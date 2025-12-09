@@ -141,8 +141,43 @@ jobs:
           git add apps/docs/public/llms*.txt
           git commit -m "chore: regenerate llms.txt files [skip ci]"
 
-          # Push changes
-          git push
+          # Push with retry logic for handling conflicts
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if git push; then
+              echo "✅ Push successful"
+              exit 0
+            fi
+
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "⚠️ Push failed, attempt $RETRY_COUNT of $MAX_RETRIES"
+
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+              echo "Fetching latest changes and rebasing..."
+              git fetch origin main
+
+              # Try to rebase our commit on top of latest main
+              if git rebase origin/main; then
+                echo "Rebase successful, retrying push..."
+              else
+                echo "Rebase failed, aborting..."
+                git rebase --abort
+                # Re-generate files after fetching latest
+                echo "Re-generating llms.txt files..."
+                cd apps/docs && pnpm run generate:llms && cd ../..
+                git add apps/docs/public/llms*.txt
+                git commit --amend --no-edit
+              fi
+
+              # Exponential backoff: 2s, 4s
+              sleep $((2 ** RETRY_COUNT))
+            fi
+          done
+
+          echo "❌ Failed to push after $MAX_RETRIES attempts"
+          exit 1
 
       - name: Summary
         run: |

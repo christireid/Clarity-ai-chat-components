@@ -576,6 +576,80 @@ Create sophisticated AI agents with tool calling, parallel execution, and error 
 
 > **Tip**: Execute independent tool calls in parallel to reduce total latency.
 
+```tsx
+// app/api/agent/route.ts
+import { ReactAgent } from '@clarity-chat/react/agents'
+import { tools } from './tools'
+
+export async function POST(req: Request) {
+  const { messages, userId } = await req.json()
+  
+  const agent = new ReactAgent({
+    model: 'gpt-4',
+    tools,
+    maxIterations: 10,
+    systemPrompt: `You are a helpful research assistant.
+Think step by step and use tools when needed.`
+  })
+  
+  try {
+    const result = await agent.run({
+      input: messages[messages.length - 1].content,
+      userId
+    })
+    
+    return Response.json({
+      message: result.output,
+      steps: result.steps,
+      toolCalls: result.toolCalls
+    })
+  } catch (error) {
+    return Response.json(
+      { error: error.message },
+      { status: 500 }
+    )
+  }
+}
+```
+
+```typescript
+// app/api/agent/tools.ts
+export const tools = {
+  web_search: async ({ query }: { query: string }) => {
+    const response = await fetch(
+      `https://api.tavily.com/search`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ query }),
+        headers: { 
+          'Authorization': `Bearer ${process.env.TAVILY_API_KEY}` 
+        }
+      }
+    )
+    const data = await response.json()
+    return data.results.slice(0, 5).map(r => ({
+      title: r.title,
+      url: r.url,
+      snippet: r.snippet
+    }))
+  },
+
+  calculator: async ({ expression }: { expression: string }) => {
+    // Safe eval implementation
+    const result = evalMathExpression(expression)
+    return { result, expression }
+  },
+
+  get_weather: async ({ location }: { location: string }) => {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${location}`,
+      { headers: { 'X-API-Key': process.env.WEATHER_API_KEY } }
+    )
+    return await response.json()
+  }
+}
+```
+
 ```typescript
 const agent = new ReactAgent({
   model: 'gpt-4',
@@ -589,6 +663,21 @@ const result = await agent.run({
   input: 'Get weather for SF, NYC, and Boston'
 })
 // All 3 weather calls execute in parallel
+```
+
+```typescript
+const agent = new ReactAgent({
+  model: 'gpt-4',
+  tools,
+  errorRecovery: {
+    maxRetries: 3,
+    backoffMs: 1000,
+    fallbackStrategy: 'skip' // or 'retry', 'fail'
+  },
+  onError: (error, toolName, attempt) => {
+    console.error(`Tool ${toolName} failed (attempt ${attempt}):`, error)
+  }
+})
 ```
 
 </doc>
@@ -791,6 +880,68 @@ Learn how to integrate Clarity Chat with different backend frameworks and archit
 
 > **Info**: Clarity Chat works with any backend that can handle HTTP requests and return streaming responses. These patterns show how to integrate with popular frameworks.
 
+```tsx
+// server.js
+const express = require('express')
+const OpenAI = require('openai')
+const app = express()
+
+app.use(express.json())
+app.use(cors())
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { messages } = req.body
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' })
+    }
+
+    // Set up SSE headers
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+    res.setHeader('Access-Control-Allow-Origin', '*')
+
+    // Create streaming response
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4',
+      messages,
+      stream: true,
+    })
+
+    // Stream chunks to client
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        res.write(`data: ${content}\
+\
+`)
+      }
+    }
+
+    res.end()
+  } catch (error) {
+    console.error('Chat API error:', error)
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+})
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000')
+})
+```
+
 ```python
 # main.py
 from fastapi import FastAPI, Request
@@ -853,6 +1004,76 @@ async def chat(request: Request):
 ```
 
 ```tsx
+// chat.controller.ts
+import { Controller, Post, Body, Res } from '@nestjs/common'
+import { Response } from 'express'
+import { ChatService } from './chat.service'
+
+@Controller('api/chat')
+export class ChatController {
+  constructor(private readonly chatService: ChatService) {}
+
+  @Post()
+  async chat(@Body() body: { messages: any[] }, @Res() res: Response) {
+    try {
+      const { messages } = body
+
+      if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ error: 'Invalid messages format' })
+      }
+
+      // Set up SSE headers
+      res.setHeader('Content-Type', 'text/event-stream')
+      res.setHeader('Cache-Control', 'no-cache')
+      res.setHeader('Connection', 'keep-alive')
+
+      // Stream response
+      const stream = await this.chatService.createStream(messages)
+
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content
+        if (content) {
+          res.write(`data: ${content}\
+\
+`)
+        }
+      }
+
+      res.end()
+    } catch (error) {
+      console.error('Chat API error:', error)
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Internal server error' })
+      }
+    }
+  }
+}
+
+// chat.service.ts
+import { Injectable } from '@nestjs/common'
+import OpenAI from 'openai'
+
+@Injectable()
+export class ChatService {
+  private openai: OpenAI
+
+  constructor() {
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+
+  async createStream(messages: any[]) {
+    return this.openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4',
+      messages,
+      stream: true,
+    })
+  }
+}
+```
+
+```tsx
 // Express.js with JWT
 const jwt = require('jsonwebtoken')
 
@@ -895,6 +1116,70 @@ const chatLimiter = rateLimit({
 
 app.post('/api/chat', chatLimiter, async (req, res) => {
   // ... streaming logic
+})
+```
+
+```tsx
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { messages } = req.body
+
+    // Validation
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
+
+    if (messages.length === 0) {
+      return res.status(400).json({ error: 'Messages array cannot be empty' })
+    }
+
+    // Check API key
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' })
+    }
+
+    // Create stream
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4',
+      messages,
+      stream: true,
+    })
+
+    // Handle stream errors
+    stream.on('error', (error) => {
+      console.error('Stream error:', error)
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Stream error occurred' })
+      }
+    })
+
+    // Stream response
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        res.write(`data: ${content}\
+\
+`)
+      }
+    }
+
+    res.end()
+  } catch (error) {
+    console.error('Chat API error:', error)
+
+    // Handle specific error types
+    if (error.status === 429) {
+      return res.status(429).json({ error: 'Rate limit exceeded' })
+    }
+
+    if (error.status === 401) {
+      return res.status(401).json({ error: 'Invalid API key' })
+    }
+
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
 })
 ```
 
@@ -1119,6 +1404,39 @@ const tools: Tool[] = [
 ```
 
 ```tsx
+const weatherTool = {
+  name: 'get_weather',
+  description: 'Get current weather conditions for a location',
+  parameters: {
+    type: 'object',
+    properties: {
+      location: {
+        type: 'string',
+        description: 'City and state or country',
+      },
+      units: {
+        type: 'string',
+        enum: ['celsius', 'fahrenheit'],
+        default: 'celsius',
+      },
+    },
+    required: ['location'],
+  },
+  execute: async (args) => {
+    const response = await fetch(
+      `https://api.weather.com/v1/current?location=${args.location}&units=${args.units}`
+    )
+    const data = await response.json()
+    return {
+      temperature: data.temp,
+      condition: data.condition,
+      humidity: data.humidity,
+    }
+  },
+}
+```
+
+```tsx
 const databaseTool = {
   name: 'query_database',
   description: 'Query the customer database',
@@ -1170,6 +1488,32 @@ const apiTool = {
     })
     return await response.json()
   },
+}
+```
+
+```tsx
+import { useAssistant } from '@clarity-chat/react'
+
+function AssistantWithTools() {
+  const { messages, append, toolInvocations } = useAssistant({
+    api: '/api/assistant',
+    assistantId: 'asst_123',
+    onToolCall: async (invocation) => {
+      // Route to appropriate tool
+      switch (invocation.toolName) {
+        case 'get_weather':
+          return await getWeather(invocation.args.location)
+        case 'search_database':
+          return await searchDatabase(invocation.args.query)
+        case 'send_email':
+          return await sendEmail(invocation.args)
+        default:
+          throw new Error(`Unknown tool: ${invocation.toolName}`)
+      }
+    },
+  })
+
+  return <ChatWindow messages={messages} onSendMessage={handleSend} />
 }
 ```
 
@@ -1935,6 +2279,87 @@ function Chat() {
 
 ```tsx
 import { useClarityChat } from '@clarity-chat/react'
+import { useEffect } from 'react'
+
+function Chat() {
+  const chatId = 'my-chat-session'
+  
+  const chat = useClarityChat({
+    api: '/api/chat',
+    chatId,
+    memory: {
+      enabled: true,
+      strategy: 'sliding-window',
+    },
+  })
+
+  // Load memory from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem(`chat-memory-${chatId}`)
+    if (saved) {
+      const messages = JSON.parse(saved)
+      chat.setMessages(messages)
+    }
+  }, [])
+
+  // Save memory to localStorage
+  useEffect(() => {
+    if (chat.messages.length > 0) {
+      localStorage.setItem(
+        `chat-memory-${chatId}`,
+        JSON.stringify(chat.messages)
+      )
+    }
+  }, [chat.messages])
+
+  return <ChatWindow messages={chat.messages} />
+}
+```
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+import { useEffect } from 'react'
+
+function Chat() {
+  const chatId = 'user-123-session-456'
+  
+  const chat = useClarityChat({
+    api: '/api/chat',
+    chatId,
+    memory: {
+      enabled: true,
+      strategy: 'sliding-window',
+    },
+  })
+
+  // Load memory from backend
+  useEffect(() => {
+    fetch(`/api/chat/${chatId}/memory`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.messages) {
+          chat.setMessages(data.messages)
+        }
+      })
+  }, [])
+
+  // Save memory to backend (on message change)
+  useEffect(() => {
+    if (chat.messages.length > 0) {
+      fetch(`/api/chat/${chatId}/memory`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chat.messages }),
+      })
+    }
+  }, [chat.messages])
+
+  return <ChatWindow messages={chat.messages} />
+}
+```
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
 
 function Chat() {
   const { messages, memoryInfo, memoryErrorInfo } = useClarityChat({
@@ -2194,6 +2619,69 @@ function ImagePreview({ attachments }) {
 ```
 
 ```tsx
+// app/api/chat/route.ts
+import { NextRequest } from 'next/server'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export async function POST(req: NextRequest) {
+  try {
+    const { messages } = await req.json()
+
+    // Messages can contain multi-modal content
+    // Example: [
+    //   {
+    //     role: 'user',
+    //     content: [
+    //       { type: 'text', text: 'What is in this image?' },
+    //       { type: 'image_url', image_url: { url: 'https://...' } }
+    //     ]
+    //   }
+    // ]
+
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-4-vision-preview', // Use vision model for images
+      messages,
+      stream: true,
+    })
+
+    return new Response(
+      new ReadableStream({
+        async start(controller) {
+          const encoder = new TextEncoder()
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content
+            if (content) {
+              controller.enqueue(encoder.encode(`data: ${content}\
+\
+`))
+            }
+          }
+          controller.close()
+        },
+      }),
+      {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      }
+    )
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+```
+
+```tsx
 // Send image with text
 await append({
   role: 'user',
@@ -2202,6 +2690,22 @@ await append({
     { type: 'image_url', image_url: { url: imageUrl } },
   ],
 })
+```
+
+```tsx
+// Upload and process PDF
+const handlePDFUpload = async (file: File) => {
+  // Extract text from PDF
+  const text = await extractTextFromPDF(file)
+  
+  // Send as context
+  await append({
+    role: 'user',
+    content: `Please analyze this document: \
+\
+${text}`,
+  })
+}
 ```
 
 ```tsx
@@ -3085,6 +3589,182 @@ function App() {
 }
 ```
 
+```tsx
+// app/api/chat/route.ts
+import { NextRequest } from 'next/server'
+import OpenAI from 'openai'
+
+// Initialize OpenAI client
+// Make sure OPENAI_API_KEY is set in your .env.local file
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export async function POST(req: NextRequest) {
+  try {
+    const { messages } = await req.json()
+
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return new Response(JSON.stringify({ error: 'OPENAI_API_KEY not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const stream = await openai.chat.completions.create({
+    model: process.env.OPENAI_MODEL || 'gpt-4', // Use env var or default to gpt-4
+    messages,
+    stream: true,
+  })
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder()
+        for await (const chunk of stream) {
+          const content = chunk.choices[0]?.delta?.content
+          if (content) {
+            controller.enqueue(encoder.encode(`data: ${content}\
+\
+`))
+          }
+        }
+        controller.close()
+      },
+    }),
+    {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    }
+  )
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+```
+
+```tsx
+// pages/api/chat.ts
+import { NextApiRequest, NextApiResponse } from 'next'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  try {
+    const { messages } = req.body
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' })
+    }
+
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4', // Use env var or default to gpt-4
+      messages,
+      stream: true,
+    })
+
+    for await (const chunk of stream) {
+    const content = chunk.choices[0]?.delta?.content
+    if (content) {
+      res.write(`data: ${content}\
+\
+`)
+    }
+  }
+
+  res.end()
+}
+```
+
+```tsx
+// server.js
+import express from 'express'
+import OpenAI from 'openai'
+
+const app = express()
+app.use(express.json())
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { messages } = req.body
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' })
+    }
+
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4', // Use env var or default to gpt-4
+      messages,
+      stream: true,
+    })
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        res.write(`data: ${content}\
+\
+`)
+      }
+    }
+
+    res.end()
+  } catch (error) {
+    console.error('Chat API error:', error)
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+})
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000')
+})
+```
+
 ```bash
 OPENAI_API_KEY=sk-your-api-key-here
 ```
@@ -3303,6 +3983,191 @@ function Chat() {
 ```
 
 ```tsx
+// app/api/chat/route.ts
+import { NextRequest } from 'next/server'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export async function POST(req: NextRequest) {
+  try {
+    const { messages } = await req.json()
+
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return new Response(JSON.stringify({ error: 'OPENAI_API_KEY not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Create streaming response
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4',
+      messages,
+      stream: true, // Enable streaming
+    })
+
+    // Return as Server-Sent Events (SSE)
+    return new Response(
+      new ReadableStream({
+        async start(controller) {
+          const encoder = new TextEncoder()
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content
+            if (content) {
+              // Send as SSE format
+              controller.enqueue(encoder.encode(`data: ${content}\
+\
+`))
+            }
+          }
+          controller.close()
+        },
+      }),
+      {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      }
+    )
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+```
+
+```tsx
+// pages/api/chat.ts
+import type { NextApiRequest, NextApiResponse } from 'next'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  try {
+    const { messages } = req.body
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' })
+    }
+
+    // Set up SSE headers
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+
+    // Create streaming response
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4',
+      messages,
+      stream: true,
+    })
+
+    // Stream chunks to client
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        res.write(`data: ${content}\
+\
+`)
+      }
+    }
+
+    res.end()
+  } catch (error) {
+    console.error('Chat API error:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+}
+```
+
+```tsx
+// server.ts
+import express from 'express'
+import OpenAI from 'openai'
+
+const app = express()
+app.use(express.json())
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { messages } = req.body
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' })
+    }
+
+    // Set up SSE headers
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+
+    // Create streaming response
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4',
+      messages,
+      stream: true,
+    })
+
+    // Stream chunks to client
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        res.write(`data: ${content}\
+\
+`)
+      }
+    }
+
+    res.end()
+  } catch (error) {
+    console.error('Chat API error:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000')
+})
+```
+
+```tsx
 <ClarityChat
   api="/api/chat"
   streamProtocol="sse" // Default
@@ -3408,6 +4273,88 @@ Implement real-time streaming responses with semantic memory and intelligent con
 - Set appropriate `maxTokens` based on your model's context window Use semantic search to retrieve only relevant memories Implement exponential backoff for reconnection logic Store embeddings asynchronously to avoid blocking the response Clean up old or low-relevance memories periodically Monitor token usage and adjust compression strategies
 
 > **Info**: • Setting up streaming with SSE or WebSockets • Integrating semantic memory and vector search • Managing conversation context windows • Handling reconnections and error recovery
+
+```tsx
+// app/api/chat/route.ts
+import { StreamingTextResponse } from 'ai'
+import { MemoryService } from '@clarity-chat/react/server'
+
+export async function POST(req: Request) {
+  const { messages, userId } = await req.json()
+  
+  // Retrieve relevant memories
+  const memory = new MemoryService({
+    vectorStore: 'pinecone',
+    apiKey: process.env.PINECONE_API_KEY
+  })
+  
+  const context = await memory.retrieveContext({
+    query: messages[messages.length - 1].content,
+    userId,
+    k: 5
+  })
+  
+  // Combine messages with memory context
+  const prompt = [
+    { role: 'system', content: 'You are a helpful assistant with memory.' },
+    ...context.map(c => ({ role: 'assistant', content: c })),
+    ...messages
+  ]
+  
+  // Stream response
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4',
+      messages: prompt,
+      stream: true
+    })
+  })
+  
+  // Store new message in memory
+  const lastMessage = messages[messages.length - 1]
+  await memory.store({
+    content: lastMessage.content,
+    userId,
+    metadata: { timestamp: Date.now() }
+  })
+  
+  return new StreamingTextResponse(response.body)
+}
+```
+
+```tsx
+import { ChatWindow, TokenOptimizer } from '@clarity-chat/react'
+
+export default function OptimizedMemoryChat() {
+  const optimizer = new TokenOptimizer({
+    compression: { algorithm: 'llmlingua', targetRatio: 0.6 },
+    reranking: { k: 12, topK: 4 },
+    slidingWindow: { maxTokens: 8000 }
+  })
+
+  const { messages, sendMessage } = useChat({
+    endpoint: '/api/chat',
+    enableMemory: true,
+    tokenOptimizer: optimizer,
+    onTokensOptimized: (savings) => {
+      console.log(`Saved ${savings.percent}% tokens`)
+    }
+  })
+
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={sendMessage}
+      rightPanel={<TokenOptimizationPanel />}
+    />
+  )
+}
+```
 
 </doc>
 
@@ -4078,6 +5025,42 @@ const theme = generateTheme('#3b82f6')
 </div>
 ```
 
+```tsx
+import styled from 'styled-components'
+import { ChatWindow } from '@clarity-chat/react'
+
+const StyledChatWindow = styled(ChatWindow)`
+  background: ${props => props.theme.background};
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  
+  .message {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .message-own {
+    background: linear-gradient(
+      135deg,
+      ${props => props.theme.primary},
+      ${props => props.theme.primaryDark}
+    );
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`
+
+function App() {
+  return (
+    <ThemeProvider theme={{ primary: '#3b82f6', primaryDark: '#2563eb' }}>
+      <StyledChatWindow />
+    </ThemeProvider>
+  )
+}
+```
+
 ```typescript
 const responsiveStyles = {
   // Mobile
@@ -4638,6 +5621,168 @@ const showAvatar = (index) => {
 ```
 
 ```tsx
+import { useEffect, useRef } from 'react'
+
+function useWebSocketChat(roomId) {
+  const ws = useRef(null)
+  const [messages, setMessages] = useState([])
+  const [typingUsers, setTypingUsers] = useState([])
+  const [onlineUsers, setOnlineUsers] = useState([])
+
+  useEffect(() => {
+    // Connect to WebSocket
+    ws.current = new WebSocket(`wss://api.example.com/chat/${roomId}`)
+
+    ws.current.onopen = () => {
+      console.log('Connected to chat')
+      // Send join event
+      ws.current.send(JSON.stringify({
+        type: 'join',
+        userId: currentUser.id
+      }))
+    }
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+
+      switch (data.type) {
+        case 'message':
+          setMessages(prev => [...prev, data.message])
+          break
+        case 'typing':
+          setTypingUsers(prev => [...prev, data.userId])
+          break
+        case 'stop_typing':
+          setTypingUsers(prev => prev.filter(id => id !== data.userId))
+          break
+        case 'user_joined':
+          setOnlineUsers(prev => [...prev, data.userId])
+          break
+        case 'user_left':
+          setOnlineUsers(prev => prev.filter(id => id !== data.userId))
+          break
+        case 'reaction':
+          handleReaction(data.messageId, data.emoji, data.userId)
+          break
+      }
+    }
+
+    ws.current.onclose = () => {
+      console.log('Disconnected from chat')
+    }
+
+    return () => {
+      if (ws.current) {
+        ws.current.close()
+      }
+    }
+  }, [roomId])
+
+  const sendMessage = (text) => {
+    const message = {
+      type: 'message',
+      text,
+      sender: currentUser,
+      timestamp: new Date()
+    }
+    ws.current.send(JSON.stringify(message))
+  }
+
+  const sendTyping = () => {
+    ws.current.send(JSON.stringify({ type: 'typing' }))
+  }
+
+  const sendReaction = (messageId, emoji) => {
+    ws.current.send(JSON.stringify({
+      type: 'reaction',
+      messageId,
+      emoji
+    }))
+  }
+
+  return {
+    messages,
+    typingUsers,
+    onlineUsers,
+    sendMessage,
+    sendTyping,
+    sendReaction
+  }
+}
+```
+
+```tsx
+import { ref, onValue, push, set, update } from 'firebase/database'
+import { db } from './firebase'
+
+function useFirebaseChat(roomId) {
+  const [messages, setMessages] = useState([])
+  const [onlineUsers, setOnlineUsers] = useState([])
+
+  useEffect(() => {
+    // Listen to messages
+    const messagesRef = ref(db, `rooms/${roomId}/messages`)
+    const unsubscribeMessages = onValue(messagesRef, (snapshot) => {
+      const data = snapshot.val()
+      if (data) {
+        const messagesList = Object.entries(data).map(([id, msg]) => ({
+          id,
+          ...msg
+        }))
+        setMessages(messagesList)
+      }
+    })
+
+    // Listen to online users
+    const presenceRef = ref(db, `rooms/${roomId}/presence`)
+    const unsubscribePresence = onValue(presenceRef, (snapshot) => {
+      const data = snapshot.val()
+      if (data) {
+        setOnlineUsers(Object.keys(data).filter(id => data[id].online))
+      }
+    })
+
+    // Set user online
+    const userPresenceRef = ref(db, `rooms/${roomId}/presence/${currentUser.id}`)
+    set(userPresenceRef, {
+      online: true,
+      lastSeen: Date.now()
+    })
+
+    // Set user offline on disconnect
+    onDisconnect(userPresenceRef).set({
+      online: false,
+      lastSeen: Date.now()
+    })
+
+    return () => {
+      unsubscribeMessages()
+      unsubscribePresence()
+      set(userPresenceRef, { online: false, lastSeen: Date.now() })
+    }
+  }, [roomId])
+
+  const sendMessage = (text) => {
+    const messagesRef = ref(db, `rooms/${roomId}/messages`)
+    push(messagesRef, {
+      text,
+      sender: currentUser,
+      timestamp: Date.now()
+    })
+  }
+
+  const addReaction = (messageId, emoji) => {
+    const reactionRef = ref(db, `rooms/${roomId}/messages/${messageId}/reactions/${emoji}`)
+    update(reactionRef, {
+      [currentUser.id]: true
+    })
+  }
+
+  return { messages, onlineUsers, sendMessage, addReaction }
+}
+```
+
+```tsx
 import { io } from 'socket.io-client'
 
 function useSocketIOChat(roomId) {
@@ -4724,6 +5869,42 @@ const replyToMessage = (parentId, text) => {
 ```
 
 ```typescript
+const parseMentions = (text) => {
+  const mentionRegex = /@(\w+)/g
+  const mentions = []
+  let match
+
+  while ((match = mentionRegex.exec(text)) !== null) {
+    const username = match[1]
+    const user = users.find(u => u.name.toLowerCase() === username.toLowerCase())
+    if (user) {
+      mentions.push(user.id)
+    }
+  }
+
+  return mentions
+}
+
+const sendMessage = (text) => {
+  const mentions = parseMentions(text)
+  
+  const message = {
+    text,
+    sender: currentUser,
+    mentions,
+    timestamp: new Date()
+  }
+
+  // Send notifications to mentioned users
+  mentions.forEach(userId => {
+    sendNotification(userId, `${currentUser.name} mentioned you`)
+  })
+
+  setMessages(prev => [...prev, message])
+}
+```
+
+```typescript
 const [searchQuery, setSearchQuery] = useState('')
 
 const searchMessages = (query) => {
@@ -4780,6 +5961,32 @@ const saveEdit = (messageId, newText) => {
     onCancel={() => setEditingMessageId(null)}
   />
 )}
+```
+
+```typescript
+const [userStatuses, setUserStatuses] = useState({})
+
+const updateStatus = (userId, status) => {
+  setUserStatuses(prev => ({
+    ...prev,
+    [userId]: {
+      status,
+      lastSeen: Date.now()
+    }
+  }))
+}
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'online': return 'bg-green-500'
+    case 'away': return 'bg-yellow-500'
+    case 'busy': return 'bg-red-500'
+    default: return 'bg-gray-400'
+  }
+}
+
+// Render status indicator
+<div className={`status-indicator ${getStatusColor(userStatuses[user.id]?.status)}`} />
 ```
 
 ```tsx
@@ -5161,6 +6368,185 @@ Comprehensive guide to building AI agents that can use tools, make decisions, an
 ```
 
 ```tsx
+import { createAgent } from '@clarity-chat/react'
+import type { Tool } from '@clarity-chat/react'
+
+// Define tools
+const weatherTool: Tool = {
+  name: 'get_weather',
+  description: 'Get current weather for a city',
+  parameters: {
+    type: 'object',
+    properties: {
+      location: {
+        type: 'string',
+        description: 'City name or location',
+      },
+      units: {
+        type: 'string',
+        enum: ['celsius', 'fahrenheit'],
+        description: 'Temperature units',
+      },
+    },
+    required: ['location'],
+  },
+  async execute(args) {
+    const response = await fetch(`/api/weather?location=${args.location}`)
+    return await response.json()
+  },
+}
+
+const calculatorTool: Tool = {
+  name: 'calculate',
+  description: 'Perform mathematical calculations',
+  parameters: {
+    type: 'object',
+    properties: {
+      expression: {
+        type: 'string',
+        description: 'Mathematical expression to evaluate',
+      },
+    },
+    required: ['expression'],
+  },
+  async execute(args) {
+    // Safe evaluation (no eval)
+    return { result: evaluateMath(args.expression) }
+  },
+}
+
+// Create agent
+const agent = createAgent({
+  name: 'ResearchAgent',
+  description: 'An agent that can research topics and perform calculations',
+  tools: [weatherTool, calculatorTool],
+  maxIterations: 10,
+  model: 'gpt-4',
+  temperature: 0.7,
+})
+```
+
+```tsx
+import { createAgent } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function AgentExample() {
+  const [execution, setExecution] = useState(null)
+  const [steps, setSteps] = useState([])
+
+  const agent = createAgent({
+    name: 'ResearchAgent',
+    description: 'Research agent',
+    tools: [weatherTool, calculatorTool],
+    maxIterations: 10,
+  }, {
+    onThought: (thought) => {
+      console.log('Agent thinking:', thought)
+    },
+    onAction: (tool, args) => {
+      console.log('Agent using tool:', tool, args)
+      setSteps(prev => [...prev, {
+        id: Date.now().toString(),
+        title: `Using ${tool}`,
+        detail: JSON.stringify(args),
+        status: 'running',
+        tool,
+        startedAt: new Date(),
+      }])
+    },
+    onObservation: (result) => {
+      console.log('Tool result:', result)
+      setSteps(prev => prev.map(step =>
+        step.status === 'running'
+          ? { ...step, status: 'succeeded', completedAt: new Date(), outputPreview: JSON.stringify(result).slice(0, 100) }
+          : step
+      ))
+    },
+    onAnswer: (answer) => {
+      console.log('Final answer:', answer)
+    },
+  })
+
+  const handleQuery = async () => {
+    const exec = await agent.execute('What is the weather in San Francisco and what is 15 * 23?')
+    setExecution(exec)
+  }
+
+  return (
+    <div>
+      <button onClick={handleQuery}>Run Agent</button>
+      {execution && (
+        <div>
+          <p>Status: {execution.status}</p>
+          <p>Answer: {execution.answer}</p>
+          <p>Steps: {execution.steps.length}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+```tsx
+import { AgentRunFeed } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+
+function AgentRunFeedExample() {
+  const [steps, setSteps] = useState([])
+
+  const agent = createAgent({
+    name: 'ResearchAgent',
+    description: 'Research agent',
+    tools: [weatherTool, calculatorTool],
+  }, {
+    onAction: (tool, args) => {
+      setSteps(prev => [...prev, {
+        id: Date.now().toString(),
+        title: `Calling ${tool}`,
+        detail: JSON.stringify(args),
+        status: 'running',
+        tool,
+        startedAt: new Date(),
+      }])
+    },
+    onObservation: (result) => {
+      setSteps(prev => prev.map(step =>
+        step.status === 'running'
+          ? {
+              ...step,
+              status: 'succeeded',
+              completedAt: new Date(),
+              outputPreview: JSON.stringify(result).slice(0, 100),
+            }
+          : step
+      ))
+    },
+  })
+
+  const handleQuery = async () => {
+    await agent.execute('What is the weather in San Francisco?')
+  }
+
+  return (
+    <div>
+      <button onClick={handleQuery}>Run Agent</button>
+      <AgentRunFeed
+        steps={steps}
+        onRetry={(step) => {
+          // Retry failed step
+          console.log('Retrying:', step)
+        }}
+        onOpenLogs={(step) => {
+          // Show detailed logs
+          console.log('Logs for:', step)
+        }}
+      />
+    </div>
+  )
+}
+```
+
+```tsx
 interface AgentStep {
   /** Step number */
   step: number
@@ -5197,6 +6583,49 @@ interface AgentExecution {
   startTime: number
   /** End time */
   endTime?: number
+}
+```
+
+```tsx
+import { createAgent } from '@clarity-chat/react'
+
+const agent = createAgent({
+  name: 'EmailAgent',
+  description: 'Agent that can send emails',
+  tools: [sendEmailTool],
+}, {
+  onToolApproval: async (tool, args) => {
+    // Show approval UI
+    if (tool.requiresApproval) {
+      const approved = await showApprovalDialog({
+        tool: tool.name,
+        args,
+        description: `The agent wants to send an email to ${args.to}`,
+      })
+      return approved
+    }
+    return true // Auto-approve safe tools
+  },
+})
+
+// Tool with approval requirement
+const sendEmailTool: Tool = {
+  name: 'send_email',
+  description: 'Send an email',
+  requiresApproval: true, // Requires user approval
+  parameters: {
+    type: 'object',
+    properties: {
+      to: { type: 'string' },
+      subject: { type: 'string' },
+      body: { type: 'string' },
+    },
+    required: ['to', 'subject', 'body'],
+  },
+  async execute(args) {
+    // Send email
+    return { sent: true }
+  },
 }
 ```
 
@@ -5272,6 +6701,168 @@ const execution = await Promise.race([
     setTimeout(() => reject(new Error('Execution timeout')), 30000)
   ),
 ])
+```
+
+```tsx
+import { useState } from 'react'
+import { createAgent, AgentRunFeed } from '@clarity-chat/react'
+import type { Tool, AgentRunStep } from '@clarity-chat/react'
+
+function CompleteAgentExample() {
+  const [steps, setSteps] = useState<AgentRunStep[]>([])
+  const [execution, setExecution] = useState(null)
+  const [pendingApproval, setPendingApproval] = useState(null)
+
+  // Define tools
+  const weatherTool: Tool = {
+    name: 'get_weather',
+    description: 'Get current weather for a location',
+    parameters: {
+      type: 'object',
+      properties: {
+        location: { type: 'string', description: 'City name' },
+      },
+      required: ['location'],
+    },
+    async execute(args) {
+      const response = await fetch(`/api/weather?location=${args.location}`)
+      if (!response.ok) throw new Error('Weather API failed')
+      return await response.json()
+    },
+  }
+
+  const sendEmailTool: Tool = {
+    name: 'send_email',
+    description: 'Send an email',
+    requiresApproval: true,
+    parameters: {
+      type: 'object',
+      properties: {
+        to: { type: 'string' },
+        subject: { type: 'string' },
+        body: { type: 'string' },
+      },
+      required: ['to', 'subject', 'body'],
+    },
+    async execute(args) {
+      // Validate
+      if (!isValidEmail(args.to)) {
+        throw new Error('Invalid email address')
+      }
+      // Send email
+      return { sent: true }
+    },
+  }
+
+  // Create agent
+  const agent = createAgent({
+    name: 'AssistantAgent',
+    description: 'Helpful assistant that can check weather and send emails',
+    tools: [weatherTool, sendEmailTool],
+    maxIterations: 10,
+  }, {
+    onThought: (thought) => {
+      console.log('Thinking:', thought)
+    },
+    onAction: (tool, args) => {
+      setSteps(prev => [...prev, {
+        id: Date.now().toString(),
+        title: `Using ${tool}`,
+        detail: JSON.stringify(args),
+        status: 'running',
+        tool,
+        startedAt: new Date(),
+      }])
+    },
+    onObservation: (result) => {
+      setSteps(prev => prev.map(step =>
+        step.status === 'running'
+          ? {
+              ...step,
+              status: 'succeeded',
+              completedAt: new Date(),
+              outputPreview: JSON.stringify(result).slice(0, 100),
+            }
+          : step
+      ))
+    },
+    onAnswer: (answer) => {
+      console.log('Answer:', answer)
+    },
+    onError: (error) => {
+      console.error('Agent error:', error)
+      setSteps(prev => prev.map(step =>
+        step.status === 'running'
+          ? { ...step, status: 'failed', completedAt: new Date() }
+          : step
+      ))
+    },
+    onToolApproval: async (tool, args) => {
+      if (tool.requiresApproval) {
+        return new Promise((resolve) => {
+          setPendingApproval({ tool, args, resolve })
+        })
+      }
+      return true
+    },
+  })
+
+  const handleQuery = async () => {
+    setSteps([])
+    const exec = await agent.execute('What is the weather in San Francisco?')
+    setExecution(exec)
+  }
+
+  const handleApprove = () => {
+    if (pendingApproval) {
+      pendingApproval.resolve(true)
+      setPendingApproval(null)
+    }
+  }
+
+  const handleReject = () => {
+    if (pendingApproval) {
+      pendingApproval.resolve(false)
+      setPendingApproval(null)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <button onClick={handleQuery}>Run Agent</button>
+
+      {pendingApproval && (
+        <div className="p-4 border rounded-lg bg-yellow-50">
+          <p>Approve tool execution?</p>
+          <p>Tool: {pendingApproval.tool.name}</p>
+          <p>Args: {JSON.stringify(pendingApproval.args)}</p>
+          <div className="flex gap-2 mt-2">
+            <button onClick={handleApprove}>Approve</button>
+            <button onClick={handleReject}>Reject</button>
+          </div>
+        </div>
+      )}
+
+      <AgentRunFeed
+        steps={steps}
+        onRetry={(step) => {
+          console.log('Retrying step:', step)
+        }}
+        onOpenLogs={(step) => {
+          console.log('Logs for step:', step)
+        }}
+      />
+
+      {execution && (
+        <div>
+          <p>Status: {execution.status}</p>
+          {execution.answer && <p>Answer: {execution.answer}</p>}
+          {execution.error && <p>Error: {execution.error}</p>}
+        </div>
+      )}
+    </div>
+  )
+}
 ```
 
 </doc>
@@ -6683,6 +8274,49 @@ const chunks = chunkSemantic(documentText, 1000)
 ```
 
 ```tsx
+import { useVectorStore, useEmbeddings } from '@clarity-chat/react'
+
+async function indexDocument(documentText: string, metadata: Record<string, any>) {
+  // 1. Chunk the document
+  const chunks = chunkSemantic(documentText, 1000)
+
+  // 2. Generate embeddings
+  const embeddings = useEmbeddings({
+    provider: 'openai',
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  })
+
+  const chunkEmbeddings = await Promise.all(
+    chunks.map(chunk => embeddings.generate(chunk))
+  )
+
+  // 3. Store in vector database
+  const vectorStore = useVectorStore({
+    provider: 'pinecone',
+    config: {
+      apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      indexName: 'documents',
+    },
+  })
+
+  const vectors = chunks.map((chunk, i) => ({
+    id: `doc-${Date.now()}-${i}`,
+    content: chunk,
+    embedding: chunkEmbeddings[i],
+    metadata: {
+      ...metadata,
+      chunkIndex: i,
+      totalChunks: chunks.length,
+    },
+  }))
+
+  await vectorStore.addDocuments(vectors)
+
+  return vectors.length
+}
+```
+
+```tsx
 import { useRAGPipeline } from '@clarity-chat/react'
 
 function RetrievalExample() {
@@ -6731,6 +8365,74 @@ function RerankingExample() {
 ```
 
 ```tsx
+import { useClarityChat, useRAGPipeline } from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+
+function ChatWithRAG() {
+  const [context, setContext] = useState('')
+
+  const rag = useRAGPipeline({
+    vectorStore: 'pinecone',
+    embeddingProvider: 'openai',
+  })
+
+  const {
+    messages,
+    append,
+    isLoading,
+  } = useClarityChat({
+    api: '/api/chat',
+    onRequest: async (messages) => {
+      // Retrieve relevant documents before sending to API
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage.role === 'user') {
+        const results = await rag.retrieve(lastMessage.content, 5)
+        const contextText = results
+          .map(r => r.metadata?.content || r.content)
+          .join('\
+\
+')
+        setContext(contextText)
+
+        // Add context to system message
+        return [
+          {
+            role: 'system',
+            content: `Use the following context to answer questions:\
+\
+${contextText}`,
+          },
+          ...messages,
+        ]
+      }
+      return messages
+    },
+  })
+
+  const handleSend = useCallback(async (message: string) => {
+    await append({ role: 'user', content: message })
+  }, [append])
+
+  return (
+    <div>
+      {/* Chat UI */}
+      <div>
+        {messages.map(msg => (
+          <div key={msg.id}>{msg.content}</div>
+        ))}
+      </div>
+      {/* Show sources */}
+      {context && (
+        <div className="text-sm text-muted-foreground">
+          Sources: {context.slice(0, 100)}...
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+```tsx
 import { useVectorStore } from '@clarity-chat/react'
 
 function MetadataFilterExample() {
@@ -6756,6 +8458,122 @@ function MetadataFilterExample() {
   }
 
   return <button onClick={() => handleSearch('API changes', 'engineering')}>Search</button>
+}
+```
+
+```tsx
+import { useState, useCallback } from 'react'
+import { useClarityChat, useRAGPipeline, useVectorStore, useEmbeddings } from '@clarity-chat/react'
+
+function CompleteRAGExample() {
+  const [documents, setDocuments] = useState([])
+
+  // Initialize RAG pipeline
+  const rag = useRAGPipeline({
+    vectorStore: 'pinecone',
+    embeddingProvider: 'openai',
+    apiKeys: {
+      vectorStore: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      embeddings: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    },
+    reranker: 'cohere',
+  })
+
+  // Vector store for indexing
+  const { addDocuments } = useVectorStore({
+    provider: 'pinecone',
+    config: {
+      apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      indexName: 'documents',
+    },
+  })
+
+  // Embeddings for indexing
+  const { generate } = useEmbeddings({
+    provider: 'openai',
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  })
+
+  // Chat with RAG
+  const {
+    messages,
+    append,
+    isLoading,
+  } = useClarityChat({
+    api: '/api/chat',
+    onRequest: async (messages) => {
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage.role === 'user') {
+        // Retrieve relevant documents
+        const results = await rag.retrieve(lastMessage.content, 5)
+        const context = results
+          .map(r => `[Source: ${r.metadata?.source || 'unknown'}]${r.metadata?.content || r.content}`)
+          .join('\
+\
+')
+
+        return [
+          {
+            role: 'system',
+            content: `Answer questions using the following context. Cite sources when possible.\
+\
+Context:\
+${context}`,
+          },
+          ...messages,
+        ]
+      }
+      return messages
+    },
+  })
+
+  // Index a document
+  const handleIndexDocument = useCallback(async (text: string, metadata: Record<string, any>) => {
+    // Chunk
+    const chunks = chunkSemantic(text, 1000)
+
+    // Embed
+    const embeddings = await Promise.all(
+      chunks.map(chunk => generate(chunk))
+    )
+
+    // Store
+    const vectors = chunks.map((chunk, i) => ({
+      id: `doc-${Date.now()}-${i}`,
+      content: chunk,
+      embedding: embeddings[i],
+      metadata: {
+        ...metadata,
+        chunkIndex: i,
+        totalChunks: chunks.length,
+      },
+    }))
+
+    await addDocuments(vectors)
+    setDocuments(prev => [...prev, { id: metadata.id, chunks: vectors.length }])
+  }, [generate, addDocuments])
+
+  return (
+    <div className="space-y-4">
+      {/* Document indexing */}
+      <div>
+        <button onClick={() => handleIndexDocument('Document text...', { source: 'doc1.pdf' })}>
+          Index Document
+        </button>
+        <p>Indexed: {documents.length} documents</p>
+      </div>
+
+      {/* Chat with RAG */}
+      <div>
+        {messages.map(msg => (
+          <div key={msg.id}>{msg.content}</div>
+        ))}
+        <button onClick={() => append({ role: 'user', content: 'What is in the documents?' })}>
+          Ask Question
+        </button>
+      </div>
+    </div>
+  )
 }
 ```
 
@@ -7150,6 +8968,69 @@ function WebSocketChat() {
 ```
 
 ```tsx
+// app/api/chat/stream/route.ts
+import { NextResponse } from 'next/server'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  // Create streaming response
+  const stream = new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder()
+
+      try {
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4',
+          messages,
+          stream: true,
+        })
+
+        for await (const chunk of completion) {
+          const content = chunk.choices[0]?.delta?.content || ''
+          if (content) {
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({ content })}\
+\
+`)
+            )
+          }
+        }
+
+        // Send done event
+        controller.enqueue(
+          encoder.encode(`event: done\
+data: {}\
+\
+`)
+        )
+        controller.close()
+      } catch (error) {
+        controller.enqueue(
+          encoder.encode(`event: error\
+data: ${JSON.stringify({ error: error.message })}\
+\
+`)
+        )
+        controller.close()
+      }
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  })
+}
+```
+
+```tsx
 // server.js
 import { WebSocketServer } from 'ws'
 import OpenAI from 'openai'
@@ -7267,6 +9148,67 @@ function ChatWithErrorHandling() {
         </div>
       )}
       {/* Chat UI */}
+    </div>
+  )
+}
+```
+
+```tsx
+import { useStreamingSSE } from '@clarity-chat/react'
+
+function SSEReconnect() {
+  const {
+    status,
+    reconnectAttempt,
+    isReconnecting,
+  } = useStreamingSSE({
+    url: '/api/stream',
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    reconnectDelay: 1000, // Start with 1 second
+    maxReconnectDelay: 30000, // Max 30 seconds
+    onReconnecting: (attempt, delay) => {
+      console.log(`Reconnecting (attempt ${attempt}) in ${delay}ms`)
+    },
+    onMaxReconnectAttemptsReached: () => {
+      alert('Failed to reconnect. Please refresh the page.')
+    },
+  })
+
+  return (
+    <div>
+      {isReconnecting && (
+        <p>Reconnecting... (attempt {reconnectAttempt})</p>
+      )}
+    </div>
+  )
+}
+```
+
+```tsx
+import { useStreamingWebSocket } from '@clarity-chat/react'
+
+function WebSocketReconnect() {
+  const {
+    status,
+    reconnectAttempt,
+    isReconnecting,
+  } = useStreamingWebSocket({
+    url: 'wss://api.example.com/ws',
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    reconnectDelay: 1000,
+    maxReconnectDelay: 30000,
+    onReconnecting: (attempt, delay) => {
+      console.log(`Reconnecting (attempt ${attempt}) in ${delay}ms`)
+    },
+  })
+
+  return (
+    <div>
+      {isReconnecting && (
+        <p>Reconnecting... (attempt {reconnectAttempt})</p>
+      )}
     </div>
   )
 }
@@ -7441,6 +9383,30 @@ function PromptCachingExample() {
   }
 
   return <button onClick={handlePrepare}>Prepare with Caching</button>
+}
+```
+
+```tsx
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+
+function CompressionExample() {
+  const { optimizePrompt } = useTokenOptimizationEnhanced({
+    enablePromptCompression: true,
+    compressionLevel: 'balanced', // 'conservative' | 'balanced' | 'aggressive'
+  })
+
+  const handleCompress = async () => {
+    const longPrompt = `You are a helpful assistant. Please provide detailed,
+    comprehensive answers to user questions. Be thorough and explain concepts
+    clearly. Always consider multiple perspectives and provide balanced views.`
+
+    const result = await optimizePrompt(longPrompt)
+    console.log('Original tokens:', result.tokens.original)
+    console.log('Compressed tokens:', result.tokens.optimized)
+    console.log('Savings:', result.optimizations.compression?.savingsPercent)
+  }
+
+  return <button onClick={handleCompress}>Compress Prompt</button>
 }
 ```
 
@@ -8053,6 +10019,50 @@ function ChatWithTools() {
 }
 ```
 
+```tsx
+// app/api/tools/execute/route.ts
+import { NextResponse } from 'next/server'
+import type { ToolCall } from '@clarity-chat/react'
+
+export async function POST(req: Request) {
+  const toolCall: ToolCall = await req.json()
+
+  try {
+    let result
+
+    switch (toolCall.function.name) {
+      case 'get_weather':
+        result = await getWeather(JSON.parse(toolCall.function.arguments))
+        break
+      case 'search':
+        result = await search(JSON.parse(toolCall.function.arguments))
+        break
+      default:
+        throw new Error(`Unknown tool: ${toolCall.function.name}`)
+    }
+
+    return NextResponse.json(result)
+  } catch (error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    )
+  }
+}
+
+async function getWeather(args: { location: string; units?: string }) {
+  const response = await fetch(
+    `https://api.weather.com/v1/current?location=${args.location}`
+  )
+  return response.json()
+}
+
+async function search(args: { query: string; limit?: number }) {
+  // Implement search logic
+  return { results: [] }
+}
+```
+
 </doc>
 
 <doc url="/guides/tutorials" title="Tutorials - Clarity Chat">
@@ -8399,6 +10409,27 @@ function ChatInput() {
       rows={isExpanded ? 5 : 1}
     />
   )
+}
+```
+
+```typescript
+// ThemeContext
+const ThemeContext = createContext()
+
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light')
+  
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+
+// Usage
+function ChatWindow() {
+  const { theme } = useTheme()
+  return <div className={`theme-${theme}`}>...</div>
 }
 ```
 
@@ -10377,6 +12408,26 @@ Deploy your Clarity Chat application to Vercel with streaming, edge functions, a
 > **Info**: Deploy a starter template with one click: [ Deploy to Vercel → ](https://vercel.com/new/clone?repository-url=https://github.com/clarity-chat/starter) Manual Deployment 1. Prepare Your Project Ensure your Next.js project is configured for production: `, // Environment variables env: \` : 'http://localhost:3000' } }`}` 2. Configure Environment Variables Create `.env.example` for documentation: `` 3. Connect Repository to Vercel Go to [vercel.com/new](https://vercel.com/new) Import your Git repository Select framework preset: **Next.js** Configure project: Build Command: `npm run build` Output Directory: `.next` Install Command: `npm install` 4. Add Environment Variables In Vercel dashboard → Settings → Environment Variables: Add all variables from `.env.example` Set for Production, Preview, and Development Sensitive keys: Use Production only 5. Deploy Click **Deploy** and wait for build to complete (~2 minutes). Enable Streaming Configure streaming for AI responses: Option 1: vercel.json (Recommended) `, "app/api/*/route.ts": } }`}` Option 2: Route Segment Config ``}` • Hobby: 10s • Pro: 60s • Enterprise: 900s (15 min) Edge Functions Use Edge Runtime for lower latency (120+ global regions): ` = await req.json() const response = await fetch('https://api.openai.com/v1/chat/completions', \`, 'Content-Type': 'application/json' }, body: JSON.stringify() }) return new Response(response.body, }) }`}` • No Node.js APIs (fs, child_process) • Max response: 4MB • Use for simple proxying and streaming
 
 ```typescript
+// next.config.js
+module.exports = {
+  // Enable React strict mode
+  reactStrictMode: true,
+  
+  // Optimize images
+  images: {
+    domains: ['your-cdn.com'],
+  },
+  
+  // Environment variables
+  env: {
+    NEXT_PUBLIC_APP_URL: process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000'
+  }
+}
+```
+
+```typescript
 # OpenAI
 OPENAI_API_KEY=sk-...
 
@@ -10413,6 +12464,35 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
   // Your streaming code
+}
+```
+
+```typescript
+// app/api/chat/route.ts
+export const runtime = 'edge'
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+  
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4',
+      messages,
+      stream: true
+    })
+  })
+  
+  return new Response(response.body, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache'
+    }
+  })
 }
 ```
 
@@ -11545,6 +13625,28 @@ const { optimizedMessages } = useTokenOptimization(messages, {
 ```
 
 ```tsx
+// Batch embeddings
+import { RequestBatcher } from '@clarity-chat/react/utils'
+
+const batcher = new RequestBatcher({
+  maxBatchSize: 100,
+  maxWaitMs: 50,
+  executor: async (texts) => {
+    return await openai.embeddings.create({
+      input: texts,
+      model: 'text-embedding-3-small'
+    })
+  }
+})
+
+// Cache embeddings
+import { SmartCache } from '@clarity-chat/react/utils'
+
+const cache = new SmartCache({ maxSize: 10000, ttl: 86400000 })
+const embedding = await cache.getOrSet(`emb:${text}`, () => getEmbedding(text))
+```
+
+```tsx
 // Wrap app with ThemeProvider
 import { ThemeProvider } from '@clarity-chat/react'
 
@@ -11649,6 +13751,18 @@ export async function POST(req: Request) {
 ```
 
 ```tsx
+// Log all events
+import { ChatWindow } from '@clarity-chat/react'
+
+<ChatWindow
+  onDebug={(event, data) => {
+    console.log(`[DEBUG] ${event}`, data)
+  }}
+  debug={true}
+/>
+```
+
+```tsx
 import { ErrorBoundary } from '@clarity-chat/react'
 
 <ErrorBoundary
@@ -11724,6 +13838,33 @@ useEffect(() => {
     stream.close()
   }
 }, [])
+```
+
+```typescript
+## Description
+Brief description of the issue
+
+## Reproduction
+1. Step 1
+2. Step 2
+3. See error
+
+## Expected Behavior
+What should happen
+
+## Actual Behavior
+What actually happens
+
+## Environment
+- @clarity-chat/react: 2.1.0
+- Next.js: 14.0.0
+- Node.js: 20.0.0
+- Browser: Chrome 120
+
+## Code Sample
+```tsx
+// Minimal reproduction
+```
 ```
 
 </doc>
@@ -11975,6 +14116,109 @@ function App() {
 }
 ```
 
+```tsx
+import { useState } from 'react'
+import {
+  ChatWindow,
+  Message,
+  ThemeProvider,
+  useTyping,
+} from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+import './App.css'
+
+function App() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: 'Welcome! Try sending a message.',
+      sender: 'bot',
+      timestamp: new Date(),
+      avatar: {
+        src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
+        alt: 'Bot',
+      },
+    },
+  ])
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const { isTyping, startTyping, stopTyping } = useTyping()
+
+  const handleSendMessage = (text: string) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      text,
+      sender: 'user',
+      timestamp: new Date(),
+      avatar: {
+        src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user',
+        alt: 'You',
+      },
+    }
+    setMessages((prev) => [...prev, newMessage])
+
+    startTyping('bot')
+
+    setTimeout(() => {
+      stopTyping('bot')
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: `You said: "${text}". That's interesting!`,
+        sender: 'bot',
+        timestamp: new Date(),
+        avatar: {
+          src: 'https://api.dicebear.com/7.x/bottts/svg?seed=bot',
+          alt: 'Bot',
+        },
+      }
+      setMessages((prev) => [...prev, botMessage])
+    }, 2000)
+  }
+
+  const handleReaction = (messageId: string, emoji: string) => {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === messageId
+          ? {
+              ...msg,
+              reactions: {
+                ...msg.reactions,
+                [emoji]: (msg.reactions?.[emoji] || 0) + 1,
+              },
+            }
+          : msg
+      )
+    )
+  }
+
+  return (
+    <ToastProvider>
+    <ThemeProvider theme={theme}>
+      <div className="app" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <header style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+          <h1>My Chat App</h1>
+          <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+            {theme === 'light' ? '🌙' : '☀️'} Toggle Theme
+          </button>
+        </header>
+        <div style={{ flex: 1 }}>
+          <ChatWindow
+            messages={messages}
+            onSendMessage={handleSendMessage}
+            onReaction={handleReaction}
+            typingUsers={isTyping ? [{ id: 'bot', name: 'Bot' }] : []}
+            enableReactions
+            showTimestamps
+            showAvatars
+          />
+        </div>
+      </div>
+    </ThemeProvider>
+  )
+}
+
+export default App
+```
+
 </doc>
 
 <doc url="/learn/tutorials/adding-rag" title="Tutorial: Adding RAG to Your Chatbot">
@@ -12044,6 +14288,83 @@ npm install pdf-parse  # for PDF processing
 ```
 
 ```tsx
+import { Pinecone } from '@pinecone-database/pinecone'
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
+
+const pinecone = new Pinecone({
+  apiKey: process.env.PINECONE_API_KEY!
+})
+
+const index = pinecone.index('clarity-chat-docs')
+
+export const embeddings = new OpenAIEmbeddings({
+  openAIApiKey: process.env.OPENAI_API_KEY
+})
+
+export async function storeDocument(
+  text: string,
+  metadata: { title: string; url?: string }
+) {
+  // Split into chunks
+  const chunks = splitIntoChunks(text, {
+    size: 500,
+    overlap: 50
+  })
+  
+  // Generate embeddings
+  const vectors = await Promise.all(
+    chunks.map(async (chunk, i) => ({
+      id: `${metadata.title}-${i}`,
+      values: await embeddings.embedQuery(chunk),
+      metadata: {
+        ...metadata,
+        text: chunk,
+        chunkIndex: i
+      }
+    }))
+  )
+  
+  // Upsert to Pinecone
+  await index.upsert(vectors)
+}
+
+export async function retrieveDocuments(
+  query: string,
+  k: number = 5
+) {
+  const queryEmbedding = await embeddings.embedQuery(query)
+  
+  const results = await index.query({
+    vector: queryEmbedding,
+    topK: k,
+    includeMetadata: true
+  })
+  
+  return results.matches.map(match => ({
+    text: match.metadata?.text as string,
+    score: match.score,
+    metadata: match.metadata
+  }))
+}
+
+function splitIntoChunks(
+  text: string,
+  { size, overlap }: { size: number; overlap: number }
+) {
+  const chunks: string[] = []
+  let start = 0
+  
+  while (start < text.length) {
+    const end = start + size
+    chunks.push(text.slice(start, end))
+    start = end - overlap
+  }
+  
+  return chunks
+}
+```
+
+```tsx
 import { NextRequest, NextResponse } from 'next/server'
 import { storeDocument } from '@/lib/vector-store'
 import pdf from 'pdf-parse'
@@ -12086,6 +14407,95 @@ export async function POST(req: NextRequest) {
     filename: file.name,
     chunks: Math.ceil(text.length / 500)
   })
+}
+```
+
+```tsx
+import OpenAI from 'openai'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { retrieveDocuments } from '@/lib/vector-store'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+})
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+  const lastMessage = messages[messages.length - 1]
+  
+  // Retrieve relevant documents
+  const docs = await retrieveDocuments(lastMessage.content, 5)
+  
+  // Build context from retrieved documents
+  const context = docs
+    .map((doc, i) => `[Source ${i + 1}]: ${doc.text}`)
+    .join('\
+\
+')
+  
+  // Create augmented prompt
+  const systemMessage = {
+    role: 'system',
+    content: `You are a helpful AI assistant. Answer questions based on the provided context. 
+    
+Context:
+${context}
+
+Instructions:
+- Answer questions using the context above
+- If you use information from a source, cite it as [Source N]
+- If the context doesn't contain relevant information, say so
+- Be concise and accurate`
+  }
+  
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    stream: true,
+    messages: [
+      systemMessage,
+      ...messages
+    ]
+  })
+  
+  const stream = OpenAIStream(response)
+  return new StreamingTextResponse(stream)
+}
+```
+
+```tsx
+import { Message, CitationCard } from '@clarity-chat/react'
+
+function MessageWithCitations({ message }) {
+  // Extract citations from message
+  const citations = extractCitations(message.content)
+  
+  return (
+    <div>
+      <Message content={message.content} />
+      {citations.length > 0 && (
+        <div className="mt-2 space-y-2">
+          {citations.map((citation, i) => (
+            <CitationCard
+              key={i}
+              source={citation.source}
+              text={citation.text}
+              url={citation.url}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function extractCitations(text: string) {
+  const regex = /\\[Source (\\d+)\\]/g
+  const matches = [...text.matchAll(regex)]
+  return matches.map(match => ({
+    source: `Source ${match[1]}`,
+    text: '...',  // Retrieve from metadata
+    url: '#'
+  }))
 }
 ```
 
@@ -12230,6 +14640,36 @@ export default function RootLayout({
 
 ```typescript
 npm run dev
+```
+
+```tsx
+// app/api/chat/route.ts
+import { MemoryService } from '@clarity-chat/react/server'
+
+const memory = new MemoryService({
+  vectorStore: 'pinecone',
+  apiKey: process.env.PINECONE_API_KEY
+})
+
+export async function POST(req: Request) {
+  const { messages, userId } = await req.json()
+  
+  // Retrieve relevant context
+  const context = await memory.retrieveContext({
+    query: messages[messages.length - 1].content,
+    userId,
+    k: 5
+  })
+  
+  // Include context in prompt
+  const systemMessage = {
+    role: 'system',
+    content: `You are a helpful assistant. Here's relevant context from previous conversations: ${context.join('\
+')}`
+  }
+  
+  // ... rest of the code
+}
 ```
 
 ```tsx
@@ -12638,6 +15078,20 @@ console.log('Current state:', { messages, isLoading })
     </div>
   )}
 />
+```
+
+```typescript
+function FormFlow() {
+  const [step, setStep] = useState(1)
+  
+  return (
+    <ChatWindow
+      messages={[
+        { role: 'assistant', content: `Step ${step}/3` }
+      ]}
+    />
+  )
+}
 ```
 
 ```typescript
@@ -13113,6 +15567,33 @@ function ChatWithAutocomplete() {
 ```
 
 ```tsx
+import { AdvancedChatInput } from '@clarity-chat/react'
+
+function ChatWithLinkPreview() {
+  const handleLinkPaste = async (url: string) => {
+    // Fetch link metadata from your API or a service
+    const response = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`)
+    const data = await response.json()
+    
+    return {
+      title: data.title,
+      description: data.description,
+      image: data.image,
+    }
+  }
+
+  return (
+    <AdvancedChatInput
+      value={value}
+      onChange={setValue}
+      onSubmit={handleSubmit}
+      onLinkPaste={handleLinkPaste}
+    />
+  )
+}
+```
+
+```tsx
 <AdvancedChatInput
   value={value}
   onChange={setValue}
@@ -13159,6 +15640,90 @@ interface SavedPrompt {
   isFavorite: boolean
   createdAt: Date
   updatedAt: Date
+}
+```
+
+```tsx
+import { useState, useCallback } from 'react'
+import { AdvancedChatInput, useClarityChat } from '@clarity-chat/react'
+import type { MessageAttachment, InputSuggestion, SavedPrompt } from '@clarity-chat/react'
+
+function CompleteAdvancedChat() {
+  const chat = useClarityChat({ api: '/api/chat' })
+  const [value, setValue] = useState('')
+
+  const savedPrompts: SavedPrompt[] = [
+    // Your saved prompts...
+  ]
+
+  const handleFileUpload = async (files: File[]): Promise<MessageAttachment[]> => {
+    const formData = new FormData()
+    files.forEach(file => formData.append('files', file))
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    const data = await response.json()
+    return data.attachments
+  }
+
+  const handleSuggestionRequest = async (
+    query: string,
+    trigger: '@' | '/'
+  ): Promise<InputSuggestion[]> => {
+    if (trigger === '@') {
+      // Search prompts from API
+      const response = await fetch(`/api/prompts/search?q=${query}`)
+      const prompts = await response.json()
+      return prompts.map((p: SavedPrompt) => ({
+        id: p.id,
+        type: 'prompt' as const,
+        label: p.name,
+        description: p.description,
+        value: p.content,
+      }))
+    } else {
+      // Return commands
+      return [
+        { id: '1', type: 'command', label: 'help', value: '/help' },
+        { id: '2', type: 'command', label: 'clear', value: '/clear' },
+      ]
+    }
+  }
+
+  const handleSubmit = useCallback(
+    async (text: string, attachments?: MessageAttachment[]) => {
+      await chat.append({
+        role: 'user',
+        content: text,
+        // Include attachments in message if needed
+      })
+      setValue('')
+    },
+    [chat]
+  )
+
+  return (
+    <div className="flex flex-col h-screen">
+      {/* Your message list here */}
+      
+      <AdvancedChatInput
+        value={value}
+        onChange={setValue}
+        onSubmit={handleSubmit}
+        onFileUpload={handleFileUpload}
+        onSuggestionRequest={handleSuggestionRequest}
+        savedPrompts={savedPrompts}
+        maxFiles={10}
+        acceptedFileTypes={['image/*', 'application/pdf', '.txt', '.docx']}
+        maxLength={2000}
+        disabled={chat.isLoading}
+        placeholder="Type @ for prompts, / for commands, or drag files here..."
+      />
+    </div>
+  )
 }
 ```
 
@@ -13602,6 +16167,24 @@ Display user profile pictures with automatic fallbacks, status indicators, sizes
 - Always provide `alt` text for images Include `name` for fallback initials Use semantic HTML for interactive avatars Ensure sufficient color contrast for text Make interactive avatars keyboard accessible ARIA Attributes Best Practices Use appropriately sized images for avatars. For a 64px avatar, don't load a 1024px image. Consider using CDN image resizing services. Always handle image loading failures gracefully with fallbacks. The Avatar component does this automatically with initials. Image Optimization Use WebP format for better compression Serve appropriate sizes for different avatar dimensions Use lazy loading for avatars below the fold Consider using a CDN for avatar hosting Cache avatar images aggressively UX Guidelines Use consistent avatar sizes within the same context Show status indicators for real-time presence Make avatars clickable to view full profiles Group avatars for multiple user contexts Use clear, high-quality profile pictures Performance Generate fallback colors deterministically Memoize avatar components in lists Use CSS for status indicators (not images) Avoid re-rendering on hover states
 
 > **Info**: The Avatar component includes proper alt text and ARIA labels for screen readers. Always provide meaningful `alt` or `name` props. Best Practices Always provide `alt` text for images Include `name` for fallback initials Use semantic HTML for interactive avatars Ensure sufficient color contrast for text Make interactive avatars keyboard accessible ARIA Attributes Best Practices Use appropriately sized images for avatars. For a 64px avatar, don't load a 1024px image. Consider using CDN image resizing services. Always handle image loading failures gracefully with fallbacks. The Avatar component does this automatically with initials.
+
+```typescript
+// Generate consistent colors based on user ID or name
+function generateColor(str) {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  
+  const hue = hash % 360
+  return `hsl(${hue}, 65%, 55%)`
+}
+
+<Avatar
+  name="John Doe"
+  backgroundColor={generateColor('john-doe-id')}
+/>
+```
 
 ```tsx
 import { Avatar, Tooltip } from '@clarity-chat/react'
@@ -14624,6 +17207,64 @@ interface CoreMessage {
     state: 'partial-call' | 'call' | 'result'
     result?: any
   }>
+}
+```
+
+```tsx
+import { useState, useCallback } from 'react'
+import { ChatWindow, useClarityChat, MemoryProvider } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
+
+function CompleteChat() {
+  const chat = useClarityChat({
+    api: '/api/chat',
+    memory: { enabled: true, strategy: 'sliding-window' },
+  })
+
+  const handleExport = useCallback(() => {
+    const conversation = chat.messages
+      .map(msg => `${msg.role}: ${msg.content}`)
+      .join('\
+')
+    
+    const blob = new Blob([conversation], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'conversation.txt'
+    a.click()
+  }, [chat.messages])
+
+  const handleClear = useCallback(() => {
+    chat.setMessages([])
+  }, [chat])
+
+  return (
+    <MemoryProvider config={{ maxTokens: 10000 }}>
+      <div className="w-full max-w-4xl mx-auto" style={{ height: '600px' }}>
+        <ChatWindow
+          messages={chat.messages}
+          onSendMessage={async (content) => {
+            await chat.append({ role: 'user', content })
+          }}
+          isLoading={chat.isLoading}
+          showHeader
+          sessionTitle="AI Assistant"
+          sessionSubtitle="Powered by Clarity Chat"
+          showMessageCount
+          onExport={handleExport}
+          onClear={handleClear}
+          onMessageCopy={(id, content) => {
+            navigator.clipboard.writeText(content)
+          }}
+          onMessageFeedback={(id, type) => {
+            console.log('Feedback:', id, type)
+          }}
+          className="border border-border rounded-lg shadow-lg"
+        />
+      </div>
+    </MemoryProvider>
+  )
 }
 ```
 
@@ -15675,6 +18316,54 @@ const commands: CommandItem[] = [
 ```
 
 ```tsx
+function useCommands() {
+  const { user } = useAuth()
+  const { chats } = useChats()
+
+  return useMemo(() => {
+    const commands: CommandItem[] = []
+
+    // Recent chats
+    chats.slice(0, 5).forEach((chat) => {
+      commands.push({
+        id: `chat-${chat.id}`,
+        label: `Open: ${chat.title}`,
+        icon: '💬',
+        group: 'Recent Chats',
+        onSelect: () => openChat(chat.id),
+      })
+    })
+
+    // User actions
+    if (user.isAdmin) {
+      commands.push({
+        id: 'admin-panel',
+        label: 'Admin Panel',
+        icon: '👑',
+        group: 'Admin',
+        onSelect: () => navigate('/admin'),
+      })
+    }
+
+    return commands
+  }, [chats, user])
+}
+
+function App() {
+  const commands = useCommands()
+  
+  return (
+    <ToastProvider>
+    <CommandPalette
+      items={commands}
+      open={open}
+      onClose={() => setOpen(false)}
+    />
+  )
+}
+```
+
+```tsx
 interface CommandItem {
   id: string
   label: string
@@ -16029,6 +18718,32 @@ Fully accessible right-click context menu with keyboard navigation, nested subme
 - ↑ ↓ - Navigate menu items → - Open submenu ← - Close submenu Enter / Space - Select item Esc - Close menu Home - First item End - Last item **Type to search** - Jump to matching item Type-ahead Search Quickly find menu items by typing: Type first letter to jump to matching items Continue typing to refine search Search resets after 500ms of inactivity Cycles through all matching items Mobile Support Long Press Trigger On mobile devices, context menus are triggered by long-pressing (default 500ms): Touch-Friendly Sizing Menu items automatically increase in size on touch devices for better accessibility. Swipe to Dismiss Swipe down on the menu to close it on mobile devices. Best Practices Limit context menus to 5-10 top-level items. Use submenus to organize related actions. Important actions should also be available through visible buttons or keyboard shortcuts, not hidden in context menus alone. Menu Organization Group related actions together Use separators to divide groups Place destructive actions (delete) at the bottom Show keyboard shortcuts when available Use icons for visual scanning Disabled States Show disabled items (don't hide them) Provide tooltips explaining why items are disabled Use muted colors for disabled items Submenu Guidelines Limit nesting to 2-3 levels maximum Use submenus for 5+ related items Add visual indicators (→) for items with submenus Keep submenu delay short (200-300ms) Accessibility ARIA Attributes The ContextMenu automatically includes appropriate ARIA attributes: `role="menu"` on the menu container `role="menuitem"` on clickable items `role="separator"` on dividers `aria-haspopup` for items with submenus `aria-disabled` for disabled items `aria-checked` for checkbox/radio items Focus Management Focus automatically moves to first item when menu opens Focus is trapped within the menu Focus returns to trigger element when menu closes Submenus receive focus when opened Screen Reader Support Menu structure is announced properly Disabled items are announced as "disabled" Submenus are announced as "has submenu" Keyboard shortcuts are included in announcements
 
 > **Info**: ↑ ↓ - Navigate menu items → - Open submenu ← - Close submenu Enter / Space - Select item Esc - Close menu Home - First item End - Last item **Type to search** - Jump to matching item Type-ahead Search Quickly find menu items by typing: Type first letter to jump to matching items Continue typing to refine search Search resets after 500ms of inactivity Cycles through all matching items Mobile Support Long Press Trigger On mobile devices, context menus are triggered by long-pressing (default 500ms): Touch-Friendly Sizing Menu items automatically increase in size on touch devices for better accessibility. Swipe to Dismiss Swipe down on the menu to close it on mobile devices. Best Practices Limit context menus to 5-10 top-level items. Use submenus to organize related actions. Important actions should also be available through visible buttons or keyboard shortcuts, not hidden in context menus alone.
+
+```typescript
+function DynamicContextMenu() {
+  const [users, setUsers] = useState([])
+  const [selectedUser, setSelectedUser] = useState(null)
+
+  const menuItems = React.useMemo(() => {
+    const items = [
+      { id: 'header', label: 'Mention User', type: 'label' }
+    ]
+
+    users.forEach(user => {
+      items.push({
+        id: `mention-${user.id}`,
+        label: user.name,
+        icon: user.avatar,
+        onSelect: () => mentionUser(user)
+      })
+    })
+
+    return items
+  }, [users])
+
+  return <ContextMenu items={menuItems}>{children}</ContextMenu>
+}
+```
 
 ```typescript
 function MultipleContextMenus() {
@@ -16844,6 +19559,37 @@ Smart follow-up questions that help users continue the conversation naturally. L
 
 > **Info**: Users often don't know what else to ask. Suggestions reduce friction and keep conversations flowing. This can increase engagement by 2-3x. Basic Usage return ( ) } render()`} /> With Icons Add visual icons to make suggestions more scannable. alert(\`Selected: \$\`)} /> ) } render()`} /> With Confidence Scores Show how relevant each suggestion is (useful for AI-generated suggestions). console.log('Selected:', s)} title="You might want to ask" subtitle="AI-ranked by relevance to your conversation" /> ) } render()`} /> Layout Options Choose between grid (default) or list layout. setLayout('grid')} > Grid Layout setLayout('list')} > List Layout console.log(s.title)} /> ) } render()`} /> Loading State Show skeleton placeholders while AI generates suggestions. , , ]) setIsLoading(false) }, 2000) }, []) return ( alert(s.title)} /> ) } render()`} /> Real-World Example: AI Chat with Smart Suggestions ]) // Then AI would respond... setTimeout(() => "! Here's the answer...\` }]) }, 1000) } return ( ))} ) } render()`} /> Props Best Practices Crafting Good Suggestions ✅ Make them specific to the current conversation ✅ Start with action words ("Explain...", "Show me...", "How do I...") ✅ Include 3-5 suggestions (not too many) ✅ Order by relevance/confidence ❌ Avoid generic questions like "Tell me more" ❌ Don't show obvious next steps When to Show Suggestions After AI completes a response When user might be stuck To guide users through complex topics To discover features users don't know about Show suggestions right after the AI message. Users are most likely to click them when the response is fresh in their mind.
 
+```typescript
+// Example: Generate contextual suggestions using OpenAI
+async function generateFollowUps(conversation: Message[]) {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [
+      {
+        role: 'system',
+        content: `Based on the conversation, suggest 4 natural follow-up 
+                 questions the user might want to ask next. Return JSON array 
+                 with {title, description, confidence}`
+      },
+      ...conversation
+    ],
+    response_format: { type: 'json_object' }
+  })
+
+  const suggestions = JSON.parse(response.choices[0].message.content)
+  return suggestions
+}
+
+// Use in your chat component
+const [suggestions, setSuggestions] = useState([])
+
+useEffect(() => {
+  if (messages.length > 0) {
+    generateFollowUps(messages).then(setSuggestions)
+  }
+}, [messages])
+```
+
 ```tsx
 import { 
   FollowUpSuggestions,
@@ -17538,6 +20284,34 @@ import '@clarity-chat/react/styles.css'
 ```tsx
 import { Message } from '@clarity-chat/react'
 
+function MarkdownMessage() {
+  const message: MessageType = {
+    id: '1',
+    chatId: 'demo',
+    role: 'assistant',
+    content: `Here's some **bold text** and *italic text*.
+
+```typescript
+function greet(name: string) {
+  return `Hello, ${name}!`
+}
+```
+
+- List item 1
+- List item 2
+- List item 3`,
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  return <Message message={message} />
+}
+```
+
+```tsx
+import { Message } from '@clarity-chat/react'
+
 function StreamingMessage() {
   const message: MessageType = {
     id: '1',
@@ -17677,6 +20451,61 @@ interface Message {
   createdAt: Date
   updatedAt: Date
   editHistory?: MessageEdit[]
+}
+```
+
+```tsx
+import { Message } from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
+
+function CompleteMessageExample() {
+  const message: MessageType = {
+    id: '1',
+    chatId: 'demo-chat',
+    role: 'assistant',
+    content: `Here's a helpful response with **markdown** support.
+
+```typescript
+const example = 'code blocks work too!'
+````,
+    status: 'sent',
+    attachments: [
+      {
+        id: '1',
+        type: 'document',
+        url: '/files/document.pdf',
+        name: 'document.pdf',
+        size: 1024000,
+        mimeType: 'application/pdf',
+      },
+    ],
+    metadata: {
+      tokens: 150,
+      model: 'gpt-4',
+      processingTime: 1.2,
+    },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  return (
+    <Message
+      message={message}
+      onCopy={(content) => {
+        navigator.clipboard.writeText(content)
+        // Show toast notification
+      }}
+      onFeedback={(type) => {
+        // Send feedback to analytics
+        console.log('Feedback:', type)
+      }}
+      onRetry={() => {
+        // Retry message generation
+      }}
+      showAvatar
+      showTimestamp
+    />
+  )
 }
 ```
 
@@ -18552,6 +21381,53 @@ Show safety check results for AI responses. Like a security checkpoint - did the
 
 > **Info**: AI can sometimes generate inappropriate content. Safety checks catch issues before users see them - protecting your users and your brand. Basic Usage ) } render()`} /> With Warnings and Failures } /> ) } render()`} /> Props Integration Example ` from '@clarity-chat/react' import OpenAI from 'openai' const openai = new OpenAI() async function checkSafety(text: string) ) const result = moderation.results[0] const checks = [ \` : 'Content is respectful' }, , // Add more checks... ] return checks } // In your chat component const [safetyChecks, setSafetyChecks] = useState([]) useEffect(() => }, [aiResponse])`}` Best Practices Run safety checks BEFORE displaying AI responses Block responses that fail critical checks Log all safety events for auditing Provide clear remediation steps Review warnings manually This component shows results. Always run safety checks on your backend/server, not just in the frontend. Users can bypass frontend checks.
 
+```tsx
+// Using OpenAI Moderation API
+import { SafetyStatusCard } from '@clarity-chat/react'
+import OpenAI from 'openai'
+
+const openai = new OpenAI()
+
+async function checkSafety(text: string) {
+  const moderation = await openai.moderations.create({
+    input: text
+  })
+
+  const result = moderation.results[0]
+  
+  const checks = [
+    {
+      id: '1',
+      label: 'Hate Speech',
+      status: result.categories.hate ? 'fail' : 'pass',
+      detail: result.categories.hate 
+        ? `Score: ${result.category_scores.hate.toFixed(3)}`
+        : 'Content is respectful'
+    },
+    {
+      id: '2',
+      label: 'Violence',
+      status: result.categories.violence ? 'fail' : 'pass',
+      detail: result.categories.violence
+        ? 'Violent content detected'
+        : 'No violent content'
+    },
+    // Add more checks...
+  ]
+
+  return checks
+}
+
+// In your chat component
+const [safetyChecks, setSafetyChecks] = useState([])
+
+useEffect(() => {
+  if (aiResponse) {
+    checkSafety(aiResponse).then(setSafetyChecks)
+  }
+}, [aiResponse])
+```
+
 </doc>
 
 <doc url="/reference/components/seat-invite-dialog" title="SeatInviteDialog - Clarity Chat Components">
@@ -18643,6 +21519,38 @@ Show a TL;DR of your conversation. Like Cliff Notes for your chat - highlights w
 - Generate summaries for conversations longer than 10 messages Keep highlights to 3-5 most important points Make next actions specific and actionable Include relevant metrics (time, messages, topics) Offer export functionality for sharing
 
 > **Info**: Long conversations are hard to remember. Summaries help users quickly recall what happened and what they should do next. Think "meeting minutes" but automated.
+
+```typescript
+// Generate summary using OpenAI
+async function generateSummary(messages: Message[]) {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [
+      {
+        role: 'system',
+        content: `Summarize this conversation. Return JSON:
+        {
+          highlights: string[] (3-5 key points),
+          nextActions: string[] (2-4 suggested next steps)
+        }`
+      },
+      ...messages
+    ],
+    response_format: { type: 'json_object' }
+  })
+
+  return JSON.parse(response.choices[0].message.content)
+}
+
+// Use in component
+const [summary, setSummary] = useState(null)
+
+useEffect(() => {
+  if (messages.length > 5) {
+    generateSummary(messages).then(setSummary)
+  }
+}, [messages])
+```
 
 </doc>
 
@@ -20109,6 +23017,26 @@ function MessageListWithScrollControl() {
 ```
 
 ```tsx
+import { VirtualizedMessageList } from '@clarity-chat/react'
+
+function ListWithCustomKeys() {
+  const itemKey = useCallback((index: number, data: MessageType[]) => {
+    const message = data[index]
+    // Use a composite key for better stability
+    return `${message.id}-${message.updatedAt.getTime()}`
+  }, [])
+
+  return (
+    <VirtualizedMessageList
+      messages={messages}
+      renderMessage={renderMessage}
+      itemKey={itemKey}
+    />
+  )
+}
+```
+
+```tsx
 import { useCallback, useMemo } from 'react'
 import { VirtualizedMessageList, Message } from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'
@@ -20911,6 +23839,31 @@ function Assistant() {
       <ChatWindow messages={messages} onSendMessage={handleSend} />
     </div>
   )
+}
+```
+
+```tsx
+import { useAssistant } from '@clarity-chat/react'
+
+function Assistant() {
+  const { messages, append, toolInvocations } = useAssistant({
+    api: '/api/assistant',
+    assistantId: 'asst_123',
+    onToolCall: async (invocation) => {
+      switch (invocation.toolName) {
+        case 'search_web':
+          return await searchWeb(invocation.args.query)
+        case 'get_weather':
+          return await getWeather(invocation.args.location)
+        case 'calculate':
+          return { result: eval(invocation.args.expression) }
+        default:
+          throw new Error(`Unknown tool: ${invocation.toolName}`)
+      }
+    },
+  })
+
+  return <ChatWindow messages={messages} onSendMessage={handleSend} />
 }
 ```
 
@@ -22160,6 +25113,58 @@ function BlogPostGenerator() {
       )}
     </div>
   )
+}
+```
+
+```tsx
+// app/api/generate-products/route.ts
+import { NextResponse } from 'next/server'
+
+export async function POST(req: Request) {
+  try {
+    const { query } = await req.json()
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content: 'Generate a JSON array of products based on the user query. Each product should have name, price, description, and category fields.',
+          },
+          {
+            role: 'user',
+            content: `Generate products for: ${query}`,
+          },
+        ],
+        response_format: { type: 'json_object' },
+      }),
+    })
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Failed to generate products' },
+        { status: response.status }
+      )
+    }
+
+    const data = await response.json()
+    const content = JSON.parse(data.choices[0].message.content)
+    
+    // Return the products array
+    return NextResponse.json(content.products || [])
+  } catch (error) {
+    console.error('Product generation error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
 }
 ```
 
@@ -23545,6 +26550,89 @@ Route requests to optimal models based on complexity, cost, and performance requ
 }
 ```
 
+```tsx
+import { useModelRouter } from '@clarity-chat/react/hooks'
+
+function ProductionChat() {
+  const { route, stats, override } = useModelRouter({
+    models: [
+      {
+        name: 'gpt-4-turbo',
+        cost: 0.01,
+        latencyMs: 1500,
+        quality: 0.95,
+        contextWindow: 128000
+      },
+      {
+        name: 'gpt-3.5-turbo',
+        cost: 0.0015,
+        latencyMs: 800,
+        quality: 0.85,
+        contextWindow: 16385
+      },
+      {
+        name: 'claude-3-haiku',
+        cost: 0.00025,
+        latencyMs: 500,
+        quality: 0.80,
+        contextWindow: 200000
+      }
+    ],
+    strategy: 'adaptive',
+    
+    // Fallback chain
+    fallbacks: [
+      { from: 'gpt-4-turbo', to: 'gpt-3.5-turbo' },
+      { from: 'gpt-3.5-turbo', to: 'claude-3-haiku' }
+    ],
+    
+    // A/B testing
+    experimentalRouting: {
+      enabled: true,
+      trafficSplit: { 'gpt-4-turbo': 0.2, 'gpt-3.5-turbo': 0.8 }
+    },
+    
+    // Budget constraints
+    budget: {
+      maxCostPerUser: 10.0,
+      maxCostPerDay: 1000.0,
+      onBudgetExceeded: (user) => {
+        console.warn(`Budget exceeded for ${user}`)
+      }
+    },
+    
+    // Monitoring
+    onRoute: (model, message, decision) => {
+      analytics.track('model_routed', {
+        model: model.name,
+        reason: decision.reason,
+        estimatedCost: decision.estimatedCost
+      })
+    }
+  })
+
+  // Manual override for specific cases
+  const handleSend = async (message: string) => {
+    const model = message.startsWith('/gpt4')
+      ? override('gpt-4-turbo')
+      : await route(message)
+    
+    // Send with selected model
+  }
+
+  return (
+    <div>
+      <div className="stats">
+        <p>Total cost: ${stats.totalCost.toFixed(4)}</p>
+        <p>Avg latency: {stats.avgLatency}ms</p>
+        <p>Model usage: {JSON.stringify(stats.modelUsage)}</p>
+      </div>
+      <ChatWindow onSend={handleSend} />
+    </div>
+  )
+}
+```
+
 </doc>
 
 <doc url="/reference/hooks/use-mounted" title="use-mounted | Clarity Chat">
@@ -23784,6 +26872,45 @@ function RerankedRAG() {
 ```
 
 ```tsx
+import { useRAGPipeline, useClarityChat } from '@clarity-chat/react'
+
+function RAGChat() {
+  const rag = useRAGPipeline({
+    vectorStore: 'qdrant',
+    embeddingProvider: 'openai',
+  })
+
+  const chat = useClarityChat({
+    api: '/api/chat',
+    onBeforeSend: async (messages) => {
+      // Retrieve relevant context
+      const lastMessage = messages[messages.length - 1]
+      const context = await rag.retrieve(lastMessage.content, 5)
+      
+      // Add context to system prompt
+      const contextText = context
+        .map(doc => doc.content)
+        .join('\
+\
+')
+      
+      return [
+        {
+          role: 'system',
+          content: `Use the following context to answer:\
+\
+${contextText}`,
+        },
+        ...messages,
+      ]
+    },
+  })
+
+  return <ChatWindow messages={chat.messages} onSendMessage={chat.sendMessage} />
+}
+```
+
+```tsx
 import { useRAGPipeline } from '@clarity-chat/react'
 
 // Pinecone
@@ -23893,6 +27020,40 @@ Cache LLM responses and embeddings to avoid duplicate calls and reduce costs. Su
 ```tsx
 import { useSmartCache } from '@clarity-chat/react'
 
+function CachedChat() {
+  const cache = useSmartCache({
+    cacheType: 'memory',
+    ttl: 3600000, // 1 hour
+  })
+
+  const handleQuery = async (query: string) => {
+    const cacheKey = `query:${query}`
+    
+    // Check cache first
+    const cached = await cache.get(cacheKey)
+    if (cached) {
+      return cached // Return cached response
+    }
+
+    // Cache miss - fetch from API
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ query }),
+    }).then(r => r.json())
+
+    // Cache the response
+    await cache.set(cacheKey, response)
+
+    return response
+  }
+
+  return <ChatWindow onSendMessage={handleQuery} />
+}
+```
+
+```tsx
+import { useSmartCache } from '@clarity-chat/react'
+
 function PersistentCache() {
   const cache = useSmartCache({
     cacheType: 'indexedDB',
@@ -23908,6 +27069,30 @@ function PersistentCache() {
     const response = await fetchResponse(query)
     await cache.set(query, response)
     return response
+  }
+
+  return <ChatWindow onSendMessage={handleQuery} />
+}
+```
+
+```tsx
+import { useSmartCache } from '@clarity-chat/react'
+
+function SemanticCache() {
+  const cache = useSmartCache({
+    cacheType: 'memory',
+    keyGenerator: (input) => {
+      // Generate semantic key from message content
+      const normalized = input.content.toLowerCase().trim()
+      return `semantic:${normalized}`
+    },
+  })
+
+  // Similar queries will hit the same cache entry
+  const handleQuery = async (message: string) => {
+    const key = cache.keyGenerator({ content: message })
+    const cached = await cache.get(key)
+    // ...
   }
 
   return <ChatWindow onSendMessage={handleQuery} />
@@ -24433,6 +27618,40 @@ function SSEWithAuth() {
 
 ```tsx
 import { useStreamingSSE } from '@clarity-chat/react'
+
+function SSEWithReconnect() {
+  const {
+    status,
+    reconnectAttempt,
+    isReconnecting,
+    connect,
+  } = useStreamingSSE({
+    url: '/api/stream',
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    reconnectDelay: 1000, // Start with 1 second
+    maxReconnectDelay: 30000, // Max 30 seconds
+    onReconnecting: (attempt, delay) => {
+      console.log(`Reconnecting (attempt ${attempt}) in ${delay}ms`)
+    },
+    onMaxReconnectAttemptsReached: () => {
+      console.error('Max reconnection attempts reached')
+    },
+  })
+
+  return (
+    <div>
+      <p>Status: {status}</p>
+      {isReconnecting && (
+        <p>Reconnecting... (attempt {reconnectAttempt})</p>
+      )}
+    </div>
+  )
+}
+```
+
+```tsx
+import { useStreamingSSE } from '@clarity-chat/react'
 import type { SSEEvent } from '@clarity-chat/react'
 
 function SSEWithEventHandling() {
@@ -24510,6 +27729,153 @@ interface SSEEvent {
   id?: string
   /** Retry interval suggested by server */
   retry?: number
+}
+```
+
+```tsx
+import { useState, useEffect, useCallback } from 'react'
+import { useStreamingSSE } from '@clarity-chat/react'
+import type { SSEEvent } from '@clarity-chat/react'
+
+function CompleteSSEExample() {
+  const [messages, setMessages] = useState<string[]>([])
+
+  const {
+    status,
+    data,
+    events,
+    error,
+    connect,
+    disconnect,
+    reconnect,
+    reset,
+  } = useStreamingSSE({
+    url: '/api/chat/stream',
+    method: 'POST',
+    body: {
+      message: 'Tell me a story',
+      conversationId: 'conv-123',
+    },
+    authToken: 'your-token',
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    resumeFromLastEventId: true,
+    onMessage: (event: SSEEvent) => {
+      if (event.type === 'message') {
+        setMessages(prev => [...prev, event.data])
+      } else if (event.type === 'done') {
+        disconnect()
+      }
+    },
+    onError: (err) => {
+      console.error('SSE Error:', err)
+    },
+    onReconnecting: (attempt, delay) => {
+      console.log(`Reconnecting in ${delay}ms (attempt ${attempt})`)
+    },
+  })
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <button
+          onClick={connect}
+          disabled={status !== 'idle'}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        >
+          Connect
+        </button>
+        <button
+          onClick={disconnect}
+          disabled={status === 'idle'}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
+        >
+          Disconnect
+        </button>
+        <button
+          onClick={reconnect}
+          disabled={status === 'idle'}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
+        >
+          Reconnect
+        </button>
+        <button
+          onClick={reset}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
+        >
+          Reset
+        </button>
+      </div>
+
+      <div>
+        <p>Status: {status}</p>
+        {error && <p className="text-destructive">Error: {error.message}</p>}
+      </div>
+
+      <div className="space-y-2">
+        {messages.map((msg, i) => (
+          <div key={i} className="p-2 bg-muted rounded">
+            {msg}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+```tsx
+// app/api/stream/route.ts
+import { NextResponse } from 'next/server'
+
+export async function POST(req: Request) {
+  const { message } = await req.json()
+
+  // Create a ReadableStream for SSE
+  const stream = new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder()
+
+      // Send initial event
+      controller.enqueue(
+        encoder.encode(`event: message\
+data: {"type":"start"}\
+\
+`)
+      )
+
+      // Simulate streaming response
+      const words = message.split(' ')
+      for (let i = 0; i < words.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        controller.enqueue(
+          encoder.encode(`event: message\
+data: {"type":"token","content":"${words[i]} "}\
+id: ${i}\
+\
+`)
+        )
+      }
+
+      // Send done event
+      controller.enqueue(
+        encoder.encode(`event: done\
+data: {"type":"done"}\
+\
+`)
+      )
+
+      controller.close()
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  })
 }
 ```
 
@@ -24642,6 +28008,40 @@ function WebSocketWithSend() {
 ```tsx
 import { useStreamingWebSocket } from '@clarity-chat/react'
 
+function WebSocketWithReconnect() {
+  const {
+    status,
+    reconnectAttempt,
+    isReconnecting,
+    connect,
+  } = useStreamingWebSocket({
+    url: 'wss://api.example.com/ws',
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    reconnectDelay: 1000,
+    maxReconnectDelay: 30000,
+    onReconnecting: (attempt, delay) => {
+      console.log(`Reconnecting (attempt ${attempt}) in ${delay}ms`)
+    },
+    onMaxReconnectAttemptsReached: () => {
+      console.error('Max reconnection attempts reached')
+    },
+  })
+
+  return (
+    <div>
+      <p>Status: {status}</p>
+      {isReconnecting && (
+        <p>Reconnecting... (attempt {reconnectAttempt})</p>
+      )}
+    </div>
+  )
+}
+```
+
+```tsx
+import { useStreamingWebSocket } from '@clarity-chat/react'
+
 function WebSocketWithHeartbeat() {
   const {
     status,
@@ -24719,6 +28119,134 @@ interface WebSocketMessage {
   type: 'text' | 'binary' | 'blob'
   /** Timestamp when message was received */
   timestamp: number
+}
+```
+
+```tsx
+import { useState, useEffect, useCallback } from 'react'
+import { useStreamingWebSocket } from '@clarity-chat/react'
+import type { WebSocketMessage } from '@clarity-chat/react'
+
+function CompleteWebSocketExample() {
+  const [input, setInput] = useState('')
+
+  const {
+    status,
+    messages,
+    lastMessage,
+    error,
+    connect,
+    disconnect,
+    send,
+    sendJson,
+    reconnect,
+    reset,
+    isReconnecting,
+    reconnectAttempt,
+  } = useStreamingWebSocket({
+    url: 'wss://api.example.com/ws',
+    autoReconnect: true,
+    maxReconnectAttempts: 5,
+    enableHeartbeat: true,
+    heartbeatInterval: 30000,
+    onMessage: (msg: WebSocketMessage) => {
+      console.log('Received:', msg.data)
+    },
+    onError: (err) => {
+      console.error('WebSocket Error:', err)
+    },
+    onReconnecting: (attempt, delay) => {
+      console.log(`Reconnecting in ${delay}ms (attempt ${attempt})`)
+    },
+  })
+
+  const handleSend = useCallback(() => {
+    if (input.trim() && status === 'connected') {
+      sendJson({ type: 'message', content: input })
+      setInput('')
+    }
+  }, [input, status, sendJson])
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <button
+          onClick={connect}
+          disabled={status !== 'idle'}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        >
+          Connect
+        </button>
+        <button
+          onClick={disconnect}
+          disabled={status === 'idle'}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
+        >
+          Disconnect
+        </button>
+        <button
+          onClick={reconnect}
+          disabled={status === 'idle'}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
+        >
+          Reconnect
+        </button>
+        <button
+          onClick={reset}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
+        >
+          Reset
+        </button>
+      </div>
+
+      <div>
+        <p>Status: {status}</p>
+        {isReconnecting && (
+          <p>Reconnecting... (attempt {reconnectAttempt})</p>
+        )}
+        {error && <p className="text-destructive">Error: {error.type}</p>}
+      </div>
+
+      {status === 'connected' && (
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSend()
+              }
+            }}
+            placeholder="Type a message..."
+            className="flex-1 px-3 py-2 border border-border rounded"
+          />
+          <button
+            onClick={handleSend}
+            disabled={!input.trim()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+          >
+            Send
+          </button>
+        </div>
+      )}
+
+      <div className="space-y-2 max-h-64 overflow-y-auto">
+        {messages.map((msg, i) => (
+          <div key={i} className="p-2 bg-muted rounded">
+            <p className="text-xs text-muted-foreground mb-1">
+              {new Date(msg.timestamp).toLocaleTimeString()} ({msg.type})
+            </p>
+            <p>
+              {typeof msg.data === 'string'
+                ? msg.data
+                : JSON.stringify(msg.data)}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 ```
 
@@ -25013,6 +28541,33 @@ function CheckBeforeSend() {
 ```
 
 ```tsx
+import { useTokenBudgetMonitor } from '@clarity-chat/react'
+import { getStatusColor } from '@clarity-chat/react'
+
+function StatusIndicators() {
+  const { usage, isWarning, isCritical, isExceeded } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+  })
+
+  const statusColor = getStatusColor(usage.status)
+
+  return (
+    <div>
+      <div className={`p-2 rounded ${statusColor.bg}`}>
+        <p className={statusColor.text}>
+          Status: {usage.status}
+        </p>
+        <p>Usage: {usage.utilizationPercent.toFixed(1)}%</p>
+      </div>
+      {isWarning && <p>⚠️ Warning threshold reached</p>}
+      {isCritical && <p>🚨 Critical threshold reached</p>}
+      {isExceeded && <p>❌ Token limit exceeded</p>}
+    </div>
+  )
+}
+```
+
+```tsx
 interface TokenUsage {
   /** Current tokens used */
   current: number
@@ -25062,6 +28617,157 @@ interface BudgetMessage {
   trimmable?: boolean
   /** Priority for trimming (lower = trim first, default: 0) */
   priority?: number
+}
+```
+
+```tsx
+import { useState, useEffect, useCallback } from 'react'
+import { useTokenBudgetMonitor, getStatusColor, formatTokenUsage } from '@clarity-chat/react'
+import type { BudgetMessage } from '@clarity-chat/react'
+
+function CompleteBudgetMonitorExample() {
+  const [messages, setMessages] = useState<BudgetMessage[]>([])
+
+  const {
+    usage,
+    isWarning,
+    isCritical,
+    isExceeded,
+    wouldExceed,
+    calculateTokens,
+    updateMessages,
+    trimToCritical,
+    lastTrimResult,
+    reset,
+  } = useTokenBudgetMonitor({
+    maxInputTokens: 128000,
+    warningThreshold: 0.8,
+    criticalThreshold: 0.95,
+    reservedForOutput: 4096,
+    model: 'gpt-4',
+    useAccurateTokenization: false,
+    onWarning: (usage) => {
+      console.log('Warning:', usage.utilizationPercent)
+    },
+    onCritical: (usage) => {
+      console.log('Critical:', usage.utilizationPercent)
+    },
+    onExceeded: (usage) => {
+      console.error('Exceeded:', usage.utilizationPercent)
+    },
+    autoTrim: false, // Manual trimming
+  })
+
+  useEffect(() => {
+    updateMessages(messages)
+  }, [messages, updateMessages])
+
+  const handleAddMessage = useCallback(async (content: string) => {
+    const tokens = await calculateTokens(content)
+    if (wouldExceed(tokens)) {
+      alert('Message would exceed token budget!')
+      return
+    }
+    setMessages(prev => [...prev, {
+      role: 'user',
+      content,
+      trimmable: true,
+      priority: 0,
+    }])
+  }, [calculateTokens, wouldExceed])
+
+  const handleTrim = useCallback(() => {
+    const result = trimToCritical()
+    if (result) {
+      setMessages(prev => prev.filter((_, i) =>
+        !result.removedItems.some(item => item.index === i)
+      ))
+    }
+  }, [trimToCritical])
+
+  const statusColor = getStatusColor(usage.status)
+  const formatted = formatTokenUsage(usage)
+
+  return (
+    <div className="space-y-4">
+      {/* Status Bar */}
+      <div className={`p-4 rounded ${statusColor.bg}`}>
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-semibold">Token Usage</span>
+          <span className={`font-bold ${statusColor.text}`}>
+            {usage.utilizationPercent.toFixed(1)}%
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+          <div
+            className={`h-2 rounded-full transition-all ${statusColor.bg}`}
+            style={{ width: `${Math.min(usage.utilizationPercent, 100)}%` }}
+          />
+        </div>
+        <div className="text-sm text-muted-foreground mt-1">
+          {formatted}
+        </div>
+      </div>
+
+      {/* Alerts */}
+      {isWarning && !isCritical && (
+        <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
+          ⚠️ Warning: Token usage is high
+        </div>
+      )}
+      {isCritical && (
+        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
+          🚨 Critical: Consider trimming history
+        </div>
+      )}
+      {isExceeded && (
+        <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded">
+          ❌ Exceeded: Token limit exceeded!
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleAddMessage('New message')}
+          disabled={isExceeded}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        >
+          Add Message
+        </button>
+        {isCritical && (
+          <button
+            onClick={handleTrim}
+            className="px-4 py-2 bg-orange-600 text-white rounded"
+          >
+            Trim History
+          </button>
+        )}
+        <button
+          onClick={reset}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
+        >
+          Reset
+        </button>
+      </div>
+
+      {/* Trim Result */}
+      {lastTrimResult && (
+        <div className="p-3 bg-muted rounded">
+          <p className="font-semibold mb-1">Last Trim:</p>
+          <p>Removed {lastTrimResult.tokensRemoved} tokens</p>
+          <p>Removed {lastTrimResult.removedItems.length} messages</p>
+          <ul className="list-disc list-inside mt-2">
+            {lastTrimResult.removedItems.map((item, i) => (
+              <li key={i} className="text-sm">
+                Message {item.index}: {item.preview} ({item.tokens} tokens)
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
 }
 ```
 
@@ -25543,6 +29249,153 @@ interface MessageWithTokens {
 }
 ```
 
+```tsx
+import { useState, useCallback } from 'react'
+import { useTokenTracker } from '@clarity-chat/react'
+import type { MessageWithTokens } from '@clarity-chat/react'
+
+function CompleteTrackerExample() {
+  const [messages, setMessages] = useState<MessageWithTokens[]>([])
+
+  const {
+    tokens,
+    inputTokens,
+    outputTokens,
+    estimatedCost,
+    isNearLimit,
+    isCritical,
+    percentage,
+    canSend,
+    suggestPruning,
+    addMessage,
+    removeMessage,
+    clear,
+    estimateTokens,
+  } = useTokenTracker({
+    modelName: 'gpt-4',
+    warningThreshold: 0.8,
+    criticalThreshold: 0.95,
+    onWarning: () => {
+      console.log('Warning threshold reached')
+    },
+    onCritical: () => {
+      console.log('Critical threshold reached')
+    },
+  })
+
+  const handleAddMessage = useCallback((content: string) => {
+    const estimated = estimateTokens(content)
+    if (canSend(estimated)) {
+      const newMessage: MessageWithTokens = { role: 'user', content }
+      addMessage(newMessage)
+      setMessages(prev => [...prev, newMessage])
+    } else {
+      alert('Message would exceed token limit!')
+    }
+  }, [addMessage, canSend, estimateTokens])
+
+  const handleRemoveMessage = useCallback((index: number) => {
+    removeMessage(index)
+    setMessages(prev => prev.filter((_, i) => i !== index))
+  }, [removeMessage])
+
+  return (
+    <div className="space-y-4">
+      {/* Token Usage Display */}
+      <div className="p-4 bg-muted rounded">
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-semibold">Token Usage</span>
+          <span className={`font-bold ${
+            isCritical ? 'text-red-600' :
+            isNearLimit ? 'text-yellow-600' :
+            'text-green-600'
+          }`}>
+            {percentage.toFixed(1)}%
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+          <div
+            className={`h-2 rounded-full transition-all ${
+              isCritical ? 'bg-red-600' :
+              isNearLimit ? 'bg-yellow-600' :
+              'bg-green-600'
+            }`}
+            style={{ width: `${Math.min(percentage, 100)}%` }}
+          />
+        </div>
+        <div className="text-sm text-muted-foreground mt-2">
+          <p>Total: {tokens} tokens</p>
+          <p>Input: {inputTokens} tokens</p>
+          <p>Output: {outputTokens} tokens</p>
+          <p>Estimated Cost: ${estimatedCost.toFixed(4)}</p>
+        </div>
+      </div>
+
+      {/* Alerts */}
+      {isNearLimit && !isCritical && (
+        <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
+          ⚠️ Warning: Approaching token limit
+        </div>
+      )}
+      {isCritical && (
+        <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded">
+          🚨 Critical: Token limit nearly reached
+        </div>
+      )}
+      {suggestPruning && (
+        <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+          💡 Suggestion: Consider pruning old messages
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => handleAddMessage('New message')}
+          disabled={isCritical}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        >
+          Add Message
+        </button>
+        {messages.length > 0 && (
+          <button
+            onClick={() => handleRemoveMessage(messages.length - 1)}
+            className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
+          >
+            Remove Last
+          </button>
+        )}
+        <button
+          onClick={() => {
+            clear()
+            setMessages([])
+          }}
+          className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
+        >
+          Clear All
+        </button>
+      </div>
+
+      {/* Messages List */}
+      <div className="space-y-2">
+        {messages.map((msg, i) => (
+          <div key={i} className="p-2 bg-muted rounded">
+            <p className="text-sm font-semibold">{msg.role}</p>
+            <p className="text-sm">{msg.content}</p>
+            <button
+              onClick={() => handleRemoveMessage(i)}
+              className="text-xs text-muted-foreground mt-1"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
 </doc>
 
 <doc url="/reference/hooks/use-undo-redo" title="use-undo-redo | Clarity Chat">
@@ -25645,6 +29498,52 @@ function VectorSearch() {
       {vectorStore.status === 'ready' && <div>Ready to search</div>}
       {vectorStore.error && <div>Error: {vectorStore.error.message}</div>}
       <SearchInput onSearch={handleSearch} />
+    </div>
+  )
+}
+```
+
+```tsx
+import { useVectorStore } from '@clarity-chat/react'
+import { useEmbeddings } from '@clarity-chat/react'
+
+function DocumentManager() {
+  const vectorStore = useVectorStore({
+    provider: 'pinecone',
+    config: {
+      apiKey: process.env.PINECONE_API_KEY,
+      indexName: 'documents',
+    },
+  })
+
+  const embeddings = useEmbeddings({
+    provider: 'openai',
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+
+  const handleAddDocument = async (content: string) => {
+    // Generate embedding
+    const embedding = await embeddings.generate(content)
+    
+    // Add to vector store
+    await vectorStore.addDocuments([
+      {
+        id: `doc_${Date.now()}`,
+        content,
+        embedding,
+        metadata: {
+          timestamp: Date.now(),
+          source: 'user',
+        },
+      },
+    ])
+  }
+
+  return (
+    <div>
+      <button onClick={() => handleAddDocument('New document content')}>
+        Add Document
+      </button>
     </div>
   )
 }
@@ -26353,11 +30252,53 @@ import {
 ```
 
 ```tsx
+import { countTokens } from '@clarity-chat/react/utils'
+
+const text = 'Hello, how are you?'
+const tokens = countTokens(text, 'gpt-4')
+console.log(`Tokens: ${tokens}`) // Tokens: 6
+
+// With messages
+const messages = [
+  { role: 'system', content: 'You are helpful' },
+  { role: 'user', content: 'Hello!' }
+]
+const total = countTokens(messages, 'gpt-4')
+console.log(`Total tokens: ${total}`)
+```
+
+```tsx
+import { estimateCost } from '@clarity-chat/react/utils'
+
+const cost = estimateCost({
+  model: 'gpt-4',
+  inputTokens: 1000,
+  outputTokens: 500
+})
+console.log(`Cost: $${cost}`) // Cost: $0.045
+```
+
+```tsx
 import { formatTokens } from '@clarity-chat/react/utils'
 
 formatTokens(1000) // "1K tokens"
 formatTokens(1500000) // "1.5M tokens"
 formatTokens(150, { includeEstimate: true }) // "150 tokens (~$0.0001)"
+```
+
+```tsx
+import { splitIntoChunks } from '@clarity-chat/react/utils'
+
+const text = 'Very long document...'
+const chunks = splitIntoChunks(text, {
+  size: 500,  // Max chunk size in tokens
+  overlap: 50,  // Overlap between chunks
+  model: 'gpt-4'
+})
+
+chunks.forEach((chunk, i) => {
+  console.log(`Chunk ${i}: ${chunk.length} chars`)
+})
 ```
 
 ```tsx
@@ -26370,6 +30311,23 @@ const chunks = await semanticChunker(text, {
 })
 
 // Chunks are split at natural boundaries (paragraphs, sections, etc.)
+```
+
+```tsx
+import { extractCodeBlocks } from '@clarity-chat/react/utils'
+
+const markdown = ```
+Here's some code:
+
+\\`\\`\\`typescript
+function hello() {
+  console.log('Hello')
+}
+\\`\\`\\`
+```
+
+const blocks = extractCodeBlocks(markdown)
+// [{ language: 'typescript', code: "function hello() {...}", line: 3 }]
 ```
 
 ```tsx
@@ -26398,6 +30356,13 @@ const reranked = await rerankDocuments(query, docs, {
 })
 
 // Returns top 5 most relevant documents
+```
+
+```tsx
+import { vectorSimilarity } from '@clarity-chat/react/utils'
+
+const similarity = vectorSimilarity(embedding1, embedding2, 'cosine')
+console.log(`Similarity: ${similarity}`) // 0.0 to 1.0
 ```
 
 ```tsx
@@ -26433,6 +30398,44 @@ const batcher = new RequestBatcher({
 const embedding1 = await batcher.add('text 1')
 const embedding2 = await batcher.add('text 2')
 // Both sent in single API call
+```
+
+```tsx
+import { SmartCache } from '@clarity-chat/react/utils'
+
+const cache = new SmartCache({
+  maxSize: 1000,
+  ttl: 3600000,  // 1 hour
+  strategy: 'lru'
+})
+
+// Cache embeddings
+const embedding = await cache.getOrSet(
+  `embedding:${text}`,
+  async () => await openai.embeddings.create({ input: text })
+)
+```
+
+```jsx
+import { measureLatency } from '@clarity-chat/react/utils'
+
+const { result, latency } = await measureLatency(async () => {
+  return await openai.chat.completions.create(...)
+})
+
+console.log(`Request took ${latency}ms`)
+```
+
+```tsx
+import { optimizePrompt } from '@clarity-chat/react/utils'
+
+const optimized = await optimizePrompt(prompt, {
+  algorithm: 'llmlingua',
+  targetRatio: 0.6,
+  preserveStructure: true
+})
+
+console.log(`Reduced from ${prompt.length} to ${optimized.length}`)
 ```
 
 ```tsx
@@ -26478,6 +30481,23 @@ if (pii.length > 0) {
   console.warn('PII detected:', pii)
   // pii: [{ type: 'email', value: 'user@example.com', offset: 45 }]
 }
+```
+
+```tsx
+import { retryWithBackoff } from '@clarity-chat/react/utils'
+
+const result = await retryWithBackoff(
+  async () => await unstableAPICall(),
+  {
+    maxRetries: 3,
+    initialDelayMs: 1000,
+    maxDelayMs: 10000,
+    factor: 2,
+    onRetry: (error, attempt) => {
+      console.log(`Retry ${attempt}: ${error.message}`)
+    }
+  }
+)
 ```
 
 ```jsx
@@ -26556,6 +30576,14 @@ Utility functions for accurate token counting across different AI models.
 
 Accurate token counting utilities for OpenAI, Anthropic, and Google AI models with cost estimation.
 - Model-specific token counting (GPT, Claude, Gemini) Cost estimation per model Batch message token counting Context window calculations Token budget management
+
+```jsx
+import { countTokens, estimateCost } from '@clarity-chat/react/utils'
+
+const tokens = countTokens('Hello world', 'gpt-4')
+const cost = estimateCost(tokens, 'gpt-4')
+console.log(`${tokens} tokens = $${cost}`)
+```
 
 </doc>
 

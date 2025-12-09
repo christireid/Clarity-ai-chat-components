@@ -104,6 +104,18 @@ const App = () => <div>Hello</div>\`}
     const result = extractCodeBlocks(content)
     expect(result[0].language).toBe('bash')
   })
+
+  it('should handle escaped backticks in code', () => {
+    const content = `
+      <CodePlayground
+        code={\`const template = \\\`Hello \\\${name}\\\`\`}
+      />
+    `
+    const result = extractCodeBlocks(content)
+    expect(result.length).toBe(1)
+    // After unescaping, should contain actual backticks
+    expect(result[0].code).toContain('`')
+  })
 })
 
 describe('extractTextContent', () => {

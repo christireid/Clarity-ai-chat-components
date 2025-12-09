@@ -38,23 +38,40 @@ export function extractMetadata(content: string): PageMetadata {
 
 /**
  * Extract code blocks from JSX content
+ * Handles escaped backticks within template literals
  */
 export function extractCodeBlocks(content: string): CodeBlock[] {
   const codeBlocks: CodeBlock[] = []
 
+  // Pattern to match template literal content (handles escaped backticks)
+  // Matches: any char except ` or \, OR \ followed by any char
+  const templateLiteralPattern = '(?:[^`\\\\]|\\\\.)*'
+
   // Match CodePlayground components
-  const playgroundRegex = /<CodePlayground[^>]*code=\{`([^`]+)`\}[^>]*\/>/gs
+  const playgroundRegex = new RegExp(
+    `<CodePlayground[^>]*code=\\\{\\` +
+      '`(' +
+      templateLiteralPattern +
+      ')' +
+      '`\\}[^>]*\\/>',
+    'gs'
+  )
   let match
   while ((match = playgroundRegex.exec(content)) !== null) {
     const code = match[1]
-    // Try to detect language from import statements or content
     const language = detectLanguage(code)
     codeBlocks.push({ language, code: unescapeCode(code) })
   }
 
-  // Match EnhancedCodeBlock components
-  const enhancedRegex =
-    /<EnhancedCodeBlock[^>]*code=\{`([^`]+)`\}[^>]*language=["']([^"']+)["'][^>]*(?:filename=["']([^"']+)["'])?[^>]*\/>/gs
+  // Match EnhancedCodeBlock components (code before language)
+  const enhancedRegex = new RegExp(
+    `<EnhancedCodeBlock[^>]*code=\\\{\\` +
+      '`(' +
+      templateLiteralPattern +
+      ')' +
+      '`\\}[^>]*language=["\']([^"\']+)["\'][^>]*(?:filename=["\']([^"\']+)["\'])?[^>]*\\/>',
+    'gs'
+  )
   while ((match = enhancedRegex.exec(content)) !== null) {
     codeBlocks.push({
       language: match[2],
@@ -64,8 +81,14 @@ export function extractCodeBlocks(content: string): CodeBlock[] {
   }
 
   // Also try the reverse order (language before code)
-  const enhancedRegex2 =
-    /<EnhancedCodeBlock[^>]*language=["']([^"']+)["'][^>]*code=\{`([^`]+)`\}[^>]*(?:filename=["']([^"']+)["'])?[^>]*\/>/gs
+  const enhancedRegex2 = new RegExp(
+    `<EnhancedCodeBlock[^>]*language=["\']([^"\']+)["\'][^>]*code=\\\{\\` +
+      '`(' +
+      templateLiteralPattern +
+      ')' +
+      '`\\}[^>]*(?:filename=["\']([^"\']+)["\'])?[^>]*\\/>',
+    'gs'
+  )
   while ((match = enhancedRegex2.exec(content)) !== null) {
     codeBlocks.push({
       language: match[1],
@@ -75,7 +98,14 @@ export function extractCodeBlocks(content: string): CodeBlock[] {
   }
 
   // Match template literal code blocks in pre/code tags
-  const preCodeRegex = /<pre[^>]*><code[^>]*>\{`([^`]+)`\}<\/code><\/pre>/gs
+  const preCodeRegex = new RegExp(
+    `<pre[^>]*><code[^>]*>\\\{\\` +
+      '`(' +
+      templateLiteralPattern +
+      ')' +
+      '`\\}<\\/code><\\/pre>',
+    'gs'
+  )
   while ((match = preCodeRegex.exec(content)) !== null) {
     const code = match[1]
     codeBlocks.push({

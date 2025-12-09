@@ -186,6 +186,91 @@ function getCategoryFromPath(urlPath: string): string {
 }
 
 /**
+ * Extract all hrefs from navigation config
+ */
+function getNavigationHrefs(navigation: NavigationSection[]): Set<string> {
+  const hrefs = new Set<string>()
+  for (const section of navigation) {
+    for (const item of section.items) {
+      if (item.href) {
+        hrefs.add(item.href)
+      }
+    }
+  }
+  return hrefs
+}
+
+/**
+ * Validate navigation config against discovered pages
+ * Reports pages that exist but aren't in navigation (potential drift)
+ */
+function validateNavigationCoverage(
+  discoveredPages: string[],
+  navigation: NavigationSection[],
+  stats: GenerationStats
+): void {
+  const navHrefs = getNavigationHrefs(navigation)
+  const discoveredPaths = new Set<string>()
+
+  // Convert file paths to URL paths
+  for (const filePath of discoveredPages) {
+    const urlPath = filePathToUrlPath(filePath)
+    if (urlPath && urlPath !== '/') {
+      discoveredPaths.add(urlPath)
+    }
+  }
+
+  // Find pages in navigation that don't exist (broken links)
+  const brokenLinks: string[] = []
+  for (const href of navHrefs) {
+    // Skip external links and API routes
+    if (href.startsWith('/api/') || href.startsWith('http')) {
+      continue
+    }
+    if (!discoveredPaths.has(href)) {
+      brokenLinks.push(href)
+    }
+  }
+
+  if (brokenLinks.length > 0) {
+    stats.warnings.push(
+      `Navigation contains ${brokenLinks.length} links to non-existent pages`
+    )
+    // Log first few for visibility
+    for (const link of brokenLinks.slice(0, 5)) {
+      stats.warnings.push(`  - Broken link: ${link}`)
+    }
+  }
+
+  // Find important pages not in navigation (potential drift)
+  // Only check main documentation paths, skip special routes
+  const importantPrefixes = [
+    '/learn/',
+    '/reference/',
+    '/guides/',
+    '/cookbook/',
+    '/examples/',
+  ]
+  const undocumented: string[] = []
+
+  for (const path of discoveredPaths) {
+    const isImportant = importantPrefixes.some((prefix) =>
+      path.startsWith(prefix)
+    )
+    if (isImportant && !navHrefs.has(path)) {
+      undocumented.push(path)
+    }
+  }
+
+  if (undocumented.length > 0 && undocumented.length <= 20) {
+    // Only warn if reasonable number (not a full restructure)
+    stats.warnings.push(
+      `${undocumented.length} documentation pages not in navigation config (may need to update navigation-config.ts)`
+    )
+  }
+}
+
+/**
  * Generate the llms-full.txt complete documentation file
  */
 async function generateLlmsFullTxt(
@@ -309,6 +394,10 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   console.log('🔍 Discovering documentation pages...')
   const pages = await discoverPages()
   console.log(`   Found ${pages.length} page files`)
+
+  // Validate navigation coverage
+  console.log('🔗 Validating navigation config...')
+  validateNavigationCoverage(pages, navigationConfig, stats)
 
   // Generate llms.txt
   console.log('📝 Generating llms.txt...')
