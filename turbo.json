@@ -19,11 +19,13 @@
       "persistent": true
     },
     "lint": {
-      "outputs": []
+      "outputs": [],
+      "cache": true
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": [],
+      "cache": true
     },
     "test": {
       "inputs": ["$TURBO_DEFAULT$"],

@@ -48,6 +48,18 @@ Access powerful commands via Command Palette (`Cmd/Ctrl+Shift+P`):
 - **Clarity Chat: Validate Configuration** - Check for common issues and misconfigurations
 - **Clarity Chat: Show Examples** - Browse and insert code examples
 
+### ⌨️ Keyboard Shortcuts
+
+Quick access to common commands (when editor is focused):
+
+| Command | Windows/Linux | macOS |
+|---------|--------------|-------|
+| Initialize Project | `Ctrl+Shift+C I` | `Cmd+Shift+C I` |
+| Show Examples | `Ctrl+Shift+C E` | `Cmd+Shift+C E` |
+| Validate Config | `Ctrl+Shift+C V` | `Cmd+Shift+C V` |
+| Add Provider | `Ctrl+Shift+C P` | `Cmd+Shift+C P` |
+| Component Preview | `Ctrl+Shift+C O` | `Cmd+Shift+C O` |
+
 ## Installation
 
 ### From VS Code Marketplace

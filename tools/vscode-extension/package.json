@@ -106,7 +106,39 @@
           "description": "Show inline parameter hints"
         }
       }
-    }
+    },
+    "keybindings": [
+      {
+        "command": "clarity-chat.initProject",
+        "key": "ctrl+shift+c i",
+        "mac": "cmd+shift+c i",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "clarity-chat.showExamples",
+        "key": "ctrl+shift+c e",
+        "mac": "cmd+shift+c e",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "clarity-chat.validateConfig",
+        "key": "ctrl+shift+c v",
+        "mac": "cmd+shift+c v",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "clarity-chat.addProvider",
+        "key": "ctrl+shift+c p",
+        "mac": "cmd+shift+c p",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "clarity-chat.showPreview",
+        "key": "ctrl+shift+c o",
+        "mac": "cmd+shift+c o",
+        "when": "editorTextFocus"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
