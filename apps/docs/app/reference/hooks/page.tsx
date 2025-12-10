@@ -82,12 +82,127 @@ export default function HooksPage() {
         ]}
       />
 
+      {/* Hook Selector CTA */}
+      <Link
+        href="/reference/hooks/selector"
+        className="block mb-8 p-6 border-2 border-dashed border-brand-300 dark:border-brand-700 rounded-xl hover:border-brand-500 dark:hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950 transition-colors group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="text-4xl">🧭</div>
+          <div>
+            <h3 className="text-xl font-semibold text-brand-600 dark:text-brand-400 group-hover:text-brand-700 dark:group-hover:text-brand-300">
+              Not sure which hook to use?
+            </h3>
+            <p className="text-text-secondary">
+              Try our interactive Hook Selector wizard to find the right hook for your use case.
+            </p>
+          </div>
+          <svg className="w-6 h-6 ml-auto text-brand-500 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </Link>
+
       <Callout type="info" className="mb-8">
         <p>
           <strong>Note:</strong> All hooks are client-side only and must be used within components
           marked with <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">'use client'</code>.
         </p>
       </Callout>
+
+      {/* Architecture Diagram */}
+      <section className="my-12">
+        <h2 className="text-3xl font-bold mb-6">Architecture Overview</h2>
+        <p className="text-text-secondary mb-6">
+          Clarity Chat hooks are organized into three architecture layers, from high-level drop-in solutions to low-level utilities:
+        </p>
+
+        <div className="border rounded-xl p-6 bg-gradient-to-b from-bg-secondary/50 to-transparent">
+          {/* Top-Level Layer */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="px-3 py-1 bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 rounded-full text-sm font-semibold">
+                Top-Level
+              </div>
+              <span className="text-sm text-text-secondary">Drop-in Ready</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <Link href="/reference/hooks/use-clarity-chat" className="px-3 py-2 bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg text-sm font-mono hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors">
+                useClarityChat
+              </Link>
+              <Link href="/reference/hooks/use-clarity-object" className="px-3 py-2 bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg text-sm font-mono hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors">
+                useClarityObject
+              </Link>
+            </div>
+          </div>
+
+          {/* Arrow */}
+          <div className="flex justify-center my-4">
+            <svg className="w-6 h-6 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
+
+          {/* Mid-Level Layer */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="px-3 py-1 bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 rounded-full text-sm font-semibold">
+                Mid-Level
+              </div>
+              <span className="text-sm text-text-secondary">Composable Building Blocks</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <Link href="/reference/hooks/use-chat-enhanced" className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors">
+                useChatEnhanced
+              </Link>
+              <Link href="/reference/hooks/use-clarity-chat-with-tools" className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors">
+                useClarityChatWithTools
+              </Link>
+              <Link href="/reference/hooks/use-memory-context" className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors">
+                useMemoryContext
+              </Link>
+              <Link href="/reference/hooks/use-streaming-sse" className="px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-sm font-mono hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors">
+                useStreamingSSE
+              </Link>
+            </div>
+          </div>
+
+          {/* Arrow */}
+          <div className="flex justify-center my-4">
+            <svg className="w-6 h-6 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
+
+          {/* Low-Level Layer */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold">
+                Low-Level
+              </div>
+              <span className="text-sm text-text-secondary">Utilities & Primitives</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <Link href="/reference/hooks/use-debounce" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                useDebounce
+              </Link>
+              <Link href="/reference/hooks/use-local-storage" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                useLocalStorage
+              </Link>
+              <Link href="/reference/hooks/use-indexed-db" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                useIndexedDB
+              </Link>
+              <Link href="/reference/hooks/use-design-tokens" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                useDesignTokens
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-sm text-text-secondary mt-4">
+          <strong>Tip:</strong> Start with top-level hooks for most use cases. Compose mid-level hooks for custom behavior. Use low-level utilities for fine-grained control.
+        </p>
+      </section>
 
       <section className="my-12">
         <h2 className="text-3xl font-bold mb-6">Core Hooks</h2>

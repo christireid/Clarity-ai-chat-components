@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { FeedbackWidget } from '@/components/FeedbackWidget'
 
 export const metadata: Metadata = {
   title: 'useStreaming Hook | Clarity Chat',
@@ -54,6 +55,9 @@ function StreamingChat() {
 }`}</code></pre>
         </div>
       </section>
+
+      {/* Feedback Widget */}
+      <FeedbackWidget pageId="use-streaming" className="mt-12" />
     </div>
   )
 }

@@ -8,6 +8,8 @@ on:
       - 'README.md'
       - 'packages/*/README.md'
       - 'packages/react/src/index.ts'
+      - 'apps/docs/lib/**'
+      - 'apps/docs/app/reference/**'
   pull_request:
     branches: [main]
     paths:
@@ -15,6 +17,12 @@ on:
       - 'README.md'
       - 'packages/*/README.md'
       - 'packages/react/src/index.ts'
+      - 'apps/docs/lib/**'
+      - 'apps/docs/app/reference/**'
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10'
 
 jobs:
   check-docs:
@@ -51,3 +59,27 @@ jobs:
         run: |
           chmod +x scripts/verify-docs-exports.sh
           ./scripts/verify-docs-exports.sh
+
+  validate-hook-metadata:
+    name: Validate Hook Metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate hook metadata
+        run: pnpm --filter @clarity-chat/docs validate:hooks
