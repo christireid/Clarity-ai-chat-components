@@ -2,7 +2,7 @@
  * Theme Migration command - Migrate from legacy to modern theme system
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import prompts from 'prompts'
 import fs from 'fs-extra'
 import path from 'path'
@@ -248,13 +248,13 @@ function displayAnalysis(results: MigrationResult[]) {
   const totalChanges = results.reduce((acc, r) => acc + r.changes.length, 0)
   const breakingFiles = results.filter((r) => r.hasBreakingChanges).length
 
-  console.log(chalk.bold(`  Summary:`))
-  console.log(chalk.gray(`  ─────────────────────────────────────────`))
-  console.log(`  📁 Files to migrate: ${chalk.cyan(results.length)}`)
-  console.log(`  🔄 Total changes: ${chalk.cyan(totalChanges)}`)
+  console.log(pc.bold(`  Summary:`))
+  console.log(pc.gray(`  ─────────────────────────────────────────`))
+  console.log(`  📁 Files to migrate: ${pc.cyan(results.length)}`)
+  console.log(`  🔄 Total changes: ${pc.cyan(totalChanges)}`)
   if (breakingFiles > 0) {
     console.log(
-      `  ⚠️  Files with breaking changes: ${chalk.yellow(breakingFiles)}`
+      `  ⚠️  Files with breaking changes: ${pc.yellow(breakingFiles)}`
     )
   }
   console.log()
@@ -262,7 +262,7 @@ function displayAnalysis(results: MigrationResult[]) {
   // Show details per file
   for (const result of results) {
     console.log(
-      chalk.bold(`  ${result.hasBreakingChanges ? '⚠️' : '📄'} ${result.file}`)
+      pc.bold(`  ${result.hasBreakingChanges ? '⚠️' : '📄'} ${result.file}`)
     )
 
     const data = result.changes.map((change) => ({
@@ -276,7 +276,7 @@ function displayAnalysis(results: MigrationResult[]) {
         { header: 'Change', key: 'Change' },
       ]
       const table = createTable(data, columns, {
-        headerColor: result.hasBreakingChanges ? chalk.yellow : chalk.blue,
+        headerColor: result.hasBreakingChanges ? pc.yellow : pc.blue,
       })
       console.log(table)
     }
@@ -292,42 +292,40 @@ function displayMigrationGuide() {
   console.log(createDivider('Migration Guide', 60))
   console.log()
 
-  console.log(chalk.bold('  Modern Theme API:'))
+  console.log(pc.bold('  Modern Theme API:'))
   console.log()
-  console.log(chalk.gray('  // Before (legacy)'))
+  console.log(pc.gray('  // Before (legacy)'))
   console.log(
-    chalk.red(`  import { ThemeProvider } from '@clarity-chat/react/theme'`)
+    pc.red(`  import { ThemeProvider } from '@clarity-chat/react/theme'`)
   )
-  console.log(chalk.red(`  <ThemeProvider defaultTheme={{ preset: 'ocean' }}>`))
+  console.log(pc.red(`  <ThemeProvider defaultTheme={{ preset: 'ocean' }}>`))
   console.log()
-  console.log(chalk.gray('  // After (modern)'))
+  console.log(pc.gray('  // After (modern)'))
+  console.log(pc.green(`  import { ThemeProvider } from '@clarity-chat/react'`))
   console.log(
-    chalk.green(`  import { ThemeProvider } from '@clarity-chat/react'`)
-  )
-  console.log(
-    chalk.green(`  <ThemeProvider defaultTheme={{ preset: 'vibrant' }}>`)
+    pc.green(`  <ThemeProvider defaultTheme={{ preset: 'vibrant' }}>`)
   )
   console.log()
 
-  console.log(chalk.bold('  Creating Custom Themes:'))
+  console.log(pc.bold('  Creating Custom Themes:'))
   console.log()
-  console.log(chalk.gray('  // Before (legacy)'))
+  console.log(pc.gray('  // Before (legacy)'))
   console.log(
-    chalk.red(`  const theme = createTheme({ baseTheme: 'light', ... })`)
+    pc.red(`  const theme = createTheme({ baseTheme: 'light', ... })`)
   )
   console.log()
-  console.log(chalk.gray('  // After (modern)'))
-  console.log(chalk.green(`  const theme = createTheme({`))
-  console.log(chalk.green(`    extends: 'default',`))
-  console.log(chalk.green(`    brandColor: '#6366f1',`))
-  console.log(chalk.green(`    radius: 'md',`))
-  console.log(chalk.green(`  })`))
+  console.log(pc.gray('  // After (modern)'))
+  console.log(pc.green(`  const theme = createTheme({`))
+  console.log(pc.green(`    extends: 'default',`))
+  console.log(pc.green(`    brandColor: '#6366f1',`))
+  console.log(pc.green(`    radius: 'md',`))
+  console.log(pc.green(`  })`))
   console.log()
 
-  console.log(chalk.bold('  Available Modern Presets:'))
+  console.log(pc.bold('  Available Modern Presets:'))
   console.log()
   MODERN_PRESETS.forEach((preset) => {
-    console.log(chalk.cyan(`    • ${preset}`))
+    console.log(pc.cyan(`    • ${preset}`))
   })
   console.log()
 }
@@ -346,8 +344,8 @@ export async function migrateThemeCommand(options: {
 
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log()
-      console.log(chalk.blue.bold('🎨 Clarity Chat Theme Migration Tool'))
-      console.log(chalk.gray('   Migrate from legacy to modern theme system'))
+      console.log(pc.bold(pc.blue('🎨 Clarity Chat Theme Migration Tool')))
+      console.log(pc.gray('   Migrate from legacy to modern theme system'))
       console.log()
     }
 
@@ -364,7 +362,7 @@ export async function migrateThemeCommand(options: {
       )
       console.log()
       console.log(
-        chalk.gray('Your project is already using the modern theme system.')
+        pc.gray('Your project is already using the modern theme system.')
       )
       return
     }
@@ -409,7 +407,7 @@ export async function migrateThemeCommand(options: {
           borderColor: 'blue',
         })
       )
-      console.log(chalk.gray('Run without --dry-run to apply changes.'))
+      console.log(pc.gray('Run without --dry-run to apply changes.'))
       return
     }
 
@@ -438,7 +436,7 @@ export async function migrateThemeCommand(options: {
       })
 
       if (!confirm) {
-        console.log(chalk.gray('\nMigration cancelled'))
+        console.log(pc.gray('\nMigration cancelled'))
         return
       }
     }
@@ -464,12 +462,10 @@ export async function migrateThemeCommand(options: {
 
     if (hasBreaking) {
       console.log()
-      console.log(chalk.yellow.bold('Next steps:'))
-      console.log(chalk.gray('  1. Review files marked with // TODO: comments'))
-      console.log(chalk.gray('  2. Test your theme in the browser'))
-      console.log(
-        chalk.gray('  3. Run `npx @clarity-chat/cli doctor` to verify')
-      )
+      console.log(pc.bold(pc.yellow('Next steps:')))
+      console.log(pc.gray('  1. Review files marked with // TODO: comments'))
+      console.log(pc.gray('  2. Test your theme in the browser'))
+      console.log(pc.gray('  3. Run `npx @clarity-chat/cli doctor` to verify'))
     }
   } catch (error) {
     handleError(error)

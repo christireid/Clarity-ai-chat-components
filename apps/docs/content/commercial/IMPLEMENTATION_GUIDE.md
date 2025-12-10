@@ -28,7 +28,7 @@
 
 ### Required Tools
 
-- Node.js 18+
+- Node.js 20+
 - npm 9+ or yarn 1.22+
 - Code editor (VS Code recommended)
 - Git
@@ -490,7 +490,6 @@ NEXTAUTH_URL=http://localhost:3000
 
 ```tsx
 import { VoiceInput } from '@clarity-chat/react'
-
 ;<VoiceInput
   onTranscript={(text) => handleSendMessage(text)}
   lang="en-US"
@@ -617,7 +616,6 @@ import { SSOConfigWizard } from '@clarity-chat/react'
 
 ```tsx
 import { AuthTenantDashboard } from '@clarity-chat/react'
-
 ;<AuthTenantDashboard
   tenants={tenants}
   onTenantCreate={handleCreateTenant}
@@ -772,7 +770,6 @@ const { executeWithRetry } = useErrorRecovery({
 
 ```tsx
 import { VirtualizedMessageList } from '@clarity-chat/react'
-
 ;<VirtualizedMessageList messages={messages} height={600} itemSize={100} />
 ```
 

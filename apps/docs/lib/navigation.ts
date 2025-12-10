@@ -9,6 +9,7 @@ export const learnNavigation: NavItem[] = [
       { title: 'Tutorial', href: '/learn/tutorial' },
       { title: '🎮 Interactive Playground', href: '/playground' },
       { title: 'Playground Guide', href: '/playground/guide' },
+      { title: "🆕 What's New", href: '/learn/whats-new' },
     ],
   },
   {
@@ -104,6 +105,12 @@ export const referenceNavigation: NavItem[] = [
     ],
   },
   {
+    title: 'Providers',
+    items: [
+      { title: 'MemoryProvider', href: '/reference/components/memory-provider' },
+    ],
+  },
+  {
     title: 'Interactive Components',
     items: [
       { title: 'CommandPalette', href: '/reference/components/command-palette' },
@@ -172,7 +179,11 @@ export const referenceNavigation: NavItem[] = [
   {
     title: 'Hooks',
     items: [
+      { title: '🧭 Hook Selector', href: '/reference/hooks/selector' },
+      { title: '⚖️ Compare Hooks', href: '/reference/hooks/compare' },
+      { title: '🔗 Hook Graph', href: '/reference/hooks/graph' },
       { title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' },
+      { title: 'useClarityChatWithTools', href: '/reference/hooks/use-clarity-chat-with-tools' },
       { title: 'useChatHandlers', href: '/reference/hooks/use-chat-handlers' },
       { title: 'useChatEnhanced', href: '/reference/hooks/use-chat-enhanced' },
       { title: 'useAssistant', href: '/reference/hooks/use-assistant' },
@@ -181,9 +192,11 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useMessages', href: '/reference/hooks/use-messages' },
       { title: 'useTyping', href: '/reference/hooks/use-typing' },
       { title: 'useKeyboardShortcuts', href: '/reference/hooks/use-keyboard-shortcuts' },
+      { title: 'useCommandPalette', href: '/reference/hooks/use-command-palette' },
       { title: 'useUndoRedo', href: '/reference/hooks/use-undo-redo' },
       { title: 'useHaptic', href: '/reference/hooks/use-haptic' },
       { title: 'useTheme', href: '/reference/hooks/use-theme' },
+      { title: 'useDesignTokens', href: '/reference/hooks/use-design-tokens' },
       { title: 'useTokenOptimization', href: '/reference/hooks/use-token-optimization' },
       { title: 'useModelRouter', href: '/reference/hooks/use-model-router' },
       { title: 'usePerformance', href: '/reference/hooks/use-performance' },
@@ -193,6 +206,15 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useStreamingWebSocket', href: '/reference/hooks/use-streaming-websocket' },
       { title: 'useStreamableUI', href: '/reference/hooks/use-streamable-ui' },
       { title: 'useMessageOperations', href: '/reference/hooks/use-message-operations' },
+      { title: 'useDashboardData', href: '/reference/hooks/use-dashboard-data' },
+    ],
+  },
+  {
+    title: 'Memory & Context',
+    items: [
+      { title: 'useMemoryContext', href: '/reference/hooks/use-memory-context' },
+      { title: 'useIndexedDB', href: '/reference/hooks/use-indexed-db' },
+      { title: 'useEmbeddings', href: '/reference/hooks/use-embeddings' },
     ],
   },
   {
@@ -206,6 +228,8 @@ export const referenceNavigation: NavItem[] = [
   {
     title: 'API',
     items: [
+      { title: '📋 Quick Reference', href: '/reference/quick-reference' },
+      { title: '🖨️ Printable Cheat Sheet', href: '/reference/cheat-sheet' },
       { title: 'Types', href: '/reference/api/types' },
       { title: 'Utilities', href: '/reference/utilities' },
       { title: 'Configuration', href: '/reference/api/configuration' },

@@ -298,3 +298,213 @@ export function estimateTokensDebug(
     method,
   }
 }
+
+// ============================================================================
+// Async Token Estimation (for large texts without blocking UI)
+// ============================================================================
+
+/**
+ * Threshold for when to use async estimation (characters)
+ * Texts larger than this will be processed in chunks
+ */
+const ASYNC_THRESHOLD = 50000 // 50KB
+
+/**
+ * Chunk size for async processing
+ */
+const CHUNK_SIZE = 10000 // 10KB per chunk
+
+/**
+ * Estimate tokens asynchronously
+ *
+ * For large texts (>50KB), this processes the text in chunks and yields
+ * control back to the event loop to prevent UI blocking.
+ *
+ * For smaller texts, this is equivalent to synchronous estimation.
+ *
+ * @param text - The text to estimate tokens for
+ * @param model - Optional model name for model-specific estimation
+ * @param options - Options for async processing
+ * @returns Promise resolving to estimated token count
+ *
+ * @example
+ * ```ts
+ * // For large documents
+ * const tokens = await estimateTokensAsync(largeDocument, 'gpt-4', {
+ *   onProgress: (processed, total) => {
+ *     console.log(`${Math.round(processed / total * 100)}% done`)
+ *   }
+ * })
+ * ```
+ */
+export async function estimateTokensAsync(
+  text: string,
+  model?: ModelName | string,
+  options?: {
+    /** Callback for progress updates */
+    onProgress?: (processedChars: number, totalChars: number) => void
+    /** AbortSignal to cancel processing */
+    signal?: AbortSignal
+  }
+): Promise<number> {
+  if (!text) return 0
+
+  // For small texts, use sync estimation
+  if (text.length < ASYNC_THRESHOLD) {
+    return estimateTokens(text, model)
+  }
+
+  const { onProgress, signal } = options ?? {}
+
+  const charsPerToken = model
+    ? (MODEL_CHAR_RATIOS[model] ?? inferRatioFromModelName(model))
+    : DEFAULT_CHARS_PER_TOKEN
+
+  let totalEffectiveLength = 0
+  let processedChars = 0
+
+  // Process in chunks
+  for (let i = 0; i < text.length; i += CHUNK_SIZE) {
+    // Check for abort
+    if (signal?.aborted) {
+      throw new DOMException('Token estimation cancelled', 'AbortError')
+    }
+
+    const chunk = text.slice(i, Math.min(i + CHUNK_SIZE, text.length))
+    const effectiveLength = containsCJK(chunk)
+      ? getEffectiveCharCount(chunk)
+      : chunk.length
+
+    totalEffectiveLength += effectiveLength
+    processedChars += chunk.length
+
+    // Report progress
+    onProgress?.(processedChars, text.length)
+
+    // Yield to event loop
+    await yieldToEventLoop()
+  }
+
+  return Math.ceil(totalEffectiveLength / charsPerToken)
+}
+
+/**
+ * Estimate tokens for messages asynchronously
+ *
+ * @param messages - Array of messages with content
+ * @param model - Optional model for accurate estimation
+ * @param options - Options for async processing
+ * @returns Promise resolving to total estimated token count
+ */
+export async function estimateMessagesTokensAsync(
+  messages: Array<{ content: string; role?: string }>,
+  model?: ModelName | string,
+  options?: {
+    onProgress?: (current: number, total: number) => void
+    signal?: AbortSignal
+  }
+): Promise<number> {
+  const TOKENS_PER_MESSAGE = 4
+  let total = 0
+
+  for (let i = 0; i < messages.length; i++) {
+    const msg = messages[i]
+    if (options?.signal?.aborted) {
+      throw new DOMException('Token estimation cancelled', 'AbortError')
+    }
+
+    // For messages with large content, use async
+    const tokens =
+      msg.content.length > ASYNC_THRESHOLD
+        ? await estimateTokensAsync(msg.content, model, {
+            signal: options?.signal,
+          })
+        : estimateTokens(msg.content, model)
+
+    total += tokens + TOKENS_PER_MESSAGE
+
+    options?.onProgress?.(i + 1, messages.length)
+  }
+
+  return total
+}
+
+/**
+ * Yield control back to the event loop
+ * Uses requestAnimationFrame if available, otherwise setTimeout
+ */
+function yieldToEventLoop(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof requestAnimationFrame !== 'undefined') {
+      requestAnimationFrame(() => resolve())
+    } else {
+      setTimeout(resolve, 0)
+    }
+  })
+}
+
+/**
+ * Check if text is large enough to warrant async processing
+ *
+ * @param text - Text to check
+ * @returns true if async processing is recommended
+ */
+export function shouldUseAsyncEstimation(text: string): boolean {
+  return text.length >= ASYNC_THRESHOLD
+}
+
+/**
+ * Create a cancellable token estimator
+ *
+ * @example
+ * ```ts
+ * const estimator = createCancellableEstimator()
+ *
+ * // Start estimation
+ * const promise = estimator.estimate(largeText, 'gpt-4')
+ *
+ * // Cancel if needed
+ * estimator.cancel()
+ * ```
+ */
+export function createCancellableEstimator() {
+  let controller: AbortController | null = null
+
+  return {
+    /**
+     * Start a new estimation (cancels any pending)
+     */
+    async estimate(
+      text: string,
+      model?: ModelName | string,
+      onProgress?: (processed: number, total: number) => void
+    ): Promise<number> {
+      // Cancel any pending estimation
+      this.cancel()
+
+      controller = new AbortController()
+
+      return estimateTokensAsync(text, model, {
+        signal: controller.signal,
+        onProgress,
+      })
+    },
+
+    /**
+     * Cancel pending estimation
+     */
+    cancel(): void {
+      if (controller) {
+        controller.abort()
+        controller = null
+      }
+    },
+
+    /**
+     * Check if estimation is in progress
+     */
+    get isPending(): boolean {
+      return controller !== null && !controller.signal.aborted
+    },
+  }
+}

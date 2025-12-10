@@ -4,7 +4,7 @@ Quick setup instructions for @clarity-chat/memory.
 
 ## Prerequisites
 
-- Node.js 18+ or Bun
+- Node.js 20+ or Bun
 - npm, pnpm, or yarn
 
 ## Installation
@@ -42,8 +42,8 @@ Create `test-memory.ts`:
 import { clarityMemory } from '@clarity-chat/memory'
 
 const mem = clarityMemory()
-await mem.add("Test memory")
-const results = await mem.search("test")
+await mem.add('Test memory')
+const results = await mem.search('test')
 console.log(results)
 ```
 
@@ -78,13 +78,15 @@ pnpm example:basic
 ### TypeScript Errors
 
 If you see TypeScript errors, ensure:
+
 1. TypeScript is installed: `npm install -D typescript`
 2. You have a `tsconfig.json` with proper settings
-3. You're using Node.js 18+ or Bun
+3. You're using Node.js 20+ or Bun
 
 ### Module Resolution Errors
 
 If you see module resolution errors:
+
 1. Ensure `"type": "module"` in package.json (or use `.mjs` extensions)
 2. Use ESM imports: `import { clarityMemory } from '@clarity-chat/memory'`
 3. Check your bundler/build tool supports ESM
@@ -92,6 +94,7 @@ If you see module resolution errors:
 ### Build Errors
 
 If build fails:
+
 1. Run `npm run build` to see detailed errors
 2. Check Node.js version: `node --version` (should be 18+)
 3. Clear cache: `rm -rf node_modules dist && npm install`

@@ -8,7 +8,7 @@ import { Command } from 'commander'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { successBox, errorBox, warningBox, infoBox } from '../../ui/box'
-import { table, TableColumn } from '../../ui/table'
+import { table, type TableColumn } from '../../ui/table'
 import chalk from 'chalk'
 
 interface CheckResult {
@@ -35,7 +35,7 @@ export const checkCommand = new Command('check')
       results.push({
         name: 'package.json',
         status: 'pass',
-        message: 'Found'
+        message: 'Found',
       })
 
       // Check for AI SDK dependencies
@@ -46,22 +46,22 @@ export const checkCommand = new Command('check')
         const aiDeps = [
           { name: 'openai', display: 'OpenAI SDK' },
           { name: '@anthropic-ai/sdk', display: 'Anthropic SDK' },
-          { name: '@google/generative-ai', display: 'Google AI SDK' }
+          { name: '@google/generative-ai', display: 'Google AI SDK' },
         ]
 
-        const foundDeps = aiDeps.filter(d => deps[d.name])
+        const foundDeps = aiDeps.filter((d) => deps[d.name])
 
         if (foundDeps.length === 0) {
           results.push({
             name: 'AI SDKs',
             status: 'warn',
-            message: 'No AI provider SDKs found in dependencies'
+            message: 'No AI provider SDKs found in dependencies',
           })
         } else {
           results.push({
             name: 'AI SDKs',
             status: 'pass',
-            message: foundDeps.map(d => d.display).join(', ')
+            message: foundDeps.map((d) => d.display).join(', '),
           })
         }
 
@@ -70,45 +70,46 @@ export const checkCommand = new Command('check')
           results.push({
             name: 'TypeScript',
             status: 'pass',
-            message: `v${deps.typescript.replace('^', '').replace('~', '')}`
+            message: `v${deps.typescript.replace('^', '').replace('~', '')}`,
           })
         } else {
           results.push({
             name: 'TypeScript',
             status: 'warn',
-            message: 'Not installed (recommended)'
+            message: 'Not installed (recommended)',
           })
         }
       } catch {
         results.push({
           name: 'package.json',
           status: 'fail',
-          message: 'Failed to parse package.json'
+          message: 'Failed to parse package.json',
         })
       }
     } else {
       results.push({
         name: 'package.json',
         status: 'fail',
-        message: 'Not found'
+        message: 'Not found',
       })
     }
 
     // Check .env.local exists
     const envPaths = ['.env.local', '.env', '.env.development']
-    const foundEnv = envPaths.find(p => existsSync(join(dir, p)))
+    const foundEnv = envPaths.find((p) => existsSync(join(dir, p)))
 
     if (foundEnv) {
       results.push({
         name: 'Environment file',
         status: 'pass',
-        message: `Found ${foundEnv}`
+        message: `Found ${foundEnv}`,
       })
 
       // Check for API key placeholders
       try {
         const envContent = readFileSync(join(dir, foundEnv), 'utf-8')
-        const hasPlaceholder = envContent.includes('your-api-key') ||
+        const hasPlaceholder =
+          envContent.includes('your-api-key') ||
           envContent.includes('sk-xxx') ||
           envContent.includes('YOUR_')
 
@@ -116,7 +117,7 @@ export const checkCommand = new Command('check')
           results.push({
             name: 'API Keys',
             status: 'warn',
-            message: 'Placeholder values detected - update with real keys'
+            message: 'Placeholder values detected - update with real keys',
           })
         }
       } catch {
@@ -126,7 +127,7 @@ export const checkCommand = new Command('check')
       results.push({
         name: 'Environment file',
         status: 'warn',
-        message: 'No .env file found (create .env.local)'
+        message: 'No .env file found (create .env.local)',
       })
     }
 
@@ -136,7 +137,7 @@ export const checkCommand = new Command('check')
       results.push({
         name: 'tsconfig.json',
         status: 'pass',
-        message: 'Found'
+        message: 'Found',
       })
 
       try {
@@ -147,7 +148,7 @@ export const checkCommand = new Command('check')
           results.push({
             name: 'TypeScript strict mode',
             status: 'warn',
-            message: 'Consider enabling strict mode'
+            message: 'Consider enabling strict mode',
           })
         }
       } catch {
@@ -165,13 +166,13 @@ export const checkCommand = new Command('check')
           results.push({
             name: '.gitignore',
             status: 'warn',
-            message: '.env files not ignored - add to prevent secrets leak'
+            message: '.env files not ignored - add to prevent secrets leak',
           })
         } else {
           results.push({
             name: '.gitignore',
             status: 'pass',
-            message: 'Environment files are ignored'
+            message: 'Environment files are ignored',
           })
         }
       } catch {
@@ -186,26 +187,26 @@ export const checkCommand = new Command('check')
       const columns: TableColumn[] = [
         { header: 'Check', width: 25 },
         { header: 'Status', width: 10, align: 'center' },
-        { header: 'Details', width: 45 }
+        { header: 'Details', width: 45 },
       ]
 
-      const data = results.map(r => [
+      const data = results.map((r) => [
         r.name,
         r.status === 'pass'
           ? chalk.green('✓ PASS')
           : r.status === 'fail'
             ? chalk.red('✗ FAIL')
             : chalk.yellow('⚠ WARN'),
-        r.message
+        r.message,
       ])
 
       console.log(table(data, columns))
       console.log()
 
       // Summary
-      const passCount = results.filter(r => r.status === 'pass').length
-      const failCount = results.filter(r => r.status === 'fail').length
-      const warnCount = results.filter(r => r.status === 'warn').length
+      const passCount = results.filter((r) => r.status === 'pass').length
+      const failCount = results.filter((r) => r.status === 'fail').length
+      const warnCount = results.filter((r) => r.status === 'warn').length
 
       const summary = `Passed: ${passCount}, Warnings: ${warnCount}, Failed: ${failCount}`
 
@@ -219,5 +220,5 @@ export const checkCommand = new Command('check')
       console.log()
     }
 
-    process.exit(results.some(r => r.status === 'fail') ? 1 : 0)
+    process.exit(results.some((r) => r.status === 'fail') ? 1 : 0)
   })

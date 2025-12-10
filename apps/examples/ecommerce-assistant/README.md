@@ -1,6 +1,7 @@
 # 🛍️ E-Commerce Shopping Assistant Demo
 
-AI-powered shopping assistant that helps customers find products, provides recommendations, and assists with purchases.
+AI-powered shopping assistant that helps customers find products, provides recommendations, and
+assists with purchases.
 
 ## ✨ Features
 
@@ -16,7 +17,8 @@ AI-powered shopping assistant that helps customers find products, provides recom
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
+
+- Node.js 20+
 - OpenAI API key
 
 ### Installation
@@ -68,70 +70,77 @@ const functions = [
     parameters: {
       query: 'string',
       category: 'optional string',
-      maxPrice: 'optional number'
-    }
+      maxPrice: 'optional number',
+    },
   },
   {
     name: 'get_product_details',
     description: 'Get detailed information about a specific product',
     parameters: {
-      productId: 'string'
-    }
+      productId: 'string',
+    },
   },
   {
     name: 'add_to_cart',
     description: 'Add a product to the shopping cart',
     parameters: {
       productId: 'string',
-      quantity: 'number'
-    }
+      quantity: 'number',
+    },
   },
   {
     name: 'get_recommendations',
     description: 'Get personalized product recommendations',
     parameters: {
-      based_on: 'customer preferences or cart items'
-    }
-  }
+      based_on: 'customer preferences or cart items',
+    },
+  },
 ]
 ```
 
 ## 💡 Use Cases
 
 ### 1. Product Discovery
+
 **Customer**: "I need a laptop for video editing"  
-**Assistant**: *Searches products, analyzes requirements*  
+**Assistant**: _Searches products, analyzes requirements_  
 **Assistant**: "I found 3 laptops perfect for video editing. The Dell XPS 15 has excellent specs..."
 
 ### 2. Price Comparison
+
 **Customer**: "What's the difference between the iPhone 15 and 15 Pro?"  
-**Assistant**: *Compares products*  
+**Assistant**: _Compares products_  
 **Assistant**: "Here's a detailed comparison: Camera, battery, features..."
 
 ### 3. Cart Management
+
 **Customer**: "Add the blue wireless headphones to my cart"  
-**Assistant**: *Calls add_to_cart function*  
+**Assistant**: _Calls add_to_cart function_  
 **Assistant**: "Added Sony WH-1000XM5 Blue to your cart! Total: $399"
 
 ### 4. Order Tracking
+
 **Customer**: "Where's my order #12345?"  
-**Assistant**: *Calls check_order_status function*  
+**Assistant**: _Calls check_order_status function_  
 **Assistant**: "Your order is out for delivery, expected today by 5 PM"
 
 ## 🎯 Key Features Demonstrated
 
 ### Function Calling (Tools)
+
 - Product search with filters
 - Cart operations (add, remove, update)
 - Order status checking
 - Recommendation engine
 
 ### Context Management
+
 - Remembers customer preferences
 - Maintains shopping session
 - Tracks conversation history
 
 ### Enhanced UI
+
 - Product cards with images
 - Cart preview
 - Price display
@@ -141,6 +150,7 @@ const functions = [
 ## 📊 Sample Product Catalog
 
 The demo includes a sample catalog with:
+
 - 50+ products across electronics, clothing, home goods
 - Realistic prices and descriptions
 - Stock availability
@@ -164,8 +174,8 @@ export const products: Product[] = [
     inStock: true,
     rating: 4.5,
     reviews: 150,
-    imageUrl: '/products/your-product.jpg'
-  }
+    imageUrl: '/products/your-product.jpg',
+  },
 ]
 ```
 
@@ -178,7 +188,7 @@ import { db } from '@/lib/database'
 async function searchProducts(query: string) {
   return await db.products.search({
     where: { name: { contains: query } },
-    take: 10
+    take: 10,
   })
 }
 ```
@@ -205,26 +215,31 @@ async function createCheckout(cartItems) {
 ## 🚀 Production Considerations
 
 ### 1. Real Product Data
+
 - Connect to your e-commerce platform API (Shopify, WooCommerce, etc.)
 - Sync product availability in real-time
 - Update prices dynamically
 
 ### 2. Authentication
+
 - Add user authentication (NextAuth.js, Clerk, etc.)
 - Link chat history to user accounts
 - Secure cart operations
 
 ### 3. Analytics
+
 - Track product impressions from AI recommendations
 - Measure conversion rate from chat
 - A/B test different recommendation strategies
 
 ### 4. Performance
+
 - Cache product data with Redis
 - Use CDN for product images
 - Implement rate limiting
 
 ### 5. Security
+
 - Validate all function calls
 - Sanitize user input
 - Implement cart security (prevent price manipulation)
@@ -260,4 +275,3 @@ MIT
 **Use Case**: E-commerce & Retail  
 **Complexity**: Intermediate  
 **AI Provider**: OpenAI (GPT-4 with function calling)
-

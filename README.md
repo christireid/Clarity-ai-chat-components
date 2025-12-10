@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="License" />
   </a>
   <a href="https://www.typescriptlang.org/">
-    <img src="https://img.shields.io/badge/TypeScript-5.3-blue?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/TypeScript-5.9-blue?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="TypeScript" />
   </a>
   <a href="https://codecov.io/gh/christireid/Clarity-ai-chat-components">
     <img src="https://img.shields.io/codecov/c/github/christireid/Clarity-ai-chat-components?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="Test Coverage" />
@@ -31,7 +31,7 @@
 <p align="center">
   <strong>70+ Production-Ready Components</strong> • 
   <strong>35+ Custom Hooks</strong> • 
-  <strong>11 Beautiful Themes</strong> • 
+  <strong>8 Theme Presets</strong> • 
   <strong>Enterprise AI Infrastructure</strong>
 </p>
 
@@ -220,7 +220,6 @@ Four **high-impact, low-effort** enhancements ready to use immediately:
 
 ```tsx
 import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
-
 ;<PromptSuggestionsEnhanced
   messages={messages}
   onSelect={(s) => sendMessage(s.text)}
@@ -250,7 +249,6 @@ import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
 ```tsx
 import { ConversationSummarizer } from '@clarity-chat/react'
-
 ;<ConversationSummarizer
   messages={messages}
   config={{
@@ -309,7 +307,6 @@ function Chat() {
 
 ```tsx
 import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
-
 ;<PerformanceAnalyticsDashboard
   updateInterval={1000}
   showWebVitals
@@ -471,7 +468,7 @@ Chat.
 ║     🎨  Beautiful Design System      🚀  Lightning Fast         ║
 ║     ♿  WCAG AAA Accessible          🧩  70+ Components         ║
 ║     💰  Token Optimization          🤖  Enterprise AI Ready     ║
-║     📊  Built-in Analytics          🎭  11 Stunning Themes      ║
+║     📊  Built-in Analytics          🎭  8 Theme Presets      ║
 ║     🔒  Production Security         ⚡  Streaming Support       ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -545,7 +542,7 @@ feature**:
 - **Modern Browsers** - Chrome, Firefox, Safari, Edge (last 2 versions)
 - **Server-Side Rendering** - Next.js, Remix, and more
 - **Mobile** - iOS Safari, Chrome Mobile
-- **Node.js** - 18+ for server-side features
+- **Node.js** - 20+ for server-side features
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Edge |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -753,7 +750,7 @@ function OptimizedChat() {
 
 ### 2. Beautiful Design System 🎨
 
-**11 Stunning Themes** with a 6-level shadow system and 150+ animations:
+**8 Theme Presets** with a 6-level shadow system and 150+ animations:
 
 ```tsx
 import { ThemeProvider, themes } from '@clarity-chat/react'
@@ -1450,7 +1447,7 @@ Pre-built prompt templates for common tasks:
 | [`@clarity-chat/primitives`](./packages/primitives)         | Base UI components                  | ~25KB  |
 | [`@clarity-chat/error-handling`](./packages/error-handling) | Error recovery system               | ~45KB  |
 | [`@clarity-chat/cli`](./packages/cli)                       | Developer CLI tool 🛠️               | ~15KB  |
-| [`@clarity-chat/mcp-server`](./mcp-server)                  | MCP server for AI agents 🤖         | ~20KB  |
+| [`@clarity-chat/mcp-server`](./tools/mcp-server)            | MCP server for AI agents 🤖         | ~20KB  |
 
 **New in v2.0**:
 
@@ -1629,11 +1626,10 @@ clarity-chat docs
 **Enable AI agents like Claude Desktop to interact with Clarity Chat projects**:
 
 ```bash
-# Install globally
-npm install -g @clarity-chat/mcp-server
-
-# Or use via npx
-npx @clarity-chat/mcp-server
+# Clone and build from monorepo (npm publication coming soon)
+git clone https://github.com/christireid/Clarity-ai-chat-components.git
+cd Clarity-ai-chat-components
+pnpm install && pnpm --filter @clarity-chat/mcp-server build
 ```
 
 **Configure Claude Desktop** (`claude_desktop_config.json`):
@@ -1642,8 +1638,8 @@ npx @clarity-chat/mcp-server
 {
   "mcpServers": {
     "clarity-chat": {
-      "command": "npx",
-      "args": ["@clarity-chat/mcp-server"]
+      "command": "node",
+      "args": ["/path/to/Clarity-ai-chat-components/tools/mcp-server/dist/index.js"]
     }
   }
 }
@@ -1668,7 +1664,7 @@ npx @clarity-chat/mcp-server
 "How much would it cost to process 1000 input tokens with Claude 3 Opus?"
 ```
 
-**[→ MCP Server Documentation](./mcp-server/README.md)**
+**[→ MCP Server Documentation](./tools/mcp-server/README.md)**
 
 ### Memory Management Tools
 
@@ -1738,7 +1734,7 @@ docker-compose -f docker-compose.memory.yml up -d
 
 ### VSCode Extension
 
-- 📝 **60+ Code Snippets**: Type `cc-` for component templates
+- 📝 **28 Code Snippets**: Type `cc-` for component templates
 - 💡 **IntelliSense**: Full TypeScript support with hover docs
 - 🔍 **Real-time Diagnostics**: Catch errors as you type
 - 👁️ **Component Preview**: See components in action

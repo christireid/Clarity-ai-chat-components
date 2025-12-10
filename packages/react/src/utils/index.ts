@@ -1,9 +1,9 @@
 /**
  * Utility Functions Export
- * 
+ *
  * Re-export commonly used utilities for convenience.
  * Note: Most utilities are domain-specific and exported from their respective domains.
- * 
+ *
  * @internal
  * These utilities are primarily for internal use. Public APIs should use
  * domain-specific exports from their respective domains.
@@ -164,3 +164,57 @@ export * from './tool-result-extractor'
 
 // Message grouping utilities
 export * from './message-grouping'
+
+// Performance utilities (debounce, throttle, Batcher, etc.)
+export * from './performance'
+
+// Fetch utilities with timeout and abort support
+export {
+  fetchWithTimeout,
+  TimeoutError,
+  isTimeoutError,
+  isAbortError,
+  type FetchWithTimeoutOptions,
+} from './fetch-with-timeout'
+
+// Rate limit header parsing
+export {
+  parseRateLimitHeaders,
+  calculateRetryDelay,
+  shouldThrottle,
+  RateLimitInfoError,
+  type RateLimitInfo,
+} from './rate-limit-headers'
+
+// Circuit breaker pattern for AI API resilience
+export {
+  CircuitBreaker,
+  CircuitOpenError,
+  createAICircuitBreaker,
+  withCircuitBreaker,
+  isCircuitOpenError,
+  type CircuitBreakerOptions,
+  type CircuitBreakerStats,
+  type CircuitState,
+} from './circuit-breaker'
+
+// Retry with exponential backoff
+export {
+  retryWithBackoff,
+  createRetryWrapper,
+  AI_API_RETRY_OPTIONS,
+  STREAMING_RETRY_OPTIONS,
+  type RetryOptions,
+  type RetryResult,
+} from './retry-with-backoff'
+
+// Request deduplication (prevent double-clicks)
+export {
+  RequestDeduplicator,
+  DebouncedError,
+  isDebouncedError,
+  createMessageKey,
+  createDeduplicator,
+  type DeduplicationOptions,
+  type DeduplicationStats,
+} from './request-deduplication'

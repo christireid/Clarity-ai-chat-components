@@ -8,7 +8,7 @@
 'use client'
 
 import React from 'react'
-import { ErrorBoundary, ErrorBoundaryProps } from './error-boundary'
+import { ErrorBoundary, type ErrorBoundaryProps } from './error-boundary'
 import { ErrorFeedback } from '../error/ErrorFeedback'
 import { useErrorReporter } from '../error/ErrorReporter'
 import type { ErrorFeedback as ErrorFeedbackData } from '../error/types'
@@ -16,8 +16,10 @@ import type { ErrorFeedback as ErrorFeedbackData } from '../error/types'
 /**
  * Enhanced Error Boundary Props
  */
-export interface ErrorBoundaryEnhancedProps
-  extends Omit<ErrorBoundaryProps, 'onError' | 'fallback'> {
+export interface ErrorBoundaryEnhancedProps extends Omit<
+  ErrorBoundaryProps,
+  'onError' | 'fallback'
+> {
   /** Whether to show user feedback option */
   enableFeedback?: boolean
 

@@ -2,7 +2,7 @@
  * keys command - Manage API keys
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import prompts from 'prompts'
 import ora from 'ora'
 import fs from 'fs-extra'
@@ -10,7 +10,12 @@ import path from 'path'
 import { getLogger } from '../utils/logger.js'
 import { ValidationError, NotFoundError, handleError } from '../utils/errors.js'
 import { ProviderSchema, validate } from '../utils/validation.js'
-import { validatePath, maskSensitive, validateApiKeyFormat, ensureEnvInGitignore } from '../utils/security.js'
+import {
+  validatePath,
+  maskSensitive,
+  validateApiKeyFormat,
+  ensureEnvInGitignore,
+} from '../utils/security.js'
 import { success, info, warn, error, outputJson } from '../utils/output.js'
 import { createBanner } from '../ui/banner.js'
 import { successMessage, infoMessage, warningMessage } from '../ui/messages.js'
@@ -32,21 +37,21 @@ const PROVIDERS = {
     envVar: 'OPENAI_API_KEY',
     testUrl: 'https://api.openai.com/v1/models',
     icon: '🤖',
-    docs: 'https://platform.openai.com/api-keys'
+    docs: 'https://platform.openai.com/api-keys',
   },
   anthropic: {
     name: 'Anthropic',
     envVar: 'ANTHROPIC_API_KEY',
     testUrl: 'https://api.anthropic.com/v1/models',
     icon: '🧠',
-    docs: 'https://console.anthropic.com/account/keys'
+    docs: 'https://console.anthropic.com/account/keys',
   },
   google: {
     name: 'Google AI',
     envVar: 'GOOGLE_API_KEY',
     testUrl: 'https://generativelanguage.googleapis.com/v1/models',
     icon: '🔍',
-    docs: 'https://makersuite.google.com/app/apikey'
+    docs: 'https://makersuite.google.com/app/apikey',
   },
 }
 
@@ -94,7 +99,7 @@ export async function keysCommand(options: KeysOptions) {
       { title: '📋 List configured keys', value: 'list' },
       { title: '✅ Validate keys', value: 'validate' },
       { title: '❌ Remove key', value: 'remove' },
-    ]
+    ],
   })
 
   switch (action) {
@@ -105,8 +110,8 @@ export async function keysCommand(options: KeysOptions) {
         message: 'Select provider:',
         choices: Object.entries(PROVIDERS).map(([key, value]) => ({
           title: `${value.icon} ${value.name}`,
-          value: key
-        }))
+          value: key,
+        })),
       })
       await addKey(provider, envPath)
       break
@@ -124,8 +129,8 @@ export async function keysCommand(options: KeysOptions) {
         message: 'Select provider to remove:',
         choices: Object.entries(PROVIDERS).map(([key, value]) => ({
           title: `${value.icon} ${value.name}`,
-          value: key
-        }))
+          value: key,
+        })),
       })
       await removeKey(provider, envPath)
       break
@@ -135,26 +140,32 @@ export async function keysCommand(options: KeysOptions) {
 
 async function addKey(provider: string, envPath: string) {
   // Validate provider
-  const validatedProvider = validate(ProviderSchema, provider, 'Invalid provider')
-  
+  const validatedProvider = validate(
+    ProviderSchema,
+    provider,
+    'Invalid provider'
+  )
+
   const providerConfig = PROVIDERS[validatedProvider as keyof typeof PROVIDERS]
-  
+
   if (!providerConfig) {
-    throw new NotFoundError(
-      `Provider "${validatedProvider}" not found`,
-      [
-        'Available providers: openai, anthropic, google',
-        'Run: clarity-chat keys --help for more info',
-      ]
-    )
+    throw new NotFoundError(`Provider "${validatedProvider}" not found`, [
+      'Available providers: openai, anthropic, google',
+      'Run: clarity-chat keys --help for more info',
+    ])
   }
 
   if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
     console.log()
-    console.log(infoMessage(`Get your API key: ${chalk.underline.cyan(providerConfig.docs)}`, {
-      title: '📚 Documentation',
-      borderColor: 'blue',
-    }))
+    console.log(
+      infoMessage(
+        `Get your API key: ${pc.underline(pc.cyan(providerConfig.docs))}`,
+        {
+          title: '📚 Documentation',
+          borderColor: 'blue',
+        }
+      )
+    )
     console.log()
   }
 
@@ -167,15 +178,22 @@ async function addKey(provider: string, envPath: string) {
         return 'API key is required'
       }
       // Basic format validation
-      if (!validateApiKeyFormat(value, validatedProvider as 'openai' | 'anthropic' | 'google')) {
+      if (
+        !validateApiKeyFormat(
+          value,
+          validatedProvider as 'openai' | 'anthropic' | 'google'
+        )
+      ) {
         return `Invalid ${providerConfig.name} API key format`
       }
       return true
-    }
+    },
   })
 
   if (!apiKey) {
-    throw new ValidationError('API key not provided', ['Provide a valid API key'])
+    throw new ValidationError('API key not provided', [
+      'Provide a valid API key',
+    ])
   }
 
   // Read or create .env.local
@@ -189,7 +207,7 @@ async function addKey(provider: string, envPath: string) {
   // Update or add the key
   const envVar = providerConfig.envVar
   const keyRegex = new RegExp(`^${envVar}=.*$`, 'm')
-  
+
   if (keyRegex.test(envContent)) {
     envContent = envContent.replace(keyRegex, `${envVar}=${apiKey}`)
   } else {
@@ -197,22 +215,26 @@ async function addKey(provider: string, envPath: string) {
   }
 
   await fs.writeFile(envPath, envContent, 'utf-8')
-  
+
   // Ensure .env.local is in .gitignore
   const cwd = path.dirname(envPath)
   await ensureEnvInGitignore(cwd)
-  
+
   if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
     console.log()
-    console.log(successMessage(`${providerConfig.name} API key saved to .env.local`, {
-      title: '✅ Saved',
-      borderColor: 'green',
-    }))
+    console.log(
+      successMessage(`${providerConfig.name} API key saved to .env.local`, {
+        title: '✅ Saved',
+        borderColor: 'green',
+      })
+    )
     console.log()
-    console.log(warningMessage('Restart your dev server to use the new key', {
-      title: '⚠️  Note',
-      borderColor: 'yellow',
-    }))
+    console.log(
+      warningMessage('Restart your dev server to use the new key', {
+        title: '⚠️  Note',
+        borderColor: 'yellow',
+      })
+    )
   } else {
     success(`${providerConfig.name} API key saved to .env.local`)
     warn('Restart your dev server to use the new key')
@@ -220,21 +242,26 @@ async function addKey(provider: string, envPath: string) {
 }
 
 async function listKeys(envPath: string) {
-  if (!await fs.pathExists(envPath)) {
+  if (!(await fs.pathExists(envPath))) {
     warn('No .env.local file found')
     info('Run: clarity-chat keys add to add keys')
     return
   }
 
   const envContent = await fs.readFile(envPath, 'utf-8')
-  
+
   const keys: Record<string, { configured: boolean; masked?: string }> = {}
-  
+
   Object.entries(PROVIDERS).forEach(([key, config]) => {
     const regex = new RegExp(`^${config.envVar}=(.+)$`, 'm')
     const match = envContent.match(regex)
-    
-    if (match && match[1] && !match[1].includes('your_') && !match[1].includes('_key_here')) {
+
+    if (
+      match &&
+      match[1] &&
+      !match[1].includes('your_') &&
+      !match[1].includes('_key_here')
+    ) {
       keys[config.name] = {
         configured: true,
         masked: maskSensitive(match[1], 4),
@@ -253,25 +280,31 @@ async function listKeys(envPath: string) {
 
   if (!process.argv.includes('--quiet')) {
     console.log()
-    console.log(infoMessage('Configured API Keys', {
-      title: '🔑 Keys',
-      borderColor: 'blue',
-    }))
+    console.log(
+      infoMessage('Configured API Keys', {
+        title: '🔑 Keys',
+        borderColor: 'blue',
+      })
+    )
     console.log()
-    
+
     const keyList = Object.entries(PROVIDERS).map(([key, config]) => {
       const keyInfo = keys[config.name]
       return {
         key: `${config.icon} ${config.name}`,
-        value: keyInfo.configured && keyInfo.masked ? keyInfo.masked : 'Not configured',
+        value:
+          keyInfo.configured && keyInfo.masked
+            ? keyInfo.masked
+            : 'Not configured',
         color: keyInfo.configured ? 'green' : 'gray',
       }
     })
-    
-    const listItems = keyList.map(item => {
-      const colorFn = item.color && typeof chalk[item.color as keyof typeof chalk] === 'function'
-        ? (chalk[item.color as keyof typeof chalk] as (text: string) => string)
-        : undefined
+
+    const listItems = keyList.map((item) => {
+      const colorFn =
+        item.color && typeof pc[item.color as keyof typeof pc] === 'function'
+          ? (pc[item.color as keyof typeof pc] as (text: string) => string)
+          : undefined
       return {
         label: item.key,
         value: item.value,
@@ -286,7 +319,7 @@ async function listKeys(envPath: string) {
       if (keyInfo.configured && keyInfo.masked) {
         success(`${config.icon} ${config.name}: ${keyInfo.masked}`)
       } else {
-        console.log(chalk.gray(`⬜ ${config.icon} ${config.name}: Not configured`))
+        console.log(pc.gray(`⬜ ${config.icon} ${config.name}: Not configured`))
       }
     })
   }
@@ -294,23 +327,23 @@ async function listKeys(envPath: string) {
 
 async function removeKey(provider: string, envPath: string) {
   const providerConfig = PROVIDERS[provider as keyof typeof PROVIDERS]
-  
+
   if (!providerConfig) {
     logger.error(`Unknown provider: ${provider}`)
     return
   }
 
-  if (!await fs.pathExists(envPath)) {
-    console.log(chalk.yellow('No .env.local file found'))
+  if (!(await fs.pathExists(envPath))) {
+    console.log(pc.yellow('No .env.local file found'))
     return
   }
 
   const envContent = await fs.readFile(envPath, 'utf-8')
   const envVar = providerConfig.envVar
   const keyRegex = new RegExp(`^${envVar}=.*$`, 'm')
-  
+
   if (!keyRegex.test(envContent)) {
-    console.log(chalk.yellow(`${providerConfig.name} key not found in .env.local`))
+    console.log(pc.yellow(`${providerConfig.name} key not found in .env.local`))
     return
   }
 
@@ -318,56 +351,58 @@ async function removeKey(provider: string, envPath: string) {
     type: 'confirm',
     name: 'confirm',
     message: `Remove ${providerConfig.name} API key?`,
-    initial: false
+    initial: false,
   })
 
   if (!confirm) {
-    console.log(chalk.gray('Cancelled'))
+    console.log(pc.gray('Cancelled'))
     return
   }
 
   const updatedContent = envContent.replace(keyRegex, '')
   await fs.writeFile(envPath, updatedContent, 'utf-8')
-  
-  console.log(chalk.green(`\n✅ ${providerConfig.name} API key removed`))
+
+  console.log(pc.green(`\n✅ ${providerConfig.name} API key removed`))
 }
 
 async function validateKeys(envPath: string) {
-  if (!await fs.pathExists(envPath)) {
-    console.log(chalk.yellow('No .env.local file found'))
+  if (!(await fs.pathExists(envPath))) {
+    console.log(pc.yellow('No .env.local file found'))
     return
   }
 
   const envContent = await fs.readFile(envPath, 'utf-8')
-  
-  console.log(chalk.bold('Validating API Keys...\n'))
-  
+
+  console.log(pc.bold('Validating API Keys...\n'))
+
   for (const [key, config] of Object.entries(PROVIDERS)) {
     const regex = new RegExp(`^${config.envVar}=(.+)$`, 'm')
     const match = envContent.match(regex)
-    
+
     if (!match || !match[1] || match[1].includes('your_')) {
-      console.log(chalk.gray(`⬜ ${config.icon} ${config.name}: Not configured`))
+      console.log(pc.gray(`⬜ ${config.icon} ${config.name}: Not configured`))
       continue
     }
 
     const spinner = ora(`Testing ${config.name}...`).start()
-    
+
     try {
       const response = await fetch(config.testUrl, {
         headers: {
-          'Authorization': key === 'openai' ? `Bearer ${match[1]}` : ``,
+          Authorization: key === 'openai' ? `Bearer ${match[1]}` : ``,
           'x-api-key': key === 'anthropic' ? match[1] : '',
-        }
+        },
       })
-      
+
       if (response.ok || response.status === 200) {
-        spinner.succeed(chalk.green(`${config.icon} ${config.name}: Valid`))
+        spinner.succeed(pc.green(`${config.icon} ${config.name}: Valid`))
       } else {
-        spinner.fail(chalk.red(`${config.icon} ${config.name}: Invalid (${response.status})`))
+        spinner.fail(
+          pc.red(`${config.icon} ${config.name}: Invalid (${response.status})`)
+        )
       }
     } catch (error) {
-      spinner.fail(chalk.red(`${config.icon} ${config.name}: Failed to validate`))
+      spinner.fail(pc.red(`${config.icon} ${config.name}: Failed to validate`))
     }
   }
 }

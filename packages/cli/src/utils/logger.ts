@@ -3,7 +3,7 @@
  * Supports log levels, structured output, and request tracking
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 
 export enum LogLevel {
   DEBUG = 0,
@@ -31,7 +31,9 @@ export interface Logger {
   getLevel: () => LogLevel
 }
 
-let globalLogLevel: LogLevel = process.env.DEBUG ? LogLevel.DEBUG : LogLevel.INFO
+let globalLogLevel: LogLevel = process.env.DEBUG
+  ? LogLevel.DEBUG
+  : LogLevel.INFO
 let requestId: string | null = null
 
 /**
@@ -61,28 +63,36 @@ export function getRequestId(): string | null {
 function formatLogEntry(entry: LogEntry): string {
   return JSON.stringify({
     ...entry,
-    error: entry.error ? {
-      message: entry.error.message,
-      stack: entry.error.stack,
-      name: entry.error.name,
-    } : undefined,
+    error: entry.error
+      ? {
+          message: entry.error.message,
+          stack: entry.error.stack,
+          name: entry.error.name,
+        }
+      : undefined,
   })
 }
 
 /**
  * Create logger instance
  */
-export function getLogger(namespace: string, level: LogLevel = globalLogLevel): Logger {
+export function getLogger(
+  namespace: string,
+  level: LogLevel = globalLogLevel
+): Logger {
   let instanceLevel = level
 
   const shouldLog = (logLevel: LogLevel): boolean => {
     return logLevel >= instanceLevel && logLevel >= globalLogLevel
   }
 
-  const formatPrefix = (icon: string, color: (str: string) => string): string => {
-    const parts = [chalk.gray(`[${namespace}]`), color(icon)]
+  const formatPrefix = (
+    icon: string,
+    color: (str: string) => string
+  ): string => {
+    const parts = [pc.gray(`[${namespace}]`), color(icon)]
     if (requestId) {
-      parts.push(chalk.gray(`[${requestId.slice(0, 8)}]`))
+      parts.push(pc.gray(`[${requestId.slice(0, 8)}]`))
     }
     return parts.join(' ')
   }
@@ -90,7 +100,7 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
   return {
     info: (message: string, ...args: any[]) => {
       if (!shouldLog(LogLevel.INFO)) return
-      
+
       const entry: LogEntry = {
         timestamp: new Date().toISOString(),
         level: LogLevel.INFO,
@@ -102,13 +112,13 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
       if (process.env.JSON_LOGS) {
         console.log(formatLogEntry(entry))
       } else {
-        console.log(formatPrefix('ℹ', chalk.blue), message, ...args)
+        console.log(formatPrefix('ℹ', pc.blue), message, ...args)
       }
     },
 
     warn: (message: string, ...args: any[]) => {
       if (!shouldLog(LogLevel.WARN)) return
-      
+
       const entry: LogEntry = {
         timestamp: new Date().toISOString(),
         level: LogLevel.WARN,
@@ -120,16 +130,20 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
       if (process.env.JSON_LOGS) {
         console.warn(formatLogEntry(entry))
       } else {
-        console.warn(formatPrefix('⚠', chalk.yellow), message, ...args)
+        console.warn(formatPrefix('⚠', pc.yellow), message, ...args)
       }
     },
 
     error: (message: string | Error, ...args: any[]) => {
       if (!shouldLog(LogLevel.ERROR)) return
-      
+
       const error = message instanceof Error ? message : undefined
-      const errorMessage: string = error ? error.message : (typeof message === 'string' ? message : String(message))
-      
+      const errorMessage: string = error
+        ? error.message
+        : typeof message === 'string'
+          ? message
+          : String(message)
+
       const entry: LogEntry = {
         timestamp: new Date().toISOString(),
         level: LogLevel.ERROR,
@@ -142,17 +156,22 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
       if (process.env.JSON_LOGS) {
         console.error(formatLogEntry(entry))
       } else {
-        console.error(formatPrefix('✖', chalk.red), errorMessage, ...args)
-        
-        if (error && 'stack' in error && error.stack && (process.env.DEBUG || process.env.VERBOSE)) {
-          console.error(chalk.gray(String(error.stack)))
+        console.error(formatPrefix('✖', pc.red), errorMessage, ...args)
+
+        if (
+          error &&
+          'stack' in error &&
+          error.stack &&
+          (process.env.DEBUG || process.env.VERBOSE)
+        ) {
+          console.error(pc.gray(String(error.stack)))
         }
       }
     },
 
     success: (message: string, ...args: any[]) => {
       if (!shouldLog(LogLevel.INFO)) return
-      
+
       const entry: LogEntry = {
         timestamp: new Date().toISOString(),
         level: LogLevel.INFO,
@@ -164,13 +183,13 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
       if (process.env.JSON_LOGS) {
         console.log(formatLogEntry(entry))
       } else {
-        console.log(formatPrefix('✔', chalk.green), message, ...args)
+        console.log(formatPrefix('✔', pc.green), message, ...args)
       }
     },
 
     debug: (message: string, ...args: any[]) => {
       if (!shouldLog(LogLevel.DEBUG)) return
-      
+
       const entry: LogEntry = {
         timestamp: new Date().toISOString(),
         level: LogLevel.DEBUG,
@@ -182,7 +201,7 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
       if (process.env.JSON_LOGS) {
         console.log(formatLogEntry(entry))
       } else {
-        console.log(formatPrefix('🐛', chalk.magenta), message, ...args)
+        console.log(formatPrefix('🐛', pc.magenta), message, ...args)
       }
     },
 

@@ -37,6 +37,11 @@
     "docs": "pnpm --filter @clarity-chat/docs dev",
     "docs:build": "pnpm --filter @clarity-chat/docs build",
     "docs:generate": "typedoc",
+    "docs:sync": "pnpm --filter @clarity-chat/docs-sync start sync",
+    "docs:sync:dry-run": "pnpm --filter @clarity-chat/docs-sync start sync --dry-run",
+    "docs:extract-apis": "pnpm --filter @clarity-chat/docs-sync start extract-apis",
+    "docs:generate-docs": "pnpm --filter @clarity-chat/docs-sync start generate-docs",
+    "docs:changelog": "pnpm --filter @clarity-chat/docs-sync start generate-changelog",
     "index-docs": "tsx scripts/index-docs.ts",
     "index-docs:clear": "tsx scripts/index-docs.ts --clear",
     "index-docs:dry-run": "tsx scripts/index-docs.ts --dry-run",
@@ -50,6 +55,7 @@
     "analyze": "node tools/scripts/analyze-bundle.js",
     "benchmark": "node tools/scripts/benchmark.js",
     "test:visual": "playwright test --config=tests/visual/playwright.config.ts",
+    "check:consistency": "tsx scripts/check-consistency.ts",
     "prepare": "husky"
   },
   "devDependencies": {

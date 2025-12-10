@@ -1,6 +1,6 @@
 /**
  * Feedback Animations
- * 
+ *
  * Visual feedback components for success, error, and state changes.
  * Provides delightful animations for user actions.
  */
@@ -10,15 +10,15 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { 
-  CheckCircleIcon, 
-  XCircleIcon, 
+import {
+  CheckCircleIcon,
+  XCircleIcon,
   AlertCircleIcon,
   InfoIcon,
 } from './icons'
-import { 
-  ANIMATION_DURATION, 
-  ANIMATION_EASING,
+import {
+  ANIMATION_DURATION,
+  EASING_FRAMER,
   // createSuccessAnimation, // Reserved for future use
   // createErrorAnimation, // Reserved for future use
 } from '../animations'
@@ -58,6 +58,7 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
       }, duration)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [show, duration, onComplete])
 
   const Icon = {
@@ -83,7 +84,7 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{
             duration: ANIMATION_DURATION.normal / 1000,
-            ease: ANIMATION_EASING.spring,
+            ease: EASING_FRAMER.spring,
           }}
           className={cn(
             'flex flex-col items-center justify-center gap-3 p-6 rounded-lg shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] border border-border/50',
@@ -96,13 +97,13 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
             animate={{ scale: 1, rotate: 0 }}
             transition={{
               duration: ANIMATION_DURATION.slow / 1000,
-              ease: ANIMATION_EASING.spring,
+              ease: EASING_FRAMER.spring,
               delay: 0.1,
             }}
           >
             <Icon size={48} />
           </motion.div>
-          
+
           {message && (
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -136,7 +137,7 @@ export const SuccessCheckmark: React.FC<{
           exit={{ scale: 0, rotate: 45 }}
           transition={{
             duration: ANIMATION_DURATION.normal / 1000,
-            ease: ANIMATION_EASING.spring,
+            ease: EASING_FRAMER.spring,
           }}
           className={cn('text-success', className)}
         >
@@ -166,12 +167,16 @@ export const ErrorShake: React.FC<{
   return (
     <motion.div
       key={key}
-      animate={trigger ? {
-        x: [-10, 10, -10, 10, -5, 5, 0],
-      } : {}}
+      animate={
+        trigger
+          ? {
+              x: [-10, 10, -10, 10, -5, 5, 0],
+            }
+          : {}
+      }
       transition={{
         duration: 0.5,
-        ease: ANIMATION_EASING.default,
+        ease: EASING_FRAMER.default,
       }}
       className={className}
     >
@@ -190,14 +195,18 @@ export const PulseAttention: React.FC<{
 }> = ({ active, children, className }) => {
   return (
     <motion.div
-      animate={active ? {
-        scale: [1, 1.05, 1],
-        opacity: [1, 0.8, 1],
-      } : {}}
+      animate={
+        active
+          ? {
+              scale: [1, 1.05, 1],
+              opacity: [1, 0.8, 1],
+            }
+          : {}
+      }
       transition={{
         duration: 1,
         repeat: Infinity,
-        ease: ANIMATION_EASING.inOut,
+        ease: EASING_FRAMER.inOut,
       }}
       className={className}
     >
@@ -220,7 +229,7 @@ export const RippleEffect: React.FC<{
     if (trigger) {
       const id = Date.now()
       setRipples((prev) => [...prev, id])
-      
+
       setTimeout(() => {
         setRipples((prev) => prev.filter((r) => r !== id))
       }, 1000)
@@ -228,7 +237,12 @@ export const RippleEffect: React.FC<{
   }, [trigger])
 
   return (
-    <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
+    <div
+      className={cn(
+        'absolute inset-0 overflow-hidden pointer-events-none',
+        className
+      )}
+    >
       <AnimatePresence>
         {ripples.map((id) => (
           <motion.div
@@ -236,7 +250,7 @@ export const RippleEffect: React.FC<{
             initial={{ scale: 0, opacity: 0.6 }}
             animate={{ scale: 2.5, opacity: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1, ease: ANIMATION_EASING.out }}
+            transition={{ duration: 1, ease: EASING_FRAMER.out }}
             className="absolute inset-0 rounded-full border-4"
             style={{ borderColor: color }}
           />
@@ -260,7 +274,7 @@ export const ConfettiEffect: React.FC<{
     if (trigger) {
       const newParticles = Array.from({ length: count }, (_, i) => i)
       setParticles(newParticles)
-      
+
       setTimeout(() => {
         setParticles([])
       }, 2000)
@@ -268,18 +282,23 @@ export const ConfettiEffect: React.FC<{
   }, [trigger, count])
 
   return (
-    <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
+    <div
+      className={cn(
+        'absolute inset-0 overflow-hidden pointer-events-none',
+        className
+      )}
+    >
       <AnimatePresence>
         {particles.map((i) => (
           <motion.div
             key={i}
-            initial={{ 
-              x: '50%', 
+            initial={{
+              x: '50%',
               y: '50%',
               scale: 0,
               opacity: 1,
             }}
-            animate={{ 
+            animate={{
               x: `${50 + (Math.random() - 0.5) * 200}%`,
               y: `${50 + (Math.random() - 0.5) * 200}%`,
               scale: 1,
@@ -288,12 +307,17 @@ export const ConfettiEffect: React.FC<{
             }}
             transition={{
               duration: 1 + Math.random(),
-              ease: ANIMATION_EASING.out,
+              ease: EASING_FRAMER.out,
             }}
             className="absolute w-2 h-2 rounded-full"
             style={{
               backgroundColor: [
-                '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'
+                '#ef4444',
+                '#f59e0b',
+                '#10b981',
+                '#3b82f6',
+                '#8b5cf6',
+                '#ec4899',
               ][Math.floor(Math.random() * 6)],
             }}
           />
@@ -314,17 +338,21 @@ export const GlowEffect: React.FC<{
 }> = ({ active, color = 'rgb(var(--primary))', children, className }) => {
   return (
     <motion.div
-      animate={active ? {
-        boxShadow: [
-          `0 0 0 0 ${color}00`,
-          `0 0 20px 5px ${color}40`,
-          `0 0 0 0 ${color}00`,
-        ],
-      } : {}}
+      animate={
+        active
+          ? {
+              boxShadow: [
+                `0 0 0 0 ${color}00`,
+                `0 0 20px 5px ${color}40`,
+                `0 0 0 0 ${color}00`,
+              ],
+            }
+          : {}
+      }
       transition={{
         duration: 2,
         repeat: Infinity,
-        ease: ANIMATION_EASING.inOut,
+        ease: EASING_FRAMER.inOut,
       }}
       className={className}
     >
@@ -346,14 +374,14 @@ export const BounceIn: React.FC<{
       {show && (
         <motion.div
           initial={{ scale: 0 }}
-          animate={{ 
+          animate={{
             scale: [0, 1.2, 0.9, 1.05, 1],
           }}
           exit={{ scale: 0 }}
           transition={{
             duration: 0.5,
             times: [0, 0.4, 0.6, 0.8, 1],
-            ease: ANIMATION_EASING.out,
+            ease: EASING_FRAMER.out,
           }}
           className={className}
         >
@@ -383,7 +411,8 @@ export const SlideNotification: React.FC<{
 
   const colorClasses = {
     success: 'bg-success/10 border-success/20 text-success-foreground',
-    error: 'bg-destructive/10 border-destructive/20 text-destructive-foreground',
+    error:
+      'bg-destructive/10 border-destructive/20 text-destructive-foreground',
     warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
     info: 'bg-info/10 border-info/20 text-info-foreground',
   }
@@ -392,21 +421,21 @@ export const SlideNotification: React.FC<{
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{ 
-            opacity: 0, 
+          initial={{
+            opacity: 0,
             y: position === 'top' ? -20 : 20,
           }}
-          animate={{ 
-            opacity: 1, 
+          animate={{
+            opacity: 1,
             y: 0,
           }}
-          exit={{ 
-            opacity: 0, 
+          exit={{
+            opacity: 0,
             y: position === 'top' ? -20 : 20,
           }}
           transition={{
             duration: ANIMATION_DURATION.normal / 1000,
-            ease: ANIMATION_EASING.spring,
+            ease: EASING_FRAMER.spring,
           }}
           className={cn(
             'flex items-center gap-2 px-4 py-3 rounded-lg border border-border/50 backdrop-blur-sm shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',

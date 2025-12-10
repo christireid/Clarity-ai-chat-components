@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react'
+import React, { Component, type ReactNode } from 'react'
 import { ClarityChatError } from '../errors'
 
 /**
@@ -43,7 +43,9 @@ function ErrorFallback({
         margin: '1rem 0',
       }}
     >
-      <h2 style={{ color: '#c00', marginTop: 0 }}>Oops! Something went wrong</h2>
+      <h2 style={{ color: '#c00', marginTop: 0 }}>
+        Oops! Something went wrong
+      </h2>
       <p style={{ color: '#600' }}>{error.message}</p>
 
       {error instanceof ClarityChatError && error.solution && (
@@ -153,9 +155,9 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryProps, ErrorState> {
 
 /**
  * Error Boundary component - catches errors in child components
- * 
+ *
  * Modern functional wrapper around required class component
- * 
+ *
  * @example
  * ```tsx
  * <ErrorBoundary

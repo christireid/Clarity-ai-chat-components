@@ -1,6 +1,7 @@
 {
   "name": "@clarity-chat/codemods",
   "version": "0.1.0",
+  "type": "module",
   "description": "Automated code transformations for Clarity Chat upgrades",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +20,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "clarity-chat",

@@ -50,6 +50,11 @@
     },
     "clean": {
       "cache": false
+    },
+    "docs-sync": {
+      "dependsOn": ["^build"],
+      "outputs": [".docs-sync/**", "apps/docs/content/**"],
+      "cache": false
     }
   }
 }

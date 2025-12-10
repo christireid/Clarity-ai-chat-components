@@ -10,7 +10,7 @@ import {
   cn,
   formatRelativeTime,
 } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -132,6 +132,7 @@ export function Message({
   ref,
 }: MessageProps) {
   const [isHovered, setIsHovered] = React.useState(false)
+  const [isFocusWithin, setIsFocusWithin] = React.useState(false)
   const [feedbackGiven, setFeedbackGiven] = React.useState<
     'up' | 'down' | null
   >(message.feedback?.type || null)
@@ -322,10 +323,18 @@ export function Message({
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{
         duration: ANIMATION_DURATION.normal / 1000,
-        ease: ANIMATION_EASING.out,
+        ease: EASING_FRAMER.out,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsFocusWithin(true)}
+      onBlur={(e) => {
+        // Only set false if focus moved outside this component
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          setIsFocusWithin(false)
+        }
+      }}
+      tabIndex={0}
       className={cn(
         'group flex gap-3 rounded-xl transition-all duration-200 ease-out',
         // Reduced padding for grouped messages
@@ -472,7 +481,7 @@ export function Message({
             onEdit={onEdit}
             onRegenerate={onRegenerate}
             onDelete={onDelete}
-            show={isHovered || !!feedbackGiven}
+            show={isHovered || isFocusWithin || !!feedbackGiven}
           />
         )}
 

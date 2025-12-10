@@ -1,0 +1,266 @@
+name: Documentation Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/*/src/**/*.ts'
+      - 'packages/*/src/**/*.tsx'
+      - '!packages/*/src/**/*.test.*'
+      - '!packages/*/src/**/*.spec.*'
+      - '!packages/*/src/**/__tests__/**'
+  workflow_dispatch:
+    inputs:
+      full_rebuild:
+        description: 'Force full documentation rebuild'
+        required: false
+        default: 'false'
+        type: boolean
+      skip_commit:
+        description: 'Skip committing changes (dry run)'
+        required: false
+        default: 'false'
+        type: boolean
+
+concurrency:
+  group: docs-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10'
+
+jobs:
+  analyze-changes:
+    name: Analyze Changes
+    runs-on: ubuntu-latest
+    outputs:
+      docs_relevant: ${{ steps.detect.outputs.docs_relevant }}
+      affected_packages: ${{ steps.detect.outputs.affected_packages }}
+      has_breaking_changes: ${{ steps.detect.outputs.has_breaking_changes }}
+      change_summary: ${{ steps.detect.outputs.change_summary }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build docs-sync tool
+        run: pnpm --filter @clarity-chat/docs-sync build
+
+      - name: Detect documentation-relevant changes
+        id: detect
+        run: |
+          # Get the base commit
+          if [ "${{ github.event_name }}" = "push" ]; then
+            BASE_COMMIT="${{ github.event.before }}"
+          else
+            BASE_COMMIT="HEAD~1"
+          fi
+
+          # Run change detection
+          OUTPUT=$(pnpm --filter @clarity-chat/docs-sync start detect-changes \
+            --base="$BASE_COMMIT" \
+            --head="${{ github.sha }}" \
+            --output=github)
+
+          # Parse output and set GitHub outputs
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+
+      - name: Upload change analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: change-analysis
+          path: .docs-sync/cache/change-analysis.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  generate-docs:
+    name: Generate Documentation
+    needs: analyze-changes
+    if: |
+      needs.analyze-changes.outputs.docs_relevant == 'true' ||
+      github.event.inputs.full_rebuild == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build:packages
+
+      - name: Build docs-sync tool
+        run: pnpm --filter @clarity-chat/docs-sync build
+
+      - name: Download change analysis
+        uses: actions/download-artifact@v4
+        with:
+          name: change-analysis
+          path: .docs-sync/cache
+        continue-on-error: true
+
+      - name: Restore API cache
+        uses: actions/cache@v4
+        with:
+          path: .docs-sync/cache/api-cache.json
+          key: api-cache-${{ hashFiles('packages/*/src/**/*.ts', 'packages/*/src/**/*.tsx') }}
+          restore-keys: |
+            api-cache-
+
+      - name: Run documentation sync
+        id: sync
+        run: |
+          # Determine base commit
+          if [ "${{ github.event_name }}" = "push" ]; then
+            BASE_COMMIT="${{ github.event.before }}"
+          else
+            BASE_COMMIT="HEAD~1"
+          fi
+
+          # Build sync command
+          SYNC_CMD="pnpm --filter @clarity-chat/docs-sync start sync --base=$BASE_COMMIT --head=${{ github.sha }}"
+
+          if [ "${{ github.event.inputs.full_rebuild }}" = "true" ]; then
+            SYNC_CMD="$SYNC_CMD --full"
+          fi
+
+          if [ "${{ github.event.inputs.skip_commit }}" = "true" ]; then
+            SYNC_CMD="$SYNC_CMD --dry-run"
+          fi
+
+          # Run sync
+          $SYNC_CMD
+
+      - name: Check for documentation changes
+        id: check-changes
+        run: |
+          if git diff --quiet apps/docs/ .docs-sync/; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "### Documentation Changes" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            git diff --stat apps/docs/ .docs-sync/ >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Commit documentation updates
+        if: |
+          steps.check-changes.outputs.has_changes == 'true' &&
+          github.event.inputs.skip_commit != 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add apps/docs/ .docs-sync/
+
+          # Create commit message
+          COMMIT_MSG="docs: auto-update documentation [skip ci]
+
+          Changes detected in: ${{ needs.analyze-changes.outputs.affected_packages }}
+
+          ${{ needs.analyze-changes.outputs.change_summary }}"
+
+          git commit -m "$COMMIT_MSG"
+          git push
+
+      - name: Save API cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .docs-sync/cache/api-cache.json
+          key: api-cache-${{ hashFiles('packages/*/src/**/*.ts', 'packages/*/src/**/*.tsx') }}
+
+  build-verify:
+    name: Build & Verify Docs
+    needs: generate-docs
+    if: always() && needs.generate-docs.result == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (updated)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build documentation site
+        run: pnpm --filter @clarity-chat/docs build
+        continue-on-error: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-build
+          path: apps/docs/.next
+          retention-days: 7
+          if-no-files-found: ignore
+
+  notify:
+    name: Notify on Breaking Changes
+    needs: [analyze-changes, generate-docs]
+    if: |
+      always() &&
+      needs.analyze-changes.outputs.has_breaking_changes == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post breaking changes warning
+        run: |
+          echo "## ⚠️ Breaking Changes Detected" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "This push contains breaking API changes." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Affected packages: ${{ needs.analyze-changes.outputs.affected_packages }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please ensure:" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Migration guide is updated" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] CHANGELOG reflects breaking changes" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Version bump follows semver" >> $GITHUB_STEP_SUMMARY

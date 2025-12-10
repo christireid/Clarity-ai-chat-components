@@ -17,7 +17,12 @@ export type MemoryScope = 'session' | 'thread' | 'global' | 'user'
 /**
  * Memory type determines how the memory is processed and retrieved
  */
-export type MemoryType = 'episodic' | 'semantic' | 'procedural' | 'short-term' | 'profile'
+export type MemoryType =
+  | 'episodic'
+  | 'semantic'
+  | 'procedural'
+  | 'short-term'
+  | 'profile'
 
 /**
  * Priority levels for memory retrieval and token allocation
@@ -830,7 +835,7 @@ export class MemoryError extends Error {
   constructor(
     message: string,
     public code: string,
-    public cause?: Error
+    public override cause?: Error
   ) {
     super(message)
     this.name = 'MemoryError'
@@ -848,14 +853,25 @@ export const MemoryErrorCodes = {
   MEMORY_NOT_FOUND: 'MEMORY_NOT_FOUND',
 } as const
 
-export type MemoryErrorCode = typeof MemoryErrorCodes[keyof typeof MemoryErrorCodes]
+export type MemoryErrorCode =
+  (typeof MemoryErrorCodes)[keyof typeof MemoryErrorCodes]
 
 /**
  * Vector store configuration
  */
 export interface VectorStoreConfig {
   /** Store type */
-  type: 'in-memory' | 'file' | 'indexeddb' | 'redis' | 'postgres' | 'sqlite' | 'chroma' | 'qdrant' | 'pinecone' | 'lancedb'
+  type:
+    | 'in-memory'
+    | 'file'
+    | 'indexeddb'
+    | 'redis'
+    | 'postgres'
+    | 'sqlite'
+    | 'chroma'
+    | 'qdrant'
+    | 'pinecone'
+    | 'lancedb'
 
   /** File path (for file store) */
   path?: string

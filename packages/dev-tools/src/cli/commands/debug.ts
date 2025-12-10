@@ -5,13 +5,14 @@
  */
 
 import { Command } from 'commander'
-import { createLogger, LogLevel } from '../../debug/logger'
+import { createLogger, type LogLevel } from '../../debug/logger'
 import { successBox, infoBox, warningBox } from '../../ui/box'
 import { keyValueTable } from '../../ui/table'
 import chalk from 'chalk'
 
-export const debugCommand = new Command('debug')
-  .description('Debug utilities for Clarity Chat applications')
+export const debugCommand = new Command('debug').description(
+  'Debug utilities for Clarity Chat applications'
+)
 
 // Subcommand: env - Display environment info
 debugCommand
@@ -21,24 +22,25 @@ debugCommand
   .action((options) => {
     const envInfo: Record<string, string> = {
       'Node Version': process.version,
-      'Platform': process.platform,
-      'Architecture': process.arch,
+      Platform: process.platform,
+      Architecture: process.arch,
       'Working Directory': process.cwd(),
-      'NODE_ENV': process.env.NODE_ENV || '(not set)',
-      'LOG_LEVEL': process.env.LOG_LEVEL || '(not set)'
+      NODE_ENV: process.env.NODE_ENV || '(not set)',
+      LOG_LEVEL: process.env.LOG_LEVEL || '(not set)',
     }
 
     // Check for API keys (masked)
     const apiKeys = [
       { env: 'OPENAI_API_KEY', name: 'OpenAI' },
       { env: 'ANTHROPIC_API_KEY', name: 'Anthropic' },
-      { env: 'GOOGLE_API_KEY', name: 'Google AI' }
+      { env: 'GOOGLE_API_KEY', name: 'Google AI' },
     ]
 
     for (const key of apiKeys) {
       const value = process.env[key.env]
       if (value) {
-        envInfo[`${key.name} API Key`] = `${value.slice(0, 8)}...${value.slice(-4)} (${value.length} chars)`
+        envInfo[`${key.name} API Key`] =
+          `${value.slice(0, 8)}...${value.slice(-4)} (${value.length} chars)`
       } else {
         envInfo[`${key.name} API Key`] = chalk.dim('(not set)')
       }
@@ -55,7 +57,7 @@ debugCommand
         logLevel: process.env.LOG_LEVEL || '',
         hasOpenAIKey: !!process.env.OPENAI_API_KEY,
         hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
-        hasGoogleKey: !!process.env.GOOGLE_API_KEY
+        hasGoogleKey: !!process.env.GOOGLE_API_KEY,
       }
       console.log(JSON.stringify(jsonOutput, null, 2))
     } else {
@@ -69,13 +71,21 @@ debugCommand
 debugCommand
   .command('log')
   .description('Test the logging system')
-  .option('-l, --level <level>', 'Log level (trace, debug, info, warn, error)', 'info')
-  .option('-m, --message <message>', 'Custom message to log', 'Test log message')
+  .option(
+    '-l, --level <level>',
+    'Log level (trace, debug, info, warn, error)',
+    'info'
+  )
+  .option(
+    '-m, --message <message>',
+    'Custom message to log',
+    'Test log message'
+  )
   .action((options) => {
     const logger = createLogger({
       level: options.level as LogLevel,
       timestamps: true,
-      colors: true
+      colors: true,
     })
 
     console.log()
@@ -136,10 +146,17 @@ debugCommand
 debugCommand
   .command('request')
   .description('Debug a simulated API request')
-  .option('-p, --provider <provider>', 'AI provider (openai, anthropic, google)', 'openai')
+  .option(
+    '-p, --provider <provider>',
+    'AI provider (openai, anthropic, google)',
+    'openai'
+  )
   .option('-m, --model <model>', 'Model name', 'gpt-4-turbo')
   .action((options) => {
-    const logger = createLogger({ level: 'debug', prefix: `[${options.provider}]` })
+    const logger = createLogger({
+      level: 'debug',
+      prefix: `[${options.provider}]`,
+    })
 
     console.log()
     console.log(chalk.bold.blue('Simulating API request debugging...'))
@@ -150,24 +167,24 @@ debugCommand
 
     logger.info('Preparing request', {
       provider: options.provider,
-      model: options.model
+      model: options.model,
     })
 
     logger.debug('Request headers', {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer sk-***'
+      Authorization: 'Bearer sk-***',
     })
 
     logger.debug('Request body', {
       model: options.model,
       messages: [{ role: 'user', content: 'Hello!' }],
-      max_tokens: 100
+      max_tokens: 100,
     })
 
     // Simulate response
     logger.info('Received response', {
       status: 200,
-      latency: '245ms'
+      latency: '245ms',
     })
 
     logger.debug('Response body', {
@@ -176,19 +193,19 @@ debugCommand
       usage: {
         prompt_tokens: 10,
         completion_tokens: 25,
-        total_tokens: 35
-      }
+        total_tokens: 35,
+      },
     })
 
     logger.timeEnd('Total Request', 'info')
 
     // Summary
     const summary: Record<string, string> = {
-      'Provider': options.provider,
-      'Model': options.model,
-      'Status': chalk.green('200 OK'),
-      'Tokens': '35 total (10 prompt + 25 completion)',
-      'Estimated Cost': '$0.001'
+      Provider: options.provider,
+      Model: options.model,
+      Status: chalk.green('200 OK'),
+      Tokens: '35 total (10 prompt + 25 completion)',
+      'Estimated Cost': '$0.001',
     }
 
     console.log()
@@ -197,5 +214,5 @@ debugCommand
   })
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }

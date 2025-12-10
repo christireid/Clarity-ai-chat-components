@@ -4,7 +4,7 @@ Build a fully functional AI chat application in under 10 minutes.
 
 ## Prerequisites
 
-- Node.js 18+ installed
+- Node.js 20+ installed
 - Basic knowledge of React
 - An OpenAI API key (or another AI provider)
 
@@ -47,12 +47,14 @@ import type { Message } from '@clarity-chat/types'
 import { useState } from 'react'
 
 export function Chat() {
-  const [messages, setMessages] = useState<Message[]>([{
-    id: '1',
-    role: 'assistant',
-    content: 'Hello! How can I help you today?',
-    timestamp: Date.now(),
-  }])
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'assistant',
+      content: 'Hello! How can I help you today?',
+      timestamp: Date.now(),
+    },
+  ])
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSendMessage = async (content: string) => {
@@ -63,7 +65,7 @@ export function Chat() {
       content,
       timestamp: Date.now(),
     }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
     try {
@@ -71,30 +73,36 @@ export function Chat() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          messages: [...messages, userMessage] 
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
         }),
       })
-      
+
       const data = await response.json()
-      
+
       // Add AI response
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: data.message,
-        timestamp: Date.now(),
-      }])
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.message,
+          timestamp: Date.now(),
+        },
+      ])
     } catch (error) {
       console.error('Failed to send message:', error)
       // Add error message
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
-        timestamp: Date.now(),
-        error: true,
-      }])
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.',
+          timestamp: Date.now(),
+          error: true,
+        },
+      ])
     } finally {
       setIsLoading(false)
     }
@@ -102,11 +110,7 @@ export function Chat() {
 
   return (
     <div style={{ width: '100%', maxWidth: '800px', height: '600px' }}>
-      <ChatWindow
-        messages={messages}
-        isLoading={isLoading}
-        onSendMessage={handleSendMessage}
-      />
+      <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={handleSendMessage} />
     </div>
   )
 }
@@ -129,21 +133,18 @@ const openai = new OpenAI({
 export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json()
-    
+
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-turbo',
       messages,
     })
-    
-    return Response.json({ 
-      message: completion.choices[0].message.content 
+
+    return Response.json({
+      message: completion.choices[0].message.content,
     })
   } catch (error) {
     console.error('Error:', error)
-    return Response.json(
-      { error: 'Failed to process request' },
-      { status: 500 }
-    )
+    return Response.json({ error: 'Failed to process request' }, { status: 500 })
   }
 }
 ```
@@ -160,22 +161,19 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
   try {
     const { messages } = req.body
-    
+
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-turbo',
       messages,
     })
-    
+
     res.json({ message: completion.choices[0].message.content })
   } catch (error) {
     console.error('Error:', error)
@@ -204,12 +202,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
   try {
     const { messages } = await request.json()
-    
+
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-turbo',
       messages,
     })
-    
+
     return json({ message: completion.choices[0].message.content })
   } catch (error) {
     console.error('Error:', error)
@@ -244,13 +242,15 @@ import '@clarity-chat/react/styles.css'
 
 export default function Home() {
   return (
-    <main style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center',
-      minHeight: '100vh',
-      padding: '2rem',
-    }}>
+    <main
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        padding: '2rem',
+      }}
+    >
       <Chat />
     </main>
   )
@@ -267,13 +267,15 @@ import '@clarity-chat/react/styles.css'
 
 function App() {
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center',
-      minHeight: '100vh',
-      padding: '2rem',
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        padding: '2rem',
+      }}
+    >
       <Chat />
     </div>
   )
@@ -386,9 +388,7 @@ module.exports = {
     return [
       {
         source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-        ],
+        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
       },
     ]
   },

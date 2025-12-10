@@ -42,7 +42,7 @@ import {
 } from '../icons'
 import {
   ANIMATION_DURATION,
-  ANIMATION_EASING,
+  EASING_FRAMER,
   INTERACTION_VARIANTS,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
@@ -128,16 +128,19 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
       }, 300)
     }, [messageId, onDelete, toast])
 
-    const handleReport = React.useCallback((reason: string) => {
-      onReport?.(reason)
-      toast?.success(`Message reported: ${reason}`)
-      setShowReportMenu(false)
-    }, [onReport, toast])
-
-    const hasSecurityWarnings = securityInfo && (
-      !securityInfo.validated ||
-      (securityInfo.threats && securityInfo.threats.length > 0)
+    const handleReport = React.useCallback(
+      (reason: string) => {
+        onReport?.(reason)
+        toast?.success(`Message reported: ${reason}`)
+        setShowReportMenu(false)
+      },
+      [onReport, toast]
     )
+
+    const hasSecurityWarnings =
+      securityInfo &&
+      (!securityInfo.validated ||
+        (securityInfo.threats && securityInfo.threats.length > 0))
 
     const hasPiiDetected = securityInfo?.piiDetected
 
@@ -149,7 +152,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           exit={{ opacity: 0, y: 10, height: 0 }}
           transition={{
             duration: ANIMATION_DURATION.fast / 1000,
-            ease: ANIMATION_EASING.out,
+            ease: EASING_FRAMER.out,
           }}
           className="flex items-center gap-1 overflow-hidden"
         >
@@ -168,7 +171,8 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                 size="icon"
                 className={cn(
                   'h-7 w-7 rounded-md',
-                  hasSecurityWarnings && 'text-orange-500 hover:text-orange-600',
+                  hasSecurityWarnings &&
+                    'text-orange-500 hover:text-orange-600',
                   !hasSecurityWarnings && 'text-green-500 hover:text-green-600'
                 )}
                 aria-label="Security status"
@@ -192,7 +196,10 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                     <div className="font-semibold mb-2 flex items-center gap-2">
                       {hasSecurityWarnings ? (
                         <>
-                          <AlertTriangleIcon size={12} className="text-orange-500" />
+                          <AlertTriangleIcon
+                            size={12}
+                            className="text-orange-500"
+                          />
                           Security Warnings
                         </>
                       ) : (
@@ -205,50 +212,78 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
 
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Validated:</span>
-                        <span className={securityInfo.validated ? 'text-green-600' : 'text-red-600'}>
+                        <span className="text-muted-foreground">
+                          Validated:
+                        </span>
+                        <span
+                          className={
+                            securityInfo.validated
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                          }
+                        >
                           {securityInfo.validated ? 'Yes' : 'No'}
                         </span>
                       </div>
 
                       {hasPiiDetected && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">PII Detected:</span>
+                          <span className="text-muted-foreground">
+                            PII Detected:
+                          </span>
                           <span className="text-orange-600">
                             {securityInfo.piiCount || 1} item(s)
                           </span>
                         </div>
                       )}
 
-                      {securityInfo.threats && securityInfo.threats.length > 0 && (
-                        <div>
-                          <span className="text-muted-foreground">Threats:</span>
-                          <ul className="list-disc list-inside mt-1">
-                            {securityInfo.threats.slice(0, 3).map((threat, i) => (
-                              <li key={i} className="text-orange-600 text-xs">{threat}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {securityInfo.threats &&
+                        securityInfo.threats.length > 0 && (
+                          <div>
+                            <span className="text-muted-foreground">
+                              Threats:
+                            </span>
+                            <ul className="list-disc list-inside mt-1">
+                              {securityInfo.threats
+                                .slice(0, 3)
+                                .map((threat, i) => (
+                                  <li
+                                    key={i}
+                                    className="text-orange-600 text-xs"
+                                  >
+                                    {threat}
+                                  </li>
+                                ))}
+                            </ul>
+                          </div>
+                        )}
 
                       {securityInfo.sanitized && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Sanitized:</span>
+                          <span className="text-muted-foreground">
+                            Sanitized:
+                          </span>
                           <span className="text-blue-600">Yes</span>
                         </div>
                       )}
 
                       {securityInfo.confidence !== undefined && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Confidence:</span>
-                          <span>{(securityInfo.confidence * 100).toFixed(0)}%</span>
+                          <span className="text-muted-foreground">
+                            Confidence:
+                          </span>
+                          <span>
+                            {(securityInfo.confidence * 100).toFixed(0)}%
+                          </span>
                         </div>
                       )}
 
                       {securityInfo.method && (
                         <div className="flex justify-between text-xs">
                           <span className="text-muted-foreground">Method:</span>
-                          <span className="capitalize">{securityInfo.method}</span>
+                          <span className="capitalize">
+                            {securityInfo.method}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -279,7 +314,12 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, duration: 0.2 }}
           >
-            <CopyButton text={messageContent} size="icon" iconOnly className="h-7 w-7 rounded-md" />
+            <CopyButton
+              text={messageContent}
+              size="icon"
+              iconOnly
+              className="h-7 w-7 rounded-md"
+            />
           </motion.div>
 
           {/* Thumbs Up with Confetti */}
@@ -387,7 +427,9 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                   className="absolute bottom-full left-0 mb-2 z-50"
                 >
                   <div className="bg-popover text-popover-foreground border rounded-lg shadow-lg p-2 text-xs w-48">
-                    <div className="font-semibold mb-2 px-2">Report Message</div>
+                    <div className="font-semibold mb-2 px-2">
+                      Report Message
+                    </div>
                     <button
                       onClick={() => handleReport('harmful')}
                       className="w-full text-left px-2 py-1.5 hover:bg-accent rounded"
@@ -509,10 +551,14 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                 aria-label="Delete message"
               >
                 <motion.div
-                  animate={isDeleting ? {
-                    rotate: [0, 10, -10, 10, 0],
-                    scale: [1, 0.9, 0.9, 0.9, 0.8],
-                  } : {}}
+                  animate={
+                    isDeleting
+                      ? {
+                          rotate: [0, 10, -10, 10, 0],
+                          scale: [1, 0.9, 0.9, 0.9, 0.8],
+                        }
+                      : {}
+                  }
                   transition={{ duration: 0.3 }}
                 >
                   <TrashIcon size={14} />

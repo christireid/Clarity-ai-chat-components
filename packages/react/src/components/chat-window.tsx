@@ -7,9 +7,10 @@ import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
 import { MessageList } from './message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from './thinking-indicator'
-import { BotIcon } from './icons'
+import { BotIcon, SparklesIcon } from './icons'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */
@@ -47,10 +48,40 @@ export interface ChatWindowProps {
   /** Enable clear chat functionality */
   onClear?: () => void
   className?: string
+  /**
+   * Starter prompts to show in empty state (2024 AI UX trend)
+   * These help users discover what the chat can do
+   */
+  starterPrompts?: PromptSuggestion[]
+  /**
+   * Suggested follow-up prompts shown after assistant messages
+   * Helps maintain conversation flow
+   */
+  followUpSuggestions?: PromptSuggestion[]
+  /**
+   * Whether to show starter prompts in empty state
+   * @default true when starterPrompts is provided
+   */
+  showStarterPrompts?: boolean
+  /**
+   * Whether to show follow-up suggestions after last assistant message
+   * @default true when followUpSuggestions is provided
+   */
+  showFollowUpSuggestions?: boolean
 }
 
 // Default empty state component - extracted for better performance
-const DefaultEmptyState = () => (
+interface DefaultEmptyStateProps {
+  starterPrompts?: PromptSuggestion[]
+  onSelectPrompt?: (suggestion: PromptSuggestion) => void
+  showStarterPrompts?: boolean
+}
+
+const DefaultEmptyState = ({
+  starterPrompts,
+  onSelectPrompt,
+  showStarterPrompts = true,
+}: DefaultEmptyStateProps) => (
   <motion.div
     className="text-center space-y-8 px-4"
     initial={{ opacity: 0, scale: 0.95 }}
@@ -80,36 +111,64 @@ const DefaultEmptyState = () => (
         with your questions and tasks.
       </p>
     </div>
+
+    {/* Starter Prompts - 2024 AI UX Pattern */}
+    {showStarterPrompts &&
+      starterPrompts &&
+      starterPrompts.length > 0 &&
+      onSelectPrompt && (
+        <motion.div
+          className="pt-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <SparklesIcon size={14} className="text-primary" />
+            <span className="text-xs font-medium text-muted-foreground/80 uppercase tracking-wider">
+              Try asking
+            </span>
+          </div>
+          <PromptSuggestions
+            suggestions={starterPrompts}
+            onSelect={onSelectPrompt}
+            suggestionType="starter"
+            layout="chips"
+            maxSuggestions={4}
+            className="justify-center"
+          />
+        </motion.div>
+      )}
   </motion.div>
 )
 
 /**
  * ChatWindow - Mid-Level Composable Component
- * 
+ *
  * A composable chat window component that accepts messages and handles
  * rendering, input, and user interactions.
- * 
+ *
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Chat UI
- * 
+ *
  * For drop-in usage, use top-level `ClarityChat` instead.
  * For custom rendering, use low-level `Message` components.
- * 
+ *
  * @example
  * ```tsx
  * const chat = useClarityChat({ api: '/api/chat' })
  * const handlers = useChatHandlers({ chat })
- * 
+ *
  * <ChatWindow
  *   messages={chat.messages}
  *   isLoading={chat.isLoading}
  *   onSendMessage={handlers.onSendMessage}
  * />
  * ```
- * 
+ *
  * A mid-level building block for rendering chat interfaces. Provides full control
  * over message rendering, input handling, and UI customization.
- * 
+ *
  * **Features:**
  * - Message list rendering with animations
  * - Chat input with send functionality
@@ -118,16 +177,16 @@ const DefaultEmptyState = () => (
  * - Customizable empty state
  * - Optional header with session info
  * - Export and clear functionality
- * 
+ *
  * **When to use:**
  * - You need full control over the chat UI
  * - You're using `useChat` or `useClarityChat` hooks
  * - You want to customize message rendering
- * 
+ *
  * **When NOT to use:**
  * - For simplest setup, use `ClarityChat` component instead
  * - For pre-configured setups, use recipe components (`ChatWithMemory`, etc.)
- * 
+ *
  * @param props - ChatWindow configuration
  * @param props.messages - Array of messages to display
  * @param props.isLoading - Whether a request is in progress
@@ -148,14 +207,14 @@ const DefaultEmptyState = () => (
  * @param props.onClear - Optional callback for clear chat functionality
  * @param props.className - Optional CSS class name
  * @param props.aiStatus - Optional AI processing status for thinking indicator
- * 
+ *
  * @example Basic usage with useChat hook
  * ```tsx
  * import { useChat, ChatWindow } from '@clarity-chat/react'
- * 
+ *
  * function MyChat() {
  *   const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
- *   
+ *
  *   return (
  *     <ChatWindow
  *       messages={messages}
@@ -165,7 +224,7 @@ const DefaultEmptyState = () => (
  *   )
  * }
  * ```
- * 
+ *
  * @example With custom header and actions
  * ```tsx
  * <ChatWindow
@@ -181,7 +240,7 @@ const DefaultEmptyState = () => (
  *   onClear={() => clearMessages()}
  * />
  * ```
- * 
+ *
  * @example With message callbacks
  * ```tsx
  * <ChatWindow
@@ -221,23 +280,27 @@ export function ChatWindow({
   onExport,
   onClear,
   className,
+  starterPrompts,
+  followUpSuggestions,
+  showStarterPrompts = true,
+  showFollowUpSuggestions = true,
 }: ChatWindowProps) {
   // Runtime validation
   if (!Array.isArray(messages)) {
     throw new Error(
       'ChatWindow: "messages" prop must be an array.\n\n' +
-      'Example:\n' +
-      '  <ChatWindow messages={[]} onSendMessage={handleSend} />\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/components'
+        'Example:\n' +
+        '  <ChatWindow messages={[]} onSendMessage={handleSend} />\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/components'
     )
   }
 
   if (typeof onSendMessage !== 'function') {
     throw new Error(
       'ChatWindow: "onSendMessage" prop is required and must be a function.\n\n' +
-      'Example:\n' +
-      '  <ChatWindow messages={messages} onSendMessage={(msg) => sendMessage(msg)} />\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/components'
+        'Example:\n' +
+        '  <ChatWindow messages={messages} onSendMessage={(msg) => sendMessage(msg)} />\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/components'
     )
   }
 
@@ -248,19 +311,20 @@ export function ChatWindow({
   // CoreMessage has content: string | Array<...>, Message has content: string
   const normalizedMessages = React.useMemo(() => {
     if (messages.length === 0) return []
-    
+
     // Check if it's CoreMessage[] format by checking first message structure
     const firstMessage = messages[0]
     const isCoreMessage =
       firstMessage &&
       'content' in firstMessage &&
-      (typeof firstMessage.content === 'string' || Array.isArray(firstMessage.content)) &&
+      (typeof firstMessage.content === 'string' ||
+        Array.isArray(firstMessage.content)) &&
       !('status' in firstMessage) // Message has 'status', CoreMessage doesn't
-    
+
     if (isCoreMessage) {
       return convertCoreMessagesToMessages(messages as CoreMessage[])
     }
-    
+
     return messages as Message[]
   }, [messages])
 
@@ -270,8 +334,30 @@ export function ChatWindow({
     setInput('')
   }
 
+  // Handle prompt selection (starter or follow-up)
+  const handlePromptSelect = (suggestion: PromptSuggestion) => {
+    onSendMessage(suggestion.text)
+  }
+
   // React 19: Simple derivation - compiler optimizes
-  const effectiveEmptyState = emptyState || <DefaultEmptyState />
+  const effectiveEmptyState = emptyState || (
+    <DefaultEmptyState
+      starterPrompts={starterPrompts}
+      onSelectPrompt={handlePromptSelect}
+      showStarterPrompts={showStarterPrompts}
+    />
+  )
+
+  // Check if we should show follow-up suggestions
+  // Only show when: not loading, has messages, last message is from assistant, has suggestions
+  const lastMessage = normalizedMessages[normalizedMessages.length - 1]
+  const shouldShowFollowUp =
+    showFollowUpSuggestions &&
+    !isLoading &&
+    followUpSuggestions &&
+    followUpSuggestions.length > 0 &&
+    lastMessage?.role === 'assistant' &&
+    lastMessage?.status !== 'streaming'
 
   // React 19: Simple string derivation - compiler optimizes
   const messageCountText =
@@ -309,7 +395,11 @@ export function ChatWindow({
               )}
             </div>
             {showMessageCount && messageCountText && (
-              <Badge variant="secondary" className="shrink-0" aria-label={messageCountText}>
+              <Badge
+                variant="secondary"
+                className="shrink-0"
+                aria-label={messageCountText}
+              >
                 {messageCountText}
               </Badge>
             )}
@@ -385,6 +475,33 @@ export function ChatWindow({
           emptyState={effectiveEmptyState}
           className="flex-1 min-h-0"
         />
+
+        {/* Follow-up Suggestions - 2024 AI UX Pattern */}
+        <AnimatePresence>
+          {shouldShowFollowUp && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              className="px-5 pb-3"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <SparklesIcon size={12} className="text-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground/80">
+                  Suggested follow-ups
+                </span>
+              </div>
+              <PromptSuggestions
+                suggestions={followUpSuggestions!}
+                onSelect={handlePromptSelect}
+                suggestionType="follow-up"
+                layout="chips"
+                maxSuggestions={3}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Thinking Indicator - positioned above input */}
         <AnimatePresence>

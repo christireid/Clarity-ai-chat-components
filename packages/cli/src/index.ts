@@ -6,7 +6,7 @@
  */
 
 import { Command } from 'commander'
-import chalk from 'chalk'
+import pc from 'picocolors'
 import { initCommand } from './commands/init.js'
 import { addCommand } from './commands/add.js'
 import { keysCommand } from './commands/keys.js'

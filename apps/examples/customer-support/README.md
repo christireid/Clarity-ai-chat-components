@@ -13,7 +13,7 @@ AI-powered customer support chat with persistent conversation history using Next
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Supabase account (free tier works)
 - npm or yarn
 

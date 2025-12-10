@@ -3,7 +3,7 @@
  * Supports multiple output modes: human-readable, JSON, quiet, verbose
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import { getLogger } from './logger.js'
 
 const logger = getLogger('output')
@@ -31,7 +31,7 @@ export function initOutputMode(options: {
   isJson = options.json || false
   isQuiet = options.quiet || false
   isVerbose = options.verbose || false
-  
+
   if (isJson) {
     currentMode = OutputMode.JSON
   } else if (isQuiet) {
@@ -46,7 +46,9 @@ export function initOutputMode(options: {
 /**
  * Check if output should be suppressed
  */
-export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' = 'info'): boolean {
+export function shouldOutput(
+  level: 'info' | 'warn' | 'error' | 'debug' = 'info'
+): boolean {
   if (isQuiet && level !== 'error') return false
   if (level === 'debug' && !isVerbose && !process.env.DEBUG) return false
   return true
@@ -55,9 +57,12 @@ export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' = 'info'
 /**
  * Output formatted message
  */
-export function output(message: string, level: 'info' | 'warn' | 'error' | 'debug' = 'info'): void {
+export function output(
+  message: string,
+  level: 'info' | 'warn' | 'error' | 'debug' = 'info'
+): void {
   if (!shouldOutput(level)) return
-  
+
   if (isJson) {
     const json = {
       level,
@@ -67,24 +72,24 @@ export function output(message: string, level: 'info' | 'warn' | 'error' | 'debu
     console.log(JSON.stringify(json))
     return
   }
-  
+
   const colors: Record<string, (text: string) => string> = {
-    info: chalk.blue,
-    warn: chalk.yellow,
-    error: chalk.red,
-    debug: chalk.magenta,
+    info: pc.blue,
+    warn: pc.yellow,
+    error: pc.red,
+    debug: pc.magenta,
   }
-  
+
   const icons: Record<string, string> = {
     info: 'ℹ',
     warn: '⚠',
     error: '✖',
     debug: '🐛',
   }
-  
-  const color = colors[level] || chalk.white
+
+  const color = colors[level] || pc.white
   const icon = icons[level] || '•'
-  
+
   console.log(color(`${icon} ${message}`))
 }
 
@@ -98,11 +103,11 @@ export function outputJson(data: any): void {
     // Format as table or list for human-readable
     if (Array.isArray(data)) {
       data.forEach((item, index) => {
-        console.log(chalk.cyan(`${index + 1}.`), item)
+        console.log(pc.cyan(`${index + 1}.`), item)
       })
     } else if (typeof data === 'object') {
       Object.entries(data).forEach(([key, value]) => {
-        console.log(chalk.cyan(`${key}:`), value)
+        console.log(pc.cyan(`${key}:`), value)
       })
     } else {
       console.log(data)
@@ -119,7 +124,7 @@ export function outputTable(
   options: { border?: boolean } = {}
 ): void {
   if (isJson) {
-    const data = rows.map(row => {
+    const data = rows.map((row) => {
       const obj: Record<string, any> = {}
       headers.forEach((header, index) => {
         obj[header] = row[index]
@@ -129,39 +134,41 @@ export function outputTable(
     outputJson(data)
     return
   }
-  
+
   // Simple table formatting
   const maxWidths = headers.map((header, i) => {
     const headerWidth = header.length
-    const maxRowWidth = Math.max(...rows.map(row => String(row[i] || '').length))
+    const maxRowWidth = Math.max(
+      ...rows.map((row) => String(row[i] || '').length)
+    )
     return Math.max(headerWidth, maxRowWidth)
   })
-  
+
   // Header
-  const headerRow = headers.map((header, i) => 
-    chalk.bold.cyan(header.padEnd(maxWidths[i]))
-  ).join(' | ')
-  
+  const headerRow = headers
+    .map((header, i) => pc.bold(pc.cyan(header.padEnd(maxWidths[i]))))
+    .join(' | ')
+
   if (options.border) {
-    console.log(chalk.gray('─'.repeat(headerRow.length)))
+    console.log(pc.gray('─'.repeat(headerRow.length)))
   }
-  
+
   console.log(headerRow)
-  
+
   if (options.border) {
-    console.log(chalk.gray('─'.repeat(headerRow.length)))
+    console.log(pc.gray('─'.repeat(headerRow.length)))
   }
-  
+
   // Rows
-  rows.forEach(row => {
-    const rowStr = row.map((cell, i) => 
-      String(cell || '').padEnd(maxWidths[i])
-    ).join(' | ')
+  rows.forEach((row) => {
+    const rowStr = row
+      .map((cell, i) => String(cell || '').padEnd(maxWidths[i]))
+      .join(' | ')
     console.log(rowStr)
   })
-  
+
   if (options.border) {
-    console.log(chalk.gray('─'.repeat(headerRow.length)))
+    console.log(pc.gray('─'.repeat(headerRow.length)))
   }
 }
 
@@ -179,7 +186,7 @@ export function success(message: string): void {
     console.log(JSON.stringify(json))
     return
   }
-  console.log(chalk.green(`✔ ${message}`))
+  console.log(pc.green(`✔ ${message}`))
 }
 
 /**

@@ -3,13 +3,13 @@
  * Enhanced with beautiful UI components
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import prompts from 'prompts'
 import path from 'path'
 import fs from 'fs-extra'
 import { getLogger } from '../utils/logger.js'
 import { sectionHeader } from '../ui/banner.js'
-import { table, TableColumn } from '../ui/table.js'
+import { table, type TableColumn } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
 import { successBox, errorBox, infoBox } from '../ui/box.js'
 
@@ -38,7 +38,7 @@ export function ${name}({ }: ${name}Props) {
     </div>
   )
 }
-`
+`,
   },
   hook: {
     name: 'React Hook',
@@ -57,12 +57,14 @@ export function ${name}() {
     setState,
   }
 }
-`
+`,
   },
   adapter: {
     name: 'Model Adapter',
     icon: '🔌',
-    template: (name: string) => `import type { ChatMessage, ModelConfig, StreamChunk, TokenUsage } from '@clarity-chat/types'
+    template: (
+      name: string
+    ) => `import type { ChatMessage, ModelConfig, StreamChunk, TokenUsage } from '@clarity-chat/types'
 
 export async function* stream${name}(
   messages: ChatMessage[],
@@ -126,7 +128,7 @@ export async function* stream${name}(
     }
   }
 }
-`
+`,
   },
   test: {
     name: 'Test File',
@@ -144,7 +146,7 @@ describe('${name}', () => {
     // Add edge case tests
   })
 })
-`
+`,
   },
 }
 
@@ -154,13 +156,13 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   console.log()
 
   const generator = GENERATORS[type as keyof typeof GENERATORS]
-  
+
   if (!generator) {
     logger.error(`Unknown generator type: ${type}`)
-    
+
     // Display available generators in a beautiful table
     const columns: TableColumn[] = [
-      { header: 'Type', width: 15, color: chalk.yellow },
+      { header: 'Type', width: 15, color: pc.yellow },
       { header: 'Name', width: 30 },
     ]
 
@@ -173,7 +175,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     console.log(sectionHeader('📦 Available Generators'))
     console.log(table(generatorData, columns))
     console.log()
-    
+
     process.exit(1)
   }
 
@@ -184,7 +186,8 @@ export async function generateCommand(type: string, options: GenerateOptions) {
       type: 'text',
       name: 'name',
       message: `Enter ${generator.name} name:`,
-      validate: (value: string) => value.length > 0 ? true : 'Name is required'
+      validate: (value: string) =>
+        value.length > 0 ? true : 'Name is required',
     })
     name = response.name
   }
@@ -197,7 +200,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   // Determine output path
   const cwd = process.cwd()
   let outputPath = options.output
-  
+
   if (!outputPath) {
     const defaultPaths: Record<string, string> = {
       component: './src/components',
@@ -209,13 +212,13 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   }
 
   const fullPath = path.join(cwd, outputPath)
-  
+
   // Display generation info
   const infoContent = [
     `${generator.icon} ${generator.name}`,
     '',
-    `Name: ${chalk.cyan(name)}`,
-    `Path: ${chalk.cyan(fullPath)}`,
+    `Name: ${pc.cyan(name)}`,
+    `Path: ${pc.cyan(fullPath)}`,
   ].join('\n')
 
   console.log(infoBox(infoContent, 'Generation Info'))
@@ -225,11 +228,11 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     type: 'confirm',
     name: 'confirm',
     message: 'Generate file?',
-    initial: true
+    initial: true,
   })
 
   if (!confirm) {
-    console.log(chalk.gray('\nCancelled'))
+    console.log(pc.gray('\nCancelled'))
     return
   }
 
@@ -241,7 +244,8 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     await fs.ensureDir(fullPath)
 
     // Generate file
-    const extension = type === 'component' ? '.tsx' : type === 'test' ? '.test.ts' : '.ts'
+    const extension =
+      type === 'component' ? '.tsx' : type === 'test' ? '.test.ts' : '.ts'
     const fileName = `${name}${extension}`
     const filePath = path.join(fullPath, fileName)
 
@@ -251,11 +255,11 @@ export async function generateCommand(type: string, options: GenerateOptions) {
         type: 'confirm',
         name: 'overwrite',
         message: 'Overwrite existing file?',
-        initial: false
+        initial: false,
       })
-      
+
       if (!overwrite) {
-        console.log(chalk.gray('\nCancelled'))
+        console.log(pc.gray('\nCancelled'))
         return
       }
     }
@@ -267,22 +271,23 @@ export async function generateCommand(type: string, options: GenerateOptions) {
 
     console.log()
     const successContent = [
-      chalk.bold('File created successfully!'),
+      pc.bold('File created successfully!'),
       '',
-      chalk.white('File:'),
-      chalk.cyan(`  ${filePath}`),
+      pc.white('File:'),
+      pc.cyan(`  ${filePath}`),
       '',
-      chalk.gray('Open it in your editor and start coding!'),
+      pc.gray('Open it in your editor and start coding!'),
     ].join('\n')
 
     console.log(successBox(successContent, '✓ Success'))
     console.log()
-
   } catch (error) {
     spinner.fail('Failed to generate code')
     logger.error(error instanceof Error ? error : new Error(String(error)))
     console.log()
-    console.log(errorBox('Failed to generate code. Check the error above.', '✗ Error'))
+    console.log(
+      errorBox('Failed to generate code. Check the error above.', '✗ Error')
+    )
     console.log()
     process.exit(1)
   }

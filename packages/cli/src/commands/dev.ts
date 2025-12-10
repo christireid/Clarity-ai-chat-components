@@ -3,7 +3,7 @@
  * Enhanced with beautiful UI components
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import { execa } from 'execa'
 import open from 'open'
 import { getLogger } from '../utils/logger.js'
@@ -21,7 +21,9 @@ interface DevOptions {
 function validatePort(port: string): number {
   const portNum = parseInt(port, 10)
   if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
-    throw new Error(`Invalid port "${port}". Port must be a number between 1 and 65535.`)
+    throw new Error(
+      `Invalid port "${port}". Port must be a number between 1 and 65535.`
+    )
   }
   return portNum
 }
@@ -35,10 +37,12 @@ export async function devCommand(options: DevOptions) {
     port = validatePort(portString)
   } catch (error) {
     console.log()
-    console.log(errorBox(
-      error instanceof Error ? error.message : 'Invalid port number',
-      '✗ Configuration Error'
-    ))
+    console.log(
+      errorBox(
+        error instanceof Error ? error.message : 'Invalid port number',
+        '✗ Configuration Error'
+      )
+    )
     console.log()
     process.exit(1)
   }
@@ -52,16 +56,16 @@ export async function devCommand(options: DevOptions) {
 
   try {
     spinner.succeed('Development server starting')
-    
+
     const serverUrl = `http://localhost:${port}`
-    
+
     const infoContent = [
-      chalk.bold('Server is starting...'),
+      pc.bold('Server is starting...'),
       '',
-      chalk.white('URL: ') + chalk.cyan(serverUrl),
-      chalk.white('Status: ') + chalk.green('Starting'),
+      pc.white('URL: ') + pc.cyan(serverUrl),
+      pc.white('Status: ') + pc.green('Starting'),
       '',
-      chalk.gray('Press ') + chalk.bold('Ctrl+C') + chalk.gray(' to stop'),
+      pc.gray('Press ') + pc.bold('Ctrl+C') + pc.gray(' to stop'),
     ].join('\n')
 
     console.log()
@@ -72,26 +76,27 @@ export async function devCommand(options: DevOptions) {
     if (options.open) {
       setTimeout(() => {
         open(serverUrl)
-        console.log(chalk.gray(`Opening browser: ${serverUrl}`))
+        console.log(pc.gray(`Opening browser: ${serverUrl}`))
       }, 1000)
     }
 
     // Start the actual dev server
     const devProcess = execa('npm', ['run', 'dev'], {
       stdio: 'inherit',
-      env: { PORT: port.toString() }
+      env: { PORT: port.toString() },
     })
 
     await devProcess
-
   } catch (error) {
     spinner.fail('Failed to start development server')
     logger.error(error instanceof Error ? error : new Error(String(error)))
     console.log()
-    console.log(errorBox(
-      'Failed to start development server. Check the error above.',
-      '✗ Error'
-    ))
+    console.log(
+      errorBox(
+        'Failed to start development server. Check the error above.',
+        '✗ Error'
+      )
+    )
     console.log()
     process.exit(1)
   }

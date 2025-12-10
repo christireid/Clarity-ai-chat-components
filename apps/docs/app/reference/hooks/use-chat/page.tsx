@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { MessageFlowSequence } from '@/components/Diagrams/MessageFlowSequence'
-
+import { FeedbackWidget } from '@/components/FeedbackWidget'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const dynamic = 'force-dynamic'
 
@@ -70,6 +70,9 @@ function ChatComponent() {
           </pre>
         </div>
       </section>
+
+      {/* Feedback Widget */}
+      <FeedbackWidget pageId="use-chat" className="mt-12" />
     </div>
   )
 }
