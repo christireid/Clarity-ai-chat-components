@@ -12,7 +12,10 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "validate:hooks": "tsx scripts/validate-hook-metadata.ts"
+    "validate:hooks": "tsx scripts/validate-hook-metadata.ts",
+    "perf:lighthouse": "lhci autorun",
+    "perf:bundle": "size-limit",
+    "perf:analyze": "cross-env ANALYZE=true next build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
