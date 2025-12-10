@@ -16,5 +16,47 @@
     "path": "packages/types/dist/index.js",
     "limit": "10 KB",
     "webpack": false
+  },
+  {
+    "name": "Animation Library",
+    "path": "apps/docs/lib/animations.ts",
+    "limit": "15 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "Design Tokens",
+    "path": "apps/docs/lib/design-tokens.ts",
+    "limit": "8 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "Toast System",
+    "path": "apps/docs/lib/toast.ts",
+    "limit": "5 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "Toast Component",
+    "path": "apps/docs/components/UI/Toast.tsx",
+    "limit": "12 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "ScrollReveal Component",
+    "path": "apps/docs/components/UI/ScrollReveal.tsx",
+    "limit": "8 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "PageTransition Component",
+    "path": "apps/docs/components/UI/PageTransition.tsx",
+    "limit": "6 KB",
+    "webpack": false,
+    "gzip": true
   }
 ]

@@ -83,9 +83,10 @@ export type TokenizerEncoding =
   | 'mistral' // Mistral models
 
 /**
- * Complete model configuration
+ * Complete model configuration for tokenization
+ * Note: Named TokenModelConfig to avoid collision with ModelConfig in adapters/types.ts
  */
-export interface ModelConfig {
+export interface TokenModelConfig {
   /** Model display name */
   displayName: string
   /** Provider */
@@ -131,7 +132,7 @@ export interface ModelConfig {
  * This is the single source of truth for all model configurations.
  * Other modules should derive their configurations from this registry.
  */
-export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
+export const MODEL_REGISTRY: Record<ModelId, TokenModelConfig> = {
   // ===========================================================================
   // OpenAI GPT-4 Family
   // ===========================================================================
@@ -840,7 +841,7 @@ export function getModelsByProvider(provider: ModelProvider): ModelId[] {
  * Get models with a specific capability
  */
 export function getModelsWithCapability(
-  capability: keyof ModelConfig['capabilities']
+  capability: keyof TokenModelConfig['capabilities']
 ): ModelId[] {
   return getAllModelIds().filter(
     (id) => MODEL_REGISTRY[id].capabilities[capability]
@@ -866,13 +867,13 @@ export function isValidModelId(id: string): id is ModelId {
 /**
  * Get model config with type safety
  */
-export function getModelConfig(id: ModelId): ModelConfig {
+export function getModelConfig(id: ModelId): TokenModelConfig {
   return MODEL_REGISTRY[id]
 }
 
 /**
  * Get model config or undefined if not found
  */
-export function tryGetModelConfig(id: string): ModelConfig | undefined {
+export function tryGetModelConfig(id: string): TokenModelConfig | undefined {
   return isValidModelId(id) ? MODEL_REGISTRY[id] : undefined
 }

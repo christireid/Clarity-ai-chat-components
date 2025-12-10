@@ -16,7 +16,7 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
-import rehypeHighlight from 'rehype-highlight'
+// rehypeHighlight is now loaded async (react-markdown v10 feature)
 import rehypeKatex from 'rehype-katex'
 import rehypeRaw from 'rehype-raw'
 import { cn } from '@clarity-chat/primitives'
@@ -225,10 +225,19 @@ export function MarkdownRendererEnhanced({
   }, [enableGFM, enableMath])
 
   // Build rehype plugins list
+  // react-markdown v10 supports async plugins (available since v9.1.0)
+  // We can use async loading for heavy plugins like rehypeHighlight to improve initial load
   const rehypePlugins = useMemo(() => {
     const plugins: any[] = []
     if (allowHtml) plugins.push(rehypeRaw)
-    if (enableHighlight) plugins.push(rehypeHighlight)
+    if (enableHighlight) {
+      // Use async plugin loading for rehypeHighlight (heavy dependency)
+      // This defers loading until needed, improving initial bundle size
+      plugins.push(async () => {
+        const { default: rehypeHighlight } = await import('rehype-highlight')
+        return rehypeHighlight
+      })
+    }
     if (enableMath) plugins.push(rehypeKatex)
     return plugins
   }, [allowHtml, enableHighlight, enableMath])

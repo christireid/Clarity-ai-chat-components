@@ -44,7 +44,11 @@ export interface CoTAnalysis {
   /** Detected CoT trigger phrase */
   detectedTrigger?: string
   /** Recommendation for optimization */
-  recommendation: 'keep-few-shot' | 'convert-to-zero-shot' | 'add-cot-trigger' | 'already-optimized'
+  recommendation:
+    | 'keep-few-shot'
+    | 'convert-to-zero-shot'
+    | 'add-cot-trigger'
+    | 'already-optimized'
   /** Estimated token savings from optimization */
   potentialSavings: number
 }
@@ -73,9 +77,10 @@ export const COT_TRIGGERS = {
   /** Standard Zero-Shot CoT trigger (most effective) */
   standard: "Let's think step by step.",
   /** More detailed trigger */
-  detailed: "Let's approach this step by step, considering each aspect carefully.",
+  detailed:
+    "Let's approach this step by step, considering each aspect carefully.",
   /** Concise trigger */
-  concise: "Think step by step:",
+  concise: 'Think step by step:',
   /** Analysis-focused trigger */
   analysis: "Let's analyze this systematically.",
   /** Problem-solving trigger */
@@ -165,7 +170,7 @@ export function analyzeCoTPrompt(prompt: string): CoTAnalysis {
   const hasFewShotExemplars = exemplarCount > 0
 
   // Determine recommendation
-  let recommendation: CoTAnalysis['recommendation']
+  let recommendation: CoTAnalysis['recommendation'] = 'already-optimized'
   let potentialSavings = 0
 
   if (!hasFewShotExemplars && hasCoTTrigger) {
@@ -251,7 +256,7 @@ export function optimizeCoTPrompt(
     // This is a simplified implementation - real version would be smarter
     const lines = optimized.split('\n')
     let exemplarsSeen = 0
-    const filteredLines = lines.filter(line => {
+    const filteredLines = lines.filter((line) => {
       for (const pattern of EXEMPLAR_PATTERNS) {
         if (pattern.test(line)) {
           exemplarsSeen++
@@ -341,10 +346,17 @@ export function recommendCoTApproach(params: {
     'gemini-1.5-pro',
     'gemini-2',
   ]
-  const isStrongModel = strongModels.some(m => model.toLowerCase().includes(m.toLowerCase()))
+  const isStrongModel = strongModels.some((m) =>
+    model.toLowerCase().includes(m.toLowerCase())
+  )
 
   // Tasks that benefit from CoT
-  const cotBenefitTasks: typeof taskType[] = ['math', 'logic', 'coding', 'analysis']
+  const cotBenefitTasks: (typeof taskType)[] = [
+    'math',
+    'logic',
+    'coding',
+    'analysis',
+  ]
   const benefitsFromCoT = cotBenefitTasks.includes(taskType)
 
   // Decision logic
@@ -369,7 +381,8 @@ export function recommendCoTApproach(params: {
     return {
       approach: 'zero-shot',
       trigger: COT_TRIGGERS.standard,
-      reason: 'Consider removing examples and using Zero-Shot for similar quality with fewer tokens',
+      reason:
+        'Consider removing examples and using Zero-Shot for similar quality with fewer tokens',
       tokenEfficiency: 'medium',
     }
   }

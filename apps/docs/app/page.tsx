@@ -7,6 +7,7 @@ import { LiveChatDemo } from '@/components/Layout/LiveChatDemo'
 import { CodeExample } from '@/components/Demo/CodeExample'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
 import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 // Lazy load the animated background to reduce initial bundle size
 // This component is decorative and can load after initial render
@@ -220,9 +221,10 @@ function App() {
 
       {/* Links Section */}
       <section className="container-docs py-24 border-t border-border">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div>
-            <h3 className="text-2xl font-bold mb-4">Learn</h3>
+        <ScrollReveal stagger staggerDelay={0.15} className="grid md:grid-cols-3 gap-8">
+          <ScrollRevealItem>
+            <div>
+              <h3 className="text-2xl font-bold mb-4">Learn</h3>
             <ul className="space-y-3">
               <li>
                 <Link
@@ -296,46 +298,89 @@ function App() {
                 </Link>
               </li>
             </ul>
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold mb-4">Community</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="https://github.com/christireid/Clarity-ai-chat-components"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>GitHub</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/cookbook"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>Cookbook</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/examples"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>Examples</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
+            </div>
+          </ScrollRevealItem>
+          <ScrollRevealItem>
+            <div>
+              <h3 className="text-2xl font-bold mb-4">Reference</h3>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="/reference/components"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>Components</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/reference/hooks"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>Hooks</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/reference/api"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>API Reference</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </ScrollRevealItem>
+          <ScrollRevealItem>
+            <div>
+              <h3 className="text-2xl font-bold mb-4">Community</h3>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="https://github.com/christireid/Clarity-ai-chat-components"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>GitHub</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/cookbook"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>Cookbook</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/examples"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>Examples</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </ScrollRevealItem>
+        </ScrollReveal>
       </section>
     </div>
   )

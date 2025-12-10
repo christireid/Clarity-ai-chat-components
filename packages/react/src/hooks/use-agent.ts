@@ -1,15 +1,15 @@
 /**
  * useAgent - Top-level hook for AI agents
- * 
+ *
  * Drop-in ready hook for agent orchestration with tool calling.
- * 
+ *
  * @example
  * ```tsx
  * const agent = useAgent({
  *   model: 'gpt-4',
  *   tools: [webSearchTool, calculatorTool],
  * })
- * 
+ *
  * const response = await agent.run({ query: 'What is 2+2?' })
  * ```
  */
@@ -55,20 +55,20 @@ export interface UseAgentReturn {
 
 /**
  * useAgent - Top-level agent hook
- * 
+ *
  * Provides a simple API for agent orchestration with automatic
  * tool management and error handling.
- * 
+ *
  * @param options - Configuration options for the agent
  * @param options.model - Model identifier (e.g., 'gpt-4', 'claude-3')
  * @param options.tools - Array of tools the agent can use
  * @param options.api - API endpoint for agent execution (optional)
  * @param options.config - Additional configuration options (optional)
- * 
+ *
  * @returns Agent instance with run method, loading state, error state, and execution state
- * 
+ *
  * @throws {Error} If agent initialization fails or execution fails
- * 
+ *
  * @example
  * ```tsx
  * const agent = useAgent({
@@ -76,7 +76,7 @@ export interface UseAgentReturn {
  *   tools: [webSearchTool, calculatorTool],
  *   api: '/api/agent',
  * })
- * 
+ *
  * const response = await agent.run({ query: 'What is 2+2?' })
  * console.log(response) // "4"
  * ```
@@ -115,12 +115,11 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
       description: 'AI Agent',
       model,
       tools,
-      api,
       maxIterations: config?.['maxIterations'] || 10,
       ...config,
     }
     agentRef.current = new ReactAgent(agentConfig)
-  }, [model, tools, api, config])
+  }, [model, tools, config])
 
   const run = React.useCallback(
     async (input: { query: string; context?: any }) => {
@@ -134,7 +133,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
 
       try {
         const execution = await agentRef.current.execute(input.query)
-        
+
         // Update state from execution
         setState({
           currentStep: execution.steps.length,
@@ -146,7 +145,8 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
 
         return execution.answer || 'No answer generated'
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Agent execution failed')
+        const error =
+          err instanceof Error ? err : new Error('Agent execution failed')
         setError(error)
         // Log error for debugging
         if (process.env['NODE_ENV'] === 'development') {

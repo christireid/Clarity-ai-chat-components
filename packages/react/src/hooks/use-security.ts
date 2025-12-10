@@ -27,7 +27,10 @@ import {
   type SecurityMetrics,
   type SecurityEvent,
 } from '../security/security-manager'
-import type { Message, OutputValidationResult } from '../safety/jailbreak-prevention'
+import type {
+  SafetyMessage,
+  OutputValidationResult,
+} from '../safety/jailbreak-prevention'
 
 /**
  * useSecurity Hook
@@ -38,21 +41,27 @@ export function useSecurity(config?: SecurityConfig) {
   const [securityManager] = useState(() => new SecurityManager(config))
 
   const validateInput = useCallback(
-    async (input: string, context?: SecurityContext): Promise<SecurityResult> => {
+    async (
+      input: string,
+      context?: SecurityContext
+    ): Promise<SecurityResult> => {
       return await securityManager.validateInput(input, context)
     },
     [securityManager]
   )
 
   const prepareMessages = useCallback(
-    (messages: Message[]): Message[] => {
+    (messages: SafetyMessage[]): SafetyMessage[] => {
       return securityManager.prepareMessages(messages)
     },
     [securityManager]
   )
 
   const validateOutput = useCallback(
-    async (output: string, context?: SecurityContext): Promise<OutputValidationResult> => {
+    async (
+      output: string,
+      context?: SecurityContext
+    ): Promise<OutputValidationResult> => {
       return await securityManager.validateOutput(output, context)
     },
     [securityManager]
@@ -145,7 +154,8 @@ export function useSecureInput(config?: SecurityConfig) {
         setLastResult(result)
         return result
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Validation failed'
+        const errorMessage =
+          err instanceof Error ? err.message : 'Validation failed'
         setError(errorMessage)
         throw err
       } finally {
@@ -175,8 +185,10 @@ export function useSecureChat(options?: {
   onSecurityBlock?: (reason: string, details?: any) => void
   onSecurityWarning?: (warning: string, details?: any) => void
 }) {
-  const { validateInput, prepareMessages, validateOutput } = useSecurity(options?.config)
-  const [messages, setMessages] = useState<Message[]>([])
+  const { validateInput, prepareMessages, validateOutput } = useSecurity(
+    options?.config
+  )
+  const [messages, setMessages] = useState<SafetyMessage[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -188,7 +200,7 @@ export function useSecureChat(options?: {
   const sendMessage = useCallback(
     async (
       userMessage: string,
-      onLLMResponse?: (messages: Message[]) => Promise<string>
+      onLLMResponse?: (messages: SafetyMessage[]) => Promise<string>
     ): Promise<void> => {
       setIsProcessing(true)
       setError(null)
@@ -199,7 +211,10 @@ export function useSecureChat(options?: {
 
         if (!validation.allowed) {
           setError(validation.reason || 'Message blocked by security policy')
-          options?.onSecurityBlock?.(validation.reason || 'blocked', validation.details)
+          options?.onSecurityBlock?.(
+            validation.reason || 'blocked',
+            validation.details
+          )
           return
         }
 
@@ -208,7 +223,7 @@ export function useSecureChat(options?: {
         }
 
         // Step 2: Add user message (use sanitized version)
-        const userMsg: Message = {
+        const userMsg: SafetyMessage = {
           role: 'user',
           content: validation.sanitizedInput || userMessage,
         }
@@ -227,13 +242,16 @@ export function useSecureChat(options?: {
 
           if (!outputValidation.safe) {
             setError('Response blocked by security policy')
-            options?.onSecurityBlock?.('output_validation_failed', outputValidation.risks)
+            options?.onSecurityBlock?.(
+              'output_validation_failed',
+              outputValidation.risks
+            )
             return
           }
 
           // Step 6: Add assistant message
           // Use nullish coalescing to preserve empty string as valid output
-          const assistantMsg: Message = {
+          const assistantMsg: SafetyMessage = {
             role: 'assistant',
             content: outputValidation.output ?? response,
           }
@@ -244,7 +262,8 @@ export function useSecureChat(options?: {
           setMessages(newMessages)
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to process message'
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to process message'
         setError(errorMessage)
         throw err
       } finally {

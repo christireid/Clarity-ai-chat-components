@@ -1,20 +1,23 @@
 /**
  * Core Exports - Essential APIs Only
- * 
+ *
  * This file exports only the most essential APIs for a simpler import experience.
  * Use this if you want to import just the basics without the full library.
- * 
+ *
  * @example
  * ```tsx
  * import { ClarityChat } from '@clarity-chat/react/core'
  * ```
- * 
+ *
  * @fileoverview Core essential APIs
  */
 
 // Main high-level component
 export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
-export { ClarityChatSimple, type ClarityChatSimpleProps } from './components/clarity-chat-simple'
+export {
+  ClarityChatSimple,
+  type ClarityChatSimpleProps,
+} from './components/clarity-chat-simple'
 
 // Main hook
 export {
@@ -39,6 +42,10 @@ export {
 
 // Error handling
 export { ErrorBoundary } from './components/error-boundary'
+export {
+  ChatWithErrorBoundary,
+  type ChatWithErrorBoundaryProps,
+} from './components/chat-with-error-boundary'
 
 // Composed hooks
 export {

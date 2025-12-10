@@ -1,6 +1,6 @@
 /**
  * Helper Hooks for useClarityChat
- * 
+ *
  * Common patterns and utilities built on top of useClarityChat
  */
 
@@ -14,28 +14,28 @@ import type { Message } from '@clarity-chat/types'
 
 /**
  * useClarityChatWithWindow - Pre-configured hook for ChatWindow component
- * 
+ *
  * Automatically converts messages and provides ChatWindow-compatible interface.
  * This is now mainly for backward compatibility - consider using ClarityChat component instead.
- * 
+ *
  * @deprecated Consider using the ClarityChat component for a simpler API
  * @example
  * ```tsx
  * // Old way (still works)
  * const { messages, handleSendMessage, isLoading } = useClarityChatWithWindow({ api: '/api/chat' })
- * 
+ *
  * // New way (recommended)
  * <ClarityChat api="/api/chat" />
  * ```
  */
-export function useClarityChatWithWindow(
-  options: UseClarityChatOptions = {}
-) {
+export function useClarityChatWithWindow(options: UseClarityChatOptions = {}) {
   const chat = useClarityChat(options)
 
+  const chatId =
+    typeof options.id === 'function' ? options.id() : options.id || 'default'
   const messages = React.useMemo(
-    () => convertCoreMessagesToMessages(chat.messages, options.id || 'default'),
-    [chat.messages, options.id]
+    () => convertCoreMessagesToMessages(chat.messages, chatId),
+    [chat.messages, chatId]
   )
 
   const handleSendMessage = React.useCallback(

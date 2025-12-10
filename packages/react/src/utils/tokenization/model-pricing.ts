@@ -10,9 +10,20 @@ import type { ModelName } from './accurate-counter'
 import {
   MODEL_REGISTRY,
   type ModelId,
-  type ModelConfig,
+  type TokenModelConfig,
   type ModelProvider,
 } from './model-registry'
+
+/**
+ * Supported providers for pricing (subset of ModelProvider)
+ * Note: 'meta' and 'mistral' are mapped to 'other' for pricing purposes
+ */
+export type PricingProvider =
+  | 'openai'
+  | 'anthropic'
+  | 'google'
+  | 'deepseek'
+  | 'other'
 
 export interface ModelPricing {
   /** Cost per 1M input tokens */
@@ -25,21 +36,26 @@ export interface ModelPricing {
   contextWindow: number
   /** Maximum output tokens */
   maxOutputTokens: number
-  /** Provider */
-  provider: ModelProvider | 'other'
+  /** Provider (meta and mistral are mapped to 'other') */
+  provider: PricingProvider
 }
 
 /**
- * Convert MODEL_REGISTRY ModelConfig to ModelPricing format
+ * Convert MODEL_REGISTRY TokenModelConfig to ModelPricing format
  */
-function toModelPricing(config: ModelConfig): ModelPricing {
+function toModelPricing(config: TokenModelConfig): ModelPricing {
+  // Map providers not supported in ModelPricing to 'other'
+  const normalizedProvider: PricingProvider =
+    config.provider === 'meta' || config.provider === 'mistral'
+      ? 'other'
+      : config.provider
   return {
     inputCostPer1M: config.inputCostPer1M,
     outputCostPer1M: config.outputCostPer1M,
     cachedInputCostPer1M: config.cachedInputCostPer1M,
     contextWindow: config.contextWindow,
     maxOutputTokens: config.maxOutputTokens,
-    provider: config.provider === 'meta' ? 'other' : config.provider,
+    provider: normalizedProvider,
   }
 }
 
@@ -255,7 +271,7 @@ export function recommendModel(params: {
   outputTokens: number
   maxCostPerRequest?: number
   minContextWindow?: number
-  providers?: Array<'openai' | 'anthropic' | 'google' | 'deepseek' | 'other'>
+  providers?: PricingProvider[]
 }): {
   recommended: string
   alternatives: string[]
@@ -274,7 +290,11 @@ export function recommendModel(params: {
     ([_, pricing]) => {
       if (minContextWindow && pricing.contextWindow < minContextWindow)
         return false
-      if (providers && !providers.includes(pricing.provider)) return false
+      if (
+        providers &&
+        !(providers as readonly string[]).includes(pricing.provider)
+      )
+        return false
       return true
     }
   )

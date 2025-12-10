@@ -1,3 +1,39 @@
+/**
+ * @clarity-chat/primitives - UI Component Primitives
+ *
+ * This package provides foundational UI components built on shadcn/ui and Radix UI.
+ * All components are accessible (WCAG 2.1 AA compliant) and fully customizable.
+ *
+ * @packageDocumentation
+ *
+ * ## Features:
+ * - **Accessibility**: Full keyboard navigation and screen reader support
+ * - **Customization**: Tailwind CSS and class-variance-authority (cva) variants
+ * - **Composability**: Headless primitives with sensible defaults
+ * - **Performance**: Optimized rendering with React 19 support
+ *
+ * ## Component Categories:
+ * - **Buttons**: Button with loading states and variants
+ * - **Dialogs**: Modal dialogs with animations
+ * - **Menus**: Dropdown and context menus
+ * - **Tooltips**: Simple and advanced tooltip options
+ * - **Forms**: Input, Textarea, Checkbox, Label
+ * - **Layout**: Card, ScrollArea, Avatar, Badge
+ *
+ * @example
+ * ```tsx
+ * import { Button, Dialog, Tooltip } from '@clarity-chat/primitives'
+ *
+ * <Button variant="primary" state="loading">
+ *   Submit
+ * </Button>
+ *
+ * <Tooltip content="Helpful tip">
+ *   <span>Hover me</span>
+ * </Tooltip>
+ * ```
+ */
+
 // ============================================================================
 // shadcn/ui Components (Default - Official, Battle-Tested with Radix UI)
 // ============================================================================
@@ -46,6 +82,7 @@ export {
   DialogTitle,
   DialogDescription,
 } from './components/ui/dialog'
+export type { DialogContentProps } from './components/ui/dialog'
 
 // Also export with Shadcn prefix for backward compatibility
 export {
@@ -113,20 +150,28 @@ export {
   PopoverContent as ShadcnPopoverContent,
 } from './components/ui/popover'
 
-// Tooltip
+// Tooltip (Enhanced wrapper with content prop)
+export { Tooltip, SimpleTooltip } from './components/tooltip'
+export type { TooltipProps } from './components/tooltip'
+
+// Raw shadcn Tooltip components (for composable usage)
 export {
-  Tooltip,
+  Tooltip as TooltipRoot,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
 } from './components/ui/tooltip'
 
-// Also export with Shadcn prefix for backward compatibility
+// Also export raw shadcn/Radix Tooltip components for advanced use
 export {
   Tooltip as ShadcnTooltip,
   TooltipTrigger as ShadcnTooltipTrigger,
   TooltipContent as ShadcnTooltipContent,
   TooltipProvider as ShadcnTooltipProvider,
+  Tooltip as RadixTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
 } from './components/ui/tooltip'
 
 // Checkbox

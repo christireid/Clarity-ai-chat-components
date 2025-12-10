@@ -34,6 +34,7 @@ import {
   springs,
   durations,
 } from '@/lib/animations'
+import { toast } from '@/lib/toast'
 
 interface SearchDialogProps {
   open: boolean
@@ -175,6 +176,10 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   const handleSelect = useCallback(
     (item: SearchItem & { _score: number }) => {
       trackSearchClick(query, item.href, item.title)
+      toast.success('Navigating...', {
+        description: item.title,
+        duration: 2000,
+      })
       router.push(item.href)
       onClose()
       setQuery('')

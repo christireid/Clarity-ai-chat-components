@@ -1,12 +1,29 @@
 /**
  * Model Adapters
- * 
+ *
  * Export all model adapters and utilities
  */
 
-export * from './types'
+// Types - explicit exports for better tree-shaking
+export type {
+  ModelConfig,
+  ChatMessage,
+  ContentPart,
+  ToolCall,
+  Citation,
+  StreamChunk,
+  TokenUsage,
+  ModelAdapter,
+  ModelInfo,
+} from './types'
+
+// OpenAI adapter
 export { openAIAdapter, openAIModels } from './openai'
+
+// Anthropic adapter
 export { anthropicAdapter, anthropicModels } from './anthropic'
+
+// Google adapter
 export { googleAdapter, googleModels } from './google'
 
 // Export combined model list
@@ -14,11 +31,7 @@ import { openAIModels } from './openai'
 import { anthropicModels } from './anthropic'
 import { googleModels } from './google'
 
-export const allModels = [
-  ...openAIModels,
-  ...anthropicModels,
-  ...googleModels
-]
+export const allModels = [...openAIModels, ...anthropicModels, ...googleModels]
 
 // Helper to get adapter by provider name
 import type { ModelAdapter } from './types'

@@ -1,11 +1,11 @@
 /**
  * Clarity Chat - Main Entry Point
- * 
+ *
  * Organized by domain with clear layering:
  * - Top-level: Drop-in ready APIs
- * - Mid-level: Composable building blocks  
+ * - Mid-level: Composable building blocks
  * - Low-level: Primitives and utilities
- * 
+ *
  * All exports maintain backward compatibility.
  */
 
@@ -138,8 +138,13 @@ export * from './hooks/use-smart-cache'
 export * from './hooks/use-model-router'
 export * from './hooks/use-smart-throttle'
 
-// Utilities
-export * from './utils'
+// Utilities (selective exports to avoid conflicts with domain exports)
+// Note: Most utilities are available via domain exports
+export { cn } from './utils/cn'
+export { compressPrompt } from './utils/prompt-compression'
+export * from './utils/mobile'
+export * from './utils/rate-limiting'
+export * from './utils/hybrid-search'
 
 // Types
 export * from './types/chat-types'
@@ -242,5 +247,30 @@ export * from './animations'
 // Accessibility System
 export * from './accessibility'
 
-// AI Provider
-export * from './ai'
+// AI Provider (selective exports to avoid conflicts with Suggestion from developer-experience)
+export {
+  AIProvider,
+  useAI,
+  useSuggestions,
+  useModeration,
+  useSentimentAnalysis,
+  useAutoComplete,
+  createQuickReplyProvider,
+  createCommandProvider,
+  createCompletionProvider,
+  createContextAwareProvider,
+  createProfanityFilter,
+  createPIIDetector,
+  createSimpleSentimentAnalyzer,
+  combineModerationProviders,
+  type AIConfig,
+  type SuggestionType,
+  type SuggestionContext,
+  type SuggestionProvider,
+  type ModerationResult,
+  type ModerationContext,
+  type ModerationProvider,
+  type SentimentResult,
+  type SentimentAnalyzer,
+  // Note: Suggestion type is intentionally omitted to avoid conflict with templates
+} from './ai'

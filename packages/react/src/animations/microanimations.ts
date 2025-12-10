@@ -1,12 +1,12 @@
 /**
  * Microanimations Library
- * 
+ *
  * Delightful microanimations for enhanced user experience.
  * These are small, subtle animations that provide feedback and delight.
  */
 
 import { type Variants } from 'framer-motion'
-import { ANIMATION_DURATION, ANIMATION_EASING } from './constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from './constants'
 
 /**
  * Feedback Animations
@@ -18,7 +18,7 @@ export const FeedbackAnimations = {
     x: [-10, 10, -10, 10, -5, 5, 0],
     transition: {
       duration: 0.5,
-      ease: ANIMATION_EASING.sharp,
+      ease: EASING_FRAMER.sharp,
     },
   },
 
@@ -27,7 +27,7 @@ export const FeedbackAnimations = {
     y: [0, -10, 0, -5, 0],
     transition: {
       duration: 0.6,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -37,7 +37,7 @@ export const FeedbackAnimations = {
     transition: {
       duration: 1,
       repeat: Infinity,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 
@@ -47,7 +47,7 @@ export const FeedbackAnimations = {
     transition: {
       duration: 1.5,
       repeat: Infinity,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 
@@ -56,7 +56,7 @@ export const FeedbackAnimations = {
     rotate: [-3, 3, -3, 3, -2, 2, 0],
     transition: {
       duration: 0.5,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 
@@ -66,7 +66,7 @@ export const FeedbackAnimations = {
     rotate: [-3, 3, -3, 3, -2, 2, 0],
     transition: {
       duration: 0.8,
-      ease: ANIMATION_EASING.spring,
+      ease: EASING_FRAMER.spring,
     },
   },
 
@@ -85,7 +85,7 @@ export const FeedbackAnimations = {
     scaleY: [1, 0.75, 1.25, 0.85, 1.05, 0.95, 1],
     transition: {
       duration: 0.8,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 } as const
@@ -101,7 +101,7 @@ export const StateAnimations = {
     opacity: [0, 1, 1],
     transition: {
       duration: 0.5,
-      ease: ANIMATION_EASING.spring,
+      ease: EASING_FRAMER.spring,
     },
   },
 
@@ -110,7 +110,7 @@ export const StateAnimations = {
     x: [-8, 8, -8, 8, -4, 4, 0],
     transition: {
       duration: 0.4,
-      ease: ANIMATION_EASING.sharp,
+      ease: EASING_FRAMER.sharp,
     },
   },
 
@@ -123,7 +123,7 @@ export const StateAnimations = {
     ],
     transition: {
       duration: 0.6,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -136,7 +136,7 @@ export const StateAnimations = {
     ],
     transition: {
       duration: 0.6,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -151,7 +151,7 @@ export const StateAnimations = {
     transition: {
       duration: 1,
       repeat: 3,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 } as const
@@ -177,7 +177,7 @@ export const LoadingAnimations = {
     transition: {
       duration: 1.5,
       repeat: Infinity,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 
@@ -197,7 +197,7 @@ export const LoadingAnimations = {
     transition: {
       duration: 1.5,
       repeat: Infinity,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
       delay: index * 0.15,
     },
   }),
@@ -209,7 +209,7 @@ export const LoadingAnimations = {
     transition: {
       duration: 1.2,
       repeat: Infinity,
-      ease: ANIMATION_EASING.spring,
+      ease: EASING_FRAMER.spring,
       delay: index * 0.15,
     },
   }),
@@ -219,7 +219,7 @@ export const LoadingAnimations = {
     scaleX: [0, 1],
     transition: {
       duration: 1,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -283,7 +283,7 @@ export const InteractionAnimations = {
     ],
     transition: {
       duration: 0.6,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 } as const
@@ -307,7 +307,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, y: -20 },
     transition: {
       duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -318,7 +318,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, y: 20 },
     transition: {
       duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -329,7 +329,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, x: -20 },
     transition: {
       duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -340,7 +340,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, x: 20 },
     transition: {
       duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -351,7 +351,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, scale: 0.95 },
     transition: {
       duration: ANIMATION_DURATION.fast / 1000,
-      ease: ANIMATION_EASING.spring,
+      ease: EASING_FRAMER.spring,
     },
   },
 
@@ -362,7 +362,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, scale: 1.05 },
     transition: {
       duration: ANIMATION_DURATION.fast / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -373,7 +373,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, scale: 0.8 },
     transition: {
       duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.spring,
+      ease: EASING_FRAMER.spring,
     },
   },
 
@@ -384,7 +384,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, rotateX: 90 },
     transition: {
       duration: ANIMATION_DURATION.slow / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -395,7 +395,7 @@ export const TransitionAnimations = {
     exit: { opacity: 0, rotate: 180 },
     transition: {
       duration: ANIMATION_DURATION.slow / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 } as const
@@ -436,7 +436,7 @@ export const ListAnimations = {
     transition: {
       delay: index * 0.05,
       duration: ANIMATION_DURATION.fast / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   }),
 
@@ -447,7 +447,7 @@ export const ListAnimations = {
     transition: {
       delay: index * 0.05,
       duration: ANIMATION_DURATION.fast / 1000,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   }),
 } as const
@@ -462,7 +462,7 @@ export const AttentionAnimations = {
     y: [0, -20, 0, -10, 0, -5, 0],
     transition: {
       duration: 1,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   },
 
@@ -471,7 +471,7 @@ export const AttentionAnimations = {
     rotate: [0, 15, -15, 10, -10, 5, -5, 0],
     transition: {
       duration: 1,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 
@@ -481,7 +481,7 @@ export const AttentionAnimations = {
     skewY: [0, -12.5, 6.25, -3.125, 1.5625, -0.78125, 0],
     transition: {
       duration: 1,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 
@@ -491,7 +491,7 @@ export const AttentionAnimations = {
     rotate: [0, -5, 5, -3, 3, -2, 2, 0],
     transition: {
       duration: 1,
-      ease: ANIMATION_EASING.inOut,
+      ease: EASING_FRAMER.inOut,
     },
   },
 } as const
@@ -507,7 +507,7 @@ export const TypographyAnimations = {
     transition: {
       delay: index * 0.03,
       duration: 0.3,
-      ease: ANIMATION_EASING.out,
+      ease: EASING_FRAMER.out,
     },
   }),
 
@@ -553,7 +553,7 @@ export const createRipple = (x: number, y: number, size: number) => ({
   },
   transition: {
     duration: 0.6,
-    ease: ANIMATION_EASING.out,
+    ease: EASING_FRAMER.out,
   },
 })
 

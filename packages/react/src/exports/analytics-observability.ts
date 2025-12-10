@@ -1,6 +1,6 @@
 /**
  * Analytics & Observability Domain Exports
- * 
+ *
  * Top-level: Simple analytics access
  * Mid-level: Specific tracking
  * Low-level: Core services
@@ -10,11 +10,9 @@
 // TOP-LEVEL: Simple Analytics Access
 // ============================================================================
 
-export {
-  AnalyticsProvider,
-  useAnalytics,
-  type AnalyticsConfig,
-} from '../analytics/AnalyticsProvider'
+export { AnalyticsProvider, useAnalytics } from '../analytics/AnalyticsProvider'
+
+export type { AnalyticsConfig } from '../analytics/types'
 
 // ============================================================================
 // MID-LEVEL: Specific Tracking
@@ -27,7 +25,7 @@ export * from '../analytics/providers'
 export * from '../analytics/hooks'
 
 // Performance monitoring
-export { usePerformance } from '../hooks/use-performance'
+export { useRenderPerformance as usePerformance } from '../hooks/use-performance'
 
 // Error tracking
 export * from '../error'

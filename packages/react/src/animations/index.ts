@@ -7,6 +7,7 @@
  * Key exports:
  * - Duration tokens: ANIMATION_DURATION, DURATION_CSS, DURATION_SECONDS, TAILWIND_DURATION
  * - Easing tokens: ANIMATION_EASING, EASING_FRAMER, TAILWIND_EASING
+ * - Unified easing: getEasing, getFramerEasing, getCSSEasing (use these to avoid format confusion)
  * - Presets: ANIMATION_PRESETS, ANIMATION_PRESETS_REDUCED
  * - Interactions: INTERACTION_VARIANTS, INTERACTION_VARIANTS_REDUCED
  * - Helpers: getPreset, getInteractionVariant, getTransition, getTailwindTransition

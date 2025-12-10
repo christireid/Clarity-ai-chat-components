@@ -24,29 +24,51 @@ async function loadPrism(): Promise<typeof import('prismjs') | null> {
       // Set Prism as a global for language component compatibility
       // Language components like prism-tsx expect window.Prism to exist
       if (typeof window !== 'undefined') {
-        (window as unknown as { Prism: typeof import('prismjs') }).Prism = Prism
+        ;(window as unknown as { Prism: typeof import('prismjs') }).Prism =
+          Prism
       }
 
       // Load language support sequentially to ensure dependencies are met
       // typescript and javascript must load before jsx/tsx
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error prismjs language components may not have type declarations
       await import('prismjs/components/prism-javascript')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error prismjs language components may not have type declarations
       await import('prismjs/components/prism-typescript')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error prismjs language components may not have type declarations
       await import('prismjs/components/prism-jsx')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error prismjs language components may not have type declarations
       await import('prismjs/components/prism-tsx')
 
       // Load other languages in parallel
       await Promise.all([
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-json'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-bash'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-css'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-markdown'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-python'),
       ])
 
       prismLoaded = true
       return Prism
     } catch (error) {
-      console.warn('Prism.js not available, syntax highlighting disabled:', error)
+      console.warn(
+        'Prism.js not available, syntax highlighting disabled:',
+        error
+      )
       prismLoadPromise = null
       return null
     }
@@ -96,7 +118,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
 
     // Extract language from className (format: language-xxx)
     const match = /language-(\w+)/.exec(className || '')
-    const language = match ? match[1] : 'typescript'
+    const language: string = match?.[1] ?? 'typescript'
 
     // Extract text content from React children
     const codeString = getTextContent(children).replace(/\n$/, '')
@@ -104,30 +126,44 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
     // Highlight code with Prism (lazy loaded)
     useEffect(() => {
       if (!inline && codeString) {
-        loadPrism().then((prism) => {
-          if (prism && prism.languages) {
-            try {
-              const grammar = prism.languages[language] || prism.languages.typescript
-              const highlighted = prism.highlight(codeString, grammar, language)
-              setHighlightedCode(highlighted)
-            } catch (error) {
-              console.error('Prism highlighting error:', error)
+        loadPrism()
+          .then((prism) => {
+            if (prism && prism.languages) {
+              try {
+                const grammar =
+                  prism.languages[language] || prism.languages['typescript']
+                if (!grammar) {
+                  setHighlightedCode(codeString)
+                  return
+                }
+                const highlighted = prism.highlight(
+                  codeString,
+                  grammar,
+                  language
+                )
+                setHighlightedCode(highlighted)
+              } catch (error) {
+                console.error('Prism highlighting error:', error)
+                setHighlightedCode(codeString)
+              }
+            } else {
+              // Fallback to plain code if Prism is not available
               setHighlightedCode(codeString)
             }
-          } else {
-            // Fallback to plain code if Prism is not available
+          })
+          .catch((error) => {
+            console.warn('Failed to load Prism:', error)
             setHighlightedCode(codeString)
-          }
-        }).catch((error) => {
-          console.warn('Failed to load Prism:', error)
-          setHighlightedCode(codeString)
-        })
+          })
       }
     }, [codeString, language, inline])
 
     if (inline) {
       return (
-        <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono" {...rest}>
+        <code
+          className="bg-muted px-1 py-0.5 rounded text-sm font-mono"
+          {...rest}
+        >
           {children}
         </code>
       )

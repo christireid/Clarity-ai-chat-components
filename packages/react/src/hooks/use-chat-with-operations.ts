@@ -1,9 +1,9 @@
 /**
  * useChatWithOperations - Composed hook combining chat + message operations
- * 
+ *
  * This hook combines useClarityChat with useMessageOperations to provide
  * a complete chat experience with edit/regenerate/delete functionality.
- * 
+ *
  * @example
  * ```tsx
  * const {
@@ -26,7 +26,10 @@
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
 import { useMessageOperations } from './use-message-operations'
-import { convertCoreMessagesToMessages, convertMessagesToCoreMessages } from '../utils/message-conversion'
+import {
+  convertCoreMessagesToMessages,
+  convertMessagesToCoreMessages,
+} from '../utils/message-conversion'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -43,10 +46,13 @@ export interface UseChatWithOperationsOptions extends UseClarityChatOptions {
 export interface UseChatWithOperationsReturn {
   // From useClarityChat
   messages: Message[]
-  append: (message: { role: 'user' | 'assistant' | 'system'; content: string }) => Promise<void>
+  append: (message: {
+    role: 'user' | 'assistant' | 'system'
+    content: string
+  }) => Promise<void>
   isLoading: boolean
   error: Error | null
-  
+
   // From useMessageOperations
   editMessage: (messageId: string, newContent: string) => void
   regenerateMessage: (messageId: string) => void
@@ -55,14 +61,14 @@ export interface UseChatWithOperationsReturn {
   redo: () => void
   canUndo: boolean
   canRedo: boolean
-  
+
   // Additional helpers
   clearMessages: () => void
 }
 
 /**
  * useChatWithOperations - Composed hook for chat with message operations
- * 
+ *
  * Combines useClarityChat and useMessageOperations into a single hook
  * that provides both chat functionality and message editing capabilities.
  */
@@ -79,10 +85,20 @@ export function useChatWithOperations(
     return convertCoreMessagesToMessages(chat.messages)
   }, [chat.messages])
 
-  // Use message operations hook
+  // Convert Messages to MessageWithOperations format
+  const messagesWithTimestamp = React.useMemo(() => {
+    return messages.map((msg) => ({
+      id: msg.id,
+      chatId: msg.chatId,
+      role: msg.role,
+      content: msg.content,
+      timestamp: msg.createdAt?.getTime() ?? Date.now(),
+    }))
+  }, [messages])
+
+  // Use message operations hook (only pass initial messages if operations are enabled)
   const operations = useMessageOperations({
-    initialMessages: messages,
-    enabled: enableOperations,
+    initialMessages: enableOperations ? messagesWithTimestamp : [],
   })
 
   // Sync operations with chat messages
@@ -91,7 +107,10 @@ export function useChatWithOperations(
       // Update operations when chat messages change
       // This is a simplified sync - in production you might want more sophisticated syncing
       const lastMessage = messages[messages.length - 1]
-      if (lastMessage && !operations.messages.find(m => m.id === lastMessage.id)) {
+      if (
+        lastMessage &&
+        !operations.messages.find((m) => m.id === lastMessage.id)
+      ) {
         operations.addMessage({
           chatId: lastMessage.chatId,
           role: lastMessage.role,
@@ -104,7 +123,7 @@ export function useChatWithOperations(
   // Clear all messages
   const clearMessages = React.useCallback(() => {
     if (enableOperations) {
-      operations.messages.forEach(msg => {
+      operations.messages.forEach((msg) => {
         operations.deleteMessage(msg.id)
       })
     }
@@ -112,15 +131,17 @@ export function useChatWithOperations(
 
   return {
     // From chat
-    messages: enableOperations ? operations.messages.map(msg => ({
-      id: msg.id,
-      chatId: msg.chatId,
-      role: msg.role,
-      content: msg.content,
-      status: 'sent' as const,
-      createdAt: new Date(msg.timestamp),
-      updatedAt: new Date(msg.timestamp),
-    })) : messages,
+    messages: enableOperations
+      ? operations.messages.map((msg) => ({
+          id: msg.id,
+          chatId: msg.chatId ?? 'default',
+          role: msg.role,
+          content: msg.content,
+          status: 'sent' as const,
+          createdAt: new Date(msg.timestamp),
+          updatedAt: new Date(msg.timestamp),
+        }))
+      : messages,
     append: async (message) => {
       await chat.append({
         role: message.role,
@@ -128,17 +149,19 @@ export function useChatWithOperations(
       })
     },
     isLoading: chat.isLoading,
-    error: chat.error,
-    
+    error: chat.error ?? null,
+
     // From operations
     editMessage: enableOperations ? operations.editMessage : () => {},
-    regenerateMessage: enableOperations ? operations.regenerateMessage : () => {},
+    regenerateMessage: enableOperations
+      ? operations.regenerateMessage
+      : () => {},
     deleteMessage: enableOperations ? operations.deleteMessage : () => {},
     undo: enableOperations ? operations.undo : () => {},
     redo: enableOperations ? operations.redo : () => {},
     canUndo: enableOperations ? operations.canUndo : false,
     canRedo: enableOperations ? operations.canRedo : false,
-    
+
     // Additional
     clearMessages,
   }

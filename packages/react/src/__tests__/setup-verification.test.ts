@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
 /**
  * Smoke tests to verify test setup is working correctly
@@ -18,11 +18,11 @@ describe('Test Setup Verification', () => {
   it('should have jest-dom matchers available', () => {
     const element = document.createElement('div')
     document.body.appendChild(element)
-    
+
     // jest-dom matchers from @testing-library/jest-dom
     expect(element).toBeInTheDocument()
     expect(element).toBeVisible()
-    
+
     document.body.removeChild(element)
   })
 
@@ -67,7 +67,7 @@ describe('Test Setup Verification', () => {
   it('should handle timers', () => {
     const callback = vi.fn()
     setTimeout(callback, 100)
-    
+
     vi.runAllTimers()
     expect(callback).toHaveBeenCalled()
   })
