@@ -1,11 +1,15 @@
+'use client'
+
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { MessageSquare, Palette, Users, FileText, Zap, Command } from 'lucide-react'
+import { ScrollReveal } from '@/components/UI/ScrollReveal'
 
-export const metadata: Metadata = {
-  title: 'Examples',
-  description: 'Interactive examples and code samples',
-}
+// Metadata must be exported from a server component, not a client component
+// export const metadata: Metadata = {
+//   title: 'Examples',
+//   description: 'Interactive examples and code samples',
+// }
 
 const examples = [
   {
@@ -164,31 +168,35 @@ export default function ExamplesPage() {
   return (
     <div className="container-docs py-12">
       <div className="max-w-4xl">
-        <h1 className="text-5xl font-bold mb-6">Examples</h1>
-        <p className="text-xl text-text-secondary mb-12">
-          Explore interactive examples and learn by doing. All examples include full
-          source code and are ready to copy and customize.
-        </p>
+        <ScrollReveal>
+          <h1 className="text-5xl font-bold mb-6">Examples</h1>
+          <p className="text-xl text-text-secondary mb-12">
+            Explore interactive examples and learn by doing. All examples include full
+            source code and are ready to copy and customize.
+          </p>
+        </ScrollReveal>
 
         <div className="grid gap-12">
-          {examples.map((category) => {
+          {examples.map((category, idx) => {
             const Icon = category.icon
             return (
-              <div key={category.title}>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400 rounded-lg">
-                    <Icon className="w-6 h-6" />
+              <ScrollReveal key={category.title} delay={idx * 0.1}>
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400 rounded-lg">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h2 className="text-3xl font-bold">{category.title}</h2>
                   </div>
-                  <h2 className="text-3xl font-bold">{category.title}</h2>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  {category.examples.map((example) => (
-                    <Link
-                      key={example.href}
-                      href={example.href}
-                      className="group p-6 border border-border rounded-xl hover:border-brand-500 hover:shadow-lg transition-all"
-                    >
+                  <ScrollReveal stagger delay={idx * 0.1 + 0.1}>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {category.examples.map((example) => (
+                        <Link
+                          key={example.href}
+                          href={example.href}
+                          className="group p-6 border border-border rounded-xl hover:border-brand-500 hover:shadow-lg transition-all"
+                        >
                       <div className="flex items-start justify-between mb-3">
                         <h3 className="text-xl font-semibold text-brand-600 dark:text-brand-400 group-hover:text-brand-700 dark:group-hover:text-brand-300">
                           {example.title}
@@ -203,14 +211,17 @@ export default function ExamplesPage() {
                       </div>
                       <p className="text-text-secondary">{example.description}</p>
                     </Link>
-                  ))}
+                      ))}
+                    </div>
+                  </ScrollReveal>
                 </div>
-              </div>
+              </ScrollReveal>
             )
           })}
         </div>
 
-        <div className="mt-16 p-8 bg-gradient-to-r from-brand-50 to-purple-50 dark:from-brand-950 dark:to-purple-950 rounded-xl border border-brand-200 dark:border-brand-800">
+        <ScrollReveal delay={0.5}>
+          <div className="mt-16 p-8 bg-gradient-to-r from-brand-50 to-purple-50 dark:from-brand-950 dark:to-purple-950 rounded-xl border border-brand-200 dark:border-brand-800">
           <h2 className="text-2xl font-bold mb-4">Want More Examples?</h2>
           <p className="text-text-secondary mb-6">
             Check out our Storybook for interactive component demos and our GitHub repository
@@ -234,7 +245,8 @@ export default function ExamplesPage() {
               View on GitHub
             </a>
           </div>
-        </div>
+          </div>
+        </ScrollReveal>
       </div>
     </div>
   )

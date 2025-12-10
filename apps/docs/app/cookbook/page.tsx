@@ -1,52 +1,60 @@
+'use client'
+
 import React from 'react'
 import { Metadata } from 'next'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-export const metadata: Metadata = {
-  title: 'Cookbook - Clarity Chat Components',
-  description:
-    'Real-world recipes for common AI chat patterns and integrations.',
-}
+// Metadata must be exported from a server component
+// export const metadata: Metadata = {
+//   title: 'Cookbook - Clarity Chat Components',
+//   description:
+//     'Real-world recipes for common AI chat patterns and integrations.',
+// }
 
 export default function CookbookPage() {
   return (
     <div className="docs-content">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
-          Cookbook
-        </h1>
-        <p className="text-xl text-text-secondary leading-relaxed">
-          Real-world recipes you can copy and use. Each recipe solves a specific
-          problem with production-ready code.
-        </p>
-      </div>
+      <ScrollReveal>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+            Cookbook
+          </h1>
+          <p className="text-xl text-text-secondary leading-relaxed">
+            Real-world recipes you can copy and use. Each recipe solves a specific
+            problem with production-ready code.
+          </p>
+        </div>
 
-      <YouWillLearn
+        <YouWillLearn
         items={[
           'Copy-paste ready code examples',
           'Production-tested patterns',
           'Common integration scenarios',
           'Best practices and optimizations',
         ]}
-      />
+        />
 
-      <Callout type="tip" className="mb-8">
-        <p>
-          <strong>Pro tip:</strong> All recipes are fully typed with TypeScript and include error handling.
-          They're ready to use in production applications.
-        </p>
-      </Callout>
+        <Callout type="tip" className="mb-8">
+          <p>
+            <strong>Pro tip:</strong> All recipes are fully typed with TypeScript and include error handling.
+            They're ready to use in production applications.
+          </p>
+        </Callout>
+      </ScrollReveal>
 
       <section className="my-12">
-        <h2 className="text-3xl font-bold mb-6">Available Recipes</h2>
-        <p className="text-text-secondary mb-8">
-          These are battle-tested patterns used in real applications. Click any
-          recipe to see the complete implementation with copy-paste ready code.
-        </p>
+        <ScrollReveal>
+          <h2 className="text-3xl font-bold mb-6">Available Recipes</h2>
+          <p className="text-text-secondary mb-8">
+            These are battle-tested patterns used in real applications. Click any
+            recipe to see the complete implementation with copy-paste ready code.
+          </p>
+        </ScrollReveal>
 
-      <ScrollReveal stagger staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ScrollReveal stagger staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ScrollRevealItem>
           <a href="/cookbook/openai-streaming-chat" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full">
             <div className="flex items-start gap-3">
@@ -91,8 +99,10 @@ export default function CookbookPage() {
               </div>
             </div>
           </a>
+        </ScrollRevealItem>
 
-          <a href="/cookbook/latex-markdown" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all">
+        <ScrollRevealItem>
+          <a href="/cookbook/latex-markdown" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full">
             <div className="flex items-start gap-3">
               <span className="text-2xl">∑</span>
               <div>
@@ -111,8 +121,10 @@ export default function CookbookPage() {
               </div>
             </div>
           </a>
+        </ScrollRevealItem>
 
-          <a href="/cookbook/advanced-export" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all">
+        <ScrollRevealItem>
+          <a href="/cookbook/advanced-export" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full">
             <div className="flex items-start gap-3">
               <span className="text-2xl">📤</span>
               <div>
@@ -131,8 +143,10 @@ export default function CookbookPage() {
               </div>
             </div>
           </a>
+        </ScrollRevealItem>
 
-        <a href="/cookbook/rag-document-chat" className="docs-card group">
+        <ScrollRevealItem>
+          <a href="/cookbook/rag-document-chat" className="docs-card group block h-full">
           <div className="flex items-start gap-3">
             <span className="text-2xl">📚</span>
             <div>
