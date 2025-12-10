@@ -1,14 +1,20 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    // TODO: Re-enable after fixing ~300 index access errors across codebase
     "noUncheckedIndexedAccess": false,
-    // TODO: Re-enable after fixing 12 index signature access errors
     "noPropertyAccessFromIndexSignature": false,
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/utils/memory/examples/**", "src/**/*.example.tsx", "src/**/*.example.ts", "src/prompt/**/*"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/__tests__/**",
+    "src/utils/memory/examples/**",
+    "src/**/*.example.tsx",
+    "src/**/*.example.ts",
+    "src/prompt/**/*"
+  ]
 }

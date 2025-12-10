@@ -1,9 +1,10 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
     "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
     "types": ["@testing-library/jest-dom"]
   },
   "include": ["src/**/*"],

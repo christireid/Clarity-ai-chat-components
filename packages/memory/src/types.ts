@@ -832,13 +832,16 @@ export interface MemoryScore {
  * Memory error class
  */
 export class MemoryError extends Error {
+  public readonly cause?: Error
+
   constructor(
     message: string,
     public code: string,
-    public override cause?: Error
+    cause?: Error
   ) {
     super(message)
     this.name = 'MemoryError'
+    this.cause = cause
   }
 }
 

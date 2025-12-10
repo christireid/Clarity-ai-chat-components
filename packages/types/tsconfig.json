@@ -1,6 +1,8 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../typescript-config/node-library.json",
   "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
     "noUnusedLocals": true,

@@ -5,14 +5,21 @@
     "**/.env.*local",
     "tsconfig.json",
     "eslint.config.js",
-    ".prettierrc"
+    ".prettierrc",
+    "packages/typescript-config/**"
   ],
   "globalEnv": ["NODE_ENV", "CI"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", ".next/**", "storybook-static/**", "build/**"]
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "tsconfig.json"],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        "storybook-static/**",
+        "build/**"
+      ]
     },
     "dev": {
       "cache": false,
@@ -28,8 +35,17 @@
       "cache": true
     },
     "test": {
-      "inputs": ["$TURBO_DEFAULT$"],
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "vitest.config.*", "vitest.setup.*"],
+      "outputs": [],
+      "cache": true,
+      "env": ["CI"]
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "vitest.config.*", "vitest.setup.*"],
       "outputs": ["coverage/**"],
+      "cache": false,
       "env": ["CI"]
     },
     "clean": {

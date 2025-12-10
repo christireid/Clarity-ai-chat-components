@@ -37,9 +37,12 @@ const mockDebugger = {
   currentIndex: -1,
 }
 
-// Mock the TimeTravelDebugger class
+// Mock the TimeTravelDebugger class - must be a proper constructor function
 vi.mock('../../debug/time-travel', () => ({
-  TimeTravelDebugger: vi.fn(() => mockDebugger),
+  TimeTravelDebugger: vi.fn(function (this: typeof mockDebugger) {
+    Object.assign(this, mockDebugger)
+    return this
+  }),
 }))
 
 describe('useTimeTravel', () => {
