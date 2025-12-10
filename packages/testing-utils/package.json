@@ -21,6 +21,7 @@
     "dist",
     "vitest.shared.ts"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
