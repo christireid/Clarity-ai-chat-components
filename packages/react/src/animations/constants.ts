@@ -462,11 +462,13 @@ export const ANIMATION_PRESETS = {
     exit: { opacity: 0, scale: 0.8 },
   },
   /** Collapse/expand effect */
+  /* eslint-disable clarity-animations/no-layout-animation -- height animation is intentional for collapse effect */
   collapse: {
     initial: { opacity: 0, height: 0 },
     animate: { opacity: 1, height: 'auto' },
     exit: { opacity: 0, height: 0 },
   },
+  /* eslint-enable clarity-animations/no-layout-animation */
 } as const
 
 /**
@@ -693,20 +695,6 @@ export function getEasing(name: AnimationEasing): {
     framer: EASING_FRAMER[name],
     tailwind: TAILWIND_EASING[name],
   }
-}
-
-/**
- * Get easing specifically for framer-motion
- *
- * @example
- * ```tsx
- * <motion.div transition={{ ease: getFramerEasing('out') }} />
- * ```
- */
-export function getFramerEasing(
-  name: AnimationEasing
-): readonly number[] | 'linear' {
-  return EASING_FRAMER[name]
 }
 
 /**
