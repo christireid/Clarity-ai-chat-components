@@ -14,7 +14,7 @@ import { Slot } from '@radix-ui/react-slot'
 import { cn } from '../../lib/utils'
 
 /**
- * Button state for controlled state management
+ * Button state for visual feedback
  */
 export type ButtonState = 'idle' | 'loading' | 'success' | 'error'
 

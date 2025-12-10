@@ -82,6 +82,7 @@ export {
   DialogTitle,
   DialogDescription,
 } from './components/ui/dialog'
+export type { DialogContentProps } from './components/ui/dialog'
 
 // Also export with Shadcn prefix for backward compatibility
 export {
@@ -149,9 +150,17 @@ export {
   PopoverContent as ShadcnPopoverContent,
 } from './components/ui/popover'
 
-// Tooltip - Wrapper with simpler API (content prop)
+// Tooltip (Enhanced wrapper with content prop)
 export { Tooltip, SimpleTooltip } from './components/tooltip'
 export type { TooltipProps } from './components/tooltip'
+
+// Raw shadcn Tooltip components (for composable usage)
+export {
+  Tooltip as TooltipRoot,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from './components/ui/tooltip'
 
 // Also export raw shadcn/Radix Tooltip components for advanced use
 export {

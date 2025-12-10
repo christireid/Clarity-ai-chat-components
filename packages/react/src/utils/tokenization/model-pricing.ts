@@ -290,7 +290,11 @@ export function recommendModel(params: {
     ([_, pricing]) => {
       if (minContextWindow && pricing.contextWindow < minContextWindow)
         return false
-      if (providers && !providers.includes(pricing.provider)) return false
+      if (
+        providers &&
+        !(providers as readonly string[]).includes(pricing.provider)
+      )
+        return false
       return true
     }
   )

@@ -18,8 +18,11 @@ const buttonVariants = cva(
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
+        // Extended variants
         surface:
-          'bg-surface text-surface-foreground border border-border hover:bg-surface/80',
+          'bg-muted text-muted-foreground border border-border/60 hover:bg-muted/80',
+        success: 'bg-green-600 text-white hover:bg-green-700',
+        error: 'bg-red-600 text-white hover:bg-red-700',
       },
       size: {
         default: 'h-10 px-4 py-2',

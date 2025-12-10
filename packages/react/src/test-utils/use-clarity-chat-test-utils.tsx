@@ -41,8 +41,12 @@ export function createMockUseClarityChat(
 
   const setInput =
     overrides?.setInput ||
-    ((newInput: string) => {
-      input = newInput
+    ((newInput: React.SetStateAction<string>) => {
+      if (typeof newInput === 'function') {
+        input = newInput(input)
+      } else {
+        input = newInput
+      }
     })
 
   return {

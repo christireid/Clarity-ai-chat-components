@@ -1,11 +1,11 @@
 /**
  * retrieveMemories - Low-level utility for retrieving memories
- * 
+ *
  * Primitive function for retrieving relevant memories from memory store.
  * Used internally by memory system and available for custom implementations.
  */
 
-import type { MemoryItem, MemoryQuery } from '@clarity-chat/memory'
+import type { MemoryItem, MemoryQuery, MemoryType } from '@clarity-chat/memory'
 
 /**
  * Options for retrieving memories
@@ -16,12 +16,12 @@ export interface RetrieveMemoriesOptions {
   /** Relevance threshold */
   threshold?: number
   /** Memory types to include */
-  types?: string[]
+  types?: MemoryType[]
 }
 
 /**
  * retrieveMemories - Retrieve relevant memories
- * 
+ *
  * Low-level utility for querying memory store. Used by memory system
  * and available for custom memory retrieval strategies.
  */
@@ -40,7 +40,7 @@ export async function retrieveMemories(
     const memoryQuery: MemoryQuery = {
       query,
       limit,
-      threshold,
+      minConfidence: threshold,
       types,
     }
 

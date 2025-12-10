@@ -1,8 +1,8 @@
 /**
  * Analytics System
- * 
+ *
  * Complete analytics solution for tracking user behavior and application performance.
- * 
+ *
  * Features:
  * - Provider-agnostic architecture
  * - Multiple analytics providers support (GA4, Mixpanel, PostHog, Amplitude, etc.)
@@ -12,18 +12,18 @@
  * - Debug mode
  * - "Do Not Track" respect
  * - Session management
- * 
+ *
  * @example
  * ```tsx
- * import { 
- *   AnalyticsProvider, 
+ * import {
+ *   AnalyticsProvider,
  *   useAnalytics,
- *   createGoogleAnalyticsProvider 
+ *   createGoogleAnalyticsProvider
  * } from '@/analytics'
- * 
+ *
  * // Setup
  * const gaProvider = createGoogleAnalyticsProvider('G-XXXXXXXXXX')
- * 
+ *
  * <AnalyticsProvider
  *   config={{
  *     enabled: true,
@@ -34,15 +34,15 @@
  * >
  *   <App />
  * </AnalyticsProvider>
- * 
+ *
  * // Usage
  * function MyComponent() {
  *   const { track } = useAnalytics()
- *   
+ *
  *   const handleClick = () => {
  *     track('button_clicked', { button_name: 'submit' })
  *   }
- *   
+ *
  *   return <button onClick={handleClick}>Submit</button>
  * }
  * ```
@@ -63,8 +63,28 @@ export { AnalyticsEvents } from './types'
 // Export provider component and hook
 export { AnalyticsProvider, useAnalytics } from './AnalyticsProvider'
 
-// Export provider implementations
-export * from './providers'
+// Export provider implementations - explicit exports
+export {
+  createConsoleProvider,
+  createGoogleAnalyticsProvider,
+  createMixpanelProvider,
+  createPostHogProvider,
+  createAmplitudeProvider,
+  createCustomApiProvider,
+  createLocalStorageProvider,
+} from './providers'
 
-// Export tracking hooks
-export * from './hooks'
+// Export tracking hooks - explicit exports
+export {
+  useTrackMount,
+  useTrackUnmount,
+  useTrackChange,
+  useTrackVisibility,
+  useTrackClick,
+  useTrackSubmit,
+  useTrackError,
+  useTrackTiming,
+  useTrackFeature,
+  useTrackScrollDepth,
+  useTrackTimeOnPage,
+} from './hooks'
