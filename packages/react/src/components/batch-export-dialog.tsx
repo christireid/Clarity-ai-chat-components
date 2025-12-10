@@ -64,14 +64,14 @@ export interface BatchExportDialogProps {
 
 /**
  * Batch Export Dialog Component
- * 
+ *
  * Allows exporting multiple conversations/resources at once with:
  * - Multi-select resource selection
  * - Format selection
  * - Batch progress tracking
  * - Error handling per resource
  * - Cloud storage integration options
- * 
+ *
  * @example
  * ```tsx
  * <BatchExportDialog
@@ -102,7 +102,8 @@ export function BatchExportDialog({
   const [showCloudOptions, setShowCloudOptions] = React.useState(false)
 
   // Select/deselect all
-  const allSelected = selectedIds.size === resources.length && resources.length > 0
+  const allSelected =
+    selectedIds.size === resources.length && resources.length > 0
 
   const handleSelectAll = () => {
     if (allSelected) {
@@ -158,7 +159,9 @@ export function BatchExportDialog({
     const exporting = progress.filter((p) => p.status === 'exporting')
     const exportingProgress =
       exporting.reduce((sum, p) => sum + p.progress, 0) / exporting.length || 0
-    return ((completed + exporting.length * (exportingProgress / 100)) / total) * 100
+    return (
+      ((completed + exporting.length * (exportingProgress / 100)) / total) * 100
+    )
   }, [progress])
 
   const completedCount = progress.filter((p) => p.status === 'completed').length
@@ -166,7 +169,7 @@ export function BatchExportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="xl" className={className}>
+      <DialogContent className={cn('max-w-xl', className)}>
         <DialogHeader>
           <DialogTitle>Batch Export</DialogTitle>
           <DialogDescription>
@@ -195,7 +198,9 @@ export function BatchExportDialog({
               <AnimatePresence>
                 {resources.map((resource, index) => {
                   const isSelected = selectedIds.has(resource.id)
-                  const resourceProgress = progress.find((p) => p.resourceId === resource.id)
+                  const resourceProgress = progress.find(
+                    (p) => p.resourceId === resource.id
+                  )
                   const isExporting = resourceProgress?.status === 'exporting'
                   const isCompleted = resourceProgress?.status === 'completed'
                   const hasError = resourceProgress?.status === 'error'
@@ -221,7 +226,9 @@ export function BatchExportDialog({
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium truncate">{resource.name}</p>
+                          <p className="text-sm font-medium truncate">
+                            {resource.name}
+                          </p>
                           {resource.messageCount && (
                             <Badge variant="secondary" className="text-xs">
                               {resource.messageCount} messages
@@ -316,7 +323,9 @@ export function BatchExportDialog({
                   />
                   <div>
                     <p className="text-sm font-medium">{label}</p>
-                    <p className="text-xs text-muted-foreground">{description}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {description}
+                    </p>
                   </div>
                 </label>
               ))}
@@ -341,8 +350,8 @@ export function BatchExportDialog({
                 className="mt-2 p-3 bg-muted/50 rounded-lg space-y-2"
               >
                 <p className="text-xs text-muted-foreground">
-                  Cloud storage integration coming soon. For now, exports will be
-                  downloaded to your device.
+                  Cloud storage integration coming soon. For now, exports will
+                  be downloaded to your device.
                 </p>
               </motion.div>
             )}
@@ -396,7 +405,7 @@ function formatBytes(bytes: number): string {
   const k = 1024
   const sizes = ['B', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
 }
 
 function formatRelativeTime(date: Date): string {
@@ -408,7 +417,8 @@ function formatRelativeTime(date: Date): string {
 
   if (diffMins < 1) return 'just now'
   if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`
-  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`
+  if (diffHours < 24)
+    return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`
   if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`
   return date.toLocaleDateString()
 }

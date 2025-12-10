@@ -27,6 +27,18 @@
 export { ClarityChat } from './components/clarity-chat'
 export { ClarityChatPresets } from './components/clarity-chat-presets'
 
+// Chat Recipes - Pre-built combinations for common patterns
+export {
+  ChatComplete,
+  ChatWithMemory,
+  ChatWithAnalytics,
+  ChatWithPreset,
+  type ChatCompleteProps,
+  type ChatWithMemoryProps,
+  type ChatWithAnalyticsProps,
+  type ChatWithPresetProps,
+} from './components/chat-recipes'
+
 // Chat State - Primary hook
 export {
   useClarityChat,
@@ -451,8 +463,6 @@ export { ModelSelector } from './components/model-selector'
 export { ContextCard } from './components/context-card'
 export { ContextManager } from './components/context-manager'
 export { ProjectSidebar } from './components/project-sidebar'
-// TODO: Re-enable once prompt system is implemented
-// export { PromptLibrary } from './components/prompt-library'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
 export { LinkPreview, InlineLink } from './components/link-preview'

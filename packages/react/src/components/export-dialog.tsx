@@ -114,7 +114,7 @@ export function ExportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="xl" animation="scale" className={className}>
+      <DialogContent className={cn('max-w-xl', className)}>
         <DialogHeader>
           <DialogTitle>Export {resourceType}</DialogTitle>
           <DialogDescription>

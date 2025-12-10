@@ -1,8 +1,35 @@
 {
   "name": "@clarity-chat/react",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "React components for Clarity Chat",
+  "description": "Premium AI chat components for React - 70+ components, 35+ hooks, enterprise-ready",
+  "keywords": [
+    "react",
+    "chat",
+    "ai",
+    "chatbot",
+    "components",
+    "typescript",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt",
+    "streaming",
+    "accessibility",
+    "wcag",
+    "ui",
+    "chat-ui"
+  ],
+  "homepage": "https://clarity-chat.dev",
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Code & Clarity",
+    "email": "hello@codeandclarity.com",
+    "url": "https://codeandclarity.com"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -31,14 +58,17 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "sideEffects": [
     "*.css"
   ],
   "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "repository": {
     "type": "git",
@@ -59,8 +89,13 @@
     "size:why": "size-limit --why"
   },
   "peerDependencies": {
-    "react": ">=19.0.0",
-    "react-dom": ">=19.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@clarity-chat/memory": "workspace:*",
@@ -95,6 +130,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.10.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/react-window": "^1.8.8",

@@ -1,6 +1,6 @@
 {
   "name": "@clarity-chat/types",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "TypeScript type definitions for Clarity Chat",
   "license": "MIT",
   "author": "Christi Reid <christi@codeclarity.ai>",
@@ -32,8 +32,8 @@
   ],
   "sideEffects": false,
   "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "repository": {
     "type": "git",
