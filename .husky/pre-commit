@@ -1,1 +1,76 @@
+#!/usr/bin/env bash
+
+# Check for documentation artifacts before commit
+echo "🔍 Checking for documentation artifacts..."
+
+# Get list of staged markdown and text files
+STAGED_DOCS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md|txt)$' || true)
+
+if [ -z "$STAGED_DOCS" ]; then
+  echo "✅ No documentation files staged"
+else
+  # Artifact patterns
+  ARTIFACTS_FOUND=false
+
+  while IFS= read -r file; do
+    # Skip if in .archive
+    if [[ "$file" == *".archive/"* ]]; then
+      continue
+    fi
+
+    # Check filename for artifact patterns
+    filename=$(basename "$file")
+
+    if [[ "$filename" =~ _COMPLETE\.md$ ]] || \
+       [[ "$filename" =~ _SUMMARY\.md$ ]] || \
+       [[ "$filename" =~ _STATUS\.md$ ]] || \
+       [[ "$filename" =~ _REPORT\.md$ ]] || \
+       [[ "$filename" =~ ^FINAL_.+\.md$ ]] || \
+       [[ "$filename" == "PROJECT_COMPLETE.md" ]] || \
+       [[ "$filename" =~ ^PHASE_[0-9]+_.+\.md$ ]] || \
+       [[ "$filename" =~ _PROGRESS\.md$ ]] || \
+       [[ "$filename" =~ _CHECKLIST\.md$ ]] || \
+       [[ "$filename" =~ ^CLEANUP_.+\.md$ ]] || \
+       [[ "$filename" =~ ^OPTIMIZATION_.+\.md$ ]] || \
+       [[ "$filename" =~ ^REFACTOR_.+\.md$ ]] || \
+       [[ "$filename" =~ ^IMPLEMENTATION_.+\.md$ ]]; then
+
+      if [ "$ARTIFACTS_FOUND" = false ]; then
+        echo ""
+        echo "⚠️  WARNING: Potential development artifacts detected!"
+        echo ""
+        ARTIFACTS_FOUND=true
+      fi
+
+      echo "  📄 $file"
+    fi
+  done <<< "$STAGED_DOCS"
+
+  if [ "$ARTIFACTS_FOUND" = true ]; then
+    echo ""
+    echo "These files look like development artifacts that should be:"
+    echo "  1. Moved to .archive/ directory, or"
+    echo "  2. Deleted if not worth archiving"
+    echo ""
+    echo "Common artifact patterns:"
+    echo "  • *_COMPLETE.md, *_SUMMARY.md, *_STATUS.md"
+    echo "  • PHASE_*_*.md, CLEANUP_*.md, FINAL_*.md"
+    echo ""
+    echo "See: .github/DOCUMENTATION_POLICY.md for details"
+    echo ""
+    read -p "Continue with commit anyway? (y/N) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      echo "❌ Commit aborted. Please archive or remove artifacts first."
+      exit 1
+    fi
+    echo "⚠️  Proceeding with commit (artifacts will be flagged in CI)"
+  else
+    echo "✅ No development artifacts detected"
+  fi
+fi
+
+echo ""
+
+# Run lint-staged
 npx lint-staged

@@ -1797,6 +1797,15 @@ npm run test:e2e
 
 We welcome contributions! See our [Contributing Guide](./CONTRIBUTING.md) for details.
 
+### 📝 Documentation Hygiene
+
+**Important**: Please review our [Documentation Policy](./.github/DOCUMENTATION_POLICY.md) before adding documentation files. We maintain a clean repository structure by:
+- ✅ Keeping only essential documentation in the repository
+- 📦 Archiving completed work to `.archive/`
+- ❌ Not committing status reports, phase summaries, or temporary notes
+
+This ensures the repository stays professional and release-ready!
+
 ```bash
 # Clone the repo
 git clone https://github.com/christireid/Clarity-ai-chat-components.git

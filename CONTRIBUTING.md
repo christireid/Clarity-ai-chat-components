@@ -14,6 +14,7 @@ This document provides guidelines and instructions for contributing to the proje
 - [Project Structure](#project-structure)
 - [Development Workflow](#development-workflow)
 - [Coding Standards](#coding-standards)
+- [Documentation Guidelines](#documentation-guidelines)
 - [Testing Guidelines](#testing-guidelines)
 - [Commit Conventions](#commit-conventions)
 - [Pull Request Process](#pull-request-process)
@@ -298,6 +299,144 @@ component-name/
 ├── index.ts                 # Exports
 └── README.md                # Component documentation
 ```
+
+---
+
+## Documentation Guidelines
+
+### Documentation Policy
+
+**IMPORTANT**: Clarity Chat maintains a clean, professional documentation structure. Please review our [Documentation Policy](./.github/DOCUMENTATION_POLICY.md) before adding or modifying documentation.
+
+### What to Commit
+
+**✅ DO commit**:
+- User-facing documentation (guides, tutorials, API references)
+- Package READMEs and getting started guides
+- Architecture and design documents (when stable)
+- Migration guides for breaking changes
+- Updated CHANGELOG entries via changesets
+
+**❌ DON'T commit**:
+- Status reports or progress summaries (`*_COMPLETE.md`, `*_SUMMARY.md`)
+- Phase tracking documents (`PHASE_1_*.md`, `PHASE_2_*.md`)
+- Implementation notes after completion (archive instead)
+- Temporary notes or scratch files
+- Duplicate guides with version numbers
+
+### Documentation Checklist
+
+Before committing documentation:
+
+- [ ] Is this essential for users or contributors?
+- [ ] Is there already a file that serves this purpose?
+- [ ] Will this file be needed 3+ months from now?
+- [ ] Does the filename follow essential documentation patterns?
+- [ ] Have I checked for duplicate content?
+
+### Where Documentation Goes
+
+**User-Facing Documentation**:
+```
+apps/docs/content/          # Documentation site content
+  ├── guides/               # User guides
+  ├── api/                  # API references
+  └── examples/             # Code examples
+```
+
+**Package Documentation**:
+```
+packages/*/
+  ├── README.md             # Package overview and quick start
+  ├── CHANGELOG.md          # Version history (via changesets)
+  └── API.md                # Detailed API documentation (optional)
+```
+
+**Historical Documentation**:
+```
+.archive/
+  ├── implementation-notes/ # Technical implementation details
+  ├── status-reports/       # Project status and completion reports
+  └── design-decisions/     # Architectural decisions
+```
+
+### Archiving Completed Work
+
+When a project phase or task is complete:
+
+1. **Move to `.archive/`**:
+   ```bash
+   # Move to appropriate category
+   mv IMPLEMENTATION_COMPLETE.md .archive/implementation-notes/
+   mv PHASE_3_SUMMARY.md .archive/status-reports/
+   ```
+
+2. **Update archive README** (if needed):
+   ```bash
+   # Add entry to .archive/README.md if adding new category
+   ```
+
+3. **Don't commit artifacts**:
+   ```bash
+   # These should NEVER be in the main repository:
+   # ❌ CLEANUP_COMPLETE.md
+   # ❌ FINAL_STATUS.md
+   # ❌ PROJECT_SUMMARY.md
+   ```
+
+### Common Mistakes to Avoid
+
+**❌ Creating duplicate guides**:
+```bash
+# Bad: Multiple versions
+QUICK_START.md
+QUICK_START_V2.md
+QUICK_START_FINAL.md
+
+# Good: Single canonical version
+README.md  # With quick start section
+```
+
+**❌ Committing status files**:
+```bash
+# Bad: Status files in repository
+git add IMPLEMENTATION_COMPLETE.md
+git add CLEANUP_SUMMARY.md
+
+# Good: Use git commit messages
+git commit -m "feat: implement user authentication"
+```
+
+**❌ Keeping temporary notes**:
+```bash
+# Bad: Temporary files committed
+TODO.md
+NOTES.md
+SCRATCH.md
+
+# Good: Use local files or GitHub Issues
+# Keep notes locally, track work in issues
+```
+
+### Documentation Updates
+
+When updating code, also update:
+
+1. **README** - If public API or usage changes
+2. **CHANGELOG** - Create a changeset for package changes
+3. **API docs** - If function signatures change
+4. **Examples** - If usage patterns change
+5. **Migration guide** - If breaking changes introduced
+
+### Monthly Documentation Audit
+
+We conduct monthly audits (first Monday) to:
+- Remove development artifacts
+- Archive completed work
+- Check for duplicate content
+- Update outdated guides
+
+**You can help** by following the documentation policy and archiving your completed work!
 
 ---
 

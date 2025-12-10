@@ -1,0 +1,231 @@
+name: Documentation Artifact Detection
+
+on:
+  pull_request:
+    paths:
+      - '**.md'
+      - '**.txt'
+      - 'docs/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '**.md'
+      - '**.txt'
+
+jobs:
+  check-documentation-artifacts:
+    name: Check for Development Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for artifact patterns
+        id: artifact-check
+        run: |
+          echo "🔍 Scanning for development artifacts..."
+
+          # Define artifact patterns
+          PATTERNS=(
+            "*_COMPLETE.md"
+            "*_SUMMARY.md"
+            "*_STATUS.md"
+            "*_REPORT.md"
+            "FINAL_*.md"
+            "PROJECT_COMPLETE.md"
+            "PHASE_1_*.md"
+            "PHASE_2_*.md"
+            "PHASE_3_*.md"
+            "PHASE_4_*.md"
+            "PHASE_5_*.md"
+            "*_PROGRESS.md"
+            "*_CHECKLIST.md"
+            "CLEANUP_*.md"
+            "OPTIMIZATION_*.md"
+            "REFACTOR_*.md"
+            "IMPLEMENTATION_*.md"
+          )
+
+          # Search for artifacts outside .archive
+          FOUND_ARTIFACTS=()
+
+          for pattern in "${PATTERNS[@]}"; do
+            while IFS= read -r file; do
+              # Skip if in .archive, node_modules, or .git
+              if [[ "$file" == *".archive/"* ]] || \
+                 [[ "$file" == *"node_modules/"* ]] || \
+                 [[ "$file" == *".git/"* ]]; then
+                continue
+              fi
+              FOUND_ARTIFACTS+=("$file")
+            done < <(find . -name "$pattern" 2>/dev/null)
+          done
+
+          # Check results
+          if [ ${#FOUND_ARTIFACTS[@]} -eq 0 ]; then
+            echo "✅ No development artifacts found!"
+            echo "status=success" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "❌ Found ${#FOUND_ARTIFACTS[@]} development artifact(s):"
+            echo ""
+            for artifact in "${FOUND_ARTIFACTS[@]}"; do
+              echo "  ⚠️  $artifact"
+            done
+            echo ""
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "count=${#FOUND_ARTIFACTS[@]}" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Post failure comment
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## ❌ Documentation Artifacts Detected
+
+            This PR includes development artifacts that should not be committed to the repository.
+
+            ### What are development artifacts?
+            Development artifacts are temporary files like status reports, completion summaries, and phase tracking documents that should be archived rather than committed.
+
+            ### How to fix this:
+
+            1. **Move files to archive:**
+               \`\`\`bash
+               # Move to appropriate archive category
+               mv <filename> .archive/status-reports/
+               # or
+               mv <filename> .archive/implementation-notes/
+               \`\`\`
+
+            2. **Or delete if not worth archiving:**
+               \`\`\`bash
+               git rm <filename>
+               \`\`\`
+
+            ### Common artifact patterns:
+            - \`*_COMPLETE.md\`, \`*_SUMMARY.md\`, \`*_STATUS.md\`
+            - \`PHASE_1_*.md\`, \`PHASE_2_*.md\`, etc.
+            - \`CLEANUP_*.md\`, \`OPTIMIZATION_*.md\`
+            - \`IMPLEMENTATION_*.md\`, \`FINAL_*.md\`
+
+            ### Need help?
+            See our [Documentation Policy](.github/DOCUMENTATION_POLICY.md) for details.
+
+            <sub>💡 Tip: Use \`git commit\` messages to document progress instead of status files.</sub>
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  check-file-count:
+    name: Monitor Documentation File Count
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Count documentation files
+        id: count
+        run: |
+          echo "📊 Counting documentation files..."
+
+          MD_COUNT=$(find . -type f -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | wc -l)
+          TXT_COUNT=$(find . -type f -name "*.txt" -not -path "./node_modules/*" -not -path "./.git/*" | wc -l)
+          TOTAL=$((MD_COUNT + TXT_COUNT))
+
+          echo "Markdown files: $MD_COUNT"
+          echo "Text files: $TXT_COUNT"
+          echo "Total: $TOTAL"
+
+          echo "md_count=$MD_COUNT" >> $GITHUB_OUTPUT
+          echo "txt_count=$TXT_COUNT" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+
+          # Healthy threshold: < 400 files
+          if [ $TOTAL -gt 400 ]; then
+            echo "⚠️  Warning: Documentation file count ($TOTAL) exceeds healthy threshold (400)"
+            echo "status=warning" >> $GITHUB_OUTPUT
+          else
+            echo "✅ File count ($TOTAL) is healthy (< 400)"
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for empty files
+        run: |
+          echo "🔍 Checking for empty documentation files..."
+
+          EMPTY_FILES=$(find . -type f -name "*.md" -empty -not -path "./node_modules/*" | wc -l)
+
+          if [ $EMPTY_FILES -eq 0 ]; then
+            echo "✅ No empty markdown files found"
+          else
+            echo "⚠️  Found $EMPTY_FILES empty markdown file(s)"
+            find . -type f -name "*.md" -empty -not -path "./node_modules/*"
+          fi
+
+      - name: Check for TODO/FIXME markers
+        run: |
+          echo "🔍 Scanning for TODO/FIXME markers in documentation..."
+
+          TODO_COUNT=$(grep -rn "TODO\|FIXME\|TBD\|PLACEHOLDER" --include="*.md" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.archive 2>/dev/null | wc -l || echo "0")
+
+          if [ $TODO_COUNT -eq 0 ]; then
+            echo "✅ No TODO/FIXME markers found"
+          else
+            echo "ℹ️  Found $TODO_COUNT TODO/FIXME marker(s) in documentation"
+            echo "   (This is informational - not a failure)"
+          fi
+
+  check-essential-files:
+    name: Verify Essential Files Exist
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check essential root files
+        run: |
+          echo "📋 Verifying essential files..."
+
+          ESSENTIAL_FILES=(
+            "README.md"
+            "CHANGELOG.md"
+            "CONTRIBUTING.md"
+            "CODE_OF_CONDUCT.md"
+            "SECURITY.md"
+            "LICENSE"
+            ".github/DOCUMENTATION_POLICY.md"
+          )
+
+          MISSING=()
+
+          for file in "${ESSENTIAL_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              MISSING+=("$file")
+              echo "❌ Missing: $file"
+            else
+              echo "✅ Present: $file"
+            fi
+          done
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo ""
+            echo "❌ Missing ${#MISSING[@]} essential file(s)"
+            exit 1
+          else
+            echo ""
+            echo "✅ All essential files present"
+          fi
