@@ -12,6 +12,9 @@ interface Message {
   isStreaming?: boolean
 }
 
+// Generate unique message IDs (collision-safe)
+const generateId = () => crypto.randomUUID()
+
 const initialMessages: Message[] = [
   {
     id: '1',
@@ -41,7 +44,7 @@ export function LiveChatDemo() {
     onError: (error) => {
       console.error('Streaming error:', error)
       setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
+        id: generateId(),
         text: "I'm having trouble connecting right now. Please try again in a moment!",
         sender: 'bot',
         timestamp: new Date(),
@@ -83,7 +86,7 @@ export function LiveChatDemo() {
     if (!input.trim() || isTyping || isStreaming) return
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: generateId(),
       text: input,
       sender: 'user',
       timestamp: new Date(),
@@ -110,7 +113,7 @@ export function LiveChatDemo() {
       setIsTyping(false)
 
       // Create placeholder message for streaming
-      const botMessageId = (Date.now() + 1).toString()
+      const botMessageId = generateId()
       currentBotMessageIdRef.current = botMessageId
       setMessages(prev => [...prev, {
         id: botMessageId,
@@ -126,7 +129,7 @@ export function LiveChatDemo() {
     } catch (error) {
       console.error('Error getting response:', error)
       setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
+        id: generateId(),
         text: "I'm having trouble connecting right now. Please try again in a moment!",
         sender: 'bot',
         timestamp: new Date(),
