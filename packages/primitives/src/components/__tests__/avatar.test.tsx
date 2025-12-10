@@ -88,32 +88,31 @@ describe('Avatar Component', () => {
   describe('Status Indicator', () => {
     it('should render online status', () => {
       const { container } = render(<Avatar status="online" fallback="AB" />)
-      const status = container.querySelector('.bg-success')
+      const status = container.querySelector('[data-status="online"]')
       expect(status).toBeInTheDocument()
     })
 
     it('should render offline status', () => {
       const { container } = render(<Avatar status="offline" fallback="AB" />)
-      // Offline uses muted-foreground with opacity
-      const status = container.querySelector('[class*="bg-muted-foreground"]')
+      const status = container.querySelector('[data-status="offline"]')
       expect(status).toBeInTheDocument()
     })
 
     it('should render away status', () => {
       const { container } = render(<Avatar status="away" fallback="AB" />)
-      const status = container.querySelector('.bg-warning')
+      const status = container.querySelector('[data-status="away"]')
       expect(status).toBeInTheDocument()
     })
 
     it('should render busy status', () => {
       const { container } = render(<Avatar status="busy" fallback="AB" />)
-      const status = container.querySelector('.bg-destructive')
+      const status = container.querySelector('[data-status="busy"]')
       expect(status).toBeInTheDocument()
     })
 
     it('should not render status when not provided', () => {
       const { container } = render(<Avatar fallback="AB" />)
-      const status = container.querySelector('.bg-success')
+      const status = container.querySelector('[data-status]')
       expect(status).not.toBeInTheDocument()
     })
 

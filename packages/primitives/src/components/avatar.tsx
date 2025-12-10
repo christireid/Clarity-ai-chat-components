@@ -110,6 +110,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {/* Status Indicator */}
         {status && !statusBadge && (
           <span
+            data-status={status}
             className={cn(
               'absolute bottom-0 right-0 block rounded-full ring-2 ring-background/80',
               statusSizes[size || 'default'],

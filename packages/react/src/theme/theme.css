@@ -110,12 +110,14 @@
     --accent-foreground: var(--clarity-accent-foreground);
     --destructive: var(--clarity-destructive);
     --destructive-foreground: var(--clarity-destructive-foreground);
-    --success: var(--clarity-success);
-    --success-foreground: var(--clarity-success-foreground);
-    --warning: var(--clarity-warning);
-    --warning-foreground: var(--clarity-warning-foreground);
-    --info: var(--clarity-info);
-    --info-foreground: var(--clarity-info-foreground);
+    /* State colors use HSL format for Tailwind compatibility */
+    /* Use --clarity-* vars directly for OKLCH access */
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 0 0% 100%;
     --border: var(--clarity-border);
     --input: var(--clarity-input);
     --ring: var(--clarity-ring);
@@ -283,6 +285,14 @@
       0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
     --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
     --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.3);
+
+    /* State colors - HSL format for Tailwind compatibility */
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 222.2 47.4% 11.2%;
 
     /* Colored shadows - more visible in dark mode */
     --shadow-primary: 0 4px 14px -3px oklch(var(--clarity-primary) / 0.45);
