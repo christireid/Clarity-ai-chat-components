@@ -113,9 +113,24 @@ Real-world usage examples
 Links to other context docs
 ```
 
+## Prompt Engineering Best Practices Applied
+
+These context documents follow prompt engineering research findings:
+
+1. **KV-Cache Alignment**: Static reference information placed first for server-side caching
+2. **Lost-in-the-Middle Mitigation**: Critical information at start and end of documents
+3. **Clear Structure**: Consistent headers and sections for reliable parsing
+4. **Token Efficiency**: Concise language, no redundant prose
+5. **Version Metadata**: All documents include version, last updated, and changelogs
+
 ## Version
 
 Context documents are versioned with the codebase. When major architectural changes occur, update all affected context documents.
 
-**Last Updated**: 2025-10-27
-**Covers**: Clarity Chat v1.0 (Phase 2 Complete)
+**Version**: 1.1.0
+**Last Updated**: 2025-12-09
+**Covers**: Clarity Chat monorepo with @clarity-chat/react
+
+**Changelog**:
+- v1.1.0 (Dec 2025): Added prompt engineering best practices, updated version metadata
+- v1.0.0 (Oct 2025): Initial version
