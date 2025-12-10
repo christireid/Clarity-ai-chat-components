@@ -3,7 +3,7 @@
  * Enhanced progress bars and spinners
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import ora, { type Ora } from 'ora'
 
 export interface ProgressBarOptions {
@@ -37,7 +37,7 @@ export class ProgressBar {
     this.incompleteChar = options.incompleteChar || '░'
     this.showPercentage = options.showPercentage ?? true
     this.showCount = options.showCount ?? true
-    this.color = options.color || chalk.cyan
+    this.color = options.color || pc.cyan
   }
 
   update(current: number, text?: string) {
@@ -71,16 +71,16 @@ export class ProgressBar {
 
     const bar =
       this.color(this.completeChar.repeat(filled)) +
-      chalk.dim(this.incompleteChar.repeat(empty))
+      pc.dim(this.incompleteChar.repeat(empty))
 
     const parts: string[] = [bar]
 
     if (this.showPercentage) {
-      parts.push(chalk.bold(`${percent}%`))
+      parts.push(pc.bold(`${percent}%`))
     }
 
     if (this.showCount) {
-      parts.push(chalk.dim(`[${this.current}/${this.total}]`))
+      parts.push(pc.dim(`[${this.current}/${this.total}]`))
     }
 
     if (this.text) {
@@ -155,28 +155,28 @@ export class StepProgress {
 
   renderSummary() {
     console.log()
-    console.log(chalk.bold('Summary:'))
+    console.log(pc.bold('Summary:'))
 
     this.steps.forEach((step, index) => {
       const icon =
         step.status === 'complete'
-          ? chalk.green('✓')
+          ? pc.green('✓')
           : step.status === 'error'
-            ? chalk.red('✗')
+            ? pc.red('✗')
             : step.status === 'active'
-              ? chalk.cyan('→')
-              : chalk.dim('○')
+              ? pc.cyan('→')
+              : pc.dim('○')
 
       const status =
         step.status === 'complete'
-          ? chalk.green('Complete')
+          ? pc.green('Complete')
           : step.status === 'error'
-            ? chalk.red('Failed')
+            ? pc.red('Failed')
             : step.status === 'active'
-              ? chalk.cyan('Active')
-              : chalk.dim('Pending')
+              ? pc.cyan('Active')
+              : pc.dim('Pending')
 
-      console.log(`  ${icon} ${step.name} ${chalk.dim('—')} ${status}`)
+      console.log(`  ${icon} ${step.name} ${pc.dim('—')} ${status}`)
     })
   }
 }
@@ -194,9 +194,9 @@ export function percentageProgress(
   const filled = Math.floor((barWidth * current) / total)
   const empty = barWidth - filled
 
-  const bar = chalk.cyan('█'.repeat(filled)) + chalk.dim('░'.repeat(empty))
-  const percentText = chalk.bold(`${percent}%`)
-  const countText = chalk.dim(`(${current}/${total})`)
+  const bar = pc.cyan('█'.repeat(filled)) + pc.dim('░'.repeat(empty))
+  const percentText = pc.bold(`${percent}%`)
+  const countText = pc.dim(`(${current}/${total})`)
 
   return label
     ? `${bar} ${percentText} ${countText} ${label}`

@@ -101,6 +101,28 @@ export * from './hooks/use-streaming-websocket'
 export * from './hooks/use-streaming'
 export * from './hooks/use-streamable-ui'
 
+// Resilience Hooks (AI-Ops)
+export {
+  useCircuitBreaker,
+  CircuitOpenError,
+  isCircuitOpenError,
+  type UseCircuitBreakerOptions,
+  type UseCircuitBreakerReturn,
+} from './hooks/use-circuit-breaker'
+export {
+  useRetryWithBackoff,
+  type UseRetryWithBackoffOptions,
+  type UseRetryWithBackoffReturn,
+} from './hooks/use-retry-with-backoff'
+export {
+  useRequestDeduplication,
+  DebouncedError,
+  isDebouncedError,
+  createMessageKey,
+  type UseRequestDeduplicationOptions,
+  type UseRequestDeduplicationReturn,
+} from './hooks/use-request-deduplication'
+
 // Tools & Agents
 export * from './agents/tool-ui-registry'
 export {

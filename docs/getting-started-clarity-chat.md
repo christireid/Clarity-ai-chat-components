@@ -2,15 +2,18 @@
 
 > **Learn how to build production-ready AI chat interfaces in minutes.**
 
-Clarity Chat provides everything you need to build ChatGPT-like interfaces: streaming, error handling, token management, accessibility, and more. This guide will get you up and running in under 5 minutes.
+Clarity Chat provides everything you need to build ChatGPT-like interfaces: streaming, error
+handling, token management, accessibility, and more. This guide will get you up and running in under
+5 minutes.
 
 ## Prerequisites
 
 - React 19+ (or React 18 with compatibility mode)
-- Node.js 18+ or Bun
+- Node.js 20+ or Bun
 - Basic knowledge of React hooks
 
-> **Note**: Clarity works with any React setup (Next.js, Vite, Remix, etc.). Examples here use Next.js, but the concepts apply everywhere.
+> **Note**: Clarity works with any React setup (Next.js, Vite, Remix, etc.). Examples here use
+> Next.js, but the concepts apply everywhere.
 
 ## Installation
 
@@ -29,24 +32,12 @@ Here's the simplest possible chat implementation:
 ```tsx
 'use client'
 
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { useMemo } from 'react'
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 export default function ChatPage() {
-  const {
-    messages: coreMessages,
-    append,
-    isLoading,
-    error,
-  } = useClarityChat({
+  const { messages, append, isLoading, error } = useClarityChat({
     api: '/api/chat',
   })
-
-  // Convert CoreMessage[] to Message[] for ChatWindow
-  const messages = useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
 
   return (
     <div className="h-screen">
@@ -69,30 +60,35 @@ export default function ChatPage() {
 }
 ```
 
-**That's it!** ✨ You now have a fully functional chat interface with:
+**That's it!** You now have a fully functional chat interface with:
 
-- ✅ **Streaming responses** - Messages appear in real-time as the AI generates them
-- ✅ **Loading states** - Visual feedback during message processing
-- ✅ **Error handling** - Automatic error recovery and user-friendly error messages
-- ✅ **Production-ready UI** - Beautiful, accessible, responsive interface
+- **Streaming responses** - Messages appear in real-time as the AI generates them
+- **Loading states** - Visual feedback during message processing
+- **Error handling** - Automatic error recovery and user-friendly error messages
+- **Production-ready UI** - Beautiful, accessible, responsive interface
 
-> **Tip**: The `useMemo` hook ensures efficient message conversion. This is important for performance when messages update frequently.
+> **Note**: `ChatWindow` accepts both `CoreMessage[]` (from `useClarityChat`) and `Message[]`
+> formats directly - no conversion needed!
 
 ## What You Get Out of the Box
 
 Clarity Chat provides everything you need for a production-ready chat experience:
 
 ### Streaming Responses
+
 Messages stream in real-time as the AI generates them. No configuration needed—it just works.
 
 ### Sensible Defaults
+
 - SSE (Server-Sent Events) transport for reliable streaming
 - Automatic error recovery
 - Optimized rendering for performance
 - Accessible UI components (WCAG compliant)
 
 ### Production-Ready UI
+
 The `<ChatWindow>` component includes:
+
 - Virtualized message list (handles 1000+ messages smoothly)
 - Animated thinking indicators
 - Empty states
@@ -106,8 +102,7 @@ Enable context-aware conversations with Clarity's built-in memory system:
 ```tsx
 'use client'
 
-import { useClarityChat, ChatWindow, MemoryProvider, convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { useMemo } from 'react'
+import { useClarityChat, ChatWindow, MemoryProvider } from '@clarity-chat/react'
 
 export default function ChatWithMemory() {
   return (
@@ -118,13 +113,7 @@ export default function ChatWithMemory() {
 }
 
 function ChatPage() {
-  const {
-    messages: coreMessages,
-    append,
-    isLoading,
-    memoryEnabled,
-    contextSummary,
-  } = useClarityChat({
+  const { messages, append, isLoading, memoryEnabled, contextSummary } = useClarityChat({
     api: '/api/chat',
     memory: {
       enabled: true,
@@ -132,11 +121,6 @@ function ChatPage() {
       maxTokens: 4000,
     },
   })
-
-  const messages = useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
 
   return (
     <div className="h-screen">
@@ -158,28 +142,20 @@ function ChatPage() {
 ```
 
 With memory enabled, Clarity will:
+
 - Automatically store conversation context
 - Retrieve relevant past conversations
 - Enrich prompts with context
 - Optimize token usage
 
-## Common Pitfalls
-
-> **Warning**: Don't forget to convert messages! `useClarityChat` returns `CoreMessage[]` (Vercel-compatible format), but `ChatWindow` expects `Message[]`. Always use `convertCoreMessagesToMessages()`.
-
-**Common Issues:**
-
-1. **Messages not displaying** - Forgot to convert messages with `convertCoreMessagesToMessages`
-2. **Type errors** - Make sure you're using the correct message types
-3. **Streaming not working** - Check your API endpoint returns SSE format
-
 ## Building Custom UI
 
-If you prefer to build your own UI instead of using `<ChatWindow>`, `useClarityChat` provides `input` and `setInput` just like Vercel's `useChat`:
+If you prefer to build your own UI instead of using `<ChatWindow>`, `useClarityChat` provides
+`input` and `setInput` just like Vercel's `useChat`:
 
 ```tsx
 const {
-  messages: coreMessages,
+  messages,
   input,
   setInput,
   append,
@@ -200,43 +176,52 @@ const {
 </form>
 ```
 
-**Note:** `<ChatWindow>` manages its own input state internally, so you don't need `input`/`setInput` when using it.
+**Note:** `<ChatWindow>` manages its own input state internally, so you don't need
+`input`/`setInput` when using it.
 
 ## Next Steps
 
 Now that you have a basic chat working, explore more features:
 
 ### Learn More
+
 - **[API Reference](../../packages/react/README.md)** - Complete API documentation
 - **[Guides](./)** - Theming, token optimization, error handling, and more
 - **[Cookbook](./cookbook/)** - Common patterns and recipes
 
 ### See It In Action
+
 - **[Examples](../../apps/examples/)** - 30+ production-ready examples
 - **[Storybook](http://localhost:6006)** - Interactive component demos
 
 ### Migration
-- **[Compare with Vercel AI SDK](./clarity-vs-vercel-ai-sdk-ui.md)** - See how Clarity extends Vercel's API
+
+- **[Compare with Vercel AI SDK](./clarity-vs-vercel-ai-sdk-ui.md)** - See how Clarity extends
+  Vercel's API
 - **[Migration Guide](./migrating-from-vercel.md)** - Migrate from Vercel AI SDK
 
 ## Troubleshooting
 
 ### Messages not appearing?
-- Ensure you're converting messages: `convertCoreMessagesToMessages(coreMessages)`
+
 - Check that `messages` prop is an array
 - Verify your API is returning messages correctly
+- Ensure your API endpoint is accessible
 
 ### Streaming not working?
+
 - Verify your API endpoint supports SSE (Server-Sent Events)
 - Check network tab for connection issues
 - Ensure `isLoading` state is being managed correctly
 
 ### Type errors?
+
 - Make sure you're importing types from `@clarity-chat/react`
 - Check that you're using React 19+ (or compatibility mode)
 - Verify all imports are correct
 
 ### Need more help?
+
 - Check the [FAQ](./FAQ.md)
 - Browse [examples](../../apps/examples/)
 - See [Storybook](http://localhost:6006) for interactive demos

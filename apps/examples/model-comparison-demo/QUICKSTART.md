@@ -4,7 +4,7 @@ Get the Model Comparison demo running in under 5 minutes.
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - At least one API key (OpenAI, Anthropic, or Google AI)
 
 ## Setup (3 steps)
@@ -72,20 +72,23 @@ Open http://localhost:3001 in your browser.
 
 ### "API key not found"
 
-**Solution**: 
+**Solution**:
+
 1. Verify `.env.local` exists in `examples/model-comparison-demo/`
 2. Restart dev server: `Ctrl+C` then `npm run dev`
 
 ### Streaming doesn't start
 
 **Solution**:
+
 1. Open browser console (F12)
 2. Check for errors in Network tab
 3. Verify API key is valid
 
 ### Wrong port
 
-**Solution**: 
+**Solution**:
+
 - Model Comparison uses port **3001** (not 3000)
 - Check `package.json` if different
 
@@ -147,6 +150,7 @@ All providers offer free tiers or credits:
 - **Google AI**: Generous free tier
 
 For this demo, each comparison costs:
+
 - GPT-3.5: ~$0.0005
 - GPT-4: ~$0.02
 - Claude 3 Sonnet: ~$0.01

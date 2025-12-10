@@ -2,18 +2,35 @@
  * doctor command - Check project health and configuration
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
 import { getLogger } from '../utils/logger.js'
 import { ValidationError, ConfigError, handleError } from '../utils/errors.js'
 import { loadConfig } from '../utils/config.js'
-import { detectFramework, detectPackageManager, isTypeScriptProject, hasTailwind } from '../utils/detect.js'
-import { success, info, warn, error, outputJson, outputTable } from '../utils/output.js'
+import {
+  detectFramework,
+  detectPackageManager,
+  isTypeScriptProject,
+  hasTailwind,
+} from '../utils/detect.js'
+import {
+  success,
+  info,
+  warn,
+  error,
+  outputJson,
+  outputTable,
+} from '../utils/output.js'
 import { ensureEnvInGitignore } from '../utils/security.js'
 import { createBanner, createDivider } from '../ui/banner.js'
-import { successMessage, errorMessage, warningMessage, infoMessage } from '../ui/messages.js'
+import {
+  successMessage,
+  errorMessage,
+  warningMessage,
+  infoMessage,
+} from '../ui/messages.js'
 import { createStatusTable } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
 
@@ -38,10 +55,10 @@ export async function doctorCommand(options: DoctorOptions) {
       console.log(createBanner('Health Check', { gradient: 'pastel' }))
       console.log()
     }
-    
+
     const cwd = process.cwd()
     const checks: Array<{ name: string; result: CheckResult }> = []
-    
+
     // Load config to check configuration
     let config
     try {
@@ -53,27 +70,27 @@ export async function doctorCommand(options: DoctorOptions) {
     // Check 1: package.json exists
     const spinner = createSpinner('Checking project structure...')
     spinner.start()
-    
+
     const packageJsonPath = path.join(cwd, 'package.json')
     if (await fs.pathExists(packageJsonPath)) {
       checks.push({
         name: 'package.json',
-        result: { 
-          status: 'pass', 
+        result: {
+          status: 'pass',
           message: 'Found',
           category: 'Project Structure',
-          severity: 'info'
-        }
+          severity: 'info',
+        },
       })
     } else {
       checks.push({
         name: 'package.json',
-        result: { 
-          status: 'fail', 
+        result: {
+          status: 'fail',
           message: 'Not found - not in a Node.js project',
           category: 'Project Structure',
-          severity: 'critical'
-        }
+          severity: 'critical',
+        },
       })
       spinner.fail('Project structure check failed')
       if (process.argv.includes('--json')) {
@@ -85,35 +102,37 @@ export async function doctorCommand(options: DoctorOptions) {
     // Check 2: Clarity Chat dependencies
     const packageJson = await fs.readJson(packageJsonPath)
     const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
-    
-    const clarityChatPackages = Object.keys(deps).filter(dep => dep.startsWith('@clarity-chat/'))
+
+    const clarityChatPackages = Object.keys(deps).filter((dep) =>
+      dep.startsWith('@clarity-chat/')
+    )
     const hasClarityChat = clarityChatPackages.length > 0
-    
+
     if (hasClarityChat) {
       checks.push({
         name: 'Clarity Chat packages',
-        result: { 
-          status: 'pass', 
+        result: {
+          status: 'pass',
           message: `Installed (${clarityChatPackages.length} packages)`,
           category: 'Dependencies',
-          severity: 'info'
-        }
+          severity: 'info',
+        },
       })
     } else {
       checks.push({
         name: 'Clarity Chat packages',
-        result: { 
-          status: 'warn', 
+        result: {
+          status: 'warn',
           message: 'Not installed - run: clarity-chat init',
           category: 'Dependencies',
           severity: 'warning',
           fix: async () => {
             info('Run: clarity-chat init to install packages')
-          }
-        }
+          },
+        },
       })
     }
-    
+
     // Check 2.5: Framework detection
     const detectedFramework = await detectFramework(cwd)
     if (detectedFramework) {
@@ -123,11 +142,11 @@ export async function doctorCommand(options: DoctorOptions) {
           status: 'pass',
           message: `Detected: ${detectedFramework}`,
           category: 'Project Structure',
-          severity: 'info'
-        }
+          severity: 'info',
+        },
       })
     }
-    
+
     // Check 2.6: Package manager detection
     const packageManager = await detectPackageManager(cwd)
     checks.push({
@@ -136,41 +155,50 @@ export async function doctorCommand(options: DoctorOptions) {
         status: 'pass',
         message: `Detected: ${packageManager}`,
         category: 'Project Structure',
-        severity: 'info'
-      }
+        severity: 'info',
+      },
     })
 
     // Check 3: .env.local with API keys
     const envPath = path.join(cwd, '.env.local')
     if (await fs.pathExists(envPath)) {
       const envContent = await fs.readFile(envPath, 'utf-8')
-      const keyPattern = /^(OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY)=(.+)$/m
+      const keyPattern =
+        /^(OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY)=(.+)$/m
       const matches = envContent.match(keyPattern)
-      const hasValidKeys = matches && matches[2] && !matches[2].includes('your_') && !matches[2].includes('_key_here')
-      
+      const hasValidKeys =
+        matches &&
+        matches[2] &&
+        !matches[2].includes('your_') &&
+        !matches[2].includes('_key_here')
+
       if (hasValidKeys) {
-        const configuredKeys = (envContent.match(/^(OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY)=/gm) || []).length
+        const configuredKeys = (
+          envContent.match(
+            /^(OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY)=/gm
+          ) || []
+        ).length
         checks.push({
           name: 'API keys',
-          result: { 
-            status: 'pass', 
+          result: {
+            status: 'pass',
             message: `Configured (${configuredKeys} keys found)`,
             category: 'Configuration',
-            severity: 'info'
-          }
+            severity: 'info',
+          },
         })
       } else {
         checks.push({
           name: 'API keys',
-          result: { 
-            status: 'warn', 
+          result: {
+            status: 'warn',
             message: 'No valid keys found - add with: clarity-chat keys add',
             category: 'Configuration',
-            severity: 'warning'
-          }
+            severity: 'warning',
+          },
         })
       }
-      
+
       // Check if .env.local is in .gitignore
       const gitignorePath = path.join(cwd, '.gitignore')
       if (await fs.pathExists(gitignorePath)) {
@@ -182,8 +210,8 @@ export async function doctorCommand(options: DoctorOptions) {
               status: 'pass',
               message: 'Protected from git',
               category: 'Security',
-              severity: 'info'
-            }
+              severity: 'info',
+            },
           })
         } else {
           checks.push({
@@ -196,29 +224,33 @@ export async function doctorCommand(options: DoctorOptions) {
               fix: async () => {
                 await ensureEnvInGitignore(cwd)
                 success('Added .env.local to .gitignore')
-              }
-            }
+              },
+            },
           })
         }
       }
     } else {
       checks.push({
         name: 'API keys',
-        result: { 
-          status: 'warn', 
+        result: {
+          status: 'warn',
           message: '.env.local not found',
           category: 'Configuration',
           severity: 'warning',
           fix: async () => {
-            await fs.writeFile(envPath, `# Clarity Chat API Keys
+            await fs.writeFile(
+              envPath,
+              `# Clarity Chat API Keys
 OPENAI_API_KEY=your_key_here
 ANTHROPIC_API_KEY=your_key_here
 GOOGLE_API_KEY=your_key_here
-`, 'utf-8')
+`,
+              'utf-8'
+            )
             await ensureEnvInGitignore(cwd)
             success('Created .env.local and added to .gitignore')
-          }
-        }
+          },
+        },
       })
     }
 
@@ -227,22 +259,22 @@ GOOGLE_API_KEY=your_key_here
     if (hasTailwindConfig) {
       checks.push({
         name: 'Tailwind CSS',
-        result: { 
-          status: 'pass', 
+        result: {
+          status: 'pass',
           message: 'Configured',
           category: 'Styling',
-          severity: 'info'
-        }
+          severity: 'info',
+        },
       })
     } else {
       checks.push({
         name: 'Tailwind CSS',
-        result: { 
-          status: 'warn', 
+        result: {
+          status: 'warn',
           message: 'Not found - Clarity Chat works best with Tailwind CSS',
           category: 'Styling',
-          severity: 'warning'
-        }
+          severity: 'warning',
+        },
       })
     }
 
@@ -251,25 +283,25 @@ GOOGLE_API_KEY=your_key_here
     if (hasTypeScript) {
       checks.push({
         name: 'TypeScript',
-        result: { 
-          status: 'pass', 
+        result: {
+          status: 'pass',
           message: 'Configured',
           category: 'Language',
-          severity: 'info'
-        }
+          severity: 'info',
+        },
       })
     } else {
       checks.push({
         name: 'TypeScript',
-        result: { 
-          status: 'warn', 
+        result: {
+          status: 'warn',
           message: 'Not found - TypeScript recommended for best experience',
           category: 'Language',
-          severity: 'warning'
-        }
+          severity: 'warning',
+        },
       })
     }
-    
+
     // Check 5.5: Config file
     if (config) {
       checks.push({
@@ -278,8 +310,8 @@ GOOGLE_API_KEY=your_key_here
           status: 'pass',
           message: 'Found clarity-chat.config.js',
           category: 'Configuration',
-          severity: 'info'
-        }
+          severity: 'info',
+        },
       })
     } else {
       checks.push({
@@ -288,52 +320,55 @@ GOOGLE_API_KEY=your_key_here
           status: 'pass',
           message: 'No config file (using defaults)',
           category: 'Configuration',
-          severity: 'info'
-        }
+          severity: 'info',
+        },
       })
     }
 
-  // Check 6: Git repository
-  const gitPath = path.join(cwd, '.git')
-  if (await fs.pathExists(gitPath)) {
-    checks.push({
-      name: 'Git repository',
-      result: { 
-        status: 'pass', 
-        message: 'Initialized',
-        category: 'Project Structure',
-        severity: 'info'
-      }
-    })
-  } else {
-    checks.push({
-      name: 'Git repository',
-      result: { 
-        status: 'warn', 
-        message: 'Not initialized - run: git init',
-        category: 'Project Structure',
-        severity: 'warning'
-      }
-    })
-  }
+    // Check 6: Git repository
+    const gitPath = path.join(cwd, '.git')
+    if (await fs.pathExists(gitPath)) {
+      checks.push({
+        name: 'Git repository',
+        result: {
+          status: 'pass',
+          message: 'Initialized',
+          category: 'Project Structure',
+          severity: 'info',
+        },
+      })
+    } else {
+      checks.push({
+        name: 'Git repository',
+        result: {
+          status: 'warn',
+          message: 'Not initialized - run: git init',
+          category: 'Project Structure',
+          severity: 'warning',
+        },
+      })
+    }
 
     spinner.succeed('Health check complete\n')
 
     // Group checks by category
-    const checksByCategory = checks.reduce((acc, check) => {
-      const category = check.result.category || 'Other'
-      if (!acc[category]) acc[category] = []
-      acc[category].push(check)
-      return acc
-    }, {} as Record<string, typeof checks>)
+    const checksByCategory = checks.reduce(
+      (acc, check) => {
+        const category = check.result.category || 'Other'
+        if (!acc[category]) acc[category] = []
+        acc[category].push(check)
+        return acc
+      },
+      {} as Record<string, typeof checks>
+    )
 
     // Display results
     if (process.argv.includes('--json')) {
       const summary = {
-        pass: checks.filter(c => c.result.status === 'pass').length,
-        warn: checks.filter(c => c.result.status === 'warn').length,
-        fail: checks.filter(c => c.result.status === 'fail').length,
-        checks: checks.map(c => ({
+        pass: checks.filter((c) => c.result.status === 'pass').length,
+        warn: checks.filter((c) => c.result.status === 'warn').length,
+        fail: checks.filter((c) => c.result.status === 'fail').length,
+        checks: checks.map((c) => ({
           name: c.name,
           status: c.result.status,
           message: c.result.message,
@@ -347,11 +382,13 @@ GOOGLE_API_KEY=your_key_here
 
     // Display by category with beautiful formatting
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-      for (const [category, categoryChecks] of Object.entries(checksByCategory)) {
+      for (const [category, categoryChecks] of Object.entries(
+        checksByCategory
+      )) {
         console.log()
-        console.log(chalk.bold.cyan(`  ${category}`))
+        console.log(pc.bold(pc.cyan(`  ${category}`)))
         console.log(createDivider(undefined, 50))
-        
+
         categoryChecks.forEach(({ name, result }) => {
           if (result.status === 'pass') {
             success(`${name}: ${result.message}`)
@@ -378,27 +415,37 @@ GOOGLE_API_KEY=your_key_here
     }
 
     // Summary with beautiful formatting
-    const passCount = checks.filter(c => c.result.status === 'pass').length
-    const warnCount = checks.filter(c => c.result.status === 'warn').length
-    const failCount = checks.filter(c => c.result.status === 'fail').length
+    const passCount = checks.filter((c) => c.result.status === 'pass').length
+    const warnCount = checks.filter((c) => c.result.status === 'warn').length
+    const failCount = checks.filter((c) => c.result.status === 'fail').length
 
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
       console.log(createDivider(undefined, 60))
-      const summaryItems: Array<{ check: string; status: 'pass' | 'warn' | 'fail'; message: string }> = [
-        { check: 'Passed', status: 'pass', message: `${passCount} checks` },
-      ]
+      const summaryItems: Array<{
+        check: string
+        status: 'pass' | 'warn' | 'fail'
+        message: string
+      }> = [{ check: 'Passed', status: 'pass', message: `${passCount} checks` }]
       if (warnCount > 0) {
-        summaryItems.push({ check: 'Warnings', status: 'warn', message: `${warnCount} checks` })
+        summaryItems.push({
+          check: 'Warnings',
+          status: 'warn',
+          message: `${warnCount} checks`,
+        })
       }
       if (failCount > 0) {
-        summaryItems.push({ check: 'Failed', status: 'fail', message: `${failCount} checks` })
+        summaryItems.push({
+          check: 'Failed',
+          status: 'fail',
+          message: `${failCount} checks`,
+        })
       }
       const summaryTable = createStatusTable(summaryItems)
       console.log(summaryTable)
       console.log(createDivider(undefined, 60))
     } else {
-      console.log('\n' + chalk.bold('Summary:'))
+      console.log('\n' + pc.bold('Summary:'))
       success(`Passed: ${passCount}`)
       if (warnCount > 0) warn(`Warnings: ${warnCount}`)
       if (failCount > 0) error(`Failed: ${failCount}`)
@@ -406,12 +453,17 @@ GOOGLE_API_KEY=your_key_here
 
     // Auto-fix if requested
     if (options.fix) {
-      if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-        console.log('\n' + chalk.bold.cyan('Applying fixes...\n'))
+      if (
+        !process.argv.includes('--json') &&
+        !process.argv.includes('--quiet')
+      ) {
+        console.log('\n' + pc.bold(pc.cyan('Applying fixes...\n')))
       }
-      
-      const fixableChecks = checks.filter(c => c.result.fix && c.result.status !== 'pass')
-      
+
+      const fixableChecks = checks.filter(
+        (c) => c.result.fix && c.result.status !== 'pass'
+      )
+
       if (fixableChecks.length === 0) {
         info('No fixes available')
       } else {

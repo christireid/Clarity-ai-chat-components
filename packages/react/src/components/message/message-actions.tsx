@@ -30,6 +30,12 @@ export interface MessageActionsProps {
   onRegenerate?: (messageId: string) => void
   onDelete?: (messageId: string) => void
   show: boolean
+  /**
+   * Always show actions regardless of hover state
+   * Useful for accessibility when actions should be discoverable
+   * @default false
+   */
+  alwaysVisible?: boolean
 }
 
 /**
@@ -41,6 +47,8 @@ export interface MessageActionsProps {
  * - Icon-only buttons (cleaner, more minimal)
  * - Delete feedback with animation
  * - Improved hover/tap interactions
+ * - Keyboard navigation (arrow keys, Tab)
+ * - Focus-visible accessibility
  */
 export const MessageActions = React.memo<MessageActionsProps>(
   ({
@@ -56,12 +64,15 @@ export const MessageActions = React.memo<MessageActionsProps>(
     onRegenerate,
     onDelete,
     show,
+    alwaysVisible = false,
   }) => {
     const [isDeleting, setIsDeleting] = React.useState(false)
     const toast = useToast()
 
     const isUserMessage = role === 'user'
     const isAssistantMessage = role === 'assistant'
+
+    const actionsRef = React.useRef<HTMLDivElement>(null)
 
     const handleDelete = React.useCallback(() => {
       setIsDeleting(true)
@@ -75,18 +86,56 @@ export const MessageActions = React.memo<MessageActionsProps>(
       }, 300)
     }, [messageId, onDelete, toast])
 
-    if (!show) return null
+    // Keyboard navigation handler for arrow keys within the actions toolbar
+    const handleKeyDown = React.useCallback((e: React.KeyboardEvent) => {
+      const container = actionsRef.current
+      if (!container) return
+
+      const buttons = Array.from(
+        container.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
+      )
+      const currentIndex = buttons.indexOf(
+        document.activeElement as HTMLButtonElement
+      )
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault()
+        const nextIndex = (currentIndex + 1) % buttons.length
+        buttons[nextIndex]?.focus()
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        const prevIndex = (currentIndex - 1 + buttons.length) % buttons.length
+        buttons[prevIndex]?.focus()
+      } else if (e.key === 'Home') {
+        e.preventDefault()
+        buttons[0]?.focus()
+      } else if (e.key === 'End') {
+        e.preventDefault()
+        buttons[buttons.length - 1]?.focus()
+      }
+    }, [])
+
+    // Don't render if not shown and not always visible
+    if (!show && !alwaysVisible) return null
 
     return (
       <AnimatePresence>
         <motion.div
+          ref={actionsRef}
           initial={{ opacity: 0, y: 10, height: 0 }}
-          animate={{ opacity: 1, y: 0, height: 'auto' }}
+          animate={{
+            opacity: alwaysVisible || show ? 1 : 0.6,
+            y: 0,
+            height: 'auto',
+          }}
           exit={{ opacity: 0, y: 10, height: 0 }}
           transition={{
             duration: ANIMATION_DURATION.fast / 1000,
             ease: EASING_FRAMER.out,
           }}
+          role="toolbar"
+          aria-label="Message actions"
+          onKeyDown={handleKeyDown}
           className="flex items-center gap-1.5 overflow-hidden mt-3"
         >
           {/* Copy button - icon only, staggered animation */}

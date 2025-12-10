@@ -6,6 +6,7 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks'
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y'
 import storybook from 'eslint-plugin-storybook'
 import globals from 'globals'
+import clarityAnimations from './eslint-plugin-clarity-animations/index.js'
 
 const sharedRules = {
   'react/react-in-jsx-scope': 'off',
@@ -90,7 +91,10 @@ export default [
         NodeJS: 'readonly',
       },
     },
-    plugins: sharedPlugins,
+    plugins: {
+      ...sharedPlugins,
+      'clarity-animations': clarityAnimations,
+    },
     settings: {
       react: { version: '19.0' },
     },
@@ -105,6 +109,11 @@ export default [
       ],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
+      // Clarity Animations rules
+      'clarity-animations/no-hardcoded-duration': 'warn',
+      'clarity-animations/no-layout-animation': 'error',
+      'clarity-animations/prefer-animation-library': 'warn',
+      'clarity-animations/require-reduced-motion': 'warn',
     },
   },
 

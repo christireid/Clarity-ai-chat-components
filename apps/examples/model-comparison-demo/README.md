@@ -25,7 +25,7 @@ Compare AI model responses side-by-side with real-time streaming using Clarity C
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 20+
 - npm 9+
 
 ### Installation
@@ -65,6 +65,7 @@ GOOGLE_API_KEY=AIza...
 ### Model Selection
 
 Choose any two models from:
+
 - **OpenAI**: GPT-4 Turbo, GPT-4, GPT-3.5 Turbo
 - **Anthropic**: Claude 3 Opus, Sonnet, Haiku
 - **Google**: Gemini Pro, Gemini Vision
@@ -97,17 +98,9 @@ function ComparisonView() {
 
   return (
     <div>
-      <ModelSelector
-        models={allModels}
-        value={model}
-        onChange={(id) => setModel(id)}
-        showMetrics
-      />
-      
-      <StreamingMessage
-        content={response}
-        isStreaming={isStreaming}
-      />
+      <ModelSelector models={allModels} value={model} onChange={(id) => setModel(id)} showMetrics />
+
+      <StreamingMessage content={response} isStreaming={isStreaming} />
     </div>
   )
 }
@@ -119,15 +112,15 @@ function ComparisonView() {
 import { openAIAdapter, anthropicAdapter } from '@clarity-chat/react'
 
 // Stream from OpenAI
-const config = { 
-  provider: 'openai', 
+const config = {
+  provider: 'openai',
   model: 'gpt-4-turbo',
-  apiKey: process.env.OPENAI_API_KEY 
+  apiKey: process.env.OPENAI_API_KEY,
 }
 
 for await (const chunk of openAIAdapter.stream(messages, config)) {
   if (chunk.type === 'token') {
-    setResponse(prev => prev + chunk.content)
+    setResponse((prev) => prev + chunk.content)
   } else if (chunk.type === 'done') {
     const cost = openAIAdapter.estimateCost(chunk.usage, config.model)
     console.log(`Cost: $${cost.toFixed(4)}`)
@@ -140,10 +133,10 @@ for await (const chunk of openAIAdapter.stream(messages, config)) {
 ```tsx
 import { openAIAdapter, anthropicAdapter } from '@clarity-chat/react'
 
-const usage = { 
-  promptTokens: 1000, 
+const usage = {
+  promptTokens: 1000,
   completionTokens: 500,
-  totalTokens: 1500 
+  totalTokens: 1500,
 }
 
 // GPT-4 Turbo: $0.025
@@ -152,30 +145,34 @@ const gpt4Cost = openAIAdapter.estimateCost(usage, 'gpt-4-turbo')
 // Claude 3 Sonnet: $0.0105
 const claudeCost = anthropicAdapter.estimateCost(usage, 'claude-3-sonnet')
 
-console.log(`Savings: ${((gpt4Cost - claudeCost) / gpt4Cost * 100).toFixed(1)}%`)
+console.log(`Savings: ${(((gpt4Cost - claudeCost) / gpt4Cost) * 100).toFixed(1)}%`)
 // Savings: 58.0%
 ```
 
 ## Features Demonstrated
 
 ### 1. Model Adapter System
+
 - Unified API for multiple providers
 - Easy provider switching
 - Consistent streaming interface
 
 ### 2. Streaming Components
+
 - `StreamingMessage` - Real-time token display
 - `ModelSelector` - Visual model picker with metrics
 - Cursor animation during streaming
 - Performance metrics display
 
 ### 3. Cost Optimization
+
 - Real-time cost estimation
 - Side-by-side cost comparison
 - Percentage savings calculation
 - Per-token pricing transparency
 
 ### 4. Developer Experience
+
 - Type-safe APIs
 - Comprehensive error handling
 - Responsive design
@@ -223,9 +220,7 @@ Set these in your deployment platform:
 Edit the model list in `page.tsx`:
 
 ```tsx
-const models = allModels.filter(m => 
-  m.provider === 'openai' || m.provider === 'anthropic'
-)
+const models = allModels.filter((m) => m.provider === 'openai' || m.provider === 'anthropic')
 ```
 
 ### Add Custom Metrics

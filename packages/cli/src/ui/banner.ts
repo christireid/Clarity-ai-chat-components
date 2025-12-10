@@ -3,11 +3,18 @@
  * Enhanced with gradients and ASCII art
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import gradient from 'gradient-string'
 
 export interface BannerOptions {
-  gradient?: 'pastel' | 'rainbow' | 'cristal' | 'retro' | 'atlas' | 'summer' | 'morning'
+  gradient?:
+    | 'pastel'
+    | 'rainbow'
+    | 'cristal'
+    | 'retro'
+    | 'atlas'
+    | 'summer'
+    | 'morning'
   color?: 'cyan' | 'green' | 'blue' | 'magenta' | 'yellow'
   padding?: number
   margin?: number
@@ -26,11 +33,11 @@ const GRADIENTS = {
 } as const
 
 const COLORS = {
-  cyan: chalk.cyan,
-  green: chalk.green,
-  blue: chalk.blue,
-  magenta: chalk.magenta,
-  yellow: chalk.yellow,
+  cyan: pc.cyan,
+  green: pc.green,
+  blue: pc.blue,
+  magenta: pc.magenta,
+  yellow: pc.yellow,
 } as const
 
 /**
@@ -48,13 +55,15 @@ export function createBanner(
   } = options
 
   const lines = Array.isArray(text) ? text : [text]
-  
+
   // Add padding
-  const paddedLines = lines.map(line => ' '.repeat(padding) + line + ' '.repeat(padding))
-  
+  const paddedLines = lines.map(
+    (line) => ' '.repeat(padding) + line + ' '.repeat(padding)
+  )
+
   // Add top margin
   const topMargin = '\n'.repeat(margin)
-  
+
   // Add bottom margin
   const bottomMargin = '\n'.repeat(margin)
 
@@ -63,7 +72,7 @@ export function createBanner(
   if (gradientType && GRADIENTS[gradientType]) {
     formatted = GRADIENTS[gradientType].multiline(paddedLines.join('\n'))
   } else if (color && COLORS[color]) {
-    formatted = paddedLines.map(line => COLORS[color](line)).join('\n')
+    formatted = paddedLines.map((line) => COLORS[color](line)).join('\n')
   } else {
     formatted = paddedLines.join('\n')
   }
@@ -77,7 +86,7 @@ export function createBanner(
 export const CLARITY_BANNER = [
   '  ____  _               _ _         ____  _           _   ',
   ' / ___|| | __ _ _ __(_) |_ _   _/ ___|| |__   __ _| |_ ',
-  '| |    | |/ _` | \'__| | __| | | | |    | \'_ \\ / _` | __|',
+  "| |    | |/ _` | '__| | __| | | | |    | '_ \\ / _` | __|",
   '| |___ | | (_| | |  | | |_| |_| | |___ | | | | (_| | |_ ',
   ' \\____|_|\\__,_|_|  |_|\\__|\\__, |\\____|_| |_|\\__,_|\\__|',
   '                           |___/                          ',
@@ -95,14 +104,14 @@ export function displayBanner(options: BannerOptions = {}): void {
  */
 export function sectionHeader(title: string, icon?: string): string {
   const iconText = icon ? `${icon} ` : ''
-  return chalk.bold.cyan(`${iconText}${title}`)
+  return pc.bold(pc.cyan(`${iconText}${title}`))
 }
 
 /**
  * Create a subsection header
  */
 export function subsectionHeader(title: string): string {
-  return chalk.bold(title)
+  return pc.bold(title)
 }
 
 /**
@@ -112,7 +121,7 @@ export function createDivider(text?: string, width: number = 60): string {
   if (text) {
     const padding = Math.max(0, Math.floor((width - text.length - 2) / 2))
     const line = '─'.repeat(padding)
-    return chalk.gray(`${line} ${text} ${line}`)
+    return pc.gray(`${line} ${text} ${line}`)
   }
-  return chalk.gray('─'.repeat(width))
+  return pc.gray('─'.repeat(width))
 }

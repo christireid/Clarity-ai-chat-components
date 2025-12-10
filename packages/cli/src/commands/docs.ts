@@ -3,7 +3,7 @@
  * Enhanced with beautiful UI components
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import open from 'open'
 import { getLogger } from '../utils/logger.js'
 import { sectionHeader } from '../ui/banner.js'
@@ -67,7 +67,7 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
   // Display available docs in a table if no query
   if (!query) {
     const columns: TableColumn[] = [
-      { header: 'Topic', width: 20, color: chalk.yellow },
+      { header: 'Topic', width: 20, color: pc.yellow },
       { header: 'Description', width: 40 },
     ]
 
@@ -95,23 +95,23 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
 
   try {
     const infoContent = [
-      chalk.bold(`Opening: ${docTitle}`),
+      pc.bold(`Opening: ${docTitle}`),
       '',
-      chalk.gray('URL: ') + chalk.cyan(url),
+      pc.gray('URL: ') + pc.cyan(url),
     ].join('\n')
 
     console.log(infoBox(infoContent, '📚 Opening Docs'))
     console.log()
 
     await open(url)
-    console.log(chalk.gray(`Opened in browser: ${url}`))
+    console.log(pc.gray(`Opened in browser: ${url}`))
     console.log()
   } catch (error) {
     logger.error('Failed to open browser')
     console.log()
     console.log(
       warningBox(
-        `Failed to open browser automatically.\n\nManually visit: ${chalk.cyan(url)}`,
+        `Failed to open browser automatically.\n\nManually visit: ${pc.cyan(url)}`,
         '⚠ Browser Error'
       )
     )

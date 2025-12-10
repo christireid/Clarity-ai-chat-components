@@ -2,7 +2,7 @@
  * Theme Validation command - Validate theme configurations
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import fs from 'fs-extra'
 import path from 'path'
 import fastGlob from 'fast-glob'
@@ -401,27 +401,23 @@ function displayResults(results: ValidationResult[]) {
         )
       : 100
 
-  console.log(chalk.bold(`  Summary:`))
-  console.log(chalk.gray(`  ─────────────────────────────────────────`))
-  console.log(`  📁 Files analyzed: ${chalk.cyan(results.length)}`)
-  console.log(`  ❌ Errors: ${chalk.red(totalErrors)}`)
-  console.log(`  ⚠️  Warnings: ${chalk.yellow(totalWarnings)}`)
+  console.log(pc.bold(`  Summary:`))
+  console.log(pc.gray(`  ─────────────────────────────────────────`))
+  console.log(`  📁 Files analyzed: ${pc.cyan(results.length)}`)
+  console.log(`  ❌ Errors: ${pc.red(totalErrors)}`)
+  console.log(`  ⚠️  Warnings: ${pc.yellow(totalWarnings)}`)
   console.log(
-    `  📊 Average score: ${avgScore >= 80 ? chalk.green(avgScore) : avgScore >= 60 ? chalk.yellow(avgScore) : chalk.red(avgScore)}/100`
+    `  📊 Average score: ${avgScore >= 80 ? pc.green(avgScore) : avgScore >= 60 ? pc.yellow(avgScore) : pc.red(avgScore)}/100`
   )
   console.log()
 
   // Show details per file
   for (const result of results) {
     const scoreColor =
-      result.score >= 80
-        ? chalk.green
-        : result.score >= 60
-          ? chalk.yellow
-          : chalk.red
+      result.score >= 80 ? pc.green : result.score >= 60 ? pc.yellow : pc.red
 
     console.log(
-      chalk.bold(
+      pc.bold(
         `  ${result.isValid ? '✅' : '❌'} ${result.file} (Score: ${scoreColor(result.score)})`
       )
     )
@@ -429,10 +425,10 @@ function displayResults(results: ValidationResult[]) {
     const data = result.issues.map((issue) => ({
       Type:
         issue.type === 'error'
-          ? chalk.red('error')
+          ? pc.red('error')
           : issue.type === 'warning'
-            ? chalk.yellow('warn')
-            : chalk.blue('info'),
+            ? pc.yellow('warn')
+            : pc.blue('info'),
       Message: issue.message,
       Fix: issue.fix || '',
     }))
@@ -444,7 +440,7 @@ function displayResults(results: ValidationResult[]) {
         { header: 'Fix', key: 'Fix' },
       ]
       const table = createTable(data, columns, {
-        headerColor: chalk.blue,
+        headerColor: pc.blue,
       })
       console.log(table)
     }
@@ -465,10 +461,8 @@ export async function validateThemeCommand(options: {
 
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log()
-      console.log(chalk.blue.bold('🎨 Clarity Chat Theme Validator'))
-      console.log(
-        chalk.gray('   Validate theme configurations and accessibility')
-      )
+      console.log(pc.bold(pc.blue('🎨 Clarity Chat Theme Validator')))
+      console.log(pc.gray('   Validate theme configurations and accessibility'))
       console.log()
     }
 

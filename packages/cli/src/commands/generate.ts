@@ -3,7 +3,7 @@
  * Enhanced with beautiful UI components
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import prompts from 'prompts'
 import path from 'path'
 import fs from 'fs-extra'
@@ -162,7 +162,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
 
     // Display available generators in a beautiful table
     const columns: TableColumn[] = [
-      { header: 'Type', width: 15, color: chalk.yellow },
+      { header: 'Type', width: 15, color: pc.yellow },
       { header: 'Name', width: 30 },
     ]
 
@@ -217,8 +217,8 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   const infoContent = [
     `${generator.icon} ${generator.name}`,
     '',
-    `Name: ${chalk.cyan(name)}`,
-    `Path: ${chalk.cyan(fullPath)}`,
+    `Name: ${pc.cyan(name)}`,
+    `Path: ${pc.cyan(fullPath)}`,
   ].join('\n')
 
   console.log(infoBox(infoContent, 'Generation Info'))
@@ -232,7 +232,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   })
 
   if (!confirm) {
-    console.log(chalk.gray('\nCancelled'))
+    console.log(pc.gray('\nCancelled'))
     return
   }
 
@@ -259,7 +259,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
       })
 
       if (!overwrite) {
-        console.log(chalk.gray('\nCancelled'))
+        console.log(pc.gray('\nCancelled'))
         return
       }
     }
@@ -271,12 +271,12 @@ export async function generateCommand(type: string, options: GenerateOptions) {
 
     console.log()
     const successContent = [
-      chalk.bold('File created successfully!'),
+      pc.bold('File created successfully!'),
       '',
-      chalk.white('File:'),
-      chalk.cyan(`  ${filePath}`),
+      pc.white('File:'),
+      pc.cyan(`  ${filePath}`),
       '',
-      chalk.gray('Open it in your editor and start coding!'),
+      pc.gray('Open it in your editor and start coding!'),
     ].join('\n')
 
     console.log(successBox(successContent, '✓ Success'))

@@ -1,151 +1,179 @@
 /**
  * Anthropic Model Adapter
- * 
- * Adapter for Anthropic's Claude models
+ *
+ * Adapter for Anthropic's Claude models (Claude 3.5, Claude 3, etc.)
+ * Includes timeout, AbortSignal support, and rate limit header parsing.
  */
 
-import type { 
-  ModelAdapter
+import type {
+  ModelAdapter,
   // ChatMessage, // Reserved for future use
   // ModelConfig, // Reserved for future use
   // StreamChunk, // Reserved for future use
   // TokenUsage // Reserved for future use
 } from './types'
+import { fetchWithTimeout } from '../utils/fetch-with-timeout'
+import { parseRateLimitHeaders } from '../utils/rate-limit-headers'
 
 export const anthropicAdapter: ModelAdapter = {
   name: 'anthropic',
-  
+
   async chat(messages, config) {
+    const timeout = config.timeout ?? 30000 // 30s default for chat
+
     // Extract system message
-    const systemMessage = messages.find(m => m.role === 'system')
-    const conversationMessages = messages.filter(m => m.role !== 'system')
-    
-    const response = await fetch(
+    const systemMessage = messages.find((m) => m.role === 'system')
+    const conversationMessages = messages.filter((m) => m.role !== 'system')
+
+    const response = await fetchWithTimeout(
       `${config.baseURL || 'https://api.anthropic.com/v1'}/messages`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': config.apiKey || process.env['ANTHROPIC_API_KEY'] || '',
-          'anthropic-version': '2023-06-01'
+          'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
           model: config.model,
           system: systemMessage?.content || undefined,
-          messages: conversationMessages.map(m => ({
+          messages: conversationMessages.map((m) => ({
             role: m.role === 'assistant' ? 'assistant' : 'user',
-            content: typeof m.content === 'string' ? m.content : m.content
+            content: typeof m.content === 'string' ? m.content : m.content,
           })),
           max_tokens: config.maxTokens || 4096,
           temperature: config.temperature,
           top_p: config.topP,
-          stop_sequences: config.stop
-        })
+          stop_sequences: config.stop,
+        }),
+        timeout,
+        signal: config.signal,
       }
     )
-    
+
     if (!response.ok) {
-      const error = await response.json()
-      throw new Error(`Anthropic API error: ${error.error?.message || response.statusText}`)
+      const rateLimitInfo = parseRateLimitHeaders(response)
+      const error = await response.json().catch(() => ({}))
+      const errorMessage = `Anthropic API error: ${error.error?.message || response.statusText}`
+
+      // Attach rate limit info to error for upstream handling
+      const err = new Error(errorMessage) as Error & {
+        rateLimitInfo?: typeof rateLimitInfo
+      }
+      err.rateLimitInfo = rateLimitInfo
+      throw err
     }
-    
+
     const data = await response.json()
-    
+
     return {
       role: 'assistant',
-      content: data.content[0]?.text || ''
+      content: data.content[0]?.text || '',
     }
   },
-  
+
   async *stream(messages, config) {
-    const systemMessage = messages.find(m => m.role === 'system')
-    const conversationMessages = messages.filter(m => m.role !== 'system')
-    
-    const response = await fetch(
+    const timeout = config.timeout ?? 60000 // 60s default for streaming
+
+    const systemMessage = messages.find((m) => m.role === 'system')
+    const conversationMessages = messages.filter((m) => m.role !== 'system')
+
+    const response = await fetchWithTimeout(
       `${config.baseURL || 'https://api.anthropic.com/v1'}/messages`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': config.apiKey || process.env['ANTHROPIC_API_KEY'] || '',
-          'anthropic-version': '2023-06-01'
+          'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
           model: config.model,
           system: systemMessage?.content || undefined,
-          messages: conversationMessages.map(m => ({
+          messages: conversationMessages.map((m) => ({
             role: m.role === 'assistant' ? 'assistant' : 'user',
-            content: typeof m.content === 'string' ? m.content : m.content
+            content: typeof m.content === 'string' ? m.content : m.content,
           })),
           max_tokens: config.maxTokens || 4096,
           temperature: config.temperature,
-          stream: true
-        })
+          stream: true,
+        }),
+        timeout,
+        signal: config.signal,
       }
     )
-    
+
     if (!response.ok) {
-      const error = await response.json()
+      const rateLimitInfo = parseRateLimitHeaders(response)
+      const error = await response.json().catch(() => ({}))
       yield {
         type: 'error',
-        error: error.error?.message || response.statusText
+        error: error.error?.message || response.statusText,
+        rateLimitInfo,
       }
       return
     }
-    
+
     const reader = response.body?.getReader()
     const decoder = new TextDecoder()
-    
+
     if (!reader) {
       yield { type: 'error', error: 'No response body' }
       return
     }
-    
+
     let buffer = ''
-    
+
     try {
       while (true) {
         const { done, value } = await reader.read()
-        
+
         if (done) {
           yield { type: 'done' }
           break
         }
-        
+
         buffer += decoder.decode(value, { stream: true })
         const lines = buffer.split('\n')
         buffer = lines.pop() || ''
-        
+
         for (const line of lines) {
           const trimmed = line.trim()
-          
+
           if (!trimmed || !trimmed.startsWith('data: ')) continue
-          
+
           try {
             const json = JSON.parse(trimmed.slice(6))
-            
+
             if (json.type === 'content_block_delta' && json.delta?.text) {
               yield {
                 type: 'token',
-                content: json.delta.text
+                content: json.delta.text,
               }
-              
+
               config.streamOptions?.onToken?.(json.delta.text)
             }
-            
+
             if (json.type === 'message_delta' && json.usage) {
               yield {
                 type: 'done',
                 usage: {
                   promptTokens: json.usage.input_tokens || 0,
                   completionTokens: json.usage.output_tokens || 0,
-                  totalTokens: (json.usage.input_tokens || 0) + (json.usage.output_tokens || 0),
-                  estimatedCost: this.estimateCost({
-                    promptTokens: json.usage.input_tokens || 0,
-                    completionTokens: json.usage.output_tokens || 0,
-                    totalTokens: (json.usage.input_tokens || 0) + (json.usage.output_tokens || 0)
-                  }, config.model)
-                }
+                  totalTokens:
+                    (json.usage.input_tokens || 0) +
+                    (json.usage.output_tokens || 0),
+                  estimatedCost: this.estimateCost(
+                    {
+                      promptTokens: json.usage.input_tokens || 0,
+                      completionTokens: json.usage.output_tokens || 0,
+                      totalTokens:
+                        (json.usage.input_tokens || 0) +
+                        (json.usage.output_tokens || 0),
+                    },
+                    config.model
+                  ),
+                },
               }
             }
           } catch (e) {
@@ -157,40 +185,74 @@ export const anthropicAdapter: ModelAdapter = {
       reader.releaseLock()
     }
   },
-  
+
   estimateCost(usage, model) {
-    // Pricing per 1M tokens (as of 2024)
+    // Pricing per 1M tokens (as of 2025)
     const rates: Record<string, { input: number; output: number }> = {
+      // Claude 3.5 family (2024-2025)
+      'claude-3-5-sonnet-20241022': { input: 3, output: 15 },
+      'claude-3-5-sonnet-latest': { input: 3, output: 15 },
+      'claude-3-5-haiku-20241022': { input: 0.8, output: 4 },
+      'claude-3-5-haiku-latest': { input: 0.8, output: 4 },
+      // Claude 3 family
       'claude-3-opus-20240229': { input: 15, output: 75 },
+      'claude-3-opus-latest': { input: 15, output: 75 },
       'claude-3-sonnet-20240229': { input: 3, output: 15 },
       'claude-3-haiku-20240307': { input: 0.25, output: 1.25 },
+      // Legacy models
       'claude-2.1': { input: 8, output: 24 },
-      'claude-2.0': { input: 8, output: 24 }
+      'claude-2.0': { input: 8, output: 24 },
     }
-    
-    const rate = rates[model] || rates['claude-3-sonnet-20240229']
+
+    const rate = rates[model] || rates['claude-3-5-sonnet-latest']
     if (!rate) return 0
-    
+
     return (
       (usage.promptTokens / 1000000) * rate.input +
       (usage.completionTokens / 1000000) * rate.output
     )
-  }
+  },
 }
 
 export const anthropicModels = [
   {
-    id: 'claude-3-opus-20240229',
+    id: 'claude-3-5-sonnet-latest',
+    name: 'Claude 3.5 Sonnet',
+    provider: 'anthropic' as const,
+    speed: 'fast' as const,
+    cost: 'medium' as const,
+    quality: 'best' as const,
+    contextWindow: 200000,
+    description: 'Most intelligent Claude model, best for complex tasks',
+    streaming: true,
+    toolCalling: true,
+    vision: true,
+  },
+  {
+    id: 'claude-3-5-haiku-latest',
+    name: 'Claude 3.5 Haiku',
+    provider: 'anthropic' as const,
+    speed: 'fast' as const,
+    cost: 'low' as const,
+    quality: 'excellent' as const,
+    contextWindow: 200000,
+    description: 'Fast and affordable, great for most tasks',
+    streaming: true,
+    toolCalling: true,
+    vision: true,
+  },
+  {
+    id: 'claude-3-opus-latest',
     name: 'Claude 3 Opus',
     provider: 'anthropic' as const,
     speed: 'medium' as const,
     cost: 'high' as const,
     quality: 'best' as const,
     contextWindow: 200000,
-    description: 'Most capable Claude model, exceptional reasoning',
+    description: 'Exceptional reasoning, use for complex analysis',
     streaming: true,
     toolCalling: true,
-    vision: true
+    vision: true,
   },
   {
     id: 'claude-3-sonnet-20240229',
@@ -200,10 +262,10 @@ export const anthropicModels = [
     cost: 'medium' as const,
     quality: 'excellent' as const,
     contextWindow: 200000,
-    description: 'Balanced performance and cost',
+    description: 'Legacy model, use claude-3-5-sonnet instead',
     streaming: true,
     toolCalling: true,
-    vision: true
+    vision: true,
   },
   {
     id: 'claude-3-haiku-20240307',
@@ -213,9 +275,9 @@ export const anthropicModels = [
     cost: 'low' as const,
     quality: 'good' as const,
     contextWindow: 200000,
-    description: 'Fastest Claude model, great for simple tasks',
+    description: 'Legacy model, use claude-3-5-haiku instead',
     streaming: true,
     toolCalling: true,
-    vision: true
-  }
+    vision: true,
+  },
 ]

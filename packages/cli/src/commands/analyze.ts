@@ -2,14 +2,20 @@
  * Analyze command - Analyze project structure and usage
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import ora from 'ora'
 import fs from 'fs-extra'
 import path from 'path'
 import fastGlob from 'fast-glob'
 import { getLogger } from '../utils/logger.js'
 import { handleError } from '../utils/errors.js'
-import { success, info, warn, outputJson, outputTable } from '../utils/output.js'
+import {
+  success,
+  info,
+  warn,
+  outputJson,
+  outputTable,
+} from '../utils/output.js'
 import { createBanner, createDivider } from '../ui/banner.js'
 import { successMessage, infoMessage } from '../ui/messages.js'
 import { createTable } from '../ui/table.js'
@@ -58,7 +64,12 @@ async function analyzeProject(): Promise<AnalysisResult> {
     // Find all source files
     const files = await fastGlob(['src/**/*.{ts,tsx,js,jsx}'], {
       cwd: process.cwd(),
-      ignore: ['**/node_modules/**', '**/dist/**', '**/*.test.*', '**/*.spec.*'],
+      ignore: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/*.test.*',
+        '**/*.spec.*',
+      ],
     })
 
     result.totalFiles = files.length
@@ -72,16 +83,17 @@ async function analyzeProject(): Promise<AnalysisResult> {
       const content = await fs.readFile(path.join(process.cwd(), file), 'utf8')
 
       // Find Clarity Chat imports
-      const importRegex = /import\s+{([^}]+)}\s+from\s+['"]@clarity-chat\/react['"]/g
+      const importRegex =
+        /import\s+{([^}]+)}\s+from\s+['"]@clarity-chat\/react['"]/g
       const matches = content.matchAll(importRegex)
 
       for (const match of matches) {
         const imports = match[1]
           .split(',')
-          .map(i => i.trim())
+          .map((i) => i.trim())
           .filter(Boolean)
 
-        imports.forEach(importName => {
+        imports.forEach((importName) => {
           result.totalImports++
 
           // Categorize as component or hook
@@ -130,14 +142,14 @@ async function analyzeProject(): Promise<AnalysisResult> {
       }
 
       // Check for common patterns
-      const hasChat = result.components.some(c => c.name.includes('Chat'))
+      const hasChat = result.components.some((c) => c.name.includes('Chat'))
       if (!hasChat) {
         result.recommendations.push(
           'Add ChatWindow or ChatInterface for a complete chat experience.'
         )
       }
 
-      const hasModelSelector = result.components.some(c =>
+      const hasModelSelector = result.components.some((c) =>
         c.name.includes('ModelSelector')
       )
       if (!hasModelSelector && hasChat) {
@@ -161,11 +173,11 @@ async function analyzeProject(): Promise<AnalysisResult> {
 async function displayResults(result: AnalysisResult) {
   if (process.argv.includes('--json') || process.argv.includes('--quiet')) {
     // Simple output for JSON/quiet mode
-    console.log(chalk.blue.bold('\n📊 Project Analysis\n'))
-    console.log(`Total files scanned: ${chalk.cyan(result.totalFiles)}`)
-    console.log(`Total imports: ${chalk.cyan(result.totalImports)}`)
-    console.log(`Components used: ${chalk.cyan(result.components.length)}`)
-    console.log(`Hooks used: ${chalk.cyan(result.hooks.length)}`)
+    console.log(pc.bold(pc.blue('\n📊 Project Analysis\n')))
+    console.log(`Total files scanned: ${pc.cyan(result.totalFiles)}`)
+    console.log(`Total imports: ${pc.cyan(result.totalImports)}`)
+    console.log(`Components used: ${pc.cyan(result.components.length)}`)
+    console.log(`Hooks used: ${pc.cyan(result.hooks.length)}`)
     return
   }
 
@@ -185,25 +197,27 @@ async function displayResults(result: AnalysisResult) {
     { header: 'Value', key: 'Value' },
   ]
   const summaryTable = createTable(summaryData, summaryColumns, {
-    headerColor: chalk.blue,
+    headerColor: pc.blue,
   })
   console.log(summaryTable)
   console.log()
 
   // Top components table
   if (result.components.length > 0) {
-    console.log(chalk.bold.cyan('  Most Used Components'))
+    console.log(pc.bold(pc.cyan('  Most Used Components')))
     console.log(createDivider(undefined, 50))
-    const componentData = result.components.slice(0, 10).map((component, index) => ({
-      Component: `${index + 1}. ${component.name}`,
-      Usage: `used in ${component.importCount} file(s)`,
-    }))
+    const componentData = result.components
+      .slice(0, 10)
+      .map((component, index) => ({
+        Component: `${index + 1}. ${component.name}`,
+        Usage: `used in ${component.importCount} file(s)`,
+      }))
     const componentColumns = [
       { header: 'Component', key: 'Component', width: 30 },
       { header: 'Usage', key: 'Usage' },
     ]
     const componentTable = createTable(componentData, componentColumns, {
-      headerColor: chalk.cyan,
+      headerColor: pc.cyan,
       compact: true,
     })
     console.log(componentTable)
@@ -212,7 +226,7 @@ async function displayResults(result: AnalysisResult) {
 
   // Top hooks table
   if (result.hooks.length > 0) {
-    console.log(chalk.bold.cyan('  Most Used Hooks'))
+    console.log(pc.bold(pc.cyan('  Most Used Hooks')))
     console.log(createDivider(undefined, 50))
     const hookData = result.hooks.slice(0, 5).map((hook, index) => ({
       Hook: `${index + 1}. ${hook.name}`,
@@ -223,7 +237,7 @@ async function displayResults(result: AnalysisResult) {
       { header: 'Usage', key: 'Usage' },
     ]
     const hookTable = createTable(hookData, hookColumns, {
-      headerColor: chalk.cyan,
+      headerColor: pc.cyan,
       compact: true,
     })
     console.log(hookTable)
@@ -233,22 +247,26 @@ async function displayResults(result: AnalysisResult) {
   // Unused components warning
   if (result.unusedComponents.length > 0) {
     console.log()
-    console.log(chalk.yellow.bold('  ⚠️  Unused Components'))
+    console.log(pc.bold(pc.yellow('  ⚠️  Unused Components')))
     console.log(createDivider(undefined, 50))
-    result.unusedComponents.forEach(component => {
-      console.log(chalk.gray(`    • ${component}`))
+    result.unusedComponents.forEach((component) => {
+      console.log(pc.gray(`    • ${component}`))
     })
-    console.log(chalk.gray('\n    Consider removing unused dependencies to reduce bundle size.'))
+    console.log(
+      pc.gray(
+        '\n    Consider removing unused dependencies to reduce bundle size.'
+      )
+    )
     console.log()
   }
 
   // Recommendations
   if (result.recommendations.length > 0) {
     console.log()
-    console.log(chalk.bold.cyan('  💡 Recommendations'))
+    console.log(pc.bold(pc.cyan('  💡 Recommendations')))
     console.log(createDivider(undefined, 50))
-    result.recommendations.forEach(rec => {
-      console.log(chalk.gray(`    • ${rec}`))
+    result.recommendations.forEach((rec) => {
+      console.log(pc.gray(`    • ${rec}`))
     })
     console.log()
   }
@@ -276,9 +294,9 @@ async function generateReport(result: AnalysisResult) {
     const markdown = generateMarkdownReport(result)
     await fs.writeFile(mdPath, markdown)
 
-    spinner.succeed(`Reports saved to ${chalk.cyan('clarity-reports/')}`)
-    console.log(`  ${chalk.gray(jsonPath)}`)
-    console.log(`  ${chalk.gray(mdPath)}`)
+    spinner.succeed(`Reports saved to ${pc.cyan('clarity-reports/')}`)
+    console.log(`  ${pc.gray(jsonPath)}`)
+    console.log(`  ${pc.gray(mdPath)}`)
   } catch (error) {
     spinner.fail('Failed to generate report')
     throw error
@@ -308,11 +326,15 @@ ${result.components.map((c, i) => `${i + 1}. **${c.name}** - used in ${c.importC
 
 ${result.hooks.map((h, i) => `${i + 1}. **${h.name}** - used in ${h.importCount} file(s)`).join('\n')}
 
-${result.recommendations.length > 0 ? `
+${
+  result.recommendations.length > 0
+    ? `
 ## Recommendations
 
-${result.recommendations.map(r => `- ${r}`).join('\n')}
-` : ''}
+${result.recommendations.map((r) => `- ${r}`).join('\n')}
+`
+    : ''
+}
 
 ---
 
@@ -323,7 +345,10 @@ Generated by Clarity Chat CLI
 /**
  * Main analyze command
  */
-export async function analyzeCommand(options: { report?: boolean; verbose?: boolean }) {
+export async function analyzeCommand(options: {
+  report?: boolean
+  verbose?: boolean
+}) {
   try {
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
@@ -332,12 +357,12 @@ export async function analyzeCommand(options: { report?: boolean; verbose?: bool
     }
 
     const result = await analyzeProject()
-    
+
     if (process.argv.includes('--json')) {
       outputJson(result)
       return
     }
-    
+
     await displayResults(result)
 
     if (options.report) {
@@ -346,20 +371,22 @@ export async function analyzeCommand(options: { report?: boolean; verbose?: bool
 
     if (options.verbose) {
       info('\nDetailed usage by file:')
-      result.components.forEach(component => {
-        console.log(chalk.yellow(`\n${component.name}:`))
-        component.files.forEach(file => {
-          console.log(chalk.gray(`  ${file}`))
+      result.components.forEach((component) => {
+        console.log(pc.yellow(`\n${component.name}:`))
+        component.files.forEach((file) => {
+          console.log(pc.gray(`  ${file}`))
         })
       })
     }
 
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log()
-      console.log(successMessage('Analysis complete!', {
-        title: '✅ Complete',
-        borderColor: 'green',
-      }))
+      console.log(
+        successMessage('Analysis complete!', {
+          title: '✅ Complete',
+          borderColor: 'green',
+        })
+      )
     } else {
       success('Analysis complete!')
     }
@@ -367,4 +394,3 @@ export async function analyzeCommand(options: { report?: boolean; verbose?: bool
     handleError(error)
   }
 }
-

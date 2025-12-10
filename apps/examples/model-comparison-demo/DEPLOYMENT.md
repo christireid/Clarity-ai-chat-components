@@ -8,7 +8,7 @@ Complete guide for deploying the Model Comparison demo to production platforms.
 
 - Git repository with your code
 - At least one AI provider API key (OpenAI recommended)
-- Node.js 18+ installed locally
+- Node.js 20+ installed locally
 
 ---
 
@@ -41,12 +41,12 @@ vercel --prod
 
 ## Platform Comparison
 
-| Platform | Free Tier | Setup Time | Best For |
-|----------|-----------|------------|----------|
-| **Vercel** | 100GB/month | 5 min | Next.js apps ⭐ |
-| **Cloudflare** | Unlimited | 10 min | Edge performance |
-| **Netlify** | 100GB/month | 8 min | Jamstack sites |
-| **Docker** | Varies | 20 min | Self-hosting |
+| Platform       | Free Tier   | Setup Time | Best For         |
+| -------------- | ----------- | ---------- | ---------------- |
+| **Vercel**     | 100GB/month | 5 min      | Next.js apps ⭐  |
+| **Cloudflare** | Unlimited   | 10 min     | Edge performance |
+| **Netlify**    | 100GB/month | 8 min      | Jamstack sites   |
+| **Docker**     | Varies      | 20 min     | Self-hosting     |
 
 ---
 
@@ -88,6 +88,7 @@ NODE_ENV=production             # Recommended
 ## Support
 
 For issues, see:
+
 - README.md for setup
 - TESTING.md for test cases
 - TROUBLESHOOTING.md for common issues

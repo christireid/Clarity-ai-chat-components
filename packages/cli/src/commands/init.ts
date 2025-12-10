@@ -4,7 +4,7 @@
 
 import React from 'react'
 import { render } from 'ink'
-import chalk from 'chalk'
+import pc from 'picocolors'
 import ora from 'ora'
 import { execa } from 'execa'
 import fs from 'fs-extra'
@@ -126,7 +126,7 @@ export async function initCommand(options: InitOptions) {
     spinner.succeed('Project structure created')
 
     // Copy template files
-    spinner.text = chalk.cyan('Installing components...')
+    spinner.text = pc.cyan('Installing components...')
 
     const templatePath = path.join(
       __dirname,
@@ -166,7 +166,7 @@ export async function initCommand(options: InitOptions) {
 
     // Install dependencies
     if (config.installDeps) {
-      spinner.text = chalk.cyan(
+      spinner.text = pc.cyan(
         `Installing dependencies with ${packageManager}...`
       )
 
@@ -190,7 +190,7 @@ export async function initCommand(options: InitOptions) {
 
     // Initialize git
     if (config.initGit) {
-      spinner.text = chalk.cyan('Initializing git repository...')
+      spinner.text = pc.cyan('Initializing git repository...')
       try {
         await execa('git', ['init'], { cwd })
         await execa('git', ['add', '.'], { cwd })
@@ -238,13 +238,13 @@ GOOGLE_API_KEY=your_google_key_here
       console.log(
         nextStepsMessage([
           'Add your API keys to .env.local',
-          `Run ${chalk.bold('npm run dev')} to start development`,
-          `Open ${chalk.bold('http://localhost:3000')} in your browser`,
+          `Run ${pc.bold('npm run dev')} to start development`,
+          `Open ${pc.bold('http://localhost:3000')} in your browser`,
         ])
       )
       console.log()
       console.log(
-        chalk.gray('💡 Need help? Run: ') + chalk.bold.cyan('clarity-chat docs')
+        pc.gray('💡 Need help? Run: ') + pc.bold(pc.cyan('clarity-chat docs'))
       )
     } else {
       success('Project initialized successfully')

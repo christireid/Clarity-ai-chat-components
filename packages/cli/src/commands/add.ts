@@ -3,7 +3,7 @@
  * Enhanced with beautiful UI components
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import path from 'path'
 import fs from 'fs-extra'
 import { execa } from 'execa'
@@ -77,7 +77,7 @@ export async function addCommand(component: string, options: AddOptions) {
 
     // Display available components in a beautiful table
     const columns: TableColumn[] = [
-      { header: 'Component', width: 25, color: chalk.yellow },
+      { header: 'Component', width: 25, color: pc.yellow },
       { header: 'Description', width: 40 },
     ]
 
@@ -182,16 +182,15 @@ export async function addCommand(component: string, options: AddOptions) {
       : `'@/components/clarity-chat/${componentName}'`
 
     const successContent = [
-      chalk.bold('Component added successfully!'),
+      pc.bold('Component added successfully!'),
       '',
-      chalk.white('Files created:'),
-      ...copiedFiles.map((file) => chalk.cyan(`  • ${file}`)),
+      pc.white('Files created:'),
+      ...copiedFiles.map((file) => pc.cyan(`  • ${file}`)),
       '',
-      chalk.white('Import it in your code:'),
-      chalk.cyan(`  import { ${componentName} } from ${importPath}`),
+      pc.white('Import it in your code:'),
+      pc.cyan(`  import { ${componentName} } from ${importPath}`),
       '',
-      chalk.gray('📚 View docs: ') +
-        chalk.bold(`clarity-chat docs ${component}`),
+      pc.gray('📚 View docs: ') + pc.bold(`clarity-chat docs ${component}`),
     ].join('\n')
 
     console.log(successBox(successContent, '✓ Success'))
