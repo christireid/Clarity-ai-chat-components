@@ -1,17 +1,31 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+  useDeferredValue,
+} from 'react'
 import { useRouter } from 'next/navigation'
-import { createPortal } from 'react-dom'
-import { hookMetadata, categoryConfig, type HookCategory } from '@/lib/hook-metadata'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Search, Code2, FileText, BookOpen, X, Loader2 } from 'lucide-react'
+import {
+  hookMetadata,
+  categoryConfig,
+  type HookCategory,
+} from '@/lib/hook-metadata'
+import { fuzzySearch, highlightMatches } from '@/lib/fuzzy-search'
+import { trackSearchQuery, trackSearchClick } from '@/lib/search-analytics'
+import { cn } from '@/lib/utils'
 
 interface SearchResult {
   type: 'hook' | 'guide' | 'page'
-  name: string
+  title: string
   description: string
   href: string
   category?: HookCategory
-  keywords?: string[]
 }
 
 // Build search index from hook metadata
@@ -22,90 +36,75 @@ function buildSearchIndex(): SearchResult[] {
   hookMetadata.forEach((hook) => {
     results.push({
       type: 'hook',
-      name: hook.name,
+      title: hook.name,
       description: hook.description,
       href: hook.href,
       category: hook.category,
-      keywords: [
-        hook.name.toLowerCase(),
-        hook.category,
-        ...hook.description.toLowerCase().split(' '),
-        ...(hook.useCases || []).map((uc) => uc.toLowerCase()),
-      ],
     })
   })
 
   // Add static pages
-  const staticPages: Omit<SearchResult, 'keywords'>[] = [
+  const staticPages: SearchResult[] = [
     {
       type: 'page',
-      name: 'Hook Selector',
+      title: 'Hook Selector',
       description: 'Find the right hook for your use case',
       href: '/reference/hooks/selector',
     },
     {
       type: 'page',
-      name: 'Compare Hooks',
+      title: 'Compare Hooks',
       description: 'Compare hooks side by side',
       href: '/reference/hooks/compare',
     },
     {
       type: 'page',
-      name: 'Hook Relationship Graph',
+      title: 'Hook Relationship Graph',
       description: 'Visualize how hooks relate to each other',
       href: '/reference/hooks/graph',
     },
     {
       type: 'guide',
-      name: 'Getting Started',
+      title: 'Getting Started',
       description: 'Quick start guide for Clarity Chat',
       href: '/guides/getting-started',
     },
     {
       type: 'guide',
-      name: 'Architecture Overview',
+      title: 'Architecture Overview',
       description: 'Understanding the Clarity Chat architecture',
       href: '/guides/architecture',
     },
     {
       type: 'page',
-      name: 'API Reference',
+      title: 'API Reference',
       description: 'Complete API documentation',
       href: '/reference',
     },
   ]
 
-  staticPages.forEach((page) => {
-    results.push({
-      ...page,
-      keywords: [
-        page.name.toLowerCase(),
-        ...page.description.toLowerCase().split(' '),
-      ],
-    })
-  })
-
-  return results
+  return [...results, ...staticPages]
 }
 
-function highlightMatch(text: string, query: string): React.ReactNode {
-  if (!query) return text
+// Get icon by type
+function getTypeIcon(type: string, isSelected: boolean = false) {
+  const iconClass = cn('w-4 h-4', isSelected ? 'text-white' : '')
 
-  const lowerText = text.toLowerCase()
-  const lowerQuery = query.toLowerCase()
-  const index = lowerText.indexOf(lowerQuery)
-
-  if (index === -1) return text
-
-  return (
-    <>
-      {text.slice(0, index)}
-      <mark className="bg-brand-200 dark:bg-brand-800 text-inherit rounded px-0.5">
-        {text.slice(index, index + query.length)}
-      </mark>
-      {text.slice(index + query.length)}
-    </>
-  )
+  switch (type) {
+    case 'hook':
+      return (
+        <Code2 className={cn(iconClass, !isSelected && 'text-purple-500')} />
+      )
+    case 'guide':
+      return (
+        <BookOpen className={cn(iconClass, !isSelected && 'text-green-500')} />
+      )
+    case 'page':
+    default:
+      return (
+        <FileText className={cn(iconClass, !isSelected && 'text-blue-500')} />
+      )
+  }
 }
 
 function SearchResultItem({
@@ -115,65 +114,74 @@ function SearchResultItem({
   onClick,
   onMouseEnter,
 }: {
-  result: SearchResult
+  result: SearchResult & { _score: number }
   isSelected: boolean
   query: string
   onClick: () => void
   onMouseEnter: () => void
 }) {
-  const iconByType = {
-    hook: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-      </svg>
-    ),
-    guide: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-      </svg>
-    ),
-    page: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
-  }
-
   return (
     <button
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      className={`
-        w-full flex items-center gap-3 px-4 py-3 text-left transition-colors
-        ${isSelected ? 'bg-brand-100 dark:bg-brand-900/50' : 'hover:bg-muted/50'}
-      `}
+      className={cn(
+        'w-full flex items-center gap-3 px-4 py-3 text-left transition-all rounded-lg',
+        isSelected
+          ? 'bg-brand-500 text-white shadow-md'
+          : 'hover:bg-bg-secondary'
+      )}
     >
-      <span className={`flex-shrink-0 ${isSelected ? 'text-brand-600 dark:text-brand-400' : 'text-muted-foreground'}`}>
-        {iconByType[result.type]}
+      <span className="flex-shrink-0">
+        {getTypeIcon(result.type, isSelected)}
       </span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={`font-medium truncate ${result.type === 'hook' ? 'font-mono text-sm' : ''}`}>
-            {highlightMatch(result.name, query)}
-          </span>
+          <span
+            className={cn(
+              'font-medium truncate',
+              result.type === 'hook' && 'font-mono text-sm'
+            )}
+            dangerouslySetInnerHTML={{
+              __html: query
+                ? highlightMatches(query, result.title)
+                : result.title,
+            }}
+          />
           {result.category && (
             <span
-              className="text-xs px-1.5 py-0.5 rounded flex-shrink-0"
-              style={{
-                backgroundColor: `${categoryConfig[result.category].colorClass.includes('text-') ? '' : categoryConfig[result.category].colorClass}`,
-              }}
+              className={cn(
+                'text-xs px-1.5 py-0.5 rounded flex-shrink-0',
+                isSelected
+                  ? 'bg-white/20 text-white/90'
+                  : categoryConfig[result.category].colorClass
+              )}
             >
               {categoryConfig[result.category].label}
             </span>
           )}
         </div>
-        <p className="text-sm text-muted-foreground truncate">
-          {highlightMatch(result.description, query)}
-        </p>
+        <p
+          className={cn(
+            'text-sm truncate',
+            isSelected ? 'text-white/70' : 'text-text-secondary'
+          )}
+          dangerouslySetInnerHTML={{
+            __html: query
+              ? highlightMatches(query, result.description)
+              : result.description,
+          }}
+        />
       </div>
-      {isSelected && (
-        <span className="flex-shrink-0 text-xs text-muted-foreground">
-          Enter
+      {result._score > 0 && query && (
+        <span
+          className={cn(
+            'text-xs font-mono px-1.5 py-0.5 rounded flex-shrink-0',
+            isSelected
+              ? 'bg-white/20 text-white/80'
+              : 'bg-bg-tertiary text-text-tertiary'
+          )}
+        >
+          {Math.round(result._score)}
         </span>
       )}
     </button>
@@ -185,44 +193,48 @@ export function SearchPalette() {
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+
+  // Debounce search query for performance
+  const deferredQuery = useDeferredValue(query)
+  const isSearching = query !== deferredQuery
 
   const searchIndex = useMemo(() => buildSearchIndex(), [])
 
+  // Use fuzzySearch from lib/fuzzy-search
   const results = useMemo(() => {
-    if (!query.trim()) {
-      // Show recent/popular items when no query
-      return searchIndex.slice(0, 8)
+    if (!deferredQuery.trim()) {
+      // Show popular items when no query
+      return searchIndex.slice(0, 8).map((item) => ({ ...item, _score: 0 }))
     }
 
-    const lowerQuery = query.toLowerCase()
-    return searchIndex
-      .filter((item) => {
-        // Match against name
-        if (item.name.toLowerCase().includes(lowerQuery)) return true
-        // Match against description
-        if (item.description.toLowerCase().includes(lowerQuery)) return true
-        // Match against keywords
-        if (item.keywords?.some((kw) => kw.includes(lowerQuery))) return true
-        return false
-      })
-      .sort((a, b) => {
-        // Prioritize name matches
-        const aNameMatch = a.name.toLowerCase().includes(lowerQuery)
-        const bNameMatch = b.name.toLowerCase().includes(lowerQuery)
-        if (aNameMatch && !bNameMatch) return -1
-        if (!aNameMatch && bNameMatch) return 1
+    return fuzzySearch(deferredQuery, searchIndex, (item: SearchResult) => [
+      { field: 'title', value: item.title, weight: 3 },
+      { field: 'description', value: item.description, weight: 1 },
+      { field: 'type', value: item.type, weight: 0.5 },
+    ]).slice(0, 10)
+  }, [deferredQuery, searchIndex])
 
-        // Then sort alphabetically
-        return a.name.localeCompare(b.name)
-      })
-      .slice(0, 10)
-  }, [query, searchIndex])
+  // Track search queries (debounced)
+  useEffect(() => {
+    if (deferredQuery.trim().length >= 2) {
+      trackSearchQuery(deferredQuery, results.length)
+    }
+  }, [deferredQuery, results.length])
 
   // Reset selected index when results change
   useEffect(() => {
     setSelectedIndex(0)
   }, [results])
+
+  // Scroll selected item into view
+  useEffect(() => {
+    const selectedElement = listRef.current?.querySelector(
+      '[data-selected="true"]'
+    )
+    selectedElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [selectedIndex])
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -234,7 +246,10 @@ export function SearchPalette() {
       }
 
       // Also open with / when not in an input
-      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
+      if (
+        e.key === '/' &&
+        !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)
+      ) {
         e.preventDefault()
         setIsOpen(true)
       }
@@ -247,7 +262,7 @@ export function SearchPalette() {
   // Focus input when opened
   useEffect(() => {
     if (isOpen) {
-      inputRef.current?.focus()
+      setTimeout(() => inputRef.current?.focus(), 100)
     } else {
       setQuery('')
       setSelectedIndex(0)
@@ -259,11 +274,12 @@ export function SearchPalette() {
   }, [])
 
   const handleSelect = useCallback(
-    (result: SearchResult) => {
+    (result: SearchResult & { _score: number }) => {
+      trackSearchClick(query, result.href, result.title)
       router.push(result.href)
       setIsOpen(false)
     },
-    [router]
+    [router, query]
   )
 
   const handleKeyDown = useCallback(
@@ -292,78 +308,125 @@ export function SearchPalette() {
     [results, selectedIndex, handleSelect, handleClose]
   )
 
-  // Don't render on server
-  if (typeof window === 'undefined') return null
+  // Screen reader announcements
+  const resultsAnnouncement = useMemo(() => {
+    if (isSearching) return 'Searching...'
+    if (!deferredQuery.trim()) return 'Showing popular items'
+    if (results.length === 0) return 'No results found'
+    return `${results.length} result${results.length !== 1 ? 's' : ''} found`
+  }, [results.length, deferredQuery, isSearching])
 
   return (
     <>
       {/* Search trigger button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground border rounded-lg hover:border-brand-500 hover:text-foreground transition-colors"
+        className={cn(
+          'flex items-center gap-2 px-3 py-1.5 text-sm text-text-secondary',
+          'border border-border rounded-lg',
+          'hover:border-brand-500 hover:text-text-primary transition-colors'
+        )}
         aria-label="Search documentation"
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+        <Search className="w-4 h-4" />
         <span className="hidden sm:inline">Search...</span>
-        <kbd className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-muted rounded">
+        <kbd className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-bg-secondary rounded border border-border">
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
 
       {/* Modal */}
-      {isOpen &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-50 overflow-y-auto"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Search documentation"
-          >
+      <AnimatePresence>
+        {isOpen && (
+          <>
             {/* Backdrop */}
-            <div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
               onClick={handleClose}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
               aria-hidden="true"
             />
 
             {/* Dialog */}
-            <div className="fixed inset-x-4 top-[10vh] sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-xl">
-              <div className="bg-background border rounded-xl shadow-2xl overflow-hidden">
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Search documentation"
+              initial={{ opacity: 0, scale: 0.95, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+              className="fixed top-[10vh] left-1/2 -translate-x-1/2 w-full max-w-xl mx-4 z-50"
+              onKeyDown={handleKeyDown}
+            >
+              <div className="bg-bg-primary border border-border rounded-xl shadow-2xl overflow-hidden">
                 {/* Search input */}
-                <div className="flex items-center gap-3 px-4 border-b">
-                  <svg className="w-5 h-5 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                <div className="flex items-center gap-3 px-4 border-b border-border">
+                  {isSearching ? (
+                    <Loader2 className="w-5 h-5 text-brand-500 flex-shrink-0 animate-spin" />
+                  ) : (
+                    <Search className="w-5 h-5 text-text-secondary flex-shrink-0" />
+                  )}
                   <input
                     ref={inputRef}
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={handleKeyDown}
                     placeholder="Search hooks, guides, and more..."
-                    className="flex-1 py-4 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+                    className="flex-1 py-4 bg-transparent outline-none text-text-primary placeholder:text-text-tertiary"
                     autoComplete="off"
                     autoCorrect="off"
                     autoCapitalize="off"
                     spellCheck="false"
+                    aria-label="Search"
+                    aria-autocomplete="list"
+                    aria-controls="search-results"
                   />
+                  {query && (
+                    <button
+                      onClick={() => setQuery('')}
+                      className="p-1 rounded hover:bg-bg-secondary transition-colors"
+                      aria-label="Clear search"
+                    >
+                      <X className="w-4 h-4 text-text-secondary" />
+                    </button>
+                  )}
                   <button
                     onClick={handleClose}
-                    className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                    className="p-1 text-text-secondary hover:text-text-primary transition-colors"
                     aria-label="Close search"
                   >
-                    <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Esc</kbd>
+                    <kbd className="px-1.5 py-0.5 text-xs bg-bg-secondary rounded border border-border">
+                      Esc
+                    </kbd>
                   </button>
                 </div>
 
+                {/* Screen reader announcements */}
+                <div
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  className="sr-only"
+                >
+                  {resultsAnnouncement}
+                </div>
+
                 {/* Results */}
-                <div className="max-h-[60vh] overflow-y-auto">
+                <div
+                  ref={listRef}
+                  id="search-results"
+                  role="listbox"
+                  aria-label="Search results"
+                  className="max-h-[60vh] overflow-y-auto p-2"
+                >
                   {results.length > 0 ? (
-                    <div className="py-2">
-                      {!query && (
-                        <p className="px-4 py-2 text-xs font-semibold uppercase text-muted-foreground">
+                    <div className="space-y-0.5">
+                      {!deferredQuery && (
+                        <p className="px-3 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider">
                           Quick Access
                         </p>
                       )}
@@ -372,51 +435,66 @@ export function SearchPalette() {
                           key={`${result.type}-${result.href}`}
                           result={result}
                           isSelected={index === selectedIndex}
-                          query={query}
+                          query={deferredQuery}
                           onClick={() => handleSelect(result)}
                           onMouseEnter={() => setSelectedIndex(index)}
                         />
                       ))}
                     </div>
                   ) : (
-                    <div className="px-4 py-8 text-center text-muted-foreground">
-                      <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <p className="font-medium mb-1">No results found</p>
-                      <p className="text-sm">Try searching for a hook name or keyword</p>
+                    <div className="py-12 text-center">
+                      <Search className="w-12 h-12 mx-auto text-text-tertiary mb-3 opacity-40" />
+                      <p className="text-text-secondary text-sm font-medium mb-1">
+                        No results found
+                      </p>
+                      <p className="text-text-tertiary text-xs">
+                        Try different keywords
+                      </p>
                     </div>
                   )}
                 </div>
 
                 {/* Footer */}
-                <div className="px-4 py-3 border-t bg-muted/50 flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                      <kbd className="px-1 py-0.5 bg-background rounded border">↑</kbd>
-                      <kbd className="px-1 py-0.5 bg-background rounded border">↓</kbd>
-                      <span>Navigate</span>
+                <div className="px-4 py-2.5 border-t border-border bg-bg-secondary/50 flex items-center justify-between text-xs text-text-tertiary">
+                  <div className="flex gap-4">
+                    <span className="flex items-center gap-1.5">
+                      <kbd className="px-1.5 py-0.5 bg-bg-primary border border-border rounded text-xs">
+                        ↑↓
+                      </kbd>
+                      Navigate
                     </span>
-                    <span className="flex items-center gap-1">
-                      <kbd className="px-1 py-0.5 bg-background rounded border">↵</kbd>
-                      <span>Select</span>
+                    <span className="flex items-center gap-1.5">
+                      <kbd className="px-1.5 py-0.5 bg-bg-primary border border-border rounded text-xs">
+                        ↵
+                      </kbd>
+                      Select
                     </span>
                   </div>
-                  <span className="flex items-center gap-1">
-                    <kbd className="px-1 py-0.5 bg-background rounded border">Esc</kbd>
-                    <span>Close</span>
+                  <span className="font-medium">
+                    {isSearching ? (
+                      'Searching...'
+                    ) : (
+                      <>
+                        {results.length} result
+                        {results.length !== 1 ? 's' : ''}
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
-            </div>
-          </div>,
-          document.body
+            </motion.div>
+          </>
         )}
+      </AnimatePresence>
     </>
   )
 }
 
-export function SearchPaletteProvider({ children }: { children: React.ReactNode }) {
+export function SearchPaletteProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <>
       {children}

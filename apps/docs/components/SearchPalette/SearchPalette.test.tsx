@@ -4,6 +4,7 @@
  * @vitest-environment happy-dom
  */
 
+import React from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -15,6 +16,24 @@ vi.mock('next/navigation', () => ({
     push: mockPush,
     prefetch: vi.fn(),
   }),
+}))
+
+// Mock framer-motion to avoid animation issues in tests
+vi.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+      <div {...props}>{children}</div>
+    ),
+  },
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}))
+
+// Mock search analytics
+vi.mock('@/lib/search-analytics', () => ({
+  trackSearchQuery: vi.fn(),
+  trackSearchClick: vi.fn(),
 }))
 
 // Mock hook metadata
@@ -182,7 +201,10 @@ describe('SearchPalette', () => {
 
       // Open and type
       await user.click(screen.getByLabelText('Search documentation'))
-      await user.type(screen.getByPlaceholderText('Search hooks, guides, and more...'), 'chat')
+      await user.type(
+        screen.getByPlaceholderText('Search hooks, guides, and more...'),
+        'chat'
+      )
 
       // Close
       await user.keyboard('{Escape}')
@@ -191,7 +213,9 @@ describe('SearchPalette', () => {
       await user.click(screen.getByLabelText('Search documentation'))
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search hooks, guides, and more...')).toHaveValue('')
+        expect(
+          screen.getByPlaceholderText('Search hooks, guides, and more...')
+        ).toHaveValue('')
       })
     })
   })
@@ -213,7 +237,10 @@ describe('SearchPalette', () => {
       render(<SearchPalette />)
 
       await user.click(screen.getByLabelText('Search documentation'))
-      await user.type(screen.getByPlaceholderText('Search hooks, guides, and more...'), 'token')
+      await user.type(
+        screen.getByPlaceholderText('Search hooks, guides, and more...'),
+        'token'
+      )
 
       await waitFor(() => {
         expect(screen.getByText('useTokenTracker')).toBeInTheDocument()
@@ -241,7 +268,10 @@ describe('SearchPalette', () => {
       render(<SearchPalette />)
 
       await user.click(screen.getByLabelText('Search documentation'))
-      await user.type(screen.getByPlaceholderText('Search hooks, guides, and more...'), 'chat')
+      await user.type(
+        screen.getByPlaceholderText('Search hooks, guides, and more...'),
+        'chat'
+      )
 
       await waitFor(() => {
         const mark = document.querySelector('mark')
@@ -270,7 +300,7 @@ describe('SearchPalette', () => {
       )
 
       // Second result button should have selected styling
-      expect(resultButtons[1]?.className).toContain('bg-brand-100')
+      expect(resultButtons[1]?.className).toContain('bg-brand-500')
     })
 
     it('navigates up with Arrow Up', async () => {
@@ -290,7 +320,7 @@ describe('SearchPalette', () => {
         btn.classList.contains('w-full')
       )
 
-      expect(resultButtons[1]?.className).toContain('bg-brand-100')
+      expect(resultButtons[1]?.className).toContain('bg-brand-500')
     })
 
     it('selects item with Enter', async () => {
@@ -298,7 +328,10 @@ describe('SearchPalette', () => {
       render(<SearchPalette />)
 
       await user.click(screen.getByLabelText('Search documentation'))
-      await user.type(screen.getByPlaceholderText('Search hooks, guides, and more...'), 'token')
+      await user.type(
+        screen.getByPlaceholderText('Search hooks, guides, and more...'),
+        'token'
+      )
 
       await waitFor(() => {
         expect(screen.getByText('useTokenTracker')).toBeInTheDocument()
@@ -306,7 +339,9 @@ describe('SearchPalette', () => {
 
       await user.keyboard('{Enter}')
 
-      expect(mockPush).toHaveBeenCalledWith('/reference/hooks/use-token-tracker')
+      expect(mockPush).toHaveBeenCalledWith(
+        '/reference/hooks/use-token-tracker'
+      )
     })
   })
 
@@ -316,7 +351,10 @@ describe('SearchPalette', () => {
       render(<SearchPalette />)
 
       await user.click(screen.getByLabelText('Search documentation'))
-      await user.type(screen.getByPlaceholderText('Search hooks, guides, and more...'), 'token')
+      await user.type(
+        screen.getByPlaceholderText('Search hooks, guides, and more...'),
+        'token'
+      )
 
       await waitFor(() => {
         expect(screen.getByText('useTokenTracker')).toBeInTheDocument()
@@ -324,7 +362,9 @@ describe('SearchPalette', () => {
 
       await user.click(screen.getByText('useTokenTracker'))
 
-      expect(mockPush).toHaveBeenCalledWith('/reference/hooks/use-token-tracker')
+      expect(mockPush).toHaveBeenCalledWith(
+        '/reference/hooks/use-token-tracker'
+      )
     })
 
     it('closes modal after selection', async () => {
@@ -332,7 +372,10 @@ describe('SearchPalette', () => {
       render(<SearchPalette />)
 
       await user.click(screen.getByLabelText('Search documentation'))
-      await user.type(screen.getByPlaceholderText('Search hooks, guides, and more...'), 'token')
+      await user.type(
+        screen.getByPlaceholderText('Search hooks, guides, and more...'),
+        'token'
+      )
 
       await waitFor(() => {
         expect(screen.getByText('useTokenTracker')).toBeInTheDocument()
@@ -366,7 +409,9 @@ describe('SearchPalette', () => {
 
       await user.click(screen.getByLabelText('Search documentation'))
 
-      const input = screen.getByPlaceholderText('Search hooks, guides, and more...')
+      const input = screen.getByPlaceholderText(
+        'Search hooks, guides, and more...'
+      )
       expect(input).toHaveAttribute('autocomplete', 'off')
       expect(input).toHaveAttribute('spellcheck', 'false')
     })
@@ -380,7 +425,8 @@ describe('SearchPalette', () => {
       await waitFor(() => {
         expect(screen.getByText('Navigate')).toBeInTheDocument()
         expect(screen.getByText('Select')).toBeInTheDocument()
-        expect(screen.getByText('Close')).toBeInTheDocument()
+        // Esc key hint is shown in header, close via aria-label
+        expect(screen.getByLabelText('Close search')).toBeInTheDocument()
       })
     })
   })
