@@ -4,10 +4,16 @@ import * as React from 'react'
 
 /**
  * SSE connection status
- * 
+ *
  * Tracks the current state of the SSE connection for monitoring and UI updates.
  */
-export type SSEStatus = 'idle' | 'connecting' | 'connected' | 'streaming' | 'error' | 'closed'
+export type SSEStatus =
+  | 'idle'
+  | 'connecting'
+  | 'connected'
+  | 'streaming'
+  | 'error'
+  | 'closed'
 
 /**
  * Event type for SSE messages
@@ -31,59 +37,59 @@ export interface SSEEvent {
 export interface UseStreamingSSEOptions {
   /** Base URL for SSE endpoint */
   url: string
-  
+
   /** HTTP method (default: 'GET') */
   method?: 'GET' | 'POST'
-  
+
   /** Request body for POST requests */
   body?: any
-  
+
   /** Request headers */
   headers?: Record<string, string>
-  
+
   /** Authentication token (will be added to headers) */
   authToken?: string
-  
+
   /** Fallback: Use cookie-based auth if header auth fails */
   useCookieFallback?: boolean
-  
+
   /** Enable automatic reconnection (default: true) */
   autoReconnect?: boolean
-  
+
   /** Maximum reconnection attempts (default: 5) */
   maxReconnectAttempts?: number
-  
+
   /** Initial reconnection delay in ms (default: 1000) */
   reconnectDelay?: number
-  
+
   /** Maximum reconnection delay in ms (default: 30000) */
   maxReconnectDelay?: number
-  
+
   /** Heartbeat interval in ms (default: 30000) */
   heartbeatInterval?: number
-  
+
   /** Resume from last event ID (default: true) */
   resumeFromLastEventId?: boolean
-  
+
   /** Parse JSON responses automatically (default: true) */
   autoParseJson?: boolean
-  
+
   /** Event handlers */
   onOpen?: () => void
   onMessage?: (event: SSEEvent) => void
   onError?: (error: Error) => void
   onClose?: () => void
-  
+
   /** Called when reconnection attempt starts */
   onReconnecting?: (attempt: number, delay: number) => void
-  
+
   /** Called when max reconnection attempts reached */
   onMaxReconnectAttemptsReached?: () => void
 }
 
 /**
  * Return type for useStreamingSSE hook (mid-level API)
- * 
+ *
  * Follows the standard hook return pattern:
  * - Data: `events`, `lastEvent` (streamed events)
  * - State: `status`, `isConnected`, `error`
@@ -92,34 +98,34 @@ export interface UseStreamingSSEOptions {
 export interface UseStreamingSSEReturn {
   /** Current connection status */
   status: SSEStatus
-  
+
   /** All received events */
   events: SSEEvent[]
-  
+
   /** Latest event */
   lastEvent: SSEEvent | null
-  
+
   /** Accumulated data from streaming events */
   data: string
-  
+
   /** Current error if any */
   error: Error | null
-  
+
   /** Connect to SSE endpoint */
   connect: () => void
-  
+
   /** Disconnect from SSE endpoint */
   disconnect: () => void
-  
+
   /** Reconnect (disconnect and connect) */
   reconnect: () => void
-  
+
   /** Reset state and events */
   reset: () => void
-  
+
   /** Current reconnection attempt number */
   reconnectAttempt: number
-  
+
   /** Whether currently reconnecting */
   isReconnecting: boolean
 }
@@ -127,7 +133,7 @@ export interface UseStreamingSSEReturn {
 /**
  * Production-ready SSE streaming hook with automatic reconnection,
  * authentication handling, token assembly, and network status detection.
- * 
+ *
  * **Features:**
  * - Automatic reconnection with exponential backoff
  * - Token authentication (header + cookie fallback)
@@ -136,13 +142,13 @@ export interface UseStreamingSSEReturn {
  * - Network status detection
  * - Heartbeat monitoring
  * - Memory-efficient event buffering
- * 
+ *
  * **Use Cases:**
  * - OpenAI/Anthropic API streaming
  * - Real-time chat message streaming
  * - Live notifications
  * - Server-to-client updates
- * 
+ *
  * @example
  * ```tsx
  * const Chat = () => {
@@ -164,7 +170,7 @@ export interface UseStreamingSSEReturn {
  *     },
  *     onError: (error) => console.error('SSE Error:', error),
  *   })
- * 
+ *
  *   return (
  *     <div>
  *       <button onClick={connect} disabled={status !== 'idle'}>
@@ -173,7 +179,7 @@ export interface UseStreamingSSEReturn {
  *       <button onClick={disconnect} disabled={status === 'idle'}>
  *         Cancel
  *       </button>
- *       
+ *
  *       {status === 'streaming' && <div>{data}</div>}
  *       {error && <div>Error: {error.message}</div>}
  *     </div>
@@ -183,47 +189,53 @@ export interface UseStreamingSSEReturn {
  */
 /**
  * useStreamingSSE - Mid-Level SSE Streaming Hook
- * 
+ *
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Streaming & Transport
- * 
+ *
  * Hook for managing Server-Sent Events (SSE) connections with automatic
  * reconnection, heartbeat, and event handling.
- * 
+ *
  * For chat streaming, use top-level `useClarityChat` with transport: 'sse'.
  * For low-level streaming, use `useStreaming` primitive.
- * 
+ *
  * @param options - SSE configuration options
  * @param options.url - Base URL for SSE endpoint (required)
  * @param options.autoReconnect - Enable automatic reconnection (default: true)
  * @param options.onMessage - Callback for each SSE event
  * @param options.onError - Callback on error
  * @returns SSE connection state and controls
- * 
+ *
  * @example
  * ```tsx
  * const { events, status, connect, disconnect } = useStreamingSSE({
  *   url: '/api/stream',
  *   onMessage: (event) => console.log('Event:', event),
  * })
- * 
+ *
  * React.useEffect(() => {
  *   connect()
  *   return () => disconnect()
  * }, [])
  * ```
- * 
+ *
  * @throws {Error} If URL is invalid or missing
  */
-export function useStreamingSSE(options: UseStreamingSSEOptions): UseStreamingSSEReturn {
+export function useStreamingSSE(
+  options: UseStreamingSSEOptions
+): UseStreamingSSEReturn {
   // Validate URL
-  if (!options.url || typeof options.url !== 'string' || options.url.trim().length === 0) {
+  if (
+    !options.url ||
+    typeof options.url !== 'string' ||
+    options.url.trim().length === 0
+  ) {
     throw new Error(
       'useStreamingSSE: "url" option is required.\n' +
-      'Please provide a valid SSE endpoint URL.\n\n' +
-      'Example:\n' +
-      '  const stream = useStreamingSSE({ url: "/api/stream" })\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/streaming'
+        'Please provide a valid SSE endpoint URL.\n\n' +
+        'Example:\n' +
+        '  const stream = useStreamingSSE({ url: "/api/stream" })\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/streaming'
     )
   }
   const {
@@ -259,7 +271,8 @@ export function useStreamingSSE(options: UseStreamingSSEOptions): UseStreamingSS
 
   // Refs
   const abortControllerRef = React.useRef<AbortController | null>(null)
-  const readerRef = React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
+  const readerRef =
+    React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
   const lastEventIdRef = React.useRef<string>('')
   const reconnectTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
   const heartbeatTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
@@ -316,7 +329,9 @@ export function useStreamingSSE(options: UseStreamingSSEOptions): UseStreamingSS
     }
 
     heartbeatTimeoutRef.current = setTimeout(() => {
-      console.warn('[useStreamingSSE] Heartbeat timeout - connection may be stale')
+      console.warn(
+        '[useStreamingSSE] Heartbeat timeout - connection may be stale'
+      )
       if (autoReconnect && shouldReconnectRef.current) {
         reconnect()
       }
@@ -329,7 +344,11 @@ export function useStreamingSSE(options: UseStreamingSSEOptions): UseStreamingSS
    */
   const connect = React.useCallback(async () => {
     // Prevent duplicate connections
-    if (status === 'connecting' || status === 'connected' || status === 'streaming') {
+    if (
+      status === 'connecting' ||
+      status === 'connected' ||
+      status === 'streaming'
+    ) {
       return
     }
 
@@ -369,7 +388,9 @@ export function useStreamingSSE(options: UseStreamingSSEOptions): UseStreamingSS
       })
 
       if (!response.ok) {
-        throw new Error(`SSE request failed: ${response.status} ${response.statusText}`)
+        throw new Error(
+          `SSE request failed: ${response.status} ${response.statusText}`
+        )
       }
 
       if (!response.body) {
@@ -420,7 +441,11 @@ export function useStreamingSSE(options: UseStreamingSSEOptions): UseStreamingSS
           // Empty line = event boundary
           if (line.trim() === '') {
             if (currentEventData) {
-              processEvent(currentEventType, currentEventData.trim(), currentEventId)
+              processEvent(
+                currentEventType,
+                currentEventData.trim(),
+                currentEventId
+              )
               currentEventType = ''
               currentEventData = ''
               currentEventId = ''
@@ -470,10 +495,19 @@ export function useStreamingSSE(options: UseStreamingSSEOptions): UseStreamingSS
       onError?.(error)
 
       // Attempt reconnection
-      if (autoReconnect && shouldReconnectRef.current && reconnectAttempt < maxReconnectAttempts) {
+      if (
+        autoReconnect &&
+        shouldReconnectRef.current &&
+        reconnectAttempt < maxReconnectAttempts
+      ) {
         const nextAttempt = reconnectAttempt + 1
+        // Calculate delay with exponential backoff and jitter (0.5-1.5x multiplier)
+        // Jitter prevents "thundering herd" when many clients reconnect simultaneously
+        const baseDelay =
+          reconnectDelayRef.current * Math.pow(2, reconnectAttempt)
+        const jitter = 0.5 + Math.random() // Random multiplier between 0.5 and 1.5
         const delay = Math.min(
-          reconnectDelayRef.current * Math.pow(2, reconnectAttempt),
+          Math.floor(baseDelay * jitter),
           maxReconnectDelay
         )
 
