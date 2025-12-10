@@ -23,3 +23,14 @@ packages/ @christireid
 .env* @christireid
 *.pem @christireid
 *.key @christireid
+
+# Documentation files - require review for quality
+README.md @christireid
+CONTRIBUTING.md @christireid
+CODE_OF_CONDUCT.md @christireid
+SECURITY.md @christireid
+CHANGELOG.md @christireid
+.github/DOCUMENTATION_POLICY.md @christireid
+packages/*/README.md @christireid
+docs/ @christireid
+.archive/ @christireid

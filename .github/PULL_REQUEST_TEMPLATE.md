@@ -53,6 +53,18 @@
 - [ ] I have checked for accessibility compliance
 - [ ] I have considered the security implications of my changes
 
+## Documentation Checklist
+
+<!-- Check all that apply if you added/modified documentation -->
+
+- [ ] I have reviewed the [Documentation Policy](../.github/DOCUMENTATION_POLICY.md)
+- [ ] No development artifacts (status reports, phase summaries, etc.) are included
+- [ ] Documentation files follow essential documentation patterns
+- [ ] Changes to READMEs reflect actual API/functionality changes
+- [ ] Temporary notes have been removed or archived to `.archive/`
+- [ ] No duplicate documentation was created
+- [ ] Links and references have been tested
+
 ## Breaking Changes
 
 <!-- If this PR introduces breaking changes, describe them and the migration path -->
