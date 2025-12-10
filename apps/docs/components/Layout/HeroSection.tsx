@@ -12,6 +12,7 @@ import {
   Star,
   Terminal,
 } from 'lucide-react'
+import { toast } from '@/lib/toast'
 
 interface HeroSectionProps {
   title: React.ReactNode
@@ -113,12 +114,20 @@ function InstallCommand({ command }: { command: string }) {
         navigator.vibrate(50)
       }
 
+      toast.success('Copied to clipboard!', {
+        description: 'Install command ready to paste',
+        duration: 2000,
+      })
+
       setTimeout(() => {
         setCopied(false)
         setShowConfetti(false)
       }, 2000)
-    } catch {
-      // Silently fail
+    } catch (error) {
+      toast.error('Failed to copy', {
+        description: 'Please try selecting and copying manually',
+        action: { label: 'Try again', onClick: copyToClipboard },
+      })
     }
   }, [command])
 

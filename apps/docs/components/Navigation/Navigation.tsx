@@ -17,6 +17,7 @@ import {
 import { SearchDialog } from './SearchDialog'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from '@/lib/toast'
 
 const navigation = [
   { name: 'Learn', href: '/learn/quick-start' },
@@ -51,9 +52,28 @@ export function Navigation() {
   }, [])
 
   const cycleTheme = () => {
-    if (theme === 'light') setTheme('dark')
-    else if (theme === 'dark') setTheme('system')
-    else setTheme('light')
+    let newTheme: string
+    if (theme === 'light') {
+      newTheme = 'dark'
+      setTheme('dark')
+    } else if (theme === 'dark') {
+      newTheme = 'system'
+      setTheme('system')
+    } else {
+      newTheme = 'light'
+      setTheme('light')
+    }
+    
+    const themeIcons = {
+      light: '☀️',
+      dark: '🌙',
+      system: '💻'
+    }
+    
+    toast.success(`Theme: ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`, {
+      description: `Switched to ${themeIcons[newTheme as keyof typeof themeIcons]} ${newTheme} mode`,
+      duration: 2000,
+    })
   }
 
   const getThemeIcon = () => {
