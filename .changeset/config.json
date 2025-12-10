@@ -1,19 +1,16 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": [
     "@changesets/changelog-github",
-    {
-      "repo": "christireid/Clarity-ai-chat-components"
-    }
+    { "repo": "christireid/Clarity-ai-chat-components" }
   ],
   "commit": false,
   "fixed": [],
-  "linked": [],
-  "access": "restricted",
+  "linked": [
+    ["@clarity-chat/react", "@clarity-chat/primitives", "@clarity-chat/types"]
+  ],
+  "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [
-    "@clarity-chat/storybook",
-    "@clarity-chat/docs"
-  ]
+  "ignore": []
 }

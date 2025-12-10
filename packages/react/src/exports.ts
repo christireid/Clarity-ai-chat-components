@@ -316,6 +316,17 @@ export { ConversationBranchVisualizer } from './components/conversation-branch-v
 // Markdown & Rendering
 export { MarkdownRendererEnhanced } from './components/markdown-renderer-enhanced'
 
+// Chat History with Undo/Redo
+export {
+  useChatHistory,
+  type ChatMessage as ChatHistoryMessage,
+  type ChatHistoryOptions,
+  type UseChatHistoryReturn,
+} from './hooks/use-chat-history'
+
+// Integrations (Sentry, Analytics)
+export * from './integrations'
+
 // Additional Hooks
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'

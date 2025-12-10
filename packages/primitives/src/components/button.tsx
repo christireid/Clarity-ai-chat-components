@@ -214,7 +214,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         asChild={asChild}
         ref={ref}
         disabled={isDisabled}
+        data-slot="button"
         data-variant={effectiveVariant}
+        data-state={currentState}
+        data-size={size || 'default'}
         onClick={handleClick}
         aria-busy={currentState === 'loading'}
         {...props}
