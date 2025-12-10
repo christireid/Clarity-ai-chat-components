@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 
 export interface DragInfo {
   point: { x: number; y: number }
@@ -153,7 +153,7 @@ export const DropZone = React.forwardRef<HTMLDivElement, DropZoneProps>(
         }}
         transition={{
           duration: ANIMATION_DURATION.fast / 1000,
-          ease: ANIMATION_EASING.out,
+          ease: EASING_FRAMER.out,
         }}
         className={cn(
           'relative border-2 border-dashed rounded-lg transition-all',

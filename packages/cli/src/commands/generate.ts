@@ -9,7 +9,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import { getLogger } from '../utils/logger.js'
 import { sectionHeader } from '../ui/banner.js'
-import { table, TableColumn } from '../ui/table.js'
+import { table, type TableColumn } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
 import { successBox, errorBox, infoBox } from '../ui/box.js'
 

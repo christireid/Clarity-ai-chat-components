@@ -1,6 +1,7 @@
 {
   "name": "@clarity-chat/react",
   "version": "0.1.0",
+  "type": "module",
   "description": "React components for Clarity Chat",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

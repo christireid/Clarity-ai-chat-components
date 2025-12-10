@@ -4,7 +4,7 @@
  */
 
 import pc from 'picocolors'
-import ora, { Ora } from 'ora'
+import ora, { type Ora } from 'ora'
 
 export interface ProgressBarOptions {
   total: number

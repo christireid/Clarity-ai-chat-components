@@ -1,6 +1,7 @@
 {
   "name": "@clarity-chat/dev-tools",
   "version": "0.1.0",
+  "type": "module",
   "description": "Developer tools for debugging, testing, and validation in Clarity Chat",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,7 +22,8 @@
     "dev": "tsc --watch",
     "cli": "node dist/cli/index.js",
     "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "clarity-chat",
@@ -53,5 +55,6 @@
     "react-dom": "^19.2.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
-  }
+  },
+  "sideEffects": false
 }

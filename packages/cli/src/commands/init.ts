@@ -90,7 +90,7 @@ export async function initCommand(options: InitOptions) {
     if (!validatedTemplate && !validatedFramework) {
       const { waitUntilExit } = render(
         React.createElement(InitWizard, {
-          detectedFramework,
+          detectedFramework: detectedFramework ?? undefined,
           packageManager,
           onComplete: (result: any) => {
             config = result

@@ -1,11 +1,15 @@
 /**
  * Render Utilities
- * 
+ *
  * Helper functions for rendering components in tests
  */
 
-import { render, RenderOptions, RenderResult } from '@testing-library/react'
-import { ReactElement, ReactNode } from 'react'
+import {
+  render,
+  type RenderOptions,
+  type RenderResult,
+} from '@testing-library/react'
+import type { ReactElement, ReactNode } from 'react'
 
 /**
  * Wrapper component that provides all necessary contexts
@@ -16,7 +20,7 @@ export function AllProviders({ children }: { children: ReactNode }) {
 
 /**
  * Render a component with all necessary providers
- * 
+ *
  * @example
  * ```tsx
  * const { getByRole } = renderWithProviders(<Button>Click me</Button>)
@@ -31,7 +35,7 @@ export function renderWithProviders(
 
 /**
  * Render a component and return common queries
- * 
+ *
  * @example
  * ```tsx
  * const { getButton, getInput } = renderComponent(
@@ -42,7 +46,10 @@ export function renderWithProviders(
  * )
  * ```
  */
-export function renderComponent(ui: ReactElement, options?: RenderOptions): RenderResult & {
+export function renderComponent(
+  ui: ReactElement,
+  options?: RenderOptions
+): RenderResult & {
   getButton: (name: string) => HTMLElement
   getInput: (label: string) => HTMLElement
   getHeading: (name: string) => HTMLElement
@@ -61,7 +68,7 @@ export function renderComponent(ui: ReactElement, options?: RenderOptions): Rend
 
 /**
  * Wait for a component to finish loading
- * 
+ *
  * @example
  * ```tsx
  * renderWithProviders(<AsyncComponent />)

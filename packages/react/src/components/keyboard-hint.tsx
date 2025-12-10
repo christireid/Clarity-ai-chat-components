@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 
 export interface KeyboardHintShortcut {
   keys: string[]
@@ -83,7 +83,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
               }}
               transition={{
                 duration: ANIMATION_DURATION.normal / 1000,
-                ease: ANIMATION_EASING.out,
+                ease: EASING_FRAMER.out,
               }}
               className={cn(
                 'fixed bg-background border border-border/40 rounded-lg shadow-md z-50 backdrop-blur-md',

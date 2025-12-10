@@ -11,7 +11,7 @@ import {
 } from '../icons'
 import {
   ANIMATION_DURATION,
-  ANIMATION_EASING,
+  EASING_FRAMER,
   INTERACTION_VARIANTS,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
@@ -131,7 +131,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
           exit={{ opacity: 0, y: 10, height: 0 }}
           transition={{
             duration: ANIMATION_DURATION.fast / 1000,
-            ease: ANIMATION_EASING.out,
+            ease: EASING_FRAMER.out,
           }}
           role="toolbar"
           aria-label="Message actions"

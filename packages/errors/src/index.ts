@@ -1,17 +1,17 @@
 /**
  * Enhanced error handling system for Clarity Chat
- * 
+ *
  * Provides developer-friendly error messages with:
  * - Clear descriptions of what went wrong
  * - Step-by-step solutions
  * - Code examples
  * - Links to documentation
  * - Contextual information for debugging
- * 
+ *
  * @example
  * ```typescript
  * import { APIKeyMissingError } from '@clarity-chat/errors'
- * 
+ *
  * if (!process.env.OPENAI_API_KEY) {
  *   throw new APIKeyMissingError('openai')
  * }
@@ -19,7 +19,8 @@
  */
 
 // Base error class
-export { ClarityError, ErrorContext, ErrorSolution } from './base-error.js'
+export { ClarityError } from './base-error.js'
+export type { ErrorContext, ErrorSolution } from './base-error.js'
 
 // API errors
 export {
@@ -27,7 +28,7 @@ export {
   APIRateLimitError,
   APIAuthenticationError,
   APINetworkError,
-  APIResponseError
+  APIResponseError,
 } from './api-errors.js'
 
 // Configuration errors
@@ -36,7 +37,7 @@ export {
   InvalidConfigError,
   PortAlreadyInUseError,
   FileNotFoundError,
-  DependencyMissingError
+  DependencyMissingError,
 } from './config-errors.js'
 
 // Validation errors
@@ -44,7 +45,7 @@ export {
   ValidationError,
   InvalidInputError,
   MissingFieldError,
-  TypeMismatchError
+  TypeMismatchError,
 } from './validation-errors.js'
 
 // Helper functions
@@ -55,5 +56,5 @@ export {
   createErrorHandler,
   withErrorHandling,
   assert,
-  tryCatch
+  tryCatch,
 } from './utils.js'

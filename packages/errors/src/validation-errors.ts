@@ -2,15 +2,15 @@
  * Input validation errors
  */
 
-import { ClarityError, ErrorSolution } from './base-error.js'
+import { ClarityError, type ErrorSolution } from './base-error.js'
 
 export class ValidationError extends ClarityError {
   constructor(message: string, errors: string[], originalError?: Error) {
     const solutions: ErrorSolution[] = [
       {
         description: 'Fix the validation errors',
-        steps: errors.map(err => `Fix: ${err}`)
-      }
+        steps: errors.map((err) => `Fix: ${err}`),
+      },
     ]
 
     super(
@@ -21,7 +21,7 @@ export class ValidationError extends ClarityError {
       {
         location: 'Input validation',
         action: 'Validating user input',
-        data: { errors }
+        data: { errors },
       },
       originalError
     )
@@ -41,10 +41,10 @@ export class InvalidInputError extends ClarityError {
         steps: [
           `Expected format: ${expectedFormat}`,
           `You provided: ${JSON.stringify(actualValue)}`,
-          'Update your input to match the expected format'
+          'Update your input to match the expected format',
         ],
-        example: getValidationExample(fieldName, expectedFormat)
-      }
+        example: getValidationExample(fieldName, expectedFormat),
+      },
     ]
 
     super(
@@ -55,7 +55,7 @@ export class InvalidInputError extends ClarityError {
       {
         location: 'Input validation',
         action: `Validating ${fieldName}`,
-        data: { fieldName, expectedFormat, actualValue }
+        data: { fieldName, expectedFormat, actualValue },
       },
       originalError
     )
@@ -70,13 +70,13 @@ export class MissingFieldError extends ClarityError {
         steps: [
           `Include ${fieldName} in your request`,
           'Check the API documentation for required fields',
-          'Ensure the field is not null or undefined'
+          'Ensure the field is not null or undefined',
         ],
         example: `{
   ${fieldName}: "value",
   // ... other fields
-}`
-      }
+}`,
+      },
     ]
 
     super(
@@ -87,7 +87,7 @@ export class MissingFieldError extends ClarityError {
       {
         location: 'Input validation',
         action: 'Checking required fields',
-        data: { fieldName }
+        data: { fieldName },
       },
       originalError
     )
@@ -107,10 +107,10 @@ export class TypeMismatchError extends ClarityError {
         steps: [
           `Current type: ${actualType}`,
           `Expected type: ${expectedType}`,
-          'Convert the value before sending'
+          'Convert the value before sending',
         ],
-        example: getTypeConversionExample(fieldName, actualType, expectedType)
-      }
+        example: getTypeConversionExample(fieldName, actualType, expectedType),
+      },
     ]
 
     super(
@@ -121,7 +121,7 @@ export class TypeMismatchError extends ClarityError {
       {
         location: 'Type validation',
         action: `Validating type of ${fieldName}`,
-        data: { fieldName, expectedType, actualType }
+        data: { fieldName, expectedType, actualType },
       },
       originalError
     )
@@ -143,31 +143,41 @@ const input = {
 const input = {
   ${fieldName}: "+1-555-123-4567"
 }`,
-    'date': `// Valid date format (ISO 8601)
+    date: `// Valid date format (ISO 8601)
 const input = {
   ${fieldName}: "2024-01-15T10:30:00Z"
-}`
+}`,
   }
 
-  return examples[format.toLowerCase()] || `const input = {\n  ${fieldName}: /* ${format} */\n}`
+  return (
+    examples[format.toLowerCase()] ||
+    `const input = {\n  ${fieldName}: /* ${format} */\n}`
+  )
 }
 
-function getTypeConversionExample(field: string, from: string, to: string): string {
+function getTypeConversionExample(
+  field: string,
+  from: string,
+  to: string
+): string {
   const conversions: Record<string, Record<string, string>> = {
     string: {
       number: `const ${field} = parseInt(stringValue, 10)\n// or\nconst ${field} = Number(stringValue)`,
       boolean: `const ${field} = stringValue === "true"`,
-      array: `const ${field} = stringValue.split(",")`
+      array: `const ${field} = stringValue.split(",")`,
     },
     number: {
       string: `const ${field} = numberValue.toString()`,
-      boolean: `const ${field} = numberValue > 0`
+      boolean: `const ${field} = numberValue > 0`,
     },
     boolean: {
       string: `const ${field} = boolValue.toString()`,
-      number: `const ${field} = boolValue ? 1 : 0`
-    }
+      number: `const ${field} = boolValue ? 1 : 0`,
+    },
   }
 
-  return conversions[from]?.[to] || `// Convert ${from} to ${to}\nconst ${field} = /* conversion logic */`
+  return (
+    conversions[from]?.[to] ||
+    `// Convert ${from} to ${to}\nconst ${field} = /* conversion logic */`
+  )
 }

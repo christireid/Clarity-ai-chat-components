@@ -21,7 +21,8 @@ const buttonVariants = cva(
           'border ring-1 ring-border bg-background hover:bg-accent hover:text-accent-foreground hover:border-primary/40 hover:shadow-xs transition-colors duration-200',
         secondary:
           'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 hover:shadow-sm hover:-translate-y-[1px] active:translate-y-0 active:shadow-xs',
-        ghost: 'hover:bg-accent hover:text-accent-foreground transition-colors duration-200',
+        ghost:
+          'hover:bg-accent hover:text-accent-foreground transition-colors duration-200',
         link: 'text-primary underline-offset-4 hover:underline transition-colors duration-200',
         success:
           'bg-green-600 text-white shadow-xs hover:bg-green-700 hover:shadow-sm hover:-translate-y-[1px] active:translate-y-0 active:shadow-xs',
@@ -61,7 +62,8 @@ const RIPPLE_COLORS: Record<string, string> = {
 } as const
 
 export interface ButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size'>,
+  extends
+    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size'>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
   loading?: boolean
@@ -99,17 +101,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const [internalState, setInternalState] = React.useState<ButtonState>('idle')
-    const stateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+    const [internalState, setInternalState] =
+      React.useState<ButtonState>('idle')
+    const stateTimeoutRef = React.useRef<
+      ReturnType<typeof setTimeout> | undefined
+    >(undefined)
 
     // Determine current state: controlled state takes precedence, then loading, then internal
     // Use explicit null check since 'idle' is falsy but valid
-    const currentState = controlledState !== undefined 
-      ? controlledState 
-      : loading 
-        ? 'loading' 
-        : internalState
-    const shouldShowRipple = ripple && variant !== 'link' && !disabled && currentState === 'idle'
+    const currentState =
+      controlledState !== undefined
+        ? controlledState
+        : loading
+          ? 'loading'
+          : internalState
+    const shouldShowRipple =
+      ripple && variant !== 'link' && !disabled && currentState === 'idle'
 
     // Use ripple effect hook
     const { ripples, addRipple } = useRippleEffect({
@@ -117,26 +124,32 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     })
 
     // Ripple color
-    const rippleColorValue = rippleColor || RIPPLE_COLORS[variant ?? 'default'] || 'rgba(22, 119, 255, 0.22)'
+    const rippleColorValue =
+      rippleColor ||
+      RIPPLE_COLORS[variant ?? 'default'] ||
+      'rgba(22, 119, 255, 0.22)'
 
     // Auto-reset state after duration
     React.useEffect(() => {
-      if ((currentState === 'success' || currentState === 'error') && !controlledState) {
+      if (
+        (currentState === 'success' || currentState === 'error') &&
+        !controlledState
+      ) {
         // Validate stateDuration to prevent issues with invalid values
         const duration = Math.max(0, stateDuration || 2000)
-        
+
         stateTimeoutRef.current = setTimeout(() => {
           setInternalState('idle')
         }, duration)
-
-        return () => {
-          if (stateTimeoutRef.current) {
-            clearTimeout(stateTimeoutRef.current)
-            stateTimeoutRef.current = undefined
-          }
-        }
       } else {
         // Clear timeout if state changes before duration completes
+        if (stateTimeoutRef.current) {
+          clearTimeout(stateTimeoutRef.current)
+          stateTimeoutRef.current = undefined
+        }
+      }
+
+      return () => {
         if (stateTimeoutRef.current) {
           clearTimeout(stateTimeoutRef.current)
           stateTimeoutRef.current = undefined

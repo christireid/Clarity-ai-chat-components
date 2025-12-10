@@ -11,7 +11,7 @@ import {
   SparklesIcon,
   CheckCircleIcon,
 } from './icons'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 
 export interface ThinkingIndicatorProps {
@@ -116,7 +116,7 @@ export function ThinkingIndicator({
       exit={containerVariants.exit}
       transition={{
         duration: prefersReducedMotion ? 0.1 : ANIMATION_DURATION.normal / 1000,
-        ease: ANIMATION_EASING.out,
+        ease: EASING_FRAMER.out,
       }}
       className={cn(
         'flex items-center gap-3 rounded-lg border border-border/40 bg-muted/40 px-4 py-3 shadow-md',
@@ -132,7 +132,7 @@ export function ThinkingIndicator({
             : {
                 duration: 2,
                 repeat: Infinity,
-                ease: ANIMATION_EASING.inOut,
+                ease: EASING_FRAMER.inOut,
               }
         }
         className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px] text-primary"
@@ -179,7 +179,7 @@ export function ThinkingIndicator({
               duration: prefersReducedMotion
                 ? 0.1
                 : ANIMATION_DURATION.fast / 1000,
-              ease: ANIMATION_EASING.out,
+              ease: EASING_FRAMER.out,
             }}
             className="text-xs text-muted-foreground/90 mt-1 truncate"
           >
@@ -197,7 +197,7 @@ export function ThinkingIndicator({
                 duration: prefersReducedMotion
                   ? 0.1
                   : ANIMATION_DURATION.slow / 1000,
-                ease: ANIMATION_EASING.out,
+                ease: EASING_FRAMER.out,
               }}
               className="h-full bg-primary rounded-full"
             />

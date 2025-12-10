@@ -165,6 +165,9 @@ export * from './tool-result-extractor'
 // Message grouping utilities
 export * from './message-grouping'
 
+// Performance utilities (debounce, throttle, Batcher, etc.)
+export * from './performance'
+
 // Fetch utilities with timeout and abort support
 export {
   fetchWithTimeout,

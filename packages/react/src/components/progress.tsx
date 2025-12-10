@@ -1,16 +1,16 @@
 /**
  * Progress Indicators
- * 
+ *
  * Linear and circular progress indicators with determinate and indeterminate states.
  * Used for loading states, file uploads, and streaming progress.
- * 
+ *
  * @enhanced Framer Motion 12: Spring-based progress animations for smoother fills
  */
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { getSpring } from '../animations/spring-presets'
 
@@ -83,7 +83,10 @@ export const Progress: React.FC<ProgressProps> = ({
         {isIndeterminate ? (
           // Indeterminate animation
           <motion.div
-            className={cn('absolute inset-y-0 rounded-full', colorClasses[variant])}
+            className={cn(
+              'absolute inset-y-0 rounded-full',
+              colorClasses[variant]
+            )}
             style={{ width: '40%' }}
             animate={{
               x: prefersReducedMotion ? '0%' : ['-100%', '250%'],
@@ -151,11 +154,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 
   return (
     <div className={cn('relative inline-flex', className)}>
-      <svg
-        width={size}
-        height={size}
-        className="transform -rotate-90"
-      >
+      <svg width={size} height={size} className="transform -rotate-90">
         {/* Background circle */}
         <circle
           cx={size / 2}
@@ -205,7 +204,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
                 ? { duration: 0.01, ease: 'linear' }
                 : {
                     duration: ANIMATION_DURATION.slow / 1000,
-                    ease: ANIMATION_EASING.out,
+                    ease: EASING_FRAMER.out,
                   }
             }
           />
@@ -242,7 +241,7 @@ export const StreamingProgress: React.FC<StreamingProgressProps> = ({
   className,
 }) => {
   const prefersReducedMotion = useReducedMotion()
-  
+
   const sizeClasses = {
     sm: 'gap-1',
     md: 'gap-1.5',
@@ -277,7 +276,7 @@ export const StreamingProgress: React.FC<StreamingProgressProps> = ({
               duration: 1.5,
               repeat: prefersReducedMotion ? 0 : Infinity,
               delay: i * 0.2,
-              ease: ANIMATION_EASING.inOut,
+              ease: EASING_FRAMER.inOut,
             }}
           />
         ))}
@@ -317,7 +316,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
     const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
   }
 
   const percentage = Math.min(Math.max(value, 0), 100)
@@ -365,7 +364,10 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
         </div>
       </div>
 
-      <Progress value={percentage} variant={isComplete ? 'success' : 'primary'} />
+      <Progress
+        value={percentage}
+        variant={isComplete ? 'success' : 'primary'}
+      />
     </div>
   )
 }
@@ -373,7 +375,9 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 /**
  * Skeleton Progress - Shows loading skeleton with animated progress
  */
-export const SkeletonProgress: React.FC<{ className?: string }> = ({ className }) => {
+export const SkeletonProgress: React.FC<{ className?: string }> = ({
+  className,
+}) => {
   return (
     <div className={cn('space-y-2.5', className)}>
       <div className="flex items-center justify-between">
