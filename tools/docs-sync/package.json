@@ -33,7 +33,6 @@
   "author": "Clarity Chat",
   "license": "MIT",
   "dependencies": {
-    "ajv": "^8.17.1",
     "commander": "^12.1.0",
     "glob": "^11.0.0",
     "gray-matter": "^4.0.3",
@@ -41,7 +40,8 @@
     "minimatch": "^10.0.1",
     "ora": "^8.1.1",
     "picocolors": "^1.1.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",

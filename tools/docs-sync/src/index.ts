@@ -64,6 +64,7 @@ import {
   validateConfigFull,
   formatValidationErrors,
 } from './utils/validator.js'
+import { ConfigError, NotFoundError, handleError } from './utils/errors.js'
 
 /** Default package configurations */
 const DEFAULT_PACKAGES: PackageConfig[] = [
@@ -170,7 +171,9 @@ function loadConfig(
     try {
       config = JSON.parse(content) as DocsSyncConfig
     } catch (err) {
-      throw new Error(`Invalid JSON in config file: ${(err as Error).message}`)
+      throw new ConfigError(
+        `Invalid JSON in config file: ${(err as Error).message}`
+      )
     }
   } else {
     // Look for default config locations
@@ -193,7 +196,7 @@ function loadConfig(
       try {
         config = JSON.parse(content) as DocsSyncConfig
       } catch (err) {
-        throw new Error(
+        throw new ConfigError(
           `Invalid JSON in config file: ${(err as Error).message}`
         )
       }
@@ -240,7 +243,7 @@ function loadConfig(
     const validationResult = validateConfigFull(config)
     if (!validationResult.valid) {
       const errorMessage = formatValidationErrors(validationResult.errors)
-      throw new Error(errorMessage)
+      throw new ConfigError(errorMessage)
     }
     debug('Configuration validated successfully')
   }
@@ -323,8 +326,7 @@ program
       process.exit(filtered.summary.docsRelevantFiles > 0 ? 0 : 0)
     } catch (err) {
       failSpinner('Change detection failed')
-      error((err as Error).message)
-      process.exit(1)
+      handleError(err)
     }
   })
 
@@ -449,8 +451,7 @@ program
       }
     } catch (err) {
       failSpinner('API extraction failed')
-      error((err as Error).message)
-      process.exit(1)
+      handleError(err)
     }
   })
 
@@ -482,8 +483,10 @@ program
       const apiDataPath = join(config.apiDataDir, 'extracted-apis.json')
       if (!existsSync(apiDataPath)) {
         failSpinner('No extracted API data found')
-        error('Run extract-apis first.')
-        process.exit(1)
+        throw new NotFoundError('Extracted API data', [
+          'Run: pnpm docs-sync extract-apis',
+          'Ensure TypeScript sources exist',
+        ])
       }
 
       const apiData = JSON.parse(readFileSync(apiDataPath, 'utf-8')) as Record<
@@ -547,8 +550,7 @@ program
       }
     } catch (err) {
       failSpinner('Documentation generation failed')
-      error((err as Error).message)
-      process.exit(1)
+      handleError(err)
     }
   })
 
@@ -605,8 +607,7 @@ program
       }
     } catch (err) {
       failSpinner('Changelog generation failed')
-      error((err as Error).message)
-      process.exit(1)
+      handleError(err)
     }
   })
 
@@ -780,8 +781,7 @@ program
       success(`Sync completed in ${formatDuration(Date.now() - startTime)}`)
     } catch (err) {
       failSpinner('Sync failed')
-      error((err as Error).message)
-      process.exit(1)
+      handleError(err)
     }
   })
 
@@ -992,8 +992,7 @@ program
       }
     } catch (err) {
       failSpinner('Verification failed')
-      error((err as Error).message)
-      process.exit(1)
+      handleError(err)
     }
   })
 
@@ -1017,8 +1016,10 @@ program
       // Load current API data
       const apiDataPath = join(config.apiDataDir, 'extracted-apis.json')
       if (!existsSync(apiDataPath)) {
-        error('No extracted API data found. Run extract-apis first.')
-        process.exit(1)
+        throw new NotFoundError('Extracted API data', [
+          'Run: pnpm docs-sync extract-apis',
+          'Ensure TypeScript sources exist',
+        ])
       }
 
       startSpinner('Loading API data...')
@@ -1080,8 +1081,7 @@ program
       }
     } catch (err) {
       failSpinner('Diff failed')
-      error((err as Error).message)
-      process.exit(1)
+      handleError(err)
     }
   })
 
@@ -1094,8 +1094,12 @@ program
     const configPath = join(process.cwd(), '.docs-sync.json')
 
     if (existsSync(configPath) && !options.force) {
-      error('Configuration file already exists. Use --force to overwrite.')
-      process.exit(1)
+      handleError(
+        new ConfigError('Configuration file already exists', [
+          'Use --force to overwrite the existing config',
+          'Or manually edit the existing .docs-sync.json',
+        ])
+      )
     }
 
     const defaultConfig = {

@@ -3,7 +3,7 @@
  * Provides actionable error messages and proper exit codes
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import boxen from 'boxen'
 import { getLogger } from './logger.js'
 
@@ -77,22 +77,27 @@ function normalizeError(error: unknown): Error {
  */
 export function handleError(error: string | Error | unknown): never {
   const normalizedError = normalizeError(error)
-  
+
   // Don't show beautiful error UI in JSON mode
   const isJsonMode = process.argv.includes('--json')
-  
+
   if (normalizedError instanceof CLIError) {
     if (!isJsonMode) {
       console.error('\n')
       const errorBox = boxen(
-        chalk.red.bold(normalizedError.message) +
-        (normalizedError.suggestions.length > 0 
-          ? '\n\n' + chalk.yellow.bold('💡 Suggestions:\n') +
-            normalizedError.suggestions.map(s => chalk.gray('  • ') + s).join('\n')
-          : '') +
-        (normalizedError.docs 
-          ? '\n\n' + chalk.blue.bold('📚 Documentation: ') + chalk.cyan.underline(normalizedError.docs)
-          : ''),
+        pc.bold(pc.red(normalizedError.message)) +
+          (normalizedError.suggestions.length > 0
+            ? '\n\n' +
+              pc.bold(pc.yellow('💡 Suggestions:\n')) +
+              normalizedError.suggestions
+                .map((s) => pc.gray('  • ') + s)
+                .join('\n')
+            : '') +
+          (normalizedError.docs
+            ? '\n\n' +
+              pc.bold(pc.blue('📚 Documentation: ')) +
+              pc.underline(pc.cyan(normalizedError.docs))
+            : ''),
         {
           padding: 1,
           margin: 1,
@@ -104,26 +109,30 @@ export function handleError(error: string | Error | unknown): never {
       )
       console.error(errorBox)
     } else {
-      console.error(JSON.stringify({
-        error: normalizedError.message,
-        code: normalizedError.code,
-        suggestions: normalizedError.suggestions,
-        docs: normalizedError.docs,
-      }))
+      console.error(
+        JSON.stringify({
+          error: normalizedError.message,
+          code: normalizedError.code,
+          suggestions: normalizedError.suggestions,
+          docs: normalizedError.docs,
+        })
+      )
     }
-    
+
     logger.error(normalizedError)
     process.exit(normalizedError.code)
   }
-  
+
   if (normalizedError instanceof Error) {
     if (!isJsonMode) {
       console.error('\n')
       const errorBox = boxen(
-        chalk.red.bold('Unexpected Error:') + '\n\n' + chalk.red(normalizedError.message) +
-        (process.env.DEBUG || process.env.VERBOSE && normalizedError.stack
-          ? '\n\n' + chalk.gray(normalizedError.stack)
-          : '\n\n' + chalk.gray('Run with --debug for more details')),
+        pc.bold(pc.red('Unexpected Error:')) +
+          '\n\n' +
+          pc.red(normalizedError.message) +
+          (process.env.DEBUG || (process.env.VERBOSE && normalizedError.stack)
+            ? '\n\n' + pc.gray(normalizedError.stack)
+            : '\n\n' + pc.gray('Run with --debug for more details')),
         {
           padding: 1,
           margin: 1,
@@ -135,31 +144,32 @@ export function handleError(error: string | Error | unknown): never {
       )
       console.error(errorBox)
     } else {
-      console.error(JSON.stringify({
-        error: normalizedError.message,
-        stack: normalizedError.stack,
-      }))
+      console.error(
+        JSON.stringify({
+          error: normalizedError.message,
+          stack: normalizedError.stack,
+        })
+      )
     }
-    
+
     logger.error(normalizedError)
     process.exit(ExitCode.GENERAL_ERROR)
   }
-  
+
   if (!isJsonMode) {
     console.error('\n')
-    console.error(boxen(
-      chalk.red.bold('Unknown Error'),
-      {
+    console.error(
+      boxen(pc.bold(pc.red('Unknown Error')), {
         padding: 1,
         margin: 1,
         borderStyle: 'round',
         borderColor: 'red',
         title: '❌ Error',
         titleAlignment: 'center',
-      }
-    ))
+      })
+    )
   }
-  
+
   logger.error('Unknown error', normalizedError)
   process.exit(ExitCode.GENERAL_ERROR)
 }

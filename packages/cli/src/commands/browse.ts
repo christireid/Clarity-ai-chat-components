@@ -4,11 +4,16 @@
  * https://github.com/charmbracelet/bubbletea
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import { execSync } from 'child_process'
 import open from 'open'
 import { createBanner, createDivider } from '../ui/banner.js'
-import { infoMessage, successMessage, featureHighlight, tipMessage } from '../ui/messages.js'
+import {
+  infoMessage,
+  successMessage,
+  featureHighlight,
+  tipMessage,
+} from '../ui/messages.js'
 import { createTable } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
 import { handleError } from '../utils/errors.js'
@@ -21,7 +26,12 @@ const COMPONENT_CATALOG = {
       {
         name: 'ChatWindow',
         description: 'Complete chat interface with message history',
-        features: ['Streaming support', 'Message history', 'Auto-scroll', 'Responsive'],
+        features: [
+          'Streaming support',
+          'Message history',
+          'Auto-scroll',
+          'Responsive',
+        ],
         dependencies: ['react', 'framer-motion'],
         preview: 'https://clarity-chat-docs.vercel.app/components/chat-window',
       },
@@ -30,14 +40,16 @@ const COMPONENT_CATALOG = {
         description: 'Customizable chat container',
         features: ['Flexible layout', 'Theme support', 'Custom headers'],
         dependencies: ['react'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/chat-interface',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/chat-interface',
       },
       {
         name: 'MessageBubble',
         description: 'Individual message display',
         features: ['Role-based styling', 'Timestamps', 'Actions'],
         dependencies: ['react', 'react-markdown'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/message-bubble',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/message-bubble',
       },
     ],
   },
@@ -56,14 +68,16 @@ const COMPONENT_CATALOG = {
         description: 'AI model selection dropdown',
         features: ['Provider grouping', 'Model info', 'Quick switch'],
         dependencies: ['react', '@radix-ui/react-select'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/model-selector',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/model-selector',
       },
       {
         name: 'PromptTemplate',
         description: 'Reusable prompt templates',
         features: ['Variable substitution', 'Template library', 'Categories'],
         dependencies: ['react'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/prompt-template',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/prompt-template',
       },
     ],
   },
@@ -75,14 +89,16 @@ const COMPONENT_CATALOG = {
         description: 'AI processing animation',
         features: ['Multiple styles', 'Customizable', 'Smooth animation'],
         dependencies: ['react', 'framer-motion'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/thinking-indicator',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/thinking-indicator',
       },
       {
         name: 'StreamingIndicator',
         description: 'Real-time streaming visualization',
         features: ['Pulse animation', 'Token counter', 'Speed indicator'],
         dependencies: ['react'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/streaming-indicator',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/streaming-indicator',
       },
       {
         name: 'ProgressBar',
@@ -101,14 +117,16 @@ const COMPONENT_CATALOG = {
         description: 'Real-time token usage display',
         features: ['Live counting', 'Cost estimation', 'History'],
         dependencies: ['react'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/token-counter',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/token-counter',
       },
       {
         name: 'CostEstimator',
         description: 'API cost calculator',
         features: ['Multi-provider', 'Rate display', 'Budgets'],
         dependencies: ['react'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/cost-estimator',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/cost-estimator',
       },
       {
         name: 'UsageChart',
@@ -127,7 +145,8 @@ const COMPONENT_CATALOG = {
         description: 'Source citation display',
         features: ['Rich metadata', 'Preview', 'Copy link'],
         dependencies: ['react'],
-        preview: 'https://clarity-chat-docs.vercel.app/components/citation-card',
+        preview:
+          'https://clarity-chat-docs.vercel.app/components/citation-card',
       },
       {
         name: 'CodeBlock',
@@ -152,43 +171,45 @@ const COMPONENT_CATALOG = {
  */
 export async function browseCommand() {
   console.clear()
-  
+
   // Beautiful banner
-  console.log(createBanner('🎨 Component Browser', {
-    gradient: 'pastel',
-  }))
-  
+  console.log(
+    createBanner('🎨 Component Browser', {
+      gradient: 'pastel',
+    })
+  )
+
   console.log()
   infoMessage('Navigate with arrow keys, Enter to select, Q to quit')
   console.log()
 
   // Display categories
   const categories = Object.keys(COMPONENT_CATALOG)
-  
+
   for (let i = 0; i < categories.length; i++) {
     const category = categories[i]
     const data = COMPONENT_CATALOG[category as keyof typeof COMPONENT_CATALOG]
-    
+
     // Category header
-    console.log(chalk.bold.blue(`\n▸ ${category}`))
-    console.log(chalk.gray(`  ${data.description}`))
+    console.log(pc.bold(pc.blue(`\n▸ ${category}`)))
+    console.log(pc.gray(`  ${data.description}`))
     console.log()
-    
+
     // Components in category
     data.components.forEach((component, idx) => {
       const prefix = idx === data.components.length - 1 ? '  └─' : '  ├─'
-      console.log(chalk.yellow(prefix) + ' ' + chalk.bold.white(component.name))
-      console.log(chalk.gray(`     ${component.description}`))
-      
+      console.log(pc.yellow(prefix) + ' ' + pc.bold(pc.white(component.name)))
+      console.log(pc.gray(`     ${component.description}`))
+
       // Features
       const featureStr = component.features.slice(0, 3).join(' • ')
-      console.log(chalk.cyan(`     ✓ ${featureStr}`))
-      
+      console.log(pc.cyan(`     ✓ ${featureStr}`))
+
       // Quick actions
       console.log(
-        chalk.gray(`     💾 clarity-chat add ${component.name.toLowerCase()}`) +
-        chalk.dim(' | ') +
-        chalk.gray(`📖 docs`)
+        pc.gray(`     💾 clarity-chat add ${component.name.toLowerCase()}`) +
+          pc.dim(' | ') +
+          pc.gray(`📖 docs`)
       )
       console.log()
     })
@@ -216,10 +237,14 @@ export async function browseCommand() {
  * Interactive component selector with filtering
  */
 export async function selectComponent(): Promise<string | null> {
-  const allComponents: Array<{ name: string; category: string; description: string }> = []
-  
+  const allComponents: Array<{
+    name: string
+    category: string
+    description: string
+  }> = []
+
   Object.entries(COMPONENT_CATALOG).forEach(([category, data]) => {
-    data.components.forEach(component => {
+    data.components.forEach((component) => {
       allComponents.push({
         name: component.name,
         category,
@@ -228,16 +253,16 @@ export async function selectComponent(): Promise<string | null> {
     })
   })
 
-  console.log(chalk.bold.cyan('\n🎯 Select a component to install:\n'))
-  
+  console.log(pc.bold(pc.cyan('\n🎯 Select a component to install:\n')))
+
   allComponents.forEach((comp, idx) => {
     console.log(
-      chalk.gray(`  ${(idx + 1).toString().padStart(2)}.`) +
+      pc.gray(`  ${(idx + 1).toString().padStart(2)}.`) +
         ' ' +
-        chalk.bold.yellow(comp.name) +
-        chalk.gray(` (${comp.category})`)
+        pc.bold(pc.yellow(comp.name)) +
+        pc.gray(` (${comp.category})`)
     )
-    console.log(chalk.gray(`      ${comp.description}`))
+    console.log(pc.gray(`      ${comp.description}`))
   })
 
   console.log()
@@ -249,14 +274,14 @@ export async function selectComponent(): Promise<string | null> {
  */
 export async function showComponentDetails(componentName: string) {
   console.clear()
-  
+
   // Find component
   let component: any = null
   let category: string = ''
-  
+
   for (const [cat, data] of Object.entries(COMPONENT_CATALOG)) {
     const found = data.components.find(
-      c => c.name.toLowerCase() === componentName.toLowerCase()
+      (c) => c.name.toLowerCase() === componentName.toLowerCase()
     )
     if (found) {
       component = found
@@ -271,60 +296,60 @@ export async function showComponentDetails(componentName: string) {
   }
 
   // Beautiful header
-  console.log(createBanner(component.name, {
-    gradient: 'pastel',
-  }))
+  console.log(
+    createBanner(component.name, {
+      gradient: 'pastel',
+    })
+  )
   console.log()
 
   // Category
-  console.log(chalk.gray('  Category: ') + chalk.cyan(category))
+  console.log(pc.gray('  Category: ') + pc.cyan(category))
   console.log()
 
   // Description
-  console.log(chalk.bold.white('  Description'))
-  console.log(chalk.gray(`  ${component.description}`))
+  console.log(pc.bold(pc.white('  Description')))
+  console.log(pc.gray(`  ${component.description}`))
   console.log()
 
   // Features
-  console.log(chalk.bold.white('  Features'))
+  console.log(pc.bold(pc.white('  Features')))
   component.features.forEach((feature: string) => {
-    console.log(chalk.green('  ✓ ') + chalk.gray(feature))
+    console.log(pc.green('  ✓ ') + pc.gray(feature))
   })
   console.log()
 
   // Dependencies
-  console.log(chalk.bold.white('  Dependencies'))
+  console.log(pc.bold(pc.white('  Dependencies')))
   component.dependencies.forEach((dep: string) => {
-    console.log(chalk.yellow('  • ') + chalk.gray(dep))
+    console.log(pc.yellow('  • ') + pc.gray(dep))
   })
   console.log()
 
   // Installation
-  console.log(chalk.bold.white('  Installation'))
-  console.log(chalk.cyan(`  $ clarity-chat add ${component.name.toLowerCase()}`))
+  console.log(pc.bold(pc.white('  Installation')))
+  console.log(pc.cyan(`  $ clarity-chat add ${component.name.toLowerCase()}`))
   console.log()
 
   // Actions
-  console.log(chalk.bold.white('  Quick Actions'))
+  console.log(pc.bold(pc.white('  Quick Actions')))
   console.log(
-    chalk.gray('  1. ') +
-      chalk.white('Install now') +
-      chalk.gray(' - Add to your project')
+    pc.gray('  1. ') +
+      pc.white('Install now') +
+      pc.gray(' - Add to your project')
   )
   console.log(
-    chalk.gray('  2. ') +
-      chalk.white('View docs') +
-      chalk.gray(' - Open documentation')
+    pc.gray('  2. ') + pc.white('View docs') + pc.gray(' - Open documentation')
   )
   console.log(
-    chalk.gray('  3. ') +
-      chalk.white('Live preview') +
-      chalk.gray(' - See it in action')
+    pc.gray('  3. ') + pc.white('Live preview') + pc.gray(' - See it in action')
   )
   console.log()
 
   // Prompt for action
-  console.log(chalk.yellow('💡 Press Enter to install, D for docs, or Q to go back'))
+  console.log(
+    pc.yellow('💡 Press Enter to install, D for docs, or Q to go back')
+  )
   console.log()
 }
 
@@ -333,19 +358,21 @@ export async function showComponentDetails(componentName: string) {
  */
 export async function installComponentInteractive(componentName: string) {
   const spinner = createSpinner(`Installing ${componentName}...`)
-  
+
   try {
     spinner.start()
     execSync(`clarity-chat add ${componentName.toLowerCase()}`, {
       stdio: 'inherit',
     })
     spinner.succeed()
-    
+
     successMessage(`${componentName} installed successfully!`)
     console.log()
-    
+
     // Show next steps
-    infoMessage(`Next steps:\n\nImport the component: import { ${componentName} } from '@clarity-chat/react'\nView docs: clarity-chat docs ${componentName.toLowerCase()}`)
+    infoMessage(
+      `Next steps:\n\nImport the component: import { ${componentName} } from '@clarity-chat/react'\nView docs: clarity-chat docs ${componentName.toLowerCase()}`
+    )
     console.log()
   } catch (error) {
     spinner.fail()
@@ -357,19 +384,33 @@ export async function installComponentInteractive(componentName: string) {
  * Search components
  */
 export async function searchComponents(query: string) {
-  console.log(chalk.bold.cyan(`\n🔍 Search results for "${query}":\n`))
-  
-  const results: Array<{ name: string; category: string; description: string; score: number }> = []
-  
+  console.log(pc.bold(pc.cyan(`\n🔍 Search results for "${query}":\n`)))
+
+  const results: Array<{
+    name: string
+    category: string
+    description: string
+    score: number
+  }> = []
+
   Object.entries(COMPONENT_CATALOG).forEach(([category, data]) => {
-    data.components.forEach(component => {
-      const searchString = `${component.name} ${component.description} ${component.features.join(' ')}`.toLowerCase()
+    data.components.forEach((component) => {
+      const searchString =
+        `${component.name} ${component.description} ${component.features.join(' ')}`.toLowerCase()
       if (searchString.includes(query.toLowerCase())) {
         // Simple relevance scoring
-        const nameMatch = component.name.toLowerCase().includes(query.toLowerCase()) ? 10 : 0
-        const descMatch = component.description.toLowerCase().includes(query.toLowerCase()) ? 5 : 0
+        const nameMatch = component.name
+          .toLowerCase()
+          .includes(query.toLowerCase())
+          ? 10
+          : 0
+        const descMatch = component.description
+          .toLowerCase()
+          .includes(query.toLowerCase())
+          ? 5
+          : 0
         const score = nameMatch + descMatch
-        
+
         results.push({
           name: component.name,
           category,
@@ -384,24 +425,26 @@ export async function searchComponents(query: string) {
   results.sort((a, b) => b.score - a.score)
 
   if (results.length === 0) {
-    console.log(chalk.yellow('  No components found matching your search'))
-    console.log(chalk.gray('  Try browsing all components: ') + chalk.cyan('clarity-chat browse'))
+    console.log(pc.yellow('  No components found matching your search'))
+    console.log(
+      pc.gray('  Try browsing all components: ') +
+        pc.cyan('clarity-chat browse')
+    )
     console.log()
     return
   }
 
   results.forEach((result, idx) => {
     console.log(
-      chalk.bold.yellow(`  ${idx + 1}. ${result.name}`) +
-        chalk.gray(` (${result.category})`)
+      pc.bold(pc.yellow(`  ${idx + 1}. ${result.name}`)) +
+        pc.gray(` (${result.category})`)
     )
-    console.log(chalk.gray(`     ${result.description}`))
+    console.log(pc.gray(`     ${result.description}`))
     console.log(
-      chalk.cyan(`     $ clarity-chat add ${result.name.toLowerCase()}`) +
-        chalk.dim(' | ') +
-        chalk.gray(`clarity-chat docs ${result.name.toLowerCase()}`)
+      pc.cyan(`     $ clarity-chat add ${result.name.toLowerCase()}`) +
+        pc.dim(' | ') +
+        pc.gray(`clarity-chat docs ${result.name.toLowerCase()}`)
     )
     console.log()
   })
 }
-
