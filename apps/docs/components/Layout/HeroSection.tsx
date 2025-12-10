@@ -117,6 +117,11 @@ function InstallCommand({ command }: { command: string }) {
         navigator.vibrate(50)
       }
 
+      toast.success('Copied to clipboard!', {
+        description: 'Install command ready to paste',
+        duration: 2000,
+      })
+
       setTimeout(() => {
         setCopied(false)
         setShowConfetti(false)
@@ -124,6 +129,7 @@ function InstallCommand({ command }: { command: string }) {
     } catch (error) {
       toast.error('Failed to copy', {
         description: 'Please try selecting and copying manually',
+        action: { label: 'Try again', onClick: copyToClipboard },
       })
     }
   }, [command])
