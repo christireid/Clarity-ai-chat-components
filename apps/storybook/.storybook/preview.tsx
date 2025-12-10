@@ -1,15 +1,33 @@
+/**
+ * Storybook Preview Configuration
+ *
+ * Global decorators, parameters, and loaders for Clarity Chat Storybook.
+ * Includes MSW for API mocking, theme providers, and accessibility setup.
+ */
 import type { Decorator, Preview } from '@storybook/react-vite'
+import type { Renderer } from '@storybook/react'
 import React from 'react'
 import { ThemeProvider, ToastProvider } from '@clarity-chat/react'
 import { getAllThemes } from '@clarity-chat/react/theme'
-import { clarityTheme, clarityDarkTheme } from './manager'
+import { withThemeByClassName } from '@storybook/addon-themes'
+import { initialize, mswLoader } from 'msw-storybook-addon'
+import clarityTheme from './clarity-theme'
+import clarityDarkTheme from './clarity-theme-dark'
 import './globals.css'
+
+// Initialize MSW for API mocking in stories
+initialize({
+  onUnhandledRequest: 'bypass',
+})
 
 // Suppress AbortError from Storybook's waitForAnimations in React 19
 if (typeof window !== 'undefined') {
   const originalOnError = window.onerror
   window.onerror = (message, source, lineno, colno, error) => {
-    if (error?.name === 'AbortError' || (typeof message === 'string' && message.includes('AbortError'))) {
+    if (
+      error?.name === 'AbortError' ||
+      (typeof message === 'string' && message.includes('AbortError'))
+    ) {
       return true // Suppress the error
     }
     return originalOnError?.(message, source, lineno, colno, error) ?? false
@@ -35,9 +53,10 @@ const themePresets = getAllThemes()
 
 const withTheme: Decorator = (Story, context) => {
   const mode = context.globals.themeMode ?? 'system'
-  const preset = context.globals.themePreset && context.globals.themePreset !== 'auto'
-    ? context.globals.themePreset
-    : undefined
+  const preset =
+    context.globals.themePreset && context.globals.themePreset !== 'auto'
+      ? context.globals.themePreset
+      : undefined
 
   return (
     <ThemeProvider
@@ -71,19 +90,43 @@ const preview: Preview = {
           'Welcome',
           ['Introduction', 'Getting Started', 'Playground', "What's New"],
           'Foundation',
-          ['Overview', 'Colors & Themes', 'Typography', 'Spacing & Layout', 'Motion & Animation', 'Iconography'],
+          [
+            'Overview',
+            'Colors & Themes',
+            'Typography',
+            'Spacing & Layout',
+            'Motion & Animation',
+            'Iconography',
+          ],
           'Components',
           ['Inputs', 'Data Display', 'Feedback', 'Layout', 'Navigation'],
           'Advanced Features',
-          ['AI & Agents', 'Memory & Context', 'Streaming & Real-time', 'Analytics & Monitoring', 'Enterprise'],
+          [
+            'AI & Agents',
+            'Memory & Context',
+            'Streaming & Real-time',
+            'Analytics & Monitoring',
+            'Enterprise',
+          ],
           'Hooks',
-          ['Chat Hooks', 'Streaming', 'State Management', 'Performance', 'Utilities'],
+          [
+            'Chat Hooks',
+            'Streaming',
+            'State Management',
+            'Performance',
+            'Utilities',
+          ],
           'Patterns',
           ['Chat Patterns', 'Form Patterns', 'Layout Patterns', 'AI Patterns'],
           'Examples',
           ['Complete Applications', 'Integration Examples', 'Use Cases'],
           'Resources',
-          ['Accessibility', 'Best Practices', 'Migration Guides', 'API Reference'],
+          [
+            'Accessibility',
+            'Best Practices',
+            'Migration Guides',
+            'API Reference',
+          ],
           // Legacy categories (backward compatibility during transition)
           'Getting Started',
           'Design Principles',
@@ -104,7 +147,12 @@ const preview: Preview = {
       sort: 'requiredFirst',
     },
     docs: {
-      toc: true,
+      theme: clarityTheme,
+      toc: {
+        contentsSelector: '.sbdocs-content',
+        headingSelector: 'h2, h3',
+        title: 'On this page',
+      },
       source: {
         state: 'open',
       },
@@ -143,8 +191,11 @@ const preview: Preview = {
         system: { name: 'system', value: 'transparent' },
         light: { name: 'light', value: '#ffffff' },
         dark: { name: 'dark', value: '#111827' },
-        gradient: { name: 'gradient', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }
-      }
+        gradient: {
+          name: 'gradient',
+          value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        },
+      },
     },
     viewport: {
       options: {
@@ -168,7 +219,21 @@ const preview: Preview = {
     },
   },
 
-  decorators: [withTheme],
+  decorators: [
+    // Tailwind dark mode class decorator
+    withThemeByClassName<Renderer>({
+      themes: {
+        light: '',
+        dark: 'dark',
+      },
+      defaultTheme: 'light',
+    }),
+    // Clarity theme provider decorator
+    withTheme,
+  ],
+
+  // MSW loader for API mocking
+  loaders: [mswLoader],
 
   globalTypes: {
     locale: {
@@ -224,9 +289,9 @@ const preview: Preview = {
 
   initialGlobals: {
     backgrounds: {
-      value: 'system'
-    }
-  }
+      value: 'system',
+    },
+  },
 }
 
 export default preview

@@ -1,0 +1,133 @@
+{/* Welcome.mdx - Introduction to Clarity Chat */}
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Introduction/Welcome" />
+
+<div className="sb-unstyled">
+  <div className="max-w-4xl mx-auto py-12 px-4">
+    <div className="text-center mb-12">
+      <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+        Clarity Chat
+      </h1>
+      <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        The premium AI chat component library for building production-ready
+        chat interfaces with React, TypeScript, and Tailwind CSS.
+      </p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="text-3xl mb-4">🚀</div>
+        <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">Production Ready</h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          181/181 tests passing. TypeScript strict mode. WCAG 2.1 AA compliant.
+        </p>
+      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="text-3xl mb-4">🎯</div>
+        <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">Multi-Provider</h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          OpenAI, Anthropic Claude, and Google Gemini support out of the box.
+        </p>
+      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="text-3xl mb-4">⚡</div>
+        <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">Performance Optimized</h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          56% smaller bundle (27KB). Token optimization. KV-cache alignment.
+        </p>
+      </div>
+    </div>
+
+    <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-6 mb-8">
+      <h2 className="font-semibold text-lg mb-4 text-gray-900 dark:text-gray-100">Quick Start</h2>
+      <pre className="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto text-sm">
+        <code>{`npm install @clarity-chat/react
+
+// In your component
+import { ClarityChat } from '@clarity-chat/react'
+
+export default function Chat() {
+  return <ClarityChat api="/api/chat" />
+}`}</code>
+      </pre>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-gray-100">Key Features</h3>
+        <ul className="space-y-2 text-gray-600 dark:text-gray-400 text-sm">
+          <li className="flex items-center gap-2">
+            <span className="text-green-500">✓</span> Drop-in chat interface components
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-green-500">✓</span> Real-time streaming support (SSE/WebSocket)
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-green-500">✓</span> Built-in conversation memory
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-green-500">✓</span> Tool/function calling support
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-green-500">✓</span> Token optimization utilities
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-green-500">✓</span> Fully accessible (WCAG 2.1 AA)
+          </li>
+        </ul>
+      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h3 className="font-semibold text-lg mb-3 text-gray-900 dark:text-gray-100">Architecture</h3>
+        <ul className="space-y-2 text-gray-600 dark:text-gray-400 text-sm">
+          <li className="flex items-center gap-2">
+            <span className="text-blue-500">→</span> Provider-agnostic design
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-blue-500">→</span> Composable component architecture
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-blue-500">→</span> Headless hooks for custom UIs
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-blue-500">→</span> shadcn/ui primitive foundation
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-blue-500">→</span> Tailwind CSS styling
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="text-blue-500">→</span> Tree-shakeable exports
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="text-center">
+      <p className="text-gray-600 dark:text-gray-400 mb-4">
+        Ready to build your AI chat interface?
+      </p>
+      <div className="flex gap-4 justify-center flex-wrap">
+        <a
+          href="?path=/docs/introduction-getting-started--docs"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition inline-block"
+        >
+          Get Started
+        </a>
+        <a
+          href="?path=/docs/components-drop-in-solutions-claritychat--docs"
+          className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition inline-block"
+        >
+          View Components
+        </a>
+        <a
+          href="https://github.com/christireid/Clarity-ai-chat-components"
+          className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition inline-block"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

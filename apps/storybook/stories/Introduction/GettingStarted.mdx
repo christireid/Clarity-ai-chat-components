@@ -1,0 +1,175 @@
+{/* GettingStarted.mdx - Quick start guide */}
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Introduction/Getting Started" />
+
+# Getting Started
+
+Get up and running with Clarity Chat in minutes.
+
+## Installation
+
+Install the package using your preferred package manager:
+
+```bash
+# npm
+npm install @clarity-chat/react
+
+# pnpm
+pnpm add @clarity-chat/react
+
+# yarn
+yarn add @clarity-chat/react
+```
+
+## Peer Dependencies
+
+Clarity Chat requires the following peer dependencies:
+
+```bash
+npm install react react-dom
+```
+
+## Basic Setup
+
+### 1. Import Styles
+
+Import the Clarity Chat styles in your app's entry point:
+
+```tsx
+// In your _app.tsx, layout.tsx, or index.tsx
+import '@clarity-chat/react/styles.css'
+```
+
+Or with Tailwind CSS (recommended):
+
+```css
+/* In your globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### 2. Add the Chat Component
+
+The simplest way to add AI chat to your app:
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react'
+
+export default function ChatPage() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      placeholder="Ask me anything..."
+    />
+  )
+}
+```
+
+### 3. Create an API Endpoint
+
+Create an API route to handle chat requests. Here's an example using Next.js with OpenAI:
+
+```ts
+// app/api/chat/route.ts
+import { OpenAI } from 'openai'
+import { streamResponse } from '@clarity-chat/react/server'
+
+const openai = new OpenAI()
+
+export async function POST(request: Request) {
+  const { messages } = await request.json()
+
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4-turbo',
+    messages,
+    stream: true,
+  })
+
+  return streamResponse(completion)
+}
+```
+
+## Using Hooks for Custom UIs
+
+For more control, use the `useClarityChat` hook:
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+function CustomChat() {
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+  } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div>
+      {messages.map((message) => (
+        <div key={message.id}>
+          <strong>{message.role}:</strong> {message.content}
+        </div>
+      ))}
+
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Type a message..."
+          disabled={isLoading}
+        />
+        <button type="submit" disabled={isLoading}>
+          Send
+        </button>
+      </form>
+    </div>
+  )
+}
+```
+
+## Adding Memory
+
+Enable conversation memory to maintain context:
+
+```tsx
+import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
+
+function ChatWithMemory() {
+  return (
+    <MemoryProvider
+      strategy="sliding-window"
+      maxTokens={4000}
+    >
+      <ClarityChat api="/api/chat" />
+    </MemoryProvider>
+  )
+}
+```
+
+## Multi-Provider Support
+
+Clarity Chat works with multiple AI providers:
+
+```tsx
+// OpenAI
+<ClarityChat api="/api/openai" provider="openai" />
+
+// Anthropic Claude
+<ClarityChat api="/api/anthropic" provider="anthropic" />
+
+// Google Gemini
+<ClarityChat api="/api/gemini" provider="google" />
+```
+
+## Next Steps
+
+- [Explore Components](/docs/components-drop-in-solutions-claritychat--docs)
+- [Learn about Hooks](/docs/hooks-primary-useclaritychat--docs)
+- [Design System](/docs/design-system-design-tokens--docs)
+- [View Examples](/docs/examples-basic-chat--docs)

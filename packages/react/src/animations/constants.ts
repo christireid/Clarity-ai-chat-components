@@ -161,19 +161,6 @@ export const EASING_FRAMER = {
 } satisfies Record<string, FramerEasing>
 
 /**
- * Get a Framer Motion compatible easing value
- * Use this helper when you need to pass easing to Framer Motion transitions
- * @param key - The easing key from ANIMATION_EASING
- * @returns A Framer Motion compatible easing value
- */
-export function getFramerEasing(
-  key: keyof typeof ANIMATION_EASING
-): FramerEasing {
-  const easing = EASING_FRAMER[key as keyof typeof EASING_FRAMER]
-  return easing ?? EASING_FRAMER.default
-}
-
-/**
  * Tailwind timing function class mappings
  */
 export const TAILWIND_EASING = {
@@ -461,12 +448,14 @@ export const ANIMATION_PRESETS = {
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0.8 },
   },
-  /** Collapse/expand effect */
+  /* eslint-disable clarity-animations/no-layout-animation */
+  /** Collapse/expand effect - height animation is intentional for expand/collapse behavior */
   collapse: {
     initial: { opacity: 0, height: 0 },
     animate: { opacity: 1, height: 'auto' },
     exit: { opacity: 0, height: 0 },
   },
+  /* eslint-enable clarity-animations/no-layout-animation */
 } as const
 
 /**

@@ -169,9 +169,6 @@ export {
   TooltipContent as ShadcnTooltipContent,
   TooltipProvider as ShadcnTooltipProvider,
   Tooltip as RadixTooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
 } from './components/ui/tooltip'
 
 // Checkbox
@@ -189,6 +186,7 @@ export {
   DrawerClose,
   DrawerContent,
   DrawerHeader,
+  DrawerBody,
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
@@ -203,6 +201,7 @@ export {
   DrawerClose as ShadcnDrawerClose,
   DrawerContent as ShadcnDrawerContent,
   DrawerHeader as ShadcnDrawerHeader,
+  DrawerBody as ShadcnDrawerBody,
   DrawerFooter as ShadcnDrawerFooter,
   DrawerTitle as ShadcnDrawerTitle,
   DrawerDescription as ShadcnDrawerDescription,
