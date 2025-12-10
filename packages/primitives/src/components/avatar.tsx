@@ -73,10 +73,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     }
 
     const statusColors = {
-      online: 'bg-green-500 ring-green-400/40',
-      offline: 'bg-gray-400 ring-gray-300/40',
-      away: 'bg-amber-500 ring-amber-400/40',
-      busy: 'bg-red-500 ring-red-400/40',
+      online: 'bg-success ring-success/40',
+      offline: 'bg-muted-foreground/60 ring-muted-foreground/30',
+      away: 'bg-warning ring-warning/40',
+      busy: 'bg-destructive ring-destructive/40',
     }
 
     const statusSizes = {
@@ -118,11 +118,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
           >
             {(status === 'online' || status === 'away') && (
               <span
-                className="absolute inset-0 rounded-full animate-ping opacity-60"
-                style={{
-                  backgroundColor:
-                    status === 'online' ? 'rgb(34, 197, 94)' : 'rgb(245, 158, 11)',
-                }}
+                className={cn(
+                  'absolute inset-0 rounded-full animate-ping opacity-60',
+                  status === 'online' ? 'bg-success' : 'bg-warning'
+                )}
               />
             )}
           </span>

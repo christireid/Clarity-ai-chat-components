@@ -88,31 +88,32 @@ describe('Avatar Component', () => {
   describe('Status Indicator', () => {
     it('should render online status', () => {
       const { container } = render(<Avatar status="online" fallback="AB" />)
-      const status = container.querySelector('.bg-green-500')
+      const status = container.querySelector('.bg-success')
       expect(status).toBeInTheDocument()
     })
 
     it('should render offline status', () => {
       const { container } = render(<Avatar status="offline" fallback="AB" />)
-      const status = container.querySelector('.bg-gray-400')
+      // Offline uses muted-foreground with opacity
+      const status = container.querySelector('[class*="bg-muted-foreground"]')
       expect(status).toBeInTheDocument()
     })
 
     it('should render away status', () => {
       const { container } = render(<Avatar status="away" fallback="AB" />)
-      const status = container.querySelector('.bg-amber-500')
+      const status = container.querySelector('.bg-warning')
       expect(status).toBeInTheDocument()
     })
 
     it('should render busy status', () => {
       const { container } = render(<Avatar status="busy" fallback="AB" />)
-      const status = container.querySelector('.bg-red-500')
+      const status = container.querySelector('.bg-destructive')
       expect(status).toBeInTheDocument()
     })
 
     it('should not render status when not provided', () => {
       const { container } = render(<Avatar fallback="AB" />)
-      const status = container.querySelector('.bg-green-500')
+      const status = container.querySelector('.bg-success')
       expect(status).not.toBeInTheDocument()
     })
 

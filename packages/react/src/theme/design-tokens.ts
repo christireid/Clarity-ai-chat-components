@@ -136,17 +136,18 @@ export const designTokens = {
   },
 
   /**
-   * Z-index scale
+   * Z-index scale (matches CSS custom properties)
    */
   zIndex: {
     base: 0,
     dropdown: 1000,
-    sticky: 1020,
-    fixed: 1030,
-    modalBackdrop: 1040,
-    modal: 1050,
-    popover: 1060,
-    tooltip: 1070,
+    sticky: 1100,
+    fixed: 1200,
+    modalBackdrop: 1300,
+    modal: 1400,
+    popover: 1500,
+    tooltip: 1600,
+    toast: 1700,
   },
 
   /**

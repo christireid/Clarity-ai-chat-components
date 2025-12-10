@@ -41,7 +41,7 @@ describe('Textarea Component', () => {
     it('should render with success variant', () => {
       const { container } = render(<Textarea variant="success" />)
       const textarea = container.querySelector('textarea')
-      expect(textarea).toHaveClass('border-green-500')
+      expect(textarea).toHaveClass('border-success')
     })
   })
 

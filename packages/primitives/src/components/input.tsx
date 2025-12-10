@@ -13,7 +13,7 @@ const inputVariants = cva(
       variant: {
         default: '',
         error: 'ring-destructive focus-visible:ring-destructive focus-visible:ring-destructive/20',
-        success: 'ring-green-500 focus-visible:ring-green-500 focus-visible:ring-green-500/20',
+        success: 'ring-success focus-visible:ring-success focus-visible:ring-success/20',
       },
       inputSize: {
         default: 'h-10',

@@ -142,11 +142,11 @@
     --shadow-medium: 0 12px 32px rgba(15, 23, 42, 0.12);
     --shadow-strong: 0 18px 48px rgba(15, 23, 42, 0.16);
 
-    /* Colored Shadows for Emphasis */
-    --shadow-primary: 0 8px 16px -4px hsl(var(--primary) / 0.3);
-    --shadow-success: 0 8px 16px -4px hsl(var(--success) / 0.3);
-    --shadow-warning: 0 8px 16px -4px hsl(var(--warning) / 0.3);
-    --shadow-error: 0 8px 16px -4px hsl(var(--destructive) / 0.3);
+    /* Colored Shadows for Emphasis (OKLCH format) */
+    --shadow-primary: 0 8px 16px -4px oklch(var(--clarity-primary) / 0.3);
+    --shadow-success: 0 8px 16px -4px oklch(var(--clarity-success) / 0.3);
+    --shadow-warning: 0 8px 16px -4px oklch(var(--clarity-warning) / 0.3);
+    --shadow-error: 0 8px 16px -4px oklch(var(--clarity-destructive) / 0.3);
 
     /* Animation Timing */
     --duration-instant: 100ms;
@@ -687,5 +687,84 @@
   30% {
     transform: translateY(-8px);
     opacity: 1;
+  }
+}
+
+/* Ripple Effect Animation */
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+/* Error Shake Animation */
+@keyframes error-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-3px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Scale In Animation */
+@keyframes scale-in {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Fade Scale Animation (for dialogs/modals) */
+@keyframes fade-scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-scale-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* Reduced motion - disable all animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
