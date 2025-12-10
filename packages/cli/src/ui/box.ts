@@ -3,7 +3,7 @@
  * Inspired by https://github.com/charmbracelet/lipgloss
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 
 export interface BoxOptions {
   title?: string
@@ -69,15 +69,16 @@ export function box(content: string, options: BoxOptions = {}): string {
     padding = 1,
     margin = 0,
     borderStyle = 'rounded',
-    borderColor = chalk.cyan,
+    borderColor = pc.cyan,
     width,
   } = options
 
   const style = BORDER_STYLES[borderStyle]
   const lines = content.split('\n')
-  
+
   // Calculate content width
-  const contentWidth = width || Math.max(...lines.map(line => line.length)) + padding * 2
+  const contentWidth =
+    width || Math.max(...lines.map((line) => line.length)) + padding * 2
   const innerWidth = contentWidth - padding * 2
 
   // Build the box
@@ -92,7 +93,7 @@ export function box(content: string, options: BoxOptions = {}): string {
   if (title) {
     const titleText = ` ${title} `
     const remainingWidth = contentWidth - titleText.length - 2
-    
+
     let topBorder = ''
     if (titleAlign === 'left') {
       topBorder =
@@ -116,12 +117,14 @@ export function box(content: string, options: BoxOptions = {}): string {
         titleText +
         style.topRight
     }
-    
+
     output.push(' '.repeat(margin) + borderColor(topBorder))
   } else {
     output.push(
       ' '.repeat(margin) +
-        borderColor(style.topLeft + style.horizontal.repeat(contentWidth) + style.topRight)
+        borderColor(
+          style.topLeft + style.horizontal.repeat(contentWidth) + style.topRight
+        )
     )
   }
 
@@ -136,7 +139,7 @@ export function box(content: string, options: BoxOptions = {}): string {
   }
 
   // Content lines
-  lines.forEach(line => {
+  lines.forEach((line) => {
     const padded = line.padEnd(innerWidth)
     output.push(
       ' '.repeat(margin) +
@@ -161,7 +164,11 @@ export function box(content: string, options: BoxOptions = {}): string {
   // Bottom border
   output.push(
     ' '.repeat(margin) +
-      borderColor(style.bottomLeft + style.horizontal.repeat(contentWidth) + style.bottomRight)
+      borderColor(
+        style.bottomLeft +
+          style.horizontal.repeat(contentWidth) +
+          style.bottomRight
+      )
   )
 
   // Add bottom margin
@@ -180,7 +187,7 @@ export function panel(content: string, title?: string): string {
     title,
     padding: 1,
     borderStyle: 'rounded',
-    borderColor: chalk.cyan,
+    borderColor: pc.cyan,
   })
 }
 
@@ -192,7 +199,7 @@ export function successBox(content: string, title?: string): string {
     title: title || '✓ Success',
     padding: 1,
     borderStyle: 'rounded',
-    borderColor: chalk.green,
+    borderColor: pc.green,
   })
 }
 
@@ -204,7 +211,7 @@ export function errorBox(content: string, title?: string): string {
     title: title || '✗ Error',
     padding: 1,
     borderStyle: 'rounded',
-    borderColor: chalk.red,
+    borderColor: pc.red,
   })
 }
 
@@ -216,7 +223,7 @@ export function warningBox(content: string, title?: string): string {
     title: title || '⚠ Warning',
     padding: 1,
     borderStyle: 'rounded',
-    borderColor: chalk.yellow,
+    borderColor: pc.yellow,
   })
 }
 
@@ -228,7 +235,7 @@ export function infoBox(content: string, title?: string): string {
     title: title || 'ℹ Info',
     padding: 1,
     borderStyle: 'rounded',
-    borderColor: chalk.blue,
+    borderColor: pc.blue,
   })
 }
 
@@ -236,7 +243,7 @@ export function infoBox(content: string, title?: string): string {
  * Create a horizontal rule
  */
 export function hr(width: number = 60, char: string = '─'): string {
-  return chalk.gray(char.repeat(width))
+  return pc.gray(char.repeat(width))
 }
 
 /**
@@ -250,18 +257,16 @@ export interface TableColumn {
 
 export function table(data: string[][], columns: TableColumn[]): string {
   const output: string[] = []
-  
+
   // Calculate column widths
   const widths = columns.map((col, i) => {
     const headerWidth = col.header.length
-    const dataWidth = Math.max(...data.map(row => (row[i] || '').length))
+    const dataWidth = Math.max(...data.map((row) => (row[i] || '').length))
     return col.width || Math.max(headerWidth, dataWidth) + 2
   })
 
   // Top border
-  output.push(
-    chalk.gray('┌' + widths.map(w => '─'.repeat(w)).join('┬') + '┐')
-  )
+  output.push(pc.gray('┌' + widths.map((w) => '─'.repeat(w)).join('┬') + '┐'))
 
   // Header
   const headerRow = columns
@@ -269,16 +274,14 @@ export function table(data: string[][], columns: TableColumn[]): string {
       const text = col.header
       const width = widths[i]
       const padded = text.padEnd(width - 2)
-      return ` ${chalk.bold.cyan(padded)} `
+      return ` ${pc.bold(pc.cyan(padded))} `
     })
-    .join(chalk.gray('│'))
-  
-  output.push(chalk.gray('│') + headerRow + chalk.gray('│'))
+    .join(pc.gray('│'))
+
+  output.push(pc.gray('│') + headerRow + pc.gray('│'))
 
   // Header separator
-  output.push(
-    chalk.gray('├' + widths.map(w => '─'.repeat(w)).join('┼') + '┤')
-  )
+  output.push(pc.gray('├' + widths.map((w) => '─'.repeat(w)).join('┼') + '┤'))
 
   // Data rows
   data.forEach((row, rowIndex) => {
@@ -289,22 +292,20 @@ export function table(data: string[][], columns: TableColumn[]): string {
         const padded = text.padEnd(width - 2)
         return ` ${padded} `
       })
-      .join(chalk.gray('│'))
-    
-    output.push(chalk.gray('│') + cells + chalk.gray('│'))
-    
+      .join(pc.gray('│'))
+
+    output.push(pc.gray('│') + cells + pc.gray('│'))
+
     // Row separator (except for last row)
     if (rowIndex < data.length - 1) {
       output.push(
-        chalk.gray('├' + widths.map(w => '─'.repeat(w)).join('┼') + '┤')
+        pc.gray('├' + widths.map((w) => '─'.repeat(w)).join('┼') + '┤')
       )
     }
   })
 
   // Bottom border
-  output.push(
-    chalk.gray('└' + widths.map(w => '─'.repeat(w)).join('┴') + '┘')
-  )
+  output.push(pc.gray('└' + widths.map((w) => '─'.repeat(w)).join('┴') + '┘'))
 
   return output.join('\n')
 }
@@ -320,20 +321,26 @@ export interface TreeNode {
 
 export function tree(nodes: TreeNode[], prefix: string = ''): string {
   const output: string[] = []
-  
+
   nodes.forEach((node, index) => {
     const isLast = index === nodes.length - 1
     const connector = isLast ? '└─' : '├─'
     const icon = node.icon || '○'
-    
-    output.push(chalk.gray(prefix + connector) + ' ' + chalk.cyan(icon) + ' ' + chalk.white(node.label))
-    
+
+    output.push(
+      pc.gray(prefix + connector) +
+        ' ' +
+        pc.cyan(icon) +
+        ' ' +
+        pc.white(node.label)
+    )
+
     if (node.children && node.children.length > 0) {
       const newPrefix = prefix + (isLast ? '  ' : '│ ')
       output.push(tree(node.children, newPrefix))
     }
   })
-  
+
   return output.join('\n')
 }
 
@@ -341,9 +348,7 @@ export function tree(nodes: TreeNode[], prefix: string = ''): string {
  * Create a list with bullets
  */
 export function list(items: string[], bullet: string = '•'): string {
-  return items
-    .map(item => chalk.cyan(bullet) + ' ' + chalk.white(item))
-    .join('\n')
+  return items.map((item) => pc.cyan(bullet) + ' ' + pc.white(item)).join('\n')
 }
 
 /**
@@ -351,7 +356,6 @@ export function list(items: string[], bullet: string = '•'): string {
  */
 export function numberedList(items: string[]): string {
   return items
-    .map((item, i) => chalk.cyan(`${i + 1}.`) + ' ' + chalk.white(item))
+    .map((item, i) => pc.cyan(`${i + 1}.`) + ' ' + pc.white(item))
     .join('\n')
 }
-

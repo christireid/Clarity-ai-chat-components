@@ -3,16 +3,19 @@
  * Creates smooth, eye-catching animations
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 import { createSpinner } from './progress.js'
 
 /**
  * Animate text typing effect
  */
-export async function typeText(text: string, delay: number = 50): Promise<void> {
+export async function typeText(
+  text: string,
+  delay: number = 50
+): Promise<void> {
   for (const char of text) {
     process.stdout.write(char)
-    await new Promise(resolve => setTimeout(resolve, delay))
+    await new Promise((resolve) => setTimeout(resolve, delay))
   }
   process.stdout.write('\n')
 }
@@ -22,7 +25,7 @@ export async function typeText(text: string, delay: number = 50): Promise<void> 
  */
 export function createPulse(text: string, color: string = 'cyan'): string {
   // Simple pulsing effect using bold
-  const colorFn = chalk[color as keyof typeof chalk]
+  const colorFn = pc[color as keyof typeof pc]
   if (typeof colorFn === 'function') {
     return (colorFn as (text: string) => string)(text)
   }
@@ -34,14 +37,17 @@ export function createPulse(text: string, color: string = 'cyan'): string {
  */
 export function createRainbowText(text: string): string {
   const colors = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta']
-  return text.split('').map((char, index) => {
-    const color = colors[index % colors.length]
-    const colorFn = chalk[color as keyof typeof chalk]
-    if (typeof colorFn === 'function') {
-      return (colorFn as (text: string) => string)(char)
-    }
-    return char
-  }).join('')
+  return text
+    .split('')
+    .map((char, index) => {
+      const color = colors[index % colors.length]
+      const colorFn = pc[color as keyof typeof pc]
+      if (typeof colorFn === 'function') {
+        return (colorFn as (text: string) => string)(char)
+      }
+      return char
+    })
+    .join('')
 }
 
 /**
@@ -49,9 +55,12 @@ export function createRainbowText(text: string): string {
  */
 export function createShimmer(text: string): string {
   // Alternating bold for shimmer effect
-  return text.split('').map((char, index) => {
-    return index % 2 === 0 ? chalk.bold(char) : char
-  }).join('')
+  return text
+    .split('')
+    .map((char, index) => {
+      return index % 2 === 0 ? pc.bold(char) : char
+    })
+    .join('')
 }
 
 /**
@@ -70,7 +79,7 @@ export async function animateLoading(
     spinner.text = messages[currentIndex]
   }, duration / messages.length)
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       clearInterval(interval)
       spinner.stop()
@@ -82,12 +91,19 @@ export async function animateLoading(
 /**
  * Create a countdown animation
  */
-export async function countdown(seconds: number, message: string = 'Starting'): Promise<void> {
+export async function countdown(
+  seconds: number,
+  message: string = 'Starting'
+): Promise<void> {
   for (let i = seconds; i > 0; i--) {
-    process.stdout.write(`\r${chalk.bold.cyan(message)} in ${chalk.bold.yellow(i.toString())}...`)
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    process.stdout.write(
+      `\r${pc.bold(pc.cyan(message))} in ${pc.bold(pc.yellow(i.toString()))}...`
+    )
+    await new Promise((resolve) => setTimeout(resolve, 1000))
   }
-  process.stdout.write(`\r${chalk.bold.green(message)} now!                    \n`)
+  process.stdout.write(
+    `\r${pc.bold(pc.green(message))} now!                    \n`
+  )
 }
 
 /**
@@ -101,9 +117,9 @@ export async function animateProgress(
     const percent = Math.round((i / total) * 100)
     const filled = Math.round((i / total) * 20)
     const bar = '█'.repeat(filled) + '░'.repeat(20 - filled)
-    process.stdout.write(`\r${chalk.cyan(`Progress: [${bar}] ${percent}%`)}`)
+    process.stdout.write(`\r${pc.cyan(`Progress: [${bar}] ${percent}%`)}`)
     await callback(i)
-    await new Promise(resolve => setTimeout(resolve, 50))
+    await new Promise((resolve) => setTimeout(resolve, 50))
   }
   process.stdout.write('\n')
 }

@@ -3,7 +3,7 @@
  * Inspired by https://github.com/charmbracelet/bubbletea
  */
 
-import chalk from 'chalk'
+import pc from 'picocolors'
 
 const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
 const DOTS_FRAMES = ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']
@@ -15,7 +15,7 @@ export class Spinner {
   private frameIndex: number = 0
   private interval: NodeJS.Timeout | null = null
   private text: string = ''
-  private color: (text: string) => string = chalk.cyan
+  private color: (text: string) => string = pc.cyan
 
   constructor(type: 'dots' | 'arrow' | 'pulse' | 'default' = 'default') {
     switch (type) {
@@ -36,10 +36,10 @@ export class Spinner {
   start(text: string = '') {
     this.text = text
     this.frameIndex = 0
-    
+
     // Hide cursor
     process.stdout.write('\x1B[?25l')
-    
+
     this.interval = setInterval(() => {
       this.render()
       this.frameIndex = (this.frameIndex + 1) % this.frames.length
@@ -53,25 +53,25 @@ export class Spinner {
   succeed(text?: string) {
     this.stop()
     const message = text || this.text
-    console.log(chalk.green('✓') + ' ' + message)
+    console.log(pc.green('✓') + ' ' + message)
   }
 
   fail(text?: string) {
     this.stop()
     const message = text || this.text
-    console.log(chalk.red('✗') + ' ' + message)
+    console.log(pc.red('✗') + ' ' + message)
   }
 
   warn(text?: string) {
     this.stop()
     const message = text || this.text
-    console.log(chalk.yellow('⚠') + ' ' + message)
+    console.log(pc.yellow('⚠') + ' ' + message)
   }
 
   info(text?: string) {
     this.stop()
     const message = text || this.text
-    console.log(chalk.blue('ℹ') + ' ' + message)
+    console.log(pc.blue('ℹ') + ' ' + message)
   }
 
   stop() {
@@ -79,7 +79,7 @@ export class Spinner {
       clearInterval(this.interval)
       this.interval = null
     }
-    
+
     // Clear line and show cursor
     process.stdout.write('\r\x1B[K')
     process.stdout.write('\x1B[?25h')
@@ -95,7 +95,10 @@ export class Spinner {
  * Multi-spinner for parallel operations
  */
 export class MultiSpinner {
-  private spinners: Map<string, { text: string; status: 'pending' | 'success' | 'error' }> = new Map()
+  private spinners: Map<
+    string,
+    { text: string; status: 'pending' | 'success' | 'error' }
+  > = new Map()
   private interval: NodeJS.Timeout | null = null
   private frameIndex: number = 0
 
@@ -133,7 +136,7 @@ export class MultiSpinner {
 
   private start() {
     process.stdout.write('\x1B[?25l') // Hide cursor
-    
+
     this.interval = setInterval(() => {
       this.render()
       this.frameIndex = (this.frameIndex + 1) % SPINNER_FRAMES.length
@@ -145,29 +148,29 @@ export class MultiSpinner {
     if (this.spinners.size > 1) {
       process.stdout.write(`\x1B[${this.spinners.size}A`)
     }
-    
+
     // Render each spinner
     this.spinners.forEach((spinner) => {
       process.stdout.write('\r\x1B[K') // Clear line
-      
+
       if (spinner.status === 'pending') {
-        const frame = chalk.cyan(SPINNER_FRAMES[this.frameIndex])
+        const frame = pc.cyan(SPINNER_FRAMES[this.frameIndex])
         process.stdout.write(`${frame} ${spinner.text}`)
       } else if (spinner.status === 'success') {
-        process.stdout.write(chalk.green('✓') + ' ' + spinner.text)
+        process.stdout.write(pc.green('✓') + ' ' + spinner.text)
       } else {
-        process.stdout.write(chalk.red('✗') + ' ' + spinner.text)
+        process.stdout.write(pc.red('✗') + ' ' + spinner.text)
       }
-      
+
       process.stdout.write('\n')
     })
   }
 
   private checkComplete() {
     const allComplete = Array.from(this.spinners.values()).every(
-      s => s.status !== 'pending'
+      (s) => s.status !== 'pending'
     )
-    
+
     if (allComplete && this.interval) {
       clearInterval(this.interval)
       this.interval = null
@@ -222,14 +225,11 @@ export class ProgressBar {
     const filled = Math.floor((this.width * this.current) / this.total)
     const empty = this.width - filled
 
-    const bar =
-      chalk.cyan('█').repeat(filled) +
-      chalk.gray('░').repeat(empty)
+    const bar = pc.cyan('█').repeat(filled) + pc.gray('░').repeat(empty)
 
-    const percentage = chalk.bold(`${percent}%`)
-    const progress = chalk.gray(`[${this.current}/${this.total}]`)
+    const percentage = pc.bold(`${percent}%`)
+    const progress = pc.gray(`[${this.current}/${this.total}]`)
 
     process.stdout.write(`\r${bar} ${percentage} ${progress} ${this.text}`)
   }
 }
-
