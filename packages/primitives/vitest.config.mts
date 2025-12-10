@@ -45,6 +45,7 @@ export default defineConfig({
     },
   },
   esbuild: {
-    target: 'node18',
+    // Vite 7 requires Node 20.19+ or 22.12+, update target accordingly
+    target: 'node20',
   },
 })
