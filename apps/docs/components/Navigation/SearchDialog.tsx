@@ -27,6 +27,13 @@ import { fuzzySearch } from '@/lib/fuzzy-search'
 import { trackSearchQuery, trackSearchClick } from '@/lib/search-analytics'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import {
+  fadeIn,
+  staggerContainer,
+  staggerItem,
+  springs,
+  durations,
+} from '@/lib/animations'
 
 interface SearchDialogProps {
   open: boolean
@@ -189,10 +196,11 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
         <>
           {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            variants={fadeIn}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: durations.fast }}
             onClick={onClose}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             aria-hidden="true"
@@ -203,10 +211,13 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
             role="dialog"
             aria-modal="true"
             aria-label="Search documentation"
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            initial={{ opacity: 0, scale: 0.96, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+            exit={{ opacity: 0, scale: 0.96, y: -10 }}
+            transition={{
+              duration: durations.normal,
+              ease: springs.smooth.ease,
+            }}
             className="fixed top-[15%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4 z-50"
             onKeyDown={handleKeyDown}
           >
@@ -277,77 +288,90 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {Object.entries(groupedResults).map(([category, items]) => (
-                      <div key={category} role="group" aria-label={category}>
-                        <div className="px-3 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider">
-                          {category}
-                        </div>
-                        <div className="space-y-0.5">
-                          {items.map((item) => {
-                            const index = itemIndexMap.get(item.href) ?? 0
-                            const isSelected = index === selectedIndex
+                  <motion.div
+                    className="space-y-4"
+                    variants={staggerContainer}
+                    initial="initial"
+                    animate="animate"
+                  >
+                    {Object.entries(groupedResults).map(
+                      ([category, items], groupIndex) => (
+                        <motion.div
+                          key={category}
+                          role="group"
+                          aria-label={category}
+                          variants={staggerItem}
+                          custom={groupIndex * 0.05}
+                        >
+                          <div className="px-3 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                            {category}
+                          </div>
+                          <div className="space-y-0.5">
+                            {items.map((item) => {
+                              const index = itemIndexMap.get(item.href) ?? 0
+                              const isSelected = index === selectedIndex
 
-                            return (
-                              <button
-                                key={item.href}
-                                id={`search-result-${item.href}`}
-                                role="option"
-                                aria-selected={isSelected}
-                                data-selected={isSelected}
-                                onClick={() => handleSelect(item)}
-                                onMouseEnter={() => setSelectedIndex(index)}
-                                className={cn(
-                                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all',
-                                  isSelected
-                                    ? 'bg-brand-500 text-white shadow-md'
-                                    : 'hover:bg-bg-secondary'
-                                )}
-                              >
-                                <div
+                              return (
+                                <button
+                                  key={item.href}
+                                  id={`search-result-${item.href}`}
+                                  role="option"
+                                  aria-selected={isSelected}
+                                  data-selected={isSelected}
+                                  onClick={() => handleSelect(item)}
+                                  onMouseEnter={() => setSelectedIndex(index)}
                                   className={cn(
-                                    'flex-shrink-0',
-                                    isSelected && 'text-white'
+                                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all',
+                                    isSelected
+                                      ? 'bg-brand-500 text-white shadow-md'
+                                      : 'hover:bg-bg-secondary'
                                   )}
                                 >
-                                  {getTypeIcon(item.type, isSelected)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="font-medium truncate">
-                                    {item.title}
-                                  </div>
-                                  {item.description && (
-                                    <div
-                                      className={cn(
-                                        'text-sm truncate',
-                                        isSelected
-                                          ? 'text-white/70'
-                                          : 'text-text-secondary'
-                                      )}
-                                    >
-                                      {item.description}
-                                    </div>
-                                  )}
-                                </div>
-                                {item._score > 0 && query && (
                                   <div
                                     className={cn(
-                                      'text-xs font-mono px-1.5 py-0.5 rounded',
-                                      isSelected
-                                        ? 'bg-white/20 text-white/80'
-                                        : 'bg-bg-tertiary text-text-tertiary'
+                                      'flex-shrink-0',
+                                      isSelected && 'text-white'
                                     )}
                                   >
-                                    {Math.round(item._score)}
+                                    {getTypeIcon(item.type, isSelected)}
                                   </div>
-                                )}
-                              </button>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-medium truncate">
+                                      {item.title}
+                                    </div>
+                                    {item.description && (
+                                      <div
+                                        className={cn(
+                                          'text-sm truncate',
+                                          isSelected
+                                            ? 'text-white/70'
+                                            : 'text-text-secondary'
+                                        )}
+                                      >
+                                        {item.description}
+                                      </div>
+                                    )}
+                                  </div>
+                                  {item._score > 0 && query && (
+                                    <div
+                                      className={cn(
+                                        'text-xs font-mono px-1.5 py-0.5 rounded',
+                                        isSelected
+                                          ? 'bg-white/20 text-white/80'
+                                          : 'bg-bg-tertiary text-text-tertiary'
+                                      )}
+                                    >
+                                      {Math.round(item._score)}
+                                    </div>
+                                  )}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </motion.div>
+                      )
+                    )}
+                  </motion.div>
                 )}
               </div>
 

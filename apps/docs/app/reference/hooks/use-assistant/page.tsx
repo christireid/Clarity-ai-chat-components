@@ -7,6 +7,7 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
+import { FeedbackWidget } from '@/components/FeedbackWidget'
 
 export const dynamic = 'force-dynamic'
 
@@ -416,6 +417,9 @@ function Assistant() {
         prev={{ title: 'useChatEnhanced', href: '/reference/hooks/use-chat-enhanced' }}
         next={{ title: 'useCompletion', href: '/reference/hooks/use-completion' }}
       />
+
+      {/* Feedback Widget */}
+      <FeedbackWidget pageId="use-assistant" className="mt-12" />
     </>
   )
 }

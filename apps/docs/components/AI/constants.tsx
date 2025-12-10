@@ -16,32 +16,24 @@ export const SESSION_ID_KEY = 'clarity-docs-assistant-session-id'
 export const MESSAGES_KEY = 'clarity-docs-assistant-messages'
 
 // ============================================================================
-// Timing Constants
+// Timing Constants (re-exported from lib for backward compatibility)
 // ============================================================================
 
-export const CONVERSATION_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
-export const STREAM_THROTTLE_MS = 50 // Throttle streaming updates
-export const CLIPBOARD_TIMEOUT_MS = 2000 // Clipboard success display time
-export const TOAST_DURATION_MS = 3000 // Toast notification duration
-export const FOCUS_DELAY_MS = 100 // Delay before focusing input
-
-// ============================================================================
-// Streaming Retry Configuration
-// ============================================================================
-
-export const MAX_RETRY_ATTEMPTS = 3
-export const INITIAL_RETRY_DELAY_MS = 1000
-export const MAX_RETRY_DELAY_MS = 10000
-export const RETRY_BACKOFF_MULTIPLIER = 2
-
-// ============================================================================
-// Token Tracking Constants
-// ============================================================================
-
-export const MODEL_MAX_TOKENS = 128000 // Claude/GPT-4 turbo context window
-export const TOKEN_COST_PER_TOKEN = 0.000003 // Claude 3 Sonnet pricing
-export const TOKEN_WARNING_THRESHOLD = 0.75 // Warn at 75% usage
-export const TOKEN_CRITICAL_THRESHOLD = 0.9 // Critical at 90% usage
+export {
+  CONVERSATION_TTL_MS,
+  STREAM_THROTTLE_MS,
+  CLIPBOARD_TIMEOUT_MS,
+  TOAST_DURATION_MS,
+  FOCUS_DELAY_MS,
+  MAX_RETRY_ATTEMPTS,
+  INITIAL_RETRY_DELAY_MS,
+  MAX_RETRY_DELAY_MS,
+  RETRY_BACKOFF_MULTIPLIER,
+  MODEL_MAX_TOKENS,
+  TOKEN_COST_PER_TOKEN,
+  TOKEN_WARNING_THRESHOLD,
+  TOKEN_CRITICAL_THRESHOLD,
+} from '@/lib/timing-constants'
 
 // ============================================================================
 // Animation Variants
