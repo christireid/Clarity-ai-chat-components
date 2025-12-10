@@ -1,6 +1,6 @@
 /**
  * Advanced Prompt Optimization Example
- * 
+ *
  * Demonstrates Phase 2 features:
  * - Automatic prompt optimization with compiler-like pipeline
  * - Dynamic model routing
@@ -45,7 +45,7 @@ export function AdvancedOptimizedChat() {
   })
 
   // Use debugger for visualization
-  const debugger = usePromptDebugger({
+  const promptDebugger = usePromptDebugger({
     diagnostics: optimizer.diagnostics,
     routingDecision: routing.routingDecision,
     messagesBefore: messages,
@@ -68,8 +68,14 @@ export function AdvancedOptimizedChat() {
 
   // Switch model if recommended
   React.useEffect(() => {
-    if (routing.routingDecision.shouldSwitch && routing.routingDecision.recommendedModel) {
-      console.log('Model switch recommended:', routing.routingDecision.reasoning)
+    if (
+      routing.routingDecision.shouldSwitch &&
+      routing.routingDecision.recommendedModel
+    ) {
+      console.log(
+        'Model switch recommended:',
+        routing.routingDecision.reasoning
+      )
       // In production, you'd show a confirmation dialog
     }
   }, [routing.routingDecision])
@@ -79,7 +85,7 @@ export function AdvancedOptimizedChat() {
       {/* Main Chat Area */}
       <div style={{ flex: 1 }}>
         <h2>Chat with Automatic Optimization</h2>
-        
+
         {/* Model Selector */}
         <div style={{ marginBottom: '20px' }}>
           <label>
@@ -99,8 +105,16 @@ export function AdvancedOptimizedChat() {
             </select>
           </label>
           {routing.routingDecision.shouldSwitch && (
-            <div style={{ marginTop: '10px', padding: '10px', background: '#fff3cd', borderRadius: '4px' }}>
-              💡 Recommendation: Switch to {routing.routingDecision.recommendedModel}
+            <div
+              style={{
+                marginTop: '10px',
+                padding: '10px',
+                background: '#fff3cd',
+                borderRadius: '4px',
+              }}
+            >
+              💡 Recommendation: Switch to{' '}
+              {routing.routingDecision.recommendedModel}
               <br />
               <small>{routing.routingDecision.reasoning}</small>
             </div>
@@ -108,7 +122,15 @@ export function AdvancedOptimizedChat() {
         </div>
 
         {/* Messages */}
-        <div style={{ border: '1px solid #ddd', borderRadius: '4px', padding: '10px', minHeight: '300px', marginBottom: '20px' }}>
+        <div
+          style={{
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            padding: '10px',
+            minHeight: '300px',
+            marginBottom: '20px',
+          }}
+        >
           {optimizer.optimizedMessages.map((msg) => (
             <div
               key={msg.id}
@@ -120,9 +142,17 @@ export function AdvancedOptimizedChat() {
               }}
             >
               <strong>{msg.role}:</strong>{' '}
-              {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+              {typeof msg.content === 'string'
+                ? msg.content
+                : JSON.stringify(msg.content)}
               {msg.metadata?.compressed && (
-                <span style={{ fontSize: '12px', color: '#666', marginLeft: '10px' }}>
+                <span
+                  style={{
+                    fontSize: '12px',
+                    color: '#666',
+                    marginLeft: '10px',
+                  }}
+                >
                   [Compressed: {msg.metadata.compressionType}]
                 </span>
               )}
@@ -147,7 +177,14 @@ export function AdvancedOptimizedChat() {
       </div>
 
       {/* Debug Panel */}
-      <div style={{ width: '400px', border: '1px solid #ddd', borderRadius: '4px', padding: '15px' }}>
+      <div
+        style={{
+          width: '400px',
+          border: '1px solid #ddd',
+          borderRadius: '4px',
+          padding: '15px',
+        }}
+      >
         <h3>Optimization Debug Panel</h3>
 
         {/* Token Stats */}
@@ -156,11 +193,12 @@ export function AdvancedOptimizedChat() {
           <div>
             <div>Input Tokens: {optimizer.tokenStats.inputTokens}</div>
             <div>Remaining Budget: {optimizer.tokenStats.remainingBudget}</div>
-            <div>Utilization: {(optimizer.tokenStats.utilization * 100).toFixed(1)}%</div>
+            <div>
+              Utilization: {(optimizer.tokenStats.utilization * 100).toFixed(1)}
+              %
+            </div>
             {optimizer.costEstimate && (
-              <div>
-                Cost: ${optimizer.costEstimate.totalCost.toFixed(4)}
-              </div>
+              <div>Cost: ${optimizer.costEstimate.totalCost.toFixed(4)}</div>
             )}
           </div>
         </div>
@@ -168,14 +206,20 @@ export function AdvancedOptimizedChat() {
         {/* Token Graph */}
         <div style={{ marginBottom: '20px' }}>
           <h4>Token Graph</h4>
-          <div style={{ height: '150px', border: '1px solid #ddd', padding: '10px' }}>
-            {debugger.tokenGraph.map((point, idx) => (
+          <div
+            style={{
+              height: '150px',
+              border: '1px solid #ddd',
+              padding: '10px',
+            }}
+          >
+            {promptDebugger.tokenGraph.map((point, idx) => (
               <div
                 key={idx}
                 style={{
                   display: 'inline-block',
-                  width: `${100 / debugger.tokenGraph.length}%`,
-                  height: `${(point.tokens / Math.max(...debugger.tokenGraph.map((p) => p.tokens))) * 100}%`,
+                  width: `${100 / promptDebugger.tokenGraph.length}%`,
+                  height: `${(point.tokens / Math.max(...promptDebugger.tokenGraph.map((p) => p.tokens))) * 100}%`,
                   background: '#4CAF50',
                   marginRight: '2px',
                   verticalAlign: 'bottom',
@@ -185,7 +229,7 @@ export function AdvancedOptimizedChat() {
             ))}
           </div>
           <div style={{ fontSize: '12px', marginTop: '5px' }}>
-            {debugger.tokenGraph.map((p, idx) => (
+            {promptDebugger.tokenGraph.map((p, idx) => (
               <span key={idx} style={{ marginRight: '10px' }}>
                 {p.stage}: {p.tokens}
               </span>
@@ -197,15 +241,27 @@ export function AdvancedOptimizedChat() {
         <div style={{ marginBottom: '20px' }}>
           <h4>Optimization Stages</h4>
           <div style={{ fontSize: '12px' }}>
-            {debugger.optimizationHistory.map((stage, idx) => (
-              <div key={idx} style={{ marginBottom: '8px', padding: '5px', background: '#f9f9f9' }}>
+            {promptDebugger.optimizationHistory.map((stage, idx) => (
+              <div
+                key={idx}
+                style={{
+                  marginBottom: '8px',
+                  padding: '5px',
+                  background: '#f9f9f9',
+                }}
+              >
                 <strong>{stage.stage}</strong>
                 <br />
                 {stage.tokensBefore} → {stage.tokensAfter} tokens
                 {stage.tokensSaved > 0 && (
-                  <span style={{ color: '#4CAF50' }}> (-{stage.tokensSaved})</span>
+                  <span style={{ color: '#4CAF50' }}>
+                    {' '}
+                    (-{stage.tokensSaved})
+                  </span>
                 )}
-                {stage.duration && <span style={{ color: '#666' }}> [{stage.duration}ms]</span>}
+                {stage.duration && (
+                  <span style={{ color: '#666' }}> [{stage.duration}ms]</span>
+                )}
                 {stage.details.length > 0 && (
                   <ul style={{ margin: '5px 0', paddingLeft: '20px' }}>
                     {stage.details.map((detail, i) => (
@@ -219,17 +275,25 @@ export function AdvancedOptimizedChat() {
         </div>
 
         {/* Compression Logs */}
-        {debugger.compressionLogs.length > 0 && (
+        {promptDebugger.compressionLogs.length > 0 && (
           <div style={{ marginBottom: '20px' }}>
             <h4>Compression Logs</h4>
             <div style={{ fontSize: '12px' }}>
-              {debugger.compressionLogs.map((log, idx) => (
-                <div key={idx} style={{ marginBottom: '5px', padding: '5px', background: '#fff3cd' }}>
+              {promptDebugger.compressionLogs.map((log, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    marginBottom: '5px',
+                    padding: '5px',
+                    background: '#fff3cd',
+                  }}
+                >
                   <strong>{log.messageId}</strong>
                   <br />
                   {log.originalLength} → {log.compressedLength} tokens
                   <br />
-                  Ratio: {(log.compressionRatio * 100).toFixed(1)}% ({log.compressionType})
+                  Ratio: {(log.compressionRatio * 100).toFixed(1)}% (
+                  {log.compressionType})
                   {log.originalCount && (
                     <>
                       <br />
@@ -246,11 +310,16 @@ export function AdvancedOptimizedChat() {
         <div>
           <h4>Summary</h4>
           <div style={{ fontSize: '12px' }}>
-            <div>Total Stages: {debugger.summary.totalStages}</div>
-            <div>Tokens Saved: {debugger.summary.totalTokensSaved}</div>
-            <div>Compression Ratio: {(debugger.summary.compressionRatio * 100).toFixed(1)}%</div>
-            <div>Duration: {debugger.summary.optimizationDuration}ms</div>
-            <div>Optimized: {debugger.summary.wasOptimized ? 'Yes' : 'No'}</div>
+            <div>Total Stages: {promptDebugger.summary.totalStages}</div>
+            <div>Tokens Saved: {promptDebugger.summary.totalTokensSaved}</div>
+            <div>
+              Compression Ratio:{' '}
+              {(promptDebugger.summary.compressionRatio * 100).toFixed(1)}%
+            </div>
+            <div>Duration: {promptDebugger.summary.optimizationDuration}ms</div>
+            <div>
+              Optimized: {promptDebugger.summary.wasOptimized ? 'Yes' : 'No'}
+            </div>
           </div>
         </div>
       </div>
@@ -274,7 +343,8 @@ export function ToonDSLAdvancedExample() {
         .roleWithMetadata(
           'system',
           (b) =>
-            b.text('You are a helpful assistant.')
+            b
+              .text('You are a helpful assistant.')
               .importantText('Always be concise and accurate.', 8)
               .text('Provide clear, actionable responses.'),
           { importance: 9, compressStrategy: 'none' }
@@ -282,7 +352,8 @@ export function ToonDSLAdvancedExample() {
         .scopedSection(
           'UserContext',
           'user-context',
-          (b) => b.variable('userName').text(' is asking: ').variable('userQuery'),
+          (b) =>
+            b.variable('userName').text(' is asking: ').variable('userQuery'),
           { importance: 5, compressible: true }
         )
         .longResponse('assistant', (b) => b.variable('response'), 'semantic')
@@ -301,13 +372,15 @@ export function ToonDSLAdvancedExample() {
   return (
     <div style={{ padding: '20px' }}>
       <h2>Toon DSL with Advanced Features</h2>
-      
+
       <div style={{ marginBottom: '20px' }}>
         <label>
           User Name:{' '}
           <input
             value={variables.userName}
-            onChange={(e) => setVariables({ ...variables, userName: e.target.value })}
+            onChange={(e) =>
+              setVariables({ ...variables, userName: e.target.value })
+            }
           />
         </label>
         <br />
@@ -315,7 +388,9 @@ export function ToonDSLAdvancedExample() {
           Query:{' '}
           <input
             value={variables.userQuery}
-            onChange={(e) => setVariables({ ...variables, userQuery: e.target.value })}
+            onChange={(e) =>
+              setVariables({ ...variables, userQuery: e.target.value })
+            }
             style={{ width: '300px' }}
           />
         </label>
@@ -324,15 +399,31 @@ export function ToonDSLAdvancedExample() {
       <div>
         <h3>Optimized Messages ({optimizer.tokenStats.inputTokens} tokens)</h3>
         {optimizer.optimizedMessages.map((msg) => (
-          <div key={msg.id} style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ddd' }}>
+          <div
+            key={msg.id}
+            style={{
+              marginBottom: '10px',
+              padding: '10px',
+              border: '1px solid #ddd',
+            }}
+          >
             <strong>{msg.role}:</strong>{' '}
-            {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+            {typeof msg.content === 'string'
+              ? msg.content
+              : JSON.stringify(msg.content)}
           </div>
         ))}
       </div>
 
       {optimizer.diagnostics.wasOptimized && (
-        <div style={{ marginTop: '20px', padding: '10px', background: '#e8f5e9', borderRadius: '4px' }}>
+        <div
+          style={{
+            marginTop: '20px',
+            padding: '10px',
+            background: '#e8f5e9',
+            borderRadius: '4px',
+          }}
+        >
           <strong>Optimization Applied:</strong> {optimizer.diagnostics.reason}
           <br />
           <small>Saved {optimizer.diagnostics.totalTokensSaved} tokens</small>
@@ -382,28 +473,39 @@ export function ModelSwitchingExample() {
         <div>
           Max Tokens: {routing.currentModelProfile.maxTokens.toLocaleString()}
           <br />
-          Cost: ${routing.currentModelProfile.costPer1K}/1K input, ${routing.currentModelProfile.outputCostPer1K}/1K output
+          Cost: ${routing.currentModelProfile.costPer1K}/1K input, $
+          {routing.currentModelProfile.outputCostPer1K}/1K output
         </div>
       </div>
 
       {routing.routingDecision.shouldSwitch && (
-        <div style={{ padding: '15px', background: '#fff3cd', borderRadius: '4px', marginBottom: '20px' }}>
+        <div
+          style={{
+            padding: '15px',
+            background: '#fff3cd',
+            borderRadius: '4px',
+            marginBottom: '20px',
+          }}
+        >
           <h4>💡 Model Switch Recommended</h4>
           <p>
-            <strong>Recommended:</strong> {routing.routingDecision.recommendedModel}
+            <strong>Recommended:</strong>{' '}
+            {routing.routingDecision.recommendedModel}
             <br />
             <strong>Reason:</strong> {routing.routingDecision.reasoning}
             {routing.routingDecision.costSavings && (
               <>
                 <br />
-                <strong>Cost Savings:</strong> ${routing.routingDecision.costSavings.toFixed(4)}
+                <strong>Cost Savings:</strong> $
+                {routing.routingDecision.costSavings.toFixed(4)}
               </>
             )}
             {routing.routingDecision.tokenCapacityImprovement && (
               <>
                 <br />
                 <strong>Token Capacity Improvement:</strong>{' '}
-                {routing.routingDecision.tokenCapacityImprovement.toLocaleString()} tokens
+                {routing.routingDecision.tokenCapacityImprovement.toLocaleString()}{' '}
+                tokens
               </>
             )}
           </p>
@@ -412,7 +514,13 @@ export function ModelSwitchingExample() {
 
       <div>
         <h3>Available Models ({availableModels.length})</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '10px' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+            gap: '10px',
+          }}
+        >
           {availableModels.map((model) => (
             <div
               key={model.name}
@@ -428,12 +536,17 @@ export function ModelSwitchingExample() {
               <strong>{model.name}</strong>
               <br />
               Max: {model.maxTokens.toLocaleString()} tokens
-              <br />
-              ${model.costPer1K}/1K input
+              <br />${model.costPer1K}/1K input
               <br />
               Style: {model.optimalPromptStyle}
               {modelsInBudget.some((m) => m.name === model.name) && (
-                <div style={{ marginTop: '5px', color: '#4CAF50', fontSize: '12px' }}>
+                <div
+                  style={{
+                    marginTop: '5px',
+                    color: '#4CAF50',
+                    fontSize: '12px',
+                  }}
+                >
                   ✓ Within budget
                 </div>
               )}

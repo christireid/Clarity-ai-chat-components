@@ -119,7 +119,6 @@ export function CustomerSupportTemplate({
       chatId,
       role: 'user',
       content,
-      timestamp: Date.now(),
     })
 
     setIsLoading(true)
@@ -136,7 +135,6 @@ export function CustomerSupportTemplate({
         role: 'assistant',
         content:
           "I'll connect you with a human agent right away. Please wait a moment...",
-        timestamp: Date.now(),
       })
       onEscalate(messages)
       setIsLoading(false)
@@ -153,7 +151,6 @@ export function CustomerSupportTemplate({
         chatId,
         role: 'assistant',
         content: matchedFaq.answer,
-        timestamp: Date.now(),
       })
       setIsLoading(false)
       return
@@ -181,7 +178,6 @@ export function CustomerSupportTemplate({
         content:
           data.response ||
           'I understand your concern. Let me help you with that.',
-        timestamp: Date.now(),
       })
     } catch (_error) {
       // Fallback response
@@ -190,7 +186,6 @@ export function CustomerSupportTemplate({
         role: 'assistant',
         content:
           'I appreciate your patience. Let me look into that for you. Meanwhile, you can always request to speak with a human agent.',
-        timestamp: Date.now(),
       })
     } finally {
       setIsLoading(false)

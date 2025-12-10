@@ -3,8 +3,8 @@
  */
 
 import * as React from 'react'
-import { createEmbeddingProvider } from './index'
 import type { EmbeddingProvider } from './types'
+import { createEmbeddingProvider } from './factory'
 
 /**
  * Options for useEmbeddings
@@ -51,7 +51,9 @@ export function useEmbeddings(
         throw new Error('Embedding provider not initialized')
       }
       const response = await embeddingProvider.embed({ input: text })
-      return Array.isArray(text) ? response.embeddings : response.embeddings[0] ?? []
+      return Array.isArray(text)
+        ? response.embeddings
+        : (response.embeddings[0] ?? [])
     },
     [embeddingProvider]
   )

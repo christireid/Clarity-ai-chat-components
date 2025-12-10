@@ -35,48 +35,7 @@ export * from './qdrant'
 export * from './weaviate'
 export * from './chroma'
 export * from './react'
-
-import type { VectorStore, VectorStoreConfig } from './types'
-import { PineconeVectorStore } from './pinecone'
-import { QdrantVectorStore } from './qdrant'
-import { WeaviateVectorStore } from './weaviate'
-import { ChromaVectorStore } from './chroma'
-
-/**
- * Create a vector store instance
- *
- * Factory function that creates the appropriate vector store based on provider
- *
- * @example
- * ```tsx
- * const store = createVectorStore({
- *   provider: 'pinecone',
- *   apiKey: process.env.PINECONE_API_KEY,
- *   environment: 'us-east1-gcp',
- *   indexName: 'documents',
- * })
- *
- * await store.initialize()
- * ```
- */
-export function createVectorStore(config: VectorStoreConfig): VectorStore {
-  switch (config.provider) {
-    case 'pinecone':
-      return new PineconeVectorStore(config as any)
-
-    case 'qdrant':
-      return new QdrantVectorStore(config as any)
-
-    case 'weaviate':
-      return new WeaviateVectorStore(config as any)
-
-    case 'chroma':
-      return new ChromaVectorStore(config as any)
-
-    default:
-      throw new Error(`Unsupported vector store provider: ${config.provider}`)
-  }
-}
+export * from './factory'
 
 /**
  * Vector store utilities

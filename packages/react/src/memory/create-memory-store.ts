@@ -1,10 +1,10 @@
 /**
  * createMemoryStore - Top-level factory for memory store
- * 
+ *
  * Creates a memory store instance with sensible defaults. Use this when you
  * need a memory store outside of React components or want to configure it
  * imperatively.
- * 
+ *
  * @example
  * ```tsx
  * // Create a memory store
@@ -12,17 +12,17 @@
  *   strategy: 'vector-store',
  *   maxTokens: 8000,
  * })
- * 
+ *
  * // Use in non-React context
  * await memoryStore.addMemory('User prefers dark mode', 'episodic')
  * const results = await memoryStore.query('What are user preferences?')
  * ```
- * 
+ *
  * @example
  * ```tsx
  * // Use with React Provider
  * const memoryStore = createMemoryStore({ enabled: true })
- * 
+ *
  * <MemoryProvider service={memoryStore}>
  *   <App />
  * </MemoryProvider>
@@ -30,7 +30,7 @@
  */
 
 import { MemoryService } from './memory-service'
-import type { MemoryType, MemoryScope } from '@clarity-chat/memory'
+import type { MemoryType, MemoryScope, MemoryServiceConfig } from './types'
 
 /**
  * Options for creating a memory store
@@ -77,7 +77,7 @@ export interface MemoryStore {
 
 /**
  * createMemoryStore - Create a memory store instance
- * 
+ *
  * Factory function that creates a memory store with the specified configuration.
  * Can be used in both React and non-React contexts.
  */
@@ -93,10 +93,39 @@ export function createMemoryStore(
   } = options
 
   // Create or use provided service
-  const service = customService || new MemoryService({
+  const serviceConfig: MemoryServiceConfig = {
+    tokenOptimization: {
+      maxContextWindow: maxTokens || 8000,
+      allocation: {
+        systemPrompt: 10,
+        userPreferences: 15,
+        recentContext: 30,
+        semanticMemory: 20,
+        episodicMemory: 15,
+        responseReserve: 10,
+      },
+      dynamicAllocation: true,
+      enableCompression: false,
+      enableChunking: false,
+    },
+    persistence: {
+      useVectorStore: strategy === 'vector-store',
+      useCache: true,
+      useDatabase: false,
+    },
+    enableAutoSummarization: false,
+    enableAutoCleanup: true,
+    cleanupInterval: 60000,
+    retentionPolicy: {
+      shortTerm: 3600,
+      session: 86400,
+      thread: 604800,
+      global: 0,
+    },
     maxTokens: maxTokens || 8000,
     strategy,
-  })
+  }
+  const service = customService || new MemoryService(serviceConfig)
 
   return {
     enabled,
@@ -107,26 +136,23 @@ export function createMemoryStore(
       maxTokens,
       scope,
     },
-    addMemory: async (content: string, type: MemoryType = 'episodic', metadata?: Record<string, any>) => {
+    addMemory: async (
+      content: string,
+      type: MemoryType = 'episodic',
+      metadata?: Record<string, any>
+    ) => {
       if (!enabled) return
-      await service.addMemory({
-        content,
-        type,
-        scope,
-        metadata,
-        timestamp: Date.now(),
-      })
+      await service.addMemory(content, type, scope, metadata || {})
     },
-    query: async (query: string, limit = 10) => {
+    query: async (queryText: string, limit = 10) => {
       if (!enabled) return []
-      const results = await service.query({ query, limit })
+      const results = await service.query({ query: queryText, limit })
       return results.map((r) => r.memory)
     },
     clear: async () => {
       if (!enabled) return
-      // Clear memories for current scope
-      // Implementation depends on service API
-      await service.clear(scope)
+      // Clear memories for current scope by deleting them
+      await service.deleteMemories({ scopes: [scope] })
     },
   }
 }

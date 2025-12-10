@@ -5,10 +5,21 @@ const nextConfig = {
 
   experimental: {
     mdxRs: true,
+    // Next.js 16: Optimize package imports for better tree-shaking
+    // Automatically optimizes imports from specified packages, reducing bundle size
+    optimizePackageImports: [
+      '@clarity-chat/react',
+      '@clarity-chat/primitives',
+      'lucide-react',
+      'framer-motion',
+    ],
   },
 
   // Turbopack configuration (Next.js 15.5+)
   turbopack: {},
+  
+  // Next.js 16: Improved caching defaults
+  // Automatic static optimization and ISR improvements
 
   transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives'],
   typescript: {

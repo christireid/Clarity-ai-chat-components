@@ -46,6 +46,9 @@ interface RequestBody {
   message: string
 }
 
+// Maximum message length (4KB is reasonable for chat)
+const MAX_MESSAGE_LENGTH = 4096
+
 /**
  * Create a plain text streaming response from StreamChunk generator
  */
@@ -87,15 +90,25 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    if (!body.message) {
+    // Validate message exists and has content
+    const message = typeof body.message === 'string' ? body.message.trim() : ''
+
+    if (!message) {
       return Response.json(
         { error: 'Message is required' },
         { status: 400 }
       )
     }
 
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      return Response.json(
+        { error: `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH} characters` },
+        { status: 400 }
+      )
+    }
+
     // Search documentation for relevant context
-    const searchResults = searchDocumentation(body.message, {
+    const searchResults = searchDocumentation(message, {
       topK: 3,
       minScore: 0.5,
     })
@@ -104,8 +117,8 @@ export async function POST(request: NextRequest) {
 
     // Build message with context
     const messageWithContext = docsContext
-      ? `[Documentation Context]\n${docsContext}\n\n[User Question]\n${body.message}`
-      : body.message
+      ? `[Documentation Context]\n${docsContext}\n\n[User Question]\n${message}`
+      : message
 
     // Choose streaming function based on API key availability
     const hasGeminiKey = !!process.env.GEMINI_API_KEY
@@ -121,7 +134,7 @@ export async function POST(request: NextRequest) {
     } else {
       // Use shared demo streaming utility
       generator = streamFromDemo([
-        { role: 'user', content: body.message }
+        { role: 'user', content: message }
       ])
     }
 

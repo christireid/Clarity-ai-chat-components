@@ -6,6 +6,7 @@
   "description": "Premium AI Chat Component Library by Code & Clarity",
   "packageManager": "pnpm@10.21.0",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "// === DEVELOPMENT ===": "",
     "dev": "turbo run dev",
     "dev:react": "turbo run dev --filter=@clarity-chat/react",
@@ -79,6 +80,7 @@
     "patch-package": "^8.0.0",
     "prettier": "^3.7.4",
     "size-limit": "^12.0.0",
+    "only-allow": "^1.2.1",
     "storybook-dark-mode": "^3.0.3",
     "turbo": "^2.6.3",
     "typescript": "^5.9.3",

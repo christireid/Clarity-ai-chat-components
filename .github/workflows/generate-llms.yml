@@ -1,0 +1,283 @@
+name: Generate AI Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/docs/**'
+      - '.github/workflows/generate-llms.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/docs/**'
+      - '.github/workflows/generate-llms.yml'
+  workflow_dispatch:
+
+# Permissions for auto-commit and PR comments
+permissions:
+  contents: write
+  actions: read
+  pull-requests: write
+
+# Cancel in-progress runs for same workflow and ref
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10'
+
+jobs:
+  generate-llms-txt:
+    name: Generate llms.txt Files
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Need full history for proper commit
+          fetch-depth: 0
+          # Use token for push
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate llms.txt files
+        run: pnpm run generate:llms
+        working-directory: apps/docs
+
+      - name: Validate generated files
+        id: validate
+        run: |
+          echo "Validating generated files..."
+
+          # Check files exist
+          if [ ! -f apps/docs/public/llms.txt ]; then
+            echo "❌ llms.txt not found"
+            exit 1
+          fi
+
+          if [ ! -f apps/docs/public/llms-full.txt ]; then
+            echo "❌ llms-full.txt not found"
+            exit 1
+          fi
+
+          if [ ! -f apps/docs/public/llms-metrics.json ]; then
+            echo "❌ llms-metrics.json not found"
+            exit 1
+          fi
+
+          # Check files are not empty
+          if [ ! -s apps/docs/public/llms.txt ]; then
+            echo "❌ llms.txt is empty"
+            exit 1
+          fi
+
+          if [ ! -s apps/docs/public/llms-full.txt ]; then
+            echo "❌ llms-full.txt is empty"
+            exit 1
+          fi
+
+          # Display file sizes
+          echo "📊 File sizes:"
+          ls -lh apps/docs/public/llms*.txt apps/docs/public/llms-metrics.json
+
+          # Read metrics from JSON
+          METRICS_FILE="apps/docs/public/llms-metrics.json"
+          TOTAL_PAGES=$(jq -r '.totalPages' $METRICS_FILE)
+          TOTAL_TOKENS=$(jq -r '.totalTokens' $METRICS_FILE)
+          LLMS_TXT_TOKENS=$(jq -r '.llmsTxtTokens // "N/A"' $METRICS_FILE)
+          WARNING_COUNT=$(jq -r '.warningCount' $METRICS_FILE)
+          LLMS_TXT_SIZE=$(jq -r '.fileSizes.llmsTxtHuman' $METRICS_FILE)
+          LLMS_FULL_SIZE=$(jq -r '.fileSizes.llmsFullTxtHuman' $METRICS_FILE)
+
+          echo ""
+          echo "📈 Metrics from llms-metrics.json:"
+          echo "   Total pages: ${TOTAL_PAGES}"
+          echo "   Total tokens: ${TOTAL_TOKENS}"
+          echo "   llms.txt tokens: ${LLMS_TXT_TOKENS}"
+          echo "   llms.txt size: ${LLMS_TXT_SIZE}"
+          echo "   llms-full.txt size: ${LLMS_FULL_SIZE}"
+          echo "   Warnings: ${WARNING_COUNT}"
+
+          # Export for other steps
+          echo "total_pages=${TOTAL_PAGES}" >> $GITHUB_OUTPUT
+          echo "total_tokens=${TOTAL_TOKENS}" >> $GITHUB_OUTPUT
+          echo "llms_txt_tokens=${LLMS_TXT_TOKENS}" >> $GITHUB_OUTPUT
+          echo "warning_count=${WARNING_COUNT}" >> $GITHUB_OUTPUT
+          echo "llms_txt_size=${LLMS_TXT_SIZE}" >> $GITHUB_OUTPUT
+          echo "llms_full_size=${LLMS_FULL_SIZE}" >> $GITHUB_OUTPUT
+
+          # Check llms-full.txt is under 500K tokens
+          if [ $TOTAL_TOKENS -gt 500000 ]; then
+            echo "⚠️ Warning: llms-full.txt exceeds 500K tokens"
+          fi
+
+          # Verify llms.txt starts with correct header
+          if ! head -1 apps/docs/public/llms.txt | grep -q "^# Clarity Chat"; then
+            echo "❌ llms.txt missing expected header"
+            exit 1
+          fi
+
+          echo "✅ All validations passed"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: llms-files
+          path: |
+            apps/docs/public/llms.txt
+            apps/docs/public/llms-full.txt
+            apps/docs/public/llms-metrics.json
+          retention-days: 7
+
+      # Post comment on PR with metrics
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const metrics = {
+              pages: '${{ steps.validate.outputs.total_pages }}',
+              tokens: '${{ steps.validate.outputs.total_tokens }}',
+              navTokens: '${{ steps.validate.outputs.llms_txt_tokens }}',
+              warnings: '${{ steps.validate.outputs.warning_count }}',
+              llmsTxtSize: '${{ steps.validate.outputs.llms_txt_size }}',
+              llmsFullSize: '${{ steps.validate.outputs.llms_full_size }}'
+            };
+
+            const body = `## 📄 AI Documentation Preview
+
+            | Metric | Value |
+            |--------|-------|
+            | Pages processed | ${metrics.pages} |
+            | Total tokens | ${Number(metrics.tokens).toLocaleString()} |
+            | Navigation tokens | ${Number(metrics.navTokens).toLocaleString()} |
+            | llms.txt size | ${metrics.llmsTxtSize} |
+            | llms-full.txt size | ${metrics.llmsFullSize} |
+            | Warnings | ${metrics.warnings} |
+
+            ${metrics.warnings > 0 ? '⚠️ **Note:** There are content extraction warnings. Check the workflow logs for details.' : '✅ No warnings detected.'}
+
+            ---
+            <sup>Generated by [generate-llms workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})</sup>`;
+
+            // Find existing comment from this workflow
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('📄 AI Documentation Preview')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      # Only commit changes on main branch push
+      - name: Commit generated files
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          # Check if there are changes
+          if git diff --quiet apps/docs/public/llms*.txt apps/docs/public/llms-metrics.json 2>/dev/null; then
+            echo "No changes to llms.txt files"
+            exit 0
+          fi
+
+          # Configure git
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Stage and commit
+          git add apps/docs/public/llms*.txt apps/docs/public/llms-metrics.json
+          git commit -m "chore: regenerate llms.txt files [skip ci]"
+
+          # Push with retry logic for handling conflicts
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if git push; then
+              echo "✅ Push successful"
+              exit 0
+            fi
+
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "⚠️ Push failed, attempt $RETRY_COUNT of $MAX_RETRIES"
+
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+              echo "Fetching latest changes and rebasing..."
+              git fetch origin main
+
+              # Try to rebase our commit on top of latest main
+              if git rebase origin/main; then
+                echo "Rebase successful, retrying push..."
+              else
+                echo "Rebase failed, aborting..."
+                git rebase --abort
+                # Re-generate files after fetching latest
+                echo "Re-generating llms.txt files..."
+                cd apps/docs && pnpm run generate:llms && cd ../..
+                git add apps/docs/public/llms*.txt
+                git commit --amend --no-edit
+              fi
+
+              # Exponential backoff: 2s, 4s
+              sleep $((2 ** RETRY_COUNT))
+            fi
+          done
+
+          echo "❌ Failed to push after $MAX_RETRIES attempts"
+          exit 1
+
+      - name: Summary
+        run: |
+          echo "## 📄 AI Documentation Generation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Generated AI-optimized documentation files:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Pages processed | ${{ steps.validate.outputs.total_pages }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Total tokens | ${{ steps.validate.outputs.total_tokens }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| llms.txt | ${{ steps.validate.outputs.llms_txt_size }} (${{ steps.validate.outputs.llms_txt_tokens }} tokens) |" >> $GITHUB_STEP_SUMMARY
+          echo "| llms-full.txt | ${{ steps.validate.outputs.llms_full_size }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Warnings | ${{ steps.validate.outputs.warning_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "✅ Files have been committed and pushed to main" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ Files are available as workflow artifacts" >> $GITHUB_STEP_SUMMARY
+          fi

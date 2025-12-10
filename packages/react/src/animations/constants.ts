@@ -125,10 +125,30 @@ export const ANIMATION_EASING = {
 } as const
 
 /**
+ * Easing type for Framer Motion
+ * Framer Motion accepts these easing formats:
+ * - Named strings: "linear", "easeIn", "easeOut", "easeInOut", etc.
+ * - Array of 4 numbers: [x1, y1, x2, y2] for cubic-bezier
+ */
+export type FramerEasing =
+  | 'linear'
+  | 'easeIn'
+  | 'easeOut'
+  | 'easeInOut'
+  | 'circIn'
+  | 'circOut'
+  | 'circInOut'
+  | 'backIn'
+  | 'backOut'
+  | 'backInOut'
+  | 'anticipate'
+  | readonly [number, number, number, number]
+
+/**
  * Easing as Framer Motion compatible format
  */
 export const EASING_FRAMER = {
-  linear: 'linear',
+  linear: 'linear' as const,
   default: [0.4, 0, 0.2, 1] as const,
   in: [0.4, 0, 1, 1] as const,
   out: [0, 0, 0.2, 1] as const,
@@ -138,7 +158,20 @@ export const EASING_FRAMER = {
   spring: [0.34, 1.56, 0.64, 1] as const,
   bounce: [0.68, -0.55, 0.265, 1.55] as const,
   snappy: [0.4, 0, 0.2, 1] as const,
-} as const
+} satisfies Record<string, FramerEasing>
+
+/**
+ * Get a Framer Motion compatible easing value
+ * Use this helper when you need to pass easing to Framer Motion transitions
+ * @param key - The easing key from ANIMATION_EASING
+ * @returns A Framer Motion compatible easing value
+ */
+export function getFramerEasing(
+  key: keyof typeof ANIMATION_EASING
+): FramerEasing {
+  const easing = EASING_FRAMER[key as keyof typeof EASING_FRAMER]
+  return easing ?? EASING_FRAMER.default
+}
 
 /**
  * Tailwind timing function class mappings
@@ -621,6 +654,71 @@ export function getTailwindTransition(
   properties = 'transition-all'
 ): string {
   return `${properties} ${TAILWIND_DURATION[duration]} ${TAILWIND_EASING[easing]}`
+}
+
+// =============================================================================
+// UNIFIED EASING API
+// =============================================================================
+
+/**
+ * Unified easing system that provides the correct format for each context.
+ *
+ * Use this when you're unsure which format to use:
+ * - `getEasing('out').css` for CSS transitions
+ * - `getEasing('out').framer` for framer-motion
+ * - `getEasing('out').tailwind` for Tailwind classes
+ *
+ * @example
+ * ```tsx
+ * // CSS inline style
+ * style={{ transitionTimingFunction: getEasing('out').css }}
+ *
+ * // framer-motion
+ * <motion.div transition={{ ease: getEasing('out').framer }} />
+ *
+ * // Tailwind
+ * className={getEasing('out').tailwind}
+ * ```
+ */
+export function getEasing(name: AnimationEasing): {
+  /** CSS cubic-bezier string format */
+  css: string
+  /** framer-motion array format */
+  framer: readonly number[] | 'linear'
+  /** Tailwind class */
+  tailwind: string
+} {
+  return {
+    css: ANIMATION_EASING[name],
+    framer: EASING_FRAMER[name],
+    tailwind: TAILWIND_EASING[name],
+  }
+}
+
+/**
+ * Get easing specifically for framer-motion
+ *
+ * @example
+ * ```tsx
+ * <motion.div transition={{ ease: getFramerEasing('out') }} />
+ * ```
+ */
+export function getFramerEasing(
+  name: AnimationEasing
+): readonly number[] | 'linear' {
+  return EASING_FRAMER[name]
+}
+
+/**
+ * Get easing specifically for CSS
+ *
+ * @example
+ * ```tsx
+ * style={{ transitionTimingFunction: getCSSEasing('out') }}
+ * ```
+ */
+export function getCSSEasing(name: AnimationEasing): string {
+  return ANIMATION_EASING[name]
 }
 
 // =============================================================================

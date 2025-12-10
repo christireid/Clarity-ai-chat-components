@@ -1,9 +1,9 @@
 /**
  * Ripple Effect Component
- * 
+ *
  * Material Design-inspired ripple effect for buttons and clickable elements.
  * Provides tactile feedback on click/tap.
- * 
+ *
  * @enhanced Framer Motion 12: Spring-based ripple expansion for more organic feel
  */
 
@@ -11,7 +11,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ANIMATION_EASING } from '../animations/constants'
+import { EASING_FRAMER } from '../animations/constants'
 
 interface RippleType {
   id: number
@@ -51,12 +51,14 @@ export function useRipple({
       const rect = target.getBoundingClientRect()
 
       // Get click/touch position
-      const x = 'touches' in event
-        ? (event.touches[0]?.clientX ?? 0) - rect.left
-        : event.clientX - rect.left
-      const y = 'touches' in event
-        ? (event.touches[0]?.clientY ?? 0) - rect.top
-        : event.clientY - rect.top
+      const x =
+        'touches' in event
+          ? (event.touches[0]?.clientX ?? 0) - rect.left
+          : event.clientX - rect.left
+      const y =
+        'touches' in event
+          ? (event.touches[0]?.clientY ?? 0) - rect.top
+          : event.clientY - rect.top
 
       // Calculate size (diameter to cover the entire element)
       const size = Math.max(rect.width, rect.height) * 2
@@ -167,7 +169,11 @@ export const WithRipple: React.FC<WithRippleProps> = ({
   onTouchStart,
   ...rippleProps
 }) => {
-  const { ripples, addRipple, rippleProps: computedRippleProps } = useRipple(rippleProps)
+  const {
+    ripples,
+    addRipple,
+    rippleProps: computedRippleProps,
+  } = useRipple(rippleProps)
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     addRipple(event)
@@ -193,11 +199,11 @@ export const WithRipple: React.FC<WithRippleProps> = ({
 
 /**
  * Example usage:
- * 
+ *
  * // With hook
  * const MyButton = () => {
  *   const { ripples, addRipple } = useRipple()
- *   
+ *
  *   return (
  *     <button onClick={addRipple} className="relative overflow-hidden">
  *       Click me
@@ -205,7 +211,7 @@ export const WithRipple: React.FC<WithRippleProps> = ({
  *     </button>
  *   )
  * }
- * 
+ *
  * // With HOC
  * const MyButton = () => (
  *   <WithRipple onClick={() => console.log('clicked')}>

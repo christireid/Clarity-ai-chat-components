@@ -21,7 +21,7 @@ export { ClarityChatPresets } from './components/clarity-chat-presets'
 export { ChatWindow } from './components/chat-window'
 export { ChatInput } from './components/chat-input'
 export { AdvancedChatInput } from './components/advanced-chat-input'
-export { MessageList } from './components/virtualized-message-list'
+export { VirtualizedMessageList as MessageList } from './components/virtualized-message-list'
 export { StreamingMessage } from './components/streaming-message'
 export { ThinkingIndicator } from './components/thinking-indicator'
 
@@ -54,7 +54,7 @@ export {
 
 // Mid-Level: Composable hooks
 export {
-  useChatEnhanced,
+  useChat as useChatEnhanced,
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
@@ -290,8 +290,10 @@ export { MultiModalPreview } from './components/multi-modal-preview'
 export { AgentRunFeed } from './components/agent-run-feed'
 export { SessionSummaryCard } from './components/session-summary-card'
 export { WorkflowSuggestionList } from './components/workflow-suggestion-list'
-export { AIOps } from './components/ai-ops'
-export { Enterprise } from './components/enterprise'
+// AI-Ops components (exported from directory)
+export * from './components/ai-ops'
+// Enterprise components (exported from directory)
+export * from './components/enterprise'
 export { AnalyticsDashboard } from './components/analytics-dashboard'
 
 // Error Handling Components
@@ -353,7 +355,8 @@ export { useDesignTokens } from './hooks/use-design-tokens'
 export * from './hooks/use-theme-analytics'
 
 // Additional Utilities
-export * from './utils'
+// Note: Specific utils are exported above. Commenting out barrel export to avoid duplicates.
+// export * from './utils'
 
 // Additional Types
 export * from './types/chat-types'

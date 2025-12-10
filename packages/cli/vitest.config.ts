@@ -34,4 +34,8 @@ export default defineConfig({
     },
     dedupe: ['zod', 'fs-extra'],
   },
+  esbuild: {
+    // Vite 7 requires Node 20.19+ or 22.12+, update target accordingly
+    target: 'node20',
+  },
 })

@@ -462,31 +462,6 @@ function FormField() {
 
 ## Hooks
 
-### useBodyScrollLock
-
-Lock body scroll when modal/dialog is open.
-
-```tsx
-import { useBodyScrollLock } from '@clarity-chat/primitives'
-
-function Modal({ isOpen }) {
-  const { lock, unlock } = useBodyScrollLock()
-
-  React.useEffect(() => {
-    if (isOpen) {
-      lock()
-      return unlock
-    }
-  }, [isOpen, lock, unlock])
-
-  return isOpen ? <div>Modal content</div> : null
-}
-```
-
-**Returns:**
-- `lock()` - Lock body scroll
-- `unlock()` - Unlock body scroll
-
 ### useRippleEffect
 
 Material Design ripple effect for buttons.

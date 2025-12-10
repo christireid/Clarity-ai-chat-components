@@ -1,15 +1,19 @@
 # @clarity-chat/react
 
-> **The Most Complete AI Chat Component Library for React** — Enterprise-grade, stupid-simple, drop-in ready.
+> **The Most Complete AI Chat Component Library for React** — Enterprise-grade, stupid-simple,
+> drop-in ready.
 
 [![npm version](https://img.shields.io/npm/v/@clarity-chat/react)](https://www.npmjs.com/package/@clarity-chat/react)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 🎯 Value Proposition
 
-Clarity Chat is the most complete AI chat component library for React. Get a production-ready chat interface in **one line**, or compose powerful features with our layered API architecture. Built for developers who want enterprise-grade capabilities without the complexity.
+Clarity Chat is the most complete AI chat component library for React. Get a production-ready chat
+interface in **one line**, or compose powerful features with our layered API architecture. Built for
+developers who want enterprise-grade capabilities without the complexity.
 
 **Key Differentiators**:
+
 - ⚡ **One-line setup** - `<ClarityChat api="/api/chat" />` and you're done
 - 🏗️ **Layered architecture** - Start simple, scale to enterprise
 - 🎨 **Production-ready UI** - Beautiful, accessible, responsive components
@@ -31,12 +35,14 @@ yarn add @clarity-chat/react
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity?** 
+> 📖 **New to Clarity?**
+>
 > - Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
 > - Check the [Developer Guide](../../DEVELOPER_GUIDE.md) for architecture and patterns
 > - See the [Quick Reference](../../QUICK_REFERENCE_ARCHITECTURE.md) for copy-paste snippets
 > - Review the [Architecture Documentation](../../DESIGN.md) for deep dives
-> - Explore [Examples](../../packages/react/src/examples/) for minimal, mid-level, and complex use cases
+> - Explore [Examples](../../packages/react/src/examples/) for minimal, mid-level, and complex use
+>   cases
 
 ### Basic Chat (Simplest Way - Top-Level API)
 
@@ -79,11 +85,13 @@ function MyChat() {
 **Architecture**: This uses **Mid-Level APIs** for more control while maintaining ergonomics.
 
 **What Changed:**
+
 - ✅ `ChatWindow` now accepts `CoreMessage[]` directly - no conversion needed
 - ✅ `useChatHandlers` provides pre-configured handlers - less boilerplate
 - ✅ Simpler API - same power, easier to use
 
-**When to Use**: Use this pattern when you need custom UI or more control than `ClarityChat` provides.
+**When to Use**: Use this pattern when you need custom UI or more control than `ClarityChat`
+provides.
 
 ### Using Presets (Top-Level APIs - Even Easier!)
 
@@ -98,12 +106,7 @@ function SimpleChat() {
 
 // Chat with memory
 function MemoryChat() {
-  return (
-    <ClarityChatPresets.WithMemory 
-      api="/api/chat"
-      memoryStrategy="sliding-window"
-    />
-  )
+  return <ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" />
 }
 
 // Enterprise chat with all features
@@ -158,13 +161,11 @@ function ProductRecommendations() {
 
   return (
     <div>
-      <button onClick={() => run({ query: 'gaming laptops' })}>
-        Generate Products
-      </button>
+      <button onClick={() => run({ query: 'gaming laptops' })}>Generate Products</button>
       {isLoading && <div>Generating...</div>}
       {object && (
         <div>
-          {object.map(product => (
+          {object.map((product) => (
             <div key={product.name}>
               <h3>{product.name}</h3>
               <p>${product.price}</p>
@@ -212,7 +213,9 @@ const toolRegistry = createToolUIRegistry({
 ## 📚 Examples
 
 ### Minimal Examples (10-20 lines)
+
 See `packages/react/src/examples/minimal-examples.tsx` for:
+
 - Basic chat with `ClarityChat`
 - Chat with memory
 - Structured output generation
@@ -220,14 +223,18 @@ See `packages/react/src/examples/minimal-examples.tsx` for:
 - Custom streaming
 
 ### Mid-Level Examples (40-60 lines)
+
 See `packages/react/src/examples/mid-level-examples.tsx` for:
+
 - Composable chat with custom UI
 - Memory integration patterns
 - Tool registry setup
 - Advanced streaming configuration
 
 ### Complex Examples (80-150 lines)
+
 See `packages/react/src/examples/complex-examples.tsx` for:
+
 - Enterprise chat with memory and advanced features
 - Agent-powered chat with tools
 - Multi-chat dashboard
@@ -236,26 +243,32 @@ See `packages/react/src/examples/complex-examples.tsx` for:
 ## 📚 Documentation
 
 ### Quick Start & Migration
-- **[Getting Started with Clarity Chat](../../docs/getting-started-clarity-chat.md)** ⭐ - Quick start guide
+
+- **[Getting Started with Clarity Chat](../../docs/getting-started-clarity-chat.md)** ⭐ - Quick
+  start guide
 - **[Clarity vs Vercel AI SDK UI](../../docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
 - **[Migrating from Vercel](../../docs/migrating-from-vercel.md)** - Migration guide
 
 ### Getting Started
+
 - **[Getting Started Guide](./GETTING_STARTED.md)** ⭐ - Complete guide covering all features
 - **[Quick Start](./QUICK_START.md)** - Get up and running in 5 minutes
 - **[Migration Guide](./MIGRATION_GUIDE.md)** - Migrate from Vercel AI SDK
 
 ### API Reference
+
 - **[API Reference](./API_REFERENCE.md)** - Complete API documentation
 - **[TypeScript Guide](./TYPESCRIPT_GUIDE.md)** - Type definitions and patterns
 - **[Performance Guide](./PERFORMANCE_GUIDE.md)** - Optimization strategies
 
 ### Feature Guides
+
 - **[Phase 3 README](./README_PHASE_3.md)** - Structured output & tool UI registry
 - **[Phase 3 Examples](./PHASE_3_EXAMPLES.md)** - Usage patterns and examples
 - **[All Phases Summary](./ALL_PHASES_SUMMARY.md)** - Complete overview
 
 ### Documentation Index
+
 - **[Documentation Index](./DOCUMENTATION_INDEX.md)** - Complete documentation navigation
 
 ## 🎯 Core APIs
@@ -263,6 +276,7 @@ See `packages/react/src/examples/complex-examples.tsx` for:
 ### Top-Level: Drop-In Components
 
 #### `ClarityChat`
+
 **The simplest way to add AI chat** - zero config, automatic everything.
 
 ```tsx
@@ -270,6 +284,7 @@ See `packages/react/src/examples/complex-examples.tsx` for:
 ```
 
 #### `ChatWithMemory`
+
 Chat component with memory pre-configured.
 
 ```tsx
@@ -277,6 +292,7 @@ Chat component with memory pre-configured.
 ```
 
 #### `ChatComplete`
+
 Full-featured chat with memory, analytics, and error handling.
 
 ```tsx
@@ -286,6 +302,7 @@ Full-featured chat with memory, analytics, and error handling.
 ### Mid-Level: Composable Hooks
 
 #### `useChat`
+
 Simplified chat hook with automatic message conversion.
 
 ```tsx
@@ -293,17 +310,11 @@ const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
 ```
 
 #### `useClarityChat`
+
 Flagship chat hook with memory integration and transport selection.
 
 ```tsx
-const {
-  messages,
-  append,
-  isLoading,
-  error,
-  memoryEnabled,
-  contextSummary,
-} = useClarityChat({
+const { messages, append, isLoading, error, memoryEnabled, contextSummary } = useClarityChat({
   api: '/api/chat',
   memory: {
     enabled: true,
@@ -314,6 +325,7 @@ const {
 ```
 
 ### `useClarityObject<T>`
+
 Type-safe structured object generation.
 
 ```tsx
@@ -324,6 +336,7 @@ const { object, run, isLoading } = useClarityObject<Product[]>({
 ```
 
 ### `useChatEnhanced`
+
 Advanced chat hook with enhanced features.
 
 ```tsx
@@ -336,6 +349,7 @@ const { messages, append, isLoading } = useChatEnhanced({
 ```
 
 ### `useAssistant`
+
 Assistant hook with tool support.
 
 ```tsx
@@ -348,6 +362,7 @@ const { messages, toolInvocations, append } = useAssistant({
 ## 🧩 Components
 
 ### Chat Components
+
 - `ChatWindow` - Complete chat interface
 - `ChatInput` - Message input component
 - `AdvancedChatInput` - Enhanced input with attachments
@@ -355,11 +370,13 @@ const { messages, toolInvocations, append } = useAssistant({
 - `StreamingMessage` - Real-time streaming display
 
 ### Tool Components
+
 - `ClarityToolResult` - Tool result renderer
 - `ToolInvocationCard` - Tool invocation display
 - `AgentRunFeed` - Agent execution feed
 
 ### Utility Components
+
 - `ThinkingIndicator` - Loading indicator
 - `ErrorBoundary` - Error boundary wrapper
 - `RetryButton` - Retry action button
@@ -368,6 +385,7 @@ const { messages, toolInvocations, append } = useAssistant({
 ## 🔧 Memory Strategies
 
 ### Sliding Window
+
 Fast, recent context management.
 
 ```tsx
@@ -378,6 +396,7 @@ memory: {
 ```
 
 ### Semantic Chunks
+
 Context-aware memory selection.
 
 ```tsx
@@ -388,6 +407,7 @@ memory: {
 ```
 
 ### Vector Store
+
 Long-term memory with embeddings.
 
 ```tsx
@@ -400,6 +420,7 @@ memory: {
 ## 🌐 Transport Protocols
 
 ### Server-Sent Events (SSE)
+
 Default, HTTP-based streaming.
 
 ```tsx
@@ -407,6 +428,7 @@ transport: 'sse'
 ```
 
 ### WebSocket
+
 Real-time bidirectional communication.
 
 ```tsx
@@ -416,10 +438,12 @@ transport: 'websocket'
 ## 📖 Examples
 
 ### Example Apps
+
 - **[Basic Chat Example](../../apps/examples/use-clarity-chat-showcase/)** - Complete showcase
 - **[Vercel-Compatible Example](../../apps/examples/vercel-ai-sdk-compatible/)** - Migration example
 
 ### Code Examples
+
 - `examples/basic-clarity-chat-example.tsx` - Basic usage
 - `examples/advanced-clarity-chat-example.tsx` - Advanced features
 - `examples/product-recommendation-object.tsx` - Structured output
@@ -427,6 +451,7 @@ transport: 'websocket'
 - `examples/generative-ui-integrated.tsx` - Full integration
 
 ### Storybook
+
 - **[Storybook Stories](../../apps/storybook/)** - Interactive component examples
 
 ## 🧪 Testing
@@ -464,17 +489,49 @@ pnpm lint
 - `@clarity-chat/types` - Shared type definitions
 - `@clarity-chat/primitives` - Primitive components
 
+## 📊 Feature Comparison
+
+### vs Vercel AI SDK UI
+
+| Feature                 | Clarity Chat                                    | Vercel AI SDK UI                      |
+| ----------------------- | ----------------------------------------------- | ------------------------------------- |
+| **Drop-in Component**   | `<ClarityChat />` - one line                    | Requires hook + component composition |
+| **Built-in Memory**     | 3 strategies (sliding-window, semantic, vector) | Manual implementation                 |
+| **Tool UI Registry**    | `createToolUIRegistry()` - type-safe            | `experimental_toolRenderFunction`     |
+| **Structured Output**   | `useClarityObject<T>` with streaming            | `useObject` (partial streaming)       |
+| **Transport Options**   | SSE + WebSocket built-in                        | SSE only                              |
+| **Enterprise Features** | RBAC, audit, multi-tenancy                      | Not included                          |
+| **Token Optimization**  | Built-in budgeting, compression, caching        | Manual implementation                 |
+| **UI Components**       | 70+ ready-to-use components                     | Minimal UI                            |
+| **Presets**             | `ClarityChatPresets.Enterprise` etc.            | None                                  |
+| **TypeScript**          | Full coverage with DTS                          | Full coverage                         |
+| **Accessibility**       | WCAG 2.1 AA compliant                           | Basic                                 |
+
+### Migration
+
+Migrating from Vercel AI SDK? See our [Migration Guide](./MIGRATION_GUIDE.md) for a step-by-step
+walkthrough.
+
 ## 🤝 Compatibility
 
 ### Vercel AI SDK
-Full API compatibility with Vercel AI SDK UI. See [Migration Guide](./MIGRATION_GUIDE.md).
+
+Full API compatibility with Vercel AI SDK UI hooks. Drop-in replacement for `useChat`,
+`useCompletion`, and `useAssistant`.
 
 ### React Version
-Requires React 19.0.0 or higher.
+
+- React 18.0.0+ (recommended)
+- React 19.0.0+ (full feature support)
+
+### Bundle Size
+
+- Full bundle: ~350KB gzipped
+- Tree-shakeable: Import only what you need
 
 ## 📝 License
 
-See [LICENSE](../../LICENSE) file.
+MIT License - See [LICENSE](../../LICENSE) file.
 
 ## 🙏 Acknowledgments
 

@@ -35,5 +35,19 @@
  * ```
  */
 
-export * from './types'
-export * from './tracer'
+// Types - explicit exports
+export type {
+  TraceSpan,
+  LLMSpan,
+  ChainSpan,
+  ToolSpan,
+  RetrievalSpan,
+  Trace,
+  EvaluationMetric,
+  EvaluationResult,
+  ObservabilityConfig,
+  ObservabilityBackend,
+} from './types'
+
+// Tracer - explicit exports
+export { Tracer, ConsoleBackend, getTracer, setTracer } from './tracer'

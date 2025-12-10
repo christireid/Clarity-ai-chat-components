@@ -5,31 +5,48 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
+
+// Store mock instance for assertions
+let mockInspector: any = null
+
+// Mock the API inspector - must be hoisted
+vi.mock('../../debug', () => {
+  // Create mock instance inside the factory
+  const createMockInspector = () => ({
+    getLogs: vi.fn(() => []),
+    getLog: vi.fn(() => null),
+    startCall: vi.fn(() => 'test-call-id'),
+    completeCall: vi.fn(),
+    recordError: vi.fn(),
+    clear: vi.fn(),
+    setEnabled: vi.fn(),
+    setVerbose: vi.fn(),
+    getTotalUsage: vi.fn(() => ({
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+    })),
+    enabled: false,
+    verbose: false,
+  })
+
+  // Singleton instance
+  let instance: any = null
+
+  return {
+    getAPIInspector: vi.fn(() => {
+      if (!instance) {
+        instance = createMockInspector()
+      }
+      // Store for external access
+      mockInspector = instance
+      return instance
+    }),
+  }
+})
+
+// Import after mock is set up
 import { useAPIInspector } from '../hooks/use-api-inspector'
-
-// Create a stable mock instance that persists across calls
-const mockInspector = {
-  getLogs: vi.fn(() => []),
-  getLog: vi.fn(() => null),
-  startCall: vi.fn(() => 'test-call-id'),
-  completeCall: vi.fn(),
-  recordError: vi.fn(),
-  clear: vi.fn(),
-  setEnabled: vi.fn(),
-  setVerbose: vi.fn(),
-  getTotalUsage: vi.fn(() => ({
-    promptTokens: 0,
-    completionTokens: 0,
-    totalTokens: 0,
-  })),
-  enabled: false,
-  verbose: false,
-}
-
-// Mock the API inspector to return the same instance
-vi.mock('../../debug', () => ({
-  getAPIInspector: vi.fn(() => mockInspector),
-}))
 
 describe('useAPIInspector', () => {
   beforeEach(() => {
@@ -76,7 +93,10 @@ describe('useAPIInspector', () => {
       })
     })
 
-    expect(mockInspector.completeCall).toHaveBeenCalledWith('test-call-id', expect.any(Object))
+    expect(mockInspector.completeCall).toHaveBeenCalledWith(
+      'test-call-id',
+      expect.any(Object)
+    )
   })
 
   it('should clear logs', () => {

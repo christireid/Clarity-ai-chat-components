@@ -36,6 +36,7 @@ export * from './cohere'
 export * from './cache'
 export * from './react'
 export * from './local-embedder'
+export * from './factory'
 
 import type {
   EmbeddingProvider,
@@ -44,28 +45,9 @@ import type {
   EmbeddingRequest,
   EmbeddingResponse,
 } from './types'
-import { OpenAIEmbeddingProvider } from './openai'
-import { CohereEmbeddingProvider } from './cohere'
+import { createEmbeddingProvider } from './factory'
 import { MemoryEmbeddingCache } from './cache'
 import { estimateTokens as estimateTokensCentralized } from '../utils/tokenization/estimator'
-
-/**
- * Create an embedding provider
- */
-export function createEmbeddingProvider(
-  config: EmbeddingConfig
-): EmbeddingProvider {
-  switch (config.provider) {
-    case 'openai':
-      return new OpenAIEmbeddingProvider(config)
-
-    case 'cohere':
-      return new CohereEmbeddingProvider(config)
-
-    default:
-      throw new Error(`Unsupported embedding provider: ${config.provider}`)
-  }
-}
 
 /**
  * Cached Embedding Provider

@@ -1,9 +1,9 @@
 /**
  * createEnterpriseShell - Top-level API for enterprise setup
- * 
+ *
  * Creates a complete enterprise shell with multi-tenancy, RBAC, audit logging,
  * and all enterprise features pre-configured.
- * 
+ *
  * @example
  * ```tsx
  * const shell = createEnterpriseShell({
@@ -12,7 +12,7 @@
  *   rbac: { enabled: true, roles: ['admin', 'user'] },
  *   audit: { enabled: true },
  * })
- * 
+ *
  * return (
  *   <shell.Provider>
  *     <shell.ChatApp api="/api/chat" />
@@ -82,7 +82,7 @@ export interface EnterpriseShell {
 
 /**
  * createEnterpriseShell - Create enterprise shell
- * 
+ *
  * Sets up complete enterprise infrastructure with all features enabled.
  */
 export function createEnterpriseShell(
@@ -104,8 +104,18 @@ export function createEnterpriseShell(
     if (multiTenancy.enabled) {
       content = (
         <MultiTenancyProvider
-          tenantId={multiTenancy.tenantId}
-          resolver={multiTenancy.tenantResolver}
+          initialContext={
+            multiTenancy.tenantId
+              ? {
+                  tenant: {
+                    id: multiTenancy.tenantId,
+                    name: multiTenancy.tenantId,
+                    status: 'active' as const,
+                    createdAt: Date.now(),
+                  },
+                }
+              : undefined
+          }
         >
           {content}
         </MultiTenancyProvider>
@@ -114,14 +124,7 @@ export function createEnterpriseShell(
 
     // Wrap with RBAC if enabled
     if (rbac.enabled) {
-      content = (
-        <RBACProvider
-          roles={rbac.roles || []}
-          permissions={rbac.permissions}
-        >
-          {content}
-        </RBACProvider>
-      )
+      content = <RBACProvider>{content}</RBACProvider>
     }
 
     // Audit is handled via AuditLogger (no provider needed)
@@ -133,10 +136,9 @@ export function createEnterpriseShell(
         <AnalyticsProvider
           config={{
             providers: analytics.providers || [],
-            autoTrack: {
-              pageViews: true,
-              errors: true,
-            },
+            autoTrack: true,
+            autoTrackPageViews: true,
+            autoTrackErrors: true,
           }}
         >
           {content}

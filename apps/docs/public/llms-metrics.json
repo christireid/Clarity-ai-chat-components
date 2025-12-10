@@ -1,0 +1,125 @@
+{
+  "generatedAt": "2025-12-09T13:55:19.438Z",
+  "totalPages": 360,
+  "totalTokens": 326539,
+  "llmsTxtTokens": 2188,
+  "fileSizes": {
+    "llmsTxtBytes": 9647,
+    "llmsFullTxtBytes": 1535178,
+    "llmsTxtHuman": "9.42 KB",
+    "llmsFullTxtHuman": "1.46 MB"
+  },
+  "categoryMetrics": [
+    {
+      "category": "Blog",
+      "pageCount": 3,
+      "tokenCount": 4703,
+      "tokenPercentage": 1.440256753404647
+    },
+    {
+      "category": "Changelog",
+      "pageCount": 1,
+      "tokenCount": 38,
+      "tokenPercentage": 0.011637201069397531
+    },
+    {
+      "category": "Commercial",
+      "pageCount": 1,
+      "tokenCount": 70,
+      "tokenPercentage": 0.021436949338363872
+    },
+    {
+      "category": "Compare",
+      "pageCount": 1,
+      "tokenCount": 822,
+      "tokenPercentage": 0.2517310336590729
+    },
+    {
+      "category": "Cookbook",
+      "pageCount": 37,
+      "tokenCount": 36933,
+      "tokenPercentage": 11.310440713054183
+    },
+    {
+      "category": "Enterprise-standalone",
+      "pageCount": 1,
+      "tokenCount": 76,
+      "tokenPercentage": 0.023274402138795062
+    },
+    {
+      "category": "Enterprise",
+      "pageCount": 3,
+      "tokenCount": 1696,
+      "tokenPercentage": 0.519386658255216
+    },
+    {
+      "category": "Examples-catalog",
+      "pageCount": 1,
+      "tokenCount": 106,
+      "tokenPercentage": 0.032461666140951
+    },
+    {
+      "category": "Examples",
+      "pageCount": 18,
+      "tokenCount": 22123,
+      "tokenPercentage": 6.774994717323199
+    },
+    {
+      "category": "Guides",
+      "pageCount": 60,
+      "tokenCount": 50162,
+      "tokenPercentage": 15.361717895871548
+    },
+    {
+      "category": "Integrations",
+      "pageCount": 3,
+      "tokenCount": 929,
+      "tokenPercentage": 0.28449894193342906
+    },
+    {
+      "category": "Learn",
+      "pageCount": 21,
+      "tokenCount": 45089,
+      "tokenPercentage": 13.80815155310698
+    },
+    {
+      "category": "Page.tsx",
+      "pageCount": 1,
+      "tokenCount": 252,
+      "tokenPercentage": 0.07717301761810993
+    },
+    {
+      "category": "Playground-demo",
+      "pageCount": 1,
+      "tokenCount": 311,
+      "tokenPercentage": 0.09524130348901662
+    },
+    {
+      "category": "Playground",
+      "pageCount": 3,
+      "tokenCount": 5425,
+      "tokenPercentage": 1.6613635737232
+    },
+    {
+      "category": "Reference",
+      "pageCount": 195,
+      "tokenCount": 152481,
+      "tokenPercentage": 46.69610674375802
+    },
+    {
+      "category": "Research",
+      "pageCount": 1,
+      "tokenCount": 60,
+      "tokenPercentage": 0.01837452800431189
+    },
+    {
+      "category": "Tools",
+      "pageCount": 9,
+      "tokenCount": 5263,
+      "tokenPercentage": 1.6117523481115579
+    }
+  ],
+  "skippedCount": 0,
+  "truncatedCount": 0,
+  "warningCount": 8
+}
