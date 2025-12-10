@@ -36,3 +36,6 @@ In your package's `tsconfig.json`:
 
 3. **Override strict settings** if your package has legacy code that doesn't compile under strict
    mode.
+
+4. **Next.js apps**: The `nextjs.json` config includes `incremental: true`. Next.js automatically
+   manages the `tsBuildInfoFile` location, so you don't need to specify it.
