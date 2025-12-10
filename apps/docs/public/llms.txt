@@ -16,6 +16,7 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 - [React Hooks](https://clarity-chat.dev/learn/concepts/hooks): 35+ hooks for chat functionality, streaming, and state management
 - [Theming System](https://clarity-chat.dev/learn/concepts/theming): 11+ pre-built themes with full customization support
 - [Animations](https://clarity-chat.dev/learn/concepts/animations): 150+ micro-interactions with Framer Motion
+- [Architecture](https://clarity-chat.dev/learn/architecture): Three-tier API design philosophy
 
 ## Main Components
 
@@ -29,14 +30,13 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 ## Core Hooks
 
-- [useChat](https://clarity-chat.dev/reference/hooks/use-chat): Primary hook for chat state and operations
-- [useStreaming](https://clarity-chat.dev/reference/hooks/use-streaming): Handle streaming responses
+- [useClarityChat](https://clarity-chat.dev/reference/hooks/use-clarity-chat): Primary hook for chat state and operations with memory integration
 - [useStreamingSSE](https://clarity-chat.dev/reference/hooks/use-streaming-sse): Server-Sent Events streaming
-- [useStreamingWebSocket](https://clarity-chat.dev/reference/hooks/use-streaming-websocket): WebSocket streaming
+- [useStreamingWebSocket](https://clarity-chat.dev/reference/hooks/use-streaming-websocket): WebSocket streaming with auto-reconnection
 - [useTokenTracker](https://clarity-chat.dev/reference/hooks/use-token-tracker): Monitor token consumption
 - [useTokenOptimization](https://clarity-chat.dev/reference/hooks/use-token-optimization): Optimize context window usage
-- [useKeyboardShortcuts](https://clarity-chat.dev/reference/hooks/use-keyboard-shortcuts): Accessibility keyboard navigation
 - [useVoiceInput](https://clarity-chat.dev/reference/hooks/use-voice-input): Voice-to-text input
+- [useChatHandlers](https://clarity-chat.dev/reference/hooks/use-chat-handlers): Pre-configured handlers for ChatWindow
 
 ## UI Components
 
@@ -52,8 +52,7 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 - [VoiceInput](https://clarity-chat.dev/reference/components/voice-input): Speech-to-text integration
 - [FileUpload](https://clarity-chat.dev/reference/components/file-upload): Document and image uploads
-- [CodeBlock](https://clarity-chat.dev/reference/components/enhanced-code-block): Syntax-highlighted code display
-- [MarkdownRenderer](https://clarity-chat.dev/reference/components/markdown-renderer-enhanced): Rich markdown with math support
+- [MarkdownRenderer](https://clarity-chat.dev/reference/components/markdown-renderer-enhanced): Rich markdown with syntax-highlighted code blocks and math support
 - [CommandPalette](https://clarity-chat.dev/reference/components/command-palette): Keyboard-driven command menu
 - [ConversationTimeline](https://clarity-chat.dev/reference/components/conversation-timeline): Visual conversation history
 - [MemoryInspector](https://clarity-chat.dev/reference/components/memory-inspector): Debug context and memory
@@ -68,10 +67,11 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 - [Streaming](https://clarity-chat.dev/guides/streaming): Implement real-time streaming responses
 - [State Management](https://clarity-chat.dev/guides/state-management): Manage chat state effectively
-- [Performance](https://clarity-chat.dev/guides/performance): Optimize for large conversations
-- [Accessibility](https://clarity-chat.dev/guides/accessibility): WCAG AAA compliance
-- [Security](https://clarity-chat.dev/guides/security): Security best practices
-- [Mobile Experience](https://clarity-chat.dev/guides/mobile): Mobile-optimized interfaces
+- [Performance](https://clarity-chat.dev/learn/guides/performance): Optimize for large conversations
+- [Accessibility](https://clarity-chat.dev/learn/guides/accessibility): WCAG AAA compliance
+- [Styling](https://clarity-chat.dev/learn/guides/styling): Customizing component styles
+- [TypeScript](https://clarity-chat.dev/learn/guides/typescript): TypeScript best practices
+- [Testing](https://clarity-chat.dev/learn/guides/testing): Testing your chat components
 
 ## Examples
 
@@ -88,8 +88,12 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 - [RAG Document Chat](https://clarity-chat.dev/cookbook/rag-document-chat): Build retrieval-augmented chat
 - [Agent with Tools](https://clarity-chat.dev/cookbook/agent-with-tools): Create tool-using agents
 - [Custom Theming](https://clarity-chat.dev/cookbook/custom-theming): Design your own theme
-- [Enterprise SSO](https://clarity-chat.dev/cookbook/enterprise-sso-setup): Configure single sign-on
-- [Production Monitoring](https://clarity-chat.dev/cookbook/production-monitoring): Observability setup
+- [Memory Integration](https://clarity-chat.dev/cookbook/memory-integration): Add conversation memory
+- [Error Handling](https://clarity-chat.dev/cookbook/error-handling): Handle errors gracefully
+- [Authentication](https://clarity-chat.dev/cookbook/authentication): Add user authentication
+- [Offline First](https://clarity-chat.dev/cookbook/offline-first-chat): Build offline-capable chat
+- [Voice Chat](https://clarity-chat.dev/cookbook/voice-chat): Add voice input/output
+- [Multi-Agent Orchestration](https://clarity-chat.dev/cookbook/multi-agent-orchestration): Coordinate multiple AI agents
 
 ## Integrations
 
@@ -99,10 +103,21 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 ## API Reference
 
-- [Components API](https://clarity-chat.dev/reference/api/components): All component props and types
-- [Hooks API](https://clarity-chat.dev/reference/api/hooks): Hook signatures and return types
+- [Components API](https://clarity-chat.dev/reference/components): All component props and types
+- [Hooks API](https://clarity-chat.dev/reference/hooks): Hook signatures and return types
 - [Utilities](https://clarity-chat.dev/reference/api/utilities): Helper functions and utilities
 - [Type Definitions](https://clarity-chat.dev/reference/api/types): TypeScript type reference
+
+## Optional
+
+- [Enterprise Features](https://clarity-chat.dev/enterprise): SSO, RBAC, multi-tenancy, audit logs
+- [Migration from Vercel AI SDK](https://clarity-chat.dev/learn/migration/from-vercel-ai-sdk): Step-by-step migration guide
+- [Deployment - Vercel](https://clarity-chat.dev/learn/deployment/vercel): Deploy to Vercel with zero configuration
+- [Deployment - AWS](https://clarity-chat.dev/learn/deployment/aws): Deploy to AWS with Lambda, ECS, or EC2
+- [Deployment - Docker](https://clarity-chat.dev/learn/deployment/docker): Deploy with Docker and docker-compose
+- [Troubleshooting](https://clarity-chat.dev/learn/troubleshooting): Common issues and solutions
+- [CLI Tools](https://clarity-chat.dev/tools/cli): Command-line utilities
+- [Testing Toolkit](https://clarity-chat.dev/tools/testing): Testing utilities and mocks
 
 ## AI-Optimized APIs
 
@@ -130,12 +145,3 @@ Model Context Protocol server for Claude Code and other AI tools:
 ```
 
 Available MCP tools: `list_components`, `get_component`, `list_hooks`, `get_hook`, `search_docs`, `health_check`
-
-## Optional
-
-- [Enterprise Features](https://clarity-chat.dev/enterprise): SSO, RBAC, multi-tenancy, audit logs
-- [Migration from Vercel AI SDK](https://clarity-chat.dev/learn/migration/from-vercel-ai-sdk): Step-by-step migration guide
-- [Deployment Guides](https://clarity-chat.dev/learn/deployment/vercel): Deploy to Vercel, AWS, Docker
-- [Troubleshooting](https://clarity-chat.dev/learn/troubleshooting): Common issues and solutions
-- [CLI Tools](https://clarity-chat.dev/tools/cli): Command-line utilities
-- [Testing Toolkit](https://clarity-chat.dev/tools/testing): Testing utilities and mocks
