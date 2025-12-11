@@ -2,30 +2,36 @@
 
 import * as React from 'react'
 import { estimateTokens } from '../utils/tokenization/estimator'
+import { MODEL_REGISTRY } from '../utils/tokenization/model-registry'
 
 /**
- * Token pricing for popular models
+ * Token pricing for popular models (derived from MODEL_REGISTRY)
+ * Format: cost per token in dollars
+ *
+ * @deprecated Import from '../utils/tokenization/model-pricing' for full pricing utilities
  */
-export const MODEL_PRICING: Record<string, { input: number; output: number }> = {
-  'gpt-4': { input: 0.00003, output: 0.00006 },
-  'gpt-4-turbo': { input: 0.00001, output: 0.00003 },
-  'gpt-3.5-turbo': { input: 0.0000005, output: 0.0000015 },
-  'claude-3-opus': { input: 0.000015, output: 0.000075 },
-  'claude-3-sonnet': { input: 0.000003, output: 0.000015 },
-  'claude-3-haiku': { input: 0.00000025, output: 0.00000125 },
-}
+export const MODEL_PRICING: Record<string, { input: number; output: number }> =
+  Object.fromEntries(
+    Object.entries(MODEL_REGISTRY).map(([id, config]) => [
+      id,
+      {
+        input: config.inputCostPer1M / 1_000_000,
+        output: config.outputCostPer1M / 1_000_000,
+      },
+    ])
+  )
 
 /**
- * Token limits for popular models
+ * Token limits for popular models (derived from MODEL_REGISTRY)
+ *
+ * @deprecated Use MODEL_REGISTRY directly for full model configuration
  */
-export const MODEL_LIMITS: Record<string, number> = {
-  'gpt-4': 8192,
-  'gpt-4-turbo': 128000,
-  'gpt-3.5-turbo': 16385,
-  'claude-3-opus': 200000,
-  'claude-3-sonnet': 200000,
-  'claude-3-haiku': 200000,
-}
+export const MODEL_LIMITS: Record<string, number> = Object.fromEntries(
+  Object.entries(MODEL_REGISTRY).map(([id, config]) => [
+    id,
+    config.contextWindow,
+  ])
+)
 
 /**
  * Message with token count
@@ -42,25 +48,25 @@ export interface MessageWithTokens {
 export interface UseTokenTrackerOptions {
   /** Model name (e.g., 'gpt-4', 'claude-3-opus') */
   modelName: string
-  
+
   /** Maximum tokens for model (auto-detected if modelName matches) */
   maxTokens?: number
-  
+
   /** Cost per input token in dollars (auto-detected if modelName matches) */
   inputCostPerToken?: number
-  
+
   /** Cost per output token in dollars (auto-detected if modelName matches) */
   outputCostPerToken?: number
-  
+
   /** Warning threshold as percentage (default: 0.8 = 80%) */
   warningThreshold?: number
-  
+
   /** Critical threshold as percentage (default: 0.95 = 95%) */
   criticalThreshold?: number
-  
+
   /** Callback when warning threshold exceeded */
   onWarning?: () => void
-  
+
   /** Callback when critical threshold exceeded */
   onCritical?: () => void
 }
@@ -71,40 +77,40 @@ export interface UseTokenTrackerOptions {
 export interface UseTokenTrackerReturn {
   /** Current total tokens in conversation */
   tokens: number
-  
+
   /** Input tokens (user messages) */
   inputTokens: number
-  
+
   /** Output tokens (assistant messages) */
   outputTokens: number
-  
+
   /** Estimated total cost in dollars */
   estimatedCost: number
-  
+
   /** Whether near token limit (warning threshold) */
   isNearLimit: boolean
-  
+
   /** Whether at critical token limit */
   isCritical: boolean
-  
+
   /** Percentage of limit used (0-100) */
   percentage: number
-  
+
   /** Whether can send message without exceeding limit */
   canSend: (estimatedTokens: number) => boolean
-  
+
   /** Suggest pruning old messages */
   suggestPruning: boolean
-  
+
   /** Add message to tracker */
   addMessage: (message: MessageWithTokens) => void
-  
+
   /** Remove message from tracker */
   removeMessage: (index: number) => void
-  
+
   /** Clear all messages */
   clear: () => void
-  
+
   /** Estimate tokens for text (rough approximation) */
   estimateTokens: (text: string) => number
 }
@@ -120,7 +126,7 @@ function estimateTokensFromText(text: string): number {
 
 /**
  * Production-ready Token Tracker hook for cost transparency.
- * 
+ *
  * **Features:**
  * - Real-time token counting across conversation
  * - Automatic model pricing lookup
@@ -129,14 +135,14 @@ function estimateTokensFromText(text: string): number {
  * - Context limit validation
  * - Pruning suggestions
  * - Support for popular models (GPT-4, Claude, etc.)
- * 
+ *
  * **Use Cases:**
  * - Display current conversation token usage
  * - Warn users before hitting context limits
  * - Show estimated API costs
  * - Prevent messages that would exceed limits
  * - Suggest context pruning
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage with GPT-4
@@ -149,17 +155,17 @@ function estimateTokensFromText(text: string): number {
  * } = useTokenTracker({
  *   modelName: 'gpt-4',
  * })
- * 
+ *
  * // Add messages
  * addMessage({ role: 'user', content: 'Hello!', tokens: 5 })
  * addMessage({ role: 'assistant', content: 'Hi there!', tokens: 7 })
- * 
+ *
  * // Check before sending
  * const canSendMessage = canSend(estimatedTokens)
  * if (!canSendMessage) {
  *   alert('Message too long - would exceed context limit')
  * }
- * 
+ *
  * // With custom model and pricing
  * const tracker = useTokenTracker({
  *   modelName: 'custom-model',
@@ -174,13 +180,13 @@ function estimateTokensFromText(text: string): number {
  *     showPruneDialog()
  *   },
  * })
- * 
+ *
  * // With pruning suggestions
  * function ChatUI() {
  *   const { suggestPruning, clear } = useTokenTracker({
  *     modelName: 'gpt-4',
  *   })
- * 
+ *
  *   return (
  *     <div>
  *       {suggestPruning && (
@@ -209,8 +215,10 @@ export function useTokenTracker(
 
   // Get model info
   const maxTokens = customMaxTokens ?? MODEL_LIMITS[modelName] ?? 4096
-  const inputCostPerToken = customInputCost ?? MODEL_PRICING[modelName]?.input ?? 0
-  const outputCostPerToken = customOutputCost ?? MODEL_PRICING[modelName]?.output ?? 0
+  const inputCostPerToken =
+    customInputCost ?? MODEL_PRICING[modelName]?.input ?? 0
+  const outputCostPerToken =
+    customOutputCost ?? MODEL_PRICING[modelName]?.output ?? 0
 
   // State
   const [messages, setMessages] = React.useState<MessageWithTokens[]>([])
@@ -224,7 +232,7 @@ export function useTokenTracker(
 
     for (const message of messages) {
       const tokens = message.tokens ?? estimateTokensFromText(message.content)
-      
+
       if (message.role === 'user' || message.role === 'system') {
         input += tokens
       } else if (message.role === 'assistant') {
@@ -239,7 +247,8 @@ export function useTokenTracker(
   const percentage = Math.min((tokens / maxTokens) * 100, 100)
   const isNearLimit = percentage >= warningThreshold * 100
   const isCritical = percentage >= criticalThreshold * 100
-  const estimatedCost = (inputTokens * inputCostPerToken) + (outputTokens * outputCostPerToken)
+  const estimatedCost =
+    inputTokens * inputCostPerToken + outputTokens * outputCostPerToken
   const suggestPruning = isCritical
 
   /**
@@ -247,7 +256,7 @@ export function useTokenTracker(
    */
   const canSend = React.useCallback(
     (estimatedTokens: number): boolean => {
-      return (tokens + estimatedTokens) <= maxTokens
+      return tokens + estimatedTokens <= maxTokens
     },
     [tokens, maxTokens]
   )
@@ -299,7 +308,16 @@ export function useTokenTracker(
       setHasWarned(false)
       setHasCritical(false)
     }
-  }, [isNearLimit, isCritical, hasWarned, hasCritical, percentage, warningThreshold, onWarning, onCritical])
+  }, [
+    isNearLimit,
+    isCritical,
+    hasWarned,
+    hasCritical,
+    percentage,
+    warningThreshold,
+    onWarning,
+    onCritical,
+  ])
 
   return {
     tokens,
