@@ -30,6 +30,9 @@ import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import type { Message } from '@clarity-chat/types'
 
+/** Request body data for chat API */
+export type ChatRequestBody = Record<string, string | number | boolean | string[] | number[] | null>
+
 /**
  * Simplified options - only the essentials
  */
@@ -39,7 +42,7 @@ export interface UseChatSimpleOptions {
   /** Initial messages (optional) */
   initialMessages?: Message[]
   /** Additional body data */
-  body?: Record<string, any>
+  body?: ChatRequestBody
   /** Custom headers */
   headers?: Record<string, string>
   /** Callback when message is sent */

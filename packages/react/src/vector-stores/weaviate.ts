@@ -7,29 +7,28 @@
 
 import type {
   VectorStore,
-  VectorStoreConfig,
+  WeaviateStoreConfig,
   Vector,
   VectorQuery,
   VectorMatch,
   VectorUpsertOptions,
   VectorStats,
+  VectorMetadata,
+  VectorFilter,
 } from './types'
 
-export interface WeaviateConfig extends VectorStoreConfig {
-  provider: 'weaviate'
-  endpoint: string
-  className?: string
-}
+/** @deprecated Use WeaviateStoreConfig from './types' instead */
+export type WeaviateConfig = WeaviateStoreConfig
 
 export class WeaviateVectorStore implements VectorStore {
   readonly provider = 'weaviate'
-  
+
   private apiKey?: string
   private endpoint: string
   private className: string
-  private _initialized = false   
-  
-  constructor(config: WeaviateConfig) {
+  private _initialized = false
+
+  constructor(config: WeaviateStoreConfig) {
     if (!config.endpoint) {
       throw new Error('Weaviate endpoint is required')
     }

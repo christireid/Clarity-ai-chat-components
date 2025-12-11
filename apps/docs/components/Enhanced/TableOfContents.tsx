@@ -83,8 +83,8 @@ export function TableOfContents({ headings: propHeadings, className }: TableOfCo
     <nav
       className={clsx(
         'sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto',
-        'hidden xl:block w-64 ml-8',
-        'text-sm',
+        'hidden xl:block w-56 shrink-0',
+        'text-sm pl-6 border-l border-border/50',
         className
       )}
       aria-label="Table of contents"

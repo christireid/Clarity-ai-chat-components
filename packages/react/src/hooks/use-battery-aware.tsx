@@ -70,11 +70,19 @@ interface BatteryManager extends EventTarget {
   dischargingTime: number
   level: number
   addEventListener(
-    type: 'chargingchange' | 'chargingtimechange' | 'dischargingtimechange' | 'levelchange',
+    type:
+      | 'chargingchange'
+      | 'chargingtimechange'
+      | 'dischargingtimechange'
+      | 'levelchange',
     listener: (event: Event) => void
   ): void
   removeEventListener(
-    type: 'chargingchange' | 'chargingtimechange' | 'dischargingtimechange' | 'levelchange',
+    type:
+      | 'chargingchange'
+      | 'chargingtimechange'
+      | 'dischargingtimechange'
+      | 'levelchange',
     listener: (event: Event) => void
   ): void
 }
@@ -146,7 +154,8 @@ const defaultConfig: BatteryAwareConfig = {
 export function useBatteryAware(config?: Partial<BatteryAwareConfig>) {
   const finalConfig = { ...defaultConfig, ...config }
 
-  const [batteryStatus, setBatteryStatus] = React.useState<BatteryStatus | null>(null)
+  const [batteryStatus, setBatteryStatus] =
+    React.useState<BatteryStatus | null>(null)
   const [isSupported, setIsSupported] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
@@ -204,8 +213,11 @@ export function useBatteryAware(config?: Partial<BatteryAwareConfig>) {
           }
         }
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to access battery API'))
+        setError(
+          err instanceof Error ? err : new Error('Failed to access battery API')
+        )
         console.error('Battery API error:', err)
+        return undefined
       }
     }
 
@@ -291,7 +303,12 @@ export function useBatteryAware(config?: Partial<BatteryAwareConfig>) {
       updateInterval: 100, // 100ms
       level: 'none',
     }
-  }, [batteryStatus, finalConfig.autoOptimize, finalConfig.optimizations, finalConfig.thresholds])
+  }, [
+    batteryStatus,
+    finalConfig.autoOptimize,
+    finalConfig.optimizations,
+    finalConfig.thresholds,
+  ])
 
   /**
    * Get human-readable battery level description
@@ -362,7 +379,9 @@ export function useBatteryAware(config?: Partial<BatteryAwareConfig>) {
  * ```
  */
 export function withBatteryOptimizations<P extends object>(
-  Component: React.ComponentType<P & { batteryOptimizations?: OptimizationRecommendations }>,
+  Component: React.ComponentType<
+    P & { batteryOptimizations?: OptimizationRecommendations }
+  >,
   config?: Partial<BatteryAwareConfig>
 ) {
   return function BatteryAwareComponent(props: P) {

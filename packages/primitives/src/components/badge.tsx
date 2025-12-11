@@ -19,11 +19,11 @@ const badgeVariants = cva(
         outline:
           'border border-border/60 bg-background text-foreground hover:bg-accent/50 hover:border-border/80 hover:scale-105',
         success:
-          'border border-green-600/30 bg-green-500 text-white shadow-sm hover:bg-green-600 hover:shadow-md hover:scale-105',
+          'border border-success/30 bg-success text-success-foreground shadow-sm hover:bg-success/90 hover:shadow-md hover:scale-105',
         warning:
-          'border border-yellow-600/30 bg-yellow-500 text-white shadow-sm hover:bg-yellow-600 hover:shadow-md hover:scale-105',
+          'border border-warning/30 bg-warning text-warning-foreground shadow-sm hover:bg-warning/90 hover:shadow-md hover:scale-105',
         info:
-          'border border-blue-600/30 bg-blue-500 text-white shadow-sm hover:bg-blue-600 hover:shadow-md hover:scale-105',
+          'border border-info/30 bg-info text-info-foreground shadow-sm hover:bg-info/90 hover:shadow-md hover:scale-105',
         subtle:
           'border border-border/40 bg-muted text-muted-foreground hover:bg-muted/70 hover:border-border/60 hover:scale-105',
         ghost:

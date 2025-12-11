@@ -5,6 +5,11 @@
  * All variables are namespaced with --clarity- prefix for safety.
  * Legacy unprefixed names are provided for backwards compatibility.
  *
+ * Color Format: OKLCH (Oklab Lightness Chroma Hue)
+ * - Better perceptual uniformity than HSL
+ * - Wider gamut support for modern displays
+ * - More predictable color manipulation
+ *
  * @see THEMING.md for documentation
  */
 
@@ -14,48 +19,52 @@
   :root {
     /* ========================================
        Color Tokens - Light Mode (Default)
-       All colors use HSL values without hsl() wrapper
+       All colors use OKLCH format: L C H
+       L = Lightness (0-1), C = Chroma (0-0.4), H = Hue (0-360)
        ======================================== */
 
     /* Base colors */
-    --clarity-background: 0 0% 100%;
-    --clarity-foreground: 222 47% 11%;
+    --clarity-background: 100% 0 0; /* white */
+    --clarity-foreground: 20% 0.02 250; /* near-black with subtle blue */
 
     /* Surface colors */
-    --clarity-card: 0 0% 100%;
-    --clarity-card-foreground: 222 47% 11%;
-    --clarity-popover: 0 0% 100%;
-    --clarity-popover-foreground: 222 47% 11%;
+    --clarity-card: 100% 0 0;
+    --clarity-card-foreground: 20% 0.02 250;
+    --clarity-popover: 100% 0 0;
+    --clarity-popover-foreground: 20% 0.02 250;
 
-    /* Brand colors */
-    --clarity-primary: 239 84% 67%;
-    --clarity-primary-foreground: 0 0% 100%;
-    --clarity-secondary: 240 5% 96%;
-    --clarity-secondary-foreground: 222 47% 11%;
-    --clarity-accent: 240 5% 96%;
-    --clarity-accent-foreground: 222 47% 11%;
+    /* Brand colors - vibrant blue-purple primary */
+    --clarity-primary: 60% 0.2 265;
+    --clarity-primary-foreground: 100% 0 0;
+    --clarity-secondary: 96% 0.01 265;
+    --clarity-secondary-foreground: 20% 0.02 250;
+    --clarity-accent: 96% 0.02 265;
+    --clarity-accent-foreground: 20% 0.02 250;
 
     /* State colors */
-    --clarity-destructive: 0 84% 60%;
-    --clarity-destructive-foreground: 0 0% 100%;
-    --clarity-success: 142 71% 45%;
-    --clarity-success-foreground: 0 0% 100%;
-    --clarity-warning: 38 92% 50%;
-    --clarity-warning-foreground: 22 92% 20%;
-    --clarity-info: 199 89% 48%;
-    --clarity-info-foreground: 0 0% 100%;
+    --clarity-destructive: 55% 0.22 25;
+    --clarity-destructive-foreground: 100% 0 0;
+    --clarity-success: 55% 0.18 145;
+    --clarity-success-foreground: 100% 0 0;
+    --clarity-warning: 75% 0.18 70;
+    --clarity-warning-foreground: 25% 0.08 70;
+    --clarity-info: 60% 0.15 230;
+    --clarity-info-foreground: 100% 0 0;
 
     /* UI colors */
-    --clarity-muted: 240 5% 96%;
-    --clarity-muted-foreground: 240 4% 46%;
-    --clarity-border: 240 6% 90%;
-    --clarity-input: 240 6% 90%;
-    --clarity-ring: 239 84% 67%;
+    --clarity-muted: 96% 0.01 265;
+    --clarity-muted-foreground: 55% 0.02 265;
+    --clarity-border: 90% 0.01 265;
+    --clarity-input: 90% 0.01 265;
+    --clarity-ring: 60% 0.2 265;
 
     /* Extended surfaces */
-    --clarity-surface-muted: 240 5% 96%;
-    --clarity-surface-elevated: 0 0% 100%;
-    --clarity-surface-overlay: 0 0% 100%;
+    --clarity-surface-muted: 96% 0.01 265;
+    --clarity-surface-elevated: 100% 0 0;
+    --clarity-surface-overlay: 100% 0 0;
+
+    /* Color function helper - use oklch() in components */
+    --color-space: oklch;
 
     /* ========================================
        Border Radius Tokens
@@ -101,12 +110,14 @@
     --accent-foreground: var(--clarity-accent-foreground);
     --destructive: var(--clarity-destructive);
     --destructive-foreground: var(--clarity-destructive-foreground);
-    --success: var(--clarity-success);
-    --success-foreground: var(--clarity-success-foreground);
-    --warning: var(--clarity-warning);
-    --warning-foreground: var(--clarity-warning-foreground);
-    --info: var(--clarity-info);
-    --info-foreground: var(--clarity-info-foreground);
+    /* State colors use HSL format for Tailwind compatibility */
+    /* Use --clarity-* vars directly for OKLCH access */
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 0 0% 100%;
     --border: var(--clarity-border);
     --input: var(--clarity-input);
     --ring: var(--clarity-ring);
@@ -133,11 +144,17 @@
     --shadow-medium: 0 12px 32px rgba(15, 23, 42, 0.12);
     --shadow-strong: 0 18px 48px rgba(15, 23, 42, 0.16);
 
-    /* Colored Shadows for Emphasis */
-    --shadow-primary: 0 8px 16px -4px hsl(var(--primary) / 0.3);
-    --shadow-success: 0 8px 16px -4px hsl(var(--success) / 0.3);
-    --shadow-warning: 0 8px 16px -4px hsl(var(--warning) / 0.3);
-    --shadow-error: 0 8px 16px -4px hsl(var(--destructive) / 0.3);
+    /* Colored Shadows for Emphasis (OKLCH format) */
+    --shadow-primary: 0 8px 16px -4px oklch(var(--clarity-primary) / 0.3);
+    --shadow-success: 0 8px 16px -4px oklch(var(--clarity-success) / 0.3);
+    --shadow-warning: 0 8px 16px -4px oklch(var(--clarity-warning) / 0.3);
+    --shadow-error: 0 8px 16px -4px oklch(var(--clarity-destructive) / 0.3);
+
+    /* Focus Ring Colors (for semantic focus states) */
+    --ring-success: hsl(var(--success));
+    --ring-warning: hsl(var(--warning));
+    --ring-info: hsl(var(--info));
+    --ring-destructive: hsl(var(--destructive));
 
     /* Animation Timing */
     --duration-instant: 100ms;
@@ -152,17 +169,24 @@
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    /* Spacing Scale */
-    --space-1: 0.25rem; /* 4px */
-    --space-2: 0.5rem; /* 8px */
-    --space-3: 0.75rem; /* 12px */
-    --space-4: 1rem; /* 16px */
-    --space-5: 1.25rem; /* 20px */
-    --space-6: 1.5rem; /* 24px */
-    --space-8: 2rem; /* 32px */
-    --space-10: 2.5rem; /* 40px */
-    --space-12: 3rem; /* 48px */
-    --space-16: 4rem; /* 64px */
+    /* Spacing Scale - Responsive with clamp() */
+    --space-1: 0.25rem; /* 4px - fixed for micro spacing */
+    --space-2: 0.5rem; /* 8px - fixed for small gaps */
+    --space-3: clamp(0.625rem, 0.5rem + 0.5vw, 0.75rem); /* 10-12px */
+    --space-4: clamp(0.875rem, 0.75rem + 0.5vw, 1rem); /* 14-16px */
+    --space-5: clamp(1rem, 0.875rem + 0.75vw, 1.25rem); /* 16-20px */
+    --space-6: clamp(1.25rem, 1rem + 1vw, 1.5rem); /* 20-24px */
+    --space-8: clamp(1.5rem, 1.25rem + 1.5vw, 2rem); /* 24-32px */
+    --space-10: clamp(2rem, 1.5rem + 2vw, 2.5rem); /* 32-40px */
+    --space-12: clamp(2.25rem, 1.75rem + 2.5vw, 3rem); /* 36-48px */
+    --space-16: clamp(3rem, 2.25rem + 3vw, 4rem); /* 48-64px */
+
+    /* Semantic spacing aliases */
+    --space-xs: var(--space-1);
+    --space-sm: var(--space-2);
+    --space-md: var(--space-4);
+    --space-lg: var(--space-6);
+    --space-xl: var(--space-8);
 
     /* Z-index Scale */
     --z-base: 0;
@@ -213,49 +237,49 @@
   }
 
   /* ========================================
-     Dark Mode
+     Dark Mode (OKLCH)
      ======================================== */
   .dark,
   [data-theme='dark'] {
     /* Base colors */
-    --clarity-background: 222 47% 11%;
-    --clarity-foreground: 210 40% 98%;
+    --clarity-background: 20% 0.02 250;
+    --clarity-foreground: 95% 0.01 250;
 
     /* Surface colors */
-    --clarity-card: 222 47% 11%;
-    --clarity-card-foreground: 210 40% 98%;
-    --clarity-popover: 222 47% 11%;
-    --clarity-popover-foreground: 210 40% 98%;
+    --clarity-card: 20% 0.02 250;
+    --clarity-card-foreground: 95% 0.01 250;
+    --clarity-popover: 20% 0.02 250;
+    --clarity-popover-foreground: 95% 0.01 250;
 
     /* Brand colors */
-    --clarity-primary: 239 84% 67%;
-    --clarity-primary-foreground: 0 0% 100%;
-    --clarity-secondary: 217 33% 17%;
-    --clarity-secondary-foreground: 210 40% 98%;
-    --clarity-accent: 217 33% 17%;
-    --clarity-accent-foreground: 210 40% 98%;
+    --clarity-primary: 70% 0.2 265;
+    --clarity-primary-foreground: 100% 0 0;
+    --clarity-secondary: 25% 0.03 265;
+    --clarity-secondary-foreground: 95% 0.01 250;
+    --clarity-accent: 25% 0.03 265;
+    --clarity-accent-foreground: 95% 0.01 250;
 
     /* State colors */
-    --clarity-destructive: 0 63% 31%;
-    --clarity-destructive-foreground: 210 40% 98%;
-    --clarity-success: 142 71% 45%;
-    --clarity-success-foreground: 0 0% 100%;
-    --clarity-warning: 38 92% 50%;
-    --clarity-warning-foreground: 22 92% 20%;
-    --clarity-info: 199 89% 48%;
-    --clarity-info-foreground: 0 0% 100%;
+    --clarity-destructive: 45% 0.2 25;
+    --clarity-destructive-foreground: 95% 0.01 250;
+    --clarity-success: 55% 0.18 145;
+    --clarity-success-foreground: 100% 0 0;
+    --clarity-warning: 75% 0.18 70;
+    --clarity-warning-foreground: 25% 0.08 70;
+    --clarity-info: 60% 0.15 230;
+    --clarity-info-foreground: 100% 0 0;
 
     /* UI colors */
-    --clarity-muted: 217 33% 17%;
-    --clarity-muted-foreground: 215 20% 65%;
-    --clarity-border: 217 33% 17%;
-    --clarity-input: 217 33% 17%;
-    --clarity-ring: 239 84% 67%;
+    --clarity-muted: 25% 0.03 265;
+    --clarity-muted-foreground: 65% 0.02 265;
+    --clarity-border: 25% 0.03 265;
+    --clarity-input: 25% 0.03 265;
+    --clarity-ring: 70% 0.2 265;
 
     /* Extended surfaces */
-    --clarity-surface-muted: 217 33% 17%;
-    --clarity-surface-elevated: 222 47% 13%;
-    --clarity-surface-overlay: 222 47% 9%;
+    --clarity-surface-muted: 25% 0.03 265;
+    --clarity-surface-elevated: 23% 0.02 265;
+    --clarity-surface-overlay: 15% 0.02 265;
 
     /* Dark mode shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -268,11 +292,109 @@
     --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
     --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.3);
 
+    /* State colors - HSL format for Tailwind compatibility */
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217.2 91.2% 59.8%;
+    --info-foreground: 222.2 47.4% 11.2%;
+
     /* Colored shadows - more visible in dark mode */
-    --shadow-primary: 0 4px 14px -3px hsl(var(--clarity-primary) / 0.45);
-    --shadow-success: 0 4px 14px -3px hsl(var(--clarity-success) / 0.45);
-    --shadow-warning: 0 4px 14px -3px hsl(var(--clarity-warning) / 0.45);
-    --shadow-error: 0 4px 14px -3px hsl(var(--clarity-destructive) / 0.45);
+    --shadow-primary: 0 4px 14px -3px oklch(var(--clarity-primary) / 0.45);
+    --shadow-success: 0 4px 14px -3px oklch(var(--clarity-success) / 0.45);
+    --shadow-warning: 0 4px 14px -3px oklch(var(--clarity-warning) / 0.45);
+    --shadow-error: 0 4px 14px -3px oklch(var(--clarity-destructive) / 0.45);
+  }
+
+  /* ========================================
+     Zen Theme (Calm, Nature-inspired)
+     ======================================== */
+  [data-theme='zen'] {
+    /* Calm green-teal primary */
+    --clarity-primary: 60% 0.15 165;
+    --clarity-primary-foreground: 100% 0 0;
+    --clarity-accent: 92% 0.08 165;
+    --clarity-accent-foreground: 25% 0.05 165;
+    --clarity-ring: 60% 0.15 165;
+
+    /* Softer, warmer surfaces */
+    --clarity-background: 99% 0.005 90;
+    --clarity-foreground: 25% 0.02 90;
+    --clarity-card: 99% 0.005 90;
+    --clarity-card-foreground: 25% 0.02 90;
+    --clarity-muted: 95% 0.01 90;
+    --clarity-border: 88% 0.02 90;
+
+    /* Calmer state colors */
+    --clarity-success: 58% 0.14 145;
+    --clarity-warning: 72% 0.14 70;
+    --clarity-destructive: 52% 0.16 25;
+  }
+
+  [data-theme='zen'].dark,
+  .dark[data-theme='zen'] {
+    --clarity-background: 18% 0.02 165;
+    --clarity-foreground: 92% 0.01 165;
+    --clarity-card: 18% 0.02 165;
+    --clarity-card-foreground: 92% 0.01 165;
+    --clarity-muted: 22% 0.03 165;
+    --clarity-border: 25% 0.03 165;
+    --clarity-primary: 65% 0.15 165;
+    --clarity-accent: 28% 0.06 165;
+  }
+
+  /* ========================================
+     Vivid Theme (Creative, Energetic)
+     ======================================== */
+  [data-theme='vivid'] {
+    /* Bold pink-magenta primary */
+    --clarity-primary: 65% 0.25 340;
+    --clarity-primary-foreground: 100% 0 0;
+    --clarity-accent: 92% 0.12 340;
+    --clarity-accent-foreground: 30% 0.1 340;
+    --clarity-ring: 65% 0.25 340;
+
+    /* Vivid state colors */
+    --clarity-success: 60% 0.22 145;
+    --clarity-warning: 78% 0.2 65;
+    --clarity-destructive: 58% 0.25 25;
+    --clarity-info: 62% 0.18 240;
+  }
+
+  [data-theme='vivid'].dark,
+  .dark[data-theme='vivid'] {
+    --clarity-background: 15% 0.03 340;
+    --clarity-foreground: 95% 0.02 340;
+    --clarity-card: 15% 0.03 340;
+    --clarity-card-foreground: 95% 0.02 340;
+    --clarity-muted: 20% 0.04 340;
+    --clarity-border: 25% 0.05 340;
+    --clarity-primary: 70% 0.25 340;
+    --clarity-accent: 25% 0.1 340;
+  }
+
+  /* ========================================
+     Reduced Contrast Mode (Accessibility)
+     ======================================== */
+  [data-contrast='reduced'] {
+    /* Reduce chroma for less visual intensity */
+    --clarity-primary: 60% 0.1 265;
+    --clarity-accent: 90% 0.04 265;
+    --clarity-destructive: 55% 0.12 25;
+    --clarity-success: 55% 0.1 145;
+    --clarity-warning: 70% 0.1 70;
+    --clarity-info: 60% 0.08 230;
+
+    /* Softer text contrast */
+    --clarity-foreground: 30% 0.01 250;
+    --clarity-muted-foreground: 50% 0.01 265;
+  }
+
+  [data-contrast='reduced'].dark,
+  .dark[data-contrast='reduced'] {
+    --clarity-foreground: 85% 0.01 250;
+    --clarity-muted-foreground: 60% 0.01 265;
   }
 }
 
@@ -581,5 +703,84 @@
   30% {
     transform: translateY(-8px);
     opacity: 1;
+  }
+}
+
+/* Ripple Effect Animation */
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+/* Error Shake Animation */
+@keyframes error-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-3px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Scale In Animation */
+@keyframes scale-in {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Fade Scale Animation (for dialogs/modals) */
+@keyframes fade-scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-scale-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* Reduced motion - disable all animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

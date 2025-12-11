@@ -7,29 +7,29 @@
 
 import type {
   VectorStore,
-  VectorStoreConfig,
+  QdrantStoreConfig,
   Vector,
   VectorQuery,
   VectorMatch,
   VectorUpsertOptions,
   VectorStats,
+  VectorMetadata,
+  VectorFilter,
+  VectorFilterValue,
 } from './types'
 
-export interface QdrantConfig extends VectorStoreConfig {
-  provider: 'qdrant'
-  endpoint: string
-  collectionName?: string
-}
+/** @deprecated Use QdrantStoreConfig from './types' instead */
+export type QdrantConfig = QdrantStoreConfig
 
 export class QdrantVectorStore implements VectorStore {
   readonly provider = 'qdrant'
-  
+
   private apiKey?: string
   private endpoint: string
   private collectionName: string
-  private _initialized = false   
-  
-  constructor(config: QdrantConfig) {
+  private _initialized = false
+
+  constructor(config: QdrantStoreConfig) {
     if (!config.endpoint) {
       throw new Error('Qdrant endpoint is required')
     }

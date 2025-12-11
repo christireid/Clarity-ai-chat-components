@@ -50,8 +50,18 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        success: 'hsl(var(--success))',
-        warning: 'hsl(var(--warning))',
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--success-foreground))',
+        },
+        warning: {
+          DEFAULT: 'hsl(var(--warning))',
+          foreground: 'hsl(var(--warning-foreground))',
+        },
+        info: {
+          DEFAULT: 'hsl(var(--info))',
+          foreground: 'hsl(var(--info-foreground))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -66,6 +76,13 @@ module.exports = {
         xl: '0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06)',
         '2xl':
           '0 24px 48px rgba(0, 0, 0, 0.18), 0 12px 24px rgba(0, 0, 0, 0.08)',
+      },
+      // Semantic ring colors for focus states
+      ringColor: {
+        success: 'var(--ring-success)',
+        warning: 'var(--ring-warning)',
+        info: 'var(--ring-info)',
+        destructive: 'var(--ring-destructive)',
       },
       // =========================================================================
       // ANIMATION SYSTEM
@@ -175,11 +192,11 @@ module.exports = {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.3' },
         },
-        // Success feedback
+        // Success feedback (uses CSS variable for theme consistency)
         'success-pulse': {
-          '0%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.7)' },
-          '50%': { boxShadow: '0 0 0 8px rgba(34, 197, 94, 0)' },
-          '100%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0)' },
+          '0%': { boxShadow: '0 0 0 0 hsl(var(--success) / 0.7)' },
+          '50%': { boxShadow: '0 0 0 8px hsl(var(--success) / 0)' },
+          '100%': { boxShadow: '0 0 0 0 hsl(var(--success) / 0)' },
         },
         // Badge animations
         'badge-pulse': {

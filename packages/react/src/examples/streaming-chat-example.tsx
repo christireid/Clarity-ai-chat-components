@@ -7,7 +7,7 @@ import { cn } from '@clarity-chat/primitives'
 
 /**
  * Example: SSE Streaming Chat
- * 
+ *
  * Demonstrates real-world usage of useStreamingSSE hook
  * for OpenAI/Anthropic-style streaming chat responses.
  */
@@ -61,10 +61,10 @@ export const SSEStreamingChatExample: React.FC = () => {
       <div className="flex items-center gap-2 text-sm">
         <div
           className={cn('h-2 w-2 rounded-full', {
-            'bg-gray-400': status === 'idle',
-            'bg-yellow-500 animate-pulse': status === 'connecting',
-            'bg-green-500': status === 'connected' || status === 'streaming',
-            'bg-red-500': status === 'error',
+            'bg-muted-foreground/60': status === 'idle',
+            'bg-warning animate-pulse': status === 'connecting',
+            'bg-success': status === 'connected' || status === 'streaming',
+            'bg-destructive': status === 'error',
           })}
         />
         <span className="capitalize">{status}</span>
@@ -77,8 +77,8 @@ export const SSEStreamingChatExample: React.FC = () => {
 
       {/* Error Display */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-          <p className="text-sm text-red-800">
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
+          <p className="text-sm text-destructive">
             <strong>Error:</strong> {error.message}
           </p>
           <Button
@@ -93,7 +93,7 @@ export const SSEStreamingChatExample: React.FC = () => {
       )}
 
       {/* Message Display */}
-      <div className="min-h-[200px] rounded-lg border bg-white p-4">
+      <div className="min-h-[200px] rounded-lg border bg-card p-4">
         {data ? (
           <div className="prose prose-sm">
             <p className="whitespace-pre-wrap">{data}</p>
@@ -134,7 +134,7 @@ export const SSEStreamingChatExample: React.FC = () => {
 
 /**
  * Example: WebSocket Chat
- * 
+ *
  * Demonstrates real-world usage of useStreamingWebSocket hook
  * for bidirectional real-time chat.
  */
@@ -196,10 +196,11 @@ export const WebSocketChatExample: React.FC = () => {
       <div className="flex items-center gap-2 text-sm">
         <div
           className={cn('h-2 w-2 rounded-full', {
-            'bg-gray-400': status === 'idle' || status === 'closed',
-            'bg-yellow-500 animate-pulse': status === 'connecting' || status === 'reconnecting',
-            'bg-green-500': status === 'connected',
-            'bg-red-500': status === 'error',
+            'bg-muted-foreground/60': status === 'idle' || status === 'closed',
+            'bg-warning animate-pulse':
+              status === 'connecting' || status === 'reconnecting',
+            'bg-success': status === 'connected',
+            'bg-destructive': status === 'error',
           })}
         />
         <span className="capitalize">{status}</span>
@@ -229,14 +230,14 @@ export const WebSocketChatExample: React.FC = () => {
       </div>
 
       {/* Messages Display */}
-      <div className="min-h-[300px] space-y-2 rounded-lg border bg-white p-4">
+      <div className="min-h-[300px] space-y-2 rounded-lg border bg-card p-4">
         {displayMessages.length > 0 ? (
           displayMessages.map((msg, i) => (
             <div
               key={i}
               className={cn('rounded-lg p-3', {
-                'bg-blue-50 text-right': msg.startsWith('You:'),
-                'bg-gray-50': !msg.startsWith('You:'),
+                'bg-primary/10 text-right': msg.startsWith('You:'),
+                'bg-muted': !msg.startsWith('You:'),
               })}
             >
               <p className="text-sm">{msg}</p>
@@ -259,7 +260,10 @@ export const WebSocketChatExample: React.FC = () => {
           className="flex-1 rounded-lg border px-4 py-2"
           disabled={status !== 'connected'}
         />
-        <Button type="submit" disabled={!input.trim() || status !== 'connected'}>
+        <Button
+          type="submit"
+          disabled={!input.trim() || status !== 'connected'}
+        >
           Send
         </Button>
       </form>
@@ -274,7 +278,7 @@ export const WebSocketChatExample: React.FC = () => {
 
 /**
  * Example: Combined SSE + WebSocket Demo
- * 
+ *
  * Shows how to choose between SSE and WebSocket based on use case.
  */
 export const CombinedStreamingExample: React.FC = () => {
@@ -306,11 +310,13 @@ export const CombinedStreamingExample: React.FC = () => {
       </div>
 
       {/* Comparison Table */}
-      <div className="rounded-lg border bg-white p-4">
+      <div className="rounded-lg border bg-card p-4">
         <h3 className="mb-2 font-semibold">When to Use Each:</h3>
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <h4 className="mb-1 font-medium text-green-600">SSE (Server-Sent Events)</h4>
+            <h4 className="mb-1 font-medium text-green-600">
+              SSE (Server-Sent Events)
+            </h4>
             <ul className="space-y-1 text-sm text-muted-foreground">
               <li>✓ Unidirectional (server → client)</li>
               <li>✓ OpenAI/Anthropic-style streaming</li>

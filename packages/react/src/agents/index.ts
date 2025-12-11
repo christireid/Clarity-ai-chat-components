@@ -53,8 +53,24 @@ export * from './react-agent'
 export * from './tools'
 export * from './tool-ui-registry'
 
-import type { Agent, AgentConfig, AgentCallbacks } from './types'
+import type { Agent, AgentConfig, AgentCallbacks, Tool, ToolArguments, ToolParameters, ToolParameterProperty } from './types'
 import { ReactAgent } from './react-agent'
+
+/** OpenAI-format function tool for LLM */
+export interface LLMFunctionTool {
+  type: 'function'
+  function: {
+    name: string
+    description: string
+    parameters: ToolParameters
+  }
+}
+
+/** Parsed tool call from LLM response */
+export interface ParsedToolCall {
+  name: string
+  arguments: ToolArguments
+}
 
 /**
  * createAgent - Top-Level Agent Factory
@@ -119,14 +135,20 @@ export function createAgent(
   return new ReactAgent(config, callbacks)
 }
 
+/** Raw function call from LLM (before parsing) */
+interface RawFunctionCall {
+  name: string
+  arguments: string | ToolArguments
+}
+
 /**
- * Agent utilities
+ * Agent utilities for tool handling
  */
 export const AgentUtils = {
   /**
    * Format tool for LLM (OpenAI function calling format)
    */
-  formatToolForLLM(tool: any): any {
+  formatToolForLLM(tool: Tool): LLMFunctionTool {
     return {
       type: 'function',
       function: {
@@ -136,32 +158,32 @@ export const AgentUtils = {
       },
     }
   },
-  
+
   /**
    * Format tools array for LLM
    */
-  formatToolsForLLM(tools: any[]): any[] {
+  formatToolsForLLM(tools: Tool[]): LLMFunctionTool[] {
     return tools.map(t => this.formatToolForLLM(t))
   },
-  
+
   /**
    * Parse tool call response from LLM
    */
-  parseToolCall(functionCall: any): { name: string; arguments: Record<string, any> } {
+  parseToolCall(functionCall: RawFunctionCall): ParsedToolCall {
     return {
       name: functionCall.name,
       arguments: typeof functionCall.arguments === 'string'
-        ? JSON.parse(functionCall.arguments)
+        ? JSON.parse(functionCall.arguments) as ToolArguments
         : functionCall.arguments,
     }
   },
-  
+
   /**
    * Validate tool arguments against schema
    */
-  validateArguments(tool: any, args: Record<string, any>): { valid: boolean; errors?: string[] } {
+  validateArguments(tool: Tool, args: ToolArguments): { valid: boolean; errors?: string[] } {
     const errors: string[] = []
-    
+
     // Check required fields
     if (tool.parameters.required) {
       for (const field of tool.parameters.required) {
@@ -170,7 +192,7 @@ export const AgentUtils = {
         }
       }
     }
-    
+
     // Type checking (simplified)
     for (const [key, value] of Object.entries(args)) {
       const schema = tool.parameters.properties[key]
@@ -178,11 +200,14 @@ export const AgentUtils = {
         errors.push(`Unknown parameter: ${key}`)
         continue
       }
-      
+
       const actualType = typeof value
       const expectedType = schema.type
-      
+
       if (expectedType === 'number' && actualType !== 'number') {
+        errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
+      }
+      if (expectedType === 'integer' && (actualType !== 'number' || !Number.isInteger(value))) {
         errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
       }
       if (expectedType === 'string' && actualType !== 'string') {
@@ -191,8 +216,11 @@ export const AgentUtils = {
       if (expectedType === 'boolean' && actualType !== 'boolean') {
         errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
       }
+      if (expectedType === 'array' && !Array.isArray(value)) {
+        errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
+      }
     }
-    
+
     return {
       valid: errors.length === 0,
       errors: errors.length > 0 ? errors : undefined,

@@ -29,7 +29,8 @@ const avatarVariants = cva(
 )
 
 export interface AvatarProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>,
     VariantProps<typeof avatarVariants> {
   src?: string
   alt?: string
@@ -60,7 +61,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     const getFallbackText = () => {
       if (fallback && fallback.trim()) return fallback.trim()
       if (alt && alt.trim()) {
-        const words = alt.trim().split(/\s+/).filter((w) => w.length > 0)
+        const words = alt
+          .trim()
+          .split(/\s+/)
+          .filter((w) => w.length > 0)
         if (words.length > 0) {
           return words
             .map((n) => n[0])
@@ -73,10 +77,17 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     }
 
     const statusColors = {
-      online: 'bg-green-500 ring-green-400/40',
-      offline: 'bg-gray-400 ring-gray-300/40',
-      away: 'bg-amber-500 ring-amber-400/40',
-      busy: 'bg-red-500 ring-red-400/40',
+      online: 'bg-success ring-success/40',
+      offline: 'bg-muted-foreground/60 ring-muted-foreground/30',
+      away: 'bg-warning ring-warning/40',
+      busy: 'bg-destructive ring-destructive/40',
+    }
+
+    const statusLabels = {
+      online: 'Online',
+      offline: 'Offline',
+      away: 'Away',
+      busy: 'Busy',
     }
 
     const statusSizes = {
@@ -100,9 +111,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {...props}
       >
         {/* Always render AvatarImage when src is provided - Radix UI handles loading/error internally */}
-        {src ? (
-          <AvatarImage src={src} alt={alt || 'Avatar'} />
-        ) : null}
+        {src ? <AvatarImage src={src} alt={alt || 'Avatar'} /> : null}
         <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none animate-in fade-in duration-200">
           {getFallbackText()}
         </AvatarFallback>
@@ -110,6 +119,9 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {/* Status Indicator */}
         {status && !statusBadge && (
           <span
+            role="status"
+            aria-label={`Status: ${statusLabels[status]}`}
+            data-status={status}
             className={cn(
               'absolute bottom-0 right-0 block rounded-full ring-2 ring-background/80',
               statusSizes[size || 'default'],
@@ -118,11 +130,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
           >
             {(status === 'online' || status === 'away') && (
               <span
-                className="absolute inset-0 rounded-full animate-ping opacity-60"
-                style={{
-                  backgroundColor:
-                    status === 'online' ? 'rgb(34, 197, 94)' : 'rgb(245, 158, 11)',
-                }}
+                className={cn(
+                  'absolute inset-0 rounded-full animate-ping opacity-60',
+                  status === 'online' ? 'bg-success' : 'bg-warning'
+                )}
               />
             )}
           </span>

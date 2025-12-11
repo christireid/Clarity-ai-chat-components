@@ -25,9 +25,9 @@ const buttonVariants = cva(
           'hover:bg-accent hover:text-accent-foreground transition-colors duration-200',
         link: 'text-primary underline-offset-4 hover:underline transition-colors duration-200',
         success:
-          'bg-green-600 text-white shadow-xs hover:bg-green-700 hover:shadow-sm hover:-translate-y-[1px] active:translate-y-0 active:shadow-xs',
+          'bg-success text-success-foreground shadow-xs hover:bg-success/90 hover:shadow-sm hover:-translate-y-[1px] active:translate-y-0 active:shadow-xs',
         error:
-          'bg-red-600 text-white shadow-xs hover:bg-red-700 hover:shadow-sm hover:-translate-y-[1px] active:translate-y-0 active:shadow-xs',
+          'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 hover:shadow-sm hover:-translate-y-[1px] active:translate-y-0 active:shadow-xs',
         surface:
           'bg-surface text-surface-foreground border border-border/60 shadow-xs hover:bg-surface/80 hover:shadow-sm hover:-translate-y-[1px] active:translate-y-0 active:shadow-xs',
       },
@@ -214,7 +214,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         asChild={asChild}
         ref={ref}
         disabled={isDisabled}
+        data-slot="button"
         data-variant={effectiveVariant}
+        data-state={currentState}
+        data-size={size || 'default'}
         onClick={handleClick}
         aria-busy={currentState === 'loading'}
         {...props}

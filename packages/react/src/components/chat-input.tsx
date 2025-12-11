@@ -274,7 +274,7 @@ export function ChatInput({
   return (
     <motion.div
       className={cn(
-        'relative flex flex-col gap-3 px-5 py-4 border-t border-border/80 bg-background/95 backdrop-blur-md shadow-[0_-2px_8px_rgba(15,23,42,0.06)]',
+        'relative flex flex-col gap-3 px-5 py-4 border-t border-border/80 bg-background/95 backdrop-blur-md shadow-sm',
         className
       )}
       initial="idle"

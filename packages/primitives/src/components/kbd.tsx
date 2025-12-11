@@ -109,7 +109,7 @@ const sizeClasses: Record<KbdSize, string> = {
 
 const variantClasses: Record<KbdVariant, string> = {
   default:
-    'bg-muted border border-border/60 shadow-[0_1px_2px_rgba(0,0,0,0.05)]',
+    'bg-muted border border-border/60 shadow-xs',
   outline: 'border border-border/80 bg-transparent',
   ghost: 'bg-transparent',
 }

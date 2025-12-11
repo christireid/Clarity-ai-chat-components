@@ -13,6 +13,7 @@ import {
   Terminal,
 } from 'lucide-react'
 import { toast } from '@/lib/toast'
+import { HeroParticlesLazy } from '@/components/hero/HeroParticlesLazy'
 
 interface HeroSectionProps {
   title: React.ReactNode
@@ -338,13 +339,20 @@ export function HeroSection({
 }: HeroSectionProps) {
   return (
     <section className="relative overflow-hidden">
-      {/* Animated Background Gradient */}
+      {/* 3D Particle Animation Background */}
+      <HeroParticlesLazy
+        interactionMode="hybrid"
+        interactionStrength={0.6}
+        bloomIntensity={1.8}
+      />
+
+      {/* Animated Background Gradient (subtle overlay) */}
       <motion.div
         animate={{
           background: [
-            'radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%)',
-            'radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)',
-            'radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%)',
+            'radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)',
+            'radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)',
+            'radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)',
           ],
         }}
         transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
@@ -352,7 +360,7 @@ export function HeroSection({
       />
 
       {/* Animated Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] opacity-50" />
 
       {/* Content */}
       <div className="container-docs relative py-20 md:py-28">

@@ -156,24 +156,37 @@ export {
   convertMessagesToCoreMessages,
 } from './utils/message-conversion'
 
-// Legacy Chat Hook (Deprecated - use useChatEnhanced or useClarityChat instead)
+// Unified Chat Hook - Simplified API with sensible defaults
 /**
- * @deprecated Use `useChatEnhanced` or `useClarityChat` instead.
- * This hook is maintained for backward compatibility only.
+ * useChat - Simplified chat hook with sensible defaults
  *
- * Migration:
+ * This is the recommended hook for most use cases. It provides:
+ * - Automatic message conversion
+ * - Optional persistence to localStorage
+ * - Auto-scroll support
+ * - Full access to underlying useClarityChat via `chat` property
+ *
+ * @example
  * ```tsx
- * // Old
- * const chat = useChat({ api: '/api/chat' })
- *
- * // New (recommended)
- * const chat = useClarityChat({ api: '/api/chat' })
- * // or
- * const chat = useChatEnhanced({ api: '/api/chat' })
+ * const { messages, sendMessage, isLoading, clearMessages } = useChat({
+ *   api: '/api/chat',
+ *   persistMessages: true,
+ * })
  * ```
  */
 export {
   useChat,
+  type UseChatOptions,
+  type UseChatReturn,
+} from './hooks/use-chat-unified'
+
+// Legacy Chat Hook (Deprecated - use useChat or useClarityChat instead)
+/**
+ * @deprecated Use `useChat` or `useClarityChat` instead.
+ * This hook is maintained for backward compatibility only and will be removed in v3.0.
+ */
+export {
+  useChat as useChatLegacy,
   type UseChatOptions as UseChatOptionsLegacy,
   type UseChatReturn as UseChatReturnLegacy,
 } from './hooks/use-chat'

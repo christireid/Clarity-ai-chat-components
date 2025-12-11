@@ -5,19 +5,26 @@
  * enabling enterprise-grade RAG with semantic search.
  */
 
+/** Metadata that can be attached to vectors */
+export type VectorMetadata = Record<string, string | number | boolean | string[] | number[]>
+
 export interface Vector {
   /** Vector ID */
   id: string
   /** Embedding values */
   values: number[]
   /** Metadata associated with the vector */
-  metadata?: Record<string, any>
+  metadata?: VectorMetadata
   /** Sparse vector values for hybrid search */
   sparseValues?: {
     indices: number[]
     values: number[]
   }
 }
+
+/** Filter condition for vector queries */
+export type VectorFilterValue = string | number | boolean | string[] | number[]
+export type VectorFilter = Record<string, VectorFilterValue | { $eq?: VectorFilterValue; $ne?: VectorFilterValue; $gt?: number; $gte?: number; $lt?: number; $lte?: number; $in?: VectorFilterValue[] }>
 
 export interface VectorQuery {
   /** Query vector */
@@ -29,7 +36,7 @@ export interface VectorQuery {
   /** Minimum similarity score (0-1) */
   minScore?: number
   /** Metadata filters */
-  filter?: Record<string, any>
+  filter?: VectorFilter
   /** Include vector values in response */
   includeValues?: boolean
   /** Include metadata in response */
@@ -46,7 +53,7 @@ export interface VectorMatch {
   /** Vector values (if requested) */
   values?: number[]
   /** Metadata */
-  metadata?: Record<string, any>
+  metadata?: VectorMetadata
 }
 
 export interface VectorUpsertOptions {
@@ -67,9 +74,8 @@ export interface VectorStats {
   status?: 'ready' | 'initializing' | 'error'
 }
 
-export interface VectorStoreConfig {
-  /** Provider name */
-  provider: 'pinecone' | 'qdrant' | 'weaviate' | 'chroma' | 'custom'
+/** Base configuration shared by all vector stores */
+export interface VectorStoreBaseConfig {
   /** API key */
   apiKey?: string
   /** API endpoint */
@@ -80,11 +86,60 @@ export interface VectorStoreConfig {
   dimension?: number
   /** Similarity metric */
   metric?: 'cosine' | 'euclidean' | 'dotProduct'
-  /** Environment (for Pinecone) */
-  environment?: string
-  /** Additional provider-specific config */
-  config?: Record<string, any>
 }
+
+/** Pinecone-specific configuration */
+export interface PineconeStoreConfig extends VectorStoreBaseConfig {
+  provider: 'pinecone'
+  /** Pinecone environment (e.g., 'us-east1-gcp') */
+  environment: string
+  /** Pinecone project ID */
+  projectId?: string
+}
+
+/** Qdrant-specific configuration */
+export interface QdrantStoreConfig extends VectorStoreBaseConfig {
+  provider: 'qdrant'
+  /** Qdrant endpoint (required) */
+  endpoint: string
+  /** Collection name (defaults to indexName) */
+  collectionName?: string
+}
+
+/** Weaviate-specific configuration */
+export interface WeaviateStoreConfig extends VectorStoreBaseConfig {
+  provider: 'weaviate'
+  /** Weaviate endpoint (required) */
+  endpoint: string
+  /** Weaviate class name (defaults to indexName or 'Document') */
+  className?: string
+}
+
+/** Chroma-specific configuration */
+export interface ChromaStoreConfig extends VectorStoreBaseConfig {
+  provider: 'chroma'
+  /** Chroma endpoint (defaults to 'http://localhost:8000') */
+  endpoint?: string
+  /** Chroma tenant */
+  tenant?: string
+  /** Chroma database */
+  database?: string
+}
+
+/** Custom vector store configuration */
+export interface CustomStoreConfig extends VectorStoreBaseConfig {
+  provider: 'custom'
+  /** Custom provider-specific options */
+  customOptions?: Record<string, unknown>
+}
+
+/** Discriminated union of all vector store configurations */
+export type VectorStoreConfig =
+  | PineconeStoreConfig
+  | QdrantStoreConfig
+  | WeaviateStoreConfig
+  | ChromaStoreConfig
+  | CustomStoreConfig
 
 /**
  * Unified Vector Store Interface
