@@ -177,7 +177,26 @@ button:focus-visible {
 
 /* Container utilities */
 .container-docs {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Docs layout specific styles */
+.docs-sidebar-toggle {
+  @apply fixed top-20 z-50 p-2 rounded-lg;
+  @apply bg-bg-secondary hover:bg-bg-tertiary border border-border;
+  @apply text-text-secondary hover:text-text-primary;
+  @apply transition-all duration-300 shadow-sm hover:shadow-md;
+}
+
+/* Resize handle styling */
+.docs-resize-handle {
+  @apply cursor-col-resize;
+  @apply transition-colors duration-200;
+}
+
+.docs-resize-handle:hover,
+.docs-resize-handle:active {
+  @apply bg-brand-400;
 }
 
 /* Skip to content link */
