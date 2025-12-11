@@ -1,0 +1,2654 @@
+{
+  "generated": "2025-12-11T14:02:40.118Z",
+  "stats": {
+    "total": 145,
+    "byCategory": [
+      ["Components", 62],
+      ["Advanced", 36],
+      ["Hooks", 23],
+      ["Examples", 9],
+      ["Foundation", 9],
+      ["Patterns", 3],
+      ["Primitives", 2],
+      ["Welcome", 1]
+    ],
+    "hooks": 45,
+    "new": 0,
+    "beta": 0,
+    "deprecated": 0
+  },
+  "categories": [
+    "Advanced/AI",
+    "Advanced/Analytics",
+    "Advanced/Enterprise",
+    "Advanced/Memory",
+    "Advanced/Streaming",
+    "Components",
+    "Components/ChatInput",
+    "Components/ChatWindow",
+    "Components/DataDisplay",
+    "Components/Drop-in Solutions",
+    "Components/Feedback",
+    "Components/Inputs",
+    "Components/Layout",
+    "Components/MessageList",
+    "Components/Navigation",
+    "Components/TokenCounter",
+    "Examples",
+    "Foundation",
+    "Hooks/Accessibility",
+    "Hooks/Chat",
+    "Hooks/Performance",
+    "Hooks/Primary",
+    "Hooks/State",
+    "Hooks/Streaming",
+    "Hooks/Utilities",
+    "Hooks/useClarityChat",
+    "Patterns/AI",
+    "Patterns/Chat",
+    "Patterns/Forms",
+    "Primitives/Avatar",
+    "Primitives/Button",
+    "Welcome"
+  ],
+  "components": {
+    "Advanced/AI": [
+      {
+        "title": "AgentRunFeed",
+        "path": "?path=/docs/advanced-ai-agentrunfeed--docs",
+        "category": "Advanced",
+        "subcategory": "AI",
+        "description": "Visual feed showing agent execution steps, tool invocations, and their status",
+        "tags": ["ai", "hook"],
+        "file": "Advanced/AI/AgentRunFeed.stories.tsx"
+      },
+      {
+        "title": "AIOperations",
+        "path": "?path=/docs/advanced-ai-aioperations--docs",
+        "category": "Advanced",
+        "subcategory": "AI",
+        "description": "Tools for testing, monitoring, and improving AI performance and safety",
+        "tags": ["ai"],
+        "file": "Advanced/AI/AIOperations.stories.tsx"
+      },
+      {
+        "title": "ClarityToolResult",
+        "path": "?path=/docs/advanced-ai-claritytoolresult--docs",
+        "category": "Advanced",
+        "subcategory": "AI",
+        "description": "The \\",
+        "tags": ["ai", "hook"],
+        "file": "Advanced/AI/ClarityToolResult.stories.tsx"
+      },
+      {
+        "title": "FollowUpSuggestions",
+        "path": "?path=/docs/advanced-ai-followupsuggestions--docs",
+        "category": "Advanced",
+        "subcategory": "AI",
+        "description": "Display contextual follow-up suggestions to keep conversations flowing",
+        "tags": ["stable", "ai", "hook"],
+        "file": "Advanced/AI/FollowUpSuggestions.stories.tsx"
+      },
+      {
+        "title": "PromptLibrary",
+        "path": "?path=/docs/advanced-ai-promptlibrary--docs",
+        "category": "Advanced",
+        "subcategory": "AI",
+        "tags": ["ai"],
+        "file": "Advanced/AI/PromptLibrary.stories.tsx"
+      },
+      {
+        "title": "PromptSuggestions",
+        "path": "?path=/docs/advanced-ai-promptsuggestions--docs",
+        "category": "Advanced",
+        "subcategory": "AI",
+        "description": "Display prompt suggestions for starting or continuing conversations",
+        "tags": ["stable", "ai"],
+        "file": "Advanced/AI/PromptSuggestions.stories.tsx"
+      },
+      {
+        "title": "ToolInvocationCard",
+        "path": "?path=/docs/advanced-ai-toolinvocationcard--docs",
+        "category": "Advanced",
+        "subcategory": "AI",
+        "description": "**Tool Invocation Card** - Professional function/tool call visualization with approval workflow: - \ud83d",
+        "tags": ["ai", "hook"],
+        "file": "Advanced/AI/ToolInvocationCard.stories.tsx"
+      },
+      {
+        "title": "WorkflowSuggestionList",
+        "path": "?path=/docs/advanced-ai-workflowsuggestionlist--docs",
+        "category": "Advanced",
+        "subcategory": "AI",
+        "description": "Present curated workflows that help users accomplish routine tasks with minimal prompting",
+        "tags": ["ai"],
+        "file": "Advanced/AI/WorkflowSuggestionList.stories.tsx"
+      }
+    ],
+    "Advanced/Analytics": [
+      {
+        "title": "ABTestingDashboard",
+        "path": "?path=/docs/advanced-analytics-abtestingdashboard--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "A/B testing dashboard for monitoring experiment results with statistical significance testing, winne",
+        "tags": ["ai"],
+        "file": "Advanced/Analytics/ABTestingDashboard.stories.tsx"
+      },
+      {
+        "title": "AnalyticsDashboard",
+        "path": "?path=/docs/advanced-analytics-analyticsdashboard--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "Comprehensive analytics dashboard showing metrics, leaderboards, insights, and recent activities",
+        "tags": [],
+        "file": "Advanced/Analytics/AnalyticsDashboard.stories.tsx"
+      },
+      {
+        "title": "AnimatedValues",
+        "path": "?path=/docs/advanced-analytics-animatedvalues--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "Real-time value animation utilities for dashboard metrics",
+        "tags": ["hook"],
+        "file": "Advanced/Analytics/AnimatedValues.stories.tsx"
+      },
+      {
+        "title": "DashboardErrorBoundary",
+        "path": "?path=/docs/advanced-analytics-dashboarderrorboundary--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "Error boundary specifically designed for dashboard widgets",
+        "tags": ["ai"],
+        "file": "Advanced/Analytics/DashboardErrorBoundary.stories.tsx"
+      },
+      {
+        "title": "DashboardSkeletons",
+        "path": "?path=/docs/advanced-analytics-dashboardskeletons--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "Loading states for dashboard components",
+        "tags": ["ai", "hook"],
+        "file": "Advanced/Analytics/DashboardSkeletons.stories.tsx"
+      },
+      {
+        "title": "PerformanceDashboard",
+        "path": "?path=/docs/advanced-analytics-performancedashboard--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "In-app observability widget mirroring dashboards in Datadog, Vercel, and the Storybook Design System",
+        "tags": ["memory", "ai"],
+        "file": "Advanced/Analytics/PerformanceDashboard.stories.tsx"
+      },
+      {
+        "title": "TokenOptimization",
+        "path": "?path=/docs/advanced-analytics-tokenoptimization--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "Visual components for monitoring and communicating token efficiency across your AI stack",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Advanced/Analytics/TokenOptimization.stories.tsx"
+      },
+      {
+        "title": "TokenOptimizationBadge",
+        "path": "?path=/docs/advanced-analytics-tokenoptimizationbadge--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "# Token Optimization Badge Compact badge displaying token savings and optimization status",
+        "tags": ["ai"],
+        "file": "Advanced/Analytics/TokenOptimizationBadge.stories.tsx"
+      },
+      {
+        "title": "TokenOptimizationDashboard",
+        "path": "?path=/docs/advanced-analytics-tokenoptimizationdashboard--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "# Token Optimization Dashboard Comprehensive dashboard displaying detailed token optimization metric",
+        "tags": ["ai"],
+        "file": "Advanced/Analytics/TokenOptimizationDashboard.stories.tsx"
+      },
+      {
+        "title": "TokenOptimizationPanel",
+        "path": "?path=/docs/advanced-analytics-tokenoptimizationpanel--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "description": "# Token Optimization Panel Displays comprehensive token optimization statistics with real-time monit",
+        "tags": ["ai"],
+        "file": "Advanced/Analytics/TokenOptimizationPanel.stories.tsx"
+      },
+      {
+        "title": "UsageDashboard",
+        "path": "?path=/docs/advanced-analytics-usagedashboard--docs",
+        "category": "Advanced",
+        "subcategory": "Analytics",
+        "tags": ["ai"],
+        "file": "Advanced/Analytics/UsageDashboard.stories.tsx"
+      }
+    ],
+    "Advanced/Enterprise": [
+      {
+        "title": "AuditLogViewer",
+        "path": "?path=/docs/advanced-enterprise-auditlogviewer--docs",
+        "category": "Advanced",
+        "subcategory": "Enterprise",
+        "description": "Component for displaying audit logs with filtering, search, and detailed entry views",
+        "tags": ["ai"],
+        "file": "Advanced/Enterprise/AuditLogViewer.stories.tsx"
+      },
+      {
+        "title": "AuthTenantDashboard",
+        "path": "?path=/docs/advanced-enterprise-authtenantdashboard--docs",
+        "category": "Advanced",
+        "subcategory": "Enterprise",
+        "description": "Dashboard for managing tenant authentication, seat usage, and plan information",
+        "tags": [],
+        "file": "Advanced/Enterprise/AuthTenantDashboard.stories.tsx"
+      },
+      {
+        "title": "BatchExportDialog",
+        "path": "?path=/docs/advanced-enterprise-batchexportdialog--docs",
+        "category": "Advanced",
+        "subcategory": "Enterprise",
+        "tags": ["ai"],
+        "file": "Advanced/Enterprise/BatchExportDialog.stories.tsx"
+      },
+      {
+        "title": "EvaluationDashboard",
+        "path": "?path=/docs/advanced-enterprise-evaluationdashboard--docs",
+        "category": "Advanced",
+        "subcategory": "Enterprise",
+        "description": "Dashboard for evaluating AI model performance with metrics, sparklines, and quality indicators",
+        "tags": ["ai"],
+        "file": "Advanced/Enterprise/EvaluationDashboard.stories.tsx"
+      },
+      {
+        "title": "ExportDialog",
+        "path": "?path=/docs/advanced-enterprise-exportdialog--docs",
+        "category": "Advanced",
+        "subcategory": "Enterprise",
+        "tags": ["ai"],
+        "file": "Advanced/Enterprise/ExportDialog.stories.tsx"
+      },
+      {
+        "title": "SafetyReviewConsole",
+        "path": "?path=/docs/advanced-enterprise-safetyreviewconsole--docs",
+        "category": "Advanced",
+        "subcategory": "Enterprise",
+        "description": "Console for reviewing and managing safety highlights in AI-generated content",
+        "tags": ["ai"],
+        "file": "Advanced/Enterprise/SafetyReviewConsole.stories.tsx"
+      },
+      {
+        "title": "SeatInviteDialog",
+        "path": "?path=/docs/advanced-enterprise-seatinvitedialog--docs",
+        "category": "Advanced",
+        "subcategory": "Enterprise",
+        "description": "# Seat Invite Dialog Dialog component for inviting team members to your organization with role-based",
+        "tags": ["ai"],
+        "file": "Advanced/Enterprise/SeatInviteDialog.stories.tsx"
+      },
+      {
+        "title": "SSOConfigWizard",
+        "path": "?path=/docs/advanced-enterprise-ssoconfigwizard--docs",
+        "category": "Advanced",
+        "subcategory": "Enterprise",
+        "description": "# SSO Configuration Wizard Guided wizard for configuring Single Sign-On (SSO) integration with ident",
+        "tags": ["ai"],
+        "file": "Advanced/Enterprise/SSOConfigWizard.stories.tsx"
+      }
+    ],
+    "Advanced/Memory": [
+      {
+        "title": "ContextManager",
+        "path": "?path=/docs/advanced-memory-contextmanager--docs",
+        "category": "Advanced",
+        "subcategory": "Memory",
+        "tags": ["memory"],
+        "file": "Advanced/Memory/ContextManager.stories.tsx"
+      },
+      {
+        "title": "ContextVisualizer",
+        "path": "?path=/docs/advanced-memory-contextvisualizer--docs",
+        "category": "Advanced",
+        "subcategory": "Memory",
+        "tags": ["memory"],
+        "file": "Advanced/Memory/ContextVisualizer.stories.tsx"
+      },
+      {
+        "title": "DocumentViewer",
+        "path": "?path=/docs/advanced-memory-documentviewer--docs",
+        "category": "Advanced",
+        "subcategory": "Memory",
+        "description": "Component for displaying document content with metadata and highlighting support",
+        "tags": ["memory", "ai"],
+        "file": "Advanced/Memory/DocumentViewer.stories.tsx"
+      },
+      {
+        "title": "KnowledgeBaseViewer",
+        "path": "?path=/docs/advanced-memory-knowledgebaseviewer--docs",
+        "category": "Advanced",
+        "subcategory": "Memory",
+        "tags": ["memory", "ai", "hook"],
+        "file": "Advanced/Memory/KnowledgeBaseViewer.stories.tsx"
+      },
+      {
+        "title": "MemoryInspector",
+        "path": "?path=/docs/advanced-memory-memoryinspector--docs",
+        "category": "Advanced",
+        "subcategory": "Memory",
+        "description": "Inspect what the assistant has stored in memory",
+        "tags": ["memory"],
+        "file": "Advanced/Memory/MemoryInspector.stories.tsx"
+      }
+    ],
+    "Advanced/Streaming": [
+      {
+        "title": "StreamBlock",
+        "path": "?path=/docs/advanced-streaming-streamblock--docs",
+        "category": "Advanced",
+        "subcategory": "Streaming",
+        "description": "The \\",
+        "tags": ["streaming", "ai"],
+        "file": "Advanced/Streaming/StreamBlock.stories.tsx"
+      },
+      {
+        "title": "StreamCancellation",
+        "path": "?path=/docs/advanced-streaming-streamcancellation--docs",
+        "category": "Advanced",
+        "subcategory": "Streaming",
+        "tags": ["streaming"],
+        "file": "Advanced/Streaming/StreamCancellation.stories.tsx"
+      },
+      {
+        "title": "StreamingExamples",
+        "path": "?path=/docs/advanced-streaming-streamingexamples--docs",
+        "category": "Advanced",
+        "subcategory": "Streaming",
+        "description": "Interactive demo comparing SSE and WebSocket streaming integrations",
+        "tags": ["streaming", "ai"],
+        "file": "Advanced/Streaming/StreamingExamples.stories.tsx"
+      },
+      {
+        "title": "StreamingTextRenderer",
+        "path": "?path=/docs/advanced-streaming-streamingtextrenderer--docs",
+        "category": "Advanced",
+        "subcategory": "Streaming",
+        "tags": ["streaming"],
+        "file": "Advanced/Streaming/StreamingTextRenderer.stories.tsx"
+      }
+    ],
+    "Components/ChatInput": [
+      {
+        "title": "Essentials",
+        "path": "?path=/docs/components-chatinput-essentials--docs",
+        "category": "Components",
+        "subcategory": "ChatInput",
+        "description": "The ChatInput component provides a complete input interface for chat applications",
+        "tags": ["ai"],
+        "file": "Components/ChatInput/Essentials.stories.tsx"
+      }
+    ],
+    "Components/ChatWindow": [
+      {
+        "title": "Enterprise",
+        "path": "?path=/docs/components-chatwindow-enterprise--docs",
+        "category": "Components",
+        "subcategory": "ChatWindow",
+        "description": "Enterprise patterns for production applications",
+        "tags": ["memory", "ai"],
+        "file": "Components/ChatWindow/Enterprise.stories.tsx"
+      },
+      {
+        "title": "Essentials",
+        "path": "?path=/docs/components-chatwindow-essentials--docs",
+        "category": "Components",
+        "subcategory": "ChatWindow",
+        "description": "The ChatWindow component is a complete, production-ready chat interface that combines message displa",
+        "tags": ["ai", "hook"],
+        "file": "Components/ChatWindow/Essentials.stories.tsx"
+      }
+    ],
+    "Components/Drop-in Solutions": [
+      {
+        "title": "ClarityChat",
+        "path": "?path=/docs/components-drop-in-solutions-claritychat--docs",
+        "category": "Components",
+        "subcategory": "Drop-in Solutions",
+        "description": "The complete AI chat interface",
+        "tags": ["streaming", "memory", "ai", "hook"],
+        "file": "Components/ClarityChat/ClarityChat.stories.tsx"
+      }
+    ],
+    "Components/DataDisplay": [
+      {
+        "title": "AdvancedMessageSearch",
+        "path": "?path=/docs/components-datadisplay-advancedmessagesearch--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "tags": [],
+        "file": "Components/DataDisplay/AdvancedMessageSearch.stories.tsx"
+      },
+      {
+        "title": "AnimatedList",
+        "path": "?path=/docs/components-datadisplay-animatedlist--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Motion primitives for sequencing chat UI affordances",
+        "tags": ["ai"],
+        "file": "Components/DataDisplay/AnimatedList.stories.tsx"
+      },
+      {
+        "title": "Avatar",
+        "path": "?path=/docs/components-datadisplay-avatar--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Display user or bot avatars with automatic fallbacks and status indicators",
+        "tags": ["stable", "ai"],
+        "file": "Components/DataDisplay/Avatar.stories.tsx"
+      },
+      {
+        "title": "Badge",
+        "path": "?path=/docs/components-datadisplay-badge--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Small count and label indicators for status, categories, and notifications",
+        "tags": ["stable", "ai"],
+        "file": "Components/DataDisplay/Badge.stories.tsx"
+      },
+      {
+        "title": "Card",
+        "path": "?path=/docs/components-datadisplay-card--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Flexible container component for grouping related content",
+        "tags": ["stable", "streaming", "ai"],
+        "file": "Components/DataDisplay/Card.stories.tsx"
+      },
+      {
+        "title": "CitationCard",
+        "path": "?path=/docs/components-datadisplay-citationcard--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "**Citation Card** - Beautiful RAG (Retrieval-Augmented Generation) source display: - 📚 Source attri",
+        "tags": ["ai"],
+        "file": "Components/DataDisplay/CitationCard.stories.tsx"
+      },
+      {
+        "title": "ContextCard",
+        "path": "?path=/docs/components-datadisplay-contextcard--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Component for displaying context items (documents, images, links) used in chat conversations with pr",
+        "tags": ["hook"],
+        "file": "Components/DataDisplay/ContextCard.stories.tsx"
+      },
+      {
+        "title": "ConversationBranchVisualizer",
+        "path": "?path=/docs/components-datadisplay-conversationbranchvisualizer--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Tree view for branching conversations (think Claude conversation forks)",
+        "tags": [],
+        "file": "Components/DataDisplay/ConversationBranchVisualizer.stories.tsx"
+      },
+      {
+        "title": "ConversationTimeline",
+        "path": "?path=/docs/components-datadisplay-conversationtimeline--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Visual timeline showing conversation events including user messages, assistant responses, tool calls",
+        "tags": ["ai", "hook"],
+        "file": "Components/DataDisplay/ConversationTimeline.stories.tsx"
+      },
+      {
+        "title": "EnhancedCodeBlock",
+        "path": "?path=/docs/components-datadisplay-enhancedcodeblock--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "tags": ["ai"],
+        "file": "Components/DataDisplay/EnhancedCodeBlock.stories.tsx"
+      },
+      {
+        "title": "EnhancedMarkdownRenderer",
+        "path": "?path=/docs/components-datadisplay-enhancedmarkdownrenderer--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Enhanced markdown renderer with LaTeX math support, Mermaid diagrams, syntax highlighting, and more",
+        "tags": ["streaming", "ai"],
+        "file": "Components/DataDisplay/EnhancedMarkdownRenderer.stories.tsx"
+      },
+      {
+        "title": "InteractiveCard",
+        "path": "?path=/docs/components-datadisplay-interactivecard--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "High-affordance card surface inspired by Revolut and Pitch storybooks",
+        "tags": ["ai"],
+        "file": "Components/DataDisplay/InteractiveCard.stories.tsx"
+      },
+      {
+        "title": "MarkdownRendererEnhanced",
+        "path": "?path=/docs/components-datadisplay-markdownrendererenhanced--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Extended markdown renderer with KaTeX, syntax highlighting, Mermaid diagrams, copy-to-clipboard, and",
+        "tags": ["ai"],
+        "file": "Components/DataDisplay/MarkdownRendererEnhanced.stories.tsx"
+      },
+      {
+        "title": "Message",
+        "path": "?path=/docs/components-datadisplay-message--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Enhanced message component for displaying chat messages with animations, feedback, and interactive f",
+        "tags": ["stable", "streaming", "ai"],
+        "file": "Components/DataDisplay/Message.stories.tsx"
+      },
+      {
+        "title": "MessageEssentials",
+        "path": "?path=/docs/components-datadisplay-messageessentials--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "The Message component is the foundation of any chat interface",
+        "tags": ["streaming", "ai"],
+        "file": "Components/DataDisplay/MessageEssentials.stories.tsx"
+      },
+      {
+        "title": "MessageList",
+        "path": "?path=/docs/components-datadisplay-messagelist--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Message list component with auto-scroll, scroll-to-bottom button, and comprehensive message manageme",
+        "tags": ["stable", "ai", "hook"],
+        "file": "Components/DataDisplay/MessageList.stories.tsx"
+      },
+      {
+        "title": "MessageMetadata",
+        "path": "?path=/docs/components-datadisplay-messagemetadata--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Component for displaying message metadata including tokens, cost, response time, model, confidence, ",
+        "tags": ["ai"],
+        "file": "Components/DataDisplay/MessageMetadata.stories.tsx"
+      },
+      {
+        "title": "MessageOptimized",
+        "path": "?path=/docs/components-datadisplay-messageoptimized--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Optimized message renderer with markdown parsing, streaming indicators, and interaction affordances",
+        "tags": ["streaming", "ai"],
+        "file": "Components/DataDisplay/MessageOptimized.stories.tsx"
+      },
+      {
+        "title": "MessageSearch",
+        "path": "?path=/docs/components-datadisplay-messagesearch--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Concurrent-safe message filtering built on React deferred values",
+        "tags": [],
+        "file": "Components/DataDisplay/MessageSearch.stories.tsx"
+      },
+      {
+        "title": "MultiModalPreview",
+        "path": "?path=/docs/components-datadisplay-multimodalpreview--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Preview and manage multimodal attachments including images, audio, video, files, and links",
+        "tags": ["ai"],
+        "file": "Components/DataDisplay/MultiModalPreview.stories.tsx"
+      },
+      {
+        "title": "PersonaPanel",
+        "path": "?path=/docs/components-datadisplay-personapanel--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Switch between tailored assistants optimized for different AI chat workflows",
+        "tags": ["ai"],
+        "file": "Components/DataDisplay/PersonaPanel.stories.tsx"
+      },
+      {
+        "title": "Progress",
+        "path": "?path=/docs/components-datadisplay-progress--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Progress indicators that provide visual feedback for tasks, uploads, and loading states with smooth ",
+        "tags": ["stable", "ai"],
+        "file": "Components/DataDisplay/Progress.stories.tsx"
+      },
+      {
+        "title": "Skeleton",
+        "path": "?path=/docs/components-datadisplay-skeleton--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Skeleton loading components that provide visual placeholders while content loads, improving perceive",
+        "tags": ["stable", "ai"],
+        "file": "Components/DataDisplay/Skeleton.stories.tsx"
+      },
+      {
+        "title": "StreamingMessage",
+        "path": "?path=/docs/components-datadisplay-streamingmessage--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "**Streaming Message Component** - Real-time AI response rendering with advanced features: - 🌊 Token",
+        "tags": ["stable", "streaming", "ai", "hook"],
+        "file": "Components/DataDisplay/StreamingMessage.stories.tsx"
+      },
+      {
+        "title": "TokenCounter",
+        "path": "?path=/docs/components-datadisplay-tokencounter--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Component for displaying token usage with cost tracking and limit warnings",
+        "tags": [],
+        "file": "Components/DataDisplay/TokenCounter.stories.tsx"
+      },
+      {
+        "title": "Tooltip",
+        "path": "?path=/docs/components-datadisplay-tooltip--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "Tooltip component for displaying helpful information on hover or focus",
+        "tags": ["stable", "ai"],
+        "file": "Components/DataDisplay/Tooltip.stories.tsx"
+      },
+      {
+        "title": "VirtualizedMessageList",
+        "path": "?path=/docs/components-datadisplay-virtualizedmessagelist--docs",
+        "category": "Components",
+        "subcategory": "DataDisplay",
+        "description": "High-performance list for long-running conversations",
+        "tags": ["streaming", "ai"],
+        "file": "Components/DataDisplay/VirtualizedMessageList.stories.tsx"
+      }
+    ],
+    "Components/Feedback": [
+      {
+        "title": "EmptyState",
+        "path": "?path=/docs/components-feedback-emptystate--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "Empty state components that gracefully handle no-data scenarios with clear messaging and actionable ",
+        "tags": ["stable", "ai"],
+        "file": "Components/Feedback/EmptyState.stories.tsx"
+      },
+      {
+        "title": "ErrorBoundary",
+        "path": "?path=/docs/components-feedback-errorboundary--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "Production-ready React error boundaries with enhanced reporting and recovery mechanisms",
+        "tags": ["ai"],
+        "file": "Components/Feedback/ErrorBoundary.stories.tsx"
+      },
+      {
+        "title": "FeedbackAnimation",
+        "path": "?path=/docs/components-feedback-feedbackanimation--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "Micro-interactions that mirror the polish seen in Linear, Stripe, and Shopify Polaris design systems",
+        "tags": ["ai"],
+        "file": "Components/Feedback/FeedbackAnimation.stories.tsx"
+      },
+      {
+        "title": "NetworkStatus",
+        "path": "?path=/docs/components-feedback-networkstatus--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "Component for displaying network connection status with latency tracking and reconnection attempts",
+        "tags": ["stable", "ai"],
+        "file": "Components/Feedback/NetworkStatus.stories.tsx"
+      },
+      {
+        "title": "ResponseQualityMeter",
+        "path": "?path=/docs/components-feedback-responsequalitymeter--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "Track groundedness, coverage, and other evaluation signals generated by your scoring pipeline",
+        "tags": [],
+        "file": "Components/Feedback/ResponseQualityMeter.stories.tsx"
+      },
+      {
+        "title": "SafetyStatusCard",
+        "path": "?path=/docs/components-feedback-safetystatuscard--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "Monitor policy checks on model responses",
+        "tags": ["ai"],
+        "file": "Components/Feedback/SafetyStatusCard.stories.tsx"
+      },
+      {
+        "title": "SessionSummaryCard",
+        "path": "?path=/docs/components-feedback-sessionsummarycard--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "Card displaying session summary with highlights, metrics, and actionable next steps",
+        "tags": ["hook"],
+        "file": "Components/Feedback/SessionSummaryCard.stories.tsx"
+      },
+      {
+        "title": "ThinkingIndicator",
+        "path": "?path=/docs/components-feedback-thinkingindicator--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "Animated thinking indicator showing AI processing stages with progress tracking and estimated time",
+        "tags": ["stable", "ai", "hook"],
+        "file": "Components/Feedback/ThinkingIndicator.stories.tsx"
+      },
+      {
+        "title": "Toast",
+        "path": "?path=/docs/components-feedback-toast--docs",
+        "category": "Components",
+        "subcategory": "Feedback",
+        "description": "A flexible toast notification system with auto-dismiss, queue management, and multiple position opti",
+        "tags": ["stable", "ai"],
+        "file": "Components/Feedback/Toast.stories.tsx"
+      }
+    ],
+    "Components/Inputs": [
+      {
+        "title": "AdvancedChatInput",
+        "path": "?path=/docs/components-inputs-advancedchatinput--docs",
+        "category": "Components",
+        "subcategory": "Inputs",
+        "description": "Advanced chat input component with prompt library integration, file attachments, suggestions, and ri",
+        "tags": ["ai"],
+        "file": "Components/Inputs/AdvancedChatInput.stories.tsx"
+      },
+      {
+        "title": "Button",
+        "path": "?path=/docs/components-inputs-button--docs",
+        "category": "Components",
+        "subcategory": "Inputs",
+        "description": "A versatile button component with enhanced UX through microanimations and state management",
+        "tags": ["stable", "ai"],
+        "file": "Components/Inputs/Button.stories.tsx"
+      },
+      {
+        "title": "ChatInput",
+        "path": "?path=/docs/components-inputs-chatinput--docs",
+        "category": "Components",
+        "subcategory": "Inputs",
+        "description": "A delightful chat input component with smooth animations, character counting, and comprehensive stat",
+        "tags": ["ai"],
+        "file": "Components/Inputs/ChatInput.stories.tsx"
+      },
+      {
+        "title": "Checkbox",
+        "path": "?path=/docs/components-inputs-checkbox--docs",
+        "category": "Components",
+        "subcategory": "Inputs",
+        "description": "Checkbox input component for binary selection with accessible focus states",
+        "tags": ["stable", "ai"],
+        "file": "Components/Inputs/Checkbox.stories.tsx"
+      },
+      {
+        "title": "FileUpload",
+        "path": "?path=/docs/components-inputs-fileupload--docs",
+        "category": "Components",
+        "subcategory": "Inputs",
+        "description": "Drag and drop file upload component with progress tracking, file validation, and multiple file suppo",
+        "tags": ["stable", "ai"],
+        "file": "Components/Inputs/FileUpload.stories.tsx"
+      },
+      {
+        "title": "Input",
+        "path": "?path=/docs/components-inputs-input--docs",
+        "category": "Components",
+        "subcategory": "Inputs",
+        "description": "Text input component with support for various types and states",
+        "tags": ["stable", "ai"],
+        "file": "Components/Inputs/Input.stories.tsx"
+      },
+      {
+        "title": "Textarea",
+        "path": "?path=/docs/components-inputs-textarea--docs",
+        "category": "Components",
+        "subcategory": "Inputs",
+        "description": "Multi-line text input component for longer content",
+        "tags": ["stable", "ai"],
+        "file": "Components/Inputs/Textarea.stories.tsx"
+      },
+      {
+        "title": "VoiceInput",
+        "path": "?path=/docs/components-inputs-voiceinput--docs",
+        "category": "Components",
+        "subcategory": "Inputs",
+        "description": "Voice input component with Web Speech API support",
+        "tags": ["stable", "ai"],
+        "file": "Components/Inputs/VoiceInput.stories.tsx"
+      }
+    ],
+    "Components/Layout": [
+      {
+        "title": "ChatWindow",
+        "path": "?path=/docs/components-layout-chatwindow--docs",
+        "category": "Components",
+        "subcategory": "Layout",
+        "description": "Complete chat window component that orchestrates MessageList and ChatInput to provide a full-feature",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Components/Layout/ChatWindow.stories.tsx"
+      },
+      {
+        "title": "ConversationList",
+        "path": "?path=/docs/components-layout-conversationlist--docs",
+        "category": "Components",
+        "subcategory": "Layout",
+        "description": "Animated conversation list with hover lift, staggered entry, search, filters, and delete animations",
+        "tags": ["ai"],
+        "file": "Components/Layout/ConversationList.stories.tsx"
+      },
+      {
+        "title": "Dialog",
+        "path": "?path=/docs/components-layout-dialog--docs",
+        "category": "Components",
+        "subcategory": "Layout",
+        "description": "A modal dialog component with backdrop blur, smooth animations, focus trap, and keyboard navigation",
+        "tags": ["stable", "ai"],
+        "file": "Components/Layout/Dialog.stories.tsx"
+      },
+      {
+        "title": "Drawer",
+        "path": "?path=/docs/components-layout-drawer--docs",
+        "category": "Components",
+        "subcategory": "Layout",
+        "description": "A drawer component that slides in from the edge of the screen",
+        "tags": ["stable", "ai"],
+        "file": "Components/Layout/Drawer.stories.tsx"
+      },
+      {
+        "title": "ProjectSidebar",
+        "path": "?path=/docs/components-layout-projectsidebar--docs",
+        "category": "Components",
+        "subcategory": "Layout",
+        "tags": [],
+        "file": "Components/Layout/ProjectSidebar.stories.tsx"
+      },
+      {
+        "title": "SettingsPanel",
+        "path": "?path=/docs/components-layout-settingspanel--docs",
+        "category": "Components",
+        "subcategory": "Layout",
+        "tags": ["ai"],
+        "file": "Components/Layout/SettingsPanel.stories.tsx"
+      }
+    ],
+    "Components/MessageList": [
+      {
+        "title": "Essentials",
+        "path": "?path=/docs/components-messagelist-essentials--docs",
+        "category": "Components",
+        "subcategory": "MessageList",
+        "description": "The MessageList component displays a virtualized list of chat messages with smooth scrolling and per",
+        "tags": ["ai", "hook"],
+        "file": "Components/MessageList/Essentials.stories.tsx"
+      }
+    ],
+    "Components/Navigation": [
+      {
+        "title": "CommandPalette",
+        "path": "?path=/docs/components-navigation-commandpalette--docs",
+        "category": "Components",
+        "subcategory": "Navigation",
+        "description": "A keyboard-first command palette for quick actions, search, and navigation with fuzzy matching and c",
+        "tags": ["stable", "ai", "hook"],
+        "file": "Components/Navigation/CommandPalette.stories.tsx"
+      },
+      {
+        "title": "ContextMenu",
+        "path": "?path=/docs/components-navigation-contextmenu--docs",
+        "category": "Components",
+        "subcategory": "Navigation",
+        "description": "Right-click context menu with support for icons, shortcuts, separators, and submenus",
+        "tags": [],
+        "file": "Components/Navigation/ContextMenu.stories.tsx"
+      },
+      {
+        "title": "Draggable",
+        "path": "?path=/docs/components-navigation-draggable--docs",
+        "category": "Components",
+        "subcategory": "Navigation",
+        "description": "Make any element draggable with support for drag constraints, drop zones, and custom drag handlers",
+        "tags": ["ai"],
+        "file": "Components/Navigation/Draggable.stories.tsx"
+      },
+      {
+        "title": "DropdownMenu",
+        "path": "?path=/docs/components-navigation-dropdownmenu--docs",
+        "category": "Components",
+        "subcategory": "Navigation",
+        "description": "Dropdown menu with keyboard navigation and accessibility support",
+        "tags": ["stable", "ai"],
+        "file": "Components/Navigation/DropdownMenu.stories.tsx"
+      },
+      {
+        "title": "Popover",
+        "path": "?path=/docs/components-navigation-popover--docs",
+        "category": "Components",
+        "subcategory": "Navigation",
+        "description": "Popover component for displaying floating content relative to a trigger element",
+        "tags": ["stable", "ai"],
+        "file": "Components/Navigation/Popover.stories.tsx"
+      }
+    ],
+    "Components/TokenCounter": [
+      {
+        "title": "Essentials",
+        "path": "?path=/docs/components-tokencounter-essentials--docs",
+        "category": "Components",
+        "subcategory": "TokenCounter",
+        "description": "The TokenCounter component displays token usage with cost tracking and limit warnings",
+        "tags": ["ai"],
+        "file": "Components/TokenCounter/Essentials.stories.tsx"
+      }
+    ],
+    "Examples": [
+      {
+        "title": "AdvancedInteractions",
+        "path": "?path=/docs/examples-advancedinteractions--docs",
+        "category": "Examples",
+        "tags": [],
+        "file": "Examples/AdvancedInteractions.stories.tsx"
+      },
+      {
+        "title": "AiExperience",
+        "path": "?path=/docs/examples-aiexperience--docs",
+        "category": "Examples",
+        "tags": ["grounded", "deterministic", "memory", "ai"],
+        "file": "Examples/AiExperience.stories.tsx"
+      },
+      {
+        "title": "CompositeExamples",
+        "path": "?path=/docs/examples-compositeexamples--docs",
+        "category": "Examples",
+        "description": "Composite examples showing multiple components working together in real-world scenarios",
+        "tags": ["ai", "hook"],
+        "file": "Examples/CompositeExamples.stories.tsx"
+      },
+      {
+        "title": "Documentation Patterns",
+        "path": "?path=/docs/examples-documentation-patterns--docs",
+        "category": "Examples",
+        "description": "UI patterns commonly used in documentation sites to improve developer experience",
+        "tags": ["ai"],
+        "file": "Examples/DocumentationPatterns.stories.tsx"
+      },
+      {
+        "title": "Enterprise",
+        "path": "?path=/docs/examples-enterprise--docs",
+        "category": "Examples",
+        "description": "Enterprise-grade components for organizational management and security",
+        "tags": ["ai"],
+        "file": "Examples/Enterprise.stories.tsx"
+      },
+      {
+        "title": "HooksShowcase",
+        "path": "?path=/docs/examples-hooksshowcase--docs",
+        "category": "Examples",
+        "description": "A comprehensive collection of React hooks for building chat interfaces and interactive experiences",
+        "tags": ["streaming", "memory", "ai", "hook"],
+        "file": "Examples/HooksShowcase.stories.tsx"
+      },
+      {
+        "title": "IndustrySolutions",
+        "path": "?path=/docs/examples-industrysolutions--docs",
+        "category": "Examples",
+        "description": "Industry-specific AI chat solutions demonstrating real-world use cases",
+        "tags": ["memory", "ai"],
+        "file": "Examples/IndustrySolutions.stories.tsx"
+      },
+      {
+        "title": "Live API Demo",
+        "path": "?path=/docs/examples-live-api-demo--docs",
+        "category": "Examples",
+        "description": "Test Clarity Chat components against your own API endpoint",
+        "tags": ["streaming", "ai"],
+        "file": "Examples/LiveAPIDemo.stories.tsx"
+      },
+      {
+        "title": "Templates",
+        "path": "?path=/docs/examples-templates--docs",
+        "category": "Examples",
+        "description": "Pre-built chat templates optimized for specific use cases",
+        "tags": ["ai"],
+        "file": "Examples/Templates.stories.tsx"
+      }
+    ],
+    "Foundation": [
+      {
+        "title": "Colors & Themes",
+        "path": "?path=/docs/foundation-colors-&-themes--docs",
+        "category": "Foundation",
+        "description": "# Colors & Themes Clarity Chat provides a comprehensive color system and theming architecture that m",
+        "tags": ["ai"],
+        "file": "Foundation/ColorsThemes.stories.tsx"
+      },
+      {
+        "title": "Iconography",
+        "path": "?path=/docs/foundation-iconography--docs",
+        "category": "Foundation",
+        "tags": ["ai"],
+        "file": "Foundation/Iconography.stories.tsx"
+      },
+      {
+        "title": "Motion & Animation",
+        "path": "?path=/docs/foundation-motion-&-animation--docs",
+        "category": "Foundation",
+        "tags": [],
+        "file": "Foundation/Motion.stories.tsx"
+      },
+      {
+        "title": "Spacing & Layout",
+        "path": "?path=/docs/foundation-spacing-&-layout--docs",
+        "category": "Foundation",
+        "tags": ["ai"],
+        "file": "Foundation/SpacingLayout.stories.tsx"
+      },
+      {
+        "title": "Theme Contrast Checker",
+        "path": "?path=/docs/foundation-theme-contrast-checker--docs",
+        "category": "Foundation",
+        "description": "# Theme Contrast Checker A visual accessibility analyzer that checks WCAG color contrast compliance ",
+        "tags": ["ai"],
+        "file": "Foundation/ThemeContrastChecker.stories.tsx"
+      },
+      {
+        "title": "Theme Playground",
+        "path": "?path=/docs/foundation-theme-playground--docs",
+        "category": "Foundation",
+        "description": "# Interactive Theme Playground Create and customize themes in real-time",
+        "tags": ["ai"],
+        "file": "Foundation/ThemePlayground.stories.tsx"
+      },
+      {
+        "title": "Theme Preview Thumbnail",
+        "path": "?path=/docs/foundation-theme-preview-thumbnail--docs",
+        "category": "Foundation",
+        "description": "# Theme Preview Thumbnail A visual thumbnail component that displays a miniature preview of a theme",
+        "tags": ["ai"],
+        "file": "Foundation/ThemePreviewThumbnail.stories.tsx"
+      },
+      {
+        "title": "ThemePreview",
+        "path": "?path=/docs/foundation-themepreview--docs",
+        "category": "Foundation",
+        "description": "Live preview and editor for theme tokens",
+        "tags": [],
+        "file": "Foundation/ThemePreview.stories.tsx"
+      },
+      {
+        "title": "ThemeSelector",
+        "path": "?path=/docs/foundation-themeselector--docs",
+        "category": "Foundation",
+        "description": "Theme management components inspired by companies like Intercom and Zendesk, combining visual previe",
+        "tags": ["ai"],
+        "file": "Foundation/ThemeSelector.stories.tsx"
+      }
+    ],
+    "Hooks/Accessibility": [
+      {
+        "title": "UseReducedMotion",
+        "path": "?path=/docs/hooks-accessibility-usereducedmotion--docs",
+        "category": "Hooks",
+        "subcategory": "Accessibility",
+        "description": "The \\",
+        "tags": ["ai", "hook"],
+        "file": "Hooks/Accessibility/UseReducedMotion.stories.tsx"
+      }
+    ],
+    "Hooks/Chat": [
+      {
+        "title": "UseAssistant",
+        "path": "?path=/docs/hooks-chat-useassistant--docs",
+        "category": "Hooks",
+        "subcategory": "Chat",
+        "description": "The \\",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Hooks/Chat/UseAssistant.stories.tsx"
+      },
+      {
+        "title": "UseChat",
+        "path": "?path=/docs/hooks-chat-usechat--docs",
+        "category": "Hooks",
+        "subcategory": "Chat",
+        "description": "The \\",
+        "tags": ["ai", "hook"],
+        "file": "Hooks/Chat/UseChat.stories.tsx"
+      },
+      {
+        "title": "UseChatEnhanced",
+        "path": "?path=/docs/hooks-chat-usechatenhanced--docs",
+        "category": "Hooks",
+        "subcategory": "Chat",
+        "description": "The enhanced \\",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Hooks/Chat/UseChatEnhanced.stories.tsx"
+      },
+      {
+        "title": "UseClarityChat",
+        "path": "?path=/docs/hooks-chat-useclaritychat--docs",
+        "category": "Hooks",
+        "subcategory": "Chat",
+        "description": "The \\",
+        "tags": ["memory", "ai", "hook"],
+        "file": "Hooks/Chat/UseClarityChat.stories.tsx"
+      },
+      {
+        "title": "UseCompletion",
+        "path": "?path=/docs/hooks-chat-usecompletion--docs",
+        "category": "Hooks",
+        "subcategory": "Chat",
+        "description": "The \\",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Hooks/Chat/UseCompletion.stories.tsx"
+      }
+    ],
+    "Hooks/Performance": [
+      {
+        "title": "UseAutoScroll",
+        "path": "?path=/docs/hooks-performance-useautoscroll--docs",
+        "category": "Hooks",
+        "subcategory": "Performance",
+        "description": "# useAutoScroll Automatically scroll to the bottom of a container when new content is added, with in",
+        "tags": ["ai", "hook"],
+        "file": "Hooks/Performance/UseAutoScroll.stories.tsx"
+      },
+      {
+        "title": "UseDebounce",
+        "path": "?path=/docs/hooks-performance-usedebounce--docs",
+        "category": "Hooks",
+        "subcategory": "Performance",
+        "description": "The \\",
+        "tags": ["hook"],
+        "file": "Hooks/Performance/UseDebounce.stories.tsx"
+      },
+      {
+        "title": "UseThrottle",
+        "path": "?path=/docs/hooks-performance-usethrottle--docs",
+        "category": "Hooks",
+        "subcategory": "Performance",
+        "description": "The \\",
+        "tags": ["hook"],
+        "file": "Hooks/Performance/UseThrottle.stories.tsx"
+      },
+      {
+        "title": "UseTokenTracker",
+        "path": "?path=/docs/hooks-performance-usetokentracker--docs",
+        "category": "Hooks",
+        "subcategory": "Performance",
+        "description": "# useTokenTracker Track token usage across a conversation with automatic cost calculation, limit war",
+        "tags": ["ai", "hook"],
+        "file": "Hooks/Performance/UseTokenTracker.stories.tsx"
+      }
+    ],
+    "Hooks/Primary": [
+      {
+        "title": "useClarityChat",
+        "path": "?path=/docs/hooks-primary-useclaritychat--docs",
+        "category": "Hooks",
+        "subcategory": "Primary",
+        "description": "The primary hook for AI chat functionality",
+        "tags": ["streaming", "memory", "ai", "hook"],
+        "file": "Hooks/Primary/useClarityChat.stories.tsx"
+      }
+    ],
+    "Hooks/State": [
+      {
+        "title": "UseClarityObject",
+        "path": "?path=/docs/hooks-state-useclarityobject--docs",
+        "category": "Hooks",
+        "subcategory": "State",
+        "description": "The \\",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Hooks/State/UseClarityObject.stories.tsx"
+      },
+      {
+        "title": "UseLocalStorage",
+        "path": "?path=/docs/hooks-state-uselocalstorage--docs",
+        "category": "Hooks",
+        "subcategory": "State",
+        "description": "The \\",
+        "tags": ["ai", "hook"],
+        "file": "Hooks/State/UseLocalStorage.stories.tsx"
+      },
+      {
+        "title": "UseMessageOperations",
+        "path": "?path=/docs/hooks-state-usemessageoperations--docs",
+        "category": "Hooks",
+        "subcategory": "State",
+        "description": "The \\",
+        "tags": ["hook"],
+        "file": "Hooks/State/UseMessageOperations.stories.tsx"
+      },
+      {
+        "title": "UsePrevious",
+        "path": "?path=/docs/hooks-state-useprevious--docs",
+        "category": "Hooks",
+        "subcategory": "State",
+        "description": "The \\",
+        "tags": ["memory", "hook"],
+        "file": "Hooks/State/UsePrevious.stories.tsx"
+      }
+    ],
+    "Hooks/Streaming": [
+      {
+        "title": "UseStreamableUI",
+        "path": "?path=/docs/hooks-streaming-usestreamableui--docs",
+        "category": "Hooks",
+        "subcategory": "Streaming",
+        "description": "The \\",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Hooks/Streaming/UseStreamableUI.stories.tsx"
+      },
+      {
+        "title": "UseStreaming",
+        "path": "?path=/docs/hooks-streaming-usestreaming--docs",
+        "category": "Hooks",
+        "subcategory": "Streaming",
+        "description": "The \\",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Hooks/Streaming/UseStreaming.stories.tsx"
+      },
+      {
+        "title": "UseStreamingSSE",
+        "path": "?path=/docs/hooks-streaming-usestreamingsse--docs",
+        "category": "Hooks",
+        "subcategory": "Streaming",
+        "description": "# useStreamingSSE React hook for Server-Sent Events (SSE) streaming with automatic reconnection, err",
+        "tags": ["streaming", "ai", "hook"],
+        "file": "Hooks/Streaming/UseStreamingSSE.stories.tsx"
+      }
+    ],
+    "Hooks/Utilities": [
+      {
+        "title": "UseClipboard",
+        "path": "?path=/docs/hooks-utilities-useclipboard--docs",
+        "category": "Hooks",
+        "subcategory": "Utilities",
+        "description": "The \\",
+        "tags": ["ai", "hook"],
+        "file": "Hooks/Utilities/UseClipboard.stories.tsx"
+      },
+      {
+        "title": "UseErrorRecovery",
+        "path": "?path=/docs/hooks-utilities-useerrorrecovery--docs",
+        "category": "Hooks",
+        "subcategory": "Utilities",
+        "description": "# useErrorRecovery Automatic error recovery hook with intelligent retry logic, exponential backoff, ",
+        "tags": ["ai", "hook"],
+        "file": "Hooks/Utilities/UseErrorRecovery.stories.tsx"
+      },
+      {
+        "title": "UseVoiceInput",
+        "path": "?path=/docs/hooks-utilities-usevoiceinput--docs",
+        "category": "Hooks",
+        "subcategory": "Utilities",
+        "description": "# useVoiceInput Speech-to-text input hook using the Web Speech API for voice recognition",
+        "tags": ["ai", "hook"],
+        "file": "Hooks/Utilities/UseVoiceInput.stories.tsx"
+      },
+      {
+        "title": "UseWindowSize",
+        "path": "?path=/docs/hooks-utilities-usewindowsize--docs",
+        "category": "Hooks",
+        "subcategory": "Utilities",
+        "description": "The \\",
+        "tags": ["memory", "hook"],
+        "file": "Hooks/Utilities/UseWindowSize.stories.tsx"
+      }
+    ],
+    "Hooks/useClarityChat": [
+      {
+        "title": "Essentials",
+        "path": "?path=/docs/hooks-useclaritychat-essentials--docs",
+        "category": "Hooks",
+        "subcategory": "useClarityChat",
+        "description": "The \\",
+        "tags": ["memory", "ai", "hook"],
+        "file": "Hooks/useClarityChat/Essentials.stories.tsx"
+      }
+    ],
+    "Patterns/AI": [
+      {
+        "title": "Streaming Responses",
+        "path": "?path=/docs/patterns-ai-streaming-responses--docs",
+        "category": "Patterns",
+        "subcategory": "AI",
+        "description": "# Streaming Responses Pattern Learn how to implement streaming AI responses for better user experien",
+        "tags": ["streaming", "memory", "ai"],
+        "file": "Patterns/AI/Streaming.stories.tsx"
+      }
+    ],
+    "Patterns/Chat": [
+      {
+        "title": "Multi-turn Conversations",
+        "path": "?path=/docs/patterns-chat-multi-turn-conversations--docs",
+        "category": "Patterns",
+        "subcategory": "Chat",
+        "description": "# Multi-turn Conversation Pattern Learn how to build chat interfaces that maintain context across mu",
+        "tags": ["streaming", "ai"],
+        "file": "Patterns/Chat/MultiTurn.stories.tsx"
+      }
+    ],
+    "Patterns/Forms": [
+      {
+        "title": "Multi-step Forms",
+        "path": "?path=/docs/patterns-forms-multi-step-forms--docs",
+        "category": "Patterns",
+        "subcategory": "Forms",
+        "description": "# Multi-step Form Pattern Learn how to implement multi-step forms in chat interfaces",
+        "tags": ["ai"],
+        "file": "Patterns/Forms/MultiStep.stories.tsx"
+      }
+    ],
+    "Primitives/Avatar": [
+      {
+        "title": "Essentials",
+        "path": "?path=/docs/primitives-avatar-essentials--docs",
+        "category": "Primitives",
+        "subcategory": "Avatar",
+        "description": "The Avatar component displays user profile pictures with automatic fallback support",
+        "tags": ["ai"],
+        "file": "Primitives/Avatar/Essentials.stories.tsx"
+      }
+    ],
+    "Primitives/Button": [
+      {
+        "title": "Essentials",
+        "path": "?path=/docs/primitives-button-essentials--docs",
+        "category": "Primitives",
+        "subcategory": "Button",
+        "description": "The Button component is a versatile, accessible button with multiple variants and states",
+        "tags": ["ai"],
+        "file": "Primitives/Button/Essentials.stories.tsx"
+      }
+    ],
+    "Welcome": [
+      {
+        "title": "Playground",
+        "path": "?path=/docs/welcome-playground--docs",
+        "category": "Welcome",
+        "description": "# Interactive Playground Try out Clarity Chat components in this interactive playground",
+        "tags": ["ai", "hook"],
+        "file": "Welcome/Playground.stories.tsx"
+      }
+    ],
+    "Components": [
+      {
+        "title": "ErrorBoundary",
+        "path": "?path=/docs/components-errorboundary--docs",
+        "category": "Components",
+        "tags": ["ai"],
+        "file": "error-handling/ErrorBoundary.stories.tsx"
+      }
+    ]
+  },
+  "flat": [
+    {
+      "title": "ABTestingDashboard",
+      "path": "?path=/docs/advanced-analytics-abtestingdashboard--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "A/B testing dashboard for monitoring experiment results with statistical significance testing, winne",
+      "tags": ["ai"],
+      "file": "Advanced/Analytics/ABTestingDashboard.stories.tsx"
+    },
+    {
+      "title": "AdvancedChatInput",
+      "path": "?path=/docs/components-inputs-advancedchatinput--docs",
+      "category": "Components",
+      "subcategory": "Inputs",
+      "description": "Advanced chat input component with prompt library integration, file attachments, suggestions, and ri",
+      "tags": ["ai"],
+      "file": "Components/Inputs/AdvancedChatInput.stories.tsx"
+    },
+    {
+      "title": "AdvancedInteractions",
+      "path": "?path=/docs/examples-advancedinteractions--docs",
+      "category": "Examples",
+      "tags": [],
+      "file": "Examples/AdvancedInteractions.stories.tsx"
+    },
+    {
+      "title": "AdvancedMessageSearch",
+      "path": "?path=/docs/components-datadisplay-advancedmessagesearch--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "tags": [],
+      "file": "Components/DataDisplay/AdvancedMessageSearch.stories.tsx"
+    },
+    {
+      "title": "AgentRunFeed",
+      "path": "?path=/docs/advanced-ai-agentrunfeed--docs",
+      "category": "Advanced",
+      "subcategory": "AI",
+      "description": "Visual feed showing agent execution steps, tool invocations, and their status",
+      "tags": ["ai", "hook"],
+      "file": "Advanced/AI/AgentRunFeed.stories.tsx"
+    },
+    {
+      "title": "AiExperience",
+      "path": "?path=/docs/examples-aiexperience--docs",
+      "category": "Examples",
+      "tags": ["grounded", "deterministic", "memory", "ai"],
+      "file": "Examples/AiExperience.stories.tsx"
+    },
+    {
+      "title": "AIOperations",
+      "path": "?path=/docs/advanced-ai-aioperations--docs",
+      "category": "Advanced",
+      "subcategory": "AI",
+      "description": "Tools for testing, monitoring, and improving AI performance and safety",
+      "tags": ["ai"],
+      "file": "Advanced/AI/AIOperations.stories.tsx"
+    },
+    {
+      "title": "AnalyticsDashboard",
+      "path": "?path=/docs/advanced-analytics-analyticsdashboard--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "Comprehensive analytics dashboard showing metrics, leaderboards, insights, and recent activities",
+      "tags": [],
+      "file": "Advanced/Analytics/AnalyticsDashboard.stories.tsx"
+    },
+    {
+      "title": "AnimatedList",
+      "path": "?path=/docs/components-datadisplay-animatedlist--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Motion primitives for sequencing chat UI affordances",
+      "tags": ["ai"],
+      "file": "Components/DataDisplay/AnimatedList.stories.tsx"
+    },
+    {
+      "title": "AnimatedValues",
+      "path": "?path=/docs/advanced-analytics-animatedvalues--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "Real-time value animation utilities for dashboard metrics",
+      "tags": ["hook"],
+      "file": "Advanced/Analytics/AnimatedValues.stories.tsx"
+    },
+    {
+      "title": "AuditLogViewer",
+      "path": "?path=/docs/advanced-enterprise-auditlogviewer--docs",
+      "category": "Advanced",
+      "subcategory": "Enterprise",
+      "description": "Component for displaying audit logs with filtering, search, and detailed entry views",
+      "tags": ["ai"],
+      "file": "Advanced/Enterprise/AuditLogViewer.stories.tsx"
+    },
+    {
+      "title": "AuthTenantDashboard",
+      "path": "?path=/docs/advanced-enterprise-authtenantdashboard--docs",
+      "category": "Advanced",
+      "subcategory": "Enterprise",
+      "description": "Dashboard for managing tenant authentication, seat usage, and plan information",
+      "tags": [],
+      "file": "Advanced/Enterprise/AuthTenantDashboard.stories.tsx"
+    },
+    {
+      "title": "Avatar",
+      "path": "?path=/docs/components-datadisplay-avatar--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Display user or bot avatars with automatic fallbacks and status indicators",
+      "tags": ["stable", "ai"],
+      "file": "Components/DataDisplay/Avatar.stories.tsx"
+    },
+    {
+      "title": "Badge",
+      "path": "?path=/docs/components-datadisplay-badge--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Small count and label indicators for status, categories, and notifications",
+      "tags": ["stable", "ai"],
+      "file": "Components/DataDisplay/Badge.stories.tsx"
+    },
+    {
+      "title": "BatchExportDialog",
+      "path": "?path=/docs/advanced-enterprise-batchexportdialog--docs",
+      "category": "Advanced",
+      "subcategory": "Enterprise",
+      "tags": ["ai"],
+      "file": "Advanced/Enterprise/BatchExportDialog.stories.tsx"
+    },
+    {
+      "title": "Button",
+      "path": "?path=/docs/components-inputs-button--docs",
+      "category": "Components",
+      "subcategory": "Inputs",
+      "description": "A versatile button component with enhanced UX through microanimations and state management",
+      "tags": ["stable", "ai"],
+      "file": "Components/Inputs/Button.stories.tsx"
+    },
+    {
+      "title": "Card",
+      "path": "?path=/docs/components-datadisplay-card--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Flexible container component for grouping related content",
+      "tags": ["stable", "streaming", "ai"],
+      "file": "Components/DataDisplay/Card.stories.tsx"
+    },
+    {
+      "title": "ChatInput",
+      "path": "?path=/docs/components-inputs-chatinput--docs",
+      "category": "Components",
+      "subcategory": "Inputs",
+      "description": "A delightful chat input component with smooth animations, character counting, and comprehensive stat",
+      "tags": ["ai"],
+      "file": "Components/Inputs/ChatInput.stories.tsx"
+    },
+    {
+      "title": "ChatWindow",
+      "path": "?path=/docs/components-layout-chatwindow--docs",
+      "category": "Components",
+      "subcategory": "Layout",
+      "description": "Complete chat window component that orchestrates MessageList and ChatInput to provide a full-feature",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Components/Layout/ChatWindow.stories.tsx"
+    },
+    {
+      "title": "Checkbox",
+      "path": "?path=/docs/components-inputs-checkbox--docs",
+      "category": "Components",
+      "subcategory": "Inputs",
+      "description": "Checkbox input component for binary selection with accessible focus states",
+      "tags": ["stable", "ai"],
+      "file": "Components/Inputs/Checkbox.stories.tsx"
+    },
+    {
+      "title": "CitationCard",
+      "path": "?path=/docs/components-datadisplay-citationcard--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "**Citation Card** - Beautiful RAG (Retrieval-Augmented Generation) source display: - 📚 Source attri",
+      "tags": ["ai"],
+      "file": "Components/DataDisplay/CitationCard.stories.tsx"
+    },
+    {
+      "title": "ClarityChat",
+      "path": "?path=/docs/components-drop-in-solutions-claritychat--docs",
+      "category": "Components",
+      "subcategory": "Drop-in Solutions",
+      "description": "The complete AI chat interface",
+      "tags": ["streaming", "memory", "ai", "hook"],
+      "file": "Components/ClarityChat/ClarityChat.stories.tsx"
+    },
+    {
+      "title": "ClarityToolResult",
+      "path": "?path=/docs/advanced-ai-claritytoolresult--docs",
+      "category": "Advanced",
+      "subcategory": "AI",
+      "description": "The \\",
+      "tags": ["ai", "hook"],
+      "file": "Advanced/AI/ClarityToolResult.stories.tsx"
+    },
+    {
+      "title": "Colors & Themes",
+      "path": "?path=/docs/foundation-colors-&-themes--docs",
+      "category": "Foundation",
+      "description": "# Colors & Themes Clarity Chat provides a comprehensive color system and theming architecture that m",
+      "tags": ["ai"],
+      "file": "Foundation/ColorsThemes.stories.tsx"
+    },
+    {
+      "title": "CommandPalette",
+      "path": "?path=/docs/components-navigation-commandpalette--docs",
+      "category": "Components",
+      "subcategory": "Navigation",
+      "description": "A keyboard-first command palette for quick actions, search, and navigation with fuzzy matching and c",
+      "tags": ["stable", "ai", "hook"],
+      "file": "Components/Navigation/CommandPalette.stories.tsx"
+    },
+    {
+      "title": "CompositeExamples",
+      "path": "?path=/docs/examples-compositeexamples--docs",
+      "category": "Examples",
+      "description": "Composite examples showing multiple components working together in real-world scenarios",
+      "tags": ["ai", "hook"],
+      "file": "Examples/CompositeExamples.stories.tsx"
+    },
+    {
+      "title": "ContextCard",
+      "path": "?path=/docs/components-datadisplay-contextcard--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Component for displaying context items (documents, images, links) used in chat conversations with pr",
+      "tags": ["hook"],
+      "file": "Components/DataDisplay/ContextCard.stories.tsx"
+    },
+    {
+      "title": "ContextManager",
+      "path": "?path=/docs/advanced-memory-contextmanager--docs",
+      "category": "Advanced",
+      "subcategory": "Memory",
+      "tags": ["memory"],
+      "file": "Advanced/Memory/ContextManager.stories.tsx"
+    },
+    {
+      "title": "ContextMenu",
+      "path": "?path=/docs/components-navigation-contextmenu--docs",
+      "category": "Components",
+      "subcategory": "Navigation",
+      "description": "Right-click context menu with support for icons, shortcuts, separators, and submenus",
+      "tags": [],
+      "file": "Components/Navigation/ContextMenu.stories.tsx"
+    },
+    {
+      "title": "ContextVisualizer",
+      "path": "?path=/docs/advanced-memory-contextvisualizer--docs",
+      "category": "Advanced",
+      "subcategory": "Memory",
+      "tags": ["memory"],
+      "file": "Advanced/Memory/ContextVisualizer.stories.tsx"
+    },
+    {
+      "title": "ConversationBranchVisualizer",
+      "path": "?path=/docs/components-datadisplay-conversationbranchvisualizer--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Tree view for branching conversations (think Claude conversation forks)",
+      "tags": [],
+      "file": "Components/DataDisplay/ConversationBranchVisualizer.stories.tsx"
+    },
+    {
+      "title": "ConversationList",
+      "path": "?path=/docs/components-layout-conversationlist--docs",
+      "category": "Components",
+      "subcategory": "Layout",
+      "description": "Animated conversation list with hover lift, staggered entry, search, filters, and delete animations",
+      "tags": ["ai"],
+      "file": "Components/Layout/ConversationList.stories.tsx"
+    },
+    {
+      "title": "ConversationTimeline",
+      "path": "?path=/docs/components-datadisplay-conversationtimeline--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Visual timeline showing conversation events including user messages, assistant responses, tool calls",
+      "tags": ["ai", "hook"],
+      "file": "Components/DataDisplay/ConversationTimeline.stories.tsx"
+    },
+    {
+      "title": "DashboardErrorBoundary",
+      "path": "?path=/docs/advanced-analytics-dashboarderrorboundary--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "Error boundary specifically designed for dashboard widgets",
+      "tags": ["ai"],
+      "file": "Advanced/Analytics/DashboardErrorBoundary.stories.tsx"
+    },
+    {
+      "title": "DashboardSkeletons",
+      "path": "?path=/docs/advanced-analytics-dashboardskeletons--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "Loading states for dashboard components",
+      "tags": ["ai", "hook"],
+      "file": "Advanced/Analytics/DashboardSkeletons.stories.tsx"
+    },
+    {
+      "title": "Dialog",
+      "path": "?path=/docs/components-layout-dialog--docs",
+      "category": "Components",
+      "subcategory": "Layout",
+      "description": "A modal dialog component with backdrop blur, smooth animations, focus trap, and keyboard navigation",
+      "tags": ["stable", "ai"],
+      "file": "Components/Layout/Dialog.stories.tsx"
+    },
+    {
+      "title": "Documentation Patterns",
+      "path": "?path=/docs/examples-documentation-patterns--docs",
+      "category": "Examples",
+      "description": "UI patterns commonly used in documentation sites to improve developer experience",
+      "tags": ["ai"],
+      "file": "Examples/DocumentationPatterns.stories.tsx"
+    },
+    {
+      "title": "DocumentViewer",
+      "path": "?path=/docs/advanced-memory-documentviewer--docs",
+      "category": "Advanced",
+      "subcategory": "Memory",
+      "description": "Component for displaying document content with metadata and highlighting support",
+      "tags": ["memory", "ai"],
+      "file": "Advanced/Memory/DocumentViewer.stories.tsx"
+    },
+    {
+      "title": "Draggable",
+      "path": "?path=/docs/components-navigation-draggable--docs",
+      "category": "Components",
+      "subcategory": "Navigation",
+      "description": "Make any element draggable with support for drag constraints, drop zones, and custom drag handlers",
+      "tags": ["ai"],
+      "file": "Components/Navigation/Draggable.stories.tsx"
+    },
+    {
+      "title": "Drawer",
+      "path": "?path=/docs/components-layout-drawer--docs",
+      "category": "Components",
+      "subcategory": "Layout",
+      "description": "A drawer component that slides in from the edge of the screen",
+      "tags": ["stable", "ai"],
+      "file": "Components/Layout/Drawer.stories.tsx"
+    },
+    {
+      "title": "DropdownMenu",
+      "path": "?path=/docs/components-navigation-dropdownmenu--docs",
+      "category": "Components",
+      "subcategory": "Navigation",
+      "description": "Dropdown menu with keyboard navigation and accessibility support",
+      "tags": ["stable", "ai"],
+      "file": "Components/Navigation/DropdownMenu.stories.tsx"
+    },
+    {
+      "title": "EmptyState",
+      "path": "?path=/docs/components-feedback-emptystate--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "Empty state components that gracefully handle no-data scenarios with clear messaging and actionable ",
+      "tags": ["stable", "ai"],
+      "file": "Components/Feedback/EmptyState.stories.tsx"
+    },
+    {
+      "title": "EnhancedCodeBlock",
+      "path": "?path=/docs/components-datadisplay-enhancedcodeblock--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "tags": ["ai"],
+      "file": "Components/DataDisplay/EnhancedCodeBlock.stories.tsx"
+    },
+    {
+      "title": "EnhancedMarkdownRenderer",
+      "path": "?path=/docs/components-datadisplay-enhancedmarkdownrenderer--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Enhanced markdown renderer with LaTeX math support, Mermaid diagrams, syntax highlighting, and more",
+      "tags": ["streaming", "ai"],
+      "file": "Components/DataDisplay/EnhancedMarkdownRenderer.stories.tsx"
+    },
+    {
+      "title": "Enterprise",
+      "path": "?path=/docs/components-chatwindow-enterprise--docs",
+      "category": "Components",
+      "subcategory": "ChatWindow",
+      "description": "Enterprise patterns for production applications",
+      "tags": ["memory", "ai"],
+      "file": "Components/ChatWindow/Enterprise.stories.tsx"
+    },
+    {
+      "title": "Enterprise",
+      "path": "?path=/docs/examples-enterprise--docs",
+      "category": "Examples",
+      "description": "Enterprise-grade components for organizational management and security",
+      "tags": ["ai"],
+      "file": "Examples/Enterprise.stories.tsx"
+    },
+    {
+      "title": "ErrorBoundary",
+      "path": "?path=/docs/components-feedback-errorboundary--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "Production-ready React error boundaries with enhanced reporting and recovery mechanisms",
+      "tags": ["ai"],
+      "file": "Components/Feedback/ErrorBoundary.stories.tsx"
+    },
+    {
+      "title": "ErrorBoundary",
+      "path": "?path=/docs/components-errorboundary--docs",
+      "category": "Components",
+      "tags": ["ai"],
+      "file": "error-handling/ErrorBoundary.stories.tsx"
+    },
+    {
+      "title": "Essentials",
+      "path": "?path=/docs/components-chatinput-essentials--docs",
+      "category": "Components",
+      "subcategory": "ChatInput",
+      "description": "The ChatInput component provides a complete input interface for chat applications",
+      "tags": ["ai"],
+      "file": "Components/ChatInput/Essentials.stories.tsx"
+    },
+    {
+      "title": "Essentials",
+      "path": "?path=/docs/components-chatwindow-essentials--docs",
+      "category": "Components",
+      "subcategory": "ChatWindow",
+      "description": "The ChatWindow component is a complete, production-ready chat interface that combines message displa",
+      "tags": ["ai", "hook"],
+      "file": "Components/ChatWindow/Essentials.stories.tsx"
+    },
+    {
+      "title": "Essentials",
+      "path": "?path=/docs/components-messagelist-essentials--docs",
+      "category": "Components",
+      "subcategory": "MessageList",
+      "description": "The MessageList component displays a virtualized list of chat messages with smooth scrolling and per",
+      "tags": ["ai", "hook"],
+      "file": "Components/MessageList/Essentials.stories.tsx"
+    },
+    {
+      "title": "Essentials",
+      "path": "?path=/docs/components-tokencounter-essentials--docs",
+      "category": "Components",
+      "subcategory": "TokenCounter",
+      "description": "The TokenCounter component displays token usage with cost tracking and limit warnings",
+      "tags": ["ai"],
+      "file": "Components/TokenCounter/Essentials.stories.tsx"
+    },
+    {
+      "title": "Essentials",
+      "path": "?path=/docs/hooks-useclaritychat-essentials--docs",
+      "category": "Hooks",
+      "subcategory": "useClarityChat",
+      "description": "The \\",
+      "tags": ["memory", "ai", "hook"],
+      "file": "Hooks/useClarityChat/Essentials.stories.tsx"
+    },
+    {
+      "title": "Essentials",
+      "path": "?path=/docs/primitives-avatar-essentials--docs",
+      "category": "Primitives",
+      "subcategory": "Avatar",
+      "description": "The Avatar component displays user profile pictures with automatic fallback support",
+      "tags": ["ai"],
+      "file": "Primitives/Avatar/Essentials.stories.tsx"
+    },
+    {
+      "title": "Essentials",
+      "path": "?path=/docs/primitives-button-essentials--docs",
+      "category": "Primitives",
+      "subcategory": "Button",
+      "description": "The Button component is a versatile, accessible button with multiple variants and states",
+      "tags": ["ai"],
+      "file": "Primitives/Button/Essentials.stories.tsx"
+    },
+    {
+      "title": "EvaluationDashboard",
+      "path": "?path=/docs/advanced-enterprise-evaluationdashboard--docs",
+      "category": "Advanced",
+      "subcategory": "Enterprise",
+      "description": "Dashboard for evaluating AI model performance with metrics, sparklines, and quality indicators",
+      "tags": ["ai"],
+      "file": "Advanced/Enterprise/EvaluationDashboard.stories.tsx"
+    },
+    {
+      "title": "ExportDialog",
+      "path": "?path=/docs/advanced-enterprise-exportdialog--docs",
+      "category": "Advanced",
+      "subcategory": "Enterprise",
+      "tags": ["ai"],
+      "file": "Advanced/Enterprise/ExportDialog.stories.tsx"
+    },
+    {
+      "title": "FeedbackAnimation",
+      "path": "?path=/docs/components-feedback-feedbackanimation--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "Micro-interactions that mirror the polish seen in Linear, Stripe, and Shopify Polaris design systems",
+      "tags": ["ai"],
+      "file": "Components/Feedback/FeedbackAnimation.stories.tsx"
+    },
+    {
+      "title": "FileUpload",
+      "path": "?path=/docs/components-inputs-fileupload--docs",
+      "category": "Components",
+      "subcategory": "Inputs",
+      "description": "Drag and drop file upload component with progress tracking, file validation, and multiple file suppo",
+      "tags": ["stable", "ai"],
+      "file": "Components/Inputs/FileUpload.stories.tsx"
+    },
+    {
+      "title": "FollowUpSuggestions",
+      "path": "?path=/docs/advanced-ai-followupsuggestions--docs",
+      "category": "Advanced",
+      "subcategory": "AI",
+      "description": "Display contextual follow-up suggestions to keep conversations flowing",
+      "tags": ["stable", "ai", "hook"],
+      "file": "Advanced/AI/FollowUpSuggestions.stories.tsx"
+    },
+    {
+      "title": "HooksShowcase",
+      "path": "?path=/docs/examples-hooksshowcase--docs",
+      "category": "Examples",
+      "description": "A comprehensive collection of React hooks for building chat interfaces and interactive experiences",
+      "tags": ["streaming", "memory", "ai", "hook"],
+      "file": "Examples/HooksShowcase.stories.tsx"
+    },
+    {
+      "title": "Iconography",
+      "path": "?path=/docs/foundation-iconography--docs",
+      "category": "Foundation",
+      "tags": ["ai"],
+      "file": "Foundation/Iconography.stories.tsx"
+    },
+    {
+      "title": "IndustrySolutions",
+      "path": "?path=/docs/examples-industrysolutions--docs",
+      "category": "Examples",
+      "description": "Industry-specific AI chat solutions demonstrating real-world use cases",
+      "tags": ["memory", "ai"],
+      "file": "Examples/IndustrySolutions.stories.tsx"
+    },
+    {
+      "title": "Input",
+      "path": "?path=/docs/components-inputs-input--docs",
+      "category": "Components",
+      "subcategory": "Inputs",
+      "description": "Text input component with support for various types and states",
+      "tags": ["stable", "ai"],
+      "file": "Components/Inputs/Input.stories.tsx"
+    },
+    {
+      "title": "InteractiveCard",
+      "path": "?path=/docs/components-datadisplay-interactivecard--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "High-affordance card surface inspired by Revolut and Pitch storybooks",
+      "tags": ["ai"],
+      "file": "Components/DataDisplay/InteractiveCard.stories.tsx"
+    },
+    {
+      "title": "KnowledgeBaseViewer",
+      "path": "?path=/docs/advanced-memory-knowledgebaseviewer--docs",
+      "category": "Advanced",
+      "subcategory": "Memory",
+      "tags": ["memory", "ai", "hook"],
+      "file": "Advanced/Memory/KnowledgeBaseViewer.stories.tsx"
+    },
+    {
+      "title": "Live API Demo",
+      "path": "?path=/docs/examples-live-api-demo--docs",
+      "category": "Examples",
+      "description": "Test Clarity Chat components against your own API endpoint",
+      "tags": ["streaming", "ai"],
+      "file": "Examples/LiveAPIDemo.stories.tsx"
+    },
+    {
+      "title": "MarkdownRendererEnhanced",
+      "path": "?path=/docs/components-datadisplay-markdownrendererenhanced--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Extended markdown renderer with KaTeX, syntax highlighting, Mermaid diagrams, copy-to-clipboard, and",
+      "tags": ["ai"],
+      "file": "Components/DataDisplay/MarkdownRendererEnhanced.stories.tsx"
+    },
+    {
+      "title": "MemoryInspector",
+      "path": "?path=/docs/advanced-memory-memoryinspector--docs",
+      "category": "Advanced",
+      "subcategory": "Memory",
+      "description": "Inspect what the assistant has stored in memory",
+      "tags": ["memory"],
+      "file": "Advanced/Memory/MemoryInspector.stories.tsx"
+    },
+    {
+      "title": "Message",
+      "path": "?path=/docs/components-datadisplay-message--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Enhanced message component for displaying chat messages with animations, feedback, and interactive f",
+      "tags": ["stable", "streaming", "ai"],
+      "file": "Components/DataDisplay/Message.stories.tsx"
+    },
+    {
+      "title": "MessageEssentials",
+      "path": "?path=/docs/components-datadisplay-messageessentials--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "The Message component is the foundation of any chat interface",
+      "tags": ["streaming", "ai"],
+      "file": "Components/DataDisplay/MessageEssentials.stories.tsx"
+    },
+    {
+      "title": "MessageList",
+      "path": "?path=/docs/components-datadisplay-messagelist--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Message list component with auto-scroll, scroll-to-bottom button, and comprehensive message manageme",
+      "tags": ["stable", "ai", "hook"],
+      "file": "Components/DataDisplay/MessageList.stories.tsx"
+    },
+    {
+      "title": "MessageMetadata",
+      "path": "?path=/docs/components-datadisplay-messagemetadata--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Component for displaying message metadata including tokens, cost, response time, model, confidence, ",
+      "tags": ["ai"],
+      "file": "Components/DataDisplay/MessageMetadata.stories.tsx"
+    },
+    {
+      "title": "MessageOptimized",
+      "path": "?path=/docs/components-datadisplay-messageoptimized--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Optimized message renderer with markdown parsing, streaming indicators, and interaction affordances",
+      "tags": ["streaming", "ai"],
+      "file": "Components/DataDisplay/MessageOptimized.stories.tsx"
+    },
+    {
+      "title": "MessageSearch",
+      "path": "?path=/docs/components-datadisplay-messagesearch--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Concurrent-safe message filtering built on React deferred values",
+      "tags": [],
+      "file": "Components/DataDisplay/MessageSearch.stories.tsx"
+    },
+    {
+      "title": "Motion & Animation",
+      "path": "?path=/docs/foundation-motion-&-animation--docs",
+      "category": "Foundation",
+      "tags": [],
+      "file": "Foundation/Motion.stories.tsx"
+    },
+    {
+      "title": "Multi-step Forms",
+      "path": "?path=/docs/patterns-forms-multi-step-forms--docs",
+      "category": "Patterns",
+      "subcategory": "Forms",
+      "description": "# Multi-step Form Pattern Learn how to implement multi-step forms in chat interfaces",
+      "tags": ["ai"],
+      "file": "Patterns/Forms/MultiStep.stories.tsx"
+    },
+    {
+      "title": "Multi-turn Conversations",
+      "path": "?path=/docs/patterns-chat-multi-turn-conversations--docs",
+      "category": "Patterns",
+      "subcategory": "Chat",
+      "description": "# Multi-turn Conversation Pattern Learn how to build chat interfaces that maintain context across mu",
+      "tags": ["streaming", "ai"],
+      "file": "Patterns/Chat/MultiTurn.stories.tsx"
+    },
+    {
+      "title": "MultiModalPreview",
+      "path": "?path=/docs/components-datadisplay-multimodalpreview--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Preview and manage multimodal attachments including images, audio, video, files, and links",
+      "tags": ["ai"],
+      "file": "Components/DataDisplay/MultiModalPreview.stories.tsx"
+    },
+    {
+      "title": "NetworkStatus",
+      "path": "?path=/docs/components-feedback-networkstatus--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "Component for displaying network connection status with latency tracking and reconnection attempts",
+      "tags": ["stable", "ai"],
+      "file": "Components/Feedback/NetworkStatus.stories.tsx"
+    },
+    {
+      "title": "PerformanceDashboard",
+      "path": "?path=/docs/advanced-analytics-performancedashboard--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "In-app observability widget mirroring dashboards in Datadog, Vercel, and the Storybook Design System",
+      "tags": ["memory", "ai"],
+      "file": "Advanced/Analytics/PerformanceDashboard.stories.tsx"
+    },
+    {
+      "title": "PersonaPanel",
+      "path": "?path=/docs/components-datadisplay-personapanel--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Switch between tailored assistants optimized for different AI chat workflows",
+      "tags": ["ai"],
+      "file": "Components/DataDisplay/PersonaPanel.stories.tsx"
+    },
+    {
+      "title": "Playground",
+      "path": "?path=/docs/welcome-playground--docs",
+      "category": "Welcome",
+      "description": "# Interactive Playground Try out Clarity Chat components in this interactive playground",
+      "tags": ["ai", "hook"],
+      "file": "Welcome/Playground.stories.tsx"
+    },
+    {
+      "title": "Popover",
+      "path": "?path=/docs/components-navigation-popover--docs",
+      "category": "Components",
+      "subcategory": "Navigation",
+      "description": "Popover component for displaying floating content relative to a trigger element",
+      "tags": ["stable", "ai"],
+      "file": "Components/Navigation/Popover.stories.tsx"
+    },
+    {
+      "title": "Progress",
+      "path": "?path=/docs/components-datadisplay-progress--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Progress indicators that provide visual feedback for tasks, uploads, and loading states with smooth ",
+      "tags": ["stable", "ai"],
+      "file": "Components/DataDisplay/Progress.stories.tsx"
+    },
+    {
+      "title": "ProjectSidebar",
+      "path": "?path=/docs/components-layout-projectsidebar--docs",
+      "category": "Components",
+      "subcategory": "Layout",
+      "tags": [],
+      "file": "Components/Layout/ProjectSidebar.stories.tsx"
+    },
+    {
+      "title": "PromptLibrary",
+      "path": "?path=/docs/advanced-ai-promptlibrary--docs",
+      "category": "Advanced",
+      "subcategory": "AI",
+      "tags": ["ai"],
+      "file": "Advanced/AI/PromptLibrary.stories.tsx"
+    },
+    {
+      "title": "PromptSuggestions",
+      "path": "?path=/docs/advanced-ai-promptsuggestions--docs",
+      "category": "Advanced",
+      "subcategory": "AI",
+      "description": "Display prompt suggestions for starting or continuing conversations",
+      "tags": ["stable", "ai"],
+      "file": "Advanced/AI/PromptSuggestions.stories.tsx"
+    },
+    {
+      "title": "ResponseQualityMeter",
+      "path": "?path=/docs/components-feedback-responsequalitymeter--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "Track groundedness, coverage, and other evaluation signals generated by your scoring pipeline",
+      "tags": [],
+      "file": "Components/Feedback/ResponseQualityMeter.stories.tsx"
+    },
+    {
+      "title": "SafetyReviewConsole",
+      "path": "?path=/docs/advanced-enterprise-safetyreviewconsole--docs",
+      "category": "Advanced",
+      "subcategory": "Enterprise",
+      "description": "Console for reviewing and managing safety highlights in AI-generated content",
+      "tags": ["ai"],
+      "file": "Advanced/Enterprise/SafetyReviewConsole.stories.tsx"
+    },
+    {
+      "title": "SafetyStatusCard",
+      "path": "?path=/docs/components-feedback-safetystatuscard--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "Monitor policy checks on model responses",
+      "tags": ["ai"],
+      "file": "Components/Feedback/SafetyStatusCard.stories.tsx"
+    },
+    {
+      "title": "SeatInviteDialog",
+      "path": "?path=/docs/advanced-enterprise-seatinvitedialog--docs",
+      "category": "Advanced",
+      "subcategory": "Enterprise",
+      "description": "# Seat Invite Dialog Dialog component for inviting team members to your organization with role-based",
+      "tags": ["ai"],
+      "file": "Advanced/Enterprise/SeatInviteDialog.stories.tsx"
+    },
+    {
+      "title": "SessionSummaryCard",
+      "path": "?path=/docs/components-feedback-sessionsummarycard--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "Card displaying session summary with highlights, metrics, and actionable next steps",
+      "tags": ["hook"],
+      "file": "Components/Feedback/SessionSummaryCard.stories.tsx"
+    },
+    {
+      "title": "SettingsPanel",
+      "path": "?path=/docs/components-layout-settingspanel--docs",
+      "category": "Components",
+      "subcategory": "Layout",
+      "tags": ["ai"],
+      "file": "Components/Layout/SettingsPanel.stories.tsx"
+    },
+    {
+      "title": "Skeleton",
+      "path": "?path=/docs/components-datadisplay-skeleton--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Skeleton loading components that provide visual placeholders while content loads, improving perceive",
+      "tags": ["stable", "ai"],
+      "file": "Components/DataDisplay/Skeleton.stories.tsx"
+    },
+    {
+      "title": "Spacing & Layout",
+      "path": "?path=/docs/foundation-spacing-&-layout--docs",
+      "category": "Foundation",
+      "tags": ["ai"],
+      "file": "Foundation/SpacingLayout.stories.tsx"
+    },
+    {
+      "title": "SSOConfigWizard",
+      "path": "?path=/docs/advanced-enterprise-ssoconfigwizard--docs",
+      "category": "Advanced",
+      "subcategory": "Enterprise",
+      "description": "# SSO Configuration Wizard Guided wizard for configuring Single Sign-On (SSO) integration with ident",
+      "tags": ["ai"],
+      "file": "Advanced/Enterprise/SSOConfigWizard.stories.tsx"
+    },
+    {
+      "title": "StreamBlock",
+      "path": "?path=/docs/advanced-streaming-streamblock--docs",
+      "category": "Advanced",
+      "subcategory": "Streaming",
+      "description": "The \\",
+      "tags": ["streaming", "ai"],
+      "file": "Advanced/Streaming/StreamBlock.stories.tsx"
+    },
+    {
+      "title": "StreamCancellation",
+      "path": "?path=/docs/advanced-streaming-streamcancellation--docs",
+      "category": "Advanced",
+      "subcategory": "Streaming",
+      "tags": ["streaming"],
+      "file": "Advanced/Streaming/StreamCancellation.stories.tsx"
+    },
+    {
+      "title": "Streaming Responses",
+      "path": "?path=/docs/patterns-ai-streaming-responses--docs",
+      "category": "Patterns",
+      "subcategory": "AI",
+      "description": "# Streaming Responses Pattern Learn how to implement streaming AI responses for better user experien",
+      "tags": ["streaming", "memory", "ai"],
+      "file": "Patterns/AI/Streaming.stories.tsx"
+    },
+    {
+      "title": "StreamingExamples",
+      "path": "?path=/docs/advanced-streaming-streamingexamples--docs",
+      "category": "Advanced",
+      "subcategory": "Streaming",
+      "description": "Interactive demo comparing SSE and WebSocket streaming integrations",
+      "tags": ["streaming", "ai"],
+      "file": "Advanced/Streaming/StreamingExamples.stories.tsx"
+    },
+    {
+      "title": "StreamingMessage",
+      "path": "?path=/docs/components-datadisplay-streamingmessage--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "**Streaming Message Component** - Real-time AI response rendering with advanced features: - 🌊 Token",
+      "tags": ["stable", "streaming", "ai", "hook"],
+      "file": "Components/DataDisplay/StreamingMessage.stories.tsx"
+    },
+    {
+      "title": "StreamingTextRenderer",
+      "path": "?path=/docs/advanced-streaming-streamingtextrenderer--docs",
+      "category": "Advanced",
+      "subcategory": "Streaming",
+      "tags": ["streaming"],
+      "file": "Advanced/Streaming/StreamingTextRenderer.stories.tsx"
+    },
+    {
+      "title": "Templates",
+      "path": "?path=/docs/examples-templates--docs",
+      "category": "Examples",
+      "description": "Pre-built chat templates optimized for specific use cases",
+      "tags": ["ai"],
+      "file": "Examples/Templates.stories.tsx"
+    },
+    {
+      "title": "Textarea",
+      "path": "?path=/docs/components-inputs-textarea--docs",
+      "category": "Components",
+      "subcategory": "Inputs",
+      "description": "Multi-line text input component for longer content",
+      "tags": ["stable", "ai"],
+      "file": "Components/Inputs/Textarea.stories.tsx"
+    },
+    {
+      "title": "Theme Contrast Checker",
+      "path": "?path=/docs/foundation-theme-contrast-checker--docs",
+      "category": "Foundation",
+      "description": "# Theme Contrast Checker A visual accessibility analyzer that checks WCAG color contrast compliance ",
+      "tags": ["ai"],
+      "file": "Foundation/ThemeContrastChecker.stories.tsx"
+    },
+    {
+      "title": "Theme Playground",
+      "path": "?path=/docs/foundation-theme-playground--docs",
+      "category": "Foundation",
+      "description": "# Interactive Theme Playground Create and customize themes in real-time",
+      "tags": ["ai"],
+      "file": "Foundation/ThemePlayground.stories.tsx"
+    },
+    {
+      "title": "Theme Preview Thumbnail",
+      "path": "?path=/docs/foundation-theme-preview-thumbnail--docs",
+      "category": "Foundation",
+      "description": "# Theme Preview Thumbnail A visual thumbnail component that displays a miniature preview of a theme",
+      "tags": ["ai"],
+      "file": "Foundation/ThemePreviewThumbnail.stories.tsx"
+    },
+    {
+      "title": "ThemePreview",
+      "path": "?path=/docs/foundation-themepreview--docs",
+      "category": "Foundation",
+      "description": "Live preview and editor for theme tokens",
+      "tags": [],
+      "file": "Foundation/ThemePreview.stories.tsx"
+    },
+    {
+      "title": "ThemeSelector",
+      "path": "?path=/docs/foundation-themeselector--docs",
+      "category": "Foundation",
+      "description": "Theme management components inspired by companies like Intercom and Zendesk, combining visual previe",
+      "tags": ["ai"],
+      "file": "Foundation/ThemeSelector.stories.tsx"
+    },
+    {
+      "title": "ThinkingIndicator",
+      "path": "?path=/docs/components-feedback-thinkingindicator--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "Animated thinking indicator showing AI processing stages with progress tracking and estimated time",
+      "tags": ["stable", "ai", "hook"],
+      "file": "Components/Feedback/ThinkingIndicator.stories.tsx"
+    },
+    {
+      "title": "Toast",
+      "path": "?path=/docs/components-feedback-toast--docs",
+      "category": "Components",
+      "subcategory": "Feedback",
+      "description": "A flexible toast notification system with auto-dismiss, queue management, and multiple position opti",
+      "tags": ["stable", "ai"],
+      "file": "Components/Feedback/Toast.stories.tsx"
+    },
+    {
+      "title": "TokenCounter",
+      "path": "?path=/docs/components-datadisplay-tokencounter--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Component for displaying token usage with cost tracking and limit warnings",
+      "tags": [],
+      "file": "Components/DataDisplay/TokenCounter.stories.tsx"
+    },
+    {
+      "title": "TokenOptimization",
+      "path": "?path=/docs/advanced-analytics-tokenoptimization--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "Visual components for monitoring and communicating token efficiency across your AI stack",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Advanced/Analytics/TokenOptimization.stories.tsx"
+    },
+    {
+      "title": "TokenOptimizationBadge",
+      "path": "?path=/docs/advanced-analytics-tokenoptimizationbadge--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "# Token Optimization Badge Compact badge displaying token savings and optimization status",
+      "tags": ["ai"],
+      "file": "Advanced/Analytics/TokenOptimizationBadge.stories.tsx"
+    },
+    {
+      "title": "TokenOptimizationDashboard",
+      "path": "?path=/docs/advanced-analytics-tokenoptimizationdashboard--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "# Token Optimization Dashboard Comprehensive dashboard displaying detailed token optimization metric",
+      "tags": ["ai"],
+      "file": "Advanced/Analytics/TokenOptimizationDashboard.stories.tsx"
+    },
+    {
+      "title": "TokenOptimizationPanel",
+      "path": "?path=/docs/advanced-analytics-tokenoptimizationpanel--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "description": "# Token Optimization Panel Displays comprehensive token optimization statistics with real-time monit",
+      "tags": ["ai"],
+      "file": "Advanced/Analytics/TokenOptimizationPanel.stories.tsx"
+    },
+    {
+      "title": "ToolInvocationCard",
+      "path": "?path=/docs/advanced-ai-toolinvocationcard--docs",
+      "category": "Advanced",
+      "subcategory": "AI",
+      "description": "**Tool Invocation Card** - Professional function/tool call visualization with approval workflow: - \ud83d",
+      "tags": ["ai", "hook"],
+      "file": "Advanced/AI/ToolInvocationCard.stories.tsx"
+    },
+    {
+      "title": "Tooltip",
+      "path": "?path=/docs/components-datadisplay-tooltip--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "Tooltip component for displaying helpful information on hover or focus",
+      "tags": ["stable", "ai"],
+      "file": "Components/DataDisplay/Tooltip.stories.tsx"
+    },
+    {
+      "title": "UsageDashboard",
+      "path": "?path=/docs/advanced-analytics-usagedashboard--docs",
+      "category": "Advanced",
+      "subcategory": "Analytics",
+      "tags": ["ai"],
+      "file": "Advanced/Analytics/UsageDashboard.stories.tsx"
+    },
+    {
+      "title": "UseAssistant",
+      "path": "?path=/docs/hooks-chat-useassistant--docs",
+      "category": "Hooks",
+      "subcategory": "Chat",
+      "description": "The \\",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Hooks/Chat/UseAssistant.stories.tsx"
+    },
+    {
+      "title": "UseAutoScroll",
+      "path": "?path=/docs/hooks-performance-useautoscroll--docs",
+      "category": "Hooks",
+      "subcategory": "Performance",
+      "description": "# useAutoScroll Automatically scroll to the bottom of a container when new content is added, with in",
+      "tags": ["ai", "hook"],
+      "file": "Hooks/Performance/UseAutoScroll.stories.tsx"
+    },
+    {
+      "title": "UseChat",
+      "path": "?path=/docs/hooks-chat-usechat--docs",
+      "category": "Hooks",
+      "subcategory": "Chat",
+      "description": "The \\",
+      "tags": ["ai", "hook"],
+      "file": "Hooks/Chat/UseChat.stories.tsx"
+    },
+    {
+      "title": "UseChatEnhanced",
+      "path": "?path=/docs/hooks-chat-usechatenhanced--docs",
+      "category": "Hooks",
+      "subcategory": "Chat",
+      "description": "The enhanced \\",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Hooks/Chat/UseChatEnhanced.stories.tsx"
+    },
+    {
+      "title": "useClarityChat",
+      "path": "?path=/docs/hooks-primary-useclaritychat--docs",
+      "category": "Hooks",
+      "subcategory": "Primary",
+      "description": "The primary hook for AI chat functionality",
+      "tags": ["streaming", "memory", "ai", "hook"],
+      "file": "Hooks/Primary/useClarityChat.stories.tsx"
+    },
+    {
+      "title": "UseClarityChat",
+      "path": "?path=/docs/hooks-chat-useclaritychat--docs",
+      "category": "Hooks",
+      "subcategory": "Chat",
+      "description": "The \\",
+      "tags": ["memory", "ai", "hook"],
+      "file": "Hooks/Chat/UseClarityChat.stories.tsx"
+    },
+    {
+      "title": "UseClarityObject",
+      "path": "?path=/docs/hooks-state-useclarityobject--docs",
+      "category": "Hooks",
+      "subcategory": "State",
+      "description": "The \\",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Hooks/State/UseClarityObject.stories.tsx"
+    },
+    {
+      "title": "UseClipboard",
+      "path": "?path=/docs/hooks-utilities-useclipboard--docs",
+      "category": "Hooks",
+      "subcategory": "Utilities",
+      "description": "The \\",
+      "tags": ["ai", "hook"],
+      "file": "Hooks/Utilities/UseClipboard.stories.tsx"
+    },
+    {
+      "title": "UseCompletion",
+      "path": "?path=/docs/hooks-chat-usecompletion--docs",
+      "category": "Hooks",
+      "subcategory": "Chat",
+      "description": "The \\",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Hooks/Chat/UseCompletion.stories.tsx"
+    },
+    {
+      "title": "UseDebounce",
+      "path": "?path=/docs/hooks-performance-usedebounce--docs",
+      "category": "Hooks",
+      "subcategory": "Performance",
+      "description": "The \\",
+      "tags": ["hook"],
+      "file": "Hooks/Performance/UseDebounce.stories.tsx"
+    },
+    {
+      "title": "UseErrorRecovery",
+      "path": "?path=/docs/hooks-utilities-useerrorrecovery--docs",
+      "category": "Hooks",
+      "subcategory": "Utilities",
+      "description": "# useErrorRecovery Automatic error recovery hook with intelligent retry logic, exponential backoff, ",
+      "tags": ["ai", "hook"],
+      "file": "Hooks/Utilities/UseErrorRecovery.stories.tsx"
+    },
+    {
+      "title": "UseLocalStorage",
+      "path": "?path=/docs/hooks-state-uselocalstorage--docs",
+      "category": "Hooks",
+      "subcategory": "State",
+      "description": "The \\",
+      "tags": ["ai", "hook"],
+      "file": "Hooks/State/UseLocalStorage.stories.tsx"
+    },
+    {
+      "title": "UseMessageOperations",
+      "path": "?path=/docs/hooks-state-usemessageoperations--docs",
+      "category": "Hooks",
+      "subcategory": "State",
+      "description": "The \\",
+      "tags": ["hook"],
+      "file": "Hooks/State/UseMessageOperations.stories.tsx"
+    },
+    {
+      "title": "UsePrevious",
+      "path": "?path=/docs/hooks-state-useprevious--docs",
+      "category": "Hooks",
+      "subcategory": "State",
+      "description": "The \\",
+      "tags": ["memory", "hook"],
+      "file": "Hooks/State/UsePrevious.stories.tsx"
+    },
+    {
+      "title": "UseReducedMotion",
+      "path": "?path=/docs/hooks-accessibility-usereducedmotion--docs",
+      "category": "Hooks",
+      "subcategory": "Accessibility",
+      "description": "The \\",
+      "tags": ["ai", "hook"],
+      "file": "Hooks/Accessibility/UseReducedMotion.stories.tsx"
+    },
+    {
+      "title": "UseStreamableUI",
+      "path": "?path=/docs/hooks-streaming-usestreamableui--docs",
+      "category": "Hooks",
+      "subcategory": "Streaming",
+      "description": "The \\",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Hooks/Streaming/UseStreamableUI.stories.tsx"
+    },
+    {
+      "title": "UseStreaming",
+      "path": "?path=/docs/hooks-streaming-usestreaming--docs",
+      "category": "Hooks",
+      "subcategory": "Streaming",
+      "description": "The \\",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Hooks/Streaming/UseStreaming.stories.tsx"
+    },
+    {
+      "title": "UseStreamingSSE",
+      "path": "?path=/docs/hooks-streaming-usestreamingsse--docs",
+      "category": "Hooks",
+      "subcategory": "Streaming",
+      "description": "# useStreamingSSE React hook for Server-Sent Events (SSE) streaming with automatic reconnection, err",
+      "tags": ["streaming", "ai", "hook"],
+      "file": "Hooks/Streaming/UseStreamingSSE.stories.tsx"
+    },
+    {
+      "title": "UseThrottle",
+      "path": "?path=/docs/hooks-performance-usethrottle--docs",
+      "category": "Hooks",
+      "subcategory": "Performance",
+      "description": "The \\",
+      "tags": ["hook"],
+      "file": "Hooks/Performance/UseThrottle.stories.tsx"
+    },
+    {
+      "title": "UseTokenTracker",
+      "path": "?path=/docs/hooks-performance-usetokentracker--docs",
+      "category": "Hooks",
+      "subcategory": "Performance",
+      "description": "# useTokenTracker Track token usage across a conversation with automatic cost calculation, limit war",
+      "tags": ["ai", "hook"],
+      "file": "Hooks/Performance/UseTokenTracker.stories.tsx"
+    },
+    {
+      "title": "UseVoiceInput",
+      "path": "?path=/docs/hooks-utilities-usevoiceinput--docs",
+      "category": "Hooks",
+      "subcategory": "Utilities",
+      "description": "# useVoiceInput Speech-to-text input hook using the Web Speech API for voice recognition",
+      "tags": ["ai", "hook"],
+      "file": "Hooks/Utilities/UseVoiceInput.stories.tsx"
+    },
+    {
+      "title": "UseWindowSize",
+      "path": "?path=/docs/hooks-utilities-usewindowsize--docs",
+      "category": "Hooks",
+      "subcategory": "Utilities",
+      "description": "The \\",
+      "tags": ["memory", "hook"],
+      "file": "Hooks/Utilities/UseWindowSize.stories.tsx"
+    },
+    {
+      "title": "VirtualizedMessageList",
+      "path": "?path=/docs/components-datadisplay-virtualizedmessagelist--docs",
+      "category": "Components",
+      "subcategory": "DataDisplay",
+      "description": "High-performance list for long-running conversations",
+      "tags": ["streaming", "ai"],
+      "file": "Components/DataDisplay/VirtualizedMessageList.stories.tsx"
+    },
+    {
+      "title": "VoiceInput",
+      "path": "?path=/docs/components-inputs-voiceinput--docs",
+      "category": "Components",
+      "subcategory": "Inputs",
+      "description": "Voice input component with Web Speech API support",
+      "tags": ["stable", "ai"],
+      "file": "Components/Inputs/VoiceInput.stories.tsx"
+    },
+    {
+      "title": "WorkflowSuggestionList",
+      "path": "?path=/docs/advanced-ai-workflowsuggestionlist--docs",
+      "category": "Advanced",
+      "subcategory": "AI",
+      "description": "Present curated workflows that help users accomplish routine tasks with minimal prompting",
+      "tags": ["ai"],
+      "file": "Advanced/AI/WorkflowSuggestionList.stories.tsx"
+    }
+  ]
+}

@@ -11,6 +11,41 @@
  * - OpenAI-compatible streaming (SSE)
  * - Custom streaming endpoints
  * - Non-streaming responses
+ *
+ * ## CORS Considerations
+ *
+ * **Important**: Direct browser requests to AI APIs (OpenAI, Anthropic) will be
+ * blocked by CORS policies. To use real providers:
+ *
+ * 1. **Use a backend proxy** (recommended): Create an API route in your app that
+ *    forwards requests to the AI provider
+ * 2. **Use Ollama locally**: Ollama runs on localhost and allows CORS by default
+ * 3. **Use a CORS proxy**: For development only, use a service like cors-anywhere
+ *
+ * ## Quick Start with Ollama (Local AI)
+ *
+ * Ollama is the easiest way to test with real AI locally:
+ *
+ * ```bash
+ * # 1. Install Ollama (macOS)
+ * brew install ollama
+ *
+ * # Or download from https://ollama.ai
+ *
+ * # 2. Start Ollama server
+ * ollama serve
+ *
+ * # 3. Pull a model (in another terminal)
+ * ollama pull llama3.2
+ *
+ * # 4. Test the API
+ * curl http://localhost:11434/api/chat -d '{
+ *   "model": "llama3.2",
+ *   "messages": [{"role": "user", "content": "Hello!"}]
+ * }'
+ * ```
+ *
+ * Then select "Ollama (Local)" in the provider selector below.
  */
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React, { useState, useCallback } from 'react'
@@ -35,7 +70,9 @@ const meta: Meta = {
       description: {
         component:
           'Test Clarity Chat components against your own API endpoint. ' +
-          'Configure the API URL and optionally add headers for authentication.',
+          'Configure the API URL and optionally add headers for authentication. ' +
+          '**Note**: Direct browser requests to OpenAI/Anthropic APIs will be blocked by CORS. ' +
+          'Use Ollama for local testing or create a backend proxy for production providers.',
       },
     },
   },

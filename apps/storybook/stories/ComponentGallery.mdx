@@ -5,52 +5,102 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 export const SearchFilter = () => {
   const [filter, setFilter] = React.useState('')
+  const [resultCount, setResultCount] = React.useState(0)
+  const [focusedIndex, setFocusedIndex] = React.useState(-1)
+  const inputRef = React.useRef(null)
 
   React.useEffect(() => {
     const cards = document.querySelectorAll('.gallery-card')
     const sections = document.querySelectorAll('.gallery-section')
-    const searchTerm = filter.toLowerCase()
+    const searchTerm = filter.toLowerCase().trim()
 
     if (!searchTerm) {
-      cards.forEach(card => card.style.display = '')
+      cards.forEach(card => {
+        card.style.display = ''
+        card.classList.remove('gallery-card-focused')
+      })
       sections.forEach(section => section.style.display = '')
+      setResultCount(cards.length)
+      setFocusedIndex(-1)
       return
     }
 
+    let visibleCount = 0
     cards.forEach(card => {
       const title = card.querySelector('.gallery-card-title')?.textContent?.toLowerCase() || ''
       const description = card.querySelector('.gallery-card-description')?.textContent?.toLowerCase() || ''
       const tags = Array.from(card.querySelectorAll('.gallery-tag')).map(t => t.textContent?.toLowerCase() || '').join(' ')
       const matches = title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)
       card.style.display = matches ? '' : 'none'
+      card.classList.remove('gallery-card-focused')
+      if (matches) visibleCount++
     })
+
+    setResultCount(visibleCount)
+    setFocusedIndex(-1)
 
     // Hide empty sections
     sections.forEach(section => {
-      const visibleCards = section.querySelectorAll('.gallery-card[style=""], .gallery-card:not([style])')
       const hasVisible = Array.from(section.querySelectorAll('.gallery-card')).some(c => c.style.display !== 'none')
       section.style.display = hasVisible ? '' : 'none'
     })
   }, [filter])
 
+  const handleKeyDown = (e) => {
+    const visibleCards = Array.from(document.querySelectorAll('.gallery-card')).filter(c => c.style.display !== 'none')
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      const newIndex = Math.min(focusedIndex + 1, visibleCards.length - 1)
+      setFocusedIndex(newIndex)
+      visibleCards.forEach((card, i) => card.classList.toggle('gallery-card-focused', i === newIndex))
+      visibleCards[newIndex]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      const newIndex = Math.max(focusedIndex - 1, 0)
+      setFocusedIndex(newIndex)
+      visibleCards.forEach((card, i) => card.classList.toggle('gallery-card-focused', i === newIndex))
+      visibleCards[newIndex]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    } else if (e.key === 'Enter' && focusedIndex >= 0 && focusedIndex < visibleCards.length) {
+      e.preventDefault()
+      visibleCards[focusedIndex]?.click()
+    } else if (e.key === 'Escape') {
+      setFilter('')
+      inputRef.current?.blur()
+    }
+  }
+
   return (
     <div className="gallery-search">
       <input
+        ref={inputRef}
         type="text"
         placeholder="Search components... (e.g., button, chat, streaming)"
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="gallery-search-input"
         aria-label="Search components"
+        aria-describedby="search-results-count"
       />
       {filter && (
-        <button
-          onClick={() => setFilter('')}
-          className="gallery-search-clear"
-          aria-label="Clear search"
-        >
-          ✕
-        </button>
+        <div className="gallery-search-info">
+          <span id="search-results-count" className="gallery-search-count" aria-live="polite">
+            {resultCount} {resultCount === 1 ? 'result' : 'results'}
+          </span>
+          <button
+            onClick={() => setFilter('')}
+            className="gallery-search-clear"
+            aria-label="Clear search"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      {filter && (
+        <div className="gallery-search-hint">
+          Use ↑↓ to navigate, Enter to select, Esc to clear
+        </div>
       )}
     </div>
   )
@@ -106,6 +156,36 @@ export const SearchFilter = () => {
     .gallery-search-clear:hover {
       background: #d1d5db;
       color: #374151;
+    }
+    .gallery-search-info {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .gallery-search-count {
+      font-size: 0.75rem;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+    .dark .gallery-search-count {
+      color: #9ca3af;
+    }
+    .gallery-search-hint {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    .dark .gallery-search-hint {
+      color: #6b7280;
+    }
+    .gallery-card-focused {
+      border-color: #6366f1 !important;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
     }
     .gallery-hero {
       background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);

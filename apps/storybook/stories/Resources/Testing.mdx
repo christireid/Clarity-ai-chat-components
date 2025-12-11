@@ -1,0 +1,311 @@
+{/* Testing.mdx - Comprehensive testing documentation */}
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Resources/Testing" />
+
+# Testing Guide
+
+Comprehensive guide to testing Clarity Chat components, including unit tests,
+interaction tests, accessibility tests, and visual regression testing.
+
+---
+
+## Testing Strategy
+
+Clarity Chat uses a multi-layered testing approach:
+
+| Layer | Purpose | Tools |
+|-------|---------|-------|
+| **Unit Tests** | Test individual functions/hooks | Vitest, React Testing Library |
+| **Interaction Tests** | Test user interactions | Storybook Test Runner |
+| **Accessibility Tests** | WCAG compliance | axe-playwright, @storybook/addon-a11y |
+| **Visual Regression** | Catch UI changes | Chromatic |
+| **E2E Tests** | Full user flows | Playwright |
+
+---
+
+## Running Tests
+
+### Quick Start
+
+```bash
+# From the storybook directory
+cd apps/storybook
+
+# Run interaction tests
+pnpm test-storybook
+
+# Run with accessibility checks
+pnpm test-storybook:a11y
+
+# Run in CI mode (headless)
+pnpm test-storybook:ci
+```
+
+### Prerequisites
+
+1. **Start Storybook** (in one terminal):
+```bash
+pnpm dev
+```
+
+2. **Run tests** (in another terminal):
+```bash
+pnpm test-storybook
+```
+
+---
+
+## Interaction Tests
+
+Storybook interaction tests verify component behavior using the `play` function:
+
+```typescript
+import { within, userEvent, expect } from '@storybook/testing-library'
+
+export const WithInteraction: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Find elements by accessible roles
+    const button = canvas.getByRole('button', { name: /send/i })
+    const input = canvas.getByRole('textbox')
+
+    // Simulate user interactions
+    await userEvent.type(input, 'Hello, world!')
+    await userEvent.click(button)
+
+    // Assert expected outcomes
+    await expect(input).toHaveValue('')
+  },
+}
+```
+
+### Best Practices
+
+- **Use semantic queries**: Prefer `getByRole`, `getByLabelText` over `getByTestId`
+- **Simulate real interactions**: Use `userEvent` over `fireEvent`
+- **Wait for async**: Use `waitFor` for async operations
+- **Test accessibility**: Verify focus management and keyboard navigation
+
+---
+
+## Accessibility Testing
+
+All components are automatically tested for WCAG 2.1 AA compliance.
+
+### How It Works
+
+The test runner uses axe-playwright to scan each story:
+
+```typescript
+// .storybook/test-runner.ts
+import { checkA11y, injectAxe } from 'axe-playwright'
+
+const config: TestRunnerConfig = {
+  async preVisit(page) {
+    await injectAxe(page)
+  },
+  async postVisit(page) {
+    await checkA11y(page, '#storybook-root', {
+      axeOptions: {
+        runOnly: {
+          type: 'tag',
+          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'],
+        },
+      },
+    })
+  },
+}
+```
+
+### Skip A11y for Specific Stories
+
+Add the `skip-a11y` tag to skip accessibility checks:
+
+```typescript
+export const StoryWithKnownIssue: Story = {
+  tags: ['skip-a11y'],
+  // ...
+}
+```
+
+### Manual Testing
+
+Use the Accessibility addon panel in Storybook:
+
+1. Open any story
+2. Click "Accessibility" tab in the addon panel
+3. Review violations, passes, and incomplete checks
+
+---
+
+## Visual Regression Testing
+
+Chromatic captures screenshots and detects visual changes.
+
+### Setup
+
+```bash
+# Install Chromatic
+npm install --save-dev chromatic
+
+# Run visual tests
+npx chromatic --project-token=<your-token>
+```
+
+### CI Integration
+
+The Chromatic workflow automatically runs on pull requests:
+
+```yaml
+# .github/workflows/chromatic.yml
+jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+```
+
+---
+
+## Link Validation
+
+Validate all internal links in documentation:
+
+```bash
+pnpm validate-links
+```
+
+This script:
+- Scans all MDX files for internal links
+- Extracts story paths from `.stories.tsx` files
+- Reports any broken links
+
+---
+
+## Writing Testable Components
+
+### Accessibility First
+
+```typescript
+// Good: Semantic HTML with ARIA
+<button
+  aria-label="Send message"
+  aria-disabled={isLoading}
+  onClick={handleSend}
+>
+  Send
+</button>
+
+// Bad: Div with click handler
+<div onClick={handleSend}>Send</div>
+```
+
+### Predictable State
+
+```typescript
+// Good: Controlled state
+const [value, setValue] = useState('')
+<Input value={value} onChange={setValue} />
+
+// Bad: Uncontrolled with no way to test
+<Input defaultValue="" />
+```
+
+### Test IDs (Last Resort)
+
+```typescript
+// Only when semantic queries aren't possible
+<div data-testid="custom-widget" role="application">
+  {/* Complex custom component */}
+</div>
+```
+
+---
+
+## CI/CD Pipeline
+
+### Pull Request Checks
+
+| Check | Status | Description |
+|-------|--------|-------------|
+| Chromatic | [![Chromatic](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/chromatic.yml/badge.svg)](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/chromatic.yml) | Visual regression |
+| Accessibility | [![Accessibility](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/accessibility.yml/badge.svg)](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/accessibility.yml) | WCAG compliance |
+| CI | [![CI](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/ci.yml/badge.svg)](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/ci.yml) | Build & lint |
+
+### Workflow Overview
+
+```
+Pull Request
+    ├── validate-links     # Check documentation links
+    ├── build-storybook    # Build static site
+    ├── chromatic          # Visual regression
+    └── accessibility      # A11y tests
+```
+
+---
+
+## Troubleshooting
+
+### Tests Not Running
+
+```bash
+# Ensure Storybook is running
+pnpm dev
+
+# Check test-runner is installed
+pnpm add -D @storybook/test-runner
+
+# Clear cache and retry
+rm -rf node_modules/.cache
+pnpm test-storybook
+```
+
+### Flaky Tests
+
+```typescript
+// Increase timeout for slow operations
+await waitFor(
+  () => expect(element).toBeVisible(),
+  { timeout: 5000 }
+)
+
+// Use findBy for async elements
+const element = await canvas.findByRole('button')
+```
+
+### False Positive A11y Errors
+
+```typescript
+// Skip specific rules if needed
+await checkA11y(page, '#storybook-root', {
+  axeOptions: {
+    rules: {
+      'color-contrast': { enabled: false },
+    },
+  },
+})
+```
+
+---
+
+## Resources
+
+### Internal
+
+- [Accessibility Guide](?path=/docs/resources-accessibility--docs)
+- [useReducedMotion Hook](?path=/docs/hooks-accessibility-usereducedmotion--docs)
+
+### External
+
+- [Storybook Test Runner](https://storybook.js.org/docs/writing-tests/test-runner)
+- [Testing Library](https://testing-library.com/docs/)
+- [axe-core Rules](https://dequeuniversity.com/rules/axe/4.6)
+- [Chromatic Documentation](https://www.chromatic.com/docs/)
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)

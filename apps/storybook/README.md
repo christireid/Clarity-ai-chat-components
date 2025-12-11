@@ -1,10 +1,17 @@
 # Clarity Chat Storybook
 
-> Comprehensive component documentation, pattern library, and development environment for Clarity Chat
+> Comprehensive component documentation, pattern library, and development environment for Clarity
+> Chat
 
 [![Storybook](https://img.shields.io/badge/Storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=white)](https://storybook.js.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Accessibility](https://img.shields.io/badge/WCAG%202.1-AA-green?style=for-the-badge)](https://www.w3.org/WAI/WCAG21/quickref/)
+
+### CI Status
+
+[![Chromatic](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/chromatic.yml/badge.svg)](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/chromatic.yml)
+[![Accessibility](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/accessibility.yml/badge.svg)](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/accessibility.yml)
+[![CI](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/ci.yml/badge.svg)](https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/ci.yml)
 
 ---
 
@@ -51,12 +58,14 @@ Visit [http://localhost:6006](http://localhost:6006) to view Storybook.
 ### **145 Total Pages** organized into 7 main sections:
 
 #### 1. **Welcome** (4 pages)
+
 - Introduction and overview
 - What's new in the redesign
 - Navigation guide
 - Getting started
 
 #### 2. **Foundation** (7 pages)
+
 - Getting Started guide
 - Design principles
 - Color system and themes
@@ -65,6 +74,7 @@ Visit [http://localhost:6006](http://localhost:6006) to view Storybook.
 - Accessibility standards
 
 #### 3. **Components** (60 pages: 55 stories + 5 overviews)
+
 - **Chat** - Message, MessageList, ChatInput, ChatWindow
 - **Streaming** - StreamingMessage, StreamBlock, Cancellation
 - **Token Optimization** - Dashboard, Panel, Badge
@@ -72,6 +82,7 @@ Visit [http://localhost:6006](http://localhost:6006) to view Storybook.
 - **UI Primitives** - Button, Input, Dialog, Toast, etc.
 
 #### 4. **Advanced Features** (37 pages: 32 stories + 5 overviews)
+
 - **AI** - Agent systems, tool calling
 - **Streaming** - Real-time responses, WebSocket
 - **Memory** - Context management, persistence
@@ -79,6 +90,7 @@ Visit [http://localhost:6006](http://localhost:6006) to view Storybook.
 - **Enterprise** - Multi-tenancy, RBAC, audit logging
 
 #### 5. **Hooks** (25 pages: 20 stories + 5 overviews)
+
 - **Chat Hooks** - useChat, useChatCore, useMessageOperations
 - **Streaming** - useStreaming, useStreamingSSE
 - **Performance** - useDebounce, useThrottle, useSmartCache
@@ -86,11 +98,13 @@ Visit [http://localhost:6006](http://localhost:6006) to view Storybook.
 - **State Management** - useLocalStorage, useIndexedDB
 
 #### 6. **Examples** (8 pages: 7 stories + 1 overview)
+
 - Complete use cases and real-world implementations
 - Multi-modal chat, model switching, virtualization
 - Financial advisor, healthcare assistant demos
 
 #### 7. **Patterns** (8 pages: 3 stories + 5 overviews) ⭐ NEW!
+
 - **20 Documented Patterns** with best practices
 - **Chat Patterns** - Multi-turn conversations, branching, threading
 - **Form Patterns** - Multi-step forms, validation, auto-save
@@ -102,20 +116,26 @@ Visit [http://localhost:6006](http://localhost:6006) to view Storybook.
 ## 🎯 Features
 
 ### ✨ Interactive Demos
+
 Every component includes live, interactive examples with real state management.
 
 ### 🧪 Automated Tests
+
 23 interaction test stories with ~90 test steps verify component behavior.
 
 ### ♿ Accessibility
+
 All components are WCAG 2.1 Level AA compliant with:
+
 - Full keyboard navigation
 - Screen reader support
 - Proper ARIA attributes
 - Color contrast (4.5:1+)
 
 ### 📖 Comprehensive Documentation
+
 Each component includes:
+
 - Clear descriptions
 - Feature lists
 - Use cases
@@ -123,13 +143,17 @@ Each component includes:
 - API references
 
 ### 🎨 Theme Support
+
 Built-in theme switcher with multiple presets:
+
 - System (auto)
 - Light/Dark modes
 - Custom color schemes
 
 ### 📱 Responsive
+
 All stories tested across viewports:
+
 - Mobile (375px)
 - Tablet (768px)
 - Desktop (1280px)
@@ -235,16 +259,16 @@ npm run test-storybook -- --coverage
 
 Current Storybook documentation coverage:
 
-| Section | Pages | Coverage | Status |
-|---------|-------|----------|--------|
-| Welcome | 4 | 100% | ✅ Complete |
-| Foundation | 7 | 100% | ✅ Complete |
-| Components | 60 | 95% | ✅ Excellent |
-| Advanced | 37 | 90% | ✅ Excellent |
-| Hooks | 25 | 85% | ✅ Good |
-| Examples | 8 | 100% | ✅ Complete |
-| Patterns | 8 | 100% | ✅ Complete |
-| **Overall** | **145** | **95%** | **✅ Excellent** |
+| Section     | Pages   | Coverage | Status           |
+| ----------- | ------- | -------- | ---------------- |
+| Welcome     | 4       | 100%     | ✅ Complete      |
+| Foundation  | 7       | 100%     | ✅ Complete      |
+| Components  | 60      | 95%      | ✅ Excellent     |
+| Advanced    | 37      | 90%      | ✅ Excellent     |
+| Hooks       | 25      | 85%      | ✅ Good          |
+| Examples    | 8       | 100%     | ✅ Complete      |
+| Patterns    | 8       | 100%     | ✅ Complete      |
+| **Overall** | **145** | **95%**  | **✅ Excellent** |
 
 All major components, hooks, and patterns are documented with working examples.
 
@@ -261,7 +285,8 @@ All components meet WCAG 2.1 Level AA standards:
 - ✅ Focus management
 - ✅ Semantic HTML
 
-The `@storybook/addon-a11y` automatically checks for violations. View results in the "Accessibility" panel.
+The `@storybook/addon-a11y` automatically checks for violations. View results in the "Accessibility"
+panel.
 
 ### Testing with Screen Readers
 
@@ -276,11 +301,13 @@ The `@storybook/addon-a11y` automatically checks for violations. View results in
 The Storybook includes **11 professional theme presets**, all WCAG AA compliant:
 
 **Light Themes:**
+
 - Professional Light (default)
 - Healthcare Light
 - Finance Light
 
 **Dark Themes:**
+
 - Professional Dark
 - Healthcare Dark
 - Finance Dark
@@ -289,10 +316,12 @@ The Storybook includes **11 professional theme presets**, all WCAG AA compliant:
 - Forest
 
 **Neutral:**
+
 - System (auto light/dark)
 - Minimal Light
 
 Use the theme switcher in the toolbar to explore all themes. All themes include:
+
 - ✅ WCAG AA color contrast (4.5:1+)
 - ✅ Accessible focus indicators
 - ✅ Consistent spacing and typography
@@ -307,6 +336,7 @@ Themes are provided by `@clarity-chat/react/theme`.
 ### Interaction Tests
 
 Automated tests verify:
+
 - User interactions (click, type, keyboard)
 - Component state changes
 - Accessibility features
@@ -317,6 +347,7 @@ View test results in the "Interactions" panel.
 ### Visual Testing
 
 For visual regression testing, consider integrating:
+
 - [Chromatic](https://www.chromatic.com/)
 - [Percy](https://percy.io/)
 - [Applitools](https://applitools.com/)
@@ -334,6 +365,7 @@ The Storybook is organized for easy navigation - **find any component in ≤3 cl
 3. **Explore** → Individual component/pattern documentation
 
 **Quick Links by Use Case:**
+
 - 🚀 **Getting Started** → Welcome → Getting Started
 - 🎨 **Browse Components** → Components → Overview
 - 📚 **Learn Patterns** → Patterns → Overview ⭐
@@ -344,6 +376,7 @@ The Storybook is organized for easy navigation - **find any component in ≤3 cl
 ### In-Storybook Guides
 
 Navigate to overview pages for comprehensive guides:
+
 - **Welcome/Getting-Started** - Quick start guide
 - **Foundation/Design-Principles** - Design system fundamentals
 - **Components/Overview** - All components catalog
@@ -524,6 +557,7 @@ See [LICENSE](../../LICENSE) for details.
 ## 🎉 Acknowledgments
 
 Built with:
+
 - [Storybook](https://storybook.js.org/)
 - [React](https://reactjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
@@ -534,4 +568,5 @@ Built with:
 
 **Happy Storybook Development!** 🎨
 
-For questions or issues, please open an issue on [GitHub](https://github.com/christireid/Clarity-ai-chat-components/issues).
+For questions or issues, please open an issue on
+[GitHub](https://github.com/christireid/Clarity-ai-chat-components/issues).
