@@ -1,5 +1,5 @@
 name: 'Setup Node.js and pnpm'
-description: 'Sets up Node.js, pnpm, and installs dependencies with caching'
+description: 'Sets up Node.js, pnpm, and installs dependencies with caching and retry logic'
 
 inputs:
   node-version:
@@ -33,12 +33,32 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: 'pnpm'
 
-    - name: Install dependencies
+    - name: Install dependencies with retry
       if: inputs.install-dependencies == 'true'
       shell: bash
       run: |
+        MAX_RETRIES=3
+        RETRY_COUNT=0
+        INSTALL_CMD="pnpm install"
+
         if [ "${{ inputs.frozen-lockfile }}" = "true" ]; then
-          pnpm install --frozen-lockfile
-        else
-          pnpm install
+          INSTALL_CMD="pnpm install --frozen-lockfile"
         fi
+
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES: Running $INSTALL_CMD"
+          if $INSTALL_CMD; then
+            echo "✅ Dependencies installed successfully"
+            exit 0
+          fi
+
+          RETRY_COUNT=$((RETRY_COUNT + 1))
+          if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+            WAIT_TIME=$((2 ** RETRY_COUNT))
+            echo "⚠️ Install failed, retrying in ${WAIT_TIME}s..."
+            sleep $WAIT_TIME
+          fi
+        done
+
+        echo "❌ Failed to install dependencies after $MAX_RETRIES attempts"
+        exit 1

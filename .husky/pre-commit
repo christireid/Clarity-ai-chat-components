@@ -71,5 +71,40 @@ fi
 
 echo ""
 
+# Check for workflow file changes and validate with actionlint
+echo "🔍 Checking for workflow changes..."
+STAGED_WORKFLOWS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.github/workflows/.*\.ya?ml$' || true)
+
+if [ -n "$STAGED_WORKFLOWS" ]; then
+  echo "📋 Validating workflow files with actionlint..."
+
+  # Check if actionlint is available
+  if command -v actionlint >/dev/null 2>&1; then
+    for file in $STAGED_WORKFLOWS; do
+      if [ -f "$file" ]; then
+        echo "  Checking $file..."
+        if ! actionlint "$file"; then
+          echo ""
+          echo "❌ actionlint found issues in $file"
+          echo "   Please fix the issues before committing."
+          echo ""
+          echo "💡 Tip: Install actionlint locally:"
+          echo "   brew install actionlint  # macOS"
+          echo "   go install github.com/rhysd/actionlint/cmd/actionlint@latest  # Go"
+          exit 1
+        fi
+      fi
+    done
+    echo "✅ All workflow files passed actionlint validation"
+  else
+    echo "⚠️  actionlint not installed, skipping workflow validation"
+    echo "   Install: brew install actionlint (macOS) or see https://github.com/rhysd/actionlint"
+  fi
+else
+  echo "✅ No workflow files staged"
+fi
+
+echo ""
+
 # Run lint-staged
 npx lint-staged
