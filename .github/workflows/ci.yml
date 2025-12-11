@@ -3,67 +3,457 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.changeset/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE/**'
+      - 'LICENSE'
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.changeset/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE/**'
+      - 'LICENSE'
+  workflow_dispatch:
+    inputs:
+      skip_cache:
+        description: 'Skip Turbo cache (force fresh build)'
+        type: boolean
+        default: false
+      debug_enabled:
+        description: 'Enable tmate SSH debugging on failure'
+        type: boolean
+        default: false
+      run_all_jobs:
+        description: 'Run all jobs regardless of path filters'
+        type: boolean
+        default: true
+
+# Cancel in-progress runs on new commits
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# Minimal global permissions
+permissions:
+  contents: read
+  pull-requests: write  # For failure comments
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10'
+  TURBO_TELEMETRY_DISABLED: 1
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build packages
-        run: pnpm --filter @clarity-chat/react build
-
-      - name: Run tests
-        run: pnpm --filter @clarity-chat/react test --run
-        continue-on-error: true
-
+  # ============================================
+  # LINT - Fast feedback on code style
+  # ============================================
   lint:
+    name: Lint
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
         with:
-          version: 9
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
         with:
-          node-version: 20.x
-          cache: pnpm
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Turbo Remote Cache
+        if: ${{ !inputs.skip_cache }}
+        uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
 
       - name: Run ESLint
-        run: pnpm lint
-        continue-on-error: true
+        id: lint
+        run: |
+          if [ "${{ inputs.skip_cache }}" = "true" ]; then
+            pnpm turbo run lint --summarize --force
+          else
+            pnpm turbo run lint --summarize
+          fi
 
       - name: Check formatting
         run: pnpm format:check
-        continue-on-error: true
+
+      - name: Setup tmate session
+        if: ${{ failure() && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@e5c7151931ca95bad1c6f4190c730ecf8c7dde48 # v3.19
+        with:
+          limit-access-to-actor: true
+          timeout-minutes: 15
+
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Lint completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # TYPECHECK - Catch type errors
+  # ============================================
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Turbo Remote Cache
+        if: ${{ !inputs.skip_cache }}
+        uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
+
+      - name: Run typecheck
+        run: |
+          if [ "${{ inputs.skip_cache }}" = "true" ]; then
+            pnpm turbo run typecheck --summarize --force
+          else
+            pnpm turbo run typecheck --summarize
+          fi
+
+      - name: Setup tmate session
+        if: ${{ failure() && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@e5c7151931ca95bad1c6f4190c730ecf8c7dde48 # v3.19
+        with:
+          limit-access-to-actor: true
+          timeout-minutes: 15
+
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Typecheck completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # TEST - Run unit tests
+  # ============================================
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Turbo Remote Cache
+        if: ${{ !inputs.skip_cache }}
+        uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
+
+      - name: Run tests
+        run: |
+          if [ "${{ inputs.skip_cache }}" = "true" ]; then
+            pnpm turbo run test --summarize --force
+          else
+            pnpm turbo run test --summarize
+          fi
+
+      - name: Setup tmate session
+        if: ${{ failure() && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@e5c7151931ca95bad1c6f4190c730ecf8c7dde48 # v3.19
+        with:
+          limit-access-to-actor: true
+          timeout-minutes: 15
+
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Tests completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # BUILD - Verify build succeeds
+  # ============================================
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint, typecheck, test]
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
+      cache_hits: ${{ steps.build.outputs.cache_hits }}
+      cache_misses: ${{ steps.build.outputs.cache_misses }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Turbo Remote Cache
+        if: ${{ !inputs.skip_cache }}
+        uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
+
+      - name: Build packages
+        id: build
+        run: |
+          if [ "${{ inputs.skip_cache }}" = "true" ]; then
+            pnpm turbo run build --summarize --force 2>&1 | tee build-output.log
+          else
+            pnpm turbo run build --summarize 2>&1 | tee build-output.log
+          fi
+          # Extract cache stats from turbo output
+          CACHE_HITS=$(grep -oP 'cache hit' build-output.log | wc -l || echo "0")
+          CACHE_MISSES=$(grep -oP 'cache miss' build-output.log | wc -l || echo "0")
+          echo "cache_hits=${CACHE_HITS}" >> $GITHUB_OUTPUT
+          echo "cache_misses=${CACHE_MISSES}" >> $GITHUB_OUTPUT
+
+      - name: Verify build outputs
+        run: |
+          echo "📦 Checking build outputs..."
+          if [ -d "packages/react/dist" ]; then
+            echo "✅ packages/react/dist exists"
+            ls -la packages/react/dist
+          else
+            echo "❌ packages/react/dist not found"
+            exit 1
+          fi
+
+      - name: Setup tmate session
+        if: ${{ failure() && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@e5c7151931ca95bad1c6f4190c730ecf8c7dde48 # v3.19
+        with:
+          limit-access-to-actor: true
+          timeout-minutes: 15
+
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Build completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # CI SUMMARY - Performance report & failure notifications
+  # ============================================
+  ci-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [lint, typecheck, test, build]
+    if: always()
+    steps:
+      - name: Checkout for github-script
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Generate CI Summary
+        id: summary
+        run: |
+          # Determine failed jobs
+          FAILED_JOBS=""
+          if [ "${{ needs.lint.result }}" != "success" ]; then FAILED_JOBS="${FAILED_JOBS}Lint,"; fi
+          if [ "${{ needs.typecheck.result }}" != "success" ]; then FAILED_JOBS="${FAILED_JOBS}Typecheck,"; fi
+          if [ "${{ needs.test.result }}" != "success" ]; then FAILED_JOBS="${FAILED_JOBS}Test,"; fi
+          if [ "${{ needs.build.result }}" != "success" ]; then FAILED_JOBS="${FAILED_JOBS}Build,"; fi
+          FAILED_JOBS="${FAILED_JOBS%,}"  # Remove trailing comma
+          echo "failed_jobs=${FAILED_JOBS}" >> $GITHUB_OUTPUT
+
+          # Check if any job failed
+          if [ -n "$FAILED_JOBS" ]; then
+            echo "has_failures=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_failures=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "## 📊 CI Performance Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Duration | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ needs.lint.outputs.duration || 'N/A' }} | ${{ needs.lint.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Typecheck | ${{ needs.typecheck.outputs.duration || 'N/A' }} | ${{ needs.typecheck.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test | ${{ needs.test.outputs.duration || 'N/A' }} | ${{ needs.test.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.outputs.duration || 'N/A' }} | ${{ needs.build.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Cache statistics section
+          echo "### 📦 Cache Statistics" >> $GITHUB_STEP_SUMMARY
+          CACHE_HITS="${{ needs.build.outputs.cache_hits || '0' }}"
+          CACHE_MISSES="${{ needs.build.outputs.cache_misses || '0' }}"
+          TOTAL=$((CACHE_HITS + CACHE_MISSES))
+          if [ "$TOTAL" -gt 0 ]; then
+            HIT_RATE=$((CACHE_HITS * 100 / TOTAL))
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Cache Hits | ${CACHE_HITS} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Cache Misses | ${CACHE_MISSES} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Hit Rate | ${HIT_RATE}% |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- No cache data available for this run" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### 🔒 Security Features" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ StepSecurity Harden Runner (egress monitoring)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ SHA-pinned actions (supply chain protection)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Minimal permissions (least privilege)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ⚡ Performance Features" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Turbo Remote Cache (cross-run caching)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Parallel job execution" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ pnpm store caching" >> $GITHUB_STEP_SUMMARY
+
+      - name: Post failure comment to PR
+        if: ${{ steps.summary.outputs.has_failures == 'true' && github.event_name == 'pull_request' }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const failedJobs = '${{ steps.summary.outputs.failed_jobs }}'.split(',').filter(Boolean);
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const body = `## ❌ CI Failed
+
+            **Failed Jobs:** ${failedJobs.join(', ')}
+
+            | Job | Status | Duration |
+            |-----|--------|----------|
+            | Lint | ${{ needs.lint.result == 'success' && '✅ Passed' || '❌ Failed' }} | ${{ needs.lint.outputs.duration || 'N/A' }} |
+            | Typecheck | ${{ needs.typecheck.result == 'success' && '✅ Passed' || '❌ Failed' }} | ${{ needs.typecheck.outputs.duration || 'N/A' }} |
+            | Test | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} | ${{ needs.test.outputs.duration || 'N/A' }} |
+            | Build | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} | ${{ needs.build.outputs.duration || 'N/A' }} |
+
+            **[View Full Logs](${runUrl})**
+
+            <details>
+            <summary>💡 Quick Actions</summary>
+
+            - Re-run failed jobs from the Actions tab
+            - Run \`pnpm ${failedJobs[0]?.toLowerCase() || 'lint'}\` locally to reproduce
+            - Use \`workflow_dispatch\` with \`debug_enabled: true\` for SSH debugging
+
+            </details>
+            `;
+
+            // Check for existing failure comment to avoid spam
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' &&
+              c.body.includes('## ❌ CI Failed')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: Check overall status
+        if: ${{ steps.summary.outputs.has_failures == 'true' }}
+        run: |
+          echo "❌ One or more CI jobs failed: ${{ steps.summary.outputs.failed_jobs }}"
+          exit 1

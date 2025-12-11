@@ -23,6 +23,12 @@
   <a href="./LICENSE">
     <img src="https://img.shields.io/badge/Accessibility-WCAG%202.1%20AAA-success?style=for-the-badge" alt="WCAG AAA" />
   </a>
+  <a href="./.github/WORKFLOWS.md">
+    <img src="https://img.shields.io/badge/Actions-SHA%20Pinned-green?style=for-the-badge&colorA=18181B&colorB=22C55E" alt="Actions SHA Pinned" />
+  </a>
+  <a href="https://github.com/step-security/harden-runner">
+    <img src="https://img.shields.io/badge/Security-Harden%20Runner-blue?style=for-the-badge&colorA=18181B&colorB=3B82F6" alt="Harden Runner" />
+  </a>
   <a href="https://discord.gg/clarity-chat">
     <img src="https://img.shields.io/discord/clarity-chat?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="Discord" />
   </a>

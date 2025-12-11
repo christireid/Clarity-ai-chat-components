@@ -34,6 +34,20 @@ jobs:
     timeout-minutes: 20
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+            playwright.azureedge.net:443
+            playwright-verizon.azureedge.net:443
+            playwright-akamai.azureedge.net:443
+
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:

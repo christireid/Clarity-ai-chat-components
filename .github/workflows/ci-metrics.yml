@@ -1,0 +1,298 @@
+name: CI Metrics
+
+on:
+  schedule:
+    # Run weekly on Sundays at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  collect-metrics:
+    name: Collect CI Metrics
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+
+      - name: Collect workflow metrics
+        id: metrics
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const now = new Date();
+            const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+            // Initialize default metrics for error cases
+            const defaultMetrics = {
+              totalRuns: 0,
+              completedRuns: 0,
+              successfulRuns: 0,
+              failedRuns: 0,
+              cancelledRuns: 0,
+              successRate: 'N/A',
+              avgDuration: 'N/A',
+              minDuration: 'N/A',
+              maxDuration: 'N/A',
+              p95Duration: 'N/A',
+              cacheHitRate: 'N/A',
+              error: null
+            };
+
+            try {
+              // Paginated fetch of all workflow runs from the past week
+              let allRuns = [];
+              let page = 1;
+              const perPage = 100;
+              const maxPages = 10; // Safety limit: max 1000 runs
+
+              while (page <= maxPages) {
+                console.log(`Fetching page ${page}...`);
+
+                const { data: runs } = await github.rest.actions.listWorkflowRuns({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: 'ci.yml',
+                  created: `>=${weekAgo.toISOString().split('T')[0]}`,
+                  per_page: perPage,
+                  page: page
+                });
+
+                if (!runs.workflow_runs || runs.workflow_runs.length === 0) {
+                  break;
+                }
+
+                allRuns = allRuns.concat(runs.workflow_runs);
+                console.log(`Fetched ${runs.workflow_runs.length} runs, total: ${allRuns.length}`);
+
+                // If we got fewer than perPage, we've reached the end
+                if (runs.workflow_runs.length < perPage) {
+                  break;
+                }
+
+                page++;
+              }
+
+              console.log(`Total runs collected: ${allRuns.length}`);
+
+              // Handle case where no runs found
+              if (allRuns.length === 0) {
+                console.log('No workflow runs found in the past week');
+                core.setOutput('metrics', JSON.stringify({
+                  ...defaultMetrics,
+                  error: 'No workflow runs found in the past week'
+                }));
+                return defaultMetrics;
+              }
+
+              // Calculate metrics with validation
+              const completedRuns = allRuns.filter(r => r.status === 'completed');
+              const successfulRuns = completedRuns.filter(r => r.conclusion === 'success');
+              const failedRuns = completedRuns.filter(r => r.conclusion === 'failure');
+              const cancelledRuns = completedRuns.filter(r => r.conclusion === 'cancelled');
+
+              // Calculate durations (in minutes) with validation
+              const durations = completedRuns
+                .filter(r => r.run_started_at && r.updated_at)
+                .map(r => {
+                  try {
+                    const start = new Date(r.run_started_at);
+                    const end = new Date(r.updated_at);
+                    const duration = (end - start) / 1000 / 60;
+                    // Sanity check: duration should be positive and reasonable (< 2 hours)
+                    return (duration > 0 && duration < 120) ? duration : null;
+                  } catch (e) {
+                    return null;
+                  }
+                })
+                .filter(d => d !== null);
+
+              // Calculate statistics
+              const avgDuration = durations.length > 0
+                ? (durations.reduce((a, b) => a + b, 0) / durations.length).toFixed(1)
+                : 'N/A';
+
+              const minDuration = durations.length > 0
+                ? Math.min(...durations).toFixed(1)
+                : 'N/A';
+
+              const maxDuration = durations.length > 0
+                ? Math.max(...durations).toFixed(1)
+                : 'N/A';
+
+              // Calculate P95 duration
+              let p95Duration = 'N/A';
+              if (durations.length > 0) {
+                const sorted = [...durations].sort((a, b) => a - b);
+                const p95Index = Math.floor(sorted.length * 0.95);
+                p95Duration = sorted[p95Index].toFixed(1);
+              }
+
+              const successRate = completedRuns.length > 0
+                ? ((successfulRuns.length / completedRuns.length) * 100).toFixed(1)
+                : 'N/A';
+
+              const metrics = {
+                totalRuns: allRuns.length,
+                completedRuns: completedRuns.length,
+                successfulRuns: successfulRuns.length,
+                failedRuns: failedRuns.length,
+                cancelledRuns: cancelledRuns.length,
+                successRate: successRate,
+                avgDuration: avgDuration,
+                minDuration: minDuration,
+                maxDuration: maxDuration,
+                p95Duration: p95Duration,
+                cacheHitRate: 'N/A',
+                error: null
+              };
+
+              console.log('Metrics calculated:', JSON.stringify(metrics, null, 2));
+              core.setOutput('metrics', JSON.stringify(metrics));
+              return metrics;
+
+            } catch (error) {
+              console.error('Error collecting metrics:', error.message);
+              core.setOutput('metrics', JSON.stringify({
+                ...defaultMetrics,
+                error: error.message
+              }));
+              // Don't fail the workflow for metrics collection errors
+              return defaultMetrics;
+            }
+
+      - name: Generate metrics report
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            let metrics;
+            try {
+              metrics = JSON.parse('${{ steps.metrics.outputs.metrics }}');
+            } catch (e) {
+              console.error('Failed to parse metrics:', e.message);
+              metrics = { error: 'Failed to parse metrics data' };
+            }
+
+            const now = new Date();
+            const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+            // Handle error case
+            if (metrics.error) {
+              const errorBody = `## ⚠️ CI Metrics Collection Error
+
+              **Period**: ${weekAgo.toISOString().split('T')[0]} to ${now.toISOString().split('T')[0]}
+
+              An error occurred while collecting CI metrics:
+              \`\`\`
+              ${metrics.error}
+              \`\`\`
+
+              This is likely a transient issue. The workflow will retry next week.
+
+              ---
+              *This report was automatically generated by the [CI Metrics workflow](.github/workflows/ci-metrics.yml)*
+              `;
+
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, errorBody);
+              return;
+            }
+
+            const body = `## 📊 Weekly CI Metrics Report
+
+            **Period**: ${weekAgo.toISOString().split('T')[0]} to ${now.toISOString().split('T')[0]}
+
+            ### Build Statistics
+
+            | Metric | Value |
+            |--------|-------|
+            | Total Runs | ${metrics.totalRuns} |
+            | Successful | ${metrics.successfulRuns} |
+            | Failed | ${metrics.failedRuns} |
+            | Cancelled | ${metrics.cancelledRuns || 0} |
+            | Success Rate | ${metrics.successRate}% |
+
+            ### Performance
+
+            | Metric | Value |
+            |--------|-------|
+            | Average Duration | ${metrics.avgDuration} min |
+            | P95 Duration | ${metrics.p95Duration || 'N/A'} min |
+            | Fastest Run | ${metrics.minDuration} min |
+            | Slowest Run | ${metrics.maxDuration} min |
+
+            ### Security Status
+
+            - ✅ All actions SHA-pinned
+            - ✅ StepSecurity Harden Runner enabled
+            - ✅ Minimal permissions enforced
+            - ✅ Dependabot monitoring enabled
+
+            ### Recommendations
+
+            ${metrics.successRate !== 'N/A' && parseFloat(metrics.successRate) < 90 ? `
+            ⚠️ **Success rate below 90%** (${metrics.successRate}%) - Consider investigating frequent failures.
+            ` : ''}
+            ${metrics.avgDuration !== 'N/A' && parseFloat(metrics.avgDuration) > 10 ? `
+            ⚠️ **Average duration above 10 minutes** (${metrics.avgDuration} min) - Consider optimizing build steps.
+            ` : ''}
+            ${metrics.p95Duration !== 'N/A' && parseFloat(metrics.p95Duration) > 15 ? `
+            ⚠️ **P95 duration above 15 minutes** (${metrics.p95Duration} min) - Some runs are taking too long.
+            ` : ''}
+            ${metrics.cancelledRuns > metrics.completedRuns * 0.1 ? `
+            ⚠️ **High cancellation rate** (${metrics.cancelledRuns} cancelled) - Consider reviewing workflow triggers.
+            ` : ''}
+            ${metrics.successRate !== 'N/A' && parseFloat(metrics.successRate) >= 90 && (metrics.avgDuration === 'N/A' || parseFloat(metrics.avgDuration) <= 10) ? `
+            ✅ CI performance is healthy!
+            ` : ''}
+
+            ---
+
+            *This report was automatically generated by the [CI Metrics workflow](.github/workflows/ci-metrics.yml)*
+            `;
+
+            // Create or update the metrics issue
+            const title = `📊 Weekly CI Metrics - ${now.toISOString().split('T')[0]}`;
+
+            // Check if we should create an issue (only if there are concerns)
+            const hasIssues = (metrics.successRate !== 'N/A' && parseFloat(metrics.successRate) < 90) ||
+                             (metrics.avgDuration !== 'N/A' && parseFloat(metrics.avgDuration) > 10) ||
+                             (metrics.p95Duration !== 'N/A' && parseFloat(metrics.p95Duration) > 15);
+
+            if (hasIssues) {
+              try {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: title,
+                  body: body,
+                  labels: ['ci', 'metrics', 'automated']
+                });
+                console.log('Created CI metrics issue (issues detected)');
+              } catch (e) {
+                console.error('Failed to create issue:', e.message);
+              }
+            } else {
+              // Just log to step summary for healthy metrics
+              console.log('CI metrics healthy - no issue created');
+            }
+
+            // Always add to step summary
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, body);
+
+      - name: Post summary
+        run: |
+          echo "✅ CI metrics collection complete"
+          echo "View the full report in the workflow summary above."

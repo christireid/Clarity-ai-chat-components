@@ -1,0 +1,145 @@
+version: 2
+
+# Registries configuration (if needed for private packages)
+# registries:
+#   npm-registry:
+#     type: npm-registry
+#     url: https://registry.npmjs.org
+#     replaces-base: true
+
+updates:
+  # ============================================
+  # NPM Dependencies
+  # ============================================
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+
+    # Group updates to reduce PR noise
+    groups:
+      # Production dependencies - minor/patch only
+      production-deps:
+        dependency-type: "production"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Dev dependencies - all updates grouped
+      dev-deps:
+        dependency-type: "development"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # TypeScript ecosystem
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Testing tools
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "playwright"
+          - "@playwright/*"
+          - "@testing-library/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Build tools
+      build-tools:
+        patterns:
+          - "tsup"
+          - "turbo"
+          - "esbuild"
+          - "vite"
+          - "@vitejs/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    # Ignore packages that need manual review
+    ignore:
+      # React - major version changes need careful review
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      # Next.js - major changes often have breaking changes
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+    open-pull-requests-limit: 10
+
+    labels:
+      - "dependencies"
+      - "automated"
+
+    # Reviewers for npm dependency updates
+    reviewers:
+      - "christireid"
+
+  # ============================================
+  # GitHub Actions (CRITICAL for security)
+  # ============================================
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+
+    # Group non-major updates together
+    groups:
+      actions-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    commit-message:
+      prefix: "ci(deps)"
+      include: "scope"
+
+    open-pull-requests-limit: 10
+
+    labels:
+      - "ci"
+      - "security"
+      - "dependencies"
+      - "automated"
+
+    # Reviewers for security-critical action updates
+    reviewers:
+      - "christireid"
+
+  # ============================================
+  # Docker (if Dockerfiles are added)
+  # ============================================
+  # - package-ecosystem: "docker"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   labels:
+  #     - "docker"
+  #     - "dependencies"
