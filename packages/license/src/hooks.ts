@@ -12,31 +12,25 @@ import { verifyLicense } from './verifyLicense'
 import type { LicenseStatus, LicensePlan } from './types'
 
 /**
- * Internal subscription for license key changes
+ * Subscribe to LicenseInfo changes using the built-in subscription mechanism.
+ * This replaces the previous polling approach with event-driven updates.
  */
-const _listeners: Set<() => void> = new Set()
-let _lastKey = ''
-
 function subscribe(callback: () => void): () => void {
-  _listeners.add(callback)
-  return () => _listeners.delete(callback)
+  return LicenseInfo.subscribe(callback)
 }
 
+/**
+ * Get the current license key snapshot for useSyncExternalStore.
+ */
 function getSnapshot(): string {
   return LicenseInfo.getLicenseKey()
 }
 
-function notifyListeners(): void {
-  const currentKey = LicenseInfo.getLicenseKey()
-  if (currentKey !== _lastKey) {
-    _lastKey = currentKey
-    _listeners.forEach((listener) => listener())
-  }
-}
-
-// Poll for changes (since LicenseInfo is static)
-if (typeof window !== 'undefined') {
-  setInterval(notifyListeners, 1000)
+/**
+ * Server snapshot returns empty string (no license on server).
+ */
+function getServerSnapshot(): string {
+  return ''
 }
 
 /**
@@ -59,7 +53,11 @@ if (typeof window !== 'undefined') {
  * ```
  */
 export function useLicenseStatus(): LicenseStatus {
-  const licenseKey = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+  const licenseKey = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  )
 
   return useMemo(() => {
     return verifyLicense(licenseKey)

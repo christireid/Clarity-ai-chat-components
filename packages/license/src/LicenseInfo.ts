@@ -19,6 +19,22 @@ let _licenseKey = ''
 /** Cached license status (invalidated when key changes) */
 let _cachedStatus: LicenseStatus | null = null
 
+/** Listeners for license key changes */
+const _listeners: Set<() => void> = new Set()
+
+/**
+ * Notify all listeners of license key change
+ */
+function notifyListeners(): void {
+  _listeners.forEach((listener) => {
+    try {
+      listener()
+    } catch {
+      // Silently ignore listener errors
+    }
+  })
+}
+
 /**
  * Static class for managing the Clarity Chat license.
  *
@@ -39,12 +55,17 @@ export const LicenseInfo = {
   /**
    * Set the license key for the application.
    * Should be called once at app initialization.
+   * Notifies all subscribers of the change.
    *
    * @param key - The license key string
    */
   setLicenseKey(key: string): void {
+    const changed = _licenseKey !== key
     _licenseKey = key
     _cachedStatus = null // Invalidate cache
+    if (changed) {
+      notifyListeners()
+    }
   },
 
   /**
@@ -59,10 +80,47 @@ export const LicenseInfo = {
   /**
    * Clear the current license key.
    * This will reset to the unlicensed state.
+   * Notifies all subscribers of the change.
    */
   clearLicenseKey(): void {
+    const changed = _licenseKey !== ''
     _licenseKey = ''
     _cachedStatus = null
+    if (changed) {
+      notifyListeners()
+    }
+  },
+
+  /**
+   * Subscribe to license key changes.
+   * Returns an unsubscribe function.
+   *
+   * @param callback - Function to call when license key changes
+   * @returns Unsubscribe function
+   *
+   * @example
+   * ```typescript
+   * const unsubscribe = LicenseInfo.subscribe(() => {
+   *   console.log('License changed:', LicenseInfo.isValid());
+   * });
+   *
+   * // Later, to stop listening:
+   * unsubscribe();
+   * ```
+   */
+  subscribe(callback: () => void): () => void {
+    _listeners.add(callback)
+    return () => {
+      _listeners.delete(callback)
+    }
+  },
+
+  /**
+   * Get the number of active subscribers.
+   * Useful for debugging.
+   */
+  getSubscriberCount(): number {
+    return _listeners.size
   },
 
   /**

@@ -35,6 +35,17 @@ export {
   useRequireLicense,
 } from './hooks'
 
+// React Context (alternative to static LicenseInfo)
+export {
+  LicenseProvider,
+  useLicenseContext,
+  useLicenseContextOptional,
+} from './LicenseProvider'
+export type {
+  LicenseContextValue,
+  LicenseProviderProps,
+} from './LicenseProvider'
+
 // Components
 export { Watermark, WatermarkOverlay } from './Watermark'
 export type {

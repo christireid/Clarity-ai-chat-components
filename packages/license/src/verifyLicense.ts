@@ -154,6 +154,18 @@ export function verifyLicense(
     }
   }
 
+  // Check domain restrictions (only in browser environment)
+  if (payload.domains && payload.domains.length > 0) {
+    const hostname = getCurrentHostname()
+    if (hostname && !isDomainAllowed(hostname, payload.domains)) {
+      return {
+        status: 'OutOfScope',
+        payload,
+        reason: `License not valid for domain: ${hostname}. Allowed domains: ${payload.domains.join(', ')}`,
+      }
+    }
+  }
+
   // All checks passed
   return {
     status: 'Valid',
@@ -217,4 +229,57 @@ function getEnvironment(): 'development' | 'production' | 'test' {
     return process.env.NODE_ENV as 'development' | 'production' | 'test'
   }
   return 'production'
+}
+
+/**
+ * Get the current hostname from the browser environment
+ * Returns null in SSR or non-browser environments
+ */
+function getCurrentHostname(): string | null {
+  if (typeof window !== 'undefined' && window.location?.hostname) {
+    return window.location.hostname
+  }
+  return null
+}
+
+/**
+ * Check if a hostname is allowed by the domain restrictions
+ * Supports exact match and suffix matching (e.g., '.example.com' matches 'sub.example.com')
+ *
+ * @param hostname - Current hostname to check
+ * @param allowedDomains - Array of allowed domain patterns
+ * @returns true if hostname is allowed
+ */
+function isDomainAllowed(hostname: string, allowedDomains: string[]): boolean {
+  const normalizedHostname = hostname.toLowerCase()
+
+  for (const domain of allowedDomains) {
+    const normalizedDomain = domain.toLowerCase()
+
+    // Exact match
+    if (normalizedHostname === normalizedDomain) {
+      return true
+    }
+
+    // Suffix match (e.g., '.example.com' matches 'sub.example.com')
+    if (normalizedDomain.startsWith('.')) {
+      if (normalizedHostname.endsWith(normalizedDomain)) {
+        return true
+      }
+      // Also match the bare domain (e.g., '.example.com' should match 'example.com')
+      if (normalizedHostname === normalizedDomain.slice(1)) {
+        return true
+      }
+    }
+
+    // Wildcard subdomain match (e.g., 'example.com' matches 'sub.example.com')
+    if (
+      normalizedHostname.endsWith('.' + normalizedDomain) ||
+      normalizedHostname === normalizedDomain
+    ) {
+      return true
+    }
+  }
+
+  return false
 }
