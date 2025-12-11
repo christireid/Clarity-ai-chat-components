@@ -118,6 +118,7 @@
     }
   },
   "dependencies": {
+    "@clarity-chat/license": "workspace:*",
     "@clarity-chat/memory": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/types": "workspace:*",

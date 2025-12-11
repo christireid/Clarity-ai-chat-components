@@ -1,0 +1,196 @@
+/**
+ * React Hooks for License Verification
+ *
+ * Provides React hooks for checking license status in components.
+ *
+ * @packageDocumentation
+ */
+
+import { useMemo, useSyncExternalStore } from 'react'
+import { LicenseInfo } from './LicenseInfo'
+import { verifyLicense } from './verifyLicense'
+import type { LicenseStatus, LicensePlan } from './types'
+
+/**
+ * Internal subscription for license key changes
+ */
+const _listeners: Set<() => void> = new Set()
+let _lastKey = ''
+
+function subscribe(callback: () => void): () => void {
+  _listeners.add(callback)
+  return () => _listeners.delete(callback)
+}
+
+function getSnapshot(): string {
+  return LicenseInfo.getLicenseKey()
+}
+
+function notifyListeners(): void {
+  const currentKey = LicenseInfo.getLicenseKey()
+  if (currentKey !== _lastKey) {
+    _lastKey = currentKey
+    _listeners.forEach((listener) => listener())
+  }
+}
+
+// Poll for changes (since LicenseInfo is static)
+if (typeof window !== 'undefined') {
+  setInterval(notifyListeners, 1000)
+}
+
+/**
+ * Hook to get the current license status.
+ * Automatically updates when the license key changes.
+ *
+ * @returns Current license status
+ *
+ * @example
+ * ```typescript
+ * function MyComponent() {
+ *   const status = useLicenseStatus();
+ *
+ *   if (status.status !== 'Valid') {
+ *     return <div>Please purchase a license</div>;
+ *   }
+ *
+ *   return <div>Welcome, {status.payload?.licensee}!</div>;
+ * }
+ * ```
+ */
+export function useLicenseStatus(): LicenseStatus {
+  const licenseKey = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+
+  return useMemo(() => {
+    return verifyLicense(licenseKey)
+  }, [licenseKey])
+}
+
+/**
+ * Hook to check if the current license is valid.
+ *
+ * @returns true if license is valid
+ *
+ * @example
+ * ```typescript
+ * function ProFeature() {
+ *   const isLicensed = useIsLicensed();
+ *
+ *   if (!isLicensed) {
+ *     return <UpgradePrompt />;
+ *   }
+ *
+ *   return <ProFeatureContent />;
+ * }
+ * ```
+ */
+export function useIsLicensed(): boolean {
+  const status = useLicenseStatus()
+  return status.status === 'Valid'
+}
+
+/**
+ * Hook to check if the license meets a required plan level.
+ *
+ * @param requiredPlan - Minimum required plan
+ * @returns true if license meets the required plan level
+ *
+ * @example
+ * ```typescript
+ * function EnterpriseFeature() {
+ *   const hasEnterprise = useHasPlan('enterprise');
+ *
+ *   if (!hasEnterprise) {
+ *     return <div>Enterprise license required</div>;
+ *   }
+ *
+ *   return <EnterpriseContent />;
+ * }
+ * ```
+ */
+export function useHasPlan(requiredPlan: LicensePlan): boolean {
+  const status = useLicenseStatus()
+
+  return useMemo(() => {
+    if (status.status !== 'Valid' || !status.payload) {
+      return false
+    }
+
+    const planHierarchy: Record<LicensePlan, number> = {
+      community: 0,
+      pro: 1,
+      enterprise: 2,
+    }
+
+    const actualLevel = planHierarchy[status.payload.plan]
+    const requiredLevel = planHierarchy[requiredPlan]
+
+    return actualLevel >= requiredLevel
+  }, [status, requiredPlan])
+}
+
+/**
+ * Hook to get license info for display purposes.
+ *
+ * @returns Object with licensee and plan info
+ *
+ * @example
+ * ```typescript
+ * function LicenseDisplay() {
+ *   const { licensee, plan, isValid } = useLicenseInfo();
+ *
+ *   if (!isValid) {
+ *     return <div>Unlicensed</div>;
+ *   }
+ *
+ *   return <div>Licensed to {licensee} ({plan})</div>;
+ * }
+ * ```
+ */
+export function useLicenseInfo(): {
+  licensee: string | undefined
+  plan: LicensePlan | undefined
+  isValid: boolean
+  status: LicenseStatus
+} {
+  const status = useLicenseStatus()
+
+  return useMemo(
+    () => ({
+      licensee: status.payload?.licensee,
+      plan: status.payload?.plan,
+      isValid: status.status === 'Valid',
+      status,
+    }),
+    [status]
+  )
+}
+
+/**
+ * Hook that throws an error if not licensed.
+ * Useful for components that should never render without a license.
+ *
+ * @param featureName - Name of the feature (for error message)
+ * @throws Error if license is invalid
+ *
+ * @example
+ * ```typescript
+ * function CriticalProFeature() {
+ *   useRequireLicense('CriticalProFeature');
+ *
+ *   // Only renders if licensed
+ *   return <div>Critical feature content</div>;
+ * }
+ * ```
+ */
+export function useRequireLicense(featureName = 'This feature'): void {
+  const status = useLicenseStatus()
+
+  if (status.status !== 'Valid') {
+    throw new Error(
+      `${featureName} requires a valid Clarity Chat license. ` +
+        `Status: ${status.status}. ${status.reason ?? ''} ` +
+        `Purchase at https://claritychat.dev/pricing`
+    )
+  }
+}
