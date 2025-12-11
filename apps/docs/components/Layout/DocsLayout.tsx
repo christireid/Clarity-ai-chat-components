@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState } from 'react'
 import { Menu, X, PanelLeftClose, PanelLeft, GripVertical } from 'lucide-react'
 import { Sidebar, type NavItem } from '@/components/Navigation/Sidebar'
 import { TableOfContents } from '@/components/Enhanced/TableOfContents'
 import { AutoPagination } from '@/components/Navigation/AutoPagination'
+import { useSidebarState } from '@/components/Layout/hooks/useSidebarState'
+import { useReducedMotion } from '@/components/Layout/hooks/useReducedMotion'
 import clsx from 'clsx'
 
 interface DocsLayoutProps {
@@ -17,202 +19,219 @@ interface DocsLayoutProps {
   }[]
 }
 
-const SIDEBAR_MIN_WIDTH = 200
-const SIDEBAR_MAX_WIDTH = 400
-const SIDEBAR_DEFAULT_WIDTH = 280
+/**
+ * Skeleton loader shown during SSR hydration
+ */
+function DocsLayoutSkeleton() {
+  return (
+    <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex py-8 relative">
+        {/* Sidebar skeleton */}
+        <aside className="hidden lg:block w-[280px] shrink-0">
+          <div className="p-6 space-y-4">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className="h-8 bg-bg-secondary rounded-lg animate-pulse"
+                style={{ width: `${60 + Math.random() * 40}%` }}
+              />
+            ))}
+          </div>
+        </aside>
+        {/* Content skeleton */}
+        <main className="flex-1 min-w-0 lg:ml-4">
+          <article className="max-w-4xl mx-auto px-4 lg:px-8 space-y-4">
+            <div className="h-10 bg-bg-secondary rounded-lg animate-pulse w-3/4" />
+            <div className="h-6 bg-bg-secondary rounded-lg animate-pulse w-full" />
+            <div className="h-6 bg-bg-secondary rounded-lg animate-pulse w-5/6" />
+            <div className="h-6 bg-bg-secondary rounded-lg animate-pulse w-4/5" />
+          </article>
+        </main>
+      </div>
+    </div>
+  )
+}
 
 export function DocsLayout({
   children,
   navigation,
-  tableOfContents,
 }: DocsLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false) // Mobile state
-  const [sidebarVisible, setSidebarVisible] = useState(true) // Desktop collapse state
-  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT_WIDTH)
-  const [isResizing, setIsResizing] = useState(false)
-  const sidebarRef = useRef<HTMLElement>(null)
+  // Mobile sidebar state (separate from desktop)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
-  // Load persisted state from localStorage
-  useEffect(() => {
-    const savedVisible = localStorage.getItem('docs-sidebar-visible')
-    const savedWidth = localStorage.getItem('docs-sidebar-width')
+  // Desktop sidebar state with all features
+  const sidebar = useSidebarState({
+    minWidth: 200,
+    maxWidth: 400,
+    defaultWidth: 280,
+  })
 
-    if (savedVisible !== null) {
-      setSidebarVisible(savedVisible === 'true')
-    }
-    if (savedWidth !== null) {
-      const width = parseInt(savedWidth, 10)
-      if (width >= SIDEBAR_MIN_WIDTH && width <= SIDEBAR_MAX_WIDTH) {
-        setSidebarWidth(width)
-      }
-    }
-  }, [])
+  // Respect reduced motion preferences
+  const prefersReducedMotion = useReducedMotion()
 
-  // Persist sidebar visibility
-  useEffect(() => {
-    localStorage.setItem('docs-sidebar-visible', String(sidebarVisible))
-  }, [sidebarVisible])
+  // Show skeleton during SSR hydration to prevent flash
+  if (!sidebar.isMounted) {
+    return <DocsLayoutSkeleton />
+  }
 
-  // Persist sidebar width
-  useEffect(() => {
-    localStorage.setItem('docs-sidebar-width', String(sidebarWidth))
-  }, [sidebarWidth])
+  // Animation classes based on motion preference
+  const transitionClasses = prefersReducedMotion
+    ? ''
+    : 'transition-all duration-300 ease-in-out'
 
-  // Handle resize drag
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    setIsResizing(true)
-  }, [])
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isResizing) return
-
-      const newWidth = e.clientX
-      if (newWidth >= SIDEBAR_MIN_WIDTH && newWidth <= SIDEBAR_MAX_WIDTH) {
-        setSidebarWidth(newWidth)
-      }
-    }
-
-    const handleMouseUp = () => {
-      setIsResizing(false)
-    }
-
-    if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = 'col-resize'
-      document.body.style.userSelect = 'none'
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-    }
-  }, [isResizing])
-
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Cmd/Ctrl + B to toggle sidebar
-      if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
-        e.preventDefault()
-        setSidebarVisible((v) => !v)
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  const transformTransitionClasses = prefersReducedMotion
+    ? ''
+    : 'transition-transform duration-300 ease-in-out'
 
   return (
     <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex py-8 relative">
         {/* Mobile Sidebar Toggle */}
         <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="lg:hidden fixed bottom-4 right-4 z-50 p-4 bg-brand-500 text-white rounded-full shadow-lg hover:bg-brand-600 transition-colors"
-          aria-label="Toggle sidebar"
-          aria-expanded={sidebarOpen}
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className={clsx(
+            'lg:hidden fixed bottom-4 right-4 z-50 p-4',
+            'bg-brand-500 text-white rounded-full shadow-lg',
+            'hover:bg-brand-600 active:scale-95',
+            prefersReducedMotion ? '' : 'transition-all duration-200'
+          )}
+          aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileOpen}
+          aria-controls="docs-sidebar-mobile"
         >
-          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
         {/* Desktop Sidebar Toggle */}
         <button
-          onClick={() => setSidebarVisible(!sidebarVisible)}
+          onClick={sidebar.toggleVisibility}
           className={clsx(
             'hidden lg:flex items-center justify-center',
             'fixed top-20 z-50 p-2 rounded-lg',
             'bg-bg-secondary hover:bg-bg-tertiary border border-border',
             'text-text-secondary hover:text-text-primary',
-            'transition-all duration-300 shadow-sm hover:shadow-md',
-            sidebarVisible ? 'left-[calc(var(--sidebar-width)+0.5rem)]' : 'left-4'
+            'shadow-sm hover:shadow-md',
+            transitionClasses
           )}
           style={{
-            '--sidebar-width': `${sidebarWidth}px`,
-          } as React.CSSProperties}
-          aria-label={sidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
-          aria-expanded={sidebarVisible}
+            left: sidebar.visible ? `${sidebar.width + 8}px` : '16px',
+          }}
+          aria-label={sidebar.visible ? 'Hide sidebar' : 'Show sidebar'}
+          aria-expanded={sidebar.visible}
           aria-controls="docs-sidebar"
-          title={sidebarVisible ? 'Hide sidebar (⌘B)' : 'Show sidebar (⌘B)'}
+          title={`${sidebar.visible ? 'Hide' : 'Show'} sidebar (⌘B)`}
         >
-          {sidebarVisible ? (
+          {sidebar.visible ? (
             <PanelLeftClose className="w-5 h-5" />
           ) : (
             <PanelLeft className="w-5 h-5" />
           )}
         </button>
 
-        {/* Sidebar */}
+        {/* Desktop Sidebar */}
         <aside
-          ref={sidebarRef}
           id="docs-sidebar"
           className={clsx(
-            'fixed lg:sticky top-16 left-0 z-40 h-[calc(100vh-4rem)] overflow-y-auto',
-            'bg-bg-primary border-r border-border lg:border-0',
-            'transition-transform duration-300 ease-in-out',
-            // Mobile styles
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-            // Desktop styles
-            'lg:translate-x-0',
-            !sidebarVisible && 'lg:-translate-x-full lg:opacity-0 lg:pointer-events-none'
+            'hidden lg:block',
+            'sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto',
+            'bg-bg-primary',
+            transformTransitionClasses,
+            !sidebar.visible && 'lg:w-0 lg:opacity-0 lg:overflow-hidden'
           )}
           style={{
-            width: `${sidebarWidth}px`,
-            flexShrink: 0,
+            width: sidebar.visible ? `${sidebar.width}px` : 0,
+            minWidth: sidebar.visible ? `${sidebar.width}px` : 0,
           }}
-          aria-hidden={!sidebarVisible && !sidebarOpen}
+          aria-hidden={!sidebar.visible}
+          inert={!sidebar.visible ? true : undefined}
         >
-          <div className="p-6 pr-4">
+          <div className="p-6 pr-2">
             <Sidebar navigation={navigation} />
           </div>
         </aside>
 
-        {/* Resize Handle */}
-        {sidebarVisible && (
+        {/* Resize Handle - Always visible with subtle indicator */}
+        {sidebar.visible && (
           <div
-            onMouseDown={handleMouseDown}
+            onMouseDown={sidebar.startResize}
+            onTouchStart={sidebar.startResize}
+            onKeyDown={sidebar.handleKeyboardResize}
             className={clsx(
-              'hidden lg:flex items-center justify-center',
-              'fixed top-16 h-[calc(100vh-4rem)] w-3 z-50',
-              'cursor-col-resize group',
-              'transition-opacity duration-200',
-              isResizing ? 'opacity-100' : 'opacity-0 hover:opacity-100'
+              'hidden lg:flex flex-col items-center justify-center',
+              'sticky top-16 h-[calc(100vh-4rem)] w-4 -ml-2',
+              'cursor-col-resize group z-10',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2'
             )}
-            style={{
-              left: `${sidebarWidth - 6}px`,
-            }}
             role="separator"
             aria-orientation="vertical"
-            aria-label="Resize sidebar"
+            aria-label="Resize sidebar. Use left/right arrows to adjust, Shift for larger steps, Home/End for min/max."
+            aria-valuenow={sidebar.width}
+            aria-valuemin={200}
+            aria-valuemax={400}
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'ArrowLeft') {
-                setSidebarWidth((w) => Math.max(SIDEBAR_MIN_WIDTH, w - 10))
-              } else if (e.key === 'ArrowRight') {
-                setSidebarWidth((w) => Math.min(SIDEBAR_MAX_WIDTH, w + 10))
-              }
-            }}
           >
+            {/* Visible resize indicator */}
             <div
               className={clsx(
-                'h-16 w-1 rounded-full transition-all duration-200',
-                isResizing
-                  ? 'bg-brand-500 w-1.5'
-                  : 'bg-border group-hover:bg-brand-400 group-hover:w-1.5'
+                'flex flex-col items-center justify-center gap-0.5',
+                'w-3 h-12 rounded-full',
+                prefersReducedMotion ? '' : 'transition-all duration-150',
+                sidebar.isResizing
+                  ? 'bg-brand-500 scale-110'
+                  : 'bg-border/60 group-hover:bg-brand-400 group-hover:scale-105'
               )}
-            />
+            >
+              <GripVertical
+                className={clsx(
+                  'w-3 h-3',
+                  sidebar.isResizing
+                    ? 'text-white'
+                    : 'text-text-tertiary group-hover:text-white'
+                )}
+              />
+            </div>
+            {/* Tooltip */}
+            <div
+              className={clsx(
+                'absolute top-1/2 left-6 -translate-y-1/2',
+                'px-2 py-1 rounded text-xs whitespace-nowrap',
+                'bg-gray-900 text-white',
+                'opacity-0 group-hover:opacity-100 pointer-events-none',
+                prefersReducedMotion ? '' : 'transition-opacity duration-150'
+              )}
+            >
+              Drag to resize
+            </div>
           </div>
         )}
 
-        {/* Backdrop (Mobile) */}
-        {sidebarOpen && (
+        {/* Mobile Sidebar (Overlay) */}
+        <aside
+          id="docs-sidebar-mobile"
+          className={clsx(
+            'lg:hidden fixed top-16 left-0 z-40',
+            'h-[calc(100vh-4rem)] w-72 overflow-y-auto',
+            'bg-bg-primary border-r border-border',
+            transformTransitionClasses,
+            mobileOpen ? 'translate-x-0' : '-translate-x-full'
+          )}
+          aria-hidden={!mobileOpen}
+          inert={!mobileOpen ? true : undefined}
+        >
+          <div className="p-6">
+            <Sidebar navigation={navigation} />
+          </div>
+        </aside>
+
+        {/* Mobile Backdrop */}
+        {mobileOpen && (
           <div
-            className="fixed inset-0 z-30 bg-black/50 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
+            className={clsx(
+              'lg:hidden fixed inset-0 z-30 bg-black/50',
+              prefersReducedMotion ? '' : 'animate-fade-in'
+            )}
+            onClick={() => setMobileOpen(false)}
+            onKeyDown={(e) => e.key === 'Escape' && setMobileOpen(false)}
             aria-hidden="true"
           />
         )}
@@ -220,12 +239,9 @@ export function DocsLayout({
         {/* Main Content */}
         <main
           className={clsx(
-            'flex-1 min-w-0 transition-all duration-300 ease-in-out',
-            sidebarVisible ? 'lg:ml-4' : 'lg:ml-0'
+            'flex-1 min-w-0',
+            transitionClasses
           )}
-          style={{
-            marginLeft: sidebarVisible ? undefined : 0,
-          }}
         >
           <article className="prose prose-lg dark:prose-invert max-w-none lg:max-w-4xl xl:max-w-5xl mx-auto px-4 lg:px-8">
             {children}
