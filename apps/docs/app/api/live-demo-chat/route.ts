@@ -19,6 +19,7 @@ import {
   streamFromDemo,
   type StreamChunk,
 } from '@/lib/ai/streaming'
+import { trackChatInteraction } from '@/lib/ai/chat-analytics'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -152,17 +153,13 @@ export async function POST(request: NextRequest) {
     // Next.js 16: Use after() to log analytics after response is sent
     // This doesn't block the response - analytics are processed asynchronously
     after(() => {
-      // Log chat analytics (runs after response streaming completes)
-      console.log('[Analytics] Chat interaction:', {
-        timestamp: new Date().toISOString(),
+      // Track chat interaction using the analytics service
+      trackChatInteraction({
         messageLength: message.length,
         hasDocsContext: !!docsContext,
         searchResultsCount: searchResults.length,
         provider: hasGeminiKey ? 'gemini' : 'demo',
       })
-
-      // In production, you might send this to an analytics service:
-      // await analytics.trackChatInteraction({ ... })
     })
 
     return new Response(stream, {

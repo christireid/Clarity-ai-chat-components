@@ -5,8 +5,12 @@ import { ChatWindow } from '@clarity-chat/react'
 
 type StreamMessage = {
   id: string
+  chatId?: string
   role: 'user' | 'assistant'
   content: string
+  createdAt?: Date
+  updatedAt?: Date
+  status?: 'sending' | 'sent' | 'error'
   timestamp?: number
   isStreaming?: boolean
 }

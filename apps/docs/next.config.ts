@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
   // Experimental features
   experimental: {
     mdxRs: true,
+    // Typed routes for compile-time Link validation (Next.js 16)
+    typedRoutes: true,
     // Optimize package imports for better tree-shaking (stable in Next.js 15.5+)
     optimizePackageImports: [
       '@clarity-chat/react',

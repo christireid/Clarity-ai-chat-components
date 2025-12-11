@@ -17,14 +17,6 @@ const nextConfig: NextConfig = {
     '@clarity-chat/types',
   ],
 
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
   // Static export for demo deployment
   output: 'export',
 }
