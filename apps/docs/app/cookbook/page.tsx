@@ -1,18 +1,122 @@
 'use client'
 
 import React from 'react'
-import { Metadata } from 'next'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
+import { RecipeCard } from '@/components/Cookbook'
 
-// Metadata must be exported from a server component
-// export const metadata: Metadata = {
-//   title: 'Cookbook - Clarity Chat Components',
-//   description:
-//     'Real-world recipes for common AI chat patterns and integrations.',
-// }
+// Recipe data for maintainability
+const recipes = [
+  {
+    href: '/cookbook/openai-streaming-chat',
+    icon: '💬',
+    title: 'OpenAI Streaming Chat',
+    description: 'Build a complete chat with OpenAI streaming responses',
+    tags: [{ label: 'OpenAI', primary: true }, { label: 'Streaming' }],
+  },
+  {
+    href: '/cookbook/conversation-branching',
+    icon: '🌿',
+    title: 'Conversation Branching',
+    description:
+      'Speculative replies with branch visualizer and history management',
+    tags: [{ label: 'Blueprint v2.1', primary: true }, { label: 'Branching' }],
+  },
+  {
+    href: '/cookbook/latex-markdown',
+    icon: '∑',
+    title: 'LaTeX & Markdown Renderer',
+    description:
+      'Render math-heavy answers with KaTeX, syntax highlighting, and copy buttons',
+    tags: [{ label: 'Math', primary: true }, { label: 'Markdown' }],
+  },
+  {
+    href: '/cookbook/advanced-export',
+    icon: '📤',
+    title: 'Advanced Export Workflows',
+    description:
+      'Export transcripts to PDF, Markdown, HTML, or JSON with analytics and privacy controls',
+    tags: [{ label: 'Export', primary: true }, { label: 'Privacy' }],
+  },
+  {
+    href: '/cookbook/rag-document-chat',
+    icon: '📚',
+    title: 'RAG Document Chat',
+    description: 'Chat with your documents using vector search and RAG',
+    tags: [{ label: 'RAG', primary: true }, { label: 'Pinecone' }],
+  },
+  {
+    href: '/cookbook/multi-modal-chat',
+    icon: '🖼️',
+    title: 'Multi-Modal Chat',
+    description: 'Upload and discuss images, PDFs, and other files',
+    tags: [{ label: 'Vision', primary: true }, { label: 'Files' }],
+  },
+  {
+    href: '/cookbook/agent-with-tools',
+    icon: '🤖',
+    title: 'AI Agent with Tools',
+    description: 'Build an agent that can call functions and APIs',
+    tags: [{ label: 'Agents', primary: true }, { label: 'Tools' }],
+  },
+  {
+    href: '/cookbook/voice-chat',
+    icon: '🎤',
+    title: 'Voice-Enabled Chat',
+    description: 'Add voice input and text-to-speech to your chat',
+    tags: [{ label: 'Voice', primary: true }, { label: 'STT/TTS' }],
+  },
+  {
+    href: '/cookbook/team-collaboration-chat',
+    icon: '👥',
+    title: 'Team Collaboration Chat',
+    description: 'Multi-user chat with presence and typing indicators',
+    tags: [{ label: 'Real-time', primary: true }, { label: 'WebSocket' }],
+  },
+  {
+    href: '/cookbook/custom-theming',
+    icon: '🎨',
+    title: 'Custom Theming',
+    description: 'Create and apply custom themes with dark mode',
+    tags: [{ label: 'Theming', primary: true }, { label: 'CSS' }],
+  },
+  {
+    href: '/cookbook/error-handling',
+    icon: '⚠️',
+    title: 'Robust Error Handling',
+    description: 'Handle API errors, retries, and edge cases gracefully',
+    tags: [{ label: 'Errors', primary: true }, { label: 'Retry Logic' }],
+  },
+  {
+    href: '/cookbook/nextjs-integration',
+    icon: '▲',
+    title: 'Next.js 14 Integration',
+    description: 'Complete setup with App Router and Server Components',
+    tags: [{ label: 'Next.js', primary: true }, { label: 'RSC' }],
+  },
+  {
+    href: '/cookbook/authentication',
+    icon: '🔐',
+    title: 'User Authentication',
+    description: 'Secure chat with user authentication and sessions',
+    tags: [{ label: 'Auth', primary: true }, { label: 'NextAuth' }],
+  },
+  {
+    href: '/cookbook/analytics-tracking',
+    icon: '📊',
+    title: 'Analytics & Tracking',
+    description: 'Track usage, costs, and user behavior',
+    tags: [{ label: 'Analytics', primary: true }, { label: 'Metrics' }],
+  },
+  {
+    href: '/cookbook/rate-limiting',
+    icon: '⏱️',
+    title: 'Rate Limiting & Quotas',
+    description: 'Manage API limits and user quotas effectively',
+    tags: [{ label: 'Limits', primary: true }, { label: 'Redis' }],
+  },
+] as const
 
 export default function CookbookPage() {
   return (
@@ -61,385 +165,17 @@ export default function CookbookPage() {
           staggerDelay={0.1}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/openai-streaming-chat"
-              className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-3xl">💬</span>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-text-primary mb-2 group-hover:text-brand-500 transition-colors">
-                    OpenAI Streaming Chat
-                  </h3>
-                  <p className="text-sm text-text-secondary mb-4">
-                    Build a complete chat with OpenAI streaming responses
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="text-xs bg-brand-500/10 text-brand-600 dark:text-brand-400 px-2 py-1 rounded font-medium">
-                      OpenAI
-                    </span>
-                    <span className="text-xs bg-bg-tertiary text-text-secondary px-2 py-1 rounded">
-                      Streaming
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/conversation-branching"
-              className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🌿</span>
-                <div>
-                  <h3>Conversation Branching</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Speculative replies with branch visualizer and history
-                    management
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Blueprint v2.1
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Branching
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/latex-markdown"
-              className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">∑</span>
-                <div>
-                  <h3>LaTeX & Markdown Renderer</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Render math-heavy answers with KaTeX, syntax highlighting,
-                    and copy buttons
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Math
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Markdown
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/advanced-export"
-              className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">📤</span>
-                <div>
-                  <h3>Advanced Export Workflows</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Export transcripts to PDF, Markdown, HTML, or JSON with
-                    analytics and privacy controls
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Export
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Privacy
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/rag-document-chat"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">📚</span>
-                <div>
-                  <h3>RAG Document Chat</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Chat with your documents using vector search and RAG
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      RAG
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Pinecone
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/multi-modal-chat"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🖼️</span>
-                <div>
-                  <h3>Multi-Modal Chat</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Upload and discuss images, PDFs, and other files
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Vision
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Files
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/agent-with-tools"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🤖</span>
-                <div>
-                  <h3>AI Agent with Tools</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Build an agent that can call functions and APIs
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Agents
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Tools
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/voice-chat"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🎤</span>
-                <div>
-                  <h3>Voice-Enabled Chat</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Add voice input and text-to-speech to your chat
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Voice
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      STT/TTS
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/team-collaboration-chat"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">👥</span>
-                <div>
-                  <h3>Team Collaboration Chat</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Multi-user chat with presence and typing indicators
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Real-time
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      WebSocket
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/custom-theming"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🎨</span>
-                <div>
-                  <h3>Custom Theming</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Create and apply custom themes with dark mode
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Theming
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      CSS
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/error-handling"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">⚠️</span>
-                <div>
-                  <h3>Robust Error Handling</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Handle API errors, retries, and edge cases gracefully
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Errors
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Retry Logic
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/nextjs-integration"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">▲</span>
-                <div>
-                  <h3>Next.js 14 Integration</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Complete setup with App Router and Server Components
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Next.js
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      RSC
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/authentication"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🔐</span>
-                <div>
-                  <h3>User Authentication</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Secure chat with user authentication and sessions
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Auth
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      NextAuth
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/analytics-tracking"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">📊</span>
-                <div>
-                  <h3>Analytics & Tracking</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Track usage, costs, and user behavior
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Analytics
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Metrics
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
-
-          <ScrollRevealItem>
-            <a
-              href="/cookbook/rate-limiting"
-              className="docs-card group block h-full"
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">⏱️</span>
-                <div>
-                  <h3>Rate Limiting & Quotas</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Manage API limits and user quotas effectively
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      Limits
-                    </span>
-                    <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                      Redis
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </ScrollRevealItem>
+          {recipes.map((recipe) => (
+            <ScrollRevealItem key={recipe.href}>
+              <RecipeCard
+                href={recipe.href}
+                icon={recipe.icon}
+                title={recipe.title}
+                description={recipe.description}
+                tags={recipe.tags}
+              />
+            </ScrollRevealItem>
+          ))}
         </ScrollReveal>
       </section>
     </div>

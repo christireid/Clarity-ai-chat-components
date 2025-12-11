@@ -1,19 +1,8 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { ChatWindow } from '@clarity-chat/react'
-
-type StreamMessage = {
-  id: string
-  chatId?: string
-  role: 'user' | 'assistant'
-  content: string
-  createdAt?: Date
-  updatedAt?: Date
-  status?: 'sending' | 'sent' | 'error'
-  timestamp?: number
-  isStreaming?: boolean
-}
+import { ChatWindow, TypingIndicator } from '@clarity-chat/react'
+import type { StreamMessage } from '@clarity-chat/types'
 
 export default function Home() {
   const [messages, setMessages] = useState<StreamMessage[]>([
@@ -231,15 +220,20 @@ export default function Home() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
+              gap: '1rem',
               padding: '0.5rem 1rem',
               backgroundColor: 'rgba(59, 130, 246, 0.1)',
               border: '1px solid rgba(59, 130, 246, 0.3)',
               borderRadius: '6px',
             }}
           >
-            <span style={{ fontSize: '0.875rem' }}>
-              🔴 Streaming in progress...
+            <TypingIndicator
+              variant="dots"
+              showAvatar={false}
+              label="AI is generating response"
+            />
+            <span style={{ fontSize: '0.875rem', marginLeft: '-0.5rem' }}>
+              Streaming response...
             </span>
             <button
               onClick={handleCancel}
@@ -250,6 +244,7 @@ export default function Home() {
                 border: '1px solid rgba(128, 128, 128, 0.3)',
                 borderRadius: '4px',
                 cursor: 'pointer',
+                marginLeft: 'auto',
               }}
             >
               Stop

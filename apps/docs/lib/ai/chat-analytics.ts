@@ -2,7 +2,8 @@
  * Chat Analytics Service
  *
  * Provides a production-ready abstraction for tracking chat interactions.
- * Supports multiple analytics providers and environment-aware logging.
+ * Supports multiple analytics providers, environment-aware logging, and
+ * batching for high-volume scenarios.
  *
  * @example
  * ```ts
@@ -49,6 +50,20 @@ export interface AnalyticsConfig {
   serviceEndpoint?: string
 }
 
+interface AnalyticsEvent {
+  type: 'chat_interaction' | 'api_error' | 'search_query'
+  data: Record<string, unknown>
+  timestamp: string
+}
+
+// Batching configuration
+const BATCH_SIZE = 10
+const FLUSH_INTERVAL_MS = 5000
+
+// Analytics queue for batching
+let analyticsQueue: AnalyticsEvent[] = []
+let flushTimer: ReturnType<typeof setTimeout> | null = null
+
 /**
  * Get analytics configuration from environment
  */
@@ -65,6 +80,63 @@ function getConfig(): AnalyticsConfig {
 }
 
 /**
+ * Queue an event for batched sending
+ */
+function queueEvent(event: AnalyticsEvent): void {
+  const config = getConfig()
+
+  if (!config.sendToService || !config.serviceEndpoint) {
+    return
+  }
+
+  analyticsQueue.push(event)
+
+  // Flush if we've hit the batch size
+  if (analyticsQueue.length >= BATCH_SIZE) {
+    flushAnalytics()
+    return
+  }
+
+  // Set up timer for periodic flush if not already running
+  if (!flushTimer) {
+    flushTimer = setTimeout(() => {
+      flushAnalytics()
+    }, FLUSH_INTERVAL_MS)
+  }
+}
+
+/**
+ * Flush all queued analytics events
+ */
+export function flushAnalytics(): void {
+  if (flushTimer) {
+    clearTimeout(flushTimer)
+    flushTimer = null
+  }
+
+  if (analyticsQueue.length === 0) {
+    return
+  }
+
+  const config = getConfig()
+  if (!config.sendToService || !config.serviceEndpoint) {
+    analyticsQueue = []
+    return
+  }
+
+  // Take all events and clear the queue
+  const eventsToSend = [...analyticsQueue]
+  analyticsQueue = []
+
+  // Send batch to analytics service
+  sendBatchToAnalyticsService(config.serviceEndpoint, eventsToSend).catch(
+    (error) => {
+      console.error('[Analytics] Failed to send batch:', error)
+    }
+  )
+}
+
+/**
  * Track a chat interaction
  *
  * This function is designed to be called from within Next.js `after()` callbacks
@@ -77,9 +149,10 @@ export function trackChatInteraction(metrics: ChatInteractionMetrics): void {
     return
   }
 
+  const timestamp = new Date().toISOString()
   const enrichedMetrics = {
     ...metrics,
-    timestamp: new Date().toISOString(),
+    timestamp,
     environment: process.env.NODE_ENV,
   }
 
@@ -88,15 +161,12 @@ export function trackChatInteraction(metrics: ChatInteractionMetrics): void {
     console.log('[Analytics] Chat interaction:', enrichedMetrics)
   }
 
-  // Send to external service in production
-  if (config.sendToService && config.serviceEndpoint) {
-    sendToAnalyticsService(config.serviceEndpoint, enrichedMetrics).catch(
-      (error) => {
-        // Don't throw - analytics should never break the app
-        console.error('[Analytics] Failed to send metrics:', error)
-      }
-    )
-  }
+  // Queue for batched sending in production
+  queueEvent({
+    type: 'chat_interaction',
+    data: enrichedMetrics,
+    timestamp,
+  })
 }
 
 /**
@@ -115,9 +185,10 @@ export function trackApiError(error: {
     return
   }
 
+  const timestamp = new Date().toISOString()
   const enrichedError = {
     ...error,
-    timestamp: new Date().toISOString(),
+    timestamp,
     environment: process.env.NODE_ENV,
   }
 
@@ -125,14 +196,12 @@ export function trackApiError(error: {
     console.error('[Analytics] API error:', enrichedError)
   }
 
-  if (config.sendToService && config.serviceEndpoint) {
-    sendToAnalyticsService(config.serviceEndpoint, {
-      type: 'api_error',
-      ...enrichedError,
-    }).catch((err) => {
-      console.error('[Analytics] Failed to send error metrics:', err)
-    })
-  }
+  // Errors are queued with type marker for batching
+  queueEvent({
+    type: 'api_error',
+    data: enrichedError,
+    timestamp,
+  })
 }
 
 /**
@@ -149,18 +218,51 @@ export function trackSearchQuery(query: {
     return
   }
 
+  const timestamp = new Date().toISOString()
   const enrichedQuery = {
     ...query,
-    timestamp: new Date().toISOString(),
+    timestamp,
   }
 
   if (config.logToConsole) {
     console.log('[Analytics] Search query:', enrichedQuery)
   }
+
+  queueEvent({
+    type: 'search_query',
+    data: enrichedQuery,
+    timestamp,
+  })
 }
 
 /**
- * Send metrics to external analytics service
+ * Send a batch of events to the analytics service
+ */
+async function sendBatchToAnalyticsService(
+  endpoint: string,
+  events: AnalyticsEvent[]
+): Promise<void> {
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.ANALYTICS_API_KEY || ''}`,
+    },
+    body: JSON.stringify({
+      batch: true,
+      events,
+      sentAt: new Date().toISOString(),
+    }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Analytics service returned ${response.status}`)
+  }
+}
+
+/**
+ * Send metrics to external analytics service (single event - for backwards compatibility)
+ * @deprecated Use batched sending via queueEvent instead
  */
 async function sendToAnalyticsService(
   endpoint: string,
@@ -191,3 +293,27 @@ export function createPerformanceTimer(): {
     stop: () => Math.round(performance.now() - start),
   }
 }
+
+/**
+ * Get the current queue size (useful for testing/monitoring)
+ */
+export function getQueueSize(): number {
+  return analyticsQueue.length
+}
+
+/**
+ * Clear the queue without sending (useful for testing)
+ */
+export function clearQueue(): void {
+  analyticsQueue = []
+  if (flushTimer) {
+    clearTimeout(flushTimer)
+    flushTimer = null
+  }
+}
+
+// Note: In a real production environment, you would also want to:
+// 1. Add process.on('beforeExit') handler to flush on shutdown
+// 2. Use a more robust queue (e.g., Redis) for distributed systems
+// 3. Add retry logic with exponential backoff
+// 4. Implement circuit breaker pattern for failing endpoints
