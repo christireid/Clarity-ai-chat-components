@@ -164,6 +164,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       }, 100)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [messages.length, autoScroll])
 
   return {

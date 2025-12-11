@@ -7,7 +7,14 @@
  * @internal
  */
 
-import type { VectorStore, VectorStoreConfig } from './types'
+import type {
+  VectorStore,
+  VectorStoreConfig,
+  PineconeStoreConfig,
+  QdrantStoreConfig,
+  WeaviateStoreConfig,
+  ChromaStoreConfig,
+} from './types'
 import { PineconeVectorStore } from './pinecone'
 import { QdrantVectorStore } from './qdrant'
 import { WeaviateVectorStore } from './weaviate'
@@ -37,18 +44,23 @@ import { ChromaVectorStore } from './chroma'
 export function createVectorStore(config: VectorStoreConfig): VectorStore {
   switch (config.provider) {
     case 'pinecone':
-      return new PineconeVectorStore(config as any)
+      return new PineconeVectorStore(config as PineconeStoreConfig)
 
     case 'qdrant':
-      return new QdrantVectorStore(config as any)
+      return new QdrantVectorStore(config as QdrantStoreConfig)
 
     case 'weaviate':
-      return new WeaviateVectorStore(config as any)
+      return new WeaviateVectorStore(config as WeaviateStoreConfig)
 
     case 'chroma':
-      return new ChromaVectorStore(config as any)
+      return new ChromaVectorStore(config as ChromaStoreConfig)
 
-    default:
-      throw new Error(`Unsupported vector store provider: ${config.provider}`)
+    case 'custom':
+      throw new Error('Custom vector store requires manual implementation')
+
+    default: {
+      const _exhaustiveCheck: never = config
+      throw new Error(`Unsupported vector store provider: ${(_exhaustiveCheck as VectorStoreConfig).provider}`)
+    }
   }
 }

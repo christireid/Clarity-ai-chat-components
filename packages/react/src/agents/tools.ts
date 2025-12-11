@@ -292,14 +292,19 @@ export const apiCallTool: Tool = {
   },
   requiresApproval: true,
   async execute(args) {
-    const response = await fetch(args['url'], {
-      method: args['method'],
-      headers: args['headers'],
-      body: args['body'] ? JSON.stringify(args['body']) : undefined,
+    const url = args['url'] as string
+    const method = args['method'] as string
+    const headers = args['headers'] as Record<string, string> | undefined
+    const body = args['body'] as Record<string, unknown> | undefined
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
     })
-    
+
     const data = await response.json()
-    
+
     return {
       status: response.status,
       statusText: response.statusText,
