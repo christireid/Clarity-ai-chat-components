@@ -1,7 +1,10 @@
 /**
  * MCP Tools for Clarity Chat
- * 
- * Tools that AI agents can call to interact with Clarity Chat projects
+ *
+ * Tools that AI agents can call to interact with Clarity Chat projects.
+ * Includes component discovery, documentation, code generation, and project management.
+ *
+ * @module tools
  */
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
@@ -9,9 +12,40 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 import { logger } from '../utils/logger.js'
 import { NotFoundError, ValidationError } from '../utils/errors.js'
-import { validateRequired, validateEnum, validateString, validateNumber } from '../utils/validation.js'
+import {
+  validateRequired,
+  validateEnum,
+  validateString,
+  validateNumber,
+} from '../utils/validation.js'
 import { validateProjectPath } from '../utils/security.js'
-import { projectCache, modelCache, exampleCache, CacheKeys } from '../utils/cache.js'
+import { modelCache, CacheKeys } from '../utils/cache.js'
+import {
+  validateInput,
+  DiscoverComponentsSchema,
+  GetComponentDocsSchema,
+  DiscoverHooksSchema,
+  GetHookDocsSchema,
+  GetAccessibilitySchema,
+  GenerateCodeSchema,
+  GetRelatedComponentsSchema,
+} from '../utils/schemas.js'
+import {
+  searchComponents,
+  searchHooks,
+  getComponent,
+  getHook,
+  getRelatedComponents,
+  getCategoryStats,
+  COMPONENTS,
+  HOOKS,
+} from '../data/component-registry.js'
+import {
+  getModel,
+  calculateCost as calculateModelCost,
+  getAllModels,
+  formatPricing,
+} from '../data/model-registry.js'
 
 type Provider = 'openai' | 'anthropic' | 'google' | 'all'
 type Framework = 'nextjs' | 'express' | 'hono' | 'standalone'
@@ -37,20 +71,23 @@ The user must add their API keys separately after project creation.`,
         provider: {
           type: 'string',
           enum: ['openai', 'anthropic', 'google', 'all'],
-          description: 'AI provider to configure. Use "all" to set up all three providers.'
+          description:
+            'AI provider to configure. Use "all" to set up all three providers.',
         },
         framework: {
           type: 'string',
           enum: ['nextjs', 'express', 'hono', 'standalone'],
-          description: 'Framework to use. "nextjs" recommended for full-stack apps, "standalone" for scripts.'
+          description:
+            'Framework to use. "nextjs" recommended for full-stack apps, "standalone" for scripts.',
         },
         projectPath: {
           type: 'string',
-          description: 'Absolute or relative path where the project should be created.'
-        }
+          description:
+            'Absolute or relative path where the project should be created.',
+        },
       },
-      required: ['provider', 'framework', 'projectPath']
-    }
+      required: ['provider', 'framework', 'projectPath'],
+    },
   },
   {
     name: 'list_examples',
@@ -62,8 +99,8 @@ Returns a list of example names with descriptions. Use get_example to retrieve t
     inputSchema: {
       type: 'object',
       properties: {},
-      required: []
-    }
+      required: [],
+    },
   },
   {
     name: 'get_example',
@@ -77,11 +114,12 @@ Available examples: basic-chat, streaming, nextjs-api, react-hook, conversation,
       properties: {
         exampleName: {
           type: 'string',
-          description: 'Name of the example: basic-chat, streaming, nextjs-api, react-hook, conversation, functions, cost-tracking, rag'
-        }
+          description:
+            'Name of the example: basic-chat, streaming, nextjs-api, react-hook, conversation, functions, cost-tracking, rag',
+        },
       },
-      required: ['exampleName']
-    }
+      required: ['exampleName'],
+    },
   },
   {
     name: 'validate_config',
@@ -95,11 +133,11 @@ Checks for: package.json and AI SDK dependencies, .env.local file, tsconfig.json
       properties: {
         projectPath: {
           type: 'string',
-          description: 'Path to the Clarity Chat project directory to validate'
-        }
+          description: 'Path to the Clarity Chat project directory to validate',
+        },
       },
-      required: ['projectPath']
-    }
+      required: ['projectPath'],
+    },
   },
   {
     name: 'get_model_info',
@@ -113,11 +151,12 @@ Supported models: gpt-4-turbo, gpt-4, claude-3-opus-20240229, gemini-pro.`,
       properties: {
         modelName: {
           type: 'string',
-          description: 'Model identifier: gpt-4-turbo, gpt-4, claude-3-opus-20240229, gemini-pro'
-        }
+          description:
+            'Model identifier: gpt-4-turbo, gpt-4, claude-3-opus-20240229, gemini-pro',
+        },
       },
-      required: ['modelName']
-    }
+      required: ['modelName'],
+    },
   },
   {
     name: 'calculate_cost',
@@ -131,19 +170,20 @@ Returns total cost in USD, broken down by input and output tokens.`,
       properties: {
         modelName: {
           type: 'string',
-          description: 'Model identifier: gpt-4-turbo, gpt-4, claude-3-opus-20240229, gemini-pro'
+          description:
+            'Model identifier: gpt-4-turbo, gpt-4, claude-3-opus-20240229, gemini-pro',
         },
         promptTokens: {
           type: 'number',
-          description: 'Number of input/prompt tokens'
+          description: 'Number of input/prompt tokens',
         },
         completionTokens: {
           type: 'number',
-          description: 'Number of output/completion tokens'
-        }
+          description: 'Number of output/completion tokens',
+        },
       },
-      required: ['modelName', 'promptTokens', 'completionTokens']
-    }
+      required: ['modelName', 'promptTokens', 'completionTokens'],
+    },
   },
   {
     name: 'analyze_project',
@@ -157,64 +197,348 @@ Returns: file count, detected framework, configured providers, presence of key f
       properties: {
         projectPath: {
           type: 'string',
-          description: 'Path to the Clarity Chat project directory to analyze'
-        }
+          description: 'Path to the Clarity Chat project directory to analyze',
+        },
       },
-      required: ['projectPath']
-    }
-  }
+      required: ['projectPath'],
+    },
+  },
+
+  // =============================================================================
+  // Component Discovery Tools
+  // =============================================================================
+  {
+    name: 'clarity_discover_components',
+    description: `Search and discover Clarity Chat React components by name, category, or use case.
+
+Use this tool when the user wants to:
+- Find components matching a search query (e.g., "chat input", "message list")
+- List all components in a category (top-level, chat, message, input, feedback, etc.)
+- Get an overview of available UI components
+
+Returns: List of matching components with names, descriptions, and categories.
+Total available: 70+ React components across multiple categories.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description:
+            'Search query for components (e.g., "chat", "message", "streaming", "input")',
+        },
+        category: {
+          type: 'string',
+          enum: [
+            'top-level',
+            'chat',
+            'message',
+            'input',
+            'display',
+            'feedback',
+            'navigation',
+            'analytics',
+            'enterprise',
+            'ai-ops',
+            'memory',
+            'primitives',
+            'hooks',
+            'utilities',
+          ],
+          description: 'Filter by component category',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of results (default: 10, max: 50)',
+        },
+      },
+      required: ['query'],
+    },
+  },
+  {
+    name: 'clarity_get_component_docs',
+    description: `Get comprehensive documentation for a specific Clarity Chat component.
+
+Use this tool when the user wants to:
+- Understand how to use a specific component
+- See the available props and their types
+- Get usage examples
+- Learn about component behavior
+
+Returns: Full documentation including props, examples, related components, and usage notes.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        componentName: {
+          type: 'string',
+          description:
+            'Name of the component (e.g., "ClarityChat", "ChatInput", "MessageList", "TypingIndicator")',
+        },
+      },
+      required: ['componentName'],
+    },
+  },
+  {
+    name: 'clarity_discover_hooks',
+    description: `Search and discover Clarity Chat React hooks for chat functionality.
+
+Use this tool when the user wants to:
+- Find hooks for specific functionality (chat, streaming, voice, storage)
+- Understand what hooks are available
+- Get hook recommendations for their use case
+
+Returns: List of matching hooks with names, descriptions, and what they do.
+Total available: 35+ specialized React hooks.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description:
+            'Search query for hooks (e.g., "chat", "streaming", "voice", "storage")',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of results (default: 10, max: 50)',
+        },
+      },
+      required: ['query'],
+    },
+  },
+  {
+    name: 'clarity_get_hook_docs',
+    description: `Get comprehensive documentation for a specific Clarity Chat hook.
+
+Use this tool when the user wants to:
+- Understand how to use a specific hook
+- See the parameters and return values
+- Get usage examples
+
+Returns: Full documentation including parameters, return type, examples, and related hooks.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        hookName: {
+          type: 'string',
+          description:
+            'Name of the hook (e.g., "useClarityChat", "useVoiceInput", "useTokenTracker")',
+        },
+      },
+      required: ['hookName'],
+    },
+  },
+  {
+    name: 'clarity_get_accessibility',
+    description: `Get WCAG accessibility guidance for a Clarity Chat component.
+
+Use this tool when the user wants to:
+- Ensure their chat UI is accessible
+- Understand keyboard navigation requirements
+- Get ARIA attribute recommendations
+- Learn about screen reader considerations
+
+Returns: WCAG level, keyboard support, ARIA attributes, and screen reader notes.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        componentName: {
+          type: 'string',
+          description:
+            'Name of the component to get accessibility guidance for',
+        },
+      },
+      required: ['componentName'],
+    },
+  },
+  {
+    name: 'clarity_generate_code',
+    description: `Generate ready-to-use code snippets for Clarity Chat components.
+
+Use this tool when the user wants to:
+- Get starter code for a component
+- See how to integrate a component
+- Get TypeScript code with proper typing
+
+Returns: Production-ready code snippet with imports and usage.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        componentName: {
+          type: 'string',
+          description: 'Name of the component to generate code for',
+        },
+        variant: {
+          type: 'string',
+          description: 'Specific variant or style (optional)',
+        },
+        withProvider: {
+          type: 'boolean',
+          description: 'Include provider/context wrapper (default: false)',
+        },
+        typescript: {
+          type: 'boolean',
+          description: 'Generate TypeScript code (default: true)',
+        },
+      },
+      required: ['componentName'],
+    },
+  },
+  {
+    name: 'clarity_get_related_components',
+    description: `Get components that work well together with a given component.
+
+Use this tool when the user wants to:
+- Understand component composition patterns
+- Find complementary components
+- Build complete features
+
+Returns: List of related components with their relationships.`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        componentName: {
+          type: 'string',
+          description: 'Name of the component to find related components for',
+        },
+      },
+      required: ['componentName'],
+    },
+  },
+  {
+    name: 'clarity_list_categories',
+    description: `List all component categories with their counts.
+
+Use this tool when the user wants to:
+- Get an overview of the component library
+- Understand the organization of components
+- Browse by category
+
+Returns: List of categories with component counts.`,
+    inputSchema: {
+      type: 'object',
+      properties: {},
+      required: [],
+    },
+  },
 ]
 
 /**
  * Handle tool calls with proper validation and error handling
  */
-export async function handleToolCall(name: string, args: Record<string, any>): Promise<any> {
+export async function handleToolCall(
+  name: string,
+  args: Record<string, any>
+): Promise<any> {
   logger.debug('Tool call received', { tool: name, args })
-  
+
   try {
     switch (name) {
-      case 'init_project':
+      case 'init_project': {
         validateRequired(args, ['provider', 'framework', 'projectPath'])
-        const provider = validateEnum(args.provider, ['openai', 'anthropic', 'google', 'all'] as const, 'provider')
-        const framework = validateEnum(args.framework, ['nextjs', 'express', 'hono', 'standalone'] as const, 'framework')
-        const projectPath = validateProjectPath(validateString(args.projectPath, 'projectPath'))
+        const provider = validateEnum(
+          args.provider,
+          ['openai', 'anthropic', 'google', 'all'] as const,
+          'provider'
+        )
+        const framework = validateEnum(
+          args.framework,
+          ['nextjs', 'express', 'hono', 'standalone'] as const,
+          'framework'
+        )
+        const projectPath = validateProjectPath(
+          validateString(args.projectPath, 'projectPath')
+        )
         return await initProject(provider, framework, projectPath)
-      
+      }
+
       case 'list_examples':
         return await listExamples()
-      
-      case 'get_example':
+
+      case 'get_example': {
         validateRequired(args, ['exampleName'])
         const exampleName = validateString(args.exampleName, 'exampleName')
         return await getExample(exampleName)
-      
-      case 'validate_config':
+      }
+
+      case 'validate_config': {
         validateRequired(args, ['projectPath'])
-        const configPath = validateProjectPath(validateString(args.projectPath, 'projectPath'))
+        const configPath = validateProjectPath(
+          validateString(args.projectPath, 'projectPath')
+        )
         return await validateConfig(configPath)
-      
-      case 'get_model_info':
+      }
+
+      case 'get_model_info': {
         validateRequired(args, ['modelName'])
         const modelName = validateString(args.modelName, 'modelName')
         return await getModelInfo(modelName)
-      
-      case 'calculate_cost':
-        validateRequired(args, ['modelName', 'promptTokens', 'completionTokens'])
+      }
+
+      case 'calculate_cost': {
+        validateRequired(args, [
+          'modelName',
+          'promptTokens',
+          'completionTokens',
+        ])
         const costModelName = validateString(args.modelName, 'modelName')
-        const promptTokens = validateNumber(args.promptTokens, 'promptTokens', 0)
-        const completionTokens = validateNumber(args.completionTokens, 'completionTokens', 0)
-        return await calculateCost(costModelName, promptTokens, completionTokens)
-      
-      case 'analyze_project':
+        const promptTokens = validateNumber(
+          args.promptTokens,
+          'promptTokens',
+          0
+        )
+        const completionTokens = validateNumber(
+          args.completionTokens,
+          'completionTokens',
+          0
+        )
+        return await calculateCost(
+          costModelName,
+          promptTokens,
+          completionTokens
+        )
+      }
+
+      case 'analyze_project': {
         validateRequired(args, ['projectPath'])
-        const analyzePath = validateProjectPath(validateString(args.projectPath, 'projectPath'))
+        const analyzePath = validateProjectPath(
+          validateString(args.projectPath, 'projectPath')
+        )
         return await analyzeProject(analyzePath)
-      
+      }
+
+      // Component Discovery Tools
+      case 'clarity_discover_components':
+        return await handleDiscoverComponents(args)
+
+      case 'clarity_get_component_docs':
+        return await handleGetComponentDocs(args)
+
+      case 'clarity_discover_hooks':
+        return await handleDiscoverHooks(args)
+
+      case 'clarity_get_hook_docs':
+        return await handleGetHookDocs(args)
+
+      case 'clarity_get_accessibility':
+        return await handleGetAccessibility(args)
+
+      case 'clarity_generate_code':
+        return await handleGenerateCode(args)
+
+      case 'clarity_get_related_components':
+        return await handleGetRelatedComponents(args)
+
+      case 'clarity_list_categories':
+        return handleListCategories()
+
       default:
         throw new ValidationError(`Unknown tool: ${name}`, { tool: name })
     }
   } catch (error) {
-    logger.error(`Tool call failed: ${name}`, error instanceof Error ? error : undefined, { args })
+    logger.error(
+      `Tool call failed: ${name}`,
+      error instanceof Error ? error : undefined,
+      { args }
+    )
     throw error
   }
 }
@@ -222,9 +546,13 @@ export async function handleToolCall(name: string, args: Record<string, any>): P
 /**
  * Initialize a new project
  */
-async function initProject(provider: Provider, framework: Framework, projectPath: string) {
+async function initProject(
+  provider: Provider,
+  framework: Framework,
+  projectPath: string
+) {
   logger.info('Initializing project', { provider, framework, projectPath })
-  
+
   try {
     const envContent = generateEnvTemplate(provider)
     const exampleCode = generateExampleCode(provider, framework)
@@ -236,17 +564,21 @@ async function initProject(provider: Provider, framework: Framework, projectPath
     await fs.writeFile(path.join(projectPath, '.env.local'), envContent)
 
     // Write example code
-    const fileName = framework === 'nextjs' ? 'app/api/chat/route.ts' : 'src/index.ts'
+    const fileName =
+      framework === 'nextjs' ? 'app/api/chat/route.ts' : 'src/index.ts'
     const filePath = path.join(projectPath, fileName)
     await fs.mkdir(path.dirname(filePath), { recursive: true })
     await fs.writeFile(filePath, exampleCode)
 
     // Create package.json
     const packageJson = generatePackageJson(provider, framework)
-    await fs.writeFile(path.join(projectPath, 'package.json'), JSON.stringify(packageJson, null, 2))
+    await fs.writeFile(
+      path.join(projectPath, 'package.json'),
+      JSON.stringify(packageJson, null, 2)
+    )
 
     logger.info('Project initialized successfully', { projectPath })
-    
+
     return {
       success: true,
       message: `Project initialized at ${projectPath}`,
@@ -255,12 +587,18 @@ async function initProject(provider: Provider, framework: Framework, projectPath
         `cd ${projectPath}`,
         'npm install',
         'Add your API keys to .env.local',
-        framework === 'nextjs' ? 'npm run dev' : 'npm start'
-      ]
+        framework === 'nextjs' ? 'npm run dev' : 'npm start',
+      ],
     }
   } catch (error) {
-    logger.error('Failed to initialize project', error instanceof Error ? error : undefined, { provider, framework, projectPath })
-    throw new Error(`Failed to initialize project: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    logger.error(
+      'Failed to initialize project',
+      error instanceof Error ? error : undefined,
+      { provider, framework, projectPath }
+    )
+    throw new Error(
+      `Failed to initialize project: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 
@@ -277,8 +615,8 @@ async function listExamples() {
       { name: 'conversation', description: 'Multi-turn conversation' },
       { name: 'functions', description: 'Function calling/tools' },
       { name: 'cost-tracking', description: 'Token usage and cost tracking' },
-      { name: 'rag', description: 'Retrieval Augmented Generation' }
-    ]
+      { name: 'rag', description: 'Retrieval Augmented Generation' },
+    ],
   }
 }
 
@@ -300,7 +638,7 @@ async function chat(message: string) {
   })
   return response.choices[0].message.content
 }`,
-    'streaming': `import { OpenAI } from 'openai'
+    streaming: `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -391,7 +729,7 @@ export function useChat() {
 
   return { messages, sendMessage, isLoading }
 }`,
-    'conversation': `import { OpenAI } from 'openai'
+    conversation: `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -437,7 +775,7 @@ class Conversation {
 const chat = new Conversation('You are a helpful assistant.')
 await chat.chat('Hello!')  // "Hi! How can I help you today?"
 await chat.chat('What did I just say?')  // "You said 'Hello!'"`,
-    'functions': `import { OpenAI } from 'openai'
+    functions: `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -566,7 +904,7 @@ async function chatWithTracking(message: string, model = 'gpt-4-turbo') {
     }
   }
 }`,
-    'rag': `import { OpenAI } from 'openai'
+    rag: `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -645,7 +983,7 @@ Context:
 const store = new VectorStore()
 await store.addDocument('Clarity Chat is a React component library for AI chat interfaces.')
 await store.addDocument('It supports OpenAI, Anthropic, and Google AI providers.')
-const answer = await ragQuery('What providers does Clarity Chat support?', store)`
+const answer = await ragQuery('What providers does Clarity Chat support?', store)`,
   }
 
   const code = examples[exampleName]
@@ -667,9 +1005,13 @@ async function validateConfig(projectPath: string) {
     // Check package.json
     const packageJsonPath = path.join(projectPath, 'package.json')
     const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'))
-    
+
     const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
-    if (!deps['openai'] && !deps['@anthropic-ai/sdk'] && !deps['@google/generative-ai']) {
+    if (
+      !deps['openai'] &&
+      !deps['@anthropic-ai/sdk'] &&
+      !deps['@google/generative-ai']
+    ) {
       warnings.push('No AI provider SDK installed')
     }
 
@@ -694,59 +1036,19 @@ async function validateConfig(projectPath: string) {
     return {
       valid: issues.length === 0,
       issues,
-      warnings
+      warnings,
     }
   } catch (error) {
     return {
       valid: false,
       issues: [`Failed to validate project: ${error}`],
-      warnings: []
+      warnings: [],
     }
   }
 }
 
 /**
- * Model information database (static data)
- */
-const MODEL_INFO: Record<string, {
-  provider: string
-  contextWindow: number
-  pricing: { input: number; output: number }
-  capabilities: string[]
-  bestFor: string[]
-}> = {
-  'gpt-4-turbo': {
-    provider: 'OpenAI',
-    contextWindow: 128000,
-    pricing: { input: 0.01, output: 0.03 },
-    capabilities: ['text', 'code', 'functions', 'json'],
-    bestFor: ['complex reasoning', 'long-form content']
-  },
-  'gpt-4': {
-    provider: 'OpenAI',
-    contextWindow: 8192,
-    pricing: { input: 0.03, output: 0.06 },
-    capabilities: ['text', 'code', 'functions'],
-    bestFor: ['complex tasks', 'creative writing']
-  },
-  'claude-3-opus-20240229': {
-    provider: 'Anthropic',
-    contextWindow: 200000,
-    pricing: { input: 0.015, output: 0.075 },
-    capabilities: ['text', 'code', 'analysis', 'vision'],
-    bestFor: ['complex analysis', 'research', 'long documents']
-  },
-  'gemini-pro': {
-    provider: 'Google',
-    contextWindow: 32768,
-    pricing: { input: 0.00025, output: 0.0005 },
-    capabilities: ['text', 'code', 'analysis'],
-    bestFor: ['general tasks', 'cost efficiency']
-  }
-}
-
-/**
- * Get model information (cached)
+ * Get model information using the new model registry
  */
 async function getModelInfo(modelName: string) {
   const cacheKey = CacheKeys.modelInfo(modelName)
@@ -759,35 +1061,67 @@ async function getModelInfo(modelName: string) {
 
   logger.debug('Getting model info', { modelName })
 
-  const info = MODEL_INFO[modelName]
-  if (!info) {
-    throw new NotFoundError('Model', modelName)
+  const model = getModel(modelName)
+  if (!model) {
+    // Provide helpful suggestions
+    const availableModels = getAllModels()
+      .slice(0, 10)
+      .map((m) => m.id)
+      .join(', ')
+    throw new NotFoundError(
+      'Model',
+      `${modelName}. Available models include: ${availableModels}`
+    )
+  }
+
+  const result = {
+    id: model.id,
+    name: model.name,
+    provider: model.provider,
+    contextWindow: model.contextWindow,
+    maxOutputTokens: model.maxOutputTokens,
+    pricing: {
+      input: model.pricing.input,
+      output: model.pricing.output,
+      ...(model.pricing.cached && { cached: model.pricing.cached }),
+      formatted: formatPricing(model),
+    },
+    capabilities: model.capabilities,
+    bestFor: model.bestFor,
+    releaseDate: model.releaseDate,
+    ...(model.notes && { notes: model.notes }),
   }
 
   // Cache the result (static data, long TTL)
-  modelCache.set(cacheKey, info)
+  modelCache.set(cacheKey, result)
 
-  return info
+  return result
 }
 
 /**
- * Calculate cost
+ * Calculate cost using new model registry
  */
-async function calculateCost(modelName: string, promptTokens: number, completionTokens: number) {
-  const info = await getModelInfo(modelName)
-  const inputCost = (promptTokens * info.pricing.input) / 1000
-  const outputCost = (completionTokens * info.pricing.output) / 1000
-  const totalCost = inputCost + outputCost
+async function calculateCost(
+  modelName: string,
+  promptTokens: number,
+  completionTokens: number
+) {
+  const result = calculateModelCost(modelName, promptTokens, completionTokens)
+
+  if (!result) {
+    const availableModels = getAllModels()
+      .slice(0, 10)
+      .map((m) => m.id)
+      .join(', ')
+    throw new NotFoundError(
+      'Model',
+      `${modelName}. Available models include: ${availableModels}`
+    )
+  }
 
   return {
-    modelName,
-    promptTokens,
-    completionTokens,
-    totalTokens: promptTokens + completionTokens,
-    inputCost,
-    outputCost,
-    totalCost,
-    currency: 'USD'
+    ...result,
+    totalTokens: result.inputTokens + result.outputTokens,
   }
 }
 
@@ -796,7 +1130,7 @@ async function calculateCost(modelName: string, promptTokens: number, completion
  */
 async function analyzeProject(projectPath: string) {
   logger.info('Analyzing project', { projectPath })
-  
+
   const analysis: {
     path: string
     fileCount: number
@@ -812,7 +1146,7 @@ async function analyzeProject(projectPath: string) {
     hasEnvFile: false,
     hasTsConfig: false,
     providers: [],
-    framework: 'unknown'
+    framework: 'unknown',
   }
 
   try {
@@ -838,8 +1172,11 @@ async function analyzeProject(projectPath: string) {
         const packageJson = JSON.parse(
           await fs.readFile(path.join(projectPath, 'package.json'), 'utf-8')
         )
-        const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
-        
+        const deps = {
+          ...packageJson.dependencies,
+          ...packageJson.devDependencies,
+        }
+
         if (deps['openai']) analysis.providers.push('OpenAI')
         if (deps['@anthropic-ai/sdk']) analysis.providers.push('Anthropic')
         if (deps['@google/generative-ai']) analysis.providers.push('Google AI')
@@ -849,7 +1186,9 @@ async function analyzeProject(projectPath: string) {
         else if (deps['express']) analysis.framework = 'Express'
         else if (deps['hono']) analysis.framework = 'Hono'
       } catch (error) {
-        logger.warn('Failed to parse package.json', { error: error instanceof Error ? error.message : 'Unknown error' })
+        logger.warn('Failed to parse package.json', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        })
       }
     }
 
@@ -858,8 +1197,14 @@ async function analyzeProject(projectPath: string) {
     if (error instanceof NotFoundError) {
       throw error
     }
-    logger.error('Failed to analyze project', error instanceof Error ? error : undefined, { projectPath })
-    throw new Error(`Failed to analyze project: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    logger.error(
+      'Failed to analyze project',
+      error instanceof Error ? error : undefined,
+      { projectPath }
+    )
+    throw new Error(
+      `Failed to analyze project: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
   }
 }
 
@@ -868,7 +1213,7 @@ async function analyzeProject(projectPath: string) {
  */
 function generateEnvTemplate(provider: Provider): string {
   const lines = ['# Clarity Chat Environment Variables', '']
-  
+
   if (provider === 'openai' || provider === 'all') {
     lines.push('OPENAI_API_KEY=sk-...')
   }
@@ -878,7 +1223,7 @@ function generateEnvTemplate(provider: Provider): string {
   if (provider === 'google' || provider === 'all') {
     lines.push('GOOGLE_API_KEY=...')
   }
-  
+
   return lines.join('\n')
 }
 
@@ -898,7 +1243,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ content: response.choices[0].message.content })
 }`
   }
-  
+
   return `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
@@ -916,18 +1261,339 @@ main()`
 
 function generatePackageJson(provider: Provider, framework: Framework) {
   const deps: Record<string, string> = {}
-  
+
   if (provider === 'openai' || provider === 'all') deps['openai'] = '^4.0.0'
-  if (provider === 'anthropic' || provider === 'all') deps['@anthropic-ai/sdk'] = '^0.9.0'
-  if (provider === 'google' || provider === 'all') deps['@google/generative-ai'] = '^0.1.0'
-  
+  if (provider === 'anthropic' || provider === 'all')
+    deps['@anthropic-ai/sdk'] = '^0.9.0'
+  if (provider === 'google' || provider === 'all')
+    deps['@google/generative-ai'] = '^0.1.0'
+
   if (framework === 'express') deps['express'] = '^4.18.0'
   if (framework === 'hono') deps['hono'] = '^4.0.0'
-  
+
   return {
     name: 'clarity-chat-project',
     version: '1.0.0',
     type: 'module',
-    dependencies: deps
+    dependencies: deps,
+  }
+}
+
+// =============================================================================
+// Component Discovery Tool Handlers
+// =============================================================================
+
+/**
+ * Handle clarity_discover_components tool
+ */
+async function handleDiscoverComponents(args: Record<string, unknown>) {
+  const input = validateInput(DiscoverComponentsSchema, args)
+  logger.debug('Discovering components', {
+    query: input.query,
+    category: input.category,
+  })
+
+  const results = searchComponents(input.query, {
+    category: input.category,
+    limit: input.limit,
+  })
+
+  if (results.length === 0) {
+    return {
+      query: input.query,
+      category: input.category || 'all',
+      resultCount: 0,
+      components: [],
+      suggestion: `No components found for "${input.query}". Try broader terms like "chat", "message", "input", or "button".`,
+    }
+  }
+
+  return {
+    query: input.query,
+    category: input.category || 'all',
+    resultCount: results.length,
+    totalAvailable: COMPONENTS.length,
+    components: results.map((c) => ({
+      name: c.name,
+      displayName: c.displayName,
+      description: c.description,
+      category: c.category,
+      package: c.package,
+      tags: c.tags,
+    })),
+  }
+}
+
+/**
+ * Handle clarity_get_component_docs tool
+ */
+async function handleGetComponentDocs(args: Record<string, unknown>) {
+  const input = validateInput(GetComponentDocsSchema, args)
+  logger.debug('Getting component docs', { componentName: input.componentName })
+
+  const component = getComponent(input.componentName)
+  if (!component) {
+    // Provide helpful suggestions
+    const suggestions = searchComponents(input.componentName, { limit: 3 })
+    throw new NotFoundError(
+      'Component',
+      `${input.componentName}. Did you mean: ${suggestions.map((c) => c.name).join(', ') || 'ClarityChat, ChatInput, MessageList'}?`
+    )
+  }
+
+  return {
+    name: component.name,
+    displayName: component.displayName,
+    description: component.description,
+    category: component.category,
+    package: component.package,
+    importPath: component.importPath,
+    props: component.props.map((p) => ({
+      name: p.name,
+      type: p.type,
+      required: p.required,
+      default: p.default,
+      description: p.description,
+    })),
+    examples: component.examples.map((e) => ({
+      title: e.title,
+      description: e.description,
+      code: e.code,
+    })),
+    relatedComponents: component.relatedComponents,
+    tags: component.tags,
+  }
+}
+
+/**
+ * Handle clarity_discover_hooks tool
+ */
+async function handleDiscoverHooks(args: Record<string, unknown>) {
+  const input = validateInput(DiscoverHooksSchema, args)
+  logger.debug('Discovering hooks', { query: input.query })
+
+  const results = searchHooks(input.query, { limit: input.limit })
+
+  if (results.length === 0) {
+    return {
+      query: input.query,
+      resultCount: 0,
+      hooks: [],
+      suggestion: `No hooks found for "${input.query}". Try terms like "chat", "streaming", "voice", "storage".`,
+    }
+  }
+
+  return {
+    query: input.query,
+    resultCount: results.length,
+    totalAvailable: HOOKS.length,
+    hooks: results.map((h) => ({
+      name: h.name,
+      displayName: h.displayName,
+      description: h.description,
+      package: h.package,
+      tags: h.tags,
+    })),
+  }
+}
+
+/**
+ * Handle clarity_get_hook_docs tool
+ */
+async function handleGetHookDocs(args: Record<string, unknown>) {
+  const input = validateInput(GetHookDocsSchema, args)
+  logger.debug('Getting hook docs', { hookName: input.hookName })
+
+  const hook = getHook(input.hookName)
+  if (!hook) {
+    const suggestions = searchHooks(input.hookName, { limit: 3 })
+    throw new NotFoundError(
+      'Hook',
+      `${input.hookName}. Did you mean: ${suggestions.map((h) => h.name).join(', ') || 'useClarityChat, useVoiceInput, useTokenTracker'}?`
+    )
+  }
+
+  return {
+    name: hook.name,
+    displayName: hook.displayName,
+    description: hook.description,
+    package: hook.package,
+    importPath: hook.importPath,
+    parameters: hook.parameters.map((p) => ({
+      name: p.name,
+      type: p.type,
+      required: p.required,
+      default: p.default,
+      description: p.description,
+    })),
+    returns: hook.returns,
+    examples: hook.examples.map((e) => ({
+      title: e.title,
+      description: e.description,
+      code: e.code,
+    })),
+    relatedHooks: hook.relatedHooks,
+    tags: hook.tags,
+  }
+}
+
+/**
+ * Handle clarity_get_accessibility tool
+ */
+async function handleGetAccessibility(args: Record<string, unknown>) {
+  const input = validateInput(GetAccessibilitySchema, args)
+  logger.debug('Getting accessibility info', {
+    componentName: input.componentName,
+  })
+
+  const component = getComponent(input.componentName)
+  if (!component) {
+    const suggestions = searchComponents(input.componentName, { limit: 3 })
+    throw new NotFoundError(
+      'Component',
+      `${input.componentName}. Did you mean: ${suggestions.map((c) => c.name).join(', ')}?`
+    )
+  }
+
+  return {
+    componentName: component.name,
+    displayName: component.displayName,
+    accessibility: {
+      wcagLevel: component.accessibility.wcagLevel,
+      keyboardSupport: component.accessibility.keyboardSupport,
+      ariaAttributes: component.accessibility.ariaAttributes,
+      screenReaderNotes: component.accessibility.screenReaderNotes,
+      focusManagement: component.accessibility.focusManagement,
+    },
+    recommendations: [
+      `This component is WCAG ${component.accessibility.wcagLevel} compliant.`,
+      component.accessibility.keyboardSupport.length > 0
+        ? `Keyboard shortcuts: ${component.accessibility.keyboardSupport.join(', ')}`
+        : 'No specific keyboard shortcuts required.',
+      `Required ARIA attributes: ${component.accessibility.ariaAttributes.join(', ') || 'None'}`,
+    ],
+  }
+}
+
+/**
+ * Handle clarity_generate_code tool
+ */
+async function handleGenerateCode(args: Record<string, unknown>) {
+  const input = validateInput(GenerateCodeSchema, args)
+  logger.debug('Generating code', { componentName: input.componentName })
+
+  const component = getComponent(input.componentName)
+  if (!component) {
+    const suggestions = searchComponents(input.componentName, { limit: 3 })
+    throw new NotFoundError(
+      'Component',
+      `${input.componentName}. Did you mean: ${suggestions.map((c) => c.name).join(', ')}?`
+    )
+  }
+
+  // Get the first example or generate basic usage
+  const example = component.examples[0]
+
+  // Generate import statement
+  const importStatement = `import { ${component.name} } from '${component.importPath}'`
+
+  // Generate basic props
+  const requiredProps = component.props.filter((p) => p.required)
+  const propsList = requiredProps
+    .map((p) => {
+      if (p.type.includes('string')) return `${p.name}="..."`
+      if (p.type.includes('boolean')) return `${p.name}`
+      if (p.type.includes('number')) return `${p.name}={0}`
+      if (p.type.includes('[]')) return `${p.name}={[]}`
+      if (p.type.includes('=>')) return `${p.name}={() => {}}`
+      return `${p.name}={undefined}`
+    })
+    .join('\n  ')
+
+  const basicUsage = `<${component.name}
+  ${propsList}
+/>`
+
+  return {
+    componentName: component.name,
+    package: component.package,
+    import: importStatement,
+    basicUsage,
+    example: example
+      ? {
+          title: example.title,
+          description: example.description,
+          code: example.code,
+        }
+      : null,
+    props: component.props.map((p) => ({
+      name: p.name,
+      type: p.type,
+      required: p.required,
+      default: p.default,
+    })),
+    typescript: input.typescript !== false,
+  }
+}
+
+/**
+ * Handle clarity_get_related_components tool
+ */
+async function handleGetRelatedComponents(args: Record<string, unknown>) {
+  const input = validateInput(GetRelatedComponentsSchema, args)
+  logger.debug('Getting related components', {
+    componentName: input.componentName,
+  })
+
+  const component = getComponent(input.componentName)
+  if (!component) {
+    const suggestions = searchComponents(input.componentName, { limit: 3 })
+    throw new NotFoundError(
+      'Component',
+      `${input.componentName}. Did you mean: ${suggestions.map((c) => c.name).join(', ')}?`
+    )
+  }
+
+  const related = getRelatedComponents(input.componentName)
+
+  return {
+    componentName: component.name,
+    displayName: component.displayName,
+    relatedComponents: related.map((c) => ({
+      name: c.name,
+      displayName: c.displayName,
+      description: c.description,
+      category: c.category,
+      relationship: component.relatedComponents.includes(c.name)
+        ? 'commonly-used-with'
+        : 'related',
+    })),
+    suggestion:
+      related.length > 0
+        ? `${component.name} works well with ${related
+            .slice(0, 3)
+            .map((c) => c.name)
+            .join(', ')}.`
+        : `${component.name} can be used standalone or combined with custom components.`,
+  }
+}
+
+/**
+ * Handle clarity_list_categories tool
+ */
+function handleListCategories() {
+  const stats = getCategoryStats()
+
+  return {
+    totalComponents: COMPONENTS.length,
+    totalHooks: HOOKS.length,
+    categories: stats.map((s) => ({
+      name: s.category,
+      displayName: s.category
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, (l) => l.toUpperCase()),
+      componentCount: s.count,
+    })),
+    summary: `Clarity Chat provides ${COMPONENTS.length} components and ${HOOKS.length} hooks across ${stats.length} categories.`,
   }
 }
