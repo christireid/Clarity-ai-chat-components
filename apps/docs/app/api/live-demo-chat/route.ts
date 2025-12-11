@@ -3,11 +3,22 @@
  *
  * Powers the homepage demo chat with AI and docs search.
  * Uses shared streaming utilities from lib/ai/streaming.ts
+ *
+ * Demonstrates Next.js 16 features:
+ * - after() API for post-response analytics logging
  */
 
 import { NextRequest } from 'next/server'
-import { searchDocumentation, formatSearchResultsForRAG } from '@/lib/ai/keywordSearch'
-import { streamFromGemini, streamFromDemo, type StreamChunk } from '@/lib/ai/streaming'
+import { after } from 'next/server'
+import {
+  searchDocumentation,
+  formatSearchResultsForRAG,
+} from '@/lib/ai/keywordSearch'
+import {
+  streamFromGemini,
+  streamFromDemo,
+  type StreamChunk,
+} from '@/lib/ai/streaming'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -70,7 +81,7 @@ function createPlainTextStream(
         console.error('Streaming error:', error)
         controller.error(error)
       }
-    }
+    },
   })
 }
 
@@ -94,15 +105,14 @@ export async function POST(request: NextRequest) {
     const message = typeof body.message === 'string' ? body.message.trim() : ''
 
     if (!message) {
-      return Response.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      )
+      return Response.json({ error: 'Message is required' }, { status: 400 })
     }
 
     if (message.length > MAX_MESSAGE_LENGTH) {
       return Response.json(
-        { error: `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH} characters` },
+        {
+          error: `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH} characters`,
+        },
         { status: 400 }
       )
     }
@@ -133,27 +143,38 @@ export async function POST(request: NextRequest) {
       )
     } else {
       // Use shared demo streaming utility
-      generator = streamFromDemo([
-        { role: 'user', content: message }
-      ])
+      generator = streamFromDemo([{ role: 'user', content: message }])
     }
 
     // Create streaming response
     const stream = createPlainTextStream(generator)
 
+    // Next.js 16: Use after() to log analytics after response is sent
+    // This doesn't block the response - analytics are processed asynchronously
+    after(() => {
+      // Log chat analytics (runs after response streaming completes)
+      console.log('[Analytics] Chat interaction:', {
+        timestamp: new Date().toISOString(),
+        messageLength: message.length,
+        hasDocsContext: !!docsContext,
+        searchResultsCount: searchResults.length,
+        provider: hasGeminiKey ? 'gemini' : 'demo',
+      })
+
+      // In production, you might send this to an analytics service:
+      // await analytics.trackChatInteraction({ ... })
+    })
+
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     })
   } catch (error) {
     console.error('API error:', error)
-    return Response.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 

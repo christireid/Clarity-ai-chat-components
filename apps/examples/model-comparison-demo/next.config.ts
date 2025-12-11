@@ -1,0 +1,32 @@
+import type { NextConfig } from 'next'
+
+/**
+ * Next.js 16 Configuration for Model Comparison Demo
+ *
+ * Static export configuration for demo deployment.
+ */
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+
+  // Turbopack configuration (Next.js 16 - stable)
+  turbopack: {},
+
+  transpilePackages: [
+    '@clarity-chat/react',
+    '@clarity-chat/primitives',
+    '@clarity-chat/types',
+  ],
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // Static export for demo deployment
+  output: 'export',
+}
+
+export default nextConfig
