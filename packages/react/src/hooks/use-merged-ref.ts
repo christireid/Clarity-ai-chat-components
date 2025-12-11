@@ -35,6 +35,36 @@ export type ReactRef<T> =
   | undefined
 
 /**
+ * Validates a ref in development mode
+ * @internal
+ */
+function validateRef<T>(ref: unknown, index: number): ref is ReactRef<T> {
+  if (ref === null || ref === undefined) {
+    return true
+  }
+
+  if (typeof ref === 'function') {
+    return true
+  }
+
+  if (typeof ref === 'object' && 'current' in ref) {
+    return true
+  }
+
+  // Invalid ref type - warn in development
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      `[useMergedRef] Invalid ref at index ${index}. Expected a callback function, ` +
+        `an object with a 'current' property, null, or undefined. ` +
+        `Received: ${typeof ref}`,
+      ref
+    )
+  }
+
+  return false
+}
+
+/**
  * Sets a ref value, handling both callback refs and ref objects
  */
 function setRef<T>(ref: ReactRef<T>, value: T | null): void {
@@ -80,6 +110,11 @@ function setRef<T>(ref: ReactRef<T>, value: T | null): void {
  * ```
  */
 export function useMergedRef<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
+  // Validate refs in development mode
+  if (process.env.NODE_ENV !== 'production') {
+    refs.forEach((ref, index) => validateRef(ref, index))
+  }
+
   return React.useCallback(
     (element: T | null) => {
       refs.forEach((ref) => setRef(ref, element))
@@ -104,6 +139,11 @@ export function useMergedRef<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
  * ```
  */
 export function mergeRefs<T>(...refs: ReactRef<T>[]): React.RefCallback<T> {
+  // Validate refs in development mode
+  if (process.env.NODE_ENV !== 'production') {
+    refs.forEach((ref, index) => validateRef(ref, index))
+  }
+
   return (element: T | null) => {
     refs.forEach((ref) => setRef(ref, element))
   }

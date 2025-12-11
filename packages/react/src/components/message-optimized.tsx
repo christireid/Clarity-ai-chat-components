@@ -385,14 +385,19 @@ function MessageOptimizedInner({
 
 // Custom comparison function for React.memo
 const messageOptimizedAreEqual = (prevProps: MessageOptimizedProps, nextProps: MessageOptimizedProps) => {
-  // Only re-render if these props change
+  // Compare all props that affect rendering
+  // Note: ref comparison ensures new refs get attached (React 19 ref-as-prop pattern)
   return (
     prevProps.message.id === nextProps.message.id &&
     prevProps.message.content === nextProps.message.content &&
     prevProps.message.status === nextProps.message.status &&
     prevProps.message.feedback?.type === nextProps.message.feedback?.type &&
     prevProps.showAvatar === nextProps.showAvatar &&
-    prevProps.showTimestamp === nextProps.showTimestamp
+    prevProps.showTimestamp === nextProps.showTimestamp &&
+    prevProps.className === nextProps.className &&
+    // Ref comparison: re-render if ref identity changes to attach new ref
+    // Note: stable refs (useRef objects) maintain identity, so this rarely triggers
+    prevProps.ref === nextProps.ref
   )
 }
 

@@ -156,6 +156,22 @@ export default [
       '@typescript-eslint/no-empty-object-type': 'off',
       'jsx-a11y/role-supports-aria-props': 'off',
       'react-hooks/rules-of-hooks': 'off',
+      // React 19: Warn on forwardRef usage - prefer ref-as-prop pattern
+      // See: packages/react/REACT_19_REF_MIGRATION.md
+      'no-restricted-syntax': [
+        'warn',
+        {
+          selector: 'CallExpression[callee.name="forwardRef"]',
+          message:
+            'React 19: Prefer ref-as-prop pattern over forwardRef. See REACT_19_REF_MIGRATION.md for migration guide.',
+        },
+        {
+          selector:
+            'CallExpression[callee.object.name="React"][callee.property.name="forwardRef"]',
+          message:
+            'React 19: Prefer ref-as-prop pattern over React.forwardRef. See REACT_19_REF_MIGRATION.md for migration guide.',
+        },
+      ],
     },
   },
   {

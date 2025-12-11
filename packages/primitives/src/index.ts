@@ -162,16 +162,13 @@ export {
   TooltipProvider,
 } from './components/ui/tooltip'
 
-// Also export raw shadcn/Radix Tooltip components for advanced use
+// Also export raw shadcn/Radix Tooltip components for advanced use (aliased)
 export {
   Tooltip as ShadcnTooltip,
   TooltipTrigger as ShadcnTooltipTrigger,
   TooltipContent as ShadcnTooltipContent,
   TooltipProvider as ShadcnTooltipProvider,
   Tooltip as RadixTooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
 } from './components/ui/tooltip'
 
 // Checkbox
