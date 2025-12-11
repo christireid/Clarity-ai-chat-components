@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Github, Shield, Sparkles, Zap } from 'lucide-react'
 import CodePreview from '../ui/CodePreview'
+import { durations } from '@/lib/constants'
 
 // Dynamically import Hero3D to avoid SSR issues with Three.js
 const Hero3D = dynamic(() => import('../3d/Hero3D'), {

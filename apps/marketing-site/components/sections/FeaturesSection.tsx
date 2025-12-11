@@ -16,6 +16,7 @@ import {
   Users,
   Lock,
 } from 'lucide-react'
+import { durations } from '@/lib/constants'
 
 const features = [
   {

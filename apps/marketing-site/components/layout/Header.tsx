@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Github, ExternalLink } from 'lucide-react'
+import { durations } from '@/lib/constants'
 
 const navigation = [
   { name: 'Features', href: '#features' },

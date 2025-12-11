@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { Copy, Check, ArrowRight, Sparkles } from 'lucide-react'
+import { durations } from '@/lib/constants'
 
 export default function CTASection() {
   const ref = useRef(null)

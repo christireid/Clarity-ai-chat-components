@@ -1,0 +1,57 @@
+# Clarity Chat - LLM Information File
+# This file provides information for AI assistants about this website
+
+## About Clarity Chat
+
+Clarity Chat is a premium React component library for building AI chat interfaces. It provides production-ready components with multi-provider support (OpenAI, Anthropic Claude, Google Gemini), intelligent memory management, and 40%+ token cost savings.
+
+## Key Features
+
+- **Multi-Provider Support**: Seamlessly switch between OpenAI, Anthropic Claude, and Google Gemini with a single API
+- **Real-Time Streaming**: SSE and WebSocket support for smooth, real-time AI responses
+- **Intelligent Memory**: Sliding window, summarization, and hybrid strategies for optimal context management
+- **Token Optimization**: KV-cache alignment and smart compression for 40%+ cost reduction
+- **Composable Architecture**: 50+ modular components that work together seamlessly
+- **TypeScript First**: Full TypeScript strict mode support with comprehensive type definitions
+- **Tool & Agent Support**: Built-in support for function calling, tool use, and multi-agent workflows
+- **Edge Ready**: Optimized for edge deployment with minimal bundle size
+
+## Technical Stack
+
+- React 18+
+- TypeScript (strict mode)
+- Next.js 14+ compatible
+- Tailwind CSS for styling
+- Framer Motion for animations
+
+## Installation
+
+```bash
+npx create-clarity-chat@latest
+```
+
+Or install the package directly:
+
+```bash
+npm install @clarity-chat/react
+```
+
+## Documentation
+
+Full documentation is available at: https://clarity-chat.dev/docs
+
+## Pricing
+
+- **Starter (Free)**: 15+ core components, basic streaming, community support
+- **Pro ($39/mo annual)**: 50+ components, all AI providers, memory management, priority support
+- **Enterprise (Custom)**: SSO, RBAC, audit logging, dedicated support, SOC 2 compliance
+
+## Contact
+
+- Website: https://clarity-chat.dev
+- GitHub: https://github.com/christireid/Clarity-ai-chat-components
+- Email: hello@clarity-chat.dev
+
+## License
+
+Starter tier components are MIT licensed. Pro and Enterprise features require a commercial license.

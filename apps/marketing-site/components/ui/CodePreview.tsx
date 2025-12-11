@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import { durations } from '@/lib/constants'
 
 interface CodeExample {
   title: string
