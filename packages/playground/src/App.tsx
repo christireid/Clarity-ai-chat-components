@@ -3,38 +3,82 @@
  * Interactive component testing and experimentation environment
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Editor from '@monaco-editor/react'
-import { Play, Copy, Download, Share2, RefreshCw, Settings } from 'lucide-react'
+import {
+  Play,
+  Copy,
+  Download,
+  Share2,
+  RefreshCw,
+  Settings,
+  ExternalLink,
+  Check,
+} from 'lucide-react'
 import { LivePreview } from './components/LivePreview'
 import { ComponentLibrary } from './components/ComponentLibrary'
-import { templates } from './templates'
+import { ConsolePanel } from './components/ConsolePanel'
+import { templates, getTemplateById } from './templates/index'
+import {
+  parseUrlState,
+  copyShareableUrl,
+  openInCodeSandbox,
+  openInStackBlitz,
+  downloadAsZip,
+} from './utils'
+import type { PlaygroundSettings, ConsoleLogEntry } from './types'
+
+const DEFAULT_SETTINGS: PlaygroundSettings = {
+  autoRun: true,
+  lineNumbers: true,
+  fontSize: 14,
+  tabSize: 2,
+  wordWrap: false,
+  minimap: false,
+}
+
+const DEFAULT_TEMPLATE = templates[0]
 
 export default function App() {
-  const [code, setCode] = useState(templates.basic)
+  const [code, setCode] = useState(DEFAULT_TEMPLATE.code)
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [selectedTemplate, setSelectedTemplate] = useState('basic')
-  const [autoRun, setAutoRun] = useState(true)
+  const [selectedTemplate, setSelectedTemplate] = useState(DEFAULT_TEMPLATE.id)
+  const [settings, setSettings] = useState<PlaygroundSettings>(DEFAULT_SETTINGS)
   const [showSettings, setShowSettings] = useState(false)
+  const [showExportMenu, setShowExportMenu] = useState(false)
+  const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'error'>(
+    'idle'
+  )
+  const [consoleEntries, setConsoleEntries] = useState<ConsoleLogEntry[]>([])
+  const [showConsole, setShowConsole] = useState(false)
   const runPreviewRef = useRef<(() => void) | null>(null)
   const hasLoadedFromUrl = useRef(false)
 
-  // Load code from URL parameters on mount (before formatting)
+  // Load state from URL parameters on mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const codeParam = params.get('code')
-    if (codeParam) {
-      try {
-        const decoded = decodeURIComponent(codeParam)
-        const codeFromUrl = atob(decoded)
-        setCode(codeFromUrl)
+    const urlState = parseUrlState()
+    if (urlState) {
+      if (urlState.code) {
+        setCode(urlState.code)
         hasLoadedFromUrl.current = true
-        // Clear URL parameter after loading
-        window.history.replaceState({}, '', window.location.pathname)
-      } catch (error) {
-        console.error('Failed to load code from URL:', error)
-        // Silently fail - use default template
       }
+      if (urlState.templateId) {
+        const template = getTemplateById(urlState.templateId)
+        if (template) {
+          setSelectedTemplate(template.id)
+          if (!urlState.code) {
+            setCode(template.code)
+          }
+        }
+      }
+      if (urlState.theme) {
+        setTheme(urlState.theme)
+      }
+      if (urlState.settings) {
+        setSettings((prev) => ({ ...prev, ...urlState.settings }))
+      }
+      // Clear URL parameter after loading
+      window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
 
@@ -62,74 +106,81 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run on mount
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(code)
-      // Could use a toast notification here instead of alert
-      alert('Code copied to clipboard!')
+      setShareStatus('copied')
+      setTimeout(() => setShareStatus('idle'), 2000)
     } catch (error) {
       console.error('Failed to copy to clipboard:', error)
-      alert('Failed to copy code. Please try selecting and copying manually.')
+      setShareStatus('error')
+      setTimeout(() => setShareStatus('idle'), 2000)
     }
-  }
+  }, [code])
 
-  const handleDownload = () => {
-    try {
-      const blob = new Blob([code], { type: 'text/plain' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'clarity-chat-component.tsx'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    } catch (error) {
-      console.error('Failed to download file:', error)
-      alert('Failed to download file. Please try again.')
-    }
-  }
+  const handleDownload = useCallback(() => {
+    downloadAsZip({
+      code,
+      title: getTemplateById(selectedTemplate)?.name || 'Clarity Chat Example',
+    })
+  }, [code, selectedTemplate])
 
-  const handleShare = async () => {
-    try {
-      // Encode code to base64, then URL encode
-      const base64 = btoa(unescape(encodeURIComponent(code)))
-      const encoded = encodeURIComponent(base64)
-      const url = `${window.location.origin}${window.location.pathname}?code=${encoded}`
+  const handleShare = useCallback(async () => {
+    const result = await copyShareableUrl({
+      code,
+      templateId: selectedTemplate,
+      theme,
+      settings,
+    })
 
-      // Check URL length (browsers have limits around 2000-8000 chars)
-      if (url.length > 2000) {
-        alert('Code is too long to share via URL. Please use the download feature instead.')
-        return
-      }
-
-      await navigator.clipboard.writeText(url)
-      alert('Share link copied to clipboard!')
-    } catch (error) {
-      console.error('Failed to share:', error)
-      alert('Failed to create share link. Please try again.')
-    }
-  }
-
-  const handleTemplateChange = (templateKey: string) => {
-    setSelectedTemplate(templateKey)
-    const template = templates[templateKey as keyof typeof templates]
-    if (template) {
-      setCode(template)
+    if (result.success) {
+      setShareStatus('copied')
+      setTimeout(() => setShareStatus('idle'), 2000)
     } else {
-      console.warn(`Template "${templateKey}" not found`)
-      setCode(templates.basic)
+      setShareStatus('error')
+      setTimeout(() => setShareStatus('idle'), 2000)
     }
-  }
+  }, [code, selectedTemplate, theme, settings])
 
-  const handleReset = () => {
-    const template = templates[selectedTemplate as keyof typeof templates]
+  const handleOpenInCodeSandbox = useCallback(() => {
+    openInCodeSandbox({
+      code,
+      title: getTemplateById(selectedTemplate)?.name || 'Clarity Chat Example',
+    })
+    setShowExportMenu(false)
+  }, [code, selectedTemplate])
+
+  const handleOpenInStackBlitz = useCallback(() => {
+    openInStackBlitz({
+      code,
+      title: getTemplateById(selectedTemplate)?.name || 'Clarity Chat Example',
+    })
+    setShowExportMenu(false)
+  }, [code, selectedTemplate])
+
+  const handleTemplateChange = useCallback((templateId: string) => {
+    setSelectedTemplate(templateId)
+    const template = getTemplateById(templateId)
     if (template) {
-      setCode(template)
+      setCode(template.code)
     } else {
-      setCode(templates.basic)
+      console.warn(`Template "${templateId}" not found`)
+      setCode(DEFAULT_TEMPLATE.code)
     }
-  }
+  }, [])
+
+  const handleReset = useCallback(() => {
+    const template = getTemplateById(selectedTemplate)
+    if (template) {
+      setCode(template.code)
+    } else {
+      setCode(DEFAULT_TEMPLATE.code)
+    }
+  }, [selectedTemplate])
+
+  const handleClearConsole = useCallback(() => {
+    setConsoleEntries([])
+  }, [])
 
   return (
     <div className={`h-screen flex flex-col ${theme === 'dark' ? 'dark' : ''}`}>
@@ -172,12 +223,44 @@ export default function App() {
             </button>
             <button
               onClick={handleShare}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              title="Share"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
+              title={shareStatus === 'copied' ? 'Copied!' : 'Share'}
               aria-label="Share code via URL"
             >
-              <Share2 className="w-5 h-5" aria-hidden="true" />
+              {shareStatus === 'copied' ? (
+                <Check className="w-5 h-5 text-green-500" aria-hidden="true" />
+              ) : (
+                <Share2 className="w-5 h-5" aria-hidden="true" />
+              )}
             </button>
+            {/* Export Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                title="Export"
+                aria-label="Export options"
+                aria-expanded={showExportMenu}
+              >
+                <ExternalLink className="w-5 h-5" aria-hidden="true" />
+              </button>
+              {showExportMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                  <button
+                    onClick={handleOpenInCodeSandbox}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Open in CodeSandbox
+                  </button>
+                  <button
+                    onClick={handleOpenInStackBlitz}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Open in StackBlitz
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -200,16 +283,64 @@ export default function App() {
         {/* Settings Panel */}
         {showSettings && (
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="flex items-center gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={autoRun}
-                  onChange={(e) => setAutoRun(e.target.checked)}
+                  checked={settings.autoRun}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      autoRun: e.target.checked,
+                    }))
+                  }
                   className="rounded"
                 />
                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Auto-run on change
+                  Auto-run
+                </span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={settings.lineNumbers}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      lineNumbers: e.target.checked,
+                    }))
+                  }
+                  className="rounded"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  Line numbers
+                </span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={settings.wordWrap}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      wordWrap: e.target.checked,
+                    }))
+                  }
+                  className="rounded"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  Word wrap
+                </span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={showConsole}
+                  onChange={(e) => setShowConsole(e.target.checked)}
+                  className="rounded"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  Show console
                 </span>
               </label>
             </div>
@@ -237,16 +368,17 @@ export default function App() {
               onChange={(value: string | undefined) => setCode(value || '')}
               theme={theme === 'dark' ? 'vs-dark' : 'light'}
               options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                lineNumbers: 'on',
+                minimap: { enabled: settings.minimap },
+                fontSize: settings.fontSize,
+                lineNumbers: settings.lineNumbers ? 'on' : 'off',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
                 readOnly: false,
                 automaticLayout: true,
-                tabSize: 2,
+                tabSize: settings.tabSize,
                 formatOnPaste: true,
                 formatOnType: true,
+                wordWrap: settings.wordWrap ? 'on' : 'off',
               }}
             />
           </div>
@@ -268,7 +400,23 @@ export default function App() {
                 Run
               </button>
             </div>
-            <LivePreview code={code} theme={theme} autoRun={autoRun} onRunRef={runPreviewRef} />
+            <LivePreview
+              code={code}
+              theme={theme}
+              autoRun={settings.autoRun}
+              onRunRef={runPreviewRef}
+            />
+
+            {/* Console Panel */}
+            {showConsole && (
+              <div className="mt-4">
+                <ConsolePanel
+                  entries={consoleEntries}
+                  onClear={handleClearConsole}
+                  maxHeight="150px"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
