@@ -5,6 +5,81 @@ All notable changes to the Clarity Chat VS Code extension will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2024-12-11
+
+### Highlights
+
+**Clarity Chat 1.0** is our first public marketplace release! This version transforms the extension from internal tooling into a premium, public-facing developer tool for building AI chat applications.
+
+### Added
+
+- **GitHub Copilot Chat Participant**
+  - Chat with `@clarity` directly in VS Code Copilot Chat
+  - Slash commands: `/component`, `/hook`, `/memory`, `/optimize`, `/migrate`, `/docs`
+  - Natural language queries for components, hooks, and patterns
+  - Follow-up suggestions for deeper exploration
+
+- **Visual Component Picker**
+  - Browse components by category (Top-Level, Building Blocks, Streaming, Providers, Token Management, Utilities)
+  - 18 components with full TypeScript support
+  - Auto-import handling
+  - Quick documentation access
+
+- **Visual Hook Picker**
+  - Browse hooks by category (Primary, Memory, Streaming, Token Optimization, UI State, Provider, Utilities)
+  - 18 hooks with usage examples
+  - Automatic import insertion
+
+- **API Route Generator**
+  - Generate streaming API routes for OpenAI, Anthropic, Google AI, or Multi-Provider
+  - Framework support: Next.js App Router, Next.js Pages Router, Express, Hono
+  - Streaming and non-streaming variants
+  - Type-safe implementations
+
+- **Migration Assistant**
+  - Convert Vercel AI SDK code to Clarity Chat
+  - Automatic pattern detection and conversion
+  - Preview changes before applying
+  - Import, hook, options, and type migration
+
+- **External Resource Commands**
+  - Open Documentation with topic picker
+  - Open Storybook with component picker
+  - Quick access to GitHub, Discord, examples
+
+- **Expanded Snippet Library (50+ snippets)**
+  - Component snippets: ClarityChat, ChatWindow, MessageList, ChatInput, StreamingMessage, and more
+  - Hook snippets: useClarityChat, useMemoryContext, useTokenBudgetMonitor, and more
+  - API route snippets: OpenAI, Anthropic, Google, Express, Hono
+  - Import snippets: components, hooks, types
+  - Complete page and hook setup templates
+
+- **Enhanced IntelliSense**
+  - Clarity Chat component completions with documentation
+  - Hook completions with parameter hints
+  - Export completions for import statements
+  - useClarityChat options completions
+  - Memory strategy completions
+
+- **Context Menu Integration**
+  - Right-click to add components or hooks
+  - Right-click folders to create API routes
+
+### Changed
+
+- Minimum VS Code version updated to 1.90.0 (for Copilot Chat Participant API)
+- Updated extension branding for marketplace
+- Improved snippet organization with consistent `cc-` prefix
+- Enhanced completion provider with Clarity Chat-specific items
+
+### Improved
+
+- README rewritten for marketplace presentation
+- Documentation links updated to official docs site
+- Better categorization of commands and features
+
+---
+
 ## [0.1.0] - 2024-12-09
 
 ### Added

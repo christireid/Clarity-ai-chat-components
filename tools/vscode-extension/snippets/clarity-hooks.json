@@ -1,0 +1,377 @@
+{
+  "useClarityChat Hook": {
+    "prefix": ["cc-useclaritychat", "use-clarity-chat"],
+    "body": [
+      "const {",
+      "  messages,",
+      "  input,",
+      "  handleInputChange,",
+      "  handleSubmit,",
+      "  isLoading,",
+      "  error,",
+      "  reload,",
+      "  stop,",
+      "} = useClarityChat({",
+      "  api: '${1:/api/chat}',",
+      "  ${2:memory: {",
+      "    enabled: true,",
+      "    strategy: 'hybrid',",
+      "    maxTokens: 2000,",
+      "  },}",
+      "})"
+    ],
+    "description": "useClarityChat hook with common options"
+  },
+
+  "useClarityChat with Callbacks": {
+    "prefix": ["cc-usechat-callbacks"],
+    "body": [
+      "const {",
+      "  messages,",
+      "  input,",
+      "  handleInputChange,",
+      "  handleSubmit,",
+      "  isLoading,",
+      "} = useClarityChat({",
+      "  api: '${1:/api/chat}',",
+      "  onStart: () => {",
+      "    ${2:console.log('Started')}",
+      "  },",
+      "  onFinish: (message) => {",
+      "    ${3:console.log('Finished:', message)}",
+      "  },",
+      "  onError: (error) => {",
+      "    ${4:console.error('Error:', error)}",
+      "  },",
+      "})"
+    ],
+    "description": "useClarityChat with callback handlers"
+  },
+
+  "useClarityChat with Memory": {
+    "prefix": ["cc-usechat-memory"],
+    "body": [
+      "const {",
+      "  messages,",
+      "  input,",
+      "  handleInputChange,",
+      "  handleSubmit,",
+      "  isLoading,",
+      "  memoryInfo,",
+      "} = useClarityChat({",
+      "  api: '${1:/api/chat}',",
+      "  memory: {",
+      "    enabled: true,",
+      "    strategy: '${2|hybrid,sliding-window,summarization|}',",
+      "    maxTokens: ${3:2000},",
+      "    persistKey: '${4:chat-memory}',",
+      "  },",
+      "})"
+    ],
+    "description": "useClarityChat with memory configuration"
+  },
+
+  "useChatEnhanced Hook": {
+    "prefix": ["cc-usechat-enhanced"],
+    "body": [
+      "const {",
+      "  messages,",
+      "  send,",
+      "  append,",
+      "  isLoading,",
+      "  streamingContent,",
+      "} = useChatEnhanced({",
+      "  api: '${1:/api/chat}',",
+      "  onFinish: (message) => {",
+      "    ${2:console.log('Message complete:', message)}",
+      "  },",
+      "})"
+    ],
+    "description": "useChatEnhanced composable hook"
+  },
+
+  "useMemoryContext Hook": {
+    "prefix": ["cc-usememory", "use-memory-context"],
+    "body": [
+      "const {",
+      "  memoryInfo,",
+      "  clearMemory,",
+      "  summarizeMemory,",
+      "  getRelevantContext,",
+      "} = useMemoryContext()"
+    ],
+    "description": "useMemoryContext hook"
+  },
+
+  "useConversationHistory Hook": {
+    "prefix": ["cc-usehistory", "use-conversation-history"],
+    "body": [
+      "const {",
+      "  history,",
+      "  addToHistory,",
+      "  clearHistory,",
+      "  exportHistory,",
+      "  importHistory,",
+      "} = useConversationHistory({",
+      "  storageKey: '${1:clarity-chat-history}',",
+      "  maxConversations: ${2:50},",
+      "})"
+    ],
+    "description": "useConversationHistory hook"
+  },
+
+  "useStreamingSSE Hook": {
+    "prefix": ["cc-usesse", "use-streaming-sse"],
+    "body": [
+      "const {",
+      "  data,",
+      "  isStreaming,",
+      "  error,",
+      "  start,",
+      "  stop,",
+      "} = useStreamingSSE({",
+      "  url: '${1:/api/chat}',",
+      "  onChunk: (chunk) => {",
+      "    ${2:console.log('Chunk:', chunk)}",
+      "  },",
+      "})"
+    ],
+    "description": "useStreamingSSE hook"
+  },
+
+  "useStreamingWebSocket Hook": {
+    "prefix": ["cc-usewebsocket", "use-streaming-websocket"],
+    "body": [
+      "const {",
+      "  data,",
+      "  isConnected,",
+      "  isStreaming,",
+      "  send,",
+      "  disconnect,",
+      "} = useStreamingWebSocket({",
+      "  url: '${1:wss://your-server.com/ws}',",
+      "  reconnect: true,",
+      "  maxRetries: ${2:3},",
+      "})"
+    ],
+    "description": "useStreamingWebSocket hook"
+  },
+
+  "useTokenBudgetMonitor Hook": {
+    "prefix": ["cc-usebudget", "use-token-budget"],
+    "body": [
+      "const {",
+      "  stats,",
+      "  optimizeMessages,",
+      "  isOverBudget,",
+      "  percentUsed,",
+      "  remainingTokens,",
+      "} = useTokenBudgetMonitor({",
+      "  maxInputTokens: ${1:4000},",
+      "  maxOutputTokens: ${2:1000},",
+      "  warningThreshold: ${3:0.8},",
+      "})"
+    ],
+    "description": "useTokenBudgetMonitor hook"
+  },
+
+  "useTokenOptimizationEnhanced Hook": {
+    "prefix": ["cc-useoptimization", "use-token-optimization"],
+    "body": [
+      "const {",
+      "  optimizedMessages,",
+      "  compressionRatio,",
+      "  applyOptimization,",
+      "  strategies,",
+      "} = useTokenOptimizationEnhanced({",
+      "  messages,",
+      "  targetTokens: ${1:2000},",
+      "  strategies: ['${2|truncate,summarize,prioritize|}'],",
+      "})"
+    ],
+    "description": "useTokenOptimizationEnhanced hook"
+  },
+
+  "useTokenCounter Hook": {
+    "prefix": ["cc-usetokencounter", "use-token-counter"],
+    "body": [
+      "const {",
+      "  countTokens,",
+      "  estimateCost,",
+      "  tokenize,",
+      "} = useTokenCounter({",
+      "  model: '${1|gpt-4-turbo,claude-3-opus,gemini-pro|}',",
+      "})"
+    ],
+    "description": "useTokenCounter hook"
+  },
+
+  "useLoadingState Hook": {
+    "prefix": ["cc-useloading", "use-loading-state"],
+    "body": [
+      "const {",
+      "  isLoading,",
+      "  startLoading,",
+      "  stopLoading,",
+      "  withLoading,",
+      "} = useLoadingState({",
+      "  timeout: ${1:30000},",
+      "  onTimeout: () => {",
+      "    ${2:console.error('Request timed out')}",
+      "  },",
+      "})"
+    ],
+    "description": "useLoadingState hook"
+  },
+
+  "useErrorHandler Hook": {
+    "prefix": ["cc-useerror", "use-error-handler"],
+    "body": [
+      "const {",
+      "  error,",
+      "  handleError,",
+      "  clearError,",
+      "  retryLastAction,",
+      "} = useErrorHandler({",
+      "  onError: (error) => {",
+      "    ${1:console.error('Chat error:', error)}",
+      "  },",
+      "  retryCount: ${2:3},",
+      "})"
+    ],
+    "description": "useErrorHandler hook"
+  },
+
+  "useAutoScroll Hook": {
+    "prefix": ["cc-useautoscroll", "use-auto-scroll"],
+    "body": [
+      "const {",
+      "  containerRef,",
+      "  scrollToBottom,",
+      "  isAtBottom,",
+      "} = useAutoScroll({",
+      "  smooth: true,",
+      "  threshold: ${1:100},",
+      "})"
+    ],
+    "description": "useAutoScroll hook"
+  },
+
+  "useProviderConfig Hook": {
+    "prefix": ["cc-useprovider", "use-provider-config"],
+    "body": [
+      "const {",
+      "  provider,",
+      "  model,",
+      "  setProvider,",
+      "  setModel,",
+      "  availableModels,",
+      "} = useProviderConfig({",
+      "  defaultProvider: '${1|openai,anthropic,google|}',",
+      "  defaultModel: '${2:gpt-4-turbo}',",
+      "})"
+    ],
+    "description": "useProviderConfig hook"
+  },
+
+  "useMultiProvider Hook": {
+    "prefix": ["cc-usemultiprovider", "use-multi-provider"],
+    "body": [
+      "const {",
+      "  activeProvider,",
+      "  switchProvider,",
+      "  compareResponses,",
+      "  providers,",
+      "} = useMultiProvider({",
+      "  providers: {",
+      "    openai: { model: '${1:gpt-4-turbo}' },",
+      "    anthropic: { model: '${2:claude-3-opus}' },",
+      "  },",
+      "})"
+    ],
+    "description": "useMultiProvider hook"
+  },
+
+  "useMessageParser Hook": {
+    "prefix": ["cc-usemessageparser", "use-message-parser"],
+    "body": [
+      "const {",
+      "  parseMessage,",
+      "  extractCode,",
+      "  extractLinks,",
+      "  formatMessage,",
+      "} = useMessageParser()"
+    ],
+    "description": "useMessageParser hook"
+  },
+
+  "useKeyboardShortcuts Hook": {
+    "prefix": ["cc-useshortcuts", "use-keyboard-shortcuts"],
+    "body": [
+      "useKeyboardShortcuts({",
+      "  'mod+enter': ${1:handleSubmit},",
+      "  'escape': ${2:handleCancel},",
+      "  'mod+k': ${3:clearChat},",
+      "})"
+    ],
+    "description": "useKeyboardShortcuts hook"
+  },
+
+  "useVoiceInput Hook": {
+    "prefix": ["cc-usevoice", "use-voice-input"],
+    "body": [
+      "const {",
+      "  isListening,",
+      "  transcript,",
+      "  startListening,",
+      "  stopListening,",
+      "  error,",
+      "} = useVoiceInput({",
+      "  language: '${1:en-US}',",
+      "  continuous: ${2:false},",
+      "})"
+    ],
+    "description": "useVoiceInput hook"
+  },
+
+  "Complete Chat Hook Setup": {
+    "prefix": ["cc-hook-setup", "clarity-hook-complete"],
+    "body": [
+      "// Chat state management",
+      "const {",
+      "  messages,",
+      "  input,",
+      "  handleInputChange,",
+      "  handleSubmit,",
+      "  isLoading,",
+      "  error,",
+      "  reload,",
+      "  stop,",
+      "} = useClarityChat({",
+      "  api: '${1:/api/chat}',",
+      "  memory: {",
+      "    enabled: true,",
+      "    strategy: '${2:hybrid}',",
+      "  },",
+      "  onFinish: (message) => {",
+      "    console.log('Message complete')",
+      "  },",
+      "})",
+      "",
+      "// Token management",
+      "const { stats, isOverBudget } = useTokenBudgetMonitor({",
+      "  maxInputTokens: ${3:4000},",
+      "  warningThreshold: 0.8,",
+      "})",
+      "",
+      "// Auto-scroll",
+      "const { containerRef, scrollToBottom } = useAutoScroll()",
+      "",
+      "// Scroll on new messages",
+      "useEffect(() => {",
+      "  scrollToBottom()",
+      "}, [messages])"
+    ],
+    "description": "Complete chat hook setup with all utilities"
+  }
+}

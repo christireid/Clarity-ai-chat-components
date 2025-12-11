@@ -1,279 +1,298 @@
-# Clarity Chat - VS Code Extension
+# Clarity Chat for VS Code
 
-Supercharge your AI development workflow with intelligent code completion, snippets, and productivity tools for the Clarity Chat framework.
+[![Version](https://img.shields.io/visual-studio-marketplace/v/code-and-clarity.clarity-chat)](https://marketplace.visualstudio.com/items?itemName=code-and-clarity.clarity-chat)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/code-and-clarity.clarity-chat)](https://marketplace.visualstudio.com/items?itemName=code-and-clarity.clarity-chat)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/code-and-clarity.clarity-chat)](https://marketplace.visualstudio.com/items?itemName=code-and-clarity.clarity-chat)
+
+**The Ultimate VS Code Extension for Building AI Chat Applications**
+
+Build production-ready AI chat interfaces in minutes with intelligent code completion, 50+ snippets, GitHub Copilot integration, and comprehensive tooling for the [Clarity Chat](https://github.com/code-and-clarity/clarity-chat) component library.
+
+![Clarity Chat Extension Demo](https://raw.githubusercontent.com/code-and-clarity/clarity-chat/main/assets/vscode-extension-demo.gif)
+
+## Why Clarity Chat?
+
+| Feature | Clarity Chat | shadcn/ui | Chakra UI | MUI |
+|---------|-------------|-----------|-----------|-----|
+| AI Chat Components | ✅ Purpose-built | ❌ Generic | ❌ Generic | ❌ Generic |
+| Copilot Chat Participant | ✅ @clarity | ❌ | ❌ | ❌ |
+| Memory Management | ✅ Built-in | ❌ | ❌ | ❌ |
+| Token Optimization | ✅ Automatic | ❌ | ❌ | ❌ |
+| Streaming Support | ✅ SSE + WebSocket | ❌ | ❌ | ❌ |
+| Multi-Provider | ✅ OpenAI, Anthropic, Google | ❌ | ❌ | ❌ |
 
 ## Features
 
-### 🎯 Intelligent Code Completion
+### 🤖 GitHub Copilot Chat Integration
 
-Get context-aware suggestions for:
-- **AI Model Names** - Auto-complete model names with pricing and capability info
-- **Environment Variables** - Suggestions for API keys and configuration
-- **API Parameters** - Parameter hints for all AI provider SDKs
+Chat with `@clarity` directly in VS Code! Get instant help with:
 
-![Completion Demo](https://via.placeholder.com/600x300?text=Completion+Demo)
+```
+@clarity How do I add memory to my chat?
+@clarity /component MessageList
+@clarity /hook useTokenBudgetMonitor
+@clarity /migrate from Vercel AI SDK
+```
 
-### 💡 Hover Documentation
+**Available Commands:**
+- `/component` - Get component documentation and examples
+- `/hook` - Get hook documentation and examples
+- `/memory` - Learn about memory management strategies
+- `/optimize` - Token optimization guidance
+- `/migrate` - Migration help from other libraries
+- `/docs` - Quick documentation links
 
-Hover over any element to see detailed information:
-- **Model Information** - Context window, pricing, capabilities, best use cases
-- **API Keys** - Setup instructions and links to get keys
-- **Code Patterns** - Inline documentation for common patterns
+### 🎯 Visual Component Picker
 
-![Hover Demo](https://via.placeholder.com/600x300?text=Hover+Demo)
+**Command:** `Clarity Chat: Add Component` (`Ctrl/Cmd+Shift+P`)
 
-### 📖 Code Snippets
+Browse and insert components by category:
+- **Top-Level:** ClarityChat, ClarityChatPresets
+- **Building Blocks:** ChatWindow, MessageList, ChatInput, MessageBubble
+- **Streaming:** StreamingMessage, ThinkingIndicator, TypingIndicator
+- **Providers:** ClarityChatProvider, MemoryProvider
+- **Token Management:** TokenBudgetDisplay, TokenCounter
+- **Utilities:** MarkdownRenderer, CodeBlock, ErrorBoundary
 
-60+ production-ready code snippets for:
-- **OpenAI** - GPT-4, GPT-3.5 Turbo completions and streaming
-- **Anthropic** - Claude 3 Opus, Sonnet, Haiku
-- **Google AI** - Gemini Pro models
-- **React Components** - Chat UI, hooks, message bubbles
-- **Next.js API Routes** - Server-side endpoints with streaming
-- **Utilities** - Error handling, cost tracking, RAG patterns
+Each component includes:
+- Full TypeScript props
+- Auto-import handling
+- Inline documentation
+
+### 🪝 Hook Picker
+
+**Command:** `Clarity Chat: Add Hook` (`Ctrl/Cmd+Shift+P`)
+
+Access all hooks organized by category:
+- **Primary:** useClarityChat, useChatEnhanced
+- **Memory:** useMemoryContext, useConversationHistory
+- **Streaming:** useStreamingSSE, useStreamingWebSocket
+- **Token Optimization:** useTokenBudgetMonitor, useTokenOptimizationEnhanced
+- **UI State:** useLoadingState, useErrorHandler, useAutoScroll
+- **Provider:** useProviderConfig, useMultiProvider
+- **Utilities:** useMessageParser, useKeyboardShortcuts, useVoiceInput
+
+### 🚀 API Route Generator
+
+**Command:** `Clarity Chat: Create API Route` (`Ctrl/Cmd+Shift+P`)
+
+Generate production-ready streaming API routes:
+- **Providers:** OpenAI, Anthropic, Google AI, Multi-Provider
+- **Frameworks:** Next.js App Router, Next.js Pages Router, Express, Hono
+- **Features:** Streaming, error handling, type safety
+
+### 🔄 Migration Assistant
+
+**Command:** `Clarity Chat: Convert to Clarity Chat` (`Ctrl/Cmd+Shift+P`)
+
+Migrate from Vercel AI SDK with one click:
+- Automatic import conversion
+- Hook migration (`useChat` → `useClarityChat`)
+- Options translation
+- Type updates
+- Preview changes before applying
+
+### 📝 50+ Code Snippets
+
+Type `cc-` to access all snippets:
+
+#### Components
+| Prefix | Description |
+|--------|-------------|
+| `cc-chat` | Complete ClarityChat component |
+| `cc-chat-memory` | ClarityChat with MemoryProvider |
+| `cc-window` | ChatWindow with MessageList and Input |
+| `cc-messagelist` | MessageList component |
+| `cc-chatinput` | ChatInput component |
+| `cc-streaming` | StreamingMessage component |
+| `cc-thinking` | ThinkingIndicator |
+| `cc-page` | Complete chat page template |
+| `cc-styled` | ClarityChat with custom styling |
+
+#### Hooks
+| Prefix | Description |
+|--------|-------------|
+| `cc-useclaritychat` | useClarityChat hook |
+| `cc-usechat-memory` | useClarityChat with memory config |
+| `cc-usechat-callbacks` | useClarityChat with callbacks |
+| `cc-usememory` | useMemoryContext hook |
+| `cc-usebudget` | useTokenBudgetMonitor hook |
+| `cc-usesse` | useStreamingSSE hook |
+| `cc-hook-setup` | Complete hook setup with all utilities |
+
+#### API Routes
+| Prefix | Description |
+|--------|-------------|
+| `cc-api-openai` | OpenAI streaming route |
+| `cc-api-anthropic` | Anthropic streaming route |
+| `cc-api-google` | Google AI streaming route |
+| `cc-api-multi` | Multi-provider route |
+| `cc-api-express` | Express streaming endpoint |
+| `cc-api-hono` | Hono streaming endpoint |
+
+#### Imports
+| Prefix | Description |
+|--------|-------------|
+| `cc-import-all` | Import all common exports |
+| `cc-import-components` | Import components |
+| `cc-import-hooks` | Import hooks |
+| `cc-import-types` | Import types |
+
+### 💡 Intelligent IntelliSense
+
+Context-aware completions for:
+- **Components:** All Clarity Chat components with documentation
+- **Hooks:** All hooks with parameter hints
+- **Props:** Component props with types and descriptions
+- **Options:** Hook options with defaults
+- **Models:** AI model names with pricing info
+
+### 📖 Hover Documentation
+
+Hover over any Clarity Chat element to see:
+- Component/hook description
+- Available props/options
+- Usage examples
+- Links to documentation
 
 ### 🔍 CodeLens Hints
 
-See inline hints for:
-- API call detection with provider info
-- Quick links to documentation
-- Test API call buttons
+Inline hints showing:
+- API call detection
+- Memory strategy info
+- Quick navigation to docs
 
-### ⚡ Commands
+### ⚠️ Diagnostics & Quick Fixes
 
-Access powerful commands via Command Palette (`Cmd/Ctrl+Shift+P`):
-
-- **Clarity Chat: Initialize Project** - Set up a new project with AI providers
-- **Clarity Chat: Add Provider** - Add OpenAI, Anthropic, or Google AI to existing project
-- **Clarity Chat: Validate Configuration** - Check for common issues and misconfigurations
-- **Clarity Chat: Show Examples** - Browse and insert code examples
-
-### ⌨️ Keyboard Shortcuts
-
-Quick access to common commands (when editor is focused):
-
-| Command | Windows/Linux | macOS |
-|---------|--------------|-------|
-| Initialize Project | `Ctrl+Shift+C I` | `Cmd+Shift+C I` |
-| Show Examples | `Ctrl+Shift+C E` | `Cmd+Shift+C E` |
-| Validate Config | `Ctrl+Shift+C V` | `Cmd+Shift+C V` |
-| Add Provider | `Ctrl+Shift+C P` | `Cmd+Shift+C P` |
-| Component Preview | `Ctrl+Shift+C O` | `Cmd+Shift+C O` |
+Real-time detection and fixes for:
+- Hardcoded API keys
+- Missing error handling
+- Deprecated patterns
+- Configuration issues
 
 ## Installation
 
 ### From VS Code Marketplace
 
 1. Open VS Code
-2. Go to Extensions (`Cmd/Ctrl+Shift+X`)
+2. Go to Extensions (`Ctrl/Cmd+Shift+X`)
 3. Search for "Clarity Chat"
-4. Click Install
+4. Click **Install**
 
-### From VSIX File
+### From Command Line
 
 ```bash
-code --install-extension clarity-chat-0.1.0.vsix
+code --install-extension code-and-clarity.clarity-chat
 ```
 
 ## Quick Start
 
-1. **Initialize a New Project**
-   - Open Command Palette (`Cmd/Ctrl+Shift+P`)
-   - Run `Clarity Chat: Initialize Project`
-   - Select your AI provider(s)
-   - Select your framework (Next.js, Express, Hono, or Standalone)
+### 1. Add a Component
 
-2. **Use Code Snippets**
-   - Type `cc-` in any TypeScript/JavaScript file
-   - Browse available snippets
-   - Select and customize
+```
+Ctrl/Cmd+Shift+P → "Clarity Chat: Add Component" → Select ClarityChat
+```
 
-3. **Add a Provider**
-   - Run `Clarity Chat: Add Provider`
-   - Follow setup instructions
-   - Get your API key
-   - Add to `.env.local`
+### 2. Use Snippets
 
-## Code Snippets Reference
+Type `cc-page` in a new file for a complete chat page:
 
-### TypeScript/JavaScript
+```tsx
+'use client'
 
-| Prefix | Description |
-|--------|-------------|
-| `cc-import` | Import AI provider SDK |
-| `cc-openai-chat` | OpenAI chat completion |
-| `cc-openai-stream` | OpenAI streaming chat |
-| `cc-anthropic-chat` | Anthropic chat completion |
-| `cc-anthropic-stream` | Anthropic streaming chat |
-| `cc-google-chat` | Google AI chat completion |
-| `cc-google-stream` | Google AI streaming chat |
-| `cc-api-openai` | Next.js API route with OpenAI |
-| `cc-api-stream` | Streaming API route with SSE |
-| `cc-error-handler` | Error handling wrapper |
-| `cc-token-counter` | Token estimation and cost calculation |
-| `cc-rag-processor` | RAG document chunking |
-| `cc-message-interface` | Chat message interfaces |
-| `cc-env-check` | Environment variables validation |
-| `cc-retry` | Retry logic with exponential backoff |
+import {
+  ClarityChat,
+  MemoryProvider,
+  ClarityChatProvider,
+} from '@clarity-chat/react'
 
-### React/TSX
+export default function ChatPage() {
+  return (
+    <ClarityChatProvider config={{ api: '/api/chat' }}>
+      <MemoryProvider strategy="hybrid" maxTokens={2000}>
+        <div className="h-screen flex flex-col">
+          <header className="p-4 border-b">
+            <h1 className="text-xl font-semibold">AI Chat</h1>
+          </header>
+          <main className="flex-1 overflow-hidden">
+            <ClarityChat
+              placeholder="Type your message..."
+              showTimestamp
+              enableMarkdown
+            />
+          </main>
+        </div>
+      </MemoryProvider>
+    </ClarityChatProvider>
+  )
+}
+```
 
-| Prefix | Description |
-|--------|-------------|
-| `cc-react-chat` | Complete React chat component |
-| `cc-react-stream` | React streaming chat component |
-| `cc-use-chat` | Custom useChat hook |
-| `cc-message-bubble` | Message bubble component |
-| `cc-chat-input` | Chat input component |
+### 3. Create an API Route
+
+```
+Ctrl/Cmd+Shift+P → "Clarity Chat: Create API Route" → OpenAI → Next.js App Router
+```
+
+### 4. Ask Copilot
+
+```
+@clarity How do I implement conversation memory?
+```
+
+## Commands
+
+| Command | Description | Shortcut |
+|---------|-------------|----------|
+| Add Component | Visual component picker | - |
+| Add Hook | Visual hook picker | - |
+| Create API Route | Generate API route | - |
+| Convert to Clarity Chat | Migrate from other libraries | - |
+| Open Documentation | Browse docs | - |
+| Open Storybook | Interactive component playground | - |
+| Initialize Project | Set up new project | `Ctrl/Cmd+Shift+C I` |
+| Add Provider | Add AI provider | `Ctrl/Cmd+Shift+C P` |
+| Validate Configuration | Check for issues | `Ctrl/Cmd+Shift+C V` |
+| Show Examples | Browse code examples | `Ctrl/Cmd+Shift+C E` |
+| Component Preview | Preview components | `Ctrl/Cmd+Shift+C O` |
+| Manage API Keys | Secure key management | - |
 
 ## Configuration
 
-Access settings via `Preferences > Settings > Clarity Chat`:
+Access via `Settings → Extensions → Clarity Chat`:
 
-- **Enable IntelliSense** (default: `true`) - Enable code completion
-- **Enable CodeLens** (default: `true`) - Show inline hints
-- **Default Provider** (default: `openai`) - Default AI provider for snippets
-- **Show Inline Hints** (default: `true`) - Show parameter hints
-
-## Commands Reference
-
-### Initialize Project
-
-Set up a new Clarity Chat project with:
-- AI provider selection (OpenAI, Anthropic, Google, or All)
-- Framework choice (Next.js, Express, Hono, Standalone)
-- Automatic `.env.local` template creation
-- Example code generation
-- Dependency installation instructions
-
-### Add Provider
-
-Add a new AI provider to existing project:
-- Package installation guidance
-- API key setup instructions
-- Environment variable configuration
-- Example code for the provider
-
-### Validate Configuration
-
-Run comprehensive validation checks:
-- Check for required files (`package.json`, `.env.local`, `tsconfig.json`)
-- Verify AI SDK installations
-- Scan for hardcoded API keys
-- Check for missing error handling
-- TypeScript configuration validation
-
-### Show Examples
-
-Browse and insert 8 common patterns:
-- **Basic Chat** - Simple chat completion
-- **Streaming Chat** - Real-time streaming responses
-- **Next.js API Route** - Server-side API endpoint
-- **React Hook** - Custom `useChat` hook
-- **Multi-turn Conversation** - Conversation history management
-- **Function Calling** - OpenAI function calling/tools
-- **Cost Tracking** - Token usage and cost calculation
-- **RAG Pattern** - Retrieval Augmented Generation
-
-## IntelliSense Features
-
-### Model Completion
-
-When typing model names, get auto-complete with:
-- **Model name** and display name
-- **Context window** size
-- **Pricing** (input/output per 1K tokens)
-- **Link to documentation**
-
-Example models:
-- `gpt-4-turbo` - Latest GPT-4 (128K context, $0.01/$0.03)
-- `claude-3-opus-20240229` - Most capable Claude (200K context, $0.015/$0.075)
-- `gemini-pro` - Google AI model (32K context, $0.00025/$0.0005)
-
-### Environment Variable Completion
-
-Get suggestions for:
-- `OPENAI_API_KEY`
-- `ANTHROPIC_API_KEY`
-- `GOOGLE_API_KEY`
-
-With hover documentation showing:
-- Provider name
-- How to get API key
-- Setup instructions
-
-## Hover Documentation
-
-### Model Information
-
-Hover over model names to see:
-- Full model description
-- Context window size
-- Detailed pricing
-- Capabilities (text generation, code, function calling, vision)
-- Best use cases
-- Link to official documentation
-
-### API Keys
-
-Hover over environment variables to see:
-- Provider information
-- Link to get API key
-- Setup instructions for `.env.local`
-- Code example for loading the key
-
-## Tips & Tricks
-
-1. **Quick Snippets**: Type `cc-` and press `Ctrl+Space` to see all available snippets
-
-2. **Validate Often**: Run `Clarity Chat: Validate Configuration` before deploying
-
-3. **Explore Examples**: Use `Clarity Chat: Show Examples` to learn patterns
-
-4. **Hover for Info**: Hover over model names to see pricing and capabilities
-
-5. **Use TypeScript**: Enable strict mode for better type safety with AI SDKs
-
-## Troubleshooting
-
-### Snippets Not Showing
-
-- Ensure file language is set to TypeScript, JavaScript, or React
-- Type `cc-` prefix to trigger snippets
-- Check that the extension is activated
-
-### IntelliSense Not Working
-
-- Verify `clarity-chat.enableIntelliSense` is `true` in settings
-- Reload VS Code window (`Developer: Reload Window`)
-
-### Commands Not Found
-
-- Open Command Palette (`Cmd/Ctrl+Shift+P`)
-- Type "Clarity Chat" to see all available commands
-- Ensure extension is installed and activated
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `clarityChat.enableIntelliSense` | `true` | Enable code completion |
+| `clarityChat.enableHoverDocs` | `true` | Enable hover documentation |
+| `clarityChat.enableCodeLens` | `true` | Enable CodeLens hints |
+| `clarityChat.enableCodeActions` | `true` | Enable quick fixes |
+| `clarityChat.defaultProvider` | `openai` | Default AI provider |
+| `clarityChat.defaultMemoryStrategy` | `hybrid` | Default memory strategy |
 
 ## Requirements
 
-- **VS Code** version 1.85.0 or higher
-- **Node.js** 16.x or higher (for development)
-- **TypeScript** 4.5+ (optional, for TypeScript projects)
+- **VS Code** 1.90.0 or higher
+- **Node.js** 18.x or higher (for development)
+- For Copilot Chat integration: GitHub Copilot extension
+
+## Documentation
+
+- [📖 Documentation](https://docs.claritychat.dev)
+- [🎨 Storybook](https://storybook.claritychat.dev)
+- [💻 GitHub](https://github.com/code-and-clarity/clarity-chat)
+- [💬 Discord Community](https://discord.gg/claritychat)
 
 ## Contributing
 
-Found a bug or have a feature request? Open an issue on [GitHub](https://github.com/clarity-chat/clarity-chat).
+Found a bug or have a feature request?
+- [Open an issue](https://github.com/code-and-clarity/clarity-chat/issues)
+- [Join our Discord](https://discord.gg/claritychat)
 
 ## License
 
-MIT
-
-## Links
-
-- [Documentation](https://github.com/clarity-chat/clarity-chat)
-- [OpenAI Documentation](https://platform.openai.com/docs)
-- [Anthropic Documentation](https://docs.anthropic.com)
-- [Google AI Documentation](https://ai.google.dev/docs)
+MIT © [Code and Clarity](https://github.com/code-and-clarity)
 
 ---
 
-**Enjoy using Clarity Chat!** ⚡
+**Build amazing AI chat experiences with Clarity Chat!** ✨

@@ -13,11 +13,12 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
 
   provideCodeLenses(
     document: vscode.TextDocument,
-    token: vscode.CancellationToken
+    _token: vscode.CancellationToken
   ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
     this.codeLenses = []
 
-    const text = document.getText()
+    // Get text for pattern matching
+    void document.getText()
     
     // Find OpenAI API calls
     this.findAPIPattern(document, /openai\.chat\.completions\.create/g, 'OpenAI')
