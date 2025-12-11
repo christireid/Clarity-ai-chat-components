@@ -1,19 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import type { ComponentPropsWithoutRef, ElementRef, InputHTMLAttributes } from 'react'
+import type { ComponentPropsWithoutRef, ElementRef } from 'react'
 import { cn } from '../lib/utils'
 import { ErrorMessage } from './error-message'
 import { Switch as BaseSwitch } from './ui/switch'
 
-type BaseSwitchProps = ComponentPropsWithoutRef<typeof BaseSwitch>
+type BaseSwitchProps = Omit<ComponentPropsWithoutRef<typeof BaseSwitch>, 'onChange'>
 
-type NativeSwitchProps = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  'type' | 'checked' | 'defaultChecked' | 'onChange'
->
-
-export interface SwitchProps extends BaseSwitchProps, NativeSwitchProps {
+export interface SwitchProps extends BaseSwitchProps {
   /** Visible label displayed next to the switch */
   label?: React.ReactNode
   /** Optional supporting description text */
@@ -28,6 +23,12 @@ export interface SwitchProps extends BaseSwitchProps, NativeSwitchProps {
   labelSrOnly?: boolean
   /** Native change handler for compatibility with existing checkbox handlers */
   onChange?: React.ChangeEventHandler<HTMLInputElement>
+  /** Name attribute for form submission */
+  name?: string
+  /** Value attribute for form submission */
+  value?: string | number | readonly string[]
+  /** Whether the field is required */
+  required?: boolean
 }
 
 export const Switch = React.forwardRef<ElementRef<typeof BaseSwitch>, SwitchProps>(
@@ -92,7 +93,13 @@ export const Switch = React.forwardRef<ElementRef<typeof BaseSwitch>, SwitchProp
           isTrusted: false,
           preventDefault() {},
           stopPropagation() {},
-          nativeEvent: undefined,
+          nativeEvent: undefined as unknown,
+          eventPhase: 0,
+          isDefaultPrevented: () => false,
+          isPropagationStopped: () => false,
+          persist: () => {},
+          timeStamp: Date.now(),
+          type: 'change',
         } as React.ChangeEvent<HTMLInputElement>
 
         onChange(syntheticEvent)

@@ -370,6 +370,7 @@ export function ThemeProvider({
 
       return () => clearTimeout(timeout)
     }
+    return undefined
   }, [
     resolvedTheme,
     theme.enableTransitions,
@@ -973,7 +974,7 @@ export function ThemeToggle({
               rotate: prefersReducedMotion ? 0 : 360,
             }}
             transition={{
-              duration: 1,
+              duration: durations.slower,
               repeat: Infinity,
               ease: 'linear',
             }}

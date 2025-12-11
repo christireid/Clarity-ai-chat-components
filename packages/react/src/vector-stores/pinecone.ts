@@ -7,30 +7,29 @@
 
 import type {
   VectorStore,
-  VectorStoreConfig,
+  PineconeStoreConfig,
   Vector,
   VectorQuery,
   VectorMatch,
   VectorUpsertOptions,
   VectorStats,
+  VectorMetadata,
+  VectorFilter,
 } from './types'
 
-export interface PineconeConfig extends VectorStoreConfig {
-  provider: 'pinecone'
-  environment: string
-  projectId?: string
-}
+/** @deprecated Use PineconeStoreConfig from './types' instead */
+export type PineconeConfig = PineconeStoreConfig
 
 export class PineconeVectorStore implements VectorStore {
   readonly provider = 'pinecone'
-  
+
   private apiKey: string
   private _environment: string
-  private _indexName: string   
+  private _indexName: string
   private baseUrl: string
-  private _initialized = false   
-  
-  constructor(config: PineconeConfig) {
+  private _initialized = false
+
+  constructor(config: PineconeStoreConfig) {
     if (!config.apiKey) {
       throw new Error('Pinecone API key is required')
     }

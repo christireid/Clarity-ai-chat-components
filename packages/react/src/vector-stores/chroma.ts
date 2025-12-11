@@ -7,32 +7,29 @@
 
 import type {
   VectorStore,
-  VectorStoreConfig,
+  ChromaStoreConfig,
   Vector,
   VectorQuery,
   VectorMatch,
   VectorUpsertOptions,
   VectorStats,
+  VectorMetadata,
 } from './types'
 
-export interface ChromaConfig extends VectorStoreConfig {
-  provider: 'chroma'
-  endpoint?: string
-  tenant?: string
-  database?: string
-}
+/** @deprecated Use ChromaStoreConfig from './types' instead */
+export type ChromaConfig = ChromaStoreConfig
 
 export class ChromaVectorStore implements VectorStore {
   readonly provider = 'chroma'
-  
+
   private endpoint: string
   private collectionName: string
   private tenant: string
   private database: string
   private collectionId?: string
   private initialized = false
-  
-  constructor(config: ChromaConfig) {
+
+  constructor(config: ChromaStoreConfig) {
     this.endpoint = (config.endpoint || 'http://localhost:8000').replace(/\/$/, '')
     this.collectionName = config.indexName
     this.tenant = config.tenant || 'default_tenant'

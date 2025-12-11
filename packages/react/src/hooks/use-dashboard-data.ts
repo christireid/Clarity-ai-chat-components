@@ -471,11 +471,12 @@ export function useDashboardData<T>(
 
       return () => {
         if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current)
+          clearInterval(pollingIntervalRef.current as NodeJS.Timeout)
           pollingIntervalRef.current = null
         }
       }
     }
+    return undefined
   }, [pollingInterval, fetchData, log])
 
   return {

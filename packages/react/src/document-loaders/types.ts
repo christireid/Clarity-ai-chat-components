@@ -5,22 +5,28 @@
  * Bring your own parsing logic or use built-in helpers.
  */
 
+/** Custom metadata value types */
+export type DocumentMetadataValue = string | number | boolean | string[] | number[] | null | undefined
+
+/** Document metadata structure */
+export interface DocumentMetadata {
+  /** Document source/file name */
+  source?: string
+  /** File type */
+  type?: string
+  /** Page number (for PDFs) */
+  page?: number
+  /** Line numbers */
+  lines?: { start: number; end: number }
+  /** Custom metadata fields */
+  [key: string]: DocumentMetadataValue | { start: number; end: number }
+}
+
 export interface Document {
   /** Document content */
   content: string
   /** Document metadata */
-  metadata: {
-    /** Document source/file name */
-    source?: string
-    /** File type */
-    type?: string
-    /** Page number (for PDFs) */
-    page?: number
-    /** Line numbers */
-    lines?: { start: number; end: number }
-    /** Custom metadata */
-    [key: string]: any
-  }
+  metadata: DocumentMetadata
 }
 
 export interface DocumentChunk extends Document {
@@ -51,17 +57,31 @@ export interface ChunkingOptions {
   tokenizer?: (text: string) => string[]
 }
 
+/** Options for document loading */
+export interface DocumentLoadOptions {
+  /** Encoding for text files */
+  encoding?: string
+  /** Custom metadata to attach */
+  metadata?: DocumentMetadata
+  /** Maximum document size in bytes */
+  maxSize?: number
+  /** Skip validation */
+  skipValidation?: boolean
+  /** Additional loader-specific options */
+  [key: string]: DocumentMetadataValue | DocumentMetadata | string[] | boolean | undefined
+}
+
 export interface DocumentLoader {
   /** Loader name */
   name: string
   /** Supported file types */
   supportedTypes: string[]
-  
+
   /**
    * Load a document
    */
-  load(source: string | File | Blob, options?: any): Promise<Document[]>
-  
+  load(source: string | File | Blob, options?: DocumentLoadOptions): Promise<Document[]>
+
   /**
    * Check if loader supports a file type
    */

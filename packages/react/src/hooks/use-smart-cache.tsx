@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { SmartCache, CacheOptions, CacheStats } from '../utils/smart-cache'
+import { SmartCache } from '../utils/smart-cache'
+import type { CacheOptions, CacheStats } from '../utils/smart-cache'
 import { estimateTokens } from '../utils/tokenization/estimator'
 
 export interface UseSmartCacheOptions<T = any> extends CacheOptions {
@@ -19,7 +20,11 @@ export interface UseSmartCacheReturn<T = any> {
   /** Get from cache */
   get: (query: string) => Promise<T | null>
   /** Set in cache */
-  set: (query: string, response: T, options?: { ttl?: number; tags?: string[] }) => Promise<void>
+  set: (
+    query: string,
+    response: T,
+    options?: { ttl?: number; tags?: string[] }
+  ) => Promise<void>
   /** Clear cache */
   clear: () => void
   /** Clear by tag */
@@ -34,7 +39,7 @@ export interface UseSmartCacheReturn<T = any> {
 
 /**
  * Hook for smart caching with semantic similarity
- * 
+ *
  * @example
  * ```tsx
  * function ChatComponent() {
@@ -43,7 +48,7 @@ export interface UseSmartCacheReturn<T = any> {
  *     embedFunction: async (text) => await getEmbedding(text),
  *     similarityThreshold: 0.85,
  *   })
- * 
+ *
  *   const handleQuery = async (query: string) => {
  *     // Try cache first
  *     const cached = await cache.get(query)
@@ -51,16 +56,16 @@ export interface UseSmartCacheReturn<T = any> {
  *       console.log('Cache hit!')
  *       return cached
  *     }
- * 
+ *
  *     // Query API
  *     const response = await queryAPI(query)
- *     
+ *
  *     // Cache for future
  *     await cache.set(query, response, { ttl: 3600000 }) // 1 hour
- *     
+ *
  *     return response
  *   }
- * 
+ *
  *   return (
  *     <div>
  *       <div>Cache Hit Rate: {cache.stats.hitRate.toFixed(1)}%</div>
@@ -112,7 +117,7 @@ export function useSmartCache<T = any>(
       if (!isEnabled) return null
 
       const result = await cache.get(query)
-      
+
       if (result) {
         onCacheHit?.(query, result)
         // Estimate tokens saved using centralized estimator
@@ -129,7 +134,11 @@ export function useSmartCache<T = any>(
   )
 
   const set = React.useCallback(
-    async (query: string, response: T, opts?: { ttl?: number; tags?: string[] }) => {
+    async (
+      query: string,
+      response: T,
+      opts?: { ttl?: number; tags?: string[] }
+    ) => {
       if (!isEnabled) return
       await cache.set(query, response, opts)
       setStats(cache.getStats())

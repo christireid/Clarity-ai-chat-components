@@ -328,6 +328,7 @@ export function useValueChange(
       const timer = setTimeout(() => setFlash(false), flashDuration)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [value, flashDuration])
 
   const change = value - previousValue
@@ -393,6 +394,7 @@ export function FlashingValue({
       const timer = setTimeout(() => setFlash(false), flashDuration)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [value, flashDuration])
 
   return (
