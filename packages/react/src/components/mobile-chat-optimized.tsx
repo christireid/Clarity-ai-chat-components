@@ -6,6 +6,11 @@ import type { PanInfo } from 'framer-motion'
 import { Card, CardContent, Button, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
 import { DURATION_SECONDS } from '../animations/constants'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
+import {
+  getMotionSafeDuration,
+  getMotionSafeValue,
+} from '../animations/motion-safe'
 
 /**
  * Swipe action configuration
@@ -78,6 +83,7 @@ export function MobileOptimizedMessage({
   className,
 }: MobileOptimizedMessageProps) {
   const config = { ...defaultConfig, ...userConfig }
+  const prefersReducedMotion = useReducedMotion()
 
   const x = useMotionValue(0)
   const [isLongPressing, setIsLongPressing] = React.useState(false)
@@ -215,8 +221,20 @@ export function MobileOptimizedMessage({
             return (
               <motion.div
                 key={action.id}
-                initial={{ scale: 0 }}
-                animate={{ scale: isActive ? 1 : 0.5 }}
+                initial={{
+                  scale: getMotionSafeValue(prefersReducedMotion, 0, 1),
+                }}
+                animate={{
+                  scale: isActive
+                    ? 1
+                    : getMotionSafeValue(prefersReducedMotion, 0.5, 1),
+                }}
+                transition={{
+                  duration: getMotionSafeDuration(
+                    prefersReducedMotion,
+                    DURATION_SECONDS.fast
+                  ),
+                }}
                 className={cn(
                   'flex items-center justify-center w-12 h-12 rounded-full',
                   action.color
@@ -267,9 +285,21 @@ export function MobileOptimizedMessage({
       {/* Action menu (long press) */}
       {showActions && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{
+            opacity: 0,
+            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+          }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
+          exit={{
+            opacity: 0,
+            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+          }}
+          transition={{
+            duration: getMotionSafeDuration(
+              prefersReducedMotion,
+              DURATION_SECONDS.fast
+            ),
+          }}
           className="absolute bottom-full left-0 right-0 mb-2 p-2 bg-background border rounded-lg shadow-lg z-10"
         >
           <div className="flex gap-2 justify-around">
@@ -335,6 +365,7 @@ export function MobileChatWindow({
   className,
 }: MobileChatWindowProps) {
   const config = { ...defaultConfig, ...userConfig }
+  const prefersReducedMotion = useReducedMotion()
 
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const [isPulling, setIsPulling] = React.useState(false)
@@ -401,11 +432,14 @@ export function MobileChatWindow({
         >
           <motion.div
             animate={{
-              rotate: isRefreshing ? 360 : 0,
+              rotate: isRefreshing && !prefersReducedMotion ? 360 : 0,
             }}
             transition={{
-              duration: DURATION_SECONDS.slower,
-              repeat: isRefreshing ? Infinity : 0,
+              duration: getMotionSafeDuration(
+                prefersReducedMotion,
+                DURATION_SECONDS.slower
+              ),
+              repeat: isRefreshing && !prefersReducedMotion ? Infinity : 0,
             }}
           >
             {pullDistance >= config.pullThreshold ? '↻' : '↓'}

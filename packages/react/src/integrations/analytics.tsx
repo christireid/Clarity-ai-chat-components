@@ -173,7 +173,10 @@ export function AnalyticsProvider({
         inject({ debug: vercelConfig.debug ?? false })
       })
       .catch((err) => {
-        console.warn('[Clarity Chat] Vercel Analytics not available:', err.message)
+        console.warn(
+          '[Clarity Chat] Vercel Analytics not available:',
+          err.message
+        )
       })
   }, [disabled, vercelConfig])
 

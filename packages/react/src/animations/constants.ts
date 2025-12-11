@@ -461,11 +461,14 @@ export const ANIMATION_PRESETS = {
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0.8 },
   },
-  /** Collapse/expand effect */
+  /**
+   * Collapse/expand effect using scaleY for 60fps performance
+   * Note: For height-based collapse, use CSS transitions or AnimatePresence
+   */
   collapse: {
-    initial: { opacity: 0, height: 0 },
-    animate: { opacity: 1, height: 'auto' },
-    exit: { opacity: 0, height: 0 },
+    initial: { opacity: 0, scaleY: 0, originY: 0 },
+    animate: { opacity: 1, scaleY: 1, originY: 0 },
+    exit: { opacity: 0, scaleY: 0, originY: 0 },
   },
 } as const
 
@@ -515,9 +518,9 @@ export const ANIMATION_PRESETS_REDUCED = {
     exit: { opacity: 0 },
   },
   collapse: {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
+    initial: { opacity: 0, originY: 0 },
+    animate: { opacity: 1, originY: 0 },
+    exit: { opacity: 0, originY: 0 },
   },
 } as const
 
@@ -717,3 +720,64 @@ export type AnimationDelay = keyof typeof ANIMATION_DELAY
 export type StaggerTiming = keyof typeof STAGGER_TIMING
 export type AnimationPreset = keyof typeof ANIMATION_PRESETS
 export type InteractionVariant = keyof typeof INTERACTION_VARIANTS
+export type DurationKey = keyof typeof DURATION_SECONDS
+
+// =============================================================================
+// TYPE-SAFE DURATION HELPER
+// =============================================================================
+
+/**
+ * Type-safe duration accessor for Framer Motion animations.
+ *
+ * This helper prevents runtime errors from typos or using undefined duration keys.
+ * It provides autocomplete and compile-time validation.
+ *
+ * @param key - The duration key to retrieve (instant, faster, fast, normal, slow, slower, slowest)
+ * @returns Duration value in seconds for Framer Motion
+ *
+ * @example
+ * ```tsx
+ * // ✅ Type-safe with autocomplete
+ * transition={{ duration: duration('fast') }}
+ *
+ * // ✅ Compile error for invalid keys
+ * transition={{ duration: duration('invalid') }} // Error: Argument not assignable
+ *
+ * // ❌ Old way - prone to typos
+ * transition={{ duration: DURATION_SECONDS.fast }}
+ * transition={{ duration: durations.fast }} // Runtime error if 'durations' undefined
+ * ```
+ */
+export function duration(key: DurationKey): number {
+  return DURATION_SECONDS[key]
+}
+
+/**
+ * Type-safe delay accessor for Framer Motion animations.
+ *
+ * @param key - The delay key to retrieve
+ * @returns Delay value in seconds for Framer Motion
+ *
+ * @example
+ * ```tsx
+ * transition={{ delay: delay('short') }}
+ * ```
+ */
+export function delay(key: keyof typeof DELAY_SECONDS): number {
+  return DELAY_SECONDS[key]
+}
+
+/**
+ * Type-safe easing accessor for Framer Motion animations.
+ *
+ * @param key - The easing key to retrieve
+ * @returns Easing value for Framer Motion (array or string)
+ *
+ * @example
+ * ```tsx
+ * transition={{ ease: ease('out') }}
+ * ```
+ */
+export function ease(key: keyof typeof EASING_FRAMER): FramerEasing {
+  return EASING_FRAMER[key]
+}

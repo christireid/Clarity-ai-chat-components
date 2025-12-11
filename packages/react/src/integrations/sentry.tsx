@@ -194,12 +194,12 @@ export function addChatBreadcrumb(
  */
 export function useSentryChat(): {
   captureError: (error: Error, context?: Record<string, unknown>) => void
-  addBreadcrumb: (
-    action: string,
-    data?: Record<string, unknown>
-  ) => void
+  addBreadcrumb: (action: string, data?: Record<string, unknown>) => void
   setUser: (user: { id: string; email?: string } | null) => void
-  setConversationContext: (conversationId: string, metadata?: Record<string, unknown>) => void
+  setConversationContext: (
+    conversationId: string,
+    metadata?: Record<string, unknown>
+  ) => void
 } {
   const captureError = React.useCallback(
     (error: Error, context?: Record<string, unknown>) => {
