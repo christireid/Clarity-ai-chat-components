@@ -979,6 +979,41 @@ export {
 } from './utils/tool-result-helpers'
 
 // ============================================================================
+// LICENSE MANAGEMENT
+// ============================================================================
+
+// License exports for convenience (re-exported from @clarity-chat/license)
+export {
+  LicenseInfo,
+  useLicenseStatus,
+  useIsLicensed,
+  useHasPlan,
+  useLicenseInfo,
+  verifyLicense,
+  isLicenseValid,
+  Watermark,
+  WatermarkOverlay,
+  withLicense,
+  withLicenseStatus,
+  createLicenseWrapper,
+} from '@clarity-chat/license'
+
+export type {
+  LicensePlan,
+  LicenseScope,
+  LicenseStatus,
+  LicenseStatusCode,
+  ClarityLicensePayload,
+  WithLicenseOptions,
+  WithLicenseStatusProps,
+  WatermarkProps,
+  WatermarkOverlayProps,
+} from '@clarity-chat/license'
+
+// Pro Component Utilities
+export { createProComponent, createEnterpriseComponent } from './components/pro'
+
+// ============================================================================
 // TESTING UTILITIES
 // ============================================================================
 // Testing utilities are available via a separate subpath export:
