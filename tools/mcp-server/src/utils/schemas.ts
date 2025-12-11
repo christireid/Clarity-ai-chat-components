@@ -262,17 +262,18 @@ export type GetAccessibilityInput = z.infer<typeof GetAccessibilitySchema>
 /**
  * clarity_generate_code tool input
  */
+export const CodeVariantSchema = z.enum(['basic', 'typescript', 'complete'])
+export type CodeVariant = z.infer<typeof CodeVariantSchema>
+
 export const GenerateCodeSchema = z.object({
   componentName: z
     .string()
     .min(1, 'Component name is required')
     .max(100, 'Component name too long')
     .describe('Name of the component to generate code for'),
-  variant: z
-    .string()
-    .max(50)
-    .optional()
-    .describe('Variant or style of the component'),
+  variant: CodeVariantSchema.describe(
+    'Code variant: basic, typescript, or complete'
+  ),
   withProvider: z
     .boolean()
     .default(false)

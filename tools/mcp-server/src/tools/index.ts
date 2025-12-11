@@ -217,7 +217,18 @@ Use this tool when the user wants to:
 - Get an overview of available UI components
 
 Returns: List of matching components with names, descriptions, and categories.
-Total available: 70+ React components across multiple categories.`,
+Total available: 70+ React components across multiple categories.
+
+Example output:
+{
+  "query": "chat",
+  "resultCount": 3,
+  "components": [
+    { "name": "ClarityChat", "description": "Main chat interface component", "category": "top-level" },
+    { "name": "ChatInput", "description": "Text input with send button", "category": "input" },
+    { "name": "ChatHeader", "description": "Header with title and actions", "category": "chat" }
+  ]
+}`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -264,7 +275,22 @@ Use this tool when the user wants to:
 - Get usage examples
 - Learn about component behavior
 
-Returns: Full documentation including props, examples, related components, and usage notes.`,
+Returns: Full documentation including props, examples, related components, and usage notes.
+
+Example output:
+{
+  "name": "ChatInput",
+  "displayName": "Chat Input",
+  "description": "A customizable chat input component with send button, attachments, and keyboard shortcuts.",
+  "category": "input",
+  "package": "@clarity-chat/react",
+  "props": [
+    { "name": "onSend", "type": "(message: string) => void", "required": true, "description": "Callback when message is sent" },
+    { "name": "placeholder", "type": "string", "required": false, "default": "Type a message...", "description": "Input placeholder text" }
+  ],
+  "examples": [{ "title": "Basic Usage", "code": "<ChatInput onSend={handleSend} />" }],
+  "accessibility": { "wcagLevel": "AA", "keyboardSupport": ["Enter to send", "Shift+Enter for newline"] }
+}`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -287,7 +313,18 @@ Use this tool when the user wants to:
 - Get hook recommendations for their use case
 
 Returns: List of matching hooks with names, descriptions, and what they do.
-Total available: 35+ specialized React hooks.`,
+Total available: 35+ specialized React hooks.
+
+Example output:
+{
+  "query": "stream",
+  "resultCount": 3,
+  "hooks": [
+    { "name": "useStreamingSSE", "description": "Server-Sent Events streaming with reconnection" },
+    { "name": "useStreamingWebSocket", "description": "WebSocket streaming with auto-reconnect" },
+    { "name": "useStreamParser", "description": "Parse streaming responses in multiple formats" }
+  ]
+}`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -313,7 +350,29 @@ Use this tool when the user wants to:
 - See the parameters and return values
 - Get usage examples
 
-Returns: Full documentation including parameters, return type, examples, and related hooks.`,
+Returns: Full documentation including parameters, return type, examples, and related hooks.
+
+Example output:
+{
+  "name": "useClarityChat",
+  "displayName": "useClarity Chat",
+  "description": "Primary hook for managing chat state, sending messages, and handling streaming responses.",
+  "package": "@clarity-chat/react",
+  "parameters": [
+    { "name": "api", "type": "string", "required": true, "description": "API endpoint URL" },
+    { "name": "onError", "type": "(error: Error) => void", "required": false, "description": "Error handler" }
+  ],
+  "returns": {
+    "type": "UseClarityChatReturn",
+    "description": "Chat state and methods",
+    "properties": [
+      { "name": "messages", "type": "Message[]", "description": "Current messages" },
+      { "name": "sendMessage", "type": "(content: string) => Promise<void>", "description": "Send a message" },
+      { "name": "isLoading", "type": "boolean", "description": "Loading state" }
+    ]
+  },
+  "examples": [{ "title": "Basic Chat", "code": "const { messages, sendMessage } = useClarityChat({ api: '/api/chat' })" }]
+}`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -336,7 +395,27 @@ Use this tool when the user wants to:
 - Get ARIA attribute recommendations
 - Learn about screen reader considerations
 
-Returns: WCAG level, keyboard support, ARIA attributes, and screen reader notes.`,
+Returns: WCAG level, keyboard support, ARIA attributes, and screen reader notes.
+
+Example output:
+{
+  "componentName": "ChatInput",
+  "wcagLevel": "AA",
+  "keyboardSupport": [
+    "Enter: Send message",
+    "Shift+Enter: New line",
+    "Escape: Clear input",
+    "Ctrl/Cmd+V: Paste content"
+  ],
+  "ariaAttributes": [
+    "role='textbox'",
+    "aria-label='Chat message input'",
+    "aria-multiline='true'",
+    "aria-describedby='send-hint'"
+  ],
+  "screenReaderNotes": "Announces character count and send button state. Use aria-live for typing indicators.",
+  "focusManagement": "Auto-focuses after message sent. Maintains focus during streaming responses."
+}`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -358,7 +437,15 @@ Use this tool when the user wants to:
 - See how to integrate a component
 - Get TypeScript code with proper typing
 
-Returns: Production-ready code snippet with imports and usage.`,
+Returns: Production-ready code snippet with imports and usage.
+
+Example output:
+{
+  "componentName": "ClarityChat",
+  "variant": "typescript",
+  "code": "import { ClarityChat, type ClarityChatProps } from '@clarity-chat/react'\\n\\ninterface ChatAppProps {\\n  apiEndpoint: string\\n}\\n\\nexport function ChatApp({ apiEndpoint }: ChatAppProps) {\\n  const handleSendMessage = async (content: string) => {\\n    const response = await fetch(apiEndpoint, {\\n      method: 'POST',\\n      body: JSON.stringify({ content })\\n    })\\n    return response.json()\\n  }\\n\\n  return (\\n    <ClarityChat\\n      onSendMessage={handleSendMessage}\\n      placeholder=\\"Ask me anything...\\"\\n      theme=\\"light\\"\\n    />\\n  )\\n}",
+  "imports": "import { ClarityChat, type ClarityChatProps } from '@clarity-chat/react'"
+}`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -368,7 +455,8 @@ Returns: Production-ready code snippet with imports and usage.`,
         },
         variant: {
           type: 'string',
-          description: 'Specific variant or style (optional)',
+          enum: ['basic', 'typescript', 'complete'],
+          description: 'Code variant: basic, typescript, or complete',
         },
         withProvider: {
           type: 'boolean',
@@ -379,7 +467,7 @@ Returns: Production-ready code snippet with imports and usage.`,
           description: 'Generate TypeScript code (default: true)',
         },
       },
-      required: ['componentName'],
+      required: ['componentName', 'variant'],
     },
   },
   {
@@ -391,7 +479,19 @@ Use this tool when the user wants to:
 - Find complementary components
 - Build complete features
 
-Returns: List of related components with their relationships.`,
+Returns: List of related components with their relationships.
+
+Example output:
+{
+  "componentName": "ClarityChat",
+  "relatedComponents": [
+    { "name": "ChatInput", "description": "Text input component", "relationship": "child" },
+    { "name": "MessageList", "description": "Displays chat messages", "relationship": "child" },
+    { "name": "TypingIndicator", "description": "Shows when AI is responding", "relationship": "child" },
+    { "name": "ChatHeader", "description": "Header with title and actions", "relationship": "sibling" },
+    { "name": "ConversationList", "description": "List of conversations", "relationship": "sibling" }
+  ]
+}`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -412,10 +512,81 @@ Use this tool when the user wants to:
 - Understand the organization of components
 - Browse by category
 
-Returns: List of categories with component counts.`,
+Returns: List of categories with component counts.
+
+Example output:
+{
+  "categories": [
+    { "name": "top-level", "displayName": "Top Level", "description": "Main application components", "componentCount": 2 },
+    { "name": "chat", "displayName": "Chat", "description": "Core chat components", "componentCount": 8 },
+    { "name": "message", "displayName": "Message", "description": "Message display components", "componentCount": 12 },
+    { "name": "input", "displayName": "Input", "description": "Input and form components", "componentCount": 10 },
+    { "name": "feedback", "displayName": "Feedback", "description": "Loading, error, and status components", "componentCount": 8 }
+  ],
+  "totalComponents": 70,
+  "totalHooks": 35
+}`,
     inputSchema: {
       type: 'object',
       properties: {},
+      required: [],
+    },
+  },
+  {
+    name: 'clarity_check_accessibility',
+    description: `Check accessibility compliance for multiple Clarity Chat components at once.
+
+Use this tool when the user wants to:
+- Audit their chat implementation for accessibility issues
+- Ensure WCAG compliance across their UI
+- Get a summary of accessibility features and requirements
+- Identify potential accessibility gaps
+
+Returns: Comprehensive accessibility audit with compliance scores and recommendations.
+
+Example output:
+{
+  "auditDate": "2024-12-11T20:00:00.000Z",
+  "components": [
+    {
+      "name": "ClarityChat",
+      "wcagLevel": "AA",
+      "score": 95,
+      "issues": [],
+      "recommendations": ["Consider adding high-contrast mode support"]
+    },
+    {
+      "name": "ChatInput",
+      "wcagLevel": "AA",
+      "score": 90,
+      "issues": ["Character limit not announced to screen readers"],
+      "recommendations": ["Add aria-describedby for character count"]
+    }
+  ],
+  "overallScore": 92,
+  "wcagLevel": "AA",
+  "summary": {
+    "totalComponents": 2,
+    "passedComponents": 2,
+    "issuesFound": 1,
+    "criticalIssues": 0
+  }
+}`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        componentNames: {
+          type: 'array',
+          items: { type: 'string' },
+          description:
+            'List of component names to check. If empty, checks all main components.',
+        },
+        wcagLevel: {
+          type: 'string',
+          enum: ['A', 'AA', 'AAA'],
+          description: 'WCAG conformance level to check against (default: AA)',
+        },
+      },
       required: [],
     },
   },
@@ -529,6 +700,9 @@ export async function handleToolCall(
 
       case 'clarity_list_categories':
         return handleListCategories()
+
+      case 'clarity_check_accessibility':
+        return handleCheckAccessibility(args)
 
       default:
         throw new ValidationError(`Unknown tool: ${name}`, { tool: name })
@@ -1120,8 +1294,14 @@ async function calculateCost(
   }
 
   return {
-    ...result,
+    modelName: result.modelId,
+    promptTokens: result.inputTokens,
+    completionTokens: result.outputTokens,
     totalTokens: result.inputTokens + result.outputTokens,
+    inputCost: result.inputCost,
+    outputCost: result.outputCost,
+    totalCost: result.totalCost,
+    currency: result.currency,
   }
 }
 
@@ -1362,6 +1542,7 @@ async function handleGetComponentDocs(args: Record<string, unknown>) {
     })),
     relatedComponents: component.relatedComponents,
     tags: component.tags,
+    accessibility: component.accessibility,
   }
 }
 
@@ -1458,13 +1639,11 @@ async function handleGetAccessibility(args: Record<string, unknown>) {
   return {
     componentName: component.name,
     displayName: component.displayName,
-    accessibility: {
-      wcagLevel: component.accessibility.wcagLevel,
-      keyboardSupport: component.accessibility.keyboardSupport,
-      ariaAttributes: component.accessibility.ariaAttributes,
-      screenReaderNotes: component.accessibility.screenReaderNotes,
-      focusManagement: component.accessibility.focusManagement,
-    },
+    wcagLevel: component.accessibility.wcagLevel,
+    keyboardSupport: component.accessibility.keyboardSupport,
+    ariaAttributes: component.accessibility.ariaAttributes,
+    screenReaderNotes: component.accessibility.screenReaderNotes,
+    focusManagement: component.accessibility.focusManagement,
     recommendations: [
       `This component is WCAG ${component.accessibility.wcagLevel} compliant.`,
       component.accessibility.keyboardSupport.length > 0
@@ -1480,7 +1659,10 @@ async function handleGetAccessibility(args: Record<string, unknown>) {
  */
 async function handleGenerateCode(args: Record<string, unknown>) {
   const input = validateInput(GenerateCodeSchema, args)
-  logger.debug('Generating code', { componentName: input.componentName })
+  logger.debug('Generating code', {
+    componentName: input.componentName,
+    variant: input.variant,
+  })
 
   const component = getComponent(input.componentName)
   if (!component) {
@@ -1491,48 +1673,114 @@ async function handleGenerateCode(args: Record<string, unknown>) {
     )
   }
 
-  // Get the first example or generate basic usage
-  const example = component.examples[0]
-
   // Generate import statement
-  const importStatement = `import { ${component.name} } from '${component.importPath}'`
+  const imports = `import { ${component.name} } from '${component.importPath}'`
+
+  // Generate code based on variant
+  const variant = input.variant || 'basic'
+  let code: string
 
   // Generate basic props
   const requiredProps = component.props.filter((p) => p.required)
-  const propsList = requiredProps
-    .map((p) => {
-      if (p.type.includes('string')) return `${p.name}="..."`
-      if (p.type.includes('boolean')) return `${p.name}`
-      if (p.type.includes('number')) return `${p.name}={0}`
-      if (p.type.includes('[]')) return `${p.name}={[]}`
-      if (p.type.includes('=>')) return `${p.name}={() => {}}`
-      return `${p.name}={undefined}`
-    })
-    .join('\n  ')
+  const allProps = component.props
 
-  const basicUsage = `<${component.name}
-  ${propsList}
-/>`
+  const generatePropValue = (p: {
+    name: string
+    type: string
+    default?: string
+  }) => {
+    if (p.type.includes('string')) return `"example"`
+    if (p.type.includes('boolean')) return 'true'
+    if (p.type.includes('number')) return '0'
+    if (p.type.includes('[]')) return '[]'
+    if (p.type.includes('=>') || p.type.includes('function'))
+      return `() => { /* handle ${p.name} */ }`
+    return 'undefined'
+  }
+
+  if (variant === 'basic') {
+    const basicProps = requiredProps
+      .map((p) => `  ${p.name}={${generatePropValue(p)}}`)
+      .join('\n')
+
+    code = `${imports}
+
+function Example() {
+  return (
+    <${component.name}
+${basicProps}
+    />
+  )
+}`
+  } else if (variant === 'typescript') {
+    const typedProps = requiredProps
+      .map((p) => `  ${p.name}={${generatePropValue(p)} as ${p.type}}`)
+      .join('\n')
+
+    code = `${imports}
+import type { ${component.name}Props } from '${component.importPath}'
+
+const Example: React.FC = () => {
+  return (
+    <${component.name}
+${typedProps}
+    />
+  )
+}
+
+export default Example`
+  } else if (variant === 'complete') {
+    const completeProps = allProps
+      .map((p) => {
+        const value = p.default || generatePropValue(p)
+        return `  ${p.name}={${value}}${p.required ? ' // required' : ''}`
+      })
+      .join('\n')
+
+    code = `${imports}
+
+/**
+ * ${component.displayName} - Complete Example
+ * ${component.description}
+ */
+function ${component.name}Example() {
+  return (
+    <${component.name}
+${completeProps}
+    />
+  )
+}
+
+export default ${component.name}Example`
+  } else {
+    // Default to basic
+    const basicProps = requiredProps
+      .map((p) => `  ${p.name}={${generatePropValue(p)}}`)
+      .join('\n')
+
+    code = `${imports}
+
+function Example() {
+  return (
+    <${component.name}
+${basicProps}
+    />
+  )
+}`
+  }
 
   return {
     componentName: component.name,
+    variant,
+    code,
+    imports,
     package: component.package,
-    import: importStatement,
-    basicUsage,
-    example: example
-      ? {
-          title: example.title,
-          description: example.description,
-          code: example.code,
-        }
-      : null,
     props: component.props.map((p) => ({
       name: p.name,
       type: p.type,
       required: p.required,
       default: p.default,
     })),
-    typescript: input.typescript !== false,
   }
 }
 
@@ -1584,6 +1832,24 @@ async function handleGetRelatedComponents(args: Record<string, unknown>) {
 function handleListCategories() {
   const stats = getCategoryStats()
 
+  const categoryDescriptions: Record<string, string> = {
+    'top-level':
+      'Main container components for building complete chat interfaces',
+    chat: 'Core chat functionality including message handling and streaming',
+    message: 'Components for displaying and rendering chat messages',
+    'message-display': 'Components for displaying and rendering chat messages',
+    input: 'User input components including text fields and voice input',
+    display: 'UI components for displaying information and status',
+    feedback: 'Components for user feedback, loading states, and errors',
+    navigation: 'Navigation and layout components for chat interfaces',
+    analytics: 'Analytics and monitoring components for tracking usage',
+    enterprise: 'Enterprise-grade components for production deployments',
+    'ai-ops': 'AI operations components for model management and monitoring',
+    memory: 'Components for persistent storage and conversation history',
+    voice: 'Voice input and output components for audio interactions',
+    streaming: 'Components optimized for streaming responses',
+  }
+
   return {
     totalComponents: COMPONENTS.length,
     totalHooks: HOOKS.length,
@@ -1592,8 +1858,165 @@ function handleListCategories() {
       displayName: s.category
         .replace(/-/g, ' ')
         .replace(/\b\w/g, (l) => l.toUpperCase()),
+      description:
+        categoryDescriptions[s.category] ||
+        `Components in the ${s.category} category`,
       componentCount: s.count,
     })),
     summary: `Clarity Chat provides ${COMPONENTS.length} components and ${HOOKS.length} hooks across ${stats.length} categories.`,
+  }
+}
+
+/**
+ * Handle accessibility check for multiple components
+ */
+function handleCheckAccessibility(args: Record<string, unknown>) {
+  logger.debug('Checking accessibility', { args })
+
+  const componentNames = args.componentNames as string[] | undefined
+  const targetLevel = (args.wcagLevel as string) || 'AA'
+
+  // If no components specified, check main components
+  const defaultComponents = [
+    'ClarityChat',
+    'ChatInput',
+    'MessageList',
+    'Message',
+    'TypingIndicator',
+    'StreamingMessage',
+  ]
+
+  const componentsToCheck = componentNames?.length
+    ? componentNames
+    : defaultComponents
+
+  const auditResults: Array<{
+    name: string
+    wcagLevel: string
+    score: number
+    issues: string[]
+    recommendations: string[]
+    keyboardSupport: string[]
+    ariaAttributes: string[]
+  }> = []
+
+  let totalScore = 0
+  let issuesFound = 0
+  let criticalIssues = 0
+
+  for (const name of componentsToCheck) {
+    const component = getComponent(name)
+
+    if (component) {
+      const accessibility = component.accessibility
+      const issues: string[] = []
+      const recommendations: string[] = []
+
+      // Calculate score based on accessibility metadata completeness
+      let componentScore = 100
+
+      // Check WCAG level compliance
+      const wcagLevels = ['A', 'AA', 'AAA']
+      const componentLevelIndex = wcagLevels.indexOf(accessibility.wcagLevel)
+      const targetLevelIndex = wcagLevels.indexOf(targetLevel)
+
+      if (componentLevelIndex < targetLevelIndex) {
+        issues.push(
+          `Component only meets WCAG ${accessibility.wcagLevel}, target is ${targetLevel}`
+        )
+        componentScore -= 15
+        criticalIssues++
+      }
+
+      // Check keyboard support
+      if (accessibility.keyboardSupport.length < 3) {
+        recommendations.push('Consider adding more keyboard navigation options')
+        componentScore -= 5
+      }
+
+      // Check ARIA attributes
+      if (accessibility.ariaAttributes.length < 2) {
+        recommendations.push(
+          'Add more ARIA attributes for better screen reader support'
+        )
+        componentScore -= 5
+      }
+
+      // Check screen reader notes
+      if (
+        !accessibility.screenReaderNotes ||
+        accessibility.screenReaderNotes.length < 20
+      ) {
+        recommendations.push('Provide more detailed screen reader guidance')
+        componentScore -= 5
+      }
+
+      // Check focus management
+      if (
+        !accessibility.focusManagement ||
+        accessibility.focusManagement.length < 10
+      ) {
+        recommendations.push('Document focus management behavior')
+        componentScore -= 5
+      }
+
+      // Add general recommendations based on component type
+      if (component.category === 'input') {
+        recommendations.push(
+          'Ensure error messages are announced to screen readers'
+        )
+      }
+      if (component.category === 'message') {
+        recommendations.push('Consider aria-live regions for dynamic content')
+      }
+
+      issuesFound += issues.length
+
+      auditResults.push({
+        name: component.name,
+        wcagLevel: accessibility.wcagLevel,
+        score: Math.max(componentScore, 0),
+        issues,
+        recommendations: recommendations.slice(0, 3), // Limit recommendations
+        keyboardSupport: accessibility.keyboardSupport,
+        ariaAttributes: accessibility.ariaAttributes,
+      })
+
+      totalScore += Math.max(componentScore, 0)
+    } else {
+      auditResults.push({
+        name,
+        wcagLevel: 'Unknown',
+        score: 0,
+        issues: [`Component "${name}" not found in registry`],
+        recommendations: ['Verify the component name is correct'],
+        keyboardSupport: [],
+        ariaAttributes: [],
+      })
+      criticalIssues++
+    }
+  }
+
+  const overallScore =
+    auditResults.length > 0 ? Math.round(totalScore / auditResults.length) : 0
+
+  return {
+    auditDate: new Date().toISOString(),
+    targetWcagLevel: targetLevel,
+    components: auditResults,
+    overallScore,
+    summary: {
+      totalComponents: auditResults.length,
+      passedComponents: auditResults.filter((r) => r.score >= 80).length,
+      issuesFound,
+      criticalIssues,
+    },
+    recommendations: [
+      'Run automated accessibility testing with axe-core or similar tools',
+      'Conduct manual keyboard navigation testing',
+      'Test with screen readers (NVDA, VoiceOver, JAWS)',
+      'Verify color contrast meets WCAG requirements',
+      'Ensure focus indicators are visible',
+    ],
   }
 }
