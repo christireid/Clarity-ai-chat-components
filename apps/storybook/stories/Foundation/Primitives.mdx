@@ -1,0 +1,294 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Foundation/Primitives" />
+
+# UI Primitives
+
+The `@clarity-chat/primitives` package provides foundational UI components built on
+[shadcn/ui](https://ui.shadcn.com/) and [Radix UI](https://www.radix-ui.com/).
+All components are accessible (WCAG 2.1 AA compliant) and fully customizable.
+
+---
+
+## Installation
+
+```bash
+npm install @clarity-chat/primitives
+```
+
+## Quick Start
+
+```tsx
+import { Button, Card, Input, Dialog } from '@clarity-chat/primitives'
+
+function MyComponent() {
+  return (
+    <Card>
+      <Input placeholder="Enter text..." />
+      <Button variant="default">Submit</Button>
+    </Card>
+  )
+}
+```
+
+---
+
+## Component Categories
+
+### Form Inputs
+
+Essential form components with built-in validation and accessibility.
+
+| Component | Description | Story |
+|-----------|-------------|-------|
+| Button | Primary action button with variants and loading states | [View](?path=/docs/components-inputs-button--docs) |
+| Input | Text input with validation support | [View](?path=/docs/components-inputs-input--docs) |
+| Textarea | Multi-line text input with auto-resize | [View](?path=/docs/components-inputs-textarea--docs) |
+| Checkbox | Toggle input for binary choices | [View](?path=/docs/components-inputs-checkbox--docs) |
+
+### Layout & Containers
+
+Components for structuring content and layouts.
+
+| Component | Description | Story |
+|-----------|-------------|-------|
+| Card | Content container with header/footer | [View](?path=/docs/components-data-display-card--docs) |
+| Dialog | Modal dialog with focus trapping | [View](?path=/docs/components-layout-dialog--docs) |
+| Drawer | Slide-out panel for secondary content | [View](?path=/docs/components-layout-drawer--docs) |
+| ScrollArea | Custom scrollbar with smooth scrolling | - |
+
+### Data Display
+
+Components for presenting information.
+
+| Component | Description | Story |
+|-----------|-------------|-------|
+| Avatar | User profile images with fallback | [View](?path=/docs/components-data-display-avatar--docs) |
+| Badge | Labels and status indicators | [View](?path=/docs/components-data-display-badge--docs) |
+| Tooltip | Contextual information on hover | [View](?path=/docs/components-data-display-tooltip--docs) |
+| Progress | Loading and progress indicators | [View](?path=/docs/components-data-display-progress--docs) |
+| Skeleton | Loading placeholder animations | [View](?path=/docs/components-data-display-skeleton--docs) |
+
+### Navigation & Menus
+
+Interactive navigation components.
+
+| Component | Description | Story |
+|-----------|-------------|-------|
+| DropdownMenu | Contextual action menu | [View](?path=/docs/components-navigation-dropdownmenu--docs) |
+| Popover | Floating content panel | [View](?path=/docs/components-navigation-popover--docs) |
+| CommandPalette | Keyboard-driven command interface | [View](?path=/docs/components-navigation-commandpalette--docs) |
+| ContextMenu | Right-click menu | [View](?path=/docs/components-navigation-contextmenu--docs) |
+
+---
+
+## Design Principles
+
+### Accessibility First
+
+All primitives are built with accessibility as a core requirement:
+
+- Full keyboard navigation
+- Screen reader announcements
+- Focus management
+- ARIA attributes
+- Color contrast compliance
+
+### Composable Architecture
+
+Primitives follow a composable pattern allowing flexible customization:
+
+```tsx
+// Composable usage
+<Dialog>
+  <DialogTrigger>
+    <Button>Open</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Title</DialogTitle>
+      <DialogDescription>Description</DialogDescription>
+    </DialogHeader>
+    <DialogBody>Content here</DialogBody>
+    <DialogFooter>
+      <Button>Close</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+### Styling with Tailwind
+
+All components use Tailwind CSS with the `cn()` utility for class merging:
+
+```tsx
+import { Button, cn } from '@clarity-chat/primitives'
+
+// Custom styles merge with defaults
+<Button className={cn('my-4', isLarge && 'text-lg')}>
+  Click me
+</Button>
+```
+
+### Variants with CVA
+
+Components use [class-variance-authority](https://cva.style/) for type-safe variants:
+
+```tsx
+// Button variants
+<Button variant="default">Default</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="destructive">Destructive</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+
+// Sizes
+<Button size="sm">Small</Button>
+<Button size="default">Default</Button>
+<Button size="lg">Large</Button>
+<Button size="icon">Icon</Button>
+```
+
+---
+
+## Enhanced Components
+
+Some primitives have enhanced versions with additional features:
+
+### Button (Enhanced)
+
+The default Button export includes loading state support:
+
+```tsx
+import { Button, type ButtonState } from '@clarity-chat/primitives'
+
+function SubmitButton() {
+  const [state, setState] = useState<ButtonState>('idle')
+
+  const handleClick = async () => {
+    setState('loading')
+    try {
+      await submitForm()
+      setState('success')
+    } catch {
+      setState('error')
+    }
+  }
+
+  return (
+    <Button state={state} onClick={handleClick}>
+      {state === 'loading' ? 'Submitting...' : 'Submit'}
+    </Button>
+  )
+}
+```
+
+### Tooltip (Simplified)
+
+A simplified Tooltip with content prop:
+
+```tsx
+import { Tooltip } from '@clarity-chat/primitives'
+
+// Simple usage
+<Tooltip content="Helpful information">
+  <span>Hover me</span>
+</Tooltip>
+
+// Full control (using TooltipRoot)
+<TooltipProvider>
+  <TooltipRoot>
+    <TooltipTrigger>Hover</TooltipTrigger>
+    <TooltipContent>Content</TooltipContent>
+  </TooltipRoot>
+</TooltipProvider>
+```
+
+---
+
+## Utility Exports
+
+### cn() - Class Merging
+
+Merge Tailwind classes with conflict resolution:
+
+```tsx
+import { cn } from '@clarity-chat/primitives'
+
+const className = cn(
+  'px-4 py-2 rounded',        // Base classes
+  isActive && 'bg-primary',   // Conditional
+  'text-sm',                  // Override-friendly
+  customClassName             // User classes
+)
+```
+
+### generateId() - Unique IDs
+
+Generate unique identifiers for accessibility:
+
+```tsx
+import { generateId } from '@clarity-chat/primitives'
+
+const id = generateId() // "cid-abc123xyz"
+```
+
+---
+
+## Hooks
+
+### useRippleEffect
+
+Material-style ripple effect for buttons:
+
+```tsx
+import { useRippleEffect } from '@clarity-chat/primitives'
+
+function RippleButton() {
+  const { handleClick, rippleStyle } = useRippleEffect()
+
+  return (
+    <button onClick={handleClick} style={rippleStyle}>
+      Click me
+    </button>
+  )
+}
+```
+
+### useBodyScrollLock
+
+Lock body scroll when modals are open:
+
+```tsx
+import { useBodyScrollLock } from '@clarity-chat/primitives'
+
+function Modal({ isOpen }) {
+  useBodyScrollLock(isOpen)
+
+  return isOpen ? <div>Modal content</div> : null
+}
+```
+
+---
+
+## Migration from Custom Components
+
+If migrating from earlier versions, note that default exports now point to
+shadcn/ui components. For backward compatibility, components are also
+exported with a `Shadcn` prefix:
+
+```tsx
+// These are equivalent
+import { Button } from '@clarity-chat/primitives'
+import { ShadcnButton } from '@clarity-chat/primitives'
+```
+
+---
+
+## Related Resources
+
+- [shadcn/ui Documentation](https://ui.shadcn.com/)
+- [Radix UI Primitives](https://www.radix-ui.com/primitives)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Accessibility Guide](?path=/docs/resources-accessibility--docs)
