@@ -165,8 +165,9 @@ function simulateSearch(query: string, numResults = 3): ToolResult {
  * Safe mathematical expression evaluator
  * Supports: +, -, *, /, %, parentheses, and decimal numbers
  * Does NOT use eval() - implements a proper tokenizer and parser
+ * @exported for testing
  */
-function safeEvaluate(expression: string): number {
+export function safeEvaluate(expression: string): number {
   // Tokenize the expression
   const tokens: string[] = []
   let current = ''

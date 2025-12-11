@@ -3,39 +3,37 @@
 /**
  * Basic Chat Component
  *
- * The simplest possible AI chat implementation using Clarity Chat.
+ * The simplest possible AI chat implementation using @clarity-chat/react.
  * This example demonstrates:
- * - Message state management
- * - SSE streaming responses
- * - Error handling
- * - Loading states
- * - Accessibility patterns
+ * - Using the useChat hook from @clarity-chat/react
+ * - Message rendering with proper styling
+ * - Loading states and error handling
+ * - Keyboard shortcuts (Enter to send, Shift+Enter for new line)
  *
- * Total: ~150 lines of code
+ * Total: ~120 lines of code with full functionality
  */
 
-import { useState, useRef, useEffect, useCallback, FormEvent } from 'react'
-
-// ============================================================================
-// Types
-// ============================================================================
-
-interface Message {
-  id: string
-  role: 'user' | 'assistant' | 'system'
-  content: string
-  timestamp: number
-}
+import { useRef, useEffect, FormEvent } from 'react'
+import { useChat } from '@clarity-chat/react'
 
 // ============================================================================
 // Main Component
 // ============================================================================
 
 export function BasicChat() {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const {
+    messages,
+    sendMessage,
+    isLoading,
+    error,
+    input,
+    setInput,
+    clearMessages,
+  } = useChat({
+    api: '/api/chat',
+    autoScroll: true,
+  })
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -44,113 +42,28 @@ export function BasicChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Send message handler
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (!content.trim() || isLoading) return
-
-      setError(null)
-
-      // Add user message
-      const userMessage: Message = {
-        id: `user-${Date.now()}`,
-        role: 'user',
-        content,
-        timestamp: Date.now(),
-      }
-      setMessages((prev: Message[]) => [...prev, userMessage])
-      setInput('')
-
-      // Create assistant message placeholder
-      const assistantId = `assistant-${Date.now()}`
-      const assistantMessage: Message = {
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-        timestamp: Date.now(),
-      }
-      setMessages((prev: Message[]) => [...prev, assistantMessage])
-      setIsLoading(true)
-
-      try {
-        // Call API with SSE streaming
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: [...messages, userMessage].map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-          }),
-        })
-
-        if (!response.ok) {
-          throw new Error('Failed to send message')
-        }
-
-        const reader = response.body?.getReader()
-        const decoder = new TextDecoder()
-
-        if (!reader) throw new Error('No response body')
-
-        // Read streaming response
-        let fullContent = ''
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value)
-          const lines = chunk
-            .split('\n')
-            .filter((line) => line.startsWith('data:'))
-
-          for (const line of lines) {
-            const data = line.slice(5).trim()
-            if (data === '[DONE]') continue
-
-            try {
-              const parsed = JSON.parse(data)
-              if (parsed.type === 'text-delta') {
-                fullContent += parsed.content
-                setMessages((prev: Message[]) =>
-                  prev.map((m: Message) =>
-                    m.id === assistantId ? { ...m, content: fullContent } : m
-                  )
-                )
-              } else if (parsed.type === 'error') {
-                throw new Error(parsed.message)
-              }
-            } catch {
-              // Skip invalid JSON
-            }
-          }
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to send message')
-        // Remove empty assistant message on error
-        setMessages((prev: Message[]) =>
-          prev.filter((m: Message) => m.id !== assistantId)
-        )
-      } finally {
-        setIsLoading(false)
-        inputRef.current?.focus()
-      }
-    },
-    [messages, isLoading]
-  )
+  // Focus input after loading completes
+  useEffect(() => {
+    if (!isLoading) {
+      inputRef.current?.focus()
+    }
+  }, [isLoading])
 
   // Form submit handler
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    sendMessage(input)
+    if (input.trim() && !isLoading) {
+      sendMessage(input.trim())
+    }
   }
 
   // Keyboard handler for textarea
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      sendMessage(input)
+      if (input.trim() && !isLoading) {
+        sendMessage(input.trim())
+      }
     }
   }
 
@@ -161,12 +74,12 @@ export function BasicChat() {
         <div>
           <h1 className="text-xl font-semibold">Basic Chat</h1>
           <p className="text-sm text-muted-foreground">
-            Powered by Clarity Chat
+            Powered by @clarity-chat/react
           </p>
         </div>
         {messages.length > 0 && (
           <button
-            onClick={() => setMessages([])}
+            onClick={clearMessages}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear chat
@@ -180,6 +93,7 @@ export function BasicChat() {
         role="log"
         aria-label="Chat messages"
         aria-live="polite"
+        data-chat-container
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
@@ -188,6 +102,7 @@ export function BasicChat() {
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -214,10 +129,14 @@ export function BasicChat() {
                     : 'bg-muted rounded-bl-md'
                 }`}
               >
-                <p className="whitespace-pre-wrap">{message.content}</p>
+                <p className="whitespace-pre-wrap">
+                  {typeof message.content === 'string'
+                    ? message.content
+                    : JSON.stringify(message.content)}
+                </p>
                 {message.role === 'assistant' &&
                   isLoading &&
-                  message.content === '' && (
+                  !message.content && (
                     <span className="inline-flex gap-1">
                       <span
                         className="w-2 h-2 bg-current rounded-full animate-bounce"
@@ -235,7 +154,7 @@ export function BasicChat() {
                   )}
                 {message.role === 'assistant' &&
                   isLoading &&
-                  message.content !== '' && (
+                  message.content && (
                     <span
                       className="inline-block w-2 h-4 ml-1 bg-current animate-blink"
                       aria-hidden="true"
@@ -250,8 +169,11 @@ export function BasicChat() {
 
       {/* Error display */}
       {error && (
-        <div className="mx-4 p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg text-sm">
-          {error}
+        <div
+          className="mx-4 p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg text-sm"
+          role="alert"
+        >
+          {error.message}
         </div>
       )}
 
@@ -282,6 +204,7 @@ export function BasicChat() {
                 className="w-5 h-5 animate-spin"
                 fill="none"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <circle
                   className="opacity-25"

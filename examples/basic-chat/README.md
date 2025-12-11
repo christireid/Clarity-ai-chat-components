@@ -1,12 +1,14 @@
 # Basic Chat
 
-> The simplest possible AI chat implementation with Clarity Chat - get started in under 5 minutes.
+> The simplest possible AI chat implementation using `@clarity-chat/react` - get started in under 5
+> minutes.
 
 ## Features
 
+- **@clarity-chat/react Integration** - Uses the official `useChat` hook
 - Streaming responses with SSE
 - Clean, minimal UI
-- Error handling
+- Error handling with proper error boundary
 - Loading states
 - Keyboard accessible (WCAG 2.1 AA)
 - Dark mode support
@@ -34,30 +36,45 @@ Open [http://localhost:3000](http://localhost:3000) to see the demo.
 
 ## What You'll Learn
 
-1. How to set up a basic chat interface
+1. How to use `@clarity-chat/react`'s `useChat` hook
 2. How to stream responses from OpenAI using SSE
 3. Proper message state management patterns
 4. Accessibility best practices for chat UIs
 
 ## Key Code
 
-### Chat Component (150 lines)
+### Chat Component using @clarity-chat/react
 
-The main chat component handles:
-- Message state with `useState`
-- Streaming responses via SSE
-- Auto-scroll to latest message
-- Keyboard navigation (Enter to send)
+The main chat component is dramatically simplified using the `useChat` hook:
 
 ```typescript
 // components/basic-chat.tsx
-const sendMessage = async (content: string) => {
-  // 1. Add user message to state
-  // 2. Create assistant placeholder
-  // 3. Stream response from API
-  // 4. Update assistant message chunk by chunk
+import { useChat } from '@clarity-chat/react'
+
+export function BasicChat() {
+  const { messages, sendMessage, isLoading, error, input, setInput, clearMessages } = useChat({
+    api: '/api/chat',
+    autoScroll: true,
+  })
+
+  // That's it! All the complex state management is handled for you
 }
 ```
+
+### useChat Hook Features
+
+The `useChat` hook provides:
+
+| Feature         | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `messages`      | Array of messages in the conversation           |
+| `sendMessage`   | Function to send a new message                  |
+| `isLoading`     | Loading state during API calls                  |
+| `error`         | Error object if something goes wrong            |
+| `input`         | Current input value                             |
+| `setInput`      | Function to update input                        |
+| `clearMessages` | Function to clear conversation history          |
+| `chat`          | Full access to underlying `useClarityChat` hook |
 
 ### API Route
 
@@ -78,11 +95,11 @@ export async function POST(request: NextRequest) {
       for await (const chunk of completion) {
         // Send each chunk as SSE event
       }
-    }
+    },
   })
 
   return new Response(stream, {
-    headers: { 'Content-Type': 'text/event-stream' }
+    headers: { 'Content-Type': 'text/event-stream' },
   })
 }
 ```
@@ -97,7 +114,8 @@ basic-chat/
 │   ├── layout.tsx          # Root layout
 │   └── page.tsx            # Home page
 ├── components/
-│   └── basic-chat.tsx      # Main chat component
+│   ├── basic-chat.tsx      # Main chat component (uses @clarity-chat/react)
+│   └── error-boundary.tsx  # Error boundary wrapper
 ├── .env.example            # Environment template
 ├── package.json
 ├── tailwind.config.js
@@ -116,6 +134,18 @@ const completion = await openai.chat.completions.create({
   model: 'gpt-3.5-turbo', // or 'gpt-4', 'gpt-4-turbo-preview'
   messages,
   stream: true,
+})
+```
+
+### Enable Message Persistence
+
+Use the built-in persistence feature:
+
+```typescript
+const { messages, sendMessage } = useChat({
+  api: '/api/chat',
+  persistMessages: true, // Saves to localStorage
+  storageKey: 'my-chat-history',
 })
 ```
 
@@ -154,11 +184,13 @@ Edit `components/basic-chat.tsx` to customize the message bubbles:
 - [streaming-chat](../streaming-chat) - Advanced streaming patterns
 - [multi-provider](../multi-provider) - Switch between AI providers
 - [custom-theming](../custom-theming) - Full theming capabilities
+- [accessibility](../accessibility) - WCAG 2.1 AA compliance showcase
 
 ## Tech Stack
 
 - [Next.js 15](https://nextjs.org) - React framework
 - [React 19](https://react.dev) - UI library
+- [@clarity-chat/react](../../packages/react) - Official chat components
 - [Tailwind CSS](https://tailwindcss.com) - Styling
 - [OpenAI API](https://platform.openai.com) - AI backend
 
