@@ -856,6 +856,14 @@ export {
 export * from './hooks/use-character-counter'
 export * from './hooks/use-submit-button-state'
 export * from './hooks/use-mobile-keyboard'
+// React 19 Ref Utilities
+export {
+  useMergedRef,
+  mergeRefs,
+  useMergedRefWithCleanup,
+  assignRef,
+  type ReactRef,
+} from './hooks/use-merged-ref'
 // Note: DesignTokens type is exported from './theme', only export the hook here
 export { useDesignTokens } from './hooks/use-design-tokens'
 

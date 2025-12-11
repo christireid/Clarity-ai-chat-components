@@ -7,6 +7,59 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+#### React 19 Ref Utilities
+
+- `useMergedRef` hook for merging multiple refs (internal + external)
+- `mergeRefs` function for non-hook ref merging
+- `useMergedRefWithCleanup` hook supporting React 19 ref cleanup functions
+- `assignRef` utility for manually setting ref values
+
+### Changed
+
+#### React 19 Component Refactoring
+
+- **BREAKING**: Migrated 13 files (17 components) from `forwardRef` to React 19 ref-as-prop pattern
+- Components now accept `ref` as a standard prop instead of using `forwardRef` wrapper
+- Affected components:
+  - `AdvancedChatInput` - Uses new `useMergedRef` for internal/external ref merging
+  - `MessageOptimized` - Refactored with custom `React.memo` comparison
+  - `CommandPalette` - Direct ref-as-prop
+  - `ContextMenu` - Direct ref-as-prop
+  - `KeyboardHint` - Direct ref-as-prop
+  - `ThemeSwitcher` - Direct ref-as-prop
+  - `Draggable` / `DropZone` - Both components refactored
+  - `DashboardProgress` - Direct ref-as-prop
+  - `InteractiveCard` / `InteractiveCardButton` - Both components refactored
+  - `OutputPreferenceSelector` (Uncontrolled) - Direct ref-as-prop
+  - `CalendarIntegration` - Direct ref-as-prop
+  - `DocumentIntegration` - Direct ref-as-prop
+  - `EmailIntegration` - Direct ref-as-prop
+
+#### Migration Guide
+
+For existing code using these components with refs:
+
+```tsx
+// Before (React 18 with forwardRef)
+const MyWrapper = forwardRef<HTMLDivElement, Props>((props, ref) => (
+  <CommandPalette ref={ref} {...props} />
+))
+
+// After (React 19 ref-as-prop)
+function MyWrapper({ ref, ...props }: Props & { ref?: React.Ref<HTMLDivElement> }) {
+  return <CommandPalette ref={ref} {...props} />
+}
+```
+
+The external API remains compatible - refs passed to these components work the same way.
+
+### Testing
+
+- Added comprehensive tests for `useMergedRef` hook
+- Added ref forwarding tests for refactored components
+
 ## [1.0.0] - 2024-12-09
 
 ### Release Highlights

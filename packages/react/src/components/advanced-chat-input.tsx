@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useTransition, useCallback, useMemo } from
 import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
+import { useMergedRef } from '../hooks/use-merged-ref'
 
 export interface InputSuggestion {
   id: string
@@ -87,22 +88,8 @@ export function AdvancedChatInput({
     // React Concurrent Features - useTransition for non-blocking suggestion updates
     const [isPending, startTransition] = useTransition()
 
-    // React 19: Merge internal and external refs using a callback ref
-    const setTextareaRef = useCallback(
-      (element: HTMLTextAreaElement | null) => {
-        // Set internal ref for .current access
-        (internalRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = element
-        // Set external ref if provided
-        if (ref) {
-          if (typeof ref === 'function') {
-            ref(element)
-          } else {
-            (ref as React.MutableRefObject<HTMLTextAreaElement | null>).current = element
-          }
-        }
-      },
-      [ref]
-    )
+    // React 19: Merge internal and external refs using useMergedRef utility
+    const mergedTextareaRef = useMergedRef(internalRef, ref)
 
     // Use internal ref for .current access
     const textareaRef = internalRef
@@ -445,7 +432,7 @@ export function AdvancedChatInput({
           {/* Textarea */}
           <div className="flex-1 relative">
             <Textarea
-              ref={setTextareaRef}
+              ref={mergedTextareaRef}
               value={value}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
               onKeyDown={handleKeyDown}
