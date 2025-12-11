@@ -1,10 +1,12 @@
 # Clarity Chat Components Documentation
 
-Welcome to the Clarity Chat Components documentation. This directory contains comprehensive guides for getting started, building production applications, and understanding the system architecture.
+Welcome to the Clarity Chat Components documentation. This directory contains comprehensive guides
+for getting started, building production applications, and understanding the system architecture.
 
 ## 📚 Documentation Index
 
 ### 🚀 Getting Started
+
 - **[Getting Started](./getting-started.md)** ⭐ Start here
   - Quick start (5 minutes)
   - Installation and setup
@@ -17,6 +19,7 @@ Welcome to the Clarity Chat Components documentation. This directory contains co
   - Quick links to relevant docs
 
 ### 📖 Core Guides
+
 - **[Best Practices](./best-practices.md)** ✨ Production-ready patterns
   - Component usage patterns
   - Performance optimization
@@ -42,10 +45,16 @@ Welcome to the Clarity Chat Components documentation. This directory contains co
   - Integration problems
 
 ### 🔄 Migration & Comparisons
+
 - **[Migration Guide (v1 to v2)](./migration/v1-to-v2.md)**
   - Step-by-step migration
   - Breaking changes
   - Common patterns
+
+- **[useChat Deprecation Guide](./migration/use-chat-deprecation.md)** 🆕
+  - Migrating from useChat to useClarityChat
+  - API mapping tables
+  - Code examples and troubleshooting
 
 - **[Clarity vs Vercel AI SDK UI](./clarity-vs-vercel-ai-sdk-ui.md)**
   - Feature-by-feature comparison
@@ -77,7 +86,8 @@ docs/
 ├── architecture.md                    # System architecture
 ├── troubleshooting.md                 # Common issues
 ├── migration/
-│   └── v1-to-v2.md                   # Version migration
+│   ├── v1-to-v2.md                   # Version migration
+│   └── use-chat-deprecation.md       # useChat → useClarityChat 🆕
 ├── clarity-vs-vercel-ai-sdk-ui.md    # Feature comparison
 └── migrating-from-vercel.md          # Migration guide
 ```
@@ -85,6 +95,7 @@ docs/
 ## 🎯 Documentation Goals
 
 These docs are designed to be:
+
 - **Clear**: Easy to understand and follow
 - **Opinionated**: Provide guidance, not just options
 - **Practical**: Working code examples you can copy-paste
@@ -92,4 +103,5 @@ These docs are designed to be:
 
 ## 🤝 Contributing
 
-Found an issue or want to improve the docs? Contributions are welcome! See the main [CONTRIBUTING.md](../../CONTRIBUTING.md) guide.
+Found an issue or want to improve the docs? Contributions are welcome! See the main
+[CONTRIBUTING.md](../../CONTRIBUTING.md) guide.

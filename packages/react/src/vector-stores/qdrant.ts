@@ -1,6 +1,6 @@
 /**
  * Qdrant Vector Store Implementation
- * 
+ *
  * High-performance vector database with excellent filtering capabilities.
  * Can be self-hosted or used via Qdrant Cloud.
  */
@@ -18,7 +18,10 @@ import type {
   VectorFilterValue,
 } from './types'
 
-/** @deprecated Use QdrantStoreConfig from './types' instead */
+/**
+ * @deprecated Use QdrantStoreConfig from './types' instead. Will be removed in v3.0.
+ * @see {@link QdrantStoreConfig} from './types' for the canonical type
+ */
 export type QdrantConfig = QdrantStoreConfig
 
 export class QdrantVectorStore implements VectorStore {
@@ -33,12 +36,12 @@ export class QdrantVectorStore implements VectorStore {
     if (!config.endpoint) {
       throw new Error('Qdrant endpoint is required')
     }
-    
+
     this.apiKey = config.apiKey
     this.endpoint = config.endpoint.replace(/\/$/, '')
     this.collectionName = config.collectionName || config.indexName
   }
-  
+
   private getHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -48,7 +51,7 @@ export class QdrantVectorStore implements VectorStore {
     }
     return headers
   }
-  
+
   async initialize(): Promise<void> {
     // Check if collection exists, create if not
     const response = await fetch(
@@ -58,38 +61,48 @@ export class QdrantVectorStore implements VectorStore {
         headers: this.getHeaders(),
       }
     )
-    
+
     if (response.status === 404) {
       // Collection doesn't exist, create it
-      const createResponse = await fetch(`${this.endpoint}/collections/${this.collectionName}`, {
-        method: 'PUT',
-        headers: this.getHeaders(),
-        body: JSON.stringify({
-          vectors: {
-            size: 1536, // Default to OpenAI embedding size
-            distance: 'Cosine',
-          },
-        }),
-      })
-      
+      const createResponse = await fetch(
+        `${this.endpoint}/collections/${this.collectionName}`,
+        {
+          method: 'PUT',
+          headers: this.getHeaders(),
+          body: JSON.stringify({
+            vectors: {
+              size: 1536, // Default to OpenAI embedding size
+              distance: 'Cosine',
+            },
+          }),
+        }
+      )
+
       if (!createResponse.ok) {
-        throw new Error(`Failed to create Qdrant collection: ${await createResponse.text()}`)
+        throw new Error(
+          `Failed to create Qdrant collection: ${await createResponse.text()}`
+        )
       }
     } else if (!response.ok) {
-      throw new Error(`Failed to verify Qdrant collection: ${await response.text()}`)
+      throw new Error(
+        `Failed to verify Qdrant collection: ${await response.text()}`
+      )
     }
-    
+
     this._initialized = true
   }
-  
-  async upsert(vectors: Vector[], _options?: VectorUpsertOptions): Promise<void> {
+
+  async upsert(
+    vectors: Vector[],
+    _options?: VectorUpsertOptions
+  ): Promise<void> {
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}/points`,
       {
         method: 'PUT',
         headers: this.getHeaders(),
         body: JSON.stringify({
-          points: vectors.map(v => ({
+          points: vectors.map((v) => ({
             id: v.id,
             vector: v.values,
             payload: v.metadata || {},
@@ -97,18 +110,18 @@ export class QdrantVectorStore implements VectorStore {
         }),
       }
     )
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Qdrant upsert failed: ${error}`)
     }
   }
-  
+
   async query(query: VectorQuery): Promise<VectorMatch[]> {
     if (!query.vector) {
       throw new Error('Vector query is required for Qdrant')
     }
-    
+
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}/points/search`,
       {
@@ -124,14 +137,14 @@ export class QdrantVectorStore implements VectorStore {
         }),
       }
     )
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Qdrant query failed: ${error}`)
     }
-    
+
     const data = await response.json()
-    
+
     return data.result.map((r: any) => ({
       id: r.id,
       score: r.score,
@@ -139,13 +152,17 @@ export class QdrantVectorStore implements VectorStore {
       metadata: r.payload,
     }))
   }
-  
+
   private convertFilter(filter: Record<string, any>): any {
     // Convert simple filter to Qdrant filter format
     const must: any[] = []
-    
+
     for (const [key, value] of Object.entries(filter)) {
-      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      if (
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+      ) {
         must.push({
           key,
           match: { value },
@@ -157,10 +174,10 @@ export class QdrantVectorStore implements VectorStore {
         })
       }
     }
-    
+
     return must.length > 0 ? { must } : undefined
   }
-  
+
   async delete(ids: string[], _namespace?: string): Promise<void> {
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}/points/delete`,
@@ -172,13 +189,13 @@ export class QdrantVectorStore implements VectorStore {
         }),
       }
     )
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Qdrant delete failed: ${error}`)
     }
   }
-  
+
   async deleteNamespace(namespace: string): Promise<void> {
     // Qdrant doesn't have native namespace support
     // Delete all points with matching namespace in metadata
@@ -199,13 +216,13 @@ export class QdrantVectorStore implements VectorStore {
         }),
       }
     )
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Qdrant deleteNamespace failed: ${error}`)
     }
   }
-  
+
   async getStats(): Promise<VectorStats> {
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}`,
@@ -214,21 +231,21 @@ export class QdrantVectorStore implements VectorStore {
         headers: this.getHeaders(),
       }
     )
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Qdrant getStats failed: ${error}`)
     }
-    
+
     const data = await response.json()
-    
+
     return {
       totalVectors: data.result.points_count || 0,
       dimension: data.result.config?.params?.vectors?.size || 0,
       status: data.result.status === 'green' ? 'ready' : 'initializing',
     }
   }
-  
+
   async fetch(ids: string[], _namespace?: string): Promise<Vector[]> {
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}/points`,
@@ -242,27 +259,31 @@ export class QdrantVectorStore implements VectorStore {
         }),
       }
     )
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Qdrant fetch failed: ${error}`)
     }
-    
+
     const data = await response.json()
-    
+
     return data.result.map((r: any) => ({
       id: r.id,
       values: r.vector,
       metadata: r.payload,
     }))
   }
-  
-  async list(namespace?: string, limit = 100, paginationToken?: string): Promise<{
+
+  async list(
+    namespace?: string,
+    limit = 100,
+    paginationToken?: string
+  ): Promise<{
     ids: string[]
     nextToken?: string
   }> {
     const offset = paginationToken ? parseInt(paginationToken) : 0
-    
+
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}/points/scroll`,
       {
@@ -273,33 +294,36 @@ export class QdrantVectorStore implements VectorStore {
           offset,
           with_payload: false,
           with_vector: false,
-          filter: namespace ? {
-            must: [
-              {
-                key: 'namespace',
-                match: { value: namespace },
-              },
-            ],
-          } : undefined,
+          filter: namespace
+            ? {
+                must: [
+                  {
+                    key: 'namespace',
+                    match: { value: namespace },
+                  },
+                ],
+              }
+            : undefined,
         }),
       }
     )
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Qdrant list failed: ${error}`)
     }
-    
+
     const data = await response.json()
-    
+
     return {
       ids: data.result.points.map((p: any) => p.id),
-      nextToken: data.result.next_page_offset ? String(data.result.next_page_offset) : undefined,
+      nextToken: data.result.next_page_offset
+        ? String(data.result.next_page_offset)
+        : undefined,
     }
   }
-  
+
   async close(): Promise<void> {
     this._initialized = false
   }
 }
-

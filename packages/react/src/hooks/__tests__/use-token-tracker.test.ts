@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useTokenTracker } from '../use-token-tracker'
+import {
+  useTokenTracker,
+  MODEL_PRICING,
+  MODEL_LIMITS,
+} from '../use-token-tracker'
 
 describe('useTokenTracker', () => {
   beforeEach(() => {
@@ -325,5 +329,175 @@ describe('useTokenTracker', () => {
     })
 
     expect(onWarning).toHaveBeenCalledTimes(2)
+  })
+})
+
+// =============================================================================
+// Lazy Initialization Proxy Tests
+// =============================================================================
+
+describe('MODEL_PRICING (lazy-initialized Proxy)', () => {
+  it('should return pricing data for known models via get trap', () => {
+    const gpt4Pricing = MODEL_PRICING['gpt-4']
+    expect(gpt4Pricing).toBeDefined()
+    expect(typeof gpt4Pricing.input).toBe('number')
+    expect(typeof gpt4Pricing.output).toBe('number')
+    expect(gpt4Pricing.input).toBeGreaterThan(0)
+    expect(gpt4Pricing.output).toBeGreaterThan(0)
+  })
+
+  it('should return undefined for unknown models', () => {
+    const unknownPricing = MODEL_PRICING['non-existent-model-xyz']
+    expect(unknownPricing).toBeUndefined()
+  })
+
+  it('should work with "in" operator via has trap', () => {
+    expect('gpt-4' in MODEL_PRICING).toBe(true)
+    expect('gpt-4o' in MODEL_PRICING).toBe(true)
+    expect('claude-3-5-sonnet' in MODEL_PRICING).toBe(true)
+    expect('non-existent-model' in MODEL_PRICING).toBe(false)
+  })
+
+  it('should work with Object.keys() via ownKeys trap', () => {
+    const keys = Object.keys(MODEL_PRICING)
+    expect(Array.isArray(keys)).toBe(true)
+    expect(keys.length).toBeGreaterThan(0)
+    expect(keys).toContain('gpt-4')
+    expect(keys).toContain('claude-3-5-sonnet')
+  })
+
+  it('should work with Object.entries() via getOwnPropertyDescriptor trap', () => {
+    const entries = Object.entries(MODEL_PRICING)
+    expect(Array.isArray(entries)).toBe(true)
+    expect(entries.length).toBeGreaterThan(0)
+
+    // Check first entry has correct structure
+    const [modelName, pricing] = entries[0]
+    expect(typeof modelName).toBe('string')
+    expect(pricing).toHaveProperty('input')
+    expect(pricing).toHaveProperty('output')
+  })
+
+  it('should work with Object.values()', () => {
+    const values = Object.values(MODEL_PRICING)
+    expect(Array.isArray(values)).toBe(true)
+    expect(values.length).toBeGreaterThan(0)
+
+    // All values should have input/output properties
+    values.forEach((pricing) => {
+      expect(pricing).toHaveProperty('input')
+      expect(pricing).toHaveProperty('output')
+    })
+  })
+
+  it('should work with for...in loops', () => {
+    const keys: string[] = []
+    for (const key in MODEL_PRICING) {
+      keys.push(key)
+    }
+    expect(keys.length).toBeGreaterThan(0)
+    expect(keys).toContain('gpt-4')
+  })
+
+  it('should work with spread operator', () => {
+    const copy = { ...MODEL_PRICING }
+    expect(copy).toHaveProperty('gpt-4')
+    expect(copy['gpt-4']).toHaveProperty('input')
+  })
+
+  it('should return consistent values on multiple accesses', () => {
+    const first = MODEL_PRICING['gpt-4']
+    const second = MODEL_PRICING['gpt-4']
+    expect(first).toBe(second)
+    expect(first.input).toBe(second.input)
+  })
+})
+
+describe('MODEL_LIMITS (lazy-initialized Proxy)', () => {
+  it('should return limit data for known models via get trap', () => {
+    const gpt4Limit = MODEL_LIMITS['gpt-4']
+    expect(gpt4Limit).toBeDefined()
+    expect(typeof gpt4Limit).toBe('number')
+    expect(gpt4Limit).toBeGreaterThan(0)
+  })
+
+  it('should return undefined for unknown models', () => {
+    const unknownLimit = MODEL_LIMITS['non-existent-model-xyz']
+    expect(unknownLimit).toBeUndefined()
+  })
+
+  it('should work with "in" operator via has trap', () => {
+    expect('gpt-4' in MODEL_LIMITS).toBe(true)
+    expect('gpt-4o' in MODEL_LIMITS).toBe(true)
+    expect('claude-3-5-sonnet' in MODEL_LIMITS).toBe(true)
+    expect('non-existent-model' in MODEL_LIMITS).toBe(false)
+  })
+
+  it('should work with Object.keys() via ownKeys trap', () => {
+    const keys = Object.keys(MODEL_LIMITS)
+    expect(Array.isArray(keys)).toBe(true)
+    expect(keys.length).toBeGreaterThan(0)
+    expect(keys).toContain('gpt-4')
+    expect(keys).toContain('claude-3-5-sonnet')
+  })
+
+  it('should work with Object.entries() via getOwnPropertyDescriptor trap', () => {
+    const entries = Object.entries(MODEL_LIMITS)
+    expect(Array.isArray(entries)).toBe(true)
+    expect(entries.length).toBeGreaterThan(0)
+
+    // Check first entry has correct structure
+    const [modelName, limit] = entries[0]
+    expect(typeof modelName).toBe('string')
+    expect(typeof limit).toBe('number')
+    expect(limit).toBeGreaterThan(0)
+  })
+
+  it('should work with Object.values()', () => {
+    const values = Object.values(MODEL_LIMITS)
+    expect(Array.isArray(values)).toBe(true)
+    expect(values.length).toBeGreaterThan(0)
+
+    // All values should be numbers
+    values.forEach((limit) => {
+      expect(typeof limit).toBe('number')
+      expect(limit).toBeGreaterThan(0)
+    })
+  })
+
+  it('should work with for...in loops', () => {
+    const keys: string[] = []
+    for (const key in MODEL_LIMITS) {
+      keys.push(key)
+    }
+    expect(keys.length).toBeGreaterThan(0)
+    expect(keys).toContain('gpt-4')
+  })
+
+  it('should work with spread operator', () => {
+    const copy = { ...MODEL_LIMITS }
+    expect(copy).toHaveProperty('gpt-4')
+    expect(typeof copy['gpt-4']).toBe('number')
+  })
+
+  it('should return consistent values on multiple accesses', () => {
+    const first = MODEL_LIMITS['gpt-4']
+    const second = MODEL_LIMITS['gpt-4']
+    expect(first).toBe(second)
+  })
+
+  it('should have consistent keys between MODEL_PRICING and MODEL_LIMITS', () => {
+    const pricingKeys = new Set(Object.keys(MODEL_PRICING))
+    const limitsKeys = new Set(Object.keys(MODEL_LIMITS))
+
+    // All pricing keys should have limits
+    pricingKeys.forEach((key) => {
+      expect(limitsKeys.has(key)).toBe(true)
+    })
+
+    // All limits keys should have pricing
+    limitsKeys.forEach((key) => {
+      expect(pricingKeys.has(key)).toBe(true)
+    })
   })
 })
