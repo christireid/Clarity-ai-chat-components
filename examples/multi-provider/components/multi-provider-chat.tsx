@@ -210,7 +210,7 @@ export function MultiProviderChat() {
         role: 'user',
         content,
       }
-      setMessages((prev) => [...prev, userMessage])
+      setMessages((prev: Message[]) => [...prev, userMessage])
       setInput('')
 
       // Create assistant placeholder
@@ -222,7 +222,7 @@ export function MultiProviderChat() {
         provider,
         model: modelId,
       }
-      setMessages((prev) => [...prev, assistantMessage])
+      setMessages((prev: Message[]) => [...prev, assistantMessage])
       setIsLoading(true)
 
       try {
@@ -230,7 +230,7 @@ export function MultiProviderChat() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: [...messages, userMessage].map((m) => ({
+            messages: [...messages, userMessage].map((m: Message) => ({
               role: m.role,
               content: m.content,
             })),
@@ -266,8 +266,8 @@ export function MultiProviderChat() {
               const parsed = JSON.parse(data)
               if (parsed.type === 'text-delta') {
                 fullContent += parsed.content
-                setMessages((prev) =>
-                  prev.map((m) =>
+                setMessages((prev: Message[]) =>
+                  prev.map((m: Message) =>
                     m.id === assistantId ? { ...m, content: fullContent } : m
                   )
                 )
@@ -281,7 +281,9 @@ export function MultiProviderChat() {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to send message')
-        setMessages((prev) => prev.filter((m) => m.id !== assistantId))
+        setMessages((prev: Message[]) =>
+          prev.filter((m: Message) => m.id !== assistantId)
+        )
       } finally {
         setIsLoading(false)
         inputRef.current?.focus()
@@ -346,7 +348,9 @@ export function MultiProviderChat() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Context</span>
-                <span>{(currentModel.contextWindow / 1000).toFixed(0)}K tokens</span>
+                <span>
+                  {(currentModel.contextWindow / 1000).toFixed(0)}K tokens
+                </span>
               </div>
             </div>
           )}

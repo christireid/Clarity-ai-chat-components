@@ -12,13 +12,7 @@
  * - Connection status
  */
 
-import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  FormEvent,
-} from 'react'
+import { useState, useRef, useEffect, useCallback, FormEvent } from 'react'
 
 // ============================================================================
 // Types
@@ -40,7 +34,13 @@ interface StreamMetrics {
   tokensPerSecond: number
 }
 
-type StreamStatus = 'idle' | 'connecting' | 'streaming' | 'complete' | 'error' | 'cancelled'
+type StreamStatus =
+  | 'idle'
+  | 'connecting'
+  | 'streaming'
+  | 'complete'
+  | 'error'
+  | 'cancelled'
 
 // ============================================================================
 // Token Counter Component
@@ -104,7 +104,10 @@ function TokenCounter({
 function StreamStatusIndicator({ status }: { status: StreamStatus }) {
   const statusConfig = {
     idle: { color: 'bg-muted', label: 'Ready' },
-    connecting: { color: 'bg-yellow-400 animate-pulse', label: 'Connecting...' },
+    connecting: {
+      color: 'bg-yellow-400 animate-pulse',
+      label: 'Connecting...',
+    },
     streaming: { color: 'bg-primary animate-pulse-fast', label: 'Streaming' },
     complete: { color: 'bg-green-400', label: 'Complete' },
     error: { color: 'bg-red-400', label: 'Error' },
@@ -161,13 +164,15 @@ export function StreamingChat() {
     if (messages.length < 2) return
 
     // Find last user message
-    const lastUserMessageIndex = messages.findLastIndex((m) => m.role === 'user')
+    const lastUserMessageIndex = messages.findLastIndex(
+      (m: Message) => m.role === 'user'
+    )
     if (lastUserMessageIndex === -1) return
 
     const lastUserMessage = messages[lastUserMessageIndex]
 
     // Remove assistant response (if any)
-    setMessages((prev) => prev.slice(0, lastUserMessageIndex + 1))
+    setMessages((prev: Message[]) => prev.slice(0, lastUserMessageIndex + 1))
 
     // Re-send
     sendMessage(lastUserMessage.content, true)
@@ -203,7 +208,7 @@ export function StreamingChat() {
         content: '',
         timestamp: Date.now(),
       }
-      setMessages((prev) => [...prev, assistantMessage])
+      setMessages((prev: Message[]) => [...prev, assistantMessage])
       setStatus('connecting')
 
       // Reset metrics
@@ -222,7 +227,7 @@ export function StreamingChat() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: currentMessages.map((m) => ({
+            messages: currentMessages.map((m: Message) => ({
               role: m.role,
               content: m.content,
             })),
@@ -261,7 +266,7 @@ export function StreamingChat() {
 
               if (parsed.type === 'init') {
                 startTime = Date.now()
-                setMetrics((prev) => ({
+                setMetrics((prev: StreamMetrics) => ({
                   ...prev,
                   inputTokens: parsed.inputTokens,
                 }))
@@ -273,21 +278,21 @@ export function StreamingChat() {
                     ? Math.round((parsed.outputTokens / elapsed) * 1000)
                     : 0
 
-                setMessages((prev) =>
-                  prev.map((m) =>
+                setMessages((prev: Message[]) =>
+                  prev.map((m: Message) =>
                     m.id === assistantId ? { ...m, content: fullContent } : m
                   )
                 )
 
-                setMetrics((prev) => ({
+                setMetrics((prev: StreamMetrics) => ({
                   ...prev,
                   outputTokens: parsed.outputTokens,
                   elapsedMs: elapsed,
                   tokensPerSecond: tps,
                 }))
               } else if (parsed.type === 'finish') {
-                setMessages((prev) =>
-                  prev.map((m) =>
+                setMessages((prev: Message[]) =>
+                  prev.map((m: Message) =>
                     m.id === assistantId
                       ? {
                           ...m,
@@ -312,7 +317,9 @@ export function StreamingChat() {
         } else {
           setError(err instanceof Error ? err.message : 'Stream error')
           setStatus('error')
-          setMessages((prev) => prev.filter((m) => m.id !== assistantId))
+          setMessages((prev: Message[]) =>
+            prev.filter((m: Message) => m.id !== assistantId)
+          )
         }
       } finally {
         abortControllerRef.current = null
@@ -373,8 +380,16 @@ export function StreamingChat() {
       {/* Metrics Bar */}
       <div className="flex items-center justify-between px-4 py-2 bg-muted/30 border-b border-border/50">
         <div className="flex items-center gap-6">
-          <TokenCounter label="Input" count={metrics.inputTokens} max={128000} />
-          <TokenCounter label="Output" count={metrics.outputTokens} max={4096} />
+          <TokenCounter
+            label="Input"
+            count={metrics.inputTokens}
+            max={128000}
+          />
+          <TokenCounter
+            label="Output"
+            count={metrics.outputTokens}
+            max={4096}
+          />
         </div>
         <div className="flex items-center gap-4 text-xs">
           <span className="text-muted-foreground">

@@ -1,11 +1,14 @@
 'use client'
 
 import { StreamingChat } from '@/components/streaming-chat'
+import { ErrorBoundary } from '@/components/error-boundary'
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-background">
-      <StreamingChat />
+      <ErrorBoundary>
+        <StreamingChat />
+      </ErrorBoundary>
     </main>
   )
 }

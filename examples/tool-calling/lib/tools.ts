@@ -62,7 +62,8 @@ export const TOOLS: ChatCompletionTool[] = [
         properties: {
           expression: {
             type: 'string',
-            description: 'The mathematical expression to evaluate, e.g. "2 + 2 * 3"',
+            description:
+              'The mathematical expression to evaluate, e.g. "2 + 2 * 3"',
           },
         },
         required: ['expression'],
@@ -130,7 +131,8 @@ function simulateWeather(location: string, unit = 'fahrenheit'): ToolResult {
     success: true,
     data: {
       location,
-      temperature: unit === 'celsius' ? Math.round((temp - 32) * 5 / 9) : temp,
+      temperature:
+        unit === 'celsius' ? Math.round(((temp - 32) * 5) / 9) : temp,
       unit: unit === 'celsius' ? 'C' : 'F',
       condition,
       humidity: `${humidity}%`,
@@ -159,25 +161,112 @@ function simulateSearch(query: string, numResults = 3): ToolResult {
   }
 }
 
+/**
+ * Safe mathematical expression evaluator
+ * Supports: +, -, *, /, %, parentheses, and decimal numbers
+ * Does NOT use eval() - implements a proper tokenizer and parser
+ */
+function safeEvaluate(expression: string): number {
+  // Tokenize the expression
+  const tokens: string[] = []
+  let current = ''
+
+  for (const char of expression.replace(/\s/g, '')) {
+    if ('+-*/%()'.includes(char)) {
+      if (current) {
+        tokens.push(current)
+        current = ''
+      }
+      tokens.push(char)
+    } else if (/[0-9.]/.test(char)) {
+      current += char
+    } else {
+      throw new Error(`Invalid character: ${char}`)
+    }
+  }
+  if (current) tokens.push(current)
+
+  let pos = 0
+
+  function parseNumber(): number {
+    if (tokens[pos] === '(') {
+      pos++ // skip '('
+      const result = parseAddition()
+      if (tokens[pos] !== ')') throw new Error('Missing closing parenthesis')
+      pos++ // skip ')'
+      return result
+    }
+
+    // Handle unary minus
+    if (tokens[pos] === '-') {
+      pos++
+      return -parseNumber()
+    }
+
+    const num = parseFloat(tokens[pos])
+    if (isNaN(num)) throw new Error(`Invalid number: ${tokens[pos]}`)
+    pos++
+    return num
+  }
+
+  function parseMultiplication(): number {
+    let left = parseNumber()
+
+    while (pos < tokens.length && ['*', '/', '%'].includes(tokens[pos])) {
+      const op = tokens[pos]
+      pos++
+      const right = parseNumber()
+
+      if (op === '*') left *= right
+      else if (op === '/') {
+        if (right === 0) throw new Error('Division by zero')
+        left /= right
+      } else if (op === '%') left %= right
+    }
+
+    return left
+  }
+
+  function parseAddition(): number {
+    let left = parseMultiplication()
+
+    while (pos < tokens.length && ['+', '-'].includes(tokens[pos])) {
+      const op = tokens[pos]
+      pos++
+      const right = parseMultiplication()
+
+      if (op === '+') left += right
+      else left -= right
+    }
+
+    return left
+  }
+
+  const result = parseAddition()
+  if (pos !== tokens.length)
+    throw new Error('Unexpected tokens after expression')
+  return result
+}
+
 function simulateCalculate(expression: string): ToolResult {
   try {
-    // Basic safe evaluation (in production, use a proper math library)
-    const sanitized = expression.replace(/[^0-9+\-*/().%\s]/g, '')
-    // eslint-disable-next-line no-eval
-    const result = eval(sanitized)
+    const result = safeEvaluate(expression)
 
     return {
       success: true,
       data: {
         expression,
-        result: typeof result === 'number' ? result : 'Invalid expression',
+        result: isFinite(result) ? result : 'Invalid expression',
       },
     }
-  } catch {
+  } catch (error) {
     return {
       success: false,
       data: null,
-      error: 'Invalid mathematical expression',
+      error:
+        error instanceof Error
+          ? error.message
+          : 'Invalid mathematical expression',
     }
   }
 }
@@ -204,7 +293,10 @@ function simulateStockPrice(symbol: string): ToolResult {
 // Tool Info for UI
 // ============================================================================
 
-export const TOOL_INFO: Record<string, { icon: string; color: string; description: string }> = {
+export const TOOL_INFO: Record<
+  string,
+  { icon: string; color: string; description: string }
+> = {
   get_weather: {
     icon: '🌤️',
     color: 'bg-blue-500/10 text-blue-600 border-blue-500/20',

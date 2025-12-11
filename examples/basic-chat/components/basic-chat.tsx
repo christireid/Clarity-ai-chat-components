@@ -45,93 +45,100 @@ export function BasicChat() {
   }, [messages])
 
   // Send message handler
-  const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim() || isLoading) return
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!content.trim() || isLoading) return
 
-    setError(null)
+      setError(null)
 
-    // Add user message
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      content,
-      timestamp: Date.now(),
-    }
-    setMessages((prev) => [...prev, userMessage])
-    setInput('')
-
-    // Create assistant message placeholder
-    const assistantId = `assistant-${Date.now()}`
-    const assistantMessage: Message = {
-      id: assistantId,
-      role: 'assistant',
-      content: '',
-      timestamp: Date.now(),
-    }
-    setMessages((prev) => [...prev, assistantMessage])
-    setIsLoading(true)
-
-    try {
-      // Call API with SSE streaming
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to send message')
+      // Add user message
+      const userMessage: Message = {
+        id: `user-${Date.now()}`,
+        role: 'user',
+        content,
+        timestamp: Date.now(),
       }
+      setMessages((prev: Message[]) => [...prev, userMessage])
+      setInput('')
 
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
+      // Create assistant message placeholder
+      const assistantId = `assistant-${Date.now()}`
+      const assistantMessage: Message = {
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
+      }
+      setMessages((prev: Message[]) => [...prev, assistantMessage])
+      setIsLoading(true)
 
-      if (!reader) throw new Error('No response body')
+      try {
+        // Call API with SSE streaming
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [...messages, userMessage].map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          }),
+        })
 
-      // Read streaming response
-      let fullContent = ''
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
+        if (!response.ok) {
+          throw new Error('Failed to send message')
+        }
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n').filter((line) => line.startsWith('data:'))
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
 
-        for (const line of lines) {
-          const data = line.slice(5).trim()
-          if (data === '[DONE]') continue
+        if (!reader) throw new Error('No response body')
 
-          try {
-            const parsed = JSON.parse(data)
-            if (parsed.type === 'text-delta') {
-              fullContent += parsed.content
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId ? { ...m, content: fullContent } : m
+        // Read streaming response
+        let fullContent = ''
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          const lines = chunk
+            .split('\n')
+            .filter((line) => line.startsWith('data:'))
+
+          for (const line of lines) {
+            const data = line.slice(5).trim()
+            if (data === '[DONE]') continue
+
+            try {
+              const parsed = JSON.parse(data)
+              if (parsed.type === 'text-delta') {
+                fullContent += parsed.content
+                setMessages((prev: Message[]) =>
+                  prev.map((m: Message) =>
+                    m.id === assistantId ? { ...m, content: fullContent } : m
+                  )
                 )
-              )
-            } else if (parsed.type === 'error') {
-              throw new Error(parsed.message)
+              } else if (parsed.type === 'error') {
+                throw new Error(parsed.message)
+              }
+            } catch {
+              // Skip invalid JSON
             }
-          } catch {
-            // Skip invalid JSON
           }
         }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to send message')
+        // Remove empty assistant message on error
+        setMessages((prev: Message[]) =>
+          prev.filter((m: Message) => m.id !== assistantId)
+        )
+      } finally {
+        setIsLoading(false)
+        inputRef.current?.focus()
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send message')
-      // Remove empty assistant message on error
-      setMessages((prev) => prev.filter((m) => m.id !== assistantId))
-    } finally {
-      setIsLoading(false)
-      inputRef.current?.focus()
-    }
-  }, [messages, isLoading])
+    },
+    [messages, isLoading]
+  )
 
   // Form submit handler
   const handleSubmit = (e: FormEvent) => {
@@ -212,9 +219,18 @@ export function BasicChat() {
                   isLoading &&
                   message.content === '' && (
                     <span className="inline-flex gap-1">
-                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      <span
+                        className="w-2 h-2 bg-current rounded-full animate-bounce"
+                        style={{ animationDelay: '0ms' }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-current rounded-full animate-bounce"
+                        style={{ animationDelay: '150ms' }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-current rounded-full animate-bounce"
+                        style={{ animationDelay: '300ms' }}
+                      />
                     </span>
                   )}
                 {message.role === 'assistant' &&

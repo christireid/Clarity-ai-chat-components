@@ -154,7 +154,8 @@ function SearchResult({ data }: { data: Record<string, unknown> }) {
   return (
     <div className="space-y-2">
       <div className="text-xs opacity-60">
-        {(data.totalResults as number)?.toLocaleString()} results for "{String(data.query)}"
+        {(data.totalResults as number)?.toLocaleString()} results for "
+        {String(data.query)}"
       </div>
       {results.slice(0, 3).map((r, i) => (
         <div key={i} className="p-2 bg-black/5 rounded">
@@ -170,7 +171,9 @@ function SearchResult({ data }: { data: Record<string, unknown> }) {
 function CalculatorResult({ data }: { data: Record<string, unknown> }) {
   return (
     <div className="text-center">
-      <div className="text-sm opacity-60 font-mono">{String(data.expression)}</div>
+      <div className="text-sm opacity-60 font-mono">
+        {String(data.expression)}
+      </div>
       <div className="text-3xl font-bold mt-1">= {String(data.result)}</div>
     </div>
   )
@@ -229,7 +232,7 @@ export function ToolCallingChat() {
         role: 'user',
         content,
       }
-      setMessages((prev) => [...prev, userMessage])
+      setMessages((prev: Message[]) => [...prev, userMessage])
       setInput('')
 
       // Create assistant placeholder
@@ -240,7 +243,7 @@ export function ToolCallingChat() {
         content: '',
         toolCalls: [],
       }
-      setMessages((prev) => [...prev, assistantMessage])
+      setMessages((prev: Message[]) => [...prev, assistantMessage])
       setIsLoading(true)
 
       try {
@@ -248,7 +251,7 @@ export function ToolCallingChat() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: [...messages, userMessage].map((m) => ({
+            messages: [...messages, userMessage].map((m: Message) => ({
               role: m.role,
               content: m.content,
             })),
@@ -282,34 +285,37 @@ export function ToolCallingChat() {
 
               if (parsed.type === 'text-delta') {
                 fullContent += parsed.content
-                setMessages((prev) =>
-                  prev.map((m) =>
+                setMessages((prev: Message[]) =>
+                  prev.map((m: Message) =>
                     m.id === assistantId ? { ...m, content: fullContent } : m
                   )
                 )
               } else if (parsed.type === 'tool_calls') {
                 // Initialize tool calls
                 const toolCalls: ToolCall[] = parsed.tool_calls.map(
-                  (tc: { id: string; function: { name: string; arguments: string } }) => ({
+                  (tc: {
+                    id: string
+                    function: { name: string; arguments: string }
+                  }) => ({
                     id: tc.id,
                     name: tc.function.name,
                     args: JSON.parse(tc.function.arguments || '{}'),
                     status: 'pending' as const,
                   })
                 )
-                setMessages((prev) =>
-                  prev.map((m) =>
+                setMessages((prev: Message[]) =>
+                  prev.map((m: Message) =>
                     m.id === assistantId ? { ...m, toolCalls } : m
                   )
                 )
               } else if (parsed.type === 'tool_execution_start') {
                 // Mark tool as executing
-                setMessages((prev) =>
-                  prev.map((m) => {
+                setMessages((prev: Message[]) =>
+                  prev.map((m: Message) => {
                     if (m.id === assistantId && m.toolCalls) {
                       return {
                         ...m,
-                        toolCalls: m.toolCalls.map((tc) =>
+                        toolCalls: m.toolCalls.map((tc: ToolCall) =>
                           tc.id === parsed.tool_call_id
                             ? { ...tc, status: 'executing' as const }
                             : tc
@@ -321,12 +327,12 @@ export function ToolCallingChat() {
                 )
               } else if (parsed.type === 'tool_execution_result') {
                 // Update tool with result
-                setMessages((prev) =>
-                  prev.map((m) => {
+                setMessages((prev: Message[]) =>
+                  prev.map((m: Message) => {
                     if (m.id === assistantId && m.toolCalls) {
                       return {
                         ...m,
-                        toolCalls: m.toolCalls.map((tc) =>
+                        toolCalls: m.toolCalls.map((tc: ToolCall) =>
                           tc.id === parsed.tool_call_id
                             ? {
                                 ...tc,
@@ -352,7 +358,9 @@ export function ToolCallingChat() {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to send message')
-        setMessages((prev) => prev.filter((m) => m.id !== assistantId))
+        setMessages((prev: Message[]) =>
+          prev.filter((m: Message) => m.id !== assistantId)
+        )
       } finally {
         setIsLoading(false)
         inputRef.current?.focus()
@@ -399,7 +407,8 @@ export function ToolCallingChat() {
             <div className="text-4xl mb-4">🛠️</div>
             <h2 className="text-lg font-medium mb-2">Try Tool Calling</h2>
             <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-              Ask questions that use tools. The AI will automatically call the right tool.
+              Ask questions that use tools. The AI will automatically call the
+              right tool.
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {examples.map((example, i) => (
@@ -442,22 +451,29 @@ export function ToolCallingChat() {
                     {message.content && (
                       <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
                         <p className="whitespace-pre-wrap">{message.content}</p>
-                        {isLoading &&
-                          !message.toolCalls?.length && (
-                            <span className="inline-block w-2 h-4 ml-1 bg-current animate-blink" />
-                          )}
+                        {isLoading && !message.toolCalls?.length && (
+                          <span className="inline-block w-2 h-4 ml-1 bg-current animate-blink" />
+                        )}
                       </div>
                     )}
                     {/* Loading state */}
-                    {isLoading && !message.content && !message.toolCalls?.length && (
-                      <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
-                        <span className="inline-flex gap-1">
-                          <span className="w-2 h-2 bg-current rounded-full animate-bounce" />
-                          <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                        </span>
-                      </div>
-                    )}
+                    {isLoading &&
+                      !message.content &&
+                      !message.toolCalls?.length && (
+                        <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
+                          <span className="inline-flex gap-1">
+                            <span className="w-2 h-2 bg-current rounded-full animate-bounce" />
+                            <span
+                              className="w-2 h-2 bg-current rounded-full animate-bounce"
+                              style={{ animationDelay: '150ms' }}
+                            />
+                            <span
+                              className="w-2 h-2 bg-current rounded-full animate-bounce"
+                              style={{ animationDelay: '300ms' }}
+                            />
+                          </span>
+                        </div>
+                      )}
                   </>
                 ) : (
                   <p className="whitespace-pre-wrap">{message.content}</p>
