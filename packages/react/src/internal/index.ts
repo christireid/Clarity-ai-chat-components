@@ -53,3 +53,54 @@ export {
   memoize,
   cancellable,
 } from './helpers'
+
+// Development warnings (stripped in production)
+export {
+  warn,
+  devWarning,
+  deprecatedProp,
+  deprecatedComponent,
+  missingProviderWarning,
+  performanceWarning,
+  inlineFunctionWarning,
+  accessibilityWarning,
+  validateProp,
+  requireProp,
+  validateEnumProp,
+  resetWarnings,
+  hasWarned,
+  type WarningCategory,
+  type WarningOptions,
+} from './dev-warnings'
+
+// Debug mode utilities (browser console access)
+export {
+  enableDebug,
+  disableDebug,
+  getDebugConfig,
+  getDebugLogs,
+  clearDebugLogs,
+  debugLog,
+  debug,
+  measurePerformance,
+  measurePerformanceAsync,
+  type LogLevel,
+  type DebugLogEntry,
+  type DebugConfig,
+  type ClarityDebugInterface,
+} from './debug'
+
+// Component-specific error utilities
+export {
+  ComponentError,
+  invariant,
+  createComponentInvariant,
+  throwMissingProviderError,
+  throwInvalidPropError,
+  throwMissingPropError,
+  createErrorHandler,
+  withComponentErrorHandling,
+  isComponentError,
+  type ComponentErrorCode,
+  type ComponentErrorOptions,
+} from './component-errors'
