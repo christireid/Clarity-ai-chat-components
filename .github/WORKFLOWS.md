@@ -30,10 +30,14 @@ All workflows implement these security best practices:
 | **Permissions** | ✅ 100% | Explicit least-privilege `permissions:` blocks |
 | **Timeouts** | ✅ 100% | All jobs have `timeout-minutes` set |
 | **Concurrency** | ✅ 100% | Duplicate runs cancelled automatically |
-| **Harden Runner** | ✅ CI | StepSecurity runtime protection (egress monitoring) |
+| **Harden Runner** | ✅ CI, A11y, Visual | StepSecurity runtime protection (egress monitoring) |
 | **Turbo Remote Cache** | ✅ CI | 60-80% faster builds via shared cache |
 | **Retry Logic** | ✅ CI | Automatic retry for transient network failures |
 | **Dependabot** | ✅ | Auto-updates for GitHub Actions and npm packages |
+| **PR Failure Comments** | ✅ CI | Automatic PR comments on CI failures |
+| **Manual Dispatch** | ✅ CI | Debug mode and cache bypass options |
+| **Cache Statistics** | ✅ CI | Turbo cache hit/miss reporting |
+| **Reusable Workflows** | ✅ | `_setup.yml` base workflow available |
 
 ---
 
@@ -317,6 +321,48 @@ Configures Turbo local caching for GitHub Actions.
 
 ---
 
+## Reusable Workflows
+
+### _setup.yml
+
+A reusable workflow that provides standardized setup for all CI jobs:
+- Security hardening with Harden Runner
+- Node.js and pnpm setup with caching
+- Dependency installation with retry logic
+- Turbo Remote Cache configuration
+
+**Inputs**:
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `node-version` | string | `'20'` | Node.js version |
+| `pnpm-version` | string | `'10'` | pnpm version |
+| `run-command` | string | `''` | Command to run after setup |
+| `timeout-minutes` | number | `15` | Job timeout |
+| `skip-cache` | boolean | `false` | Skip Turbo cache |
+| `enable-harden-runner` | boolean | `true` | Enable StepSecurity |
+| `fetch-depth` | number | `1` | Git fetch depth |
+
+**Outputs**:
+
+| Output | Description |
+|--------|-------------|
+| `duration` | Job duration in seconds |
+| `cache-hit` | Whether pnpm cache was hit |
+
+**Usage**:
+
+```yaml
+jobs:
+  my-job:
+    uses: ./.github/workflows/_setup.yml
+    with:
+      node-version: '20'
+      run-command: 'pnpm lint'
+```
+
+---
+
 ## Caching Strategy
 
 | Cache Type | Implementation | Key Pattern | Benefit |
@@ -368,6 +414,8 @@ jobs:
 
 ## Local Testing
 
+### Quick Commands
+
 ```bash
 # Validate workflow syntax
 npx actionlint
@@ -381,6 +429,34 @@ pnpm build
 # Run specific workflow with act (requires Docker)
 act -W .github/workflows/ci.yml
 ```
+
+### Workflow Test Script
+
+A comprehensive test script is available at `scripts/test-workflows.sh`:
+
+```bash
+# Run all validations
+./scripts/test-workflows.sh
+
+# Only run actionlint
+./scripts/test-workflows.sh --lint
+
+# Security checks only
+./scripts/test-workflows.sh --security
+
+# Dry-run ci.yml with act
+./scripts/test-workflows.sh --ci
+
+# Dry-run specific workflow
+./scripts/test-workflows.sh --dry-run docs-sync.yml
+```
+
+**Features**:
+- YAML syntax validation
+- actionlint checks
+- Security audit (SHA pinning, permissions, timeouts, concurrency)
+- Best practices verification
+- Optional act dry-run support
 
 ---
 

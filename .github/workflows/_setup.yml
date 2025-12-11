@@ -1,0 +1,197 @@
+# Reusable Setup Workflow
+# =======================
+# This reusable workflow provides a standardized setup for all CI workflows,
+# including security hardening, Node.js setup, and dependency installation.
+#
+# Usage in other workflows:
+#   jobs:
+#     my-job:
+#       uses: ./.github/workflows/_setup.yml
+#       with:
+#         node-version: '20'
+#         run-command: 'pnpm lint'
+#
+name: _Setup (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version to use'
+        required: false
+        type: string
+        default: '20'
+      pnpm-version:
+        description: 'pnpm version to use'
+        required: false
+        type: string
+        default: '10'
+      run-command:
+        description: 'Command to run after setup (optional)'
+        required: false
+        type: string
+        default: ''
+      working-directory:
+        description: 'Working directory for the command'
+        required: false
+        type: string
+        default: '.'
+      timeout-minutes:
+        description: 'Job timeout in minutes'
+        required: false
+        type: number
+        default: 15
+      skip-cache:
+        description: 'Skip Turbo cache'
+        required: false
+        type: boolean
+        default: false
+      enable-harden-runner:
+        description: 'Enable StepSecurity Harden Runner'
+        required: false
+        type: boolean
+        default: true
+      fetch-depth:
+        description: 'Git fetch depth (0 for full history)'
+        required: false
+        type: number
+        default: 1
+      allowed-endpoints:
+        description: 'Additional allowed endpoints for Harden Runner (newline-separated)'
+        required: false
+        type: string
+        default: ''
+    outputs:
+      duration:
+        description: 'Job duration in seconds'
+        value: ${{ jobs.setup-and-run.outputs.duration }}
+      cache-hit:
+        description: 'Whether pnpm cache was hit'
+        value: ${{ jobs.setup-and-run.outputs.cache-hit }}
+    secrets:
+      NPM_TOKEN:
+        description: 'NPM token for private packages (optional)'
+        required: false
+
+jobs:
+  setup-and-run:
+    name: Setup & Run
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
+      cache-hit: ${{ steps.setup-node.outputs.cache-hit }}
+    env:
+      TURBO_TELEMETRY_DISABLED: 1
+    steps:
+      # ============================================
+      # SECURITY: Harden Runner
+      # ============================================
+      - name: Harden Runner
+        if: ${{ inputs.enable-harden-runner }}
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+            ${{ inputs.allowed-endpoints }}
+
+      # ============================================
+      # TIMING: Start
+      # ============================================
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
+
+      # ============================================
+      # CHECKOUT
+      # ============================================
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: ${{ inputs.fetch-depth }}
+
+      # ============================================
+      # SETUP: pnpm
+      # ============================================
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+        with:
+          version: ${{ inputs.pnpm-version }}
+
+      # ============================================
+      # SETUP: Node.js with caching
+      # ============================================
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'pnpm'
+
+      # ============================================
+      # INSTALL: Dependencies with retry
+      # ============================================
+      - name: Install dependencies
+        shell: bash
+        run: |
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES: Installing dependencies..."
+            if pnpm install --frozen-lockfile; then
+              echo "✅ Dependencies installed successfully"
+              break
+            fi
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+              WAIT_TIME=$((2 ** RETRY_COUNT))
+              echo "⚠️ Install failed, retrying in ${WAIT_TIME}s..."
+              sleep $WAIT_TIME
+            else
+              echo "❌ Failed to install dependencies after $MAX_RETRIES attempts"
+              exit 1
+            fi
+          done
+
+      # ============================================
+      # CACHE: Turbo Remote Cache
+      # ============================================
+      - name: Setup Turbo Remote Cache
+        if: ${{ !inputs.skip-cache }}
+        uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
+
+      # ============================================
+      # RUN: Custom command (if provided)
+      # ============================================
+      - name: Run command
+        if: ${{ inputs.run-command != '' }}
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          if [ "${{ inputs.skip-cache }}" = "true" ]; then
+            # Add --force flag if it looks like a turbo command
+            if echo "${{ inputs.run-command }}" | grep -q "turbo"; then
+              ${{ inputs.run-command }} --force
+            else
+              ${{ inputs.run-command }}
+            fi
+          else
+            ${{ inputs.run-command }}
+          fi
+
+      # ============================================
+      # TIMING: Calculate duration
+      # ============================================
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Job completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
