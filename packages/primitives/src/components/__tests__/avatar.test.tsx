@@ -70,7 +70,7 @@ describe('Avatar Component', () => {
       // Radix UI handles image errors internally and shows fallback automatically
       // We verify that fallback is rendered (Radix UI will show it when image fails)
       render(<Avatar src="/invalid.jpg" alt="User" fallback="JD" />)
-      
+
       // Fallback is always rendered, Radix UI will display it when image fails
       expect(screen.getByText('JD')).toBeInTheDocument()
     })
@@ -79,7 +79,7 @@ describe('Avatar Component', () => {
       // Radix UI automatically shows fallback when image fails to load
       // We verify that fallback is present (it will be shown on error)
       render(<Avatar src="/broken.jpg" alt="User" fallback="FB" />)
-      
+
       // Fallback is always rendered, Radix UI will display it when image fails
       expect(screen.getByText('FB')).toBeInTheDocument()
     })
@@ -117,8 +117,45 @@ describe('Avatar Component', () => {
     })
 
     it('should render custom status badge', () => {
-      render(<Avatar statusBadge={<span data-testid="custom-badge">Custom</span>} fallback="AB" />)
+      render(
+        <Avatar
+          statusBadge={<span data-testid="custom-badge">Custom</span>}
+          fallback="AB"
+        />
+      )
       expect(screen.getByTestId('custom-badge')).toBeInTheDocument()
+    })
+
+    it('should have accessible aria-label for online status', () => {
+      render(<Avatar status="online" fallback="AB" />)
+      expect(screen.getByRole('status')).toHaveAttribute(
+        'aria-label',
+        'Status: Online'
+      )
+    })
+
+    it('should have accessible aria-label for offline status', () => {
+      render(<Avatar status="offline" fallback="AB" />)
+      expect(screen.getByRole('status')).toHaveAttribute(
+        'aria-label',
+        'Status: Offline'
+      )
+    })
+
+    it('should have accessible aria-label for away status', () => {
+      render(<Avatar status="away" fallback="AB" />)
+      expect(screen.getByRole('status')).toHaveAttribute(
+        'aria-label',
+        'Status: Away'
+      )
+    })
+
+    it('should have accessible aria-label for busy status', () => {
+      render(<Avatar status="busy" fallback="AB" />)
+      expect(screen.getByRole('status')).toHaveAttribute(
+        'aria-label',
+        'Status: Busy'
+      )
     })
   })
 
@@ -144,7 +181,9 @@ describe('Avatar Component', () => {
     })
 
     it('should accept custom className', () => {
-      const { container } = render(<Avatar className="custom-avatar" fallback="AB" />)
+      const { container } = render(
+        <Avatar className="custom-avatar" fallback="AB" />
+      )
       const avatar = container.querySelector('.custom-avatar')
       expect(avatar).toBeInTheDocument()
     })
@@ -158,7 +197,9 @@ describe('Avatar Component', () => {
 
   describe('Accessibility', () => {
     it('should have proper alt text for images', () => {
-      const { container } = render(<Avatar src="/avatar.jpg" alt="User avatar" />)
+      const { container } = render(
+        <Avatar src="/avatar.jpg" alt="User avatar" />
+      )
       // Radix UI AvatarImage handles alt text internally
       // Verify avatar container is rendered (alt is passed to AvatarImage component)
       const avatar = container.firstChild as HTMLElement

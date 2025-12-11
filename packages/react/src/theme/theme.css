@@ -150,6 +150,12 @@
     --shadow-warning: 0 8px 16px -4px oklch(var(--clarity-warning) / 0.3);
     --shadow-error: 0 8px 16px -4px oklch(var(--clarity-destructive) / 0.3);
 
+    /* Focus Ring Colors (for semantic focus states) */
+    --ring-success: hsl(var(--success));
+    --ring-warning: hsl(var(--warning));
+    --ring-info: hsl(var(--info));
+    --ring-destructive: hsl(var(--destructive));
+
     /* Animation Timing */
     --duration-instant: 100ms;
     --duration-fast: 150ms;

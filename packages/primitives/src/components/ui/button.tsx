@@ -21,8 +21,9 @@ const buttonVariants = cva(
         // Extended variants
         surface:
           'bg-muted text-muted-foreground border border-border/60 hover:bg-muted/80',
-        success: 'bg-green-600 text-white hover:bg-green-700',
-        error: 'bg-red-600 text-white hover:bg-red-700',
+        success: 'bg-success text-success-foreground hover:bg-success/90',
+        error:
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
       },
       size: {
         default: 'h-10 px-4 py-2',

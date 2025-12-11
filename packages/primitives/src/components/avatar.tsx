@@ -29,7 +29,8 @@ const avatarVariants = cva(
 )
 
 export interface AvatarProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>,
     VariantProps<typeof avatarVariants> {
   src?: string
   alt?: string
@@ -60,7 +61,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     const getFallbackText = () => {
       if (fallback && fallback.trim()) return fallback.trim()
       if (alt && alt.trim()) {
-        const words = alt.trim().split(/\s+/).filter((w) => w.length > 0)
+        const words = alt
+          .trim()
+          .split(/\s+/)
+          .filter((w) => w.length > 0)
         if (words.length > 0) {
           return words
             .map((n) => n[0])
@@ -77,6 +81,13 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       offline: 'bg-muted-foreground/60 ring-muted-foreground/30',
       away: 'bg-warning ring-warning/40',
       busy: 'bg-destructive ring-destructive/40',
+    }
+
+    const statusLabels = {
+      online: 'Online',
+      offline: 'Offline',
+      away: 'Away',
+      busy: 'Busy',
     }
 
     const statusSizes = {
@@ -100,9 +111,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {...props}
       >
         {/* Always render AvatarImage when src is provided - Radix UI handles loading/error internally */}
-        {src ? (
-          <AvatarImage src={src} alt={alt || 'Avatar'} />
-        ) : null}
+        {src ? <AvatarImage src={src} alt={alt || 'Avatar'} /> : null}
         <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none animate-in fade-in duration-200">
           {getFallbackText()}
         </AvatarFallback>
@@ -110,6 +119,8 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {/* Status Indicator */}
         {status && !statusBadge && (
           <span
+            role="status"
+            aria-label={`Status: ${statusLabels[status]}`}
             data-status={status}
             className={cn(
               'absolute bottom-0 right-0 block rounded-full ring-2 ring-background/80',

@@ -77,6 +77,13 @@ module.exports = {
         '2xl':
           '0 24px 48px rgba(0, 0, 0, 0.18), 0 12px 24px rgba(0, 0, 0, 0.08)',
       },
+      // Semantic ring colors for focus states
+      ringColor: {
+        success: 'var(--ring-success)',
+        warning: 'var(--ring-warning)',
+        info: 'var(--ring-info)',
+        destructive: 'var(--ring-destructive)',
+      },
       // =========================================================================
       // ANIMATION SYSTEM
       // Consistent, accessible animations across all components
@@ -185,11 +192,11 @@ module.exports = {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.3' },
         },
-        // Success feedback
+        // Success feedback (uses CSS variable for theme consistency)
         'success-pulse': {
-          '0%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.7)' },
-          '50%': { boxShadow: '0 0 0 8px rgba(34, 197, 94, 0)' },
-          '100%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0)' },
+          '0%': { boxShadow: '0 0 0 0 hsl(var(--success) / 0.7)' },
+          '50%': { boxShadow: '0 0 0 8px hsl(var(--success) / 0)' },
+          '100%': { boxShadow: '0 0 0 0 hsl(var(--success) / 0)' },
         },
         // Badge animations
         'badge-pulse': {
