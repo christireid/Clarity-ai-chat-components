@@ -54,7 +54,12 @@ import {
   retryOperation,
   extractTextContent,
   validateApiEndpoint,
+  warnIfMemoryMisconfigured,
+  warnIfTooManyMessages,
 } from './helpers'
+
+// Debug utilities
+import { debug } from '../../internal'
 
 // Types
 import type {
@@ -113,6 +118,9 @@ export function useClarityChat(
 
   // Get memory context safely (returns null if MemoryProvider is not available)
   const memoryContext = useMemorySafe()
+
+  // Warn if memory is misconfigured
+  warnIfMemoryMisconfigured(memory?.enabled, memoryContext)
 
   // Configure transport protocol
   const streamProtocol = transport === 'websocket' ? 'data' : 'sse'
@@ -310,6 +318,17 @@ export function useClarityChat(
         }
       }
 
+      // Debug log the message append
+      debug.hook('useClarityChat', 'Appending message', {
+        role: message.role,
+        contentLength:
+          typeof message.content === 'string'
+            ? message.content.length
+            : 'complex',
+        memoryEnabled: memory?.enabled,
+        hasMemoryContext: !!memoryContextRef.current,
+      })
+
       return originalAppend(message, options)
     },
     [
@@ -382,6 +401,11 @@ export function useClarityChat(
     promptOptimization?.summarizeFn,
     promptOptimization?.keepRecent,
   ])
+
+  // Warn about too many messages without optimization
+  React.useEffect(() => {
+    warnIfTooManyMessages(chat.messages.length, !!promptOptimization?.enabled)
+  }, [chat.messages.length, promptOptimization?.enabled])
 
   // Effect to update memory stats
   React.useEffect(() => {
