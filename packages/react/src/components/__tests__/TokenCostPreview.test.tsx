@@ -48,6 +48,45 @@ describe('useTokenEstimate', () => {
     expect(result.current.isStale).toBe(false)
   })
 
+  it('should have loading state in initial render or complete quickly', async () => {
+    // Note: Loading state may be very brief for synchronous estimation
+    // The hook either starts loading or completes immediately
+    const { result } = renderHook(() =>
+      useTokenEstimate({ text: 'test', model: 'gpt-4' })
+    )
+
+    // After timers, should not be loading
+    await act(async () => {
+      await vi.runAllTimersAsync()
+    })
+
+    expect(result.current.isLoading).toBe(false)
+  })
+
+  it('should transition out of loading state after calculation', async () => {
+    const { result } = renderHook(() =>
+      useTokenEstimate({ text: 'test', model: 'gpt-4' })
+    )
+
+    await act(async () => {
+      await vi.runAllTimersAsync()
+    })
+
+    expect(result.current.isLoading).toBe(false)
+  })
+
+  it('should have no error in normal operation', async () => {
+    const { result } = renderHook(() =>
+      useTokenEstimate({ text: 'test', model: 'gpt-4' })
+    )
+
+    await act(async () => {
+      await vi.runAllTimersAsync()
+    })
+
+    expect(result.current.error).toBeNull()
+  })
+
   it('should estimate tokens for text', async () => {
     const { result } = renderHook(() =>
       useTokenEstimate({ text: 'Hello, world!', model: 'gpt-4' })
@@ -308,6 +347,322 @@ describe('TokenCostPreview', () => {
 
       const tokenElement = screen.getByTestId('token-count')
       expect(tokenElement.textContent).toMatch(/K/)
+    })
+  })
+
+  describe('accessibility', () => {
+    it('should have role="status" for screen readers', async () => {
+      render(<TokenCostPreview text="Test message" minDisplayCost={0} />)
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      const container = screen.getByRole('status')
+      expect(container).toBeInTheDocument()
+    })
+
+    it('should have aria-live="polite" for live updates', async () => {
+      render(<TokenCostPreview text="Test message" minDisplayCost={0} />)
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      const container = screen.getByRole('status')
+      expect(container).toHaveAttribute('aria-live', 'polite')
+    })
+
+    it('should have aria-atomic="true" for complete announcements', async () => {
+      render(<TokenCostPreview text="Test message" minDisplayCost={0} />)
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      const container = screen.getByRole('status')
+      expect(container).toHaveAttribute('aria-atomic', 'true')
+    })
+
+    it('should have aria-label with token and cost information', async () => {
+      render(<TokenCostPreview text="Test message" minDisplayCost={0} />)
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      const container = screen.getByRole('status')
+      expect(container).toHaveAttribute('aria-label')
+      expect(container.getAttribute('aria-label')).toContain(
+        'Token and cost estimate'
+      )
+    })
+
+    it('should accept custom ariaLabel', async () => {
+      render(
+        <TokenCostPreview
+          text="Test message"
+          minDisplayCost={0}
+          ariaLabel="Custom accessibility label"
+        />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      const container = screen.getByRole('status')
+      expect(container).toHaveAttribute(
+        'aria-label',
+        'Custom accessibility label'
+      )
+    })
+
+    it('should accept custom id prop', async () => {
+      render(
+        <TokenCostPreview
+          text="Test message"
+          minDisplayCost={0}
+          id="my-token-preview"
+        />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      const container = document.getElementById('my-token-preview')
+      expect(container).toBeInTheDocument()
+    })
+
+    it('should have aria-hidden on visual elements', async () => {
+      render(
+        <TokenCostPreview
+          text="Test message"
+          showTokenCount
+          showCost
+          minDisplayCost={0}
+        />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      // Visual elements should be aria-hidden so screen readers use the main aria-label
+      const tokenCount = screen.getByTestId('token-count')
+      expect(tokenCount).toHaveAttribute('aria-hidden', 'true')
+
+      const costEstimate = screen.getByTestId('cost-estimate')
+      expect(costEstimate).toHaveAttribute('aria-hidden', 'true')
+    })
+
+    it('should include screen reader only text', async () => {
+      render(
+        <TokenCostPreview
+          text="Test message with more content"
+          showTokenCount
+          showCost
+          minDisplayCost={0}
+        />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      // Screen reader text should be present but visually hidden
+      const container = screen.getByRole('status')
+      const srOnly = container.querySelector('[style*="clip"]')
+      expect(srOnly).toBeInTheDocument()
+      expect(srOnly?.textContent).toContain('tokens')
+    })
+  })
+
+  describe('loading state', () => {
+    // Note: The loading state is very brief because token estimation is synchronous.
+    // These tests verify the loading-related props work correctly.
+
+    it('should not show loading when showLoading is false', async () => {
+      render(
+        <TokenCostPreview
+          text="Test message"
+          showLoading={false}
+          minDisplayCost={0}
+        />
+      )
+
+      // Loading indicator should never appear when showLoading is false
+      expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument()
+    })
+
+    it('should show token count after calculation completes', async () => {
+      render(
+        <TokenCostPreview text="Test message" showLoading minDisplayCost={0} />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      // After calculation, should show token count not loading
+      expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument()
+      expect(screen.getByTestId('token-count')).toBeInTheDocument()
+    })
+
+    it('should accept showLoading prop without error', () => {
+      // Test that the prop is accepted and doesn't cause errors
+      expect(() =>
+        render(
+          <TokenCostPreview
+            text="Test message"
+            showLoading
+            loadingText="Custom loading..."
+            minDisplayCost={0}
+          />
+        )
+      ).not.toThrow()
+    })
+
+    it('should render successfully with all loading props', async () => {
+      const { container } = render(
+        <TokenCostPreview
+          text="Test message"
+          showLoading
+          loadingText="Please wait..."
+          minDisplayCost={0}
+        />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      // Should have rendered something
+      expect(container.firstChild).not.toBeNull()
+    })
+  })
+
+  describe('error state', () => {
+    it('should call onError when error occurs', async () => {
+      const onError = vi.fn()
+      const { estimateTokens } =
+        await import('../../utils/tokenization/estimator')
+      ;(estimateTokens as ReturnType<typeof vi.fn>).mockImplementationOnce(
+        () => {
+          throw new Error('Test error')
+        }
+      )
+
+      render(
+        <TokenCostPreview
+          text="Test message"
+          onError={onError}
+          minDisplayCost={0}
+        />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      expect(onError).toHaveBeenCalled()
+    })
+
+    it('should show default error message when showError is true', async () => {
+      const { estimateTokens } =
+        await import('../../utils/tokenization/estimator')
+      ;(estimateTokens as ReturnType<typeof vi.fn>).mockImplementationOnce(
+        () => {
+          throw new Error('Test error')
+        }
+      )
+
+      render(
+        <TokenCostPreview text="Test message" showError minDisplayCost={0} />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      expect(screen.getByTestId('error-message')).toBeInTheDocument()
+      expect(screen.getByTestId('error-message')).toHaveTextContent(
+        'Unable to estimate'
+      )
+    })
+
+    it('should use custom error renderer', async () => {
+      const { estimateTokens } =
+        await import('../../utils/tokenization/estimator')
+      ;(estimateTokens as ReturnType<typeof vi.fn>).mockImplementationOnce(
+        () => {
+          throw new Error('Custom error')
+        }
+      )
+
+      render(
+        <TokenCostPreview
+          text="Test message"
+          showError
+          renderError={(error) => (
+            <span data-testid="custom-error">{error.message}</span>
+          )}
+          minDisplayCost={0}
+        />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      expect(screen.getByTestId('custom-error')).toHaveTextContent(
+        'Custom error'
+      )
+    })
+
+    it('should hide error when showError is false', async () => {
+      const { estimateTokens } =
+        await import('../../utils/tokenization/estimator')
+      ;(estimateTokens as ReturnType<typeof vi.fn>).mockImplementationOnce(
+        () => {
+          throw new Error('Test error')
+        }
+      )
+
+      render(
+        <TokenCostPreview
+          text="Test message"
+          showError={false}
+          minDisplayCost={0}
+        />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      expect(screen.queryByTestId('error-message')).not.toBeInTheDocument()
+    })
+
+    it('should have role="alert" for error state', async () => {
+      const { estimateTokens } =
+        await import('../../utils/tokenization/estimator')
+      ;(estimateTokens as ReturnType<typeof vi.fn>).mockImplementationOnce(
+        () => {
+          throw new Error('Test error')
+        }
+      )
+
+      render(
+        <TokenCostPreview text="Test message" showError minDisplayCost={0} />
+      )
+
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
+
+      expect(screen.getByRole('alert')).toBeInTheDocument()
     })
   })
 })

@@ -89,4 +89,11 @@ export default defineConfig([
     ...commonConfig,
     clean: false,
   },
+  // Test utilities entry
+  {
+    entry: { 'test-utils': 'src/test-utils.tsx' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
 ])

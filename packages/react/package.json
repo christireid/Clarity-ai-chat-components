@@ -74,6 +74,11 @@
       "import": "./dist/adapters/index.mjs",
       "require": "./dist/adapters/index.js"
     },
+    "./test-utils": {
+      "types": "./dist/test-utils.d.ts",
+      "import": "./dist/test-utils.mjs",
+      "require": "./dist/test-utils.js"
+    },
     "./styles.css": "./dist/styles/index.css",
     "./dist/styles/index.css": "./dist/styles/index.css"
   },

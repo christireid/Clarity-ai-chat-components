@@ -44,6 +44,10 @@ export interface TokenEstimate {
   model: string
   /** Whether the estimate is stale (during throttle) */
   isStale: boolean
+  /** Whether the estimate is currently loading (first calculation) */
+  isLoading: boolean
+  /** Error if estimation failed */
+  error: Error | null
 }
 
 /**
@@ -68,40 +72,58 @@ export function useTokenEstimate(
     inputCost: 0,
     model,
     isStale: false,
+    isLoading: true,
+    error: null,
   })
 
   // Refs for throttling
   const lastUpdateRef = React.useRef(0)
   const pendingRef = React.useRef<NodeJS.Timeout | null>(null)
   const latestTextRef = React.useRef(text)
+  const hasCalculatedRef = React.useRef(false)
 
   // Keep latest text in ref
   latestTextRef.current = text
 
   // Calculate estimate
   const calculateEstimate = React.useCallback(() => {
-    const tokens = estimateTokens(latestTextRef.current, model)
-
-    let inputCost = 0
     try {
-      const cost = calculateCost({
-        model,
-        inputTokens: tokens,
-        outputTokens: 0,
-      })
-      inputCost = cost.inputCost
-    } catch {
-      // Model not in pricing database, estimate with GPT-4 pricing
-      // $0.03 per 1K input tokens for GPT-4
-      inputCost = (tokens / 1000) * 0.03
-    }
+      const tokens = estimateTokens(latestTextRef.current, model)
 
-    setEstimate({
-      tokens,
-      inputCost,
-      model,
-      isStale: false,
-    })
+      let inputCost = 0
+      try {
+        const cost = calculateCost({
+          model,
+          inputTokens: tokens,
+          outputTokens: 0,
+        })
+        inputCost = cost.inputCost
+      } catch {
+        // Model not in pricing database, estimate with GPT-4 pricing
+        // $0.03 per 1K input tokens for GPT-4
+        inputCost = (tokens / 1000) * 0.03
+      }
+
+      hasCalculatedRef.current = true
+      setEstimate({
+        tokens,
+        inputCost,
+        model,
+        isStale: false,
+        isLoading: false,
+        error: null,
+      })
+    } catch (err) {
+      // Handle unexpected errors in estimation
+      hasCalculatedRef.current = true
+      setEstimate((prev) => ({
+        ...prev,
+        isStale: false,
+        isLoading: false,
+        error:
+          err instanceof Error ? err : new Error('Token estimation failed'),
+      }))
+    }
   }, [model])
 
   // Throttled update effect
@@ -156,12 +178,26 @@ export interface TokenCostPreviewProps {
   className?: string
   /** Callback when cost changes */
   onCostChange?: (cost: number, tokens: number) => void
+  /** Callback when an error occurs */
+  onError?: (error: Error) => void
   /** Format function for cost display */
   formatCost?: (cost: number) => string
   /** Format function for token display */
   formatTokens?: (tokens: number) => string
   /** Throttle updates in ms (default: 100) */
   throttleMs?: number
+  /** Accessible label for the component (default: "Token and cost estimate") */
+  ariaLabel?: string
+  /** ID for the component (useful for aria-describedby) */
+  id?: string
+  /** Show loading indicator during first calculation (default: false) */
+  showLoading?: boolean
+  /** Custom loading text (default: "Calculating...") */
+  loadingText?: string
+  /** Show error message when estimation fails (default: true) */
+  showError?: boolean
+  /** Custom error renderer */
+  renderError?: (error: Error) => React.ReactNode
 }
 
 /**
@@ -213,6 +249,27 @@ function defaultFormatTokens(tokens: number): string {
  * />
  * ```
  */
+/**
+ * Hook to detect prefers-reduced-motion
+ */
+function useReducedMotion(): boolean {
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
+
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQuery.matches)
+
+    const handler = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches)
+    }
+
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
+  }, [])
+
+  return prefersReducedMotion
+}
+
 export function TokenCostPreview({
   text,
   model = 'gpt-4',
@@ -221,24 +278,41 @@ export function TokenCostPreview({
   minDisplayCost = 0.0001,
   className,
   onCostChange,
+  onError,
   formatCost = defaultFormatCost,
   formatTokens = defaultFormatTokens,
   throttleMs = 100,
+  ariaLabel,
+  id,
+  showLoading = false,
+  loadingText = 'Calculating...',
+  showError = true,
+  renderError,
 }: TokenCostPreviewProps): React.ReactElement | null {
-  const { tokens, inputCost, isStale } = useTokenEstimate({
+  const { tokens, inputCost, isStale, isLoading, error } = useTokenEstimate({
     text,
     model,
     throttleMs,
   })
+
+  const prefersReducedMotion = useReducedMotion()
 
   // Notify on cost changes
   React.useEffect(() => {
     onCostChange?.(inputCost, tokens)
   }, [inputCost, tokens, onCostChange])
 
+  // Notify on errors
+  React.useEffect(() => {
+    if (error) {
+      onError?.(error)
+    }
+  }, [error, onError])
+
   // Don't render if nothing to show
   if (!showTokenCount && !showCost) return null
-  if (tokens === 0 && inputCost < minDisplayCost) return null
+  if (!isLoading && !error && tokens === 0 && inputCost < minDisplayCost)
+    return null
 
   const baseStyles: React.CSSProperties = {
     display: 'inline-flex',
@@ -247,20 +321,124 @@ export function TokenCostPreview({
     fontSize: '0.75rem',
     color: 'var(--clarity-text-muted, #6b7280)',
     opacity: isStale ? 0.7 : 1,
-    transition: 'opacity 0.15s ease',
+    // Respect prefers-reduced-motion
+    transition: prefersReducedMotion ? 'none' : 'opacity 0.15s ease',
   }
 
+  const errorStyles: React.CSSProperties = {
+    ...baseStyles,
+    color: 'var(--clarity-text-error, #dc2626)',
+  }
+
+  // Handle error state
+  if (error && showError) {
+    const errorContent = renderError ? (
+      renderError(error)
+    ) : (
+      <span data-testid="error-message">Unable to estimate</span>
+    )
+
+    return (
+      <span
+        id={id}
+        className={className}
+        style={className ? undefined : errorStyles}
+        role="alert"
+        aria-live="assertive"
+      >
+        {errorContent}
+      </span>
+    )
+  }
+
+  // Handle loading state
+  if (isLoading && showLoading && text.length > 0) {
+    return (
+      <span
+        id={id}
+        className={className}
+        style={className ? undefined : baseStyles}
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <span data-testid="loading-indicator" aria-hidden="true">
+          {loadingText}
+        </span>
+        <span
+          style={{
+            position: 'absolute',
+            width: '1px',
+            height: '1px',
+            padding: 0,
+            margin: '-1px',
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+            border: 0,
+          }}
+        >
+          Calculating token estimate
+        </span>
+      </span>
+    )
+  }
+
+  // Build accessible announcement text for screen readers
+  const announcementParts: string[] = []
+  if (showTokenCount) {
+    announcementParts.push(`${tokens} tokens`)
+  }
+  if (showCost && inputCost >= minDisplayCost) {
+    announcementParts.push(`estimated cost ${formatCost(inputCost)}`)
+  }
+  const announcementText = announcementParts.join(', ')
+
+  // Default aria-label if not provided
+  const computedAriaLabel =
+    ariaLabel ?? `Token and cost estimate: ${announcementText}`
+
   return (
-    <span className={className} style={className ? undefined : baseStyles}>
+    <span
+      id={id}
+      className={className}
+      style={className ? undefined : baseStyles}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-label={computedAriaLabel}
+    >
+      {/* Visual display */}
       {showTokenCount && (
-        <span data-testid="token-count">{formatTokens(tokens)} tokens</span>
+        <span data-testid="token-count" aria-hidden="true">
+          {formatTokens(tokens)} tokens
+        </span>
       )}
       {showTokenCount && showCost && inputCost >= minDisplayCost && (
-        <span aria-hidden>•</span>
+        <span aria-hidden="true">•</span>
       )}
       {showCost && inputCost >= minDisplayCost && (
-        <span data-testid="cost-estimate">{formatCost(inputCost)} est.</span>
+        <span data-testid="cost-estimate" aria-hidden="true">
+          {formatCost(inputCost)} est.
+        </span>
       )}
+      {/* Screen reader only announcement (hidden visually) */}
+      <span
+        style={{
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          padding: 0,
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0, 0, 0, 0)',
+          whiteSpace: 'nowrap',
+          border: 0,
+        }}
+      >
+        {announcementText}
+        {isStale && ', updating...'}
+      </span>
     </span>
   )
 }

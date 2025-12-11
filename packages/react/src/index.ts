@@ -642,6 +642,15 @@ export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
 export { TokenOptimizationDashboard } from './components/token-optimization-dashboard'
 
+// Token Cost Preview - Real-time cost estimation display
+export {
+  TokenCostPreview,
+  useTokenEstimate,
+  type TokenCostPreviewProps,
+  type UseTokenEstimateOptions,
+  type TokenEstimate,
+} from './components/TokenCostPreview'
+
 // Dashboard Utilities
 export {
   DashboardErrorBoundary,
@@ -970,8 +979,9 @@ export {
 } from './utils/tool-result-helpers'
 
 // ============================================================================
-// TESTING UTILITIES (Internal - Not exported publicly)
+// TESTING UTILITIES
 // ============================================================================
-// Testing utilities are internal and should not be exported in the public API.
-// They are available for internal testing only.
-// If you need testing utilities, import them directly from the test-utils directory.
+// Testing utilities are available via a separate subpath export:
+// import { renderWithProviders, createDeferred, captureRejection } from '@clarity-chat/react/test-utils'
+//
+// This keeps the main bundle lean while making test helpers available for consumers.
