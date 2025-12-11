@@ -169,9 +169,6 @@ export {
   TooltipContent as ShadcnTooltipContent,
   TooltipProvider as ShadcnTooltipProvider,
   Tooltip as RadixTooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
 } from './components/ui/tooltip'
 
 // Checkbox
