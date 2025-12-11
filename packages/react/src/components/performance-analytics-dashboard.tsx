@@ -112,7 +112,9 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
           // Largest Contentful Paint (LCP)
           const lcpObserver = new PerformanceObserver((list) => {
             const entries = list.getEntries()
-            const lastEntry = entries[entries.length - 1] as PerformanceEntry & {
+            const lastEntry = entries[
+              entries.length - 1
+            ] as PerformanceEntry & {
               renderTime: number
               loadTime: number
             }
@@ -125,7 +127,12 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
                   {
                     name: 'LCP',
                     value,
-                    rating: value < 2500 ? 'good' : value < 4000 ? 'needs-improvement' : 'poor',
+                    rating:
+                      value < 2500
+                        ? 'good'
+                        : value < 4000
+                          ? 'needs-improvement'
+                          : 'poor',
                     delta: 0,
                   },
                 ],
@@ -134,7 +141,10 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
           })
 
           try {
-            lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true })
+            lcpObserver.observe({
+              type: 'largest-contentful-paint',
+              buffered: true,
+            })
           } catch {
             // LCP not supported
           }
@@ -142,23 +152,30 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
           // First Input Delay (FID) / Interaction to Next Paint (INP)
           const fidObserver = new PerformanceObserver((list) => {
             const entries = list.getEntries()
-            entries.forEach((entry: PerformanceEntry & { processingStart?: number }) => {
-              if (entry.processingStart) {
-                const value = entry.processingStart - entry.startTime
-                setMetrics((prev) => ({
-                  ...prev,
-                  webVitals: [
-                    ...prev.webVitals.filter((v) => v.name !== 'FID'),
-                    {
-                      name: 'FID',
-                      value,
-                      rating: value < 100 ? 'good' : value < 300 ? 'needs-improvement' : 'poor',
-                      delta: 0,
-                    },
-                  ],
-                }))
+            entries.forEach(
+              (entry: PerformanceEntry & { processingStart?: number }) => {
+                if (entry.processingStart) {
+                  const value = entry.processingStart - entry.startTime
+                  setMetrics((prev) => ({
+                    ...prev,
+                    webVitals: [
+                      ...prev.webVitals.filter((v) => v.name !== 'FID'),
+                      {
+                        name: 'FID',
+                        value,
+                        rating:
+                          value < 100
+                            ? 'good'
+                            : value < 300
+                              ? 'needs-improvement'
+                              : 'poor',
+                        delta: 0,
+                      },
+                    ],
+                  }))
+                }
               }
-            })
+            )
           })
 
           try {
@@ -203,8 +220,10 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
             fcpObserver.disconnect()
           }
         }
+        return undefined
       } catch (error) {
         console.warn('Failed to collect Web Vitals:', error)
+        return undefined
       }
     }
 
@@ -321,7 +340,9 @@ export function PerformanceAnalyticsDashboard({
   /**
    * Get rating color
    */
-  const getRatingColor = (rating: 'good' | 'needs-improvement' | 'poor'): string => {
+  const getRatingColor = (
+    rating: 'good' | 'needs-improvement' | 'poor'
+  ): string => {
     switch (rating) {
       case 'good':
         return 'text-green-500'
@@ -371,14 +392,24 @@ export function PerformanceAnalyticsDashboard({
                 </svg>
               </div>
               <div>
-                <CardTitle className="text-base">Performance Analytics</CardTitle>
+                <CardTitle className="text-base">
+                  Performance Analytics
+                </CardTitle>
                 <CardDescription className="text-xs">
                   Real-time performance monitoring
                 </CardDescription>
               </div>
             </div>
             {showFPS && data.fps !== undefined && (
-              <Badge variant={data.fps >= 50 ? 'success' : data.fps >= 30 ? 'warning' : 'destructive'}>
+              <Badge
+                variant={
+                  data.fps >= 50
+                    ? 'success'
+                    : data.fps >= 30
+                      ? 'warning'
+                      : 'destructive'
+                }
+              >
                 {data.fps} FPS
               </Badge>
             )}
@@ -393,24 +424,37 @@ export function PerformanceAnalyticsDashboard({
             <CardTitle className="text-sm">Core Web Vitals</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={cn('grid gap-4', compact ? 'grid-cols-2' : 'grid-cols-3')}>
+            <div
+              className={cn(
+                'grid gap-4',
+                compact ? 'grid-cols-2' : 'grid-cols-3'
+              )}
+            >
               {data.webVitals.map((vital) => (
                 <motion.div
                   key={vital.name}
                   className="flex flex-col items-center rounded-lg border p-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: durations.moderate }}
                 >
                   <div className="text-xs font-medium text-muted-foreground mb-1">
                     {vital.name}
                   </div>
-                  <div className={cn('text-2xl font-bold mb-2', getRatingColor(vital.rating))}>
+                  <div
+                    className={cn(
+                      'text-2xl font-bold mb-2',
+                      getRatingColor(vital.rating)
+                    )}
+                  >
                     {vital.name === 'CLS'
                       ? vital.value.toFixed(3)
                       : `${Math.round(vital.value)}ms`}
                   </div>
-                  <Badge variant={getRatingVariant(vital.rating)} className="text-xs">
+                  <Badge
+                    variant={getRatingVariant(vital.rating)}
+                    className="text-xs"
+                  >
                     {vital.rating}
                   </Badge>
                 </motion.div>
@@ -439,7 +483,8 @@ export function PerformanceAnalyticsDashboard({
                   <div className="flex-1">
                     <div className="text-sm font-medium">{metric.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {metric.renderCount} renders • avg {metric.averageRenderTime.toFixed(2)}ms
+                      {metric.renderCount} renders • avg{' '}
+                      {metric.averageRenderTime.toFixed(2)}ms
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -484,7 +529,7 @@ export function PerformanceAnalyticsDashboard({
                   animate={{
                     width: `${(data.memoryUsage.used / data.memoryUsage.limit) * 100}%`,
                   }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: durations.slow }}
                 />
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -507,30 +552,38 @@ export function PerformanceAnalyticsDashboard({
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {data.networkMetrics.slice(0, compact ? 3 : 5).map((metric, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{metric.url}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {metric.method} • {formatBytes(metric.size)}
+              {data.networkMetrics
+                .slice(0, compact ? 3 : 5)
+                .map((metric, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">
+                        {metric.url}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {metric.method} • {formatBytes(metric.size)}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge
+                        variant={
+                          metric.status >= 200 && metric.status < 300
+                            ? 'success'
+                            : 'destructive'
+                        }
+                        className="text-xs"
+                      >
+                        {metric.status}
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        {metric.duration.toFixed(0)}ms
+                      </Badge>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Badge
-                      variant={metric.status >= 200 && metric.status < 300 ? 'success' : 'destructive'}
-                      className="text-xs"
-                    >
-                      {metric.status}
-                    </Badge>
-                    <Badge variant="secondary" className="text-xs">
-                      {metric.duration.toFixed(0)}ms
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </CardContent>
         </Card>

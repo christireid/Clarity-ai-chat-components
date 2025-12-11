@@ -1,13 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion'
-import {
-  Card,
-  CardContent,
-  Button,
-  cn,
-} from '@clarity-chat/primitives'
+import { motion, useMotionValue, useTransform } from 'framer-motion'
+import type { PanInfo } from 'framer-motion'
+import { Card, CardContent, Button, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -118,12 +114,16 @@ export function MobileOptimizedMessage({
   const swipeActions = customSwipeActions || defaultSwipeActions
 
   // Background color based on swipe distance
-  const backgroundColor = useTransform(x, [-240, -160, -80, 0], [
-    'rgb(239, 68, 68)', // red
-    'rgb(34, 197, 94)', // green
-    'rgb(59, 130, 246)', // blue
-    'transparent',
-  ])
+  const backgroundColor = useTransform(
+    x,
+    [-240, -160, -80, 0],
+    [
+      'rgb(239, 68, 68)', // red
+      'rgb(34, 197, 94)', // green
+      'rgb(59, 130, 246)', // blue
+      'transparent',
+    ]
+  )
 
   // Trigger haptic feedback
   const triggerHaptic = (intensity: 'light' | 'medium' | 'heavy' = 'light') => {
@@ -151,7 +151,9 @@ export function MobileOptimizedMessage({
 
     // Find which action threshold we've crossed
     const distance = Math.abs(info.offset.x)
-    const crossedAction = swipeActions.find(action => distance >= action.threshold)
+    const crossedAction = swipeActions.find(
+      (action) => distance >= action.threshold
+    )
 
     if (crossedAction) {
       triggerHaptic('medium')
@@ -167,7 +169,7 @@ export function MobileOptimizedMessage({
 
     // Find action to trigger
     const triggeredAction = swipeActions
-      .filter(action => distance >= action.threshold)
+      .filter((action) => distance >= action.threshold)
       .sort((a, b) => b.threshold - a.threshold)[0]
 
     if (triggeredAction || velocity > 500) {
@@ -205,7 +207,7 @@ export function MobileOptimizedMessage({
           className="absolute inset-0 flex items-center justify-end px-4 gap-2"
           style={{ backgroundColor }}
         >
-          {swipeActions.map(action => {
+          {swipeActions.map((action) => {
             const distance = Math.abs(x.get())
             const isActive = distance >= action.threshold
 
@@ -242,10 +244,9 @@ export function MobileOptimizedMessage({
         )}
       >
         <Card>
-          <CardContent className={cn(
-            'p-4',
-            config.largeTapTargets && 'min-h-[60px]'
-          )}>
+          <CardContent
+            className={cn('p-4', config.largeTapTargets && 'min-h-[60px]')}
+          >
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 <div className="text-sm font-medium mb-1">
@@ -253,7 +254,8 @@ export function MobileOptimizedMessage({
                 </div>
                 <div className="text-sm">{message.content}</div>
                 <div className="text-xs text-muted-foreground mt-2">
-                  {(message as any).timestamp && new Date((message as any).timestamp).toLocaleTimeString()}
+                  {(message as any).timestamp &&
+                    new Date((message as any).timestamp).toLocaleTimeString()}
                 </div>
               </div>
             </div>
@@ -270,7 +272,7 @@ export function MobileOptimizedMessage({
           className="absolute bottom-full left-0 right-0 mb-2 p-2 bg-background border rounded-lg shadow-lg z-10"
         >
           <div className="flex gap-2 justify-around">
-            {swipeActions.map(action => (
+            {swipeActions.map((action) => (
               <Button
                 key={action.id}
                 variant="ghost"
@@ -401,7 +403,7 @@ export function MobileChatWindow({
               rotate: isRefreshing ? 360 : 0,
             }}
             transition={{
-              duration: 1,
+              duration: durations.slower,
               repeat: isRefreshing ? Infinity : 0,
             }}
           >
@@ -411,9 +413,8 @@ export function MobileChatWindow({
             {isRefreshing
               ? 'Refreshing...'
               : pullDistance >= config.pullThreshold
-              ? 'Release to refresh'
-              : 'Pull to refresh'
-            }
+                ? 'Release to refresh'
+                : 'Pull to refresh'}
           </span>
         </motion.div>
       )}
@@ -430,7 +431,7 @@ export function MobileChatWindow({
         }}
       >
         <div className="space-y-2 p-4">
-          {messages.map(message => (
+          {messages.map((message) => (
             <MobileOptimizedMessage
               key={message.id}
               message={message}
@@ -457,9 +458,10 @@ export function useMobileOptimization() {
   React.useEffect(() => {
     // Detect mobile
     const checkMobile = () => {
-      const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      )
+      const mobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        )
       setIsMobile(mobile || window.innerWidth < 768)
     }
 
@@ -544,7 +546,16 @@ export function useMobileOptimization() {
 export interface TouchFriendlyButtonProps {
   children: React.ReactNode
   onClick?: () => void
-  variant?: 'default' | 'secondary' | 'ghost' | 'outline' | 'destructive' | 'link' | 'success' | 'error' | 'surface'
+  variant?:
+    | 'default'
+    | 'secondary'
+    | 'ghost'
+    | 'outline'
+    | 'destructive'
+    | 'link'
+    | 'success'
+    | 'error'
+    | 'surface'
   haptic?: boolean
   className?: string
 }
@@ -574,10 +585,7 @@ export function TouchFriendlyButton({
     <Button
       onClick={handleClick}
       variant={variant}
-      className={cn(
-        'min-h-[48px] min-w-[48px] text-base',
-        className
-      )}
+      className={cn('min-h-[48px] min-w-[48px] text-base', className)}
     >
       {children}
     </Button>

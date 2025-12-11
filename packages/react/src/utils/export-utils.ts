@@ -1,15 +1,15 @@
 /**
  * Advanced Conversation Export Utilities
- * 
+ *
  * Multi-format export with privacy controls, custom templates,
  * and metadata preservation.
- * 
+ *
  * @blueprint Feature 2.4 - Advanced Export System
  * @priority MEDIUM
  * @status NEW - Implementation based on blueprint analysis
  */
 
-import { Message as BaseMessage } from '@clarity-chat/types'
+import type { Message as BaseMessage } from '@clarity-chat/types'
 
 // ============================================================================
 // Types
@@ -29,31 +29,31 @@ export type ExportTemplate = 'clean' | 'detailed' | 'shareable' | 'analytics'
 export interface ExportOptions {
   /** Output format */
   format: ExportFormat
-  
+
   /** Export template style */
   template?: ExportTemplate
-  
+
   /** Include message timestamps */
   includeTimestamps?: boolean
-  
+
   /** Include token counts and costs */
   includeMetadata?: boolean
-  
+
   /** Include system messages */
   includeSystemMessages?: boolean
-  
+
   /** Filter messages by custom function */
   messageFilter?: (message: Message) => boolean
-  
+
   /** Custom filename (without extension) */
   filename?: string
-  
+
   /** Include conversation analytics */
   includeAnalytics?: boolean
-  
+
   /** Privacy mode - redact sensitive information */
   privacyMode?: boolean
-  
+
   /** Custom CSS for HTML/PDF export */
   customCss?: string
 }
@@ -84,23 +84,25 @@ export interface ConversationAnalytics {
 // ============================================================================
 
 export function calculateAnalytics(messages: Message[]): ConversationAnalytics {
-  const userMessages = messages.filter(m => m.role === 'user')
-  const assistantMessages = messages.filter(m => m.role === 'assistant')
-  const systemMessages = messages.filter(m => m.role === 'system')
+  const userMessages = messages.filter((m) => m.role === 'user')
+  const assistantMessages = messages.filter((m) => m.role === 'assistant')
+  const systemMessages = messages.filter((m) => m.role === 'system')
 
   const totalTokens = messages.reduce((sum, m) => sum + (m.tokens || 0), 0)
-  const averageMessageLength = messages.reduce((sum, m) => sum + m.content.length, 0) / messages.length
+  const averageMessageLength =
+    messages.reduce((sum, m) => sum + m.content.length, 0) / messages.length
 
   const timestamps = messages
-    .map(m => m.timestamp)
+    .map((m) => m.timestamp)
     .filter((t): t is Date => t instanceof Date)
     .sort((a, b) => a.getTime() - b.getTime())
 
   const firstMessageAt = timestamps[0]
   const lastMessageAt = timestamps[timestamps.length - 1]
-  const conversationDuration = lastMessageAt && firstMessageAt
-    ? (lastMessageAt.getTime() - firstMessageAt.getTime()) / 1000 // seconds
-    : undefined
+  const conversationDuration =
+    lastMessageAt && firstMessageAt
+      ? (lastMessageAt.getTime() - firstMessageAt.getTime()) / 1000 // seconds
+      : undefined
 
   return {
     totalMessages: messages.length,
@@ -129,11 +131,11 @@ const SENSITIVE_PATTERNS = [
 
 export function redactSensitiveInfo(text: string): string {
   let redacted = text
-  
-  SENSITIVE_PATTERNS.forEach(pattern => {
+
+  SENSITIVE_PATTERNS.forEach((pattern) => {
     redacted = redacted.replace(pattern, '[REDACTED]')
   })
-  
+
   return redacted
 }
 
@@ -145,7 +147,7 @@ export function sanitizeMessages(
 
   // Filter out system messages if requested
   if (!options.includeSystemMessages) {
-    filtered = filtered.filter(m => m.role !== 'system')
+    filtered = filtered.filter((m) => m.role !== 'system')
   }
 
   // Apply custom filter
@@ -155,7 +157,7 @@ export function sanitizeMessages(
 
   // Redact sensitive info in privacy mode
   if (options.privacyMode) {
-    filtered = filtered.map(m => ({
+    filtered = filtered.map((m) => ({
       ...m,
       content: redactSensitiveInfo(m.content),
     }))
@@ -173,7 +175,7 @@ export function exportToJSON(
   options: ExportOptions
 ): string {
   const sanitized = sanitizeMessages(messages, options)
-  
+
   const data: any = {
     metadata: {
       exportedAt: new Date().toISOString(),
@@ -181,11 +183,12 @@ export function exportToJSON(
       format: 'json',
       version: '1.0.0',
     },
-    messages: sanitized.map(m => ({
+    messages: sanitized.map((m) => ({
       id: m.id,
       role: m.role,
       content: m.content,
-      ...(options.includeTimestamps && m.timestamp && { timestamp: m.timestamp.toISOString() }),
+      ...(options.includeTimestamps &&
+        m.timestamp && { timestamp: m.timestamp.toISOString() }),
       ...(options.includeMetadata && { tokens: m.tokens, cost: m.cost }),
     })),
   }
@@ -206,7 +209,9 @@ export function exportToMarkdown(
   options: ExportOptions
 ): string {
   const sanitized = sanitizeMessages(messages, options)
-  const analytics = options.includeAnalytics ? calculateAnalytics(messages) : null
+  const analytics = options.includeAnalytics
+    ? calculateAnalytics(messages)
+    : null
 
   let markdown = '# Conversation Export\n\n'
 
@@ -235,15 +240,21 @@ export function exportToMarkdown(
   markdown += '## Conversation\n\n'
 
   sanitized.forEach((message, index) => {
-    const roleEmoji = message.role === 'user' ? '👤' : message.role === 'assistant' ? '🤖' : '⚙️'
-    const roleName = message.role.charAt(0).toUpperCase() + message.role.slice(1)
+    const roleEmoji =
+      message.role === 'user'
+        ? '👤'
+        : message.role === 'assistant'
+          ? '🤖'
+          : '⚙️'
+    const roleName =
+      message.role.charAt(0).toUpperCase() + message.role.slice(1)
 
     markdown += `### ${roleEmoji} ${roleName}`
-    
+
     if (options.includeTimestamps && message.timestamp) {
       markdown += ` - ${message.timestamp.toLocaleString()}`
     }
-    
+
     markdown += '\n\n'
     markdown += message.content + '\n\n'
 
@@ -268,7 +279,9 @@ export function exportToHTML(
   options: ExportOptions
 ): string {
   const sanitized = sanitizeMessages(messages, options)
-  const analytics = options.includeAnalytics ? calculateAnalytics(messages) : null
+  const analytics = options.includeAnalytics
+    ? calculateAnalytics(messages)
+    : null
 
   const defaultCss = `
     body {
@@ -368,10 +381,16 @@ export function exportToHTML(
   }
 
   // Add messages
-  sanitized.forEach(message => {
-    const roleEmoji = message.role === 'user' ? '👤' : message.role === 'assistant' ? '🤖' : '⚙️'
-    const roleName = message.role.charAt(0).toUpperCase() + message.role.slice(1)
-    
+  sanitized.forEach((message) => {
+    const roleEmoji =
+      message.role === 'user'
+        ? '👤'
+        : message.role === 'assistant'
+          ? '🤖'
+          : '⚙️'
+    const roleName =
+      message.role.charAt(0).toUpperCase() + message.role.slice(1)
+
     html += `
   <div class="message ${message.role}">
     <div class="message-header">
@@ -400,7 +419,7 @@ function escapeHtml(text: string): string {
     div.textContent = text
     return div.innerHTML
   }
-  
+
   // Server-side: use string replacement
   return text
     .replace(/&/g, '&amp;')
@@ -429,13 +448,13 @@ export function exportToText(
 
   sanitized.forEach((message, index) => {
     const roleName = message.role.toUpperCase()
-    
+
     text += `[${roleName}]`
-    
+
     if (options.includeTimestamps && message.timestamp) {
       text += ` ${message.timestamp.toLocaleString()}`
     }
-    
+
     text += '\n'
     text += message.content + '\n'
 
@@ -467,22 +486,22 @@ export async function exportConversation(
       content = exportToJSON(messages, options)
       mimeType = 'application/json'
       break
-    
+
     case 'markdown':
       content = exportToMarkdown(messages, options)
       mimeType = 'text/markdown'
       break
-    
+
     case 'html':
       content = exportToHTML(messages, options)
       mimeType = 'text/html'
       break
-    
+
     case 'txt':
       content = exportToText(messages, options)
       mimeType = 'text/plain'
       break
-    
+
     case 'pdf':
       // PDF generation would require a library like jsPDF or puppeteer
       // For now, export as HTML and let user print to PDF
@@ -490,7 +509,7 @@ export async function exportConversation(
       mimeType = 'text/html'
       console.warn('PDF export: Please use browser "Print to PDF" feature')
       break
-    
+
     default:
       throw new Error(`Unsupported export format: ${options.format}`)
   }
@@ -507,7 +526,7 @@ export async function downloadConversation(
   options: ExportOptions
 ): Promise<void> {
   const blob = await exportConversation(messages, options)
-  
+
   const extensions: Record<ExportFormat, string> = {
     json: '.json',
     markdown: '.md',
@@ -516,8 +535,9 @@ export async function downloadConversation(
     txt: '.txt',
   }
 
-  const filename = (options.filename || 'conversation') + extensions[options.format]
-  
+  const filename =
+    (options.filename || 'conversation') + extensions[options.format]
+
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url

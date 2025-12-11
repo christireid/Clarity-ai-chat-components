@@ -143,6 +143,7 @@ export function MessageList({
       const timeout = setTimeout(() => setShowPulse(false), 2000)
       return () => clearTimeout(timeout)
     }
+    return undefined
   }, [messages.length, messageCountWhenScrolledAway, isNearBottom])
 
   // Keyboard shortcut: End key to jump to bottom
@@ -198,7 +199,7 @@ export function MessageList({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: durations.fast }}
               className="space-y-4 px-4 py-6"
             >
               {Array.from({ length: loadingCount }).map((_, index) => (
@@ -219,7 +220,7 @@ export function MessageList({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: durations.fast }}
               className="px-2 py-4"
             >
               {emptyState}
@@ -235,7 +236,7 @@ export function MessageList({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: durations.fast }}
             >
               {messages.map((message, index) => {
                 // Calculate grouping for this message
@@ -258,7 +259,10 @@ export function MessageList({
                     key={message.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, delay: index * 0.03 }}
+                    transition={{
+                      duration: durations.normal,
+                      delay: index * 0.03,
+                    }}
                     className="w-full"
                   >
                     {/* Time separator */}
@@ -296,7 +300,7 @@ export function MessageList({
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: durations.normal }}
                 >
                   <SkeletonMessage
                     role="assistant"
@@ -344,7 +348,7 @@ export function MessageList({
                   ? {
                       scale: [1, 1.08, 1],
                       transition: {
-                        duration: 0.6,
+                        duration: durations.slower,
                         repeat: 3,
                         ease: 'easeInOut',
                       },

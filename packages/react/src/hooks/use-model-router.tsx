@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { ModelRouter, RouteModelConfig, RoutingDecision, COMMON_MODELS } from '../utils/model-router'
+import { ModelRouter, COMMON_MODELS } from '../utils/model-router'
+import type { RouteModelConfig, RoutingDecision } from '../utils/model-router'
 
 export interface UseModelRouterOptions {
   /** Available models to route between */
@@ -20,7 +21,11 @@ export interface UseModelRouterReturn {
   /** Route a query to appropriate model */
   route: (query: string, context?: string[]) => RoutingDecision
   /** Record feedback for learning */
-  recordFeedback: (index: number, actualCost: number, satisfaction: number) => void
+  recordFeedback: (
+    index: number,
+    actualCost: number,
+    satisfaction: number
+  ) => void
   /** Get routing statistics */
   stats: {
     totalQueries: number
@@ -44,7 +49,7 @@ export interface UseModelRouterReturn {
 
 /**
  * Hook for intelligent model routing
- * 
+ *
  * @example
  * ```tsx
  * function ChatComponent() {
@@ -59,19 +64,19 @@ export interface UseModelRouterReturn {
  *       console.log(`Savings: ${decision.savingsPercent.toFixed(1)}%`)
  *     }
  *   })
- * 
+ *
  *   const handleQuery = async (query: string) => {
  *     // Route to best model
  *     const decision = router.route(query, conversationHistory)
- *     
+ *
  *     // Use the selected model
  *     const response = await queryAPI(query, {
  *       model: decision.model.id
  *     })
- *     
+ *
  *     return response
  *   }
- * 
+ *
  *   return (
  *     <div>
  *       <div>Total Queries: {router.stats.totalQueries}</div>
@@ -93,7 +98,8 @@ export function useModelRouter(
     onRoute,
   } = options
 
-  const [lastDecision, setLastDecision] = React.useState<RoutingDecision | null>(null)
+  const [lastDecision, setLastDecision] =
+    React.useState<RoutingDecision | null>(null)
   const [stats, setStats] = React.useState({
     totalQueries: 0,
     totalEstimatedCost: 0,
@@ -104,11 +110,12 @@ export function useModelRouter(
 
   // Create router instance (memoized)
   const router = React.useMemo(
-    () => new ModelRouter(availableModels, {
-      preferProvider,
-      maxCost,
-      learningEnabled,
-    }),
+    () =>
+      new ModelRouter(availableModels, {
+        preferProvider,
+        maxCost,
+        learningEnabled,
+      }),
     [availableModels, preferProvider, maxCost, learningEnabled]
   )
 
