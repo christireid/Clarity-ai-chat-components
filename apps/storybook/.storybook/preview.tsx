@@ -5,12 +5,11 @@
  * Includes MSW for API mocking, theme providers, and accessibility setup.
  */
 import type { Decorator, Preview } from '@storybook/react-vite'
-import type { Renderer } from '@storybook/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ThemeProvider, ToastProvider } from '@clarity-chat/react'
 import { getAllThemes } from '@clarity-chat/react/theme'
-import { withThemeByClassName } from '@storybook/addon-themes'
 import { initialize, mswLoader } from 'msw-storybook-addon'
+import { useDarkMode } from 'storybook-dark-mode'
 import clarityTheme from './clarity-theme'
 import clarityDarkTheme from './clarity-theme-dark'
 import './globals.css'
@@ -51,27 +50,70 @@ const themePresets = getAllThemes()
   }))
   .sort((a, b) => a.title.localeCompare(b.title))
 
+/**
+ * Theme wrapper component that syncs with Storybook's dark mode toggle
+ * and provides the ThemeProvider context to all stories
+ */
+function ThemeWrapper({
+  children,
+  preset,
+}: {
+  children: React.ReactNode
+  preset?: string
+}) {
+  // Get dark mode state from the storybook-dark-mode addon
+  const isDarkMode = useDarkMode()
+
+  // Sync dark mode class on html element for Tailwind
+  useEffect(() => {
+    const html = document.documentElement
+    const body = document.body
+
+    if (isDarkMode) {
+      html.classList.add('dark')
+      body.classList.add('dark')
+      body.style.backgroundColor = '#0f172a'
+      body.style.color = '#f1f5f9'
+    } else {
+      html.classList.remove('dark')
+      body.classList.remove('dark')
+      body.style.backgroundColor = '#ffffff'
+      body.style.color = '#1e293b'
+    }
+  }, [isDarkMode])
+
+  return (
+    <ThemeProvider
+      defaultTheme={{
+        mode: isDarkMode ? 'dark' : 'light',
+        preset,
+        enableTransitions: true,
+      }}
+    >
+      <ToastProvider>
+        <div
+          className={`sb-clarity-shell min-h-screen bg-background text-foreground transition-colors duration-200 ${isDarkMode ? 'dark' : ''}`}
+        >
+          {children}
+        </div>
+      </ToastProvider>
+    </ThemeProvider>
+  )
+}
+
+/**
+ * Theme decorator that wraps stories with the ThemeWrapper component
+ */
 const withTheme: Decorator = (Story, context) => {
-  const mode = context.globals.themeMode ?? 'system'
   const preset =
     context.globals.themePreset && context.globals.themePreset !== 'auto'
       ? context.globals.themePreset
       : undefined
 
   return (
-    <ThemeProvider
-      defaultTheme={{
-        mode,
-        preset,
-        enableTransitions: false,
-      }}
-    >
-      <ToastProvider>
-        <div className="sb-clarity-shell min-h-screen bg-background text-foreground">
-          <Story />
-        </div>
-      </ToastProvider>
-    </ThemeProvider>
+    <ThemeWrapper preset={preset}>
+      <Story />
+    </ThemeWrapper>
   )
 }
 
@@ -220,15 +262,7 @@ const preview: Preview = {
   },
 
   decorators: [
-    // Tailwind dark mode class decorator
-    withThemeByClassName<Renderer>({
-      themes: {
-        light: '',
-        dark: 'dark',
-      },
-      defaultTheme: 'light',
-    }),
-    // Clarity theme provider decorator
+    // Clarity theme provider decorator (includes dark mode syncing)
     withTheme,
   ],
 

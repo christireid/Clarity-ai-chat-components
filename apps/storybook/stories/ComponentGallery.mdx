@@ -1,633 +1,859 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+{/* ComponentGallery.mdx - Visual component showcase */}
+import { Meta } from '@storybook/addon-docs/blocks'
 
 <Meta title="Getting Started/Component Gallery" />
 
-<div className="sb-container">
-  # Component Gallery
-  
-  <p className="sb-lead">
-    A visual overview of all available components organized by category and use case.
-  </p>
-
-  ## 🎨 Quick Reference
-
-  This gallery provides a quick visual reference to help you find the right component for your needs. Click any component name to view its full documentation and interactive examples.
-
-  ## 🧱 Primitives
-
-  Building blocks for creating custom interfaces.
-
-  <div className="gallery-grid">
-    <div className="gallery-card">
-      <div className="gallery-icon">👤</div>
-      <h3>Avatar</h3>
-      <p>User profile pictures with fallbacks</p>
-      <div className="gallery-tags">
-        <span>User</span>
-        <span>Profile</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">🏷️</div>
-      <h3>Badge</h3>
-      <p>Labels and status indicators</p>
-      <div className="gallery-tags">
-        <span>Status</span>
-        <span>Label</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">🔘</div>
-      <h3>Button</h3>
-      <p>Interactive actions with states</p>
-      <div className="gallery-tags">
-        <span>Action</span>
-        <span>Interactive</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">🃏</div>
-      <h3>Card</h3>
-      <p>Content containers</p>
-      <div className="gallery-tags">
-        <span>Layout</span>
-        <span>Container</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📝</div>
-      <h3>Input</h3>
-      <p>Text input fields</p>
-      <div className="gallery-tags">
-        <span>Form</span>
-        <span>Input</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📄</div>
-      <h3>Textarea</h3>
-      <p>Multi-line text input</p>
-      <div className="gallery-tags">
-        <span>Form</span>
-        <span>Input</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">💬</div>
-      <h3>Dialog</h3>
-      <p>Modal overlays</p>
-      <div className="gallery-tags">
-        <span>Modal</span>
-        <span>Overlay</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📂</div>
-      <h3>Drawer</h3>
-      <p>Side panel navigation</p>
-      <div className="gallery-tags">
-        <span>Navigation</span>
-        <span>Panel</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📋</div>
-      <h3>DropdownMenu</h3>
-      <p>Context menus</p>
-      <div className="gallery-tags">
-        <span>Menu</span>
-        <span>Navigation</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📜</div>
-      <h3>ScrollArea</h3>
-      <p>Custom scrollable areas</p>
-      <div className="gallery-tags">
-        <span>Scroll</span>
-        <span>Container</span>
-      </div>
-    </div>
-  </div>
-
-  ## 💬 Chat Components
-
-  Core components for building conversational interfaces.
-
-  <div className="gallery-grid">
-    <div className="gallery-card featured">
-      <div className="gallery-icon">💭</div>
-      <h3>ChatWindow</h3>
-      <p>Complete chat interface</p>
-      <div className="gallery-tags">
-        <span>Core</span>
-        <span>Featured</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📨</div>
-      <h3>Message</h3>
-      <p>Individual message display</p>
-      <div className="gallery-tags">
-        <span>Core</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📋</div>
-      <h3>MessageList</h3>
-      <p>Scrollable message history</p>
-      <div className="gallery-tags">
-        <span>Core</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">⌨️</div>
-      <h3>ChatInput</h3>
-      <p>Message composition</p>
-      <div className="gallery-tags">
-        <span>Core</span>
-        <span>Input</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">✨</div>
-      <h3>StreamingMessage</h3>
-      <p>Real-time message streaming</p>
-      <div className="gallery-tags">
-        <span>Streaming</span>
-        <span>AI</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">🤔</div>
-      <h3>ThinkingIndicator</h3>
-      <p>AI processing state</p>
-      <div className="gallery-tags">
-        <span>Loading</span>
-        <span>AI</span>
-      </div>
-    </div>
-  </div>
-
-  ## 🚀 Advanced Features
-
-  Enhanced functionality for power users.
-
-  <div className="gallery-grid">
-    <div className="gallery-card">
-      <div className="gallery-icon">⌘</div>
-      <h3>CommandPalette</h3>
-      <p>Quick action launcher</p>
-      <div className="gallery-tags">
-        <span>Navigation</span>
-        <span>Power User</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">🎤</div>
-      <h3>VoiceInput</h3>
-      <p>Speech-to-text input</p>
-      <div className="gallery-tags">
-        <span>Voice</span>
-        <span>Input</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📎</div>
-      <h3>FileUpload</h3>
-      <p>Drag and drop files</p>
-      <div className="gallery-tags">
-        <span>Upload</span>
-        <span>Files</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">🔍</div>
-      <h3>MessageSearch</h3>
-      <p>Full-text conversation search</p>
-      <div className="gallery-tags">
-        <span>Search</span>
-        <span>Find</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📚</div>
-      <h3>PromptLibrary</h3>
-      <p>Saved prompt templates</p>
-      <div className="gallery-tags">
-        <span>Templates</span>
-        <span>AI</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">⚙️</div>
-      <h3>SettingsPanel</h3>
-      <p>Configuration interface</p>
-      <div className="gallery-tags">
-        <span>Settings</span>
-        <span>Config</span>
-      </div>
-    </div>
-  </div>
-
-  ## 🎭 AI/UX Enhancements
-
-  Components that improve the AI interaction experience.
-
-  <div className="gallery-grid">
-    <div className="gallery-card">
-      <div className="gallery-icon">🌓</div>
-      <h3>ThemeSwitcher</h3>
-      <p>Light/dark mode toggle</p>
-      <div className="gallery-tags">
-        <span>Theme</span>
-        <span>UI</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">💫</div>
-      <h3>AnimatedList</h3>
-      <p>Smooth list animations</p>
-      <div className="gallery-tags">
-        <span>Animation</span>
-        <span>List</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">💡</div>
-      <h3>FollowUpSuggestions</h3>
-      <p>Contextual prompts</p>
-      <div className="gallery-tags">
-        <span>AI</span>
-        <span>Suggestions</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">🎭</div>
-      <h3>PersonaPanel</h3>
-      <p>AI personality switching</p>
-      <div className="gallery-tags">
-        <span>AI</span>
-        <span>Persona</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">📊</div>
-      <h3>SessionSummaryCard</h3>
-      <p>Chat session metrics</p>
-      <div className="gallery-tags">
-        <span>Analytics</span>
-        <span>Summary</span>
-      </div>
-    </div>
-
-    <div className="gallery-card">
-      <div className="gallery-icon">⌨️</div>
-      <h3>KeyboardHint</h3>
-      <p>Shortcut display</p>
-      <div className="gallery-tags">
-        <span>Keyboard</span>
-        <span>Help</span>
-      </div>
-    </div>
-  </div>
-
-  ## 🏢 Enterprise Components
-
-  Advanced features for enterprise deployments.
-
-  <div className="gallery-grid">
-    <div className="gallery-card enterprise">
-      <div className="gallery-icon">👥</div>
-      <h3>SeatInviteDialog</h3>
-      <p>Team member management</p>
-      <div className="gallery-tags">
-        <span>Enterprise</span>
-        <span>Team</span>
-      </div>
-    </div>
-
-    <div className="gallery-card enterprise">
-      <div className="gallery-icon">🔐</div>
-      <h3>SSOConfigWizard</h3>
-      <p>Single sign-on setup</p>
-      <div className="gallery-tags">
-        <span>Enterprise</span>
-        <span>Security</span>
-      </div>
-    </div>
-
-    <div className="gallery-card enterprise">
-      <div className="gallery-icon">🔑</div>
-      <h3>ApiTokenManager</h3>
-      <p>API key management</p>
-      <div className="gallery-tags">
-        <span>Enterprise</span>
-        <span>API</span>
-      </div>
-    </div>
-
-    <div className="gallery-card enterprise">
-      <div className="gallery-icon">🏛️</div>
-      <h3>AuthTenantDashboard</h3>
-      <p>Multi-tenant admin</p>
-      <div className="gallery-tags">
-        <span>Enterprise</span>
-        <span>Admin</span>
-      </div>
-    </div>
-  </div>
-
-  ## 🤖 AI Operations
-
-  Tools for monitoring and improving AI systems.
-
-  <div className="gallery-grid">
-    <div className="gallery-card aiops">
-      <div className="gallery-icon">🧪</div>
-      <h3>PromptTestHarness</h3>
-      <p>Test and optimize prompts</p>
-      <div className="gallery-tags">
-        <span>AI Ops</span>
-        <span>Testing</span>
-      </div>
-    </div>
-
-    <div className="gallery-card aiops">
-      <div className="gallery-icon">📈</div>
-      <h3>EvaluationDashboard</h3>
-      <p>Performance metrics</p>
-      <div className="gallery-tags">
-        <span>AI Ops</span>
-        <span>Metrics</span>
-      </div>
-    </div>
-
-    <div className="gallery-card aiops">
-      <div className="gallery-icon">🛡️</div>
-      <h3>SafetyReviewConsole</h3>
-      <p>Content moderation</p>
-      <div className="gallery-tags">
-        <span>AI Ops</span>
-        <span>Safety</span>
-      </div>
-    </div>
-
-    <div className="gallery-card aiops">
-      <div className="gallery-icon">⚡</div>
-      <h3>PerformanceDashboard</h3>
-      <p>Real-time system metrics</p>
-      <div className="gallery-tags">
-        <span>AI Ops</span>
-        <span>Performance</span>
-      </div>
-    </div>
-  </div>
-
-  ## 🎯 Templates
-
-  Pre-built, production-ready implementations.
-
-  <div className="gallery-grid">
-    <div className="gallery-card template">
-      <div className="gallery-icon">🎧</div>
-      <h3>Support Bot</h3>
-      <p>Customer support template</p>
-      <div className="gallery-tags">
-        <span>Template</span>
-        <span>Support</span>
-      </div>
-    </div>
-
-    <div className="gallery-card template">
-      <div className="gallery-icon">💻</div>
-      <h3>Code Assistant</h3>
-      <p>Programming help template</p>
-      <div className="gallery-tags">
-        <span>Template</span>
-        <span>Code</span>
-      </div>
-    </div>
-
-    <div className="gallery-card template">
-      <div className="gallery-icon">📖</div>
-      <h3>Documentation Bot</h3>
-      <p>Doc search template</p>
-      <div className="gallery-tags">
-        <span>Template</span>
-        <span>Docs</span>
-      </div>
-    </div>
-
-    <div className="gallery-card template">
-      <div className="gallery-icon">📊</div>
-      <h3>Data Analyst</h3>
-      <p>Data analysis template</p>
-      <div className="gallery-tags">
-        <span>Template</span>
-        <span>Analytics</span>
-      </div>
-    </div>
-
-    <div className="gallery-card template">
-      <div className="gallery-icon">🎓</div>
-      <h3>Education Tutor</h3>
-      <p>Learning assistant template</p>
-      <div className="gallery-tags">
-        <span>Template</span>
-        <span>Education</span>
-      </div>
-    </div>
-
-    <div className="gallery-card template">
-      <div className="gallery-icon">💼</div>
-      <h3>Sales Assistant</h3>
-      <p>Sales support template</p>
-      <div className="gallery-tags">
-        <span>Template</span>
-        <span>Sales</span>
-      </div>
-    </div>
-  </div>
-
-  ## 🎯 Finding the Right Component
-
-  ### By Use Case
-
-  **Building a chat interface?**
-  → Start with `ChatWindow`, then customize with `Message`, `MessageList`, `ChatInput`
-
-  **Adding AI features?**
-  → Try `StreamingMessage`, `ThinkingIndicator`, `FollowUpSuggestions`
-
-  **Need search functionality?**
-  → Use `MessageSearch` with `CommandPalette`
-
-  **Enterprise deployment?**
-  → Check out `SSOConfigWizard`, `ApiTokenManager`, `AuthTenantDashboard`
-
-  **Want pre-built solutions?**
-  → Browse the Templates section
-
-  ### By Feature
-
-  | Feature | Components |
-  |---------|-----------|
-  | 🎤 Voice | VoiceInput |
-  | 📎 Files | FileUpload |
-  | 🔍 Search | MessageSearch, CommandPalette |
-  | 🎨 Themes | ThemeSwitcher |
-  | ⌨️ Keyboard | KeyboardHint, CommandPalette |
-  | 📊 Analytics | SessionSummaryCard, PerformanceDashboard |
-  | 🤖 AI | All AI Operations components |
-  | 🏢 Enterprise | All Enterprise components |
-
-  ## 📚 Next Steps
-
-  1. **Explore** - Click any component to see its documentation
-  2. **Experiment** - Use the Controls panel to try different props
-  3. **Copy** - Grab code snippets from the Docs tab
-  4. **Build** - Compose components to create your interface
-  5. **Customize** - Adapt components to your brand
-
-  ## 💡 Tips
-
-  - Use the **search** (press `/`) to quickly find components
-  - Check the **Accessibility** tab to verify WCAG compliance
-  - Try different **viewports** to test responsive behavior
-  - Toggle **dark mode** to see theme support
-  - Read the **Design Principles** for composition patterns
-
-</div>
-
 <style>
   {`
-    .sb-container {
-      max-width: 1200px;
-      margin: 0 auto;
+    .gallery-hero {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      border-radius: 1rem;
       padding: 3rem 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      text-align: center;
     }
-    
-    .sb-lead {
+    .gallery-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      color: white;
+    }
+    .gallery-hero p {
       font-size: 1.25rem;
-      line-height: 1.8;
-      color: #666;
-      margin: 1rem 0 3rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+      color: white;
     }
-    
+    .gallery-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 2rem;
+    }
+    .gallery-stat {
+      text-align: center;
+    }
+    .gallery-stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    .gallery-stat-label {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .gallery-section {
+      margin: 3rem 0;
+    }
+    .gallery-section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .dark .gallery-section-header {
+      border-color: #374151;
+    }
+    .gallery-section-icon {
+      font-size: 1.5rem;
+    }
+    .gallery-section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    .gallery-section-count {
+      background: #6366f1;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      margin-left: auto;
+    }
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1.5rem;
-      margin: 2rem 0 3rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
     }
-    
     .gallery-card {
-      padding: 1.5rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      transition: all 0.2s ease;
       background: white;
-    }
-    
-    .gallery-card:hover {
-      border-color: #3b82f6;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-      transform: translateY(-2px);
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      transition: all 0.2s ease;
       cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
     }
-    
-    .gallery-card.featured {
-      border-color: #3b82f6;
-      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    .dark .gallery-card {
+      background: #1f2937;
+      border-color: #374151;
     }
-    
-    .gallery-card.enterprise {
-      border-color: #8b5cf6;
-      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+    .gallery-card:hover {
+      border-color: #6366f1;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
     }
-    
-    .gallery-card.aiops {
-      border-color: #f59e0b;
-      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-    }
-    
-    .gallery-card.template {
-      border-color: #10b981;
-      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    }
-    
-    .gallery-icon {
-      font-size: 2.5rem;
+    .gallery-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
       margin-bottom: 0.75rem;
     }
-    
-    .gallery-card h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.125rem;
-      font-weight: 600;
+    .gallery-card-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
     }
-    
-    .gallery-card p {
-      margin: 0 0 1rem 0;
-      color: #666;
+    .dark .gallery-card-icon {
+      background: linear-gradient(135deg, #1e3a5f, #1e40af);
+    }
+    .gallery-card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    .gallery-card-badge {
+      font-size: 0.625rem;
+      font-weight: 600;
+      padding: 0.125rem 0.375rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-left: auto;
+    }
+    .badge-new {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .badge-popular {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    .badge-beta {
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+    .dark .badge-new {
+      background: #14532d;
+      color: #86efac;
+    }
+    .dark .badge-popular {
+      background: #78350f;
+      color: #fde68a;
+    }
+    .dark .badge-beta {
+      background: #312e81;
+      color: #a5b4fc;
+    }
+    .gallery-card-description {
       font-size: 0.875rem;
+      color: #6b7280;
+      margin: 0 0 0.75rem 0;
       line-height: 1.5;
     }
-    
-    .gallery-tags {
+    .dark .gallery-card-description {
+      color: #9ca3af;
+    }
+    .gallery-card-tags {
       display: flex;
-      gap: 0.5rem;
       flex-wrap: wrap;
+      gap: 0.375rem;
     }
-    
-    .gallery-tags span {
-      padding: 0.25rem 0.625rem;
-      background: #f3f4f6;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      color: #374151;
+    .gallery-tag {
+      font-size: 0.625rem;
       font-weight: 500;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      background: #f3f4f6;
+      color: #4b5563;
     }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1.5rem 0;
+    .dark .gallery-tag {
+      background: #374151;
+      color: #d1d5db;
     }
-    
-    th, td {
-      border: 1px solid #e5e7eb;
-      padding: 0.75rem;
-      text-align: left;
+    .gallery-search {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
     }
-    
-    th {
-      background: #f9fafb;
-      font-weight: 600;
+    .gallery-search-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      background: white;
+    }
+    .dark .gallery-search-input {
+      background: #1f2937;
+      border-color: #374151;
+      color: #f9fafb;
+    }
+    .gallery-search-input:focus {
+      outline: none;
+      border-color: #6366f1;
+    }
+    .gallery-filter-btn {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
+      background: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .dark .gallery-filter-btn {
+      background: #1f2937;
+      border-color: #374151;
+      color: #f9fafb;
+    }
+    .gallery-filter-btn:hover, .gallery-filter-btn.active {
+      border-color: #6366f1;
+      background: #6366f1;
+      color: white;
     }
   `}
 </style>
+
+<div className="gallery-hero">
+  <h1>Component Gallery</h1>
+  <p>
+    Discover 70+ production-ready components designed for building
+    exceptional AI chat experiences.
+  </p>
+  <div className="gallery-stats">
+    <div className="gallery-stat">
+      <div className="gallery-stat-value">70+</div>
+      <div className="gallery-stat-label">Components</div>
+    </div>
+    <div className="gallery-stat">
+      <div className="gallery-stat-value">35+</div>
+      <div className="gallery-stat-label">Hooks</div>
+    </div>
+    <div className="gallery-stat">
+      <div className="gallery-stat-value">100%</div>
+      <div className="gallery-stat-label">TypeScript</div>
+    </div>
+  </div>
+</div>
+
+## Drop-in Solutions
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">🚀</span>
+    <h3 className="gallery-section-title">Complete Chat Interfaces</h3>
+    <span className="gallery-section-count">3</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/components-drop-in-solutions-claritychat--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">💬</div>
+        <h4 className="gallery-card-title">ClarityChat</h4>
+        <span className="gallery-card-badge badge-popular">Popular</span>
+      </div>
+      <p className="gallery-card-description">
+        Full-featured chat interface with streaming, memory, and customization.
+        Zero-config setup.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">AI</span>
+        <span className="gallery-tag">Streaming</span>
+        <span className="gallery-tag">Memory</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-chat-window--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🖥️</div>
+        <h4 className="gallery-card-title">ChatWindow</h4>
+      </div>
+      <p className="gallery-card-description">
+        Composable chat container with header, message list, and input.
+        Full control over layout.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Layout</span>
+        <span className="gallery-tag">Composable</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-assistant-ui--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🤖</div>
+        <h4 className="gallery-card-title">AssistantUI</h4>
+        <span className="gallery-card-badge badge-new">New</span>
+      </div>
+      <p className="gallery-card-description">
+        Pre-built assistant panels for common AI tasks: code help,
+        documentation, and more.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">AI</span>
+        <span className="gallery-tag">Panels</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+## Chat Components
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">💬</span>
+    <h3 className="gallery-section-title">Messages & Input</h3>
+    <span className="gallery-section-count">12</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/components-message--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">💭</div>
+        <h4 className="gallery-card-title">Message</h4>
+        <span className="gallery-card-badge badge-popular">Popular</span>
+      </div>
+      <p className="gallery-card-description">
+        Individual chat message with avatar, markdown, and actions.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Chat</span>
+        <span className="gallery-tag">Markdown</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-message-list--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📝</div>
+        <h4 className="gallery-card-title">MessageList</h4>
+      </div>
+      <p className="gallery-card-description">
+        Virtualized message list with auto-scroll and lazy loading.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Performance</span>
+        <span className="gallery-tag">Virtual</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-chat-input--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">⌨️</div>
+        <h4 className="gallery-card-title">ChatInput</h4>
+      </div>
+      <p className="gallery-card-description">
+        Rich text input with file attachments, voice, and send button.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Input</span>
+        <span className="gallery-tag">Multimodal</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-streaming-message--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">⚡</div>
+        <h4 className="gallery-card-title">StreamingMessage</h4>
+      </div>
+      <p className="gallery-card-description">
+        Message component optimized for token-by-token streaming.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Streaming</span>
+        <span className="gallery-tag">Real-time</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-thinking-indicator--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🤔</div>
+        <h4 className="gallery-card-title">ThinkingIndicator</h4>
+      </div>
+      <p className="gallery-card-description">
+        Animated indicator showing AI is processing.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Loading</span>
+        <span className="gallery-tag">Animation</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-typing-indicator--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">...</div>
+        <h4 className="gallery-card-title">TypingIndicator</h4>
+      </div>
+      <p className="gallery-card-description">
+        Classic typing dots animation for chat interfaces.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Animation</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+## AI-Specific Components
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">🤖</span>
+    <h3 className="gallery-section-title">AI & Agent Features</h3>
+    <span className="gallery-section-count">10</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/components-tool-invocation--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🔧</div>
+        <h4 className="gallery-card-title">ToolInvocationCard</h4>
+        <span className="gallery-card-badge badge-new">New</span>
+      </div>
+      <p className="gallery-card-description">
+        Display AI tool calls with inputs, outputs, and status.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Tools</span>
+        <span className="gallery-tag">Agents</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-follow-up-suggestions--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">💡</div>
+        <h4 className="gallery-card-title">FollowUpSuggestions</h4>
+      </div>
+      <p className="gallery-card-description">
+        AI-generated follow-up prompts for conversation flow.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">UX</span>
+        <span className="gallery-tag">Suggestions</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-citation-card--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📚</div>
+        <h4 className="gallery-card-title">CitationCard</h4>
+      </div>
+      <p className="gallery-card-description">
+        Display source citations with links and previews.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">RAG</span>
+        <span className="gallery-tag">Sources</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-agent-run-feed--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🔄</div>
+        <h4 className="gallery-card-title">AgentRunFeed</h4>
+        <span className="gallery-card-badge badge-beta">Beta</span>
+      </div>
+      <p className="gallery-card-description">
+        Real-time feed showing agent execution steps.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Agents</span>
+        <span className="gallery-tag">Trace</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-token-counter--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🔢</div>
+        <h4 className="gallery-card-title">TokenCounter</h4>
+      </div>
+      <p className="gallery-card-description">
+        Real-time token usage display with limits.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Tokens</span>
+        <span className="gallery-tag">Usage</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-context-visualizer--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📊</div>
+        <h4 className="gallery-card-title">ContextVisualizer</h4>
+      </div>
+      <p className="gallery-card-description">
+        Visual display of conversation context window.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Memory</span>
+        <span className="gallery-tag">Debug</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+## Data Display
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">📊</span>
+    <h3 className="gallery-section-title">Content & Visualization</h3>
+    <span className="gallery-section-count">15</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/components-code-block--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">💻</div>
+        <h4 className="gallery-card-title">CodeBlock</h4>
+        <span className="gallery-card-badge badge-popular">Popular</span>
+      </div>
+      <p className="gallery-card-description">
+        Syntax-highlighted code with copy, language detection.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Code</span>
+        <span className="gallery-tag">Highlight</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-markdown-renderer--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📄</div>
+        <h4 className="gallery-card-title">MarkdownRenderer</h4>
+      </div>
+      <p className="gallery-card-description">
+        Full GFM support with tables, math, and diagrams.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Markdown</span>
+        <span className="gallery-tag">Rich</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-avatar--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">👤</div>
+        <h4 className="gallery-card-title">Avatar</h4>
+      </div>
+      <p className="gallery-card-description">
+        User and AI avatars with fallbacks and status.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">User</span>
+        <span className="gallery-tag">Image</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-badge--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🏷️</div>
+        <h4 className="gallery-card-title">Badge</h4>
+      </div>
+      <p className="gallery-card-description">
+        Status indicators and labels with variants.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Status</span>
+        <span className="gallery-tag">Label</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-card--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📦</div>
+        <h4 className="gallery-card-title">Card</h4>
+      </div>
+      <p className="gallery-card-description">
+        Container for grouped content with header/footer.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Container</span>
+        <span className="gallery-tag">Layout</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-skeleton--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">⬜</div>
+        <h4 className="gallery-card-title">Skeleton</h4>
+      </div>
+      <p className="gallery-card-description">
+        Loading placeholders with shimmer animation.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Loading</span>
+        <span className="gallery-tag">Placeholder</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+## Input Components
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">📝</span>
+    <h3 className="gallery-section-title">Forms & Controls</h3>
+    <span className="gallery-section-count">10</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/components-button--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🔘</div>
+        <h4 className="gallery-card-title">Button</h4>
+      </div>
+      <p className="gallery-card-description">
+        Accessible buttons with variants, sizes, and loading states.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Action</span>
+        <span className="gallery-tag">Form</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-input--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📝</div>
+        <h4 className="gallery-card-title">Input</h4>
+      </div>
+      <p className="gallery-card-description">
+        Text input with validation, icons, and states.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Form</span>
+        <span className="gallery-tag">Text</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-textarea--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📄</div>
+        <h4 className="gallery-card-title">Textarea</h4>
+      </div>
+      <p className="gallery-card-description">
+        Multi-line text with auto-resize and character count.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Form</span>
+        <span className="gallery-tag">Multiline</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-checkbox--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">☑️</div>
+        <h4 className="gallery-card-title">Checkbox</h4>
+      </div>
+      <p className="gallery-card-description">
+        Accessible checkbox with indeterminate state.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Form</span>
+        <span className="gallery-tag">Toggle</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-file-upload--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📎</div>
+        <h4 className="gallery-card-title">FileUpload</h4>
+      </div>
+      <p className="gallery-card-description">
+        Drag-and-drop file upload with preview.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Files</span>
+        <span className="gallery-tag">Upload</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-voice-input--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🎤</div>
+        <h4 className="gallery-card-title">VoiceInput</h4>
+        <span className="gallery-card-badge badge-new">New</span>
+      </div>
+      <p className="gallery-card-description">
+        Speech-to-text input with waveform visualization.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Voice</span>
+        <span className="gallery-tag">Audio</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+## Layout Components
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">📐</span>
+    <h3 className="gallery-section-title">Structure & Navigation</h3>
+    <span className="gallery-section-count">8</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/components-dialog--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🗂️</div>
+        <h4 className="gallery-card-title">Dialog</h4>
+      </div>
+      <p className="gallery-card-description">
+        Accessible modal dialogs with focus trapping.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Modal</span>
+        <span className="gallery-tag">Overlay</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-drawer--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📱</div>
+        <h4 className="gallery-card-title">Drawer</h4>
+      </div>
+      <p className="gallery-card-description">
+        Slide-out panel for settings and details.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Panel</span>
+        <span className="gallery-tag">Mobile</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-popover--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">💬</div>
+        <h4 className="gallery-card-title">Popover</h4>
+      </div>
+      <p className="gallery-card-description">
+        Floating content triggered by click or focus.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Floating</span>
+        <span className="gallery-tag">Trigger</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-tooltip--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">💡</div>
+        <h4 className="gallery-card-title">Tooltip</h4>
+      </div>
+      <p className="gallery-card-description">
+        Contextual hints on hover with smart positioning.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Help</span>
+        <span className="gallery-tag">Hover</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-dropdown-menu--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📋</div>
+        <h4 className="gallery-card-title">DropdownMenu</h4>
+      </div>
+      <p className="gallery-card-description">
+        Accessible menus with keyboard navigation.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Menu</span>
+        <span className="gallery-tag">Actions</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-command-palette--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">⌘</div>
+        <h4 className="gallery-card-title">CommandPalette</h4>
+        <span className="gallery-card-badge badge-popular">Popular</span>
+      </div>
+      <p className="gallery-card-description">
+        Keyboard-first command interface like VS Code.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Search</span>
+        <span className="gallery-tag">Commands</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+## Feedback Components
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">📣</span>
+    <h3 className="gallery-section-title">Notifications & States</h3>
+    <span className="gallery-section-count">8</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/components-toast--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🔔</div>
+        <h4 className="gallery-card-title">Toast</h4>
+      </div>
+      <p className="gallery-card-description">
+        Non-intrusive notifications with actions.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Notification</span>
+        <span className="gallery-tag">Alert</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-progress--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📊</div>
+        <h4 className="gallery-card-title">Progress</h4>
+      </div>
+      <p className="gallery-card-description">
+        Linear progress bars and circular spinners.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Loading</span>
+        <span className="gallery-tag">Progress</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-empty-state--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📭</div>
+        <h4 className="gallery-card-title">EmptyState</h4>
+      </div>
+      <p className="gallery-card-description">
+        Placeholder for empty lists and search results.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Empty</span>
+        <span className="gallery-tag">Placeholder</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-error-boundary--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🚨</div>
+        <h4 className="gallery-card-title">ErrorBoundary</h4>
+      </div>
+      <p className="gallery-card-description">
+        Graceful error handling with retry option.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Error</span>
+        <span className="gallery-tag">Recovery</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-network-status--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📶</div>
+        <h4 className="gallery-card-title">NetworkStatus</h4>
+      </div>
+      <p className="gallery-card-description">
+        Online/offline indicator with reconnection.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Network</span>
+        <span className="gallery-tag">Status</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+---
+
+## Need Help Finding Something?
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginTop: '1.5rem'}}>
+  <div className="callout callout-info">
+    <strong>🔍 Can't find a component?</strong>
+    <p>Use the sidebar search (Ctrl+K) to find any component by name.</p>
+  </div>
+  <div className="callout callout-success">
+    <strong>🪝 Looking for hooks?</strong>
+    <p>Check the <a href="?path=/docs/hooks-overview--docs">Hooks documentation</a> for state and behavior.</p>
+  </div>
+  <div className="callout callout-warning">
+    <strong>📐 Need a pattern?</strong>
+    <p>See <a href="?path=/docs/patterns-overview--docs">Patterns</a> for common implementation guides.</p>
+  </div>
+</div>
