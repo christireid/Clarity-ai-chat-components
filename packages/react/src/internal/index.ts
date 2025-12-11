@@ -84,6 +84,7 @@ export {
   debug,
   measurePerformance,
   measurePerformanceAsync,
+  initDebugMode,
   type LogLevel,
   type DebugLogEntry,
   type DebugConfig,

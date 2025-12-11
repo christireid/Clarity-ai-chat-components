@@ -355,13 +355,23 @@ export function validateProp(
         ? 'undefined'
         : typeof received
 
+  let receivedDetail = ''
+  if (typeof received === 'object' && received !== null) {
+    try {
+      receivedDetail = ` (${JSON.stringify(received)})`
+    } catch {
+      // Handle circular references
+      receivedDetail = ` (${Object.prototype.toString.call(received)})`
+    }
+  }
+
   warn({
     category: 'misuse',
     component,
     message:
       `Invalid prop "${propName}".\n\n` +
       `Expected: ${expected}\n` +
-      `Received: ${receivedType}${typeof received === 'object' ? ` (${JSON.stringify(received)})` : ''}`,
+      `Received: ${receivedType}${receivedDetail}`,
     docsPath: `/components/${component.toLowerCase()}#props`,
   })
 }

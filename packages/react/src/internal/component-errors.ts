@@ -8,6 +8,8 @@
  * @internal
  */
 
+import type { ErrorInfo } from 'react'
+
 const DOCS_BASE = 'https://clarity-chat.dev'
 
 /**
@@ -95,10 +97,16 @@ export class ComponentError extends Error {
     let fullMessage = `[Clarity Chat] ${component}: ${message}`
 
     if (received !== undefined) {
-      const receivedStr =
-        typeof received === 'object'
-          ? JSON.stringify(received, null, 2)
-          : String(received)
+      let receivedStr: string
+      try {
+        receivedStr =
+          typeof received === 'object'
+            ? JSON.stringify(received, null, 2)
+            : String(received)
+      } catch {
+        // Handle circular references or other stringify failures
+        receivedStr = Object.prototype.toString.call(received)
+      }
       fullMessage += `\n\nReceived: ${receivedStr}`
     }
 
@@ -306,9 +314,9 @@ export function throwMissingPropError(
  */
 export function createErrorHandler(
   component: string,
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
+  onError?: (error: Error, errorInfo: ErrorInfo) => void
 ) {
-  return (error: Error, errorInfo: React.ErrorInfo) => {
+  return (error: Error, errorInfo: ErrorInfo) => {
     // Enhance error with component context if not already a ComponentError
     if (!(error instanceof ComponentError)) {
       console.error(

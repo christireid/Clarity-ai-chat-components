@@ -99,11 +99,16 @@ const defaultConfig: DebugConfig = {
 
 let config: DebugConfig = { ...defaultConfig }
 const logs: DebugLogEntry[] = []
+let initialized = false
 
 /**
  * Initialize debug configuration from localStorage (browser only)
+ * Called lazily on first use to avoid side effects at module load time.
  */
-function initFromStorage(): void {
+function ensureInitialized(): void {
+  if (initialized) return
+  initialized = true
+
   if (typeof window === 'undefined') return
 
   try {
@@ -124,9 +129,6 @@ function initFromStorage(): void {
   }
 }
 
-// Initialize on module load
-initFromStorage()
-
 /**
  * Enable debug mode
  *
@@ -142,6 +144,7 @@ initFromStorage()
  * ```
  */
 export function enableDebug(options: Partial<DebugConfig> = {}): void {
+  ensureInitialized()
   config = { ...config, ...options, enabled: true }
 
   if (config.persist && typeof window !== 'undefined') {
@@ -177,6 +180,7 @@ export function disableDebug(): void {
  * Get current debug configuration
  */
 export function getDebugConfig(): DebugConfig {
+  ensureInitialized()
   return { ...config }
 }
 
@@ -228,11 +232,23 @@ export function debugLog(
   message: string,
   data?: unknown
 ): void {
+  ensureInitialized()
   if (!config.enabled) return
   if (LOG_LEVEL_PRIORITY[level] < LOG_LEVEL_PRIORITY[config.level]) return
 
-  const [type, name] = source.split(':') as ['component' | 'hook', string]
-  if (type && name && !shouldLog(type, name)) return
+  // Safely parse source - handle malformed sources gracefully
+  const colonIndex = source.indexOf(':')
+  if (colonIndex > 0) {
+    const type = source.slice(0, colonIndex)
+    const name = source.slice(colonIndex + 1)
+    if (
+      (type === 'component' || type === 'hook') &&
+      name &&
+      !shouldLog(type, name)
+    ) {
+      return
+    }
+  }
 
   // Store log entry
   const entry: DebugLogEntry = {
@@ -383,11 +399,15 @@ export interface ClarityDebugInterface {
   measureAsync: typeof measurePerformanceAsync
 }
 
+let globalDebugExposed = false
+
 /**
- * Create and expose global debug interface
+ * Create and expose global debug interface (called lazily)
  */
 function exposeGlobalDebug(): void {
+  if (globalDebugExposed) return
   if (typeof window === 'undefined') return
+  globalDebugExposed = true
 
   const globalInterface: ClarityDebugInterface = {
     enable: enableDebug,
@@ -416,5 +436,18 @@ function exposeGlobalDebug(): void {
   }
 }
 
-// Expose global debug interface when module loads
-exposeGlobalDebug()
+/**
+ * Initialize debug mode for browser use.
+ * Call this once in your app entry point to enable ClarityDebug in browser console.
+ *
+ * @example
+ * ```ts
+ * // In your app entry point
+ * import { initDebugMode } from '@clarity-chat/react/internal'
+ * initDebugMode()
+ * ```
+ */
+export function initDebugMode(): void {
+  ensureInitialized()
+  exposeGlobalDebug()
+}
