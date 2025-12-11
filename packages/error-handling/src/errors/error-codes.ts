@@ -1,0 +1,148 @@
+/**
+ * Type-safe error codes for all Clarity Chat errors
+ */
+
+/**
+ * Error codes for API-related errors
+ */
+export const ApiErrorCode = {
+  BAD_REQUEST: 'API_BAD_REQUEST',
+  UNAUTHORIZED: 'API_UNAUTHORIZED',
+  FORBIDDEN: 'API_FORBIDDEN',
+  NOT_FOUND: 'API_NOT_FOUND',
+  RATE_LIMITED: 'API_RATE_LIMITED',
+  SERVER_ERROR: 'API_SERVER_ERROR',
+  NETWORK_ERROR: 'API_NETWORK_ERROR',
+  TIMEOUT: 'API_TIMEOUT',
+} as const
+
+export type ApiErrorCode = (typeof ApiErrorCode)[keyof typeof ApiErrorCode]
+
+/**
+ * Error codes for streaming-related errors
+ */
+export const StreamingErrorCode = {
+  CONNECTION_FAILED: 'STREAM_CONNECTION_FAILED',
+  CONNECTION_LOST: 'STREAM_CONNECTION_LOST',
+  PARSE_ERROR: 'STREAM_PARSE_ERROR',
+  TIMEOUT: 'STREAM_TIMEOUT',
+  ABORTED: 'STREAM_ABORTED',
+  PROVIDER_ERROR: 'STREAM_PROVIDER_ERROR',
+} as const
+
+export type StreamingErrorCode =
+  (typeof StreamingErrorCode)[keyof typeof StreamingErrorCode]
+
+/**
+ * Error codes for AI provider-related errors
+ */
+export const ProviderErrorCode = {
+  OPENAI_ERROR: 'PROVIDER_OPENAI_ERROR',
+  ANTHROPIC_ERROR: 'PROVIDER_ANTHROPIC_ERROR',
+  GOOGLE_ERROR: 'PROVIDER_GOOGLE_ERROR',
+  RATE_LIMIT: 'PROVIDER_RATE_LIMIT',
+  CONTEXT_LENGTH: 'PROVIDER_CONTEXT_LENGTH',
+  CONTENT_FILTER: 'PROVIDER_CONTENT_FILTER',
+  INVALID_API_KEY: 'PROVIDER_INVALID_API_KEY',
+  MODEL_NOT_FOUND: 'PROVIDER_MODEL_NOT_FOUND',
+  QUOTA_EXCEEDED: 'PROVIDER_QUOTA_EXCEEDED',
+  SERVICE_UNAVAILABLE: 'PROVIDER_SERVICE_UNAVAILABLE',
+} as const
+
+export type ProviderErrorCode =
+  (typeof ProviderErrorCode)[keyof typeof ProviderErrorCode]
+
+/**
+ * Error codes for validation-related errors
+ */
+export const ValidationErrorCode = {
+  REQUIRED_FIELD: 'VALIDATION_REQUIRED_FIELD',
+  INVALID_FORMAT: 'VALIDATION_INVALID_FORMAT',
+  OUT_OF_RANGE: 'VALIDATION_OUT_OF_RANGE',
+  INVALID_TYPE: 'VALIDATION_INVALID_TYPE',
+  TOO_LONG: 'VALIDATION_TOO_LONG',
+  TOO_SHORT: 'VALIDATION_TOO_SHORT',
+  PATTERN_MISMATCH: 'VALIDATION_PATTERN_MISMATCH',
+} as const
+
+export type ValidationErrorCode =
+  (typeof ValidationErrorCode)[keyof typeof ValidationErrorCode]
+
+/**
+ * Error codes for configuration errors
+ */
+export const ConfigurationErrorCode = {
+  MISSING_CONFIG: 'CONFIG_MISSING',
+  INVALID_CONFIG: 'CONFIG_INVALID',
+  MISSING_API_KEY: 'CONFIG_MISSING_API_KEY',
+  INVALID_PROVIDER: 'CONFIG_INVALID_PROVIDER',
+  INVALID_MODEL: 'CONFIG_INVALID_MODEL',
+} as const
+
+export type ConfigurationErrorCode =
+  (typeof ConfigurationErrorCode)[keyof typeof ConfigurationErrorCode]
+
+/**
+ * Error codes for authentication errors
+ */
+export const AuthenticationErrorCode = {
+  INVALID_CREDENTIALS: 'AUTH_INVALID_CREDENTIALS',
+  TOKEN_EXPIRED: 'AUTH_TOKEN_EXPIRED',
+  TOKEN_INVALID: 'AUTH_TOKEN_INVALID',
+  SESSION_EXPIRED: 'AUTH_SESSION_EXPIRED',
+  UNAUTHORIZED: 'AUTH_UNAUTHORIZED',
+} as const
+
+export type AuthenticationErrorCode =
+  (typeof AuthenticationErrorCode)[keyof typeof AuthenticationErrorCode]
+
+/**
+ * Error codes for network errors
+ */
+export const NetworkErrorCode = {
+  CONNECTION_FAILED: 'NETWORK_CONNECTION_FAILED',
+  DNS_RESOLUTION_FAILED: 'NETWORK_DNS_FAILED',
+  SSL_ERROR: 'NETWORK_SSL_ERROR',
+  OFFLINE: 'NETWORK_OFFLINE',
+} as const
+
+export type NetworkErrorCode =
+  (typeof NetworkErrorCode)[keyof typeof NetworkErrorCode]
+
+/**
+ * Error codes for timeout errors
+ */
+export const TimeoutErrorCode = {
+  REQUEST_TIMEOUT: 'TIMEOUT_REQUEST',
+  CONNECTION_TIMEOUT: 'TIMEOUT_CONNECTION',
+  READ_TIMEOUT: 'TIMEOUT_READ',
+  IDLE_TIMEOUT: 'TIMEOUT_IDLE',
+} as const
+
+export type TimeoutErrorCode =
+  (typeof TimeoutErrorCode)[keyof typeof TimeoutErrorCode]
+
+/**
+ * Error codes for component errors
+ */
+export const ComponentErrorCode = {
+  RENDER_ERROR: 'COMPONENT_RENDER_ERROR',
+  LIFECYCLE_ERROR: 'COMPONENT_LIFECYCLE_ERROR',
+  HOOK_ERROR: 'COMPONENT_HOOK_ERROR',
+  CONTEXT_ERROR: 'COMPONENT_CONTEXT_ERROR',
+} as const
+
+export type ComponentErrorCode =
+  (typeof ComponentErrorCode)[keyof typeof ComponentErrorCode]
+
+/**
+ * Error codes for token/memory errors
+ */
+export const TokenErrorCode = {
+  TOKEN_LIMIT_EXCEEDED: 'TOKEN_LIMIT_EXCEEDED',
+  CONTEXT_TOO_LONG: 'TOKEN_CONTEXT_TOO_LONG',
+  MESSAGE_TOO_LONG: 'TOKEN_MESSAGE_TOO_LONG',
+} as const
+
+export type TokenErrorCode =
+  (typeof TokenErrorCode)[keyof typeof TokenErrorCode]

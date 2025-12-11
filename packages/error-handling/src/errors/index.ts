@@ -1,6 +1,72 @@
 /**
+ * Clarity Chat Error Classes
+ *
+ * This module exports all error classes, error codes, and type guards
+ * for comprehensive error handling in Clarity Chat applications.
+ */
+
+// =============================================================================
+// Base Error Class
+// =============================================================================
+
+export { ClarityError, isClarityError } from './base-error'
+
+// =============================================================================
+// Error Codes
+// =============================================================================
+
+export {
+  ApiErrorCode,
+  StreamingErrorCode,
+  ProviderErrorCode,
+  ValidationErrorCode,
+  ConfigurationErrorCode,
+  AuthenticationErrorCode,
+  NetworkErrorCode,
+  TimeoutErrorCode,
+  ComponentErrorCode,
+  TokenErrorCode,
+} from './error-codes'
+
+// =============================================================================
+// Enhanced Error Classes (New API)
+// =============================================================================
+
+export { ApiError, isApiError } from './api-error'
+export { StreamingError, isStreamingError } from './streaming-error'
+export type { StreamTransport } from './streaming-error'
+export { ProviderError, isProviderError } from './provider-error'
+export type { AIProvider } from './provider-error'
+export {
+  ValidationError as EnhancedValidationError,
+  isValidationError,
+} from './validation-error'
+export type { FieldError } from './validation-error'
+
+// =============================================================================
+// Type Guards
+// =============================================================================
+
+export {
+  isNetworkError,
+  isRateLimitError,
+  isAuthError,
+  isRecoverableError,
+  hasRetryAfter,
+  hasPartialContent,
+  getErrorStatusCode,
+  getErrorCode,
+  getUserMessage,
+  normalizeError,
+} from './type-guards'
+
+// =============================================================================
+// Legacy Error Classes (Backward Compatibility)
+// =============================================================================
+
+/**
  * Base error class for all Clarity Chat errors
- * Provides helpful context, solutions, and documentation links
+ * @deprecated Use ClarityError from './base-error' for new code
  */
 export class ClarityChatError extends Error {
   public readonly code: string
@@ -32,19 +98,19 @@ export class ClarityChatError extends Error {
 
   override toString(): string {
     let message = `${this.name} [${this.code}]: ${this.message}`
-    
+
     if (this.solution) {
       message += `\n\n💡 Solution: ${this.solution}`
     }
-    
+
     if (this.docs) {
       message += `\n\n📚 Documentation: ${this.docs}`
     }
-    
+
     if (this.context) {
       message += `\n\n🔍 Context: ${JSON.stringify(this.context, null, 2)}`
     }
-    
+
     return message
   }
 
@@ -81,6 +147,7 @@ export class ConfigurationError extends ClarityChatError {
 
 /**
  * API errors - HTTP request failures, invalid responses
+ * @deprecated Use ApiError from './api-error' for new code
  */
 export class APIError extends ClarityChatError {
   public readonly statusCode?: number
@@ -149,6 +216,7 @@ export class RateLimitError extends ClarityChatError {
 
 /**
  * Validation errors - invalid input data
+ * @deprecated Use EnhancedValidationError from './validation-error' for new code
  */
 export class ValidationError extends ClarityChatError {
   public readonly field?: string
@@ -177,6 +245,7 @@ export class ValidationError extends ClarityChatError {
 
 /**
  * Stream errors - streaming connection issues
+ * @deprecated Use StreamingError from './streaming-error' for new code
  */
 export class StreamError extends ClarityChatError {
   constructor(
