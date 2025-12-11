@@ -9,6 +9,12 @@ import * as React from 'react'
 import { MemoryContext } from '../../memory/memory-provider'
 import type { MemoryContextValue } from '../../memory/memory-provider'
 import { classifyError as classifyErrorUtil } from '../../utils/error-handling'
+import {
+  devWarning,
+  performanceWarning,
+  debug,
+  ComponentError,
+} from '../../internal'
 
 /**
  * Safe hook to get memory context without throwing
@@ -103,18 +109,69 @@ export function extractTextContent(
  *
  * @internal
  * @param api - The API endpoint to validate
- * @throws {Error} If the API endpoint is invalid
+ * @throws {ComponentError} If the API endpoint is invalid
  */
 export function validateApiEndpoint(
   api: string | undefined
 ): asserts api is string {
   if (!api || typeof api !== 'string' || api.trim().length === 0) {
-    throw new Error(
-      'useClarityChat: "api" option is required.\n' +
-        'Please provide your API endpoint URL.\n\n' +
-        'Example:\n' +
-        '  const chat = useClarityChat({ api: "/api/chat" })\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/getting-started'
+    throw new ComponentError({
+      code: 'MISSING_PROP',
+      component: 'useClarityChat',
+      message:
+        '"api" option is required. Please provide your API endpoint URL.',
+      expected: 'string (e.g., "/api/chat" or "https://api.example.com/chat")',
+      example:
+        'const chat = useClarityChat({ api: "/api/chat" })\n\n' +
+        '// Or with full URL\n' +
+        'const chat = useClarityChat({ api: "https://api.example.com/chat" })',
+      docsPath: '/hooks/use-clarity-chat#api',
+    })
+  }
+
+  // Log successful initialization in debug mode
+  debug.hook('useClarityChat', 'Initialized with API endpoint', { api })
+}
+
+/**
+ * Warn if memory is enabled but MemoryProvider is not present
+ *
+ * @internal
+ * @param memoryEnabled - Whether memory is configured in options
+ * @param memoryContext - The memory context from useContext
+ */
+export function warnIfMemoryMisconfigured(
+  memoryEnabled: boolean | undefined,
+  memoryContext: MemoryContextValue | null
+): void {
+  devWarning(
+    memoryEnabled === true && !memoryContext?.service,
+    'useClarityChat',
+    'Memory is enabled in options but MemoryProvider is not found in the component tree. ' +
+      'Memory features will be disabled.\n\n' +
+      'To fix this, wrap your app with MemoryProvider:\n' +
+      '<MemoryProvider>\n  <App />\n</MemoryProvider>\n\n' +
+      'Docs: https://clarity-chat.dev/memory/getting-started'
+  )
+}
+
+/**
+ * Warn about potential performance issues with message count
+ *
+ * @internal
+ * @param messageCount - Number of messages
+ * @param hasOptimization - Whether prompt optimization is enabled
+ */
+export function warnIfTooManyMessages(
+  messageCount: number,
+  hasOptimization: boolean
+): void {
+  if (messageCount > 50 && !hasOptimization) {
+    performanceWarning(
+      'useClarityChat',
+      `${messageCount} messages in conversation without prompt optimization`,
+      'Enable promptOptimization to prevent context window overflow:\n' +
+        'useClarityChat({ promptOptimization: { enabled: true } })'
     )
   }
 }
