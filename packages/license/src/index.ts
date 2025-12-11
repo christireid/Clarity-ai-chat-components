@@ -33,6 +33,7 @@ export {
   useHasPlan,
   useLicenseInfo,
   useRequireLicense,
+  useIsHydrated,
 } from './hooks'
 
 // React Context (alternative to static LicenseInfo)
@@ -47,11 +48,16 @@ export type {
 } from './LicenseProvider'
 
 // Components
-export { Watermark, WatermarkOverlay } from './Watermark'
+export {
+  Watermark,
+  WatermarkOverlay,
+  LicenseStatusAnnouncer,
+} from './Watermark'
 export type {
   WatermarkProps,
   WatermarkOverlayProps,
   WatermarkPosition,
+  LicenseStatusAnnouncerProps,
 } from './Watermark'
 
 // HOCs

@@ -57,6 +57,7 @@ export type LicenseStatusCode =
   | 'Missing'
   | 'Expired'
   | 'ExpiredForDevelopment'
+  | 'GracePeriod'
   | 'PlanMismatch'
   | 'OutOfScope'
 
@@ -89,6 +90,9 @@ export interface VerifyLicenseOptions {
 
   /** Current environment (defaults to process.env.NODE_ENV) */
   environment?: 'development' | 'production' | 'test'
+
+  /** Grace period in days after expiry (default: 14) */
+  gracePeriodDays?: number
 }
 
 /**

@@ -1,7 +1,20 @@
 # @clarity-chat/license
 
-License validation for [Clarity Chat Pro](https://claritychat.dev) - Premium AI Chat Components for
-React.
+[![npm version](https://img.shields.io/npm/v/@clarity-chat/license.svg)](https://www.npmjs.com/package/@clarity-chat/license)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+
+Commercial license validation for [Clarity Chat Pro](https://claritychat.dev) - Premium AI Chat
+Components for React.
+
+## Features
+
+- **Client-side validation** - No server calls, instant verification
+- **Honor system enforcement** - Watermarks + console warnings for unlicensed usage
+- **React hooks & context** - Multiple integration patterns for flexibility
+- **SSR-safe** - Works with Next.js, Remix, and other SSR frameworks
+- **TypeScript-first** - Full type safety with strict mode support
+- **Zero runtime dependencies** - Self-contained package
+- **Grace period support** - 14-day grace period for expired licenses
 
 ## Installation
 
@@ -150,6 +163,76 @@ and validated locally.
 - **Individual**: One developer, unlimited projects
 - **Team**: Up to 5 developers, unlimited projects
 - **Organization**: Unlimited developers in your company
+
+## LicenseProvider (Context API)
+
+For SSR frameworks or testing, use the context-based API:
+
+```tsx
+import { LicenseProvider, useLicenseContext } from '@clarity-chat/license'
+
+// Wrap your app
+function App() {
+  return (
+    <LicenseProvider licenseKey={process.env.NEXT_PUBLIC_CLARITY_LICENSE_KEY}>
+      <MyApp />
+    </LicenseProvider>
+  )
+}
+
+// Use in components
+function MyComponent() {
+  const { isValid, licensee, hasPlan } = useLicenseContext()
+
+  return (
+    <div>
+      {isValid ? `Licensed to ${licensee}` : 'Unlicensed'}
+      {hasPlan('enterprise') && <EnterpriseFeatures />}
+    </div>
+  )
+}
+```
+
+## Migration from @clarity-chat/licensing
+
+If you were using the legacy `@clarity-chat/licensing` package:
+
+### Breaking Changes
+
+1. Package renamed from `@clarity-chat/licensing` to `@clarity-chat/license`
+2. API simplified - `validateLicense` renamed to `verifyLicense`
+3. New context-based API added alongside static API
+
+### Migration Steps
+
+```diff
+// 1. Update imports
+- import { validateLicense } from '@clarity-chat/licensing';
++ import { verifyLicense } from '@clarity-chat/license';
+
+// 2. Update function calls
+- const result = validateLicense(key);
++ const result = verifyLicense(key);
+```
+
+Then remove the old package:
+
+```bash
+npm uninstall @clarity-chat/licensing
+```
+
+## Status Codes
+
+| Code                    | Description                                |
+| ----------------------- | ------------------------------------------ |
+| `Valid`                 | License is valid                           |
+| `Invalid`               | License key format is invalid              |
+| `Missing`               | No license key provided                    |
+| `Expired`               | License has expired                        |
+| `ExpiredForDevelopment` | Expired for dev, still valid in production |
+| `GracePeriod`           | License expired but within grace period    |
+| `PlanMismatch`          | License plan insufficient for feature      |
+| `OutOfScope`            | License not valid for current domain       |
 
 ## Support
 

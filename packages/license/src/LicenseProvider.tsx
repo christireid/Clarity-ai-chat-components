@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react'
-import { verifyLicense } from './verifyLicense'
+import { verifyLicense, shouldShowWatermark } from './verifyLicense'
 import { isPlanSufficient } from './constants'
 import type { LicenseStatus, LicensePlan } from './types'
 
@@ -93,7 +93,8 @@ export function LicenseProvider({
         if (!payload) return false
         return isPlanSufficient(payload.plan, requiredPlan)
       },
-      shouldShowWatermark: !isValid,
+      // Use proper watermark logic that accounts for GracePeriod
+      shouldShowWatermark: shouldShowWatermark(status),
     }
   }, [licenseKey])
 

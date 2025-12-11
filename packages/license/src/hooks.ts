@@ -6,11 +6,43 @@
  * @packageDocumentation
  */
 
-import { useMemo, useSyncExternalStore } from 'react'
+import { useMemo, useState, useEffect, useSyncExternalStore } from 'react'
 import { LicenseInfo } from './LicenseInfo'
 import { verifyLicense } from './verifyLicense'
 import { isPlanSufficient } from './constants'
 import type { LicenseStatus, LicensePlan } from './types'
+
+/**
+ * Hook to check if the component has hydrated on the client.
+ * Returns false during SSR and on first client render, then true after hydration.
+ * Useful for avoiding hydration mismatches with license-dependent rendering.
+ *
+ * @returns true after hydration, false during SSR
+ *
+ * @example
+ * ```typescript
+ * function LicenseGatedContent() {
+ *   const isHydrated = useIsHydrated();
+ *   const isLicensed = useIsLicensed();
+ *
+ *   // Avoid hydration mismatch by waiting for hydration
+ *   if (!isHydrated) {
+ *     return <LoadingSpinner />;
+ *   }
+ *
+ *   return isLicensed ? <ProContent /> : <FreeContent />;
+ * }
+ * ```
+ */
+export function useIsHydrated(): boolean {
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  return isHydrated
+}
 
 /**
  * Subscribe to LicenseInfo changes using the built-in subscription mechanism.

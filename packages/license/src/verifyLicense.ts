@@ -35,6 +35,12 @@ const CURRENT_VERSION = 1
  * }
  * ```
  */
+/** Default grace period in days */
+const DEFAULT_GRACE_PERIOD_DAYS = 14
+
+/** Seconds in a day */
+const SECONDS_PER_DAY = 24 * 60 * 60
+
 export function verifyLicense(
   licenseKey: string | null | undefined,
   options: VerifyLicenseOptions = {}
@@ -43,6 +49,7 @@ export function verifyLicense(
     requiredPlan,
     checkDevExpiry = true,
     environment = getEnvironment(),
+    gracePeriodDays = DEFAULT_GRACE_PERIOD_DAYS,
   } = options
 
   // Check for missing key
@@ -107,14 +114,27 @@ export function verifyLicense(
     }
   }
 
-  // Check expiry
+  // Check expiry with grace period support
   const now = Math.floor(Date.now() / 1000)
   const isExpired = payload.expiresAt && now > payload.expiresAt
 
   if (isExpired) {
+    // Calculate grace period end
+    const gracePeriodEnd = payload.expiresAt + gracePeriodDays * SECONDS_PER_DAY
+    const isInGracePeriod = now <= gracePeriodEnd
+    const daysRemaining = Math.ceil((gracePeriodEnd - now) / SECONDS_PER_DAY)
+
     // In production, license is perpetual (just can't get updates)
     if (environment === 'production') {
-      // Still valid for production use
+      // Check if in grace period - still functional but show warning
+      if (isInGracePeriod) {
+        return {
+          status: 'GracePeriod',
+          payload,
+          reason: `License expired. ${daysRemaining} days remaining in grace period. Renew at https://claritychat.dev/account`,
+        }
+      }
+      // After grace period in production - still valid but no watermark removal
       return {
         status: 'Valid',
         payload,
@@ -122,13 +142,22 @@ export function verifyLicense(
       }
     }
 
-    // In development, show warning
+    // In development
     if (checkDevExpiry) {
+      // Check if in grace period
+      if (isInGracePeriod) {
+        return {
+          status: 'GracePeriod',
+          payload,
+          reason: `License expired. ${daysRemaining} days remaining in grace period. Renew at https://claritychat.dev/account`,
+        }
+      }
+      // After grace period in development
       return {
         status: 'ExpiredForDevelopment',
         payload,
         reason:
-          'License expired. Renew at https://claritychat.dev/account for continued updates.',
+          'License expired and grace period ended. Renew at https://claritychat.dev/account for continued updates.',
       }
     }
   }
@@ -181,7 +210,8 @@ export function isLicenseValid(licenseKey: string | null | undefined): boolean {
  * @returns true if watermark should be shown
  */
 export function shouldShowWatermark(status: LicenseStatus): boolean {
-  return status.status !== 'Valid'
+  // No watermark for valid licenses or during grace period
+  return status.status !== 'Valid' && status.status !== 'GracePeriod'
 }
 
 /**
@@ -202,6 +232,8 @@ export function getLicenseMessage(status: LicenseStatus): string {
       return 'License expired'
     case 'ExpiredForDevelopment':
       return 'License expired for development'
+    case 'GracePeriod':
+      return `License expired - grace period active`
     case 'PlanMismatch':
       return `Upgrade required: ${status.reason}`
     case 'OutOfScope':

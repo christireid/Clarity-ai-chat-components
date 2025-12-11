@@ -7,7 +7,11 @@
 import * as React from 'react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { Watermark, WatermarkOverlay } from '../Watermark'
+import {
+  Watermark,
+  WatermarkOverlay,
+  LicenseStatusAnnouncer,
+} from '../Watermark'
 import {
   withLicense,
   withLicenseStatus,
@@ -57,6 +61,16 @@ describe('Watermark Component', () => {
   it('should render with default message for PlanMismatch status', () => {
     render(<Watermark status="PlanMismatch" />)
     expect(screen.getByRole('status')).toHaveTextContent('Upgrade Required')
+  })
+
+  it('should render with default message for GracePeriod status', () => {
+    render(<Watermark status="GracePeriod" />)
+    expect(screen.getByRole('status')).toHaveTextContent('Renewal Required')
+  })
+
+  it('should render with default message for OutOfScope status', () => {
+    render(<Watermark status="OutOfScope" />)
+    expect(screen.getByRole('status')).toHaveTextContent('Domain Not Licensed')
   })
 
   it('should render custom message when provided', () => {
@@ -134,6 +148,17 @@ describe('WatermarkOverlay Component', () => {
       </WatermarkOverlay>
     )
     expect(screen.getByTestId('child')).toBeInTheDocument()
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
+  it('should render children without watermark for GracePeriod status', () => {
+    render(
+      <WatermarkOverlay status="GracePeriod">
+        <div data-testid="child">Content</div>
+      </WatermarkOverlay>
+    )
+    expect(screen.getByTestId('child')).toBeInTheDocument()
+    // GracePeriod should NOT show watermark
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
 
@@ -446,5 +471,54 @@ describe('LicenseProvider', () => {
     )
 
     expect(contextValues[0]).toBe(contextValues[1])
+  })
+
+  it('should not show watermark during GracePeriod', () => {
+    function Consumer() {
+      const { shouldShowWatermark } = useLicenseContext()
+      return (
+        <div data-testid="watermark">{shouldShowWatermark ? 'yes' : 'no'}</div>
+      )
+    }
+
+    // For a valid license, shouldShowWatermark should be false
+    const validKey = createTestLicense('pro')
+    render(
+      <LicenseProvider licenseKey={validKey}>
+        <Consumer />
+      </LicenseProvider>
+    )
+
+    expect(screen.getByTestId('watermark')).toHaveTextContent('no')
+  })
+})
+
+describe('LicenseStatusAnnouncer Component', () => {
+  it('should render with ARIA live region attributes', () => {
+    render(<LicenseStatusAnnouncer status="Valid" />)
+    const announcer = screen.getByRole('status')
+    expect(announcer).toHaveAttribute('aria-live', 'polite')
+    expect(announcer).toHaveAttribute('aria-atomic', 'true')
+  })
+
+  it('should be visually hidden', () => {
+    render(<LicenseStatusAnnouncer status="Valid" />)
+    const announcer = screen.getByRole('status')
+    expect(announcer).toHaveStyle({
+      position: 'absolute',
+      width: '1px',
+      height: '1px',
+      overflow: 'hidden',
+    })
+  })
+
+  it('should not announce on initial mount', () => {
+    render(<LicenseStatusAnnouncer status="Missing" />)
+    const announcer = screen.getByRole('status')
+    expect(announcer).toHaveTextContent('')
+  })
+
+  it('should have displayName for React DevTools', () => {
+    expect(LicenseStatusAnnouncer.displayName).toBe('LicenseStatusAnnouncer')
   })
 })

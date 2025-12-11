@@ -35,8 +35,38 @@ export interface WithLicenseOptions {
   fallback?: React.ComponentType<{ status: LicenseStatus }>
 }
 
-/** Track if we've already logged the warning for this session */
-const warnedComponents = new Set<string>()
+/**
+ * Track if we've already logged the warning for this session.
+ * Uses a Map with timestamps for automatic cleanup of old entries.
+ */
+const warnedComponents = new Map<string, number>()
+
+/** Maximum age for warned components (1 hour) */
+const WARNING_TTL_MS = 60 * 60 * 1000
+
+/**
+ * Check if a component has been warned recently.
+ * Automatically cleans up old entries to prevent memory leaks.
+ */
+function hasWarnedRecently(componentName: string): boolean {
+  const now = Date.now()
+
+  // Clean up old entries (older than TTL)
+  for (const [name, timestamp] of warnedComponents.entries()) {
+    if (now - timestamp > WARNING_TTL_MS) {
+      warnedComponents.delete(name)
+    }
+  }
+
+  return warnedComponents.has(componentName)
+}
+
+/**
+ * Mark a component as warned.
+ */
+function markAsWarned(componentName: string): void {
+  warnedComponents.set(componentName, Date.now())
+}
 
 /**
  * Higher-order component that wraps a component with license verification.
@@ -77,14 +107,15 @@ export function withLicense<P extends object>(
       return verifyLicense(key, { requiredPlan })
     }, [])
 
-    // Show console warning once per component type
+    // Show console warning once per component type (with TTL to prevent memory leaks)
     React.useEffect(() => {
       if (
         status.status !== 'Valid' &&
+        status.status !== 'GracePeriod' &&
         showConsoleWarning &&
-        !warnedComponents.has(componentName)
+        !hasWarnedRecently(componentName)
       ) {
-        warnedComponents.add(componentName)
+        markAsWarned(componentName)
         console.warn(
           `%c[Clarity Chat]%c ${componentName} requires a valid license.\n` +
             `Status: ${status.status}\n` +

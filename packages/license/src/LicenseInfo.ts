@@ -24,14 +24,30 @@ let _cachedStatus: LicenseStatus | null = null
 const _listeners: Set<() => void> = new Set()
 
 /**
- * Notify all listeners of license key change
+ * Check if we're in development mode
+ */
+function isDevelopment(): boolean {
+  return (
+    typeof process !== 'undefined' && process.env?.NODE_ENV === 'development'
+  )
+}
+
+/**
+ * Notify all listeners of license key change.
+ * Errors are caught and logged in development mode.
  */
 function notifyListeners(): void {
   _listeners.forEach((listener) => {
     try {
       listener()
-    } catch {
-      // Silently ignore listener errors
+    } catch (error) {
+      // Log errors in development mode to help debugging
+      if (isDevelopment()) {
+        console.error(
+          '[Clarity Chat License] Error in subscription callback:',
+          error
+        )
+      }
     }
   })
 }
