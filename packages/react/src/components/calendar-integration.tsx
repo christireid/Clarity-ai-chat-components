@@ -124,6 +124,8 @@ export interface CalendarIntegrationProps extends Omit<React.HTMLAttributes<HTML
   fetchEvents?: (start: Date, end: Date) => Promise<CalendarEvent[]>
   /** Fetch availability function */
   fetchAvailability?: (start: Date, end: Date) => Promise<AvailabilitySlot[]>
+  /** Ref to the root div element */
+  ref?: React.Ref<HTMLDivElement>
 }
 
 /**
@@ -204,25 +206,22 @@ function getPriorityColor(priority: ActionItem['priority']): string {
  * - Checking availability
  * - Scheduling from conversation
  */
-export const CalendarIntegration = React.forwardRef<HTMLDivElement, CalendarIntegrationProps>(
-  function CalendarIntegration(
-    {
-      initialEvents = [],
-      actionItems: initialActionItems = [],
-      dateRange,
-      showActionItems = true,
-      showAvailability = false,
-      onEventCreate,
-      onEventUpdate: _onEventUpdate,
-      onEventDelete,
-      onActionToEvent,
-      fetchEvents,
-      fetchAvailability,
-      className,
-      ...props
-    },
-    ref
-  ) {
+export function CalendarIntegration({
+  initialEvents = [],
+  actionItems: initialActionItems = [],
+  dateRange,
+  showActionItems = true,
+  showAvailability = false,
+  onEventCreate,
+  onEventUpdate: _onEventUpdate,
+  onEventDelete,
+  onActionToEvent,
+  fetchEvents,
+  fetchAvailability,
+  className,
+  ref,
+  ...props
+}: CalendarIntegrationProps) {
   const isMounted = useIsMounted()
   const [state, setState] = React.useState<CalendarIntegrationState>({
     events: initialEvents,
@@ -590,7 +589,7 @@ export const CalendarIntegration = React.forwardRef<HTMLDivElement, CalendarInte
       )}
     </div>
   )
-})
+}
 
 // Display name for debugging
 CalendarIntegration.displayName = 'CalendarIntegration'

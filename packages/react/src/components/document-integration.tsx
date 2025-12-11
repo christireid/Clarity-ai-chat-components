@@ -112,6 +112,8 @@ export interface DocumentIntegrationProps extends Omit<React.HTMLAttributes<HTML
   multiSelect?: boolean
   /** Max documents to display */
   maxDocuments?: number
+  /** Ref to the root div element */
+  ref?: React.Ref<HTMLDivElement>
 }
 
 /**
@@ -160,24 +162,21 @@ function formatDate(date: Date): string {
  * - Document export
  * - Cross-platform sync
  */
-export const DocumentIntegration = React.forwardRef<HTMLDivElement, DocumentIntegrationProps>(
-  function DocumentIntegration(
-    {
-      platforms = ['google-docs', 'notion', 'local'],
-      initialDocuments = [],
-      onDocumentSelect,
-      onContentExtract,
-      onExport,
-      fetchDocument,
-      listDocuments,
-      showPlatformSelector = true,
-      multiSelect = false,
-      maxDocuments = 50,
-      className,
-      ...props
-    },
-    ref
-  ) {
+export function DocumentIntegration({
+  platforms = ['google-docs', 'notion', 'local'],
+  initialDocuments = [],
+  onDocumentSelect,
+  onContentExtract,
+  onExport,
+  fetchDocument,
+  listDocuments,
+  showPlatformSelector = true,
+  multiSelect = false,
+  maxDocuments = 50,
+  className,
+  ref,
+  ...props
+}: DocumentIntegrationProps) {
   const isMounted = useIsMounted()
   const [state, setState] = React.useState<DocumentIntegrationState>({
     documents: initialDocuments,
@@ -546,7 +545,7 @@ export const DocumentIntegration = React.forwardRef<HTMLDivElement, DocumentInte
       )}
     </div>
   )
-})
+}
 
 // Display name for debugging
 DocumentIntegration.displayName = 'DocumentIntegration'

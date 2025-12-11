@@ -31,6 +31,7 @@ export interface ThemeSwitcherProps {
   showPreview?: boolean
   compact?: boolean
   className?: string
+  ref?: React.Ref<HTMLDivElement>
 }
 
 const defaultThemes: ThemeSwitcherPreview[] = [
@@ -118,257 +119,250 @@ const defaultThemes: ThemeSwitcherPreview[] = [
   },
 ]
 
-export const ThemeSwitcher = React.forwardRef<
-  HTMLDivElement,
-  ThemeSwitcherProps
->(
-  (
-    {
-      currentTheme,
-      onThemeChange,
-      showPreview = true,
-      compact = false,
-      className,
-    },
-    ref
-  ) => {
-    const prefersReducedMotion = useReducedMotion()
-    const [hoveredTheme, setHoveredTheme] = React.useState<Theme | null>(null)
+export function ThemeSwitcher({
+  currentTheme,
+  onThemeChange,
+  showPreview = true,
+  compact = false,
+  className,
+  ref,
+}: ThemeSwitcherProps) {
+  const prefersReducedMotion = useReducedMotion()
+  const [hoveredTheme, setHoveredTheme] = React.useState<Theme | null>(null)
 
-    const handleThemeChange = (theme: Theme) => {
-      onThemeChange(theme)
-    }
+  const handleThemeChange = (theme: Theme) => {
+    onThemeChange(theme)
+  }
 
-    return (
-      <div ref={ref} className={cn('relative', className)}>
-        {/* Theme Options */}
-        <div
-          className={cn(
-            'flex gap-2.5',
-            compact ? 'flex-row' : 'flex-col sm:flex-row'
-          )}
-        >
-          {defaultThemes.map((theme, index) => {
-            const isActive = currentTheme === theme.name
+  return (
+    <div ref={ref} className={cn('relative', className)}>
+      {/* Theme Options */}
+      <div
+        className={cn(
+          'flex gap-2.5',
+          compact ? 'flex-row' : 'flex-col sm:flex-row'
+        )}
+      >
+        {defaultThemes.map((theme, index) => {
+          const isActive = currentTheme === theme.name
 
-            return (
-              <motion.button
-                key={theme.name}
-                onClick={() => handleThemeChange(theme.name)}
-                onMouseEnter={() => setHoveredTheme(theme.name)}
-                onMouseLeave={() => setHoveredTheme(null)}
-                initial={{
-                  opacity: 0,
-                  y: getMotionSafeValue(prefersReducedMotion, 20, 0),
-                }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: getMotionSafeDuration(
-                    prefersReducedMotion,
-                    index * 0.05
-                  ),
-                  duration: getMotionSafeDuration(
-                    prefersReducedMotion,
-                    ANIMATION_DURATION.normal / 1000
-                  ),
-                }}
-                whileHover={{
-                  scale: getMotionSafeValue(prefersReducedMotion, 1.05, 1),
-                }}
-                whileTap={{
-                  scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
-                }}
-                className={cn(
-                  'relative flex items-center gap-3.5 px-4 py-3.5 rounded-lg shadow-sm',
-                  'border transition-all duration-150 ease-out',
-                  'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2',
-                  isActive
-                    ? 'border-primary bg-primary/10 shadow-md'
-                    : 'border-border/40 hover:border-primary/50 hover:bg-muted/40',
-                  compact && 'flex-col text-center px-3.5 py-2.5'
-                )}
-              >
-                {/* Icon */}
-                <motion.div
-                  animate={
-                    isActive && !prefersReducedMotion
-                      ? {
-                          rotate: [0, -10, 10, -10, 0],
-                          scale: [1, 1.2, 1],
-                        }
-                      : {}
-                  }
-                  transition={{
-                    // Framer Motion 12: Spring celebration animation
-                    type: 'spring',
-                    damping: 12,
-                    stiffness: 200,
-                  }}
-                  className={cn(
-                    'flex-shrink-0',
-                    isActive ? 'text-primary' : 'text-muted-foreground/90'
-                  )}
-                >
-                  {theme.icon}
-                </motion.div>
-
-                {/* Label */}
-                <span
-                  className={cn(
-                    'text-sm font-semibold',
-                    compact && 'text-xs',
-                    isActive ? 'text-primary' : 'text-foreground/90'
-                  )}
-                >
-                  {theme.label}
-                </span>
-
-                {/* Active Indicator */}
-                <AnimatePresence>
-                  {isActive && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary"
-                    />
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            )
-          })}
-        </div>
-
-        {/* Live Preview */}
-        {showPreview && !compact && (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={hoveredTheme || currentTheme}
+          return (
+            <motion.button
+              key={theme.name}
+              onClick={() => handleThemeChange(theme.name)}
+              onMouseEnter={() => setHoveredTheme(theme.name)}
+              onMouseLeave={() => setHoveredTheme(null)}
               initial={{
                 opacity: 0,
-                scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
-                y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+                y: getMotionSafeValue(prefersReducedMotion, 20, 0),
               }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{
-                opacity: 0,
-                scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
-                y: getMotionSafeValue(prefersReducedMotion, -10, 0),
-              }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{
+                delay: getMotionSafeDuration(
+                  prefersReducedMotion,
+                  index * 0.05
+                ),
                 duration: getMotionSafeDuration(
                   prefersReducedMotion,
-                  ANIMATION_DURATION.fast / 1000
+                  ANIMATION_DURATION.normal / 1000
                 ),
-                ease: EASING_FRAMER.out,
               }}
-              className="mt-4 p-4 rounded-lg border border-border/40 shadow-sm overflow-hidden"
+              whileHover={{
+                scale: getMotionSafeValue(prefersReducedMotion, 1.05, 1),
+              }}
+              whileTap={{
+                scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
+              }}
+              className={cn(
+                'relative flex items-center gap-3.5 px-4 py-3.5 rounded-lg shadow-sm',
+                'border transition-all duration-150 ease-out',
+                'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2',
+                isActive
+                  ? 'border-primary bg-primary/10 shadow-md'
+                  : 'border-border/40 hover:border-primary/50 hover:bg-muted/40',
+                compact && 'flex-col text-center px-3.5 py-2.5'
+              )}
             >
-              {defaultThemes
-                .filter((t) => t.name === (hoveredTheme || currentTheme))
-                .map((theme) => (
-                  <div key={theme.name}>
-                    <div className="text-sm font-semibold mb-3">Preview</div>
-                    <div className="space-y-2.5">
-                      {/* Color Swatches */}
-                      <div className="flex gap-2.5">
-                        {Object.entries(theme.colors).map(([name, color]) => (
-                          <motion.div
-                            key={name}
-                            initial={{
-                              scale: getMotionSafeValue(
-                                prefersReducedMotion,
-                                0,
-                                1
-                              ),
-                              rotate: getMotionSafeValue(
-                                prefersReducedMotion,
-                                -180,
-                                0
-                              ),
-                            }}
-                            animate={{ scale: 1, rotate: 0 }}
-                            transition={{
-                              type: prefersReducedMotion ? 'tween' : 'spring',
-                              stiffness: 200,
-                              damping: 15,
-                              duration: getMotionSafeDuration(
-                                prefersReducedMotion,
-                                0
-                              ),
-                            }}
-                            className="flex flex-col items-center gap-1.5"
-                          >
-                            <div
-                              className="w-10 h-10 rounded-full border border-border/40 shadow-sm"
-                              style={{ backgroundColor: color }}
-                            />
-                            <span className="text-xs text-muted-foreground/90 capitalize">
-                              {name}
-                            </span>
-                          </motion.div>
-                        ))}
-                      </div>
+              {/* Icon */}
+              <motion.div
+                animate={
+                  isActive && !prefersReducedMotion
+                    ? {
+                        rotate: [0, -10, 10, -10, 0],
+                        scale: [1, 1.2, 1],
+                      }
+                    : {}
+                }
+                transition={{
+                  // Framer Motion 12: Spring celebration animation
+                  type: 'spring',
+                  damping: 12,
+                  stiffness: 200,
+                }}
+                className={cn(
+                  'flex-shrink-0',
+                  isActive ? 'text-primary' : 'text-muted-foreground/90'
+                )}
+              >
+                {theme.icon}
+              </motion.div>
 
-                      {/* Sample UI Elements */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{
-                          delay: getMotionSafeDuration(
-                            prefersReducedMotion,
-                            0.2
-                          ),
-                        }}
-                        className="mt-4 p-3 rounded border border-border/40 shadow-sm"
-                        style={{
-                          backgroundColor: theme.colors.background,
-                          color: theme.colors.foreground,
-                        }}
-                      >
-                        <div className="text-sm font-semibold mb-2">
-                          Sample Content
-                        </div>
-                        <div className="flex gap-2.5">
-                          <div
-                            className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
-                            style={{
-                              backgroundColor: theme.colors.primary,
-                              color: theme.colors.background,
-                            }}
-                          >
-                            Primary
-                          </div>
-                          <div
-                            className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
-                            style={{
-                              backgroundColor: theme.colors.secondary,
-                              color: theme.colors.background,
-                            }}
-                          >
-                            Secondary
-                          </div>
-                          <div
-                            className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
-                            style={{
-                              backgroundColor: theme.colors.accent,
-                              color: theme.colors.background,
-                            }}
-                          >
-                            Accent
-                          </div>
-                        </div>
-                      </motion.div>
-                    </div>
-                  </div>
-                ))}
-            </motion.div>
-          </AnimatePresence>
-        )}
+              {/* Label */}
+              <span
+                className={cn(
+                  'text-sm font-semibold',
+                  compact && 'text-xs',
+                  isActive ? 'text-primary' : 'text-foreground/90'
+                )}
+              >
+                {theme.label}
+              </span>
+
+              {/* Active Indicator */}
+              <AnimatePresence>
+                {isActive && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary"
+                  />
+                )}
+              </AnimatePresence>
+            </motion.button>
+          )
+        })}
       </div>
-    )
-  }
-)
+
+      {/* Live Preview */}
+      {showPreview && !compact && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={hoveredTheme || currentTheme}
+            initial={{
+              opacity: 0,
+              scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
+              y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+            }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{
+              opacity: 0,
+              scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
+              y: getMotionSafeValue(prefersReducedMotion, -10, 0),
+            }}
+            transition={{
+              duration: getMotionSafeDuration(
+                prefersReducedMotion,
+                ANIMATION_DURATION.fast / 1000
+              ),
+              ease: EASING_FRAMER.out,
+            }}
+            className="mt-4 p-4 rounded-lg border border-border/40 shadow-sm overflow-hidden"
+          >
+            {defaultThemes
+              .filter((t) => t.name === (hoveredTheme || currentTheme))
+              .map((theme) => (
+                <div key={theme.name}>
+                  <div className="text-sm font-semibold mb-3">Preview</div>
+                  <div className="space-y-2.5">
+                    {/* Color Swatches */}
+                    <div className="flex gap-2.5">
+                      {Object.entries(theme.colors).map(([name, color]) => (
+                        <motion.div
+                          key={name}
+                          initial={{
+                            scale: getMotionSafeValue(
+                              prefersReducedMotion,
+                              0,
+                              1
+                            ),
+                            rotate: getMotionSafeValue(
+                              prefersReducedMotion,
+                              -180,
+                              0
+                            ),
+                          }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{
+                            type: prefersReducedMotion ? 'tween' : 'spring',
+                            stiffness: 200,
+                            damping: 15,
+                            duration: getMotionSafeDuration(
+                              prefersReducedMotion,
+                              0
+                            ),
+                          }}
+                          className="flex flex-col items-center gap-1.5"
+                        >
+                          <div
+                            className="w-10 h-10 rounded-full border border-border/40 shadow-sm"
+                            style={{ backgroundColor: color }}
+                          />
+                          <span className="text-xs text-muted-foreground/90 capitalize">
+                            {name}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* Sample UI Elements */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        delay: getMotionSafeDuration(
+                          prefersReducedMotion,
+                          0.2
+                        ),
+                      }}
+                      className="mt-4 p-3 rounded border border-border/40 shadow-sm"
+                      style={{
+                        backgroundColor: theme.colors.background,
+                        color: theme.colors.foreground,
+                      }}
+                    >
+                      <div className="text-sm font-semibold mb-2">
+                        Sample Content
+                      </div>
+                      <div className="flex gap-2.5">
+                        <div
+                          className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
+                          style={{
+                            backgroundColor: theme.colors.primary,
+                            color: theme.colors.background,
+                          }}
+                        >
+                          Primary
+                        </div>
+                        <div
+                          className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
+                          style={{
+                            backgroundColor: theme.colors.secondary,
+                            color: theme.colors.background,
+                          }}
+                        >
+                          Secondary
+                        </div>
+                        <div
+                          className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
+                          style={{
+                            backgroundColor: theme.colors.accent,
+                            color: theme.colors.background,
+                          }}
+                        >
+                          Accent
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+              ))}
+          </motion.div>
+        </AnimatePresence>
+      )}
+    </div>
+  )
+}
 
 ThemeSwitcher.displayName = 'ThemeSwitcher'
 

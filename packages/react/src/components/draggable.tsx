@@ -21,85 +21,82 @@ export interface DraggableProps {
   axis?: 'x' | 'y' | 'both'
   showGhost?: boolean
   className?: string
+  ref?: React.Ref<HTMLDivElement>
 }
 
-export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
-  (
-    {
-      children,
-      onDragStart,
-      onDragEnd,
-      onDrop,
-      dragId,
-      disabled = false,
-      axis = 'both',
-      showGhost = true,
-      className,
-    },
-    ref
-  ) => {
-    const [isDragging, setIsDragging] = React.useState(false)
+export function Draggable({
+  children,
+  onDragStart,
+  onDragEnd,
+  onDrop,
+  dragId,
+  disabled = false,
+  axis = 'both',
+  showGhost = true,
+  className,
+  ref,
+}: DraggableProps) {
+  const [isDragging, setIsDragging] = React.useState(false)
 
-    const handleDragStart = () => {
-      if (disabled) return
-      setIsDragging(true)
-      onDragStart?.()
-    }
-
-    const handleDragEnd = (_event: unknown, info: DragInfo) => {
-      setIsDragging(false)
-      onDragEnd?.(info)
-
-      // Detect drop target
-      const element = document.elementFromPoint(info.point.x, info.point.y)
-      const dropZone = element?.closest('[data-drop-zone]')
-      const targetId = dropZone?.getAttribute('data-drop-zone') || null
-      onDrop?.(targetId)
-    }
-
-    const dragConstraints = React.useMemo(() => {
-      if (axis === 'x') return { top: 0, bottom: 0 }
-      if (axis === 'y') return { left: 0, right: 0 }
-      return undefined
-    }, [axis])
-
-    return (
-      <motion.div
-        ref={ref}
-        drag={!disabled}
-        dragConstraints={dragConstraints}
-        dragElastic={0.1}
-        dragMomentum={false}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        whileDrag={{
-          scale: 1.05,
-          opacity: showGhost ? 0.7 : 1,
-          zIndex: 50,
-          cursor: 'grabbing',
-        }}
-        animate={{
-          scale: isDragging ? 1.05 : 1,
-          rotate: isDragging ? 2 : 0,
-        }}
-        transition={{
-          type: 'spring',
-          stiffness: 300,
-          damping: 20,
-        }}
-        className={cn(
-          'touch-none',
-          !disabled && 'cursor-grab active:cursor-grabbing',
-          isDragging && 'shadow-[0_24px_48px_rgba(15,23,42,0.32)]',
-          className
-        )}
-        data-drag-id={dragId}
-      >
-        {children}
-      </motion.div>
-    )
+  const handleDragStart = () => {
+    if (disabled) return
+    setIsDragging(true)
+    onDragStart?.()
   }
-)
+
+  const handleDragEnd = (_event: unknown, info: DragInfo) => {
+    setIsDragging(false)
+    onDragEnd?.(info)
+
+    // Detect drop target
+    const element = document.elementFromPoint(info.point.x, info.point.y)
+    const dropZone = element?.closest('[data-drop-zone]')
+    const targetId = dropZone?.getAttribute('data-drop-zone') || null
+    onDrop?.(targetId)
+  }
+
+  const dragConstraints = React.useMemo(() => {
+    if (axis === 'x') return { top: 0, bottom: 0 }
+    if (axis === 'y') return { left: 0, right: 0 }
+    return undefined
+  }, [axis])
+
+  return (
+    <motion.div
+      ref={ref}
+      drag={!disabled}
+      dragConstraints={dragConstraints}
+      dragElastic={0.1}
+      dragMomentum={false}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      whileDrag={{
+        scale: 1.05,
+        opacity: showGhost ? 0.7 : 1,
+        zIndex: 50,
+        cursor: 'grabbing',
+      }}
+      animate={{
+        scale: isDragging ? 1.05 : 1,
+        rotate: isDragging ? 2 : 0,
+      }}
+      transition={{
+        type: 'spring',
+        stiffness: 300,
+        damping: 20,
+      }}
+      className={cn(
+        'touch-none',
+        !disabled && 'cursor-grab active:cursor-grabbing',
+        isDragging && 'shadow-[0_24px_48px_rgba(15,23,42,0.32)]',
+        className
+      )}
+      data-drag-id={dragId}
+    >
+      {children}
+    </motion.div>
+  )
+}
 
 Draggable.displayName = 'Draggable'
 
@@ -111,84 +108,90 @@ export interface DropZoneProps {
   isOver?: boolean
   className?: string
   activeClassName?: string
+  ref?: React.Ref<HTMLDivElement>
 }
 
-export const DropZone = React.forwardRef<HTMLDivElement, DropZoneProps>(
-  ({ children, onDrop, dropId, className, activeClassName }, ref) => {
-    const [isHovered, setIsHovered] = React.useState(false)
+export function DropZone({
+  children,
+  onDrop,
+  dropId,
+  className,
+  activeClassName,
+  ref,
+}: DropZoneProps) {
+  const [isHovered, setIsHovered] = React.useState(false)
 
-    const handleDragEnter = (e: React.DragEvent) => {
-      e.preventDefault()
-      setIsHovered(true)
-    }
-
-    const handleDragLeave = () => {
-      setIsHovered(false)
-    }
-
-    const handleDragOver = (e: React.DragEvent) => {
-      e.preventDefault()
-    }
-
-    const handleDrop = (e: React.DragEvent) => {
-      e.preventDefault()
-      setIsHovered(false)
-
-      // Get the dragged element ID
-      const dragId = e.dataTransfer.getData('text/plain')
-      onDrop?.(dragId || null)
-    }
-
-    return (
-      <motion.div
-        ref={ref}
-        data-drop-zone={dropId}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        animate={{
-          scale: isHovered ? 1.02 : 1,
-          borderColor: isHovered ? 'rgb(59, 130, 246)' : 'transparent',
-        }}
-        transition={{
-          duration: ANIMATION_DURATION.fast / 1000,
-          ease: EASING_FRAMER.out,
-        }}
-        className={cn(
-          'relative border-2 border-dashed rounded-lg transition-all',
-          isHovered && (activeClassName || 'border-primary bg-primary/5'),
-          className
-        )}
-      >
-        {/* Drop Indicator */}
-        {isHovered && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 pointer-events-none"
-          >
-            <motion.div
-              animate={{
-                scale: [1, 1.05, 1],
-                opacity: [0.5, 0.8, 0.5],
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 1.5,
-                ease: 'easeInOut',
-              }}
-              className="absolute inset-0 rounded-lg bg-primary/10"
-            />
-          </motion.div>
-        )}
-
-        {children}
-      </motion.div>
-    )
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsHovered(true)
   }
-)
+
+  const handleDragLeave = () => {
+    setIsHovered(false)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsHovered(false)
+
+    // Get the dragged element ID
+    const dragId = e.dataTransfer.getData('text/plain')
+    onDrop?.(dragId || null)
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      data-drop-zone={dropId}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      animate={{
+        scale: isHovered ? 1.02 : 1,
+        borderColor: isHovered ? 'rgb(59, 130, 246)' : 'transparent',
+      }}
+      transition={{
+        duration: ANIMATION_DURATION.fast / 1000,
+        ease: EASING_FRAMER.out,
+      }}
+      className={cn(
+        'relative border-2 border-dashed rounded-lg transition-all',
+        isHovered && (activeClassName || 'border-primary bg-primary/5'),
+        className
+      )}
+    >
+      {/* Drop Indicator */}
+      {isHovered && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 pointer-events-none"
+        >
+          <motion.div
+            animate={{
+              scale: [1, 1.05, 1],
+              opacity: [0.5, 0.8, 0.5],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 1.5,
+              ease: 'easeInOut',
+            }}
+            className="absolute inset-0 rounded-lg bg-primary/10"
+          />
+        </motion.div>
+      )}
+
+      {children}
+    </motion.div>
+  )
+}
 
 DropZone.displayName = 'DropZone'
 

@@ -29,13 +29,16 @@ export interface ContextMenuProps {
   className?: string
   /** Accessible label for the context menu */
   'aria-label'?: string
+  ref?: React.Ref<HTMLDivElement>
 }
 
-export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
-  (
-    { items, children, className, 'aria-label': ariaLabel = 'Context menu' },
-    ref
-  ) => {
+export function ContextMenu({
+  items,
+  children,
+  className,
+  'aria-label': ariaLabel = 'Context menu',
+  ref,
+}: ContextMenuProps) {
     const [isOpen, setIsOpen] = React.useState(false)
     const [position, setPosition] = React.useState({ x: 0, y: 0 })
     const [submenuOpen, setSubmenuOpen] = React.useState<string | null>(null)
@@ -498,7 +501,6 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
         </div>
       </MotionConfig>
     )
-  }
-)
+}
 
 ContextMenu.displayName = 'ContextMenu'

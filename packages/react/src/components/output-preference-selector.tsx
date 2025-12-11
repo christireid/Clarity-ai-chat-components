@@ -567,6 +567,8 @@ export interface UncontrolledOutputPreferenceSelectorProps
   defaultValue?: OutputPreference
   /** Optional callback when value changes */
   onValueChange?: (preference: OutputPreferenceValue) => void
+  /** Ref to access imperative methods */
+  ref?: React.Ref<UncontrolledOutputPreferenceSelectorRef>
 }
 
 export interface UncontrolledOutputPreferenceSelectorRef {
@@ -576,13 +578,15 @@ export interface UncontrolledOutputPreferenceSelectorRef {
   setValue: (mode: OutputPreference) => void
 }
 
-export const UncontrolledOutputPreferenceSelector = React.forwardRef<
-  UncontrolledOutputPreferenceSelectorRef,
-  UncontrolledOutputPreferenceSelectorProps
->(function UncontrolledOutputPreferenceSelector(
-  { defaultValue = 'balanced', onValueChange, modelCapacity = 128000, inputTokens = 0, taskType = 'chat', ...props },
-  ref
-) {
+export function UncontrolledOutputPreferenceSelector({
+  defaultValue = 'balanced',
+  onValueChange,
+  modelCapacity = 128000,
+  inputTokens = 0,
+  taskType = 'chat',
+  ref,
+  ...props
+}: UncontrolledOutputPreferenceSelectorProps) {
   // Validate default value
   const safeDefault = VALID_PREFERENCES.has(defaultValue) ? defaultValue : 'balanced'
   const [mode, setMode] = React.useState<OutputPreference>(safeDefault)
@@ -620,6 +624,6 @@ export const UncontrolledOutputPreferenceSelector = React.forwardRef<
       taskType={taskType}
     />
   )
-})
+}
 
 export default OutputPreferenceSelector

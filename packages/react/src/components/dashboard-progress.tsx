@@ -21,6 +21,8 @@ export interface DashboardProgressProps extends React.HTMLAttributes<HTMLDivElem
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'auto'
   /** Thresholds for auto variant (warning at X%, danger at Y%) */
   thresholds?: { warning: number; danger: number }
+  /** Ref to the root div element */
+  ref?: React.Ref<HTMLDivElement>
 }
 
 /**
@@ -42,87 +44,80 @@ export interface DashboardProgressProps extends React.HTMLAttributes<HTMLDivElem
  * />
  * ```
  */
-export const DashboardProgress = React.forwardRef<
-  HTMLDivElement,
-  DashboardProgressProps
->(
-  (
-    {
-      className,
-      value = 0,
-      max = 100,
-      'aria-label': ariaLabel,
-      showValue = false,
-      size = 'md',
-      variant = 'default',
-      thresholds = { warning: 70, danger: 90 },
-      ...props
-    },
-    ref
-  ) => {
-    // Guard against NaN/Infinity - clamp to valid percentage range
-    const safeValue = Number.isFinite(value)
-      ? Math.min(max, Math.max(0, value))
-      : 0
-    const percentage = (safeValue / max) * 100
+export function DashboardProgress({
+  className,
+  value = 0,
+  max = 100,
+  'aria-label': ariaLabel,
+  showValue = false,
+  size = 'md',
+  variant = 'default',
+  thresholds = { warning: 70, danger: 90 },
+  ref,
+  ...props
+}: DashboardProgressProps): React.ReactElement {
+  // Guard against NaN/Infinity - clamp to valid percentage range
+  const safeValue = Number.isFinite(value)
+    ? Math.min(max, Math.max(0, value))
+    : 0
+  const percentage = (safeValue / max) * 100
 
-    // Determine color based on variant
-    const getBarColor = () => {
-      if (variant === 'auto') {
-        if (percentage >= thresholds.danger) return 'bg-red-600'
-        if (percentage >= thresholds.warning) return 'bg-yellow-500'
+  // Determine color based on variant
+  const getBarColor = () => {
+    if (variant === 'auto') {
+      if (percentage >= thresholds.danger) return 'bg-red-600'
+      if (percentage >= thresholds.warning) return 'bg-yellow-500'
+      return 'bg-green-600'
+    }
+
+    switch (variant) {
+      case 'success':
         return 'bg-green-600'
-      }
-
-      switch (variant) {
-        case 'success':
-          return 'bg-green-600'
-        case 'warning':
-          return 'bg-yellow-500'
-        case 'danger':
-          return 'bg-red-600'
-        default:
-          return 'bg-blue-600'
-      }
+      case 'warning':
+        return 'bg-yellow-500'
+      case 'danger':
+        return 'bg-red-600'
+      default:
+        return 'bg-blue-600'
     }
+  }
 
-    // Size classes
-    const sizeClasses = {
-      sm: 'h-1.5',
-      md: 'h-2',
-      lg: 'h-3',
-    }
+  // Size classes
+  const sizeClasses = {
+    sm: 'h-1.5',
+    md: 'h-2',
+    lg: 'h-3',
+  }
 
-    return (
-      <div className={cn('w-full', className)} ref={ref} {...props}>
+  return (
+    <div className={cn('w-full', className)} ref={ref} {...props}>
+      <div
+        className={cn(
+          'relative w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700',
+          sizeClasses[size]
+        )}
+        role="progressbar"
+        aria-valuenow={Math.round(safeValue)}
+        aria-valuemin={0}
+        aria-valuemax={max}
+        aria-label={ariaLabel || 'Progress'}
+      >
         <div
           className={cn(
-            'relative w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700',
-            sizeClasses[size]
+            'h-full transition-all duration-300 ease-out',
+            getBarColor()
           )}
-          role="progressbar"
-          aria-valuenow={Math.round(safeValue)}
-          aria-valuemin={0}
-          aria-valuemax={max}
-          aria-label={ariaLabel || 'Progress'}
-        >
-          <div
-            className={cn(
-              'h-full transition-all duration-300 ease-out',
-              getBarColor()
-            )}
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
-        {showValue && (
-          <span className="mt-1 text-xs text-muted-foreground">
-            {Math.round(percentage)}%
-          </span>
-        )}
+          style={{ width: `${percentage}%` }}
+        />
       </div>
-    )
-  }
-)
+      {showValue && (
+        <span className="mt-1 text-xs text-muted-foreground">
+          {Math.round(percentage)}%
+        </span>
+      )}
+    </div>
+  )
+}
 
 DashboardProgress.displayName = 'DashboardProgress'
 

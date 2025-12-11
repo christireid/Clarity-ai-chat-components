@@ -170,6 +170,8 @@ export interface EmailIntegrationProps extends Omit<React.HTMLAttributes<HTMLDiv
   fetchMessages?: (threadId: string) => Promise<EmailMessage[]>
   /** Mark as read function */
   markAsRead?: (threadId: string) => Promise<void>
+  /** Ref to the root div element */
+  ref?: React.Ref<HTMLDivElement>
 }
 
 /**
@@ -238,25 +240,22 @@ function getParticipantsDisplay(participants: EmailParticipant[]): string {
  * - Managing notifications
  * - Email digests
  */
-export const EmailIntegration = React.forwardRef<HTMLDivElement, EmailIntegrationProps>(
-  function EmailIntegration(
-    {
-      accounts = [],
-      initialThreads = [],
-      showAccountSelector = true,
-      showNotifications = true,
-      maxThreads = 20,
-      onThreadSelect,
-      onSendEmail: _onSendEmail,
-      onReply,
-      fetchThreads,
-      fetchMessages,
-      markAsRead,
-      className,
-      ...props
-    },
-    ref
-  ) {
+export function EmailIntegration({
+  accounts = [],
+  initialThreads = [],
+  showAccountSelector = true,
+  showNotifications = true,
+  maxThreads = 20,
+  onThreadSelect,
+  onSendEmail: _onSendEmail,
+  onReply,
+  fetchThreads,
+  fetchMessages,
+  markAsRead,
+  className,
+  ref,
+  ...props
+}: EmailIntegrationProps) {
   const isMounted = useIsMounted()
   const [state, setState] = React.useState<EmailIntegrationState>({
     accounts,
@@ -663,7 +662,7 @@ export const EmailIntegration = React.forwardRef<HTMLDivElement, EmailIntegratio
       )}
     </div>
   )
-})
+}
 
 // Display name for debugging
 EmailIntegration.displayName = 'EmailIntegration'

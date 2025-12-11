@@ -41,6 +41,8 @@ export interface MessageOptimizedProps {
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
+  // React 19: ref as prop (replaces forwardRef)
+  ref?: React.Ref<HTMLDivElement>
 }
 
 /**
@@ -126,20 +128,19 @@ const markdownComponents: Components = {
 
 /**
  * Optimized Message component with React.memo
+ *
+ * React 19: Now uses ref as a prop instead of forwardRef wrapper.
+ * This simplifies the component API and improves type inference.
  */
-export const MessageOptimized = React.memo(
-  React.forwardRef<HTMLDivElement, MessageOptimizedProps>(
-    (
-      {
-        message,
-        onFeedback,
-        onRetry,
-        showAvatar = true,
-        showTimestamp = true,
-        className,
-      },
-      ref
-    ) => {
+function MessageOptimizedInner({
+  message,
+  onFeedback,
+  onRetry,
+  showAvatar = true,
+  showTimestamp = true,
+  className,
+  ref,
+}: MessageOptimizedProps) {
       const [isHovered, setIsHovered] = React.useState(false)
       const [feedbackGiven, setFeedbackGiven] = React.useState<
         'up' | 'down' | null
@@ -380,20 +381,25 @@ export const MessageOptimized = React.memo(
           </div>
         </motion.div>
       )
-    }
-  ),
-  // Custom comparison function for React.memo
-  (prevProps, nextProps) => {
-    // Only re-render if these props change
-    return (
-      prevProps.message.id === nextProps.message.id &&
-      prevProps.message.content === nextProps.message.content &&
-      prevProps.message.status === nextProps.message.status &&
-      prevProps.message.feedback?.type === nextProps.message.feedback?.type &&
-      prevProps.showAvatar === nextProps.showAvatar &&
-      prevProps.showTimestamp === nextProps.showTimestamp
-    )
-  }
-)
+}
+
+// Custom comparison function for React.memo
+const messageOptimizedAreEqual = (prevProps: MessageOptimizedProps, nextProps: MessageOptimizedProps) => {
+  // Only re-render if these props change
+  return (
+    prevProps.message.id === nextProps.message.id &&
+    prevProps.message.content === nextProps.message.content &&
+    prevProps.message.status === nextProps.message.status &&
+    prevProps.message.feedback?.type === nextProps.message.feedback?.type &&
+    prevProps.showAvatar === nextProps.showAvatar &&
+    prevProps.showTimestamp === nextProps.showTimestamp
+  )
+}
+
+/**
+ * Memoized and exported MessageOptimized component
+ * React 19: Uses ref as prop with React.memo
+ */
+export const MessageOptimized = React.memo(MessageOptimizedInner, messageOptimizedAreEqual)
 
 MessageOptimized.displayName = 'MessageOptimized'
