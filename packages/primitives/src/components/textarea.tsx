@@ -13,7 +13,7 @@ const textareaVariants = cva(
       variant: {
         default: '',
         error: 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/50',
-        success: 'border-green-500 focus-visible:border-green-500 focus-visible:ring-green-500/50',
+        success: 'border-success focus-visible:border-success focus-visible:ring-success/50',
       },
     },
     defaultVariants: {

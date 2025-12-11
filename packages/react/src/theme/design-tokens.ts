@@ -1,6 +1,6 @@
 /**
  * Clarity Chat Design Tokens
- * 
+ *
  * Centralized design system tokens for consistent theming.
  * All values use CSS custom properties for easy customization.
  */
@@ -13,19 +13,19 @@ export const designTokens = {
     // Base colors
     background: 'hsl(var(--background))',
     foreground: 'hsl(var(--foreground))',
-    
+
     // Component colors
     card: 'hsl(var(--card))',
     cardForeground: 'hsl(var(--card-foreground))',
     popover: 'hsl(var(--popover))',
     popoverForeground: 'hsl(var(--popover-foreground))',
-    
+
     // Brand colors
     primary: 'hsl(var(--primary))',
     primaryForeground: 'hsl(var(--primary-foreground))',
     secondary: 'hsl(var(--secondary))',
     secondaryForeground: 'hsl(var(--secondary-foreground))',
-    
+
     // State colors
     muted: 'hsl(var(--muted))',
     mutedForeground: 'hsl(var(--muted-foreground))',
@@ -39,7 +39,7 @@ export const designTokens = {
     warningForeground: 'hsl(var(--warning-foreground))',
     info: 'hsl(var(--info))',
     infoForeground: 'hsl(var(--info-foreground))',
-    
+
     // Borders & inputs
     border: 'hsl(var(--border))',
     input: 'hsl(var(--input))',
@@ -51,18 +51,18 @@ export const designTokens = {
    */
   spacing: {
     0: '0',
-    1: '0.25rem',    // 4px
-    2: '0.5rem',     // 8px
-    3: '0.75rem',    // 12px
-    4: '1rem',       // 16px
-    5: '1.25rem',    // 20px
-    6: '1.5rem',     // 24px
-    8: '2rem',       // 32px
-    10: '2.5rem',    // 40px
-    12: '3rem',      // 48px
-    16: '4rem',      // 64px
-    20: '5rem',      // 80px
-    24: '6rem',      // 96px
+    1: '0.25rem', // 4px
+    2: '0.5rem', // 8px
+    3: '0.75rem', // 12px
+    4: '1rem', // 16px
+    5: '1.25rem', // 20px
+    6: '1.5rem', // 24px
+    8: '2rem', // 32px
+    10: '2.5rem', // 40px
+    12: '3rem', // 48px
+    16: '4rem', // 64px
+    20: '5rem', // 80px
+    24: '6rem', // 96px
   },
 
   /**
@@ -136,17 +136,18 @@ export const designTokens = {
   },
 
   /**
-   * Z-index scale
+   * Z-index scale (matches CSS custom properties)
    */
   zIndex: {
     base: 0,
     dropdown: 1000,
-    sticky: 1020,
-    fixed: 1030,
-    modalBackdrop: 1040,
-    modal: 1050,
-    popover: 1060,
-    tooltip: 1070,
+    sticky: 1100,
+    fixed: 1200,
+    modalBackdrop: 1300,
+    modal: 1400,
+    popover: 1500,
+    tooltip: 1600,
+    toast: 1700,
   },
 
   /**
@@ -159,6 +160,91 @@ export const designTokens = {
     xl: '1280px',
     '2xl': '1536px',
   },
+
+  /**
+   * Animation durations
+   */
+  duration: {
+    instant: '100ms',
+    fast: '150ms',
+    normal: '200ms',
+    slow: '300ms',
+    slower: '500ms',
+  },
+
+  /**
+   * Easing functions
+   */
+  easing: {
+    linear: 'linear',
+    easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
+    easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
+    easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+  },
+
+  /**
+   * Animation presets - ready-to-use animation definitions
+   * These match the keyframes defined in theme.css
+   */
+  animations: {
+    // Feedback animations
+    ripple: {
+      name: 'ripple',
+      duration: '600ms',
+      easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+      cssClass: 'animate-ripple',
+    },
+    shake: {
+      name: 'error-shake',
+      duration: '400ms',
+      easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+      cssClass: 'animate-shake',
+    },
+    // Entrance animations
+    scaleIn: {
+      name: 'scale-in',
+      duration: '200ms',
+      easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      cssClass: 'animate-scale-in',
+    },
+    fadeIn: {
+      name: 'fade-in',
+      duration: '200ms',
+      easing: 'cubic-bezier(0, 0, 0.2, 1)',
+      cssClass: 'animate-fade-in',
+    },
+    slideUp: {
+      name: 'slide-up',
+      duration: '300ms',
+      easing: 'cubic-bezier(0, 0, 0.2, 1)',
+      cssClass: 'animate-slide-up',
+    },
+    // Success/confirmation
+    successPulse: {
+      name: 'success-pulse',
+      duration: '800ms',
+      easing: 'ease-out',
+      iterations: 2,
+      cssClass: 'animate-success-pulse',
+    },
+    // Loading states
+    spinner: {
+      name: 'spinner',
+      duration: '1000ms',
+      easing: 'linear',
+      iterations: 'infinite',
+      cssClass: 'animate-spinner',
+    },
+    pulse: {
+      name: 'pulse-subtle',
+      duration: '2000ms',
+      easing: 'ease-in-out',
+      iterations: 'infinite',
+      cssClass: 'animate-pulse-subtle',
+    },
+  },
 } as const
 
 /**
@@ -170,3 +256,27 @@ export type SpacingToken = keyof typeof designTokens.spacing
 export type RadiusToken = keyof typeof designTokens.radius
 export type ShadowToken = keyof typeof designTokens.shadows
 export type ZIndexToken = keyof typeof designTokens.zIndex
+export type DurationToken = keyof typeof designTokens.duration
+export type EasingToken = keyof typeof designTokens.easing
+export type AnimationPreset = keyof typeof designTokens.animations
+
+/**
+ * Helper function to apply an animation to an element
+ */
+export function applyAnimation(
+  element: HTMLElement,
+  animation: AnimationPreset
+): void {
+  const preset = designTokens.animations[animation]
+  element.style.animation = `${preset.name} ${preset.duration} ${preset.easing}`
+  if ('iterations' in preset) {
+    element.style.animationIterationCount = String(preset.iterations)
+  }
+}
+
+/**
+ * Get animation CSS class for a preset
+ */
+export function getAnimationClass(animation: AnimationPreset): string {
+  return designTokens.animations[animation].cssClass
+}

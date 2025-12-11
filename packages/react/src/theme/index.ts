@@ -256,3 +256,30 @@ export {
   type ValidationResult,
   type ValidationIssue,
 } from './theme-validator'
+
+// Color contrast validation (WCAG compliance)
+export {
+  checkContrast as checkColorContrast,
+  validateAllColors,
+  generateContrastReport,
+  parseHSL,
+  hslToRgb,
+  getRelativeLuminance,
+  semanticColorPairs,
+  darkModeColorPairs,
+  type ContrastResult,
+  type ColorPair,
+  type ContrastReport,
+} from './color-contrast'
+
+// Color token migration utilities (codemod)
+export {
+  colorMigrationMap,
+  reviewPatterns,
+  migrateLine,
+  checkForReview,
+  migrateFile,
+  migrateDirectory,
+  generateReport,
+  type MigrationResult,
+} from './migrate-colors'

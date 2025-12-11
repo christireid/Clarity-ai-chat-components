@@ -14,6 +14,14 @@ interface ThemeConfig {
     background: string
     foreground: string
     border: string
+    // State colors
+    success: string
+    successForeground: string
+    warning: string
+    warningForeground: string
+    info: string
+    infoForeground: string
+    destructive: string
   }
   radius: string
   shadows: {
@@ -32,6 +40,14 @@ const defaultTheme: ThemeConfig = {
     background: '0 0% 100%',
     foreground: '222.2 84% 4.9%',
     border: '214.3 31.8% 91.4%',
+    // State colors
+    success: '142.1 76.2% 36.3%',
+    successForeground: '0 0% 100%',
+    warning: '45.4 93.4% 47.5%',
+    warningForeground: '0 0% 0%',
+    info: '217.2 91.2% 59.8%',
+    infoForeground: '0 0% 100%',
+    destructive: '0 84.2% 60.2%',
   },
   radius: '0.5rem',
   shadows: {
@@ -48,31 +64,40 @@ const presets = {
   ocean: {
     ...defaultTheme,
     colors: {
+      ...defaultTheme.colors,
       primary: '199 89% 48%',
       secondary: '195 53% 79%',
       background: '0 0% 100%',
       foreground: '199 18% 20%',
       border: '195 20% 85%',
+      success: '168 76% 36%',
+      info: '199 89% 48%',
     },
   },
   forest: {
     ...defaultTheme,
     colors: {
+      ...defaultTheme.colors,
       primary: '142 76% 36%',
       secondary: '142 30% 85%',
       background: '0 0% 100%',
       foreground: '142 20% 15%',
       border: '142 15% 80%',
+      success: '142 76% 36%',
+      info: '180 60% 45%',
     },
   },
   sunset: {
     ...defaultTheme,
     colors: {
+      ...defaultTheme.colors,
       primary: '14 100% 57%',
       secondary: '14 100% 92%',
       background: '0 0% 100%',
       foreground: '14 20% 15%',
       border: '14 30% 85%',
+      success: '142 70% 40%',
+      warning: '38 100% 50%',
     },
   },
 }
@@ -100,16 +125,42 @@ export default function App() {
     root.style.setProperty('--background', theme.colors.background)
     root.style.setProperty('--foreground', theme.colors.foreground)
     root.style.setProperty('--border', theme.colors.border)
+    // State colors
+    root.style.setProperty('--success', theme.colors.success)
+    root.style.setProperty(
+      '--success-foreground',
+      theme.colors.successForeground
+    )
+    root.style.setProperty('--warning', theme.colors.warning)
+    root.style.setProperty(
+      '--warning-foreground',
+      theme.colors.warningForeground
+    )
+    root.style.setProperty('--info', theme.colors.info)
+    root.style.setProperty('--info-foreground', theme.colors.infoForeground)
+    root.style.setProperty('--destructive', theme.colors.destructive)
     root.style.setProperty('--radius', theme.radius)
   }
 
   const exportTheme = () => {
     const css = `:root {
+  /* Core colors */
   --primary: ${theme.colors.primary};
   --secondary: ${theme.colors.secondary};
   --background: ${theme.colors.background};
   --foreground: ${theme.colors.foreground};
   --border: ${theme.colors.border};
+
+  /* State colors */
+  --success: ${theme.colors.success};
+  --success-foreground: ${theme.colors.successForeground};
+  --warning: ${theme.colors.warning};
+  --warning-foreground: ${theme.colors.warningForeground};
+  --info: ${theme.colors.info};
+  --info-foreground: ${theme.colors.infoForeground};
+  --destructive: ${theme.colors.destructive};
+
+  /* Layout */
   --radius: ${theme.radius};
 }`
 
@@ -241,6 +292,54 @@ export default function App() {
                   <Button variant="outline">Outline</Button>
                   <Button variant="ghost">Ghost</Button>
                   <Button variant="destructive">Destructive</Button>
+                </div>
+              </Card>
+
+              {/* State Colors Preview */}
+              <Card className="p-6">
+                <h3 className="font-medium mb-4">State Colors</h3>
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-3">
+                    <div
+                      className="px-3 py-1.5 rounded-md text-sm font-medium"
+                      style={{
+                        backgroundColor: `hsl(${theme.colors.success})`,
+                        color: `hsl(${theme.colors.successForeground})`,
+                      }}
+                    >
+                      Success
+                    </div>
+                    <div
+                      className="px-3 py-1.5 rounded-md text-sm font-medium"
+                      style={{
+                        backgroundColor: `hsl(${theme.colors.warning})`,
+                        color: `hsl(${theme.colors.warningForeground})`,
+                      }}
+                    >
+                      Warning
+                    </div>
+                    <div
+                      className="px-3 py-1.5 rounded-md text-sm font-medium"
+                      style={{
+                        backgroundColor: `hsl(${theme.colors.info})`,
+                        color: `hsl(${theme.colors.infoForeground})`,
+                      }}
+                    >
+                      Info
+                    </div>
+                    <div
+                      className="px-3 py-1.5 rounded-md text-sm font-medium bg-destructive text-white"
+                      style={{
+                        backgroundColor: `hsl(${theme.colors.destructive})`,
+                      }}
+                    >
+                      Destructive
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    These state colors are used for status indicators, badges,
+                    and feedback messages.
+                  </p>
                 </div>
               </Card>
 

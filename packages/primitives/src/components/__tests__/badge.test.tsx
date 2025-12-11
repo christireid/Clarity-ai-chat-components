@@ -39,21 +39,21 @@ describe('Badge Component', () => {
       const { container } = render(<Badge variant="success">Success</Badge>)
       const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
-      expect(badge).toHaveClass('bg-green-500')
+      expect(badge).toHaveClass('bg-success')
     })
 
     it('should render with warning variant', () => {
       const { container } = render(<Badge variant="warning">Warning</Badge>)
       const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
-      expect(badge).toHaveClass('bg-yellow-500')
+      expect(badge).toHaveClass('bg-warning')
     })
 
     it('should render with info variant', () => {
       const { container } = render(<Badge variant="info">Info</Badge>)
       const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
-      expect(badge).toHaveClass('bg-blue-500')
+      expect(badge).toHaveClass('bg-info')
     })
 
     it('should render with small size', () => {

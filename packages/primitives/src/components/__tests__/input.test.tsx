@@ -41,7 +41,7 @@ describe('Input Component', () => {
     it('should render with success variant', () => {
       const { container } = render(<Input variant="success" />)
       const input = container.querySelector('input')
-      expect(input).toHaveClass('ring-green-500')
+      expect(input).toHaveClass('ring-success')
     })
 
     it('should render with small size', () => {
