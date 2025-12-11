@@ -5,6 +5,7 @@ import { motion, useMotionValue, useTransform } from 'framer-motion'
 import type { PanInfo } from 'framer-motion'
 import { Card, CardContent, Button, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
+import { DURATION_SECONDS } from '../animations/constants'
 
 /**
  * Swipe action configuration
@@ -403,7 +404,7 @@ export function MobileChatWindow({
               rotate: isRefreshing ? 360 : 0,
             }}
             transition={{
-              duration: durations.slower,
+              duration: DURATION_SECONDS.slower,
               repeat: isRefreshing ? Infinity : 0,
             }}
           >

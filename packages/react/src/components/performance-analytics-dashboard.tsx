@@ -12,6 +12,7 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
+import { DURATION_SECONDS } from '../animations/constants'
 
 /**
  * Web Vitals metric
@@ -436,7 +437,7 @@ export function PerformanceAnalyticsDashboard({
                   className="flex flex-col items-center rounded-lg border p-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: durations.moderate }}
+                  transition={{ duration: DURATION_SECONDS.normal }}
                 >
                   <div className="text-xs font-medium text-muted-foreground mb-1">
                     {vital.name}
@@ -529,7 +530,7 @@ export function PerformanceAnalyticsDashboard({
                   animate={{
                     width: `${(data.memoryUsage.used / data.memoryUsage.limit) * 100}%`,
                   }}
-                  transition={{ duration: durations.slow }}
+                  transition={{ duration: DURATION_SECONDS.slow }}
                 />
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground">

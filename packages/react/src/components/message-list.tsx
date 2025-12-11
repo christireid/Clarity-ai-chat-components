@@ -14,7 +14,7 @@ import {
   createStaggerContainerVariant,
   createStaggerChildVariant,
 } from '../animations/utils'
-import { INTERACTION_VARIANTS } from '../animations/constants'
+import { INTERACTION_VARIANTS, DURATION_SECONDS } from '../animations/constants'
 import {
   getMotionSafeDuration,
   getMotionSafeScale,
@@ -199,7 +199,7 @@ export function MessageList({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: durations.fast }}
+              transition={{ duration: DURATION_SECONDS.fast }}
               className="space-y-4 px-4 py-6"
             >
               {Array.from({ length: loadingCount }).map((_, index) => (
@@ -220,7 +220,7 @@ export function MessageList({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: durations.fast }}
+              transition={{ duration: DURATION_SECONDS.fast }}
               className="px-2 py-4"
             >
               {emptyState}
@@ -236,7 +236,7 @@ export function MessageList({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: durations.fast }}
+              transition={{ duration: DURATION_SECONDS.fast }}
             >
               {messages.map((message, index) => {
                 // Calculate grouping for this message
@@ -260,7 +260,7 @@ export function MessageList({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: durations.normal,
+                      duration: DURATION_SECONDS.normal,
                       delay: index * 0.03,
                     }}
                     className="w-full"
@@ -300,7 +300,7 @@ export function MessageList({
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: durations.normal }}
+                  transition={{ duration: DURATION_SECONDS.normal }}
                 >
                   <SkeletonMessage
                     role="assistant"
@@ -348,7 +348,7 @@ export function MessageList({
                   ? {
                       scale: [1, 1.08, 1],
                       transition: {
-                        duration: durations.slower,
+                        duration: DURATION_SECONDS.slower,
                         repeat: 3,
                         ease: 'easeInOut',
                       },
