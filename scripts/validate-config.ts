@@ -32,6 +32,89 @@ interface ValidationContext {
 }
 
 // ============================================================================
+// Utilities
+// ============================================================================
+
+/**
+ * Parse JSON with comments (JSONC) safely.
+ * Handles single-line (//) and multi-line comments without breaking URLs in strings.
+ */
+function parseJsonWithComments(content: string): Record<string, unknown> {
+  // State machine to track if we're inside a string
+  let result = ''
+  let inString = false
+  let inSingleLineComment = false
+  let inMultiLineComment = false
+  let i = 0
+
+  while (i < content.length) {
+    const char = content[i]
+    const nextChar = content[i + 1]
+
+    // Handle string state
+    if (!inSingleLineComment && !inMultiLineComment) {
+      if (char === '"' && (i === 0 || content[i - 1] !== '\\')) {
+        inString = !inString
+        result += char
+        i++
+        continue
+      }
+    }
+
+    // If inside a string, just copy characters
+    if (inString) {
+      result += char
+      i++
+      continue
+    }
+
+    // Check for comment start (outside strings)
+    if (!inSingleLineComment && !inMultiLineComment) {
+      if (char === '/' && nextChar === '/') {
+        inSingleLineComment = true
+        i += 2
+        continue
+      }
+      if (char === '/' && nextChar === '*') {
+        inMultiLineComment = true
+        i += 2
+        continue
+      }
+    }
+
+    // Handle single-line comment end
+    if (inSingleLineComment) {
+      if (char === '\n') {
+        inSingleLineComment = false
+        result += char // Keep newline for line counting in errors
+      }
+      i++
+      continue
+    }
+
+    // Handle multi-line comment end
+    if (inMultiLineComment) {
+      if (char === '*' && nextChar === '/') {
+        inMultiLineComment = false
+        i += 2
+        continue
+      }
+      i++
+      continue
+    }
+
+    // Regular character outside comments
+    result += char
+    i++
+  }
+
+  // Remove trailing commas (common in tsconfig)
+  result = result.replace(/,(\s*[}\]])/g, '$1')
+
+  return JSON.parse(result)
+}
+
+// ============================================================================
 // Validators
 // ============================================================================
 
@@ -151,15 +234,9 @@ function validateTsConfig(ctx: ValidationContext): ValidationResult {
 
   try {
     // Read and parse, handling comments in JSON
-    let content = fs.readFileSync(configPath, 'utf-8')
-    // Remove single-line comments
-    content = content.replace(/\/\/.*$/gm, '')
-    // Remove multi-line comments
-    content = content.replace(/\/\*[\s\S]*?\*\//g, '')
-    // Remove trailing commas
-    content = content.replace(/,\s*([\]}])/g, '$1')
-
-    const config = JSON.parse(content)
+    // Use a safer approach that handles comments in tsconfig.json
+    const content = fs.readFileSync(configPath, 'utf-8')
+    const config = parseJsonWithComments(content)
     const opts = config.compilerOptions || {}
 
     // Strict mode

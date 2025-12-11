@@ -41,8 +41,22 @@ export interface WarningOptions {
 
 /**
  * Set of warnings that have already been shown (for one-time warnings)
+ * Limited to prevent unbounded memory growth in long-running SPAs
  */
 const shownWarnings = new Set<string>()
+const MAX_SHOWN_WARNINGS = 1000
+
+/**
+ * Add a warning key to the shown set, with size limit
+ */
+function markWarningShown(key: string): void {
+  // If we're at the limit, clear older entries (simple FIFO approach)
+  if (shownWarnings.size >= MAX_SHOWN_WARNINGS) {
+    const firstKey = shownWarnings.values().next().value
+    if (firstKey) shownWarnings.delete(firstKey)
+  }
+  shownWarnings.add(key)
+}
 
 /**
  * Category prefixes for visual distinction
@@ -87,7 +101,7 @@ export function warn(options: WarningOptions): void {
 
   // Only show each warning once per session if once=true
   if (once && shownWarnings.has(warningKey)) return
-  if (once) shownWarnings.add(warningKey)
+  if (once) markWarningShown(warningKey)
 
   const prefix = CATEGORY_PREFIXES[category]
   let fullMessage = `[Clarity Chat ${prefix}] ${component}\n\n${message}`
@@ -129,7 +143,7 @@ export function devWarning(
 
   const warningKey = `${component}:${message}`
   if (shownWarnings.has(warningKey)) return
-  shownWarnings.add(warningKey)
+  markWarningShown(warningKey)
 
   console.warn(`[Clarity Chat] ${component}: ${message}`)
 }
