@@ -4,14 +4,26 @@ import * as React from 'react'
 import { estimateTokens } from '../utils/tokenization/estimator'
 import { MODEL_REGISTRY } from '../utils/tokenization/model-registry'
 
+// =============================================================================
+// Lazy-initialized pricing and limits for performance
+// Values are computed on first access, not at import time
+// =============================================================================
+
+/** Cached MODEL_PRICING value */
+let _modelPricing: Record<string, { input: number; output: number }> | null =
+  null
+
+/** Cached MODEL_LIMITS value */
+let _modelLimits: Record<string, number> | null = null
+
 /**
- * Token pricing for popular models (derived from MODEL_REGISTRY)
- * Format: cost per token in dollars
- *
- * @deprecated Import from '../utils/tokenization/model-pricing' for full pricing utilities
+ * Computes MODEL_PRICING from MODEL_REGISTRY (called once on first access)
  */
-export const MODEL_PRICING: Record<string, { input: number; output: number }> =
-  Object.fromEntries(
+function computeModelPricing(): Record<
+  string,
+  { input: number; output: number }
+> {
+  return Object.fromEntries(
     Object.entries(MODEL_REGISTRY).map(([id, config]) => [
       id,
       {
@@ -20,17 +32,101 @@ export const MODEL_PRICING: Record<string, { input: number; output: number }> =
       },
     ])
   )
+}
+
+/**
+ * Computes MODEL_LIMITS from MODEL_REGISTRY (called once on first access)
+ */
+function computeModelLimits(): Record<string, number> {
+  return Object.fromEntries(
+    Object.entries(MODEL_REGISTRY).map(([id, config]) => [
+      id,
+      config.contextWindow,
+    ])
+  )
+}
+
+/**
+ * Token pricing for popular models (derived from MODEL_REGISTRY)
+ * Format: cost per token in dollars
+ *
+ * **Performance**: Lazy-initialized on first access, not at import time.
+ *
+ * @deprecated Import from '../utils/tokenization/model-pricing' for full pricing utilities.
+ * Use `calculateCost()` for accurate cost calculations.
+ * @see {@link ../utils/tokenization/model-pricing.ts} for the recommended API
+ * @see {@link MODEL_REGISTRY} for the source of truth
+ */
+export const MODEL_PRICING: Record<string, { input: number; output: number }> =
+  new Proxy({} as Record<string, { input: number; output: number }>, {
+    get(_target, prop: string) {
+      _modelPricing ??= computeModelPricing()
+      return _modelPricing[prop]
+    },
+    has(_target, prop: string) {
+      _modelPricing ??= computeModelPricing()
+      return prop in _modelPricing
+    },
+    ownKeys() {
+      _modelPricing ??= computeModelPricing()
+      return Object.keys(_modelPricing)
+    },
+    getOwnPropertyDescriptor(_target, prop: string) {
+      _modelPricing ??= computeModelPricing()
+      if (prop in _modelPricing) {
+        return {
+          value: _modelPricing[prop],
+          writable: false,
+          enumerable: true,
+          configurable: true,
+        }
+      }
+      return undefined
+    },
+  })
 
 /**
  * Token limits for popular models (derived from MODEL_REGISTRY)
  *
- * @deprecated Use MODEL_REGISTRY directly for full model configuration
+ * **Performance**: Lazy-initialized on first access, not at import time.
+ *
+ * @deprecated Use `MODEL_REGISTRY` directly for full model configuration including
+ * context window, max output tokens, and capabilities.
+ * @see {@link MODEL_REGISTRY} for the complete model configuration
+ * @example
+ * ```ts
+ * import { MODEL_REGISTRY } from '../utils/tokenization/model-registry'
+ * const gpt4Limit = MODEL_REGISTRY['gpt-4'].contextWindow // 8192
+ * ```
  */
-export const MODEL_LIMITS: Record<string, number> = Object.fromEntries(
-  Object.entries(MODEL_REGISTRY).map(([id, config]) => [
-    id,
-    config.contextWindow,
-  ])
+export const MODEL_LIMITS: Record<string, number> = new Proxy(
+  {} as Record<string, number>,
+  {
+    get(_target, prop: string) {
+      _modelLimits ??= computeModelLimits()
+      return _modelLimits[prop]
+    },
+    has(_target, prop: string) {
+      _modelLimits ??= computeModelLimits()
+      return prop in _modelLimits
+    },
+    ownKeys() {
+      _modelLimits ??= computeModelLimits()
+      return Object.keys(_modelLimits)
+    },
+    getOwnPropertyDescriptor(_target, prop: string) {
+      _modelLimits ??= computeModelLimits()
+      if (prop in _modelLimits) {
+        return {
+          value: _modelLimits[prop],
+          writable: false,
+          enumerable: true,
+          configurable: true,
+        }
+      }
+      return undefined
+    },
+  }
 )
 
 /**
