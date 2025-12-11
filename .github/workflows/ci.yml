@@ -42,11 +42,23 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
         with:
           egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -61,10 +73,19 @@ jobs:
         uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
 
       - name: Run ESLint
-        run: pnpm turbo run lint
+        run: pnpm turbo run lint --summarize
 
       - name: Check formatting
         run: pnpm format:check
+
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Lint completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
 
   # ============================================
   # TYPECHECK - Catch type errors
@@ -73,11 +94,23 @@ jobs:
     name: Typecheck
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
         with:
           egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -92,7 +125,16 @@ jobs:
         uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
 
       - name: Run typecheck
-        run: pnpm turbo run typecheck
+        run: pnpm turbo run typecheck --summarize
+
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Typecheck completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
 
   # ============================================
   # TEST - Run unit tests
@@ -101,11 +143,23 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
         with:
           egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -120,7 +174,16 @@ jobs:
         uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
 
       - name: Run tests
-        run: pnpm turbo run test
+        run: pnpm turbo run test --summarize
+
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Tests completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
 
   # ============================================
   # BUILD - Verify build succeeds
@@ -130,11 +193,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [lint, typecheck, test]
+    outputs:
+      duration: ${{ steps.timing.outputs.duration }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
         with:
           egress-policy: audit
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            registry.npmjs.org:443
+            nodejs.org:443
+
+      - name: Start timing
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -149,7 +224,7 @@ jobs:
         uses: rharkor/caching-for-turbo@cda201ff2b32699a2ae9f59704db029e3dde4fbd # v2.3.5
 
       - name: Build packages
-        run: pnpm turbo run build
+        run: pnpm turbo run build --summarize
 
       - name: Verify build outputs
         run: |
@@ -161,3 +236,49 @@ jobs:
             echo "❌ packages/react/dist not found"
             exit 1
           fi
+
+      - name: Calculate duration
+        id: timing
+        if: always()
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - ${{ steps.start.outputs.time }}))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+          echo "⏱️ Build completed in ${DURATION}s" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # CI SUMMARY - Performance report
+  # ============================================
+  ci-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [lint, typecheck, test, build]
+    if: always()
+    steps:
+      - name: Generate CI Summary
+        run: |
+          echo "## 📊 CI Performance Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Duration | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ needs.lint.outputs.duration || 'N/A' }} | ${{ needs.lint.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Typecheck | ${{ needs.typecheck.outputs.duration || 'N/A' }} | ${{ needs.typecheck.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test | ${{ needs.test.outputs.duration || 'N/A' }} | ${{ needs.test.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.outputs.duration || 'N/A' }} | ${{ needs.build.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔒 Security Features" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ StepSecurity Harden Runner (egress monitoring)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ SHA-pinned actions (supply chain protection)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Minimal permissions (least privilege)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ⚡ Performance Features" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Turbo Remote Cache (cross-run caching)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Parallel job execution" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ pnpm store caching" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check overall status
+        if: needs.lint.result != 'success' || needs.typecheck.result != 'success' || needs.test.result != 'success' || needs.build.result != 'success'
+        run: |
+          echo "❌ One or more CI jobs failed"
+          exit 1

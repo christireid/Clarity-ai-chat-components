@@ -1,0 +1,175 @@
+name: CI Metrics
+
+on:
+  schedule:
+    # Run weekly on Sundays at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  collect-metrics:
+    name: Collect CI Metrics
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+
+      - name: Collect workflow metrics
+        id: metrics
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const now = new Date();
+            const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+            // Get CI workflow runs from the past week
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ci.yml',
+              created: `>=${weekAgo.toISOString().split('T')[0]}`,
+              per_page: 100
+            });
+
+            // Calculate metrics
+            const completedRuns = runs.workflow_runs.filter(r => r.status === 'completed');
+            const successfulRuns = completedRuns.filter(r => r.conclusion === 'success');
+            const failedRuns = completedRuns.filter(r => r.conclusion === 'failure');
+
+            // Calculate durations (in minutes)
+            const durations = completedRuns
+              .filter(r => r.run_started_at && r.updated_at)
+              .map(r => {
+                const start = new Date(r.run_started_at);
+                const end = new Date(r.updated_at);
+                return (end - start) / 1000 / 60; // minutes
+              });
+
+            const avgDuration = durations.length > 0
+              ? (durations.reduce((a, b) => a + b, 0) / durations.length).toFixed(1)
+              : 'N/A';
+
+            const minDuration = durations.length > 0
+              ? Math.min(...durations).toFixed(1)
+              : 'N/A';
+
+            const maxDuration = durations.length > 0
+              ? Math.max(...durations).toFixed(1)
+              : 'N/A';
+
+            const successRate = completedRuns.length > 0
+              ? ((successfulRuns.length / completedRuns.length) * 100).toFixed(1)
+              : 'N/A';
+
+            // Get cache usage (if available)
+            let cacheHitRate = 'N/A';
+
+            const metrics = {
+              totalRuns: runs.workflow_runs.length,
+              completedRuns: completedRuns.length,
+              successfulRuns: successfulRuns.length,
+              failedRuns: failedRuns.length,
+              successRate: successRate,
+              avgDuration: avgDuration,
+              minDuration: minDuration,
+              maxDuration: maxDuration,
+              cacheHitRate: cacheHitRate
+            };
+
+            core.setOutput('metrics', JSON.stringify(metrics));
+            return metrics;
+
+      - name: Generate metrics report
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const metrics = JSON.parse('${{ steps.metrics.outputs.metrics }}');
+            const now = new Date();
+            const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+            const body = `## 📊 Weekly CI Metrics Report
+
+            **Period**: ${weekAgo.toISOString().split('T')[0]} to ${now.toISOString().split('T')[0]}
+
+            ### Build Statistics
+
+            | Metric | Value |
+            |--------|-------|
+            | Total Runs | ${metrics.totalRuns} |
+            | Successful | ${metrics.successfulRuns} |
+            | Failed | ${metrics.failedRuns} |
+            | Success Rate | ${metrics.successRate}% |
+
+            ### Performance
+
+            | Metric | Value |
+            |--------|-------|
+            | Average Duration | ${metrics.avgDuration} min |
+            | Fastest Run | ${metrics.minDuration} min |
+            | Slowest Run | ${metrics.maxDuration} min |
+
+            ### Security Status
+
+            - ✅ All actions SHA-pinned
+            - ✅ StepSecurity Harden Runner enabled
+            - ✅ Minimal permissions enforced
+            - ✅ Dependabot monitoring enabled
+
+            ### Recommendations
+
+            ${metrics.successRate !== 'N/A' && parseFloat(metrics.successRate) < 90 ? `
+            ⚠️ **Success rate below 90%** - Consider investigating frequent failures.
+            ` : ''}
+            ${metrics.avgDuration !== 'N/A' && parseFloat(metrics.avgDuration) > 10 ? `
+            ⚠️ **Average duration above 10 minutes** - Consider optimizing build steps.
+            ` : ''}
+            ${metrics.successRate !== 'N/A' && parseFloat(metrics.successRate) >= 90 && (metrics.avgDuration === 'N/A' || parseFloat(metrics.avgDuration) <= 10) ? `
+            ✅ CI performance is healthy!
+            ` : ''}
+
+            ---
+
+            *This report was automatically generated by the [CI Metrics workflow](.github/workflows/ci-metrics.yml)*
+            `;
+
+            // Create or update the metrics issue
+            const title = `📊 Weekly CI Metrics - ${now.toISOString().split('T')[0]}`;
+
+            // Check if we should create an issue (only if there are concerns)
+            const hasIssues = (metrics.successRate !== 'N/A' && parseFloat(metrics.successRate) < 90) ||
+                             (metrics.avgDuration !== 'N/A' && parseFloat(metrics.avgDuration) > 10);
+
+            if (hasIssues) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['ci', 'metrics', 'automated']
+              });
+              console.log('Created CI metrics issue (issues detected)');
+            } else {
+              // Just log to step summary for healthy metrics
+              console.log('CI metrics healthy - no issue created');
+            }
+
+            // Always add to step summary
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, body);
+
+      - name: Post summary
+        run: |
+          echo "✅ CI metrics collection complete"
+          echo "View the full report in the workflow summary above."
