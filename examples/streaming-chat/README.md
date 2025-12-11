@@ -1,159 +1,202 @@
-# Streaming Chat
+# Streaming Chat Example
 
-> Advanced SSE streaming demo with cancel, retry, and real-time token tracking.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
 
-## Features
+> Real-time streaming AI chat interface built with Clarity Chat patterns and Next.js App Router.
 
-- Real-time token counting (input & output)
-- Stream cancellation with Stop button
-- Retry failed messages
-- Tokens per second metrics
-- Stream duration tracking
-- Visual streaming cursor
-- Connection status indicator
-- Dark theme with accent colors
+![Streaming Chat Demo](./public/screenshot.png)
 
-## Quick Start
+## ✨ Features
+
+- **Real-time streaming** - See AI responses appear word-by-word as they're generated
+- **Accessible design** - WCAG 2.1 AA compliant with keyboard navigation and screen reader support
+- **Responsive layout** - Works beautifully on mobile, tablet, and desktop
+- **Error handling** - Graceful error states with retry functionality
+- **Loading states** - Skeleton UI while content loads
+- **Dark mode ready** - CSS variables for easy theme customization
+
+## 🚀 Quick Start
 
 ```bash
-# Clone the example
-npx degit clarity-chat/clarity-chat/examples/streaming-chat my-streaming-app
-cd my-streaming-app
+# Navigate to this example
+cd examples/streaming-chat
 
 # Install dependencies
 pnpm install
 
-# Set up environment
+# Copy environment variables
 cp .env.example .env.local
-# Add your OpenAI API key
+# Edit .env.local with your API keys (optional for demo mode)
 
-# Run development server
+# Start development server
 pnpm dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) to see the demo.
+Open [http://localhost:3000](http://localhost:3000) to see the demo.
 
-## What You'll Learn
+> **Note:** This example includes a demo mode that works without API keys, simulating streaming
+> responses to showcase the UI patterns.
 
-1. How to implement SSE streaming with metadata
-2. Stream cancellation with AbortController
-3. Real-time metrics calculation
-4. Graceful error handling and retry logic
+## 📋 Prerequisites
 
-## Key Code
+- Node.js 20+
+- pnpm 10+
+- (Optional) OpenAI API key for real AI responses -
+  [Get one here](https://platform.openai.com/api-keys)
 
-### Stream with Metadata
-
-The API route sends not just content, but also metrics:
-
-```typescript
-// Types of SSE events
-{ type: 'init', inputTokens: 150, model: 'gpt-4' }
-{ type: 'text-delta', content: 'Hello', outputTokens: 1, elapsedMs: 50 }
-{ type: 'finish', reason: 'stop', totalMs: 2500, outputTokens: 100 }
-{ type: 'error', message: 'Rate limit exceeded' }
-```
-
-### AbortController for Cancellation
-
-```typescript
-// Create controller before fetch
-abortControllerRef.current = new AbortController()
-
-const response = await fetch('/api/chat', {
-  signal: abortControllerRef.current.signal,
-})
-
-// Cancel on button click
-const cancelStream = () => {
-  abortControllerRef.current?.abort()
-}
-```
-
-### Token Metrics
-
-```typescript
-interface StreamMetrics {
-  inputTokens: number   // Tokens in the prompt
-  outputTokens: number  // Tokens generated so far
-  elapsedMs: number     // Time since start
-  tokensPerSecond: number // Generation speed
-}
-
-// Calculate tokens/second
-const tps = elapsed > 0
-  ? Math.round((outputTokens / elapsed) * 1000)
-  : 0
-```
-
-## Project Structure
+## 🏗️ Architecture
 
 ```
 streaming-chat/
-├── app/
-│   ├── api/chat/route.ts   # Streaming API with metrics
-│   ├── globals.css         # Dark theme styles
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-│   └── streaming-chat.tsx  # Main component (~400 lines)
-├── .env.example
+├── src/
+│   └── app/
+│       ├── layout.tsx        # Root layout with metadata
+│       ├── page.tsx          # Main chat interface
+│       ├── loading.tsx       # Loading skeleton
+│       ├── error.tsx         # Error boundary
+│       ├── globals.css       # Tailwind + CSS variables
+│       └── api/
+│           └── chat/
+│               └── route.ts  # Streaming API endpoint
 ├── package.json
-└── README.md
+├── tsconfig.json
+├── tailwind.config.ts
+└── .env.example
 ```
 
-## Customization
+### Data Flow
 
-### Add Custom Metrics
+```
+┌─────────────┐     POST /api/chat     ┌─────────────┐
+│   Client    │ ───────────────────────▶│  API Route  │
+│  (page.tsx) │                         │  (route.ts) │
+└─────────────┘                         └─────────────┘
+       ▲                                       │
+       │                                       │
+       │    ReadableStream (chunked text)      │
+       └───────────────────────────────────────┘
+```
 
-Extend the metrics panel to show additional data:
+## 📁 Key Files
+
+| File                        | Purpose                                             |
+| --------------------------- | --------------------------------------------------- |
+| `src/app/page.tsx`          | Main chat UI with `useStreamingChat` hook           |
+| `src/app/api/chat/route.ts` | Streaming API endpoint (demo + production patterns) |
+| `src/app/error.tsx`         | Error boundary with retry functionality             |
+| `src/app/loading.tsx`       | Skeleton loading state                              |
+
+## 🎨 Customization
+
+### Adding Real AI Integration
+
+Replace the demo response in `src/app/api/chat/route.ts`:
 
 ```typescript
-// In the API route
-const data = JSON.stringify({
-  type: 'text-delta',
-  content,
-  outputTokens,
-  elapsedMs,
-  // Add custom metrics
-  estimatedCost: outputTokens * 0.00003,
-  model: 'gpt-4-turbo',
-})
-```
+// Using Vercel AI SDK (recommended)
+import { streamText } from 'ai'
+import { openai } from '@ai-sdk/openai'
 
-### Change the Theme
+export async function POST(request: NextRequest) {
+  const { messages } = await request.json()
 
-This example uses a dark theme with green accent. Edit `globals.css`:
+  const result = await streamText({
+    model: openai('gpt-4o-mini'),
+    messages,
+  })
 
-```css
-:root {
-  --primary: 221.2 83.2% 53.3%; /* Blue */
-  --background: 0 0% 100%; /* Light */
+  return result.toTextStreamResponse()
 }
 ```
 
-### Adjust Token Limits
-
-Change the progress bar limits in `TokenCounter`:
+### Using OpenAI SDK Directly
 
 ```typescript
-<TokenCounter label="Input" count={metrics.inputTokens} max={200000} />
-<TokenCounter label="Output" count={metrics.outputTokens} max={8192} />
+import OpenAI from 'openai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+export async function POST(request: NextRequest) {
+  const { messages } = await request.json()
+
+  const stream = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages,
+    stream: true,
+  })
+
+  return new Response(stream.toReadableStream())
+}
 ```
 
-## Related Examples
+### Styling
 
-- [basic-chat](../basic-chat) - Simpler implementation
-- [multi-provider](../multi-provider) - Multiple AI providers
-- [token-optimization](../token-optimization) - Advanced token management
+This example uses Tailwind CSS with CSS variables. Customize colors in `src/app/globals.css`:
 
-## Tech Stack
+```css
+:root {
+  --primary: 221.2 83.2% 53.3%; /* Primary color (blue) */
+  --background: 0 0% 100%; /* Background color */
+  --foreground: 222.2 84% 4.9%; /* Text color */
+  /* ... more variables */
+}
+```
 
-- [Next.js 15](https://nextjs.org) - React framework
-- [React 19](https://react.dev) - UI library
-- [Tailwind CSS](https://tailwindcss.com) - Styling
-- [OpenAI API](https://platform.openai.com) - AI backend
+## 🔗 Related Examples
 
-## License
+- [memory-examples](../memory-examples) - Add conversation memory and context
+- [token-optimization](../token-optimization) - Optimize token usage and costs
+- [enterprise-ai-ops](../enterprise-ai-ops) - Enterprise AI operations dashboard
 
-MIT
+## 🐛 Troubleshooting
+
+<details>
+<summary>Port 3000 already in use</summary>
+
+```bash
+# Kill the process using port 3000
+npx kill-port 3000
+
+# Or use a different port
+pnpm dev -- -p 3001
+```
+
+</details>
+
+<details>
+<summary>API key not working</summary>
+
+1. Ensure your `.env.local` file exists (not `.env.example`)
+2. Check the key format: `OPENAI_API_KEY=sk-...`
+3. Verify your API key is active at [OpenAI Dashboard](https://platform.openai.com/api-keys)
+
+</details>
+
+<details>
+<summary>Streaming not working</summary>
+
+Ensure your API route returns a `ReadableStream` and sets proper headers:
+
+```typescript
+return new Response(stream, {
+  headers: {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Transfer-Encoding': 'chunked',
+  },
+})
+```
+
+</details>
+
+## 📚 Learn More
+
+- [Clarity Chat Documentation](../../packages/react/README.md)
+- [Next.js App Router](https://nextjs.org/docs/app)
+- [Vercel AI SDK](https://ai-sdk.dev)
+- [Streaming Responses Guide](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream)
+
+## 📄 License
+
+MIT © [Code & Clarity](https://codeandclarity.com)

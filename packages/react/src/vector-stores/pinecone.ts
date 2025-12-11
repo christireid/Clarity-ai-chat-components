@@ -1,6 +1,6 @@
 /**
  * Pinecone Vector Store Implementation
- * 
+ *
  * Enterprise-grade vector database with excellent performance
  * and scalability. Ideal for production RAG systems.
  */
@@ -17,7 +17,10 @@ import type {
   VectorFilter,
 } from './types'
 
-/** @deprecated Use PineconeStoreConfig from './types' instead */
+/**
+ * @deprecated Use PineconeStoreConfig from './types' instead. Will be removed in v3.0.
+ * @see {@link PineconeStoreConfig} from './types' for the canonical type
+ */
 export type PineconeConfig = PineconeStoreConfig
 
 export class PineconeVectorStore implements VectorStore {
@@ -39,27 +42,30 @@ export class PineconeVectorStore implements VectorStore {
     if (!config.indexName) {
       throw new Error('Index name is required')
     }
-    
+
     this.apiKey = config.apiKey
     this._environment = config.environment
     this._indexName = config.indexName
     this.baseUrl = `https://${config.indexName}-${config.projectId || ''}.svc.${config.environment}.pinecone.io`
   }
-  
+
   async initialize(): Promise<void> {
     // Verify connection by fetching index stats
     await this.getStats()
     this._initialized = true
   }
-  
-  async upsert(vectors: Vector[], options?: VectorUpsertOptions): Promise<void> {
+
+  async upsert(
+    vectors: Vector[],
+    options?: VectorUpsertOptions
+  ): Promise<void> {
     const namespace = options?.namespace || ''
     const batchSize = options?.batchSize || 100
-    
+
     // Process in batches
     for (let i = 0; i < vectors.length; i += batchSize) {
       const batch = vectors.slice(i, i + batchSize)
-      
+
       const response = await fetch(`${this.baseUrl}/vectors/upsert`, {
         method: 'POST',
         headers: {
@@ -67,7 +73,7 @@ export class PineconeVectorStore implements VectorStore {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          vectors: batch.map(v => ({
+          vectors: batch.map((v) => ({
             id: v.id,
             values: v.values,
             metadata: v.metadata,
@@ -76,19 +82,19 @@ export class PineconeVectorStore implements VectorStore {
           namespace,
         }),
       })
-      
+
       if (!response.ok) {
         const error = await response.text()
         throw new Error(`Pinecone upsert failed: ${error}`)
       }
     }
   }
-  
+
   async query(query: VectorQuery): Promise<VectorMatch[]> {
     if (!query.vector && !query.text) {
       throw new Error('Either vector or text query is required')
     }
-    
+
     const response = await fetch(`${this.baseUrl}/query`, {
       method: 'POST',
       headers: {
@@ -104,14 +110,14 @@ export class PineconeVectorStore implements VectorStore {
         namespace: query.namespace || '',
       }),
     })
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Pinecone query failed: ${error}`)
     }
-    
+
     const data = await response.json()
-    
+
     return data.matches
       .filter((m: any) => !query.minScore || m.score >= query.minScore)
       .map((m: any) => ({
@@ -121,7 +127,7 @@ export class PineconeVectorStore implements VectorStore {
         metadata: m.metadata,
       }))
   }
-  
+
   async delete(ids: string[], namespace?: string): Promise<void> {
     const response = await fetch(`${this.baseUrl}/vectors/delete`, {
       method: 'POST',
@@ -134,13 +140,13 @@ export class PineconeVectorStore implements VectorStore {
         namespace: namespace || '',
       }),
     })
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Pinecone delete failed: ${error}`)
     }
   }
-  
+
   async deleteNamespace(namespace: string): Promise<void> {
     const response = await fetch(`${this.baseUrl}/vectors/delete`, {
       method: 'POST',
@@ -153,13 +159,13 @@ export class PineconeVectorStore implements VectorStore {
         namespace,
       }),
     })
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Pinecone deleteNamespace failed: ${error}`)
     }
   }
-  
+
   async getStats(): Promise<VectorStats> {
     const response = await fetch(`${this.baseUrl}/describe_index_stats`, {
       method: 'POST',
@@ -169,14 +175,14 @@ export class PineconeVectorStore implements VectorStore {
       },
       body: JSON.stringify({}),
     })
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Pinecone getStats failed: ${error}`)
     }
-    
+
     const data = await response.json()
-    
+
     return {
       totalVectors: data.totalVectorCount || 0,
       dimension: data.dimension || 0,
@@ -184,7 +190,7 @@ export class PineconeVectorStore implements VectorStore {
       status: 'ready',
     }
   }
-  
+
   async fetch(ids: string[], namespace?: string): Promise<Vector[]> {
     const response = await fetch(`${this.baseUrl}/vectors/fetch`, {
       method: 'POST',
@@ -197,23 +203,29 @@ export class PineconeVectorStore implements VectorStore {
         namespace: namespace || '',
       }),
     })
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Pinecone fetch failed: ${error}`)
     }
-    
+
     const data = await response.json()
-    
-    return Object.entries(data.vectors || {}).map(([id, vec]: [string, any]) => ({
-      id,
-      values: vec.values,
-      metadata: vec.metadata,
-      sparseValues: vec.sparseValues,
-    }))
+
+    return Object.entries(data.vectors || {}).map(
+      ([id, vec]: [string, any]) => ({
+        id,
+        values: vec.values,
+        metadata: vec.metadata,
+        sparseValues: vec.sparseValues,
+      })
+    )
   }
-  
-  async list(namespace?: string, limit = 100, paginationToken?: string): Promise<{
+
+  async list(
+    namespace?: string,
+    limit = 100,
+    paginationToken?: string
+  ): Promise<{
     ids: string[]
     nextToken?: string
   }> {
@@ -229,23 +241,22 @@ export class PineconeVectorStore implements VectorStore {
         paginationToken,
       }),
     })
-    
+
     if (!response.ok) {
       const error = await response.text()
       throw new Error(`Pinecone list failed: ${error}`)
     }
-    
+
     const data = await response.json()
-    
+
     return {
       ids: data.vectors?.map((v: any) => v.id) || [],
       nextToken: data.pagination?.next,
     }
   }
-  
+
   async close(): Promise<void> {
     // Pinecone uses HTTP, no persistent connection to close
     this._initialized = false
   }
 }
-
