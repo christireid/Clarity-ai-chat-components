@@ -8,6 +8,49 @@ export { ProviderErrorCode }
  */
 export type AIProvider = 'openai' | 'anthropic' | 'google' | 'azure' | 'cohere'
 
+// =============================================================================
+// Provider-specific error response types
+// =============================================================================
+
+/**
+ * OpenAI error response shape
+ * @see https://platform.openai.com/docs/guides/error-codes
+ */
+interface OpenAIErrorResponse {
+  error?: {
+    message?: string
+    type?: string
+    code?: string
+    param?: string
+  }
+}
+
+/**
+ * Anthropic error response shape
+ * @see https://docs.anthropic.com/en/api/errors
+ */
+interface AnthropicErrorResponse {
+  type?: string
+  error?: {
+    type?: string
+    message?: string
+  }
+  message?: string
+}
+
+/**
+ * Google AI (Gemini) error response shape
+ * @see https://ai.google.dev/api/rest/v1/GenerateContentResponse
+ */
+interface GoogleErrorResponse {
+  error?: {
+    code?: number | string
+    message?: string
+    status?: string
+    details?: unknown[]
+  }
+}
+
 /**
  * AI provider-specific errors
  */
@@ -170,36 +213,96 @@ export class ProviderError extends ClarityError {
 
   /**
    * Create a provider-specific error from response
+   * Auto-detects error type from provider-specific response shapes
    */
   static fromProviderResponse(
     provider: AIProvider,
     statusCode: number,
-    errorBody: { error?: { message?: string; type?: string; code?: string } },
+    errorBody: unknown,
     model?: string
   ): ProviderError {
-    const message = errorBody.error?.message || `${provider} API error`
-    const errorType = errorBody.error?.type || errorBody.error?.code
+    // Delegate to provider-specific parsers
+    switch (provider) {
+      case 'openai':
+      case 'azure':
+        return ProviderError.fromOpenAIResponse(
+          provider,
+          statusCode,
+          errorBody,
+          model
+        )
+      case 'anthropic':
+        return ProviderError.fromAnthropicResponse(statusCode, errorBody, model)
+      case 'google':
+        return ProviderError.fromGoogleResponse(statusCode, errorBody, model)
+      default:
+        return ProviderError.fromGenericResponse(
+          provider,
+          statusCode,
+          errorBody,
+          model
+        )
+    }
+  }
 
-    // Map common error types to our codes
+  /**
+   * Parse OpenAI/Azure error response
+   * @see https://platform.openai.com/docs/guides/error-codes
+   */
+  private static fromOpenAIResponse(
+    provider: 'openai' | 'azure',
+    statusCode: number,
+    errorBody: unknown,
+    model?: string
+  ): ProviderError {
+    const body = errorBody as OpenAIErrorResponse | undefined
+    const error = body?.error
+    const message = error?.message ?? `${provider} API error`
+    const errorType = error?.type
+    const errorCode = error?.code
+
+    // Extract retry-after from response if available
+    const retryAfter =
+      typeof body === 'object' && body !== null
+        ? ((body as Record<string, unknown>)['retry_after'] as
+            | number
+            | undefined)
+        : undefined
+
+    // Determine error code based on OpenAI error patterns
     let code: ProviderErrorCode = ProviderErrorCode.OPENAI_ERROR
-    if (provider === 'anthropic') code = ProviderErrorCode.ANTHROPIC_ERROR
-    if (provider === 'google') code = ProviderErrorCode.GOOGLE_ERROR
+    let solution: string | undefined
 
-    // Detect specific error types
-    if (statusCode === 429) {
+    if (statusCode === 429 || errorType === 'rate_limit_exceeded') {
       code = ProviderErrorCode.RATE_LIMIT
-    } else if (statusCode === 401) {
+      solution = retryAfter
+        ? `Please wait ${retryAfter} seconds before trying again.`
+        : 'Please wait a moment before trying again.'
+    } else if (statusCode === 401 || errorCode === 'invalid_api_key') {
       code = ProviderErrorCode.INVALID_API_KEY
+      solution = 'Please check your API key configuration.'
+    } else if (statusCode === 403) {
+      code = ProviderErrorCode.QUOTA_EXCEEDED
+      solution = 'You have exceeded your API quota. Please check your billing.'
     } else if (
-      errorType?.includes('context_length') ||
-      message.toLowerCase().includes('context length')
+      errorCode === 'context_length_exceeded' ||
+      message.toLowerCase().includes('maximum context length')
     ) {
       code = ProviderErrorCode.CONTEXT_LENGTH
+      solution = 'Your conversation is too long. Try starting a new chat.'
     } else if (
-      errorType?.includes('content_policy') ||
-      message.toLowerCase().includes('content policy')
+      errorCode === 'content_filter' ||
+      errorType === 'content_policy_violation'
     ) {
       code = ProviderErrorCode.CONTENT_FILTER
+      solution = 'Please revise your message and try again.'
+    } else if (statusCode === 404 || errorCode === 'model_not_found') {
+      code = ProviderErrorCode.MODEL_NOT_FOUND
+      solution = 'Please verify the model name and your API access.'
+    } else if (statusCode >= 500) {
+      code = ProviderErrorCode.SERVICE_UNAVAILABLE
+      solution =
+        'The AI service is experiencing issues. Please try again later.'
     }
 
     return new ProviderError(message, {
@@ -207,6 +310,210 @@ export class ProviderError extends ClarityError {
       provider,
       statusCode,
       model,
+      retryAfter,
+      solution,
+      context: { errorType, errorCode, rawError: errorBody },
+    })
+  }
+
+  /**
+   * Parse Anthropic error response
+   * @see https://docs.anthropic.com/en/api/errors
+   */
+  private static fromAnthropicResponse(
+    statusCode: number,
+    errorBody: unknown,
+    model?: string
+  ): ProviderError {
+    const body = errorBody as AnthropicErrorResponse | undefined
+    const errorType = body?.error?.type ?? body?.type
+    const message =
+      body?.error?.message ?? body?.message ?? 'Anthropic API error'
+
+    let code: ProviderErrorCode = ProviderErrorCode.ANTHROPIC_ERROR
+    let solution: string | undefined
+    let retryAfter: number | undefined
+
+    // Anthropic-specific error types
+    if (statusCode === 429 || errorType === 'rate_limit_error') {
+      code = ProviderErrorCode.RATE_LIMIT
+      // Extract retry-after header value if present
+      const retryMs = (body as Record<string, unknown>)?.['retry_after_ms']
+      if (typeof retryMs === 'number') {
+        retryAfter = Math.ceil(retryMs / 1000)
+      }
+      solution = retryAfter
+        ? `Please wait ${retryAfter} seconds before trying again.`
+        : 'Please wait a moment before trying again.'
+    } else if (statusCode === 401 || errorType === 'authentication_error') {
+      code = ProviderErrorCode.INVALID_API_KEY
+      solution = 'Please check your API key configuration.'
+    } else if (errorType === 'invalid_request_error') {
+      if (
+        message.toLowerCase().includes('credit') ||
+        message.toLowerCase().includes('billing')
+      ) {
+        code = ProviderErrorCode.QUOTA_EXCEEDED
+        solution = 'Please check your Anthropic billing and credits.'
+      } else if (
+        message.toLowerCase().includes('too long') ||
+        message.toLowerCase().includes('token')
+      ) {
+        code = ProviderErrorCode.CONTEXT_LENGTH
+        solution = 'Your message is too long. Please shorten it.'
+      } else {
+        solution = 'Please check your request parameters.'
+      }
+    } else if (statusCode === 400 && message.toLowerCase().includes('safety')) {
+      code = ProviderErrorCode.CONTENT_FILTER
+      solution = 'Please revise your message and try again.'
+    } else if (statusCode === 404) {
+      code = ProviderErrorCode.MODEL_NOT_FOUND
+      solution = 'Please verify the model name and your API access.'
+    } else if (statusCode === 529 || errorType === 'overloaded_error') {
+      code = ProviderErrorCode.SERVICE_UNAVAILABLE
+      solution =
+        'Anthropic is experiencing high demand. Please try again later.'
+    } else if (statusCode >= 500) {
+      code = ProviderErrorCode.SERVICE_UNAVAILABLE
+      solution =
+        'Anthropic service is experiencing issues. Please try again later.'
+    }
+
+    return new ProviderError(message, {
+      code,
+      provider: 'anthropic',
+      statusCode,
+      model,
+      retryAfter,
+      solution,
+      context: { errorType, rawError: errorBody },
+    })
+  }
+
+  /**
+   * Parse Google AI (Gemini) error response
+   * @see https://ai.google.dev/api/rest/v1/GenerateContentResponse
+   */
+  private static fromGoogleResponse(
+    statusCode: number,
+    errorBody: unknown,
+    model?: string
+  ): ProviderError {
+    const body = errorBody as GoogleErrorResponse | undefined
+    const error = body?.error
+    const message = error?.message ?? 'Google AI API error'
+    const errorStatus = error?.status
+    const errorCode = error?.code
+
+    let code: ProviderErrorCode = ProviderErrorCode.GOOGLE_ERROR
+    let solution: string | undefined
+    let retryAfter: number | undefined
+
+    // Google-specific error handling
+    if (statusCode === 429 || errorStatus === 'RESOURCE_EXHAUSTED') {
+      code = ProviderErrorCode.RATE_LIMIT
+      // Look for retry delay in error details
+      const details = error?.details as
+        | Array<{ retryDelay?: string }>
+        | undefined
+      if (details?.[0]?.retryDelay) {
+        const delayStr = details[0].retryDelay
+        const match = delayStr.match(/(\d+)s/)
+        if (match?.[1]) {
+          retryAfter = parseInt(match[1], 10)
+        }
+      }
+      solution = retryAfter
+        ? `Please wait ${retryAfter} seconds before trying again.`
+        : 'Please wait a moment before trying again.'
+    } else if (
+      statusCode === 401 ||
+      statusCode === 403 ||
+      errorStatus === 'UNAUTHENTICATED'
+    ) {
+      code = ProviderErrorCode.INVALID_API_KEY
+      solution = 'Please check your Google AI API key configuration.'
+    } else if (errorStatus === 'INVALID_ARGUMENT') {
+      if (
+        message.toLowerCase().includes('token') ||
+        message.toLowerCase().includes('length')
+      ) {
+        code = ProviderErrorCode.CONTEXT_LENGTH
+        solution = 'Your message is too long. Please shorten it.'
+      } else {
+        solution = 'Please check your request parameters.'
+      }
+    } else if (
+      errorCode === 'SAFETY' ||
+      message.toLowerCase().includes('safety')
+    ) {
+      code = ProviderErrorCode.CONTENT_FILTER
+      solution = 'Please revise your message and try again.'
+    } else if (statusCode === 404 || errorStatus === 'NOT_FOUND') {
+      code = ProviderErrorCode.MODEL_NOT_FOUND
+      solution = 'Please verify the model name and your API access.'
+    } else if (statusCode >= 500 || errorStatus === 'INTERNAL') {
+      code = ProviderErrorCode.SERVICE_UNAVAILABLE
+      solution =
+        'Google AI service is experiencing issues. Please try again later.'
+    }
+
+    return new ProviderError(message, {
+      code,
+      provider: 'google',
+      statusCode,
+      model,
+      retryAfter,
+      solution,
+      context: { errorStatus, errorCode, rawError: errorBody },
+    })
+  }
+
+  /**
+   * Parse generic provider error response
+   */
+  private static fromGenericResponse(
+    provider: AIProvider,
+    statusCode: number,
+    errorBody: unknown,
+    model?: string
+  ): ProviderError {
+    const body = errorBody as
+      | {
+          error?: { message?: string; type?: string; code?: string }
+          message?: string
+        }
+      | undefined
+    const message =
+      body?.error?.message ?? body?.message ?? `${provider} API error`
+    const errorType = body?.error?.type ?? body?.error?.code
+
+    let code: ProviderErrorCode = ProviderErrorCode.OPENAI_ERROR
+    let solution: string | undefined
+
+    // Generic status code handling
+    if (statusCode === 429) {
+      code = ProviderErrorCode.RATE_LIMIT
+      solution = 'Please wait a moment before trying again.'
+    } else if (statusCode === 401 || statusCode === 403) {
+      code = ProviderErrorCode.INVALID_API_KEY
+      solution = 'Please check your API key configuration.'
+    } else if (statusCode === 404) {
+      code = ProviderErrorCode.MODEL_NOT_FOUND
+      solution = 'Please verify the model name and your API access.'
+    } else if (statusCode >= 500) {
+      code = ProviderErrorCode.SERVICE_UNAVAILABLE
+      solution =
+        'The AI service is experiencing issues. Please try again later.'
+    }
+
+    return new ProviderError(message, {
+      code,
+      provider,
+      statusCode,
+      model,
+      solution,
       context: { errorType, rawError: errorBody },
     })
   }

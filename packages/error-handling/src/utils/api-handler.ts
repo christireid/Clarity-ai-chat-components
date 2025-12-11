@@ -276,7 +276,89 @@ export async function writeErrorToStream(
 }
 
 /**
- * Parse SSE error from stream
+ * Maximum depth for JSON sanitization to prevent deeply nested attacks
+ */
+const MAX_JSON_DEPTH = 10
+
+/**
+ * Maximum string length for individual fields
+ */
+const MAX_STRING_LENGTH = 10000
+
+/**
+ * Sanitize a value to prevent XSS and limit depth/size
+ */
+function sanitizeValue(value: unknown, depth: number = 0): unknown {
+  // Depth protection
+  if (depth > MAX_JSON_DEPTH) {
+    return '[max depth exceeded]'
+  }
+
+  // Handle different types
+  if (value === null || value === undefined) {
+    return value
+  }
+
+  if (typeof value === 'string') {
+    // Truncate very long strings
+    const truncated =
+      value.length > MAX_STRING_LENGTH
+        ? value.slice(0, MAX_STRING_LENGTH) + '...[truncated]'
+        : value
+    // Basic XSS prevention - escape HTML entities
+    return truncated
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return value
+  }
+
+  if (Array.isArray(value)) {
+    // Limit array length
+    const maxArrayLength = 100
+    const sanitizedArray = value
+      .slice(0, maxArrayLength)
+      .map((item) => sanitizeValue(item, depth + 1))
+    if (value.length > maxArrayLength) {
+      sanitizedArray.push(`...[${value.length - maxArrayLength} more items]`)
+    }
+    return sanitizedArray
+  }
+
+  if (typeof value === 'object') {
+    const sanitizedObj: Record<string, unknown> = {}
+    const keys = Object.keys(value as Record<string, unknown>)
+    // Limit number of keys
+    const maxKeys = 50
+    const keysToProcess = keys.slice(0, maxKeys)
+
+    for (const key of keysToProcess) {
+      // Sanitize key names too
+      const sanitizedKey = key.slice(0, 100)
+      sanitizedObj[sanitizedKey] = sanitizeValue(
+        (value as Record<string, unknown>)[key],
+        depth + 1
+      )
+    }
+
+    if (keys.length > maxKeys) {
+      sanitizedObj['__truncated__'] = `${keys.length - maxKeys} more keys`
+    }
+
+    return sanitizedObj
+  }
+
+  // For functions or symbols, return a placeholder
+  return '[unsupported type]'
+}
+
+/**
+ * Parse SSE error from stream with sanitization
  * Useful for client-side error handling of SSE streams
  *
  * @example
@@ -293,12 +375,51 @@ export function parseSSEError(data: string): {
   type: string
   error: { code?: string; message: string; details?: unknown }
 } | null {
+  // Input validation
+  if (typeof data !== 'string' || data.length === 0) {
+    return null
+  }
+
+  // Limit input size to prevent DoS
+  const maxInputSize = 1024 * 1024 // 1MB
+  if (data.length > maxInputSize) {
+    console.warn('[parseSSEError] Input exceeds maximum size, truncating')
+    data = data.slice(0, maxInputSize)
+  }
+
   try {
     const parsed = JSON.parse(data)
-    if (parsed.type === 'error' && parsed.error) {
-      return parsed
+
+    // Validate basic structure
+    if (
+      typeof parsed !== 'object' ||
+      parsed === null ||
+      parsed.type !== 'error' ||
+      !parsed.error
+    ) {
+      return null
     }
-    return null
+
+    // Sanitize the parsed content
+    const sanitized = sanitizeValue(parsed) as {
+      type: string
+      error: { code?: string; message?: string; details?: unknown }
+    }
+
+    // Ensure required fields exist
+    if (!sanitized.error || typeof sanitized.error !== 'object') {
+      return null
+    }
+
+    // Provide default message if missing
+    if (typeof sanitized.error.message !== 'string') {
+      sanitized.error.message = 'Unknown error'
+    }
+
+    return sanitized as {
+      type: string
+      error: { code?: string; message: string; details?: unknown }
+    }
   } catch {
     return null
   }

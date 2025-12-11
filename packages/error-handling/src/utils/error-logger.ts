@@ -43,6 +43,11 @@ export interface ErrorLogEntry {
 }
 
 /**
+ * Backpressure strategy when queue is full
+ */
+export type BackpressureStrategy = 'drop-oldest' | 'drop-newest' | 'block'
+
+/**
  * Configuration for the error logger
  */
 export interface ErrorLoggerConfig {
@@ -62,6 +67,12 @@ export interface ErrorLoggerConfig {
   transform?: (entry: ErrorLogEntry) => ErrorLogEntry
   /** Filter which errors to log */
   filter?: (entry: ErrorLogEntry) => boolean
+  /** Maximum queue size for backpressure (default: 1000) */
+  maxQueueSize?: number
+  /** Strategy when queue is full (default: 'drop-oldest') */
+  backpressureStrategy?: BackpressureStrategy
+  /** Called when logs are dropped due to backpressure */
+  onDropped?: (count: number, reason: string) => void
 }
 
 /**
@@ -123,45 +134,101 @@ export function createErrorLogger(config: ErrorLoggerConfig = {}): ErrorLogger {
     headers = {},
     transform,
     filter,
+    maxQueueSize = 1000,
+    backpressureStrategy = 'drop-oldest',
+    onDropped,
   } = config
 
   let batch: ErrorLogEntry[] = []
   let flushTimer: ReturnType<typeof setTimeout> | null = null
+  let isFlushBlocked = false
+
+  /**
+   * Handle backpressure when queue is full
+   * Returns true if the new entry should be added, false if it should be dropped
+   */
+  const handleBackpressure = (): boolean => {
+    if (batch.length < maxQueueSize) {
+      return true
+    }
+
+    switch (backpressureStrategy) {
+      case 'drop-oldest': {
+        // Remove oldest entries to make room
+        const dropped = batch.splice(0, 1)
+        onDropped?.(dropped.length, 'queue-full-drop-oldest')
+        return true
+      }
+      case 'drop-newest': {
+        // Don't add the new entry
+        onDropped?.(1, 'queue-full-drop-newest')
+        return false
+      }
+      case 'block': {
+        // If we're already flushing, drop the entry
+        if (isFlushBlocked) {
+          onDropped?.(1, 'queue-full-blocked')
+          return false
+        }
+        // Try to flush synchronously-ish
+        flush()
+        return batch.length < maxQueueSize
+      }
+      default:
+        return true
+    }
+  }
 
   const flush = async (): Promise<void> => {
     if (batch.length === 0) return
+    if (isFlushBlocked) return
 
+    isFlushBlocked = true
     const toSend = [...batch]
     batch = []
 
-    if (endpoint) {
-      try {
-        await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(apiKey && { Authorization: `Bearer ${apiKey}` }),
-            ...headers,
-          },
-          body: JSON.stringify({ logs: toSend }),
-        })
-      } catch (fetchError) {
-        // Re-add to batch if send fails (will be retried)
-        batch.push(...toSend)
-        // Also log to console as fallback
-        console.error(
-          '[ErrorLogger] Failed to send logs to endpoint:',
-          fetchError
-        )
+    try {
+      if (endpoint) {
+        try {
+          await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(apiKey && { Authorization: `Bearer ${apiKey}` }),
+              ...headers,
+            },
+            body: JSON.stringify({ logs: toSend }),
+          })
+        } catch (fetchError) {
+          // Re-add to batch if send fails, but respect max queue size
+          const spaceAvailable = maxQueueSize - batch.length
+          if (spaceAvailable > 0) {
+            const toRequeue = toSend.slice(0, spaceAvailable)
+            batch.push(...toRequeue)
+            const dropped = toSend.length - toRequeue.length
+            if (dropped > 0) {
+              onDropped?.(dropped, 'send-failed-queue-full')
+            }
+          } else {
+            onDropped?.(toSend.length, 'send-failed-queue-full')
+          }
+          // Also log to console as fallback
+          console.error(
+            '[ErrorLogger] Failed to send logs to endpoint:',
+            fetchError
+          )
+          toSend.forEach((entry) => {
+            console[entry.level]('[ErrorLogger]', entry)
+          })
+        }
+      } else {
+        // Log to console if no endpoint configured
         toSend.forEach((entry) => {
           console[entry.level]('[ErrorLogger]', entry)
         })
       }
-    } else {
-      // Log to console if no endpoint configured
-      toSend.forEach((entry) => {
-        console[entry.level]('[ErrorLogger]', entry)
-      })
+    } finally {
+      isFlushBlocked = false
     }
   }
 
@@ -206,6 +273,11 @@ export function createErrorLogger(config: ErrorLoggerConfig = {}): ErrorLogger {
 
     // Apply filter if provided
     if (filter && !filter(entry)) {
+      return
+    }
+
+    // Check backpressure before adding
+    if (!handleBackpressure()) {
       return
     }
 
