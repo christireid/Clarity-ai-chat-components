@@ -2,7 +2,6 @@
  * Benchmark command - Performance testing for AI chat
  */
 
-import chalk from 'chalk'
 import { performance } from 'perf_hooks'
 import fs from 'fs-extra'
 import path from 'path'

@@ -696,20 +696,6 @@ export function getEasing(name: AnimationEasing): {
 }
 
 /**
- * Get easing specifically for framer-motion
- *
- * @example
- * ```tsx
- * <motion.div transition={{ ease: getFramerEasing('out') }} />
- * ```
- */
-export function getFramerEasing(
-  name: AnimationEasing
-): readonly number[] | 'linear' {
-  return EASING_FRAMER[name]
-}
-
-/**
  * Get easing specifically for CSS
  *
  * @example

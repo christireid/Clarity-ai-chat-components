@@ -9,44 +9,34 @@ STAGED_DOCS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md|t
 if [ -z "$STAGED_DOCS" ]; then
   echo "✅ No documentation files staged"
 else
-  # Artifact patterns
-  ARTIFACTS_FOUND=false
+  # Check for artifacts using a temp file to track state
+  ARTIFACT_LIST=""
 
-  while IFS= read -r file; do
+  for file in $STAGED_DOCS; do
     # Skip if in .archive
-    if [[ "$file" == *".archive/"* ]]; then
-      continue
-    fi
+    case "$file" in *.archive/*) continue ;; esac
 
     # Check filename for artifact patterns
     filename=$(basename "$file")
 
-    if [[ "$filename" =~ _COMPLETE\.md$ ]] || \
-       [[ "$filename" =~ _SUMMARY\.md$ ]] || \
-       [[ "$filename" =~ _STATUS\.md$ ]] || \
-       [[ "$filename" =~ _REPORT\.md$ ]] || \
-       [[ "$filename" =~ ^FINAL_.+\.md$ ]] || \
-       [[ "$filename" == "PROJECT_COMPLETE.md" ]] || \
-       [[ "$filename" =~ ^PHASE_[0-9]+_.+\.md$ ]] || \
-       [[ "$filename" =~ _PROGRESS\.md$ ]] || \
-       [[ "$filename" =~ _CHECKLIST\.md$ ]] || \
-       [[ "$filename" =~ ^CLEANUP_.+\.md$ ]] || \
-       [[ "$filename" =~ ^OPTIMIZATION_.+\.md$ ]] || \
-       [[ "$filename" =~ ^REFACTOR_.+\.md$ ]] || \
-       [[ "$filename" =~ ^IMPLEMENTATION_.+\.md$ ]]; then
+    # Use case statement for POSIX compatibility
+    case "$filename" in
+      *_COMPLETE.md|*_SUMMARY.md|*_STATUS.md|*_REPORT.md|\
+      FINAL_*.md|PROJECT_COMPLETE.md|PHASE_*.md|\
+      *_PROGRESS.md|*_CHECKLIST.md|CLEANUP_*.md|\
+      OPTIMIZATION_*.md|REFACTOR_*.md|IMPLEMENTATION_*.md)
+        ARTIFACT_LIST="$ARTIFACT_LIST $file"
+        ;;
+    esac
+  done
 
-      if [ "$ARTIFACTS_FOUND" = false ]; then
-        echo ""
-        echo "⚠️  WARNING: Potential development artifacts detected!"
-        echo ""
-        ARTIFACTS_FOUND=true
-      fi
-
-      echo "  📄 $file"
-    fi
-  done <<< "$STAGED_DOCS"
-
-  if [ "$ARTIFACTS_FOUND" = true ]; then
+  if [ -n "$ARTIFACT_LIST" ]; then
+    echo ""
+    echo "⚠️  WARNING: Potential development artifacts detected!"
+    echo ""
+    for f in $ARTIFACT_LIST; do
+      echo "  📄 $f"
+    done
     echo ""
     echo "These files look like development artifacts that should be:"
     echo "  1. Moved to .archive/ directory, or"
@@ -58,13 +48,22 @@ else
     echo ""
     echo "See: .github/DOCUMENTATION_POLICY.md for details"
     echo ""
-    read -p "Continue with commit anyway? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      echo "❌ Commit aborted. Please archive or remove artifacts first."
-      exit 1
+    # Non-interactive mode: just warn and continue
+    if [ -t 0 ]; then
+      printf "Continue with commit anyway? (y/N) "
+      read -r REPLY
+      case "$REPLY" in
+        [Yy]|[Yy][Ee][Ss])
+          echo "⚠️  Proceeding with commit (artifacts will be flagged in CI)"
+          ;;
+        *)
+          echo "❌ Commit aborted. Please archive or remove artifacts first."
+          exit 1
+          ;;
+      esac
+    else
+      echo "⚠️  Non-interactive mode: proceeding with commit (artifacts flagged)"
     fi
-    echo "⚠️  Proceeding with commit (artifacts will be flagged in CI)"
   else
     echo "✅ No development artifacts detected"
   fi

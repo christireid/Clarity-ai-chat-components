@@ -5,19 +5,45 @@
  * and multi-step execution.
  */
 
+/** JSON Schema property types for tool parameters */
+export interface ToolParameterProperty {
+  type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object'
+  description?: string
+  enum?: (string | number | boolean)[]
+  default?: unknown
+  items?: ToolParameterProperty
+  properties?: Record<string, ToolParameterProperty>
+  required?: string[]
+  minimum?: number
+  maximum?: number
+  minLength?: number
+  maxLength?: number
+  pattern?: string
+}
+
+/** JSON Schema for tool parameters */
+export interface ToolParameters {
+  type: 'object'
+  properties: Record<string, ToolParameterProperty>
+  required?: string[]
+  additionalProperties?: boolean
+}
+
+/** Arguments passed to tool execution */
+export type ToolArguments = Record<string, string | number | boolean | string[] | number[] | Record<string, unknown>>
+
+/** Result from tool execution */
+export type ToolResult = string | number | boolean | Record<string, unknown> | unknown[] | null | undefined
+
 export interface Tool {
   /** Tool name */
   name: string
   /** Tool description for AI */
   description: string
   /** Input schema (JSON Schema) */
-  parameters: {
-    type: 'object'
-    properties: Record<string, any>
-    required?: string[]
-  }
+  parameters: ToolParameters
   /** Tool execution function */
-  execute: (args: Record<string, any>) => Promise<any>
+  execute: (args: ToolArguments) => Promise<ToolResult>
   /** Whether tool requires approval */
   requiresApproval?: boolean
   /** Tool category */
@@ -53,6 +79,9 @@ export interface AgentConfig {
   planningStrategy?: 'react' | 'plan-and-execute' | 'tree-of-thought'
 }
 
+/** Metadata attached to agent messages */
+export type AgentMessageMetadata = Record<string, string | number | boolean | null>
+
 export interface AgentMessage {
   /** Message role */
   role: 'system' | 'user' | 'assistant' | 'function'
@@ -64,7 +93,7 @@ export interface AgentMessage {
     arguments: string
   }
   /** Function result (if role is 'function') */
-  functionResult?: any
+  functionResult?: ToolResult
   /** Tool calls (for parallel function calling) */
   toolCalls?: Array<{
     id: string
@@ -75,7 +104,7 @@ export interface AgentMessage {
     }
   }>
   /** Metadata */
-  metadata?: Record<string, any>
+  metadata?: AgentMessageMetadata
 }
 
 export interface AgentStep {
@@ -88,9 +117,9 @@ export interface AgentStep {
   /** Tool used (if action) */
   tool?: string
   /** Tool arguments (if action) */
-  args?: Record<string, any>
+  args?: ToolArguments
   /** Tool result (if observation) */
-  result?: any
+  result?: ToolResult
   /** Error (if failed) */
   error?: string
   /** Timestamp */
@@ -201,16 +230,16 @@ export interface AgentMemory {
 }
 
 export interface ToolApprovalCallback {
-  (tool: Tool, args: Record<string, any>): Promise<boolean>
+  (tool: Tool, args: ToolArguments): Promise<boolean>
 }
 
 export interface AgentCallbacks {
   /** Called when agent starts thinking */
   onThought?: (thought: string) => void
   /** Called when agent decides on an action */
-  onAction?: (tool: string, args: Record<string, any>) => void
+  onAction?: (tool: string, args: ToolArguments) => void
   /** Called when tool execution completes */
-  onObservation?: (result: any) => void
+  onObservation?: (result: ToolResult) => void
   /** Called when agent provides final answer */
   onAnswer?: (answer: string) => void
   /** Called on error */

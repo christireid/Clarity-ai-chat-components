@@ -4,13 +4,21 @@
  * Manage and orchestrate plugins for extensibility.
  */
 
-import type { Plugin, PluginConfig, PluginManagerConfig, PluginContext } from './types'
+import type {
+  Plugin,
+  PluginConfig,
+  PluginManagerConfig,
+  PluginContext,
+  PluginManagerInterface,
+  PluginEventData,
+  PluginStateValue,
+} from './types'
 
-export class PluginManager {
+export class PluginManager implements PluginManagerInterface {
   private plugins = new Map<string, PluginConfig>()
   private config: Required<PluginManagerConfig>
-  private sharedState: Record<string, any> = {}
-  private eventHandlers = new Map<string, Set<(data: unknown) => void>>()
+  private sharedState: Record<string, PluginStateValue> = {}
+  private eventHandlers = new Map<string, Set<(data: PluginEventData) => void>>()
 
   constructor(config?: PluginManagerConfig) {
     this.config = {
@@ -107,7 +115,7 @@ export class PluginManager {
   /**
    * Call a hook across all enabled plugins
    */
-  async callHook<T = any>(hookName: string, ...args: any[]): Promise<T[]> {
+  async callHook<T = unknown>(hookName: string, ...args: unknown[]): Promise<T[]> {
     const results: T[] = []
 
     const configs = Array.from(this.plugins.values())
@@ -119,7 +127,7 @@ export class PluginManager {
         try {
           const result = await hook(...args)
           if (result !== undefined) {
-            results.push(result)
+            results.push(result as T)
           }
         } catch (error) {
           console.error(`Plugin ${config.plugin.name} hook ${hookName} failed:`, error)
@@ -133,7 +141,7 @@ export class PluginManager {
   /**
    * Emit an event to plugins
    */
-  emit(event: string, data: any): void {
+  emit(event: string, data: PluginEventData): void {
     const handlers = this.eventHandlers.get(event)
     if (handlers) {
       handlers.forEach((handler) => {
@@ -149,7 +157,7 @@ export class PluginManager {
   /**
    * Listen to plugin events
    */
-  on(event: string, handler: (data: any) => void): () => void {
+  on(event: string, handler: (data: PluginEventData) => void): () => void {
     if (!this.eventHandlers.has(event)) {
       this.eventHandlers.set(event, new Set())
     }
@@ -165,23 +173,23 @@ export class PluginManager {
   /**
    * Get shared state
    */
-  getState(): Record<string, any> {
+  getState(): Record<string, PluginStateValue> {
     return { ...this.sharedState }
   }
 
   /**
    * Set shared state
    */
-  setState(key: string, value: any): void {
+  setState(key: string, value: PluginStateValue): void {
     this.sharedState[key] = value
   }
 
-  private async initializePlugin(plugin: Plugin, config?: Record<string, any>): Promise<void> {
+  private async initializePlugin(plugin: Plugin, config?: Record<string, unknown>): Promise<void> {
     if (!plugin.initialize) return
 
     const context: PluginContext = {
       manager: this,
-      config: config || {},
+      config: (config || {}) as Record<string, PluginStateValue>,
       state: this.sharedState,
       emit: (event, data) => this.emit(event, data),
       log: (message, level = 'info') => {

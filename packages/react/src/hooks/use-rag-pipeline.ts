@@ -125,8 +125,8 @@ export function useRAGPipeline(
   const retrieve = React.useCallback(
     async (query: string, limit = 5) => {
       try {
-        // Generate embedding for query
-        const queryEmbedding = await embeddings.generate(query)
+        // Generate embedding for query (single string returns number[])
+        const queryEmbedding = (await embeddings.generate(query)) as number[]
 
         // Search vector store
         const results = await vs.search(queryEmbedding, { topK: limit })
