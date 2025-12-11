@@ -241,6 +241,248 @@ export const ResponseInspector: Story = {
 }
 
 /**
+ * Real Provider Integration
+ * Connect to real AI providers with pre-configured endpoints.
+ *
+ * **IMPORTANT**: API keys are stored in localStorage for convenience during testing.
+ * Never use production API keys in public demos. Use test keys only.
+ */
+export const RealProviderIntegration: Story = {
+  render: () => {
+    const PROVIDERS = [
+      {
+        id: 'openai',
+        name: 'OpenAI',
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        placeholder: 'sk-...',
+        docs: 'https://platform.openai.com/api-keys',
+      },
+      {
+        id: 'anthropic',
+        name: 'Anthropic',
+        endpoint: 'https://api.anthropic.com/v1/messages',
+        placeholder: 'sk-ant-...',
+        docs: 'https://console.anthropic.com/settings/keys',
+      },
+      {
+        id: 'ollama',
+        name: 'Ollama (Local)',
+        endpoint: 'http://localhost:11434/api/chat',
+        placeholder: '(no key needed)',
+        docs: 'https://ollama.ai',
+      },
+      {
+        id: 'custom',
+        name: 'Custom Endpoint',
+        endpoint: '',
+        placeholder: 'Your API key',
+        docs: '',
+      },
+    ]
+
+    const [selectedProvider, setSelectedProvider] = useState(PROVIDERS[0])
+    const [customEndpoint, setCustomEndpoint] = useState('')
+    const [apiKey, setApiKey] = useState('')
+    const [isConnected, setIsConnected] = useState(false)
+
+    // Load saved API key from localStorage
+    React.useEffect(() => {
+      const saved = localStorage.getItem(
+        `clarity-demo-key-${selectedProvider.id}`
+      )
+      if (saved) setApiKey(saved)
+    }, [selectedProvider.id])
+
+    const handleConnect = useCallback(() => {
+      // Save key to localStorage (with warning)
+      if (apiKey && selectedProvider.id !== 'ollama') {
+        localStorage.setItem(`clarity-demo-key-${selectedProvider.id}`, apiKey)
+      }
+      setIsConnected(true)
+    }, [apiKey, selectedProvider.id])
+
+    const handleDisconnect = useCallback(() => {
+      setIsConnected(false)
+    }, [])
+
+    const handleClearKey = useCallback(() => {
+      localStorage.removeItem(`clarity-demo-key-${selectedProvider.id}`)
+      setApiKey('')
+    }, [selectedProvider.id])
+
+    const endpoint =
+      selectedProvider.id === 'custom'
+        ? customEndpoint
+        : selectedProvider.endpoint
+
+    if (!isConnected) {
+      return (
+        <div className="min-h-screen bg-background p-8 flex items-center justify-center">
+          <Card className="w-full max-w-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span>🔌</span> Real Provider Integration
+              </CardTitle>
+              <CardDescription>
+                Connect to a real AI provider to test Clarity Chat with live
+                responses.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Provider Selection */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Provider</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {PROVIDERS.map((provider) => (
+                    <button
+                      key={provider.id}
+                      onClick={() => {
+                        setSelectedProvider(provider)
+                        const saved = localStorage.getItem(
+                          `clarity-demo-key-${provider.id}`
+                        )
+                        setApiKey(saved || '')
+                      }}
+                      className={`p-3 rounded-lg border text-left transition-all ${
+                        selectedProvider.id === provider.id
+                          ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="font-medium text-sm">{provider.name}</div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {provider.endpoint || 'Custom URL'}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Endpoint */}
+              {selectedProvider.id === 'custom' && (
+                <div className="space-y-2">
+                  <label
+                    className="text-sm font-medium"
+                    htmlFor="custom-endpoint"
+                  >
+                    Custom Endpoint URL
+                  </label>
+                  <Input
+                    id="custom-endpoint"
+                    placeholder="https://your-api.com/chat"
+                    value={customEndpoint}
+                    onChange={(e) => setCustomEndpoint(e.target.value)}
+                  />
+                </div>
+              )}
+
+              {/* API Key */}
+              {selectedProvider.id !== 'ollama' && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label
+                      className="text-sm font-medium"
+                      htmlFor="provider-key"
+                    >
+                      API Key
+                    </label>
+                    {apiKey && (
+                      <button
+                        onClick={handleClearKey}
+                        className="text-xs text-muted-foreground hover:text-destructive"
+                      >
+                        Clear saved key
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    id="provider-key"
+                    type="password"
+                    placeholder={selectedProvider.placeholder}
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                  />
+                  {selectedProvider.docs && (
+                    <p className="text-xs text-muted-foreground">
+                      Get your API key from{' '}
+                      <a
+                        href={selectedProvider.docs}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline"
+                      >
+                        {selectedProvider.name} Console
+                      </a>
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Security Warning */}
+              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md text-sm text-amber-800 dark:text-amber-200">
+                <strong>⚠️ Security Notice:</strong>
+                <ul className="mt-1 ml-4 list-disc text-xs space-y-1">
+                  <li>
+                    API keys are stored in localStorage for demo convenience
+                  </li>
+                  <li>Never use production keys in public environments</li>
+                  <li>Clear your keys when done testing</li>
+                  <li>API calls are made directly from your browser</li>
+                </ul>
+              </div>
+
+              <Button
+                onClick={handleConnect}
+                className="w-full"
+                disabled={
+                  !endpoint || (selectedProvider.id !== 'ollama' && !apiKey)
+                }
+              >
+                Connect to {selectedProvider.name}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )
+    }
+
+    return (
+      <div className="h-screen flex flex-col">
+        <div className="p-4 border-b bg-muted/50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Badge className="bg-green-500">Connected</Badge>
+            <span className="font-medium">{selectedProvider.name}</span>
+            <span className="text-sm text-muted-foreground truncate max-w-md">
+              {endpoint}
+            </span>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleDisconnect}>
+            Disconnect
+          </Button>
+        </div>
+        <div className="flex-1">
+          <ClarityChat
+            api={endpoint}
+            headers={
+              apiKey
+                ? {
+                    Authorization: `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                  }
+                : { 'Content-Type': 'application/json' }
+            }
+            showHeader
+            sessionTitle={`${selectedProvider.name} Demo`}
+            sessionSubtitle="Live API Connection"
+            showNetworkStatus
+          />
+        </div>
+      </div>
+    )
+  },
+}
+
+/**
  * Multi-Provider Comparison
  * Compare responses from different AI providers side by side.
  */

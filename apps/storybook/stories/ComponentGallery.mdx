@@ -1,10 +1,112 @@
-{/* ComponentGallery.mdx - Visual component showcase */}
+{/* ComponentGallery.mdx - Visual component showcase with search */}
 import { Meta } from '@storybook/addon-docs/blocks'
 
 <Meta title="Getting Started/Component Gallery" />
 
+export const SearchFilter = () => {
+  const [filter, setFilter] = React.useState('')
+
+  React.useEffect(() => {
+    const cards = document.querySelectorAll('.gallery-card')
+    const sections = document.querySelectorAll('.gallery-section')
+    const searchTerm = filter.toLowerCase()
+
+    if (!searchTerm) {
+      cards.forEach(card => card.style.display = '')
+      sections.forEach(section => section.style.display = '')
+      return
+    }
+
+    cards.forEach(card => {
+      const title = card.querySelector('.gallery-card-title')?.textContent?.toLowerCase() || ''
+      const description = card.querySelector('.gallery-card-description')?.textContent?.toLowerCase() || ''
+      const tags = Array.from(card.querySelectorAll('.gallery-tag')).map(t => t.textContent?.toLowerCase() || '').join(' ')
+      const matches = title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)
+      card.style.display = matches ? '' : 'none'
+    })
+
+    // Hide empty sections
+    sections.forEach(section => {
+      const visibleCards = section.querySelectorAll('.gallery-card[style=""], .gallery-card:not([style])')
+      const hasVisible = Array.from(section.querySelectorAll('.gallery-card')).some(c => c.style.display !== 'none')
+      section.style.display = hasVisible ? '' : 'none'
+    })
+  }, [filter])
+
+  return (
+    <div className="gallery-search">
+      <input
+        type="text"
+        placeholder="Search components... (e.g., button, chat, streaming)"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        className="gallery-search-input"
+        aria-label="Search components"
+      />
+      {filter && (
+        <button
+          onClick={() => setFilter('')}
+          className="gallery-search-clear"
+          aria-label="Clear search"
+        >
+          ✕
+        </button>
+      )}
+    </div>
+  )
+}
+
 <style>
   {`
+    .gallery-search {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .gallery-search-input {
+      width: 100%;
+      padding: 1rem 3rem 1rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.75rem;
+      background: white;
+      transition: all 0.2s ease;
+    }
+    .dark .gallery-search-input {
+      background: #1f2937;
+      border-color: #374151;
+      color: white;
+    }
+    .gallery-search-input:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    .gallery-search-input::placeholder {
+      color: #9ca3af;
+    }
+    .gallery-search-clear {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #e5e7eb;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #6b7280;
+      transition: all 0.2s ease;
+    }
+    .dark .gallery-search-clear {
+      background: #374151;
+      color: #9ca3af;
+    }
+    .gallery-search-clear:hover {
+      background: #d1d5db;
+      color: #374151;
+    }
     .gallery-hero {
       background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
       border-radius: 1rem;
@@ -208,6 +310,8 @@ import { Meta } from '@storybook/addon-docs/blocks'
     </div>
   </div>
 </div>
+
+<SearchFilter />
 
 ## Drop-in Solutions
 

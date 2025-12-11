@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
-    "clean": "rm -rf storybook-static"
+    "clean": "rm -rf storybook-static",
+    "test-storybook": "test-storybook",
+    "test-storybook:ci": "test-storybook --ci --browsers chromium",
+    "test-storybook:a11y": "test-storybook --browsers chromium --url http://localhost:6006",
+    "validate-links": "npx tsx scripts/validate-story-links.ts",
+    "generate-gallery": "npx tsx scripts/generate-gallery-index.ts"
   },
   "dependencies": {
     "@clarity-chat/react": "workspace:*",
@@ -24,10 +29,12 @@
     "@storybook/addon-themes": "^10.1.6",
     "@storybook/react": "^10.1.6",
     "@storybook/react-vite": "^10.1.6",
+    "@storybook/test-runner": "^0.24.2",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.22",
+    "axe-playwright": "^2.2.2",
     "eslint-plugin-storybook": "^10.1.6",
     "msw": "^2.12.4",
     "msw-storybook-addon": "^2.0.6",
