@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
   useEffect,
+  useDeferredValue,
   Component,
   type RefObject,
   type ReactNode,
@@ -24,6 +25,8 @@ import {
   useWebGLAvailable,
   useResponsiveParticles,
   useInteraction,
+  useDocumentVisibility,
+  useAdaptiveQuality,
 } from './hooks'
 import {
   PHYSICS,
@@ -34,6 +37,11 @@ import {
   CANVAS,
   BOUNDS,
 } from './particle-config'
+import {
+  createParticlePhysics,
+  type ParticlePhysics,
+  type InteractionTarget,
+} from './particle-physics'
 import type {
   HeroParticlesProps,
   ParticleFieldProps,
@@ -170,9 +178,15 @@ class ParticleErrorBoundary extends Component<
 // PARTICLE FIELD COMPONENT
 // =============================================================================
 
+interface ParticleFieldInternalProps extends ParticleFieldProps {
+  isVisible: boolean
+  qualityLevel: number
+}
+
 /**
  * Inner component that renders the particle system
  * Uses buffer geometry for performance with instanced attributes
+ * Leverages extracted physics engine for clean separation of concerns
  */
 function ParticleField({
   count,
@@ -182,7 +196,9 @@ function ParticleField({
   interactionMode,
   interactionRef,
   animated,
-}: ParticleFieldProps) {
+  isVisible,
+  qualityLevel,
+}: ParticleFieldInternalProps) {
   const pointsRef = useRef<THREE.Points>(null)
   const materialRef = useRef<THREE.ShaderMaterial>(null)
   const { viewport } = useThree()
@@ -191,8 +207,35 @@ function ParticleField({
   const originalPositions = useRef<Float32Array | null>(null)
   const velocities = useRef<Float32Array | null>(null)
 
+  // Physics engine instance
+  const physicsRef = useRef<ParticlePhysics | null>(null)
+
   // Get noise function
   const noise = useMemo(() => getNoise3D(), [])
+
+  // Initialize physics engine
+  useEffect(() => {
+    physicsRef.current = createParticlePhysics(noise, {
+      noiseFrequency: PHYSICS.noiseFrequency,
+      noiseAmplitude: PHYSICS.noiseAmplitude,
+      baseSpeed: PHYSICS.baseSpeed,
+      interactionRadius: PHYSICS.repulsionRadius,
+      returnForce: PHYSICS.returnForce,
+      maxDisplacement: PHYSICS.maxDisplacement,
+      damping: 0.95,
+    })
+  }, [noise])
+
+  // Adjust physics based on quality level
+  useEffect(() => {
+    if (physicsRef.current) {
+      // Lower quality = less noise complexity, faster return
+      const qualityMultiplier = qualityLevel / 100
+      physicsRef.current.setConfig({
+        noiseAmplitude: PHYSICS.noiseAmplitude * qualityMultiplier,
+      })
+    }
+  }, [qualityLevel])
 
   // Generate initial particle data
   const { positions, colors, sizes, phases } = useMemo(() => {
@@ -272,12 +315,14 @@ function ParticleField({
     []
   )
 
-  // Animation loop
+  // Animation loop - uses extracted physics engine
   useFrame((state) => {
-    if (!animated) return
+    // Skip animation when not visible or not animated
+    if (!animated || !isVisible) return
     if (!pointsRef.current) return
     if (!originalPositions.current) return
     if (!velocities.current) return
+    if (!physicsRef.current) return
 
     const time = state.clock.elapsedTime
     const geometry = pointsRef.current.geometry
@@ -289,126 +334,27 @@ function ParticleField({
       materialRef.current.uniforms.uTime.value = time
     }
 
-    // Get interaction position in world space (with smooth interpolation)
+    // Get interaction position in world space
     const interaction = interactionRef.current
-    const interactionWorld = new THREE.Vector3(
-      (interaction?.x ?? 0) * viewport.width * 0.5,
-      (interaction?.y ?? 0) * viewport.height * 0.5,
-      0
-    )
-
-    // Pre-calculate interaction constants
-    const isInteractionActive = interaction?.isActive ?? false
-    const radiusSq = PHYSICS.repulsionRadius * PHYSICS.repulsionRadius
-
-    // Update each particle
-    for (let i = 0; i < count; i++) {
-      const i3 = i * 3
-
-      // Current position
-      const x = posArray[i3]
-      const y = posArray[i3 + 1]
-      const z = posArray[i3 + 2]
-
-      // Original position
-      const ox = originalPositions.current[i3]
-      const oy = originalPositions.current[i3 + 1]
-      const oz = originalPositions.current[i3 + 2]
-
-      // Noise-based drift using Simplex noise
-      const noiseScale = PHYSICS.noiseFrequency
-      const timeScale = time * PHYSICS.baseSpeed * 10
-
-      const noiseX = noise(x * noiseScale, y * noiseScale, timeScale) * 2 - 1
-      const noiseY =
-        noise(y * noiseScale + 100, z * noiseScale, timeScale) * 2 - 1
-      const noiseZ =
-        noise(z * noiseScale + 200, x * noiseScale, timeScale) * 2 - 1
-
-      // Apply noise velocity
-      velocities.current[i3] += noiseX * PHYSICS.noiseAmplitude * 0.01
-      velocities.current[i3 + 1] += noiseY * PHYSICS.noiseAmplitude * 0.01
-      velocities.current[i3 + 2] += noiseZ * PHYSICS.noiseAmplitude * 0.005
-
-      // Interaction (mouse/touch) forces
-      if (isInteractionActive && interactionStrength > 0) {
-        const dx = x - interactionWorld.x
-        const dy = y - interactionWorld.y
-        const distSq = dx * dx + dy * dy
-
-        if (distSq < radiusSq && distSq > 0.0001) {
-          const dist = Math.sqrt(distSq)
-          const normalizedDist = dist / PHYSICS.repulsionRadius
-          const falloff = 1 - normalizedDist
-
-          // Calculate force direction (normalized)
-          const normalizedDx = dx / dist
-          const normalizedDy = dy / dist
-
-          // Calculate force based on interaction mode
-          let forceMultiplier: number
-
-          switch (interactionMode) {
-            case 'attract':
-              // Attract: negative force pulls particles toward cursor
-              forceMultiplier = -falloff * interactionStrength * 0.15
-              break
-            case 'hybrid':
-              // Hybrid: attract from far, repel when close
-              // Creates a "magnetic field" effect
-              if (normalizedDist > 0.4) {
-                // Attract from distance
-                forceMultiplier = -falloff * interactionStrength * 0.1
-              } else {
-                // Repel when close
-                forceMultiplier = (1 - normalizedDist * 2.5) * interactionStrength * 0.2
-              }
-              break
-            case 'repel':
-            default:
-              // Repel: positive force pushes particles away
-              forceMultiplier = falloff * interactionStrength * 0.15
-              break
-          }
-
-          velocities.current[i3] += normalizedDx * forceMultiplier
-          velocities.current[i3 + 1] += normalizedDy * forceMultiplier
+    const interactionTarget: InteractionTarget | null = interaction?.isActive
+      ? {
+          x: interaction.x * viewport.width * 0.5,
+          y: interaction.y * viewport.height * 0.5,
+          isActive: true,
         }
-      }
+      : null
 
-      // Return-to-home force
-      const homeX = ox - x
-      const homeY = oy - y
-      const homeZ = oz - z
-
-      velocities.current[i3] += homeX * PHYSICS.returnForce
-      velocities.current[i3 + 1] += homeY * PHYSICS.returnForce
-      velocities.current[i3 + 2] += homeZ * PHYSICS.returnForce
-
-      // Apply velocity with damping
-      const damping = 0.95
-      velocities.current[i3] *= damping
-      velocities.current[i3 + 1] *= damping
-      velocities.current[i3 + 2] *= damping
-
-      // Update position
-      posArray[i3] += velocities.current[i3]
-      posArray[i3 + 1] += velocities.current[i3 + 1]
-      posArray[i3 + 2] += velocities.current[i3 + 2]
-
-      // Clamp displacement
-      const dispX = posArray[i3] - ox
-      const dispY = posArray[i3 + 1] - oy
-      const dispZ = posArray[i3 + 2] - oz
-      const dispMag = Math.sqrt(dispX * dispX + dispY * dispY + dispZ * dispZ)
-
-      if (dispMag > PHYSICS.maxDisplacement) {
-        const scale = PHYSICS.maxDisplacement / dispMag
-        posArray[i3] = ox + dispX * scale
-        posArray[i3 + 1] = oy + dispY * scale
-        posArray[i3 + 2] = oz + dispZ * scale
-      }
-    }
+    // Run physics step using the extracted engine
+    physicsRef.current.step(
+      posArray,
+      velocities.current,
+      originalPositions.current,
+      time,
+      interactionTarget,
+      interactionMode,
+      interactionStrength,
+      count
+    )
 
     // Mark attribute for update
     posAttr.needsUpdate = true
@@ -468,6 +414,9 @@ interface SceneProps {
   interactionRef: RefObject<InteractionState>
   animated: boolean
   bloomIntensity: number
+  isVisible: boolean
+  qualityLevel: number
+  enableBloom: boolean
 }
 
 /**
@@ -482,6 +431,9 @@ function Scene({
   interactionRef,
   animated,
   bloomIntensity,
+  isVisible,
+  qualityLevel,
+  enableBloom,
 }: SceneProps) {
   return (
     <>
@@ -493,15 +445,19 @@ function Scene({
         interactionMode={interactionMode}
         interactionRef={interactionRef}
         animated={animated}
+        isVisible={isVisible}
+        qualityLevel={qualityLevel}
       />
-      <EffectComposer>
-        <Bloom
-          intensity={bloomIntensity}
-          luminanceThreshold={BLOOM.luminanceThreshold}
-          luminanceSmoothing={BLOOM.luminanceSmoothing}
-          mipmapBlur={BLOOM.mipmapBlur}
-        />
-      </EffectComposer>
+      {enableBloom && (
+        <EffectComposer>
+          <Bloom
+            intensity={bloomIntensity}
+            luminanceThreshold={BLOOM.luminanceThreshold}
+            luminanceSmoothing={BLOOM.luminanceSmoothing}
+            mipmapBlur={BLOOM.mipmapBlur}
+          />
+        </EffectComposer>
+      )}
     </>
   )
 }
@@ -599,6 +555,9 @@ function LoadingPlaceholder() {
  * - WebGL fallback to CSS gradient
  * - Error boundary for graceful failure handling
  * - Smooth input interpolation for fluid motion
+ * - Tab visibility awareness (pauses when hidden)
+ * - Adaptive quality based on FPS monitoring
+ * - Extracted physics engine for testability
  *
  * @example
  * ```tsx
@@ -646,10 +605,23 @@ export function HeroParticles({
     handleTouchEnd,
   } = useInteraction()
 
+  // Tab visibility - pause animation when tab is hidden
+  const isTabVisible = useDocumentVisibility()
+
+  // Adaptive quality - reduce quality when FPS drops
+  const { qualityLevel, shouldDisableEffects } = useAdaptiveQuality({
+    targetFps: 55,
+    measurementInterval: 1000,
+    qualityStep: 10,
+  })
+
   // Computed values
   const animated =
     customAnimated !== undefined ? customAnimated : !prefersReducedMotion
-  const themeColors = isDark ? COLORS.dark : COLORS.light
+
+  // Use deferred value for theme to prevent blocking renders during theme transitions
+  const deferredIsDark = useDeferredValue(isDark)
+  const themeColors = deferredIsDark ? COLORS.dark : COLORS.light
 
   const primaryColor = useMemo(
     () => new THREE.Color(customPrimary ?? themeColors.primary),
@@ -662,10 +634,19 @@ export function HeroParticles({
   )
 
   const bloomIntensity =
-    customBloom ?? (isDark ? BLOOM.intensityDark : BLOOM.intensityLight)
+    customBloom ?? (deferredIsDark ? BLOOM.intensityDark : BLOOM.intensityLight)
+
+  // Adjust particle count based on quality level
+  const adjustedCount = useMemo(() => {
+    const qualityMultiplier = qualityLevel / 100
+    return Math.floor(responsiveCount * qualityMultiplier)
+  }, [responsiveCount, qualityLevel])
 
   // Adjust size multiplier for mobile (larger particles for visibility)
   const sizeMultiplier = device === 'mobile' ? 1.3 : 1
+
+  // Determine if bloom should be enabled
+  const enableBloom = !shouldDisableEffects
 
   // Don't render during SSR or on very small viewports
   if (!mounted || !shouldRender) {
@@ -681,7 +662,7 @@ export function HeroParticles({
           className
         )}
       >
-        <GradientFallback isDark={isDark} />
+        <GradientFallback isDark={deferredIsDark} />
       </div>
     )
   }
@@ -695,7 +676,7 @@ export function HeroParticles({
           className
         )}
       >
-        <GradientFallback isDark={isDark} />
+        <GradientFallback isDark={deferredIsDark} />
       </div>
     )
   }
@@ -725,7 +706,7 @@ export function HeroParticles({
 
       {/* Error boundary wraps the 3D content */}
       <ParticleErrorBoundary
-        fallback={<GradientFallback isDark={isDark} />}
+        fallback={<GradientFallback isDark={deferredIsDark} />}
         onError={(error) => {
           console.warn(
             '[HeroParticles] Falling back to gradient due to error:',
@@ -750,7 +731,7 @@ export function HeroParticles({
             style={{ pointerEvents: 'none' }}
           >
             <Scene
-              count={responsiveCount}
+              count={adjustedCount}
               primaryColor={primaryColor}
               secondaryColor={secondaryColor}
               interactionStrength={interactionStrength}
@@ -758,6 +739,9 @@ export function HeroParticles({
               interactionRef={interactionRef}
               animated={animated}
               bloomIntensity={bloomIntensity * sizeMultiplier}
+              isVisible={isTabVisible}
+              qualityLevel={qualityLevel}
+              enableBloom={enableBloom}
             />
           </Canvas>
         </Suspense>
