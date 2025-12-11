@@ -1,0 +1,275 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Resources/Accessibility" />
+
+# Accessibility
+
+Clarity Chat is built with accessibility as a core principle. This guide covers our a11y features,
+best practices, and how to test for accessibility compliance.
+
+---
+
+## WCAG Compliance
+
+Clarity Chat components are designed to meet **WCAG 2.1 Level AA** standards. Key areas include:
+
+- **Color Contrast**: All text meets 4.5:1 ratio requirements
+- **Keyboard Navigation**: Full keyboard support for all interactive elements
+- **Screen Reader Support**: Proper ARIA attributes and live regions
+- **Focus Management**: Visible focus indicators and logical focus order
+- **Motion**: Respects `prefers-reduced-motion` preferences
+
+---
+
+## Built-in A11y Features
+
+### Chat Components
+
+#### ChatWindow
+
+| Feature | Implementation |
+|---------|---------------|
+| Region landmark | `role="region"` with `aria-label` |
+| Message count | `aria-label` on badge |
+| Export button | `aria-label="Export conversation"` |
+| Clear button | `aria-label="Clear conversation"` |
+
+#### ChatInput
+
+| Feature | Implementation |
+|---------|---------------|
+| Character limit | `aria-invalid` when over limit |
+| Error message | `role="alert"` with `aria-live="assertive"` |
+| Status updates | `role="status"` with `aria-live="polite"` |
+| Send button | Dynamic `aria-label` based on state |
+| Form hints | `aria-describedby` connections |
+| Keyboard | Enter to submit, Shift+Enter for newline |
+
+#### MessageList
+
+| Feature | Implementation |
+|---------|---------------|
+| Landmark | `role="log"` for message container |
+| Live region | `aria-live="polite"` for new messages |
+| Message roles | Proper `role="article"` per message |
+
+---
+
+## Keyboard Navigation
+
+### Global Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Tab` | Move between interactive elements |
+| `Shift + Tab` | Move backwards |
+| `Enter` | Activate buttons/submit forms |
+| `Escape` | Close modals/cancel operations |
+
+### Chat Input
+
+| Shortcut | Action |
+|----------|--------|
+| `Enter` | Send message |
+| `Shift + Enter` | New line |
+| `Ctrl/Cmd + Enter` | Force send (when available) |
+
+### Message Actions
+
+| Shortcut | Action |
+|----------|--------|
+| `C` | Copy message (when focused) |
+| `R` | Retry/regenerate (when available) |
+| `E` | Edit message (when available) |
+
+---
+
+## Screen Reader Considerations
+
+### Live Regions
+
+We use ARIA live regions to announce dynamic content changes:
+
+```tsx
+// Status updates (non-urgent)
+<div role="status" aria-live="polite">
+  Typing indicator, character count, etc.
+</div>
+
+// Error messages (urgent)
+<div role="alert" aria-live="assertive">
+  Error: Message exceeds character limit
+</div>
+```
+
+### Message Announcements
+
+New messages are announced via live regions:
+
+```tsx
+<div role="log" aria-live="polite" aria-relevant="additions">
+  {messages.map(msg => (
+    <article key={msg.id} aria-label={`${msg.role} message`}>
+      {msg.content}
+    </article>
+  ))}
+</div>
+```
+
+---
+
+## Focus Management
+
+### Focus Trapping
+
+Modals and dialogs trap focus to prevent users from tabbing outside:
+
+```tsx
+// Command palette, settings dialogs, etc.
+<Dialog>
+  <DialogContent>
+    {/* Focus is trapped within this container */}
+  </DialogContent>
+</Dialog>
+```
+
+### Focus Restoration
+
+When modals close, focus returns to the triggering element:
+
+```tsx
+const triggerRef = useRef<HTMLButtonElement>(null)
+
+// On close, focus returns to trigger
+const handleClose = () => {
+  setOpen(false)
+  triggerRef.current?.focus()
+}
+```
+
+---
+
+## Color and Contrast
+
+### Theme Contrast Checker
+
+Use our built-in contrast checker component to verify your theme meets WCAG requirements:
+
+```tsx
+import { ThemeContrastChecker } from '@clarity-chat/react'
+
+<ThemeContrastChecker
+  showWarnings
+  showAAA // Optional: check for AAA compliance
+/>
+```
+
+### Dark Mode Support
+
+All components support both light and dark modes with appropriate contrast:
+
+- Light mode: Dark text on light backgrounds
+- Dark mode: Light text on dark backgrounds
+- Both modes meet 4.5:1 contrast ratio
+
+---
+
+## Motion and Animation
+
+### Reduced Motion
+
+Components respect the `prefers-reduced-motion` media query:
+
+```tsx
+import { useReducedMotion } from '@clarity-chat/react'
+
+function MyComponent() {
+  const prefersReducedMotion = useReducedMotion()
+
+  return (
+    <motion.div
+      animate={{ opacity: 1 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
+    >
+      Content
+    </motion.div>
+  )
+}
+```
+
+### Animation Guidelines
+
+- Keep animations under 400ms
+- Avoid auto-playing videos/animations
+- Provide pause/stop controls for long animations
+- Use subtle transitions, not flashy effects
+
+---
+
+## Testing Accessibility
+
+### Storybook A11y Addon
+
+All stories are tested with the `@storybook/addon-a11y` addon:
+
+1. Open any story in Storybook
+2. Click the "Accessibility" tab in the addon panel
+3. Review violations, passes, and incomplete checks
+
+### Automated Testing
+
+Run axe-core tests in your CI pipeline:
+
+```bash
+# Using @storybook/test-runner
+npm run test-storybook
+
+# Or with axe-playwright
+npx playwright test --config=a11y.config.ts
+```
+
+### Manual Testing
+
+Always supplement automated tests with manual testing:
+
+1. **Keyboard-only**: Navigate without mouse
+2. **Screen reader**: Test with VoiceOver/NVDA
+3. **Zoom**: Test at 200% zoom
+4. **Color blindness**: Use browser extensions
+5. **High contrast**: Test with Windows High Contrast mode
+
+---
+
+## Checklist for Custom Components
+
+When building custom components, ensure:
+
+- [ ] All interactive elements are focusable
+- [ ] Focus order is logical
+- [ ] Focus is visible
+- [ ] Buttons have accessible names
+- [ ] Images have alt text
+- [ ] Color is not the only way to convey information
+- [ ] Text can be resized to 200%
+- [ ] Animations can be paused/disabled
+- [ ] Forms have proper labels
+- [ ] Errors are announced to screen readers
+- [ ] Links are distinguishable from buttons
+- [ ] Custom widgets follow ARIA patterns
+
+---
+
+## Resources
+
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
+- [Inclusive Components](https://inclusive-components.design/)
+- [A11y Project Checklist](https://www.a11yproject.com/checklist/)
+
+---
+
+## Related
+
+- [Theme Contrast Checker](?path=/docs/components-utilities-themecontrastchecker--docs)
+- [Colors & Themes](?path=/docs/foundation-colors-themes--docs)
+- [Keyboard Shortcuts](?path=/docs/components-utilities-keyboardshortcuthint--docs)

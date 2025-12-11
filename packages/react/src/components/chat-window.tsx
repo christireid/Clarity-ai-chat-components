@@ -86,7 +86,7 @@ const DefaultEmptyState = ({
     className="text-center space-y-8 px-4"
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+    transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
   >
     <motion.div
       className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg ring-1 ring-primary/30"
@@ -95,7 +95,7 @@ const DefaultEmptyState = ({
         rotate: [0, 1, -1, 0],
       }}
       transition={{
-        duration: 4,
+        duration: durations.slower,
         repeat: Infinity,
         ease: 'easeInOut',
       }}
@@ -121,7 +121,11 @@ const DefaultEmptyState = ({
           className="pt-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{
+            delay: 0.2,
+            duration: durations.slow,
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
         >
           <div className="flex items-center justify-center gap-2 mb-4">
             <SparklesIcon size={14} className="text-primary" />
@@ -371,6 +375,8 @@ export function ChatWindow({
         'flex h-full flex-col overflow-hidden shadow-xl border-border/40',
         className
       )}
+      role="region"
+      aria-label={sessionTitle || 'Chat conversation'}
     >
       {/* Optional Header */}
       {showHeader && (
@@ -378,7 +384,10 @@ export function ChatWindow({
           className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-5 py-4 sm:px-6 backdrop-blur-md"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{
+            duration: durations.moderate,
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25">
@@ -416,6 +425,7 @@ export function ChatWindow({
                 onClick={onExport}
                 className="gap-2 hover:bg-accent/50 transition-colors"
                 title="Export conversation"
+                aria-label="Export conversation"
               >
                 <svg
                   className="h-4 w-4"
@@ -441,6 +451,7 @@ export function ChatWindow({
                 onClick={onClear}
                 className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
                 title="Clear conversation"
+                aria-label="Clear conversation"
               >
                 <svg
                   className="h-4 w-4"
@@ -483,7 +494,10 @@ export function ChatWindow({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{
+                duration: durations.normal,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
               className="px-5 pb-3"
             >
               <div className="flex items-center gap-2 mb-3">

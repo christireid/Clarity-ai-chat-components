@@ -5,48 +5,75 @@ import { Meta } from '@storybook/addon-docs/blocks'
 # Hooks Overview
 
 Clarity Chat provides powerful React hooks for building AI chat interfaces.
+These hooks handle complex state management, streaming, memory, and more.
 
 ---
 
-## Available Hooks
+## Core Hooks
 
 ### useClarityChat
 
-**The flagship hook** for building chat interfaces.
+**The flagship hook** for building chat interfaces. This is the recommended starting point.
 
-- Message management
-- API integration
-- Memory support
-- Streaming support
-- Error handling
+- Message management with automatic state
+- API integration with streaming
+- Memory support (sliding-window, semantic-chunks)
+- Transport selection (SSE/WebSocket)
+- Error handling and recovery
 
-**See:** [useClarityChat Essentials](./useClarityChat/Essentials)
-
----
-
-### useMemory
-
-Manage conversation memory and context.
-
-- Sliding window strategy
-- Semantic chunks
-- Vector store integration
-- Token management
-
-**See:** [useMemory](./useMemory) (Coming Soon)
+**See:** [useClarityChat Stories](?path=/docs/hooks-primary-useclaritychat--docs)
 
 ---
 
 ### useStreaming
 
-Handle streaming responses from AI APIs.
+Low-level streaming primitive for handling ReadableStream data.
 
-- Real-time updates
-- SSE support
-- Chunk processing
+- Automatic text decoding from Uint8Array
+- Chunk-by-chunk processing with callbacks
+- AbortController support for cancellation
+- Complete content accumulation
+
+**See:** [useStreaming Stories](?path=/docs/hooks-streaming-usestreaming--docs)
+
+---
+
+### useCompletion
+
+Mid-level hook for text completion with streaming support.
+
+- Single-turn completions
+- Request caching and deduplication
 - Progress tracking
+- Error handling
 
-**See:** [useStreaming](./useStreaming) (Coming Soon)
+**See:** [useCompletion Stories](?path=/docs/hooks-chat-usecompletion--docs)
+
+---
+
+### useAssistant
+
+Hook for AI assistant interactions with tool calling support.
+
+- Tool invocation handling
+- Multi-step workflows
+- Status tracking (idle, loading, streaming, processing_tools)
+- Thread/run management
+
+**See:** [useAssistant Stories](?path=/docs/hooks-chat-useassistant--docs)
+
+---
+
+### useAutoScroll
+
+Smart auto-scrolling for chat interfaces.
+
+- User scroll detection
+- Configurable threshold
+- Smooth animation
+- Manual control
+
+**See:** [useAutoScroll Stories](?path=/docs/hooks-performance-useautoscroll--docs)
 
 ---
 
@@ -111,44 +138,63 @@ const { messages, append, isStreaming } = useClarityChat({
 
 ---
 
-## Storybook Tracks
+## Hook Categories
 
-### Essentials Track
+### Chat Hooks
 
-**Most common patterns** - Use these 90% of the time.
+Core hooks for building chat interfaces.
 
-- Basic chat setup
-- With ChatWindow component
-- With memory enabled
-- Error handling
+| Hook | Purpose | Level |
+|------|---------|-------|
+| useClarityChat | Full-featured chat | High-level |
+| useChat | Legacy chat hook | Deprecated |
+| useCompletion | Text completion | Mid-level |
+| useAssistant | Tool-calling assistant | Mid-level |
 
-**See:** [useClarityChat Essentials](./useClarityChat/Essentials)
-
----
-
-### Enterprise Track
-
-**Advanced patterns** - For production applications.
-
-- Custom memory strategies
-- Multi-model routing
-- Advanced error handling
-- Performance optimization
-
-**See:** [useClarityChat Enterprise](./useClarityChat/Enterprise) (Coming Soon)
+**See:** [Chat Hooks](?path=/docs/hooks-chat-overview--docs)
 
 ---
 
-### Composability Track
+### Streaming Hooks
 
-**Extending hooks** - Customization and composition.
+Hooks for handling streaming responses.
 
-- Custom hooks based on useClarityChat
-- Hook composition patterns
-- Advanced state management
-- Custom integrations
+| Hook | Purpose | Level |
+|------|---------|-------|
+| useStreaming | Generic stream handling | Low-level |
+| useStreamingSSE | Server-Sent Events | Mid-level |
+| useStreamableUI | UI streaming | Mid-level |
 
-**See:** [useClarityChat Composability](./useClarityChat/Composability) (Coming Soon)
+**See:** [Streaming Hooks](?path=/docs/hooks-streaming-overview--docs)
+
+---
+
+### Performance Hooks
+
+Hooks for optimizing performance.
+
+| Hook | Purpose |
+|------|---------|
+| useAutoScroll | Smart auto-scrolling |
+| useDebounce | Debounced values |
+| useThrottle | Throttled callbacks |
+| useTokenTracker | Token usage tracking |
+
+**See:** [Performance Hooks](?path=/docs/hooks-performance-overview--docs)
+
+---
+
+### Utility Hooks
+
+General-purpose utility hooks.
+
+| Hook | Purpose |
+|------|---------|
+| useClipboard | Copy to clipboard |
+| useErrorRecovery | Error handling |
+| useWindowSize | Window dimensions |
+
+**See:** [Utility Hooks](?path=/docs/hooks-utilities-overview--docs)
 
 ---
 
@@ -156,27 +202,25 @@ const { messages, append, isStreaming } = useClarityChat({
 
 ### ✅ Do
 
-- Use `useClarityChat` for most cases
+- Use `useClarityChat` for most cases (it's the flagship hook)
 - Enable memory for multi-turn conversations
-- Handle errors properly
-- Use TypeScript for type safety
+- Handle errors with `onError` callback and `error` state
+- Use TypeScript for full type safety
+- Prefer `append()` over manual message manipulation
 
 ### ❌ Don't
 
-- Don't duplicate hook state
-- Don't ignore error states
+- Don't duplicate hook state in component state
+- Don't ignore error states in your UI
 - Don't skip memory for context-heavy chats
 - Don't forget to handle loading states
+- Don't use deprecated `useChat` - migrate to `useClarityChat`
 
 ---
 
 ## Related Resources
 
-- [Components Overview](../Components/Overview) - UI components
-- [API Reference](../../api/hooks.md) - Full API docs
-- [Examples](../../../examples) - Real-world examples
-- [Best Practices](../../../docs/best-practices.md) - Production patterns
-
----
-
-**Questions?** Check the [FAQ](../FAQ) or ask in [Discord](https://discord.gg/clarity-chat).
+- [Component Gallery](?path=/docs/component-gallery--docs) - UI components
+- [Build a Chat App Tutorial](?path=/docs/tutorials-build-a-chat-app--docs) - Step-by-step guide
+- [Live API Demo](?path=/docs/examples-live-api-demo--docs) - Test with real APIs
+- [Getting Started](?path=/docs/welcome-getting-started--docs) - Quick start guide
