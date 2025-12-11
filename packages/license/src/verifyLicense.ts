@@ -9,22 +9,15 @@
 
 import { base64Decode } from './utils'
 import { parseLicenseKey } from './generateLicense'
+import { isPlanSufficient } from './constants'
 import type {
   ClarityLicensePayload,
   LicenseStatus,
-  LicensePlan,
   VerifyLicenseOptions,
 } from './types'
 
 /** Current supported license version */
 const CURRENT_VERSION = 1
-
-/** Plan hierarchy for comparison */
-const PLAN_HIERARCHY: Record<LicensePlan, number> = {
-  community: 0,
-  pro: 1,
-  enterprise: 2,
-}
 
 /**
  * Verify a Clarity Chat license key
@@ -142,10 +135,7 @@ export function verifyLicense(
 
   // Check required plan level
   if (requiredPlan) {
-    const actualLevel = PLAN_HIERARCHY[payload.plan]
-    const requiredLevel = PLAN_HIERARCHY[requiredPlan]
-
-    if (actualLevel < requiredLevel) {
+    if (!isPlanSufficient(payload.plan, requiredPlan)) {
       return {
         status: 'PlanMismatch',
         payload,

@@ -9,6 +9,7 @@
 import { useMemo, useSyncExternalStore } from 'react'
 import { LicenseInfo } from './LicenseInfo'
 import { verifyLicense } from './verifyLicense'
+import { isPlanSufficient } from './constants'
 import type { LicenseStatus, LicensePlan } from './types'
 
 /**
@@ -113,17 +114,7 @@ export function useHasPlan(requiredPlan: LicensePlan): boolean {
     if (status.status !== 'Valid' || !status.payload) {
       return false
     }
-
-    const planHierarchy: Record<LicensePlan, number> = {
-      community: 0,
-      pro: 1,
-      enterprise: 2,
-    }
-
-    const actualLevel = planHierarchy[status.payload.plan]
-    const requiredLevel = planHierarchy[requiredPlan]
-
-    return actualLevel >= requiredLevel
+    return isPlanSufficient(status.payload.plan, requiredPlan)
   }, [status, requiredPlan])
 }
 

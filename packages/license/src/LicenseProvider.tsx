@@ -9,6 +9,7 @@
 
 import * as React from 'react'
 import { verifyLicense } from './verifyLicense'
+import { isPlanSufficient } from './constants'
 import type { LicenseStatus, LicensePlan } from './types'
 
 /**
@@ -37,15 +38,6 @@ export interface LicenseProviderProps {
   licenseKey: string | null | undefined
   /** Child components */
   children: React.ReactNode
-}
-
-/**
- * Plan hierarchy for comparison
- */
-const PLAN_HIERARCHY: Record<LicensePlan, number> = {
-  community: 0,
-  pro: 1,
-  enterprise: 2,
 }
 
 /**
@@ -99,9 +91,7 @@ export function LicenseProvider({
       plan: payload?.plan,
       hasPlan: (requiredPlan: LicensePlan) => {
         if (!payload) return false
-        const actualLevel = PLAN_HIERARCHY[payload.plan]
-        const requiredLevel = PLAN_HIERARCHY[requiredPlan]
-        return actualLevel >= requiredLevel
+        return isPlanSufficient(payload.plan, requiredPlan)
       },
       shouldShowWatermark: !isValid,
     }

@@ -11,6 +11,7 @@ import {
   verifyLicense,
   shouldShowWatermark as checkWatermark,
 } from './verifyLicense'
+import { isPlanSufficient } from './constants'
 import type { LicenseStatus, LicensePlan } from './types'
 
 /** Internal storage for the license key */
@@ -172,19 +173,9 @@ export const LicenseInfo = {
    * @param requiredPlan - Minimum required plan level
    */
   hasPlan(requiredPlan: LicensePlan): boolean {
-    const planHierarchy: Record<LicensePlan, number> = {
-      community: 0,
-      pro: 1,
-      enterprise: 2,
-    }
     const payload = this.getStatus().payload
-
     if (!payload) return false
-
-    const actualLevel = planHierarchy[payload.plan]
-    const requiredLevel = planHierarchy[requiredPlan]
-
-    return actualLevel >= requiredLevel
+    return isPlanSufficient(payload.plan, requiredPlan)
   },
 }
 

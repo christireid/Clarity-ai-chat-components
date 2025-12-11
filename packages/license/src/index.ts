@@ -76,3 +76,6 @@ export type {
 
 // Utilities (for advanced use cases)
 export { base64Encode, base64Decode, simpleChecksum } from './utils'
+
+// Constants (for advanced use cases)
+export { PLAN_HIERARCHY, isPlanSufficient } from './constants'
