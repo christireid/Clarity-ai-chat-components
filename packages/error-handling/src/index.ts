@@ -77,8 +77,85 @@ export type {
   UseStreamingErrorReturn,
 } from './hooks/useStreamingError'
 
+// Accessibility hooks
+export {
+  useFocusManagement,
+  useFocusTrap,
+  useAnnounce,
+  usePrefersReducedMotion,
+  useId,
+} from './hooks/useAccessibility'
+
+// Analytics hooks
+export {
+  ErrorAnalyticsProvider,
+  useErrorAnalytics,
+  useErrorAnalyticsOptional,
+} from './hooks/useErrorAnalytics'
+export type {
+  ErrorAnalyticsEntry,
+  ErrorStats,
+  ErrorAnalyticsCallbacks,
+  ErrorAnalyticsProviderProps,
+} from './hooks/useErrorAnalytics'
+
+// Persistent circuit breaker
+export {
+  usePersistentCircuitBreaker,
+  cleanupStaleCircuitBreakers,
+} from './hooks/usePersistentCircuitBreaker'
+export type { CircuitState } from './hooks/usePersistentCircuitBreaker'
+
+// Reset strategies
+export {
+  useResetStrategies,
+  dispatchResetEvent,
+  useNetworkStatus,
+  useRouteChangeReset,
+} from './hooks/useResetStrategies'
+export type {
+  ResetStrategiesOptions,
+  ResetReason,
+} from './hooks/useResetStrategies'
+
+// =============================================================================
+// Additional Components
+// =============================================================================
+
+// Retry countdown
+export { RetryCountdown } from './components/RetryCountdown'
+export type { RetryCountdownProps } from './components/RetryCountdown'
+
+// Dev tools (development only)
+export {
+  ErrorBoundaryDevTools,
+  useDevToolsRegistration,
+} from './components/ErrorBoundaryDevTools'
+export type { ErrorBoundaryDevToolsProps } from './components/ErrorBoundaryDevTools'
+
+// =============================================================================
+// Provider Error Detection
+// =============================================================================
+
+export {
+  detectProviderError,
+  logDetectionResult,
+  isMalformedErrorBody,
+} from './errors/provider-error-detector'
+export type {
+  DetectionConfidence,
+  DetectionResult,
+} from './errors/provider-error-detector'
+
 // =============================================================================
 // Utilities
 // =============================================================================
 
 export * from './utils'
+
+// =============================================================================
+// Styles (CSS)
+// =============================================================================
+
+// Import this in your app for error animations:
+// import '@clarity-chat/error-handling/styles/error-animations.css'
