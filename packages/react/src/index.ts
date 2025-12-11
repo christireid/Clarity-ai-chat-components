@@ -631,6 +631,13 @@ export * from './error'
 
 // Token Management Components
 export { TokenCounter } from './components/token-counter'
+export {
+  TokenUsageMeter,
+  MODEL_PRICING_PRESETS,
+  type TokenUsage,
+  type ModelPricing,
+  type TokenUsageMeterProps,
+} from './components/token-usage-meter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
 export { TokenOptimizationDashboard } from './components/token-optimization-dashboard'

@@ -1,12 +1,36 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next'
+import createMDX from '@next/mdx'
+
+/**
+ * Next.js 16 Configuration for Documentation Site
+ *
+ * Modernized configuration using TypeScript with:
+ * - Turbopack support for faster development
+ * - MDX support with Rust compiler
+ * - Optimized package imports for tree-shaking
+ * - Security headers
+ * - Image optimization
+ */
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 
+  // Turbopack configuration (Next.js 16 - stable)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
+  },
+
+  // Experimental features
   experimental: {
     mdxRs: true,
-    // Next.js 16: Optimize package imports for better tree-shaking
-    // Automatically optimizes imports from specified packages, reducing bundle size
+    // Typed routes for compile-time Link validation (Next.js 16)
+    typedRoutes: true,
+    // Optimize package imports for better tree-shaking (stable in Next.js 15.5+)
     optimizePackageImports: [
       '@clarity-chat/react',
       '@clarity-chat/primitives',
@@ -15,32 +39,32 @@ const nextConfig = {
     ],
   },
 
-  // Turbopack configuration (Next.js 15.5+)
-  turbopack: {},
-  
-  // Next.js 16: Improved caching defaults
-  // Automatic static optimization and ISR improvements
-
   transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives'],
+
+  // TypeScript configuration
   typescript: {
+    // Note: Consider enabling type checking in CI/CD
     ignoreBuildErrors: true,
   },
+
+  // ESLint configuration
   eslint: {
+    // Note: Consider enabling linting in CI/CD
     ignoreDuringBuilds: true,
   },
-  
+
   // Production optimizations
   compress: true,
   poweredByHeader: false,
-  
+
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  
-  // Headers for security and performance
+
+  // Security headers
   async headers() {
     return [
       {
@@ -48,25 +72,26 @@ const nextConfig = {
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
-            value: 'on'
+            value: 'on',
           },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',
-            value: 'nosniff'
+            value: 'nosniff',
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'origin-when-cross-origin',
           },
         ],
       },
     ]
   },
-  
+
+  // Webpack configuration for non-Turbopack builds
   webpack: (config) => {
     // Handle SVG imports
     config.module.rules.push({
@@ -84,13 +109,12 @@ const nextConfig = {
   },
 }
 
-const withMDX = require('@next/mdx')({
+const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [],
     rehypePlugins: [],
-    providerImportSource: '@mdx-js/react',
   },
 })
 
-module.exports = withMDX(nextConfig)
+export default withMDX(nextConfig)

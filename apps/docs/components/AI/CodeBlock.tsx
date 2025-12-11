@@ -69,7 +69,7 @@ export function CodeBlock({
           (_, i) => start + i
         )
         setSelectedLines(new Set(lines))
-        
+
         // Scroll to first selected line after a short delay
         setTimeout(() => {
           const lineElement = containerRef.current?.querySelector(
@@ -98,27 +98,28 @@ export function CodeBlock({
   const handleCopy = useCallback(async () => {
     try {
       let textToCopy = code
-      
+
       // If lines are selected, copy only selected lines
       if (selectedLines.size > 0) {
         const lines = code.split('\n')
         const sortedLines = Array.from(selectedLines).sort((a, b) => a - b)
-        textToCopy = sortedLines
-          .map((lineNum) => lines[lineNum - 1])
-          .join('\n')
+        textToCopy = sortedLines.map((lineNum) => lines[lineNum - 1]).join('\n')
       }
-      
+
       await navigator.clipboard.writeText(textToCopy)
       setCopied(true)
-      
+
       if (selectedLines.size > 0) {
-        toast.success(`Copied ${selectedLines.size} line${selectedLines.size > 1 ? 's' : ''}`, {
-          description: 'Selected lines copied to clipboard',
-        })
+        toast.success(
+          `Copied ${selectedLines.size} line${selectedLines.size > 1 ? 's' : ''}`,
+          {
+            description: 'Selected lines copied to clipboard',
+          }
+        )
       } else {
         toast.success(toastMessages.copied)
       }
-      
+
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
       console.error('Failed to copy code:', error)
@@ -162,16 +163,16 @@ export function CodeBlock({
   const handleLineClick = useCallback(
     (lineNumber: number, event: React.MouseEvent) => {
       event.preventDefault()
-      
+
       setSelectedLines((prev) => {
         const newSelection = new Set(prev)
-        
+
         if (event.shiftKey && newSelection.size > 0) {
           // Range selection
           const lines = Array.from(newSelection)
           const min = Math.min(...lines, lineNumber)
           const max = Math.max(...lines, lineNumber)
-          
+
           // Clear and add range
           newSelection.clear()
           for (let i = min; i <= max; i++) {
@@ -189,10 +190,10 @@ export function CodeBlock({
           newSelection.clear()
           newSelection.add(lineNumber)
         }
-        
+
         // Update URL hash
         updateUrlHash(newSelection)
-        
+
         return newSelection
       })
     },
@@ -204,13 +205,17 @@ export function CodeBlock({
     if (lines.size === 0) {
       // Clear hash if no selection
       if (window.location.hash.startsWith('#L')) {
-        history.replaceState(null, '', window.location.pathname + window.location.search)
+        history.replaceState(
+          null,
+          '',
+          window.location.pathname + window.location.search
+        )
       }
       return
     }
-    
+
     const sortedLines = Array.from(lines).sort((a, b) => a - b)
-    
+
     // Check if it's a continuous range
     let isRange = true
     for (let i = 1; i < sortedLines.length; i++) {
@@ -219,7 +224,7 @@ export function CodeBlock({
         break
       }
     }
-    
+
     // Create hash
     let hash
     if (isRange && sortedLines.length > 1) {
@@ -230,8 +235,12 @@ export function CodeBlock({
       // Multiple non-continuous lines - just use first and last
       hash = `#L${sortedLines[0]}-L${sortedLines[sortedLines.length - 1]}`
     }
-    
-    history.replaceState(null, '', window.location.pathname + window.location.search + hash)
+
+    history.replaceState(
+      null,
+      '',
+      window.location.pathname + window.location.search + hash
+    )
   }, [])
 
   // Keyboard shortcuts
@@ -242,7 +251,9 @@ export function CodeBlock({
       // Cmd/Ctrl+A to select all lines
       if ((e.metaKey || e.ctrlKey) && e.key === 'a' && showLineNumbers) {
         e.preventDefault()
-        const allLines = new Set(Array.from({ length: lines.length }, (_, i) => i + 1))
+        const allLines = new Set(
+          Array.from({ length: lines.length }, (_, i) => i + 1)
+        )
         setSelectedLines(allLines)
         updateUrlHash(allLines)
       }
@@ -253,7 +264,11 @@ export function CodeBlock({
         updateUrlHash(new Set())
       }
       // Cmd/Ctrl+Shift+C to copy (or Cmd/Ctrl+C for selected lines)
-      else if ((e.metaKey || e.ctrlKey) && e.key === 'c' && (e.shiftKey || selectedLines.size > 0)) {
+      else if (
+        (e.metaKey || e.ctrlKey) &&
+        e.key === 'c' &&
+        (e.shiftKey || selectedLines.size > 0)
+      ) {
         e.preventDefault()
         handleCopy()
       }
@@ -271,7 +286,15 @@ export function CodeBlock({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleCopy, handleDownload, toggleExpanded, selectedLines, showLineNumbers, lines.length, updateUrlHash])
+  }, [
+    handleCopy,
+    handleDownload,
+    toggleExpanded,
+    selectedLines,
+    showLineNumbers,
+    lines.length,
+    updateUrlHash,
+  ])
 
   const lines = code.split('\n')
   const highlightedLines = highlightedCode.split('\n')
@@ -403,7 +426,10 @@ export function CodeBlock({
         animate={{
           maxHeight: isExpanded ? 'none' : isTallCodeBlock ? '500px' : 'none',
         }}
-        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{
+          duration: durations.moderate,
+          ease: [0.25, 0.1, 0.25, 1],
+        }}
         className={cn(
           'relative overflow-x-auto',
           isTallCodeBlock && !isExpanded && 'overflow-y-hidden'
@@ -419,13 +445,16 @@ export function CodeBlock({
                   const highlightedLine = highlightedLines[index] || line
 
                   const isSelected = selectedLines.has(lineNumber)
-                  
+
                   return (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, x: -5 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.005, duration: 0.2 }}
+                      transition={{
+                        delay: index * 0.005,
+                        duration: durations.normal,
+                      }}
                       className={cn(
                         'contents group/line',
                         (isHighlighted || isSelected) && 'bg-primary/5'
@@ -443,7 +472,7 @@ export function CodeBlock({
                           isHighlighted && 'text-primary/70 font-semibold',
                           isSelected && 'text-primary font-bold bg-primary/10'
                         )}
-                        title=\"Click to select line. Cmd/Ctrl+Click for multi-select. Shift+Click for range.\"
+                        title="Click to select line. Cmd/Ctrl+Click for multi-select. Shift+Click for range."
                       >
                         {lineNumber}
                       </span>
