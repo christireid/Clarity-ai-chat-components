@@ -1,9 +1,19 @@
 'use client'
 
-import { Suspense, useMemo, useRef, useEffect, RefObject } from 'react'
+import {
+  Suspense,
+  useMemo,
+  useRef,
+  useEffect,
+  Component,
+  type RefObject,
+  type ReactNode,
+  type ErrorInfo,
+} from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import * as THREE from 'three'
+import { createNoise3D, type NoiseFunction3D } from 'simplex-noise'
 import { cn } from '@/lib/utils'
 import {
   useMounted,
@@ -13,7 +23,7 @@ import {
 import {
   useWebGLAvailable,
   useResponsiveParticles,
-  useMousePosition,
+  useInteraction,
 } from './hooks'
 import {
   PHYSICS,
@@ -27,7 +37,10 @@ import {
 import type {
   HeroParticlesProps,
   ParticleFieldProps,
-  MousePosition,
+  InteractionState,
+  InteractionMode,
+  ParticleErrorBoundaryProps,
+  ParticleErrorBoundaryState,
 } from './HeroParticles.types'
 
 // =============================================================================
@@ -102,53 +115,55 @@ const fragmentShader = /* glsl */ `
 `
 
 // =============================================================================
-// NOISE FUNCTION (Simplex-like 3D noise)
+// NOISE GENERATOR (Simplex Noise)
+// =============================================================================
+
+// Create noise function once and reuse
+let noise3D: NoiseFunction3D | null = null
+
+function getNoise3D(): NoiseFunction3D {
+  if (!noise3D) {
+    noise3D = createNoise3D()
+  }
+  return noise3D
+}
+
+// =============================================================================
+// ERROR BOUNDARY
 // =============================================================================
 
 /**
- * Simple pseudo-random function for deterministic noise
+ * Error boundary to catch Three.js/WebGL errors
+ * Prevents crashes from propagating to the rest of the app
  */
-function pseudoRandom(x: number, y: number, z: number): number {
-  const dot = x * 12.9898 + y * 78.233 + z * 37.719
-  return (Math.sin(dot) * 43758.5453) % 1
-}
+class ParticleErrorBoundary extends Component<
+  ParticleErrorBoundaryProps,
+  ParticleErrorBoundaryState
+> {
+  constructor(props: ParticleErrorBoundaryProps) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
 
-/**
- * Smooth noise function for organic particle movement
- * Uses trilinear interpolation for smooth results
- */
-function smoothNoise(x: number, y: number, z: number, time: number): number {
-  const xi = Math.floor(x)
-  const yi = Math.floor(y)
-  const zi = Math.floor(z)
-  const xf = x - xi
-  const yf = y - yi
-  const zf = z - zi
+  static getDerivedStateFromError(error: Error): ParticleErrorBoundaryState {
+    return { hasError: true, error }
+  }
 
-  // Smooth interpolation
-  const u = xf * xf * (3 - 2 * xf)
-  const v = yf * yf * (3 - 2 * yf)
-  const w = zf * zf * (3 - 2 * zf)
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    // Log error for debugging
+    console.error('[HeroParticles] WebGL Error:', error)
+    console.error('[HeroParticles] Error Info:', errorInfo)
 
-  // 8 corner values
-  const n000 = pseudoRandom(xi, yi, zi + time * 0.1)
-  const n100 = pseudoRandom(xi + 1, yi, zi + time * 0.1)
-  const n010 = pseudoRandom(xi, yi + 1, zi + time * 0.1)
-  const n110 = pseudoRandom(xi + 1, yi + 1, zi + time * 0.1)
-  const n001 = pseudoRandom(xi, yi, zi + 1 + time * 0.1)
-  const n101 = pseudoRandom(xi + 1, yi, zi + 1 + time * 0.1)
-  const n011 = pseudoRandom(xi, yi + 1, zi + 1 + time * 0.1)
-  const n111 = pseudoRandom(xi + 1, yi + 1, zi + 1 + time * 0.1)
+    // Call optional error handler
+    this.props.onError?.(error, errorInfo)
+  }
 
-  // Trilinear interpolation
-  const nx00 = n000 * (1 - u) + n100 * u
-  const nx10 = n010 * (1 - u) + n110 * u
-  const nx01 = n001 * (1 - u) + n101 * u
-  const nx11 = n011 * (1 - u) + n111 * u
-  const nxy0 = nx00 * (1 - v) + nx10 * v
-  const nxy1 = nx01 * (1 - v) + nx11 * v
-
-  return nxy0 * (1 - w) + nxy1 * w
+  render(): ReactNode {
+    if (this.state.hasError) {
+      return this.props.fallback
+    }
+    return this.props.children
+  }
 }
 
 // =============================================================================
@@ -163,8 +178,9 @@ function ParticleField({
   count,
   primaryColor,
   secondaryColor,
-  repulsionStrength,
-  mouseRef,
+  interactionStrength,
+  interactionMode,
+  interactionRef,
   animated,
 }: ParticleFieldProps) {
   const pointsRef = useRef<THREE.Points>(null)
@@ -174,6 +190,9 @@ function ParticleField({
   // Store original positions for return-to-home behavior
   const originalPositions = useRef<Float32Array | null>(null)
   const velocities = useRef<Float32Array | null>(null)
+
+  // Get noise function
+  const noise = useMemo(() => getNoise3D(), [])
 
   // Generate initial particle data
   const { positions, colors, sizes, phases } = useMemo(() => {
@@ -270,13 +289,17 @@ function ParticleField({
       materialRef.current.uniforms.uTime.value = time
     }
 
-    // Get mouse position in world space
-    const mouse = mouseRef.current
-    const mouseWorld = new THREE.Vector3(
-      (mouse?.x ?? 0) * viewport.width * 0.5,
-      (mouse?.y ?? 0) * viewport.height * 0.5,
+    // Get interaction position in world space (with smooth interpolation)
+    const interaction = interactionRef.current
+    const interactionWorld = new THREE.Vector3(
+      (interaction?.x ?? 0) * viewport.width * 0.5,
+      (interaction?.y ?? 0) * viewport.height * 0.5,
       0
     )
+
+    // Pre-calculate interaction constants
+    const isInteractionActive = interaction?.isActive ?? false
+    const radiusSq = PHYSICS.repulsionRadius * PHYSICS.repulsionRadius
 
     // Update each particle
     for (let i = 0; i < count; i++) {
@@ -292,56 +315,64 @@ function ParticleField({
       const oy = originalPositions.current[i3 + 1]
       const oz = originalPositions.current[i3 + 2]
 
-      // Noise-based drift
-      const noiseX =
-        smoothNoise(
-          x * PHYSICS.noiseFrequency,
-          y * PHYSICS.noiseFrequency,
-          z * PHYSICS.noiseFrequency,
-          time * PHYSICS.baseSpeed
-        ) *
-          2 -
-        1
+      // Noise-based drift using Simplex noise
+      const noiseScale = PHYSICS.noiseFrequency
+      const timeScale = time * PHYSICS.baseSpeed * 10
+
+      const noiseX = noise(x * noiseScale, y * noiseScale, timeScale) * 2 - 1
       const noiseY =
-        smoothNoise(
-          y * PHYSICS.noiseFrequency + 100,
-          z * PHYSICS.noiseFrequency,
-          x * PHYSICS.noiseFrequency,
-          time * PHYSICS.baseSpeed
-        ) *
-          2 -
-        1
+        noise(y * noiseScale + 100, z * noiseScale, timeScale) * 2 - 1
       const noiseZ =
-        smoothNoise(
-          z * PHYSICS.noiseFrequency + 200,
-          x * PHYSICS.noiseFrequency,
-          y * PHYSICS.noiseFrequency,
-          time * PHYSICS.baseSpeed
-        ) *
-          2 -
-        1
+        noise(z * noiseScale + 200, x * noiseScale, timeScale) * 2 - 1
 
       // Apply noise velocity
       velocities.current[i3] += noiseX * PHYSICS.noiseAmplitude * 0.01
       velocities.current[i3 + 1] += noiseY * PHYSICS.noiseAmplitude * 0.01
       velocities.current[i3 + 2] += noiseZ * PHYSICS.noiseAmplitude * 0.005
 
-      // Mouse repulsion
-      if (mouse?.isActive && repulsionStrength > 0) {
-        const dx = x - mouseWorld.x
-        const dy = y - mouseWorld.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
+      // Interaction (mouse/touch) forces
+      if (isInteractionActive && interactionStrength > 0) {
+        const dx = x - interactionWorld.x
+        const dy = y - interactionWorld.y
+        const distSq = dx * dx + dy * dy
 
-        if (dist < PHYSICS.repulsionRadius && dist > 0.01) {
-          const force =
-            (1 - dist / PHYSICS.repulsionRadius) *
-            repulsionStrength *
-            PHYSICS.repulsionStrength
+        if (distSq < radiusSq && distSq > 0.0001) {
+          const dist = Math.sqrt(distSq)
+          const normalizedDist = dist / PHYSICS.repulsionRadius
+          const falloff = 1 - normalizedDist
+
+          // Calculate force direction (normalized)
           const normalizedDx = dx / dist
           const normalizedDy = dy / dist
 
-          velocities.current[i3] += normalizedDx * force * 0.1
-          velocities.current[i3 + 1] += normalizedDy * force * 0.1
+          // Calculate force based on interaction mode
+          let forceMultiplier: number
+
+          switch (interactionMode) {
+            case 'attract':
+              // Attract: negative force pulls particles toward cursor
+              forceMultiplier = -falloff * interactionStrength * 0.15
+              break
+            case 'hybrid':
+              // Hybrid: attract from far, repel when close
+              // Creates a "magnetic field" effect
+              if (normalizedDist > 0.4) {
+                // Attract from distance
+                forceMultiplier = -falloff * interactionStrength * 0.1
+              } else {
+                // Repel when close
+                forceMultiplier = (1 - normalizedDist * 2.5) * interactionStrength * 0.2
+              }
+              break
+            case 'repel':
+            default:
+              // Repel: positive force pushes particles away
+              forceMultiplier = falloff * interactionStrength * 0.15
+              break
+          }
+
+          velocities.current[i3] += normalizedDx * forceMultiplier
+          velocities.current[i3 + 1] += normalizedDy * forceMultiplier
         }
       }
 
@@ -432,8 +463,9 @@ interface SceneProps {
   count: number
   primaryColor: THREE.Color
   secondaryColor: THREE.Color
-  repulsionStrength: number
-  mouseRef: RefObject<MousePosition>
+  interactionStrength: number
+  interactionMode: InteractionMode
+  interactionRef: RefObject<InteractionState>
   animated: boolean
   bloomIntensity: number
 }
@@ -445,8 +477,9 @@ function Scene({
   count,
   primaryColor,
   secondaryColor,
-  repulsionStrength,
-  mouseRef,
+  interactionStrength,
+  interactionMode,
+  interactionRef,
   animated,
   bloomIntensity,
 }: SceneProps) {
@@ -456,8 +489,9 @@ function Scene({
         count={count}
         primaryColor={primaryColor}
         secondaryColor={secondaryColor}
-        repulsionStrength={repulsionStrength}
-        mouseRef={mouseRef}
+        interactionStrength={interactionStrength}
+        interactionMode={interactionMode}
+        interactionRef={interactionRef}
         animated={animated}
       />
       <EffectComposer>
@@ -498,15 +532,53 @@ function GradientFallback({ isDark }: { isDark: boolean }) {
 }
 
 // =============================================================================
-// LOADING PLACEHOLDER
+// LOADING PLACEHOLDER (with shimmer effect)
 // =============================================================================
 
 /**
  * Placeholder shown while Canvas loads
+ * Features a subtle shimmer animation for premium feel
  */
 function LoadingPlaceholder() {
   return (
-    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+    <div className="absolute inset-0 overflow-hidden">
+      {/* Base gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+
+      {/* Shimmer effect */}
+      <div
+        className="absolute inset-0 animate-pulse"
+        style={{
+          background: `
+            linear-gradient(
+              90deg,
+              transparent 0%,
+              rgba(59, 130, 246, 0.03) 50%,
+              transparent 100%
+            )
+          `,
+          animation: 'shimmer 2s ease-in-out infinite',
+        }}
+      />
+
+      {/* Scattered dots for visual interest */}
+      <div className="absolute inset-0 opacity-20">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-primary/30"
+            style={{
+              width: Math.random() * 4 + 2,
+              height: Math.random() * 4 + 2,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `pulse ${2 + Math.random() * 2}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -518,22 +590,32 @@ function LoadingPlaceholder() {
  * HeroParticles - Premium 3D particle animation for the hero section
  *
  * Features:
- * - Organic particle drift using noise functions
- * - Mouse-interactive repulsion effect
+ * - Organic particle drift using Simplex noise
+ * - Mouse and touch interactive effects (repel/attract/hybrid)
  * - Bloom post-processing for dreamy glow
  * - Theme-aware colors (dark/light mode)
  * - Responsive particle count
  * - Accessible (respects prefers-reduced-motion)
  * - WebGL fallback to CSS gradient
+ * - Error boundary for graceful failure handling
+ * - Smooth input interpolation for fluid motion
  *
  * @example
  * ```tsx
+ * // Basic usage
  * <div className="relative h-screen">
  *   <HeroParticles />
  *   <div className="relative z-10">
  *     // Hero content here
  *   </div>
  * </div>
+ *
+ * // With custom settings
+ * <HeroParticles
+ *   interactionMode="hybrid"
+ *   interactionStrength={0.7}
+ *   bloomIntensity={2}
+ * />
  * ```
  */
 export function HeroParticles({
@@ -541,8 +623,10 @@ export function HeroParticles({
   primaryColor: customPrimary,
   secondaryColor: customSecondary,
   bloomIntensity: customBloom,
-  repulsionStrength = PHYSICS.repulsionStrength,
+  interactionStrength = 0.5,
+  interactionMode = 'repel',
   animated: customAnimated,
+  enableTouch = true,
   className,
 }: HeroParticlesProps) {
   // Hooks
@@ -551,9 +635,16 @@ export function HeroParticles({
   const isDark = useIsDark()
   const { isAvailable: webglAvailable, isChecked: webglChecked } =
     useWebGLAvailable()
-  const { count: responsiveCount, shouldRender } =
+  const { count: responsiveCount, shouldRender, device } =
     useResponsiveParticles(customCount)
-  const { mouseRef, handleMouseMove, handleMouseLeave } = useMousePosition()
+  const {
+    interactionRef,
+    handleMouseMove,
+    handleMouseLeave,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+  } = useInteraction()
 
   // Computed values
   const animated =
@@ -572,6 +663,9 @@ export function HeroParticles({
 
   const bloomIntensity =
     customBloom ?? (isDark ? BLOOM.intensityDark : BLOOM.intensityLight)
+
+  // Adjust size multiplier for mobile (larger particles for visibility)
+  const sizeMultiplier = device === 'mobile' ? 1.3 : 1
 
   // Don't render during SSR or on very small viewports
   if (!mounted || !shouldRender) {
@@ -592,7 +686,7 @@ export function HeroParticles({
     )
   }
 
-  // Show static particles for reduced motion
+  // Show static fallback for reduced motion
   if (prefersReducedMotion && customAnimated !== true) {
     return (
       <div
@@ -606,50 +700,68 @@ export function HeroParticles({
     )
   }
 
+  // Touch handlers (conditionally enabled)
+  const touchHandlers = enableTouch
+    ? {
+        onTouchStart: handleTouchStart,
+        onTouchMove: handleTouchMove,
+        onTouchEnd: handleTouchEnd,
+      }
+    : {}
+
   return (
     <div
-      className={cn(
-        'absolute inset-0 -z-10 overflow-hidden',
-        className
-      )}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      className={cn('absolute inset-0 -z-10 overflow-hidden', className)}
       style={{ pointerEvents: 'none' }}
     >
-      {/* Invisible overlay to capture mouse events */}
+      {/* Invisible overlay to capture mouse/touch events */}
       <div
         className="absolute inset-0"
         style={{ pointerEvents: 'auto' }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        {...touchHandlers}
       />
-      <Suspense fallback={<LoadingPlaceholder />}>
-        <Canvas
-          camera={{
-            fov: CAMERA.fov,
-            near: CAMERA.near,
-            far: CAMERA.far,
-            position: CAMERA.position as unknown as THREE.Vector3Tuple,
-          }}
-          dpr={CANVAS.dpr as [number, number]}
-          gl={{
-            antialias: CANVAS.antialias,
-            alpha: CANVAS.alpha,
-            powerPreference: CANVAS.powerPreference,
-          }}
-          style={{ pointerEvents: 'none' }}
-        >
-          <Scene
-            count={responsiveCount}
-            primaryColor={primaryColor}
-            secondaryColor={secondaryColor}
-            repulsionStrength={repulsionStrength}
-            mouseRef={mouseRef}
-            animated={animated}
-            bloomIntensity={bloomIntensity}
-          />
-        </Canvas>
-      </Suspense>
+
+      {/* Error boundary wraps the 3D content */}
+      <ParticleErrorBoundary
+        fallback={<GradientFallback isDark={isDark} />}
+        onError={(error) => {
+          console.warn(
+            '[HeroParticles] Falling back to gradient due to error:',
+            error.message
+          )
+        }}
+      >
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <Canvas
+            camera={{
+              fov: CAMERA.fov,
+              near: CAMERA.near,
+              far: CAMERA.far,
+              position: CAMERA.position as unknown as THREE.Vector3Tuple,
+            }}
+            dpr={CANVAS.dpr as [number, number]}
+            gl={{
+              antialias: CANVAS.antialias,
+              alpha: CANVAS.alpha,
+              powerPreference: CANVAS.powerPreference,
+            }}
+            style={{ pointerEvents: 'none' }}
+          >
+            <Scene
+              count={responsiveCount}
+              primaryColor={primaryColor}
+              secondaryColor={secondaryColor}
+              interactionStrength={interactionStrength}
+              interactionMode={interactionMode}
+              interactionRef={interactionRef}
+              animated={animated}
+              bloomIntensity={bloomIntensity * sizeMultiplier}
+            />
+          </Canvas>
+        </Suspense>
+      </ParticleErrorBoundary>
     </div>
   )
 }

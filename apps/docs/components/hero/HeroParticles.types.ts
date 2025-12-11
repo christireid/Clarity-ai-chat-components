@@ -6,6 +6,15 @@ import type { RefObject } from 'react'
 import type * as THREE from 'three'
 
 // =============================================================================
+// INTERACTION MODES
+// =============================================================================
+
+/**
+ * Available interaction modes for particle behavior
+ */
+export type InteractionMode = 'repel' | 'attract' | 'hybrid'
+
+// =============================================================================
 // COMPONENT PROPS
 // =============================================================================
 
@@ -21,10 +30,14 @@ export interface HeroParticlesProps {
   secondaryColor?: string
   /** Bloom intensity (0-3, default varies by theme) */
   bloomIntensity?: number
-  /** Mouse repulsion strength (0-1, default: 0.5) */
-  repulsionStrength?: number
+  /** Mouse/touch interaction strength (0-1, default: 0.5) */
+  interactionStrength?: number
+  /** Interaction mode: 'repel' pushes away, 'attract' pulls in, 'hybrid' does both */
+  interactionMode?: InteractionMode
   /** Whether animation is enabled (respects prefers-reduced-motion by default) */
   animated?: boolean
+  /** Enable touch interaction on mobile (default: true) */
+  enableTouch?: boolean
   /** Additional className for the wrapper div */
   className?: string
 }
@@ -39,10 +52,12 @@ export interface ParticleFieldProps {
   primaryColor: THREE.Color
   /** Secondary color in normalized RGB [0-1, 0-1, 0-1] */
   secondaryColor: THREE.Color
-  /** Mouse repulsion strength (0-1) */
-  repulsionStrength: number
-  /** Reference to mouse position in NDC */
-  mouseRef: RefObject<MousePosition>
+  /** Mouse/touch interaction strength (0-1) */
+  interactionStrength: number
+  /** Interaction mode */
+  interactionMode: InteractionMode
+  /** Reference to interaction position */
+  interactionRef: RefObject<InteractionState>
   /** Whether animation is enabled */
   animated: boolean
 }
@@ -52,7 +67,27 @@ export interface ParticleFieldProps {
 // =============================================================================
 
 /**
- * Mouse position tracking in Normalized Device Coordinates
+ * Interaction state tracking for mouse and touch
+ * Uses smooth interpolation for fluid motion
+ */
+export interface InteractionState {
+  /** Current interpolated X position (-1 to 1) */
+  x: number
+  /** Current interpolated Y position (-1 to 1) */
+  y: number
+  /** Target X position (raw input) */
+  targetX: number
+  /** Target Y position (raw input) */
+  targetY: number
+  /** Whether interaction is currently active */
+  isActive: boolean
+  /** Type of interaction source */
+  source: 'mouse' | 'touch' | 'none'
+}
+
+/**
+ * Legacy mouse position type for backwards compatibility
+ * @deprecated Use InteractionState instead
  */
 export interface MousePosition {
   /** X position (-1 to 1) */
@@ -115,12 +150,14 @@ export interface ResponsiveConfig {
 export interface ParticleUniforms {
   /** Current time for animation */
   uTime: { value: number }
-  /** Mouse position in world space */
-  uMouse: { value: THREE.Vector3 }
-  /** Mouse repulsion strength */
-  uRepulsionStrength: { value: number }
-  /** Whether mouse is active */
-  uMouseActive: { value: number }
+  /** Interaction position in world space */
+  uInteractionPos: { value: THREE.Vector3 }
+  /** Interaction strength */
+  uInteractionStrength: { value: number }
+  /** Whether interaction is active (0 or 1) */
+  uInteractionActive: { value: number }
+  /** Interaction mode (0=repel, 1=attract, 2=hybrid) */
+  uInteractionMode: { value: number }
   /** Particle size multiplier */
   uSizeMultiplier: { value: number }
   /** Glow intensity */
@@ -156,7 +193,26 @@ export interface UseWebGLAvailableReturn {
 }
 
 /**
+ * Return type for useInteraction hook
+ */
+export interface UseInteractionReturn {
+  /** Ref containing current interaction state with smooth interpolation */
+  interactionRef: RefObject<InteractionState>
+  /** Handler for mouse move events */
+  handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void
+  /** Handler for mouse leave events */
+  handleMouseLeave: () => void
+  /** Handler for touch start events */
+  handleTouchStart: (event: React.TouchEvent<HTMLDivElement>) => void
+  /** Handler for touch move events */
+  handleTouchMove: (event: React.TouchEvent<HTMLDivElement>) => void
+  /** Handler for touch end events */
+  handleTouchEnd: () => void
+}
+
+/**
  * Return type for useMousePosition hook
+ * @deprecated Use useInteraction instead
  */
 export interface UseMousePositionReturn {
   /** Ref containing current mouse position */
@@ -165,4 +221,30 @@ export interface UseMousePositionReturn {
   handleMouseMove: (event: React.MouseEvent<HTMLDivElement>) => void
   /** Handler for mouse leave events */
   handleMouseLeave: () => void
+}
+
+// =============================================================================
+// ERROR BOUNDARY TYPES
+// =============================================================================
+
+/**
+ * Props for the error boundary component
+ */
+export interface ParticleErrorBoundaryProps {
+  /** Children to render */
+  children: React.ReactNode
+  /** Fallback to show on error */
+  fallback: React.ReactNode
+  /** Called when an error occurs */
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
+}
+
+/**
+ * State for the error boundary component
+ */
+export interface ParticleErrorBoundaryState {
+  /** Whether an error has occurred */
+  hasError: boolean
+  /** The error that occurred */
+  error: Error | null
 }

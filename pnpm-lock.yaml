@@ -194,6 +194,9 @@ importers:
       react-live:
         specifier: ^4.1.8
         version: 4.1.8(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      simplex-noise:
+        specifier: 4.0.3
+        version: 4.0.3
       tailwind-merge:
         specifier: ^2.2.0
         version: 2.6.0
@@ -11829,6 +11832,9 @@ packages:
 
   simple-get@4.0.1:
     resolution: {integrity: sha512-brv7p5WgH0jmQJr1ZDDfKDOSeWWg+OVypG99A/5vYGPqJ6pxiaHLy8nxtFjBA7oMa01ebA9gfh1uMCFqOuXxvA==}
+
+  simplex-noise@4.0.3:
+    resolution: {integrity: sha512-qSE2I4AngLQG7BXqoZj51jokT4WUXe8mOBrvfOXpci8+6Yu44+/dD5zqDpOx3Ux792eamTd2lLcI8jqFntk/lg==}
 
   sirv@3.0.2:
     resolution: {integrity: sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g==}
@@ -25352,6 +25358,8 @@ snapshots:
       once: 1.4.0
       simple-concat: 1.0.1
     optional: true
+
+  simplex-noise@4.0.3: {}
 
   sirv@3.0.2:
     dependencies:
