@@ -1,0 +1,11 @@
+{
+  "projectId": "clarity-chat-storybook",
+  "buildScriptName": "build-storybook",
+  "storybookBuildDir": "storybook-static",
+  "onlyChanged": true,
+  "externals": ["public/**"],
+  "skip": "dependabot/**",
+  "autoAcceptChanges": "main",
+  "exitOnceUploaded": false,
+  "exitZeroOnChanges": false
+}

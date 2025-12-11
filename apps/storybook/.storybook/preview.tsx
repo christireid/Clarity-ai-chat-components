@@ -19,26 +19,64 @@ initialize({
   onUnhandledRequest: 'bypass',
 })
 
-// Suppress AbortError from Storybook's waitForAnimations in React 19
+/**
+ * Suppress AbortError from Storybook's waitForAnimations in React 19
+ *
+ * This is a known compatibility issue between React 19's concurrent features
+ * and Storybook 10's animation detection. The AbortError is harmless and occurs
+ * when React interrupts pending animations during concurrent renders.
+ *
+ * @see https://github.com/storybookjs/storybook/issues/28795
+ */
 if (typeof window !== 'undefined') {
+  // Suppress AbortError in global error handler
   const originalOnError = window.onerror
   window.onerror = (message, source, lineno, colno, error) => {
-    if (
+    // Check for AbortError by name or message content
+    const isAbortError =
       error?.name === 'AbortError' ||
-      (typeof message === 'string' && message.includes('AbortError'))
-    ) {
-      return true // Suppress the error
+      (typeof message === 'string' &&
+        (message.includes('AbortError') ||
+          message.includes('signal is aborted')))
+
+    if (isAbortError) {
+      // Suppress the error - it's expected during React 19 concurrent rendering
+      return true
     }
     return originalOnError?.(message, source, lineno, colno, error) ?? false
   }
 
+  // Suppress AbortError in unhandled promise rejections
   const originalOnUnhandledRejection = window.onunhandledrejection
   window.onunhandledrejection = (event) => {
-    if (event.reason?.name === 'AbortError') {
+    const reason = event.reason
+    const isAbortError =
+      reason?.name === 'AbortError' ||
+      reason?.message?.includes('AbortError') ||
+      reason?.message?.includes('signal is aborted')
+
+    if (isAbortError) {
       event.preventDefault()
       return
     }
     originalOnUnhandledRejection?.call(window, event)
+  }
+
+  // Also suppress in console.error for cleaner dev experience
+  const originalConsoleError = console.error
+  console.error = (...args) => {
+    const firstArg = args[0]
+    if (
+      typeof firstArg === 'string' &&
+      (firstArg.includes('AbortError') ||
+        firstArg.includes('signal is aborted'))
+    ) {
+      return // Suppress AbortError console logs
+    }
+    if (firstArg instanceof Error && firstArg.name === 'AbortError') {
+      return
+    }
+    originalConsoleError.apply(console, args)
   }
 }
 
@@ -286,28 +324,16 @@ const preview: Preview = {
         showName: true,
       },
     },
-    themeMode: {
-      name: 'Theme Mode',
-      description: 'Select light, dark, or system theme',
-      defaultValue: 'system',
-      toolbar: {
-        icon: 'mirror',
-        items: [
-          { value: 'system', title: 'System' },
-          { value: 'light', title: 'Light' },
-          { value: 'dark', title: 'Dark' },
-        ],
-        showName: true,
-      },
-    },
+    // Note: Dark mode is controlled by the storybook-dark-mode addon (sun/moon icon)
+    // Theme presets allow switching between different Clarity color schemes
     themePreset: {
       name: 'Theme Preset',
-      description: 'Switch between Clarity theme presets',
+      description: 'Switch between Clarity theme presets (color schemes)',
       defaultValue: 'auto',
       toolbar: {
         icon: 'paintbrush',
         items: [
-          { value: 'auto', title: 'Auto' },
+          { value: 'auto', title: 'Default Theme' },
           ...themePresets.map((preset) => ({
             value: preset.value,
             title: preset.title,

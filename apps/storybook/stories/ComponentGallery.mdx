@@ -184,47 +184,6 @@ import { Meta } from '@storybook/addon-docs/blocks'
       background: #374151;
       color: #d1d5db;
     }
-    .gallery-search {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .gallery-search-input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      background: white;
-    }
-    .dark .gallery-search-input {
-      background: #1f2937;
-      border-color: #374151;
-      color: #f9fafb;
-    }
-    .gallery-search-input:focus {
-      outline: none;
-      border-color: #6366f1;
-    }
-    .gallery-filter-btn {
-      padding: 0.75rem 1.5rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 0.5rem;
-      background: white;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .dark .gallery-filter-btn {
-      background: #1f2937;
-      border-color: #374151;
-      color: #f9fafb;
-    }
-    .gallery-filter-btn:hover, .gallery-filter-btn.active {
-      border-color: #6366f1;
-      background: #6366f1;
-      color: white;
-    }
   `}
 </style>
 
@@ -275,7 +234,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Memory</span>
       </div>
     </a>
-    <a href="?path=/docs/components-chat-window--docs" className="gallery-card">
+    <a href="?path=/docs/components-chatwindow-essentials--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🖥️</div>
         <h4 className="gallery-card-title">ChatWindow</h4>
@@ -289,19 +248,19 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Composable</span>
       </div>
     </a>
-    <a href="?path=/docs/components-assistant-ui--docs" className="gallery-card">
+    <a href="?path=/docs/components-chatwindow-enterprise--docs" className="gallery-card">
       <div className="gallery-card-header">
-        <div className="gallery-card-icon">🤖</div>
-        <h4 className="gallery-card-title">AssistantUI</h4>
+        <div className="gallery-card-icon">🏢</div>
+        <h4 className="gallery-card-title">Enterprise ChatWindow</h4>
         <span className="gallery-card-badge badge-new">New</span>
       </div>
       <p className="gallery-card-description">
-        Pre-built assistant panels for common AI tasks: code help,
-        documentation, and more.
+        Enterprise-grade chat with advanced features like branching,
+        audit logging, and SSO.
       </p>
       <div className="gallery-card-tags">
-        <span className="gallery-tag">AI</span>
-        <span className="gallery-tag">Panels</span>
+        <span className="gallery-tag">Enterprise</span>
+        <span className="gallery-tag">SSO</span>
       </div>
     </a>
   </div>
@@ -316,7 +275,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
     <span className="gallery-section-count">12</span>
   </div>
   <div className="gallery-grid">
-    <a href="?path=/docs/components-message--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-message--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">💭</div>
         <h4 className="gallery-card-title">Message</h4>
@@ -330,7 +289,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Markdown</span>
       </div>
     </a>
-    <a href="?path=/docs/components-message-list--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-messagelist--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📝</div>
         <h4 className="gallery-card-title">MessageList</h4>
@@ -343,7 +302,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Virtual</span>
       </div>
     </a>
-    <a href="?path=/docs/components-chat-input--docs" className="gallery-card">
+    <a href="?path=/docs/components-inputs-chatinput--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">⌨️</div>
         <h4 className="gallery-card-title">ChatInput</h4>
@@ -356,7 +315,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Multimodal</span>
       </div>
     </a>
-    <a href="?path=/docs/components-streaming-message--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-streamingmessage--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">⚡</div>
         <h4 className="gallery-card-title">StreamingMessage</h4>
@@ -369,7 +328,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Real-time</span>
       </div>
     </a>
-    <a href="?path=/docs/components-thinking-indicator--docs" className="gallery-card">
+    <a href="?path=/docs/components-feedback-thinkingindicator--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🤔</div>
         <h4 className="gallery-card-title">ThinkingIndicator</h4>
@@ -382,16 +341,17 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Animation</span>
       </div>
     </a>
-    <a href="?path=/docs/components-typing-indicator--docs" className="gallery-card">
+    <a href="?path=/docs/components-chatinput-essentials--docs" className="gallery-card">
       <div className="gallery-card-header">
-        <div className="gallery-card-icon">...</div>
-        <h4 className="gallery-card-title">TypingIndicator</h4>
+        <div className="gallery-card-icon">📨</div>
+        <h4 className="gallery-card-title">ChatInput Essentials</h4>
       </div>
       <p className="gallery-card-description">
-        Classic typing dots animation for chat interfaces.
+        Essential chat input patterns and configurations.
       </p>
       <div className="gallery-card-tags">
-        <span className="gallery-tag">Animation</span>
+        <span className="gallery-tag">Input</span>
+        <span className="gallery-tag">Patterns</span>
       </div>
     </a>
   </div>
@@ -406,7 +366,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
     <span className="gallery-section-count">10</span>
   </div>
   <div className="gallery-grid">
-    <a href="?path=/docs/components-tool-invocation--docs" className="gallery-card">
+    <a href="?path=/docs/advanced-ai-toolinvocationcard--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🔧</div>
         <h4 className="gallery-card-title">ToolInvocationCard</h4>
@@ -420,7 +380,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Agents</span>
       </div>
     </a>
-    <a href="?path=/docs/components-follow-up-suggestions--docs" className="gallery-card">
+    <a href="?path=/docs/advanced-ai-followupsuggestions--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">💡</div>
         <h4 className="gallery-card-title">FollowUpSuggestions</h4>
@@ -433,7 +393,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Suggestions</span>
       </div>
     </a>
-    <a href="?path=/docs/components-citation-card--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-citationcard--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📚</div>
         <h4 className="gallery-card-title">CitationCard</h4>
@@ -446,7 +406,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Sources</span>
       </div>
     </a>
-    <a href="?path=/docs/components-agent-run-feed--docs" className="gallery-card">
+    <a href="?path=/docs/advanced-ai-agentrunfeed--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🔄</div>
         <h4 className="gallery-card-title">AgentRunFeed</h4>
@@ -460,7 +420,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Trace</span>
       </div>
     </a>
-    <a href="?path=/docs/components-token-counter--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-tokencounter--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🔢</div>
         <h4 className="gallery-card-title">TokenCounter</h4>
@@ -473,7 +433,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Usage</span>
       </div>
     </a>
-    <a href="?path=/docs/components-context-visualizer--docs" className="gallery-card">
+    <a href="?path=/docs/advanced-memory-contextvisualizer--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📊</div>
         <h4 className="gallery-card-title">ContextVisualizer</h4>
@@ -484,6 +444,32 @@ import { Meta } from '@storybook/addon-docs/blocks'
       <div className="gallery-card-tags">
         <span className="gallery-tag">Memory</span>
         <span className="gallery-tag">Debug</span>
+      </div>
+    </a>
+    <a href="?path=/docs/advanced-ai-aioperations--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">⚙️</div>
+        <h4 className="gallery-card-title">AIOperations</h4>
+      </div>
+      <p className="gallery-card-description">
+        AI operation controls and monitoring.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Operations</span>
+        <span className="gallery-tag">Control</span>
+      </div>
+    </a>
+    <a href="?path=/docs/advanced-ai-claritytoolresult--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📋</div>
+        <h4 className="gallery-card-title">ClarityToolResult</h4>
+      </div>
+      <p className="gallery-card-description">
+        Display tool execution results with formatting.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Tools</span>
+        <span className="gallery-tag">Results</span>
       </div>
     </a>
   </div>
@@ -498,7 +484,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
     <span className="gallery-section-count">15</span>
   </div>
   <div className="gallery-grid">
-    <a href="?path=/docs/components-code-block--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-enhancedcodeblock--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">💻</div>
         <h4 className="gallery-card-title">CodeBlock</h4>
@@ -512,7 +498,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Highlight</span>
       </div>
     </a>
-    <a href="?path=/docs/components-markdown-renderer--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-enhancedmarkdownrenderer--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📄</div>
         <h4 className="gallery-card-title">MarkdownRenderer</h4>
@@ -525,7 +511,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Rich</span>
       </div>
     </a>
-    <a href="?path=/docs/components-avatar--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-avatar--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">👤</div>
         <h4 className="gallery-card-title">Avatar</h4>
@@ -538,7 +524,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Image</span>
       </div>
     </a>
-    <a href="?path=/docs/components-badge--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-badge--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🏷️</div>
         <h4 className="gallery-card-title">Badge</h4>
@@ -551,7 +537,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Label</span>
       </div>
     </a>
-    <a href="?path=/docs/components-card--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-card--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📦</div>
         <h4 className="gallery-card-title">Card</h4>
@@ -564,7 +550,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Layout</span>
       </div>
     </a>
-    <a href="?path=/docs/components-skeleton--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-skeleton--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">⬜</div>
         <h4 className="gallery-card-title">Skeleton</h4>
@@ -575,6 +561,32 @@ import { Meta } from '@storybook/addon-docs/blocks'
       <div className="gallery-card-tags">
         <span className="gallery-tag">Loading</span>
         <span className="gallery-tag">Placeholder</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-datadisplay-progress--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📊</div>
+        <h4 className="gallery-card-title">Progress</h4>
+      </div>
+      <p className="gallery-card-description">
+        Linear progress bars and circular spinners.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Loading</span>
+        <span className="gallery-tag">Progress</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-datadisplay-conversationtimeline--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📅</div>
+        <h4 className="gallery-card-title">ConversationTimeline</h4>
+      </div>
+      <p className="gallery-card-description">
+        Visual timeline of conversation events.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Timeline</span>
+        <span className="gallery-tag">History</span>
       </div>
     </a>
   </div>
@@ -589,7 +601,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
     <span className="gallery-section-count">10</span>
   </div>
   <div className="gallery-grid">
-    <a href="?path=/docs/components-button--docs" className="gallery-card">
+    <a href="?path=/docs/components-inputs-button--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🔘</div>
         <h4 className="gallery-card-title">Button</h4>
@@ -602,7 +614,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Form</span>
       </div>
     </a>
-    <a href="?path=/docs/components-input--docs" className="gallery-card">
+    <a href="?path=/docs/components-inputs-input--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📝</div>
         <h4 className="gallery-card-title">Input</h4>
@@ -615,7 +627,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Text</span>
       </div>
     </a>
-    <a href="?path=/docs/components-textarea--docs" className="gallery-card">
+    <a href="?path=/docs/components-inputs-textarea--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📄</div>
         <h4 className="gallery-card-title">Textarea</h4>
@@ -628,7 +640,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Multiline</span>
       </div>
     </a>
-    <a href="?path=/docs/components-checkbox--docs" className="gallery-card">
+    <a href="?path=/docs/components-inputs-checkbox--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">☑️</div>
         <h4 className="gallery-card-title">Checkbox</h4>
@@ -641,7 +653,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Toggle</span>
       </div>
     </a>
-    <a href="?path=/docs/components-file-upload--docs" className="gallery-card">
+    <a href="?path=/docs/components-inputs-fileupload--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📎</div>
         <h4 className="gallery-card-title">FileUpload</h4>
@@ -654,7 +666,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Upload</span>
       </div>
     </a>
-    <a href="?path=/docs/components-voice-input--docs" className="gallery-card">
+    <a href="?path=/docs/components-inputs-voiceinput--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🎤</div>
         <h4 className="gallery-card-title">VoiceInput</h4>
@@ -666,6 +678,19 @@ import { Meta } from '@storybook/addon-docs/blocks'
       <div className="gallery-card-tags">
         <span className="gallery-tag">Voice</span>
         <span className="gallery-tag">Audio</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-inputs-advancedchatinput--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">✨</div>
+        <h4 className="gallery-card-title">AdvancedChatInput</h4>
+      </div>
+      <p className="gallery-card-description">
+        Feature-rich chat input with attachments and mentions.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Advanced</span>
+        <span className="gallery-tag">Rich</span>
       </div>
     </a>
   </div>
@@ -680,7 +705,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
     <span className="gallery-section-count">8</span>
   </div>
   <div className="gallery-grid">
-    <a href="?path=/docs/components-dialog--docs" className="gallery-card">
+    <a href="?path=/docs/components-layout-dialog--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🗂️</div>
         <h4 className="gallery-card-title">Dialog</h4>
@@ -693,7 +718,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Overlay</span>
       </div>
     </a>
-    <a href="?path=/docs/components-drawer--docs" className="gallery-card">
+    <a href="?path=/docs/components-layout-drawer--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📱</div>
         <h4 className="gallery-card-title">Drawer</h4>
@@ -706,7 +731,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Mobile</span>
       </div>
     </a>
-    <a href="?path=/docs/components-popover--docs" className="gallery-card">
+    <a href="?path=/docs/components-navigation-popover--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">💬</div>
         <h4 className="gallery-card-title">Popover</h4>
@@ -719,7 +744,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Trigger</span>
       </div>
     </a>
-    <a href="?path=/docs/components-tooltip--docs" className="gallery-card">
+    <a href="?path=/docs/components-datadisplay-tooltip--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">💡</div>
         <h4 className="gallery-card-title">Tooltip</h4>
@@ -732,7 +757,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Hover</span>
       </div>
     </a>
-    <a href="?path=/docs/components-dropdown-menu--docs" className="gallery-card">
+    <a href="?path=/docs/components-navigation-dropdownmenu--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📋</div>
         <h4 className="gallery-card-title">DropdownMenu</h4>
@@ -745,7 +770,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Actions</span>
       </div>
     </a>
-    <a href="?path=/docs/components-command-palette--docs" className="gallery-card">
+    <a href="?path=/docs/components-navigation-commandpalette--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">⌘</div>
         <h4 className="gallery-card-title">CommandPalette</h4>
@@ -757,6 +782,32 @@ import { Meta } from '@storybook/addon-docs/blocks'
       <div className="gallery-card-tags">
         <span className="gallery-tag">Search</span>
         <span className="gallery-tag">Commands</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-layout-conversationlist--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📚</div>
+        <h4 className="gallery-card-title">ConversationList</h4>
+      </div>
+      <p className="gallery-card-description">
+        Sidebar list of chat conversations with search.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Sidebar</span>
+        <span className="gallery-tag">List</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-layout-settingspanel--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">⚙️</div>
+        <h4 className="gallery-card-title">SettingsPanel</h4>
+      </div>
+      <p className="gallery-card-description">
+        Settings management panel with sections.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Settings</span>
+        <span className="gallery-tag">Config</span>
       </div>
     </a>
   </div>
@@ -771,7 +822,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
     <span className="gallery-section-count">8</span>
   </div>
   <div className="gallery-grid">
-    <a href="?path=/docs/components-toast--docs" className="gallery-card">
+    <a href="?path=/docs/components-feedback-toast--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🔔</div>
         <h4 className="gallery-card-title">Toast</h4>
@@ -784,20 +835,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Alert</span>
       </div>
     </a>
-    <a href="?path=/docs/components-progress--docs" className="gallery-card">
-      <div className="gallery-card-header">
-        <div className="gallery-card-icon">📊</div>
-        <h4 className="gallery-card-title">Progress</h4>
-      </div>
-      <p className="gallery-card-description">
-        Linear progress bars and circular spinners.
-      </p>
-      <div className="gallery-card-tags">
-        <span className="gallery-tag">Loading</span>
-        <span className="gallery-tag">Progress</span>
-      </div>
-    </a>
-    <a href="?path=/docs/components-empty-state--docs" className="gallery-card">
+    <a href="?path=/docs/components-feedback-emptystate--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📭</div>
         <h4 className="gallery-card-title">EmptyState</h4>
@@ -810,7 +848,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Placeholder</span>
       </div>
     </a>
-    <a href="?path=/docs/components-error-boundary--docs" className="gallery-card">
+    <a href="?path=/docs/components-feedback-errorboundary--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">🚨</div>
         <h4 className="gallery-card-title">ErrorBoundary</h4>
@@ -823,7 +861,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Recovery</span>
       </div>
     </a>
-    <a href="?path=/docs/components-network-status--docs" className="gallery-card">
+    <a href="?path=/docs/components-feedback-networkstatus--docs" className="gallery-card">
       <div className="gallery-card-header">
         <div className="gallery-card-icon">📶</div>
         <h4 className="gallery-card-title">NetworkStatus</h4>
@@ -836,6 +874,187 @@ import { Meta } from '@storybook/addon-docs/blocks'
         <span className="gallery-tag">Status</span>
       </div>
     </a>
+    <a href="?path=/docs/components-feedback-feedbackanimation--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">✨</div>
+        <h4 className="gallery-card-title">FeedbackAnimation</h4>
+      </div>
+      <p className="gallery-card-description">
+        Success, error, and loading animations.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Animation</span>
+        <span className="gallery-tag">Feedback</span>
+      </div>
+    </a>
+    <a href="?path=/docs/components-feedback-responsequalitymeter--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📈</div>
+        <h4 className="gallery-card-title">ResponseQualityMeter</h4>
+      </div>
+      <p className="gallery-card-description">
+        Display AI response quality score.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Quality</span>
+        <span className="gallery-tag">Metrics</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+## Hooks
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">🪝</span>
+    <h3 className="gallery-section-title">React Hooks</h3>
+    <span className="gallery-section-count">20+</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/hooks-primary-useclaritychat--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">💬</div>
+        <h4 className="gallery-card-title">useClarityChat</h4>
+        <span className="gallery-card-badge badge-popular">Popular</span>
+      </div>
+      <p className="gallery-card-description">
+        Primary hook for AI chat with streaming and memory.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Chat</span>
+        <span className="gallery-tag">AI</span>
+      </div>
+    </a>
+    <a href="?path=/docs/hooks-chat-usechat--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">💭</div>
+        <h4 className="gallery-card-title">useChat</h4>
+      </div>
+      <p className="gallery-card-description">
+        Core chat hook for custom implementations.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Chat</span>
+        <span className="gallery-tag">Core</span>
+      </div>
+    </a>
+    <a href="?path=/docs/hooks-chat-usecompletion--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">✍️</div>
+        <h4 className="gallery-card-title">useCompletion</h4>
+      </div>
+      <p className="gallery-card-description">
+        Hook for text completion and generation.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Completion</span>
+        <span className="gallery-tag">Text</span>
+      </div>
+    </a>
+    <a href="?path=/docs/hooks-streaming-usestreaming--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">⚡</div>
+        <h4 className="gallery-card-title">useStreaming</h4>
+      </div>
+      <p className="gallery-card-description">
+        Low-level streaming state management.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Streaming</span>
+        <span className="gallery-tag">State</span>
+      </div>
+    </a>
+    <a href="?path=/docs/hooks-performance-useautoscroll--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📜</div>
+        <h4 className="gallery-card-title">useAutoScroll</h4>
+      </div>
+      <p className="gallery-card-description">
+        Smart auto-scrolling for message lists.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Scroll</span>
+        <span className="gallery-tag">UX</span>
+      </div>
+    </a>
+    <a href="?path=/docs/hooks-chat-useassistant--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🤖</div>
+        <h4 className="gallery-card-title">useAssistant</h4>
+      </div>
+      <p className="gallery-card-description">
+        OpenAI Assistants API integration hook.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Assistants</span>
+        <span className="gallery-tag">OpenAI</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+## Enterprise Features
+
+<div className="gallery-section">
+  <div className="gallery-section-header">
+    <span className="gallery-section-icon">🏢</span>
+    <h3 className="gallery-section-title">Enterprise Components</h3>
+    <span className="gallery-section-count">8</span>
+  </div>
+  <div className="gallery-grid">
+    <a href="?path=/docs/advanced-enterprise-ssoconfigwizard--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">🔐</div>
+        <h4 className="gallery-card-title">SSOConfigWizard</h4>
+      </div>
+      <p className="gallery-card-description">
+        Step-by-step SSO configuration wizard.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">SSO</span>
+        <span className="gallery-tag">Auth</span>
+      </div>
+    </a>
+    <a href="?path=/docs/advanced-enterprise-auditlogviewer--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📋</div>
+        <h4 className="gallery-card-title">AuditLogViewer</h4>
+      </div>
+      <p className="gallery-card-description">
+        View and filter audit logs.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Audit</span>
+        <span className="gallery-tag">Logs</span>
+      </div>
+    </a>
+    <a href="?path=/docs/advanced-enterprise-exportdialog--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📤</div>
+        <h4 className="gallery-card-title">ExportDialog</h4>
+      </div>
+      <p className="gallery-card-description">
+        Export conversations in various formats.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Export</span>
+        <span className="gallery-tag">Data</span>
+      </div>
+    </a>
+    <a href="?path=/docs/advanced-analytics-analyticsdashboard--docs" className="gallery-card">
+      <div className="gallery-card-header">
+        <div className="gallery-card-icon">📊</div>
+        <h4 className="gallery-card-title">AnalyticsDashboard</h4>
+      </div>
+      <p className="gallery-card-description">
+        Usage analytics and metrics visualization.
+      </p>
+      <div className="gallery-card-tags">
+        <span className="gallery-tag">Analytics</span>
+        <span className="gallery-tag">Metrics</span>
+      </div>
+    </a>
   </div>
 </div>
 
@@ -844,16 +1063,16 @@ import { Meta } from '@storybook/addon-docs/blocks'
 ## Need Help Finding Something?
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginTop: '1.5rem'}}>
-  <div className="callout callout-info">
+  <div style={{background: 'var(--sb-color-blue-subtle, #e3f2fd)', padding: '1rem', borderRadius: '0.5rem', border: '1px solid var(--sb-color-blue-border, #90caf9)'}}>
     <strong>🔍 Can't find a component?</strong>
-    <p>Use the sidebar search (Ctrl+K) to find any component by name.</p>
+    <p style={{margin: '0.5rem 0 0 0', fontSize: '0.875rem'}}>Use the sidebar search (Ctrl+K) to find any component by name.</p>
   </div>
-  <div className="callout callout-success">
+  <div style={{background: 'var(--sb-color-green-subtle, #e8f5e9)', padding: '1rem', borderRadius: '0.5rem', border: '1px solid var(--sb-color-green-border, #a5d6a7)'}}>
     <strong>🪝 Looking for hooks?</strong>
-    <p>Check the <a href="?path=/docs/hooks-overview--docs">Hooks documentation</a> for state and behavior.</p>
+    <p style={{margin: '0.5rem 0 0 0', fontSize: '0.875rem'}}>Check the <a href="?path=/docs/hooks-overview--docs">Hooks documentation</a> for state and behavior.</p>
   </div>
-  <div className="callout callout-warning">
+  <div style={{background: 'var(--sb-color-orange-subtle, #fff3e0)', padding: '1rem', borderRadius: '0.5rem', border: '1px solid var(--sb-color-orange-border, #ffcc80)'}}>
     <strong>📐 Need a pattern?</strong>
-    <p>See <a href="?path=/docs/patterns-overview--docs">Patterns</a> for common implementation guides.</p>
+    <p style={{margin: '0.5rem 0 0 0', fontSize: '0.875rem'}}>See <a href="?path=/docs/patterns-overview--docs">Patterns</a> for common implementation guides.</p>
   </div>
 </div>

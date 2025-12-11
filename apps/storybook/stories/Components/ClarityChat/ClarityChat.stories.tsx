@@ -31,6 +31,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { http, HttpResponse, delay } from 'msw'
 import { ClarityChat } from '@clarity-chat/react'
 
+// Note: Interaction tests with @storybook/test will be added when Storybook 10
+// compatible testing packages are available. For now, use manual testing.
+
 // Simple action function replacement for action('action')
 const action =
   (name: string) =>

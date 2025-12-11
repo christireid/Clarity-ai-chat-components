@@ -213,6 +213,13 @@ const config: StorybookConfig = {
       )
     }
 
+    // Note: Manual chunk splitting disabled due to Storybook 10 + Rollup 4 compatibility issues
+    // The default chunking strategy works well enough for now
+    // config.build.rollupOptions.output = { manualChunks: ... }
+
+    // Increase chunk size warning limit for large dependencies
+    config.build.chunkSizeWarningLimit = 600
+
     // Add process polyfill for browser compatibility
     config.define = config.define || {}
     config.define['process.env'] = JSON.stringify({})
