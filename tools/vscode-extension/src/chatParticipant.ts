@@ -23,7 +23,7 @@ export function registerChatParticipant(context: vscode.ExtensionContext): void 
   participant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'assets', 'icon.png')
 
   participant.followupProvider = {
-    provideFollowups: (result, context, token) => {
+    provideFollowups: (_result, _context, _token) => {
       return [
         {
           prompt: 'Show me memory management examples',
@@ -57,9 +57,9 @@ export function registerChatParticipant(context: vscode.ExtensionContext): void 
  */
 async function handleChatRequest(
   request: vscode.ChatRequest,
-  context: vscode.ChatContext,
+  _context: vscode.ChatContext,
   response: vscode.ChatResponseStream,
-  token: vscode.CancellationToken
+  _token: vscode.CancellationToken
 ): Promise<vscode.ChatResult | void> {
   const prompt = request.prompt.toLowerCase()
 

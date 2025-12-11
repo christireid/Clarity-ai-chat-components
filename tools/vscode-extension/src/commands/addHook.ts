@@ -332,7 +332,7 @@ const HOOKS: HookItem[] = [
   }
 ]
 
-export async function addHookCommand(context: vscode.ExtensionContext) {
+export async function addHookCommand(_context: vscode.ExtensionContext) {
   const editor = vscode.window.activeTextEditor
   if (!editor) {
     vscode.window.showErrorMessage('No active editor found')

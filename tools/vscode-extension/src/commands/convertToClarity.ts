@@ -225,7 +225,7 @@ async function applyChanges(editor: vscode.TextEditor, originalText: string) {
   })
 }
 
-async function showPreview(document: vscode.TextDocument, changes: ConversionPattern[]) {
+async function showPreview(document: vscode.TextDocument, _changes: ConversionPattern[]) {
   const originalText = document.getText()
   let newText = originalText
 

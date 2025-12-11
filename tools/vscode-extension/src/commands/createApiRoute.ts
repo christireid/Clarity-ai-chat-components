@@ -4,7 +4,6 @@
  */
 
 import * as vscode from 'vscode'
-import * as path from 'path'
 
 interface ProviderOption {
   label: string

@@ -255,7 +255,7 @@ const COMPONENTS: ComponentItem[] = [
   }
 ]
 
-export async function addComponentCommand(context: vscode.ExtensionContext) {
+export async function addComponentCommand(_context: vscode.ExtensionContext) {
   const editor = vscode.window.activeTextEditor
   if (!editor) {
     vscode.window.showErrorMessage('No active editor found')
@@ -315,7 +315,7 @@ export async function addComponentCommand(context: vscode.ExtensionContext) {
   const hasImport = text.includes(selection.value) && text.includes('@clarity-chat/react')
 
   // Prepare the code to insert
-  let insertText = selection.code
+  const insertText = selection.code
 
   // If import doesn't exist, ask if user wants to add it
   if (!hasImport) {
