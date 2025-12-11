@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect, useTransition, useImperativeHandle, forwardRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useEffect, useTransition, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
+import { useMergedRef } from '../hooks/use-merged-ref'
 
 export interface InputSuggestion {
   id: string
@@ -18,28 +19,31 @@ export interface AdvancedChatInputProps {
   value: string
   onChange: (value: string) => void
   onSubmit: (value: string, attachments?: MessageAttachment[]) => void
-  
+
   // Autocomplete features
   suggestions?: InputSuggestion[]
   onSuggestionRequest?: (query: string, trigger: '@' | '/') => Promise<InputSuggestion[]>
-  
+
   // File upload
   onFileUpload?: (files: File[]) => Promise<MessageAttachment[]>
   maxFiles?: number
   acceptedFileTypes?: string[]
-  
+
   // Link preview
   onLinkPaste?: (url: string) => Promise<{ title: string; description?: string; image?: string }>
-  
+
   // Prompts
   savedPrompts?: SavedPrompt[]
   onPromptSelect?: (prompt: SavedPrompt) => void
-  
+
   // State
   disabled?: boolean
   placeholder?: string
   maxLength?: number
   className?: string
+
+  // React 19: ref as prop (replaces forwardRef)
+  ref?: React.Ref<HTMLTextAreaElement>
 }
 
 // Default commands - extracted as constant
@@ -50,24 +54,27 @@ const DEFAULT_COMMANDS: InputSuggestion[] = [
   { id: '4', type: 'command', label: 'model', description: 'Switch AI model', value: '/model' },
 ] as const
 
-export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInputProps>(
-  (
-    {
-      value,
-      onChange,
-      onSubmit,
-      onSuggestionRequest,
-      onFileUpload,
-      maxFiles = 5,
-      acceptedFileTypes = ['image/*', 'application/pdf', '.txt', '.doc', '.docx'],
-      savedPrompts = [],
-      disabled = false,
-      placeholder = 'Type a message... Use @ for prompts, / for commands',
-      maxLength,
-      className,
-    },
-    ref
-  ) => {
+/**
+ * AdvancedChatInput - Feature-rich chat input with autocomplete
+ *
+ * React 19: Now uses ref as a prop instead of forwardRef wrapper.
+ * This simplifies the component API and improves type inference.
+ */
+export function AdvancedChatInput({
+  value,
+  onChange,
+  onSubmit,
+  onSuggestionRequest,
+  onFileUpload,
+  maxFiles = 5,
+  acceptedFileTypes = ['image/*', 'application/pdf', '.txt', '.doc', '.docx'],
+  savedPrompts = [],
+  disabled = false,
+  placeholder = 'Type a message... Use @ for prompts, / for commands',
+  maxLength,
+  className,
+  ref,
+}: AdvancedChatInputProps) {
     const [attachments, setAttachments] = useState<MessageAttachment[]>([])
     const [suggestions, setSuggestions] = useState<InputSuggestion[]>([])
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -75,14 +82,17 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
     const [isUploading, setIsUploading] = useState(false)
     const [triggerChar, setTriggerChar] = useState<'@' | '/' | null>(null)
     const [cursorPosition, setCursorPosition] = useState(0)
-    const textareaRef = useRef<HTMLTextAreaElement>(null)
+    const internalRef = useRef<HTMLTextAreaElement>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
-    
+
     // React Concurrent Features - useTransition for non-blocking suggestion updates
     const [isPending, startTransition] = useTransition()
 
-    // Merge refs
-    useImperativeHandle(ref, () => textareaRef.current!)
+    // React 19: Merge internal and external refs using useMergedRef utility
+    const mergedTextareaRef = useMergedRef(internalRef, ref)
+
+    // Use internal ref for .current access
+    const textareaRef = internalRef
 
     // Memoized loadSuggestions function
     const loadSuggestions = useCallback(async (query: string, trigger: '@' | '/') => {
@@ -422,7 +432,7 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
           {/* Textarea */}
           <div className="flex-1 relative">
             <Textarea
-              ref={textareaRef}
+              ref={mergedTextareaRef}
               value={value}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -460,6 +470,6 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
         </div>
       </div>
     )
-  }
-)
+}
+
 AdvancedChatInput.displayName = 'AdvancedChatInput'

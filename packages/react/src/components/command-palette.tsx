@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, useState, useRef, useMemo, useEffect, useId } from 'react'
+import { useState, useRef, useMemo, useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { cn, Kbd, useBodyScrollLock } from '@clarity-chat/primitives'
@@ -31,21 +31,19 @@ export interface CommandPaletteProps {
   loading?: boolean
   /** Accessible label for the command palette */
   'aria-label'?: string
+  ref?: React.Ref<HTMLDivElement>
 }
 
-export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
-  (
-    {
-      items,
-      open,
-      onClose,
-      placeholder = 'Type a command...',
-      className,
-      loading = false,
-      'aria-label': ariaLabel = 'Command palette',
-    },
-    ref
-  ) => {
+export function CommandPalette({
+  items,
+  open,
+  onClose,
+  placeholder = 'Type a command...',
+  className,
+  loading = false,
+  'aria-label': ariaLabel = 'Command palette',
+  ref,
+}: CommandPaletteProps) {
     const [search, setSearch] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(0)
     const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
@@ -555,7 +553,6 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
 
     // Render through portal to avoid z-index issues
     return createPortal(content, portalContainer)
-  }
-)
+}
 
 CommandPalette.displayName = 'CommandPalette'

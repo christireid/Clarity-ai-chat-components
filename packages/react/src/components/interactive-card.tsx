@@ -30,27 +30,26 @@ export interface InteractiveCardProps
   onCardClick?: () => void
   /** Children */
   children: React.ReactNode
+  /** Ref forwarding */
+  ref?: React.Ref<HTMLDivElement>
 }
 
 /**
  * Card with enhanced interactivity
  */
-export const InteractiveCard = React.memo(
-  React.forwardRef<HTMLDivElement, InteractiveCardProps>(function InteractiveCard(
-    {
-      interactive = false,
-      selected = false,
-      disabled = false,
-      hoverIntensity = 'medium',
-      showFocusRing = true,
-      showRipple = false,
-      onCardClick,
-      className,
-      children,
-      ...props
-    }: InteractiveCardProps,
-    ref
-  ) {
+export const InteractiveCard = React.memo(function InteractiveCard({
+  interactive = false,
+  selected = false,
+  disabled = false,
+  hoverIntensity = 'medium',
+  showFocusRing = true,
+  showRipple = false,
+  onCardClick,
+  className,
+  children,
+  ref,
+  ...props
+}: InteractiveCardProps) {
     const [isHovered, setIsHovered] = React.useState(false)
     const [ripples, setRipples] = React.useState<
       { x: number; y: number; id: number }[]
@@ -200,7 +199,6 @@ export const InteractiveCard = React.memo(
       </motion.div>
     )
   })
-)
 
 InteractiveCard.displayName = 'InteractiveCard'
 
@@ -221,26 +219,22 @@ export interface InteractiveButtonProps
   iconRight?: React.ReactNode
   /** Children */
   children?: React.ReactNode
+  /** Ref forwarding */
+  ref?: React.Ref<HTMLButtonElement>
 }
 
-export const InteractiveButton = React.forwardRef<
-  HTMLButtonElement,
-  InteractiveButtonProps
->(
-  (
-    {
-      variant = 'default',
-      size = 'md',
-      loading = false,
-      icon,
-      iconRight,
-      disabled,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+export function InteractiveButton({
+  variant = 'default',
+  size = 'md',
+  loading = false,
+  icon,
+  iconRight,
+  disabled,
+  className,
+  children,
+  ref,
+  ...props
+}: InteractiveButtonProps) {
     const variantClasses = {
       default: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
       primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
@@ -310,7 +304,6 @@ export const InteractiveButton = React.forwardRef<
       </motion.button>
     )
   }
-)
 
 InteractiveButton.displayName = 'InteractiveButton'
 

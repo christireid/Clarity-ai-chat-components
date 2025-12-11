@@ -162,7 +162,7 @@ export {
   TooltipProvider,
 } from './components/ui/tooltip'
 
-// Also export raw shadcn/Radix Tooltip components for advanced use
+// Also export raw shadcn/Radix Tooltip components for advanced use (aliased)
 export {
   Tooltip as ShadcnTooltip,
   TooltipTrigger as ShadcnTooltipTrigger,
