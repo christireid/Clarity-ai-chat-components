@@ -9,6 +9,10 @@ import {
   type ButtonState,
 } from '@clarity-chat/primitives'
 import { SendIcon } from './icons'
+import {
+  useRequestDeduplication,
+  isDebouncedError,
+} from '../hooks/use-request-deduplication'
 
 export interface ChatInputProps {
   value: string
@@ -31,20 +35,20 @@ export interface ChatInputProps {
 
 /**
  * ChatInput - Mid-Level Composable Component
- * 
+ *
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Chat UI
- * 
+ *
  * A composable input component for chat interfaces with character counting,
  * validation, and smooth animations.
- * 
+ *
  * For drop-in usage, use top-level `ClarityChat` component instead.
  * For custom input rendering, use low-level primitives.
- * 
+ *
  * @example
  * ```tsx
  * const [input, setInput] = useState('')
- * 
+ *
  * <ChatInput
  *   value={input}
  *   onChange={setInput}
@@ -55,10 +59,10 @@ export interface ChatInputProps {
  *   maxLength={1000}
  * />
  * ```
- * 
+ *
  * A mid-level building block for chat input functionality. Provides a textarea
  * with character counting, validation, animations, and submit handling.
- * 
+ *
  * **Features:**
  * - Character counter with warning thresholds
  * - Auto-resizing textarea
@@ -66,16 +70,16 @@ export interface ChatInputProps {
  * - Keyboard shortcuts (Enter to submit, Shift+Enter for newline)
  * - Disabled state handling
  * - Max length validation
- * 
+ *
  * **When to use:**
  * - Building custom chat interfaces
  * - Need input with character counting
  * - Want smooth animations
- * 
+ *
  * **When NOT to use:**
  * - For simplest setup, use `ClarityChat` component (includes input)
  * - For basic text input without chat features, use standard HTML input
- * 
+ *
  * @param props - ChatInput configuration
  * @param props.value - Current input value (controlled)
  * @param props.onChange - Callback when value changes
@@ -88,12 +92,12 @@ export interface ChatInputProps {
  * @param props.animateHeight - Enable smooth expand/contract animation (default: true)
  * @param props.glowOnFocus - Enable focus ring glow animation (default: true)
  * @param props.className - Optional CSS class name
- * 
+ *
  * @example Basic usage
  * ```tsx
  * function MyChatInput() {
  *   const [value, setValue] = useState('')
- *   
+ *
  *   return (
  *     <ChatInput
  *       value={value}
@@ -106,7 +110,7 @@ export interface ChatInputProps {
  *   )
  * }
  * ```
- * 
+ *
  * @example With character limit
  * ```tsx
  * <ChatInput
@@ -118,7 +122,7 @@ export interface ChatInputProps {
  *   warningThreshold={0.9} // Warn at 90%
  * />
  * ```
- * 
+ *
  * @example Disabled state
  * ```tsx
  * <ChatInput
@@ -147,27 +151,27 @@ export function ChatInput({
     if (typeof value !== 'string') {
       console.error(
         'ChatInput: "value" prop must be a string.\n\n' +
-        'Example:\n' +
-        '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/components'
+          'Example:\n' +
+          '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
+          'For more help, see: https://clarity-chat.dev/docs/components'
       )
     }
 
     if (typeof onChange !== 'function') {
       console.error(
         'ChatInput: "onChange" prop must be a function.\n\n' +
-        'Example:\n' +
-        '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/components'
+          'Example:\n' +
+          '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
+          'For more help, see: https://clarity-chat.dev/docs/components'
       )
     }
 
     if (typeof onSubmit !== 'function') {
       console.error(
         'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
-        'Example:\n' +
-        '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/components'
+          'Example:\n' +
+          '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
+          'For more help, see: https://clarity-chat.dev/docs/components'
       )
     }
   }
@@ -175,13 +179,20 @@ export function ChatInput({
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
+  // Request deduplication to prevent double-submit on rapid clicks
+  const { execute: dedupeExecute, isPending } = useRequestDeduplication({
+    debounceMs: 300,
+  })
+
   // Validate maxLength prop
   const validMaxLength = maxLength && maxLength > 0 ? maxLength : undefined
-  
+
   // React 19: Compiler automatically optimizes these - no useMemo needed for simple calculations
   const charCount = value.length
   const isOverLimit = validMaxLength ? charCount > validMaxLength : false
-  const isNearLimit = validMaxLength ? charCount >= validMaxLength * warningThreshold : false
+  const isNearLimit = validMaxLength
+    ? charCount >= validMaxLength * warningThreshold
+    : false
   const hasContent = value.trim().length > 0
 
   // Derived styling - compiler optimizes
@@ -210,23 +221,38 @@ export function ChatInput({
         { transform: 'translateX(8px)' },
         { transform: 'translateX(0)' },
       ],
-      { duration: 400, easing: 'ease-in-out' }
+      { duration: durations.slower, easing: 'ease-in-out' }
     )
   }
 
-  // React 19: Async action with built-in state management
+  // Check if submit is blocked by deduplication
+  const isSubmitPending = isPending('chat-submit')
+
+  // React 19: Async action with built-in state management + deduplication
   const handleSubmit = async () => {
-    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading') {
+    if (
+      !value.trim() ||
+      isOverLimit ||
+      disabled ||
+      buttonState === 'loading' ||
+      isSubmitPending
+    ) {
       return
     }
 
     setButtonState('loading')
     try {
-      await onSubmit(value)
+      // Wrap submission with deduplication to prevent double-submit
+      await dedupeExecute('chat-submit', () => onSubmit(value))
       setButtonState('success')
       // Auto-reset after showing success
       setTimeout(() => setButtonState('idle'), 1000)
     } catch (error) {
+      // Ignore debounced/deduplicated requests
+      if (isDebouncedError(error)) {
+        setButtonState('idle')
+        return
+      }
       setButtonState('error')
       console.error('[ChatInput] Submit error:', error)
       // Auto-reset after showing error
@@ -236,20 +262,21 @@ export function ChatInput({
 
   // React 19: Compiler optimizes event handlers - no useCallback needed
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        if (value.trim() && !isOverLimit && !disabled) {
-          handleSubmit()
-        } else if (isOverLimit) {
-          triggerShakeAnimation()
-        }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (value.trim() && !isOverLimit && !disabled) {
+        handleSubmit()
+      } else if (isOverLimit) {
+        triggerShakeAnimation()
       }
+    }
   }
 
   // Simple handlers - compiler optimizes
   const handleFocus = () => setIsFocused(true)
   const handleBlur = () => setIsFocused(false)
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    onChange(e.target.value)
 
   // Focus ring glow animation variants
   // Leveraging Framer Motion v12's improved type inference - no explicit type needed
@@ -264,7 +291,7 @@ export function ChatInput({
             '0 0 0 4px hsl(var(--primary) / 0.15)',
             '0 0 0 4px hsl(var(--primary) / 0.15)',
           ],
-          transition: { duration: 0.3, ease: 'easeOut' },
+          transition: { duration: durations.moderate, ease: 'easeOut' },
         }
       : {
           boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
@@ -286,7 +313,7 @@ export function ChatInput({
         <motion.div
           className="flex-1 relative"
           layout={animateHeight}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
+          transition={{ duration: durations.normal, ease: 'easeOut' }}
         >
           <Textarea
             ref={textareaRef}
@@ -305,7 +332,9 @@ export function ChatInput({
             variant={isOverLimit ? 'error' : 'default'}
             className={cn(
               'transition-all duration-200 shadow-sm border-border/40',
-              isFocused && glowOnFocus && 'ring-2 ring-ring/30 shadow-md border-ring/50',
+              isFocused &&
+                glowOnFocus &&
+                'ring-2 ring-ring/30 shadow-md border-ring/50',
               isOverLimit && 'animate-[shake_0.4s_ease-in-out]'
             )}
           />
@@ -332,21 +361,25 @@ export function ChatInput({
                       animate={{
                         width: `${validMaxLength ? Math.min((charCount / validMaxLength) * 100, 100) : 0}%`,
                       }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: durations.normal }}
                     />
                   </div>
 
                   {/* Counter text */}
                   <motion.div
                     className={cn('text-xs tabular-nums', counterColor)}
-                    animate={isOverLimit ? {
-                      scale: [1, 1.05, 1],
-                      transition: {
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      },
-                    } : undefined}
+                    animate={
+                      isOverLimit
+                        ? {
+                            scale: [1, 1.05, 1],
+                            transition: {
+                              duration: durations.slower,
+                              repeat: Infinity,
+                              ease: 'easeInOut',
+                            },
+                          }
+                        : undefined
+                    }
                   >
                     {charCount}/{validMaxLength ?? 0}
                   </motion.div>
@@ -359,25 +392,27 @@ export function ChatInput({
         {/* Send Button with state transitions */}
         <Button
           onClick={handleSubmit}
-            disabled={disabled || !hasContent || isOverLimit}
-            state={buttonState}
-            size="icon"
-            className={cn(
-              'transition-all duration-200 ease-out shrink-0 h-11 w-11 rounded-xl shadow-sm',
-              hasContent && !isOverLimit
-                ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]'
-                : 'bg-muted/60 text-muted-foreground border border-border/40'
-            )}
-            aria-label={
-              buttonState === 'loading'
-                ? 'Sending message...'
-                : buttonState === 'success'
-                  ? 'Message sent!'
-                  : buttonState === 'error'
-                    ? 'Failed to send'
-                    : 'Send message'
-            }
-            aria-describedby={validMaxLength && showCharCounter ? 'char-counter' : undefined}
+          disabled={disabled || !hasContent || isOverLimit || isSubmitPending}
+          state={buttonState}
+          size="icon"
+          className={cn(
+            'transition-all duration-200 ease-out shrink-0 h-11 w-11 rounded-xl shadow-sm',
+            hasContent && !isOverLimit
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]'
+              : 'bg-muted/60 text-muted-foreground border border-border/40'
+          )}
+          aria-label={
+            buttonState === 'loading'
+              ? 'Sending message...'
+              : buttonState === 'success'
+                ? 'Message sent!'
+                : buttonState === 'error'
+                  ? 'Failed to send'
+                  : 'Send message'
+          }
+          aria-describedby={
+            validMaxLength && showCharCounter ? 'char-counter' : undefined
+          }
         >
           <AnimatePresence mode="wait">
             {buttonState === 'idle' && (
@@ -386,7 +421,7 @@ export function ChatInput({
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: 0.15 }}
+                transition={{ duration: durations.fast }}
               >
                 <SendIcon size={19} />
               </motion.div>

@@ -12,6 +12,12 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
+import { DURATION_SECONDS } from '../animations/constants'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
+import {
+  getMotionSafeDuration,
+  getMotionSafeValue,
+} from '../animations/motion-safe'
 
 /**
  * Web Vitals metric
@@ -321,6 +327,7 @@ export function PerformanceAnalyticsDashboard({
 }: PerformanceAnalyticsDashboardProps) {
   const collectedMetrics = usePerformanceMetrics(updateInterval)
   const data = externalData || collectedMetrics
+  const prefersReducedMotion = useReducedMotion()
 
   React.useEffect(() => {
     onDataUpdate?.(data)
@@ -434,9 +441,17 @@ export function PerformanceAnalyticsDashboard({
                 <motion.div
                   key={vital.name}
                   className="flex flex-col items-center rounded-lg border p-4"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{
+                    opacity: 0,
+                    y: getMotionSafeValue(prefersReducedMotion, 20, 0),
+                  }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: durations.moderate }}
+                  transition={{
+                    duration: getMotionSafeDuration(
+                      prefersReducedMotion,
+                      DURATION_SECONDS.normal
+                    ),
+                  }}
                 >
                   <div className="text-xs font-medium text-muted-foreground mb-1">
                     {vital.name}
@@ -525,11 +540,20 @@ export function PerformanceAnalyticsDashboard({
               <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                 <motion.div
                   className="h-full bg-primary"
-                  initial={{ width: 0 }}
+                  initial={{
+                    width: prefersReducedMotion
+                      ? `${(data.memoryUsage.used / data.memoryUsage.limit) * 100}%`
+                      : 0,
+                  }}
                   animate={{
                     width: `${(data.memoryUsage.used / data.memoryUsage.limit) * 100}%`,
                   }}
-                  transition={{ duration: durations.slow }}
+                  transition={{
+                    duration: getMotionSafeDuration(
+                      prefersReducedMotion,
+                      DURATION_SECONDS.slow
+                    ),
+                  }}
                 />
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground">

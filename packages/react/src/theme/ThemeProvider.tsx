@@ -20,6 +20,7 @@ import {
   getMotionSafeValue,
 } from '../animations/motion-safe'
 import { cn } from '@clarity-chat/primitives'
+import { DURATION_SECONDS } from '../animations/constants'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -974,7 +975,7 @@ export function ThemeToggle({
               rotate: prefersReducedMotion ? 0 : 360,
             }}
             transition={{
-              duration: durations.slower,
+              duration: DURATION_SECONDS.slower,
               repeat: Infinity,
               ease: 'linear',
             }}

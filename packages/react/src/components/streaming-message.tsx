@@ -47,6 +47,8 @@ export interface StreamingMessageProps {
   onToolApprove?: (toolCall: ToolCall) => void
   /** Callback when tool is rejected */
   onToolReject?: (toolCall: ToolCall) => void
+  /** Callback when retry is requested after an error */
+  onRetry?: () => void
   /** Additional CSS class */
   className?: string
   /**
@@ -118,12 +120,14 @@ const StreamingCursor = React.memo(function StreamingCursor() {
 StreamingCursor.displayName = 'StreamingCursor'
 
 /**
- * Error display component
+ * Error display component with optional retry button
  */
 const ErrorDisplay = React.memo(function ErrorDisplay({
   error,
+  onRetry,
 }: {
   error: string
+  onRetry?: () => void
 }) {
   return (
     <motion.div
@@ -154,6 +158,31 @@ const ErrorDisplay = React.memo(function ErrorDisplay({
         <div className="flex-1">
           <h4 className="font-semibold text-foreground">Error</h4>
           <p className="mt-1 text-sm text-muted-foreground">{error}</p>
+          {onRetry && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onRetry}
+              className="mt-3"
+              aria-label="Retry failed request"
+            >
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              Try again
+            </Button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -490,6 +519,7 @@ export function StreamingMessage({
   showTools = true,
   onToolApprove,
   onToolReject,
+  onRetry,
   className = '',
   smoothStreaming = false,
   streamingSpeed = 'normal',
@@ -565,11 +595,11 @@ export function StreamingMessage({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 10 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: durations.normal }}
       className={cn('space-y-4', className)}
     >
       {/* Error State */}
-      {error && <ErrorDisplay error={error} />}
+      {error && <ErrorDisplay error={error} onRetry={onRetry} />}
 
       {/* Thinking Steps */}
       {showThinking && (thinkingSteps.length > 0 || currentThinkingStep) && (
