@@ -1,8 +1,9 @@
 /**
  * Clarity Chat VS Code Extension
  *
- * Provides IntelliSense, code snippets, and productivity features
- * for developing with the Clarity Chat AI framework.
+ * The ultimate VS Code extension for building AI chat applications.
+ * Provides IntelliSense, code snippets, commands, and Copilot integration
+ * for the Clarity Chat library.
  */
 
 import * as vscode from 'vscode'
@@ -14,8 +15,14 @@ import { initProjectCommand } from './commands/init'
 import { addProviderCommand } from './commands/add-provider'
 import { validateConfigCommand } from './commands/validate'
 import { showExamplesCommand } from './commands/examples'
+import { addComponentCommand } from './commands/addComponent'
+import { addHookCommand } from './commands/addHook'
+import { createApiRouteCommand } from './commands/createApiRoute'
+import { convertToClarityCommand } from './commands/convertToClarity'
+import { openDocsCommand, openStorybookCommand } from './commands/openExternal'
 import { PreviewPanel } from './views/preview-panel'
 import { ApiKeyManager } from './views/api-key-manager'
+import { registerChatParticipant } from './chatParticipant'
 
 /**
  * Extension activation
@@ -24,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('Clarity Chat extension is now active')
 
   // Get configuration
-  const config = vscode.workspace.getConfiguration('clarity-chat')
+  const config = vscode.workspace.getConfiguration('clarityChat')
 
   // Register completion provider
   if (config.get('enableIntelliSense', true)) {
@@ -41,24 +48,27 @@ export function activate(context: vscode.ExtensionContext) {
         completionProvider,
         '.',
         '"',
-        "'"
+        "'",
+        '<'
       )
 
     context.subscriptions.push(completionDisposable)
   }
 
   // Register hover provider
-  const hoverProvider = new HoverProvider()
-  const hoverDisposable = vscode.languages.registerHoverProvider(
-    [
-      { language: 'typescript', scheme: 'file' },
-      { language: 'javascript', scheme: 'file' },
-      { language: 'typescriptreact', scheme: 'file' },
-      { language: 'javascriptreact', scheme: 'file' },
-    ],
-    hoverProvider
-  )
-  context.subscriptions.push(hoverDisposable)
+  if (config.get('enableHoverDocs', true)) {
+    const hoverProvider = new HoverProvider()
+    const hoverDisposable = vscode.languages.registerHoverProvider(
+      [
+        { language: 'typescript', scheme: 'file' },
+        { language: 'javascript', scheme: 'file' },
+        { language: 'typescriptreact', scheme: 'file' },
+        { language: 'javascriptreact', scheme: 'file' },
+      ],
+      hoverProvider
+    )
+    context.subscriptions.push(hoverDisposable)
+  }
 
   // Register CodeLens provider
   if (config.get('enableCodeLens', true)) {
@@ -96,24 +106,53 @@ export function activate(context: vscode.ExtensionContext) {
   )
 
   // Register quick fix provider
-  const quickFixProvider = new QuickFixProvider()
-  context.subscriptions.push(
-    vscode.languages.registerCodeActionsProvider(
-      [
-        { language: 'typescript', scheme: 'file' },
-        { language: 'javascript', scheme: 'file' },
-        { language: 'typescriptreact', scheme: 'file' },
-        { language: 'javascriptreact', scheme: 'file' },
-      ],
-      quickFixProvider,
-      {
-        providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
-      }
+  if (config.get('enableCodeActions', true)) {
+    const quickFixProvider = new QuickFixProvider()
+    context.subscriptions.push(
+      vscode.languages.registerCodeActionsProvider(
+        [
+          { language: 'typescript', scheme: 'file' },
+          { language: 'javascript', scheme: 'file' },
+          { language: 'typescriptreact', scheme: 'file' },
+          { language: 'javascriptreact', scheme: 'file' },
+        ],
+        quickFixProvider,
+        {
+          providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+        }
+      )
     )
-  )
+  }
 
   // Register commands
   context.subscriptions.push(
+    // New Clarity Chat specific commands
+    vscode.commands.registerCommand(
+      'clarity-chat.addComponent',
+      () => addComponentCommand(context)
+    ),
+    vscode.commands.registerCommand(
+      'clarity-chat.addHook',
+      () => addHookCommand(context)
+    ),
+    vscode.commands.registerCommand(
+      'clarity-chat.createApiRoute',
+      (uri?: vscode.Uri) => createApiRouteCommand(context, uri)
+    ),
+    vscode.commands.registerCommand(
+      'clarity-chat.convertToClarity',
+      convertToClarityCommand
+    ),
+    vscode.commands.registerCommand(
+      'clarity-chat.openDocs',
+      openDocsCommand
+    ),
+    vscode.commands.registerCommand(
+      'clarity-chat.openStorybook',
+      openStorybookCommand
+    ),
+
+    // Existing commands
     vscode.commands.registerCommand(
       'clarity-chat.initProject',
       initProjectCommand
@@ -138,15 +177,18 @@ export function activate(context: vscode.ExtensionContext) {
     })
   )
 
+  // Register Copilot chat participant (requires VS Code 1.90+)
+  registerChatParticipant(context)
+
   // Show welcome message on first install
-  const hasShownWelcome = context.globalState.get('hasShownWelcome', false)
+  const hasShownWelcome = context.globalState.get('clarity-chat.hasShownWelcome', false)
   if (!hasShownWelcome) {
     showWelcomeMessage(context)
   }
 
   // Configuration change listener
   vscode.workspace.onDidChangeConfiguration((e) => {
-    if (e.affectsConfiguration('clarity-chat')) {
+    if (e.affectsConfiguration('clarityChat')) {
       vscode.window
         .showInformationMessage(
           'Clarity Chat configuration changed. Reload window to apply changes.',
@@ -166,22 +208,25 @@ export function activate(context: vscode.ExtensionContext) {
  */
 function showWelcomeMessage(context: vscode.ExtensionContext) {
   const message =
-    'Welcome to Clarity Chat! Get started by initializing a new project.'
+    'Welcome to Clarity Chat! Get started by adding a component or initializing a new project.'
 
   vscode.window
     .showInformationMessage(
       message,
+      'Add Component',
       'Initialize Project',
-      'Show Examples',
+      'View Documentation',
       "Don't Show Again"
     )
     .then((selection) => {
-      if (selection === 'Initialize Project') {
+      if (selection === 'Add Component') {
+        vscode.commands.executeCommand('clarity-chat.addComponent')
+      } else if (selection === 'Initialize Project') {
         vscode.commands.executeCommand('clarity-chat.initProject')
-      } else if (selection === 'Show Examples') {
-        vscode.commands.executeCommand('clarity-chat.showExamples')
+      } else if (selection === 'View Documentation') {
+        vscode.commands.executeCommand('clarity-chat.openDocs')
       } else if (selection === "Don't Show Again") {
-        context.globalState.update('hasShownWelcome', true)
+        context.globalState.update('clarity-chat.hasShownWelcome', true)
       }
     })
 }
