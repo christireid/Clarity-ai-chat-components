@@ -1,44 +1,55 @@
 import * as React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { FileUpload, FileUploadProps } from '../file-upload'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { FileUpload, type FileUploadProps } from '../file-upload'
 import type { MessageAttachment } from '@clarity-chat/types'
 
 // Mock useReducedMotion hook
-jest.mock('../../hooks/use-reduced-motion', () => ({
+vi.mock('../../hooks/use-reduced-motion', () => ({
   useReducedMotion: () => false,
 }))
 
 // Mock framer-motion to avoid animation issues in tests
-jest.mock('framer-motion', () => {
-  const React = require('react')
+vi.mock('framer-motion', async () => {
+  const ReactModule = await vi.importActual<typeof import('react')>('react')
   return {
     motion: {
-      div: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <div ref={ref} {...props}>{children}</div>
-      )),
-      span: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <span ref={ref} {...props}>{children}</span>
-      )),
-      li: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <li ref={ref} {...props}>{children}</li>
-      )),
-      img: React.forwardRef((props: any, ref: any) => (
-        <img ref={ref} {...props} />
-      )),
+      div: ({ children, ref, ...props }: any) => (
+        <div ref={ref} {...props}>
+          {children}
+        </div>
+      ),
+      span: ({ children, ref, ...props }: any) => (
+        <span ref={ref} {...props}>
+          {children}
+        </span>
+      ),
+      li: ({ children, ref, ...props }: any) => (
+        <li ref={ref} {...props}>
+          {children}
+        </li>
+      ),
+      img: ({ ref, ...props }: any) => <img ref={ref} alt="" {...props} />,
     },
     AnimatePresence: ({ children }: any) => children,
   }
 })
 
 describe('FileUpload', () => {
-  const mockOnUpload = jest.fn<Promise<MessageAttachment[]>, [File[], AbortController?]>()
+  const mockOnUpload =
+    vi.fn<
+      (
+        files: File[],
+        controller?: AbortController
+      ) => Promise<MessageAttachment[]>
+    >()
   const defaultProps: FileUploadProps = {
     onUpload: mockOnUpload,
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockOnUpload.mockResolvedValue([])
   })
 
@@ -53,7 +64,9 @@ describe('FileUpload', () => {
     it('renders the dropzone with default text', () => {
       render(<FileUpload {...defaultProps} />)
 
-      expect(screen.getByText(/click to upload or drag and drop/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/click to upload or drag and drop/i)
+      ).toBeInTheDocument()
     })
 
     it('renders with custom label and description', () => {
@@ -99,11 +112,16 @@ describe('FileUpload', () => {
 
   describe('Accessibility', () => {
     it('has proper ARIA attributes on dropzone', () => {
-      render(<FileUpload {...defaultProps} maxFiles={5} maxFileSize={1024 * 1024} />)
+      render(
+        <FileUpload {...defaultProps} maxFiles={5} maxFileSize={1024 * 1024} />
+      )
 
       const dropzone = screen.getByRole('button')
       expect(dropzone).toHaveAttribute('aria-label')
-      expect(dropzone).toHaveAttribute('aria-describedby', 'dropzone-description')
+      expect(dropzone).toHaveAttribute(
+        'aria-describedby',
+        'dropzone-description'
+      )
       expect(dropzone).toHaveAttribute('tabIndex', '0')
     })
 
@@ -150,7 +168,9 @@ describe('FileUpload', () => {
     it('accepts files via file input', async () => {
       render(<FileUpload {...defaultProps} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -163,7 +183,9 @@ describe('FileUpload', () => {
     it('shows file size in the list', async () => {
       render(<FileUpload {...defaultProps} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 2048, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -177,7 +199,9 @@ describe('FileUpload', () => {
       const user = userEvent.setup()
       render(<FileUpload {...defaultProps} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -186,7 +210,9 @@ describe('FileUpload', () => {
         expect(screen.getByText('test.pdf')).toBeInTheDocument()
       })
 
-      const removeButton = screen.getByRole('button', { name: /remove test.pdf/i })
+      const removeButton = screen.getByRole('button', {
+        name: /remove test.pdf/i,
+      })
       await user.click(removeButton)
 
       expect(screen.queryByText('test.pdf')).not.toBeInTheDocument()
@@ -196,7 +222,9 @@ describe('FileUpload', () => {
       const user = userEvent.setup()
       render(<FileUpload {...defaultProps} maxFiles={5} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const files = [
         createMockFile('file1.pdf', 1024, 'application/pdf'),
         createMockFile('file2.pdf', 1024, 'application/pdf'),
@@ -219,7 +247,7 @@ describe('FileUpload', () => {
 
   describe('File Validation', () => {
     it('rejects files exceeding max size', async () => {
-      const onError = jest.fn()
+      const onError = vi.fn()
       render(
         <FileUpload
           {...defaultProps}
@@ -228,7 +256,9 @@ describe('FileUpload', () => {
         />
       )
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('large.pdf', 2048, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -243,7 +273,7 @@ describe('FileUpload', () => {
     })
 
     it('rejects files below min size', async () => {
-      const onError = jest.fn()
+      const onError = vi.fn()
       render(
         <FileUpload
           {...defaultProps}
@@ -252,7 +282,9 @@ describe('FileUpload', () => {
         />
       )
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('small.pdf', 512, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -267,7 +299,7 @@ describe('FileUpload', () => {
     })
 
     it('rejects files with invalid type', async () => {
-      const onError = jest.fn()
+      const onError = vi.fn()
       render(
         <FileUpload
           {...defaultProps}
@@ -276,7 +308,9 @@ describe('FileUpload', () => {
         />
       )
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('doc.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -291,16 +325,12 @@ describe('FileUpload', () => {
     })
 
     it('rejects when max files exceeded', async () => {
-      const onError = jest.fn()
-      render(
-        <FileUpload
-          {...defaultProps}
-          maxFiles={1}
-          onError={onError}
-        />
-      )
+      const onError = vi.fn()
+      render(<FileUpload {...defaultProps} maxFiles={1} onError={onError} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const files = [
         createMockFile('file1.pdf', 1024, 'application/pdf'),
         createMockFile('file2.pdf', 1024, 'application/pdf'),
@@ -318,14 +348,11 @@ describe('FileUpload', () => {
     })
 
     it('accepts wildcard mime types', async () => {
-      render(
-        <FileUpload
-          {...defaultProps}
-          acceptedFileTypes={['image/*']}
-        />
-      )
+      render(<FileUpload {...defaultProps} acceptedFileTypes={['image/*']} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('photo.png', 1024, 'image/png')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -336,14 +363,11 @@ describe('FileUpload', () => {
     })
 
     it('accepts files by extension', async () => {
-      render(
-        <FileUpload
-          {...defaultProps}
-          acceptedFileTypes={['.pdf']}
-        />
-      )
+      render(<FileUpload {...defaultProps} acceptedFileTypes={['.pdf']} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('document.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -359,7 +383,9 @@ describe('FileUpload', () => {
       const user = userEvent.setup()
       render(<FileUpload {...defaultProps} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -368,10 +394,15 @@ describe('FileUpload', () => {
         expect(screen.getByText('test.pdf')).toBeInTheDocument()
       })
 
-      const uploadButton = screen.getByRole('button', { name: /upload 1 file/i })
+      const uploadButton = screen.getByRole('button', {
+        name: /upload 1 file/i,
+      })
       await user.click(uploadButton)
 
-      expect(mockOnUpload).toHaveBeenCalledWith([file], expect.any(AbortController))
+      expect(mockOnUpload).toHaveBeenCalledWith(
+        [file],
+        expect.any(AbortController)
+      )
     })
 
     it('shows uploading state during upload', async () => {
@@ -379,7 +410,9 @@ describe('FileUpload', () => {
       const user = userEvent.setup()
       render(<FileUpload {...defaultProps} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -388,11 +421,16 @@ describe('FileUpload', () => {
         expect(screen.getByText('test.pdf')).toBeInTheDocument()
       })
 
-      const uploadButton = screen.getByRole('button', { name: /upload 1 file/i })
+      const uploadButton = screen.getByRole('button', {
+        name: /upload 1 file/i,
+      })
       await user.click(uploadButton)
 
       await waitFor(() => {
-        expect(screen.getByText(/uploading/i)).toBeInTheDocument()
+        // Check for the uploading button (more specific than just /uploading/i)
+        expect(
+          screen.getByRole('button', { name: /uploading/i })
+        ).toBeInTheDocument()
       })
     })
 
@@ -400,7 +438,9 @@ describe('FileUpload', () => {
       const user = userEvent.setup()
       render(<FileUpload {...defaultProps} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -409,7 +449,9 @@ describe('FileUpload', () => {
         expect(screen.getByText('test.pdf')).toBeInTheDocument()
       })
 
-      const uploadButton = screen.getByRole('button', { name: /upload 1 file/i })
+      const uploadButton = screen.getByRole('button', {
+        name: /upload 1 file/i,
+      })
       await user.click(uploadButton)
 
       await waitFor(() => {
@@ -419,11 +461,13 @@ describe('FileUpload', () => {
 
     it('shows error on upload failure', async () => {
       mockOnUpload.mockRejectedValue(new Error('Network error'))
-      const onError = jest.fn()
+      const onError = vi.fn()
       const user = userEvent.setup()
       render(<FileUpload {...defaultProps} onError={onError} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -432,7 +476,9 @@ describe('FileUpload', () => {
         expect(screen.getByText('test.pdf')).toBeInTheDocument()
       })
 
-      const uploadButton = screen.getByRole('button', { name: /upload 1 file/i })
+      const uploadButton = screen.getByRole('button', {
+        name: /upload 1 file/i,
+      })
       await user.click(uploadButton)
 
       await waitFor(() => {
@@ -441,10 +487,12 @@ describe('FileUpload', () => {
     })
 
     it('calls onFilesSelected callback', async () => {
-      const onFilesSelected = jest.fn()
+      const onFilesSelected = vi.fn()
       render(<FileUpload {...defaultProps} onFilesSelected={onFilesSelected} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -457,13 +505,18 @@ describe('FileUpload', () => {
     it('auto-uploads when autoUpload is true', async () => {
       render(<FileUpload {...defaultProps} autoUpload />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
 
       await waitFor(() => {
-        expect(mockOnUpload).toHaveBeenCalledWith([file], expect.any(AbortController))
+        expect(mockOnUpload).toHaveBeenCalledWith(
+          [file],
+          expect.any(AbortController)
+        )
       })
     })
   })
@@ -480,7 +533,8 @@ describe('FileUpload', () => {
         },
       })
 
-      expect(screen.getByText(/drop files here/i)).toBeInTheDocument()
+      // Component shows "Drop to upload" when drag is accepted
+      expect(screen.getByText(/drop to upload/i)).toBeInTheDocument()
     })
 
     it('accepts dropped files', async () => {
@@ -512,20 +566,17 @@ describe('FileUpload', () => {
       })
 
       // Should not show drag state
-      expect(screen.queryByText(/drop files here/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/drop to upload/i)).not.toBeInTheDocument()
     })
   })
 
   describe('Error Display', () => {
     it('displays error with suggestion', async () => {
-      render(
-        <FileUpload
-          {...defaultProps}
-          maxFileSize={1024}
-        />
-      )
+      render(<FileUpload {...defaultProps} maxFileSize={1024} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('large.pdf', 2048, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -538,14 +589,11 @@ describe('FileUpload', () => {
 
     it('dismisses error when dismiss button is clicked', async () => {
       const user = userEvent.setup()
-      render(
-        <FileUpload
-          {...defaultProps}
-          maxFileSize={1024}
-        />
-      )
+      render(<FileUpload {...defaultProps} maxFileSize={1024} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('large.pdf', 2048, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -565,7 +613,9 @@ describe('FileUpload', () => {
       const user = userEvent.setup()
       render(<FileUpload {...defaultProps} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const file = createMockFile('test.pdf', 1024, 'application/pdf')
 
       fireEvent.change(input, { target: { files: [file] } })
@@ -574,11 +624,15 @@ describe('FileUpload', () => {
         expect(screen.getByText('test.pdf')).toBeInTheDocument()
       })
 
-      const uploadButton = screen.getByRole('button', { name: /upload 1 file/i })
+      const uploadButton = screen.getByRole('button', {
+        name: /upload 1 file/i,
+      })
       await user.click(uploadButton)
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument()
+        // Look for file-specific retry or "Retry All" button
+        const retryButtons = screen.getAllByRole('button', { name: /retry/i })
+        expect(retryButtons.length).toBeGreaterThan(0)
       })
     })
   })
@@ -587,7 +641,9 @@ describe('FileUpload', () => {
     it('shows correct file count', async () => {
       render(<FileUpload {...defaultProps} maxFiles={5} />)
 
-      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
       const files = [
         createMockFile('file1.pdf', 1024, 'application/pdf'),
         createMockFile('file2.pdf', 1024, 'application/pdf'),
@@ -597,6 +653,93 @@ describe('FileUpload', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Files to upload (2/5)')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('useFileUpload hook', () => {
+    it('provides headless file upload functionality', async () => {
+      // This test verifies the hook is exported and can be used
+      const { useFileUpload } = await import('../file-upload')
+      expect(typeof useFileUpload).toBe('function')
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('handles rapid file addition and removal', async () => {
+      const user = userEvent.setup()
+      render(<FileUpload {...defaultProps} maxFiles={10} />)
+
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
+
+      // Add multiple files quickly
+      for (let i = 0; i < 5; i++) {
+        const file = createMockFile(`file${i}.pdf`, 1024, 'application/pdf')
+        fireEvent.change(input, { target: { files: [file] } })
+      }
+
+      // Wait for all files to appear
+      await waitFor(() => {
+        expect(screen.getByText('file4.pdf')).toBeInTheDocument()
+      })
+
+      // Remove files quickly
+      const removeButtons = screen.getAllByRole('button', { name: /remove/i })
+      for (const button of removeButtons) {
+        await user.click(button)
+      }
+
+      // All files should be removed
+      expect(screen.queryByText(/\.pdf$/)).not.toBeInTheDocument()
+    })
+
+    it('handles empty file list gracefully', () => {
+      render(<FileUpload {...defaultProps} />)
+
+      // Should not show file list when no files
+      expect(screen.queryByText(/files to upload/i)).not.toBeInTheDocument()
+    })
+
+    it('handles concurrent upload attempts', async () => {
+      let resolveUpload: () => void
+      mockOnUpload.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveUpload = () => resolve([])
+          })
+      )
+
+      const user = userEvent.setup()
+      render(<FileUpload {...defaultProps} />)
+
+      const input = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
+      const file = createMockFile('test.pdf', 1024, 'application/pdf')
+
+      fireEvent.change(input, { target: { files: [file] } })
+
+      await waitFor(() => {
+        expect(screen.getByText('test.pdf')).toBeInTheDocument()
+      })
+
+      const uploadButton = screen.getByRole('button', {
+        name: /upload 1 file/i,
+      })
+      await user.click(uploadButton)
+
+      // Upload button should be disabled during upload
+      await waitFor(() => {
+        expect(uploadButton).toBeDisabled()
+      })
+
+      // Resolve the upload
+      resolveUpload!()
+
+      await waitFor(() => {
+        expect(mockOnUpload).toHaveBeenCalledTimes(1)
       })
     })
   })

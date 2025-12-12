@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FileUpload } from '@clarity-chat/react'
+import { FileUpload, useFileUpload } from '@clarity-chat/react'
 import { expect, within, userEvent } from 'storybook/test'
 import type { MessageAttachment } from '@clarity-chat/types'
 
@@ -78,7 +78,8 @@ Accessible file upload component with drag-and-drop, validation, progress tracki
   tags: ['autodocs', 'stable'],
   argTypes: {
     onUpload: {
-      description: 'Async handler called when files are ready to upload. Receives files and optional AbortController.',
+      description:
+        'Async handler called when files are ready to upload. Receives files and optional AbortController.',
       action: 'upload',
     },
     onFilesSelected: {
@@ -179,7 +180,9 @@ export const Default: Story = {
     const canvas = within(canvasElement)
 
     // Test dropzone renders
-    await expect(canvas.getByText(/click to upload or drag and drop/i)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/click to upload or drag and drop/i)
+    ).toBeInTheDocument()
 
     // Test keyboard hint displays
     await expect(canvas.getByText('Enter')).toBeInTheDocument()
@@ -338,7 +341,8 @@ export const DragAcceptReject: Story = {
     acceptedFileTypes: ['image/*'],
     maxFiles: 5,
     label: 'Drag acceptance demo',
-    description: 'Drag an image (accepted) or PDF (rejected) to see visual feedback',
+    description:
+      'Drag an image (accepted) or PDF (rejected) to see visual feedback',
   },
   parameters: {
     docs: {
@@ -382,7 +386,8 @@ export const LargeFileHandling: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates handling of larger files with appropriate size limits.',
+        story:
+          'Demonstrates handling of larger files with appropriate size limits.',
       },
     },
   },
@@ -401,6 +406,360 @@ export const MinFileSizeValidation: Story = {
     docs: {
       description: {
         story: 'Shows validation for minimum file size requirements.',
+      },
+    },
+  },
+}
+
+// ============================================================================
+// HEADLESS MODE STORIES (useFileUpload hook)
+// ============================================================================
+
+/**
+ * Demonstrates using the headless `useFileUpload` hook for custom UI implementations.
+ *
+ * The hook provides all file upload functionality without any UI:
+ * - File validation (type, size, count)
+ * - Drag-and-drop support
+ * - Clipboard paste support
+ * - Upload progress tracking
+ * - Cancel and retry support
+ * - Keyboard accessibility bindings
+ *
+ * This enables building completely custom upload UIs while getting all the
+ * accessibility and functionality benefits of the FileUpload component.
+ */
+export const HeadlessMode: Story = {
+  render: () => {
+    const CustomUploader = () => {
+      const {
+        files,
+        errors,
+        isUploading,
+        isDragging,
+        dragAccept,
+        addFiles,
+        removeFile,
+        upload,
+        getDropzoneProps,
+        inputRef,
+        dropzoneRef,
+      } = useFileUpload({
+        onUpload: simulateUpload,
+        maxFiles: 3,
+        acceptedFileTypes: ['image/*'],
+      })
+
+      return (
+        <div className="space-y-4">
+          <div
+            ref={dropzoneRef}
+            {...getDropzoneProps()}
+            className={`
+              border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all
+              ${isDragging && dragAccept ? 'border-green-500 bg-green-50' : ''}
+              ${isDragging && !dragAccept ? 'border-red-500 bg-red-50' : ''}
+              ${!isDragging ? 'border-gray-300 hover:border-blue-500' : ''}
+            `}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => addFiles(Array.from(e.target.files || []))}
+              className="hidden"
+            />
+            <p className="text-lg font-medium">Custom Dropzone</p>
+            <p className="text-sm text-gray-500">
+              Built with useFileUpload hook
+            </p>
+          </div>
+
+          {files.length > 0 && (
+            <ul className="space-y-2">
+              {files.map((file, index) => (
+                <li
+                  key={file.name}
+                  className="flex items-center justify-between p-2 bg-gray-100 rounded"
+                >
+                  <span>{file.name}</span>
+                  <button
+                    onClick={() => removeFile(index)}
+                    className="text-red-500"
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {files.length > 0 && !isUploading && (
+            <button
+              onClick={() => upload()}
+              className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Upload {files.length} file{files.length > 1 ? 's' : ''}
+            </button>
+          )}
+
+          {errors.length > 0 && (
+            <div className="p-3 bg-red-100 border border-red-300 rounded">
+              {errors.map((err, i) => (
+                <p key={i} className="text-red-700 text-sm">
+                  {err.message}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    return <CustomUploader />
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: `
+## Headless Mode with useFileUpload
+
+The \`useFileUpload\` hook provides all file upload functionality without any UI:
+
+\`\`\`tsx
+import { useFileUpload } from '@clarity-chat/react'
+
+function CustomUploader() {
+  const {
+    files,
+    errors,
+    isUploading,
+    isDragging,
+    dragAccept,
+    addFiles,
+    removeFile,
+    upload,
+    cancel,
+    retryFile,
+    getDropzoneProps,
+    getInputProps,
+  } = useFileUpload({
+    onUpload: async (files) => { /* ... */ },
+    maxFiles: 5,
+    acceptedFileTypes: ['image/*'],
+    onProgress: (progress) => { /* ... */ },
+    onError: (error) => { /* ... */ },
+  })
+
+  return (
+    <div {...getDropzoneProps()}>
+      <input {...getInputProps()} />
+      {/* Your custom UI */}
+    </div>
+  )
+}
+\`\`\`
+
+### Hook Return Value
+
+| Property | Type | Description |
+|----------|------|-------------|
+| files | File[] | Currently selected files |
+| errors | FileUploadError[] | Validation and upload errors |
+| isUploading | boolean | Upload in progress |
+| isDragging | boolean | Drag over the dropzone |
+| dragAccept | boolean | Dragged files are valid |
+| dragReject | boolean | Dragged files are invalid |
+| addFiles | (files: File[]) => void | Add files to selection |
+| removeFile | (index: number) => void | Remove file by index |
+| upload | () => Promise<void> | Start upload |
+| cancel | () => void | Cancel upload |
+| retryFile | (key: string) => void | Retry specific file |
+| clearErrors | () => void | Clear all errors |
+| getDropzoneProps | () => object | Spread on dropzone |
+| getInputProps | () => object | Spread on input |
+        `,
+      },
+    },
+  },
+}
+
+/**
+ * Demonstrates the individual sub-components that make up the FileUpload.
+ *
+ * Available sub-components:
+ * - Dropzone: The drag-and-drop area
+ * - FileList: Container for selected files
+ * - FileItem: Individual file with progress
+ * - ErrorDisplay: Error messages with retry
+ */
+export const ModularComponents: Story = {
+  render: () => (
+    <div className="space-y-6">
+      <div className="p-4 border rounded-lg">
+        <h3 className="text-sm font-semibold mb-2 text-gray-600">
+          Available Sub-Components
+        </h3>
+        <ul className="text-sm space-y-2">
+          <li>
+            <code className="bg-gray-100 px-1 rounded">Dropzone</code> - The
+            drag-and-drop area with visual states
+          </li>
+          <li>
+            <code className="bg-gray-100 px-1 rounded">FileList</code> -
+            Container for selected files with batch actions
+          </li>
+          <li>
+            <code className="bg-gray-100 px-1 rounded">FileItem</code> -
+            Individual file with preview, progress, and actions
+          </li>
+          <li>
+            <code className="bg-gray-100 px-1 rounded">ErrorDisplay</code> -
+            Error messages with dismiss and retry
+          </li>
+        </ul>
+      </div>
+
+      <div className="p-4 border rounded-lg">
+        <h3 className="text-sm font-semibold mb-2 text-gray-600">
+          Import Statement
+        </h3>
+        <pre className="bg-gray-100 p-3 rounded text-xs overflow-x-auto">
+          {`import {
+  FileUpload,
+  useFileUpload,
+  useFilePreviews,
+  Dropzone,
+  FileList,
+  FileItem,
+  ErrorDisplay,
+} from '@clarity-chat/react'`}
+        </pre>
+      </div>
+
+      <FileUpload
+        onUpload={simulateUpload}
+        maxFiles={5}
+        label="Complete FileUpload (composed from sub-components)"
+        description="This is the full component that uses all sub-components internally"
+      />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `
+## Modular Sub-Components
+
+The FileUpload component is built from composable sub-components that you can use
+independently to create custom upload experiences.
+
+### Sub-Components
+
+| Component | Description |
+|-----------|-------------|
+| \`Dropzone\` | The drag-and-drop area with accept/reject visual states |
+| \`FileList\` | Container for file items with batch actions |
+| \`FileItem\` | Individual file with preview, progress bar, and retry |
+| \`ErrorDisplay\` | Error messages with dismiss and retry all |
+
+### Hooks
+
+| Hook | Description |
+|------|-------------|
+| \`useFileUpload\` | Core headless hook with all functionality |
+| \`useFilePreviews\` | Image preview URL management with cleanup |
+
+### Example: Custom Dropzone Only
+
+\`\`\`tsx
+import { useFileUpload, Dropzone } from '@clarity-chat/react'
+
+function CustomDropzoneOnly() {
+  const { isDragging, dragAccept, dropzoneRef, getDropzoneProps } = useFileUpload({
+    onUpload: async (files) => { /* ... */ },
+  })
+
+  return (
+    <Dropzone
+      isDragging={isDragging}
+      dragAccept={dragAccept}
+      // ... other props from hook
+    />
+  )
+}
+\`\`\`
+        `,
+      },
+    },
+  },
+}
+
+export const ClipboardPasteSupport: Story = {
+  args: {
+    onUpload: simulateUpload,
+    maxFiles: 5,
+    acceptedFileTypes: ['image/*'],
+    label: 'Paste images from clipboard',
+    description:
+      'Copy an image and press Ctrl+V (or Cmd+V on Mac) while focused',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: `
+## Clipboard Paste Support
+
+The FileUpload component supports pasting images directly from the clipboard:
+
+1. Copy an image (screenshot, from browser, etc.)
+2. Focus the dropzone (Tab or click)
+3. Press Ctrl+V (Cmd+V on Mac)
+
+The image will be added to the file queue just like a drag-and-drop or file selection.
+
+This feature is especially useful for:
+- Screenshots
+- Images copied from websites
+- Images from image editing software
+        `,
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Verify paste hint is shown
+    await expect(canvas.getByText(/Ctrl\+V/)).toBeInTheDocument()
+  },
+}
+
+export const IndividualFileRetry: Story = {
+  args: {
+    onUpload: simulateFailedUpload,
+    maxFiles: 5,
+    label: 'Per-file retry demo',
+    description: 'Select files and upload to see per-file retry buttons',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: `
+## Individual File Retry
+
+When uploads fail, each file can be retried individually:
+
+1. Select one or more files
+2. Click Upload
+3. After failure, each file shows a retry button
+4. Click retry on specific files to re-upload
+
+This is useful when:
+- Only some files fail in a batch
+- You want to retry without re-selecting all files
+- Network issues cause intermittent failures
+        `,
       },
     },
   },

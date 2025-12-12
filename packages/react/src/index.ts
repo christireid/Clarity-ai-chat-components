@@ -462,7 +462,22 @@ export { ToolInvocationCard } from './components/tool-invocation-card'
 export { ClarityToolResult } from './components/clarity-tool-result'
 export { CitationCard } from './components/citation-card'
 export { CopyButton } from './components/copy-button'
-export { FileUpload } from './components/file-upload'
+export {
+  FileUpload,
+  useFileUpload,
+  useFilePreviews,
+  Dropzone,
+  FileList,
+  FileItem,
+  ErrorDisplay,
+  type FileUploadProps,
+  type FileUploadError,
+  type FileUploadErrorCode,
+  type UploadProgressInfo,
+  type UseFileUploadReturn,
+  type DropzoneBindings,
+  type InputBindings,
+} from './components/file-upload'
 
 // ✨ ENHANCED (2025): Secure Message Actions with Security Indicators
 export {
