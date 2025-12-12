@@ -37,7 +37,7 @@ export interface UseMobileKeyboardOptions {
  */
 function isMobileDevice(): boolean {
   if (typeof window === 'undefined') return false
-  
+
   return (
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
@@ -47,7 +47,7 @@ function isMobileDevice(): boolean {
 
 /**
  * Production-ready mobile keyboard detection hook.
- * 
+ *
  * **Features:**
  * - Detects keyboard show/hide events
  * - Estimates keyboard height
@@ -55,31 +55,31 @@ function isMobileDevice(): boolean {
  * - Handles viewport changes
  * - iOS and Android support
  * - Debounced resize handling
- * 
+ *
  * **Use Cases:**
  * - Adjust UI when keyboard appears
  * - Scroll chat input into view
  * - Prevent content from being hidden
  * - Improve mobile UX
- * 
+ *
  * **Platform Notes:**
  * - iOS: Uses visualViewport API and focusin/focusout events
  * - Android: Uses window resize detection
  * - Falls back gracefully on desktop
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage
  * function ChatInput() {
  *   const { isKeyboardVisible, keyboardHeight } = useMobileKeyboard()
- *   
+ *
  *   return (
  *     <div style={{ marginBottom: keyboardHeight }}>
  *       <input />
  *     </div>
  *   )
  * }
- * 
+ *
  * // With callbacks
  * function ChatWindow() {
  *   const keyboard = useMobileKeyboard({
@@ -92,14 +92,14 @@ function isMobileDevice(): boolean {
  *     autoScroll: true,
  *     scrollOffset: 20
  *   })
- *   
+ *
  *   return <div>...</div>
  * }
- * 
+ *
  * // Conditional rendering
  * function ChatFooter() {
  *   const { isKeyboardVisible, isMobile } = useMobileKeyboard()
- *   
+ *
  *   if (!isMobile) return <FullFooter />
  *   if (isKeyboardVisible) return <CompactFooter />
  *   return <DefaultFooter />
@@ -121,10 +121,14 @@ export function useMobileKeyboard(
     isKeyboardVisible: false,
     keyboardHeight: 0,
     isMobile: isMobileDevice(),
-    originalViewportHeight: typeof window !== 'undefined' ? window.innerHeight : 0,
+    originalViewportHeight:
+      typeof window !== 'undefined' ? window.innerHeight : 0,
   }))
 
   const debounceTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
+  const scrollTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
+  const focusTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
+  const blurTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
   const previousHeightRef = React.useRef<number>(
     typeof window !== 'undefined' ? window.innerHeight : 0
   )
@@ -134,19 +138,25 @@ export function useMobileKeyboard(
    */
   const scrollToFocusedElement = React.useCallback(() => {
     const activeElement = document.activeElement as HTMLElement
-    
+
     if (
       activeElement &&
       (activeElement.tagName === 'INPUT' ||
         activeElement.tagName === 'TEXTAREA' ||
         activeElement.isContentEditable)
     ) {
-      setTimeout(() => {
+      // Clear any existing scroll timer to prevent memory leaks
+      if (scrollTimerRef.current) {
+        clearTimeout(scrollTimerRef.current)
+      }
+
+      scrollTimerRef.current = setTimeout(() => {
+        scrollTimerRef.current = undefined
         activeElement.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         })
-        
+
         // Additional scroll offset
         if (scrollOffset > 0) {
           window.scrollBy(0, scrollOffset)
@@ -175,7 +185,7 @@ export function useMobileKeyboard(
 
       if (isKeyboardVisible) {
         const keyboardHeight = heightDifference
-        
+
         setState((prev) => ({
           ...prev,
           isKeyboardVisible: true,
@@ -215,7 +225,7 @@ export function useMobileKeyboard(
   const handleFocusIn = React.useCallback(
     (e: FocusEvent) => {
       const target = e.target as HTMLElement
-      
+
       if (
         !state.isMobile ||
         !(
@@ -227,8 +237,14 @@ export function useMobileKeyboard(
         return
       }
 
+      // Clear any existing focus timer to prevent memory leaks
+      if (focusTimerRef.current) {
+        clearTimeout(focusTimerRef.current)
+      }
+
       // On iOS, visual viewport will change when keyboard shows
-      setTimeout(() => {
+      focusTimerRef.current = setTimeout(() => {
+        focusTimerRef.current = undefined
         handleResize()
       }, 100)
     },
@@ -241,7 +257,13 @@ export function useMobileKeyboard(
   const handleFocusOut = React.useCallback(() => {
     if (!state.isMobile) return
 
-    setTimeout(() => {
+    // Clear any existing blur timer to prevent memory leaks
+    if (blurTimerRef.current) {
+      clearTimeout(blurTimerRef.current)
+    }
+
+    blurTimerRef.current = setTimeout(() => {
+      blurTimerRef.current = undefined
       // Check if no input is focused
       const activeElement = document.activeElement
       if (
@@ -284,8 +306,18 @@ export function useMobileKeyboard(
     document.addEventListener('focusout', handleFocusOut)
 
     return () => {
+      // Clear all timers to prevent memory leaks
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current)
+      }
+      if (scrollTimerRef.current) {
+        clearTimeout(scrollTimerRef.current)
+      }
+      if (focusTimerRef.current) {
+        clearTimeout(focusTimerRef.current)
+      }
+      if (blurTimerRef.current) {
+        clearTimeout(blurTimerRef.current)
       }
 
       if (window.visualViewport) {
@@ -318,7 +350,7 @@ export function useMobileViewportHeight(): number {
       // Use visual viewport if available (more accurate on mobile)
       const vh = window.visualViewport?.height || window.innerHeight
       setHeight(vh)
-      
+
       // Also update CSS custom property
       document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`)
     }
@@ -327,7 +359,8 @@ export function useMobileViewportHeight(): number {
 
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', updateHeight)
-      return () => window.visualViewport?.removeEventListener('resize', updateHeight)
+      return () =>
+        window.visualViewport?.removeEventListener('resize', updateHeight)
     } else {
       window.addEventListener('resize', updateHeight)
       return () => window.removeEventListener('resize', updateHeight)

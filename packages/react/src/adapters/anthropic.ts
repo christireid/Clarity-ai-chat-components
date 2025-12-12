@@ -3,27 +3,32 @@
  *
  * Adapter for Anthropic's Claude models (Claude 3.5, Claude 3, etc.)
  * Includes timeout, AbortSignal support, and rate limit header parsing.
+ *
+ * SECURITY: API key must be explicitly provided via config.apiKey.
+ * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type {
-  ModelAdapter,
-  // ChatMessage, // Reserved for future use
-  // ModelConfig, // Reserved for future use
-  // StreamChunk, // Reserved for future use
-  // TokenUsage // Reserved for future use
-} from './types'
+import type { ModelAdapter } from './types'
 import { fetchWithTimeout } from '../utils/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/rate-limit-headers'
+import {
+  validateApiKey,
+  extractSystemMessage,
+  filterConversationMessages,
+  DEFAULT_TIMEOUTS,
+} from './shared'
 
 export const anthropicAdapter: ModelAdapter = {
   name: 'anthropic',
 
   async chat(messages, config) {
-    const timeout = config.timeout ?? 30000 // 30s default for chat
+    // SECURITY: Require explicit API key - no process.env fallback
+    const apiKey = validateApiKey(config.apiKey, 'Anthropic')
+    const timeout = config.timeout ?? DEFAULT_TIMEOUTS.chat
 
-    // Extract system message
-    const systemMessage = messages.find((m) => m.role === 'system')
-    const conversationMessages = messages.filter((m) => m.role !== 'system')
+    // Extract system message using shared utility
+    const systemMessage = extractSystemMessage(messages)
+    const conversationMessages = filterConversationMessages(messages)
 
     const response = await fetchWithTimeout(
       `${config.baseURL || 'https://api.anthropic.com/v1'}/messages`,
@@ -31,7 +36,7 @@ export const anthropicAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': config.apiKey || process.env['ANTHROPIC_API_KEY'] || '',
+          'x-api-key': apiKey,
           'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
@@ -73,10 +78,12 @@ export const anthropicAdapter: ModelAdapter = {
   },
 
   async *stream(messages, config) {
-    const timeout = config.timeout ?? 60000 // 60s default for streaming
+    // SECURITY: Require explicit API key - no process.env fallback
+    const apiKey = validateApiKey(config.apiKey, 'Anthropic')
+    const timeout = config.timeout ?? DEFAULT_TIMEOUTS.stream
 
-    const systemMessage = messages.find((m) => m.role === 'system')
-    const conversationMessages = messages.filter((m) => m.role !== 'system')
+    const systemMessage = extractSystemMessage(messages)
+    const conversationMessages = filterConversationMessages(messages)
 
     const response = await fetchWithTimeout(
       `${config.baseURL || 'https://api.anthropic.com/v1'}/messages`,
@@ -84,7 +91,7 @@ export const anthropicAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': config.apiKey || process.env['ANTHROPIC_API_KEY'] || '',
+          'x-api-key': apiKey,
           'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
