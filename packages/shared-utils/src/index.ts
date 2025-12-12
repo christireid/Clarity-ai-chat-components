@@ -1,10 +1,49 @@
 /**
  * @clarity-chat/shared-utils
  *
- * Shared utilities for all Clarity Chat packages
+ * @deprecated This package is deprecated and will be removed in v2.0.0.
+ * Please migrate to @clarity-chat/utils instead.
+ *
+ * Migration guide:
+ *
+ * Before:
+ * ```ts
+ * import { getLogger, LRUCache, startSpinner } from '@clarity-chat/shared-utils'
+ * ```
+ *
+ * After:
+ * ```ts
+ * import { getLogger, LRUCache, startSpinner } from '@clarity-chat/utils'
+ * // Or for better tree-shaking:
+ * import { getLogger } from '@clarity-chat/utils/logger'
+ * import { LRUCache } from '@clarity-chat/utils/cache'
+ * import { startSpinner } from '@clarity-chat/utils/progress'
+ * ```
+ *
+ * @see https://github.com/christireid/Clarity-ai-chat-components/blob/main/packages/utils/MIGRATION.md
  */
 
-// Logger
+// Show deprecation warning in development
+if (
+  typeof process !== 'undefined' &&
+  process.env?.['NODE_ENV'] !== 'production'
+) {
+  console.warn(
+    '\x1b[33m[@clarity-chat/shared-utils] DEPRECATION WARNING\x1b[0m\n' +
+      '\n' +
+      'This package has been consolidated into @clarity-chat/utils.\n' +
+      'Please update your imports:\n' +
+      '\n' +
+      "  Before: import { ... } from '@clarity-chat/shared-utils'\n" +
+      "  After:  import { ... } from '@clarity-chat/utils'\n" +
+      '\n' +
+      'This package will be removed in v2.0.0.\n'
+  )
+}
+
+// Re-export everything from the consolidated utils package
+
+// Logger (from @clarity-chat/utils/logger)
 export {
   LogLevel,
   type LogLevelString,
@@ -21,9 +60,9 @@ export {
   error,
   success,
   debug,
-} from './logger.js'
+} from '@clarity-chat/utils'
 
-// Progress
+// Progress (from @clarity-chat/utils/progress)
 export {
   configureProgress,
   startSpinner,
@@ -35,11 +74,12 @@ export {
   pauseSpinner,
   resumeSpinner,
   ProgressTracker,
-  formatDuration,
-  formatSize,
-} from './progress.js'
+} from '@clarity-chat/utils'
 
-// Cache
+// Format helpers (were in progress.ts)
+export { formatDuration, formatSize } from '@clarity-chat/utils'
+
+// Cache (from @clarity-chat/utils/cache)
 export {
   getContentHash,
   createCacheKey,
@@ -47,16 +87,17 @@ export {
   TTLCache,
   memoize,
   memoizeAsync,
-} from './cache.js'
+} from '@clarity-chat/utils'
 
-// Errors
+// CLI Errors (from @clarity-chat/utils/errors)
+// Note: Some error class names changed. Using aliases for backward compatibility.
 export {
   ExitCode,
   CLIError,
-  ValidationError,
-  ConfigError,
-  NotFoundError,
-  PermissionError,
-  handleError,
-  withErrorHandling,
-} from './errors.js'
+  CLIValidationError as ValidationError,
+  CLIConfigError as ConfigError,
+  CLINotFoundError as NotFoundError,
+  CLIPermissionError as PermissionError,
+  handleCLIError as handleError,
+  withCLIErrorHandling as withErrorHandling,
+} from '@clarity-chat/utils'
