@@ -66,6 +66,12 @@ export {
   type OpenAISummarizerConfig,
 } from './summarization/openai-summarizer'
 
+// Anthropic summarizer
+export {
+  AnthropicSummarizer,
+  type AnthropicSummarizerConfig,
+} from './summarization/anthropic-summarizer'
+
 // Importance scoring
 export {
   ImportanceScorer,

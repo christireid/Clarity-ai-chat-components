@@ -1,12 +1,13 @@
 /**
  * Summarization Pipeline
- * 
+ *
  * Handles automatic summarization of memories
  */
 
 import type { Memory, SummarizationConfig } from '../types'
 import type { Summarizer } from './summarizer'
 import { OpenAISummarizer } from './openai-summarizer'
+import { AnthropicSummarizer } from './anthropic-summarizer'
 import { countTokens } from '../utils/token-counter'
 
 export class SummarizationPipeline {
@@ -16,7 +17,7 @@ export class SummarizationPipeline {
 
   constructor(config: SummarizationConfig) {
     this.config = config
-    
+
     if (config.enabled) {
       this.summarizer = this.createSummarizer()
     }
@@ -30,7 +31,9 @@ export class SummarizationPipeline {
       throw new Error('Summarizer not configured')
     }
 
-    const maxTokens = this.config.maxTokens || Math.floor(this.countTokens(memory.content) * 0.5)
+    const maxTokens =
+      this.config.maxTokens ||
+      Math.floor(this.countTokens(memory.content) * 0.5)
     return this.summarizer.summarize(memory.content, maxTokens)
   }
 
@@ -42,11 +45,11 @@ export class SummarizationPipeline {
       throw new Error('Summarizer not configured')
     }
 
-    const texts = memories.map(m => m.content)
+    const texts = memories.map((m) => m.content)
     const maxTokens = this.config.maxTokens || 200
-    
+
     const summaries = await this.summarizer.summarizeBatch(texts, maxTokens)
-    
+
     const result = new Map<string, string>()
     memories.forEach((memory, index) => {
       result.set(memory.id, summaries[index] || memory.content)
@@ -88,8 +91,13 @@ export class SummarizationPipeline {
           model: this.config.model,
         })
       case 'anthropic':
-        // TODO: Implement Anthropic summarizer
-        throw new Error('Anthropic summarizer not yet implemented')
+        if (!process.env.ANTHROPIC_API_KEY) {
+          throw new Error('Anthropic API key required for summarization')
+        }
+        return new AnthropicSummarizer({
+          apiKey: process.env.ANTHROPIC_API_KEY,
+          model: this.config.model,
+        })
       case 'local':
         // TODO: Implement local summarizer
         throw new Error('Local summarizer not yet implemented')
