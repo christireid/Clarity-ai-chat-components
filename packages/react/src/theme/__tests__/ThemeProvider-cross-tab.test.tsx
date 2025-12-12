@@ -6,8 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, act, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen, act, fireEvent } from '@testing-library/react'
 import * as React from 'react'
 import { ThemeProvider, useTheme } from '../ThemeProvider'
 
@@ -48,9 +47,9 @@ class MockBroadcastChannel {
   }
 }
 
-// Mock matchMedia
+// Mock matchMedia - default to light mode
 const mockMatchMedia = vi.fn().mockImplementation((query: string) => ({
-  matches: query === '(prefers-color-scheme: dark)',
+  matches: false, // Don't match dark mode by default
   media: query,
   onchange: null,
   addListener: vi.fn(),
@@ -185,7 +184,7 @@ describe('ThemeProvider Cross-Tab Sync', () => {
   })
 
   describe('Debouncing', () => {
-    it('should debounce rapid theme changes', async () => {
+    it('should debounce rapid theme changes', () => {
       const postMessageSpy = vi.spyOn(
         MockBroadcastChannel.prototype,
         'postMessage'
@@ -206,13 +205,15 @@ describe('ThemeProvider Cross-Tab Sync', () => {
         vi.advanceTimersByTime(10)
       })
 
-      // Simulate multiple rapid changes
+      // Simulate multiple rapid changes using fireEvent (sync)
       const setDarkButton = screen.getByTestId('set-dark')
       const toggleButton = screen.getByTestId('toggle')
 
-      await userEvent.click(setDarkButton)
-      await userEvent.click(toggleButton)
-      await userEvent.click(toggleButton)
+      act(() => {
+        fireEvent.click(setDarkButton)
+        fireEvent.click(toggleButton)
+        fireEvent.click(toggleButton)
+      })
 
       // Before debounce timeout, should not have broadcasted all changes
       act(() => {
@@ -228,7 +229,7 @@ describe('ThemeProvider Cross-Tab Sync', () => {
       expect(postMessageSpy).toHaveBeenCalled()
     })
 
-    it('should broadcast immediately when debounce is 0', async () => {
+    it('should broadcast immediately when debounce is 0', () => {
       const postMessageSpy = vi.spyOn(
         MockBroadcastChannel.prototype,
         'postMessage'
@@ -252,7 +253,9 @@ describe('ThemeProvider Cross-Tab Sync', () => {
       postMessageSpy.mockClear()
 
       const setDarkButton = screen.getByTestId('set-dark')
-      await userEvent.click(setDarkButton)
+      act(() => {
+        fireEvent.click(setDarkButton)
+      })
 
       // Should broadcast immediately
       act(() => {

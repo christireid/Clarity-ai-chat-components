@@ -4,14 +4,13 @@
  */
 
 import * as vscode from 'vscode'
-import * as path from 'path'
 
 export class PreviewPanel {
   public static currentPanel: PreviewPanel | undefined
   private readonly panel: vscode.WebviewPanel
   private disposables: vscode.Disposable[] = []
 
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+  private constructor(panel: vscode.WebviewPanel, _extensionUri: vscode.Uri) {
     this.panel = panel
 
     // Set the webview's initial html content
@@ -93,7 +92,7 @@ export class PreviewPanel {
     this.panel.webview.html = this.getHtmlForWebview(webview)
   }
 
-  private getHtmlForWebview(webview: vscode.Webview): string {
+  private getHtmlForWebview(_webview: vscode.Webview): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,6 +1,45 @@
 # Clarity Memory Examples
 
-This directory contains complete, runnable examples showing how to use `@clarity-chat/memory` in different environments and frameworks.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org/)
+
+> Complete, runnable examples for `@clarity-chat/memory` - AI conversation memory and context management.
+
+![Memory Examples](./public/screenshot.png)
+
+## ✨ Features
+
+- **Multiple frameworks** - Express.js, Fastify, Next.js, and CLI examples
+- **React components** - Basic and advanced memory-enhanced chat interfaces
+- **Vanilla JS** - No-framework example for any environment
+- **Production patterns** - Token optimization, persistence, and caching
+
+## 🚀 Quick Start
+
+```bash
+# Navigate to this example
+cd examples/memory-examples
+
+# Install dependencies
+pnpm install
+
+# Copy environment variables
+cp .env.example .env.local
+
+# Run an example
+pnpm run express   # Express.js server
+pnpm run fastify   # Fastify server
+pnpm run cli       # Interactive CLI
+```
+
+## 📋 Prerequisites
+
+- Node.js 20+
+- pnpm 10+
+- (Optional) OpenAI API key for semantic search with embeddings
+
+---
 
 ## 📚 Available Examples
 
@@ -318,20 +357,56 @@ Track user preferences to make personalized recommendations.
 
 ---
 
+## 🔗 Related Examples
+
+- [streaming-chat](../streaming-chat) - Real-time streaming AI chat interface
+- [token-optimization](../token-optimization) - Optimize token usage and costs
+- [enterprise-ai-ops](../enterprise-ai-ops) - Enterprise AI operations dashboard
+
+---
+
+## 🐛 Troubleshooting
+
+<details>
+<summary>Server won't start</summary>
+
+1. Ensure dependencies are installed: `pnpm install`
+2. Check if port 3000 is available
+3. Verify environment variables in `.env.local`
+
+</details>
+
+<details>
+<summary>Memory not persisting</summary>
+
+By default, memory uses in-memory storage. For persistence:
+
+```typescript
+const memory = clarityMemory({
+  storage: {
+    type: 'file',
+    path: './memories.json'
+  }
+})
+```
+
+</details>
+
+<details>
+<summary>Embedding errors</summary>
+
+Embeddings require an OpenAI API key. Set `OPENAI_API_KEY` in your `.env.local` file.
+
+</details>
+
+---
+
 ## 📚 Learn More
 
-- **Main Package README**: [../../packages/memory/README.md](../../packages/memory/README.md)
-- **API Documentation**: [../../packages/memory/API.md](../../packages/memory/API.md)
-- **Package Examples**: [../../packages/memory/examples/](../../packages/memory/examples/)
-
----
-
-## 🤝 Contributing
-
-Found an issue or want to add an example? Please open an issue or PR!
-
----
+- [Clarity Memory Package](../../packages/memory/README.md)
+- [Memory API Documentation](../../packages/memory/API.md)
+- [Vercel AI SDK](https://ai-sdk.dev)
 
 ## 📄 License
 
-MIT - See [LICENSE](../../LICENSE) for details
+MIT © [Code & Clarity](https://codeandclarity.com)

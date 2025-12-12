@@ -1,15 +1,16 @@
 {
   "name": "@clarity-chat/errors",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
-  "description": "Enhanced error handling system with developer-friendly messages",
+  "description": "DEPRECATED: Please use @clarity-chat/utils/errors instead. Enhanced error handling system with developer-friendly messages",
+  "deprecated": "This package is deprecated. Please use @clarity-chat/utils/errors instead.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -27,8 +28,8 @@
     "directory": "packages/errors"
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
     "test": "vitest run --passWithNoTests",
@@ -39,7 +40,8 @@
     "errors",
     "error-handling",
     "developer-experience",
-    "clarity-chat"
+    "clarity-chat",
+    "deprecated"
   ],
   "author": "Christi Reid <christi@codeclarity.ai>",
   "license": "MIT",
@@ -48,11 +50,12 @@
   },
   "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "dependencies": {
-    "chalk": "^5.6.2"
+    "@clarity-chat/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
     "@vitest/coverage-v8": "^4.0.15",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
   }
