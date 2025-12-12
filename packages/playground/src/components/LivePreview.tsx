@@ -1,34 +1,32 @@
 /**
  * Live Preview Component
- * Renders user code in real-time with error handling
+ *
+ * Renders user code in real-time with error handling and console interception.
+ * Uses a sandboxed iframe for security.
  */
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Play } from 'lucide-react'
+import type { ConsoleLogEntry, PlaygroundError } from '../types'
 
 interface LivePreviewProps {
   code: string
   theme: 'light' | 'dark'
   autoRun: boolean
   onRunRef?: React.MutableRefObject<(() => void) | null>
+  onConsoleEntry?: (entry: Omit<ConsoleLogEntry, 'id' | 'timestamp'>) => void
+  onError?: (error: PlaygroundError | null) => void
 }
 
-const renderPreview = (
-  code: string,
-  theme: 'light' | 'dark',
-  iframeRef: React.RefObject<HTMLIFrameElement | null>,
-  setError: (error: string | null) => void
-) => {
-  try {
-    setError(null)
-
-    // Create the HTML content for the iframe
-    const html = `
+// Generate iframe HTML with console interception
+function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
+  return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline';">
   <script src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -43,77 +41,244 @@ const renderPreview = (
     * {
       box-sizing: border-box;
     }
+    .error-display {
+      color: #dc2626;
+      padding: 16px;
+      font-family: ui-monospace, monospace;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 4px;
+      margin: 16px 0;
+      white-space: pre-wrap;
+    }
+    .error-display.dark {
+      background: rgba(220, 38, 38, 0.1);
+      border-color: rgba(220, 38, 38, 0.3);
+      color: #fca5a5;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
-  <script type="text/babel">
+  <script>
+    // Console interception - must be before any other scripts
+    (function() {
+      const originalConsole = {
+        log: console.log.bind(console),
+        info: console.info.bind(console),
+        warn: console.warn.bind(console),
+        error: console.error.bind(console),
+      };
+
+      function serializeArg(arg) {
+        if (arg === null) return 'null';
+        if (arg === undefined) return 'undefined';
+        if (typeof arg === 'function') return '[Function]';
+        if (typeof arg === 'symbol') return arg.toString();
+        if (arg instanceof Error) {
+          return arg.message + (arg.stack ? '\\n' + arg.stack : '');
+        }
+        if (typeof arg === 'object') {
+          try {
+            return JSON.stringify(arg, null, 2);
+          } catch (e) {
+            return '[Circular Object]';
+          }
+        }
+        return String(arg);
+      }
+
+      function interceptConsole(level) {
+        return function(...args) {
+          // Call original console method
+          originalConsole[level](...args);
+
+          // Send to parent
+          try {
+            window.parent.postMessage({
+              type: 'playground-console',
+              level: level,
+              message: args.map(serializeArg).join(' '),
+              args: args.slice(1).map(serializeArg),
+            }, '*');
+          } catch (e) {
+            // Silently fail if postMessage fails
+          }
+        };
+      }
+
+      console.log = interceptConsole('log');
+      console.info = interceptConsole('info');
+      console.warn = interceptConsole('warn');
+      console.error = interceptConsole('error');
+
+      // Global error handler
+      window.onerror = function(message, source, lineno, colno, error) {
+        window.parent.postMessage({
+          type: 'playground-error',
+          error: {
+            message: String(message),
+            line: lineno,
+            column: colno,
+            stack: error ? error.stack : null,
+          }
+        }, '*');
+        return false;
+      };
+
+      // Unhandled promise rejection handler
+      window.onunhandledrejection = function(event) {
+        const error = event.reason;
+        window.parent.postMessage({
+          type: 'playground-error',
+          error: {
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : null,
+          }
+        }, '*');
+      };
+    })();
+  </script>
+  <script type="text/babel" data-presets="react">
     try {
       ${code}
-      
-      // If the code defines a default export component, render it
+
+      // If the code defines a Component, render it
       if (typeof Component !== 'undefined') {
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<Component />);
+
+        // Notify parent that render was successful
+        window.parent.postMessage({ type: 'playground-render-success' }, '*');
       }
     } catch (error) {
+      // Display error in preview
       const errorDiv = document.createElement('div');
-      errorDiv.style.cssText = 'color: red; padding: 16px; font-family: monospace; background: #fee; border: 1px solid #fcc; border-radius: 4px; margin: 16px; white-space: pre-wrap;';
+      errorDiv.className = 'error-display${theme === 'dark' ? ' dark' : ''}';
+
       const strong = document.createElement('strong');
       strong.textContent = 'Error: ';
-      const errorMessage = error?.message || error?.toString() || 'Unknown error';
-      const errorText = errorMessage + (error?.stack ? '\\n\\n' + error.stack : '');
-      const message = document.createTextNode(errorText);
-      
       errorDiv.appendChild(strong);
-      errorDiv.appendChild(message);
-      
-      // Clear body and add error
+
+      const errorMessage = error?.message || error?.toString() || 'Unknown error';
+      errorDiv.appendChild(document.createTextNode(errorMessage));
+
+      if (error?.stack) {
+        const stackDiv = document.createElement('div');
+        stackDiv.style.marginTop = '8px';
+        stackDiv.style.fontSize = '12px';
+        stackDiv.style.opacity = '0.8';
+        stackDiv.textContent = error.stack;
+        errorDiv.appendChild(stackDiv);
+      }
+
       const root = document.getElementById('root');
       if (root) {
         root.innerHTML = '';
         root.appendChild(errorDiv);
-      } else {
-        document.body.innerHTML = '';
-        document.body.appendChild(errorDiv);
       }
+
+      // Send error to parent
+      window.parent.postMessage({
+        type: 'playground-error',
+        error: {
+          message: errorMessage,
+          stack: error?.stack || null,
+        }
+      }, '*');
     }
   </script>
 </body>
 </html>
-      `
-
-    if (iframeRef.current) {
-      const doc = iframeRef.current.contentDocument
-      if (doc) {
-        doc.open()
-        doc.write(html)
-        doc.close()
-      }
-    }
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Unknown error')
-  }
+  `.trim()
 }
 
-export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps) {
+export function LivePreview({
+  code,
+  theme,
+  autoRun,
+  onRunRef,
+  onConsoleEntry,
+  onError,
+}: LivePreviewProps) {
   const [error, setError] = useState<string | null>(null)
+  const [isRunning, setIsRunning] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const runPreview = useCallback(() => {
-    renderPreview(code, theme, iframeRef, setError)
-  }, [code, theme])
+  // Handle messages from iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Security: Only accept messages from our iframe
+      if (event.source !== iframeRef.current?.contentWindow) {
+        return
+      }
 
+      const { data } = event
+
+      if (data.type === 'playground-console' && onConsoleEntry) {
+        onConsoleEntry({
+          level: data.level,
+          message: data.message,
+          args: data.args,
+        })
+      }
+
+      if (data.type === 'playground-error') {
+        const playgroundError: PlaygroundError = {
+          message: data.error.message,
+          line: data.error.line,
+          column: data.error.column,
+          stack: data.error.stack,
+        }
+        setError(data.error.message)
+        onError?.(playgroundError)
+      }
+
+      if (data.type === 'playground-render-success') {
+        setError(null)
+        onError?.(null)
+      }
+    }
+
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [onConsoleEntry, onError])
+
+  const runPreview = useCallback(() => {
+    setIsRunning(true)
+    setError(null)
+
+    try {
+      const html = generatePreviewHTML(code, theme)
+
+      if (iframeRef.current) {
+        const doc = iframeRef.current.contentDocument
+        if (doc) {
+          doc.open()
+          doc.write(html)
+          doc.close()
+        }
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      setError(message)
+      onError?.({ message })
+    } finally {
+      setIsRunning(false)
+    }
+  }, [code, theme, onError])
+
+  // Expose run function to parent via ref
   useEffect(() => {
     if (onRunRef) {
       onRunRef.current = runPreview
     }
   }, [onRunRef, runPreview])
 
+  // Auto-run with debouncing
   useEffect(() => {
     if (!autoRun) {
-      // Clear any pending timeout when auto-run is disabled
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
         timeoutRef.current = null
@@ -121,14 +286,13 @@ export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps
       return
     }
 
-    // Debounce auto-run to avoid excessive re-renders
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
 
     timeoutRef.current = setTimeout(() => {
       runPreview()
-    }, 300) // 300ms debounce delay
+    }, 500) // 500ms debounce for better UX
 
     return () => {
       if (timeoutRef.current) {
@@ -138,12 +302,12 @@ export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps
   }, [autoRun, runPreview])
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       {error && (
         <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <div className="flex items-start gap-2">
             <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-            <div>
+            <div className="flex-1">
               <h3 className="font-semibold text-red-900 dark:text-red-100 mb-1">
                 Error
               </h3>
@@ -151,16 +315,23 @@ export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps
                 {error}
               </pre>
             </div>
+            <button
+              onClick={runPreview}
+              className="flex items-center gap-1 px-2 py-1 text-sm bg-red-100 dark:bg-red-900/40 hover:bg-red-200 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 rounded transition-colors"
+            >
+              <Play className="w-3 h-3" />
+              Retry
+            </button>
           </div>
         </div>
       )}
 
-      <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden h-[600px]">
+      <div className="flex-1 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden min-h-[400px]">
         <iframe
           ref={iframeRef}
           title="Live code preview"
-          sandbox="allow-scripts allow-same-origin"
-          className="w-full h-full"
+          sandbox="allow-scripts"
+          className={`w-full h-full ${isRunning ? 'opacity-50' : ''}`}
           aria-label="Live preview of the code"
         />
       </div>

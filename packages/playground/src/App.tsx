@@ -1,10 +1,19 @@
 /**
  * Clarity Chat Playground
- * Interactive component testing and experimentation environment
+ *
+ * Interactive component testing and experimentation environment.
+ * Features:
+ * - Live code preview with hot reloading
+ * - Console output interception
+ * - URL sharing with compression
+ * - Export to CodeSandbox/StackBlitz
+ * - Keyboard shortcuts
+ * - Auto-save to localStorage
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRef, useCallback } from 'react'
 import Editor from '@monaco-editor/react'
+import { Toaster } from 'sonner'
 import {
   Play,
   Copy,
@@ -13,177 +22,61 @@ import {
   RefreshCw,
   Settings,
   ExternalLink,
-  Check,
+  Terminal,
+  Keyboard,
 } from 'lucide-react'
 import { LivePreview } from './components/LivePreview'
 import { ComponentLibrary } from './components/ComponentLibrary'
 import { ConsolePanel } from './components/ConsolePanel'
-import { templates, getTemplateById } from './templates/index'
+import { ErrorBoundary, PreviewErrorBoundary } from './components/ErrorBoundary'
+import { PlaygroundProvider, usePlayground } from './contexts/PlaygroundContext'
 import {
-  parseUrlState,
-  copyShareableUrl,
-  openInCodeSandbox,
-  openInStackBlitz,
-  downloadAsZip,
-} from './utils'
-import type { PlaygroundSettings, ConsoleLogEntry } from './types'
+  useKeyboardShortcuts,
+  getShortcutLabel,
+} from './hooks/useKeyboardShortcuts'
 
-const DEFAULT_SETTINGS: PlaygroundSettings = {
-  autoRun: true,
-  lineNumbers: true,
-  fontSize: 14,
-  tabSize: 2,
-  wordWrap: false,
-  minimap: false,
-}
-
-const DEFAULT_TEMPLATE = templates[0]
-
-export default function App() {
-  const [code, setCode] = useState(DEFAULT_TEMPLATE.code)
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [selectedTemplate, setSelectedTemplate] = useState(DEFAULT_TEMPLATE.id)
-  const [settings, setSettings] = useState<PlaygroundSettings>(DEFAULT_SETTINGS)
-  const [showSettings, setShowSettings] = useState(false)
-  const [showExportMenu, setShowExportMenu] = useState(false)
-  const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'error'>(
-    'idle'
-  )
-  const [consoleEntries, setConsoleEntries] = useState<ConsoleLogEntry[]>([])
-  const [showConsole, setShowConsole] = useState(false)
+/**
+ * Main Playground Content
+ * Uses the PlaygroundContext for all state management
+ */
+function PlaygroundContent() {
+  const { state, actions } = usePlayground()
   const runPreviewRef = useRef<(() => void) | null>(null)
-  const hasLoadedFromUrl = useRef(false)
 
-  // Load state from URL parameters on mount
-  useEffect(() => {
-    const urlState = parseUrlState()
-    if (urlState) {
-      if (urlState.code) {
-        setCode(urlState.code)
-        hasLoadedFromUrl.current = true
-      }
-      if (urlState.templateId) {
-        const template = getTemplateById(urlState.templateId)
-        if (template) {
-          setSelectedTemplate(template.id)
-          if (!urlState.code) {
-            setCode(template.code)
-          }
-        }
-      }
-      if (urlState.theme) {
-        setTheme(urlState.theme)
-      }
-      if (urlState.settings) {
-        setSettings((prev) => ({ ...prev, ...urlState.settings }))
-      }
-      // Clear URL parameter after loading
-      window.history.replaceState({}, '', window.location.pathname)
-    }
-  }, [])
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onShare: actions.share,
+    onRun: () => runPreviewRef.current?.(),
+    onCopy: actions.copyCode,
+    onReset: actions.reset,
+    onToggleTheme: actions.toggleTheme,
+    onToggleConsole: actions.toggleConsole,
+    onToggleSettings: actions.toggleSettings,
+    onEscape: actions.closeExportMenu,
+  })
 
-  // Auto-format code on initial load only (skip if loaded from URL)
-  useEffect(() => {
-    if (hasLoadedFromUrl.current) return
+  const handleEditorChange = useCallback(
+    (value: string | undefined) => {
+      actions.setCode(value || '')
+    },
+    [actions]
+  )
 
-    const format = async () => {
-      try {
-        const prettierMod = await import('prettier/standalone')
-        const parserBabel = await import('prettier/parser-babel')
-        const formatted = await prettierMod.default.format(code, {
-          parser: 'babel',
-          plugins: [parserBabel.default],
-          semi: false,
-          singleQuote: true,
-        })
-        setCode(formatted)
-      } catch (error) {
-        console.error('Failed to format code:', error)
-        // Silently fail - code will remain unformatted
-      }
-    }
-    void format()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only run on mount
-
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setShareStatus('copied')
-      setTimeout(() => setShareStatus('idle'), 2000)
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error)
-      setShareStatus('error')
-      setTimeout(() => setShareStatus('idle'), 2000)
-    }
-  }, [code])
-
-  const handleDownload = useCallback(() => {
-    downloadAsZip({
-      code,
-      title: getTemplateById(selectedTemplate)?.name || 'Clarity Chat Example',
-    })
-  }, [code, selectedTemplate])
-
-  const handleShare = useCallback(async () => {
-    const result = await copyShareableUrl({
-      code,
-      templateId: selectedTemplate,
-      theme,
-      settings,
-    })
-
-    if (result.success) {
-      setShareStatus('copied')
-      setTimeout(() => setShareStatus('idle'), 2000)
-    } else {
-      setShareStatus('error')
-      setTimeout(() => setShareStatus('idle'), 2000)
-    }
-  }, [code, selectedTemplate, theme, settings])
-
-  const handleOpenInCodeSandbox = useCallback(() => {
-    openInCodeSandbox({
-      code,
-      title: getTemplateById(selectedTemplate)?.name || 'Clarity Chat Example',
-    })
-    setShowExportMenu(false)
-  }, [code, selectedTemplate])
-
-  const handleOpenInStackBlitz = useCallback(() => {
-    openInStackBlitz({
-      code,
-      title: getTemplateById(selectedTemplate)?.name || 'Clarity Chat Example',
-    })
-    setShowExportMenu(false)
-  }, [code, selectedTemplate])
-
-  const handleTemplateChange = useCallback((templateId: string) => {
-    setSelectedTemplate(templateId)
-    const template = getTemplateById(templateId)
-    if (template) {
-      setCode(template.code)
-    } else {
-      console.warn(`Template "${templateId}" not found`)
-      setCode(DEFAULT_TEMPLATE.code)
-    }
-  }, [])
-
-  const handleReset = useCallback(() => {
-    const template = getTemplateById(selectedTemplate)
-    if (template) {
-      setCode(template.code)
-    } else {
-      setCode(DEFAULT_TEMPLATE.code)
-    }
-  }, [selectedTemplate])
-
-  const handleClearConsole = useCallback(() => {
-    setConsoleEntries([])
-  }, [])
+  const handleConsoleEntry = useCallback(
+    (entry: {
+      level: 'log' | 'info' | 'warn' | 'error'
+      message: string
+      args?: unknown[]
+    }) => {
+      actions.addConsoleEntry(entry)
+    },
+    [actions]
+  )
 
   return (
-    <div className={`h-screen flex flex-col ${theme === 'dark' ? 'dark' : ''}`}>
+    <div
+      className={`h-screen flex flex-col ${state.theme === 'dark' ? 'dark' : ''}`}
+    >
       {/* Header */}
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -193,106 +86,142 @@ export default function App() {
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Interactive component testing environment
+              {state.lastSaved && (
+                <span className="ml-2 text-xs">
+                  (Auto-saved {state.lastSaved.toLocaleTimeString()})
+                </span>
+              )}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
-              onClick={handleReset}
+              onClick={actions.reset}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              title="Reset to template"
+              title={`Reset to template (${getShortcutLabel('reset')})`}
               aria-label="Reset code to selected template"
             >
               <RefreshCw className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
-              onClick={handleCopy}
+              onClick={actions.copyCode}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              title="Copy code"
+              title={`Copy code (${getShortcutLabel('copy')})`}
               aria-label="Copy code to clipboard"
             >
               <Copy className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
-              onClick={handleDownload}
+              onClick={actions.downloadZip}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              title="Download"
+              title="Download as ZIP"
               aria-label="Download code as file"
             >
               <Download className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
-              onClick={handleShare}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
-              title={shareStatus === 'copied' ? 'Copied!' : 'Share'}
+              onClick={actions.share}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              title={`Share (${getShortcutLabel('share')})`}
               aria-label="Share code via URL"
             >
-              {shareStatus === 'copied' ? (
-                <Check className="w-5 h-5 text-green-500" aria-hidden="true" />
-              ) : (
-                <Share2 className="w-5 h-5" aria-hidden="true" />
-              )}
+              <Share2 className="w-5 h-5" aria-hidden="true" />
             </button>
+
             {/* Export Menu */}
             <div className="relative">
               <button
-                onClick={() => setShowExportMenu(!showExportMenu)}
+                onClick={actions.toggleExportMenu}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 title="Export"
                 aria-label="Export options"
-                aria-expanded={showExportMenu}
+                aria-expanded={state.showExportMenu}
               >
                 <ExternalLink className="w-5 h-5" aria-hidden="true" />
               </button>
-              {showExportMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
-                  <button
-                    onClick={handleOpenInCodeSandbox}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Open in CodeSandbox
-                  </button>
-                  <button
-                    onClick={handleOpenInStackBlitz}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Open in StackBlitz
-                  </button>
-                </div>
+              {state.showExportMenu && (
+                <>
+                  {/* Backdrop for closing */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={actions.closeExportMenu}
+                  />
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                    <button
+                      onClick={actions.exportToCodeSandbox}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Open in CodeSandbox
+                    </button>
+                    <button
+                      onClick={actions.exportToStackBlitz}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Open in StackBlitz
+                    </button>
+                  </div>
+                </>
               )}
             </div>
+
             <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              title="Settings"
+              onClick={actions.toggleConsole}
+              className={`p-2 rounded-lg transition-colors ${
+                state.showConsole
+                  ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+              title={`Toggle console (${getShortcutLabel('console')})`}
+              aria-label="Toggle console panel"
+              aria-pressed={state.showConsole}
+            >
+              <Terminal className="w-5 h-5" aria-hidden="true" />
+              {state.consoleEntries.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {state.consoleEntries.length > 99
+                    ? '99+'
+                    : state.consoleEntries.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={actions.toggleSettings}
+              className={`p-2 rounded-lg transition-colors ${
+                state.showSettings
+                  ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+              title={`Settings (${getShortcutLabel('settings')})`}
               aria-label="Toggle settings panel"
-              aria-expanded={showSettings}
+              aria-expanded={state.showSettings}
             >
               <Settings className="w-5 h-5" aria-hidden="true" />
             </button>
+
             <button
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              onClick={actions.toggleTheme}
               className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              title={`Toggle theme (${getShortcutLabel('theme')})`}
+              aria-label={`Switch to ${state.theme === 'light' ? 'dark' : 'light'} mode`}
             >
-              <span aria-hidden="true">{theme === 'light' ? '🌙' : '☀️'}</span>
+              <span aria-hidden="true">
+                {state.theme === 'light' ? '🌙' : '☀️'}
+              </span>
             </button>
           </div>
         </div>
 
         {/* Settings Panel */}
-        {showSettings && (
+        {state.showSettings && (
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={settings.autoRun}
+                  checked={state.settings.autoRun}
                   onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      autoRun: e.target.checked,
-                    }))
+                    actions.updateSettings({ autoRun: e.target.checked })
                   }
                   className="rounded"
                 />
@@ -303,12 +232,9 @@ export default function App() {
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={settings.lineNumbers}
+                  checked={state.settings.lineNumbers}
                   onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      lineNumbers: e.target.checked,
-                    }))
+                    actions.updateSettings({ lineNumbers: e.target.checked })
                   }
                   className="rounded"
                 />
@@ -319,12 +245,9 @@ export default function App() {
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={settings.wordWrap}
+                  checked={state.settings.wordWrap}
                   onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      wordWrap: e.target.checked,
-                    }))
+                    actions.updateSettings({ wordWrap: e.target.checked })
                   }
                   className="rounded"
                 />
@@ -335,14 +258,50 @@ export default function App() {
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={showConsole}
-                  onChange={(e) => setShowConsole(e.target.checked)}
+                  checked={state.settings.minimap}
+                  onChange={(e) =>
+                    actions.updateSettings({ minimap: e.target.checked })
+                  }
                   className="rounded"
                 />
                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Show console
+                  Minimap
                 </span>
               </label>
+            </div>
+
+            {/* Keyboard Shortcuts Help */}
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <Keyboard className="w-4 h-4" />
+                <span className="font-medium">Keyboard Shortcuts</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                <div>
+                  <kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">
+                    {getShortcutLabel('run')}
+                  </kbd>{' '}
+                  Run
+                </div>
+                <div>
+                  <kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">
+                    {getShortcutLabel('share')}
+                  </kbd>{' '}
+                  Share
+                </div>
+                <div>
+                  <kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">
+                    {getShortcutLabel('copy')}
+                  </kbd>{' '}
+                  Copy
+                </div>
+                <div>
+                  <kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">
+                    {getShortcutLabel('console')}
+                  </kbd>{' '}
+                  Console
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -353,8 +312,8 @@ export default function App() {
         {/* Sidebar - Component Library */}
         <aside className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
           <ComponentLibrary
-            selectedTemplate={selectedTemplate}
-            onTemplateChange={handleTemplateChange}
+            selectedTemplate={state.selectedTemplate}
+            onTemplateChange={actions.setTemplate}
           />
         </aside>
 
@@ -364,29 +323,29 @@ export default function App() {
             <Editor
               height="100%"
               defaultLanguage="typescript"
-              value={code}
-              onChange={(value: string | undefined) => setCode(value || '')}
-              theme={theme === 'dark' ? 'vs-dark' : 'light'}
+              value={state.code}
+              onChange={handleEditorChange}
+              theme={state.theme === 'dark' ? 'vs-dark' : 'light'}
               options={{
-                minimap: { enabled: settings.minimap },
-                fontSize: settings.fontSize,
-                lineNumbers: settings.lineNumbers ? 'on' : 'off',
+                minimap: { enabled: state.settings.minimap },
+                fontSize: state.settings.fontSize,
+                lineNumbers: state.settings.lineNumbers ? 'on' : 'off',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
                 readOnly: false,
                 automaticLayout: true,
-                tabSize: settings.tabSize,
+                tabSize: state.settings.tabSize,
                 formatOnPaste: true,
                 formatOnType: true,
-                wordWrap: settings.wordWrap ? 'on' : 'off',
+                wordWrap: state.settings.wordWrap ? 'on' : 'off',
               }}
             />
           </div>
         </div>
 
         {/* Live Preview */}
-        <div className="w-1/2 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-y-auto">
-          <div className="p-6">
+        <div className="w-1/2 flex flex-col bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
+          <div className="flex-1 overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Preview
@@ -394,32 +353,62 @@ export default function App() {
               <button
                 onClick={() => runPreviewRef.current?.()}
                 className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                title="Run preview manually"
+                title={`Run preview (${getShortcutLabel('run')})`}
               >
                 <Play className="w-4 h-4" />
                 Run
               </button>
             </div>
-            <LivePreview
-              code={code}
-              theme={theme}
-              autoRun={settings.autoRun}
-              onRunRef={runPreviewRef}
-            />
 
-            {/* Console Panel */}
-            {showConsole && (
-              <div className="mt-4">
-                <ConsolePanel
-                  entries={consoleEntries}
-                  onClear={handleClearConsole}
-                  maxHeight="150px"
+            <ErrorBoundary onReset={() => runPreviewRef.current?.()}>
+              <PreviewErrorBoundary onRetry={() => runPreviewRef.current?.()}>
+                <LivePreview
+                  code={state.code}
+                  theme={state.theme}
+                  autoRun={state.settings.autoRun}
+                  onRunRef={runPreviewRef}
+                  onConsoleEntry={handleConsoleEntry}
+                  onError={actions.setError}
                 />
-              </div>
-            )}
+              </PreviewErrorBoundary>
+            </ErrorBoundary>
           </div>
+
+          {/* Console Panel */}
+          {state.showConsole && (
+            <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+              <ConsolePanel
+                entries={state.consoleEntries}
+                onClear={actions.clearConsole}
+                maxHeight="200px"
+              />
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Toast notifications */}
+      <Toaster
+        position="bottom-right"
+        theme={state.theme}
+        toastOptions={{
+          className: 'dark:bg-gray-800 dark:text-white',
+        }}
+      />
     </div>
+  )
+}
+
+/**
+ * Main App Component
+ * Wraps everything with the PlaygroundProvider
+ */
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <PlaygroundProvider>
+        <PlaygroundContent />
+      </PlaygroundProvider>
+    </ErrorBoundary>
   )
 }
