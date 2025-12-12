@@ -242,7 +242,10 @@ export {
   LoadingIcon,
   SuccessIcon,
   ErrorIcon,
-} from './components/button-state-icons'
+  CloseIcon,
+  CharacterCount,
+} from './components/icons'
+export type { CharacterCountProps } from './components/icons'
 
 export { Kbd, useFormattedShortcut } from './components/kbd'
 export type {
@@ -257,10 +260,150 @@ export type {
 // ============================================================================
 
 export { useRippleEffect } from './hooks/use-ripple-effect'
+export type { RippleType } from './hooks/use-ripple-effect'
+
 export { useBodyScrollLock } from './hooks/use-body-scroll-lock'
+
+export {
+  useReducedMotion,
+  getReducedMotionPreference,
+} from './hooks/use-reduced-motion'
+
+export {
+  useControllableState,
+  useControllableBoolean,
+} from './hooks/use-controllable-state'
+export type { UseControllableStateOptions } from './hooks/use-controllable-state'
+
+export {
+  composeRefs,
+  useComposedRefs,
+  useForwardedRef,
+} from './hooks/use-composed-refs'
 
 // ============================================================================
 // Utils
 // ============================================================================
 
 export * from './lib/utils'
+
+// ARIA Utilities
+export {
+  generateAriaId,
+  resetAriaIdCounter,
+  announce,
+  clearAnnouncement,
+  getFocusableElements,
+  getFirstFocusableElement,
+  getLastFocusableElement,
+  focusFirstElement,
+  saveFocus,
+  Keys,
+  isKey,
+  isActivationKey,
+  getErrorAriaAttributes,
+  getLoadingAriaAttributes,
+  getExpandedAriaAttributes,
+} from './lib/aria'
+
+// Animation Presets
+export {
+  durations,
+  springPresets,
+  easingPresets,
+  noAnimation,
+  fadeVariants,
+  scaleVariants,
+  slideUpVariants,
+  slideDownVariants,
+  slideLeftVariants,
+  slideRightVariants,
+  popVariants,
+  collapseVariants,
+  getReducedMotionVariants,
+  getReducedMotionTransition,
+  interactiveVariants,
+  getReducedMotionInteractive,
+  staggerContainerVariants,
+  staggerItemVariants,
+  animationPresets,
+} from './lib/animation-presets'
+
+// ============================================================================
+// Context Providers
+// ============================================================================
+
+export {
+  A11yProvider,
+  A11yContext,
+  useA11y,
+  useReducedMotionContext,
+} from './context/a11y-context'
+export type {
+  A11yContextValue,
+  A11yProviderProps,
+  AnnounceOptions,
+} from './context/a11y-context'
+
+// ============================================================================
+// Compound Components
+// ============================================================================
+
+// Input Compound (composable sub-components)
+export {
+  InputCompound,
+  InputRoot,
+  InputLabel,
+  InputField,
+  InputError,
+  InputHelper,
+  InputCharacterCount,
+  InputFooter,
+} from './components/input-compound'
+export type {
+  InputRootProps,
+  InputLabelProps,
+  InputFieldProps,
+  InputErrorProps,
+  InputHelperProps,
+  InputCharacterCountProps,
+  InputFooterProps,
+} from './components/input-compound'
+
+// ============================================================================
+// Enhanced Custom Components (with advanced accessibility)
+// ============================================================================
+
+// Enhanced Dialog with animations and focus trap
+export {
+  Dialog as EnhancedDialog,
+  DialogTrigger as EnhancedDialogTrigger,
+  DialogContent as EnhancedDialogContent,
+  DialogHeader as EnhancedDialogHeader,
+  DialogTitle as EnhancedDialogTitle,
+  DialogDescription as EnhancedDialogDescription,
+  DialogBody as EnhancedDialogBody,
+  DialogFooter as EnhancedDialogFooter,
+  DialogClose as EnhancedDialogClose,
+} from './components/dialog'
+export type {
+  DialogProps as EnhancedDialogProps,
+  DialogTriggerProps as EnhancedDialogTriggerProps,
+  DialogContentProps as EnhancedDialogContentProps,
+  DialogHeaderProps as EnhancedDialogHeaderProps,
+  DialogTitleProps as EnhancedDialogTitleProps,
+  DialogDescriptionProps as EnhancedDialogDescriptionProps,
+  DialogFooterProps as EnhancedDialogFooterProps,
+  DialogCloseProps as EnhancedDialogCloseProps,
+} from './components/dialog'
+
+// Enhanced Button with ripple and announcements
+export {
+  Button as EnhancedButton,
+  buttonVariants as enhancedButtonVariants,
+} from './components/button'
+export type { ButtonProps as EnhancedButtonProps } from './components/button'
+
+// Enhanced Checkbox with announcements
+export { Checkbox as EnhancedCheckbox } from './components/checkbox'
+export type { CheckboxProps as EnhancedCheckboxProps } from './components/checkbox'

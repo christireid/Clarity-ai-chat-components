@@ -35,13 +35,13 @@ describe('Input Component', () => {
     it('should render with error variant', () => {
       const { container } = render(<Input variant="error" />)
       const input = container.querySelector('input')
-      expect(input).toHaveClass('ring-destructive')
+      expect(input).toHaveClass('border-destructive')
     })
 
     it('should render with success variant', () => {
       const { container } = render(<Input variant="success" />)
       const input = container.querySelector('input')
-      expect(input).toHaveClass('ring-success')
+      expect(input).toHaveClass('border-success')
     })
 
     it('should render with small size', () => {
@@ -116,7 +116,7 @@ describe('Input Component', () => {
     it('should apply error variant when error prop is provided', () => {
       const { container } = render(<Input error="Error message" />)
       const input = container.querySelector('input')
-      expect(input).toHaveClass('ring-destructive')
+      expect(input).toHaveClass('border-destructive')
     })
 
     it('should show error message with ErrorMessage component', () => {
@@ -171,7 +171,8 @@ describe('Input Component', () => {
 
     it('should render number input type', () => {
       render(<Input type="number" />)
-      const input = screen.getByRole('spinbutton') || screen.getByRole('textbox')
+      const input =
+        screen.getByRole('spinbutton') || screen.getByRole('textbox')
       expect(input).toHaveAttribute('type', 'number')
     })
   })
