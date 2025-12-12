@@ -196,7 +196,7 @@ export function TaskList({
                           opacity: [1, 1, 0],
                         }}
                         transition={{
-                          duration: durations.slow,
+                          duration: durations.slower,
                           ease: 'easeOut',
                         }}
                       />
@@ -222,14 +222,14 @@ export function TaskList({
               <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400">
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: durations.slow, ease: 'easeOut' }}
+                  transition={{ duration: durations.slower, ease: 'easeOut' }}
                 >
                   <Sparkles className="w-5 h-5" />
                 </motion.div>
                 <span className="font-medium">All tasks complete!</span>
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: durations.slow, ease: 'easeOut' }}
+                  transition={{ duration: durations.slower, ease: 'easeOut' }}
                 >
                   <Sparkles className="w-5 h-5" />
                 </motion.div>

@@ -11,3 +11,5 @@ export {
   DEFAULT_CONTEXT_ACTIONS,
 } from './HeroChatContextMenu'
 export { HeroChatToast } from './HeroChatToast'
+export { HeroChatSidebar } from './HeroChatSidebar'
+export { HeroChatTokenCounter } from './HeroChatTokenCounter'

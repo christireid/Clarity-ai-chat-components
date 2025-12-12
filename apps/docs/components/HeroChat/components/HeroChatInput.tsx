@@ -97,7 +97,7 @@ export function HeroChatInput({
           whileTap={{ scale: 0.95 }}
           animate={isRecording ? { scale: [1, 1.1, 1] } : {}}
           transition={
-            isRecording ? { duration: durations.slow, repeat: Infinity } : {}
+            isRecording ? { duration: durations.slower, repeat: Infinity } : {}
           }
           aria-label={isRecording ? 'Stop recording' : 'Start voice input'}
           aria-pressed={isRecording}

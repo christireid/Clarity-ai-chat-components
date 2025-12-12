@@ -29,6 +29,8 @@ import {
   HeroChatCommandPalette,
   HeroChatContextMenu,
   HeroChatToast,
+  HeroChatSidebar,
+  HeroChatTokenCounter,
   PROMPT_SUGGESTIONS,
 } from './components'
 
@@ -121,6 +123,14 @@ export function HeroChat({ className = '' }: HeroChatProps) {
   // State from useHeroChat hook
   // -------------------------------------------------------------------------
   const {
+    // Conversations
+    conversations,
+    currentConversation,
+    createConversation,
+    switchConversation,
+    deleteConversation,
+    renameConversation,
+    // Messages
     messages,
     sendMessage,
     regenerateMessage,
@@ -128,14 +138,21 @@ export function HeroChat({ className = '' }: HeroChatProps) {
     clearMessages,
     copyMessage,
     hasCopied,
+    // Streaming
     isStreaming,
+    // Voice
     isRecording,
     startVoiceInput,
     stopVoiceInput,
     voiceTranscript,
     isVoiceSupported,
+    // Theme
     theme,
     setTheme,
+    // Token tracking
+    tokenUsage,
+    estimatedCost,
+    // Error
     error,
     clearError,
   } = useHeroChat()
@@ -145,6 +162,7 @@ export function HeroChat({ className = '' }: HeroChatProps) {
   // -------------------------------------------------------------------------
   const [input, setInput] = useState('')
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
+  const [showSidebar, setShowSidebar] = useState(false)
   const [toast, setToast] = useState<{
     message: string
     type: 'success' | 'error'
@@ -353,12 +371,26 @@ export function HeroChat({ className = '' }: HeroChatProps) {
         aria-hidden="true"
       />
 
+      {/* Sidebar */}
+      <HeroChatSidebar
+        conversations={conversations}
+        currentConversationId={currentConversation?.id || null}
+        isOpen={showSidebar}
+        onClose={() => setShowSidebar(false)}
+        onCreateConversation={createConversation}
+        onSwitchConversation={switchConversation}
+        onDeleteConversation={deleteConversation}
+        onRenameConversation={renameConversation}
+      />
+
       {/* Header */}
       <HeroChatHeader
         theme={theme}
         onCycleTheme={cycleTheme}
         onOpenCommandPalette={openCommandPalette}
+        onOpenSidebar={() => setShowSidebar(true)}
         shortcutDisplay={shortcutDisplay}
+        conversationCount={conversations.length}
       />
 
       {/* Messages */}
@@ -418,6 +450,13 @@ export function HeroChat({ className = '' }: HeroChatProps) {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Token Counter */}
+      <HeroChatTokenCounter
+        tokenUsage={tokenUsage}
+        estimatedCost={estimatedCost}
+        isStreaming={isStreaming}
+      />
 
       {/* Input area */}
       <HeroChatInput
