@@ -22,6 +22,18 @@ export type DecayCurve = 'linear' | 'exponential' | 'step'
 
 /**
  * Decay configuration for different memory types/scopes
+ *
+ * @example
+ * ```typescript
+ * const policy: DecayPolicy = {
+ *   enabled: true,
+ *   ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
+ *   curve: 'exponential',
+ *   minImportance: 0.8, // Keep important memories
+ *   minAccessCount: 10, // Keep frequently accessed
+ *   halfLife: 3 * 24 * 60 * 60 * 1000, // 3 day half-life
+ * }
+ * ```
  */
 export interface DecayPolicy {
   /** Enable decay for this category */
@@ -208,6 +220,33 @@ export class DecayManager {
 
   /**
    * Evaluate a memory for decay
+   *
+   * Determines whether a memory should be kept, compressed, or deleted
+   * based on its age, importance, access frequency, and configured policies.
+   *
+   * @param memory - The memory to evaluate
+   * @param now - Current time (for testing, defaults to now)
+   * @returns DecayResult with recommended action and reasoning
+   *
+   * @example
+   * ```typescript
+   * const result = decayManager.evaluate(memory)
+   *
+   * switch (result.action) {
+   *   case 'delete':
+   *     await store.delete(memory.id)
+   *     break
+   *   case 'compress':
+   *     await store.compress(memory.id)
+   *     break
+   *   case 'keep':
+   *     // No action needed
+   *     break
+   * }
+   *
+   * console.log(`Decay score: ${result.decayScore}`)
+   * console.log(`Reason: ${result.reason}`)
+   * ```
    */
   evaluate(memory: Memory, now: Date = new Date()): DecayResult {
     const policy = this.getPolicy(memory)
@@ -345,6 +384,26 @@ export class DecayManager {
 
   /**
    * Find memories that are candidates for decay
+   *
+   * Efficiently scans memories and returns those that need action,
+   * sorted by decay score (most decayed first).
+   *
+   * @param memories - Array of memories to evaluate
+   * @param options - Optional limit and timestamp override
+   * @returns Array of DecayResults for memories that need action
+   *
+   * @example
+   * ```typescript
+   * // Find top 50 decay candidates
+   * const candidates = decayManager.findDecayCandidates(memories, {
+   *   limit: 50,
+   * })
+   *
+   * // Process in order of urgency (highest decay score first)
+   * for (const candidate of candidates) {
+   *   console.log(`${candidate.id}: ${candidate.action} (score: ${candidate.decayScore})`)
+   * }
+   * ```
    */
   findDecayCandidates(
     memories: Memory[],
@@ -413,6 +472,30 @@ export class DecayManager {
 
   /**
    * Get decay statistics for a set of memories
+   *
+   * Provides an overview of memory health across your entire store.
+   * Useful for monitoring dashboards and alerting.
+   *
+   * @param memories - Array of memories to analyze
+   * @param now - Current time (for testing)
+   * @returns Statistics object with health metrics
+   *
+   * @example
+   * ```typescript
+   * const stats = decayManager.getStats(memories)
+   *
+   * // Display in dashboard
+   * console.log(`Total: ${stats.total}`)
+   * console.log(`Healthy: ${stats.healthy} (${(stats.healthy/stats.total*100).toFixed(1)}%)`)
+   * console.log(`At Risk: ${stats.atRisk}`)
+   * console.log(`Expired: ${stats.expired}`)
+   * console.log(`Average Decay: ${(stats.averageDecayScore*100).toFixed(1)}%`)
+   *
+   * // Alert if too many at-risk
+   * if (stats.atRisk > stats.total * 0.2) {
+   *   console.warn('Warning: More than 20% of memories at risk!')
+   * }
+   * ```
    */
   getStats(
     memories: Memory[],

@@ -11,6 +11,8 @@ export interface AnthropicSummarizerConfig {
   model?: string
   temperature?: number
   maxRetries?: number
+  /** Maximum concurrent requests for batch operations (default: 3) */
+  maxConcurrency?: number
 }
 
 /**
@@ -31,12 +33,14 @@ export class AnthropicSummarizer implements Summarizer {
   private model: string
   private temperature: number
   private maxRetries: number
+  private maxConcurrency: number
 
   constructor(config: AnthropicSummarizerConfig) {
     this.apiKey = config.apiKey
     this.model = config.model || 'claude-3-haiku-20240307'
     this.temperature = config.temperature ?? 0.3
     this.maxRetries = config.maxRetries ?? 3
+    this.maxConcurrency = config.maxConcurrency ?? 3
   }
 
   /**
@@ -93,14 +97,32 @@ export class AnthropicSummarizer implements Summarizer {
 
         const data = await response.json()
 
-        // Extract text from Anthropic's response format
-        const content = data.content?.[0]
-        if (content?.type === 'text') {
-          return content.text
+        // Validate response structure
+        if (!data || typeof data !== 'object') {
+          throw new Error(
+            `Invalid Anthropic response: expected object, got ${typeof data}`
+          )
         }
 
-        // Fallback to original text if no content
-        return text
+        if (!Array.isArray(data.content) || data.content.length === 0) {
+          throw new Error(
+            `Invalid Anthropic response: missing or empty content array. Response: ${JSON.stringify(data).slice(0, 200)}`
+          )
+        }
+
+        // Extract text from Anthropic's response format
+        const content = data.content[0]
+        if (
+          !content ||
+          content.type !== 'text' ||
+          typeof content.text !== 'string'
+        ) {
+          throw new Error(
+            `Invalid Anthropic response: expected text content, got ${JSON.stringify(content).slice(0, 200)}`
+          )
+        }
+
+        return content.text
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error))
 
@@ -123,18 +145,38 @@ export class AnthropicSummarizer implements Summarizer {
   }
 
   /**
-   * Summarize multiple texts
+   * Summarize multiple texts with controlled concurrency
+   *
+   * Uses parallel processing with configurable concurrency limit to balance
+   * throughput and API rate limits.
    */
   async summarizeBatch(texts: string[], maxTokens: number): Promise<string[]> {
-    // Summarize each text individually
-    // Anthropic doesn't have native batch support, so we process sequentially
-    // to avoid rate limits
-    const results: string[] = []
+    if (texts.length === 0) return []
 
-    for (const text of texts) {
-      const summary = await this.summarize(text, maxTokens)
-      results.push(summary)
+    // Process in parallel with concurrency limit
+    const results: string[] = new Array(texts.length)
+    const executing: Set<Promise<void>> = new Set()
+
+    for (let i = 0; i < texts.length; i++) {
+      const index = i
+      const promise = this.summarize(texts[index]!, maxTokens)
+        .then((summary) => {
+          results[index] = summary
+        })
+        .finally(() => {
+          executing.delete(promise)
+        })
+
+      executing.add(promise)
+
+      // When we hit concurrency limit, wait for one to complete
+      if (executing.size >= this.maxConcurrency) {
+        await Promise.race(executing)
+      }
     }
+
+    // Wait for all remaining
+    await Promise.all(executing)
 
     return results
   }
