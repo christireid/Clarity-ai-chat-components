@@ -156,8 +156,9 @@ export function Message({
     }
   }
 
-  // Memoize markdown components to avoid recreation on every render
-  // Using Partial<Components> to allow custom component types
+  // Memoize markdown components to avoid recreation on every render.
+  // react-markdown's `components` prop accepts Partial<Components>, allowing us to
+  // override only specific elements while using defaults for the rest.
   const markdownComponents = React.useMemo<Partial<Components>>(() => {
     // Create wrapper for memoized component to match react-markdown's expected type
     const CodeWrapper: Components['code'] = (props) => {
@@ -283,12 +284,12 @@ export function Message({
 
   // Memoize plugin arrays to avoid recreation on every render
   const remarkPlugins = React.useMemo(() => [remarkGfm], [])
-  // Note: rehypeHighlight has version mismatches between vfile dependencies.
-  // We cast through unknown as a type-safe workaround until upstream fixes this.
+  // rehypeHighlight has type incompatibilities due to vfile version mismatches across
+  // the unified ecosystem. This is a known upstream issue. We use a readonly tuple
+  // assertion to preserve the plugin reference while satisfying the type checker.
+  // See: https://github.com/rehypejs/rehype-highlight/issues/26
   const rehypePlugins = React.useMemo(
-    () => [
-      rehypeHighlight as unknown as typeof import('rehype-highlight').default,
-    ],
+    () => [rehypeHighlight] as readonly [typeof rehypeHighlight],
     []
   )
 

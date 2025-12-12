@@ -82,7 +82,10 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     )
   }
 
-  // Omit conflicting DOM props from motion.div spread
+  // Extract ARIA role separately to ensure it's passed correctly to motion.div.
+  // Framer Motion's HTMLMotionProps can have type conflicts with standard HTML attributes
+  // when spread together. Explicit extraction ensures proper typing and avoids
+  // rendering role="" when undefined.
   const { role, ...restProps } = props
 
   return (
@@ -96,7 +99,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       variants={variants}
       initial="initial"
       animate="animate"
-      role={role}
+      {...(role !== undefined && { role })}
       {...restProps}
     />
   )
