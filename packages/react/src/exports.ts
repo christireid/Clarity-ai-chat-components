@@ -326,8 +326,30 @@ export {
   type UseChatHistoryReturn,
 } from './hooks/use-chat-history'
 
-// Integrations (Sentry, Analytics)
-export * from './integrations'
+// Integrations (Sentry, Analytics) - explicitly named to avoid conflicts
+export {
+  initSentry,
+  captureAIError,
+  addChatBreadcrumb,
+  useSentryChat,
+  withSentryErrorBoundary,
+  startAITransaction,
+  type SentryOptions,
+  type SentryScope,
+  type SentryBreadcrumb,
+} from './integrations/sentry'
+export {
+  AnalyticsProvider as IntegrationsAnalyticsProvider,
+  useAnalytics as useIntegrationsAnalytics,
+  useChatAnalytics,
+  useWebVitals,
+  type PostHogConfig,
+  type VercelAnalyticsConfig,
+  type AnalyticsProviderProps as IntegrationsAnalyticsProviderProps,
+  type AnalyticsContextValue as IntegrationsAnalyticsContextValue,
+  type ChatAnalyticsEvent,
+  type ChatEventProperties,
+} from './integrations/analytics'
 
 // Additional Hooks
 export * from './hooks/use-completion'

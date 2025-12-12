@@ -1,6 +1,6 @@
 /**
  * Tool Result Extractor Utilities
- * 
+ *
  * Utilities for extracting tool calls and results from chat messages
  * for use with ClarityToolResult component.
  */
@@ -10,18 +10,18 @@ import type { ToolCall } from '../adapters/types'
 
 /**
  * Extract tool calls and results from messages
- * 
+ *
  * Looks for tool invocations in message metadata and constructs
  * ToolCall objects for rendering with ClarityToolResult.
- * 
+ *
  * @param messages Array of chat messages
  * @returns Array of tool calls with their results
- * 
+ *
  * @example
  * ```tsx
  * const { messages } = useClarityChat({ api: '/api/chat' })
  * const toolResults = extractToolResults(messages)
- * 
+ *
  * {toolResults.map(({ toolCall, result }) => (
  *   <ClarityToolResult
  *     registry={registry}
@@ -37,16 +37,20 @@ export function extractToolResults(messages: Message[]): Array<{
   result: any
 }> {
   const toolResults: Array<{ toolCall: ToolCall; result: any }> = []
-  
+
   for (const message of messages) {
     // Check for tool invocations in metadata (from CoreMessage.toolInvocations)
     if (message.metadata?.['toolInvocations']) {
       const invocations = message.metadata['toolInvocations']
-      
+
       if (Array.isArray(invocations)) {
         for (const invocation of invocations) {
           // Only include completed tool calls with results
-          if (invocation.toolCallId && invocation.state === 'result' && invocation.result !== undefined) {
+          if (
+            invocation.toolCallId &&
+            invocation.state === 'result' &&
+            invocation.result !== undefined
+          ) {
             const toolCall: ToolCall = {
               id: invocation.toolCallId,
               type: 'function',
@@ -55,7 +59,7 @@ export function extractToolResults(messages: Message[]): Array<{
                 arguments: JSON.stringify(invocation.args || {}),
               },
             }
-            
+
             toolResults.push({
               toolCall,
               result: invocation.result,
@@ -64,14 +68,22 @@ export function extractToolResults(messages: Message[]): Array<{
         }
       }
     }
-    
+
     // Also check for tool calls in message metadata (direct tool call)
     if (message.metadata?.['toolCallId'] && message.metadata?.['name']) {
+      const toolCallId = message.metadata['toolCallId']
+      const toolName = message.metadata['name']
+
+      // Ensure we have string values
+      if (typeof toolCallId !== 'string' || typeof toolName !== 'string') {
+        continue
+      }
+
       const toolCall: ToolCall = {
-        id: message.metadata['toolCallId'],
+        id: toolCallId,
         type: 'function',
         function: {
-          name: message.metadata['name'],
+          name: toolName,
           arguments: JSON.stringify(message.metadata['args'] || {}),
         },
       }
@@ -86,19 +98,19 @@ export function extractToolResults(messages: Message[]): Array<{
           result = message.content
         }
       }
-      
+
       if (result) {
         toolResults.push({ toolCall, result })
       }
     }
   }
-  
+
   return toolResults
 }
 
 /**
  * Extract tool results for a specific tool name
- * 
+ *
  * @param messages Array of chat messages
  * @param toolName Name of the tool to filter by
  * @returns Array of tool calls with their results for the specified tool
@@ -114,7 +126,7 @@ export function extractToolResultsByName(
 
 /**
  * Get the latest tool result for a specific tool
- * 
+ *
  * @param messages Array of chat messages
  * @param toolName Name of the tool
  * @returns Latest tool result or null
