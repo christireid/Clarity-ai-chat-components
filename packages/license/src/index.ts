@@ -34,6 +34,7 @@ export {
   useLicenseInfo,
   useRequireLicense,
   useIsHydrated,
+  useLicenseWarning,
 } from './hooks'
 
 // React Context (alternative to static LicenseInfo)
@@ -60,13 +61,18 @@ export type {
   LicenseStatusAnnouncerProps,
 } from './Watermark'
 
-// HOCs
+// HOCs and Gate Components
 export {
   withLicense,
   withLicenseStatus,
   createLicenseWrapper,
+  LicenseGate,
 } from './withLicense'
-export type { WithLicenseOptions, WithLicenseStatusProps } from './withLicense'
+export type {
+  WithLicenseOptions,
+  WithLicenseStatusProps,
+  LicenseGateProps,
+} from './withLicense'
 
 // Types
 export type {

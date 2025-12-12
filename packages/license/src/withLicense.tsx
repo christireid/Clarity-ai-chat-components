@@ -246,3 +246,46 @@ export function withLicenseStatus<P extends object>(
 
   return ComponentWithLicenseStatus
 }
+
+/**
+ * Props for LicenseGate component
+ */
+export interface LicenseGateProps {
+  /** Required plan level */
+  requiredPlan: LicensePlan
+  /** Child content to render when licensed */
+  children: React.ReactNode
+  /** Optional fallback to render when not licensed */
+  fallback?: React.ReactNode
+}
+
+/**
+ * Component that only renders children if properly licensed.
+ * Does not show watermark - just gates access to content.
+ *
+ * @example
+ * ```tsx
+ * <LicenseGate requiredPlan="enterprise" fallback={<UpgradePrompt />}>
+ *   <EnterpriseFeature />
+ * </LicenseGate>
+ * ```
+ */
+export function LicenseGate({
+  requiredPlan,
+  children,
+  fallback = null,
+}: LicenseGateProps): React.ReactElement {
+  const hasLicense = React.useMemo(() => {
+    const key = LicenseInfo.getLicenseKey()
+    const status = verifyLicense(key, { requiredPlan })
+    return status.status === 'Valid' || status.status === 'GracePeriod'
+  }, [requiredPlan])
+
+  if (!hasLicense) {
+    return <>{fallback}</>
+  }
+
+  return <>{children}</>
+}
+
+LicenseGate.displayName = 'LicenseGate'

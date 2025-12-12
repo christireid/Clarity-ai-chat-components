@@ -6,7 +6,13 @@
  * @packageDocumentation
  */
 
-import { useMemo, useState, useEffect, useSyncExternalStore } from 'react'
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useSyncExternalStore,
+  useRef,
+} from 'react'
 import { LicenseInfo } from './LicenseInfo'
 import { verifyLicense } from './verifyLicense'
 import { isPlanSufficient } from './constants'
@@ -214,4 +220,63 @@ export function useRequireLicense(featureName = 'This feature'): void {
         `Purchase at https://claritychat.dev/pricing`
     )
   }
+}
+
+/**
+ * Hook that logs a console warning for unlicensed usage (development only).
+ * Used internally by license-gated components.
+ * Only logs once per feature per session.
+ *
+ * @param featureName - Name of the feature requiring license
+ * @param requiredPlan - Minimum required plan level (default: 'pro')
+ *
+ * @example
+ * ```typescript
+ * function ProFeature() {
+ *   useLicenseWarning('ProFeature', 'pro');
+ *
+ *   // Component continues to render regardless
+ *   return <div>Feature content</div>;
+ * }
+ * ```
+ */
+export function useLicenseWarning(
+  featureName: string,
+  requiredPlan: LicensePlan = 'pro'
+): void {
+  const warningShownRef = useRef(false)
+  const status = useLicenseStatus()
+
+  useEffect(() => {
+    if (warningShownRef.current) return
+
+    const isValid = status.status === 'Valid' || status.status === 'GracePeriod'
+    const hasSufficientPlan =
+      isValid &&
+      status.payload &&
+      isPlanSufficient(status.payload.plan, requiredPlan)
+
+    if (!isValid || !hasSufficientPlan) {
+      const isDev =
+        typeof process !== 'undefined' &&
+        process.env?.NODE_ENV === 'development'
+
+      if (isDev) {
+        warningShownRef.current = true
+        const reason = !isValid
+          ? (status.reason ?? 'No valid license')
+          : `Requires ${requiredPlan} plan, current: ${status.payload?.plan}`
+
+        console.warn(
+          `%c Clarity Chat License Warning %c\n\n` +
+            `The "${featureName}" feature requires a ${requiredPlan} license.\n\n` +
+            `${reason}\n\n` +
+            `Get your license at: https://claritychat.dev/pricing\n\n` +
+            `This warning only appears in development mode.`,
+          'background: #f59e0b; color: black; font-weight: bold; padding: 4px 8px;',
+          ''
+        )
+      }
+    }
+  }, [status, featureName, requiredPlan])
 }
