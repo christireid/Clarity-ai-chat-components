@@ -209,7 +209,7 @@ export function useStreamingWebSocket(
     heartbeatMessage = 'ping',
     autoParseJson = true,
     connectOnMount = false,
-    maxMessageBufferSize = 1000,
+    maxMessageBufferSize: rawMaxMessageBufferSize = 1000,
     onOpen,
     onMessage,
     onError,
@@ -218,6 +218,9 @@ export function useStreamingWebSocket(
     onMaxReconnectAttemptsReached,
     onHeartbeatFailed,
   } = options
+
+  // Validate and normalize maxMessageBufferSize (must be at least 1 to prevent slice(-0) bug)
+  const maxMessageBufferSize = Math.max(1, Math.floor(rawMaxMessageBufferSize))
 
   // State
   const [status, setStatus] = React.useState<WebSocketStatus>('idle')

@@ -127,9 +127,14 @@ export function useMobileKeyboard(
   }))
 
   // Use useSafeTimeout for automatic cleanup on unmount - prevents memory leaks
-  const { setSafeTimeout, clearAllTimeouts } = useSafeTimeout()
+  const { setSafeTimeout, clearSafeTimeout, clearAllTimeouts } =
+    useSafeTimeout()
   const previousHeightRef = React.useRef<number>(
     typeof window !== 'undefined' ? window.innerHeight : 0
+  )
+  // Track debounce timer ID for proper debouncing (cancel previous before setting new)
+  const debounceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
   )
 
   /**
@@ -164,8 +169,14 @@ export function useMobileKeyboard(
   const handleResize = React.useCallback(() => {
     if (!state.isMobile) return
 
+    // Cancel previous debounce timer to ensure proper debouncing
+    if (debounceTimerRef.current) {
+      clearSafeTimeout(debounceTimerRef.current)
+    }
+
     // Debounced resize handling with automatic cleanup via useSafeTimeout
-    setSafeTimeout(() => {
+    debounceTimerRef.current = setSafeTimeout(() => {
+      debounceTimerRef.current = null
       const currentHeight = window.visualViewport?.height || window.innerHeight
       const previousHeight = previousHeightRef.current
       const heightDifference = previousHeight - currentHeight
@@ -208,6 +219,7 @@ export function useMobileKeyboard(
     autoScroll,
     scrollToFocusedElement,
     setSafeTimeout,
+    clearSafeTimeout,
   ])
 
   /**

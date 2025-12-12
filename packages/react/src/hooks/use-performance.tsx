@@ -29,6 +29,12 @@ class CircularBuffer<T> {
   private readonly capacity: number
 
   constructor(capacity: number) {
+    // Validate capacity to prevent divide-by-zero and undefined behavior
+    if (!Number.isInteger(capacity) || capacity < 1) {
+      throw new Error(
+        `CircularBuffer: capacity must be a positive integer, got ${capacity}`
+      )
+    }
     this.capacity = capacity
     this.buffer = new Array(capacity)
   }
