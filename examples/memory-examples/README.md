@@ -7,7 +7,7 @@
 > Complete, runnable examples for `@clarity-chat/memory` - AI conversation memory and context
 > management.
 
-![Memory Examples](./public/screenshot.png)
+![Memory Examples](./public/screenshot.svg)
 
 ## ✨ Features
 

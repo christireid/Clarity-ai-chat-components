@@ -1,6 +1,6 @@
 {
-  "name": "accessibility-example",
-  "version": "0.1.0",
+  "name": "@clarity-chat/example-accessibility",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3005",

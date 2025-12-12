@@ -1,5 +1,5 @@
 {
-  "name": "@clarity-examples/multi-provider",
+  "name": "@clarity-chat/example-multi-provider",
   "version": "1.0.0",
   "private": true,
   "description": "Demonstrate provider switching between OpenAI, Anthropic Claude, and Google Gemini",

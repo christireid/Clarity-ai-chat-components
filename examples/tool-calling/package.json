@@ -1,5 +1,5 @@
 {
-  "name": "@clarity-examples/tool-calling",
+  "name": "@clarity-chat/example-tool-calling",
   "version": "1.0.0",
   "private": true,
   "description": "Demonstrate AI function/tool calling with visual rendering",

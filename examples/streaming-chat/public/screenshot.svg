@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <rect x="40" y="40" width="1120" height="550" rx="12" fill="#1e293b"/>
+
+  <!-- Header -->
+  <rect x="40" y="40" width="1120" height="60" rx="12" fill="#334155"/>
+  <circle cx="80" cy="70" r="12" fill="#3b82f6"/>
+  <rect x="105" y="60" width="150" height="20" rx="4" fill="#64748b"/>
+
+  <!-- Chat messages area -->
+  <!-- User message -->
+  <rect x="600" y="140" width="520" height="70" rx="16" fill="#3b82f6"/>
+  <rect x="620" y="155" width="200" height="12" rx="2" fill="#93c5fd"/>
+  <rect x="620" y="175" width="160" height="12" rx="2" fill="#93c5fd"/>
+
+  <!-- Assistant message -->
+  <rect x="80" y="240" width="520" height="120" rx="16" fill="#334155"/>
+  <rect x="100" y="260" width="300" height="12" rx="2" fill="#64748b"/>
+  <rect x="100" y="280" width="400" height="12" rx="2" fill="#64748b"/>
+  <rect x="100" y="300" width="350" height="12" rx="2" fill="#64748b"/>
+  <rect x="100" y="320" width="280" height="12" rx="2" fill="#64748b"/>
+
+  <!-- User message 2 -->
+  <rect x="700" y="390" width="420" height="50" rx="16" fill="#3b82f6"/>
+  <rect x="720" y="405" width="180" height="12" rx="2" fill="#93c5fd"/>
+
+  <!-- Input area -->
+  <rect x="80" y="520" width="920" height="50" rx="25" fill="#334155" stroke="#475569" stroke-width="2"/>
+  <rect x="100" y="535" width="200" height="14" rx="2" fill="#475569"/>
+  <rect x="1020" y="520" width="100" height="50" rx="25" fill="#3b82f6"/>
+  <rect x="1045" y="535" width="50" height="14" rx="2" fill="#93c5fd"/>
+
+  <!-- Streaming Chat label -->
+  <text x="600" y="600" fill="#64748b" font-family="system-ui, sans-serif" font-size="14" text-anchor="middle">Streaming Chat - Live Preview</text>
+</svg>
