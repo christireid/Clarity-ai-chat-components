@@ -34,6 +34,7 @@ export {
   useLicenseInfo,
   useRequireLicense,
   useIsHydrated,
+  useLicenseWarning,
 } from './hooks'
 
 // React Context (alternative to static LicenseInfo)
@@ -60,13 +61,32 @@ export type {
   LicenseStatusAnnouncerProps,
 } from './Watermark'
 
-// HOCs
+// UI Components (status display, warnings, prompts)
+export {
+  LicenseLoadingSkeleton,
+  LicenseStatusBadge,
+  LicenseExpiryWarning,
+  LicenseUpgradePrompt,
+} from './LicenseUI'
+export type {
+  LicenseLoadingSkeletonProps,
+  LicenseStatusBadgeProps,
+  LicenseExpiryWarningProps,
+  LicenseUpgradePromptProps,
+} from './LicenseUI'
+
+// HOCs and Gate Components
 export {
   withLicense,
   withLicenseStatus,
   createLicenseWrapper,
+  LicenseGate,
 } from './withLicense'
-export type { WithLicenseOptions, WithLicenseStatusProps } from './withLicense'
+export type {
+  WithLicenseOptions,
+  WithLicenseStatusProps,
+  LicenseGateProps,
+} from './withLicense'
 
 // Types
 export type {
@@ -84,4 +104,10 @@ export type {
 export { base64Encode, base64Decode, simpleChecksum } from './utils'
 
 // Constants (for advanced use cases)
-export { PLAN_HIERARCHY, isPlanSufficient } from './constants'
+export {
+  PLAN_HIERARCHY,
+  isPlanSufficient,
+  clearWarnings,
+  isDevelopment,
+  getWarningCount,
+} from './constants'

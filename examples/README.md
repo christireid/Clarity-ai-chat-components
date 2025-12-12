@@ -15,24 +15,27 @@ pnpm dev
 
 ## Available Examples
 
-### Core Examples
+### Runnable Examples
 
-| Example                            | Description                           | Port | Complexity   |
-| ---------------------------------- | ------------------------------------- | ---- | ------------ |
-| [basic-chat](./basic-chat)         | Simplest chat implementation          | 3000 | Beginner     |
-| [streaming-chat](./streaming-chat) | Advanced SSE with token metrics       | 3001 | Intermediate |
-| [multi-provider](./multi-provider) | OpenAI, Anthropic, Google support     | 3002 | Intermediate |
-| [custom-theming](./custom-theming) | 8 preset themes with live preview     | 3003 | Beginner     |
-| [tool-calling](./tool-calling)     | AI function calling with visual cards | 3004 | Advanced     |
-| [accessibility](./accessibility)   | WCAG 2.1 AA compliant interface       | 3005 | Intermediate |
+All examples below can be run with `pnpm dev`:
+
+| Example                                  | Description                           | Port | Complexity   |
+| ---------------------------------------- | ------------------------------------- | ---- | ------------ |
+| [basic-chat](./basic-chat)               | Simplest chat implementation          | 3000 | Beginner     |
+| [streaming-chat](./streaming-chat)       | Advanced SSE with token metrics       | 3001 | Intermediate |
+| [enterprise-ai-ops](./enterprise-ai-ops) | Enterprise AI operations dashboard    | 3002 | Advanced     |
+| [custom-theming](./custom-theming)       | 8 preset themes with live preview     | 3003 | Beginner     |
+| [tool-calling](./tool-calling)           | AI function calling with visual cards | 3004 | Advanced     |
+| [accessibility](./accessibility)         | WCAG 2.1 AA compliant interface       | 3005 | Intermediate |
+| [advanced-features](./advanced-features) | Battery-aware & performance features  | 3006 | Advanced     |
+| [security-examples](./security-examples) | Security validation & PII redaction   | 3007 | Intermediate |
+| [multi-provider](./multi-provider)       | OpenAI, Anthropic, Google support     | 3008 | Intermediate |
 
 ### Reference Implementations
 
 | Example                                    | Description                   |
 | ------------------------------------------ | ----------------------------- |
 | [memory-examples](./memory-examples)       | Context management patterns   |
-| [security-examples](./security-examples)   | Security best practices       |
-| [advanced-features](./advanced-features)   | Advanced component usage      |
 | [token-optimization](./token-optimization) | Cost optimization strategies  |
 | [standalone](./standalone)                 | Vanilla JS integration        |
 | [utils](./utils)                           | Utility functions and helpers |
@@ -87,6 +90,30 @@ pnpm dev
 - Large font mode
 - Reduced motion support
 - WCAG 2.1 AA compliance
+
+### enterprise-ai-ops
+
+- Real-time monitoring dashboard
+- Model performance metrics
+- Cost tracking and analytics
+- Safety evaluation scores
+- Request/response logging
+
+### advanced-features
+
+- Battery-aware streaming (reduces activity on low battery)
+- Performance optimization dashboard
+- Enhanced prompt suggestions
+- Adaptive UI components
+- Resource usage monitoring
+
+### security-examples
+
+- Prompt injection detection
+- PII (Personal Identifiable Information) redaction
+- Jailbreak prevention patterns
+- Security event monitoring
+- Configurable security policies
 
 ## Project Structure
 
@@ -150,9 +177,9 @@ cp -r basic-chat my-new-example
 
 ```json
 {
-  "name": "my-new-example",
+  "name": "@clarity-chat/example-my-new-example",
   "scripts": {
-    "dev": "next dev -p 3006"
+    "dev": "next dev -p 3009"
   }
 }
 ```
@@ -182,8 +209,8 @@ async function getWeather(location: string) {
 
 ## Requirements
 
-- Node.js 18+
-- pnpm (recommended) or npm
+- Node.js 20+
+- pnpm 10+ (required)
 - OpenAI API key (most examples)
 - Anthropic API key (multi-provider)
 - Google AI API key (multi-provider)

@@ -7,7 +7,7 @@
 > Interactive demonstrations of token optimization techniques including TOON format, prompt
 > compression, and cache preparation.
 
-![Token Optimization Demo](./public/screenshot.png)
+![Token Optimization Demo](./public/screenshot.svg)
 
 ## ✨ Features
 

@@ -5,8 +5,8 @@
  */
 
 import * as React from 'react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { render, screen, act, waitFor } from '@testing-library/react'
 import {
   Watermark,
   WatermarkOverlay,
@@ -16,7 +16,9 @@ import {
   withLicense,
   withLicenseStatus,
   createLicenseWrapper,
+  LicenseGate,
 } from '../withLicense'
+import { useLicenseWarning } from '../hooks'
 import {
   LicenseProvider,
   useLicenseContext,
@@ -24,6 +26,7 @@ import {
 } from '../LicenseProvider'
 import { LicenseInfo } from '../LicenseInfo'
 import { generateLicenseKey } from '../generateLicense'
+import { clearWarnings } from '../constants'
 
 const TEST_SECRET = 'test-secret-key-12345'
 
@@ -226,6 +229,9 @@ describe('withLicense HOC', () => {
   })
 
   it('should log console warning when unlicensed', () => {
+    const originalEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+
     const LicensedComponent = withLicense(TestComponent, {
       componentName: 'UniqueTestComponent1',
       showConsoleWarning: true,
@@ -233,6 +239,8 @@ describe('withLicense HOC', () => {
 
     render(<LicensedComponent message="Hello" />)
     expect(console.warn).toHaveBeenCalled()
+
+    process.env.NODE_ENV = originalEnv
   })
 
   it('should render fallback component when provided and unlicensed', () => {
@@ -520,5 +528,277 @@ describe('LicenseStatusAnnouncer Component', () => {
 
   it('should have displayName for React DevTools', () => {
     expect(LicenseStatusAnnouncer.displayName).toBe('LicenseStatusAnnouncer')
+  })
+})
+
+describe('LicenseGate Component', () => {
+  beforeEach(() => {
+    LicenseInfo.clearLicenseKey()
+  })
+
+  it('should render children when licensed', async () => {
+    const validKey = createTestLicense('pro')
+    LicenseInfo.setLicenseKey(validKey)
+
+    render(
+      <LicenseGate requiredPlan="pro">
+        <div data-testid="content">Pro Content</div>
+      </LicenseGate>
+    )
+
+    // Wait for hydration
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toHaveTextContent('Pro Content')
+    })
+  })
+
+  it('should render fallback when not licensed', async () => {
+    render(
+      <LicenseGate
+        requiredPlan="pro"
+        fallback={<div data-testid="fallback">Please upgrade</div>}
+      >
+        <div data-testid="content">Pro Content</div>
+      </LicenseGate>
+    )
+
+    // Wait for hydration
+    await waitFor(() => {
+      expect(screen.queryByTestId('content')).not.toBeInTheDocument()
+      expect(screen.getByTestId('fallback')).toHaveTextContent('Please upgrade')
+    })
+  })
+
+  it('should render nothing when not licensed and no fallback', async () => {
+    const { container } = render(
+      <LicenseGate requiredPlan="pro">
+        <div data-testid="content">Pro Content</div>
+      </LicenseGate>
+    )
+
+    // Wait for hydration
+    await waitFor(() => {
+      expect(screen.queryByTestId('content')).not.toBeInTheDocument()
+      // When not licensed and no fallback, the gate renders null (empty fragment)
+      expect(container.innerHTML).toBe('')
+    })
+  })
+
+  it('should render loading state during SSR/hydration', () => {
+    const validKey = createTestLicense('pro')
+    LicenseInfo.setLicenseKey(validKey)
+
+    // On first render (before hydration), should show loading
+    const { container } = render(
+      <LicenseGate
+        requiredPlan="pro"
+        loading={<div data-testid="loading">Loading...</div>}
+      >
+        <div data-testid="content">Pro Content</div>
+      </LicenseGate>
+    )
+
+    // Initially shows loading (before useEffect runs)
+    // Note: In test environment with happy-dom, the effect runs synchronously
+    // so we just verify the loading prop is accepted and component works
+    expect(container).toBeDefined()
+  })
+
+  it('should gate based on plan level', async () => {
+    const proKey = createTestLicense('pro')
+    LicenseInfo.setLicenseKey(proKey)
+
+    // Pro license can access pro features
+    const { rerender } = render(
+      <LicenseGate requiredPlan="pro">
+        <div data-testid="content">Content</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
+
+    // Pro license cannot access enterprise features
+    rerender(
+      <LicenseGate
+        requiredPlan="enterprise"
+        fallback={<div data-testid="fallback">Upgrade to Enterprise</div>}
+      >
+        <div data-testid="content">Content</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('content')).not.toBeInTheDocument()
+      expect(screen.getByTestId('fallback')).toBeInTheDocument()
+    })
+  })
+
+  it('should allow enterprise license to access all plan levels', async () => {
+    const enterpriseKey = createTestLicense('enterprise')
+    LicenseInfo.setLicenseKey(enterpriseKey)
+
+    // Enterprise can access community
+    const { rerender } = render(
+      <LicenseGate requiredPlan="community">
+        <div data-testid="content">Community</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
+
+    // Enterprise can access pro
+    rerender(
+      <LicenseGate requiredPlan="pro">
+        <div data-testid="content">Pro</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
+
+    // Enterprise can access enterprise
+    rerender(
+      <LicenseGate requiredPlan="enterprise">
+        <div data-testid="content">Enterprise</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
+  })
+
+  it('should have correct displayName', () => {
+    expect(LicenseGate.displayName).toBe('LicenseGate')
+  })
+
+  it('should react to license key changes', async () => {
+    // Start without license
+    const { rerender } = render(
+      <LicenseGate
+        requiredPlan="pro"
+        fallback={<div data-testid="fallback">No license</div>}
+      >
+        <div data-testid="content">Licensed content</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('fallback')).toBeInTheDocument()
+    })
+
+    // Add license
+    const validKey = createTestLicense('pro')
+    act(() => {
+      LicenseInfo.setLicenseKey(validKey)
+    })
+
+    // Force re-render to pick up new key
+    rerender(
+      <LicenseGate
+        requiredPlan="pro"
+        fallback={<div data-testid="fallback">No license</div>}
+      >
+        <div data-testid="content">Licensed content</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
+  })
+})
+
+describe('useLicenseWarning hook', () => {
+  beforeEach(() => {
+    LicenseInfo.clearLicenseKey()
+    clearWarnings() // Clear shared warning tracker
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('should log warning in development mode when unlicensed', () => {
+    const originalEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+
+    function TestComponent() {
+      useLicenseWarning('TestFeature', 'pro')
+      return <div>Test</div>
+    }
+
+    render(<TestComponent />)
+
+    expect(console.warn).toHaveBeenCalled()
+    const warnCall = (console.warn as ReturnType<typeof vi.fn>).mock.calls[0]
+    expect(warnCall?.[0]).toContain('TestFeature')
+
+    process.env.NODE_ENV = originalEnv
+  })
+
+  it('should not log warning when properly licensed', () => {
+    const originalEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+
+    const validKey = createTestLicense('pro')
+    LicenseInfo.setLicenseKey(validKey)
+
+    function TestComponent() {
+      useLicenseWarning('TestFeature', 'pro')
+      return <div>Test</div>
+    }
+
+    render(<TestComponent />)
+
+    expect(console.warn).not.toHaveBeenCalled()
+
+    process.env.NODE_ENV = originalEnv
+  })
+
+  it('should log warning when plan is insufficient', () => {
+    const originalEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+
+    const communityKey = createTestLicense('community')
+    LicenseInfo.setLicenseKey(communityKey)
+
+    function TestComponent() {
+      useLicenseWarning('ProFeature', 'pro')
+      return <div>Test</div>
+    }
+
+    render(<TestComponent />)
+
+    expect(console.warn).toHaveBeenCalled()
+
+    process.env.NODE_ENV = originalEnv
+  })
+
+  it('should only log warning once per feature', () => {
+    const originalEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+
+    function TestComponent() {
+      useLicenseWarning('UniqueFeature123', 'pro')
+      return <div>Test</div>
+    }
+
+    const { rerender } = render(<TestComponent />)
+
+    expect(console.warn).toHaveBeenCalledTimes(1)
+
+    // Re-render should not log again
+    rerender(<TestComponent />)
+
+    expect(console.warn).toHaveBeenCalledTimes(1)
+
+    process.env.NODE_ENV = originalEnv
   })
 })

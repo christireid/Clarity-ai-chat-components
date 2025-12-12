@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0f172a"/>
+
+  <!-- Theme selector sidebar -->
+  <rect x="0" y="0" width="400" height="630" fill="#1e293b"/>
+
+  <!-- Title -->
+  <rect x="30" y="40" width="160" height="24" rx="4" fill="#f8fafc"/>
+  <rect x="30" y="72" width="260" height="14" rx="2" fill="#64748b"/>
+
+  <!-- Filter buttons -->
+  <rect x="30" y="110" width="60" height="32" rx="8" fill="#3b82f6"/>
+  <rect x="100" y="110" width="60" height="32" rx="8" fill="#334155"/>
+  <rect x="170" y="110" width="60" height="32" rx="8" fill="#334155"/>
+
+  <!-- Theme cards -->
+  <rect x="30" y="160" width="340" height="90" rx="12" fill="#334155" stroke="#3b82f6" stroke-width="2"/>
+  <circle cx="60" cy="190" r="16" fill="#3b82f6"/>
+  <circle cx="100" cy="190" r="16" fill="#f8fafc"/>
+  <circle cx="140" cy="190" r="16" fill="#1e293b"/>
+  <circle cx="180" cy="190" r="16" fill="#64748b"/>
+  <rect x="60" y="218" width="100" height="14" rx="2" fill="#f8fafc"/>
+  <rect x="60" y="236" width="140" height="10" rx="2" fill="#64748b"/>
+
+  <rect x="30" y="260" width="340" height="90" rx="12" fill="#334155"/>
+  <circle cx="60" cy="290" r="16" fill="#0ea5e9"/>
+  <circle cx="100" cy="290" r="16" fill="#e0f2fe"/>
+  <circle cx="140" cy="290" r="16" fill="#0369a1"/>
+  <circle cx="180" cy="290" r="16" fill="#7dd3fc"/>
+  <rect x="60" y="318" width="80" height="14" rx="2" fill="#f8fafc"/>
+  <rect x="60" y="336" width="120" height="10" rx="2" fill="#64748b"/>
+
+  <rect x="30" y="360" width="340" height="90" rx="12" fill="#334155"/>
+  <circle cx="60" cy="390" r="16" fill="#22c55e"/>
+  <circle cx="100" cy="390" r="16" fill="#f0fdf4"/>
+  <circle cx="140" cy="390" r="16" fill="#166534"/>
+  <circle cx="180" cy="390" r="16" fill="#86efac"/>
+  <rect x="60" y="418" width="80" height="14" rx="2" fill="#f8fafc"/>
+  <rect x="60" y="436" width="140" height="10" rx="2" fill="#64748b"/>
+
+  <rect x="30" y="460" width="340" height="90" rx="12" fill="#334155"/>
+  <circle cx="60" cy="490" r="16" fill="#ec4899"/>
+  <circle cx="100" cy="490" r="16" fill="#fdf2f8"/>
+  <circle cx="140" cy="490" r="16" fill="#9d174d"/>
+  <circle cx="180" cy="490" r="16" fill="#f9a8d4"/>
+  <rect x="60" y="518" width="80" height="14" rx="2" fill="#f8fafc"/>
+  <rect x="60" y="536" width="140" height="10" rx="2" fill="#64748b"/>
+
+  <!-- Export button -->
+  <rect x="30" y="570" width="340" height="44" rx="8" fill="#475569"/>
+  <rect x="100" y="585" width="200" height="14" rx="2" fill="#f8fafc"/>
+
+  <!-- Chat preview area -->
+  <rect x="420" y="20" width="760" height="590" rx="16" fill="#1e293b"/>
+
+  <!-- Preview header -->
+  <rect x="440" y="40" width="140" height="20" rx="4" fill="#f8fafc"/>
+  <rect x="440" y="68" width="200" height="12" rx="2" fill="#64748b"/>
+
+  <!-- Chat preview -->
+  <rect x="440" y="100" width="720" height="400" rx="12" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+
+  <!-- Preview header inside -->
+  <rect x="440" y="100" width="720" height="50" rx="12" fill="#1e293b"/>
+  <rect x="460" y="115" width="100" height="16" rx="2" fill="#f8fafc"/>
+  <rect x="460" y="135" width="200" height="10" rx="2" fill="#64748b"/>
+
+  <!-- Messages preview -->
+  <rect x="640" y="170" width="500" height="45" rx="12" fill="#3b82f6"/>
+  <rect x="660" y="185" width="200" height="12" rx="2" fill="#93c5fd"/>
+
+  <rect x="460" y="235" width="500" height="70" rx="12" fill="#334155"/>
+  <rect x="480" y="255" width="300" height="12" rx="2" fill="#64748b"/>
+  <rect x="480" y="275" width="380" height="12" rx="2" fill="#64748b"/>
+
+  <rect x="700" y="325" width="440" height="40" rx="12" fill="#3b82f6"/>
+  <rect x="720" y="338" width="160" height="12" rx="2" fill="#93c5fd"/>
+
+  <rect x="460" y="385" width="400" height="50" rx="12" fill="#334155"/>
+  <rect x="480" y="400" width="280" height="12" rx="2" fill="#64748b"/>
+  <rect x="480" y="418" width="320" height="12" rx="2" fill="#64748b"/>
+
+  <!-- Preview input -->
+  <rect x="460" y="450" width="620" height="40" rx="20" fill="#334155"/>
+  <rect x="1100" y="450" width="40" height="40" rx="20" fill="#3b82f6"/>
+
+  <!-- Theme info -->
+  <rect x="440" y="520" width="720" height="70" rx="8" fill="#334155"/>
+  <rect x="460" y="540" width="100" height="12" rx="2" fill="#64748b"/>
+  <rect x="460" y="558" width="160" height="16" rx="2" fill="#f8fafc"/>
+  <rect x="680" y="540" width="100" height="12" rx="2" fill="#64748b"/>
+  <rect x="680" y="558" width="80" height="16" rx="2" fill="#f8fafc"/>
+
+  <!-- Custom Theming label -->
+  <text x="600" y="625" fill="#64748b" font-family="system-ui, sans-serif" font-size="14" text-anchor="middle">Custom Theming - 8 Preset Themes with Live Preview</text>
+</svg>

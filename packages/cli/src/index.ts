@@ -94,6 +94,7 @@ program
   .option('--no-install', 'Skip dependency installation')
   .option('--no-git', 'Skip git initialization')
   .option('--dry-run', 'Show what would be created without making changes')
+  .option('-y, --yes', 'Skip confirmation prompts (use defaults)')
   .action(initCommand)
 
 program
@@ -103,6 +104,8 @@ program
   .option('--no-deps', 'Skip dependency installation')
   .option('--batch <components>', 'Add multiple components (comma-separated)')
   .option('--dry-run', 'Show what would be added without making changes')
+  .option('-y, --yes', 'Skip confirmation prompts')
+  .option('--force', 'Overwrite existing files')
   .action(addCommand)
 
 program
@@ -128,7 +131,9 @@ program
 program
   .command('generate <type>')
   .alias('g')
-  .description('⚡ Generate code (component, hook, context, adapter, test)')
+  .description(
+    '⚡ Generate code (component, hook, context, chat-component, adapter, api-route, test)'
+  )
   .option('-n, --name <name>', 'Component/hook name (PascalCase)')
   .option('-o, --output <path>', 'Output directory')
   .option('-d, --description <desc>', 'Brief description')
@@ -139,23 +144,39 @@ program
   .option('--no-story', 'Skip Storybook story')
   .option('-f, --force', 'Overwrite existing files')
   .option('--dry-run', 'Show what would be generated without creating files')
+  .option('-y, --yes', 'Skip confirmation prompts')
+  .option(
+    '--provider <provider>',
+    'AI provider: openai, anthropic, google (for adapter/api-route)'
+  )
+  .option(
+    '--with-streaming',
+    'Include streaming support (for chat-component/api-route)'
+  )
+  .option('--with-memory', 'Include memory support (for chat-component)')
   .addHelpText(
     'after',
     `
 Examples:
-  $ clarity-chat generate component                    Interactive mode
-  $ clarity-chat g component --name ChatMessage        Quick generation
+  $ clarity-chat generate component                         Interactive mode
+  $ clarity-chat g component --name ChatMessage             Quick generation
   $ clarity-chat g component -n ChatMessage --with-story
   $ clarity-chat g hook --name chatState --with-test
   $ clarity-chat g context --name Theme
-  $ clarity-chat g component --name Button --dry-run   Preview files
+  $ clarity-chat g chat-component --name MyChat --with-streaming --with-memory
+  $ clarity-chat g adapter --name openai --provider openai
+  $ clarity-chat g api-route --name chat --provider anthropic --with-streaming
+  $ clarity-chat g component --name Button --dry-run        Preview files
+  $ clarity-chat g component -n Button -y                   Non-interactive mode
 
 Available generators:
-  component  Create a React component with tests and story
-  hook       Create a custom React hook with tests
-  context    Create a React context with provider and hook
-  adapter    Create an AI model adapter for streaming
-  test       Create a test file with Vitest
+  component       Create a React component with tests and story
+  hook            Create a custom React hook with tests
+  context         Create a React context with provider and hook
+  chat-component  Create an AI chat component with streaming/memory support
+  adapter         Create an AI model adapter for streaming
+  api-route       Create a Next.js API route for AI chat endpoints
+  test            Create a test file with Vitest
 `
   )
   .action(generateCommand)

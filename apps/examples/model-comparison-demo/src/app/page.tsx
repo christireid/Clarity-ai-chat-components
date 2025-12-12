@@ -98,12 +98,16 @@ export default function Home() {
     try {
       await Promise.all([
         leftStream.stream(messages, {
+          id: `${leftModelData.provider}-${leftModel}`,
+          name: leftModelData.name || leftModel,
           provider: leftModelData.provider as any,
           model: leftModel,
           temperature: 0.7,
           maxTokens: 1000,
         }),
         rightStream.stream(messages, {
+          id: `${rightModelData.provider}-${rightModel}`,
+          name: rightModelData.name || rightModel,
           provider: rightModelData.provider as any,
           model: rightModel,
           temperature: 0.7,

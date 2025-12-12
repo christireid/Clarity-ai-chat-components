@@ -17,10 +17,12 @@ import { OpsHeader } from '@/components/OpsHeader'
 import { MetricsOverview } from '@/components/MetricsOverview'
 import { RealTimeMonitor } from '@/components/RealTimeMonitor'
 import { AlertPanel } from '@/components/AlertPanel'
-import { Shield, TrendingUp, Activity, TestTube, DollarSign, AlertTriangle } from 'lucide-react'
+import { Shield, TrendingUp, Activity, Zap, AlertTriangle } from 'lucide-react'
 
 export default function EnterpriseAIOps() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'safety' | 'evaluation' | 'testing' | 'tokens' | 'performance'>('overview')
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'safety' | 'evaluation' | 'testing' | 'tokens' | 'performance'
+  >('overview')
 
   const { metrics } = useTokenOptimization({
     enabled: true,
@@ -36,7 +38,7 @@ export default function EnterpriseAIOps() {
     activeUsers: 1247,
     tokensUsed: 12500000,
     tokensSaved: 3750000,
-    costSaved: 1125.50,
+    costSaved: 1125.5,
     safetyViolations: 3,
     qualityScore: 92.3,
   }
@@ -45,8 +47,8 @@ export default function EnterpriseAIOps() {
     { id: 'overview', label: 'Overview', icon: Activity },
     { id: 'safety', label: 'Safety', icon: Shield },
     { id: 'evaluation', label: 'Evaluation', icon: TrendingUp },
-    { id: 'testing', label: 'Testing', icon: TestTube },
-    { id: 'tokens', label: 'Token Ops', icon: DollarSign },
+    { id: 'testing', label: 'Testing', icon: Zap },
+    { id: 'tokens', label: 'Token Ops', icon: TrendingUp },
     { id: 'performance', label: 'Performance', icon: Activity },
   ]
 
@@ -187,18 +189,20 @@ export default function EnterpriseAIOps() {
           {activeTab === 'tokens' && (
             <div className="space-y-6">
               <TokenOptimizationDashboard
-                metrics={metrics || {
-                  totalTokens: 12500000,
-                  tokensSaved: 3750000,
-                  costSaved: 1125.50,
-                  savingsPercent: 30,
-                  breakdown: {
-                    promptCompression: { tokens: 1500000, percent: 12 },
-                    caching: { hits: 1200, savings: 1500000 },
-                    modelRouting: { savings: 500000, percent: 40 },
-                    responseLimiting: { tokens: 250000, percent: 8 },
-                  },
-                }}
+                metrics={
+                  metrics || {
+                    totalTokens: 12500000,
+                    tokensSaved: 3750000,
+                    costSaved: 1125.5,
+                    savingsPercent: 30,
+                    breakdown: {
+                      promptCompression: { tokens: 1500000, percent: 12 },
+                      caching: { hits: 1200, savings: 1500000 },
+                      modelRouting: { savings: 500000, percent: 40 },
+                      responseLimiting: { tokens: 250000, percent: 8 },
+                    },
+                  }
+                }
                 showBreakdown={true}
               />
             </div>

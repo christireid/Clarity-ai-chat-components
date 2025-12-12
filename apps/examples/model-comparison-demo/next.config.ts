@@ -21,10 +21,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
   // Static export for demo deployment
   output: 'export',
 }

@@ -416,6 +416,13 @@ export * from './hooks/use-submit-button-state'
 export * from './hooks/use-mobile-keyboard'
 export { useDesignTokens } from './hooks/use-design-tokens'
 export * from './hooks/use-theme-analytics'
+export {
+  useBatteryAware,
+  withBatteryOptimizations,
+  type BatteryStatus,
+  type BatteryAwareConfig,
+  type OptimizationRecommendations,
+} from './hooks/use-battery-aware'
 
 // Additional Utilities
 // Note: Specific utils are exported above. Commenting out barrel export to avoid duplicates.

@@ -6,7 +6,7 @@
 
 > Real-time streaming AI chat interface built with Clarity Chat patterns and Next.js App Router.
 
-![Streaming Chat Demo](./public/screenshot.png)
+![Streaming Chat Demo](./public/screenshot.svg)
 
 ## ✨ Features
 
