@@ -718,6 +718,17 @@ export function usePromptArchitect(
       const saved = localStorage.getItem(storageKey)
       if (saved) {
         const parsed = JSON.parse(saved)
+
+        // Convert date strings back to Date objects for versions
+        if (parsed.versions && Array.isArray(parsed.versions)) {
+          parsed.versions = parsed.versions.map(
+            (v: { createdAt?: string | Date; [key: string]: unknown }) => ({
+              ...v,
+              createdAt: v.createdAt ? new Date(v.createdAt) : new Date(),
+            })
+          )
+        }
+
         dispatch({ type: 'HYDRATE_FROM_STORAGE', payload: parsed })
         return true
       }

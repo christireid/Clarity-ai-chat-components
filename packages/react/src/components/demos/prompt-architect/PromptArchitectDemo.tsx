@@ -444,6 +444,7 @@ To enable live AI responses, provide a Gemini API key.`
               type="button"
               role="switch"
               aria-checked={state.structuredOutputMode}
+              aria-label="Toggle JSON structured output mode"
               onClick={toggleStructuredOutput}
               className={cn(
                 'relative inline-flex h-5 w-9 items-center rounded-full',

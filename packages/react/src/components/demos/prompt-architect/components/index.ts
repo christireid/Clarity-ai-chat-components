@@ -35,3 +35,9 @@ export type { PresetSelectorProps } from './PresetSelector'
 
 export { VersionSelector } from './VersionSelector'
 export type { VersionSelectorProps } from './VersionSelector'
+
+export { ErrorFallback } from './ErrorFallback'
+export type { ErrorFallbackProps } from './ErrorFallback'
+
+export { PromptArchitectErrorBoundary } from './PromptArchitectErrorBoundary'
+export type { PromptArchitectErrorBoundaryProps } from './PromptArchitectErrorBoundary'

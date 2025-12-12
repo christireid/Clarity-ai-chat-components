@@ -156,6 +156,8 @@ export {
   TokenBadge,
   PresetSelector,
   VersionSelector,
+  ErrorFallback,
+  PromptArchitectErrorBoundary,
 } from './components'
 
 export type {
@@ -169,4 +171,6 @@ export type {
   TokenBadgeProps,
   PresetSelectorProps,
   VersionSelectorProps,
+  ErrorFallbackProps,
+  PromptArchitectErrorBoundaryProps,
 } from './components'

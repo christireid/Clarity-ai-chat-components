@@ -96,6 +96,7 @@ export function VariableField({
             type="button"
             role="switch"
             aria-checked={value === 'true'}
+            aria-label={`Toggle ${displayName}`}
             onClick={() => onChange(value === 'true' ? 'false' : 'true')}
             disabled={disabled}
             className={cn(

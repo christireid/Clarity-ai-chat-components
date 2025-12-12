@@ -428,6 +428,22 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxOutputTokens: 8192,
     supportsStructuredOutput: true,
   },
+  {
+    id: 'gemini-1.5-flash',
+    name: 'Gemini 1.5 Flash',
+    provider: 'google',
+    maxTokens: 1000000,
+    maxOutputTokens: 8192,
+    supportsStructuredOutput: true,
+  },
+  {
+    id: 'gemini-2.0-flash-exp',
+    name: 'Gemini 2.0 Flash',
+    provider: 'google',
+    maxTokens: 1000000,
+    maxOutputTokens: 8192,
+    supportsStructuredOutput: true,
+  },
 ]
 
 /**

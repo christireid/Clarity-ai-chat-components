@@ -61,7 +61,7 @@ function StreamingCursor() {
       className="inline-block w-2 h-4 bg-primary ml-0.5"
       animate={{ opacity: [1, 0, 1] }}
       transition={{
-        duration: durations.slower,
+        duration: DURATION_SECONDS.slower,
         repeat: Infinity,
         ease: 'linear',
       }}
