@@ -71,8 +71,9 @@ export const springPresets = {
 
 /**
  * Duration constants for consistent timing
+ * @public Exported for use in components that need timing values
  */
-const durations = {
+export const durations = {
   /** Very fast: 100ms */
   fast: 0.1,
   /** Normal: 200ms */

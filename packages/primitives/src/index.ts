@@ -305,6 +305,7 @@ export {
 
 // Animation Presets
 export {
+  durations,
   springPresets,
   easingPresets,
   noAnimation,
