@@ -445,5 +445,5 @@ npm install @clarity-chat/types@latest
 
 ---
 
-**Last Updated:** [Date]  
+**Last Updated:** December 2025
 **Version:** v2.0

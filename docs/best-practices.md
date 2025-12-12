@@ -396,11 +396,11 @@ function CustomLayout() {
 
 ## Next Steps
 
-- [API Reference](./apps/docs/app/api/)
-- [Examples](./apps/examples/)
-- [Troubleshooting](./troubleshooting.md)
-- [Architecture](./architecture.md)
+- [API Reference](./api-reference.md) - Complete API documentation
+- [Examples](../apps/examples/README.md) - 35+ production-ready examples
+- [Troubleshooting](./.context/troubleshooting.md) - Common issues and solutions
+- [Architecture](./architecture.md) - System design overview
 
 ---
 
-**Last Updated:** [Date]
+**Last Updated:** December 2025
