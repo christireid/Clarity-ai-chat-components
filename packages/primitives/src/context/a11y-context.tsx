@@ -200,6 +200,15 @@ export function A11yProvider({
     options?: AnnounceOptions
   } | null>(null)
 
+  // Cleanup debounce timer on unmount to prevent setState on unmounted component
+  React.useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [])
+
   // Announce function - delegates to aria.ts with debouncing
   const announce = React.useCallback(
     (message: string, options?: AnnounceOptions) => {

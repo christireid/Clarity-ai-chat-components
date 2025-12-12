@@ -40,7 +40,15 @@ export interface CharacterCountProps {
 
 export const CharacterCount: React.FC<CharacterCountProps> = React.memo(
   function CharacterCount({ current, max, className }) {
-    const isOverLimit = max !== undefined && current > max
+    // Normalize inputs: ensure non-negative integers, handle NaN
+    const normalizedCurrent = Math.max(0, Math.floor(current) || 0)
+    // Only use max if it's a positive number
+    const normalizedMax =
+      max !== undefined && Number.isFinite(max) && max > 0
+        ? Math.floor(max)
+        : undefined
+    const isOverLimit =
+      normalizedMax !== undefined && normalizedCurrent > normalizedMax
 
     return (
       <span
@@ -52,8 +60,8 @@ export const CharacterCount: React.FC<CharacterCountProps> = React.memo(
         aria-live="polite"
         aria-atomic="true"
       >
-        {current}
-        {max !== undefined && `/${max}`}
+        {normalizedCurrent}
+        {normalizedMax !== undefined && `/${normalizedMax}`}
       </span>
     )
   }

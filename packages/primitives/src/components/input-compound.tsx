@@ -162,7 +162,11 @@ function InputRoot({
 
   // Internal state for uncontrolled mode
   const [internalValue, setInternalValueState] = React.useState(defaultValue)
-  const value = controlledValue !== undefined ? controlledValue : internalValue
+  // Handle null/undefined controlled values safely (coerce to empty string)
+  const value =
+    controlledValue !== undefined && controlledValue !== null
+      ? controlledValue
+      : internalValue
 
   const setInternalValue = React.useCallback(
     (newValue: string) => {
