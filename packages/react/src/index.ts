@@ -594,6 +594,45 @@ export {
 export { OfflineChatSync, useOfflineChat } from './components/offline-chat-sync'
 export { EnhancedMarkdownRenderer } from './components/enhanced-markdown-renderer'
 export { EnhancedCodeBlock } from './components/enhanced-code-block'
+
+// World-Class Code Display Components
+export {
+  // Main Components
+  CodeBlock,
+  StreamingCodeBlock,
+  InlineCode,
+  // Sub-components
+  LineNumbers,
+  CodeBlockHeader,
+  CodeBlockCopyButton,
+  // Themes
+  CODE_THEMES,
+  DEFAULT_DARK_THEME,
+  DEFAULT_LIGHT_THEME,
+  getDarkThemes,
+  getLightThemes,
+  getThemeDefinition,
+  isValidTheme,
+  // Utilities
+  parseLineRanges,
+  normalizeLanguage,
+  detectLanguage,
+  getLanguageDisplayName,
+  COMMON_LANGUAGES,
+  LANGUAGE_DISPLAY_NAMES,
+  // Types
+  type CodeBlockProps,
+  type StreamingCodeBlockProps,
+  type InlineCodeProps,
+  type LineNumbersProps,
+  type CodeBlockHeaderProps,
+  type CodeBlockCopyButtonProps,
+  type CodeThemeDefinition,
+  type CodeThemeName,
+  type CodeFontFamily,
+  type CommonLanguage,
+} from './components/code'
+
 export { StreamingTextRenderer } from './components/streaming-text-renderer'
 export { PersonaPanel } from './components/persona-panel'
 export { ConversationTimeline } from './components/conversation-timeline'
