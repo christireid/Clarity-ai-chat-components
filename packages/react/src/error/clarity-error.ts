@@ -6,7 +6,18 @@
  * - Actionable suggestions for resolution
  * - Links to relevant documentation
  * - Context about what went wrong
+ *
+ * The validation helpers in this module compose with the type guards from
+ * `../internal/assertions` to provide consistent checking with enriched
+ * error context for better developer experience.
  */
+
+import {
+  isArray,
+  isDefined,
+  isPlainObject,
+  isNonEmptyString,
+} from '../internal/assertions'
 
 export type ClarityErrorCode =
   | 'INVALID_MESSAGES_PROP'
@@ -126,6 +137,8 @@ export class ClarityError extends Error {
 
 /**
  * Validates that a prop is an array
+ *
+ * Composes with `isArray()` from internal/assertions for consistent type checking.
  */
 export function validateArrayProp(
   value: unknown,
@@ -133,7 +146,7 @@ export function validateArrayProp(
   componentName: string,
   docsUrl?: string
 ): asserts value is unknown[] {
-  if (!Array.isArray(value)) {
+  if (!isArray(value)) {
     throw new ClarityError(
       'INVALID_PROP_TYPE',
       `"${propName}" must be an array`,
@@ -150,6 +163,8 @@ export function validateArrayProp(
 
 /**
  * Validates that a required prop is present
+ *
+ * Composes with `isDefined()` from internal/assertions for consistent null checking.
  */
 export function validateRequiredProp(
   value: unknown,
@@ -157,7 +172,7 @@ export function validateRequiredProp(
   componentName: string,
   docsUrl?: string
 ): asserts value is NonNullable<typeof value> {
-  if (value === undefined || value === null) {
+  if (!isDefined(value)) {
     throw new ClarityError(
       'MISSING_REQUIRED_PROP',
       `"${propName}" is required but was not provided`,
@@ -197,6 +212,9 @@ export function validateMessageRole(
 
 /**
  * Validates messages array structure
+ *
+ * Composes with `isPlainObject()` and `isNonEmptyString()` from internal/assertions
+ * for consistent type checking with enriched error context.
  */
 export function validateMessagesArray(
   messages: unknown,
@@ -211,9 +229,9 @@ export function validateMessagesArray(
 
   // Validate each message has required fields
   for (let i = 0; i < messages.length; i++) {
-    const msg = messages[i] as Record<string, unknown>
+    const msg = messages[i]
 
-    if (!msg || typeof msg !== 'object') {
+    if (!isPlainObject(msg)) {
       throw new ClarityError(
         'INVALID_PROP_TYPE',
         `messages[${i}] must be an object`,
@@ -227,10 +245,10 @@ export function validateMessagesArray(
       )
     }
 
-    if (typeof msg.id !== 'string') {
+    if (!isNonEmptyString(msg.id)) {
       throw new ClarityError(
         'INVALID_PROP_TYPE',
-        `messages[${i}].id must be a string`,
+        `messages[${i}].id must be a non-empty string`,
         {
           component: componentName,
           prop: `messages[${i}].id`,
