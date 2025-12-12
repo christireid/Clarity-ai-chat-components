@@ -52,6 +52,10 @@ export function useToolOrchestration(
   const debugEvents = useDebugEvents()
   const lastPriceRef = useRef<Record<string, number>>({})
 
+  // Ref-based lock to prevent race conditions with concurrent sendMessage calls
+  // This ensures only one message is processed at a time, even with rapid clicks
+  const isProcessingRef = useRef(false)
+
   // Execute a tool and update state
   const executeToolCall = useCallback(
     async (toolCall: ToolCallState, messageId: string): Promise<unknown> => {
@@ -192,7 +196,12 @@ export function useToolOrchestration(
   // Send message
   const sendMessage = useCallback(
     async (content: string) => {
-      if (!content.trim() || isLoading) return
+      // Use ref-based lock to prevent race conditions
+      // State check (isLoading) can have stale values in rapid succession
+      if (!content.trim() || isLoading || isProcessingRef.current) return
+
+      // Acquire lock immediately using ref (synchronous)
+      isProcessingRef.current = true
 
       setIsLoading(true)
       setOrchestratorState('streaming')
@@ -268,6 +277,7 @@ export function useToolOrchestration(
             })
 
             setIsLoading(false)
+            isProcessingRef.current = false // Release lock
             debugEvents.addEvent('STREAM_END', { waitingForApproval: true })
             return // Stop here and wait for approval
           }
@@ -341,6 +351,7 @@ export function useToolOrchestration(
       }
 
       setIsLoading(false)
+      isProcessingRef.current = false // Release lock
       setOrchestratorState('completed')
       debugEvents.addEvent('STREAM_END', {})
     },
@@ -351,6 +362,7 @@ export function useToolOrchestration(
     setMessages([])
     setOrchestratorState('idle')
     setPendingApproval(null)
+    isProcessingRef.current = false // Ensure lock is released on clear
     debugEvents.clearEvents()
   }, [debugEvents])
 

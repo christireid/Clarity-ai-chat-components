@@ -6,6 +6,7 @@
  * Displays the result of an executed trade with celebration animation.
  */
 
+import { memo, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Receipt, Clock, TrendingUp, TrendingDown } from 'lucide-react'
 import type { TradeResult } from '../../lib/types'
@@ -14,7 +15,7 @@ interface TradeResultCardProps {
   data: TradeResult
 }
 
-export function TradeResultCard({ data }: TradeResultCardProps) {
+export const TradeResultCard = memo(function TradeResultCard({ data }: TradeResultCardProps) {
   const isBuy = data.action === 'buy'
   const formattedDate = new Date(data.timestamp).toLocaleString()
 
@@ -134,6 +135,4 @@ export function TradeResultCard({ data }: TradeResultCardProps) {
       </div>
     </motion.div>
   )
-}
-
-TradeResultCard.displayName = 'TradeResultCard'
+})

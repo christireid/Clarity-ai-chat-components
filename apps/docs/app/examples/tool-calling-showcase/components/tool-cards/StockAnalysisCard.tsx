@@ -7,6 +7,7 @@
  * and action buttons for further analysis.
  */
 
+import { memo, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
   TrendingUp,
@@ -123,9 +124,14 @@ function MetricItem({
   )
 }
 
-export function StockAnalysisCard({ data, onViewChart, onTrade }: StockAnalysisCardProps) {
+export const StockAnalysisCard = memo(function StockAnalysisCard({ data, onViewChart, onTrade }: StockAnalysisCardProps) {
   const isPositive = data.change >= 0
-  const priceHistoryValues = data.priceHistory.map((p) => p.price)
+
+  // Memoize price history values to prevent recalculation on re-renders
+  const priceHistoryValues = useMemo(
+    () => data.priceHistory.map((p) => p.price),
+    [data.priceHistory]
+  )
 
   return (
     <motion.div
@@ -282,6 +288,4 @@ export function StockAnalysisCard({ data, onViewChart, onTrade }: StockAnalysisC
       </div>
     </motion.div>
   )
-}
-
-StockAnalysisCard.displayName = 'StockAnalysisCard'
+})

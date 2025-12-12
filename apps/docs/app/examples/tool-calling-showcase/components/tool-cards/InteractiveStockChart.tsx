@@ -7,7 +7,7 @@
  * multiple chart types, technical indicators, and mobile support.
  */
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   TrendingUp,
@@ -113,7 +113,7 @@ function calculateRSI(data: ChartDataPoint[], period: number = 14): number[] {
   return result
 }
 
-export function InteractiveStockChart({
+export const InteractiveStockChart = memo(function InteractiveStockChart({
   data,
   height = 350,
   onTimeframeChange,
@@ -652,6 +652,4 @@ export function InteractiveStockChart({
       </div>
     </motion.div>
   )
-}
-
-InteractiveStockChart.displayName = 'InteractiveStockChart'
+})

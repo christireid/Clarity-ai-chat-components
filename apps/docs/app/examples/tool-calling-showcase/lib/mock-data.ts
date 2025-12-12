@@ -5,17 +5,23 @@
  * No real API keys required - fully self-contained
  */
 
-import type {
-  SearchTickerArgs,
-  GetFinancialsArgs,
-  RenderChartArgs,
-  ExecuteTradeArgs,
-  TickerSearchResult,
-  FinancialData,
-  ChartData,
-  TradeResult,
-  PriceHistoryPoint,
-  ChartDataPoint,
+import {
+  searchTickerSchema,
+  getFinancialsSchema,
+  renderChartSchema,
+  executeTradeSchema,
+  type SearchTickerArgs,
+  type GetFinancialsArgs,
+  type RenderChartArgs,
+  type ExecuteTradeArgs,
+  type TickerSearchResult,
+  type FinancialData,
+  type ChartData,
+  type TradeResult,
+  type PriceHistoryPoint,
+  type ChartDataPoint,
+  type ToolName,
+  TOOL_NAMES,
 } from './types'
 
 // ============================================================================
@@ -447,24 +453,58 @@ export type ToolResult = {
   error?: string
 }
 
+/**
+ * Type-safe tool executor with Zod validation
+ * Validates arguments before execution to prevent runtime type errors
+ */
 export async function executeTool(name: string, args: Record<string, unknown>): Promise<ToolResult> {
+  // Validate tool name
+  if (!TOOL_NAMES.includes(name as ToolName)) {
+    return {
+      success: false,
+      data: null,
+      error: `Unknown tool: ${name}. Valid tools are: ${TOOL_NAMES.join(', ')}`,
+    }
+  }
+
   try {
     let data: unknown
 
     switch (name) {
-      case 'search_ticker':
-        data = await executeSearchTicker(args as SearchTickerArgs)
+      case 'search_ticker': {
+        const parsed = searchTickerSchema.safeParse(args)
+        if (!parsed.success) {
+          throw new Error(`Invalid search_ticker args: ${parsed.error.message}`)
+        }
+        data = await executeSearchTicker(parsed.data)
         break
-      case 'get_financials':
-        data = await executeGetFinancials(args as GetFinancialsArgs)
+      }
+      case 'get_financials': {
+        const parsed = getFinancialsSchema.safeParse(args)
+        if (!parsed.success) {
+          throw new Error(`Invalid get_financials args: ${parsed.error.message}`)
+        }
+        data = await executeGetFinancials(parsed.data)
         break
-      case 'render_chart':
-        data = await executeRenderChart(args as RenderChartArgs)
+      }
+      case 'render_chart': {
+        const parsed = renderChartSchema.safeParse(args)
+        if (!parsed.success) {
+          throw new Error(`Invalid render_chart args: ${parsed.error.message}`)
+        }
+        data = await executeRenderChart(parsed.data)
         break
-      case 'execute_trade':
-        data = await executeExecuteTrade(args as ExecuteTradeArgs)
+      }
+      case 'execute_trade': {
+        const parsed = executeTradeSchema.safeParse(args)
+        if (!parsed.success) {
+          throw new Error(`Invalid execute_trade args: ${parsed.error.message}`)
+        }
+        data = await executeExecuteTrade(parsed.data)
         break
+      }
       default:
+        // This should never happen due to the check above
         throw new Error(`Unknown tool: ${name}`)
     }
 
