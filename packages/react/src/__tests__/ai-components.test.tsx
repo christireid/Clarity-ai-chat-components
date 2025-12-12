@@ -31,7 +31,9 @@ describe('AI experience components', () => {
       />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /summarise conversation/i }))
+    fireEvent.click(
+      screen.getByRole('button', { name: /summarise conversation/i })
+    )
     expect(handleSelect).toHaveBeenCalled()
   })
 
@@ -39,8 +41,20 @@ describe('AI experience components', () => {
     render(
       <PersonaPanel
         personas={[
-          { id: '1', name: 'Researcher', role: 'researcher', summary: 'Finds docs', expertise: [] },
-          { id: '2', name: 'Mentor', role: 'coach', summary: 'Coaches writing', expertise: [] },
+          {
+            id: '1',
+            name: 'Researcher',
+            role: 'researcher',
+            summary: 'Finds docs',
+            expertise: [],
+          },
+          {
+            id: '2',
+            name: 'Mentor',
+            role: 'coach',
+            summary: 'Coaches writing',
+            expertise: [],
+          },
         ]}
         activePersonaId="2"
       />
@@ -54,8 +68,18 @@ describe('AI experience components', () => {
     render(
       <ConversationTimeline
         events={[
-          { id: '1', type: 'user', title: 'User question', timestamp: new Date('2024-01-01T10:00:00Z') },
-          { id: '2', type: 'assistant', title: 'Assistant reply', timestamp: new Date('2024-01-01T10:01:00Z') },
+          {
+            id: '1',
+            type: 'user',
+            title: 'User question',
+            timestamp: new Date('2024-01-01T10:00:00Z'),
+          },
+          {
+            id: '2',
+            type: 'assistant',
+            title: 'Assistant reply',
+            timestamp: new Date('2024-01-01T10:01:00Z'),
+          },
         ]}
       />
     )
@@ -67,13 +91,15 @@ describe('AI experience components', () => {
   it('renders memory inspector with grouped scopes', () => {
     render(
       <MemoryInspector
-        memories={[{
-          id: 'm1',
-          label: 'Project',
-          value: 'Phoenix',
-          scope: 'thread',
-          lastUpdated: new Date(),
-        }]}
+        memories={[
+          {
+            id: 'm1',
+            label: 'Project',
+            value: 'Phoenix',
+            scope: 'thread',
+            lastUpdated: new Date(),
+          },
+        ]}
       />
     )
 
@@ -119,13 +145,15 @@ describe('AI experience components', () => {
     const handleRetry = vi.fn()
     render(
       <AgentRunFeed
-        steps={[{
-          id: 'step',
-          title: 'Search KB',
-          status: 'failed',
-          startedAt: new Date(),
-          completedAt: new Date(),
-        }]}
+        steps={[
+          {
+            id: 'step',
+            title: 'Search KB',
+            status: 'failed',
+            startedAt: new Date(),
+            completedAt: new Date(),
+          },
+        ]}
         onRetry={handleRetry}
       />
     )
@@ -156,12 +184,14 @@ describe('AI experience components', () => {
     const handleSelect = vi.fn()
     render(
       <WorkflowSuggestionList
-        workflows={[{
-          id: 'wf',
-          name: 'Troubleshooting handoff',
-          description: 'Escalate conversation to support agent',
-          steps: ['Summarise issue'],
-        }]}
+        workflows={[
+          {
+            id: 'wf',
+            name: 'Troubleshooting handoff',
+            description: 'Escalate conversation to support agent',
+            steps: ['Summarise issue'],
+          },
+        ]}
         onSelect={handleSelect}
       />
     )
@@ -187,8 +217,18 @@ describe('AI experience components', () => {
   it('renders evaluation dashboard metrics and sparklines', () => {
     render(
       <EvaluationDashboard
-        metrics={[{ id: 'latency', label: 'Latency', value: '1.8s', trend: 'up', change: '+0.3s' }]}
-        sparklines={[{ id: 'cost', label: 'Cost per 1K tokens', percentage: 72 }]}
+        metrics={[
+          {
+            id: 'latency',
+            label: 'Latency',
+            value: '1.8s',
+            trend: 'up',
+            change: '+0.3s',
+          },
+        ]}
+        sparklines={[
+          { id: 'cost', label: 'Cost per 1K tokens', percentage: 72 },
+        ]}
       />
     )
 
@@ -202,13 +242,15 @@ describe('AI experience components', () => {
     render(
       <SafetyReviewConsole
         content="Sensitive value: 123"
-        highlights={[{
-          id: 'h1',
-          start: 18,
-          end: 21,
-          category: 'PII',
-          severity: 'high',
-        }]}
+        highlights={[
+          {
+            id: 'h1',
+            start: 18,
+            end: 21,
+            category: 'PII',
+            severity: 'high',
+          },
+        ]}
         onRedact={handleRedact}
       />
     )
@@ -230,23 +272,33 @@ describe('AI experience components', () => {
     expect(screen.getByText(/5\/10/)).toBeInTheDocument()
   })
 
-  it('renders API token manager and revokes token', () => {
+  it('renders API token manager and shows revoke confirmation', () => {
     const handleRevoke = vi.fn()
     render(
       <ApiTokenManager
-        tokens={[{
-          id: 'token',
-          label: 'Backend',
-          createdAt: 'Apr 1',
-          lastUsed: 'today',
-          scopes: ['chat:read'],
-          status: 'active',
-        }]}
+        tokens={[
+          {
+            id: 'token',
+            label: 'Backend',
+            createdAt: 'Apr 1',
+            lastUsed: 'today',
+            scopes: ['chat:read'],
+            status: 'active',
+          },
+        ]}
         onRevoke={handleRevoke}
       />
     )
 
+    // Click revoke button - this should open confirmation dialog
     fireEvent.click(screen.getByRole('button', { name: /revoke/i }))
+    // The dialog should now be open
+    expect(screen.getByText(/revoke api token/i)).toBeInTheDocument()
+    // Click confirm button in dialog
+    const confirmButton = screen.getAllByRole('button', {
+      name: /revoke token/i,
+    })[0]
+    fireEvent.click(confirmButton)
     expect(handleRevoke).toHaveBeenCalled()
   })
 
@@ -254,7 +306,14 @@ describe('AI experience components', () => {
     const handleSubmit = vi.fn()
     render(
       <SSOConfigWizard
-        steps={[{ id: '1', title: 'Download metadata', description: 'Copy ACS URL', status: 'complete' }]}
+        steps={[
+          {
+            id: '1',
+            title: 'Download metadata',
+            description: 'Copy ACS URL',
+            status: 'complete',
+          },
+        ]}
         onSubmit={handleSubmit}
       />
     )
@@ -265,7 +324,8 @@ describe('AI experience components', () => {
 
   it('renders seat invite dialog trigger button', () => {
     render(<SeatInviteDialog />)
-    expect(screen.getByRole('button', { name: /invite teammate/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /invite teammate/i })
+    ).toBeInTheDocument()
   })
 })
-
