@@ -37,6 +37,12 @@ export interface ChatInteractionMetrics {
   userId?: string
   /** Optional: Session identifier */
   sessionId?: string
+  /** Optional: Personality mode selected */
+  personalityMode?: 'friendly' | 'technical' | 'concise'
+  /** Optional: Query complexity classification */
+  queryComplexity?: 'simple' | 'moderate' | 'complex'
+  /** Optional: Whether demo mode was used as fallback */
+  isDemoMode?: boolean
 }
 
 export interface AnalyticsConfig {
@@ -51,7 +57,12 @@ export interface AnalyticsConfig {
 }
 
 interface AnalyticsEvent {
-  type: 'chat_interaction' | 'api_error' | 'search_query'
+  type:
+    | 'chat_interaction'
+    | 'api_error'
+    | 'search_query'
+    | 'personality_mode_change'
+    | 'demo_mode_usage'
   data: Record<string, unknown>
   timestamp: string
 }
@@ -200,6 +211,84 @@ export function trackApiError(error: {
   queueEvent({
     type: 'api_error',
     data: enrichedError,
+    timestamp,
+  })
+}
+
+/**
+ * Track personality mode selection for UX insights
+ *
+ * @example
+ * ```ts
+ * trackPersonalityModeChange({
+ *   previousMode: 'friendly',
+ *   newMode: 'technical',
+ *   sessionId: 'session-123',
+ * })
+ * ```
+ */
+export function trackPersonalityModeChange(data: {
+  previousMode?: 'friendly' | 'technical' | 'concise'
+  newMode: 'friendly' | 'technical' | 'concise'
+  sessionId?: string
+  userId?: string
+}): void {
+  const config = getConfig()
+
+  if (!config.enabled) {
+    return
+  }
+
+  const timestamp = new Date().toISOString()
+  const enrichedData = {
+    type: 'personality_mode_change',
+    ...data,
+    timestamp,
+    environment: process.env.NODE_ENV,
+  }
+
+  if (config.logToConsole) {
+    console.log('[Analytics] Personality mode change:', enrichedData)
+  }
+
+  queueEvent({
+    type: 'personality_mode_change' as AnalyticsEvent['type'],
+    data: enrichedData,
+    timestamp,
+  })
+}
+
+/**
+ * Track demo mode usage for understanding API key adoption
+ */
+export function trackDemoModeUsage(data: {
+  query: string
+  matchedTopic?: string
+  sessionId?: string
+}): void {
+  const config = getConfig()
+
+  if (!config.enabled) {
+    return
+  }
+
+  const timestamp = new Date().toISOString()
+  const enrichedData = {
+    type: 'demo_mode_usage',
+    queryLength: data.query.length,
+    matchedTopic: data.matchedTopic || 'default',
+    sessionId: data.sessionId,
+    timestamp,
+    environment: process.env.NODE_ENV,
+  }
+
+  if (config.logToConsole) {
+    console.log('[Analytics] Demo mode usage:', enrichedData)
+  }
+
+  queueEvent({
+    type: 'demo_mode_usage' as AnalyticsEvent['type'],
+    data: enrichedData,
     timestamp,
   })
 }

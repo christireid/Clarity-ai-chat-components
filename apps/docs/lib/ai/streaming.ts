@@ -353,6 +353,12 @@ I'm running without an API key, so I can only provide pre-defined answers. Here'
     }
   }
 
+  // Calculate token estimates for demo mode transparency
+  const inputTokens = Math.ceil(lastMessage.content.length / 4)
+  const outputTokens = Math.ceil(response.length / 4)
+  const matchedTopic =
+    priorityKeys.find((key) => query.includes(key)) || 'default'
+
   // Stream the response character by character
   const words = response.split(' ')
   let buffer = ''
@@ -371,6 +377,28 @@ I'm running without an API key, so I can only provide pre-defined answers. Here'
       // Small delay to simulate network latency
       await new Promise((resolve) => setTimeout(resolve, 30))
     }
+  }
+
+  // Add token usage footer in demo mode for transparency
+  const tokenFooter = `\n\n---\n📊 **Demo Mode Stats:** ~${inputTokens} input tokens, ~${outputTokens} output tokens | Topic: ${matchedTopic}`
+
+  yield {
+    type: 'text',
+    content: tokenFooter,
+  }
+
+  // Yield thinking chunk with metadata for UI consumption
+  yield {
+    type: 'thinking',
+    data: {
+      demoMode: true,
+      matchedTopic,
+      tokenEstimate: {
+        input: inputTokens,
+        output: outputTokens,
+        total: inputTokens + outputTokens,
+      },
+    },
   }
 }
 
