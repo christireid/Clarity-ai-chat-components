@@ -257,10 +257,70 @@ export type {
 // ============================================================================
 
 export { useRippleEffect } from './hooks/use-ripple-effect'
+export type { RippleType } from './hooks/use-ripple-effect'
+
 export { useBodyScrollLock } from './hooks/use-body-scroll-lock'
+
+export {
+  useReducedMotion,
+  getReducedMotionPreference,
+} from './hooks/use-reduced-motion'
+
+export {
+  useControllableState,
+  useControllableBoolean,
+} from './hooks/use-controllable-state'
+export type { UseControllableStateOptions } from './hooks/use-controllable-state'
+
+export {
+  composeRefs,
+  useComposedRefs,
+  useForwardedRef,
+} from './hooks/use-composed-refs'
 
 // ============================================================================
 // Utils
 // ============================================================================
 
 export * from './lib/utils'
+
+// ARIA Utilities
+export {
+  generateAriaId,
+  resetAriaIdCounter,
+  announce,
+  clearAnnouncement,
+  getFocusableElements,
+  getFirstFocusableElement,
+  getLastFocusableElement,
+  focusFirstElement,
+  saveFocus,
+  Keys,
+  isKey,
+  isActivationKey,
+  getErrorAriaAttributes,
+  getLoadingAriaAttributes,
+  getExpandedAriaAttributes,
+} from './lib/aria'
+
+// Animation Presets
+export {
+  springPresets,
+  easingPresets,
+  noAnimation,
+  fadeVariants,
+  scaleVariants,
+  slideUpVariants,
+  slideDownVariants,
+  slideLeftVariants,
+  slideRightVariants,
+  popVariants,
+  collapseVariants,
+  getReducedMotionVariants,
+  getReducedMotionTransition,
+  interactiveVariants,
+  getReducedMotionInteractive,
+  staggerContainerVariants,
+  staggerItemVariants,
+  animationPresets,
+} from './lib/animation-presets'
