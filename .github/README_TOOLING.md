@@ -127,7 +127,68 @@ clarity-codemod migrate 1 2 ./src
 - Safe, reversible changes
 - Beautiful terminal output
 
-### 5. **VSCode Extension** 💻
+### 5. **Code Review Framework** 🔍
+
+AI-powered code review prompts for React/NextJS applications across multiple editors.
+
+#### Quick Start
+
+| Editor | How to Use |
+|--------|------------|
+| **VS Code + Copilot** | `⌘+Shift+P` → Copilot Chat → Type `@react-review` |
+| **Cursor** | `⌘+L` → Type `@react-review` |
+| **Claude Code** | Type `/review-react` or `/review-full` |
+
+#### Available Reviews
+
+| Review Type | Focus Area | Commands |
+|-------------|------------|----------|
+| **Full Review** | All domains combined | `/review-full` |
+| **React/NextJS** | Architecture, patterns | `/review-react`, `@react-review` |
+| **Security** | XSS, CSRF, validation | `/review-security`, `@security-review` |
+| **Performance** | Memoization, splitting | `/review-performance`, `@performance-review` |
+| **TypeScript** | Strict mode, types | `/review-typescript`, `@typescript-review` |
+| **Tailwind** | CSS quality, dark mode | `/review-tailwind`, `@tailwind-review` |
+| **Clarity Chat** | Hook usage, streaming | `/review-clarity-chat`, `@clarity-chat-review` |
+
+#### VS Code Snippets for Review Annotations
+
+Use these snippets while reviewing code:
+
+| Snippet | Prefix | Purpose |
+|---------|--------|---------|
+| Critical Issue | `crcritical` | Mark must-fix issues |
+| Improvement | `crimprove` | Suggest enhancements |
+| Security Issue | `crsecurity` | Flag vulnerabilities |
+| Performance | `crperf` | Note perf concerns |
+| TypeScript | `crtype` | Type safety issues |
+| Tailwind | `crtailwind` | Styling issues |
+| TODO | `crtodo` | Action items |
+
+#### File Locations
+
+```
+.github/prompts/          # GitHub Copilot prompts
+.cursor/prompts/          # Cursor editor prompts
+.claude/commands/         # Claude Code slash commands
+docs/prompts/             # Full documentation
+docs/prompts/criteria/    # Canonical review criteria
+docs/prompts/examples/    # Training examples
+```
+
+#### When to Use Each Review
+
+```
+Making a PR?           → /review-full
+Security-sensitive?    → /review-security
+Performance concerns?  → /review-performance
+New component?         → /review-react + /review-clarity-chat
+Styling changes?       → /review-tailwind
+```
+
+**Documentation**: See `docs/prompts/REACT_NEXTJS_CODE_REVIEW_PROMPT.md` for detailed criteria.
+
+### 6. **VSCode Extension** 💻
 
 Rich IDE integration for Visual Studio Code.
 
@@ -135,13 +196,13 @@ Rich IDE integration for Visual Studio Code.
 
 **Features**:
 
-- 60+ code snippets
+- 75+ code snippets (including code review annotations)
 - IntelliSense auto-completion
 - Hover documentation
 - CodeLens hints
 - 4 useful commands
 
-### 6. **MCP Server** 🤖
+### 7. **MCP Server** 🤖
 
 Model Context Protocol server for AI agent integration.
 
@@ -156,7 +217,7 @@ npm start
 - 6 documentation resources
 - 5 AI prompt templates
 
-### 7. **Storybook** 📚
+### 8. **Storybook** 📚
 
 Component development environment with enhanced addons.
 
