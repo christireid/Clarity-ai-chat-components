@@ -68,6 +68,10 @@ interface GenerateOptions {
   dir?: string
   force?: boolean
   description?: string
+  yes?: boolean
+  provider?: 'openai' | 'anthropic' | 'google' | 'custom'
+  withStreaming?: boolean
+  withMemory?: boolean
 }
 
 interface GeneratorConfig {
@@ -95,6 +99,10 @@ interface TemplateContext {
   withStory: boolean
   componentDir: string
   package: string
+  provider?: string
+  withStreaming?: boolean
+  withMemory?: boolean
+  year: number
 }
 
 // ============================================================================
@@ -740,6 +748,319 @@ describe('{{pascalName}}', () => {
   it.todo('should handle errors gracefully')
 })
 `,
+
+  chatComponent: `'use client'
+
+import { forwardRef, useState, useCallback } from 'react'
+import { cn } from '@/lib/utils'
+
+export interface {{pascalName}}Message {
+  id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: Date
+}
+
+export interface {{pascalName}}Props {
+  /** Additional CSS classes */
+  className?: string
+  /** Model to use for chat */
+  model?: string
+  /** System prompt */
+  systemPrompt?: string
+  /** Initial messages */
+  initialMessages?: {{pascalName}}Message[]
+  /** Called when a new message is added */
+  onMessage?: (message: {{pascalName}}Message) => void
+  /** Called when an error occurs */
+  onError?: (error: Error) => void
+  /** Maximum messages to keep in history */
+  maxMessages?: number
+  /** API endpoint for chat */
+  endpoint?: string
+}
+
+/**
+ * {{pascalName}} - {{description}}
+ *
+ * @example
+ * \`\`\`tsx
+ * <{{pascalName}}
+ *   model="gpt-4"
+ *   endpoint="/api/chat"
+ *   onMessage={(msg) => console.log(msg)}
+ * />
+ * \`\`\`
+ */
+export const {{pascalName}} = forwardRef<HTMLDivElement, {{pascalName}}Props>(
+  (
+    {
+      className,
+      model = 'gpt-4',
+      systemPrompt,
+      initialMessages = [],
+      onMessage,
+      onError,
+      maxMessages = 100,
+      endpoint = '/api/chat',
+      ...props
+    },
+    ref
+  ) => {
+    const [messages, setMessages] = useState<{{pascalName}}Message[]>(initialMessages)
+    const [input, setInput] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+
+    const sendMessage = useCallback(async () => {
+      if (!input.trim() || isLoading) return
+
+      const userMessage: {{pascalName}}Message = {
+        id: crypto.randomUUID(),
+        role: 'user',
+        content: input.trim(),
+        timestamp: new Date(),
+      }
+
+      setMessages((prev) => [...prev.slice(-(maxMessages - 1)), userMessage])
+      setInput('')
+      setIsLoading(true)
+      onMessage?.(userMessage)
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            messages: [...messages, userMessage].map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+            systemPrompt,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error(\`API error: \${response.status}\`)
+        }
+
+        const data = await response.json()
+        const assistantMessage: {{pascalName}}Message = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: data.content,
+          timestamp: new Date(),
+        }
+
+        setMessages((prev) => [...prev.slice(-(maxMessages - 1)), assistantMessage])
+        onMessage?.(assistantMessage)
+      } catch (err) {
+        onError?.(err instanceof Error ? err : new Error(String(err)))
+      } finally {
+        setIsLoading(false)
+      }
+    }, [input, isLoading, messages, model, systemPrompt, maxMessages, endpoint, onMessage, onError])
+
+    return (
+      <div
+        ref={ref}
+        className={cn('clarity-{{kebabName}} flex flex-col h-full', className)}
+        {...props}
+      >
+        {/* Message List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={cn(
+                'p-3 rounded-lg max-w-[80%]',
+                message.role === 'user'
+                  ? 'bg-primary text-primary-foreground ml-auto'
+                  : 'bg-muted'
+              )}
+            >
+              <p className="text-sm">{message.content}</p>
+              <time className="text-xs opacity-50">
+                {message.timestamp.toLocaleTimeString()}
+              </time>
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <span className="animate-pulse">●</span>
+              <span>AI is thinking...</span>
+            </div>
+          )}
+        </div>
+
+        {/* Input Area */}
+        <div className="border-t p-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+              placeholder="Type a message..."
+              disabled={isLoading}
+              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+            />
+            <button
+              onClick={sendMessage}
+              disabled={isLoading || !input.trim()}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
+            >
+              {isLoading ? 'Sending...' : 'Send'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+)
+
+{{pascalName}}.displayName = '{{pascalName}}'
+`,
+
+  chatComponentIndex: `export { {{pascalName}} } from './{{pascalName}}'
+export type { {{pascalName}}Props, {{pascalName}}Message } from './{{pascalName}}'
+`,
+
+  chatComponentTest: `import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { {{pascalName}} } from './{{pascalName}}'
+
+const mockFetch = vi.fn()
+global.fetch = mockFetch
+
+describe('{{pascalName}}', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ content: 'AI response' }),
+    })
+  })
+
+  it('should render with default props', () => {
+    render(<{{pascalName}} />)
+    expect(screen.getByPlaceholderText('Type a message...')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument()
+  })
+
+  it('should render initial messages', () => {
+    const initialMessages = [
+      { id: '1', role: 'user' as const, content: 'Hello', timestamp: new Date() },
+      { id: '2', role: 'assistant' as const, content: 'Hi!', timestamp: new Date() },
+    ]
+    render(<{{pascalName}} initialMessages={initialMessages} />)
+    expect(screen.getByText('Hello')).toBeInTheDocument()
+    expect(screen.getByText('Hi!')).toBeInTheDocument()
+  })
+
+  it('should send a message on button click', async () => {
+    const onMessage = vi.fn()
+    render(<{{pascalName}} onMessage={onMessage} />)
+
+    await userEvent.type(screen.getByPlaceholderText('Type a message...'), 'Test')
+    await userEvent.click(screen.getByRole('button', { name: /send/i }))
+
+    await waitFor(() => {
+      expect(onMessage).toHaveBeenCalled()
+    })
+  })
+
+  it('should apply custom className', () => {
+    const { container } = render(<{{pascalName}} className="custom-class" />)
+    expect(container.firstChild).toHaveClass('custom-class')
+  })
+})
+`,
+
+  chatComponentStory: `import type { Meta, StoryObj } from '@storybook/react'
+import { {{pascalName}} } from './{{pascalName}}'
+
+const meta: Meta<typeof {{pascalName}}> = {
+  title: 'Chat/{{pascalName}}',
+  component: {{pascalName}},
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component: '{{description}}',
+      },
+    },
+  },
+  decorators: [
+    (Story) => (
+      <div className="h-[600px] w-full max-w-2xl mx-auto border rounded-lg overflow-hidden">
+        <Story />
+      </div>
+    ),
+  ],
+}
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: {
+    model: 'gpt-4',
+  },
+}
+
+export const WithMessages: Story = {
+  args: {
+    model: 'gpt-4',
+    initialMessages: [
+      { id: '1', role: 'user', content: 'Hello!', timestamp: new Date() },
+      { id: '2', role: 'assistant', content: 'Hi there! How can I help?', timestamp: new Date() },
+    ],
+  },
+}
+`,
+
+  apiRoute: `import { NextRequest } from 'next/server'
+
+export async function POST(req: NextRequest) {
+  try {
+    const { messages, model, systemPrompt, temperature = 0.7, maxTokens = 1000 } = await req.json()
+
+    if (!messages || !Array.isArray(messages)) {
+      return Response.json(
+        { error: 'messages is required and must be an array' },
+        { status: 400 }
+      )
+    }
+
+    // TODO: Replace with your AI provider SDK
+    // Example using OpenAI:
+    // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    // const response = await openai.chat.completions.create({
+    //   model: model || 'gpt-4',
+    //   messages: systemPrompt
+    //     ? [{ role: 'system', content: systemPrompt }, ...messages]
+    //     : messages,
+    //   temperature,
+    //   max_tokens: maxTokens,
+    // })
+
+    // Placeholder response
+    return Response.json({
+      content: 'This is a placeholder response. Configure your AI provider.',
+      usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+    })
+  } catch (error) {
+    console.error('API error:', error)
+    return Response.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+`,
 }
 
 // ============================================================================
@@ -902,6 +1223,105 @@ const GENERATORS: Record<string, GeneratorConfig> = {
       },
     ],
   },
+
+  'chat-component': {
+    name: 'Chat Component',
+    icon: '💬',
+    description:
+      'Create an AI chat component with streaming and memory support',
+    defaultDir: './src/components/chat',
+    files: (ctx) => [
+      {
+        name: `${ctx.pascalName}/${ctx.pascalName}.tsx`,
+        template: TEMPLATES.chatComponent,
+      },
+      {
+        name: `${ctx.pascalName}/index.ts`,
+        template: TEMPLATES.chatComponentIndex,
+      },
+      {
+        name: `${ctx.pascalName}/${ctx.pascalName}.test.tsx`,
+        template: TEMPLATES.chatComponentTest,
+        enabled: ctx.withTest,
+      },
+      {
+        name: `${ctx.pascalName}/${ctx.pascalName}.stories.tsx`,
+        template: TEMPLATES.chatComponentStory,
+        enabled: ctx.withStory,
+      },
+    ],
+    prompts: async (options) => {
+      const result: Partial<GenerateOptions> = {}
+
+      if (options.withStreaming === undefined) {
+        result.withStreaming = await promptConfirm({
+          message: 'Include streaming support?',
+          initialValue: true,
+        })
+      }
+
+      if (options.withMemory === undefined) {
+        result.withMemory = await promptConfirm({
+          message: 'Include conversation memory?',
+          initialValue: false,
+        })
+      }
+
+      if (options.withTest === undefined) {
+        result.withTest = await promptConfirm({
+          message: 'Include test file?',
+          initialValue: true,
+        })
+      }
+
+      if (options.withStory === undefined) {
+        result.withStory = await promptConfirm({
+          message: 'Include Storybook story?',
+          initialValue: true,
+        })
+      }
+
+      return result
+    },
+  },
+
+  'api-route': {
+    name: 'API Route',
+    icon: '🌐',
+    description: 'Create a Next.js API route for AI chat endpoints',
+    defaultDir: './src/app/api',
+    files: (ctx) => [
+      {
+        name: `${ctx.kebabName}/route.ts`,
+        template: TEMPLATES.apiRoute,
+      },
+    ],
+    prompts: async (options) => {
+      const result: Partial<GenerateOptions> = {}
+
+      if (!options.provider) {
+        result.provider = (await promptSelect({
+          message: 'AI provider:',
+          options: [
+            { value: 'openai', label: 'OpenAI', hint: 'GPT-4, GPT-3.5' },
+            { value: 'anthropic', label: 'Anthropic', hint: 'Claude 3' },
+            { value: 'google', label: 'Google', hint: 'Gemini Pro' },
+            { value: 'custom', label: 'Custom', hint: 'Custom API endpoint' },
+          ],
+          initialValue: 'openai',
+        })) as 'openai' | 'anthropic' | 'google' | 'custom'
+      }
+
+      if (options.withStreaming === undefined) {
+        result.withStreaming = await promptConfirm({
+          message: 'Include streaming support?',
+          initialValue: true,
+        })
+      }
+
+      return result
+    },
+  },
 }
 
 // ============================================================================
@@ -980,6 +1400,10 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   // Get component name
   let name = options.name
   if (!name) {
+    if (options.yes) {
+      log.error('--name is required when using --yes flag')
+      process.exit(1)
+    }
     name = await promptText({
       message: `${generator.name} name (PascalCase):`,
       placeholder:
@@ -987,7 +1411,11 @@ export async function generateCommand(type: string, options: GenerateOptions) {
           ? 'ChatState'
           : type === 'context'
             ? 'Theme'
-            : 'ChatMessage',
+            : type === 'chat-component'
+              ? 'MyChat'
+              : type === 'api-route'
+                ? 'chat'
+                : 'ChatMessage',
       validate: validateName,
     })
   } else {
@@ -998,9 +1426,9 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     }
   }
 
-  // Get description
+  // Get description (skip if --yes is provided)
   let description = options.description
-  if (!description && !options.dryRun) {
+  if (!description && !options.dryRun && !options.yes) {
     description = await promptText({
       message: 'Brief description:',
       placeholder: `A ${type} for...`,
@@ -1008,9 +1436,9 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     })
   }
 
-  // Run generator-specific prompts
+  // Run generator-specific prompts (skip if --yes is provided)
   let additionalOptions: Partial<GenerateOptions> = {}
-  if (generator.prompts && !options.dryRun) {
+  if (generator.prompts && !options.dryRun && !options.yes) {
     additionalOptions = await generator.prompts(options)
   }
 
@@ -1042,6 +1470,10 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     withStory: finalOptions.withStory ?? false,
     componentDir: finalOptions.type || 'components',
     package: finalOptions.package || 'react',
+    provider: finalOptions.provider,
+    withStreaming: finalOptions.withStreaming ?? true,
+    withMemory: finalOptions.withMemory ?? false,
+    year: new Date().getFullYear(),
   }
 
   // Get files to generate
@@ -1076,8 +1508,8 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     return
   }
 
-  // Confirm generation
-  if (!options.force) {
+  // Confirm generation (skip if --yes or --force is provided)
+  if (!options.force && !options.yes) {
     const confirm = await promptConfirm({
       message: 'Generate files?',
       initialValue: true,
@@ -1145,14 +1577,26 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     )
 
     // Next steps
-    const importPath =
-      type === 'hook'
-        ? `import { use${pascalName} } from '${outputPath}/use${pascalName}'`
-        : type === 'context'
-          ? `import { ${pascalName}Provider, use${pascalName} } from '${outputPath}/${pascalName}Context'`
-          : type === 'adapter'
-            ? `import { create${pascalName}Adapter } from '${outputPath}/${context.camelName}Adapter'`
-            : `import { ${pascalName} } from '${outputPath}/${pascalName}'`
+    let importPath: string
+    switch (type) {
+      case 'hook':
+        importPath = `import { use${pascalName} } from '${outputPath}/use${pascalName}'`
+        break
+      case 'context':
+        importPath = `import { ${pascalName}Provider, use${pascalName} } from '${outputPath}/${pascalName}Context'`
+        break
+      case 'adapter':
+        importPath = `import { create${pascalName}Adapter } from '${outputPath}/${context.camelName}Adapter'`
+        break
+      case 'chat-component':
+        importPath = `import { ${pascalName} } from '${outputPath}/${pascalName}'`
+        break
+      case 'api-route':
+        importPath = `API route created at: ${outputPath}/${context.kebabName}/route.ts`
+        break
+      default:
+        importPath = `import { ${pascalName} } from '${outputPath}/${pascalName}'`
+    }
 
     showNextSteps([
       `Import: ${pc.cyan(importPath)}`,
