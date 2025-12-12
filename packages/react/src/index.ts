@@ -478,7 +478,37 @@ export { ContextManager } from './components/context-manager'
 export { ProjectSidebar } from './components/project-sidebar'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
-export { LinkPreview, InlineLink } from './components/link-preview'
+export {
+  // Components
+  LinkPreview,
+  LinkPreviewSkeleton,
+  LinkPreviewError,
+  LinkPreviewCompact,
+  InlineLink,
+  SmartLinkPreview,
+  RichEmbed,
+  // Hook
+  useLinkPreview,
+  // Utilities
+  isValidUrl,
+  sanitizeUrl,
+  detectEmbedType,
+  createMetadataFetcher,
+  createFallbackMetadata,
+  // Types
+  type LinkMetadata,
+  type LinkPreviewProps,
+  type LinkPreviewVariant,
+  type LinkPreviewSkeletonProps,
+  type LinkPreviewErrorProps,
+  type LinkPreviewCompactProps,
+  type InlineLinkProps,
+  type SmartLinkPreviewProps,
+  type UseLinkPreviewOptions,
+  type UseLinkPreviewReturn,
+  type MetadataFetcherConfig,
+  type EmbedType,
+} from './components/link-preview'
 export {
   KeyboardHint,
   type KeyboardHintShortcut,
@@ -673,8 +703,8 @@ export { TokenCounter } from './components/token-counter'
 export {
   TokenUsageMeter,
   MODEL_PRICING_PRESETS,
-  type TokenUsage,
-  type ModelPricing,
+  type TokenUsage as TokenUsageMeterData,
+  type ModelPricing as TokenUsageMeterPricing,
   type TokenUsageMeterProps,
 } from './components/token-usage-meter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'

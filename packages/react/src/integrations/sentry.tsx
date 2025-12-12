@@ -89,9 +89,9 @@ export function initSentry(options: SentryOptions): void {
           'Load failed',
           ...(options.ignoreErrors ?? []),
         ],
-        beforeSend(event, hint) {
+        beforeSend(event: unknown, hint: { originalException?: Error }) {
           // Filter out rate limit errors (expected in AI apps)
-          const error = hint?.originalException as Error | undefined
+          const error = hint?.originalException
           if (
             error?.message?.includes('429') ||
             error?.message?.includes('rate limit')

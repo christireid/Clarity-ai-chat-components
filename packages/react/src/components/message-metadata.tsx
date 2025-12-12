@@ -4,13 +4,26 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Badge, Tooltip, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { Clock as ClockIcon, DollarSign as DollarSignIcon, TrendingUp as TrendingUpIcon, Shield as ShieldIcon } from 'lucide-react'
+import {
+  Clock as ClockIcon,
+  DollarSign as DollarSignIcon,
+  TrendingUp as TrendingUpIcon,
+  Shield as ShieldIcon,
+} from 'lucide-react'
 
 // Type assertions to fix React 18/19 compatibility
-const ClockIconComponent = ClockIcon as React.ComponentType<{ className?: string }>
-const DollarSignIconComponent = DollarSignIcon as React.ComponentType<{ className?: string }>
-const TrendingUpIconComponent = TrendingUpIcon as React.ComponentType<{ className?: string }>
-const ShieldIconComponent = ShieldIcon as React.ComponentType<{ className?: string }>
+const ClockIconComponent = ClockIcon as React.ComponentType<{
+  className?: string
+}>
+const DollarSignIconComponent = DollarSignIcon as React.ComponentType<{
+  className?: string
+}>
+const TrendingUpIconComponent = TrendingUpIcon as React.ComponentType<{
+  className?: string
+}>
+const ShieldIconComponent = ShieldIcon as React.ComponentType<{
+  className?: string
+}>
 
 /**
  * Enhanced message metadata display
@@ -37,14 +50,14 @@ export interface MessageMetadataProps {
 
 /**
  * Message Metadata Component
- * 
+ *
  * Displays comprehensive metadata about a message including:
  * - Token usage and cost
  * - Response time metrics
  * - Confidence scores
  * - Model information
  * - Source attribution
- * 
+ *
  * @example
  * ```tsx
  * <MessageMetadata
@@ -66,18 +79,31 @@ export function MessageMetadata({
   compact = false,
   className,
 }: MessageMetadataProps) {
-  const metadata = (message as Message & { metadata?: Record<string, unknown> }).metadata || {}
+  const metadata =
+    (message as Message & { metadata?: Record<string, unknown> }).metadata || {}
   const [expanded, setExpanded] = React.useState(!compact)
 
-  // Extract metadata values
-  const tokens = metadata['tokens'] || metadata['tokenCount']
-  const inputTokens = metadata['inputTokens']
-  const outputTokens = metadata['outputTokens']
-  const cost = metadata['cost'] || metadata['estimatedCost']
-  const responseTime = metadata['responseTime'] || metadata['processingTime']
-  const model = metadata['model']
-  const confidence = metadata['confidence'] || metadata['confidenceScore']
-  const sources = metadata['sources'] || metadata['attributions']
+  // Type guard helpers
+  const asNumber = (val: unknown): number | undefined =>
+    typeof val === 'number' ? val : undefined
+  const asString = (val: unknown): string | undefined =>
+    typeof val === 'string' ? val : undefined
+  const asArray = (val: unknown): unknown[] | undefined =>
+    Array.isArray(val) ? val : undefined
+
+  // Extract and type-narrow metadata values
+  const tokens =
+    asNumber(metadata['tokens']) ?? asNumber(metadata['tokenCount'])
+  const inputTokens = asNumber(metadata['inputTokens'])
+  const outputTokens = asNumber(metadata['outputTokens'])
+  const cost = asNumber(metadata['cost']) ?? asNumber(metadata['estimatedCost'])
+  const responseTime =
+    asNumber(metadata['responseTime']) ?? asNumber(metadata['processingTime'])
+  const model = asString(metadata['model'])
+  const confidence =
+    asNumber(metadata['confidence']) ?? asNumber(metadata['confidenceScore'])
+  const sources =
+    asArray(metadata['sources']) ?? asArray(metadata['attributions'])
 
   // Calculate cost if we have tokens and model
   const calculatedCost = React.useMemo(() => {
@@ -98,7 +124,8 @@ export function MessageMetadata({
     if (!modelCost) return undefined
 
     const inputCost = ((inputTokens || tokens * 0.7) / 1000) * modelCost.input
-    const outputCost = ((outputTokens || tokens * 0.3) / 1000) * modelCost.output
+    const outputCost =
+      ((outputTokens || tokens * 0.3) / 1000) * modelCost.output
     return inputCost + outputCost
   }, [cost, tokens, inputTokens, outputTokens, model])
 
@@ -163,7 +190,8 @@ export function MessageMetadata({
               {inputTokens && outputTokens && (
                 <span className="text-muted-foreground">
                   {' '}
-                  ({inputTokens.toLocaleString()}/{outputTokens.toLocaleString()})
+                  ({inputTokens.toLocaleString()}/
+                  {outputTokens.toLocaleString()})
                 </span>
               )}
             </span>
@@ -218,7 +246,9 @@ export function MessageMetadata({
         >
           <Badge variant="secondary" className="gap-1">
             <ShieldIconComponent className="h-3 w-3" />
-            <span>{sources.length} source{sources.length !== 1 ? 's' : ''}</span>
+            <span>
+              {sources.length} source{sources.length !== 1 ? 's' : ''}
+            </span>
           </Badge>
         </Tooltip>
       )}

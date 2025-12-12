@@ -1,11 +1,12 @@
 {
   "name": "@clarity-chat/utils",
-  "version": "0.1.0",
-  "description": "Shared utility functions for Clarity Chat packages",
+  "version": "1.0.0",
+  "description": "Unified utility library for Clarity Chat - tree-shakeable, TypeScript-first utilities for formatting, caching, logging, error handling, async operations, and validation",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -13,27 +14,66 @@
       "require": "./dist/index.cjs"
     },
     "./format": {
-      "types": "./dist/format.d.ts",
-      "import": "./dist/format.js",
-      "require": "./dist/format.cjs"
+      "types": "./dist/format/index.d.ts",
+      "import": "./dist/format/index.js",
+      "require": "./dist/format/index.cjs"
+    },
+    "./cache": {
+      "types": "./dist/cache/index.d.ts",
+      "import": "./dist/cache/index.js",
+      "require": "./dist/cache/index.cjs"
+    },
+    "./logger": {
+      "types": "./dist/logger/index.d.ts",
+      "import": "./dist/logger/index.js",
+      "require": "./dist/logger/index.cjs"
+    },
+    "./progress": {
+      "types": "./dist/progress/index.d.ts",
+      "import": "./dist/progress/index.js",
+      "require": "./dist/progress/index.cjs"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.js",
+      "require": "./dist/errors/index.cjs"
+    },
+    "./async": {
+      "types": "./dist/async/index.d.ts",
+      "import": "./dist/async/index.js",
+      "require": "./dist/async/index.cjs"
+    },
+    "./validation": {
+      "types": "./dist/validation/index.d.ts",
+      "import": "./dist/validation/index.js",
+      "require": "./dist/validation/index.cjs"
     }
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md",
+    "MIGRATION.md"
   ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "keywords": [
     "clarity-chat",
     "utilities",
     "format",
+    "cache",
+    "logger",
+    "errors",
+    "async",
+    "validation",
     "typescript"
   ],
   "author": "Christi Reid <christi@codeclarity.ai>",
@@ -43,10 +83,24 @@
     "url": "https://github.com/christireid/Clarity-ai-chat-components.git",
     "directory": "packages/utils"
   },
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {
+    "ora": "^8.1.1"
+  },
   "devDependencies": {
     "@types/node": "^22.10.5",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

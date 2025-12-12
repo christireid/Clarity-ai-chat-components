@@ -8,6 +8,7 @@
  */
 
 import type { Transition } from 'framer-motion'
+import { DURATION_SECONDS } from './constants'
 
 /**
  * Spring preset types
@@ -118,7 +119,7 @@ export function getSpring(
   if (prefersReducedMotion) {
     return {
       type: 'tween',
-      duration: durations.fast, // Near-instant
+      duration: DURATION_SECONDS.fast, // Near-instant
       ease: 'linear',
       ...overrides,
     }
@@ -186,7 +187,7 @@ export function createSpringTransition(
   if (prefersReducedMotion) {
     return {
       type: 'tween',
-      duration: durations.fast,
+      duration: DURATION_SECONDS.fast,
       ease: 'linear',
     }
   }

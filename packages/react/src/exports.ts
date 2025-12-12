@@ -267,7 +267,37 @@ export { ProjectSidebar } from './components/project-sidebar'
 export { PromptLibrary } from './components/prompt-library'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
-export { LinkPreview } from './components/link-preview'
+export {
+  // Components
+  LinkPreview,
+  LinkPreviewSkeleton,
+  LinkPreviewError,
+  LinkPreviewCompact,
+  InlineLink,
+  SmartLinkPreview,
+  RichEmbed,
+  // Hook
+  useLinkPreview,
+  // Utilities
+  isValidUrl,
+  sanitizeUrl,
+  detectEmbedType,
+  createMetadataFetcher,
+  createFallbackMetadata,
+  // Types
+  type LinkMetadata,
+  type LinkPreviewProps,
+  type LinkPreviewVariant,
+  type LinkPreviewSkeletonProps,
+  type LinkPreviewErrorProps,
+  type LinkPreviewCompactProps,
+  type InlineLinkProps,
+  type SmartLinkPreviewProps,
+  type UseLinkPreviewOptions,
+  type UseLinkPreviewReturn,
+  type MetadataFetcherConfig,
+  type EmbedType,
+} from './components/link-preview'
 export { KnowledgeBaseViewer } from './components/knowledge-base-viewer'
 export { ExportDialog } from './components/export-dialog'
 export { BatchExportDialog } from './components/batch-export-dialog'
@@ -326,8 +356,30 @@ export {
   type UseChatHistoryReturn,
 } from './hooks/use-chat-history'
 
-// Integrations (Sentry, Analytics)
-export * from './integrations'
+// Integrations (Sentry, Analytics) - explicitly named to avoid conflicts
+export {
+  initSentry,
+  captureAIError,
+  addChatBreadcrumb,
+  useSentryChat,
+  withSentryErrorBoundary,
+  startAITransaction,
+  type SentryOptions,
+  type SentryScope,
+  type SentryBreadcrumb,
+} from './integrations/sentry'
+export {
+  AnalyticsProvider as IntegrationsAnalyticsProvider,
+  useAnalytics as useIntegrationsAnalytics,
+  useChatAnalytics,
+  useWebVitals,
+  type PostHogConfig,
+  type VercelAnalyticsConfig,
+  type AnalyticsProviderProps as IntegrationsAnalyticsProviderProps,
+  type AnalyticsContextValue as IntegrationsAnalyticsContextValue,
+  type ChatAnalyticsEvent,
+  type ChatEventProperties,
+} from './integrations/analytics'
 
 // Additional Hooks
 export * from './hooks/use-completion'

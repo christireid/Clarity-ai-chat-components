@@ -34,6 +34,11 @@ import type {
   TokenBreakdown,
 } from './types'
 import { TokenCounter, ContextOptimizer } from './token-optimizer'
+import {
+  DecayManager,
+  type DecayManagerConfig,
+  type DecayResult,
+} from './utils/decay-manager'
 
 /**
  * Memory Service
@@ -48,6 +53,8 @@ export class MemoryService {
   private eventListeners: Map<string, Set<MemoryEventListener>>
   private cleanupInterval?: NodeJS.Timeout
   private summarizationInterval?: NodeJS.Timeout
+  private decayManager?: DecayManager
+  private decayInterval?: NodeJS.Timeout
 
   constructor(
     config: MemoryServiceConfig,
@@ -72,6 +79,18 @@ export class MemoryService {
     // Initialize vector store if configured
     if (this.config.persistence.useVectorStore && this.vectorStore) {
       await this.vectorStore.initialize()
+    }
+
+    // Initialize decay manager if configured
+    if (this.config.decay?.enabled) {
+      this.decayManager = new DecayManager(
+        this.config.decay.policies as Partial<DecayManagerConfig>
+      )
+
+      // Start decay background task if interval specified
+      if (this.config.decay.decayInterval) {
+        this.startDecayTask()
+      }
     }
 
     // Start background tasks
@@ -229,6 +248,16 @@ export class MemoryService {
     for (const result of results) {
       result.memory.accessCount++
       result.memory.lastAccessed = new Date()
+    }
+
+    // Auto-decay on recall if enabled
+    if (this.config.decay?.autoDecayOnRecall && this.decayManager) {
+      // Run decay in background (don't block recall)
+      this.runDecay().catch((error) => {
+        if (this.config.debug) {
+          console.error('Auto-decay failed:', error)
+        }
+      })
     }
 
     return results
@@ -700,6 +729,116 @@ export class MemoryService {
   }
 
   /**
+   * Start decay task
+   */
+  private startDecayTask(): void {
+    this.decayInterval = setInterval(() => {
+      this.runDecay().catch((error) => {
+        if (this.config.debug) {
+          console.error('Decay task failed:', error)
+        }
+      })
+    }, this.config.decay!.decayInterval!)
+  }
+
+  /**
+   * Run decay evaluation on all memories
+   *
+   * Evaluates all cached memories and performs appropriate actions:
+   * - delete: Remove fully decayed memories
+   * - compress: Compress at-risk memories
+   * - keep: No action needed
+   *
+   * @returns Results of decay evaluation
+   */
+  async runDecay(): Promise<{
+    processed: number
+    deleted: number
+    compressed: number
+    kept: number
+    results: DecayResult[]
+  }> {
+    if (!this.decayManager) {
+      return { processed: 0, deleted: 0, compressed: 0, kept: 0, results: [] }
+    }
+
+    const memories = Array.from(this.cache.values())
+    const candidates = this.decayManager.findDecayCandidates(
+      memories as any[], // Cast to Memory type
+      { limit: 100 }
+    )
+
+    let deleted = 0
+    let compressed = 0
+    let kept = 0
+
+    for (const result of candidates) {
+      try {
+        switch (result.action) {
+          case 'delete':
+            await this.deleteMemory(result.id)
+            deleted++
+            this.emitEvent({
+              type: 'memory:expired',
+              timestamp: new Date(),
+              data: { id: result.id, reason: result.reason },
+            })
+            break
+
+          case 'compress':
+            await this.compressMemory(result.id)
+            compressed++
+            break
+
+          default:
+            kept++
+        }
+      } catch (error) {
+        if (this.config.debug) {
+          console.error(`Failed to process decay for ${result.id}:`, error)
+        }
+      }
+    }
+
+    if (this.config.debug && candidates.length > 0) {
+      console.log(
+        `[MemoryService] Decay cycle complete: ` +
+          `${deleted} deleted, ${compressed} compressed, ${kept} kept`
+      )
+    }
+
+    return {
+      processed: candidates.length,
+      deleted,
+      compressed,
+      kept,
+      results: candidates,
+    }
+  }
+
+  /**
+   * Get decay statistics for all memories
+   *
+   * Returns health metrics about memory decay status.
+   */
+  getDecayStats(): {
+    total: number
+    healthy: number
+    atRisk: number
+    expiring: number
+    expired: number
+    byAction: { keep: number; compress: number; delete: number }
+    averageDecayScore: number
+  } | null {
+    if (!this.decayManager) {
+      return null
+    }
+
+    const memories = Array.from(this.cache.values())
+    return this.decayManager.getStats(memories as any[])
+  }
+
+  /**
    * Run a single summarization cycle
    * Finds old memories and compresses them to save space
    */
@@ -719,7 +858,10 @@ export class MemoryService {
       if (memory.content.length < 200) continue
 
       // Skip if too recent (less than 1 hour old)
-      const createdAt = memory.createdAt instanceof Date ? memory.createdAt : new Date(memory.createdAt)
+      const createdAt =
+        memory.createdAt instanceof Date
+          ? memory.createdAt
+          : new Date(memory.createdAt)
       const ageMs = now.getTime() - createdAt.getTime()
       if (isNaN(ageMs) || ageMs < 60 * 60 * 1000) continue
 
@@ -795,11 +937,14 @@ export class MemoryService {
    */
   private splitIntoSentences(text: string): string[] {
     // Common abbreviations that shouldn't trigger sentence splits
-    const abbreviations = /\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|vs|etc|e\.g|i\.e|Inc|Ltd|Corp|Co|U\.S|U\.K)\./gi
+    const abbreviations =
+      /\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|vs|etc|e\.g|i\.e|Inc|Ltd|Corp|Co|U\.S|U\.K)\./gi
 
     // Temporarily replace abbreviation periods with placeholder
     const placeholder = '<<<DOT>>>'
-    const protected_ = text.replace(abbreviations, (match) => match.replace(/\./g, placeholder))
+    const protected_ = text.replace(abbreviations, (match) =>
+      match.replace(/\./g, placeholder)
+    )
 
     // Split on sentence-ending punctuation followed by space or end
     const sentences = protected_
@@ -890,6 +1035,9 @@ export class MemoryService {
     if (this.summarizationInterval) {
       clearInterval(this.summarizationInterval)
     }
+    if (this.decayInterval) {
+      clearInterval(this.decayInterval)
+    }
   }
 
   /**
@@ -948,8 +1096,11 @@ export class MemoryService {
       metadata: metadata,
       embedding: match.values,
       confidence: match.score || 0.5,
-      priority: (metadata['priority'] as MemoryPriority | undefined) || 'medium',
-      tokens: TokenCounter.count((metadata['content'] as string | undefined) || ''),
+      priority:
+        (metadata['priority'] as MemoryPriority | undefined) || 'medium',
+      tokens: TokenCounter.count(
+        (metadata['content'] as string | undefined) || ''
+      ),
       accessCount: 0,
       lastAccessed: new Date(),
       createdAt: new Date(),
@@ -1039,7 +1190,10 @@ export class MemoryService {
   /**
    * Recall memories matching a query (alias for query)
    */
-  async recall(queryText: string, options?: Partial<MemoryQuery>): Promise<MemorySearchResult[]> {
+  async recall(
+    queryText: string,
+    options?: Partial<MemoryQuery>
+  ): Promise<MemorySearchResult[]> {
     return this.query({ query: queryText, ...options })
   }
 
@@ -1056,14 +1210,24 @@ export class MemoryService {
     const allocation = this.optimizer.getBudgetManager().getAllocation()
 
     // Build formatted context
-    const semanticMems = allMemories.filter(r => r.memory.type === 'semantic').map(r => r.memory)
-    const episodicMems = allMemories.filter(r => r.memory.type === 'episodic').map(r => r.memory)
+    const semanticMems = allMemories
+      .filter((r) => r.memory.type === 'semantic')
+      .map((r) => r.memory)
+    const episodicMems = allMemories
+      .filter((r) => r.memory.type === 'episodic')
+      .map((r) => r.memory)
 
     const formatted = [
       options?.includeSummary ? '# Context Summary' : '',
-      semanticMems.length > 0 ? `\n## Semantic Memories\n${semanticMems.map(m => m.content).join('\n')}` : '',
-      episodicMems.length > 0 ? `\n## Recent Events\n${episodicMems.map(m => m.content).join('\n')}` : '',
-    ].filter(Boolean).join('\n')
+      semanticMems.length > 0
+        ? `\n## Semantic Memories\n${semanticMems.map((m) => m.content).join('\n')}`
+        : '',
+      episodicMems.length > 0
+        ? `\n## Recent Events\n${episodicMems.map((m) => m.content).join('\n')}`
+        : '',
+    ]
+      .filter(Boolean)
+      .join('\n')
 
     const totalTokens = TokenCounter.count(formatted)
 
@@ -1078,7 +1242,7 @@ export class MemoryService {
     }
 
     return {
-      memories: allMemories.map(r => r.memory),
+      memories: allMemories.map((r) => r.memory),
       totalTokens,
       tokenBreakdown: breakdown,
       formatted,
@@ -1179,6 +1343,9 @@ export class MemoryService {
     }
     if (this.summarizationInterval) {
       clearInterval(this.summarizationInterval)
+    }
+    if (this.decayInterval) {
+      clearInterval(this.decayInterval)
     }
 
     // Flush buffer

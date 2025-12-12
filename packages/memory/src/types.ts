@@ -513,6 +513,18 @@ export interface MemoryServiceConfig {
     user?: number
   }
 
+  /** Decay manager configuration for intelligent memory forgetting */
+  decay?: {
+    /** Enable decay manager */
+    enabled: boolean
+    /** Run decay evaluation automatically on recall() */
+    autoDecayOnRecall?: boolean
+    /** Decay evaluation interval (ms) for background processing */
+    decayInterval?: number
+    /** Custom decay policies by type/scope (see DecayManagerConfig) */
+    policies?: Record<string, unknown>
+  }
+
   /** Enable debug logging */
   debug?: boolean
 
