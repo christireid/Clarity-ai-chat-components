@@ -22,7 +22,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate input tokens
-    const inputText = messages.map((m: { content: string }) => m.content).join(' ')
+    const inputText = messages
+      .map((m: { content: string }) => m.content)
+      .join(' ')
     const inputTokens = estimateTokens(inputText)
 
     const encoder = new TextEncoder()

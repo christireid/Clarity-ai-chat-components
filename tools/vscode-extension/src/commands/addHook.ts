@@ -17,7 +17,8 @@ const HOOKS: HookItem[] = [
   {
     label: '$(symbol-method) useClarityChat',
     description: 'Primary chat hook',
-    detail: 'Full-featured chat state management with streaming, memory, and optimization',
+    detail:
+      'Full-featured chat state management with streaming, memory, and optimization',
     value: 'useClarityChat',
     category: 'Primary',
     imports: "import { useClarityChat } from '@clarity-chat/react'",
@@ -37,7 +38,7 @@ const HOOKS: HookItem[] = [
     strategy: 'hybrid',
     maxTokens: 2000,
   },}
-})`
+})`,
   },
   {
     label: '$(symbol-method) useChatEnhanced',
@@ -57,7 +58,7 @@ const HOOKS: HookItem[] = [
   onFinish: (message) => {
     \${2:console.log('Message complete:', message)}
   },
-})`
+})`,
   },
 
   // Memory Hooks
@@ -73,7 +74,7 @@ const HOOKS: HookItem[] = [
   clearMemory,
   summarizeMemory,
   getRelevantContext,
-} = useMemoryContext()`
+} = useMemoryContext()`,
   },
   {
     label: '$(history) useConversationHistory',
@@ -91,7 +92,7 @@ const HOOKS: HookItem[] = [
 } = useConversationHistory({
   storageKey: '\${1:clarity-chat-history}',
   maxConversations: \${2:50},
-})`
+})`,
   },
 
   // Streaming Hooks
@@ -113,7 +114,7 @@ const HOOKS: HookItem[] = [
   onChunk: (chunk) => {
     \${2:console.log('Received chunk:', chunk)}
   },
-})`
+})`,
   },
   {
     label: '$(plug) useStreamingWebSocket',
@@ -132,7 +133,7 @@ const HOOKS: HookItem[] = [
   url: '\${1:wss://your-server.com/ws}',
   reconnect: true,
   maxRetries: 3,
-})`
+})`,
   },
 
   // Token Optimization Hooks
@@ -153,7 +154,7 @@ const HOOKS: HookItem[] = [
   maxInputTokens: \${1:4000},
   maxOutputTokens: \${2:1000},
   warningThreshold: \${3:0.8},
-})`
+})`,
   },
   {
     label: '$(zap) useTokenOptimizationEnhanced',
@@ -161,7 +162,8 @@ const HOOKS: HookItem[] = [
     detail: 'Advanced optimization strategies for token efficiency',
     value: 'useTokenOptimizationEnhanced',
     category: 'Token Optimization',
-    imports: "import { useTokenOptimizationEnhanced } from '@clarity-chat/react'",
+    imports:
+      "import { useTokenOptimizationEnhanced } from '@clarity-chat/react'",
     code: `const {
   optimizedMessages,
   compressionRatio,
@@ -171,7 +173,7 @@ const HOOKS: HookItem[] = [
   messages,
   targetTokens: \${1:2000},
   strategies: ['\${2|truncate,summarize,prioritize|}'],
-})`
+})`,
   },
   {
     label: '$(symbol-numeric) useTokenCounter',
@@ -186,7 +188,7 @@ const HOOKS: HookItem[] = [
   tokenize,
 } = useTokenCounter({
   model: '\${1|gpt-4-turbo,claude-3-opus,gemini-pro|}',
-})`
+})`,
   },
 
   // UI State Hooks
@@ -207,7 +209,7 @@ const HOOKS: HookItem[] = [
   onTimeout: () => {
     \${2:console.error('Request timed out')}
   },
-})`
+})`,
   },
   {
     label: '$(error) useErrorHandler',
@@ -226,7 +228,7 @@ const HOOKS: HookItem[] = [
     \${1:console.error('Chat error:', error)}
   },
   retryCount: \${2:3},
-})`
+})`,
   },
   {
     label: '$(scroll) useAutoScroll',
@@ -242,7 +244,7 @@ const HOOKS: HookItem[] = [
 } = useAutoScroll({
   smooth: true,
   threshold: \${1:100},
-})`
+})`,
   },
 
   // Provider Integration Hooks
@@ -262,7 +264,7 @@ const HOOKS: HookItem[] = [
 } = useProviderConfig({
   defaultProvider: '\${1|openai,anthropic,google|}',
   defaultModel: '\${2:gpt-4-turbo}',
-})`
+})`,
   },
   {
     label: '$(symbol-interface) useMultiProvider',
@@ -281,7 +283,7 @@ const HOOKS: HookItem[] = [
     openai: { model: 'gpt-4-turbo' },
     anthropic: { model: 'claude-3-opus' },
   },
-})`
+})`,
   },
 
   // Utility Hooks
@@ -297,7 +299,7 @@ const HOOKS: HookItem[] = [
   extractCode,
   extractLinks,
   formatMessage,
-} = useMessageParser()`
+} = useMessageParser()`,
   },
   {
     label: '$(keyboard) useKeyboardShortcuts',
@@ -310,7 +312,7 @@ const HOOKS: HookItem[] = [
   'mod+enter': handleSubmit,
   'escape': handleCancel,
   'mod+k': clearChat,
-})`
+})`,
   },
   {
     label: '$(mic) useVoiceInput',
@@ -328,8 +330,8 @@ const HOOKS: HookItem[] = [
 } = useVoiceInput({
   language: '\${1:en-US}',
   continuous: \${2:false},
-})`
-  }
+})`,
+  },
 ]
 
 export async function addHookCommand(_context: vscode.ExtensionContext) {
@@ -340,59 +342,66 @@ export async function addHookCommand(_context: vscode.ExtensionContext) {
   }
 
   // Group hooks by category
-  const categories = [...new Set(HOOKS.map(h => h.category))]
+  const categories = [...new Set(HOOKS.map((h) => h.category))]
 
   // Show category picker first
   const categoryPick = await vscode.window.showQuickPick(
     [
-      { label: 'All Hooks', description: 'Show all available hooks', value: 'all' },
-      ...categories.map(cat => ({
+      {
+        label: 'All Hooks',
+        description: 'Show all available hooks',
+        value: 'all',
+      },
+      ...categories.map((cat) => ({
         label: `$(folder) ${cat}`,
-        description: `${HOOKS.filter(h => h.category === cat).length} hooks`,
-        value: cat
-      }))
+        description: `${HOOKS.filter((h) => h.category === cat).length} hooks`,
+        value: cat,
+      })),
     ],
     {
       placeHolder: 'Select hook category',
-      title: 'Clarity Chat Hooks'
+      title: 'Clarity Chat Hooks',
     }
   )
 
   if (!categoryPick) return
 
   // Filter hooks by category
-  const filteredHooks = categoryPick.value === 'all'
-    ? HOOKS
-    : HOOKS.filter(h => h.category === categoryPick.value)
+  const filteredHooks =
+    categoryPick.value === 'all'
+      ? HOOKS
+      : HOOKS.filter((h) => h.category === categoryPick.value)
 
   // Show hook picker
-  const selection = await vscode.window.showQuickPick(
-    filteredHooks,
-    {
-      placeHolder: 'Select a hook to add',
-      title: 'Clarity Chat Hooks',
-      matchOnDescription: true,
-      matchOnDetail: true
-    }
-  ) as HookItem | undefined
+  const selection = (await vscode.window.showQuickPick(filteredHooks, {
+    placeHolder: 'Select a hook to add',
+    title: 'Clarity Chat Hooks',
+    matchOnDescription: true,
+    matchOnDetail: true,
+  })) as HookItem | undefined
 
   if (!selection) return
 
   // Check if import already exists
   const document = editor.document
   const text = document.getText()
-  const hasImport = text.includes(selection.value) && text.includes('@clarity-chat/react')
+  const hasImport =
+    text.includes(selection.value) && text.includes('@clarity-chat/react')
 
   // If import doesn't exist, ask if user wants to add it
   if (!hasImport) {
     const addImport = await vscode.window.showQuickPick(
       [
-        { label: 'Yes', description: 'Add import statement at the top', value: true },
-        { label: 'No', description: 'Insert hook only', value: false }
+        {
+          label: 'Yes',
+          description: 'Add import statement at the top',
+          value: true,
+        },
+        { label: 'No', description: 'Insert hook only', value: false },
       ],
       {
         placeHolder: `Add import for ${selection.value}?`,
-        title: 'Add Import'
+        title: 'Add Import',
       }
     )
 
@@ -400,7 +409,7 @@ export async function addHookCommand(_context: vscode.ExtensionContext) {
       // Find the best location for the import
       const importLocation = findImportLocation(document)
 
-      await editor.edit(editBuilder => {
+      await editor.edit((editBuilder) => {
         editBuilder.insert(importLocation, selection.imports + '\n')
       })
     }
@@ -411,16 +420,17 @@ export async function addHookCommand(_context: vscode.ExtensionContext) {
   await editor.insertSnippet(snippet)
 
   // Show success message
-  vscode.window.showInformationMessage(
-    `Added ${selection.value} hook`,
-    'View Docs'
-  ).then(choice => {
-    if (choice === 'View Docs') {
-      vscode.env.openExternal(
-        vscode.Uri.parse(`https://docs.claritychat.dev/hooks/${selection.value.toLowerCase()}`)
-      )
-    }
-  })
+  vscode.window
+    .showInformationMessage(`Added ${selection.value} hook`, 'View Docs')
+    .then((choice) => {
+      if (choice === 'View Docs') {
+        vscode.env.openExternal(
+          vscode.Uri.parse(
+            `https://docs.claritychat.dev/hooks/${selection.value.toLowerCase()}`
+          )
+        )
+      }
+    })
 }
 
 function findImportLocation(document: vscode.TextDocument): vscode.Position {
@@ -431,9 +441,14 @@ function findImportLocation(document: vscode.TextDocument): vscode.Position {
   let lastImportLine = -1
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim()
-    if (line.startsWith('import ') || line.startsWith("import{")) {
+    if (line.startsWith('import ') || line.startsWith('import{')) {
       lastImportLine = i
-    } else if (lastImportLine >= 0 && line && !line.startsWith('//') && !line.startsWith('/*')) {
+    } else if (
+      lastImportLine >= 0 &&
+      line &&
+      !line.startsWith('//') &&
+      !line.startsWith('/*')
+    ) {
       break
     }
   }
@@ -444,7 +459,10 @@ function findImportLocation(document: vscode.TextDocument): vscode.Position {
 
   // No imports found, insert at the beginning (after any 'use client' directive)
   for (let i = 0; i < Math.min(lines.length, 5); i++) {
-    if (lines[i].includes("'use client'") || lines[i].includes('"use client"')) {
+    if (
+      lines[i].includes("'use client'") ||
+      lines[i].includes('"use client"')
+    ) {
       return new vscode.Position(i + 1, 0)
     }
   }

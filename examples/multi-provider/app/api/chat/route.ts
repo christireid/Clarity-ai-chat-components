@@ -171,7 +171,10 @@ export async function POST(request: NextRequest) {
         } catch (error) {
           const errorMessage =
             error instanceof Error ? error.message : 'Stream error'
-          const errorData = JSON.stringify({ type: 'error', message: errorMessage })
+          const errorData = JSON.stringify({
+            type: 'error',
+            message: errorMessage,
+          })
           controller.enqueue(encoder.encode(`data: ${errorData}\n\n`))
           controller.close()
         }

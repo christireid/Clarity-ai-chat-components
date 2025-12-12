@@ -9,9 +9,11 @@ const URLS = {
   docs: 'https://docs.claritychat.dev',
   storybook: 'https://storybook.claritychat.dev',
   github: 'https://github.com/code-and-clarity/clarity-chat',
-  examples: 'https://github.com/code-and-clarity/clarity-chat/tree/main/examples',
+  examples:
+    'https://github.com/code-and-clarity/clarity-chat/tree/main/examples',
   discord: 'https://discord.gg/claritychat',
-  changelog: 'https://github.com/code-and-clarity/clarity-chat/blob/main/CHANGELOG.md',
+  changelog:
+    'https://github.com/code-and-clarity/clarity-chat/blob/main/CHANGELOG.md',
 }
 
 /**
@@ -21,19 +23,55 @@ export async function openDocsCommand() {
   // Ask what documentation to open
   const selection = await vscode.window.showQuickPick(
     [
-      { label: '$(home) Getting Started', description: 'Quick start guide', value: '/getting-started' },
-      { label: '$(symbol-class) Components', description: 'Component reference', value: '/components' },
-      { label: '$(symbol-method) Hooks', description: 'Hooks reference', value: '/hooks' },
-      { label: '$(cloud) API Routes', description: 'Server-side setup', value: '/api-routes' },
-      { label: '$(database) Memory Management', description: 'Conversation memory', value: '/memory' },
-      { label: '$(dashboard) Token Optimization', description: 'Cost optimization', value: '/token-optimization' },
-      { label: '$(sync) Migration Guide', description: 'From Vercel AI SDK', value: '/migration' },
-      { label: '$(book) API Reference', description: 'Full API docs', value: '/api' },
-      { label: '$(file-code) Examples', description: 'Code examples', value: '/examples' },
+      {
+        label: '$(home) Getting Started',
+        description: 'Quick start guide',
+        value: '/getting-started',
+      },
+      {
+        label: '$(symbol-class) Components',
+        description: 'Component reference',
+        value: '/components',
+      },
+      {
+        label: '$(symbol-method) Hooks',
+        description: 'Hooks reference',
+        value: '/hooks',
+      },
+      {
+        label: '$(cloud) API Routes',
+        description: 'Server-side setup',
+        value: '/api-routes',
+      },
+      {
+        label: '$(database) Memory Management',
+        description: 'Conversation memory',
+        value: '/memory',
+      },
+      {
+        label: '$(dashboard) Token Optimization',
+        description: 'Cost optimization',
+        value: '/token-optimization',
+      },
+      {
+        label: '$(sync) Migration Guide',
+        description: 'From Vercel AI SDK',
+        value: '/migration',
+      },
+      {
+        label: '$(book) API Reference',
+        description: 'Full API docs',
+        value: '/api',
+      },
+      {
+        label: '$(file-code) Examples',
+        description: 'Code examples',
+        value: '/examples',
+      },
     ],
     {
       placeHolder: 'What documentation do you need?',
-      title: 'Clarity Chat Documentation'
+      title: 'Clarity Chat Documentation',
     }
   )
 
@@ -50,16 +88,40 @@ export async function openStorybookCommand() {
   // Ask what component to view
   const selection = await vscode.window.showQuickPick(
     [
-      { label: '$(home) All Components', description: 'Browse all components', value: '' },
-      { label: '$(symbol-class) ClarityChat', description: 'Main chat component', value: '?path=/docs/components-claritychat--docs' },
-      { label: '$(list-ordered) MessageList', description: 'Message display', value: '?path=/docs/components-messagelist--docs' },
-      { label: '$(edit) ChatInput', description: 'Input component', value: '?path=/docs/components-chatinput--docs' },
-      { label: '$(pulse) StreamingMessage', description: 'Streaming text', value: '?path=/docs/components-streamingmessage--docs' },
-      { label: '$(database) MemoryProvider', description: 'Memory context', value: '?path=/docs/providers-memoryprovider--docs' },
+      {
+        label: '$(home) All Components',
+        description: 'Browse all components',
+        value: '',
+      },
+      {
+        label: '$(symbol-class) ClarityChat',
+        description: 'Main chat component',
+        value: '?path=/docs/components-claritychat--docs',
+      },
+      {
+        label: '$(list-ordered) MessageList',
+        description: 'Message display',
+        value: '?path=/docs/components-messagelist--docs',
+      },
+      {
+        label: '$(edit) ChatInput',
+        description: 'Input component',
+        value: '?path=/docs/components-chatinput--docs',
+      },
+      {
+        label: '$(pulse) StreamingMessage',
+        description: 'Streaming text',
+        value: '?path=/docs/components-streamingmessage--docs',
+      },
+      {
+        label: '$(database) MemoryProvider',
+        description: 'Memory context',
+        value: '?path=/docs/providers-memoryprovider--docs',
+      },
     ],
     {
       placeHolder: 'Select component to view in Storybook',
-      title: 'Clarity Chat Storybook'
+      title: 'Clarity Chat Storybook',
     }
   )
 
@@ -75,15 +137,35 @@ export async function openStorybookCommand() {
 export async function openGitHubCommand() {
   const selection = await vscode.window.showQuickPick(
     [
-      { label: '$(github) Repository', description: 'Main repository', value: URLS.github },
-      { label: '$(issues) Issues', description: 'Report bugs or request features', value: `${URLS.github}/issues` },
-      { label: '$(git-pull-request) Pull Requests', description: 'Contribute', value: `${URLS.github}/pulls` },
-      { label: '$(file-code) Examples', description: 'Example projects', value: URLS.examples },
-      { label: '$(history) Changelog', description: 'Version history', value: URLS.changelog },
+      {
+        label: '$(github) Repository',
+        description: 'Main repository',
+        value: URLS.github,
+      },
+      {
+        label: '$(issues) Issues',
+        description: 'Report bugs or request features',
+        value: `${URLS.github}/issues`,
+      },
+      {
+        label: '$(git-pull-request) Pull Requests',
+        description: 'Contribute',
+        value: `${URLS.github}/pulls`,
+      },
+      {
+        label: '$(file-code) Examples',
+        description: 'Example projects',
+        value: URLS.examples,
+      },
+      {
+        label: '$(history) Changelog',
+        description: 'Version history',
+        value: URLS.changelog,
+      },
     ],
     {
       placeHolder: 'Select what to open',
-      title: 'Clarity Chat on GitHub'
+      title: 'Clarity Chat on GitHub',
     }
   )
 
@@ -105,15 +187,35 @@ export function openDiscordCommand() {
 export async function showQuickLinksCommand() {
   const selection = await vscode.window.showQuickPick(
     [
-      { label: '$(book) Documentation', description: 'Complete guides and API reference', value: 'docs' },
-      { label: '$(preview) Storybook', description: 'Interactive component playground', value: 'storybook' },
-      { label: '$(github) GitHub', description: 'Source code and issues', value: 'github' },
-      { label: '$(comment-discussion) Discord', description: 'Community support', value: 'discord' },
-      { label: '$(file-code) Examples', description: 'Sample projects', value: 'examples' },
+      {
+        label: '$(book) Documentation',
+        description: 'Complete guides and API reference',
+        value: 'docs',
+      },
+      {
+        label: '$(preview) Storybook',
+        description: 'Interactive component playground',
+        value: 'storybook',
+      },
+      {
+        label: '$(github) GitHub',
+        description: 'Source code and issues',
+        value: 'github',
+      },
+      {
+        label: '$(comment-discussion) Discord',
+        description: 'Community support',
+        value: 'discord',
+      },
+      {
+        label: '$(file-code) Examples',
+        description: 'Sample projects',
+        value: 'examples',
+      },
     ],
     {
       placeHolder: 'Quick Links',
-      title: 'Clarity Chat Resources'
+      title: 'Clarity Chat Resources',
     }
   )
 

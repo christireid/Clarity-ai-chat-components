@@ -158,9 +158,7 @@
 
   "TypingIndicator": {
     "prefix": ["cc-typing", "typing-indicator"],
-    "body": [
-      "<TypingIndicator isTyping={${1:isTyping}} />"
-    ],
+    "body": ["<TypingIndicator isTyping={${1:isTyping}} />"],
     "description": "Typing indicator"
   },
 

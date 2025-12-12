@@ -98,7 +98,7 @@ export async function GET() {
       openai: !!process.env.OPENAI_API_KEY,
       anthropic: !!process.env.ANTHROPIC_API_KEY,
       google: !!process.env.GOOGLE_API_KEY,
-    }
+    },
   })
 }
 ```
@@ -123,16 +123,19 @@ multi-provider/
 ## Available Models
 
 ### OpenAI
+
 - **GPT-4 Turbo** - Most capable, 128K context
 - **GPT-4o** - Fast multimodal, 128K context
 - **GPT-3.5 Turbo** - Cost-effective, 16K context
 
 ### Anthropic
+
 - **Claude 3 Opus** - Most intelligent, 200K context
 - **Claude 3.5 Sonnet** - Best balance, 200K context
 - **Claude 3 Haiku** - Fastest, 200K context
 
 ### Google
+
 - **Gemini 1.5 Pro** - 2M context window
 - **Gemini 1.5 Flash** - Fast, 1M context
 
@@ -141,6 +144,7 @@ multi-provider/
 ### Add a New Provider
 
 1. Add to `lib/providers.ts`:
+
 ```typescript
 export const PROVIDERS = {
   // ...existing
@@ -154,6 +158,7 @@ export const PROVIDERS = {
 ```
 
 2. Add models:
+
 ```typescript
 {
   id: 'new-model-id',

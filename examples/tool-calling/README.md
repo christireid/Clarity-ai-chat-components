@@ -32,12 +32,12 @@ Open [http://localhost:3004](http://localhost:3004) to see the demo.
 
 ## Available Tools
 
-| Tool | Description | Example Query |
-|------|-------------|---------------|
-| Weather | Get current weather | "What's the weather in NYC?" |
-| Search | Web search | "Search for AI news" |
-| Calculator | Math calculations | "Calculate 15% of 287" |
-| Stock | Stock prices | "Apple stock price?" |
+| Tool       | Description         | Example Query                |
+| ---------- | ------------------- | ---------------------------- |
+| Weather    | Get current weather | "What's the weather in NYC?" |
+| Search     | Web search          | "Search for AI news"         |
+| Calculator | Math calculations   | "Calculate 15% of 287"       |
+| Stock      | Stock prices        | "Apple stock price?"         |
 
 ## What You'll Learn
 
@@ -176,10 +176,9 @@ Replace the simulated functions with real API calls:
 
 ```typescript
 async function executeWeather(location: string) {
-  const response = await fetch(
-    `https://api.weather.com/v1/current?location=${location}`,
-    { headers: { 'API-Key': process.env.WEATHER_API_KEY } }
-  )
+  const response = await fetch(`https://api.weather.com/v1/current?location=${location}`, {
+    headers: { 'API-Key': process.env.WEATHER_API_KEY },
+  })
   return response.json()
 }
 ```

@@ -31,7 +31,10 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
     }
 
     // Import completions for @clarity-chat/react
-    if (linePrefix.includes("from '@clarity-chat") || linePrefix.includes('from "@clarity-chat')) {
+    if (
+      linePrefix.includes("from '@clarity-chat") ||
+      linePrefix.includes('from "@clarity-chat')
+    ) {
       completions.push(...this.getClarityChatExports())
     }
 
@@ -61,12 +64,15 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
     }
 
     // useClarityChat options
-    if (linePrefix.includes('useClarityChat({') || linePrefix.includes('useClarityChat({\n')) {
+    if (
+      linePrefix.includes('useClarityChat({') ||
+      linePrefix.includes('useClarityChat({\n')
+    ) {
       completions.push(...this.getUseClarityChatOptions())
     }
 
     // Memory strategy completions
-    if (linePrefix.includes("strategy:") || linePrefix.includes("strategy =")) {
+    if (linePrefix.includes('strategy:') || linePrefix.includes('strategy =')) {
       completions.push(...this.getMemoryStrategyCompletions())
     }
 
@@ -77,13 +83,15 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
     const components = [
       {
         label: 'ClarityChat',
-        snippet: 'ClarityChat api="${1:/api/chat}" placeholder="${2:Type your message...}" $0/>',
+        snippet:
+          'ClarityChat api="${1:/api/chat}" placeholder="${2:Type your message...}" $0/>',
         detail: 'Complete drop-in chat UI',
         docs: 'Full-featured chat interface with streaming, markdown, and accessibility support.',
       },
       {
         label: 'ClarityChatPresets',
-        snippet: 'ClarityChatPresets variant="${1|minimal,standard,enterprise|}" api="${2:/api/chat}" />',
+        snippet:
+          'ClarityChatPresets variant="${1|minimal,standard,enterprise|}" api="${2:/api/chat}" />',
         detail: 'Pre-configured chat variants',
         docs: 'Ready-to-use chat presets for common use cases.',
       },
@@ -95,7 +103,8 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
       },
       {
         label: 'MessageList',
-        snippet: 'MessageList messages={${1:messages}} isLoading={${2:isLoading}} />',
+        snippet:
+          'MessageList messages={${1:messages}} isLoading={${2:isLoading}} />',
         detail: 'Message list display',
         docs: 'Virtualized message list for performance with large histories.',
       },
@@ -108,19 +117,22 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
       },
       {
         label: 'MessageBubble',
-        snippet: 'MessageBubble message={${1:message}} variant="${2|default,compact,minimal|}" />',
+        snippet:
+          'MessageBubble message={${1:message}} variant="${2|default,compact,minimal|}" />',
         detail: 'Individual message display',
         docs: 'Styled message bubble with role-based theming and timestamps.',
       },
       {
         label: 'MemoryProvider',
-        snippet: 'MemoryProvider strategy="${1|hybrid,sliding-window,summarization|}" maxTokens={${2:2000}}>\n\t$0\n</MemoryProvider>',
+        snippet:
+          'MemoryProvider strategy="${1|hybrid,sliding-window,summarization|}" maxTokens={${2:2000}}>\n\t$0\n</MemoryProvider>',
         detail: 'Memory context provider',
         docs: 'Enables conversation memory for child components.',
       },
       {
         label: 'StreamingMessage',
-        snippet: 'StreamingMessage content={${1:content}} isStreaming={${2:isStreaming}} showCursor />',
+        snippet:
+          'StreamingMessage content={${1:content}} isStreaming={${2:isStreaming}} showCursor />',
         detail: 'Streaming text display',
         docs: 'Real-time text display with typing cursor animation.',
       },
@@ -132,19 +144,22 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
       },
       {
         label: 'TokenBudgetDisplay',
-        snippet: 'TokenBudgetDisplay stats={${1:tokenStats}} maxTokens={${2:4000}} showWarning />',
+        snippet:
+          'TokenBudgetDisplay stats={${1:tokenStats}} maxTokens={${2:4000}} showWarning />',
         detail: 'Token usage visualization',
         docs: 'Shows token consumption with visual progress bar.',
       },
       {
         label: 'MarkdownRenderer',
-        snippet: 'MarkdownRenderer content={${1:content}} enableCodeHighlight />',
+        snippet:
+          'MarkdownRenderer content={${1:content}} enableCodeHighlight />',
         detail: 'Markdown content display',
         docs: 'Renders markdown with syntax highlighting and sanitization.',
       },
       {
         label: 'CodeBlock',
-        snippet: 'CodeBlock code={${1:code}} language="${2:typescript}" showLineNumbers enableCopy />',
+        snippet:
+          'CodeBlock code={${1:code}} language="${2:typescript}" showLineNumbers enableCopy />',
         detail: 'Syntax highlighted code',
         docs: 'Code block with copy button and language detection.',
       },
@@ -183,7 +198,8 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
       },
       {
         label: 'useMemoryContext',
-        snippet: '{ memoryInfo, clearMemory, summarizeMemory } = useMemoryContext()',
+        snippet:
+          '{ memoryInfo, clearMemory, summarizeMemory } = useMemoryContext()',
         detail: 'Access memory state from MemoryProvider',
         docs: 'Get and manage conversation memory state.',
       },
@@ -196,7 +212,8 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
       },
       {
         label: 'useChatEnhanced',
-        snippet: '{ messages, send, isLoading } = useChatEnhanced(${1:options})',
+        snippet:
+          '{ messages, send, isLoading } = useChatEnhanced(${1:options})',
         detail: 'Composable chat hook',
         docs: 'Enhanced hook with more granular control and composability.',
       },
@@ -209,7 +226,8 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
       },
       {
         label: 'useAutoScroll',
-        snippet: '{ containerRef, scrollToBottom, isAtBottom } = useAutoScroll()',
+        snippet:
+          '{ containerRef, scrollToBottom, isAtBottom } = useAutoScroll()',
         detail: 'Auto-scroll behavior',
         docs: 'Automatically scroll to new messages.',
       },
@@ -259,27 +277,54 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
       { name: 'useClarityChat', kind: vscode.CompletionItemKind.Function },
       { name: 'useChatEnhanced', kind: vscode.CompletionItemKind.Function },
       { name: 'useMemoryContext', kind: vscode.CompletionItemKind.Function },
-      { name: 'useConversationHistory', kind: vscode.CompletionItemKind.Function },
+      {
+        name: 'useConversationHistory',
+        kind: vscode.CompletionItemKind.Function,
+      },
       { name: 'useStreamingSSE', kind: vscode.CompletionItemKind.Function },
-      { name: 'useStreamingWebSocket', kind: vscode.CompletionItemKind.Function },
-      { name: 'useTokenBudgetMonitor', kind: vscode.CompletionItemKind.Function },
-      { name: 'useTokenOptimizationEnhanced', kind: vscode.CompletionItemKind.Function },
+      {
+        name: 'useStreamingWebSocket',
+        kind: vscode.CompletionItemKind.Function,
+      },
+      {
+        name: 'useTokenBudgetMonitor',
+        kind: vscode.CompletionItemKind.Function,
+      },
+      {
+        name: 'useTokenOptimizationEnhanced',
+        kind: vscode.CompletionItemKind.Function,
+      },
       { name: 'useTokenCounter', kind: vscode.CompletionItemKind.Function },
       { name: 'useAutoScroll', kind: vscode.CompletionItemKind.Function },
       { name: 'useProviderConfig', kind: vscode.CompletionItemKind.Function },
       { name: 'useMultiProvider', kind: vscode.CompletionItemKind.Function },
-      { name: 'useKeyboardShortcuts', kind: vscode.CompletionItemKind.Function },
+      {
+        name: 'useKeyboardShortcuts',
+        kind: vscode.CompletionItemKind.Function,
+      },
       { name: 'useVoiceInput', kind: vscode.CompletionItemKind.Function },
       // Types
       { name: 'CoreMessage', kind: vscode.CompletionItemKind.Interface },
-      { name: 'UseClarityChatOptions', kind: vscode.CompletionItemKind.Interface },
-      { name: 'ClarityMemoryOptions', kind: vscode.CompletionItemKind.Interface },
+      {
+        name: 'UseClarityChatOptions',
+        kind: vscode.CompletionItemKind.Interface,
+      },
+      {
+        name: 'ClarityMemoryOptions',
+        kind: vscode.CompletionItemKind.Interface,
+      },
       { name: 'TokenBudgetStats', kind: vscode.CompletionItemKind.Interface },
       { name: 'StreamingState', kind: vscode.CompletionItemKind.Interface },
       // Utilities
-      { name: 'buildKVCacheOptimizedPrompt', kind: vscode.CompletionItemKind.Function },
+      {
+        name: 'buildKVCacheOptimizedPrompt',
+        kind: vscode.CompletionItemKind.Function,
+      },
       { name: 'createSystemSegment', kind: vscode.CompletionItemKind.Function },
-      { name: 'createHistorySegment', kind: vscode.CompletionItemKind.Function },
+      {
+        name: 'createHistorySegment',
+        kind: vscode.CompletionItemKind.Function,
+      },
     ]
 
     return exports.map(({ name, kind }) => {
@@ -294,16 +339,31 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
       { name: 'api', type: 'string', desc: 'API endpoint URL' },
       { name: 'memory', type: 'object', desc: 'Memory configuration' },
       { name: 'onStart', type: 'function', desc: 'Called when request starts' },
-      { name: 'onFinish', type: 'function', desc: 'Called when request completes' },
+      {
+        name: 'onFinish',
+        type: 'function',
+        desc: 'Called when request completes',
+      },
       { name: 'onError', type: 'function', desc: 'Error handler callback' },
-      { name: 'initialMessages', type: 'array', desc: 'Initial message history' },
+      {
+        name: 'initialMessages',
+        type: 'array',
+        desc: 'Initial message history',
+      },
       { name: 'initialValue', type: 'string', desc: 'Initial input value' },
-      { name: 'requestBody', type: 'object', desc: 'Additional request body data' },
+      {
+        name: 'requestBody',
+        type: 'object',
+        desc: 'Additional request body data',
+      },
       { name: 'headers', type: 'object', desc: 'Custom request headers' },
     ]
 
     return options.map(({ name, type, desc }) => {
-      const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Property)
+      const item = new vscode.CompletionItem(
+        name,
+        vscode.CompletionItemKind.Property
+      )
       item.detail = type
       item.documentation = desc
       return item
@@ -312,13 +372,19 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
 
   private getMemoryStrategyCompletions(): vscode.CompletionItem[] {
     const strategies = [
-      { name: 'hybrid', desc: 'Combine sliding window and summarization (recommended)' },
+      {
+        name: 'hybrid',
+        desc: 'Combine sliding window and summarization (recommended)',
+      },
       { name: 'sliding-window', desc: 'Keep last N messages' },
       { name: 'summarization', desc: 'Compress old messages into summaries' },
     ]
 
     return strategies.map(({ name, desc }) => {
-      const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.EnumMember)
+      const item = new vscode.CompletionItem(
+        name,
+        vscode.CompletionItemKind.EnumMember
+      )
       item.detail = desc
       item.insertText = `'${name}'`
       return item

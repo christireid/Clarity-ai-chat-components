@@ -21,19 +21,54 @@ interface FrameworkOption {
 
 const PROVIDERS: ProviderOption[] = [
   { label: 'OpenAI', description: 'GPT-4, GPT-3.5 Turbo', value: 'openai' },
-  { label: 'Anthropic', description: 'Claude 3 Opus, Sonnet, Haiku', value: 'anthropic' },
+  {
+    label: 'Anthropic',
+    description: 'Claude 3 Opus, Sonnet, Haiku',
+    value: 'anthropic',
+  },
   { label: 'Google AI', description: 'Gemini Pro models', value: 'google' },
-  { label: 'Multi-Provider', description: 'Support multiple providers', value: 'multi' }
+  {
+    label: 'Multi-Provider',
+    description: 'Support multiple providers',
+    value: 'multi',
+  },
 ]
 
 const FRAMEWORKS: FrameworkOption[] = [
-  { label: 'Next.js App Router', description: 'app/api/chat/route.ts', value: 'nextjs-app', fileName: 'route.ts', directory: 'app/api/chat' },
-  { label: 'Next.js Pages Router', description: 'pages/api/chat.ts', value: 'nextjs-pages', fileName: 'chat.ts', directory: 'pages/api' },
-  { label: 'Express', description: 'Express.js server', value: 'express', fileName: 'chat.ts', directory: 'src/routes' },
-  { label: 'Hono', description: 'Hono web framework', value: 'hono', fileName: 'chat.ts', directory: 'src/routes' }
+  {
+    label: 'Next.js App Router',
+    description: 'app/api/chat/route.ts',
+    value: 'nextjs-app',
+    fileName: 'route.ts',
+    directory: 'app/api/chat',
+  },
+  {
+    label: 'Next.js Pages Router',
+    description: 'pages/api/chat.ts',
+    value: 'nextjs-pages',
+    fileName: 'chat.ts',
+    directory: 'pages/api',
+  },
+  {
+    label: 'Express',
+    description: 'Express.js server',
+    value: 'express',
+    fileName: 'chat.ts',
+    directory: 'src/routes',
+  },
+  {
+    label: 'Hono',
+    description: 'Hono web framework',
+    value: 'hono',
+    fileName: 'chat.ts',
+    directory: 'src/routes',
+  },
 ]
 
-export async function createApiRouteCommand(context: vscode.ExtensionContext, targetUri?: vscode.Uri) {
+export async function createApiRouteCommand(
+  context: vscode.ExtensionContext,
+  targetUri?: vscode.Uri
+) {
   // Get workspace folder
   const workspaceFolders = vscode.workspace.workspaceFolders
   if (!workspaceFolders) {
@@ -44,7 +79,7 @@ export async function createApiRouteCommand(context: vscode.ExtensionContext, ta
   // Select provider
   const provider = await vscode.window.showQuickPick(PROVIDERS, {
     placeHolder: 'Select AI provider',
-    title: 'Create API Route - Select Provider'
+    title: 'Create API Route - Select Provider',
   })
 
   if (!provider) return
@@ -52,7 +87,7 @@ export async function createApiRouteCommand(context: vscode.ExtensionContext, ta
   // Select framework
   const framework = await vscode.window.showQuickPick(FRAMEWORKS, {
     placeHolder: 'Select framework',
-    title: 'Create API Route - Select Framework'
+    title: 'Create API Route - Select Framework',
   })
 
   if (!framework) return
@@ -60,26 +95,41 @@ export async function createApiRouteCommand(context: vscode.ExtensionContext, ta
   // Ask for streaming preference
   const streaming = await vscode.window.showQuickPick(
     [
-      { label: 'Streaming', description: 'Real-time response streaming (recommended)', value: true },
-      { label: 'Non-streaming', description: 'Wait for complete response', value: false }
+      {
+        label: 'Streaming',
+        description: 'Real-time response streaming (recommended)',
+        value: true,
+      },
+      {
+        label: 'Non-streaming',
+        description: 'Wait for complete response',
+        value: false,
+      },
     ],
     {
       placeHolder: 'Select response type',
-      title: 'Create API Route - Response Type'
+      title: 'Create API Route - Response Type',
     }
   )
 
   if (!streaming) return
 
   // Generate the code
-  const code = generateApiRouteCode(provider.value, framework.value, streaming.value)
+  const code = generateApiRouteCode(
+    provider.value,
+    framework.value,
+    streaming.value
+  )
 
   // Determine the file path
   let targetDir: vscode.Uri
   if (targetUri) {
     targetDir = targetUri
   } else {
-    targetDir = vscode.Uri.joinPath(workspaceFolders[0].uri, framework.directory)
+    targetDir = vscode.Uri.joinPath(
+      workspaceFolders[0].uri,
+      framework.directory
+    )
   }
 
   const targetFile = vscode.Uri.joinPath(targetDir, framework.fileName)
@@ -126,11 +176,17 @@ export async function createApiRouteCommand(context: vscode.ExtensionContext, ta
   if (action === 'Add Environment Variables') {
     vscode.commands.executeCommand('clarity-chat.addProvider')
   } else if (action === 'View Documentation') {
-    vscode.env.openExternal(vscode.Uri.parse('https://docs.claritychat.dev/api-routes'))
+    vscode.env.openExternal(
+      vscode.Uri.parse('https://docs.claritychat.dev/api-routes')
+    )
   }
 }
 
-function generateApiRouteCode(provider: string, framework: string, streaming: boolean): string {
+function generateApiRouteCode(
+  provider: string,
+  framework: string,
+  streaming: boolean
+): string {
   switch (framework) {
     case 'nextjs-app':
       return generateNextJsAppRoute(provider, streaming)
@@ -506,7 +562,10 @@ export async function POST(req: NextRequest) {
   }
 }
 
-function generateNextJsPagesRoute(provider: string, streaming: boolean): string {
+function generateNextJsPagesRoute(
+  provider: string,
+  streaming: boolean
+): string {
   // Similar implementation for pages router
   return `import type { NextApiRequest, NextApiResponse } from 'next'
 import { OpenAI } from 'openai'
@@ -523,7 +582,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { messages, model = 'gpt-4-turbo' } = req.body
 
-${streaming ? `    // Set up SSE headers
+${
+  streaming
+    ? `    // Set up SSE headers
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
     res.setHeader('Connection', 'keep-alive')
@@ -542,7 +603,8 @@ ${streaming ? `    // Set up SSE headers
     }
 
     res.write('data: [DONE]\\n\\n')
-    res.end()` : `    const response = await openai.chat.completions.create({
+    res.end()`
+    : `    const response = await openai.chat.completions.create({
       model,
       messages,
     })
@@ -550,7 +612,8 @@ ${streaming ? `    // Set up SSE headers
     res.status(200).json({
       content: response.choices[0].message.content,
       usage: response.usage,
-    })`}
+    })`
+}
   } catch (error) {
     console.error('Chat error:', error)
     res.status(500).json({ error: 'Failed to generate response' })
@@ -573,7 +636,9 @@ router.post('/chat', async (req, res) => {
   try {
     const { messages, model = 'gpt-4-turbo' } = req.body
 
-${streaming ? `    // Set up SSE headers
+${
+  streaming
+    ? `    // Set up SSE headers
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
     res.setHeader('Connection', 'keep-alive')
@@ -592,7 +657,8 @@ ${streaming ? `    // Set up SSE headers
     }
 
     res.write('data: [DONE]\\n\\n')
-    res.end()` : `    const response = await openai.chat.completions.create({
+    res.end()`
+    : `    const response = await openai.chat.completions.create({
       model,
       messages,
     })
@@ -600,7 +666,8 @@ ${streaming ? `    // Set up SSE headers
     res.json({
       content: response.choices[0].message.content,
       usage: response.usage,
-    })`}
+    })`
+}
   } catch (error) {
     console.error('Chat error:', error)
     res.status(500).json({ error: 'Failed to generate response' })
@@ -626,7 +693,9 @@ app.post('/chat', async (c) => {
   const { messages, model = 'gpt-4-turbo' } = await c.req.json()
 
   try {
-${streaming ? `    return streamSSE(c, async (stream) => {
+${
+  streaming
+    ? `    return streamSSE(c, async (stream) => {
       const completion = await openai.chat.completions.create({
         model,
         messages,
@@ -641,7 +710,8 @@ ${streaming ? `    return streamSSE(c, async (stream) => {
       }
 
       await stream.writeSSE({ data: '[DONE]' })
-    })` : `    const response = await openai.chat.completions.create({
+    })`
+    : `    const response = await openai.chat.completions.create({
       model,
       messages,
     })
@@ -649,7 +719,8 @@ ${streaming ? `    return streamSSE(c, async (stream) => {
     return c.json({
       content: response.choices[0].message.content,
       usage: response.usage,
-    })`}
+    })`
+}
   } catch (error) {
     console.error('Chat error:', error)
     return c.json({ error: 'Failed to generate response' }, 500)

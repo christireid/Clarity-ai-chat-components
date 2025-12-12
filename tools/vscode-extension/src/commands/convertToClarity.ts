@@ -15,77 +15,77 @@ const IMPORT_CONVERSIONS: ConversionPattern[] = [
   {
     from: /import\s*{\s*useChat\s*}\s*from\s*['"]ai\/react['"]/g,
     to: "import { useClarityChat } from '@clarity-chat/react'",
-    description: "Import useChat from ai/react"
+    description: 'Import useChat from ai/react',
   },
   {
     from: /import\s*{\s*useChat\s*}\s*from\s*['"]ai['"]/g,
     to: "import { useClarityChat } from '@clarity-chat/react'",
-    description: "Import useChat from ai"
+    description: 'Import useChat from ai',
   },
   {
     from: /import\s*{\s*useCompletion\s*}\s*from\s*['"]ai\/react['"]/g,
     to: "import { useClarityChat } from '@clarity-chat/react'",
-    description: "Import useCompletion from ai/react"
+    description: 'Import useCompletion from ai/react',
   },
   {
     from: /import\s*{\s*Message\s*}\s*from\s*['"]ai['"]/g,
     to: "import type { CoreMessage } from '@clarity-chat/react'",
-    description: "Import Message type from ai"
+    description: 'Import Message type from ai',
   },
   {
     from: /import\s*{\s*StreamingTextResponse\s*}\s*from\s*['"]ai['"]/g,
-    to: "// StreamingTextResponse is handled automatically by Clarity Chat API routes",
-    description: "Import StreamingTextResponse from ai"
-  }
+    to: '// StreamingTextResponse is handled automatically by Clarity Chat API routes',
+    description: 'Import StreamingTextResponse from ai',
+  },
 ]
 
 const HOOK_CONVERSIONS: ConversionPattern[] = [
   {
     from: /\buseChat\s*\(\s*\{/g,
-    to: "useClarityChat({",
-    description: "useChat hook"
+    to: 'useClarityChat({',
+    description: 'useChat hook',
   },
   {
     from: /\buseCompletion\s*\(\s*\{/g,
-    to: "useClarityChat({",
-    description: "useCompletion hook"
-  }
+    to: 'useClarityChat({',
+    description: 'useCompletion hook',
+  },
 ]
 
 const OPTION_CONVERSIONS: ConversionPattern[] = [
   {
     from: /onResponse\s*:/g,
-    to: "onStart:",
-    description: "onResponse option"
+    to: 'onStart:',
+    description: 'onResponse option',
   },
   {
     from: /onFinish\s*:\s*\(\s*message\s*\)/g,
-    to: "onFinish: (message, context)",
-    description: "onFinish signature"
+    to: 'onFinish: (message, context)',
+    description: 'onFinish signature',
   },
   {
     from: /body\s*:\s*\{/g,
-    to: "requestBody: {",
-    description: "body option"
+    to: 'requestBody: {',
+    description: 'body option',
   },
   {
     from: /initialInput\s*:/g,
-    to: "initialValue:",
-    description: "initialInput option"
-  }
+    to: 'initialValue:',
+    description: 'initialInput option',
+  },
 ]
 
 const TYPE_CONVERSIONS: ConversionPattern[] = [
   {
     from: /:\s*Message\[\]/g,
-    to: ": CoreMessage[]",
-    description: "Message[] type"
+    to: ': CoreMessage[]',
+    description: 'Message[] type',
   },
   {
     from: /:\s*Message\b/g,
-    to: ": CoreMessage",
-    description: "Message type"
-  }
+    to: ': CoreMessage',
+    description: 'Message type',
+  },
 ]
 
 export async function convertToClarityCommand() {
@@ -110,7 +110,9 @@ export async function convertToClarityCommand() {
       'Cancel'
     )
     if (action === 'Show Migration Guide') {
-      vscode.env.openExternal(vscode.Uri.parse('https://docs.claritychat.dev/migration'))
+      vscode.env.openExternal(
+        vscode.Uri.parse('https://docs.claritychat.dev/migration')
+      )
     }
     return
   }
@@ -128,12 +130,14 @@ export async function convertToClarityCommand() {
   const changes = analyzeChanges(text)
 
   if (changes.length === 0) {
-    vscode.window.showInformationMessage('No convertible patterns found in this file.')
+    vscode.window.showInformationMessage(
+      'No convertible patterns found in this file.'
+    )
     return
   }
 
   // Show changes summary
-  const changesSummary = changes.map(c => `- ${c.description}`).join('\n')
+  const changesSummary = changes.map((c) => `- ${c.description}`).join('\n')
   const proceed = await vscode.window.showInformationMessage(
     `Found ${changes.length} patterns to convert:\n\n${changesSummary.slice(0, 200)}${changesSummary.length > 200 ? '...' : ''}`,
     { modal: true },
@@ -161,7 +165,9 @@ export async function convertToClarityCommand() {
   )
 
   if (action === 'View Migration Guide') {
-    vscode.env.openExternal(vscode.Uri.parse('https://docs.claritychat.dev/migration'))
+    vscode.env.openExternal(
+      vscode.Uri.parse('https://docs.claritychat.dev/migration')
+    )
   } else if (action === 'Add Memory Support') {
     // Insert memory configuration
     const editor = vscode.window.activeTextEditor
@@ -185,7 +191,7 @@ function analyzeChanges(text: string): ConversionPattern[] {
     ...IMPORT_CONVERSIONS,
     ...HOOK_CONVERSIONS,
     ...OPTION_CONVERSIONS,
-    ...TYPE_CONVERSIONS
+    ...TYPE_CONVERSIONS,
   ]
 
   for (const pattern of allPatterns) {
@@ -207,7 +213,7 @@ async function applyChanges(editor: vscode.TextEditor, originalText: string) {
     ...IMPORT_CONVERSIONS,
     ...HOOK_CONVERSIONS,
     ...OPTION_CONVERSIONS,
-    ...TYPE_CONVERSIONS
+    ...TYPE_CONVERSIONS,
   ]
 
   for (const pattern of allPatterns) {
@@ -220,12 +226,15 @@ async function applyChanges(editor: vscode.TextEditor, originalText: string) {
     editor.document.positionAt(originalText.length)
   )
 
-  await editor.edit(editBuilder => {
+  await editor.edit((editBuilder) => {
     editBuilder.replace(fullRange, newText)
   })
 }
 
-async function showPreview(document: vscode.TextDocument, _changes: ConversionPattern[]) {
+async function showPreview(
+  document: vscode.TextDocument,
+  _changes: ConversionPattern[]
+) {
   const originalText = document.getText()
   let newText = originalText
 
@@ -234,7 +243,7 @@ async function showPreview(document: vscode.TextDocument, _changes: ConversionPa
     ...IMPORT_CONVERSIONS,
     ...HOOK_CONVERSIONS,
     ...OPTION_CONVERSIONS,
-    ...TYPE_CONVERSIONS
+    ...TYPE_CONVERSIONS,
   ]
 
   for (const pattern of allPatterns) {
@@ -246,13 +255,16 @@ async function showPreview(document: vscode.TextDocument, _changes: ConversionPa
   const modifiedUri = originalUri.with({ scheme: 'clarity-preview' })
 
   // Register content provider for preview
-  const provider = new class implements vscode.TextDocumentContentProvider {
+  const provider = new (class implements vscode.TextDocumentContentProvider {
     provideTextDocumentContent(): string {
       return newText
     }
-  }
+  })()
 
-  const disposable = vscode.workspace.registerTextDocumentContentProvider('clarity-preview', provider)
+  const disposable = vscode.workspace.registerTextDocumentContentProvider(
+    'clarity-preview',
+    provider
+  )
 
   // Show diff
   await vscode.commands.executeCommand(

@@ -37,9 +37,15 @@
 }
 
 /* Provider brand colors */
-.provider-openai { --provider-color: 16 185 129; }
-.provider-anthropic { --provider-color: 217 91 60; }
-.provider-google { --provider-color: 66 133 244; }
+.provider-openai {
+  --provider-color: 16 185 129;
+}
+.provider-anthropic {
+  --provider-color: 217 91 60;
+}
+.provider-google {
+  --provider-color: 66 133 244;
+}
 
 /* Smooth transitions */
 .transition-provider {
@@ -48,8 +54,13 @@
 
 /* Streaming cursor */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .animate-blink {

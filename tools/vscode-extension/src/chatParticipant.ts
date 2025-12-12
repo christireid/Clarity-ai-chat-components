@@ -8,7 +8,9 @@ import * as vscode from 'vscode'
 /**
  * Register the Copilot chat participant
  */
-export function registerChatParticipant(context: vscode.ExtensionContext): void {
+export function registerChatParticipant(
+  context: vscode.ExtensionContext
+): void {
   // Check if chat API is available (VS Code 1.90+)
   if (!vscode.chat) {
     console.log('Chat API not available - Copilot features disabled')
@@ -20,7 +22,11 @@ export function registerChatParticipant(context: vscode.ExtensionContext): void 
     handleChatRequest
   )
 
-  participant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'assets', 'icon.png')
+  participant.iconPath = vscode.Uri.joinPath(
+    context.extensionUri,
+    'assets',
+    'icon.png'
+  )
 
   participant.followupProvider = {
     provideFollowups: (_result, _context, _token) => {
@@ -103,7 +109,11 @@ async function handleChatRequest(
     await handleMemoryRequest(response)
   } else if (prompt.includes('token') || prompt.includes('optimi')) {
     await handleOptimizationRequest(response)
-  } else if (prompt.includes('migrate') || prompt.includes('convert') || prompt.includes('vercel')) {
+  } else if (
+    prompt.includes('migrate') ||
+    prompt.includes('convert') ||
+    prompt.includes('vercel')
+  ) {
     await handleMigrationRequest(response)
   } else if (prompt.includes('stream')) {
     await handleStreamingRequest(response)
@@ -130,12 +140,16 @@ async function handleComponentRequest(
   response.markdown('| Component | Description |\n')
   response.markdown('|-----------|-------------|\n')
   response.markdown('| `ClarityChat` | Complete chat UI with all features |\n')
-  response.markdown('| `ClarityChatPresets` | Pre-configured variants (minimal, standard, enterprise) |\n\n')
+  response.markdown(
+    '| `ClarityChatPresets` | Pre-configured variants (minimal, standard, enterprise) |\n\n'
+  )
 
   response.markdown('## Building Blocks\n\n')
   response.markdown('| Component | Description |\n')
   response.markdown('|-----------|-------------|\n')
-  response.markdown('| `ChatWindow` | Scrollable container with proper layout |\n')
+  response.markdown(
+    '| `ChatWindow` | Scrollable container with proper layout |\n'
+  )
   response.markdown('| `ChatInput` | Full-featured input with submit |\n')
   response.markdown('| `MessageList` | Virtualized message display |\n')
   response.markdown('| `MessageBubble` | Individual message styling |\n')
@@ -174,14 +188,22 @@ async function handleHookRequest(
   response.markdown('## Primary Hooks\n\n')
   response.markdown('| Hook | Description |\n')
   response.markdown('|------|-------------|\n')
-  response.markdown('| `useClarityChat` | Full-featured chat state management |\n')
-  response.markdown('| `useChatEnhanced` | Composable chat with more control |\n\n')
+  response.markdown(
+    '| `useClarityChat` | Full-featured chat state management |\n'
+  )
+  response.markdown(
+    '| `useChatEnhanced` | Composable chat with more control |\n\n'
+  )
 
   response.markdown('## Memory Hooks\n\n')
   response.markdown('| Hook | Description |\n')
   response.markdown('|------|-------------|\n')
-  response.markdown('| `useMemoryContext` | Access memory state from provider |\n')
-  response.markdown('| `useConversationHistory` | Persist and manage history |\n\n')
+  response.markdown(
+    '| `useMemoryContext` | Access memory state from provider |\n'
+  )
+  response.markdown(
+    '| `useConversationHistory` | Persist and manage history |\n\n'
+  )
 
   response.markdown('## Streaming Hooks\n\n')
   response.markdown('| Hook | Description |\n')
@@ -193,7 +215,9 @@ async function handleHookRequest(
   response.markdown('| Hook | Description |\n')
   response.markdown('|------|-------------|\n')
   response.markdown('| `useTokenBudgetMonitor` | Track token usage |\n')
-  response.markdown('| `useTokenOptimizationEnhanced` | Advanced optimization |\n')
+  response.markdown(
+    '| `useTokenOptimizationEnhanced` | Advanced optimization |\n'
+  )
   response.markdown('| `useTokenCounter` | Count tokens for text |\n\n')
 
   response.markdown('### Quick Example\n\n')
@@ -217,20 +241,32 @@ async function handleHookRequest(
   })
 }
 
-async function handleMemoryRequest(response: vscode.ChatResponseStream): Promise<void> {
+async function handleMemoryRequest(
+  response: vscode.ChatResponseStream
+): Promise<void> {
   response.markdown('# Memory Management\n\n')
-  response.markdown('Clarity Chat provides built-in conversation memory to help you build context-aware AI applications.\n\n')
+  response.markdown(
+    'Clarity Chat provides built-in conversation memory to help you build context-aware AI applications.\n\n'
+  )
 
   response.markdown('## Memory Strategies\n\n')
   response.markdown('| Strategy | Description | Best For |\n')
   response.markdown('|----------|-------------|----------|\n')
-  response.markdown('| `sliding-window` | Keep last N messages | Simple chat apps |\n')
-  response.markdown('| `summarization` | Compress old messages | Long conversations |\n')
-  response.markdown('| `hybrid` | Combine both approaches | Production apps |\n\n')
+  response.markdown(
+    '| `sliding-window` | Keep last N messages | Simple chat apps |\n'
+  )
+  response.markdown(
+    '| `summarization` | Compress old messages | Long conversations |\n'
+  )
+  response.markdown(
+    '| `hybrid` | Combine both approaches | Production apps |\n\n'
+  )
 
   response.markdown('## Basic Setup\n\n')
   response.markdown('```tsx\n')
-  response.markdown("import { MemoryProvider, useClarityChat } from '@clarity-chat/react'\n\n")
+  response.markdown(
+    "import { MemoryProvider, useClarityChat } from '@clarity-chat/react'\n\n"
+  )
   response.markdown('function App() {\n')
   response.markdown('  return (\n')
   response.markdown('    <MemoryProvider\n')
@@ -250,7 +286,9 @@ async function handleMemoryRequest(response: vscode.ChatResponseStream): Promise
   response.markdown('      maxTokens: 2000,\n')
   response.markdown('    },\n')
   response.markdown('  })\n')
-  response.markdown('  // memoryInfo contains: totalTokens, compressionRatio, etc.\n')
+  response.markdown(
+    '  // memoryInfo contains: totalTokens, compressionRatio, etc.\n'
+  )
   response.markdown('}\n')
   response.markdown('```\n\n')
 
@@ -265,16 +303,24 @@ async function handleMemoryRequest(response: vscode.ChatResponseStream): Promise
   response.markdown('```\n\n')
 }
 
-async function handleOptimizationRequest(response: vscode.ChatResponseStream): Promise<void> {
+async function handleOptimizationRequest(
+  response: vscode.ChatResponseStream
+): Promise<void> {
   response.markdown('# Token Optimization\n\n')
-  response.markdown('Clarity Chat provides several strategies to optimize token usage and reduce costs.\n\n')
+  response.markdown(
+    'Clarity Chat provides several strategies to optimize token usage and reduce costs.\n\n'
+  )
 
   response.markdown('## 1. Token Budget Monitor\n\n')
   response.markdown('Track token usage in real-time:\n\n')
   response.markdown('```tsx\n')
-  response.markdown("import { useTokenBudgetMonitor } from '@clarity-chat/react'\n\n")
+  response.markdown(
+    "import { useTokenBudgetMonitor } from '@clarity-chat/react'\n\n"
+  )
   response.markdown('const {\n')
-  response.markdown('  stats,           // { inputTokens, outputTokens, totalCost }\n')
+  response.markdown(
+    '  stats,           // { inputTokens, outputTokens, totalCost }\n'
+  )
   response.markdown('  optimizeMessages, // Trim messages to fit budget\n')
   response.markdown('  isOverBudget,    // Boolean check\n')
   response.markdown('  percentUsed,     // 0-100 percentage\n')
@@ -288,7 +334,9 @@ async function handleOptimizationRequest(response: vscode.ChatResponseStream): P
 
   response.markdown('## 2. Message Optimization\n\n')
   response.markdown('```tsx\n')
-  response.markdown('const { optimizedMessages, compressionRatio } = useTokenOptimizationEnhanced({\n')
+  response.markdown(
+    'const { optimizedMessages, compressionRatio } = useTokenOptimizationEnhanced({\n'
+  )
   response.markdown('  messages,\n')
   response.markdown('  targetTokens: 2000,\n')
   response.markdown("  strategies: ['truncate', 'summarize', 'prioritize'],\n")
@@ -301,19 +349,27 @@ async function handleOptimizationRequest(response: vscode.ChatResponseStream): P
   response.markdown("  model: 'gpt-4-turbo',\n")
   response.markdown('})\n\n')
   response.markdown("const tokens = countTokens('Hello, world!')\n")
-  response.markdown('const cost = estimateCost(1000, 500) // input, output tokens\n')
+  response.markdown(
+    'const cost = estimateCost(1000, 500) // input, output tokens\n'
+  )
   response.markdown('```\n\n')
 
   response.markdown('## Best Practices\n\n')
-  response.markdown('1. Use `hybrid` memory strategy for automatic optimization\n')
+  response.markdown(
+    '1. Use `hybrid` memory strategy for automatic optimization\n'
+  )
   response.markdown('2. Set appropriate `maxTokens` for your use case\n')
   response.markdown('3. Monitor token usage with `useTokenBudgetMonitor`\n')
   response.markdown('4. Use streaming to improve perceived performance\n')
 }
 
-async function handleMigrationRequest(response: vscode.ChatResponseStream): Promise<void> {
+async function handleMigrationRequest(
+  response: vscode.ChatResponseStream
+): Promise<void> {
   response.markdown('# Migration from Vercel AI SDK\n\n')
-  response.markdown('Clarity Chat is designed to be a drop-in replacement with enhanced features.\n\n')
+  response.markdown(
+    'Clarity Chat is designed to be a drop-in replacement with enhanced features.\n\n'
+  )
 
   response.markdown('## Import Changes\n\n')
   response.markdown('```tsx\n')
@@ -328,11 +384,15 @@ async function handleMigrationRequest(response: vscode.ChatResponseStream): Prom
   response.markdown('## Hook Migration\n\n')
   response.markdown('```tsx\n')
   response.markdown('// Before\n')
-  response.markdown('const { messages, input, handleInputChange, handleSubmit } = useChat({\n')
+  response.markdown(
+    'const { messages, input, handleInputChange, handleSubmit } = useChat({\n'
+  )
   response.markdown("  api: '/api/chat',\n")
   response.markdown('})\n\n')
   response.markdown('// After (same API, plus memory!)\n')
-  response.markdown('const { messages, input, handleInputChange, handleSubmit } = useClarityChat({\n')
+  response.markdown(
+    'const { messages, input, handleInputChange, handleSubmit } = useClarityChat({\n'
+  )
   response.markdown("  api: '/api/chat',\n")
   response.markdown('  memory: { enabled: true }, // Built-in memory!\n')
   response.markdown('})\n')
@@ -353,9 +413,13 @@ async function handleMigrationRequest(response: vscode.ChatResponseStream): Prom
   })
 }
 
-async function handleStreamingRequest(response: vscode.ChatResponseStream): Promise<void> {
+async function handleStreamingRequest(
+  response: vscode.ChatResponseStream
+): Promise<void> {
   response.markdown('# Streaming Responses\n\n')
-  response.markdown('Clarity Chat supports multiple streaming transports for real-time responses.\n\n')
+  response.markdown(
+    'Clarity Chat supports multiple streaming transports for real-time responses.\n\n'
+  )
 
   response.markdown('## Server-Sent Events (SSE) - Recommended\n\n')
   response.markdown('```tsx\n')
@@ -376,7 +440,9 @@ async function handleStreamingRequest(response: vscode.ChatResponseStream): Prom
 
   response.markdown('## WebSocket\n\n')
   response.markdown('```tsx\n')
-  response.markdown('const { data, isConnected, send } = useStreamingWebSocket({\n')
+  response.markdown(
+    'const { data, isConnected, send } = useStreamingWebSocket({\n'
+  )
   response.markdown("  url: 'wss://your-server.com/ws',\n")
   response.markdown('  reconnect: true,\n')
   response.markdown('  maxRetries: 3,\n')
@@ -389,7 +455,9 @@ async function handleStreamingRequest(response: vscode.ChatResponseStream): Prom
   })
 }
 
-async function handleApiRouteRequest(response: vscode.ChatResponseStream): Promise<void> {
+async function handleApiRouteRequest(
+  response: vscode.ChatResponseStream
+): Promise<void> {
   response.markdown('# API Routes\n\n')
   response.markdown('Clarity Chat works with any streaming API endpoint.\n\n')
 
@@ -402,7 +470,9 @@ async function handleApiRouteRequest(response: vscode.ChatResponseStream): Promi
   response.markdown('  \n')
   response.markdown('  const stream = new ReadableStream({\n')
   response.markdown('    async start(controller) {\n')
-  response.markdown('      const completion = await openai.chat.completions.create({\n')
+  response.markdown(
+    '      const completion = await openai.chat.completions.create({\n'
+  )
   response.markdown("        model: 'gpt-4-turbo',\n")
   response.markdown('        messages,\n')
   response.markdown('        stream: true,\n')
@@ -426,13 +496,21 @@ async function handleDocsRequest(
   response.markdown('# Clarity Chat Documentation\n\n')
 
   response.markdown('## Quick Links\n\n')
-  response.markdown('- [Getting Started](https://docs.claritychat.dev/getting-started)\n')
+  response.markdown(
+    '- [Getting Started](https://docs.claritychat.dev/getting-started)\n'
+  )
   response.markdown('- [Components](https://docs.claritychat.dev/components)\n')
   response.markdown('- [Hooks](https://docs.claritychat.dev/hooks)\n')
-  response.markdown('- [Memory Management](https://docs.claritychat.dev/memory)\n')
-  response.markdown('- [Token Optimization](https://docs.claritychat.dev/token-optimization)\n')
+  response.markdown(
+    '- [Memory Management](https://docs.claritychat.dev/memory)\n'
+  )
+  response.markdown(
+    '- [Token Optimization](https://docs.claritychat.dev/token-optimization)\n'
+  )
   response.markdown('- [API Routes](https://docs.claritychat.dev/api-routes)\n')
-  response.markdown('- [Migration Guide](https://docs.claritychat.dev/migration)\n')
+  response.markdown(
+    '- [Migration Guide](https://docs.claritychat.dev/migration)\n'
+  )
   response.markdown('- [Examples](https://docs.claritychat.dev/examples)\n\n')
 
   response.button({
@@ -446,13 +524,17 @@ async function handleDocsRequest(
   })
 }
 
-async function handleExamplesRequest(response: vscode.ChatResponseStream): Promise<void> {
+async function handleExamplesRequest(
+  response: vscode.ChatResponseStream
+): Promise<void> {
   response.markdown('# Code Examples\n\n')
 
   response.markdown('## Complete Chat Page\n\n')
   response.markdown('```tsx\n')
   response.markdown("'use client'\n\n")
-  response.markdown("import { ClarityChat, MemoryProvider } from '@clarity-chat/react'\n\n")
+  response.markdown(
+    "import { ClarityChat, MemoryProvider } from '@clarity-chat/react'\n\n"
+  )
   response.markdown('export default function ChatPage() {\n')
   response.markdown('  return (\n')
   response.markdown('    <MemoryProvider strategy="hybrid" maxTokens={2000}>\n')
@@ -479,10 +561,14 @@ async function handleGeneralRequest(
   prompt: string,
   response: vscode.ChatResponseStream
 ): Promise<void> {
-  response.markdown("I'm the **Clarity Chat** assistant! I can help you with:\n\n")
+  response.markdown(
+    "I'm the **Clarity Chat** assistant! I can help you with:\n\n"
+  )
 
   response.markdown('## Ask me about:\n\n')
-  response.markdown('- **Components** - "show me components" or "add a chat component"\n')
+  response.markdown(
+    '- **Components** - "show me components" or "add a chat component"\n'
+  )
   response.markdown('- **Hooks** - "what hooks are available?"\n')
   response.markdown('- **Memory** - "how do I set up memory?"\n')
   response.markdown('- **Token Optimization** - "how do I optimize tokens?"\n')

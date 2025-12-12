@@ -37,12 +37,14 @@ Open [http://localhost:3003](http://localhost:3003) to see the demo.
 ## Available Themes
 
 ### Light Themes
+
 - **Default Light** - Clean and professional
 - **Ocean** - Calm blue tones
 - **Forest** - Natural green palette
 - **Rose** - Warm pink accents
 
 ### Dark Themes
+
 - **Default Dark** - Modern dark mode
 - **Midnight** - Deep blue darkness
 - **Emerald** - Rich green on dark
@@ -59,7 +61,7 @@ export interface Theme {
   name: string
   mode: 'light' | 'dark'
   colors: {
-    background: string      // HSL values
+    background: string // HSL values
     foreground: string
     primary: string
     userBubble: string
@@ -153,9 +155,9 @@ All colors use HSL format without the `hsl()` wrapper:
 
 ```typescript
 // Format: "hue saturation% lightness%"
-primary: '221.2 83.2% 53.3%'  // Blue
-primary: '142 76% 36%'        // Green
-primary: '350 80% 50%'        // Pink
+primary: '221.2 83.2% 53.3%' // Blue
+primary: '142 76% 36%' // Green
+primary: '350 80% 50%' // Pink
 ```
 
 ### Add Smooth Transitions
@@ -164,9 +166,10 @@ The base CSS includes transition rules:
 
 ```css
 * {
-  transition: background-color 0.2s ease,
-              border-color 0.2s ease,
-              color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 ```
 

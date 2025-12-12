@@ -293,7 +293,10 @@ const CLARITY_COMPONENTS: Record<string, ClarityItemInfo> = {
     name: 'ClarityChatProvider',
     type: 'component',
     description: 'Root context provider for Clarity Chat configuration.',
-    props: ['config: ClarityChatConfig - Global configuration', 'children: ReactNode'],
+    props: [
+      'config: ClarityChatConfig - Global configuration',
+      'children: ReactNode',
+    ],
     example: `<ClarityChatProvider config={{ api: '/api/chat' }}>
   <App />
 </ClarityChatProvider>`,
@@ -314,7 +317,8 @@ const CLARITY_COMPONENTS: Record<string, ClarityItemInfo> = {
   MarkdownRenderer: {
     name: 'MarkdownRenderer',
     type: 'component',
-    description: 'Renders markdown content with syntax highlighting for code blocks.',
+    description:
+      'Renders markdown content with syntax highlighting for code blocks.',
     props: [
       'content: string - Markdown content',
       'enableCodeHighlight?: boolean',
@@ -375,7 +379,8 @@ const CLARITY_HOOKS: Record<string, ClarityItemInfo> = {
   useChatEnhanced: {
     name: 'useChatEnhanced',
     type: 'hook',
-    description: 'Enhanced chat hook with more granular control over chat behavior.',
+    description:
+      'Enhanced chat hook with more granular control over chat behavior.',
     returns: '{ ...useClarityChat, reload, stop, setMessages }',
     example: `const { messages, reload, stop } = useChatEnhanced({
   api: '/api/chat',
@@ -527,7 +532,8 @@ updateConfig({ model: 'gpt-4-turbo', temperature: 0.7 })`,
   useMessageParser: {
     name: 'useMessageParser',
     type: 'hook',
-    description: 'Parse and transform message content (markdown, code blocks, etc).',
+    description:
+      'Parse and transform message content (markdown, code blocks, etc).',
     returns: '{ parse, parseAsync }',
     example: `const { parse } = useMessageParser({
   enableMarkdown: true,
@@ -569,12 +575,15 @@ export class HoverProvider implements vscode.HoverProvider {
     _token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.Hover> {
     // Try to get word at position with different patterns
-    const wordRange = document.getWordRangeAtPosition(position, /[a-zA-Z_][\w]*/g)
+    const wordRange = document.getWordRangeAtPosition(
+      position,
+      /[a-zA-Z_][\w]*/g
+    )
     if (!wordRange) {
       // Try quoted strings for model names
       const quotedRange = document.getWordRangeAtPosition(
         position,
-        /['"][\w\-]+['"]/g
+        /['"][\w-]+['"]/g
       )
       if (quotedRange) {
         const word = document.getText(quotedRange).replace(/['"]/g, '')
@@ -622,7 +631,8 @@ export class HoverProvider implements vscode.HoverProvider {
     md.supportHtml = true
     md.isTrusted = true
 
-    const icon = info.type === 'component' ? '🧩' : info.type === 'hook' ? '🪝' : '📦'
+    const icon =
+      info.type === 'component' ? '🧩' : info.type === 'hook' ? '🪝' : '📦'
     md.appendMarkdown(`## ${icon} ${info.name}\n\n`)
     md.appendMarkdown(`*${info.type}*\n\n`)
     md.appendMarkdown(`${info.description}\n\n`)

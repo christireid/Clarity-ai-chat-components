@@ -127,13 +127,11 @@ export function activate(context: vscode.ExtensionContext) {
   // Register commands
   context.subscriptions.push(
     // New Clarity Chat specific commands
-    vscode.commands.registerCommand(
-      'clarity-chat.addComponent',
-      () => addComponentCommand(context)
+    vscode.commands.registerCommand('clarity-chat.addComponent', () =>
+      addComponentCommand(context)
     ),
-    vscode.commands.registerCommand(
-      'clarity-chat.addHook',
-      () => addHookCommand(context)
+    vscode.commands.registerCommand('clarity-chat.addHook', () =>
+      addHookCommand(context)
     ),
     vscode.commands.registerCommand(
       'clarity-chat.createApiRoute',
@@ -143,10 +141,7 @@ export function activate(context: vscode.ExtensionContext) {
       'clarity-chat.convertToClarity',
       convertToClarityCommand
     ),
-    vscode.commands.registerCommand(
-      'clarity-chat.openDocs',
-      openDocsCommand
-    ),
+    vscode.commands.registerCommand('clarity-chat.openDocs', openDocsCommand),
     vscode.commands.registerCommand(
       'clarity-chat.openStorybook',
       openStorybookCommand
@@ -181,7 +176,10 @@ export function activate(context: vscode.ExtensionContext) {
   registerChatParticipant(context)
 
   // Show welcome message on first install
-  const hasShownWelcome = context.globalState.get('clarity-chat.hasShownWelcome', false)
+  const hasShownWelcome = context.globalState.get(
+    'clarity-chat.hasShownWelcome',
+    false
+  )
   if (!hasShownWelcome) {
     showWelcomeMessage(context)
   }

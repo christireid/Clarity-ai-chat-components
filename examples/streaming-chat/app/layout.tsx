@@ -6,7 +6,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Streaming Chat | Clarity Chat Demo',
-  description: 'Advanced SSE streaming demo with cancel, retry, and token tracking',
+  description:
+    'Advanced SSE streaming demo with cancel, retry, and token tracking',
 }
 
 export default function RootLayout({

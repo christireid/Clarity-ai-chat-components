@@ -26,7 +26,7 @@ const COMPONENTS: ComponentItem[] = [
   placeholder="\${2:Type your message...}"
   showTimestamp
   enableMarkdown
-/>`
+/>`,
   },
   {
     label: '$(symbol-class) ClarityChatPresets',
@@ -38,7 +38,7 @@ const COMPONENTS: ComponentItem[] = [
     code: `<ClarityChatPresets
   variant="\${1|minimal,standard,enterprise|}"
   api="\${2:/api/chat}"
-/>`
+/>`,
   },
 
   // Building Blocks
@@ -51,7 +51,7 @@ const COMPONENTS: ComponentItem[] = [
     imports: "import { ChatWindow } from '@clarity-chat/react'",
     code: `<ChatWindow className="\${1:h-screen}">
   \${2:{children\\}}
-</ChatWindow>`
+</ChatWindow>`,
   },
   {
     label: '$(list-ordered) MessageList',
@@ -64,7 +64,7 @@ const COMPONENTS: ComponentItem[] = [
   messages={messages}
   isLoading={isLoading}
   showTimestamp
-/>`
+/>`,
   },
   {
     label: '$(edit) ChatInput',
@@ -79,7 +79,7 @@ const COMPONENTS: ComponentItem[] = [
   onSubmit={handleSubmit}
   isLoading={isLoading}
   placeholder="\${1:Type a message...}"
-/>`
+/>`,
   },
   {
     label: '$(comment) MessageBubble',
@@ -92,7 +92,7 @@ const COMPONENTS: ComponentItem[] = [
   message={message}
   variant="\${1|default,compact,minimal|}"
   showTimestamp
-/>`
+/>`,
   },
 
   // Streaming Components
@@ -107,7 +107,7 @@ const COMPONENTS: ComponentItem[] = [
   content={content}
   isStreaming={isStreaming}
   showCursor
-/>`
+/>`,
   },
   {
     label: '$(loading~spin) ThinkingIndicator',
@@ -119,7 +119,7 @@ const COMPONENTS: ComponentItem[] = [
     code: `<ThinkingIndicator
   variant="\${1|dots,pulse,spinner|}"
   text="\${2:AI is thinking...}"
-/>`
+/>`,
   },
   {
     label: '$(keyboard) TypingIndicator',
@@ -128,7 +128,7 @@ const COMPONENTS: ComponentItem[] = [
     value: 'TypingIndicator',
     category: 'Streaming',
     imports: "import { TypingIndicator } from '@clarity-chat/react'",
-    code: `<TypingIndicator isTyping={isTyping} />`
+    code: `<TypingIndicator isTyping={isTyping} />`,
   },
 
   // Providers
@@ -144,7 +144,7 @@ const COMPONENTS: ComponentItem[] = [
   maxTokens={2000}
 >
   \${2:{children\\}}
-</MemoryProvider>`
+</MemoryProvider>`,
   },
   {
     label: '$(symbol-namespace) ClarityChatProvider',
@@ -155,7 +155,7 @@ const COMPONENTS: ComponentItem[] = [
     imports: "import { ClarityChatProvider } from '@clarity-chat/react'",
     code: `<ClarityChatProvider config={{ api: '\${1:/api/chat}' }}>
   \${2:{children\\}}
-</ClarityChatProvider>`
+</ClarityChatProvider>`,
   },
 
   // Token & Optimization
@@ -170,7 +170,7 @@ const COMPONENTS: ComponentItem[] = [
   stats={tokenStats}
   maxTokens={4000}
   showWarning
-/>`
+/>`,
   },
   {
     label: '$(graph) TokenCounter',
@@ -182,7 +182,7 @@ const COMPONENTS: ComponentItem[] = [
     code: `<TokenCounter
   count={tokenCount}
   maxTokens={4000}
-/>`
+/>`,
   },
 
   // UI Utilities
@@ -196,7 +196,7 @@ const COMPONENTS: ComponentItem[] = [
     code: `<MarkdownRenderer
   content={content}
   enableCodeHighlight
-/>`
+/>`,
   },
   {
     label: '$(code) CodeBlock',
@@ -210,7 +210,7 @@ const COMPONENTS: ComponentItem[] = [
   language="\${1:typescript}"
   showLineNumbers
   enableCopy
-/>`
+/>`,
   },
   {
     label: '$(error) ErrorBoundary',
@@ -224,7 +224,7 @@ const COMPONENTS: ComponentItem[] = [
   onError={handleError}
 >
   \${1:{children\\}}
-</ErrorBoundary>`
+</ErrorBoundary>`,
   },
 
   // Model Selection
@@ -239,7 +239,7 @@ const COMPONENTS: ComponentItem[] = [
   models={[\${1:'gpt-4-turbo', 'claude-3-opus'}]}
   value={selectedModel}
   onChange={setSelectedModel}
-/>`
+/>`,
   },
   {
     label: '$(settings-gear) SettingsPanel',
@@ -251,8 +251,8 @@ const COMPONENTS: ComponentItem[] = [
     code: `<SettingsPanel
   settings={settings}
   onChange={handleSettingsChange}
-/>`
-  }
+/>`,
+  },
 ]
 
 export async function addComponentCommand(_context: vscode.ExtensionContext) {
@@ -263,56 +263,62 @@ export async function addComponentCommand(_context: vscode.ExtensionContext) {
   }
 
   // Group components by category
-  const categories = [...new Set(COMPONENTS.map(c => c.category))]
+  const categories = [...new Set(COMPONENTS.map((c) => c.category))]
 
   // Show category picker first
   const categoryPick = await vscode.window.showQuickPick(
     [
-      { label: 'All Components', description: 'Show all available components', value: 'all' },
-      ...categories.map(cat => ({
+      {
+        label: 'All Components',
+        description: 'Show all available components',
+        value: 'all',
+      },
+      ...categories.map((cat) => ({
         label: `$(folder) ${cat}`,
-        description: `${COMPONENTS.filter(c => c.category === cat).length} components`,
-        value: cat
-      }))
+        description: `${COMPONENTS.filter((c) => c.category === cat).length} components`,
+        value: cat,
+      })),
     ],
     {
       placeHolder: 'Select component category',
-      title: 'Clarity Chat Components'
+      title: 'Clarity Chat Components',
     }
   )
 
   if (!categoryPick) return
 
   // Filter components by category
-  const filteredComponents = categoryPick.value === 'all'
-    ? COMPONENTS
-    : COMPONENTS.filter(c => c.category === categoryPick.value)
+  const filteredComponents =
+    categoryPick.value === 'all'
+      ? COMPONENTS
+      : COMPONENTS.filter((c) => c.category === categoryPick.value)
 
   // Show component picker
-  const selection = await vscode.window.showQuickPick(
-    filteredComponents.map(comp => ({
+  const selection = (await vscode.window.showQuickPick(
+    filteredComponents.map((comp) => ({
       ...comp,
       buttons: [
         {
           iconPath: new vscode.ThemeIcon('book'),
-          tooltip: 'View Documentation'
-        }
-      ]
+          tooltip: 'View Documentation',
+        },
+      ],
     })),
     {
       placeHolder: 'Select a component to add',
       title: 'Clarity Chat Components',
       matchOnDescription: true,
-      matchOnDetail: true
+      matchOnDetail: true,
     }
-  ) as ComponentItem | undefined
+  )) as ComponentItem | undefined
 
   if (!selection) return
 
   // Check if import already exists
   const document = editor.document
   const text = document.getText()
-  const hasImport = text.includes(selection.value) && text.includes('@clarity-chat/react')
+  const hasImport =
+    text.includes(selection.value) && text.includes('@clarity-chat/react')
 
   // Prepare the code to insert
   const insertText = selection.code
@@ -321,12 +327,16 @@ export async function addComponentCommand(_context: vscode.ExtensionContext) {
   if (!hasImport) {
     const addImport = await vscode.window.showQuickPick(
       [
-        { label: 'Yes', description: 'Add import statement at the top', value: true },
-        { label: 'No', description: 'Insert component only', value: false }
+        {
+          label: 'Yes',
+          description: 'Add import statement at the top',
+          value: true,
+        },
+        { label: 'No', description: 'Insert component only', value: false },
       ],
       {
         placeHolder: `Add import for ${selection.value}?`,
-        title: 'Add Import'
+        title: 'Add Import',
       }
     )
 
@@ -334,7 +344,7 @@ export async function addComponentCommand(_context: vscode.ExtensionContext) {
       // Find the best location for the import
       const importLocation = findImportLocation(document)
 
-      await editor.edit(editBuilder => {
+      await editor.edit((editBuilder) => {
         // Add import
         editBuilder.insert(importLocation, selection.imports + '\n')
       })
@@ -346,16 +356,17 @@ export async function addComponentCommand(_context: vscode.ExtensionContext) {
   await editor.insertSnippet(snippet)
 
   // Show success message
-  vscode.window.showInformationMessage(
-    `Added ${selection.value} component`,
-    'View Docs'
-  ).then(choice => {
-    if (choice === 'View Docs') {
-      vscode.env.openExternal(
-        vscode.Uri.parse(`https://docs.claritychat.dev/components/${selection.value.toLowerCase()}`)
-      )
-    }
-  })
+  vscode.window
+    .showInformationMessage(`Added ${selection.value} component`, 'View Docs')
+    .then((choice) => {
+      if (choice === 'View Docs') {
+        vscode.env.openExternal(
+          vscode.Uri.parse(
+            `https://docs.claritychat.dev/components/${selection.value.toLowerCase()}`
+          )
+        )
+      }
+    })
 }
 
 function findImportLocation(document: vscode.TextDocument): vscode.Position {
@@ -366,9 +377,14 @@ function findImportLocation(document: vscode.TextDocument): vscode.Position {
   let lastImportLine = -1
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim()
-    if (line.startsWith('import ') || line.startsWith("import{")) {
+    if (line.startsWith('import ') || line.startsWith('import{')) {
       lastImportLine = i
-    } else if (lastImportLine >= 0 && line && !line.startsWith('//') && !line.startsWith('/*')) {
+    } else if (
+      lastImportLine >= 0 &&
+      line &&
+      !line.startsWith('//') &&
+      !line.startsWith('/*')
+    ) {
       // Found non-import, non-comment line after imports
       break
     }
@@ -380,7 +396,10 @@ function findImportLocation(document: vscode.TextDocument): vscode.Position {
 
   // No imports found, insert at the beginning (after any 'use client' directive)
   for (let i = 0; i < Math.min(lines.length, 5); i++) {
-    if (lines[i].includes("'use client'") || lines[i].includes('"use client"')) {
+    if (
+      lines[i].includes("'use client'") ||
+      lines[i].includes('"use client"')
+    ) {
       return new vscode.Position(i + 1, 0)
     }
   }

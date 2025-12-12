@@ -1,57 +1,83 @@
 # @clarity-chat/mcp-server
 
-Model Context Protocol (MCP) server for Clarity Chat - enables AI agents like Claude Desktop to
-interact with Clarity Chat projects through standardized tools, resources, and prompts.
+Model Context Protocol (MCP) server for Clarity Chat - enables AI assistants like Claude Desktop,
+Cursor, and Windsurf to interact with Clarity Chat's component library and projects.
+
+**Version**: 1.0.0 | **Protocol**: MCP 2024-11
 
 ## What is MCP?
 
 Model Context Protocol is an open protocol developed by Anthropic that standardizes how AI agents
-interact with external tools and data sources. This MCP server exposes Clarity Chat's functionality
-to any MCP-compatible AI agent.
+interact with external tools and data sources. This MCP server provides AI assistants with:
+
+- Component discovery and documentation for 70+ React components
+- Hook documentation for 35+ specialized React hooks
+- WCAG accessibility guidance for all components
+- Code generation and examples
+- Updated AI model pricing and capabilities (2024/2025)
+- Project management tools
 
 ## Features
 
-### 🛠️ Tools (7 available)
+### Tools (15 available)
 
-AI agents can call these tools to interact with Clarity Chat projects:
+#### Component Discovery Tools
 
-1. **init_project** - Initialize a new Clarity Chat project
-2. **list_examples** - List all available code examples
-3. **get_example** - Get code for a specific example
-4. **validate_config** - Validate project configuration
-5. **get_model_info** - Get detailed AI model information
-6. **calculate_cost** - Calculate costs for token usage
-7. **analyze_project** - Analyze a Clarity Chat project
+| Tool                             | Description                                              |
+| -------------------------------- | -------------------------------------------------------- |
+| `clarity_discover_components`    | Search 70+ components by name, category, or use case     |
+| `clarity_get_component_docs`     | Get full documentation for a component (props, examples) |
+| `clarity_discover_hooks`         | Search 35+ React hooks by functionality                  |
+| `clarity_get_hook_docs`          | Get documentation for a hook (parameters, return values) |
+| `clarity_get_accessibility`      | Get WCAG accessibility guidance for a component          |
+| `clarity_generate_code`          | Generate ready-to-use code snippets                      |
+| `clarity_get_related_components` | Find components that work well together                  |
+| `clarity_list_categories`        | List all component categories with counts                |
 
-### 📚 Resources (6 available)
+#### Project Management Tools
 
-AI agents can read these resources to learn about Clarity Chat:
+| Tool              | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| `init_project`    | Initialize a new Clarity Chat project                    |
+| `list_examples`   | List all available code examples                         |
+| `get_example`     | Get code for a specific example                          |
+| `validate_config` | Validate project configuration                           |
+| `get_model_info`  | Get AI model info (GPT-4o, Claude 3.5, Gemini 2.0, etc.) |
+| `calculate_cost`  | Calculate costs for token usage                          |
+| `analyze_project` | Analyze a Clarity Chat project                           |
 
-1. **clarity://docs/getting-started** - Getting started guide
-2. **clarity://docs/architecture** - Architecture overview
-3. **clarity://docs/api-reference** - Complete API reference
-4. **clarity://examples/list** - List of all examples
-5. **clarity://models/pricing** - Model pricing information
-6. **clarity://models/capabilities** - Model capabilities
+### Resources (6 available)
 
-### 💬 Prompts (5 available)
+| Resource URI                     | Description               |
+| -------------------------------- | ------------------------- |
+| `clarity://docs/getting-started` | Getting started guide     |
+| `clarity://docs/architecture`    | Architecture overview     |
+| `clarity://docs/api-reference`   | Complete API reference    |
+| `clarity://examples/list`        | List of all examples      |
+| `clarity://models/pricing`       | Model pricing information |
+| `clarity://models/capabilities`  | Model capabilities        |
 
-Pre-built prompt templates for common tasks:
+### Prompts (5 available)
 
-1. **implement-feature** - Generate implementation plan
-2. **debug-issue** - Analyze and fix issues
-3. **optimize-performance** - Suggest optimizations
-4. **review-code** - Perform code review
-5. **convert-example** - Convert code between providers
+| Prompt                 | Description                    |
+| ---------------------- | ------------------------------ |
+| `implement-feature`    | Generate implementation plan   |
+| `debug-issue`          | Analyze and fix issues         |
+| `optimize-performance` | Suggest optimizations          |
+| `review-code`          | Perform code review            |
+| `convert-example`      | Convert code between providers |
 
 ## Installation
 
-### From Monorepo (Current Method)
+### Quick Start (npx)
 
-The MCP server is part of the Clarity Chat monorepo. To use it:
+Once published to npm, use directly with npx:
 
-> **Note**: This project uses [pnpm](https://pnpm.io/) for package management. Install it with
-> `npm install -g pnpm` if you don't have it.
+```bash
+npx @clarity-chat/mcp-server
+```
+
+### From Monorepo
 
 ```bash
 # Clone the repository
@@ -65,24 +91,28 @@ pnpm install
 pnpm --filter @clarity-chat/mcp-server build
 ```
 
-### Future: npm Installation (Coming Soon)
+## IDE Configuration
 
-Once published to npm, you'll be able to install globally:
+### Claude Desktop
 
-```bash
-npm install -g @clarity-chat/mcp-server
+**Config Location:**
+
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "clarity-chat": {
+      "command": "npx",
+      "args": ["-y", "@clarity-chat/mcp-server@latest"]
+    }
+  }
+}
 ```
 
-## Usage
-
-### With Claude Desktop
-
-Add to your Claude Desktop configuration file:
-
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json` **Windows**:
-`%APPDATA%\Claude\claude_desktop_config.json`
-
-**Current method (from monorepo):**
+**From local build:**
 
 ```json
 {
@@ -95,215 +125,224 @@ Add to your Claude Desktop configuration file:
 }
 ```
 
-Replace `/path/to/Clarity-ai-chat-components` with the actual path to your cloned repository.
+### Cursor
 
-**Future method (once published to npm):**
+**Config Location:** `~/.cursor/mcp.json`
 
 ```json
 {
   "mcpServers": {
     "clarity-chat": {
       "command": "npx",
-      "args": ["@clarity-chat/mcp-server"]
+      "args": ["-y", "@clarity-chat/mcp-server@latest"]
     }
   }
 }
 ```
 
-### With Other MCP Clients
+### Windsurf
 
-The server uses stdio transport and can be integrated with any MCP-compatible client:
+**Config Location:** `~/.codeium/windsurf/mcp_config.json`
 
-```bash
-# Run from the monorepo (after building)
-cd tools/mcp-server
-node dist/index.js
+```json
+{
+  "mcpServers": {
+    "clarity-chat": {
+      "command": "npx",
+      "args": ["-y", "@clarity-chat/mcp-server@latest"]
+    }
+  }
+}
+```
+
+### VS Code (with Continue extension)
+
+**Config Location:** `.vscode/mcp.json` in your project or global settings
+
+```json
+{
+  "servers": {
+    "clarity-chat": {
+      "command": "npx",
+      "args": ["-y", "@clarity-chat/mcp-server@latest"]
+    }
+  }
+}
+```
+
+### Claude Code
+
+Add to your project's `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "clarity-chat": {
+      "command": "npx",
+      "args": ["-y", "@clarity-chat/mcp-server@latest"]
+    }
+  }
+}
 ```
 
 ## Examples
 
-### Using Tools
+### Component Discovery
 
-Once configured, you can ask Claude Desktop to use Clarity Chat tools:
-
-**Example 1: Initialize a Project**
+**Find chat components:**
 
 ```
-"Can you initialize a new Clarity Chat project with OpenAI in /path/to/my-app?"
+"What components are available for building a chat interface?"
 ```
 
-Claude will use the `init_project` tool with:
+The AI will use `clarity_discover_components` to search for relevant components.
+
+**Get component documentation:**
+
+```
+"How do I use the ClarityChat component? What props does it accept?"
+```
+
+The AI will use `clarity_get_component_docs` to retrieve full documentation.
+
+**Get accessibility guidance:**
+
+```
+"What accessibility requirements does the ChatInput component have?"
+```
+
+The AI will use `clarity_get_accessibility` to provide WCAG guidance.
+
+### Code Generation
+
+**Generate component code:**
+
+```
+"Generate code to integrate the TokenBudgetBar component"
+```
+
+The AI will use `clarity_generate_code` to provide ready-to-use code.
+
+### Model Information
+
+**Get model pricing:**
+
+```
+"What's the pricing for Claude 3.5 Sonnet?"
+```
+
+The AI will use `get_model_info` with updated 2024/2025 pricing:
 
 ```json
 {
-  "provider": "openai",
-  "framework": "nextjs",
-  "projectPath": "/path/to/my-app"
+  "id": "claude-3-5-sonnet-20241022",
+  "name": "Claude 3.5 Sonnet (Oct 2024)",
+  "provider": "Anthropic",
+  "contextWindow": 200000,
+  "pricing": {
+    "input": 3.0,
+    "output": 15.0,
+    "cached": 0.3,
+    "formatted": "Input: $3.00/1M tokens, Output: $15.00/1M tokens, Cached: $0.30/1M tokens"
+  },
+  "capabilities": ["text", "code", "vision", "tool-use", "streaming"],
+  "bestFor": ["coding", "analysis", "writing", "general-purpose"]
 }
 ```
 
-**Example 2: Get Model Information**
+**Supported Models (2024/2025):**
+
+| Provider  | Models                                             |
+| --------- | -------------------------------------------------- |
+| OpenAI    | GPT-4o, GPT-4o Mini, GPT-4 Turbo, O1, O1 Mini      |
+| Anthropic | Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus |
+| Google    | Gemini 2.0 Flash, Gemini 1.5 Pro, Gemini 1.5 Flash |
+| Mistral   | Mistral Large, Mistral Small, Codestral            |
+
+### Project Management
+
+**Initialize a new project:**
 
 ```
-"What are the capabilities and pricing of GPT-4 Turbo?"
+"Create a new Clarity Chat project with OpenAI at ~/my-chat-app"
 ```
 
-Claude will use the `get_model_info` tool:
-
-```json
-{
-  "modelName": "gpt-4-turbo"
-}
-```
-
-**Example 3: Calculate Costs**
+**Analyze existing project:**
 
 ```
-"How much would it cost to process 1000 input tokens and 500 output tokens with Claude 3 Opus?"
+"Analyze my project at ./apps/chat to see what's configured"
 ```
-
-Claude will use the `calculate_cost` tool:
-
-```json
-{
-  "modelName": "claude-3-opus-20240229",
-  "promptTokens": 1000,
-  "completionTokens": 500
-}
-```
-
-### Using Resources
-
-Resources are automatically available to Claude:
-
-```
-"Show me the getting started guide for Clarity Chat"
-```
-
-Claude will read `clarity://docs/getting-started`
-
-```
-"What examples are available?"
-```
-
-Claude will read `clarity://examples/list`
-
-### Using Prompts
-
-Prompts provide structured guidance for common tasks:
-
-```
-"I need to implement a streaming chat feature with rate limiting. Can you help?"
-```
-
-Claude will use the `implement-feature` prompt with the feature description.
-
-```
-"Review this code for security issues: [paste code]"
-```
-
-Claude will use the `review-code` prompt with focus on security.
 
 ## Tool Reference
 
-### init_project
+### clarity_discover_components
 
-Initialize a new Clarity Chat project.
-
-**Parameters:**
-
-- `provider` (required): `"openai"` | `"anthropic"` | `"google"` | `"all"`
-- `framework` (required): `"nextjs"` | `"express"` | `"hono"` | `"standalone"`
-- `projectPath` (required): Path where project should be created
-
-**Returns:**
-
-```json
-{
-  "success": true,
-  "message": "Project initialized at /path",
-  "files": [".env.local", "app/api/chat/route.ts", "package.json"],
-  "nextSteps": ["cd /path", "npm install", "Add API keys", "npm run dev"]
-}
-```
-
-### list_examples
-
-List all available code examples.
-
-**Parameters:** None
-
-**Returns:**
-
-```json
-{
-  "examples": [
-    {
-      "name": "basic-chat",
-      "description": "Simple chat completion"
-    }
-  ]
-}
-```
-
-### get_example
-
-Get code for a specific example.
+Search and discover Clarity Chat React components.
 
 **Parameters:**
 
-- `exampleName` (required): Name of the example
+- `query` (required): Search query (e.g., "chat input", "message list")
+- `category` (optional): Filter by category
+- `limit` (optional): Max results (default: 10, max: 50)
 
-**Returns:**
+**Categories:** `top-level`, `chat`, `message`, `input`, `display`, `feedback`, `navigation`,
+`analytics`, `enterprise`, `ai-ops`, `memory`, `primitives`, `hooks`, `utilities`
 
-```json
-{
-  "name": "basic-chat",
-  "code": "import { OpenAI } from 'openai'..."
-}
-```
+### clarity_get_component_docs
 
-### validate_config
-
-Validate project configuration.
+Get comprehensive documentation for a component.
 
 **Parameters:**
 
-- `projectPath` (required): Path to project directory
+- `componentName` (required): Name of the component (e.g., "ClarityChat", "ChatInput")
+
+**Returns:** Props, examples, related components, tags
+
+### clarity_get_accessibility
+
+Get WCAG accessibility guidance for a component.
+
+**Parameters:**
+
+- `componentName` (required): Name of the component
 
 **Returns:**
 
 ```json
 {
-  "valid": true,
-  "issues": [],
-  "warnings": ["No AI provider SDK installed"]
+  "wcagLevel": "AA",
+  "keyboardSupport": ["Tab navigation", "Enter to send"],
+  "ariaAttributes": ["aria-live=\"polite\"", "aria-label"],
+  "screenReaderNotes": "Messages are announced as they arrive",
+  "focusManagement": "Focus returns to input after sending"
 }
 ```
+
+### clarity_generate_code
+
+Generate ready-to-use code snippets.
+
+**Parameters:**
+
+- `componentName` (required): Name of the component
+- `variant` (optional): Specific variant or style
+- `withProvider` (optional): Include provider wrapper (default: false)
+- `typescript` (optional): Generate TypeScript (default: true)
 
 ### get_model_info
 
-Get detailed information about an AI model.
+Get detailed AI model information.
 
 **Parameters:**
 
-- `modelName` (required): Name of the model (e.g., "gpt-4-turbo")
+- `modelName` (required): Model ID or alias (e.g., "gpt-4o", "claude-sonnet", "gemini-pro")
 
-**Returns:**
-
-```json
-{
-  "provider": "OpenAI",
-  "contextWindow": 128000,
-  "pricing": { "input": 0.01, "output": 0.03 },
-  "capabilities": ["text", "code", "functions"],
-  "bestFor": ["complex reasoning", "long-form content"]
-}
-```
+**Aliases Supported:** `gpt4`, `claude-sonnet`, `sonnet`, `haiku`, `opus`, `gemini-pro`,
+`gemini-flash`
 
 ### calculate_cost
 
-Calculate cost for token usage.
+Calculate cost for token usage with 2024/2025 pricing.
 
 **Parameters:**
 
@@ -315,169 +354,131 @@ Calculate cost for token usage.
 
 ```json
 {
-  "modelName": "gpt-4-turbo",
-  "promptTokens": 1000,
-  "completionTokens": 500,
-  "totalTokens": 1500,
-  "inputCost": 0.01,
-  "outputCost": 0.015,
-  "totalCost": 0.025,
+  "modelId": "gpt-4o",
+  "inputTokens": 1000,
+  "outputTokens": 500,
+  "inputCost": 0.0025,
+  "outputCost": 0.005,
+  "totalCost": 0.0075,
   "currency": "USD"
 }
 ```
 
-### analyze_project
+## Troubleshooting
 
-Analyze a Clarity Chat project.
+### Server Not Found
 
-**Parameters:**
+If your IDE can't find the MCP server:
 
-- `projectPath` (required): Path to project directory
+1. Ensure Node.js 20+ is installed: `node --version`
+2. Check the config file location for your IDE
+3. Restart your IDE after adding the configuration
+4. Verify npx can run the package: `npx @clarity-chat/mcp-server --version`
 
-**Returns:**
+### Connection Issues
 
-```json
-{
-  "path": "/path/to/project",
-  "fileCount": 42,
-  "hasPackageJson": true,
-  "hasEnvFile": true,
-  "hasTsConfig": true,
-  "providers": ["OpenAI", "Anthropic"],
-  "framework": "Next.js"
-}
+If the server starts but tools don't work:
+
+1. Check IDE logs for error messages
+2. Ensure the MCP server is listed in your IDE's MCP panel
+3. Try restarting the MCP server from your IDE
+
+### Tool Not Working
+
+If a specific tool fails:
+
+1. Check the error message in the response
+2. Verify required parameters are provided
+3. For component tools, ensure the component name is correct (case-insensitive)
+
+### Local Development Issues
+
+```bash
+# Rebuild the server
+cd tools/mcp-server
+pnpm build
+
+# Test with MCP Inspector
+npx @modelcontextprotocol/inspector node dist/index.js
+
+# Run tests
+pnpm test
 ```
-
-## Resource Reference
-
-All resources return markdown or JSON content:
-
-- **clarity://docs/getting-started** - Complete getting started guide
-- **clarity://docs/architecture** - System architecture documentation
-- **clarity://docs/api-reference** - Full API reference for all providers
-- **clarity://examples/list** - JSON list of all available examples
-- **clarity://models/pricing** - JSON pricing data for all models
-- **clarity://models/capabilities** - JSON capabilities data for all models
-
-## Prompt Reference
-
-### implement-feature
-
-Generate implementation plan for a new feature.
-
-**Arguments:**
-
-- `feature` (required): Description of feature to implement
-- `provider` (optional): AI provider to use
-
-**Output:** Detailed implementation plan with code examples
-
-### debug-issue
-
-Analyze and suggest fixes for an issue.
-
-**Arguments:**
-
-- `issue` (required): Description of the issue
-- `code` (optional): Relevant code snippet
-
-**Output:** Root cause analysis and step-by-step fix
-
-### optimize-performance
-
-Suggest performance optimizations.
-
-**Arguments:**
-
-- `context` (required): Context about current implementation
-
-**Output:** Optimization suggestions with code examples
-
-### review-code
-
-Perform code review.
-
-**Arguments:**
-
-- `code` (required): Code to review
-- `focus` (optional): Aspect to focus on (security, performance, readability)
-
-**Output:** Comprehensive code review with suggested improvements
-
-### convert-example
-
-Convert code to different provider/framework.
-
-**Arguments:**
-
-- `code` (required): Original code
-- `from` (required): Source provider/framework
-- `to` (required): Target provider/framework
-
-**Output:** Converted code with migration notes
 
 ## Development
 
 ### Building
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ### Running Locally
 
 ```bash
-npm start
+pnpm start
 ```
 
 ### Testing
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Watch mode
-npm run test:watch
+pnpm test:watch
 
 # With coverage
-npm run test:coverage
+pnpm test:coverage
 ```
 
 ### Testing with MCP Inspector
 
 ```bash
-# From the tools/mcp-server directory (after building)
 npx @modelcontextprotocol/inspector node dist/index.js
 ```
 
 ## Architecture
 
-The MCP server is organized into modular components:
-
-1. **Tools** (`src/tools/`) - Executable operations with validation and error handling
-2. **Resources** (`src/resources/`) - Read-only documentation and data with caching
-3. **Prompts** (`src/prompts/`) - Templated prompts for common tasks
-4. **Utils** (`src/utils/`) - Shared utilities for logging, validation, security, and caching
+```
+tools/mcp-server/
+├── src/
+│   ├── index.ts           # Server entry point with graceful shutdown
+│   ├── tools/             # Tool handlers (15 tools)
+│   ├── resources/         # Resource providers (6 resources)
+│   ├── prompts/           # Prompt templates (5 prompts)
+│   ├── data/
+│   │   ├── component-registry.ts  # 70+ components, 35+ hooks
+│   │   └── model-registry.ts      # 2024/2025 model pricing
+│   └── utils/
+│       ├── schemas.ts     # Zod validation schemas
+│       ├── validation.ts  # Input validation
+│       ├── errors.ts      # Custom error classes
+│       ├── security.ts    # Path traversal prevention
+│       ├── logger.ts      # Structured logging
+│       └── cache.ts       # LRU cache with TTL
+└── README.md
+```
 
 ### Key Features
 
-- ✅ **Comprehensive Error Handling** - Structured errors with proper codes
-- ✅ **Input Validation** - All inputs validated before processing
-- ✅ **Security** - Path validation and input sanitization
-- ✅ **Logging** - Structured logging with request tracing
-- ✅ **Caching** - Resource caching for improved performance
-- ✅ **Type Safety** - Full TypeScript with strict types
-- ✅ **Testing** - Comprehensive test suite with high coverage
-
-Each module exports:
-
-- List of available items
-- Handler function for requests with proper error handling
+- **Zod Schema Validation** - Type-safe input validation
+- **Comprehensive Error Handling** - Structured errors with codes
+- **Security** - Path validation and input sanitization
+- **Graceful Shutdown** - Proper cleanup on SIGINT/SIGTERM
+- **Structured Logging** - Request tracing and debugging
+- **Caching** - Resource caching for performance
+- **Type Safety** - Full TypeScript with strict mode
 
 ## Requirements
 
 - Node.js 20.0.0 or higher
-- MCP-compatible client (e.g., Claude Desktop 0.5.0+)
+- MCP-compatible client:
+  - Claude Desktop 0.5.0+
+  - Cursor
+  - Windsurf
+  - VS Code with Continue extension
+  - Claude Code
 
 ## License
 
@@ -485,6 +486,7 @@ MIT
 
 ## Links
 
-- [Clarity Chat Documentation](https://github.com/clarity-chat/clarity-chat)
+- [Clarity Chat Documentation](https://github.com/christireid/Clarity-ai-chat-components)
 - [Model Context Protocol](https://modelcontextprotocol.io)
+- [MCP Specification](https://modelcontextprotocol.io/specification/2025-06-18)
 - [Anthropic Claude Desktop](https://claude.ai/download)

@@ -2,14 +2,16 @@
 
 All notable changes to the Clarity Chat VS Code extension will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.0] - 2024-12-11
 
 ### Highlights
 
-**Clarity Chat 1.0** is our first public marketplace release! This version transforms the extension from internal tooling into a premium, public-facing developer tool for building AI chat applications.
+**Clarity Chat 1.0** is our first public marketplace release! This version transforms the extension
+from internal tooling into a premium, public-facing developer tool for building AI chat
+applications.
 
 ### Added
 
@@ -20,13 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Follow-up suggestions for deeper exploration
 
 - **Visual Component Picker**
-  - Browse components by category (Top-Level, Building Blocks, Streaming, Providers, Token Management, Utilities)
+  - Browse components by category (Top-Level, Building Blocks, Streaming, Providers, Token
+    Management, Utilities)
   - 18 components with full TypeScript support
   - Auto-import handling
   - Quick documentation access
 
 - **Visual Hook Picker**
-  - Browse hooks by category (Primary, Memory, Streaming, Token Optimization, UI State, Provider, Utilities)
+  - Browse hooks by category (Primary, Memory, Streaming, Token Optimization, UI State, Provider,
+    Utilities)
   - 18 hooks with usage examples
   - Automatic import insertion
 
