@@ -8,6 +8,7 @@ import { useComposedRefs } from '../hooks/use-composed-refs'
 import { ErrorMessage } from './error-message'
 import { Textarea as ShadcnTextarea } from './ui/textarea'
 import { Label } from './ui/label'
+import { CharacterCount } from './button-state-icons'
 
 // ============================================================================
 // Variants
@@ -120,34 +121,6 @@ export interface TextareaProps
 }
 
 // ============================================================================
-// Character Count Component
-// ============================================================================
-
-const CharacterCount = React.memo(function CharacterCount({
-  current,
-  max,
-  isOverLimit,
-}: {
-  current: number
-  max?: number
-  isOverLimit: boolean
-}) {
-  return (
-    <span
-      className={cn(
-        'text-xs tabular-nums',
-        isOverLimit ? 'text-destructive' : 'text-muted-foreground'
-      )}
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      {current}
-      {max !== undefined && `/${max}`}
-    </span>
-  )
-})
-
-// ============================================================================
 // Textarea Component
 // ============================================================================
 
@@ -242,7 +215,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const showCount =
       showCharacterCount ||
       (maxLength !== undefined && showCharacterCount !== false)
-    const isOverLimit = maxLength !== undefined && currentLength > maxLength
 
     // Auto-resize logic
     const adjustHeight = React.useCallback(() => {
@@ -364,11 +336,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
             {/* Character count */}
             {showCount && (
-              <CharacterCount
-                current={currentLength}
-                max={maxLength}
-                isOverLimit={isOverLimit}
-              />
+              <CharacterCount current={currentLength} max={maxLength} />
             )}
           </div>
         )}

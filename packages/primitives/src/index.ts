@@ -242,7 +242,10 @@ export {
   LoadingIcon,
   SuccessIcon,
   ErrorIcon,
+  CloseIcon,
+  CharacterCount,
 } from './components/button-state-icons'
+export type { CharacterCountProps } from './components/button-state-icons'
 
 export { Kbd, useFormattedShortcut } from './components/kbd'
 export type {
