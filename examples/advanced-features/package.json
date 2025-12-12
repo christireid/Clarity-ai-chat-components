@@ -1,12 +1,12 @@
 {
-  "name": "@clarity-chat/example-multi-provider",
+  "name": "@clarity-chat/example-advanced-features",
   "version": "1.0.0",
   "private": true,
-  "description": "Demonstrate provider switching between OpenAI, Anthropic Claude, and Google Gemini",
+  "description": "Advanced AI chat features including enhanced suggestions, summarization, battery awareness, and performance analytics",
   "scripts": {
-    "dev": "next dev -p 3008",
+    "dev": "next dev -p 3006",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3006",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
   },
@@ -16,9 +16,7 @@
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "openai": "^4.68.0",
-    "@anthropic-ai/sdk": "^0.30.0",
-    "@google/generative-ai": "^0.21.0"
+    "recharts": "^2.13.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
