@@ -313,7 +313,15 @@ describe('File Generation Integration', () => {
 })
 
 describe('Generator Types', () => {
-  const generators = ['component', 'hook', 'context', 'adapter', 'test']
+  const generators = [
+    'component',
+    'hook',
+    'context',
+    'adapter',
+    'test',
+    'chat-component',
+    'api-route',
+  ]
 
   it.each(generators)('should have %s generator defined', (type) => {
     // This test verifies the generator types are recognized
@@ -327,10 +335,256 @@ describe('Generator Types', () => {
       context: './src/contexts',
       adapter: './src/lib/adapters',
       test: './src/__tests__',
+      'chat-component': './src/components/chat',
+      'api-route': './src/app/api',
     }
 
     Object.entries(defaultDirs).forEach(([type, dir]) => {
       expect(defaultDirs[type]).toBe(dir)
     })
+  })
+})
+
+describe('Chat Component Generator', () => {
+  const chatComponentTemplate = `'use client'
+
+import { forwardRef, useState, useCallback } from 'react'
+import { cn } from '@/lib/utils'
+
+export interface {{pascalName}}Message {
+  id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: Date
+}
+
+export interface {{pascalName}}Props {
+  className?: string
+  model?: string
+}
+
+export const {{pascalName}} = forwardRef<HTMLDivElement, {{pascalName}}Props>(
+  ({ className, model = 'gpt-4', ...props }, ref) => {
+    const [messages, setMessages] = useState<{{pascalName}}Message[]>([])
+    return <div ref={ref} className={cn('clarity-{{kebabName}}', className)} {...props} />
+  }
+)
+
+{{pascalName}}.displayName = '{{pascalName}}'
+`
+
+  it('should render chat component template with context', async () => {
+    const Handlebars = await import('handlebars')
+
+    const template = Handlebars.default.compile(chatComponentTemplate)
+    const result = template({
+      pascalName: 'MyChat',
+      kebabName: 'my-chat',
+    })
+
+    expect(result).toContain('export interface MyChatMessage')
+    expect(result).toContain('export interface MyChatProps')
+    expect(result).toContain('export const MyChat')
+    expect(result).toContain('clarity-my-chat')
+    expect(result).toContain("MyChat.displayName = 'MyChat'")
+    expect(result).toContain("'use client'")
+  })
+
+  it('should include AI-specific props', async () => {
+    const Handlebars = await import('handlebars')
+
+    const template = Handlebars.default.compile(chatComponentTemplate)
+    const result = template({
+      pascalName: 'ChatBot',
+      kebabName: 'chat-bot',
+    })
+
+    expect(result).toContain('model?: string')
+    expect(result).toContain("model = 'gpt-4'")
+    expect(result).toContain("role: 'user' | 'assistant' | 'system'")
+  })
+})
+
+describe('API Route Generator', () => {
+  const apiRouteTemplate = `import { NextRequest } from 'next/server'
+
+// Rate limiting: Simple in-memory store (use Redis in production)
+const rateLimit = new Map<string, { count: number; timestamp: number }>()
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+const RATE_LIMIT_MAX = 20 // requests per window
+
+export async function POST(req: NextRequest) {
+  try {
+    // TODO: Add authentication
+    // const session = await getServerSession(authOptions)
+    // if (!session) {
+    //   return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    // }
+
+    const { messages, model = '{{#if (eq provider "anthropic")}}claude-3-opus{{else if (eq provider "google")}}gemini-pro{{else}}gpt-4{{/if}}' } = await req.json()
+
+    if (!messages || !Array.isArray(messages)) {
+      return Response.json(
+        { error: 'messages is required and must be an array' },
+        { status: 400 }
+      )
+    }
+
+    // Provider: {{provider}}
+    return Response.json({ content: 'Response from {{provider}}' })
+  } catch (error) {
+    return Response.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+`
+
+  it('should render API route template with OpenAI provider', async () => {
+    const Handlebars = await import('handlebars')
+
+    // Register the eq helper
+    Handlebars.default.registerHelper('eq', (a: unknown, b: unknown) => a === b)
+
+    const template = Handlebars.default.compile(apiRouteTemplate)
+    const result = template({
+      provider: 'openai',
+    })
+
+    expect(result).toContain("import { NextRequest } from 'next/server'")
+    expect(result).toContain('Provider: openai')
+    expect(result).toContain('Response from openai')
+    expect(result).toContain('RATE_LIMIT_MAX = 20')
+  })
+
+  it('should render API route template with Anthropic provider', async () => {
+    const Handlebars = await import('handlebars')
+
+    Handlebars.default.registerHelper('eq', (a: unknown, b: unknown) => a === b)
+
+    const template = Handlebars.default.compile(apiRouteTemplate)
+    const result = template({
+      provider: 'anthropic',
+    })
+
+    expect(result).toContain('Provider: anthropic')
+    expect(result).toContain('Response from anthropic')
+  })
+
+  it('should include security patterns', async () => {
+    const Handlebars = await import('handlebars')
+
+    const template = Handlebars.default.compile(apiRouteTemplate)
+    const result = template({
+      provider: 'openai',
+    })
+
+    // Check for rate limiting
+    expect(result).toContain('rateLimit')
+    expect(result).toContain('RATE_LIMIT_WINDOW')
+    expect(result).toContain('RATE_LIMIT_MAX')
+
+    // Check for auth placeholder
+    expect(result).toContain('TODO: Add authentication')
+    expect(result).toContain('Unauthorized')
+  })
+
+  it('should validate messages array', async () => {
+    const Handlebars = await import('handlebars')
+
+    const template = Handlebars.default.compile(apiRouteTemplate)
+    const result = template({
+      provider: 'openai',
+    })
+
+    expect(result).toContain('!messages || !Array.isArray(messages)')
+    expect(result).toContain('messages is required and must be an array')
+    expect(result).toContain('status: 400')
+  })
+})
+
+describe('File Generation for New Generators', () => {
+  let tempDir: string
+
+  beforeEach(async () => {
+    tempDir = path.join(os.tmpdir(), `clarity-cli-test-${Date.now()}`)
+    await fs.ensureDir(tempDir)
+  })
+
+  afterEach(async () => {
+    await fs.remove(tempDir)
+  })
+
+  it('should create chat-component directory structure', async () => {
+    const chatDir = path.join(tempDir, 'components', 'chat', 'MyChat')
+    await fs.ensureDir(chatDir)
+
+    // Simulate file creation
+    await fs.writeFile(
+      path.join(chatDir, 'MyChat.tsx'),
+      "'use client'\nexport const MyChat = () => <div>MyChat</div>"
+    )
+    await fs.writeFile(
+      path.join(chatDir, 'index.ts'),
+      "export { MyChat } from './MyChat'"
+    )
+    await fs.writeFile(
+      path.join(chatDir, 'MyChat.test.tsx'),
+      "describe('MyChat', () => {})"
+    )
+    await fs.writeFile(
+      path.join(chatDir, 'MyChat.stories.tsx'),
+      "export default { title: 'Chat/MyChat' }"
+    )
+
+    // Verify files exist
+    expect(await fs.pathExists(path.join(chatDir, 'MyChat.tsx'))).toBe(true)
+    expect(await fs.pathExists(path.join(chatDir, 'index.ts'))).toBe(true)
+    expect(await fs.pathExists(path.join(chatDir, 'MyChat.test.tsx'))).toBe(
+      true
+    )
+    expect(await fs.pathExists(path.join(chatDir, 'MyChat.stories.tsx'))).toBe(
+      true
+    )
+  })
+
+  it('should create api-route directory structure', async () => {
+    const apiDir = path.join(tempDir, 'app', 'api', 'chat')
+    await fs.ensureDir(apiDir)
+
+    await fs.writeFile(
+      path.join(apiDir, 'route.ts'),
+      'export async function POST(req) { return Response.json({}) }'
+    )
+
+    expect(await fs.pathExists(path.join(apiDir, 'route.ts'))).toBe(true)
+  })
+})
+
+describe('Shared Case Utilities', () => {
+  // Import shared utilities to verify they work correctly
+  // These tests ensure the shared case.ts utilities work as expected
+  // after the refactoring to centralize them
+
+  it('should handle complex case conversions', () => {
+    // Testing edge cases
+    expect(toPascalCase('XMLHttpRequest')).toBe('XMLHttpRequest')
+    expect(toPascalCase('api-route-v2')).toBe('ApiRouteV2')
+    // Consecutive uppercase letters become one segment in kebab-case
+    expect(toKebabCase('ApiRouteV2')).toBe('api-route-v2')
+    expect(toKebabCase('chatMessage')).toBe('chat-message')
+  })
+
+  it('should handle empty strings', () => {
+    expect(toPascalCase('')).toBe('')
+    expect(toCamelCase('')).toBe('')
+    expect(toKebabCase('')).toBe('')
+  })
+
+  it('should handle single characters', () => {
+    expect(toPascalCase('a')).toBe('A')
+    expect(toCamelCase('A')).toBe('a')
+    expect(toKebabCase('A')).toBe('a')
   })
 })

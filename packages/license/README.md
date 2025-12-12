@@ -134,6 +134,127 @@ const LicensedComponent = withLicense(MyComponent, {
 })
 ```
 
+### LicenseGate
+
+Gate access to features based on license plan:
+
+```tsx
+import { LicenseGate, LicenseUpgradePrompt } from '@clarity-chat/license'
+
+function MyApp() {
+  return (
+    <LicenseGate
+      requiredPlan="pro"
+      fallback={<LicenseUpgradePrompt requiredPlan="pro" featureName="Analytics" />}
+    >
+      <ProAnalytics />
+    </LicenseGate>
+  )
+}
+```
+
+Props:
+
+- `requiredPlan` - Required plan level (`'community'`, `'pro'`, `'enterprise'`)
+- `children` - Content to render when licensed
+- `fallback` - Content to render when not licensed
+- `loading` - Content during SSR hydration (defaults to skeleton)
+- `noLoadingSkeleton` - Disable default loading skeleton
+
+### UI Components
+
+#### LicenseStatusBadge
+
+Display current license status in your settings or footer:
+
+```tsx
+import { LicenseStatusBadge } from '@clarity-chat/license'
+
+function Settings() {
+  return (
+    <LicenseStatusBadge
+      variant="badge" // 'icon' | 'badge' | 'full'
+      size="md" // 'sm' | 'md' | 'lg'
+      onClick={() => navigate('/settings/license')}
+    />
+  )
+}
+```
+
+#### LicenseExpiryWarning
+
+Show a banner when license is approaching expiration:
+
+```tsx
+import { LicenseExpiryWarning } from '@clarity-chat/license'
+
+function Layout({ children }) {
+  return (
+    <>
+      <LicenseExpiryWarning
+        daysThreshold={30}
+        position="top"
+        renewUrl="https://claritychat.dev/pricing"
+        persistDismiss={true}
+      />
+      {children}
+    </>
+  )
+}
+```
+
+#### LicenseUpgradePrompt
+
+Convert gated features into upgrade opportunities:
+
+```tsx
+import { LicenseUpgradePrompt } from '@clarity-chat/license'
+
+// Card variant (default)
+<LicenseUpgradePrompt
+  requiredPlan="enterprise"
+  featureName="Advanced Analytics"
+  benefits={['Real-time insights', 'Custom dashboards']}
+/>
+
+// Inline variant
+<LicenseUpgradePrompt
+  requiredPlan="pro"
+  variant="inline"
+/>
+
+// Minimal variant
+<LicenseUpgradePrompt
+  requiredPlan="pro"
+  variant="minimal"
+/>
+```
+
+#### LicenseLoadingSkeleton
+
+A subtle loading skeleton for SSR hydration states:
+
+```tsx
+import { LicenseLoadingSkeleton } from '@clarity-chat/license'
+
+;<LicenseGate requiredPlan="pro" loading={<LicenseLoadingSkeleton width="100%" height="200px" />}>
+  <ProFeature />
+</LicenseGate>
+```
+
+### useLicenseWarning
+
+Emit one-time console warnings for unlicensed usage:
+
+```tsx
+import { useLicenseWarning } from '@clarity-chat/license'
+
+function ProFeature() {
+  useLicenseWarning('ProFeature', 'pro')
+  return <div>Pro feature content</div>
+}
+```
+
 ## License Types
 
 | Plan       | Features                             |
