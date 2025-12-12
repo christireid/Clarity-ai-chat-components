@@ -218,3 +218,14 @@ export {
   type DeduplicationOptions,
   type DeduplicationStats,
 } from './request-deduplication'
+
+// Environment validation utilities
+export {
+  validateAIProvider,
+  validateVectorStore,
+  validateClarityChatConfig,
+  shouldUseMockMode,
+  getConfigSummary,
+  type EnvValidationResult,
+  type EnvValidationOptions,
+} from './env-validation'
