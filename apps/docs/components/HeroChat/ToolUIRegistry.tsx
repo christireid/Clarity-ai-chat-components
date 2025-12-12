@@ -1,6 +1,12 @@
 'use client'
 
-import { WeatherCard, StockChart, CodeSandbox, TaskList } from './tools'
+import {
+  WeatherCard,
+  StockChart,
+  CodeSandbox,
+  TaskList,
+  LocationCard,
+} from './tools'
 
 interface ToolResultData {
   ui: string
@@ -30,12 +36,16 @@ export function ToolUIRegistry({ toolResult }: ToolUIRegistryProps) {
           condition={data.condition as string}
           humidity={data.humidity as number | undefined}
           windSpeed={data.windSpeed as number | undefined}
-          forecast={data.forecast as Array<{
-            day: string
-            high: number
-            low: number
-            condition: string
-          }> | undefined}
+          forecast={
+            data.forecast as
+              | Array<{
+                  day: string
+                  high: number
+                  low: number
+                  condition: string
+                }>
+              | undefined
+          }
         />
       )
 
@@ -49,7 +59,11 @@ export function ToolUIRegistry({ toolResult }: ToolUIRegistryProps) {
           changeAmount={data.changeAmount as number | undefined}
           marketCap={data.marketCap as string | undefined}
           volume={data.volume as string | undefined}
-          dataPoints={data.dataPoints as Array<{ date: string; price: number }> | undefined}
+          dataPoints={
+            data.dataPoints as
+              | Array<{ date: string; price: number }>
+              | undefined
+          }
         />
       )
 
@@ -70,13 +84,38 @@ export function ToolUIRegistry({ toolResult }: ToolUIRegistryProps) {
         <TaskList
           title={data.title as string | undefined}
           description={data.description as string | undefined}
-          tasks={data.tasks as Array<{
-            id: string
-            text: string
-            completed: boolean
-            priority?: 'low' | 'medium' | 'high'
-          }>}
+          tasks={
+            data.tasks as Array<{
+              id: string
+              text: string
+              completed: boolean
+              priority?: 'low' | 'medium' | 'high'
+            }>
+          }
           showProgress={data.showProgress as boolean | undefined}
+        />
+      )
+
+    case 'location-card':
+      return (
+        <LocationCard
+          name={data.name as string}
+          address={data.address as string | undefined}
+          city={data.city as string | undefined}
+          country={data.country as string | undefined}
+          latitude={data.latitude as number | undefined}
+          longitude={data.longitude as number | undefined}
+          description={data.description as string | undefined}
+          placeType={
+            data.placeType as
+              | 'restaurant'
+              | 'hotel'
+              | 'attraction'
+              | 'business'
+              | 'address'
+              | 'city'
+              | undefined
+          }
         />
       )
 

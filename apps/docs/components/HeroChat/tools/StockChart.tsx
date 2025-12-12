@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingUp, TrendingDown, Activity } from 'lucide-react'
+import { TrendingUp, ChevronDown, Activity } from 'lucide-react'
 import { useMemo } from 'react'
 
 interface DataPoint {
@@ -28,7 +28,7 @@ export function StockChart({
   changeAmount,
   marketCap,
   volume,
-  dataPoints = []
+  dataPoints = [],
 }: StockChartProps) {
   const isPositive = changePercent >= 0
   const accentColor = isPositive ? 'emerald' : 'red'
@@ -39,7 +39,7 @@ export function StockChart({
       return { path: '', areaPath: '', minPrice: 0, maxPrice: 0 }
     }
 
-    const prices = dataPoints.map(d => d.price)
+    const prices = dataPoints.map((d) => d.price)
     const min = Math.min(...prices)
     const max = Math.max(...prices)
     const range = max - min || 1
@@ -57,7 +57,9 @@ export function StockChart({
       return { x, y }
     })
 
-    const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+    const pathD = points
+      .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+      .join(' ')
     const areaD = `${pathD} L ${width} ${height} L 0 ${height} Z`
 
     return { path: pathD, areaPath: areaD, minPrice: min, maxPrice: max }
@@ -75,17 +77,28 @@ export function StockChart({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg font-bold text-slate-900 dark:text-white">{symbol}</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                isPositive
-                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400'
-                  : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'
-              }`}>
-                {isPositive ? <TrendingUp className="w-3 h-3 inline mr-1" /> : <TrendingDown className="w-3 h-3 inline mr-1" />}
-                {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
+              <span className="text-lg font-bold text-slate-900 dark:text-white">
+                {symbol}
+              </span>
+              <span
+                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                  isPositive
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400'
+                    : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'
+                }`}
+              >
+                {isPositive ? (
+                  <TrendingUp className="w-3 h-3 inline mr-1" />
+                ) : (
+                  <ChevronDown className="w-3 h-3 inline mr-1" />
+                )}
+                {isPositive ? '+' : ''}
+                {changePercent.toFixed(2)}%
               </span>
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{companyName}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {companyName}
+            </p>
           </div>
           <Activity className="w-5 h-5 text-slate-400" />
         </div>
@@ -102,9 +115,13 @@ export function StockChart({
               ${currentPrice.toFixed(2)}
             </span>
             {changeAmount !== undefined && (
-              <span className={`text-sm font-medium ${
-                isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
-              }`}>
+              <span
+                className={`text-sm font-medium ${
+                  isPositive
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-red-600 dark:text-red-400'
+                }`}
+              >
                 {isPositive ? '+' : ''}${changeAmount.toFixed(2)}
               </span>
             )}
@@ -117,9 +134,23 @@ export function StockChart({
         <div className="p-4">
           <svg viewBox="0 0 280 100" className="w-full h-24">
             <defs>
-              <linearGradient id={`gradient-${symbol}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor={isPositive ? '#10b981' : '#ef4444'} stopOpacity="0.3" />
-                <stop offset="100%" stopColor={isPositive ? '#10b981' : '#ef4444'} stopOpacity="0" />
+              <linearGradient
+                id={`gradient-${symbol}`}
+                x1="0%"
+                y1="0%"
+                x2="0%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  stopColor={isPositive ? '#10b981' : '#ef4444'}
+                  stopOpacity="0.3"
+                />
+                <stop
+                  offset="100%"
+                  stopColor={isPositive ? '#10b981' : '#ef4444'}
+                  stopOpacity="0"
+                />
               </linearGradient>
             </defs>
 
@@ -129,7 +160,7 @@ export function StockChart({
               fill={`url(#gradient-${symbol})`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
+              transition={{ delay: 0.3, duration: durations.slow }}
             />
 
             {/* Line */}
@@ -142,13 +173,20 @@ export function StockChart({
               strokeLinejoin="round"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ delay: 0.3, duration: 1, ease: 'easeOut' }}
+              transition={{
+                delay: 0.3,
+                duration: durations.slower,
+                ease: 'easeOut',
+              }}
             />
 
             {/* Current price dot */}
             <motion.circle
               cx="280"
-              cy={100 - ((currentPrice - minPrice) / (maxPrice - minPrice || 1)) * 100}
+              cy={
+                100 -
+                ((currentPrice - minPrice) / (maxPrice - minPrice || 1)) * 100
+              }
               r="4"
               fill={isPositive ? '#10b981' : '#ef4444'}
               initial={{ scale: 0 }}
@@ -173,8 +211,12 @@ export function StockChart({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <p className="text-xs text-slate-500 dark:text-slate-400">Market Cap</p>
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">${marketCap}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Market Cap
+            </p>
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+              ${marketCap}
+            </p>
           </motion.div>
         )}
         {volume && (
@@ -184,7 +226,9 @@ export function StockChart({
             transition={{ delay: 0.6 }}
           >
             <p className="text-xs text-slate-500 dark:text-slate-400">Volume</p>
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{volume}</p>
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+              {volume}
+            </p>
           </motion.div>
         )}
       </div>

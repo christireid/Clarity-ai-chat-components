@@ -50,7 +50,7 @@ export function CodeSandbox({
   code,
   description,
   executable = false,
-  highlightLines = []
+  highlightLines = [],
 }: CodeSandboxProps) {
   const [copied, setCopied] = useState(false)
   const [output, setOutput] = useState<string | null>(null)
@@ -65,39 +65,44 @@ export function CodeSandbox({
   const handleRun = useCallback(async () => {
     if (!executable) return
 
+    // Security: Instead of executing arbitrary code with new Function(),
+    // we copy the code to clipboard and suggest the user run it in their browser console
     setIsRunning(true)
     setOutput(null)
 
     try {
-      // Simple JavaScript execution in a safe context
-      const logs: string[] = []
-      const mockConsole = {
-        log: (...args: unknown[]) => logs.push(args.map(String).join(' ')),
-        error: (...args: unknown[]) => logs.push(`Error: ${args.map(String).join(' ')}`),
-        warn: (...args: unknown[]) => logs.push(`Warning: ${args.map(String).join(' ')}`),
-      }
-
-      // Execute in a try-catch with a mock console
-      const fn = new Function('console', code)
-      fn(mockConsole)
-
-      setOutput(logs.join('\n') || 'No output')
-    } catch (error) {
-      setOutput(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      await navigator.clipboard.writeText(code)
+      setOutput(
+        'Code copied! Paste in your browser console (F12 → Console) to run it.'
+      )
+    } catch {
+      setOutput(
+        'Open your browser console (F12 → Console) and paste this code to run it.'
+      )
     } finally {
       setIsRunning(false)
     }
   }, [code, executable])
 
   // Syntax highlighting
-  const prismLanguage = language === 'typescript' ? 'typescript' :
-                        language === 'javascript' ? 'javascript' :
-                        language === 'python' ? 'python' :
-                        language === 'html' ? 'markup' :
-                        language === 'css' ? 'css' :
-                        language === 'json' ? 'json' :
-                        language === 'bash' ? 'bash' :
-                        language === 'sql' ? 'sql' : 'javascript'
+  const prismLanguage =
+    language === 'typescript'
+      ? 'typescript'
+      : language === 'javascript'
+        ? 'javascript'
+        : language === 'python'
+          ? 'python'
+          : language === 'html'
+            ? 'markup'
+            : language === 'css'
+              ? 'css'
+              : language === 'json'
+                ? 'json'
+                : language === 'bash'
+                  ? 'bash'
+                  : language === 'sql'
+                    ? 'sql'
+                    : 'javascript'
 
   const highlightedCode = Prism.languages[prismLanguage]
     ? Prism.highlight(code, Prism.languages[prismLanguage], prismLanguage)
@@ -126,7 +131,9 @@ export function CodeSandbox({
           <div className="flex items-center gap-2">
             <Code2 className="w-4 h-4 text-slate-400" />
             {title && <span className="text-sm text-slate-300">{title}</span>}
-            <span className={`px-2 py-0.5 rounded text-xs font-medium text-white ${languageColors[language] || 'bg-slate-600'}`}>
+            <span
+              className={`px-2 py-0.5 rounded text-xs font-medium text-white ${languageColors[language] || 'bg-slate-600'}`}
+            >
               {languageLabels[language] || language}
             </span>
           </div>
@@ -142,7 +149,9 @@ export function CodeSandbox({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Play className={`w-3.5 h-3.5 ${isRunning ? 'animate-spin' : ''}`} />
+              <Play
+                className={`w-3.5 h-3.5 ${isRunning ? 'animate-spin' : ''}`}
+              />
               {isRunning ? 'Running...' : 'Run'}
             </motion.button>
           )}
@@ -152,7 +161,11 @@ export function CodeSandbox({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            {copied ? (
+              <Check className="w-4 h-4 text-emerald-400" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
           </motion.button>
         </div>
       </div>
@@ -183,8 +196,12 @@ export function CodeSandbox({
                   className="text-slate-100"
                   dangerouslySetInnerHTML={{
                     __html: Prism.languages[prismLanguage]
-                      ? Prism.highlight(line, Prism.languages[prismLanguage], prismLanguage)
-                      : line
+                      ? Prism.highlight(
+                          line,
+                          Prism.languages[prismLanguage],
+                          prismLanguage
+                        )
+                      : line,
                   }}
                 />
               </motion.div>

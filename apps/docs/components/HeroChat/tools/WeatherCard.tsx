@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Cloud, CloudRain, CloudSnow, CloudLightning, Sun, CloudSun, Wind, Droplets } from 'lucide-react'
+import { Cloud, Sun, Droplet, Gauge } from 'lucide-react'
 
 interface ForecastDay {
   day: string
@@ -20,26 +20,29 @@ interface WeatherCardProps {
   forecast?: ForecastDay[]
 }
 
-const conditionIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  'sunny': Sun,
-  'partly-cloudy': CloudSun,
-  'cloudy': Cloud,
-  'rainy': CloudRain,
-  'stormy': CloudLightning,
-  'snowy': CloudSnow,
-  'foggy': Cloud,
-  'windy': Wind,
+const conditionIcons: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
+  sunny: Sun,
+  'partly-cloudy': Cloud,
+  cloudy: Cloud,
+  rainy: Cloud,
+  stormy: Cloud,
+  snowy: Cloud,
+  foggy: Cloud,
+  windy: Cloud,
 }
 
 const conditionGradients: Record<string, string> = {
-  'sunny': 'from-amber-400 via-orange-400 to-yellow-300',
+  sunny: 'from-amber-400 via-orange-400 to-yellow-300',
   'partly-cloudy': 'from-blue-400 via-sky-400 to-cyan-300',
-  'cloudy': 'from-slate-400 via-gray-400 to-zinc-300',
-  'rainy': 'from-slate-600 via-blue-500 to-indigo-400',
-  'stormy': 'from-slate-800 via-purple-700 to-indigo-600',
-  'snowy': 'from-slate-200 via-blue-100 to-white',
-  'foggy': 'from-gray-300 via-slate-300 to-zinc-200',
-  'windy': 'from-teal-400 via-cyan-400 to-sky-300',
+  cloudy: 'from-slate-400 via-gray-400 to-zinc-300',
+  rainy: 'from-slate-600 via-blue-500 to-indigo-400',
+  stormy: 'from-slate-800 via-purple-700 to-indigo-600',
+  snowy: 'from-slate-200 via-blue-100 to-white',
+  foggy: 'from-gray-300 via-slate-300 to-zinc-200',
+  windy: 'from-teal-400 via-cyan-400 to-sky-300',
 }
 
 export function WeatherCard({
@@ -49,7 +52,7 @@ export function WeatherCard({
   condition,
   humidity,
   windSpeed,
-  forecast
+  forecast,
 }: WeatherCardProps) {
   const Icon = conditionIcons[condition] || Cloud
   const gradient = conditionGradients[condition] || conditionGradients['cloudy']
@@ -70,7 +73,7 @@ export function WeatherCard({
             <motion.div
               className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-yellow-200/30 blur-3xl"
               animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.7, 0.5] }}
-              transition={{ duration: 4, repeat: Infinity }}
+              transition={{ duration: durations.slower, repeat: Infinity }}
             />
           )}
           {condition === 'rainy' && (
@@ -114,7 +117,9 @@ export function WeatherCard({
         </div>
 
         {/* Content */}
-        <div className={`relative z-10 ${isLight ? 'text-slate-800' : 'text-white'}`}>
+        <div
+          className={`relative z-10 ${isLight ? 'text-slate-800' : 'text-white'}`}
+        >
           {/* Location */}
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -123,7 +128,11 @@ export function WeatherCard({
             </div>
             <motion.div
               animate={{ rotate: condition === 'sunny' ? 360 : 0 }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+              transition={{
+                duration: durations.slower,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
             >
               <Icon className="w-12 h-12" />
             </motion.div>
@@ -143,7 +152,9 @@ export function WeatherCard({
           </div>
 
           {/* Condition */}
-          <p className="text-lg capitalize mb-4">{condition.replace('-', ' ')}</p>
+          <p className="text-lg capitalize mb-4">
+            {condition.replace('-', ' ')}
+          </p>
 
           {/* Stats */}
           <div className="flex gap-6">
@@ -154,7 +165,7 @@ export function WeatherCard({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <Droplets className="w-4 h-4" />
+                <Droplet className="w-4 h-4" />
                 <span className="text-sm">{humidity}%</span>
               </motion.div>
             )}
@@ -165,7 +176,7 @@ export function WeatherCard({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <Wind className="w-4 h-4" />
+                <Gauge className="w-4 h-4" />
                 <span className="text-sm">{windSpeed} km/h</span>
               </motion.div>
             )}
@@ -187,11 +198,17 @@ export function WeatherCard({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
                 >
-                  <span className="text-xs text-slate-500 dark:text-slate-400">{day.day}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    {day.day}
+                  </span>
                   <DayIcon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                   <div className="flex gap-1 text-xs">
-                    <span className="font-medium text-slate-700 dark:text-slate-200">{Math.round(day.high)}°</span>
-                    <span className="text-slate-400">{Math.round(day.low)}°</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-200">
+                      {Math.round(day.high)}°
+                    </span>
+                    <span className="text-slate-400">
+                      {Math.round(day.low)}°
+                    </span>
                   </div>
                 </motion.div>
               )

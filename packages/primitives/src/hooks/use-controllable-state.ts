@@ -89,7 +89,7 @@ export function useControllableState<T>(
 
   // Warn if switching between controlled and uncontrolled
   React.useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env['NODE_ENV'] !== 'production') {
       if (isControlledRef.current !== isControlled) {
         console.warn(
           `[useControllableState] Component is switching from ${

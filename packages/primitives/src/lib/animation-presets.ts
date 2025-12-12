@@ -287,9 +287,9 @@ export function getReducedMotionVariants(
 
   // Return instant state changes (no animation)
   return {
-    initial: normalVariants.initial,
-    animate: normalVariants.animate,
-    exit: normalVariants.exit,
+    initial: normalVariants['initial']!,
+    animate: normalVariants['animate']!,
+    exit: normalVariants['exit']!,
   }
 }
 

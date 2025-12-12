@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, Circle, ListTodo, Sparkles } from 'lucide-react'
+import { Check, Circle, List, Sparkles } from 'lucide-react'
 import { useState, useCallback, useMemo } from 'react'
 
 interface Task {
@@ -20,7 +20,8 @@ interface TaskListProps {
 
 const priorityColors = {
   low: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
-  medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400',
+  medium:
+    'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400',
   high: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400',
 }
 
@@ -28,14 +29,14 @@ export function TaskList({
   title,
   description,
   tasks: initialTasks,
-  showProgress = true
+  showProgress = true,
 }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [celebrateIndex, setCelebrateIndex] = useState<number | null>(null)
 
   const toggleTask = useCallback((id: string) => {
-    setTasks(prev => {
-      const taskIndex = prev.findIndex(t => t.id === id)
+    setTasks((prev) => {
+      const taskIndex = prev.findIndex((t) => t.id === id)
       const wasCompleted = prev[taskIndex]?.completed
 
       if (!wasCompleted) {
@@ -43,14 +44,20 @@ export function TaskList({
         setTimeout(() => setCelebrateIndex(null), 600)
       }
 
-      return prev.map(task =>
+      return prev.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
     })
   }, [])
 
-  const completedCount = useMemo(() => tasks.filter(t => t.completed).length, [tasks])
-  const progress = useMemo(() => (completedCount / tasks.length) * 100, [completedCount, tasks.length])
+  const completedCount = useMemo(
+    () => tasks.filter((t) => t.completed).length,
+    [tasks]
+  )
+  const progress = useMemo(
+    () => (completedCount / tasks.length) * 100,
+    [completedCount, tasks.length]
+  )
   const allComplete = completedCount === tasks.length
 
   return (
@@ -65,13 +72,15 @@ export function TaskList({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <ListTodo className="w-5 h-5 text-indigo-500" />
+              <List className="w-5 h-5 text-indigo-500" />
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 {title || 'Tasks'}
               </h3>
             </div>
             {description && (
-              <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {description}
+              </p>
             )}
           </div>
           <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -131,7 +140,11 @@ export function TaskList({
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 500,
+                          damping: 25,
+                        }}
                       >
                         <Check className="w-4 h-4 text-white" />
                       </motion.div>
@@ -140,17 +153,21 @@ export function TaskList({
                 </motion.div>
 
                 {/* Task text */}
-                <span className={`flex-grow text-left transition-all ${
-                  task.completed
-                    ? 'text-slate-400 line-through'
-                    : 'text-slate-700 dark:text-slate-200'
-                }`}>
+                <span
+                  className={`flex-grow text-left transition-all ${
+                    task.completed
+                      ? 'text-slate-400 line-through'
+                      : 'text-slate-700 dark:text-slate-200'
+                  }`}
+                >
                   {task.text}
                 </span>
 
                 {/* Priority badge */}
                 {task.priority && (
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${priorityColors[task.priority]}`}>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${priorityColors[task.priority]}`}
+                  >
                     {task.priority}
                   </span>
                 )}
@@ -178,7 +195,10 @@ export function TaskList({
                           y: Math.sin((i / 8) * Math.PI * 2) * 30,
                           opacity: [1, 1, 0],
                         }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                        transition={{
+                          duration: durations.slow,
+                          ease: 'easeOut',
+                        }}
                       />
                     ))}
                   </motion.div>
@@ -202,14 +222,14 @@ export function TaskList({
               <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400">
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  transition={{ duration: durations.slow, ease: 'easeOut' }}
                 >
                   <Sparkles className="w-5 h-5" />
                 </motion.div>
                 <span className="font-medium">All tasks complete!</span>
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  transition={{ duration: durations.slow, ease: 'easeOut' }}
                 >
                   <Sparkles className="w-5 h-5" />
                 </motion.div>
