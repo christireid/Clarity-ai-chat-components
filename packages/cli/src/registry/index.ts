@@ -378,7 +378,7 @@ export const GENERATOR_REGISTRY: Record<string, GeneratorConfig> = {
     description: 'Create a Next.js API route for AI chat endpoints',
     defaultDir: './src/app/api',
     prompts: ['name', 'provider', 'withStreaming', 'description'],
-    templates: ['apiRoute', 'apiRouteTest'],
+    templates: ['apiRoute'],
   },
 }
 

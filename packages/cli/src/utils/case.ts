@@ -11,6 +11,7 @@
  * @example toPascalCase('chatMessage') => 'ChatMessage'
  */
 export function toPascalCase(str: string): string {
+  if (!str) return ''
   return str
     .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''))
     .replace(/^(.)/, (_, c) => c.toUpperCase())
@@ -22,6 +23,7 @@ export function toPascalCase(str: string): string {
  * @example toCamelCase('chat-message') => 'chatMessage'
  */
 export function toCamelCase(str: string): string {
+  if (!str) return ''
   return str
     .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''))
     .replace(/^(.)/, (_, c) => c.toLowerCase())
@@ -33,6 +35,7 @@ export function toCamelCase(str: string): string {
  * @example toKebabCase('chatMessage') => 'chat-message'
  */
 export function toKebabCase(str: string): string {
+  if (!str) return ''
   return str
     .replace(/([a-z])([A-Z])/g, '$1-$2')
     .replace(/[\s_]+/g, '-')

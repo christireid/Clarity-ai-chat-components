@@ -18,7 +18,6 @@ import { successBox, errorBox, infoBox } from '../ui/box.js'
 import {
   COMPONENT_REGISTRY,
   getComponent,
-  getComponentSlugs,
   resolveComponentDependencies,
 } from '../registry/index.js'
 

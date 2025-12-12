@@ -21,11 +21,18 @@ import Handlebars from 'handlebars'
 import { toPascalCase, toCamelCase, toKebabCase } from '../utils/case.js'
 
 // Register Handlebars helpers using shared utilities
-Handlebars.registerHelper('pascalCase', (str: string) => toPascalCase(str))
-Handlebars.registerHelper('camelCase', (str: string) => toCamelCase(str))
-Handlebars.registerHelper('kebabCase', (str: string) => toKebabCase(str))
-Handlebars.registerHelper('uppercase', (str: string) => str.toUpperCase())
-Handlebars.registerHelper('lowercase', (str: string) => str.toLowerCase())
+// All helpers include null-safety to prevent crashes from missing variables
+Handlebars.registerHelper('pascalCase', (str: string) =>
+  toPascalCase(str || '')
+)
+Handlebars.registerHelper('camelCase', (str: string) => toCamelCase(str || ''))
+Handlebars.registerHelper('kebabCase', (str: string) => toKebabCase(str || ''))
+Handlebars.registerHelper('uppercase', (str: string) =>
+  (str || '').toUpperCase()
+)
+Handlebars.registerHelper('lowercase', (str: string) =>
+  (str || '').toLowerCase()
+)
 
 // Conditional helper for provider checks
 Handlebars.registerHelper('eq', (a: unknown, b: unknown) => a === b)
@@ -465,7 +472,7 @@ export type { {{pascalName}}Props, {{pascalName}}Message } from './{{pascalName}
 `,
 
   chatComponentTest: `import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { {{pascalName}} } from './{{pascalName}}'
 
@@ -656,7 +663,7 @@ export const WithSystemPrompt: Story = {
   // ---------------------------------------------------------------------------
   // Hook Template
   // ---------------------------------------------------------------------------
-  hook: `import { useState, useCallback, useEffect } from 'react'
+  hook: `import { useState, useCallback } from 'react'
 
 export interface Use{{pascalName}}Options {
   /**
@@ -955,7 +962,7 @@ export function use{{pascalName}}(): {{pascalName}}ContextValue {
 export { {{pascalName}}Context }
 `,
 
-  contextTest: `import { describe, it, expect } from 'vitest'
+  contextTest: `import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { {{pascalName}}Provider, use{{pascalName}} } from './{{pascalName}}Context'
 
