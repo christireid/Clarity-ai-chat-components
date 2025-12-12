@@ -1,6 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import {
+  useBatteryAware,
+  type OptimizationRecommendations,
+} from '@clarity-chat/react'
 
 interface Props {
   activeTab: 'demo' | 'suggestions' | 'battery' | 'performance'
@@ -91,129 +95,102 @@ function EnhancedSuggestionsDemo() {
 }
 
 // =============================================================================
-// Battery Aware Demo with Real API
+// Battery Aware Demo using @clarity-chat/react hook
 // =============================================================================
 
-interface BatteryManager {
-  charging: boolean
-  chargingTime: number
-  dischargingTime: number
-  level: number
-  addEventListener: (type: string, listener: () => void) => void
-  removeEventListener: (type: string, listener: () => void) => void
-}
-
-declare global {
-  interface Navigator {
-    getBattery?: () => Promise<BatteryManager>
-  }
-}
-
-function useBatteryStatus() {
-  const [batteryLevel, setBatteryLevel] = useState(1)
-  const [isCharging, setIsCharging] = useState(true)
-  const [isSupported, setIsSupported] = useState<boolean | null>(null)
-  const [simulationMode, setSimulationMode] = useState(false)
-
-  useEffect(() => {
-    // Check if Battery API is supported
-    if (typeof navigator === 'undefined' || !navigator.getBattery) {
-      setIsSupported(false)
-      setSimulationMode(true)
-      setBatteryLevel(0.65) // Default simulation value
-      setIsCharging(false)
-      return
-    }
-
-    setIsSupported(true)
-
-    navigator
-      .getBattery()
-      .then((battery) => {
-        // Initial values
-        setBatteryLevel(battery.level)
-        setIsCharging(battery.charging)
-
-        // Event listeners for updates
-        const updateLevel = () => setBatteryLevel(battery.level)
-        const updateCharging = () => setIsCharging(battery.charging)
-
-        battery.addEventListener('levelchange', updateLevel)
-        battery.addEventListener('chargingchange', updateCharging)
-
-        return () => {
-          battery.removeEventListener('levelchange', updateLevel)
-          battery.removeEventListener('chargingchange', updateCharging)
-        }
-      })
-      .catch(() => {
-        setIsSupported(false)
-        setSimulationMode(true)
-        setBatteryLevel(0.65)
-        setIsCharging(false)
-      })
-  }, [])
-
-  return {
-    batteryLevel,
-    setBatteryLevel,
-    isCharging,
-    setIsCharging,
-    isSupported,
-    simulationMode,
-    setSimulationMode,
-  }
-}
-
 function BatteryAwareDemo() {
+  // Use the existing useBatteryAware hook from @clarity-chat/react
   const {
-    batteryLevel,
-    setBatteryLevel,
-    isCharging,
-    setIsCharging,
+    batteryStatus,
     isSupported,
-    simulationMode,
-    setSimulationMode,
-  } = useBatteryStatus()
+    recommendations,
+    batteryDescription,
+    shouldEnableBatterySaver,
+    error,
+  } = useBatteryAware({
+    batterySaverThreshold: 0.2,
+    autoOptimize: true,
+    thresholds: {
+      critical: 0.05,
+      low: 0.2,
+      medium: 0.5,
+    },
+  })
 
-  const recommendations =
-    batteryLevel < 0.2
-      ? { level: 'aggressive', disableAnimations: true, updateInterval: 2000 }
-      : batteryLevel < 0.5
-        ? { level: 'moderate', disableAnimations: false, updateInterval: 1000 }
-        : { level: 'none', disableAnimations: false, updateInterval: 500 }
+  // Simulation mode for demo purposes (when Battery API not available)
+  const [simulationMode, setSimulationMode] = useState(false)
+  const [simulatedLevel, setSimulatedLevel] = useState(0.65)
+  const [simulatedCharging, setSimulatedCharging] = useState(false)
+
+  // Determine effective values (real or simulated)
+  const effectiveLevel =
+    simulationMode || !isSupported
+      ? simulatedLevel
+      : (batteryStatus?.level ?? 1)
+  const effectiveCharging =
+    simulationMode || !isSupported
+      ? simulatedCharging
+      : (batteryStatus?.charging ?? true)
+
+  // Calculate recommendations based on effective values for simulation
+  const effectiveRecommendations: OptimizationRecommendations =
+    simulationMode || !isSupported
+      ? {
+          disableAnimations: effectiveLevel < 0.2,
+          throttleUpdates: effectiveLevel < 0.5,
+          deferNonCritical: effectiveLevel < 0.2,
+          reduceStreaming: effectiveLevel < 0.2,
+          updateInterval:
+            effectiveLevel <= 0.05
+              ? 1000
+              : effectiveLevel <= 0.2
+                ? 500
+                : effectiveLevel <= 0.5
+                  ? 250
+                  : 100,
+          level:
+            effectiveLevel <= 0.05
+              ? 'aggressive'
+              : effectiveLevel <= 0.2
+                ? 'moderate'
+                : effectiveLevel <= 0.5
+                  ? 'minimal'
+                  : 'none',
+        }
+      : recommendations
 
   return (
     <div className="space-y-6">
       <div className="p-6 bg-card border rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Battery Status</h3>
-          {isSupported !== null && (
-            <span
-              className={`text-xs px-2 py-1 rounded ${
-                isSupported
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
-              }`}
-            >
-              {isSupported ? 'Live API' : 'Simulation Mode'}
-            </span>
-          )}
+          <span
+            className={`text-xs px-2 py-1 rounded ${
+              isSupported && !simulationMode
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+            }`}
+          >
+            {isSupported && !simulationMode ? 'Live API' : 'Simulation Mode'}
+          </span>
         </div>
 
-        {/* API Status Notice */}
-        {isSupported === false && (
-          <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              Battery Status API is not supported in this browser. Using
-              simulation mode.
-              <br />
-              <span className="text-xs text-yellow-600 dark:text-yellow-400">
-                (Supported in Chrome, Edge, Opera on desktop)
-              </span>
-            </p>
-          </div>
-        )}
+        {/* API Info Banner */}
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-sm text-blue-800 dark:text-blue-200">
+            This demo uses the{' '}
+            <code className="font-mono">useBatteryAware</code> hook from{' '}
+            <code className="font-mono">@clarity-chat/react</code>.
+            {!isSupported && (
+              <>
+                <br />
+                <span className="text-xs text-blue-600 dark:text-blue-400">
+                  Battery API not available - using simulation mode.
+                </span>
+              </>
+            )}
+          </p>
+        </div>
 
         {/* Toggle simulation mode when API is supported */}
         {isSupported && (
@@ -235,14 +212,16 @@ function BatteryAwareDemo() {
         {(simulationMode || !isSupported) && (
           <div className="mb-6 p-4 bg-muted/50 rounded-lg">
             <label className="block text-sm font-medium mb-2">
-              Simulate Battery Level: {Math.round(batteryLevel * 100)}%
+              Simulate Battery Level: {Math.round(simulatedLevel * 100)}%
             </label>
             <input
               type="range"
               min="0"
               max="100"
-              value={batteryLevel * 100}
-              onChange={(e) => setBatteryLevel(parseInt(e.target.value) / 100)}
+              value={simulatedLevel * 100}
+              onChange={(e) =>
+                setSimulatedLevel(parseInt(e.target.value) / 100)
+              }
               className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -256,8 +235,8 @@ function BatteryAwareDemo() {
               <input
                 type="checkbox"
                 id="charging"
-                checked={isCharging}
-                onChange={(e) => setIsCharging(e.target.checked)}
+                checked={simulatedCharging}
+                onChange={(e) => setSimulatedCharging(e.target.checked)}
                 className="rounded"
               />
               <label htmlFor="charging" className="text-sm">
@@ -271,23 +250,23 @@ function BatteryAwareDemo() {
         <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
           <div
             className={`w-12 h-6 border-2 rounded-sm relative ${
-              batteryLevel < 0.2 ? 'border-red-500' : 'border-green-500'
+              effectiveLevel < 0.2 ? 'border-red-500' : 'border-green-500'
             }`}
           >
             <div
               className={`absolute inset-0.5 rounded-sm transition-all ${
-                batteryLevel < 0.2 ? 'bg-red-500' : 'bg-green-500'
+                effectiveLevel < 0.2 ? 'bg-red-500' : 'bg-green-500'
               }`}
-              style={{ width: `${batteryLevel * 100}%` }}
+              style={{ width: `${effectiveLevel * 100}%` }}
             />
             <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-3 bg-current rounded-r-sm" />
           </div>
           <div>
-            <p className="font-medium">{Math.round(batteryLevel * 100)}%</p>
+            <p className="font-medium">{Math.round(effectiveLevel * 100)}%</p>
             <p className="text-xs text-muted-foreground">
-              {isCharging
+              {effectiveCharging
                 ? '⚡ Charging'
-                : batteryLevel < 0.2
+                : effectiveLevel < 0.2
                   ? '🔴 Low battery'
                   : '🔋 On battery'}
             </p>
@@ -297,10 +276,14 @@ function BatteryAwareDemo() {
 
       <div className="p-6 bg-card border rounded-lg">
         <h3 className="text-lg font-semibold mb-4">Active Optimizations</h3>
+        <p className="text-xs text-muted-foreground mb-4">
+          Recommendations from useBatteryAware hook based on current battery
+          level
+        </p>
         <div className="space-y-3">
           <div
             className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-              recommendations.disableAnimations
+              effectiveRecommendations.disableAnimations
                 ? 'bg-yellow-100 dark:bg-yellow-900/20'
                 : 'bg-muted'
             }`}
@@ -308,32 +291,48 @@ function BatteryAwareDemo() {
             <span className="text-sm">Animations</span>
             <span
               className={`text-sm font-medium ${
-                recommendations.disableAnimations
+                effectiveRecommendations.disableAnimations
                   ? 'text-yellow-700 dark:text-yellow-400'
                   : 'text-green-600'
               }`}
             >
-              {recommendations.disableAnimations ? 'Disabled' : 'Enabled'}
+              {effectiveRecommendations.disableAnimations
+                ? 'Disabled'
+                : 'Enabled'}
             </span>
           </div>
           <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
             <span className="text-sm">Update Interval</span>
             <span className="text-sm font-medium">
-              {recommendations.updateInterval}ms
+              {effectiveRecommendations.updateInterval}ms
+            </span>
+          </div>
+          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+            <span className="text-sm">Throttle Updates</span>
+            <span
+              className={`text-sm font-medium ${
+                effectiveRecommendations.throttleUpdates
+                  ? 'text-yellow-700 dark:text-yellow-400'
+                  : 'text-green-600'
+              }`}
+            >
+              {effectiveRecommendations.throttleUpdates ? 'Yes' : 'No'}
             </span>
           </div>
           <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
             <span className="text-sm">Optimization Level</span>
             <span
               className={`text-sm font-medium px-2 py-0.5 rounded ${
-                recommendations.level === 'aggressive'
+                effectiveRecommendations.level === 'aggressive'
                   ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-                  : recommendations.level === 'moderate'
+                  : effectiveRecommendations.level === 'moderate'
                     ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
-                    : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                    : effectiveRecommendations.level === 'minimal'
+                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
+                      : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
               }`}
             >
-              {recommendations.level}
+              {effectiveRecommendations.level}
             </span>
           </div>
         </div>
