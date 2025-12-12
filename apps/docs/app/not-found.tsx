@@ -41,7 +41,7 @@ export default function NotFound() {
               Go Home
             </motion.button>
           </Link>
-          <Link href="/docs">
+          <Link href="/learn/quick-start">
             <motion.button
               variants={buttonAnimation}
               whileHover="hover"

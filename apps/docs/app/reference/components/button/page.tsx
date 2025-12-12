@@ -417,7 +417,7 @@ render(<ButtonGroups />)`}
         <Button
           variant="primary"
           as="a"
-          href="/docs"
+          href="/learn/quick-start"
         >
           View Documentation
         </Button>

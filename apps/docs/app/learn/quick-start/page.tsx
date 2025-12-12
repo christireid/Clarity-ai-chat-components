@@ -349,7 +349,7 @@ export default App`}
         <Callout type="info">
           <p>
             <strong>Need help?</strong> Check out our{' '}
-            <a href="https://github.com/clarity-chat/ui/discussions" className="text-brand-500 hover:underline">GitHub Discussions</a>{' '}
+            <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions" className="text-brand-500 hover:underline">GitHub Discussions</a>{' '}
             or join our <a href="https://discord.gg/clarity-chat" className="text-brand-500 hover:underline">Discord community</a>.
           </p>
         </Callout>
