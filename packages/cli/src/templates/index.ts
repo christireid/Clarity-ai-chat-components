@@ -12,32 +12,28 @@
  * - {{description}} - Component description
  * - {{year}} - Current year
  * - {{author}} - Git author name
+ * - {{provider}} - AI provider (openai, anthropic, google)
+ * - {{withStreaming}} - Include streaming support
+ * - {{withMemory}} - Include memory support
  */
 
 import Handlebars from 'handlebars'
+import { toPascalCase, toCamelCase, toKebabCase } from '../utils/case.js'
 
-// Register Handlebars helpers
-Handlebars.registerHelper('pascalCase', (str: string) =>
-  str
-    .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''))
-    .replace(/^(.)/, (_, c) => c.toUpperCase())
-)
-
-Handlebars.registerHelper('camelCase', (str: string) =>
-  str
-    .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''))
-    .replace(/^(.)/, (_, c) => c.toLowerCase())
-)
-
-Handlebars.registerHelper('kebabCase', (str: string) =>
-  str
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/[\s_]+/g, '-')
-    .toLowerCase()
-)
-
+// Register Handlebars helpers using shared utilities
+Handlebars.registerHelper('pascalCase', (str: string) => toPascalCase(str))
+Handlebars.registerHelper('camelCase', (str: string) => toCamelCase(str))
+Handlebars.registerHelper('kebabCase', (str: string) => toKebabCase(str))
 Handlebars.registerHelper('uppercase', (str: string) => str.toUpperCase())
 Handlebars.registerHelper('lowercase', (str: string) => str.toLowerCase())
+
+// Conditional helper for provider checks
+Handlebars.registerHelper('eq', (a: unknown, b: unknown) => a === b)
+Handlebars.registerHelper('or', (...args: unknown[]) => {
+  // Remove the Handlebars options object (last argument)
+  const values = args.slice(0, -1)
+  return values.some(Boolean)
+})
 
 // ============================================================================
 // Component Templates
@@ -1377,9 +1373,10 @@ describe('{{pascalName}}Adapter', () => {
 `,
 
   // ---------------------------------------------------------------------------
-  // API Route Template (Next.js)
+  // API Route Template (Next.js) - With Security Best Practices
   // ---------------------------------------------------------------------------
   apiRoute: `import { NextRequest } from 'next/server'
+import { headers } from 'next/headers'
 {{#if (eq provider "openai")}}
 import OpenAI from 'openai'
 {{else if (eq provider "anthropic")}}
@@ -1387,6 +1384,77 @@ import Anthropic from '@anthropic-ai/sdk'
 {{else if (eq provider "google")}}
 import { GoogleGenerativeAI } from '@google/generative-ai'
 {{/if}}
+
+// ============================================================================
+// Security Configuration
+// ============================================================================
+
+/**
+ * Rate limiting configuration
+ * In production, use Redis or a dedicated rate limiting service
+ */
+const RATE_LIMIT = {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 20, // 20 requests per minute per IP
+}
+
+// Simple in-memory rate limiter (use Redis in production)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
+
+function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
+  const now = Date.now()
+  const record = rateLimitMap.get(ip)
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT.windowMs })
+    return { allowed: true, remaining: RATE_LIMIT.maxRequests - 1 }
+  }
+
+  if (record.count >= RATE_LIMIT.maxRequests) {
+    return { allowed: false, remaining: 0 }
+  }
+
+  record.count++
+  return { allowed: true, remaining: RATE_LIMIT.maxRequests - record.count }
+}
+
+/**
+ * Input validation and sanitization
+ */
+const MAX_MESSAGE_LENGTH = 32000 // ~8k tokens
+const MAX_MESSAGES = 50
+
+function validateInput(messages: unknown, maxTokens: unknown): string | null {
+  if (!messages || !Array.isArray(messages)) {
+    return 'messages is required and must be an array'
+  }
+
+  if (messages.length > MAX_MESSAGES) {
+    return \`Maximum \${MAX_MESSAGES} messages allowed\`
+  }
+
+  for (const msg of messages) {
+    if (!msg.role || !msg.content) {
+      return 'Each message must have role and content'
+    }
+    if (!['user', 'assistant', 'system'].includes(msg.role)) {
+      return 'Invalid message role'
+    }
+    if (typeof msg.content !== 'string' || msg.content.length > MAX_MESSAGE_LENGTH) {
+      return \`Message content must be a string under \${MAX_MESSAGE_LENGTH} characters\`
+    }
+  }
+
+  if (maxTokens && (typeof maxTokens !== 'number' || maxTokens < 1 || maxTokens > 4096)) {
+    return 'maxTokens must be between 1 and 4096'
+  }
+
+  return null
+}
+
+// ============================================================================
+// AI Provider Configuration
+// ============================================================================
 
 {{#if (eq provider "openai")}}
 const openai = new OpenAI({
@@ -1400,16 +1468,48 @@ const anthropic = new Anthropic({
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!)
 {{/if}}
 
+// ============================================================================
+// API Route Handler
+// ============================================================================
+
 export async function POST(req: NextRequest) {
   try {
-    const { messages, model, systemPrompt, temperature = 0.7, maxTokens = 1000 } = await req.json()
+    // Get client IP for rate limiting
+    const headersList = await headers()
+    const forwardedFor = headersList.get('x-forwarded-for')
+    const ip = forwardedFor?.split(',')[0] ?? 'unknown'
 
-    if (!messages || !Array.isArray(messages)) {
+    // Check rate limit
+    const { allowed, remaining } = checkRateLimit(ip)
+    if (!allowed) {
       return Response.json(
-        { error: 'messages is required and must be an array' },
-        { status: 400 }
+        { error: 'Rate limit exceeded. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(RATE_LIMIT.maxRequests),
+            'X-RateLimit-Remaining': '0',
+            'Retry-After': '60',
+          },
+        }
       )
     }
+
+    // Parse and validate request body
+    const body = await req.json()
+    const { messages, model, systemPrompt, temperature = 0.7, maxTokens = 1000 } = body
+
+    // Validate input
+    const validationError = validateInput(messages, maxTokens)
+    if (validationError) {
+      return Response.json({ error: validationError }, { status: 400 })
+    }
+
+    // Optional: Add authentication check here
+    // const authHeader = headersList.get('authorization')
+    // if (!authHeader || !verifyToken(authHeader)) {
+    //   return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    // }
 
 {{#if withStreaming}}
     // Streaming response
