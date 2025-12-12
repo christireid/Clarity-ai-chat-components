@@ -175,6 +175,7 @@ function DevToolsProvider({
         window.removeEventListener('mouseup', handleMouseUp)
       }
     }
+    return undefined
   }, [isDragging, handleMouseMove, handleMouseUp])
 
   const boundaryList = Array.from(boundaries.values())

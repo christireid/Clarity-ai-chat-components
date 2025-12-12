@@ -4,6 +4,13 @@ import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Card, Badge, cn } from '@clarity-chat/primitives'
 
+// Animation duration constants
+const durations = {
+  fast: 0.15,
+  normal: 0.2,
+  slow: 0.3,
+} as const
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -193,7 +200,7 @@ function getDomain(url: string): string {
 interface EmbedPattern {
   type: EmbedType
   patterns: RegExp[]
-  extractId: (url: string) => string | null
+  extractId: (url: string) => string | undefined
 }
 
 const EMBED_PATTERNS: EmbedPattern[] = [
@@ -208,7 +215,7 @@ const EMBED_PATTERNS: EmbedPattern[] = [
         const match = url.match(pattern)
         if (match) return match[1]
       }
-      return null
+      return undefined
     },
   },
   {
@@ -216,7 +223,7 @@ const EMBED_PATTERNS: EmbedPattern[] = [
     patterns: [/vimeo\.com\/(\d+)/],
     extractId: (url: string) => {
       const match = url.match(/vimeo\.com\/(\d+)/)
-      return match ? match[1] : null
+      return match ? match[1] : undefined
     },
   },
   {
@@ -224,7 +231,7 @@ const EMBED_PATTERNS: EmbedPattern[] = [
     patterns: [/(?:twitter\.com|x\.com)\/\w+\/status\/(\d+)/],
     extractId: (url: string) => {
       const match = url.match(/(?:twitter\.com|x\.com)\/\w+\/status\/(\d+)/)
-      return match ? match[1] : null
+      return match ? match[1] : undefined
     },
   },
   {
@@ -232,7 +239,7 @@ const EMBED_PATTERNS: EmbedPattern[] = [
     patterns: [/github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+)/],
     extractId: (url: string) => {
       const match = url.match(/github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+)/)
-      return match ? match[1].replace(/\/$/, '') : null
+      return match ? match[1].replace(/\/$/, '') : undefined
     },
   },
   {
@@ -244,7 +251,7 @@ const EMBED_PATTERNS: EmbedPattern[] = [
       const match = url.match(
         /open\.spotify\.com\/(track|album|playlist|artist)\/([a-zA-Z0-9]+)/
       )
-      return match ? `${match[1]}/${match[2]}` : null
+      return match ? `${match[1]}/${match[2]}` : undefined
     },
   },
 ]
@@ -254,10 +261,10 @@ const EMBED_PATTERNS: EmbedPattern[] = [
  */
 export function detectEmbedType(url: string): {
   type: EmbedType
-  id: string | null
+  id: string | undefined
 } {
   if (!isValidUrl(url)) {
-    return { type: 'default', id: null }
+    return { type: 'default', id: undefined }
   }
 
   for (const embedPattern of EMBED_PATTERNS) {
@@ -271,7 +278,7 @@ export function detectEmbedType(url: string): {
     }
   }
 
-  return { type: 'default', id: null }
+  return { type: 'default', id: undefined }
 }
 
 // ============================================================================
