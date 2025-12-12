@@ -1,0 +1,23 @@
+# Clarity Chat - Premium AI Chat Components
+# https://clarity-chat.dev
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://clarity-chat.dev/sitemap.xml
+
+# Crawl-delay for politeness
+Crawl-delay: 1
+
+# Block admin and API routes
+User-agent: *
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow important assets
+Allow: /opengraph-image
+Allow: /twitter-image
+Allow: /icon
+Allow: /apple-icon

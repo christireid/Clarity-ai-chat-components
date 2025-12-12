@@ -1,10 +1,10 @@
 {
   "name": "clarity-chat",
   "displayName": "Clarity Chat",
-  "description": "IntelliSense, code snippets, and productivity tools for Clarity Chat AI framework",
-  "version": "0.1.0",
-  "publisher": "clarity-chat",
-  "icon": "icon.png",
+  "description": "The ultimate VS Code extension for building AI chat applications. Components, hooks, snippets, and IntelliSense for the Clarity Chat library.",
+  "version": "1.0.0",
+  "publisher": "code-and-clarity",
+  "icon": "assets/icon.png",
   "galleryBanner": {
     "color": "#0F172A",
     "theme": "dark"
@@ -26,8 +26,17 @@
       "description": "Google AI Gemini Support"
     }
   ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code-and-clarity/clarity-chat"
+  },
+  "bugs": {
+    "url": "https://github.com/code-and-clarity/clarity-chat/issues"
+  },
+  "homepage": "https://claritychat.dev",
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Programming Languages",
@@ -38,61 +47,144 @@
   "keywords": [
     "clarity-chat",
     "ai",
+    "chat",
+    "react",
+    "typescript",
     "openai",
     "gpt-4",
     "anthropic",
     "claude",
     "google-ai",
     "gemini",
-    "chat",
-    "completion",
-    "llm",
+    "streaming",
+    "components",
+    "hooks",
     "chatgpt",
-    "copilot"
+    "copilot",
+    "llm"
   ],
   "activationEvents": [
     "onLanguage:typescript",
     "onLanguage:javascript",
     "onLanguage:typescriptreact",
     "onLanguage:javascriptreact",
-    "workspaceContains:**/clarity-chat.config.js",
-    "workspaceContains:**/clarity-chat.config.ts",
-    "workspaceContains:.env.local"
+    "workspaceContains:**/package.json"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
+        "command": "clarity-chat.addComponent",
+        "title": "Add Component",
+        "category": "Clarity Chat",
+        "icon": "$(add)"
+      },
+      {
+        "command": "clarity-chat.addHook",
+        "title": "Add Hook",
+        "category": "Clarity Chat",
+        "icon": "$(symbol-method)"
+      },
+      {
         "command": "clarity-chat.initProject",
-        "title": "Clarity Chat: Initialize Project",
-        "category": "Clarity Chat"
+        "title": "Initialize Project",
+        "category": "Clarity Chat",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "clarity-chat.createApiRoute",
+        "title": "Create API Route",
+        "category": "Clarity Chat",
+        "icon": "$(cloud)"
       },
       {
         "command": "clarity-chat.addProvider",
-        "title": "Clarity Chat: Add Provider",
-        "category": "Clarity Chat"
+        "title": "Add Provider",
+        "category": "Clarity Chat",
+        "icon": "$(plug)"
       },
       {
         "command": "clarity-chat.validateConfig",
-        "title": "Clarity Chat: Validate Configuration",
-        "category": "Clarity Chat"
+        "title": "Validate Configuration",
+        "category": "Clarity Chat",
+        "icon": "$(check)"
       },
       {
         "command": "clarity-chat.showExamples",
-        "title": "Clarity Chat: Show Examples",
-        "category": "Clarity Chat"
+        "title": "Show Examples",
+        "category": "Clarity Chat",
+        "icon": "$(book)"
       },
       {
         "command": "clarity-chat.showPreview",
-        "title": "Clarity Chat: Component Preview",
-        "category": "Clarity Chat"
+        "title": "Component Preview",
+        "category": "Clarity Chat",
+        "icon": "$(preview)"
       },
       {
         "command": "clarity-chat.manageApiKeys",
-        "title": "Clarity Chat: Manage API Keys",
-        "category": "Clarity Chat"
+        "title": "Manage API Keys",
+        "category": "Clarity Chat",
+        "icon": "$(key)"
+      },
+      {
+        "command": "clarity-chat.openDocs",
+        "title": "Open Documentation",
+        "category": "Clarity Chat",
+        "icon": "$(book)"
+      },
+      {
+        "command": "clarity-chat.openStorybook",
+        "title": "Open Storybook",
+        "category": "Clarity Chat",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "clarity-chat.convertToClarity",
+        "title": "Convert to Clarity Chat",
+        "category": "Clarity Chat",
+        "icon": "$(sync)"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "clarity-chat.addComponent",
+          "when": "editorLangId == typescriptreact || editorLangId == javascriptreact || editorLangId == typescript || editorLangId == javascript"
+        },
+        {
+          "command": "clarity-chat.addHook",
+          "when": "editorLangId == typescriptreact || editorLangId == javascriptreact || editorLangId == typescript || editorLangId == javascript"
+        },
+        {
+          "command": "clarity-chat.createApiRoute",
+          "when": "editorLangId == typescript || editorLangId == javascript"
+        },
+        {
+          "command": "clarity-chat.convertToClarity",
+          "when": "editorLangId == typescriptreact || editorLangId == javascriptreact || editorLangId == typescript || editorLangId == javascript"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "clarity-chat.createApiRoute",
+          "when": "explorerResourceIsFolder",
+          "group": "clarity@1"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "clarity-chat.addComponent",
+          "when": "editorLangId == typescriptreact || editorLangId == javascriptreact",
+          "group": "clarity@1"
+        },
+        {
+          "command": "clarity-chat.convertToClarity",
+          "when": "editorLangId == typescriptreact || editorLangId == javascriptreact",
+          "group": "clarity@2"
+        }
+      ]
+    },
     "snippets": [
       {
         "language": "typescript",
@@ -109,22 +201,52 @@
       {
         "language": "javascriptreact",
         "path": "./snippets/react.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./snippets/clarity-components.json"
+      },
+      {
+        "language": "javascriptreact",
+        "path": "./snippets/clarity-components.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/clarity-hooks.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./snippets/clarity-hooks.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/api-routes.json"
       }
     ],
     "configuration": {
       "title": "Clarity Chat",
       "properties": {
-        "clarity-chat.enableIntelliSense": {
+        "clarityChat.enableIntelliSense": {
           "type": "boolean",
           "default": true,
-          "description": "Enable IntelliSense for Clarity Chat APIs"
+          "description": "Enable IntelliSense completions for Clarity Chat components and hooks"
         },
-        "clarity-chat.enableCodeLens": {
+        "clarityChat.enableHoverDocs": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show documentation on hover for Clarity Chat imports"
+        },
+        "clarityChat.enableCodeLens": {
           "type": "boolean",
           "default": true,
           "description": "Show CodeLens hints for API usage"
         },
-        "clarity-chat.defaultProvider": {
+        "clarityChat.enableCodeActions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable quick fixes and refactoring suggestions"
+        },
+        "clarityChat.defaultProvider": {
           "type": "string",
           "enum": [
             "openai",
@@ -132,9 +254,14 @@
             "google"
           ],
           "default": "openai",
-          "description": "Default AI provider for snippets"
+          "description": "Default AI provider for new API routes"
         },
-        "clarity-chat.showInlineHints": {
+        "clarityChat.snippetPrefix": {
+          "type": "string",
+          "default": "cc",
+          "description": "Prefix for Clarity Chat snippets"
+        },
+        "clarityChat.showInlineHints": {
           "type": "boolean",
           "default": true,
           "description": "Show inline parameter hints"
@@ -142,6 +269,18 @@
       }
     },
     "keybindings": [
+      {
+        "command": "clarity-chat.addComponent",
+        "key": "ctrl+shift+c c",
+        "mac": "cmd+shift+c c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "clarity-chat.addHook",
+        "key": "ctrl+shift+c h",
+        "mac": "cmd+shift+c h",
+        "when": "editorTextFocus"
+      },
       {
         "command": "clarity-chat.initProject",
         "key": "ctrl+shift+c i",
@@ -171,6 +310,47 @@
         "key": "ctrl+shift+c o",
         "mac": "cmd+shift+c o",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "clarity-chat.openDocs",
+        "key": "ctrl+shift+c d",
+        "mac": "cmd+shift+c d",
+        "when": "editorTextFocus"
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "clarity-chat.assistant",
+        "fullName": "Clarity Chat",
+        "name": "clarity",
+        "description": "Your AI chat development assistant. Ask about components, hooks, memory, streaming, and more.",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "component",
+            "description": "Get help with Clarity Chat components"
+          },
+          {
+            "name": "hook",
+            "description": "Get help with Clarity Chat hooks"
+          },
+          {
+            "name": "memory",
+            "description": "Learn about memory management"
+          },
+          {
+            "name": "optimize",
+            "description": "Get token optimization tips"
+          },
+          {
+            "name": "migrate",
+            "description": "Migrate from other libraries"
+          },
+          {
+            "name": "docs",
+            "description": "Open documentation"
+          }
+        ]
       }
     ]
   },
@@ -181,6 +361,7 @@
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
     "test:unit": "npm run compile && node ./out/test/runTest.js",
+    "lint": "eslint src --ext ts",
     "package": "vsce package",
     "publish": "vsce publish"
   },
@@ -188,16 +369,14 @@
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.10.0",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^8.49.0",
+    "@typescript-eslint/parser": "^8.49.0",
     "@vscode/test-electron": "^2.3.8",
     "@vscode/vsce": "^2.22.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
+    "sharp": "^0.34.5",
     "typescript": "^5.7.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/clarity-chat/clarity-chat"
-  },
-  "license": "MIT"
+  }
 }

@@ -56,7 +56,10 @@
     "benchmark": "node tools/scripts/benchmark.js",
     "test:visual": "playwright test --config=tests/visual/playwright.config.ts",
     "check:consistency": "tsx scripts/check-consistency.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "// === DX TOOLS ===": "",
+    "generate:theme": "tsx scripts/generate-theme.ts",
+    "validate:config": "tsx scripts/validate-config.ts"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",

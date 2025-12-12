@@ -78,12 +78,12 @@ try {
   console.error('   ❌ Error:', error.message)
 }
 
-// Test 7: Licensing package
-console.log('\n7. Testing @clarity-chat/licensing...')
+// Test 7: License package
+console.log('\n7. Testing @clarity-chat/license...')
 try {
-  const licensing = await import('./packages/licensing/dist/index.mjs')
-  console.log('   ✅ Licensing package imports successfully')
-  console.log('   📦 Exports:', Object.keys(licensing).length, 'items')
+  const license = await import('./packages/license/dist/index.js')
+  console.log('   ✅ License package imports successfully')
+  console.log('   📦 Exports:', Object.keys(license).length, 'items')
 } catch (error) {
   console.error('   ❌ Error:', error.message)
 }

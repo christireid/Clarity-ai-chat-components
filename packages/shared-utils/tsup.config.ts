@@ -1,13 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: [
-    'src/index.ts',
-    'src/logger.ts',
-    'src/cache.ts',
-    'src/progress.ts',
-    'src/errors.ts',
-  ],
+  entry: ['src/index.ts'],
   format: ['esm'],
   dts: true,
   clean: true,

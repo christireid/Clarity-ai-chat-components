@@ -29,9 +29,7 @@ describe('fetchWithTimeout', () => {
       const mockResponse = new Response('OK', { status: 200 })
       mockFetch.mockResolvedValueOnce(mockResponse)
 
-      const responsePromise = fetchWithTimeout('https://api.example.com/test')
-      await vi.runAllTimersAsync()
-      const response = await responsePromise
+      const response = await fetchWithTimeout('https://api.example.com/test')
 
       expect(response).toBe(mockResponse)
       expect(mockFetch).toHaveBeenCalledTimes(1)
@@ -47,13 +45,11 @@ describe('fetchWithTimeout', () => {
       const mockResponse = new Response('OK', { status: 200 })
       mockFetch.mockResolvedValueOnce(mockResponse)
 
-      const responsePromise = fetchWithTimeout('https://api.example.com/test', {
+      await fetchWithTimeout('https://api.example.com/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: 'test' }),
       })
-      await vi.runAllTimersAsync()
-      await responsePromise
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://api.example.com/test',
@@ -69,41 +65,74 @@ describe('fetchWithTimeout', () => {
       const networkError = new Error('Network error')
       mockFetch.mockRejectedValueOnce(networkError)
 
-      const responsePromise = fetchWithTimeout('https://api.example.com/test')
-      await vi.runAllTimersAsync()
+      // Capture rejection to prevent unhandled rejection warning
+      const errorPromise = fetchWithTimeout(
+        'https://api.example.com/test'
+      ).catch((e) => e)
+      const error = await errorPromise
 
-      await expect(responsePromise).rejects.toThrow('Network error')
+      expect(error).toBeInstanceOf(Error)
+      expect(error.message).toBe('Network error')
     })
   })
 
   describe('timeout behavior', () => {
     it('should use default 30s timeout', async () => {
-      // Make fetch hang indefinitely
+      // Make fetch that respects abort signal (like real fetch does)
       mockFetch.mockImplementationOnce(
-        () => new Promise(() => {}) // Never resolves
+        (_url: string, options?: { signal?: AbortSignal }) => {
+          return new Promise((_, reject) => {
+            if (options?.signal) {
+              options.signal.addEventListener('abort', () => {
+                reject(options.signal!.reason || new Error('Aborted'))
+              })
+            }
+          })
+        }
       )
 
-      const responsePromise = fetchWithTimeout('https://api.example.com/test')
+      // Capture rejection immediately to prevent unhandled rejection
+      const errorPromise = fetchWithTimeout(
+        'https://api.example.com/test'
+      ).catch((e) => e)
 
       // Advance time past default timeout
       await vi.advanceTimersByTimeAsync(30001)
 
-      await expect(responsePromise).rejects.toThrow(TimeoutError)
-      await expect(responsePromise).rejects.toThrow('timed out after 30000ms')
+      const error = await errorPromise
+      expect(error).toBeInstanceOf(TimeoutError)
+      expect((error as TimeoutError).message).toContain(
+        'timed out after 30000ms'
+      )
     })
 
     it('should use custom timeout', async () => {
-      mockFetch.mockImplementationOnce(() => new Promise(() => {}))
+      // Make fetch that respects abort signal
+      mockFetch.mockImplementationOnce(
+        (_url: string, options?: { signal?: AbortSignal }) => {
+          return new Promise((_, reject) => {
+            if (options?.signal) {
+              options.signal.addEventListener('abort', () => {
+                reject(options.signal!.reason || new Error('Aborted'))
+              })
+            }
+          })
+        }
+      )
 
-      const responsePromise = fetchWithTimeout('https://api.example.com/test', {
+      // Capture rejection immediately to prevent unhandled rejection
+      const errorPromise = fetchWithTimeout('https://api.example.com/test', {
         timeout: 5000,
-      })
+      }).catch((e) => e)
 
       // Advance time past custom timeout
       await vi.advanceTimersByTimeAsync(5001)
 
-      await expect(responsePromise).rejects.toThrow(TimeoutError)
-      await expect(responsePromise).rejects.toThrow('timed out after 5000ms')
+      const error = await errorPromise
+      expect(error).toBeInstanceOf(TimeoutError)
+      expect((error as TimeoutError).message).toContain(
+        'timed out after 5000ms'
+      )
     })
 
     it('should clear timeout on successful response', async () => {
@@ -125,11 +154,14 @@ describe('fetchWithTimeout', () => {
     it('should clear timeout on fetch error', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
-      const responsePromise = fetchWithTimeout('https://api.example.com/test', {
+      // Capture rejection immediately to prevent unhandled rejection
+      const errorPromise = fetchWithTimeout('https://api.example.com/test', {
         timeout: 5000,
-      })
+      }).catch((e) => e)
 
-      await expect(responsePromise).rejects.toThrow('Network error')
+      const error = await errorPromise
+      expect(error).toBeInstanceOf(Error)
+      expect(error.message).toBe('Network error')
 
       // Advancing time should not cause issues
       await vi.advanceTimersByTimeAsync(10000)
@@ -139,33 +171,64 @@ describe('fetchWithTimeout', () => {
   describe('AbortSignal support', () => {
     it('should respect external AbortSignal', async () => {
       const controller = new AbortController()
-      mockFetch.mockImplementationOnce(() => new Promise(() => {}))
+      // Make fetch that respects abort signal
+      mockFetch.mockImplementationOnce(
+        (_url: string, options?: { signal?: AbortSignal }) => {
+          return new Promise((_, reject) => {
+            if (options?.signal) {
+              if (options.signal.aborted) {
+                reject(new DOMException('Aborted', 'AbortError'))
+                return
+              }
+              options.signal.addEventListener('abort', () => {
+                reject(new DOMException('Aborted', 'AbortError'))
+              })
+            }
+          })
+        }
+      )
 
-      const responsePromise = fetchWithTimeout('https://api.example.com/test', {
+      // Capture rejection immediately to prevent unhandled rejection
+      const errorPromise = fetchWithTimeout('https://api.example.com/test', {
         signal: controller.signal,
         timeout: 30000,
-      })
+      }).catch((e) => e)
 
       // Abort immediately
       controller.abort()
       await vi.runAllTimersAsync()
 
-      await expect(responsePromise).rejects.toThrow()
+      const error = await errorPromise
+      expect(error).toBeDefined()
+      expect(error.name).toBe('AbortError')
     })
 
     it('should combine external signal with timeout signal', async () => {
       const controller = new AbortController()
-      mockFetch.mockImplementationOnce(() => new Promise(() => {}))
+      // Make fetch that respects abort signal
+      mockFetch.mockImplementationOnce(
+        (_url: string, options?: { signal?: AbortSignal }) => {
+          return new Promise((_, reject) => {
+            if (options?.signal) {
+              options.signal.addEventListener('abort', () => {
+                reject(options.signal!.reason || new Error('Aborted'))
+              })
+            }
+          })
+        }
+      )
 
-      const responsePromise = fetchWithTimeout('https://api.example.com/test', {
+      // Capture rejection immediately to prevent unhandled rejection
+      const errorPromise = fetchWithTimeout('https://api.example.com/test', {
         signal: controller.signal,
         timeout: 10000,
-      })
+      }).catch((e) => e)
 
       // Timeout should still work
       await vi.advanceTimersByTimeAsync(10001)
 
-      await expect(responsePromise).rejects.toThrow(TimeoutError)
+      const error = await errorPromise
+      expect(error).toBeInstanceOf(TimeoutError)
     })
 
     it('should not throw timeout error if fetch completes before timeout', async () => {

@@ -12,23 +12,27 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "^16.0.7",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
     "framer-motion": "^12.23.25",
     "lucide-react": "^0.556.0",
-    "@clarity-chat/react": "workspace:*",
-    "@clarity-chat/primitives": "workspace:*"
+    "next": "^16.0.7",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@react-three/drei": "9.121.0",
+    "@react-three/fiber": "8.18.0",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "^5.9.3",
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.5.6",
+    "@types/three": "0.172.0",
     "autoprefixer": "^10.4.22",
     "eslint": "^9.39.1",
-    "eslint-config-next": "^16.0.7"
+    "eslint-config-next": "^16.0.7",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.0",
+    "three": "0.172.0",
+    "typescript": "^5.9.3"
   }
 }

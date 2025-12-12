@@ -127,10 +127,37 @@ program
 
 program
   .command('generate <type>')
-  .description('⚡ Generate code (component, hook, adapter, test)')
-  .option('-n, --name <name>', 'Component/hook name')
+  .alias('g')
+  .description('⚡ Generate code (component, hook, context, adapter, test)')
+  .option('-n, --name <name>', 'Component/hook name (PascalCase)')
   .option('-o, --output <path>', 'Output directory')
+  .option('-d, --description <desc>', 'Brief description')
+  .option('--type <type>', 'Component type: ui, chat, layout')
+  .option('--with-test', 'Include test file (default: true)')
+  .option('--no-test', 'Skip test file')
+  .option('--with-story', 'Include Storybook story')
+  .option('--no-story', 'Skip Storybook story')
+  .option('-f, --force', 'Overwrite existing files')
   .option('--dry-run', 'Show what would be generated without creating files')
+  .addHelpText(
+    'after',
+    `
+Examples:
+  $ clarity-chat generate component                    Interactive mode
+  $ clarity-chat g component --name ChatMessage        Quick generation
+  $ clarity-chat g component -n ChatMessage --with-story
+  $ clarity-chat g hook --name chatState --with-test
+  $ clarity-chat g context --name Theme
+  $ clarity-chat g component --name Button --dry-run   Preview files
+
+Available generators:
+  component  Create a React component with tests and story
+  hook       Create a custom React hook with tests
+  context    Create a React context with provider and hook
+  adapter    Create an AI model adapter for streaming
+  test       Create a test file with Vitest
+`
+  )
   .action(generateCommand)
 
 program

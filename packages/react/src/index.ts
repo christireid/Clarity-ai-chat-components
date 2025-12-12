@@ -478,7 +478,37 @@ export { ContextManager } from './components/context-manager'
 export { ProjectSidebar } from './components/project-sidebar'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
-export { LinkPreview, InlineLink } from './components/link-preview'
+export {
+  // Components
+  LinkPreview,
+  LinkPreviewSkeleton,
+  LinkPreviewError,
+  LinkPreviewCompact,
+  InlineLink,
+  SmartLinkPreview,
+  RichEmbed,
+  // Hook
+  useLinkPreview,
+  // Utilities
+  isValidUrl,
+  sanitizeUrl,
+  detectEmbedType,
+  createMetadataFetcher,
+  createFallbackMetadata,
+  // Types
+  type LinkMetadata,
+  type LinkPreviewProps,
+  type LinkPreviewVariant,
+  type LinkPreviewSkeletonProps,
+  type LinkPreviewErrorProps,
+  type LinkPreviewCompactProps,
+  type InlineLinkProps,
+  type SmartLinkPreviewProps,
+  type UseLinkPreviewOptions,
+  type UseLinkPreviewReturn,
+  type MetadataFetcherConfig,
+  type EmbedType,
+} from './components/link-preview'
 export {
   KeyboardHint,
   type KeyboardHintShortcut,
@@ -634,13 +664,22 @@ export { TokenCounter } from './components/token-counter'
 export {
   TokenUsageMeter,
   MODEL_PRICING_PRESETS,
-  type TokenUsage,
-  type ModelPricing,
+  type TokenUsage as TokenUsageMeterData,
+  type ModelPricing as TokenUsageMeterPricing,
   type TokenUsageMeterProps,
 } from './components/token-usage-meter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
 export { TokenOptimizationDashboard } from './components/token-optimization-dashboard'
+
+// Token Cost Preview - Real-time cost estimation display
+export {
+  TokenCostPreview,
+  useTokenEstimate,
+  type TokenCostPreviewProps,
+  type UseTokenEstimateOptions,
+  type TokenEstimate,
+} from './components/TokenCostPreview'
 
 // Dashboard Utilities
 export {
@@ -970,8 +1009,44 @@ export {
 } from './utils/tool-result-helpers'
 
 // ============================================================================
-// TESTING UTILITIES (Internal - Not exported publicly)
+// LICENSE MANAGEMENT
 // ============================================================================
-// Testing utilities are internal and should not be exported in the public API.
-// They are available for internal testing only.
-// If you need testing utilities, import them directly from the test-utils directory.
+
+// License exports for convenience (re-exported from @clarity-chat/license)
+export {
+  LicenseInfo,
+  useLicenseStatus,
+  useIsLicensed,
+  useHasPlan,
+  useLicenseInfo,
+  verifyLicense,
+  isLicenseValid,
+  Watermark,
+  WatermarkOverlay,
+  withLicense,
+  withLicenseStatus,
+  createLicenseWrapper,
+} from '@clarity-chat/license'
+
+export type {
+  LicensePlan,
+  LicenseScope,
+  LicenseStatus,
+  LicenseStatusCode,
+  ClarityLicensePayload,
+  WithLicenseOptions,
+  WithLicenseStatusProps,
+  WatermarkProps,
+  WatermarkOverlayProps,
+} from '@clarity-chat/license'
+
+// Pro Component Utilities
+export { createProComponent, createEnterpriseComponent } from './components/pro'
+
+// ============================================================================
+// TESTING UTILITIES
+// ============================================================================
+// Testing utilities are available via a separate subpath export:
+// import { renderWithProviders, createDeferred, captureRejection } from '@clarity-chat/react/test-utils'
+//
+// This keeps the main bundle lean while making test helpers available for consumers.
