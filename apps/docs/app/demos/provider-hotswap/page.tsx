@@ -248,7 +248,7 @@ export default function ProviderHotswapDemo() {
     await simulateStream(responseText, botMessageId)
   }
 
-  const currentProvider = providers.find(p => p.id === activeProvider)!
+  const currentProvider = providers.find(p => p.id === activeProvider) ?? providers[0]
 
   return (
     <div className="container-docs py-12">

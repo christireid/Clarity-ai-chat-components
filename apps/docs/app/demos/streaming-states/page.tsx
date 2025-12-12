@@ -93,6 +93,15 @@ export default function StreamingStatesDemo() {
   const [showActions, setShowActions] = useState(false)
   const [copied, setCopied] = useState(false)
   const cancelRef = useRef(false)
+  const isMountedRef = useRef(true)
+
+  // Cleanup on unmount to prevent state updates after unmount
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   const resetDemo = () => {
     cancelRef.current = true
@@ -112,7 +121,7 @@ export default function StreamingStatesDemo() {
   const streamText = async (text: string, setter: (s: string) => void) => {
     let current = ''
     for (const char of text) {
-      if (cancelRef.current) return
+      if (cancelRef.current || !isMountedRef.current) return
       current += char
       setter(current)
       await sleep(15 + Math.random() * 10)
@@ -127,32 +136,33 @@ export default function StreamingStatesDemo() {
     // Phase 1: Sending
     setPhase('sending')
     await sleep(500)
-    if (cancelRef.current) return
+    if (cancelRef.current || !isMountedRef.current) return
 
     // Phase 2: Thinking
     setPhase('thinking')
     await sleep(1500)
-    if (cancelRef.current) return
+    if (cancelRef.current || !isMountedRef.current) return
 
     // Phase 3: Streaming text
     setPhase('streaming-text')
     await streamText(demoText, setStreamedText)
-    if (cancelRef.current) return
+    if (cancelRef.current || !isMountedRef.current) return
     await sleep(300)
 
     // Phase 4: Streaming code
     setPhase('streaming-code')
     await streamText(demoCode, setStreamedCode)
-    if (cancelRef.current) return
+    if (cancelRef.current || !isMountedRef.current) return
     await sleep(300)
 
     // Phase 5: Loading image
     setPhase('loading-image')
     await sleep(1200)
-    if (cancelRef.current) return
+    if (cancelRef.current || !isMountedRef.current) return
     setShowImage(true)
     await sleep(500)
 
+    if (!isMountedRef.current) return
     // Phase 6: Complete
     setPhase('complete')
     setShowActions(true)

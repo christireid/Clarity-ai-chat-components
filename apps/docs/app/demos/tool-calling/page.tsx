@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Wrench,
@@ -121,6 +121,15 @@ export default function ToolCallingDemo() {
   ])
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [isExecuting, setIsExecuting] = useState(false)
+  const isMountedRef = useRef(true)
+
+  // Cleanup on unmount to prevent state updates after unmount
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
@@ -133,7 +142,11 @@ export default function ToolCallingDemo() {
     setSelectedTool(toolId)
 
     const demo = toolDemos[toolId]
-    const tool = tools.find(t => t.id === toolId)!
+    const tool = tools.find(t => t.id === toolId)
+    if (!tool) {
+      setIsExecuting(false)
+      return
+    }
 
     // Add user message
     const userMessage: Message = {
@@ -147,6 +160,10 @@ export default function ToolCallingDemo() {
 
     // Add bot message with tool invocation starting
     await new Promise(r => setTimeout(r, 500))
+    if (!isMountedRef.current) {
+      setIsExecuting(false)
+      return
+    }
     const botMessageId = generateId()
     const botMessage: Message = {
       id: botMessageId,
@@ -164,19 +181,27 @@ export default function ToolCallingDemo() {
 
     // Update to running
     await new Promise(r => setTimeout(r, 300))
+    if (!isMountedRef.current) {
+      setIsExecuting(false)
+      return
+    }
     setMessages(prev => prev.map(msg =>
-      msg.id === botMessageId
-        ? { ...msg, toolInvocation: { ...msg.toolInvocation!, status: 'running' } }
+      msg.id === botMessageId && msg.toolInvocation
+        ? { ...msg, toolInvocation: { ...msg.toolInvocation, status: 'running' } }
         : msg
     ))
 
     // Wait for "execution"
     await new Promise(r => setTimeout(r, demo.delay))
+    if (!isMountedRef.current) {
+      setIsExecuting(false)
+      return
+    }
 
     // Update to complete
     setMessages(prev => prev.map(msg =>
-      msg.id === botMessageId
-        ? { ...msg, toolInvocation: { ...msg.toolInvocation!, status: 'complete', output: demo.output } }
+      msg.id === botMessageId && msg.toolInvocation
+        ? { ...msg, toolInvocation: { ...msg.toolInvocation, status: 'complete', output: demo.output } }
         : msg
     ))
 

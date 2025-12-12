@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Brain,
@@ -87,6 +87,15 @@ export default function MemoryContextDemo() {
   const [memory, setMemory] = useState<MemoryItem[]>(initialMemory)
   const [showMemoryPanel, setShowMemoryPanel] = useState(true)
   const [activeMemoryIds, setActiveMemoryIds] = useState<string[]>(['1', '2', '3'])
+  const isMountedRef = useRef(true)
+
+  // Cleanup on unmount to prevent state updates after unmount
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
@@ -163,6 +172,7 @@ export default function MemoryContextDemo() {
     scrollToBottom()
 
     await new Promise(r => setTimeout(r, 1000))
+    if (!isMountedRef.current) return
 
     const { text, memoryIds, newMemory } = getMemoryResponse(userInput)
 

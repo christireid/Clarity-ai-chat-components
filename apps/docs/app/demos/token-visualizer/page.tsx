@@ -84,6 +84,15 @@ export default function TokenVisualizerDemo() {
   })
   const [showOptimization, setShowOptimization] = useState(false)
   const messageCountRef = useRef(0)
+  const isMountedRef = useRef(true)
+
+  // Cleanup on unmount to prevent state updates after unmount
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
@@ -144,6 +153,7 @@ export default function TokenVisualizerDemo() {
     }))
 
     await new Promise(r => setTimeout(r, 800))
+    if (!isMountedRef.current) return
 
     const responseText = sampleResponses[messageCountRef.current % sampleResponses.length]
     const outputTokens = estimateTokens(responseText)
