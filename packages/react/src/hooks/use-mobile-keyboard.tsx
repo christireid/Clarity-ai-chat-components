@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useSafeTimeout } from './use-safe-timeout'
 
 /**
  * Mobile keyboard state
@@ -125,10 +126,8 @@ export function useMobileKeyboard(
       typeof window !== 'undefined' ? window.innerHeight : 0,
   }))
 
-  const debounceTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
-  const scrollTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
-  const focusTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
-  const blurTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
+  // Use useSafeTimeout for automatic cleanup on unmount - prevents memory leaks
+  const { setSafeTimeout, clearAllTimeouts } = useSafeTimeout()
   const previousHeightRef = React.useRef<number>(
     typeof window !== 'undefined' ? window.innerHeight : 0
   )
@@ -145,13 +144,7 @@ export function useMobileKeyboard(
         activeElement.tagName === 'TEXTAREA' ||
         activeElement.isContentEditable)
     ) {
-      // Clear any existing scroll timer to prevent memory leaks
-      if (scrollTimerRef.current) {
-        clearTimeout(scrollTimerRef.current)
-      }
-
-      scrollTimerRef.current = setTimeout(() => {
-        scrollTimerRef.current = undefined
+      setSafeTimeout(() => {
         activeElement.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
@@ -163,7 +156,7 @@ export function useMobileKeyboard(
         }
       }, 300)
     }
-  }, [scrollOffset])
+  }, [scrollOffset, setSafeTimeout])
 
   /**
    * Handle viewport/window resize
@@ -171,11 +164,8 @@ export function useMobileKeyboard(
   const handleResize = React.useCallback(() => {
     if (!state.isMobile) return
 
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
+    // Debounced resize handling with automatic cleanup via useSafeTimeout
+    setSafeTimeout(() => {
       const currentHeight = window.visualViewport?.height || window.innerHeight
       const previousHeight = previousHeightRef.current
       const heightDifference = previousHeight - currentHeight
@@ -217,6 +207,7 @@ export function useMobileKeyboard(
     onKeyboardHide,
     autoScroll,
     scrollToFocusedElement,
+    setSafeTimeout,
   ])
 
   /**
@@ -237,18 +228,12 @@ export function useMobileKeyboard(
         return
       }
 
-      // Clear any existing focus timer to prevent memory leaks
-      if (focusTimerRef.current) {
-        clearTimeout(focusTimerRef.current)
-      }
-
       // On iOS, visual viewport will change when keyboard shows
-      focusTimerRef.current = setTimeout(() => {
-        focusTimerRef.current = undefined
+      setSafeTimeout(() => {
         handleResize()
       }, 100)
     },
-    [state.isMobile, handleResize]
+    [state.isMobile, handleResize, setSafeTimeout]
   )
 
   /**
@@ -257,13 +242,7 @@ export function useMobileKeyboard(
   const handleFocusOut = React.useCallback(() => {
     if (!state.isMobile) return
 
-    // Clear any existing blur timer to prevent memory leaks
-    if (blurTimerRef.current) {
-      clearTimeout(blurTimerRef.current)
-    }
-
-    blurTimerRef.current = setTimeout(() => {
-      blurTimerRef.current = undefined
+    setSafeTimeout(() => {
       // Check if no input is focused
       const activeElement = document.activeElement
       if (
@@ -282,7 +261,7 @@ export function useMobileKeyboard(
         previousHeightRef.current = window.innerHeight
       }
     }, 100)
-  }, [state.isMobile, onKeyboardHide])
+  }, [state.isMobile, onKeyboardHide, setSafeTimeout])
 
   /**
    * Setup event listeners
@@ -306,19 +285,8 @@ export function useMobileKeyboard(
     document.addEventListener('focusout', handleFocusOut)
 
     return () => {
-      // Clear all timers to prevent memory leaks
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-      }
-      if (scrollTimerRef.current) {
-        clearTimeout(scrollTimerRef.current)
-      }
-      if (focusTimerRef.current) {
-        clearTimeout(focusTimerRef.current)
-      }
-      if (blurTimerRef.current) {
-        clearTimeout(blurTimerRef.current)
-      }
+      // Timer cleanup is handled automatically by useSafeTimeout hook
+      clearAllTimeouts()
 
       if (window.visualViewport) {
         window.visualViewport.removeEventListener('resize', handleResize)
@@ -329,7 +297,13 @@ export function useMobileKeyboard(
       document.removeEventListener('focusin', handleFocusIn)
       document.removeEventListener('focusout', handleFocusOut)
     }
-  }, [state.isMobile, handleResize, handleFocusIn, handleFocusOut])
+  }, [
+    state.isMobile,
+    handleResize,
+    handleFocusIn,
+    handleFocusOut,
+    clearAllTimeouts,
+  ])
 
   return state
 }

@@ -8,20 +8,10 @@
  */
 
 import type { ChatMessage, ToolCall } from './types'
+import { APIKeyMissingError } from '@clarity-chat/utils/errors'
 
-/**
- * Security error thrown when API key is missing
- */
-export class MissingApiKeyError extends Error {
-  constructor(provider: string) {
-    super(
-      `API key is required for ${provider} adapter. ` +
-        `Pass apiKey in config or use a backend proxy. ` +
-        `SECURITY: Never expose API keys in frontend code.`
-    )
-    this.name = 'MissingApiKeyError'
-  }
-}
+// Re-export for backwards compatibility and convenience
+export { APIKeyMissingError }
 
 /**
  * Validates that an API key is provided.
@@ -30,14 +20,14 @@ export class MissingApiKeyError extends Error {
  * @param apiKey - The API key to validate
  * @param provider - The provider name for error messages
  * @returns The validated API key
- * @throws {MissingApiKeyError} If API key is not provided
+ * @throws {APIKeyMissingError} If API key is not provided (provides helpful solutions)
  */
 export function validateApiKey(
   apiKey: string | undefined,
-  provider: string
+  provider: 'openai' | 'anthropic' | 'google' | string
 ): string {
   if (!apiKey || apiKey.trim() === '') {
-    throw new MissingApiKeyError(provider)
+    throw new APIKeyMissingError(provider)
   }
   return apiKey
 }
