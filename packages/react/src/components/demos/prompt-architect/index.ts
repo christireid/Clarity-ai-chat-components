@@ -63,7 +63,7 @@ export type {
   // Version types
   PromptVersion,
   // Preview types
-  PreviewMessage,
+  PreviewMessage as PreviewMessageData,
   DebugViewMode,
   // Structured output types
   StructuredLLMResponse,
@@ -140,5 +140,33 @@ export type {
   StreamingJsonState,
 } from './utils'
 
-// Component will be exported in Phase 3
-// export { PromptArchitectDemo } from './PromptArchitectDemo'
+// Main component
+export { PromptArchitectDemo } from './PromptArchitectDemo'
+export type { PromptArchitectDemoProps } from './PromptArchitectDemo'
+
+// Sub-components
+export {
+  HighlightedTextarea,
+  PromptEditor,
+  VariableField,
+  VariableForm,
+  PreviewMessage,
+  PreviewPane,
+  DebugView,
+  TokenBadge,
+  PresetSelector,
+  VersionSelector,
+} from './components'
+
+export type {
+  HighlightedTextareaProps,
+  PromptEditorProps,
+  VariableFieldProps,
+  VariableFormProps,
+  PreviewMessageProps,
+  PreviewPaneProps,
+  DebugViewProps,
+  TokenBadgeProps,
+  PresetSelectorProps,
+  VersionSelectorProps,
+} from './components'
