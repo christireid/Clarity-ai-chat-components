@@ -16,7 +16,7 @@
  * @packageDocumentation
  */
 
-import React, { useState } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import {
   useArchitectWorkflow,
   useSecurityAudit,
@@ -535,14 +535,30 @@ async function persistOrder(
 
 /**
  * Security Audit Demo Component
+ *
+ * @remarks
+ * This demo uses callbacks instead of console.log for better security practices.
+ * In production, use a proper logging service that sanitizes output.
  */
 export function SecurityAuditDemo() {
+  const [auditLog, setAuditLog] = useState<string[]>([])
+
+  // Safe logging callback - avoid console.log in production
+  const logMessage = useCallback((message: string) => {
+    setAuditLog((prev) => [...prev.slice(-9), message])
+  }, [])
+
   const audit = useSecurityAudit({
     onFindingDetected: (finding) => {
-      console.log('Found:', finding.type, '-', finding.severity)
+      // Sanitize output to prevent log injection
+      const sanitizedType = String(finding.type).replace(/[^\w_]/g, '')
+      const sanitizedSeverity = String(finding.severity).replace(/[^\w]/g, '')
+      logMessage(`Found: ${sanitizedType} - ${sanitizedSeverity}`)
     },
     onAuditComplete: (findings, riskScore) => {
-      console.log(`Audit complete. Risk score: ${riskScore}`)
+      // Ensure riskScore is a number to prevent injection
+      const safeScore = typeof riskScore === 'number' ? riskScore : 0
+      logMessage(`Audit complete. Risk score: ${safeScore}`)
     },
   })
 
@@ -613,7 +629,29 @@ export function SecurityAuditDemo() {
             color: '#dc2626',
           }}
         >
-          ⚠️ Critical security findings detected!
+          Warning: Critical security findings detected!
+        </div>
+      )}
+
+      {auditLog.length > 0 && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>Audit Log</h3>
+          <div
+            style={{
+              backgroundColor: '#1e1e1e',
+              color: '#d4d4d4',
+              padding: '12px',
+              borderRadius: '4px',
+              fontFamily: 'monospace',
+              fontSize: '12px',
+              maxHeight: '150px',
+              overflow: 'auto',
+            }}
+          >
+            {auditLog.map((log, idx) => (
+              <div key={idx}>{log}</div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -622,10 +660,38 @@ export function SecurityAuditDemo() {
 
 /**
  * Design Patterns Demo Component
+ *
+ * @remarks
+ * Input validation is applied to prevent injection attacks.
+ * The sanitizeInput function removes potentially dangerous characters.
  */
 export function DesignPatternsDemo() {
   const patterns = useDesignPatterns()
   const [useCase, setUseCase] = useState('')
+
+  // Sanitize user input to prevent injection attacks
+  const sanitizeInput = useCallback((input: string): string => {
+    // Remove potentially dangerous characters while preserving useful ones
+    return input
+      .replace(/[<>'"&]/g, '') // Remove XSS vectors
+      .slice(0, 200) // Limit length to prevent DoS
+      .trim()
+  }, [])
+
+  // Handle input change with sanitization
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const sanitized = sanitizeInput(e.target.value)
+      setUseCase(sanitized)
+    },
+    [sanitizeInput]
+  )
+
+  // Safe search handler
+  const handleSearch = useCallback(() => {
+    const sanitized = sanitizeInput(useCase)
+    patterns.setSearchQuery(sanitized)
+  }, [useCase, sanitizeInput, patterns])
 
   return (
     <div style={{ fontFamily: 'system-ui', padding: '20px' }}>
@@ -635,11 +701,13 @@ export function DesignPatternsDemo() {
         <input
           type="text"
           value={useCase}
-          onChange={(e) => setUseCase(e.target.value)}
+          onChange={handleInputChange}
           placeholder="Describe your use case..."
           style={{ width: '300px', padding: '8px', marginRight: '8px' }}
+          maxLength={200}
+          aria-label="Use case description"
         />
-        <button onClick={() => patterns.setSearchQuery(useCase)}>Search</button>
+        <button onClick={handleSearch}>Search</button>
       </div>
 
       <div style={{ marginBottom: '20px' }}>

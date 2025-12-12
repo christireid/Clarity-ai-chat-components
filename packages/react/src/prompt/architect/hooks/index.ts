@@ -25,3 +25,12 @@ export {
   type UseDesignPatternsOptions,
   type UseDesignPatternsReturn,
 } from './use-design-patterns'
+
+export {
+  useArchitectChat,
+  parseResponseBlocks,
+  type ParsedResponseBlock,
+  type ArchitectRecipeType,
+  type UseArchitectChatOptions,
+  type UseArchitectChatReturn,
+} from './use-architect-chat'

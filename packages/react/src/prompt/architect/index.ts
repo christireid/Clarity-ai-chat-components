@@ -70,5 +70,11 @@ export * from './phases'
 // React hooks
 export * from './hooks'
 
+// Design patterns (tree-shakeable)
+export * from './patterns'
+
+// Runtime validation (Zod schemas)
+export * from './validation'
+
 // Examples (for documentation and demos)
 export * as examples from './examples'
