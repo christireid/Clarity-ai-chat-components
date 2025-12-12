@@ -267,7 +267,25 @@ export { ProjectSidebar } from './components/project-sidebar'
 export { PromptLibrary } from './components/prompt-library'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
-export { LinkPreview } from './components/link-preview'
+export {
+  LinkPreview,
+  LinkPreviewSkeleton,
+  LinkPreviewError,
+  LinkPreviewCompact,
+  InlineLink,
+  SmartLinkPreview,
+  useLinkPreview,
+  type LinkMetadata,
+  type LinkPreviewProps,
+  type LinkPreviewVariant,
+  type LinkPreviewSkeletonProps,
+  type LinkPreviewErrorProps,
+  type LinkPreviewCompactProps,
+  type InlineLinkProps,
+  type SmartLinkPreviewProps,
+  type UseLinkPreviewOptions,
+  type UseLinkPreviewReturn,
+} from './components/link-preview'
 export { KnowledgeBaseViewer } from './components/knowledge-base-viewer'
 export { ExportDialog } from './components/export-dialog'
 export { BatchExportDialog } from './components/batch-export-dialog'

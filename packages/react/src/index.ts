@@ -478,7 +478,25 @@ export { ContextManager } from './components/context-manager'
 export { ProjectSidebar } from './components/project-sidebar'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
-export { LinkPreview, InlineLink } from './components/link-preview'
+export {
+  LinkPreview,
+  LinkPreviewSkeleton,
+  LinkPreviewError,
+  LinkPreviewCompact,
+  InlineLink,
+  SmartLinkPreview,
+  useLinkPreview,
+  type LinkMetadata,
+  type LinkPreviewProps,
+  type LinkPreviewVariant,
+  type LinkPreviewSkeletonProps,
+  type LinkPreviewErrorProps,
+  type LinkPreviewCompactProps,
+  type InlineLinkProps,
+  type SmartLinkPreviewProps,
+  type UseLinkPreviewOptions,
+  type UseLinkPreviewReturn,
+} from './components/link-preview'
 export {
   KeyboardHint,
   type KeyboardHintShortcut,
