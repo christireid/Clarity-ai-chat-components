@@ -37,7 +37,7 @@
 <p align="center">
   <strong>70+ Production-Ready Components</strong> • 
   <strong>35+ Custom Hooks</strong> • 
-  <strong>8 Theme Presets</strong> • 
+  <strong>11 Theme Presets</strong> • 
   <strong>Enterprise AI Infrastructure</strong>
 </p>
 
@@ -474,7 +474,7 @@ Chat.
 ║     🎨  Beautiful Design System      🚀  Lightning Fast         ║
 ║     ♿  WCAG AAA Accessible          🧩  70+ Components         ║
 ║     💰  Token Optimization          🤖  Enterprise AI Ready     ║
-║     📊  Built-in Analytics          🎭  8 Theme Presets      ║
+║     📊  Built-in Analytics          🎭  11 Theme Presets     ║
 ║     🔒  Production Security         ⚡  Streaming Support       ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -756,7 +756,7 @@ function OptimizedChat() {
 
 ### 2. Beautiful Design System 🎨
 
-**8 Theme Presets** with a 6-level shadow system and 150+ animations:
+**11 Theme Presets** with a 6-level shadow system and 150+ animations:
 
 ```tsx
 import { ThemeProvider, themes } from '@clarity-chat/react'
