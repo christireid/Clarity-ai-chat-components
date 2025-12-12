@@ -1,6 +1,6 @@
 /**
  * Performance Monitoring Utilities
- * 
+ *
  * Hooks and utilities for monitoring and optimizing component performance.
  */
 
@@ -19,28 +19,94 @@ export interface PerformanceMetrics {
 }
 
 /**
- * Hook to monitor component render performance
+ * Numeric circular buffer for O(1) operations on fixed-size number arrays.
+ * Used to store render times without O(n) shift operations.
+ *
+ * Note: This is intentionally NOT generic to ensure type-safety for sum().
+ * Using a specific numeric type prevents accidental misuse with non-numeric values.
  */
-export function useRenderPerformance(componentName: string): PerformanceMetrics {
+class NumericCircularBuffer {
+  private buffer: number[]
+  private head: number = 0
+  private count: number = 0
+  private readonly capacity: number
+
+  constructor(capacity: number) {
+    // Validate capacity to prevent divide-by-zero and undefined behavior
+    if (!Number.isInteger(capacity) || capacity < 1) {
+      throw new Error(
+        `NumericCircularBuffer: capacity must be a positive integer, got ${capacity}`
+      )
+    }
+    this.capacity = capacity
+    this.buffer = new Array(capacity)
+  }
+
+  push(item: number): void {
+    this.buffer[this.head] = item
+    this.head = (this.head + 1) % this.capacity
+    if (this.count < this.capacity) {
+      this.count++
+    }
+  }
+
+  toArray(): number[] {
+    if (this.count === 0) return []
+    if (this.count < this.capacity) {
+      return this.buffer.slice(0, this.count)
+    }
+    // Return items in order: oldest to newest
+    return [...this.buffer.slice(this.head), ...this.buffer.slice(0, this.head)]
+  }
+
+  get length(): number {
+    return this.count
+  }
+
+  get last(): number | undefined {
+    if (this.count === 0) return undefined
+    const lastIndex = (this.head - 1 + this.capacity) % this.capacity
+    return this.buffer[lastIndex]
+  }
+
+  sum(): number {
+    if (this.count === 0) return 0
+    let total = 0
+    for (let i = 0; i < this.count; i++) {
+      const index = (this.head - this.count + i + this.capacity) % this.capacity
+      total += this.buffer[index]
+    }
+    return total
+  }
+}
+
+/**
+ * Hook to monitor component render performance
+ * Uses circular buffer for O(1) render time tracking instead of O(n) array.shift()
+ */
+export function useRenderPerformance(
+  componentName: string
+): PerformanceMetrics {
   const renderCount = React.useRef(0)
-  const renderTimes = React.useRef<number[]>([])
+  // Use circular buffer instead of array.shift() for O(1) performance
+  const renderTimes = React.useRef<NumericCircularBuffer>(
+    new NumericCircularBuffer(100)
+  )
   const startTime = React.useRef<number>(0)
 
   // Mark render start (guard for SSR)
-  startTime.current = typeof performance !== 'undefined' ? performance.now() : Date.now()
+  startTime.current =
+    typeof performance !== 'undefined' ? performance.now() : Date.now()
 
   // Mark render end and calculate metrics
   React.useEffect(() => {
-    const endTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
+    const endTime =
+      typeof performance !== 'undefined' ? performance.now() : Date.now()
     const renderTime = endTime - startTime.current
 
     renderCount.current += 1
+    // O(1) push operation with automatic overflow handling
     renderTimes.current.push(renderTime)
-
-    // Keep only last 100 renders
-    if (renderTimes.current.length > 100) {
-      renderTimes.current.shift()
-    }
 
     // Log slow renders in development
     if (process.env['NODE_ENV'] === 'development' && renderTime > 16) {
@@ -50,15 +116,14 @@ export function useRenderPerformance(componentName: string): PerformanceMetrics 
     }
   })
 
+  const bufferLength = renderTimes.current.length
   const averageRenderTime =
-    renderTimes.current.length > 0
-      ? renderTimes.current.reduce((a, b) => a + b, 0) / renderTimes.current.length
-      : 0
+    bufferLength > 0 ? renderTimes.current.sum() / bufferLength : 0
 
   return {
     renderCount: renderCount.current,
     renderTime: startTime.current,
-    lastRenderTime: renderTimes.current[renderTimes.current.length - 1] || 0,
+    lastRenderTime: renderTimes.current.last || 0,
     averageRenderTime,
   }
 }
@@ -97,10 +162,12 @@ export function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
  */
 export function useMountTime(componentName: string) {
   React.useEffect(() => {
-    const mountTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
-    
+    const mountTime =
+      typeof performance !== 'undefined' ? performance.now() : Date.now()
+
     return () => {
-      const unmountTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
+      const unmountTime =
+        typeof performance !== 'undefined' ? performance.now() : Date.now()
       const lifetime = unmountTime - mountTime
 
       if (process.env['NODE_ENV'] === 'development') {
@@ -121,10 +188,12 @@ export function useSlowRenderDetection(
 ) {
   const startTime = React.useRef<number>(0)
 
-  startTime.current = typeof performance !== 'undefined' ? performance.now() : Date.now()
+  startTime.current =
+    typeof performance !== 'undefined' ? performance.now() : Date.now()
 
   React.useEffect(() => {
-    const endTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
+    const endTime =
+      typeof performance !== 'undefined' ? performance.now() : Date.now()
     const renderTime = endTime - startTime.current
 
     if (renderTime > threshold) {
@@ -153,8 +222,12 @@ export const PerformanceReport: React.FC<PerformanceReportProps> = ({
   return (
     <div className="fixed bottom-4 left-4 p-3 rounded-lg bg-background border border-border/60 shadow-[0_10px_24px_rgba(15,23,42,0.12)] text-xs font-mono space-y-1 z-50 backdrop-blur-sm">
       <div className="font-semibold text-foreground">Performance Metrics</div>
-      <div className="text-muted-foreground">Renders: {metrics.renderCount}</div>
-      <div className={isSlowRender ? 'text-destructive' : 'text-muted-foreground'}>
+      <div className="text-muted-foreground">
+        Renders: {metrics.renderCount}
+      </div>
+      <div
+        className={isSlowRender ? 'text-destructive' : 'text-muted-foreground'}
+      >
         Last: {metrics.lastRenderTime.toFixed(2)}ms
         {isSlowRender && ' ⚠️'}
       </div>
@@ -176,10 +249,10 @@ export function useLazyLoad<T>(
   const [data, setData] = React.useState<T | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<Error | null>(null)
-  
+
   // Store loader in ref to avoid dependency issues
   const loaderRef = React.useRef(loader)
-  
+
   React.useLayoutEffect(() => {
     loaderRef.current = loader
   }, [loader])
@@ -190,7 +263,8 @@ export function useLazyLoad<T>(
     setLoading(true)
     setError(null)
 
-    loaderRef.current()
+    loaderRef
+      .current()
       .then((result) => {
         if (!cancelled) {
           setData(result)
@@ -216,10 +290,7 @@ export function useLazyLoad<T>(
 /**
  * Hook to debounce expensive operations
  */
-export function useDebouncePerformance<T>(
-  value: T,
-  delay: number = 300
-): T {
+export function useDebouncePerformance<T>(value: T, delay: number = 300): T {
   const [debouncedValue, setDebouncedValue] = React.useState<T>(value)
 
   React.useEffect(() => {
@@ -238,10 +309,7 @@ export function useDebouncePerformance<T>(
 /**
  * Hook to throttle expensive operations
  */
-export function useThrottlePerformance<T>(
-  value: T,
-  limit: number = 100
-): T {
+export function useThrottlePerformance<T>(value: T, limit: number = 100): T {
   const [throttledValue, setThrottledValue] = React.useState<T>(value)
   const lastRan = React.useRef<number>(Date.now())
   const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
@@ -262,11 +330,14 @@ export function useThrottlePerformance<T>(
     } else {
       // Schedule update for remaining time
       const remainingTime = limit - timeSinceLastRun
-      timeoutRef.current = setTimeout(() => {
-        setThrottledValue(value)
-        lastRan.current = Date.now()
-        timeoutRef.current = undefined
-      }, Math.max(0, remainingTime))
+      timeoutRef.current = setTimeout(
+        () => {
+          setThrottledValue(value)
+          lastRan.current = Date.now()
+          timeoutRef.current = undefined
+        },
+        Math.max(0, remainingTime)
+      )
     }
 
     return () => {
@@ -286,16 +357,24 @@ export function useThrottlePerformance<T>(
  */
 export function useMemoryLeakDetector(componentName: string) {
   React.useEffect(() => {
-    if (typeof window === 'undefined' || process.env['NODE_ENV'] !== 'development') {
+    if (
+      typeof window === 'undefined' ||
+      process.env['NODE_ENV'] !== 'development'
+    ) {
       return
     }
 
     const listeners: any[] = []
     const originalAddEventListener = EventTarget.prototype.addEventListener
-    const originalRemoveEventListener = EventTarget.prototype.removeEventListener
+    const originalRemoveEventListener =
+      EventTarget.prototype.removeEventListener
 
     // Override addEventListener (only in dev)
-    EventTarget.prototype.addEventListener = function (type, listener, options) {
+    EventTarget.prototype.addEventListener = function (
+      type,
+      listener,
+      options
+    ) {
       listeners.push({ type, listener, target: this })
       return originalAddEventListener.call(this, type, listener, options)
     }

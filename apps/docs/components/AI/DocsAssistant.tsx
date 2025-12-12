@@ -70,6 +70,7 @@ import {
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
+import { CompactPromptSelector, useSelectedPrompt } from './PromptSelector'
 import { cn } from '@/lib/utils'
 
 // Local imports from extracted modules
@@ -194,6 +195,9 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     onCritical: () =>
       toast.error('Near context limit - consider clearing conversation'),
   })
+
+  // Prompt/personality mode selector
+  const [selectedPrompt, setSelectedPrompt] = useSelectedPrompt()
 
   // State for citation display
   const [currentCitations, setCurrentCitations] = useState<Citation[]>([])
@@ -972,7 +976,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  transition={{ duration: durations.fast, ease: 'easeOut' }}
                   className="absolute top-14 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm rounded-lg border border-border/40 shadow-lg overflow-hidden"
                 >
                   <div className="p-3">
@@ -1021,41 +1025,50 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               }
               onClear={messages.length > 0 ? handleClear : undefined}
               headerActions={
-                messagesWithPlaygroundCode.size > 0 ? (
-                  <button
-                    onClick={() => {
-                      const lastWithCode = [...messages]
-                        .reverse()
-                        .find(
-                          (m) =>
-                            m.role === 'assistant' &&
-                            messagesWithPlaygroundCode.has(m.id)
-                        )
-                      if (lastWithCode) {
-                        handleOpenInPlayground(lastWithCode.id)
-                      }
-                    }}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
-                    title="Open code in playground"
-                    aria-label="Open code in CodeSandbox playground"
-                  >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
+                <div className="flex items-center gap-2">
+                  {/* AI Mode Selector */}
+                  <CompactPromptSelector
+                    value={selectedPrompt.id}
+                    onChange={setSelectedPrompt}
+                  />
+
+                  {/* Playground button - only when code is available */}
+                  {messagesWithPlaygroundCode.size > 0 && (
+                    <button
+                      onClick={() => {
+                        const lastWithCode = [...messages]
+                          .reverse()
+                          .find(
+                            (m) =>
+                              m.role === 'assistant' &&
+                              messagesWithPlaygroundCode.has(m.id)
+                          )
+                        if (lastWithCode) {
+                          handleOpenInPlayground(lastWithCode.id)
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                      title="Open code in playground"
+                      aria-label="Open code in CodeSandbox playground"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                      />
-                    </svg>
-                    Try Code
-                  </button>
-                ) : undefined
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                        />
+                      </svg>
+                      Try Code
+                    </button>
+                  )}
+                </div>
               }
               emptyState={
                 <EmptyChatState
@@ -1074,7 +1087,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  transition={{ duration: durations.normal, ease: 'easeOut' }}
                   className="border-t border-border/40 bg-muted/30 overflow-hidden"
                 >
                   <div className="p-3">

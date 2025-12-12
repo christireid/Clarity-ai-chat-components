@@ -229,3 +229,18 @@ export {
   type EnvValidationResult,
   type EnvValidationOptions,
 } from './env-validation'
+
+// Security utilities
+export {
+  safeEvaluate,
+  detectDangerousPatterns,
+  formatEvaluateResult,
+  type SafeEvaluateResult,
+} from './safe-evaluate'
+
+export {
+  sanitizeCodeHtml,
+  escapeHtmlEntities,
+  createSafeCodeHtml,
+  detectDangerousHtml,
+} from './sanitize-html'
