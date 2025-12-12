@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { sanitizeCodeHtml } from '../../utils/sanitize-html'
 
 // Dynamic import of Prism to handle cases where it's not available
 let Prism: typeof import('prismjs') | null = null
@@ -174,7 +175,10 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
     return (
       <code
         className={cn('block text-sm font-mono', className)}
-        dangerouslySetInnerHTML={{ __html: highlightedCode || codeString }}
+        // SECURITY: Sanitize HTML output from syntax highlighter to prevent XSS
+        dangerouslySetInnerHTML={{
+          __html: sanitizeCodeHtml(highlightedCode || codeString),
+        }}
         data-code-string={codeString}
         {...rest}
       />

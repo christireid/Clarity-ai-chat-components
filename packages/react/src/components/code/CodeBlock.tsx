@@ -10,6 +10,7 @@ import {
   detectLanguage,
   countLines,
 } from './utils'
+import { sanitizeCodeHtml } from '../../utils/sanitize-html'
 import { CODE_THEMES, type CodeThemeName, DEFAULT_DARK_THEME } from './themes'
 import { LineNumbers } from './LineNumbers'
 import { CodeBlockHeader } from './CodeBlockHeader'
@@ -315,7 +316,10 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
             tabIndex={0}
             role="region"
             aria-label={`Code block${title ? `: ${title}` : ''}${language !== 'text' ? ` (${language})` : ''}`}
-            dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+            // SECURITY: Sanitize HTML output from syntax highlighter to prevent XSS
+            dangerouslySetInnerHTML={{
+              __html: sanitizeCodeHtml(highlightedHtml),
+            }}
           />
         </div>
 
