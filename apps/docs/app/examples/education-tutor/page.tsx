@@ -229,7 +229,7 @@ npm run dev`}</code>
             Create your own AI tutor and make learning more engaging and effective.
           </p>
           <a
-            href="https://github.com/clarity-chat/ui/tree/main/examples/ai-tutor"
+            href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/ai-tutor"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-colors"

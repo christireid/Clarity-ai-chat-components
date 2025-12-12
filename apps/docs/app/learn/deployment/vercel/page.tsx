@@ -33,7 +33,7 @@ export default function VercelDeploymentPage() {
         <Callout type="info" title="One-Click Deploy">
           Deploy a starter template with one click:
         </Callout>
-        <a href="https://vercel.com/new/clone?repository-url=https://github.com/clarity-chat/starter" className="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800">
+        <a href="https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components" className="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800">
           Deploy to Vercel →
         </a>
       </section>

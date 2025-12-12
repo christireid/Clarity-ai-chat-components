@@ -31,8 +31,16 @@ export default function CicdToolsPage() {
           <li>🚀 Deployment: Vercel preview builds + manual promotion to production</li>
         </ul>
         <Callout type="info">
-          Review <Link href="/CI_CD_FINAL_STATUS">CI_CD_FINAL_STATUS.md</Link> for the
-          original audit notes, pass/fail logs, and recommendations.
+          Review the{' '}
+          <a
+            href="https://github.com/christireid/Clarity-ai-chat-components/blob/main/CI_CD_FINAL_STATUS.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-600 hover:underline"
+          >
+            CI_CD_FINAL_STATUS.md
+          </a>{' '}
+          on GitHub for the original audit notes, pass/fail logs, and recommendations.
         </Callout>
       </section>
 

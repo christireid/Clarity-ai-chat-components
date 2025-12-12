@@ -90,8 +90,8 @@ export const ERROR_PROMPT = `I encountered an issue while processing your reques
 - An unexpected error
 
 Please try again in a moment. If the problem persists, you can:
-- Check the [documentation](/docs) directly
-- Visit our [GitHub repository](https://github.com/your-org/clarity-chat) for support
+- Check the [documentation](/learn/quick-start) directly
+- Visit our [GitHub repository](https://github.com/christireid/Clarity-ai-chat-components) for support
 - Report issues in our issue tracker
 
 I apologize for the inconvenience! 🙏`

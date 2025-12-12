@@ -273,7 +273,7 @@ const marketData = await alphaVantage.globalQuote()`}</code>
           </p>
           <div className="flex gap-4 flex-wrap">
             <a
-              href="https://github.com/clarity-chat/ui/tree/main/examples/financial-advisor"
+              href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/financial-advisor"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-colors"

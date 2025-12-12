@@ -113,7 +113,7 @@ export default function LearnPage() {
           </p>
           <div className="flex gap-4 flex-wrap">
             <Link
-              href="https://github.com/clarity-chat/ui/discussions"
+              href="https://github.com/christireid/Clarity-ai-chat-components/discussions"
               className="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-colors"
             >
               Ask on GitHub

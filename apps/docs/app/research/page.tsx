@@ -93,7 +93,7 @@ export default function ResearchPage() {
           </p>
           <div className="flex gap-4 flex-wrap">
             <a
-              href="https://github.com/clarity-chat/ui/discussions"
+              href="https://github.com/christireid/Clarity-ai-chat-components/discussions"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-colors"
