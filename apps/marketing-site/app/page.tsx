@@ -4,6 +4,8 @@ import HeroSection from '../components/sections/HeroSection'
 import FeaturesSection from '../components/sections/FeaturesSection'
 import PricingSection from '../components/sections/PricingSection'
 import CTASection from '../components/sections/CTASection'
+import Testimonials from '../components/Testimonials'
+import FAQ from '../components/FAQ'
 
 export default function HomePage() {
   return (
@@ -12,7 +14,9 @@ export default function HomePage() {
       <main>
         <HeroSection />
         <FeaturesSection />
+        <Testimonials />
         <PricingSection />
+        <FAQ />
         <CTASection />
       </main>
       <Footer />
