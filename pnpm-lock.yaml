@@ -1587,9 +1587,9 @@ importers:
 
   packages/dev-tools:
     dependencies:
-      '@clarity-chat/errors':
+      '@clarity-chat/utils':
         specifier: workspace:*
-        version: link:../errors
+        version: link:../utils
       boxen:
         specifier: ^8.0.1
         version: 8.0.1
@@ -1708,9 +1708,9 @@ importers:
 
   packages/errors:
     dependencies:
-      chalk:
-        specifier: ^5.6.2
-        version: 5.6.2
+      '@clarity-chat/utils':
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       '@types/node':
         specifier: ^22.10.5
@@ -1718,6 +1718,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.0.15
         version: 4.0.15(vitest@4.0.15)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@microsoft/api-extractor@7.54.0(@types/node@22.19.0))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2093,12 +2096,9 @@ importers:
 
   packages/shared-utils:
     dependencies:
-      ora:
-        specifier: ^8.1.1
-        version: 8.2.0
-      picocolors:
-        specifier: ^1.1.1
-        version: 1.1.1
+      '@clarity-chat/utils':
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       '@types/node':
         specifier: ^22.10.5
@@ -2171,6 +2171,10 @@ importers:
   packages/typescript-config: {}
 
   packages/utils:
+    dependencies:
+      ora:
+        specifier: ^8.1.1
+        version: 8.2.0
     devDependencies:
       '@types/node':
         specifier: ^22.10.5
