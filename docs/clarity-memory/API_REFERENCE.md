@@ -679,4 +679,4 @@ embedding: {
 
 ---
 
-For more details, see the [Complete Design Document](./COMPLETE_DESIGN_DOCUMENT.md).
+For more details, see the [Architecture Documentation](./ARCHITECTURE.md).

@@ -74,7 +74,7 @@ Learn how to add conversation memory and context management.
 ---
 
 ### Optimize AI API costs
-**→ [Token Optimization](../TOKEN_OPTIMIZATION_SUMMARY.md)**
+**→ [Token Optimization Example](../apps/examples/token-optimization-demo/README.md)**
 
 Save 50-80% on AI API costs with our optimization suite.
 
@@ -87,7 +87,7 @@ Save 50-80% on AI API costs with our optimization suite.
 ---
 
 ### Customize the design
-**→ [Theme System](../DESIGN_SYSTEM_GUIDE.md)**
+**→ [Theme Builder Example](../apps/examples/theme-builder/README.md)**
 
 Customize themes, colors, and styling to match your brand.
 
@@ -197,7 +197,7 @@ How to contribute code, docs, or examples.
 ### Intermediate Path
 1. [Best Practices](./best-practices.md) (1 hour)
 2. [Memory Guide](./clarity-memory/GETTING_STARTED.md) (1 hour)
-3. [Token Optimization](../TOKEN_OPTIMIZATION_SUMMARY.md) (30 min)
+3. [Token Optimization](../apps/examples/token-optimization-demo/README.md) (30 min)
 4. [API Reference](./api-reference.md) (1 hour)
 
 **Total time:** ~3.5 hours
@@ -207,8 +207,8 @@ How to contribute code, docs, or examples.
 
 ### Advanced Path
 1. [Architecture Guide](./architecture.md) (1 hour)
-2. [Enterprise Features](../ENTERPRISE_FEATURES_SUMMARY.md) (2 hours)
-3. [Security Guide](../SECURITY_GUIDE.md) (1 hour)
+2. [Enterprise Example](../apps/examples/enterprise-ai-ops/README.md) (2 hours)
+3. [Security Policy](../SECURITY.md) (1 hour)
 4. [Package READMEs](../packages/react/README.md) (1 hour)
 
 **Total time:** ~5 hours

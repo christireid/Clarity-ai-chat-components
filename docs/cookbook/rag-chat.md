@@ -165,6 +165,6 @@ const ragPipeline = useRAGPipeline({
 
 ## Related
 
-- [Vector Store Setup](../../packages/memory/README.md)
-- [RAG Pipeline Guide](../../docs/guides/rag-pipeline.md)
-- [Example: RAG Workbench](../../apps/examples/rag-workbench-demo)
+- [Memory Documentation](../clarity-memory/README.md)
+- [Architecture Overview](../architecture.md)
+- [Example: RAG Workbench](../../apps/examples/rag-workbench-demo/)
