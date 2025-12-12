@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { MessageSquare, MapPin } from 'lucide-react'
+import { durations } from '@/lib/animations'
 
 interface PromptSuggestion {
   icon: string

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Sparkles } from 'lucide-react'
 import { MarkdownRendererEnhanced } from '@clarity-chat/react'
 import { ToolUIRegistry } from '../ToolUIRegistry'
+import { durations } from '@/lib/animations'
 
 interface ToolResult {
   id: string

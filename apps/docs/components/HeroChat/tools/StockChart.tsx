@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { TrendingUp, ChevronDown, Activity } from 'lucide-react'
 import { useMemo } from 'react'
+import { durations } from '@/lib/animations'
 
 interface DataPoint {
   date: string

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Cloud, Sun, Droplet, Gauge } from 'lucide-react'
+import { durations } from '@/lib/animations'
 
 interface ForecastDay {
   day: string

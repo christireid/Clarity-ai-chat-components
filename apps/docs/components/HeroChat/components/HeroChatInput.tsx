@@ -3,6 +3,7 @@
 import { useRef, KeyboardEvent } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Mic, MicOff, Paperclip, Loader2 } from 'lucide-react'
+import { durations } from '@/lib/animations'
 
 interface HeroChatInputProps {
   value: string

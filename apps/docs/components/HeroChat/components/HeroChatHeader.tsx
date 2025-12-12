@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Sun, Moon, Monitor, Command, Sparkles, Menu } from 'lucide-react'
+import { durations } from '@/lib/animations'
 
 type Theme = 'light' | 'dark' | 'system'
 

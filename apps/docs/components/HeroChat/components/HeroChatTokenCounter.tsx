@@ -9,6 +9,7 @@ import {
   ChevronUp,
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
+import { durations } from '@/lib/animations'
 
 interface TokenUsage {
   prompt: number

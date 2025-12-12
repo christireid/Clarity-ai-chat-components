@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Circle, List, Sparkles } from 'lucide-react'
 import { useState, useCallback, useMemo } from 'react'
+import { durations } from '@/lib/animations'
 
 interface Task {
   id: string
