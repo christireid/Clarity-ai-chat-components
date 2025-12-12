@@ -299,5 +299,187 @@
       " */"
     ],
     "description": "Create a JSDoc comment block"
+  },
+
+  "Code Review - Critical": {
+    "prefix": "crcritical",
+    "body": [
+      "// CRITICAL: ${1:Issue description}",
+      "// Impact: ${2:Security|Performance|Type Safety}",
+      "// Fix: ${3:Recommended fix}",
+      "$0"
+    ],
+    "description": "Mark a critical code review issue"
+  },
+
+  "Code Review - Improvement": {
+    "prefix": "crimprove",
+    "body": [
+      "// IMPROVE: ${1:Suggestion}",
+      "// Benefit: ${2:Why this helps}",
+      "$0"
+    ],
+    "description": "Mark a code review improvement suggestion"
+  },
+
+  "Code Review - Security": {
+    "prefix": "crsecurity",
+    "body": [
+      "// SECURITY: ${1:Vulnerability type}",
+      "// Risk: ${2|High,Medium,Low|}",
+      "// Attack: ${3:How it could be exploited}",
+      "// Fix: ${4:Recommended fix}",
+      "$0"
+    ],
+    "description": "Mark a security vulnerability"
+  },
+
+  "Code Review - Performance": {
+    "prefix": "crperf",
+    "body": [
+      "// PERF: ${1:Performance issue}",
+      "// Impact: ${2:Re-renders/bundle size/latency}",
+      "// Fix: ${3:Optimization approach}",
+      "$0"
+    ],
+    "description": "Mark a performance issue"
+  },
+
+  "Code Review - TypeScript": {
+    "prefix": "crtype",
+    "body": [
+      "// TYPE: ${1:Type issue}",
+      "// Problem: ${2:Why this is unsafe}",
+      "// Fix: ${3:Proper typing}",
+      "$0"
+    ],
+    "description": "Mark a TypeScript type issue"
+  },
+
+  "Code Review - Tailwind": {
+    "prefix": "crtailwind",
+    "body": [
+      "// TAILWIND: ${1:Styling issue}",
+      "// Before: ${2:Current classes}",
+      "// After: ${3:Recommended classes}",
+      "$0"
+    ],
+    "description": "Mark a Tailwind CSS issue"
+  },
+
+  "Code Review - TODO": {
+    "prefix": "crtodo",
+    "body": [
+      "// TODO(review): ${1:Action needed}",
+      "// Priority: ${2|High,Medium,Low|}",
+      "// Assignee: ${3:@username}",
+      "$0"
+    ],
+    "description": "Mark a review action item"
+  },
+
+  "Server Component Pattern": {
+    "prefix": "ccserver",
+    "body": [
+      "// Server Component - Data Fetching",
+      "import { db } from '@/lib/db'",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "export default async function ${1:ComponentName}({ $3 }: ${1:ComponentName}Props) {",
+      "  const data = await db.$4.findMany()",
+      "",
+      "  return (",
+      "    <div className=\"$5\">",
+      "      $0",
+      "    </div>",
+      "  )",
+      "}"
+    ],
+    "description": "Create a NextJS Server Component with data fetching"
+  },
+
+  "Client Component Pattern": {
+    "prefix": "ccclient",
+    "body": [
+      "'use client'",
+      "",
+      "import { useState, useCallback, memo } from 'react'",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "export const ${1:ComponentName} = memo(function ${1:ComponentName}({",
+      "  $3",
+      "}: ${1:ComponentName}Props) {",
+      "  const [state, setState] = useState($4)",
+      "",
+      "  const handleAction = useCallback(() => {",
+      "    $5",
+      "  }, [])",
+      "",
+      "  return (",
+      "    <div className=\"$6\">",
+      "      $0",
+      "    </div>",
+      "  )",
+      "})"
+    ],
+    "description": "Create a NextJS Client Component with memo and hooks"
+  },
+
+  "Server Action Pattern": {
+    "prefix": "ccaction",
+    "body": [
+      "'use server'",
+      "",
+      "import { z } from 'zod'",
+      "import { revalidatePath } from 'next/cache'",
+      "",
+      "const ${1:ActionName}Schema = z.object({",
+      "  ${2:field}: z.string().min(1),",
+      "})",
+      "",
+      "export async function ${3:actionName}(formData: FormData) {",
+      "  const parsed = ${1:ActionName}Schema.safeParse({",
+      "    ${2:field}: formData.get('${2:field}'),",
+      "  })",
+      "",
+      "  if (!parsed.success) {",
+      "    return { error: parsed.error.flatten() }",
+      "  }",
+      "",
+      "  // Safe to use validated data",
+      "  $0",
+      "",
+      "  revalidatePath('/${4:path}')",
+      "  return { success: true }",
+      "}"
+    ],
+    "description": "Create a NextJS Server Action with Zod validation"
+  },
+
+  "Memoized Callback": {
+    "prefix": "ccmemo",
+    "body": [
+      "const ${1:handlerName} = useCallback(($2) => {",
+      "  $0",
+      "}, [${3:deps}])"
+    ],
+    "description": "Create a memoized callback with useCallback"
+  },
+
+  "Memoized Value": {
+    "prefix": "ccusememo",
+    "body": [
+      "const ${1:value} = useMemo(() => {",
+      "  $0",
+      "  return ${2:result}",
+      "}, [${3:deps}])"
+    ],
+    "description": "Create a memoized value with useMemo"
   }
 }
