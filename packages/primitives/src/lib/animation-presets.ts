@@ -70,6 +70,20 @@ export const springPresets = {
 } satisfies Record<string, Transition>
 
 /**
+ * Duration constants for consistent timing
+ */
+const durations = {
+  /** Very fast: 100ms */
+  fast: 0.1,
+  /** Normal: 200ms */
+  normal: 0.2,
+  /** Moderate: 250ms */
+  moderate: 0.25,
+  /** Slow: 300ms */
+  slow: 0.3,
+} as const
+
+/**
  * Duration-based easing presets
  *
  * @description

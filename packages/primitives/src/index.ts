@@ -324,3 +324,82 @@ export {
   staggerItemVariants,
   animationPresets,
 } from './lib/animation-presets'
+
+// ============================================================================
+// Context Providers
+// ============================================================================
+
+export {
+  A11yProvider,
+  A11yContext,
+  useA11y,
+  useReducedMotionContext,
+} from './context/a11y-context'
+export type {
+  A11yContextValue,
+  A11yProviderProps,
+  AnnounceOptions,
+} from './context/a11y-context'
+
+// ============================================================================
+// Compound Components
+// ============================================================================
+
+// Input Compound (composable sub-components)
+export {
+  InputCompound,
+  InputRoot,
+  InputLabel,
+  InputField,
+  InputError,
+  InputHelper,
+  InputCharacterCount,
+  InputFooter,
+} from './components/input-compound'
+export type {
+  InputRootProps,
+  InputLabelProps,
+  InputFieldProps,
+  InputErrorProps,
+  InputHelperProps,
+  InputCharacterCountProps,
+  InputFooterProps,
+} from './components/input-compound'
+
+// ============================================================================
+// Enhanced Custom Components (with advanced accessibility)
+// ============================================================================
+
+// Enhanced Dialog with animations and focus trap
+export {
+  Dialog as EnhancedDialog,
+  DialogTrigger as EnhancedDialogTrigger,
+  DialogContent as EnhancedDialogContent,
+  DialogHeader as EnhancedDialogHeader,
+  DialogTitle as EnhancedDialogTitle,
+  DialogDescription as EnhancedDialogDescription,
+  DialogBody as EnhancedDialogBody,
+  DialogFooter as EnhancedDialogFooter,
+  DialogClose as EnhancedDialogClose,
+} from './components/dialog'
+export type {
+  DialogProps as EnhancedDialogProps,
+  DialogTriggerProps as EnhancedDialogTriggerProps,
+  DialogContentProps as EnhancedDialogContentProps,
+  DialogHeaderProps as EnhancedDialogHeaderProps,
+  DialogTitleProps as EnhancedDialogTitleProps,
+  DialogDescriptionProps as EnhancedDialogDescriptionProps,
+  DialogFooterProps as EnhancedDialogFooterProps,
+  DialogCloseProps as EnhancedDialogCloseProps,
+} from './components/dialog'
+
+// Enhanced Button with ripple and announcements
+export {
+  Button as EnhancedButton,
+  buttonVariants as enhancedButtonVariants,
+} from './components/button'
+export type { ButtonProps as EnhancedButtonProps } from './components/button'
+
+// Enhanced Checkbox with announcements
+export { Checkbox as EnhancedCheckbox } from './components/checkbox'
+export type { CheckboxProps as EnhancedCheckboxProps } from './components/checkbox'

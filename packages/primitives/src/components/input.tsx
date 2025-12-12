@@ -1,10 +1,12 @@
 'use client'
 
 import * as React from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 import { getErrorAriaAttributes } from '../lib/aria'
 import { useComposedRefs } from '../hooks/use-composed-refs'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { ErrorMessage } from './error-message'
 import { Input as ShadcnInput } from './ui/input'
 import { Label } from './ui/label'
@@ -130,14 +132,16 @@ export interface InputProps
 }
 
 /**
- * Clear button component for input
+ * Clear button component for input with animation
  */
 const ClearButton = React.memo(function ClearButton({
   onClick,
   size,
+  prefersReducedMotion,
 }: {
   onClick: () => void
   size: 'default' | 'sm' | 'lg' | null | undefined
+  prefersReducedMotion: boolean
 }) {
   const sizeClasses = {
     sm: 'h-4 w-4',
@@ -146,7 +150,7 @@ const ClearButton = React.memo(function ClearButton({
   }
 
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       className={cn(
@@ -156,6 +160,12 @@ const ClearButton = React.memo(function ClearButton({
         'transition-colors duration-150'
       )}
       aria-label="Clear input"
+      initial={
+        prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.8 }
+      }
+      animate={{ opacity: 1, scale: 1 }}
+      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+      transition={{ duration: durations.fast, ease: 'easeOut' }}
     >
       <svg
         className={sizeClasses[size || 'default']}
@@ -171,7 +181,7 @@ const ClearButton = React.memo(function ClearButton({
           clipRule="evenodd"
         />
       </svg>
-    </button>
+    </motion.button>
   )
 })
 
@@ -283,6 +293,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     // Internal ref for clear functionality
     const internalRef = React.useRef<HTMLInputElement>(null)
     const composedRef = useComposedRefs(forwardedRef, internalRef)
+
+    // Check for reduced motion preference (for clear button animation)
+    const prefersReducedMotion = useReducedMotion()
 
     // Track value for character count and clear button visibility
     const [internalValue, setInternalValue] = React.useState(defaultValue ?? '')
@@ -430,10 +443,16 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
 
-          {/* Clear button */}
-          {showClearButton && (
-            <ClearButton onClick={handleClear} size={inputSize} />
-          )}
+          {/* Clear button with animation */}
+          <AnimatePresence>
+            {showClearButton && (
+              <ClearButton
+                onClick={handleClear}
+                size={inputSize}
+                prefersReducedMotion={prefersReducedMotion}
+              />
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Footer row: error/helper text + character count */}
