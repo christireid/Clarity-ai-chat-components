@@ -123,7 +123,8 @@ const articleMetadata: LinkMetadata = {
     'Exploring the cutting-edge developments in artificial intelligence, from large language models to multimodal systems that are reshaping how we interact with technology.',
   image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200',
   siteName: 'TechCrunch',
-  favicon: 'https://techcrunch.com/wp-content/uploads/2015/02/cropped-cropped-favicon-gradient.png',
+  favicon:
+    'https://techcrunch.com/wp-content/uploads/2015/02/cropped-cropped-favicon-gradient.png',
   type: 'article',
 }
 
@@ -172,7 +173,8 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Default card variant with full metadata including image, title, description, and domain.',
+        story:
+          'Default card variant with full metadata including image, title, description, and domain.',
       },
     },
   },
@@ -236,7 +238,8 @@ export const CompactWithoutImage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Compact variant with minimal metadata - shows domain as fallback.',
+        story:
+          'Compact variant with minimal metadata - shows domain as fallback.',
       },
     },
   },
@@ -525,8 +528,8 @@ export const InMessageContext: Story = {
     <div className="space-y-4 max-w-xl">
       <div className="bg-muted/30 rounded-lg p-4">
         <p className="text-sm mb-3">
-          Check out this awesome project I found! It&apos;s a CLI tool for Claude that
-          helps you build software faster with AI assistance.
+          Check out this awesome project I found! It&apos;s a CLI tool for
+          Claude that helps you build software faster with AI assistance.
         </p>
         <LinkPreview metadata={githubMetadata} onClick={() => {}} />
       </div>
@@ -545,9 +548,21 @@ export const MultipleLinks: Story = {
   render: () => (
     <div className="space-y-3 max-w-xl">
       <p className="text-sm text-muted-foreground">Related resources:</p>
-      <LinkPreview metadata={githubMetadata} variant="compact" onClick={() => {}} />
-      <LinkPreview metadata={articleMetadata} variant="compact" onClick={() => {}} />
-      <LinkPreview metadata={videoMetadata} variant="compact" onClick={() => {}} />
+      <LinkPreview
+        metadata={githubMetadata}
+        variant="compact"
+        onClick={() => {}}
+      />
+      <LinkPreview
+        metadata={articleMetadata}
+        variant="compact"
+        onClick={() => {}}
+      />
+      <LinkPreview
+        metadata={videoMetadata}
+        variant="compact"
+        onClick={() => {}}
+      />
     </div>
   ),
   parameters: {
@@ -742,17 +757,12 @@ const HookExample = () => {
         >
           {loading ? 'Loading...' : 'Fetch'}
         </button>
-        <button
-          onClick={reset}
-          className="px-4 py-2 border rounded-md text-sm"
-        >
+        <button onClick={reset} className="px-4 py-2 border rounded-md text-sm">
           Reset
         </button>
       </div>
 
-      {error && (
-        <div className="text-destructive text-sm">Error: {error}</div>
-      )}
+      {error && <div className="text-destructive text-sm">Error: {error}</div>}
 
       {metadata && <LinkPreview metadata={metadata} onClick={() => {}} />}
     </div>

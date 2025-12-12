@@ -72,9 +72,13 @@ describe('LinkPreview', () => {
       render(<LinkPreview metadata={sampleMetadata} />)
 
       expect(screen.getByText('Example Article Title')).toBeInTheDocument()
-      expect(screen.getByText('This is a sample description for testing purposes.')).toBeInTheDocument()
+      expect(
+        screen.getByText('This is a sample description for testing purposes.')
+      ).toBeInTheDocument()
       expect(screen.getByText('Example Site')).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: /preview image/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('img', { name: /preview image/i })
+      ).toBeInTheDocument()
     })
 
     it('should render compact variant correctly', () => {
@@ -97,7 +101,9 @@ describe('LinkPreview', () => {
       render(<LinkPreview metadata={sampleMetadata} loading />)
 
       // Should not show the title when loading
-      expect(screen.queryByText('Example Article Title')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Example Article Title')
+      ).not.toBeInTheDocument()
     })
 
     it('should show fallback when provided and metadata url is missing', () => {
@@ -140,7 +146,9 @@ describe('LinkPreview', () => {
       render(<LinkPreview metadata={minimalMetadata} />)
 
       // Should not have an img element for the preview image
-      expect(screen.queryByRole('img', { name: /preview image/i })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: /preview image/i })
+      ).not.toBeInTheDocument()
     })
 
     it('should handle image error and show placeholder', () => {
@@ -150,13 +158,17 @@ describe('LinkPreview', () => {
       fireEvent.error(img)
 
       // After error, should not show the broken image
-      expect(screen.queryByRole('img', { name: /preview image/i })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: /preview image/i })
+      ).not.toBeInTheDocument()
     })
 
     it('should hide image when showImage is false', () => {
       render(<LinkPreview metadata={sampleMetadata} showImage={false} />)
 
-      expect(screen.queryByRole('img', { name: /preview image/i })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('img', { name: /preview image/i })
+      ).not.toBeInTheDocument()
     })
 
     it('should lazy load images', () => {
@@ -209,13 +221,17 @@ describe('LinkPreview', () => {
         />
       )
 
-      expect(screen.getByLabelText('Custom label for the link')).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Custom label for the link')
+      ).toBeInTheDocument()
     })
 
     it('should have accessible remove button', () => {
       render(<LinkPreview metadata={sampleMetadata} onRemove={vi.fn()} />)
 
-      expect(screen.getByRole('button', { name: /remove link preview/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /remove link preview/i })
+      ).toBeInTheDocument()
     })
   })
 
@@ -295,9 +311,7 @@ describe('LinkPreview', () => {
     it('should hide favicon when showFavicon is false', () => {
       render(<LinkPreview metadata={sampleMetadata} showFavicon={false} />)
 
-      expect(
-        screen.queryByRole('img', { name: '' })
-      ).not.toBeInTheDocument()
+      expect(screen.queryByRole('img', { name: '' })).not.toBeInTheDocument()
     })
 
     it('should hide domain badge when showDomain is false', () => {
@@ -319,7 +333,9 @@ describe('LinkPreviewSkeleton', () => {
   it('should render card skeleton by default', () => {
     const { container } = render(<LinkPreviewSkeleton />)
 
-    expect(container.querySelector('.animate-pulse, [class*="animate"]')).toBeInTheDocument()
+    expect(
+      container.querySelector('.animate-pulse, [class*="animate"]')
+    ).toBeInTheDocument()
   })
 
   it('should render compact skeleton', () => {
@@ -335,7 +351,9 @@ describe('LinkPreviewSkeleton', () => {
   })
 
   it('should apply custom className', () => {
-    const { container } = render(<LinkPreviewSkeleton className="custom-skeleton" />)
+    const { container } = render(
+      <LinkPreviewSkeleton className="custom-skeleton" />
+    )
 
     expect(container.querySelector('.custom-skeleton')).toBeInTheDocument()
   })
@@ -382,7 +400,9 @@ describe('LinkPreviewError', () => {
   it('should not show retry button when onRetry not provided', () => {
     render(<LinkPreviewError url="https://example.com" />)
 
-    expect(screen.queryByRole('button', { name: /retry/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /retry/i })
+    ).not.toBeInTheDocument()
   })
 })
 
@@ -413,7 +433,9 @@ describe('LinkPreviewCompact', () => {
 
   it('should be keyboard accessible when clickable', () => {
     const handleClick = vi.fn()
-    render(<LinkPreviewCompact metadata={sampleMetadata} onClick={handleClick} />)
+    render(
+      <LinkPreviewCompact metadata={sampleMetadata} onClick={handleClick} />
+    )
 
     const card = screen.getByRole('link')
     fireEvent.keyDown(card, { key: 'Enter' })
@@ -530,9 +552,7 @@ describe('SmartLinkPreview', () => {
 
   it('should show error state when fetch fails', async () => {
     const mockFetch = vi.fn().mockRejectedValue(new Error('Network error'))
-    render(
-      <SmartLinkPreview url="https://example.com" fetchFn={mockFetch} />
-    )
+    render(<SmartLinkPreview url="https://example.com" fetchFn={mockFetch} />)
 
     await act(async () => {
       vi.advanceTimersByTime(100)
@@ -641,9 +661,7 @@ describe('useLinkPreview', () => {
 
   it('should set error on fetch failure', async () => {
     const mockFetch = vi.fn().mockRejectedValue(new Error('Network error'))
-    const { result } = renderHook(() =>
-      useLinkPreview({ fetchFn: mockFetch })
-    )
+    const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     await act(async () => {
       try {
@@ -658,9 +676,7 @@ describe('useLinkPreview', () => {
 
   it('should cache metadata', async () => {
     const mockFetch = vi.fn().mockResolvedValue(sampleMetadata)
-    const { result } = renderHook(() =>
-      useLinkPreview({ fetchFn: mockFetch })
-    )
+    const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     // First fetch
     await act(async () => {
@@ -696,9 +712,7 @@ describe('useLinkPreview', () => {
 
   it('should clear cache', async () => {
     const mockFetch = vi.fn().mockResolvedValue(sampleMetadata)
-    const { result } = renderHook(() =>
-      useLinkPreview({ fetchFn: mockFetch })
-    )
+    const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     // First fetch
     await act(async () => {
@@ -724,9 +738,7 @@ describe('useLinkPreview', () => {
       title: 'Custom Title',
     }
     const mockFetch = vi.fn().mockResolvedValue(customMetadata)
-    const { result } = renderHook(() =>
-      useLinkPreview({ fetchFn: mockFetch })
-    )
+    const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     await act(async () => {
       await result.current.fetchMetadata('https://custom.com')
@@ -742,9 +754,7 @@ describe('useLinkPreview', () => {
       return sampleMetadata
     })
 
-    const { result } = renderHook(() =>
-      useLinkPreview({ fetchFn: mockFetch })
-    )
+    const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     // Start two fetches simultaneously
     await act(async () => {
@@ -765,23 +775,28 @@ describe('useLinkPreview', () => {
 describe('Reduced Motion Support', () => {
   it('should respect prefers-reduced-motion', () => {
     // Mock reduced motion preference
-    vi.stubGlobal('matchMedia', vi.fn().mockImplementation((query: string) => ({
-      matches: query === '(prefers-reduced-motion: reduce)',
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })))
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockImplementation((query: string) => ({
+        matches: query === '(prefers-reduced-motion: reduce)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }))
+    )
 
     render(<LinkPreview metadata={sampleMetadata} onClick={vi.fn()} />)
 
     // Should not show the animated bottom border effect
     const card = screen.getByRole('link')
     // In reduced motion mode, the animated border should not be rendered
-    expect(card.querySelector('[class*="transition-transform"]')).not.toBeInTheDocument()
+    expect(
+      card.querySelector('[class*="transition-transform"]')
+    ).not.toBeInTheDocument()
   })
 })
 
@@ -797,7 +812,9 @@ describe('Domain Extraction', () => {
   })
 
   it('should remove www prefix from domain', () => {
-    render(<LinkPreview metadata={{ url: 'https://www.test.example.com/path' }} />)
+    render(
+      <LinkPreview metadata={{ url: 'https://www.test.example.com/path' }} />
+    )
 
     expect(screen.getByText('test.example.com')).toBeInTheDocument()
   })
@@ -889,7 +906,9 @@ describe('sanitizeUrl', () => {
   })
 
   it('should return safe fallback for data: URLs', () => {
-    expect(sanitizeUrl('data:text/html,<script>alert(1)</script>')).toBe('about:blank')
+    expect(sanitizeUrl('data:text/html,<script>alert(1)</script>')).toBe(
+      'about:blank'
+    )
   })
 
   it('should return safe fallback for malformed URLs', () => {
@@ -912,7 +931,9 @@ describe('sanitizeUrl', () => {
 describe('detectEmbedType', () => {
   describe('YouTube', () => {
     it('should detect youtube.com watch URLs', () => {
-      expect(detectEmbedType('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe('youtube')
+      expect(
+        detectEmbedType('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+      ).toBe('youtube')
     })
 
     it('should detect youtu.be short URLs', () => {
@@ -920,17 +941,23 @@ describe('detectEmbedType', () => {
     })
 
     it('should detect youtube.com embed URLs', () => {
-      expect(detectEmbedType('https://www.youtube.com/embed/dQw4w9WgXcQ')).toBe('youtube')
+      expect(detectEmbedType('https://www.youtube.com/embed/dQw4w9WgXcQ')).toBe(
+        'youtube'
+      )
     })
   })
 
   describe('Twitter/X', () => {
     it('should detect twitter.com status URLs', () => {
-      expect(detectEmbedType('https://twitter.com/user/status/123456789')).toBe('twitter')
+      expect(detectEmbedType('https://twitter.com/user/status/123456789')).toBe(
+        'twitter'
+      )
     })
 
     it('should detect x.com status URLs', () => {
-      expect(detectEmbedType('https://x.com/user/status/123456789')).toBe('twitter')
+      expect(detectEmbedType('https://x.com/user/status/123456789')).toBe(
+        'twitter'
+      )
     })
   })
 
@@ -940,15 +967,21 @@ describe('detectEmbedType', () => {
     })
 
     it('should detect github.com pull request URLs', () => {
-      expect(detectEmbedType('https://github.com/owner/repo/pull/123')).toBe('github')
+      expect(detectEmbedType('https://github.com/owner/repo/pull/123')).toBe(
+        'github'
+      )
     })
 
     it('should detect github.com issue URLs', () => {
-      expect(detectEmbedType('https://github.com/owner/repo/issues/456')).toBe('github')
+      expect(detectEmbedType('https://github.com/owner/repo/issues/456')).toBe(
+        'github'
+      )
     })
 
     it('should detect gist.github.com URLs', () => {
-      expect(detectEmbedType('https://gist.github.com/user/abc123')).toBe('github')
+      expect(detectEmbedType('https://gist.github.com/user/abc123')).toBe(
+        'github'
+      )
     })
   })
 
@@ -958,21 +991,29 @@ describe('detectEmbedType', () => {
     })
 
     it('should detect player.vimeo.com embed URLs', () => {
-      expect(detectEmbedType('https://player.vimeo.com/video/123456789')).toBe('vimeo')
+      expect(detectEmbedType('https://player.vimeo.com/video/123456789')).toBe(
+        'vimeo'
+      )
     })
   })
 
   describe('Spotify', () => {
     it('should detect open.spotify.com track URLs', () => {
-      expect(detectEmbedType('https://open.spotify.com/track/abc123')).toBe('spotify')
+      expect(detectEmbedType('https://open.spotify.com/track/abc123')).toBe(
+        'spotify'
+      )
     })
 
     it('should detect open.spotify.com playlist URLs', () => {
-      expect(detectEmbedType('https://open.spotify.com/playlist/xyz789')).toBe('spotify')
+      expect(detectEmbedType('https://open.spotify.com/playlist/xyz789')).toBe(
+        'spotify'
+      )
     })
 
     it('should detect open.spotify.com album URLs', () => {
-      expect(detectEmbedType('https://open.spotify.com/album/def456')).toBe('spotify')
+      expect(detectEmbedType('https://open.spotify.com/album/def456')).toBe(
+        'spotify'
+      )
     })
   })
 
@@ -982,7 +1023,9 @@ describe('detectEmbedType', () => {
     })
 
     it('should return generic for news sites', () => {
-      expect(detectEmbedType('https://news.example.com/article')).toBe('generic')
+      expect(detectEmbedType('https://news.example.com/article')).toBe(
+        'generic'
+      )
     })
   })
 })
@@ -1098,7 +1141,9 @@ describe('createFallbackMetadata', () => {
   })
 
   it('should include path in title for long paths', () => {
-    const metadata = createFallbackMetadata('https://example.com/path/to/article')
+    const metadata = createFallbackMetadata(
+      'https://example.com/path/to/article'
+    )
 
     expect(metadata.url).toBe('https://example.com/path/to/article')
   })
@@ -1126,20 +1171,21 @@ describe('RichEmbed', () => {
 
     const iframe = screen.getByTitle(/youtube video/i)
     expect(iframe).toBeInTheDocument()
-    expect(iframe).toHaveAttribute('src', expect.stringContaining('youtube.com/embed'))
+    expect(iframe).toHaveAttribute(
+      'src',
+      expect.stringContaining('youtube.com/embed')
+    )
   })
 
   it('should render Vimeo embed', () => {
-    render(
-      <RichEmbed
-        url="https://vimeo.com/123456789"
-        embedType="vimeo"
-      />
-    )
+    render(<RichEmbed url="https://vimeo.com/123456789" embedType="vimeo" />)
 
     const iframe = screen.getByTitle(/vimeo video/i)
     expect(iframe).toBeInTheDocument()
-    expect(iframe).toHaveAttribute('src', expect.stringContaining('player.vimeo.com'))
+    expect(iframe).toHaveAttribute(
+      'src',
+      expect.stringContaining('player.vimeo.com')
+    )
   })
 
   it('should render Spotify embed', () => {
@@ -1152,16 +1198,14 @@ describe('RichEmbed', () => {
 
     const iframe = screen.getByTitle(/spotify/i)
     expect(iframe).toBeInTheDocument()
-    expect(iframe).toHaveAttribute('src', expect.stringContaining('open.spotify.com/embed'))
+    expect(iframe).toHaveAttribute(
+      'src',
+      expect.stringContaining('open.spotify.com/embed')
+    )
   })
 
   it('should render generic fallback for unsupported types', () => {
-    render(
-      <RichEmbed
-        url="https://example.com"
-        embedType="generic"
-      />
-    )
+    render(<RichEmbed url="https://example.com" embedType="generic" />)
 
     // Should show a link or preview card, not an iframe
     expect(screen.queryByRole('link')).toBeInTheDocument()
@@ -1198,13 +1242,13 @@ describe('RichEmbed', () => {
 
 describe('LRU Cache Behavior', () => {
   it('should evict oldest entries when cache is full', async () => {
-    const mockFetch = vi.fn().mockImplementation((url: string) =>
-      Promise.resolve({ url, title: `Title for ${url}` })
-    )
+    const mockFetch = vi
+      .fn()
+      .mockImplementation((url: string) =>
+        Promise.resolve({ url, title: `Title for ${url}` })
+      )
 
-    const { result } = renderHook(() =>
-      useLinkPreview({ fetchFn: mockFetch })
-    )
+    const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     // Fetch many URLs to potentially fill cache
     for (let i = 0; i < 10; i++) {
@@ -1218,9 +1262,7 @@ describe('LRU Cache Behavior', () => {
 
   it('should return cached value without refetching', async () => {
     const mockFetch = vi.fn().mockResolvedValue(sampleMetadata)
-    const { result } = renderHook(() =>
-      useLinkPreview({ fetchFn: mockFetch })
-    )
+    const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     // First fetch
     await act(async () => {
@@ -1237,13 +1279,13 @@ describe('LRU Cache Behavior', () => {
   })
 
   it('should update LRU order on cache hit', async () => {
-    const mockFetch = vi.fn().mockImplementation((url: string) =>
-      Promise.resolve({ url, title: `Title for ${url}` })
-    )
+    const mockFetch = vi
+      .fn()
+      .mockImplementation((url: string) =>
+        Promise.resolve({ url, title: `Title for ${url}` })
+      )
 
-    const { result } = renderHook(() =>
-      useLinkPreview({ fetchFn: mockFetch })
-    )
+    const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     // Fetch two URLs
     await act(async () => {
@@ -1290,12 +1332,16 @@ describe('Expandable Description', () => {
     )
 
     // Look for expand button
-    const expandButton = screen.queryByRole('button', { name: /show more|expand/i })
+    const expandButton = screen.queryByRole('button', {
+      name: /show more|expand/i,
+    })
     if (expandButton) {
       await userEvent.click(expandButton)
 
       // After expansion, description should be fully visible or have collapse option
-      expect(screen.queryByRole('button', { name: /show less|collapse/i })).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /show less|collapse/i })
+      ).toBeInTheDocument()
     }
   })
 
@@ -1307,6 +1353,8 @@ describe('Expandable Description', () => {
 
     render(<LinkPreview metadata={shortMetadata} expandableDescription />)
 
-    expect(screen.queryByRole('button', { name: /show more|expand/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /show more|expand/i })
+    ).not.toBeInTheDocument()
   })
 })
