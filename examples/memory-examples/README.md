@@ -4,7 +4,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org/)
 
-> Complete, runnable examples for `@clarity-chat/memory` - AI conversation memory and context management.
+> Complete, runnable examples for `@clarity-chat/memory` - AI conversation memory and context
+> management.
 
 ![Memory Examples](./public/screenshot.png)
 
@@ -46,6 +47,7 @@ pnpm run cli       # Interactive CLI
 ### Backend Examples
 
 #### 1. **Express.js Server** (`memory-nodejs-express.ts`)
+
 Full-featured REST API using Express.js with memory-enhanced endpoints.
 
 ```bash
@@ -53,6 +55,7 @@ npx tsx examples/memory-examples/memory-nodejs-express.ts
 ```
 
 **Features:**
+
 - Chat endpoint with memory context
 - User preferences management
 - Memory CRUD operations
@@ -60,6 +63,7 @@ npx tsx examples/memory-examples/memory-nodejs-express.ts
 - Health check
 
 **Endpoints:**
+
 - `POST /api/chat` - Chat with memory context
 - `GET /api/preferences/:userId` - Get user preferences
 - `POST /api/preferences/:userId` - Set user preference
@@ -71,6 +75,7 @@ npx tsx examples/memory-examples/memory-nodejs-express.ts
 ---
 
 #### 2. **Fastify Server** (`memory-nodejs-fastify.ts`)
+
 High-performance REST API using Fastify with type-safe routes.
 
 ```bash
@@ -82,6 +87,7 @@ npx tsx examples/memory-examples/memory-nodejs-fastify.ts
 ```
 
 **Why Fastify?**
+
 - 2x faster than Express
 - Built-in TypeScript support
 - Schema validation
@@ -92,6 +98,7 @@ Same endpoints as Express example above.
 ---
 
 #### 3. **Next.js API Route** (`memory-nodejs-api.ts`)
+
 Next.js App Router API route example for serverless/edge functions.
 
 **File location:** Copy to `app/api/chat/route.ts` in your Next.js project
@@ -104,6 +111,7 @@ import { clarityMemory } from '@clarity-chat/memory'
 ```
 
 **Features:**
+
 - Singleton memory instance
 - Optimized for serverless
 - GET and POST handlers
@@ -112,6 +120,7 @@ import { clarityMemory } from '@clarity-chat/memory'
 ---
 
 #### 4. **CLI Chat Application** (`memory-cli.ts`)
+
 Interactive command-line chat with persistent memory.
 
 ```bash
@@ -119,11 +128,13 @@ npx tsx examples/memory-examples/memory-cli.ts
 ```
 
 **Commands:**
+
 - `/stats` - View memory statistics
 - `/clear` - Clear all memories
 - `/exit` or `/quit` - Exit the application
 
 **Use Cases:**
+
 - Testing memory functionality
 - Building CLI tools
 - Prototyping chat interfaces
@@ -134,9 +145,11 @@ npx tsx examples/memory-examples/memory-cli.ts
 ### Frontend Examples
 
 #### 5. **React Advanced** (`memory-system-advanced.tsx`)
+
 Advanced React integration with hooks and context.
 
 **Features:**
+
 - Custom memory hooks
 - Context management
 - Token optimization
@@ -145,9 +158,11 @@ Advanced React integration with hooks and context.
 ---
 
 #### 6. **React Basic** (`memory-system-basic.tsx`)
+
 Simple React component example for quick integration.
 
 **Features:**
+
 - Simple setup
 - Basic memory operations
 - Minimal configuration
@@ -155,6 +170,7 @@ Simple React component example for quick integration.
 ---
 
 #### 7. **Vanilla JavaScript** (`memory-vanilla-js.html`)
+
 Pure HTML/JavaScript example without frameworks.
 
 ```bash
@@ -163,6 +179,7 @@ open examples/memory-examples/memory-vanilla-js.html
 ```
 
 **Use Cases:**
+
 - Legacy applications
 - No-build setups
 - Learning the API
@@ -229,8 +246,8 @@ await memory.initialize()
 const memory = clarityMemory({
   storage: {
     type: 'file',
-    path: './memories.json'
-  }
+    path: './memories.json',
+  },
 })
 await memory.initialize()
 
@@ -241,7 +258,7 @@ const memory = clarityMemory({
   embeddingProvider: {
     provider: 'openai',
     apiKey: process.env.OPENAI_API_KEY,
-    model: 'text-embedding-3-small'
+    model: 'text-embedding-3-small',
   },
   tokenBudget: {
     maxContextWindow: 4096,
@@ -251,9 +268,9 @@ const memory = clarityMemory({
       recentContext: 1229,
       semanticMemory: 1024,
       episodicMemory: 614,
-      responseReserve: 205
-    }
-  }
+      responseReserve: 205,
+    },
+  },
 })
 await memory.initialize()
 ```
@@ -269,7 +286,7 @@ await memory.add('User is a software engineer', {
   type: 'semantic',
   scope: 'user',
   importance: 0.9,
-  tags: ['profile', 'occupation']
+  tags: ['profile', 'occupation'],
 })
 ```
 
@@ -283,7 +300,7 @@ const results = await memory.recall('user preferences')
 const results = await memory.recall('TypeScript', {
   limit: 10,
   minConfidence: 0.7,
-  metadata: { userId: 'user123' }
+  metadata: { userId: 'user123' },
 })
 
 // Low-level query
@@ -291,7 +308,7 @@ const results = await memory.query({
   types: ['semantic', 'profile'],
   scopes: ['user', 'global'],
   metadata: { userId: 'user123' },
-  limit: 20
+  limit: 20,
 })
 ```
 
@@ -299,15 +316,15 @@ const results = await memory.query({
 
 ```typescript
 const contextBundle = await memory.context({
-  maxTokens: 1000
+  maxTokens: 1000,
 })
 
 // Use in LLM call
 const response = await openai.chat.completions.create({
   messages: [
     { role: 'system', content: contextBundle.formatted },
-    { role: 'user', content: userMessage }
-  ]
+    { role: 'user', content: userMessage },
+  ],
 })
 ```
 
@@ -341,18 +358,24 @@ const response = await openai.chat.completions.create({
 ## 🎯 Use Cases
 
 ### 1. **Chatbot with Memory**
-Use the Express or Fastify example as a starting point for a chatbot that remembers user preferences and conversation history.
+
+Use the Express or Fastify example as a starting point for a chatbot that remembers user preferences
+and conversation history.
 
 ### 2. **Personal Assistant**
+
 Use the CLI example to build a personal assistant that learns about you over time.
 
 ### 3. **Customer Support**
+
 Store customer preferences and history to provide personalized support.
 
 ### 4. **Knowledge Base**
+
 Store and retrieve domain knowledge for Q&A systems.
 
 ### 5. **Recommendation System**
+
 Track user preferences to make personalized recommendations.
 
 ---
@@ -385,8 +408,8 @@ By default, memory uses in-memory storage. For persistence:
 const memory = clarityMemory({
   storage: {
     type: 'file',
-    path: './memories.json'
-  }
+    path: './memories.json',
+  },
 })
 ```
 

@@ -26,7 +26,10 @@ export default function Error({
       <div className="text-center space-y-4 max-w-md">
         {/* Error Icon */}
         <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
-          <AlertCircle className="w-8 h-8 text-destructive" aria-hidden="true" />
+          <AlertCircle
+            className="w-8 h-8 text-destructive"
+            aria-hidden="true"
+          />
         </div>
 
         {/* Error Message */}

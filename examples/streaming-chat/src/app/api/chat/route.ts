@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           controller.enqueue(encoder.encode(chunk))
 
           // Simulate typing delay (30-80ms per word)
-          await new Promise(resolve =>
+          await new Promise((resolve) =>
             setTimeout(resolve, 30 + Math.random() * 50)
           )
         }
@@ -79,10 +79,10 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Chat API error:', error)
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    )
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
@@ -99,11 +99,11 @@ function generateDemoResponse(userMessage: string): string {
   }
 
   if (lowerMessage.includes('how') && lowerMessage.includes('work')) {
-    return "Great question! This streaming chat example works by:\n\n1. **Sending your message** to the /api/chat endpoint\n2. **Processing the request** (in production, this calls an AI provider)\n3. **Streaming the response** back chunk by chunk using ReadableStream\n4. **Updating the UI** in real-time as each chunk arrives\n\nThe result is a smooth, responsive chat experience where you see the response being \"typed\" rather than waiting for the full response."
+    return 'Great question! This streaming chat example works by:\n\n1. **Sending your message** to the /api/chat endpoint\n2. **Processing the request** (in production, this calls an AI provider)\n3. **Streaming the response** back chunk by chunk using ReadableStream\n4. **Updating the UI** in real-time as each chunk arrives\n\nThe result is a smooth, responsive chat experience where you see the response being "typed" rather than waiting for the full response.'
   }
 
   if (lowerMessage.includes('clarity') || lowerMessage.includes('chat')) {
-    return "Clarity Chat is a premium AI chat component library that provides:\n\n• **Streaming components** for real-time AI responses\n• **Accessibility-first design** (WCAG 2.1 AA compliant)\n• **TypeScript support** with full type safety\n• **Customizable themes** with Tailwind CSS\n• **Production-ready patterns** for enterprise applications\n\nThis example demonstrates the streaming chat pattern you can implement with Clarity Chat components."
+    return 'Clarity Chat is a premium AI chat component library that provides:\n\n• **Streaming components** for real-time AI responses\n• **Accessibility-first design** (WCAG 2.1 AA compliant)\n• **TypeScript support** with full type safety\n• **Customizable themes** with Tailwind CSS\n• **Production-ready patterns** for enterprise applications\n\nThis example demonstrates the streaming chat pattern you can implement with Clarity Chat components.'
   }
 
   if (lowerMessage.includes('code') || lowerMessage.includes('example')) {

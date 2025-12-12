@@ -35,7 +35,8 @@ pnpm dev
 
 Open [http://localhost:3002](http://localhost:3002) to see the dashboard.
 
-> **Note:** This example includes demo data that simulates real AI operations metrics without requiring API keys.
+> **Note:** This example includes demo data that simulates real AI operations metrics without
+> requiring API keys.
 
 ## 📋 Prerequisites
 
@@ -86,11 +87,11 @@ enterprise-ai-ops/
 
 ## 📁 Key Files
 
-| File | Purpose |
-|------|---------|
-| `src/app/page.tsx` | Main dashboard with all components and state management |
+| File                  | Purpose                                                  |
+| --------------------- | -------------------------------------------------------- |
+| `src/app/page.tsx`    | Main dashboard with all components and state management  |
 | `src/app/loading.tsx` | Skeleton loading states for better perceived performance |
-| `src/app/error.tsx` | Error boundary with retry functionality |
+| `src/app/error.tsx`   | Error boundary with retry functionality                  |
 
 ## 🎨 Customization
 
@@ -198,6 +199,7 @@ pnpm add recharts
 <summary>Performance issues</summary>
 
 For large datasets:
+
 - Implement pagination for alerts
 - Use virtual scrolling for long lists
 - Debounce real-time updates

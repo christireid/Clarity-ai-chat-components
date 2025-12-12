@@ -1,6 +1,10 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-background" aria-busy="true" aria-label="Loading dashboard">
+    <div
+      className="min-h-screen bg-background"
+      aria-busy="true"
+      aria-label="Loading dashboard"
+    >
       {/* Header skeleton */}
       <header className="border-b bg-background/95 backdrop-blur">
         <div className="container flex h-16 items-center justify-between px-4">

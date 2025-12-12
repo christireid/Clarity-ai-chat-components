@@ -6,7 +6,11 @@
  */
 export default function Loading() {
   return (
-    <div className="flex flex-col h-screen" aria-busy="true" aria-label="Loading chat">
+    <div
+      className="flex flex-col h-screen"
+      aria-busy="true"
+      aria-label="Loading chat"
+    >
       {/* Header skeleton */}
       <header className="border-b bg-background/95 backdrop-blur">
         <div className="container flex h-14 items-center justify-between px-4">
@@ -24,7 +28,9 @@ export default function Loading() {
               key={i}
               className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`max-w-[80%] space-y-2 ${i % 2 === 0 ? 'items-end' : 'items-start'}`}>
+              <div
+                className={`max-w-[80%] space-y-2 ${i % 2 === 0 ? 'items-end' : 'items-start'}`}
+              >
                 <div className="h-4 w-20 bg-muted animate-pulse rounded" />
                 <div className="p-4 bg-muted animate-pulse rounded-lg space-y-2">
                   <div className="h-4 w-48 bg-muted-foreground/10 rounded" />

@@ -1,6 +1,10 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-background p-6" aria-busy="true" aria-label="Loading">
+    <div
+      className="min-h-screen bg-background p-6"
+      aria-busy="true"
+      aria-label="Loading"
+    >
       <div className="max-w-6xl mx-auto">
         {/* Header skeleton */}
         <div className="h-9 w-80 bg-muted animate-pulse rounded mb-6" />

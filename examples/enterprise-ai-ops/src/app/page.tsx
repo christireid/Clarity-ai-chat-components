@@ -94,7 +94,13 @@ function generateMockAlerts(): SafetyAlert[] {
 // Components
 // =============================================================================
 
-function StatCard({ label, value, change, changeType, icon: Icon }: MetricCard) {
+function StatCard({
+  label,
+  value,
+  change,
+  changeType,
+  icon: Icon,
+}: MetricCard) {
   return (
     <div className="p-6 bg-card border rounded-lg">
       <div className="flex items-start justify-between">
@@ -107,8 +113,8 @@ function StatCard({ label, value, change, changeType, icon: Icon }: MetricCard) 
                 changeType === 'positive'
                   ? 'text-green-600'
                   : changeType === 'negative'
-                  ? 'text-red-600'
-                  : 'text-muted-foreground'
+                    ? 'text-red-600'
+                    : 'text-muted-foreground'
               }`}
             >
               {change}
@@ -138,9 +144,7 @@ function SafetyAlertItem({
 
   return (
     <div
-      className={`p-4 border rounded-lg ${
-        alert.resolved ? 'opacity-50' : ''
-      }`}
+      className={`p-4 border rounded-lg ${alert.resolved ? 'opacity-50' : ''}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
@@ -185,7 +189,7 @@ function SafetyAlertItem({
 }
 
 function UsageChart({ data }: { data: UsageData[] }) {
-  const maxRequests = Math.max(...data.map(d => d.requests))
+  const maxRequests = Math.max(...data.map((d) => d.requests))
 
   return (
     <div className="p-6 bg-card border rounded-lg">
@@ -218,10 +222,30 @@ function UsageChart({ data }: { data: UsageData[] }) {
 
 function TokenBreakdown() {
   const breakdown = [
-    { label: 'Input Tokens', value: 1250000, percentage: 45, color: 'bg-blue-500' },
-    { label: 'Output Tokens', value: 850000, percentage: 30, color: 'bg-green-500' },
-    { label: 'Cached Tokens', value: 450000, percentage: 16, color: 'bg-purple-500' },
-    { label: 'System Tokens', value: 250000, percentage: 9, color: 'bg-orange-500' },
+    {
+      label: 'Input Tokens',
+      value: 1250000,
+      percentage: 45,
+      color: 'bg-blue-500',
+    },
+    {
+      label: 'Output Tokens',
+      value: 850000,
+      percentage: 30,
+      color: 'bg-green-500',
+    },
+    {
+      label: 'Cached Tokens',
+      value: 450000,
+      percentage: 16,
+      color: 'bg-purple-500',
+    },
+    {
+      label: 'System Tokens',
+      value: 250000,
+      percentage: 9,
+      color: 'bg-orange-500',
+    },
   ]
 
   return (
@@ -282,8 +306,8 @@ function ModelPerformance() {
                       model.accuracy >= 90
                         ? 'text-green-600'
                         : model.accuracy >= 80
-                        ? 'text-yellow-600'
-                        : 'text-red-600'
+                          ? 'text-yellow-600'
+                          : 'text-red-600'
                     }`}
                   >
                     {model.accuracy}%
@@ -320,7 +344,7 @@ export default function EnterpriseAIOpsPage() {
   // Refresh data
   const handleRefresh = async () => {
     setIsRefreshing(true)
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await new Promise((resolve) => setTimeout(resolve, 500))
     setUsageData(generateMockUsageData())
     setLastRefresh(new Date())
     setIsRefreshing(false)
@@ -328,8 +352,8 @@ export default function EnterpriseAIOpsPage() {
 
   // Resolve alert
   const handleResolveAlert = (id: string) => {
-    setAlerts(prev =>
-      prev.map(a => (a.id === id ? { ...a, resolved: true } : a))
+    setAlerts((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, resolved: true } : a))
     )
   }
 
@@ -370,7 +394,7 @@ export default function EnterpriseAIOpsPage() {
     },
   ]
 
-  const unresolvedAlerts = alerts.filter(a => !a.resolved).length
+  const unresolvedAlerts = alerts.filter((a) => !a.resolved).length
 
   return (
     <div className="min-h-screen bg-background">
@@ -458,7 +482,7 @@ export default function EnterpriseAIOpsPage() {
                   No alerts to display
                 </p>
               ) : (
-                alerts.map(alert => (
+                alerts.map((alert) => (
                   <SafetyAlertItem
                     key={alert.id}
                     alert={alert}

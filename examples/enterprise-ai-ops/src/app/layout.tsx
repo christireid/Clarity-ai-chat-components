@@ -6,7 +6,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Enterprise AI Ops - Clarity Chat Example',
-  description: 'AI operations dashboard with monitoring, evaluation, and safety features',
+  description:
+    'AI operations dashboard with monitoring, evaluation, and safety features',
 }
 
 export default function RootLayout({
@@ -16,9 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }

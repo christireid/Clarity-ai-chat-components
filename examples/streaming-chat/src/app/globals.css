@@ -83,7 +83,9 @@
 
 /* Typing indicator animation */
 @keyframes typing-dot {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
   }
   30% {

@@ -4,7 +4,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
 
-> Interactive demonstrations of token optimization techniques including TOON format, prompt compression, and cache preparation.
+> Interactive demonstrations of token optimization techniques including TOON format, prompt
+> compression, and cache preparation.
 
 ![Token Optimization Demo](./public/screenshot.png)
 
@@ -34,7 +35,8 @@ pnpm dev
 
 Open [http://localhost:3003](http://localhost:3003) to see the demo.
 
-> **Note:** This example works without API keys, demonstrating optimization techniques with simulated data.
+> **Note:** This example works without API keys, demonstrating optimization techniques with
+> simulated data.
 
 ## 📋 Prerequisites
 
@@ -99,12 +101,12 @@ const messages = [
   {
     role: 'system',
     content: 'You are a helpful assistant...',
-    cache_control: { type: 'ephemeral' }  // Cache this!
+    cache_control: { type: 'ephemeral' }, // Cache this!
   },
   {
     role: 'user',
-    content: 'How do I optimize React?'
-  }
+    content: 'How do I optimize React?',
+  },
 ]
 ```
 
@@ -131,12 +133,7 @@ function countTokens(text: string, model = 'gpt-4o'): number {
 import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
 
 function MyComponent() {
-  const {
-    optimizeData,
-    optimizePrompt,
-    prepareMessages,
-    stats,
-  } = useTokenOptimizationEnhanced({
+  const { optimizeData, optimizePrompt, prepareMessages, stats } = useTokenOptimizationEnhanced({
     model: 'gpt-4o-mini',
     enableToon: true,
     enablePromptCaching: true,

@@ -6,7 +6,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Token Optimization - Clarity Chat Example',
-  description: 'Demonstrations of TOON format, prompt caching, compression, and cost tracking',
+  description:
+    'Demonstrations of TOON format, prompt caching, compression, and cost tracking',
 }
 
 export default function RootLayout({
@@ -16,9 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }

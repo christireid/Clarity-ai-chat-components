@@ -36,13 +36,15 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the demo.
 
-> **Note:** This example includes a demo mode that works without API keys, simulating streaming responses to showcase the UI patterns.
+> **Note:** This example includes a demo mode that works without API keys, simulating streaming
+> responses to showcase the UI patterns.
 
 ## 📋 Prerequisites
 
 - Node.js 20+
 - pnpm 10+
-- (Optional) OpenAI API key for real AI responses - [Get one here](https://platform.openai.com/api-keys)
+- (Optional) OpenAI API key for real AI responses -
+  [Get one here](https://platform.openai.com/api-keys)
 
 ## 🏗️ Architecture
 
@@ -79,12 +81,12 @@ streaming-chat/
 
 ## 📁 Key Files
 
-| File | Purpose |
-|------|---------|
-| `src/app/page.tsx` | Main chat UI with `useStreamingChat` hook |
+| File                        | Purpose                                             |
+| --------------------------- | --------------------------------------------------- |
+| `src/app/page.tsx`          | Main chat UI with `useStreamingChat` hook           |
 | `src/app/api/chat/route.ts` | Streaming API endpoint (demo + production patterns) |
-| `src/app/error.tsx` | Error boundary with retry functionality |
-| `src/app/loading.tsx` | Skeleton loading state |
+| `src/app/error.tsx`         | Error boundary with retry functionality             |
+| `src/app/loading.tsx`       | Skeleton loading state                              |
 
 ## 🎨 Customization
 
@@ -135,9 +137,9 @@ This example uses Tailwind CSS with CSS variables. Customize colors in `src/app/
 
 ```css
 :root {
-  --primary: 221.2 83.2% 53.3%;     /* Primary color (blue) */
-  --background: 0 0% 100%;           /* Background color */
-  --foreground: 222.2 84% 4.9%;      /* Text color */
+  --primary: 221.2 83.2% 53.3%; /* Primary color (blue) */
+  --background: 0 0% 100%; /* Background color */
+  --foreground: 222.2 84% 4.9%; /* Text color */
   /* ... more variables */
 }
 ```

@@ -1,6 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback, useId, FormEvent } from 'react'
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useId,
+  FormEvent,
+} from 'react'
 import { Send, Loader2, Bot, User, Sparkles } from 'lucide-react'
 
 // =============================================================================
@@ -31,91 +38,90 @@ function useStreamingChat() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim() || isLoading) return
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!content.trim() || isLoading) return
 
-    setError(null)
-    setIsLoading(true)
+      setError(null)
+      setIsLoading(true)
 
-    // Add user message
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      content: content.trim(),
-      timestamp: Date.now(),
-    }
-
-    // Add assistant message placeholder
-    const assistantId = `assistant-${Date.now()}`
-    const assistantMessage: Message = {
-      id: assistantId,
-      role: 'assistant',
-      content: '',
-      timestamp: Date.now(),
-      isStreaming: true,
-    }
-
-    setMessages(prev => [...prev, userMessage, assistantMessage])
-    setInput('')
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map(m => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`)
+      // Add user message
+      const userMessage: Message = {
+        id: `user-${Date.now()}`,
+        role: 'user',
+        content: content.trim(),
+        timestamp: Date.now(),
       }
 
-      if (!response.body) {
-        throw new Error('No response body')
+      // Add assistant message placeholder
+      const assistantId = `assistant-${Date.now()}`
+      const assistantMessage: Message = {
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
+        isStreaming: true,
       }
 
-      // Read streaming response
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let streamedContent = ''
+      setMessages((prev) => [...prev, userMessage, assistantMessage])
+      setInput('')
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [...messages, userMessage].map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          }),
+        })
 
-        const chunk = decoder.decode(value, { stream: true })
-        streamedContent += chunk
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`)
+        }
 
-        // Update message with streamed content
-        setMessages(prev =>
-          prev.map(m =>
-            m.id === assistantId
-              ? { ...m, content: streamedContent }
-              : m
+        if (!response.body) {
+          throw new Error('No response body')
+        }
+
+        // Read streaming response
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let streamedContent = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value, { stream: true })
+          streamedContent += chunk
+
+          // Update message with streamed content
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, content: streamedContent } : m
+            )
+          )
+        }
+
+        // Mark streaming as complete
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, isStreaming: false } : m
           )
         )
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Unknown error'))
+        // Remove the empty assistant message on error
+        setMessages((prev) => prev.filter((m) => m.id !== assistantId))
+      } finally {
+        setIsLoading(false)
       }
-
-      // Mark streaming as complete
-      setMessages(prev =>
-        prev.map(m =>
-          m.id === assistantId
-            ? { ...m, isStreaming: false }
-            : m
-        )
-      )
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Unknown error'))
-      // Remove the empty assistant message on error
-      setMessages(prev => prev.filter(m => m.id !== assistantId))
-    } finally {
-      setIsLoading(false)
-    }
-  }, [messages, isLoading])
+    },
+    [messages, isLoading]
+  )
 
   const clearMessages = useCallback(() => {
     setMessages([])
@@ -196,8 +202,8 @@ function EmptyState() {
       </div>
       <h2 className="text-xl font-semibold mb-2">Start a conversation</h2>
       <p className="text-muted-foreground max-w-md">
-        Type a message below to begin chatting with the AI assistant.
-        Your messages will appear here in real-time.
+        Type a message below to begin chatting with the AI assistant. Your
+        messages will appear here in real-time.
       </p>
     </div>
   )
@@ -206,7 +212,13 @@ function EmptyState() {
 /**
  * Error display component
  */
-function ErrorDisplay({ error, onRetry }: { error: Error; onRetry: () => void }) {
+function ErrorDisplay({
+  error,
+  onRetry,
+}: {
+  error: Error
+  onRetry: () => void
+}) {
   return (
     <div
       role="alert"
@@ -256,7 +268,7 @@ function ChatInput({
         id={inputId}
         type="text"
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         placeholder="Type your message..."
         disabled={isLoading}
         className="w-full px-4 py-3 pr-12 bg-secondary text-secondary-foreground rounded-lg border border-input focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
@@ -330,13 +342,16 @@ export default function StreamingChatPage() {
             <EmptyState />
           ) : (
             <>
-              {messages.map(message => (
+              {messages.map((message) => (
                 <ChatMessage key={message.id} message={message} />
               ))}
               {error && (
                 <ErrorDisplay
                   error={error}
-                  onRetry={() => messages.length > 0 && sendMessage(messages[messages.length - 1].content)}
+                  onRetry={() =>
+                    messages.length > 0 &&
+                    sendMessage(messages[messages.length - 1].content)
+                  }
                 />
               )}
               <div ref={messagesEndRef} aria-hidden="true" />

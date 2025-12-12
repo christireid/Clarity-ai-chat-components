@@ -1,7 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Zap, FileCode2, Shrink, Coins, RotateCcw, ArrowRight } from 'lucide-react'
+import {
+  Zap,
+  FileCode2,
+  Shrink,
+  Coins,
+  RotateCcw,
+  ArrowRight,
+} from 'lucide-react'
 
 // =============================================================================
 // Types
@@ -33,17 +40,23 @@ interface Stats {
  * TOON uses single-character keys and removes unnecessary whitespace
  * to reduce token count by 30-60%.
  */
-function optimizeWithToon(data: unknown): { optimized: string; tokens: number } {
+function optimizeWithToon(data: unknown): {
+  optimized: string
+  tokens: number
+} {
   const original = JSON.stringify(data, null, 2)
   // Simulate TOON conversion by stripping keys to single chars
   const json = data as Record<string, unknown>[]
   const keys = Object.keys(json[0] || {})
-  const keyMap = keys.reduce((acc, key, i) => {
-    acc[key] = String.fromCharCode(97 + i) // a, b, c, ...
-    return acc
-  }, {} as Record<string, string>)
+  const keyMap = keys.reduce(
+    (acc, key, i) => {
+      acc[key] = String.fromCharCode(97 + i) // a, b, c, ...
+      return acc
+    },
+    {} as Record<string, string>
+  )
 
-  const toonData = json.map(item =>
+  const toonData = json.map((item) =>
     Object.fromEntries(
       Object.entries(item).map(([k, v]) => [keyMap[k] || k, v])
     )
@@ -52,7 +65,9 @@ function optimizeWithToon(data: unknown): { optimized: string; tokens: number } 
   const optimized = JSON.stringify(toonData)
   // Rough token estimate: 1 token per 4 characters
   return {
-    optimized: `@keys:${Object.entries(keyMap).map(([k, v]) => `${v}=${k}`).join(',')}\n${optimized}`,
+    optimized: `@keys:${Object.entries(keyMap)
+      .map(([k, v]) => `${v}=${k}`)
+      .join(',')}\n${optimized}`,
     tokens: Math.ceil(optimized.length / 4),
   }
 }
@@ -73,7 +88,7 @@ function compressPrompt(text: string): { optimized: string; tokens: number } {
   ]
 
   let optimized = text
-  fillers.forEach(filler => {
+  fillers.forEach((filler) => {
     optimized = optimized.replace(new RegExp(filler, 'gi'), '')
   })
 
@@ -89,8 +104,14 @@ function compressPrompt(text: string): { optimized: string; tokens: number } {
 /**
  * Simulates prompt caching by adding cache control markers.
  */
-function prepareForCaching(messages: Array<{ role: string; content: string }>): {
-  prepared: Array<{ role: string; content: string; cache_control?: { type: string } }>
+function prepareForCaching(
+  messages: Array<{ role: string; content: string }>
+): {
+  prepared: Array<{
+    role: string
+    content: string
+    cache_control?: { type: string }
+  }>
   tokens: number
 } {
   const prepared = messages.map((msg, i) => ({
@@ -101,7 +122,10 @@ function prepareForCaching(messages: Array<{ role: string; content: string }>): 
       : {}),
   }))
 
-  const tokens = prepared.reduce((sum, msg) => sum + Math.ceil(msg.content.length / 4), 0)
+  const tokens = prepared.reduce(
+    (sum, msg) => sum + Math.ceil(msg.content.length / 4),
+    0
+  )
 
   return { prepared, tokens }
 }
@@ -131,7 +155,11 @@ function StatCard({
       </div>
       <p className="text-2xl font-bold">
         {value}
-        {suffix && <span className="text-sm font-normal text-muted-foreground">{suffix}</span>}
+        {suffix && (
+          <span className="text-sm font-normal text-muted-foreground">
+            {suffix}
+          </span>
+        )}
       </p>
     </div>
   )
@@ -179,7 +207,9 @@ function ResultCard({ result }: { result: OptimizationResult }) {
         <div>
           <div className="flex items-center justify-between text-sm mb-2">
             <span className="text-muted-foreground">Optimized</span>
-            <span className="font-mono text-green-600">{result.optimizedTokens} tokens</span>
+            <span className="font-mono text-green-600">
+              {result.optimizedTokens} tokens
+            </span>
           </div>
           <pre className="p-3 bg-green-50 dark:bg-green-900/20 rounded text-xs overflow-x-auto max-h-48">
             {result.optimized}
@@ -251,8 +281,8 @@ export default function TokenOptimizationPage() {
       estimatedCost: tokens * 0.00001, // Rough estimate
     }
 
-    setResults(prev => [...prev, result])
-    setStats(prev => ({
+    setResults((prev) => [...prev, result])
+    setStats((prev) => ({
       ...prev,
       toonSavings: prev.toonSavings + result.savingsPercent,
       totalTokensSaved: prev.totalTokensSaved + (originalTokens - tokens),
@@ -274,8 +304,8 @@ export default function TokenOptimizationPage() {
       estimatedCost: tokens * 0.00001,
     }
 
-    setResults(prev => [...prev, result])
-    setStats(prev => ({
+    setResults((prev) => [...prev, result])
+    setStats((prev) => ({
       ...prev,
       compressionSavings: prev.compressionSavings + result.savingsPercent,
       totalTokensSaved: prev.totalTokensSaved + (originalTokens - tokens),
@@ -302,11 +332,13 @@ export default function TokenOptimizationPage() {
       estimatedCost: tokens * 0.00001 * (1 - cacheSavings),
     }
 
-    setResults(prev => [...prev, result])
-    setStats(prev => ({
+    setResults((prev) => [...prev, result])
+    setStats((prev) => ({
       ...prev,
-      totalTokensSaved: prev.totalTokensSaved + Math.floor(originalTokens * cacheSavings),
-      totalCostSaved: prev.totalCostSaved + originalTokens * 0.00001 * cacheSavings,
+      totalTokensSaved:
+        prev.totalTokensSaved + Math.floor(originalTokens * cacheSavings),
+      totalCostSaved:
+        prev.totalCostSaved + originalTokens * 0.00001 * cacheSavings,
     }))
   }
 
@@ -374,7 +406,11 @@ export default function TokenOptimizationPage() {
           />
           <StatCard
             label="Compression Savings"
-            value={stats.compressionSavings > 0 ? stats.compressionSavings.toFixed(1) : '0'}
+            value={
+              stats.compressionSavings > 0
+                ? stats.compressionSavings.toFixed(1)
+                : '0'
+            }
             suffix="%"
             icon={Shrink}
             color="text-green-600"
@@ -402,7 +438,10 @@ export default function TokenOptimizationPage() {
           {results.length === 0 ? (
             <div className="text-center py-16 border rounded-lg bg-card">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                <ArrowRight className="w-8 h-8 text-muted-foreground" aria-hidden="true" />
+                <ArrowRight
+                  className="w-8 h-8 text-muted-foreground"
+                  aria-hidden="true"
+                />
               </div>
               <p className="text-muted-foreground">
                 Click any optimization button above to see the results
@@ -420,7 +459,8 @@ export default function TokenOptimizationPage() {
         {/* Footer */}
         <footer className="mt-12 text-center text-sm text-muted-foreground">
           <p>
-            Powered by <span className="font-medium">Clarity Chat</span> Token Optimization
+            Powered by <span className="font-medium">Clarity Chat</span> Token
+            Optimization
           </p>
         </footer>
       </div>
