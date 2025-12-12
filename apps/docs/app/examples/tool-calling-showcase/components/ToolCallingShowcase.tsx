@@ -5,6 +5,8 @@
  *
  * Main orchestrator for the Advanced Tool Calling Demo.
  * Demonstrates multi-step tool chains, generative UI, and human-in-the-loop patterns.
+ *
+ * Now refactored to use custom hooks for cleaner state management.
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react'
@@ -21,23 +23,21 @@ import {
   Search,
   BarChart3,
   DollarSign,
+  AlertTriangle,
+  RotateCcw,
 } from 'lucide-react'
 
 import type {
   Message,
   ToolCallState,
-  DebugEvent,
-  DebugEventType,
-  OrchestratorState,
   TickerSearchResult,
   FinancialData,
   ChartData,
   TradeResult,
   ExecuteTradeArgs,
 } from '../lib/types'
-import { CRITICAL_TOOLS, TOOL_DEFINITIONS } from '../lib/types'
-import { executeTool, getSimulatedResponse } from '../lib/mock-data'
 
+import { useToolOrchestration } from '../hooks'
 import {
   TickerSearchCard,
   StockAnalysisCard,
@@ -49,29 +49,86 @@ import { GlassBoxPanel } from './GlassBoxPanel'
 import { ToolSkeleton } from './SkeletonLoaders'
 
 // ============================================================================
-// Helper Functions
+// Error Boundary for Tool Cards
 // ============================================================================
 
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+import { Component, type ReactNode, type ErrorInfo } from 'react'
+
+interface ErrorBoundaryProps {
+  children: ReactNode
+  fallback?: ReactNode
+  onError?: (error: Error, errorInfo: ErrorInfo) => void
+  onRetry?: () => void
 }
 
-function addDebugEvent(
-  setEvents: React.Dispatch<React.SetStateAction<DebugEvent[]>>,
-  type: DebugEventType,
-  payload: unknown,
-  toolName?: string,
-  duration?: number
-) {
-  const event: DebugEvent = {
-    id: generateId(),
-    timestamp: new Date(),
-    type,
-    payload,
-    toolName,
-    duration,
+interface ErrorBoundaryState {
+  hasError: boolean
+  error: Error | null
+}
+
+class ToolErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props)
+    this.state = { hasError: false, error: null }
   }
-  setEvents((prev) => [...prev, event])
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('ToolErrorBoundary caught error:', error, errorInfo)
+    this.props.onError?.(error, errorInfo)
+  }
+
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null })
+    this.props.onRetry?.()
+  }
+
+  render() {
+    if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback
+      }
+
+      return (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-950/30 p-4"
+          role="alert"
+          aria-live="assertive"
+        >
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="flex-1">
+              <h4 className="font-medium text-red-700 dark:text-red-400">
+                Component Error
+              </h4>
+              <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                {this.state.error?.message || 'Something went wrong rendering this component.'}
+              </p>
+              {this.props.onRetry && (
+                <button
+                  onClick={this.handleRetry}
+                  className="mt-3 flex items-center gap-2 px-3 py-1.5 text-sm font-medium
+                             bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900
+                             text-red-700 dark:text-red-300 rounded-lg transition-colors"
+                  aria-label="Retry loading component"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                  Retry
+                </button>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )
+    }
+
+    return this.props.children
+  }
 }
 
 // ============================================================================
@@ -81,55 +138,87 @@ function addDebugEvent(
 interface ToolResultRendererProps {
   toolCall: ToolCallState
   onAction?: (action: string, payload?: unknown) => void
+  onRetry?: (toolCall: ToolCallState) => void
 }
 
-function ToolResultRenderer({ toolCall, onAction }: ToolResultRendererProps) {
+function ToolResultRenderer({ toolCall, onAction, onRetry }: ToolResultRendererProps) {
   if (toolCall.status === 'executing' || toolCall.status === 'pending') {
     return <ToolSkeleton toolName={toolCall.name} />
   }
 
   if (toolCall.status === 'error') {
     return (
-      <div className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-950/30 p-4">
-        <div className="flex items-center gap-2 text-red-600 dark:text-red-400 mb-2">
-          <span className="text-lg">Error</span>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-950/30 p-4"
+        role="alert"
+        aria-live="polite"
+      >
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="flex-1">
+            <h4 className="font-medium text-red-600 dark:text-red-400">Tool Error</h4>
+            <p className="text-sm text-red-500 dark:text-red-300 mt-1">{toolCall.error}</p>
+            {onRetry && (
+              <button
+                onClick={() => onRetry(toolCall)}
+                className="mt-3 flex items-center gap-2 px-3 py-1.5 text-sm font-medium
+                           bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900
+                           text-red-700 dark:text-red-300 rounded-lg transition-colors"
+                aria-label={`Retry ${toolCall.name} tool`}
+              >
+                <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                Retry
+              </button>
+            )}
+          </div>
         </div>
-        <p className="text-sm text-red-600 dark:text-red-400">{toolCall.error}</p>
-      </div>
+      </motion.div>
     )
   }
 
   const data = toolCall.result
 
-  switch (toolCall.name) {
-    case 'search_ticker':
-      return (
-        <TickerSearchCard
-          data={data as TickerSearchResult}
-          onSelect={(symbol) => onAction?.('analyze', { symbol })}
-        />
-      )
-    case 'get_financials':
-      return (
-        <StockAnalysisCard
-          data={data as FinancialData}
-          onViewChart={() => onAction?.('chart', { symbol: (data as FinancialData).symbol })}
-          onTrade={(action) =>
-            onAction?.('trade', { symbol: (data as FinancialData).symbol, action })
-          }
-        />
-      )
-    case 'render_chart':
-      return <InteractiveStockChart data={data as ChartData} />
-    case 'execute_trade':
-      return <TradeResultCard data={data as TradeResult} />
-    default:
-      return (
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-          <pre className="text-xs overflow-auto">{JSON.stringify(data, null, 2)}</pre>
-        </div>
-      )
-  }
+  return (
+    <ToolErrorBoundary onRetry={() => onRetry?.(toolCall)}>
+      {(() => {
+        switch (toolCall.name) {
+          case 'search_ticker':
+            return (
+              <TickerSearchCard
+                data={data as TickerSearchResult}
+                onSelect={(symbol) => onAction?.('analyze', { symbol })}
+              />
+            )
+          case 'get_financials':
+            return (
+              <StockAnalysisCard
+                data={data as FinancialData}
+                onViewChart={() => onAction?.('chart', { symbol: (data as FinancialData).symbol })}
+                onTrade={(action) =>
+                  onAction?.('trade', { symbol: (data as FinancialData).symbol, action })
+                }
+              />
+            )
+          case 'render_chart':
+            return <InteractiveStockChart data={data as ChartData} />
+          case 'execute_trade':
+            return <TradeResultCard data={data as TradeResult} />
+          default:
+            return (
+              <div
+                className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4"
+                role="region"
+                aria-label="Tool result"
+              >
+                <pre className="text-xs overflow-auto">{JSON.stringify(data, null, 2)}</pre>
+              </div>
+            )
+        }
+      })()}
+    </ToolErrorBoundary>
+  )
 }
 
 // ============================================================================
@@ -139,6 +228,7 @@ function ToolResultRenderer({ toolCall, onAction }: ToolResultRendererProps) {
 interface MessageBubbleProps {
   message: Message
   onToolAction?: (action: string, payload?: unknown) => void
+  onToolRetry?: (toolCall: ToolCallState) => void
   pendingApproval?: ToolCallState | null
   onApprove?: () => void
   onReject?: () => void
@@ -148,6 +238,7 @@ interface MessageBubbleProps {
 function MessageBubble({
   message,
   onToolAction,
+  onToolRetry,
   pendingApproval,
   onApprove,
   onReject,
@@ -160,6 +251,8 @@ function MessageBubble({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
+      role="listitem"
+      aria-label={`${isUser ? 'You' : 'AI Assistant'}: ${message.content || 'Tool call'}`}
     >
       <div className={`flex gap-3 max-w-[85%] ${isUser ? 'flex-row-reverse' : ''}`}>
         {/* Avatar */}
@@ -169,6 +262,7 @@ function MessageBubble({
               ? 'bg-gradient-to-br from-blue-500 to-indigo-500 text-white'
               : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white'
           }`}
+          aria-hidden="true"
         >
           {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
         </div>
@@ -190,7 +284,7 @@ function MessageBubble({
 
           {/* Tool Calls */}
           {message.toolCalls && message.toolCalls.length > 0 && (
-            <div className="space-y-3 w-full max-w-md">
+            <div className="space-y-3 w-full max-w-md" role="list" aria-label="Tool results">
               {message.toolCalls.map((tc) => {
                 // Check if this tool needs approval
                 if (
@@ -217,7 +311,14 @@ function MessageBubble({
                   )
                 }
 
-                return <ToolResultRenderer key={tc.id} toolCall={tc} onAction={onToolAction} />
+                return (
+                  <ToolResultRenderer
+                    key={tc.id}
+                    toolCall={tc}
+                    onAction={onToolAction}
+                    onRetry={onToolRetry}
+                  />
+                )
               })}
             </div>
           )}
@@ -263,24 +364,47 @@ const EXAMPLE_PROMPTS = [
 // ============================================================================
 
 export function ToolCallingShowcase() {
-  // State
-  const [messages, setMessages] = useState<Message[]>([])
+  // Use custom hook for tool orchestration
+  const {
+    messages,
+    isLoading,
+    orchestratorState,
+    pendingApproval,
+    isProcessingApproval,
+    sendMessage,
+    handleApprove,
+    handleReject,
+    clearMessages,
+    debugEvents,
+  } = useToolOrchestration()
+
+  // Local UI state
   const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [orchestratorState, setOrchestratorState] = useState<OrchestratorState>('idle')
-  const [debugEvents, setDebugEvents] = useState<DebugEvent[]>([])
   const [isDebugExpanded, setIsDebugExpanded] = useState(true)
-  const [pendingApproval, setPendingApproval] = useState<ToolCallState | null>(null)
-  const [isProcessingApproval, setIsProcessingApproval] = useState(false)
 
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const chatRegionRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Focus input on mount and after loading
+  useEffect(() => {
+    if (!isLoading && !pendingApproval) {
+      inputRef.current?.focus()
+    }
+  }, [isLoading, pendingApproval])
+
+  // Announce state changes for screen readers
+  useEffect(() => {
+    if (orchestratorState === 'awaiting_approval') {
+      // Focus trap will be on the modal
+    }
+  }, [orchestratorState])
 
   // Handle tool action from rendered components
   const handleToolAction = useCallback((action: string, payload?: unknown) => {
@@ -301,298 +425,80 @@ export function ToolCallingShowcase() {
     }
   }, [])
 
-  // Execute a tool and update state
-  const executeToolCall = useCallback(
-    async (toolCall: ToolCallState, messageId: string): Promise<unknown> => {
-      const startTime = Date.now()
-
-      // Update tool status to executing
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === messageId
-            ? {
-                ...m,
-                toolCalls: m.toolCalls?.map((tc) =>
-                  tc.id === toolCall.id ? { ...tc, status: 'executing' as const } : tc
-                ),
-              }
-            : m
-        )
-      )
-
-      addDebugEvent(setDebugEvents, 'TOOL_CALL', toolCall.args, toolCall.name)
-
-      // Execute the tool
-      const result = await executeTool(toolCall.name, toolCall.args)
-      const duration = Date.now() - startTime
-
-      if (result.success) {
-        addDebugEvent(setDebugEvents, 'TOOL_RESULT', result.data, toolCall.name, duration)
-
-        // Update tool with result
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === messageId
-              ? {
-                  ...m,
-                  toolCalls: m.toolCalls?.map((tc) =>
-                    tc.id === toolCall.id
-                      ? { ...tc, status: 'complete' as const, result: result.data, endTime: Date.now() }
-                      : tc
-                  ),
-                }
-              : m
-          )
-        )
-
-        return result.data
-      } else {
-        addDebugEvent(setDebugEvents, 'TOOL_ERROR', result.error, toolCall.name, duration)
-
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === messageId
-              ? {
-                  ...m,
-                  toolCalls: m.toolCalls?.map((tc) =>
-                    tc.id === toolCall.id
-                      ? { ...tc, status: 'error' as const, error: result.error }
-                      : tc
-                  ),
-                }
-              : m
-          )
-        )
-
-        throw new Error(result.error)
-      }
-    },
-    []
-  )
-
-  // Handle approval for critical tools
-  const handleApprove = useCallback(async () => {
-    if (!pendingApproval) return
-
-    setIsProcessingApproval(true)
-    addDebugEvent(setDebugEvents, 'APPROVAL_GRANTED', { toolId: pendingApproval.id })
-
-    // Find the message containing this tool call
-    const message = messages.find((m) => m.toolCalls?.some((tc) => tc.id === pendingApproval.id))
-
-    if (message) {
-      try {
-        await executeToolCall(pendingApproval, message.id)
-      } catch (error) {
-        console.error('Tool execution failed:', error)
-      }
+  // Handle tool retry
+  const handleToolRetry = useCallback((toolCall: ToolCallState) => {
+    // For demo, just re-trigger the same action
+    const { name, args } = toolCall
+    if (name === 'search_ticker') {
+      const query = (args as { query: string }).query
+      setInput(`Search for ${query}`)
+    } else if (name === 'get_financials') {
+      const symbol = (args as { symbol: string }).symbol
+      setInput(`Analyze ${symbol} stock`)
     }
+    inputRef.current?.focus()
+  }, [])
 
-    setPendingApproval(null)
-    setIsProcessingApproval(false)
-    setOrchestratorState('completed')
-  }, [pendingApproval, messages, executeToolCall])
-
-  const handleReject = useCallback(() => {
-    if (!pendingApproval) return
-
-    addDebugEvent(setDebugEvents, 'APPROVAL_DENIED', { toolId: pendingApproval.id })
-
-    // Update the tool call status to show it was rejected
-    setMessages((prev) =>
-      prev.map((m) => ({
-        ...m,
-        toolCalls: m.toolCalls?.map((tc) =>
-          tc.id === pendingApproval.id
-            ? { ...tc, status: 'error' as const, error: 'Trade cancelled by user' }
-            : tc
-        ),
-      }))
-    )
-
-    // Add an assistant message acknowledging the cancellation
-    const cancelMessage: Message = {
-      id: generateId(),
-      role: 'assistant',
-      content: "Trade cancelled. Is there anything else you'd like to do?",
-      timestamp: new Date(),
-    }
-    setMessages((prev) => [...prev, cancelMessage])
-
-    setPendingApproval(null)
-    setOrchestratorState('completed')
-  }, [pendingApproval])
-
-  // Send message
-  const sendMessage = useCallback(
+  // Send message handler
+  const handleSendMessage = useCallback(
     async (content: string) => {
       if (!content.trim() || isLoading) return
-
-      setIsLoading(true)
-      setOrchestratorState('streaming')
-
-      // Add user message
-      const userMessage: Message = {
-        id: generateId(),
-        role: 'user',
-        content,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, userMessage])
       setInput('')
-      addDebugEvent(setDebugEvents, 'USER_MESSAGE', { content })
-
-      // Get simulated AI response
-      const response = getSimulatedResponse(content)
-
-      // Add thinking event if present
-      if (response.thinking) {
-        addDebugEvent(setDebugEvents, 'ASSISTANT_THINKING', { thinking: response.thinking })
-      }
-
-      // Simulate some delay
-      await new Promise((r) => setTimeout(r, 500))
-
-      // Create assistant message
-      const assistantMessage: Message = {
-        id: generateId(),
-        role: 'assistant',
-        content: response.content || '',
-        toolCalls: response.toolCalls?.map((tc) => ({
-          id: tc.id,
-          name: tc.name,
-          args: tc.args,
-          status: 'pending' as const,
-          startTime: Date.now(),
-        })),
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, assistantMessage])
-
-      // If there are tool calls, execute them
-      if (response.toolCalls && response.toolCalls.length > 0) {
-        setOrchestratorState('tool_pending')
-
-        for (const tc of response.toolCalls) {
-          const toolCall = assistantMessage.toolCalls?.find((t) => t.id === tc.id)
-          if (!toolCall) continue
-
-          // Check if this is a critical tool requiring approval
-          if (CRITICAL_TOOLS.includes(tc.name as (typeof CRITICAL_TOOLS)[number])) {
-            setOrchestratorState('awaiting_approval')
-            addDebugEvent(setDebugEvents, 'AWAITING_APPROVAL', tc)
-
-            // Update tool status to awaiting approval
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantMessage.id
-                  ? {
-                      ...m,
-                      toolCalls: m.toolCalls?.map((t) =>
-                        t.id === tc.id ? { ...t, status: 'awaiting_approval' as const } : t
-                      ),
-                    }
-                  : m
-              )
-            )
-
-            setPendingApproval({
-              ...toolCall,
-              status: 'awaiting_approval',
-            })
-
-            setIsLoading(false)
-            return // Stop here and wait for approval
-          }
-
-          // Execute non-critical tools
-          try {
-            const result = await executeToolCall(toolCall, assistantMessage.id)
-
-            // Chain: If search_ticker returns results, auto-analyze the first one
-            if (tc.name === 'search_ticker' && result) {
-              const searchResult = result as TickerSearchResult
-              if (searchResult.matches.length > 0) {
-                // Add a follow-up message
-                await new Promise((r) => setTimeout(r, 300))
-
-                const followUpId = generateId()
-                const followUp: Message = {
-                  id: followUpId,
-                  role: 'assistant',
-                  content: `Found ${searchResult.matches[0].name}. Let me get the financial details...`,
-                  toolCalls: [
-                    {
-                      id: generateId(),
-                      name: 'get_financials',
-                      args: { symbol: searchResult.matches[0].symbol, includeHistory: true },
-                      status: 'pending',
-                      startTime: Date.now(),
-                    },
-                  ],
-                  timestamp: new Date(),
-                }
-                setMessages((prev) => [...prev, followUp])
-                addDebugEvent(setDebugEvents, 'ASSISTANT_THINKING', {
-                  thinking: `Chaining to get_financials for ${searchResult.matches[0].symbol}`,
-                })
-
-                // Execute the chained tool
-                await executeToolCall(followUp.toolCalls![0], followUpId)
-              }
-            }
-          } catch (error) {
-            console.error('Tool execution failed:', error)
-          }
-        }
-      }
-
-      setIsLoading(false)
-      setOrchestratorState('completed')
-      inputRef.current?.focus()
+      await sendMessage(content)
     },
-    [isLoading, executeToolCall]
+    [isLoading, sendMessage]
   )
 
   // Handle form submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    sendMessage(input)
+    handleSendMessage(input)
   }
 
   // Handle key down
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      sendMessage(input)
+      handleSendMessage(input)
     }
   }
 
   // Clear chat
   const handleClear = () => {
-    setMessages([])
-    setDebugEvents([])
-    setOrchestratorState('idle')
-    setPendingApproval(null)
+    clearMessages()
+    setInput('')
+    inputRef.current?.focus()
   }
 
   return (
-    <div className="flex flex-col h-[700px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-xl">
+    <div
+      className="flex flex-col h-[700px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-xl"
+      role="application"
+      aria-label="AI Stock Market Analyst - Tool Calling Demo"
+    >
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-purple-500/25">
+          <div
+            className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-purple-500/25"
+            aria-hidden="true"
+          >
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="font-bold text-lg">AI Stock Market Analyst</h2>
+            <h1 className="font-bold text-lg">AI Stock Market Analyst</h1>
             <p className="text-xs text-muted-foreground">
               Multi-step tool chains • Generative UI • Human-in-the-loop
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-xs">
+          <div
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-xs"
+            role="status"
+            aria-live="polite"
+            aria-label={`Status: ${orchestratorState.replace('_', ' ')}`}
+          >
             <div
               className={`w-2 h-2 rounded-full ${
                 orchestratorState === 'idle'
@@ -603,6 +509,7 @@ export function ToolCallingShowcase() {
                       ? 'bg-green-500 animate-pulse'
                       : 'bg-blue-500'
               }`}
+              aria-hidden="true"
             />
             <span className="capitalize">{orchestratorState.replace('_', ' ')}</span>
           </div>
@@ -610,40 +517,55 @@ export function ToolCallingShowcase() {
             onClick={handleClear}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-muted-foreground transition-colors"
             title="Clear chat"
+            aria-label="Clear conversation"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <main
+        ref={chatRegionRef}
+        className="flex-1 overflow-y-auto p-6 space-y-6"
+        role="log"
+        aria-label="Conversation messages"
+        aria-live="polite"
+        aria-relevant="additions"
+      >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/25"
+              aria-hidden="true"
             >
               <Zap className="w-8 h-8" />
             </motion.div>
-            <h3 className="text-xl font-bold mb-2">Advanced Tool Calling Demo</h3>
+            <h2 className="text-xl font-bold mb-2">Advanced Tool Calling Demo</h2>
             <p className="text-sm text-muted-foreground mb-6 max-w-md">
               Watch the AI orchestrate multiple tools, render interactive UI components, and request
               approval for critical actions.
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div
+              className="grid grid-cols-2 gap-3"
+              role="group"
+              aria-label="Example prompts"
+            >
               {EXAMPLE_PROMPTS.map((example, i) => (
                 <motion.button
                   key={i}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  onClick={() => sendMessage(example.prompt)}
+                  onClick={() => handleSendMessage(example.prompt)}
                   className="flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-500/50 hover:bg-purple-50 dark:hover:bg-purple-500/10 transition-all text-left group"
+                  aria-label={`Try: ${example.label}`}
                 >
                   <div
                     className={`w-8 h-8 rounded-lg bg-gradient-to-br ${example.color} flex items-center justify-center text-white`}
+                    aria-hidden="true"
                   >
                     <example.icon className="w-4 h-4" />
                   </div>
@@ -656,49 +578,62 @@ export function ToolCallingShowcase() {
           </div>
         ) : (
           <>
-            <AnimatePresence mode="popLayout">
-              {messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                  onToolAction={handleToolAction}
-                  pendingApproval={pendingApproval}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                  isProcessingApproval={isProcessingApproval}
-                />
-              ))}
-            </AnimatePresence>
+            <div role="list" aria-label="Messages">
+              <AnimatePresence mode="popLayout">
+                {messages.map((message) => (
+                  <MessageBubble
+                    key={message.id}
+                    message={message}
+                    onToolAction={handleToolAction}
+                    onToolRetry={handleToolRetry}
+                    pendingApproval={pendingApproval}
+                    onApprove={handleApprove}
+                    onReject={handleReject}
+                    isProcessingApproval={isProcessingApproval}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
 
             {/* Loading indicator */}
             {isLoading && !pendingApproval && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex justify-start"
+                role="status"
+                aria-label="AI is thinking"
+              >
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-500" aria-hidden="true" />
                   <span className="text-sm text-muted-foreground">AI is thinking...</span>
                 </div>
               </motion.div>
             )}
 
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} aria-hidden="true" />
           </>
         )}
-      </div>
+      </main>
 
       {/* Debug Panel */}
-      <div className="px-4 pb-4">
+      <aside className="px-4 pb-4" aria-label="Debug panel">
         <GlassBoxPanel
-          events={debugEvents}
+          events={debugEvents.events}
           isExpanded={isDebugExpanded}
           onToggle={() => setIsDebugExpanded(!isDebugExpanded)}
-          onClear={() => setDebugEvents([])}
+          onClear={() => debugEvents.clearEvents()}
         />
-      </div>
+      </aside>
 
       {/* Input Area */}
-      <div className="px-6 pb-6">
+      <footer className="px-6 pb-6">
         <form onSubmit={handleSubmit} className="relative">
+          <label htmlFor="chat-input" className="sr-only">
+            Message input
+          </label>
           <textarea
+            id="chat-input"
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -707,16 +642,21 @@ export function ToolCallingShowcase() {
             disabled={isLoading || !!pendingApproval}
             rows={1}
             className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 disabled:opacity-50 transition-all"
+            aria-describedby="input-hint"
           />
+          <span id="input-hint" className="sr-only">
+            Press Enter to send, Shift+Enter for new line
+          </span>
           <button
             type="submit"
             disabled={isLoading || !input.trim() || !!pendingApproval}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-purple-500/25 transition-all"
+            aria-label="Send message"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4" aria-hidden="true" />
           </button>
         </form>
-      </div>
+      </footer>
     </div>
   )
 }
