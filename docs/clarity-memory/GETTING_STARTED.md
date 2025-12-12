@@ -427,14 +427,13 @@ function App() {
 ## Next Steps
 
 - Read the [API Reference](./API_REFERENCE.md) for complete API documentation
-- Check out [Examples](./examples/) for more code samples
-- See the [Migration Guide](./MIGRATION_GUIDE.md) if coming from MemMachine
 - Explore [Architecture](./ARCHITECTURE.md) for system design details
+- Check out the [memory examples](../../apps/examples/memory-examples/) for code samples
 
 ## Need Help?
 
-- Check the [FAQ](./FAQ.md)
-- Browse [Examples](./examples/)
-- Open an issue on GitHub
+- Check the main [FAQ](../FAQ.md)
+- Browse [all examples](../../apps/examples/)
+- Open an issue on [GitHub](https://github.com/christireid/Clarity-ai-chat-components/issues)
 
 Happy coding! 🚀

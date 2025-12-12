@@ -28,6 +28,12 @@ export { ThinkingIndicator } from './components/thinking-indicator'
 // Low-Level: Primitives
 export { Message } from './components/message'
 export { MessageMetadata } from './components/message-metadata'
+export {
+  MessageMarkdownRenderer,
+  useMarkdownComponents,
+  useMarkdownPlugins,
+  type MessageMarkdownRendererProps,
+} from './components/message'
 export { StreamBlock } from './components/stream-block'
 export { ToolInvocationCard } from './components/tool-invocation-card'
 export { ClarityToolResult } from './components/clarity-tool-result'

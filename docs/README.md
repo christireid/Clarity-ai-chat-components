@@ -70,7 +70,7 @@ for getting started, building production applications, and understanding the sys
 
 - **[Main README](../../README.md)** - Project overview
 - **[React Package README](../../packages/react/README.md)** - Complete API reference
-- **[Feature Audit](../../CLARITY_VS_VERCEL_AI_SDK_AUDIT.md)** - Detailed technical audit
+- **[Clarity vs Vercel Comparison](./clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
 - **[Examples](../../apps/examples/)** - Code examples
 - **[Storybook](../../apps/storybook/)** - Interactive component demos
 

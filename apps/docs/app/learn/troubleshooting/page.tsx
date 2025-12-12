@@ -534,7 +534,7 @@ useEffect(() => {
         <h2>Getting Help</h2>
 
         <Callout type="info" title="Support Channels">
-          • GitHub Issues: <a href="https://github.com/clarity-chat/issues">Report bugs</a><br/>
+          • GitHub Issues: <a href="https://github.com/christireid/Clarity-ai-chat-components/issues">Report bugs</a><br/>
           • Discord: <a href="https://discord.gg/clarity-chat">Community chat</a><br/>
           • Stack Overflow: Tag <code>[clarity-chat]</code><br/>
           • Email: support@clarity-chat.dev

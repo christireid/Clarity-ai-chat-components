@@ -81,7 +81,6 @@ const memory = clarityMemory({
 
 - [Getting Started](./GETTING_STARTED.md) - Complete guide to using Clarity Memory
 - [API Reference](./API_REFERENCE.md) - Full API documentation
-- [Migration Guide](./MIGRATION_GUIDE.md) - Migrating from MemMachine
 - [Architecture](./ARCHITECTURE.md) - System architecture and design decisions
 
 ## 🎯 Use Cases

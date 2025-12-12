@@ -262,10 +262,10 @@ Check out our examples:
 ## Documentation
 
 - [Choose Your Path](./choose-your-path.md) - Find the right guide for you
-- [API Reference](../apps/docs/app/api/) - Complete API documentation
+- [API Reference](./api-reference.md) - Complete API documentation
 - [Best Practices](./best-practices.md) - Production-ready patterns
 - [Architecture](./architecture.md) - System architecture overview
-- [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+- [FAQ](./FAQ.md) - Frequently asked questions
 - [Migration Guide](./migration/v1-to-v2.md) - Upgrading from v1
 
 ---

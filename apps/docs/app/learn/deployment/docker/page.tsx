@@ -23,9 +23,9 @@ export default function DockerDeploymentPage() {
 
       <section className="docs-section">
         <h2>Quick Start</h2>
-        <pre><code>{`# Clone starter
-git clone https://github.com/clarity-chat/docker-starter
-cd docker-starter
+        <pre><code>{`# Clone the repository
+git clone https://github.com/christireid/Clarity-ai-chat-components
+cd Clarity-ai-chat-components
 
 # Configure environment
 cp .env.example .env

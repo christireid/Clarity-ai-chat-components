@@ -59,7 +59,22 @@
     "prepare": "husky",
     "// === DX TOOLS ===": "",
     "generate:theme": "tsx scripts/generate-theme.ts",
-    "validate:config": "tsx scripts/validate-config.ts"
+    "validate:config": "tsx scripts/validate-config.ts",
+    "// === CODE REVIEW ===": "",
+    "review": "tsx scripts/code-review.ts",
+    "review:security": "tsx scripts/code-review.ts --type security",
+    "review:performance": "tsx scripts/code-review.ts --type performance",
+    "review:typescript": "tsx scripts/code-review.ts --type typescript",
+    "review:tailwind": "tsx scripts/code-review.ts --type tailwind",
+    "review:staged": "tsx scripts/code-review.ts --staged",
+    "review:check": "tsx scripts/review-checks.ts",
+    "review:check:staged": "tsx scripts/review-checks.ts --staged",
+    "review:check:fix": "tsx scripts/review-checks.ts --fix",
+    "review:check:json": "tsx scripts/review-checks.ts --output json",
+    "review:test": "vitest run --config scripts/vitest.config.ts",
+    "review:test:watch": "vitest --config scripts/vitest.config.ts",
+    "review:sync": "tsx scripts/sync-review-criteria.ts",
+    "review:sync:report": "tsx scripts/sync-review-criteria.ts --report"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",

@@ -595,5 +595,28 @@ This specialized prompt extends the base work-enhancement-review template with:
 
 ---
 
-*Template Version: 1.0.0 | Last Updated: December 2025*
+## Related Review Prompts
+
+For comprehensive code reviews, combine this AI-specific prompt with general React/NextJS reviews:
+
+| Review Type | When to Use | Location |
+|-------------|-------------|----------|
+| **React/NextJS Full Review** | General architecture, patterns | [REACT_NEXTJS_CODE_REVIEW_PROMPT.md](./REACT_NEXTJS_CODE_REVIEW_PROMPT.md) |
+| **Security Deep Dive** | Server Actions, XSS, CSRF | `.github/prompts/security-review.prompt.md` |
+| **Performance Analysis** | Memoization, code splitting | `.github/prompts/performance-review.prompt.md` |
+| **TypeScript Compliance** | Strict mode, type safety | `.github/prompts/typescript-review.prompt.md` |
+| **Tailwind Quality** | CSS consistency, dark mode | `.github/prompts/tailwind-review.prompt.md` |
+
+### Recommended Review Workflow
+
+1. **First**: Run `/review-clarity-chat` for AI-specific patterns
+2. **Then**: Run `/review-react` for general React quality
+3. **If security-sensitive**: Add `/review-security`
+4. **For UI changes**: Add `/review-tailwind`
+
+See [README_TOOLING.md](../../.github/README_TOOLING.md#5-code-review-framework-) for complete usage guide.
+
+---
+
+*Template Version: 1.1.0 | Last Updated: December 2025*
 *Specialized for Clarity Chat advanced AI features including streaming, agents, memory, and multi-modal support*

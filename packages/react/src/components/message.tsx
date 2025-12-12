@@ -156,8 +156,9 @@ export function Message({
     }
   }
 
-  // Memoize markdown components to avoid recreation on every render
-  // Using Partial<Components> to allow custom component types
+  // Memoize markdown components to avoid recreation on every render.
+  // react-markdown's `components` prop accepts Partial<Components>, allowing us to
+  // override only specific elements while using defaults for the rest.
   const markdownComponents = React.useMemo<Partial<Components>>(() => {
     // Create wrapper for memoized component to match react-markdown's expected type
     const CodeWrapper: Components['code'] = (props) => {
@@ -283,12 +284,12 @@ export function Message({
 
   // Memoize plugin arrays to avoid recreation on every render
   const remarkPlugins = React.useMemo(() => [remarkGfm], [])
+  // rehypeHighlight has type incompatibilities due to vfile version mismatches across
+  // the unified ecosystem. This is a known upstream issue. We use a readonly tuple
+  // assertion to preserve the plugin reference while satisfying the type checker.
+  // See: https://github.com/rehypejs/rehype-highlight/issues/26
   const rehypePlugins = React.useMemo(
-    () => [
-      // Type incompatibility between vfile versions - using type assertion as last resort
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      rehypeHighlight as any,
-    ],
+    () => [rehypeHighlight] as readonly [typeof rehypeHighlight],
     []
   )
 
@@ -391,7 +392,7 @@ export function Message({
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: isHovered ? 1 : 0.7 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: durations.normal }}
                   className="text-xs text-muted-foreground/90 whitespace-nowrap"
                 >
                   {formatRelativeTime(message.createdAt)}
@@ -431,7 +432,7 @@ export function Message({
               <ReactMarkdown
                 remarkPlugins={remarkPlugins}
                 rehypePlugins={rehypePlugins}
-                components={markdownComponents as any}
+                components={markdownComponents}
               >
                 {message.content}
               </ReactMarkdown>

@@ -236,7 +236,7 @@ export default function ExamplesPage() {
               Open Storybook
             </a>
             <a
-              href="https://github.com/clarity-chat/ui/tree/main/examples"
+              href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-text-primary rounded-lg font-semibold transition-colors border border-border"

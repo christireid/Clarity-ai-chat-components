@@ -1,6 +1,6 @@
 /**
  * Skeleton Loaders
- * 
+ *
  * Loading placeholder components with shimmer animation effect.
  * Used to show content structure while data is loading.
  */
@@ -8,7 +8,10 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { createPulseAnimation, createShimmerAnimation } from '../animations/utils'
+import {
+  createPulseAnimation,
+  createShimmerAnimation,
+} from '../animations/utils'
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Animation type */
@@ -42,16 +45,21 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   }
 
   // Shimmer gradient background
-  const shimmerStyle = variant === 'shimmer' ? {
-    backgroundImage: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
-    backgroundSize: '200% 100%',
-  } : {}
+  const shimmerStyle =
+    variant === 'shimmer'
+      ? {
+          backgroundImage:
+            'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+          backgroundSize: '200% 100%',
+        }
+      : {}
 
-  const variants = variant === 'pulse' 
-    ? createPulseAnimation()
-    : variant === 'shimmer'
-    ? createShimmerAnimation()
-    : undefined
+  const variants =
+    variant === 'pulse'
+      ? createPulseAnimation()
+      : variant === 'shimmer'
+        ? createShimmerAnimation()
+        : undefined
 
   const baseStyle = {
     width: width ?? '100%',
@@ -74,6 +82,12 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     )
   }
 
+  // Extract ARIA role separately to ensure it's passed correctly to motion.div.
+  // Framer Motion's HTMLMotionProps can have type conflicts with standard HTML attributes
+  // when spread together. Explicit extraction ensures proper typing and avoids
+  // rendering role="" when undefined.
+  const { role, ...restProps } = props
+
   return (
     <motion.div
       className={cn(
@@ -85,7 +99,8 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       variants={variants}
       initial="initial"
       animate="animate"
-      {...(props as any)}
+      {...(role !== undefined && { role })}
+      {...restProps}
     />
   )
 }
@@ -190,14 +205,10 @@ export const SkeletonMessage: React.FC<SkeletonMessageProps> = ({
       )}
     >
       {showAvatar && <SkeletonAvatar size={32} variant={variant} />}
-      
+
       <div className={cn('flex-1', isUser && 'flex justify-end')}>
         <div className={cn('max-w-[80%]', isUser && 'items-end')}>
-          <SkeletonText
-            lines={lines}
-            variant={variant}
-            lastLineWidth={60}
-          />
+          <SkeletonText lines={lines} variant={variant} lastLineWidth={60} />
         </div>
       </div>
     </div>
@@ -233,7 +244,12 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('rounded-lg border border-border/40 bg-card overflow-hidden shadow-sm', className)}>
+    <div
+      className={cn(
+        'rounded-lg border border-border/40 bg-card overflow-hidden shadow-sm',
+        className
+      )}
+    >
       {/* Image */}
       {showImage && (
         <Skeleton variant={variant} height={imageHeight} rounded="none" />
@@ -365,9 +381,9 @@ export const SkeletonInput: React.FC<SkeletonInputProps> = ({
 /**
  * Skeleton for chat window
  */
-export const SkeletonChatWindow: React.FC<{ variant?: 'pulse' | 'shimmer' | 'none' }> = ({
-  variant = 'shimmer',
-}) => {
+export const SkeletonChatWindow: React.FC<{
+  variant?: 'pulse' | 'shimmer' | 'none'
+}> = ({ variant = 'shimmer' }) => {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -375,7 +391,13 @@ export const SkeletonChatWindow: React.FC<{ variant?: 'pulse' | 'shimmer' | 'non
         <SkeletonAvatar size={40} variant={variant} />
         <div className="flex-1">
           <Skeleton variant={variant} width="40%" height={20} rounded="sm" />
-          <Skeleton variant={variant} width="60%" height={14} rounded="sm" className="mt-2" />
+          <Skeleton
+            variant={variant}
+            width="60%"
+            height={14}
+            rounded="sm"
+            className="mt-2"
+          />
         </div>
       </div>
 
@@ -390,10 +412,26 @@ export const SkeletonChatWindow: React.FC<{ variant?: 'pulse' | 'shimmer' | 'non
       {/* Input */}
       <div className="p-4 border-t">
         <div className="flex gap-2.5">
-          <Skeleton variant={variant} height={40} className="flex-1" rounded="md" />
+          <Skeleton
+            variant={variant}
+            height={40}
+            className="flex-1"
+            rounded="md"
+          />
           <Skeleton variant={variant} width={40} height={40} rounded="md" />
         </div>
       </div>
     </div>
   )
 }
+
+// Add displayNames for better debugging and React DevTools
+Skeleton.displayName = 'Skeleton'
+SkeletonText.displayName = 'SkeletonText'
+SkeletonAvatar.displayName = 'SkeletonAvatar'
+SkeletonMessage.displayName = 'SkeletonMessage'
+SkeletonCard.displayName = 'SkeletonCard'
+SkeletonList.displayName = 'SkeletonList'
+SkeletonButton.displayName = 'SkeletonButton'
+SkeletonInput.displayName = 'SkeletonInput'
+SkeletonChatWindow.displayName = 'SkeletonChatWindow'
