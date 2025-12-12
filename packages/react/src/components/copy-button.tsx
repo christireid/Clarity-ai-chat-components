@@ -9,8 +9,10 @@ import { useToast } from './toast'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { getSpring } from '../animations/spring-presets'
 
-export interface CopyButtonProps
-  extends Omit<ButtonProps, 'onClick' | 'state'> {
+export interface CopyButtonProps extends Omit<
+  ButtonProps,
+  'onClick' | 'state'
+> {
   text: string
   onCopy?: () => void
   /** Show icon only (no text) */
@@ -27,7 +29,39 @@ export interface CopyButtonProps
 
 /**
  * CopyButton - Button with copy-to-clipboard functionality
- * 
+ *
+ * A polished copy button with celebratory feedback animations. Uses spring
+ * physics for natural motion and respects user's reduced motion preferences.
+ *
+ * @param props - CopyButton configuration
+ * @param props.text - The text to copy to clipboard (required)
+ * @param props.onCopy - Callback fired after successful copy
+ * @param props.iconOnly - Show only the icon, no text label (default: false)
+ * @param props.copyText - Label shown in idle state (default: "Copy")
+ * @param props.copiedText - Label shown after copying (default: "Copied!")
+ * @param props.showToast - Show toast notification on copy (default: false)
+ * @param props.toastMessage - Custom toast message (default: "Copied to clipboard!")
+ *
+ * @example Basic usage
+ * ```tsx
+ * <CopyButton text={codeSnippet} />
+ * ```
+ *
+ * @example Icon-only in a toolbar
+ * ```tsx
+ * <CopyButton text={content} iconOnly className="h-8 w-8" />
+ * ```
+ *
+ * @example With toast notification
+ * ```tsx
+ * <CopyButton
+ *   text={shareableLink}
+ *   showToast
+ *   toastMessage="Link copied!"
+ *   onCopy={() => analytics.track('link_copied')}
+ * />
+ * ```
+ *
  * @enhanced Framer Motion 12: Spring physics for celebration animation
  * - Bouncy spring for check icon (celebratory feel)
  * - Smooth spring for copy icon (professional entrance)
@@ -90,7 +124,9 @@ export function CopyButton({
               <motion.span
                 initial={{ opacity: 0, x: -4 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={getSpring('quick', prefersReducedMotion, { delay: 0.05 })}
+                transition={getSpring('quick', prefersReducedMotion, {
+                  delay: 0.05,
+                })}
               >
                 {children || copiedText}
               </motion.span>

@@ -283,11 +283,11 @@ export function Message({
 
   // Memoize plugin arrays to avoid recreation on every render
   const remarkPlugins = React.useMemo(() => [remarkGfm], [])
+  // Note: rehypeHighlight has version mismatches between vfile dependencies.
+  // We cast through unknown as a type-safe workaround until upstream fixes this.
   const rehypePlugins = React.useMemo(
     () => [
-      // Type incompatibility between vfile versions - using type assertion as last resort
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      rehypeHighlight as any,
+      rehypeHighlight as unknown as typeof import('rehype-highlight').default,
     ],
     []
   )
@@ -391,7 +391,7 @@ export function Message({
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: isHovered ? 1 : 0.7 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: durations.normal }}
                   className="text-xs text-muted-foreground/90 whitespace-nowrap"
                 >
                   {formatRelativeTime(message.createdAt)}
@@ -431,7 +431,7 @@ export function Message({
               <ReactMarkdown
                 remarkPlugins={remarkPlugins}
                 rehypePlugins={rehypePlugins}
-                components={markdownComponents as any}
+                components={markdownComponents}
               >
                 {message.content}
               </ReactMarkdown>
