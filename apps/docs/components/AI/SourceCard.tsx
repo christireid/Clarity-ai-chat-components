@@ -1,7 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { ExternalLink, ChevronDown, ChevronUp, BookOpen, FileText, Link as LinkIcon } from 'lucide-react'
+import {
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  BookOpen,
+  FileText,
+  Link as LinkIcon,
+} from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -47,7 +54,10 @@ export function SourceCard({
         rel="noopener noreferrer"
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.3, delay: index ? index * 0.05 : 0 }}
+        transition={{
+          duration: durations.moderate,
+          delay: index ? index * 0.05 : 0,
+        }}
         whileHover={{ scale: 1.02, x: 4 }}
         whileTap={{ scale: 0.98 }}
         className={cn(
@@ -82,7 +92,7 @@ export function SourceCard({
         )}
         <motion.div
           whileHover={{ x: 2 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: durations.normal }}
         >
           <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
         </motion.div>
@@ -95,7 +105,10 @@ export function SourceCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index ? index * 0.05 : 0 }}
+      transition={{
+        duration: durations.moderate,
+        delay: index ? index * 0.05 : 0,
+      }}
       whileHover={{ y: -4, scale: 1.01 }}
       className={cn(
         'rounded-lg border border-border bg-card overflow-hidden',
@@ -146,8 +159,10 @@ export function SourceCard({
           </div>
 
           {/* URL */}
-          <div className="text-xs text-muted-foreground truncate mt-1">
-            {source.url}
+          <div className="text-xs text-muted-foreground mt-1 overflow-hidden">
+            <span className="block truncate max-w-full" title={source.url}>
+              {source.url}
+            </span>
           </div>
 
           {/* Relevance score */}
@@ -157,7 +172,7 @@ export function SourceCard({
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${source.score * 100}%` }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
+                  transition={{ duration: durations.slow, delay: 0.1 }}
                   className={cn('h-full', relevanceColor)}
                 />
               </div>
@@ -188,7 +203,7 @@ export function SourceCard({
           >
             <motion.div
               animate={{ rotate: expanded ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: durations.normal }}
             >
               <ChevronDown className="w-4 h-4" />
             </motion.div>
@@ -203,7 +218,7 @@ export function SourceCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: durations.normal }}
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 pt-0">
@@ -253,7 +268,9 @@ function getRelevanceLabel(score: number): string {
 function getRelevanceColor(score: number): string {
   if (score >= 0.9) return 'bg-green-500/20 text-green-700 dark:text-green-300'
   if (score >= 0.8) return 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
-  if (score >= 0.7) return 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
-  if (score >= 0.6) return 'bg-orange-500/20 text-orange-700 dark:text-orange-300'
+  if (score >= 0.7)
+    return 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
+  if (score >= 0.6)
+    return 'bg-orange-500/20 text-orange-700 dark:text-orange-300'
   return 'bg-red-500/20 text-red-700 dark:text-red-300'
 }

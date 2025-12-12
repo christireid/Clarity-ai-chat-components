@@ -239,25 +239,116 @@ export async function* streamFromDemo(
   messages: { role: string; content: string }[]
 ): AsyncGenerator<StreamChunk> {
   const lastMessage = messages[messages.length - 1]
+  const query = lastMessage.content.toLowerCase()
 
-  // Simulated responses based on common queries
+  // Comprehensive simulated responses based on common queries
   const responses: Record<string, string> = {
+    // Getting Started
     'getting started':
-      'To get started with Clarity Chat, first install it via npm:\n\n```bash\nnpm install @clarity-chat/react\n```\n\nThen import and use the components:\n\n```tsx\nimport { ChatWindow } from "@clarity-chat/react"\nimport "@clarity-chat/react/styles.css"\n```\n\nCheck out our [Quick Start Guide](/guides/quick-start) for a complete walkthrough!',
+      'To get started with Clarity Chat, first install it via npm:\n\n```bash\nnpm install @clarity-chat/react\n```\n\nThen import and use the components:\n\n```tsx\nimport { ClarityChat } from "@clarity-chat/react"\nimport "@clarity-chat/react/styles.css"\n\nfunction App() {\n  return <ClarityChat api="/api/chat" />\n}\n```\n\nThat\'s it! You now have a fully functional chat interface. 🚀\n\n📖 **Learn more**: [Quick Start Guide](/guides/quick-start) | [Installation](/guides/installation)',
+    install:
+      'Install Clarity Chat with your preferred package manager:\n\n```bash\n# npm\nnpm install @clarity-chat/react\n\n# yarn\nyarn add @clarity-chat/react\n\n# pnpm\npnpm add @clarity-chat/react\n```\n\nMake sure you also have React 18+ installed as a peer dependency.\n\n📖 **Learn more**: [Installation Guide](/guides/installation)',
+
+    // Streaming
     streaming:
-      'Clarity Chat has built-in streaming support! Use the `useStreaming` hook to implement real-time message streaming:\n\n```tsx\nimport { useStreaming } from "@clarity-chat/react"\n\nconst { startStreaming, stopStreaming } = useStreaming()\n```\n\nSee our [Streaming Guide](/guides/streaming) for more details.',
+      'Clarity Chat has built-in streaming support via Server-Sent Events (SSE):\n\n```tsx\nimport { useClarityChat } from "@clarity-chat/react"\n\nfunction Chat() {\n  const { messages, sendMessage, isLoading } = useClarityChat({\n    api: "/api/chat",\n    transport: "sse", // Enable streaming\n  })\n\n  return (\n    <ChatWindow\n      messages={messages}\n      onSendMessage={sendMessage}\n      isLoading={isLoading}\n    />\n  )\n}\n```\n\nStreaming provides real-time responses as tokens are generated.\n\n📖 **Learn more**: [Streaming Guide](/guides/streaming)',
+
+    // Components
     components:
-      'Clarity Chat provides many pre-built components:\n\n- **ChatWindow**: Main chat interface\n- **Message**: Individual message display\n- **ChatInput**: Message input field\n- **MessageList**: Scrollable message container\n- **ThinkingIndicator**: Loading state\n\nExplore all components in our [Component Reference](/reference/components).',
+      'Clarity Chat provides **70+ pre-built components**:\n\n**Core Components:**\n- `<ClarityChat />` - Drop-in complete chat UI\n- `<ChatWindow />` - Main chat interface\n- `<ChatInput />` - Message input with auto-resize\n- `<MessageList />` - Virtualized message container\n- `<Message />` - Individual message display\n\n**Advanced Components:**\n- `<VoiceInput />` - Speech-to-text\n- `<FileUpload />` - Drag & drop file attachments\n- `<CommandPalette />` - Cmd+K interface\n- `<TokenCounter />` - Real-time token tracking\n- `<PromptSuggestions />` - AI-generated follow-ups\n\n📖 **Learn more**: [Component Reference](/reference/components)',
+
+    // Hooks
+    hook: 'Clarity Chat includes **35+ custom hooks**:\n\n**Core Hooks:**\n```tsx\nimport {\n  useClarityChat,    // Main chat hook\n  useStreamingSSE,   // SSE streaming\n  useTokenTracker,   // Token counting\n  useMessageOps,     // Edit/delete/regenerate\n} from "@clarity-chat/react"\n```\n\n**Utility Hooks:**\n- `useAutoScroll()` - Smart scrolling\n- `useClipboard()` - Copy-paste support\n- `useLocalStorage()` - Persistence\n- `useReducedMotion()` - Accessibility\n\n📖 **Learn more**: [Hooks Reference](/reference/hooks)',
+
+    // Theming
     theme:
-      'You can customize the theme using CSS variables or the ThemeProvider:\n\n```tsx\nimport { ThemeProvider } from "@clarity-chat/react"\n\n<ThemeProvider theme={customTheme}>\n  <ChatWindow />\n</ThemeProvider>\n```\n\nSee our [Theming Guide](/guides/theming) for more options.',
-    default: `I'm a demo assistant (no API key configured). I can help you navigate the Clarity Chat documentation!\n\nTry asking about:\n- Getting started with Clarity Chat\n- How to implement streaming\n- Available components\n- Customizing themes\n\nOr explore the documentation directly:\n- [Quick Start](/guides/quick-start)\n- [Component Reference](/reference/components)\n- [Examples](/examples)`,
+      'Customize Clarity Chat with **11 built-in themes** or create your own:\n\n```tsx\nimport { ClarityChat, themes } from "@clarity-chat/react"\n\n// Use a preset theme\n<ClarityChat theme={themes.dark} />\n\n// Or customize with CSS variables\n<ClarityChat\n  style={{\n    "--cc-primary": "#6366f1",\n    "--cc-bg": "#0f172a",\n  }}\n/>\n```\n\n**Available themes:** light, dark, system, ocean, forest, sunset, midnight, lavender, slate, rose, emerald\n\n📖 **Learn more**: [Theming Guide](/guides/theming)',
+
+    // Memory
+    memory:
+      'Clarity Chat supports long-term conversation memory:\n\n```tsx\nimport { MemoryProvider, useClarityChat } from "@clarity-chat/react"\n\nfunction App() {\n  return (\n    <MemoryProvider strategy="sliding-window" maxTokens={4000}>\n      <Chat />\n    </MemoryProvider>\n  )\n}\n```\n\n**Memory strategies:**\n- `sliding-window` - Keep recent messages\n- `summary` - Compress old messages\n- `semantic` - Vector-based retrieval\n\n📖 **Learn more**: [Memory Guide](/guides/memory)',
+
+    // Token optimization
+    token:
+      'Optimize costs with token tracking and budget management:\n\n```tsx\nimport { useTokenBudgetMonitor } from "@clarity-chat/react"\n\nconst {\n  currentTokens,\n  isNearLimit,\n  isCritical,\n} = useTokenBudgetMonitor({\n  maxTokens: 8000,\n  warningThreshold: 0.8,\n})\n```\n\nClarity Chat can reduce costs by **50-80%** with:\n- TOON format compression\n- Prompt caching\n- Smart model routing\n\n📖 **Learn more**: [Token Optimization](/guides/token-optimization)',
+
+    // Accessibility
+    accessib:
+      'Clarity Chat is **WCAG 2.1 AAA compliant** with:\n\n- Full keyboard navigation\n- Screen reader support (ARIA labels)\n- Focus management\n- Reduced motion support\n- High contrast mode\n- RTL language support\n\n```tsx\nimport { useReducedMotion } from "@clarity-chat/react"\n\nconst prefersReducedMotion = useReducedMotion()\n```\n\n📖 **Learn more**: [Accessibility Guide](/guides/accessibility)',
+
+    // Error handling
+    error:
+      'Handle errors gracefully with built-in error boundaries:\n\n```tsx\nimport { ErrorBoundary, useErrorRecovery } from "@clarity-chat/react"\n\nconst { retry, resetError } = useErrorRecovery({\n  maxRetries: 3,\n  onError: (error) => console.error(error),\n})\n\n<ErrorBoundary fallback={<ErrorMessage />}>\n  <ChatWindow />\n</ErrorBoundary>\n```\n\n📖 **Learn more**: [Error Handling](/guides/error-handling)',
+
+    // Testing
+    test: 'Test your chat components with our testing utilities:\n\n```tsx\nimport { render, screen } from "@testing-library/react"\nimport { ChatWindow } from "@clarity-chat/react"\n\ntest("renders chat input", () => {\n  render(<ChatWindow messages={[]} />)\n  expect(screen.getByRole("textbox")).toBeInTheDocument()\n})\n```\n\nWe provide mocks for streaming and API calls.\n\n📖 **Learn more**: [Testing Guide](/guides/testing)',
+
+    // Props / API
+    props:
+      'Each component accepts typed props for full customization:\n\n```tsx\ninterface ChatWindowProps {\n  messages: Message[]\n  onSendMessage: (content: string) => void\n  isLoading?: boolean\n  placeholder?: string\n  maxLength?: number\n  theme?: Theme\n  className?: string\n}\n```\n\nAll props are documented with TSDoc comments for IntelliSense support.\n\n📖 **Learn more**: [API Reference](/reference/components)',
+
+    // Examples
+    example:
+      'Check out our **30+ production-ready examples**:\n\n- Simple Chat Bot\n- Multi-turn Conversation\n- RAG with Documents\n- Voice Assistant\n- Customer Support Widget\n- Collaborative Chat\n- AI Code Assistant\n\nEach example includes full source code and live demos.\n\n📖 **Explore**: [Examples Gallery](/examples)',
+
+    // Performance
+    perform:
+      'Clarity Chat is optimized for performance:\n\n- **Virtual scrolling** for 1000+ messages\n- **Lazy loading** of heavy components\n- **Memoized renders** with React.memo\n- **Code splitting** for smaller bundles\n\n```tsx\nimport { VirtualizedMessageList } from "@clarity-chat/react"\n\n<VirtualizedMessageList\n  messages={messages}\n  overscan={5}\n/>\n```\n\n📖 **Learn more**: [Performance Guide](/guides/performance)',
   }
 
-  // Find matching response
-  let response = responses.default
-  for (const [key, value] of Object.entries(responses)) {
-    if (lastMessage.content.toLowerCase().includes(key)) {
-      response = value
+  // Improved default response with contextual help
+  const defaultResponse = `👋 **Welcome to Clarity Chat Demo Mode!**
+
+I'm running without an API key, so I can only provide pre-defined answers. Here's what I can help with:
+
+**📚 Documentation Topics:**
+- Installation & getting started
+- Streaming messages (SSE/WebSocket)
+- Available components (70+)
+- Hooks reference (35+)
+- Theming & customization
+- Memory & conversation history
+- Token optimization
+- Accessibility features
+- Error handling
+- Testing strategies
+
+**🔗 Quick Links:**
+- [Quick Start Guide](/guides/quick-start)
+- [Component Reference](/reference/components)
+- [Hooks Reference](/reference/hooks)
+- [Examples Gallery](/examples)
+
+**💡 Try asking:**
+- "How do I install Clarity Chat?"
+- "What components are available?"
+- "How does streaming work?"
+- "How do I customize the theme?"
+
+*To enable full AI-powered responses, add your API key to \`.env.local\`*`
+
+  // Find matching response with priority ordering
+  let response = defaultResponse
+  const priorityKeys = [
+    'getting started',
+    'install',
+    'streaming',
+    'components',
+    'hook',
+    'theme',
+    'memory',
+    'token',
+    'accessib',
+    'error',
+    'test',
+    'props',
+    'example',
+    'perform',
+  ]
+
+  for (const key of priorityKeys) {
+    if (query.includes(key)) {
+      response = responses[key]
       break
     }
   }

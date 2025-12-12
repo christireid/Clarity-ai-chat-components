@@ -163,11 +163,14 @@ const CONTEXTUAL_LINKS: Record<
  * Get contextual links based on current page
  */
 export function getContextualLinks(
-  currentPath: string
+  currentPath?: string
 ): Array<{ label: string; path: string }> {
-  for (const [prefix, links] of Object.entries(CONTEXTUAL_LINKS)) {
-    if (currentPath.startsWith(prefix)) {
-      return links
+  // Guard against undefined or null currentPath
+  if (currentPath && typeof currentPath === 'string') {
+    for (const [prefix, links] of Object.entries(CONTEXTUAL_LINKS)) {
+      if (currentPath.startsWith(prefix)) {
+        return links
+      }
     }
   }
   // Default links
@@ -181,13 +184,16 @@ export function getContextualLinks(
 /**
  * Generate a contextual system prompt based on the current page
  */
-export function getContextualPrompt(currentPath: string): string {
+export function getContextualPrompt(currentPath?: string): string {
   let contextAddition = ''
 
-  for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
-    if (currentPath.startsWith(prefix)) {
-      contextAddition = context
-      break
+  // Guard against undefined or null currentPath
+  if (currentPath && typeof currentPath === 'string') {
+    for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
+      if (currentPath.startsWith(prefix)) {
+        contextAddition = context
+        break
+      }
     }
   }
 
@@ -201,15 +207,18 @@ export function getContextualPrompt(currentPath: string): string {
  * @param personality - Personality mode (technical, friendly, concise)
  */
 export function getPromptWithContextAndPersonality(
-  currentPath: string,
+  currentPath?: string,
   personality: PersonalityMode = 'friendly'
 ): string {
   let contextAddition = ''
 
-  for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
-    if (currentPath.startsWith(prefix)) {
-      contextAddition = context
-      break
+  // Guard against undefined or null currentPath
+  if (currentPath && typeof currentPath === 'string') {
+    for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
+      if (currentPath.startsWith(prefix)) {
+        contextAddition = context
+        break
+      }
     }
   }
 
