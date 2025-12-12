@@ -51,7 +51,9 @@
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest run",
     "test:watch": "vitest",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "size": "npm run build && node scripts/check-size.mjs",
+    "size:report": "npm run build && node scripts/check-size.mjs --report"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0"
