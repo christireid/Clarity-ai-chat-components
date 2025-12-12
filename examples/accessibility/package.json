@@ -1,12 +1,14 @@
 {
-  "name": "accessibility-example",
-  "version": "0.1.0",
+  "name": "@clarity-chat/example-accessibility",
+  "version": "1.0.0",
   "private": true,
+  "description": "WCAG 2.1 AA compliant AI chat interface with comprehensive accessibility features",
   "scripts": {
     "dev": "next dev -p 3005",
     "build": "next build",
     "start": "next start -p 3005",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@clarity-chat/react": "workspace:*",

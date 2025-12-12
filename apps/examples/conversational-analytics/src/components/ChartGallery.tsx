@@ -1,7 +1,20 @@
 'use client'
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
-import { BarChart3, Trash2 } from 'lucide-react'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts'
+import { Trash } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface Chart {
@@ -18,9 +31,11 @@ export function ChartGallery({ charts }: ChartGalleryProps) {
   if (charts.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-        <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <span className="text-4xl opacity-50">📊</span>
         <p className="text-sm">No charts generated yet</p>
-        <p className="text-xs mt-1">Ask a question to create your first chart</p>
+        <p className="text-xs mt-1">
+          Ask a question to create your first chart
+        </p>
       </div>
     )
   }
@@ -38,7 +53,7 @@ export function ChartGallery({ charts }: ChartGalleryProps) {
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold text-sm">{chart.title}</h4>
             <button className="text-gray-400 hover:text-red-500 transition-colors">
-              <Trash2 className="w-4 h-4" />
+              <Trash className="w-4 h-4" />
             </button>
           </div>
           <div className="h-48">
@@ -60,7 +75,12 @@ export function ChartGallery({ charts }: ChartGalleryProps) {
                   <XAxis dataKey="date" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
                   <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#6366f1"
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -72,13 +92,22 @@ export function ChartGallery({ charts }: ChartGalleryProps) {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
                     outerRadius={60}
                     fill="#8884d8"
                     dataKey="value"
                   >
                     {chart.data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b'][index % 4]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={
+                          ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b'][
+                            index % 4
+                          ]
+                        }
+                      />
                     ))}
                   </Pie>
                   <Tooltip />

@@ -6,7 +6,7 @@
 
 > Production-grade AI operations dashboard for monitoring, evaluation, and safety management.
 
-![Enterprise AI Ops Dashboard](./public/screenshot.png)
+![Enterprise AI Ops Dashboard](./public/screenshot.svg)
 
 ## ✨ Features
 

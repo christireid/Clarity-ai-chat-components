@@ -369,7 +369,7 @@ export function useStreamingError(
 
       const resumePayload: ResumePayload = customPayload ?? {
         partialContent: error?.partialContent,
-        lastEventId: lastEventId ?? (error?.context?.lastEventId as string),
+        lastEventId: lastEventId ?? (error?.context?.['lastEventId'] as string),
       }
 
       try {

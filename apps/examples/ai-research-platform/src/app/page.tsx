@@ -23,14 +23,7 @@ import { ResearchAgent } from '@/components/ResearchAgent'
 import { KnowledgeGraph } from '@/components/KnowledgeGraph'
 import { ResearchDashboard } from '@/components/ResearchDashboard'
 import { motion } from 'framer-motion'
-import {
-  BookOpen,
-  Brain,
-  Database,
-  Zap,
-  BarChart3,
-  Network,
-} from 'lucide-react'
+import { BookOpen, Network } from 'lucide-react'
 
 export default function ResearchPlatform() {
   const [activeView, setActiveView] = useState<
@@ -98,7 +91,7 @@ export default function ResearchPlatform() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-                  <Brain className="w-6 h-6 text-white" />
+                  <Network className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -130,7 +123,7 @@ export default function ResearchPlatform() {
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <BarChart3 className="w-4 h-4 inline mr-2" />
+                  <Network className="w-4 h-4 inline mr-2" />
                   Dashboard
                 </button>
                 <button
@@ -178,7 +171,7 @@ export default function ResearchPlatform() {
                     className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg p-4"
                   >
                     <h3 className="font-semibold mb-3 flex items-center">
-                      <Zap className="w-4 h-4 mr-2 text-purple-600" />
+                      <Network className="w-4 h-4 mr-2 text-purple-600" />
                       Active Agents
                     </h3>
                     <ResearchAgent
@@ -276,7 +269,7 @@ export default function ResearchPlatform() {
               <aside className="w-96 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-y-auto">
                 <div className="p-4">
                   <h3 className="font-semibold mb-4 flex items-center">
-                    <Database className="w-4 h-4 mr-2" />
+                    <BookOpen className="w-4 h-4 mr-2" />
                     Agent Activity Feed
                   </h3>
                   <AgentRunFeed

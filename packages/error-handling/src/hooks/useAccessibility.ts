@@ -131,7 +131,7 @@ export function usePrefersReducedMotion(): boolean {
  * Generate unique IDs for ARIA relationships
  */
 export function useId(prefix: string): string {
-  const idRef = useRef<string>()
+  const idRef = useRef<string | undefined>(undefined)
   if (!idRef.current) {
     idRef.current = `${prefix}-${Math.random().toString(36).substring(2, 9)}`
   }

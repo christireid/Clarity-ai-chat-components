@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#000000"/>
+
+  <!-- High contrast header -->
+  <rect x="0" y="0" width="1200" height="64" fill="#000000" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="40" cy="32" r="16" fill="#ffff00"/>
+  <rect x="70" y="22" width="180" height="20" rx="4" fill="#ffffff"/>
+
+  <!-- Skip link (visible for demo) -->
+  <rect x="400" y="8" width="200" height="48" rx="4" fill="#0000ff"/>
+  <rect x="420" y="24" width="160" height="16" rx="2" fill="#ffffff"/>
+
+  <!-- Accessibility settings panel -->
+  <rect x="880" y="90" width="280" height="400" rx="12" fill="#1a1a1a" stroke="#ffffff" stroke-width="2"/>
+  <rect x="900" y="110" width="180" height="20" rx="4" fill="#ffffff"/>
+
+  <!-- Settings toggles -->
+  <rect x="900" y="150" width="240" height="40" rx="4" fill="#333333" stroke="#ffffff" stroke-width="1"/>
+  <rect x="920" y="160" width="120" height="12" rx="2" fill="#ffffff"/>
+  <rect x="1080" y="157" width="40" height="24" rx="12" fill="#00ff00"/>
+
+  <rect x="900" y="200" width="240" height="40" rx="4" fill="#333333" stroke="#ffffff" stroke-width="1"/>
+  <rect x="920" y="210" width="100" height="12" rx="2" fill="#ffffff"/>
+  <rect x="1080" y="207" width="40" height="24" rx="12" fill="#00ff00"/>
+
+  <rect x="900" y="250" width="240" height="40" rx="4" fill="#333333" stroke="#ffffff" stroke-width="1"/>
+  <rect x="920" y="260" width="130" height="12" rx="2" fill="#ffffff"/>
+  <rect x="1080" y="257" width="40" height="24" rx="12" fill="#333333" stroke="#ffffff" stroke-width="1"/>
+
+  <!-- Keyboard shortcuts -->
+  <rect x="900" y="310" width="240" height="30" rx="4" fill="#333333"/>
+  <rect x="910" y="318" width="60" height="12" rx="2" fill="#ffff00"/>
+  <rect x="980" y="318" width="140" height="12" rx="2" fill="#888888"/>
+
+  <rect x="900" y="350" width="240" height="30" rx="4" fill="#333333"/>
+  <rect x="910" y="358" width="80" height="12" rx="2" fill="#ffff00"/>
+  <rect x="1000" y="358" width="120" height="12" rx="2" fill="#888888"/>
+
+  <rect x="900" y="390" width="240" height="30" rx="4" fill="#333333"/>
+  <rect x="910" y="398" width="100" height="12" rx="2" fill="#ffff00"/>
+  <rect x="1020" y="398" width="100" height="12" rx="2" fill="#888888"/>
+
+  <!-- Chat area -->
+  <rect x="40" y="90" width="820" height="400" rx="12" fill="#1a1a1a" stroke="#ffffff" stroke-width="2"/>
+
+  <!-- Focus indicator on message -->
+  <rect x="60" y="120" width="500" height="80" rx="8" fill="#333333" stroke="#00ffff" stroke-width="4"/>
+  <rect x="80" y="140" width="300" height="16" rx="2" fill="#ffffff"/>
+  <rect x="80" y="164" width="400" height="16" rx="2" fill="#ffffff"/>
+
+  <!-- User message -->
+  <rect x="360" y="220" width="480" height="50" rx="12" fill="#0000ff"/>
+  <rect x="380" y="238" width="220" height="14" rx="2" fill="#ffffff"/>
+
+  <!-- Assistant message -->
+  <rect x="60" y="290" width="500" height="100" rx="12" fill="#333333"/>
+  <rect x="80" y="310" width="340" height="14" rx="2" fill="#ffffff"/>
+  <rect x="80" y="332" width="420" height="14" rx="2" fill="#ffffff"/>
+  <rect x="80" y="354" width="300" height="14" rx="2" fill="#ffffff"/>
+
+  <!-- Screen reader announcement -->
+  <rect x="60" y="410" width="780" height="60" rx="8" fill="#004400" stroke="#00ff00" stroke-width="2"/>
+  <rect x="80" y="420" width="120" height="12" rx="2" fill="#00ff00"/>
+  <rect x="80" y="440" width="500" height="14" rx="2" fill="#ffffff"/>
+
+  <!-- Input with visible focus -->
+  <rect x="40" y="510" width="820" height="50" rx="25" fill="#333333" stroke="#00ffff" stroke-width="4"/>
+  <rect x="70" y="525" width="200" height="16" rx="2" fill="#888888"/>
+
+  <!-- Accessibility label -->
+  <text x="600" y="600" fill="#ffffff" font-family="system-ui, sans-serif" font-size="14" text-anchor="middle">Accessibility Showcase - WCAG 2.1 AA Compliant</text>
+</svg>

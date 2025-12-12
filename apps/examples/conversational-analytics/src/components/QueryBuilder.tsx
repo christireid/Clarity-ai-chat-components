@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Sparkles } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface QueryBuilderProps {
@@ -16,7 +16,7 @@ export function QueryBuilder({ onQuery, suggestedQueries }: QueryBuilderProps) {
     <div className="space-y-4">
       <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg p-4">
         <h3 className="font-semibold mb-3 flex items-center">
-          <Sparkles className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
+          <span className="mr-2">✨</span>
           Natural Language Query
         </h3>
         <div className="flex space-x-2">

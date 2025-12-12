@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0f172a"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="1200" height="64" fill="#1e293b"/>
+  <circle cx="40" cy="32" r="16" fill="#3b82f6"/>
+  <rect x="70" y="22" width="140" height="20" rx="4" fill="#f8fafc"/>
+
+  <!-- Provider selector -->
+  <rect x="1000" y="16" width="160" height="32" rx="8" fill="#334155"/>
+  <circle cx="1020" cy="32" r="8" fill="#22c55e"/>
+  <rect x="1035" y="26" width="80" height="12" rx="2" fill="#f8fafc"/>
+
+  <!-- Main chat area -->
+  <rect x="40" y="90" width="800" height="500" rx="12" fill="#1e293b"/>
+
+  <!-- Messages -->
+  <rect x="420" y="120" width="400" height="50" rx="12" fill="#3b82f6"/>
+  <rect x="440" y="135" width="180" height="12" rx="2" fill="#93c5fd"/>
+
+  <rect x="60" y="190" width="500" height="100" rx="12" fill="#334155"/>
+  <rect x="80" y="210" width="300" height="12" rx="2" fill="#64748b"/>
+  <rect x="80" y="230" width="420" height="12" rx="2" fill="#64748b"/>
+  <rect x="80" y="250" width="360" height="12" rx="2" fill="#64748b"/>
+  <rect x="80" y="270" width="280" height="12" rx="2" fill="#64748b"/>
+
+  <rect x="500" y="310" width="320" height="40" rx="12" fill="#3b82f6"/>
+  <rect x="520" y="322" width="140" height="12" rx="2" fill="#93c5fd"/>
+
+  <rect x="60" y="370" width="480" height="80" rx="12" fill="#334155"/>
+  <rect x="80" y="390" width="340" height="12" rx="2" fill="#64748b"/>
+  <rect x="80" y="410" width="400" height="12" rx="2" fill="#64748b"/>
+  <rect x="80" y="430" width="280" height="12" rx="2" fill="#64748b"/>
+
+  <!-- Input -->
+  <rect x="60" y="520" width="720" height="50" rx="25" fill="#334155"/>
+  <rect x="800" y="520" width="20" height="50" rx="10" fill="#3b82f6"/>
+
+  <!-- Provider sidebar -->
+  <rect x="860" y="90" width="300" height="500" rx="12" fill="#1e293b"/>
+
+  <!-- Provider cards -->
+  <rect x="880" y="110" width="260" height="80" rx="8" fill="#334155" stroke="#22c55e" stroke-width="2"/>
+  <circle cx="910" cy="140" r="16" fill="#22c55e"/>
+  <rect x="935" y="125" width="80" height="14" rx="2" fill="#f8fafc"/>
+  <rect x="935" y="145" width="120" height="10" rx="2" fill="#64748b"/>
+  <rect x="935" y="160" width="60" height="10" rx="2" fill="#22c55e"/>
+
+  <rect x="880" y="200" width="260" height="80" rx="8" fill="#334155"/>
+  <circle cx="910" cy="230" r="16" fill="#f97316"/>
+  <rect x="935" y="215" width="80" height="14" rx="2" fill="#f8fafc"/>
+  <rect x="935" y="235" width="120" height="10" rx="2" fill="#64748b"/>
+  <rect x="935" y="250" width="60" height="10" rx="2" fill="#f97316"/>
+
+  <rect x="880" y="290" width="260" height="80" rx="8" fill="#334155"/>
+  <circle cx="910" cy="320" r="16" fill="#3b82f6"/>
+  <rect x="935" y="305" width="80" height="14" rx="2" fill="#f8fafc"/>
+  <rect x="935" y="325" width="120" height="10" rx="2" fill="#64748b"/>
+  <rect x="935" y="340" width="60" height="10" rx="2" fill="#3b82f6"/>
+
+  <!-- Model selector -->
+  <rect x="880" y="390" width="260" height="100" rx="8" fill="#334155"/>
+  <rect x="900" y="410" width="100" height="12" rx="2" fill="#f8fafc"/>
+  <rect x="900" y="435" width="220" height="36" rx="6" fill="#1e293b"/>
+  <rect x="915" y="448" width="140" height="12" rx="2" fill="#64748b"/>
+
+  <!-- Cost display -->
+  <rect x="880" y="500" width="260" height="70" rx="8" fill="#334155"/>
+  <rect x="900" y="520" width="80" height="12" rx="2" fill="#64748b"/>
+  <rect x="900" y="540" width="120" height="18" rx="2" fill="#f8fafc"/>
+
+  <!-- Multi-Provider label -->
+  <text x="600" y="620" fill="#64748b" font-family="system-ui, sans-serif" font-size="14" text-anchor="middle">Multi-Provider Chat - OpenAI, Anthropic, Google</text>
+</svg>

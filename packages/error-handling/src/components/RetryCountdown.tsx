@@ -43,7 +43,9 @@ export function RetryCountdown({
 }: RetryCountdownProps) {
   const [timeLeft, setTimeLeft] = React.useState(remainingMs)
   const prefersReducedMotion = usePrefersReducedMotion()
-  const intervalRef = React.useRef<ReturnType<typeof setInterval>>()
+  const intervalRef = React.useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined
+  )
 
   const totalTime = React.useRef(remainingMs)
 
