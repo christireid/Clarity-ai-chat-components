@@ -52,39 +52,45 @@ describe('A11yProvider', () => {
       expect(screen.getByTestId('child')).toBeInTheDocument()
     })
 
-    it('creates announcer elements on mount', () => {
+    it('uses shared announcer from aria.ts on mount', async () => {
       render(
-        <A11yProvider>
-          <div>Test</div>
+        <A11yProvider announceDebounce={0}>
+          <TestConsumer />
         </A11yProvider>
       )
 
-      expect(document.getElementById('a11y-announcer-root')).toBeInTheDocument()
+      // Trigger an announcement to create the shared announcer
+      const button = screen.getByText('Announce')
+      await act(async () => {
+        button.click()
+        await new Promise((r) => setTimeout(r, 50))
+      })
+
+      // Uses shared aria.ts announcer (id: clarity-aria-announcer)
       expect(
-        document.getElementById('a11y-announcer-polite')
-      ).toBeInTheDocument()
-      expect(
-        document.getElementById('a11y-announcer-assertive')
+        document.getElementById('clarity-aria-announcer')
       ).toBeInTheDocument()
     })
 
-    it('announcer has correct ARIA attributes', () => {
+    it('shared announcer has correct ARIA attributes', async () => {
       render(
-        <A11yProvider>
-          <div>Test</div>
+        <A11yProvider announceDebounce={0}>
+          <TestConsumer />
         </A11yProvider>
       )
 
-      const polite = document.getElementById('a11y-announcer-polite')
-      const assertive = document.getElementById('a11y-announcer-assertive')
+      // Trigger an announcement to create the shared announcer
+      const button = screen.getByText('Announce')
+      await act(async () => {
+        button.click()
+        await new Promise((r) => setTimeout(r, 50))
+      })
 
-      expect(polite).toHaveAttribute('role', 'status')
-      expect(polite).toHaveAttribute('aria-live', 'polite')
-      expect(polite).toHaveAttribute('aria-atomic', 'true')
-
-      expect(assertive).toHaveAttribute('role', 'alert')
-      expect(assertive).toHaveAttribute('aria-live', 'assertive')
-      expect(assertive).toHaveAttribute('aria-atomic', 'true')
+      // The shared aria.ts announcer uses a single element that changes aria-live
+      const announcer = document.getElementById('clarity-aria-announcer')
+      expect(announcer).toHaveAttribute('role', 'status')
+      expect(announcer).toHaveAttribute('aria-live', 'polite')
+      expect(announcer).toHaveAttribute('aria-atomic', 'true')
     })
   })
 
@@ -167,11 +173,10 @@ describe('A11yProvider', () => {
         await new Promise((r) => setTimeout(r, 50))
       })
 
-      // Check if announcer element exists and has content
-      const polite = document.getElementById('a11y-announcer-polite')
-      // Note: In test environment, the textContent may be set asynchronously
-      // Just verify the announcer element is created
-      expect(polite).toBeInTheDocument()
+      // Check if shared announcer element exists (uses aria.ts announcer)
+      const announcer = document.getElementById('clarity-aria-announcer')
+      // Verify the announcer element is created
+      expect(announcer).toBeInTheDocument()
     })
 
     it('announces assertive messages', async () => {
@@ -187,8 +192,9 @@ describe('A11yProvider', () => {
         await new Promise((r) => setTimeout(r, 50))
       })
 
-      const assertive = document.getElementById('a11y-announcer-assertive')
-      expect(assertive).toBeInTheDocument()
+      // Uses shared aria.ts announcer (same element, changes aria-live attribute)
+      const announcer = document.getElementById('clarity-aria-announcer')
+      expect(announcer).toBeInTheDocument()
     })
 
     it('tracks announcement queue', async () => {
@@ -295,21 +301,32 @@ describe('A11yProvider', () => {
     })
   })
 
-  describe('cleanup', () => {
-    it('removes announcer elements on unmount', () => {
+  describe('shared announcer', () => {
+    it('uses shared aria.ts announcer that persists across unmounts', async () => {
       const { unmount } = render(
-        <A11yProvider>
-          <div>Test</div>
+        <A11yProvider announceDebounce={0}>
+          <TestConsumer />
         </A11yProvider>
       )
 
-      expect(document.getElementById('a11y-announcer-root')).toBeInTheDocument()
+      // Trigger an announcement to ensure announcer is created
+      const button = screen.getByText('Announce')
+      await act(async () => {
+        button.click()
+        await new Promise((r) => setTimeout(r, 50))
+      })
+
+      // Verify shared announcer exists
+      expect(
+        document.getElementById('clarity-aria-announcer')
+      ).toBeInTheDocument()
 
       unmount()
 
+      // Shared announcer persists after unmount (intentional - shared resource)
       expect(
-        document.getElementById('a11y-announcer-root')
-      ).not.toBeInTheDocument()
+        document.getElementById('clarity-aria-announcer')
+      ).toBeInTheDocument()
     })
   })
 })

@@ -1,6 +1,10 @@
 'use client'
 
 import * as React from 'react'
+import {
+  announce as ariaAnnounce,
+  clearAnnouncement as ariaClearAnnouncement,
+} from '../lib/aria'
 
 // ============================================================================
 // Types
@@ -135,61 +139,8 @@ export function useReducedMotionContext(): boolean {
 // ============================================================================
 // Announcer Implementation
 // ============================================================================
-
-interface AnnouncerElement {
-  polite: HTMLDivElement | null
-  assertive: HTMLDivElement | null
-}
-
-function createAnnouncerElements(): AnnouncerElement {
-  // Check for existing announcer
-  const existingPolite = document.getElementById(
-    'a11y-announcer-polite'
-  ) as HTMLDivElement | null
-  const existingAssertive = document.getElementById(
-    'a11y-announcer-assertive'
-  ) as HTMLDivElement | null
-
-  if (existingPolite && existingAssertive) {
-    return { polite: existingPolite, assertive: existingAssertive }
-  }
-
-  // Create container
-  const container = document.createElement('div')
-  container.id = 'a11y-announcer-root'
-  container.setAttribute('aria-hidden', 'false')
-  Object.assign(container.style, {
-    position: 'absolute',
-    width: '1px',
-    height: '1px',
-    padding: '0',
-    margin: '-1px',
-    overflow: 'hidden',
-    clip: 'rect(0, 0, 0, 0)',
-    whiteSpace: 'nowrap',
-    border: '0',
-  })
-
-  // Create polite region
-  const polite = document.createElement('div')
-  polite.id = 'a11y-announcer-polite'
-  polite.setAttribute('role', 'status')
-  polite.setAttribute('aria-live', 'polite')
-  polite.setAttribute('aria-atomic', 'true')
-
-  // Create assertive region
-  const assertive = document.createElement('div')
-  assertive.id = 'a11y-announcer-assertive'
-  assertive.setAttribute('role', 'alert')
-  assertive.setAttribute('aria-live', 'assertive')
-  assertive.setAttribute('aria-atomic', 'true')
-
-  container.appendChild(polite)
-  container.appendChild(assertive)
-  document.body.appendChild(container)
-
-  return { polite, assertive }
-}
+// Uses the shared aria.ts announcer for DOM manipulation
+// A11yProvider adds debouncing and queue management on top
 
 // ============================================================================
 // Provider Component
@@ -237,9 +188,6 @@ export function A11yProvider({
 
   const prefersReducedMotion = forceReducedMotion ?? systemPrefersReducedMotion
 
-  // Announcer elements (singleton)
-  const announcerRef = React.useRef<AnnouncerElement | null>(null)
-
   // Announcement queue for tracking
   const [announcementQueue, setAnnouncementQueue] = React.useState<string[]>([])
 
@@ -252,21 +200,7 @@ export function A11yProvider({
     options?: AnnounceOptions
   } | null>(null)
 
-  // Initialize announcer on mount
-  React.useEffect(() => {
-    announcerRef.current = createAnnouncerElements()
-
-    return () => {
-      // Cleanup on unmount (optional - could leave for other providers)
-      const root = document.getElementById('a11y-announcer-root')
-      if (root) {
-        root.remove()
-      }
-      announcerRef.current = null
-    }
-  }, [])
-
-  // Announce function
+  // Announce function - delegates to aria.ts with debouncing
   const announce = React.useCallback(
     (message: string, options?: AnnounceOptions) => {
       if (!message.trim()) return
@@ -284,35 +218,16 @@ export function A11yProvider({
       // Debounce rapid announcements
       debounceTimerRef.current = setTimeout(() => {
         const pending = pendingAnnouncementRef.current
-        if (!pending || !announcerRef.current) return
+        if (!pending) return
 
-        const element = assertive
-          ? announcerRef.current.assertive
-          : announcerRef.current.polite
+        // Use shared aria.ts announcer for DOM manipulation
+        ariaAnnounce(pending.message, {
+          assertive,
+          clearAfter: clearAfter > 0 ? clearAfter : undefined,
+        })
 
-        if (element) {
-          // Clear first to ensure re-announcement of same message
-          element.textContent = ''
-
-          // Use RAF to ensure DOM update
-          requestAnimationFrame(() => {
-            if (element) {
-              element.textContent = pending.message
-            }
-          })
-
-          // Add to queue for tracking
-          setAnnouncementQueue((prev) => [...prev.slice(-9), pending.message])
-
-          // Auto-clear after delay
-          if (clearAfter > 0) {
-            setTimeout(() => {
-              if (element) {
-                element.textContent = ''
-              }
-            }, clearAfter)
-          }
-        }
+        // Add to queue for tracking
+        setAnnouncementQueue((prev) => [...prev.slice(-9), pending.message])
 
         pendingAnnouncementRef.current = null
       }, announceDebounce)
@@ -322,14 +237,7 @@ export function A11yProvider({
 
   // Clear announcements
   const clearAnnouncements = React.useCallback(() => {
-    if (announcerRef.current) {
-      if (announcerRef.current.polite) {
-        announcerRef.current.polite.textContent = ''
-      }
-      if (announcerRef.current.assertive) {
-        announcerRef.current.assertive.textContent = ''
-      }
-    }
+    ariaClearAnnouncement()
     setAnnouncementQueue([])
   }, [])
 
