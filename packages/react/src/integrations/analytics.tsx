@@ -97,6 +97,8 @@ export interface ChatEventProperties {
   errorType?: string
   rating?: number
   duration?: number
+  /** Additional custom properties (allows assignment to Record<string, unknown>) */
+  [key: string]: string | number | undefined
 }
 
 // ============================================

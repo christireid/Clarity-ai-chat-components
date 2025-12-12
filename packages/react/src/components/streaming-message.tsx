@@ -21,6 +21,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import type { ToolCall, Citation } from '../adapters/types'
+import { DURATION_SECONDS } from '../animations/constants'
 
 export interface StreamingMessageProps {
   /** Accumulated message content */
@@ -595,7 +596,7 @@ export function StreamingMessage({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 10 }}
-      transition={{ duration: durations.normal }}
+      transition={{ duration: DURATION_SECONDS.normal }}
       className={cn('space-y-4', className)}
     >
       {/* Error State */}
