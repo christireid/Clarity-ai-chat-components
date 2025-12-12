@@ -4,6 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { DURATION_SECONDS } from '../animations/constants'
 
 /**
  * Token usage data for streaming responses
@@ -275,7 +276,7 @@ export function TokenUsageMeter({
         {isStreaming && (
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}
-            transition={{ repeat: Infinity, duration: durations.slower }}
+            transition={{ repeat: Infinity, duration: DURATION_SECONDS.slower }}
             className="w-2 h-2 rounded-full bg-green-500"
           />
         )}
@@ -314,7 +315,10 @@ export function TokenUsageMeter({
           {isStreaming && (
             <motion.span
               animate={{ opacity: [1, 0.5, 1] }}
-              transition={{ repeat: Infinity, duration: durations.slower }}
+              transition={{
+                repeat: Infinity,
+                duration: DURATION_SECONDS.slower,
+              }}
               className="text-xs text-green-600 dark:text-green-400 font-medium"
             >
               Live
@@ -411,7 +415,7 @@ function TokenStat({
           initial={prefersReducedMotion ? false : { opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           exit={prefersReducedMotion ? undefined : { opacity: 0, y: 5 }}
-          transition={{ duration: durations.fast }}
+          transition={{ duration: DURATION_SECONDS.fast }}
           className={cn(
             'font-mono font-semibold',
             compact ? 'text-sm' : 'text-lg',
