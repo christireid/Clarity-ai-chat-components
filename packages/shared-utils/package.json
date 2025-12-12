@@ -1,7 +1,8 @@
 {
   "name": "@clarity-chat/shared-utils",
-  "version": "0.1.0",
-  "description": "Shared utilities for Clarity Chat packages",
+  "version": "0.1.1",
+  "description": "DEPRECATED: Please use @clarity-chat/utils instead. Shared utilities for Clarity Chat packages",
+  "deprecated": "This package is deprecated. Please use @clarity-chat/utils instead.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,22 +10,6 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./logger": {
-      "import": "./dist/logger.js",
-      "types": "./dist/logger.d.ts"
-    },
-    "./cache": {
-      "import": "./dist/cache.js",
-      "types": "./dist/cache.d.ts"
-    },
-    "./progress": {
-      "import": "./dist/progress.js",
-      "types": "./dist/progress.d.ts"
-    },
-    "./errors": {
-      "import": "./dist/errors.js",
-      "types": "./dist/errors.d.ts"
     }
   },
   "scripts": {
@@ -38,14 +23,12 @@
     "clarity-chat",
     "utilities",
     "shared",
-    "logger",
-    "cache"
+    "deprecated"
   ],
   "author": "Clarity Chat",
   "license": "MIT",
   "dependencies": {
-    "ora": "^8.1.1",
-    "picocolors": "^1.1.1"
+    "@clarity-chat/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
