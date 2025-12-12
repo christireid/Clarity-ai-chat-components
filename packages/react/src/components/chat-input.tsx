@@ -13,6 +13,7 @@ import {
   useRequestDeduplication,
   isDebouncedError,
 } from '../hooks/use-request-deduplication'
+import { DURATION_SECONDS } from '../animations/constants'
 
 export interface ChatInputProps {
   value: string
@@ -221,7 +222,7 @@ export function ChatInput({
         { transform: 'translateX(8px)' },
         { transform: 'translateX(0)' },
       ],
-      { duration: durations.slower, easing: 'ease-in-out' }
+      { duration: DURATION_SECONDS.slower * 1000, easing: 'ease-in-out' }
     )
   }
 
@@ -243,7 +244,9 @@ export function ChatInput({
     setButtonState('loading')
     try {
       // Wrap submission with deduplication to prevent double-submit
-      await dedupeExecute('chat-submit', () => onSubmit(value))
+      await dedupeExecute('chat-submit', async () => {
+        await onSubmit(value)
+      })
       setButtonState('success')
       // Auto-reset after showing success
       setTimeout(() => setButtonState('idle'), 1000)
@@ -291,7 +294,7 @@ export function ChatInput({
             '0 0 0 4px hsl(var(--primary) / 0.15)',
             '0 0 0 4px hsl(var(--primary) / 0.15)',
           ],
-          transition: { duration: durations.moderate, ease: 'easeOut' },
+          transition: { duration: DURATION_SECONDS.slow, ease: 'easeOut' },
         }
       : {
           boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
@@ -313,7 +316,7 @@ export function ChatInput({
         <motion.div
           className="flex-1 relative"
           layout={animateHeight}
-          transition={{ duration: durations.normal, ease: 'easeOut' }}
+          transition={{ duration: DURATION_SECONDS.normal, ease: 'easeOut' }}
         >
           <Textarea
             ref={textareaRef}
@@ -361,7 +364,7 @@ export function ChatInput({
                       animate={{
                         width: `${validMaxLength ? Math.min((charCount / validMaxLength) * 100, 100) : 0}%`,
                       }}
-                      transition={{ duration: durations.normal }}
+                      transition={{ duration: DURATION_SECONDS.normal }}
                     />
                   </div>
 
@@ -373,7 +376,7 @@ export function ChatInput({
                         ? {
                             scale: [1, 1.05, 1],
                             transition: {
-                              duration: durations.slower,
+                              duration: DURATION_SECONDS.slower,
                               repeat: Infinity,
                               ease: 'easeInOut',
                             },
@@ -421,7 +424,7 @@ export function ChatInput({
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: durations.fast }}
+                transition={{ duration: DURATION_SECONDS.fast }}
               >
                 <SendIcon size={19} />
               </motion.div>

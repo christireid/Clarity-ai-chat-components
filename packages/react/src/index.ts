@@ -634,8 +634,8 @@ export { TokenCounter } from './components/token-counter'
 export {
   TokenUsageMeter,
   MODEL_PRICING_PRESETS,
-  type TokenUsage,
-  type ModelPricing,
+  type TokenUsage as TokenUsageMeterData,
+  type ModelPricing as TokenUsageMeterPricing,
   type TokenUsageMeterProps,
 } from './components/token-usage-meter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
