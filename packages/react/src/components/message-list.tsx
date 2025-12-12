@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
 import { TimeSeparator } from './time-separator'
-import { ScrollArea, Button, cn } from '@clarity-chat/primitives'
+import { ScrollArea, Button, cn, useA11y } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { ArrowDownIcon } from './icons'
@@ -26,6 +26,7 @@ import {
   shouldShowTimeSeparator,
 } from '../utils/message-grouping'
 import type { ReactNode } from 'react'
+import { ClarityError } from '../error/clarity-error'
 
 export interface MessageListProps {
   messages: MessageType[]
@@ -45,6 +46,12 @@ export interface MessageListProps {
   enableGrouping?: boolean
   /** Show time separators between days (default: true) */
   showTimeSeparators?: boolean
+  /**
+   * Announce new messages to screen readers via aria-live region
+   * Uses A11yProvider's announce() function for polite announcements
+   * @default true
+   */
+  announceNewMessages?: boolean
   className?: string
 }
 
@@ -96,17 +103,24 @@ export function MessageList({
   emptyState,
   enableGrouping = true,
   showTimeSeparators = true,
+  announceNewMessages = true,
   className,
 }: MessageListProps) {
-  // Runtime validation
+  // Runtime validation with actionable error messages
   if (!Array.isArray(messages)) {
-    throw new Error(
-      'MessageList: "messages" prop must be an array.\n\n' +
-        'Example:\n' +
-        '  <MessageList messages={[]} />\n\n' +
-        'For more help, see: https://clarity-chat.dev/docs/components'
+    throw new ClarityError(
+      'INVALID_MESSAGES_PROP',
+      '"messages" must be an array',
+      {
+        component: 'MessageList',
+        prop: 'messages',
+        received: typeof messages,
+        expected: 'Message[]',
+        docs: 'https://clarity-chat.dev/api/message-list#messages',
+      }
     )
   }
+
   // Use auto-scroll hook with smooth scrolling
   const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
@@ -116,6 +130,38 @@ export function MessageList({
 
   // Accessibility: Respect user's motion preferences
   const prefersReducedMotion = useReducedMotion()
+
+  // Accessibility: Screen reader announcements for new messages
+  const { announce } = useA11y()
+  const prevMessageCountRef = React.useRef(messages.length)
+
+  React.useEffect(() => {
+    if (!announceNewMessages) return
+
+    const prevCount = prevMessageCountRef.current
+    const newCount = messages.length
+
+    // Only announce when new messages are added (not on initial load or deletions)
+    if (newCount > prevCount && prevCount > 0) {
+      const newMessages = messages.slice(prevCount)
+      const latestMessage = newMessages[newMessages.length - 1]
+
+      if (latestMessage) {
+        const sender = latestMessage.role === 'user' ? 'You' : 'Assistant'
+        const preview =
+          latestMessage.content.length > 100
+            ? `${latestMessage.content.slice(0, 100)}...`
+            : latestMessage.content
+
+        announce(`New message from ${sender}: ${preview}`, {
+          assertive: false,
+          clearAfter: 3000,
+        })
+      }
+    }
+
+    prevMessageCountRef.current = newCount
+  }, [messages, announceNewMessages, announce])
 
   // Track message count when user scrolls away
   const [messageCountWhenScrolledAway, setMessageCountWhenScrolledAway] =
@@ -165,8 +211,13 @@ export function MessageList({
       : 0
 
   // React 19: Static function calls - compiler optimizes, no useMemo needed
-  const containerVariants = createStaggerContainerVariant('normal', 0)
-  const itemVariants = createStaggerChildVariant('slide', 'fast')
+  // Apply reduced motion: use opacity-only transitions for accessibility
+  const containerVariants = prefersReducedMotion
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
+    : createStaggerContainerVariant('normal', 0)
+  const itemVariants = prefersReducedMotion
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
+    : createStaggerChildVariant('slide', 'fast')
 
   // React 19: Simple boolean derivation - compiler optimizes
   const showEmptyState = messages.length === 0 && !isLoading && emptyState
@@ -257,11 +308,16 @@ export function MessageList({
                 return (
                   <motion.div
                     key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{
+                      opacity: 0,
+                      y: prefersReducedMotion ? 0 : 10,
+                    }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: DURATION_SECONDS.normal,
-                      delay: index * 0.03,
+                      duration: prefersReducedMotion
+                        ? DURATION_SECONDS.fast
+                        : DURATION_SECONDS.normal,
+                      delay: prefersReducedMotion ? 0 : index * 0.03,
                     }}
                     className="w-full"
                   >
@@ -298,14 +354,21 @@ export function MessageList({
               {/* Show loading skeleton for new messages while fetching */}
               {isLoading && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{
+                    opacity: 0,
+                    y: prefersReducedMotion ? 0 : 10,
+                  }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: DURATION_SECONDS.normal }}
+                  transition={{
+                    duration: prefersReducedMotion
+                      ? DURATION_SECONDS.fast
+                      : DURATION_SECONDS.normal,
+                  }}
                 >
                   <SkeletonMessage
                     role="assistant"
                     lines={3}
-                    variant="shimmer"
+                    variant={prefersReducedMotion ? 'pulse' : 'shimmer'}
                   />
                 </motion.div>
               )}
