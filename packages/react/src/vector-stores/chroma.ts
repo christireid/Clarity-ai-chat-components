@@ -22,6 +22,42 @@ import type {
  */
 export type ChromaConfig = ChromaStoreConfig
 
+/**
+ * Default Chroma endpoint - uses environment variable or localhost for development.
+ * In production, always set CHROMA_ENDPOINT environment variable.
+ */
+const getDefaultChromaEndpoint = (): string => {
+  // Check for environment variable first (works in Node.js and some bundlers)
+  if (typeof process !== 'undefined' && process.env?.CHROMA_ENDPOINT) {
+    return process.env.CHROMA_ENDPOINT
+  }
+  // Fallback to localhost for development
+  return 'http://localhost:8000'
+}
+
+/**
+ * Validates Chroma endpoint configuration and warns about potential issues.
+ */
+const validateEndpoint = (endpoint: string, isExplicitConfig: boolean): void => {
+  const isLocalhost = endpoint.includes('localhost') || endpoint.includes('127.0.0.1')
+  const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+
+  if (isLocalhost && isProduction && !isExplicitConfig) {
+    console.warn(
+      '[ChromaVectorStore] Using localhost endpoint in production environment. ' +
+      'This will likely fail. Set the CHROMA_ENDPOINT environment variable or ' +
+      'pass an explicit endpoint in the config.'
+    )
+  }
+
+  if (isLocalhost && !isExplicitConfig && typeof window !== 'undefined') {
+    console.info(
+      '[ChromaVectorStore] Using default localhost:8000 endpoint. ' +
+      'For production, configure CHROMA_ENDPOINT or pass endpoint in config.'
+    )
+  }
+}
+
 export class ChromaVectorStore implements VectorStore {
   readonly provider = 'chroma'
 
@@ -33,10 +69,15 @@ export class ChromaVectorStore implements VectorStore {
   private initialized = false
 
   constructor(config: ChromaStoreConfig) {
-    this.endpoint = (config.endpoint || 'http://localhost:8000').replace(
+    const isExplicitEndpoint = Boolean(config.endpoint)
+    this.endpoint = (config.endpoint || getDefaultChromaEndpoint()).replace(
       /\/$/,
       ''
     )
+
+    // Validate endpoint configuration
+    validateEndpoint(this.endpoint, isExplicitEndpoint)
+
     this.collectionName = config.indexName
     this.tenant = config.tenant || 'default_tenant'
     this.database = config.database || 'default_database'

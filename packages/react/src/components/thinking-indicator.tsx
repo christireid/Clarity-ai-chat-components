@@ -123,22 +123,55 @@ export function ThinkingIndicator({
         className
       )}
     >
-      {/* Animated Icon - Fixed size container for stability */}
-      <motion.div
-        animate={iconAnimation}
-        transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : {
-                duration: 2,
+      {/* Animated Icon with Pulse Ring - Fixed size container for stability */}
+      <div className="relative flex-shrink-0 flex items-center justify-center w-[32px] h-[32px]">
+        {/* Pulse Ring Animation */}
+        {!prefersReducedMotion && (
+          <>
+            <motion.div
+              animate={{
+                scale: [1, 1.8, 1.8],
+                opacity: [0.6, 0, 0],
+              }}
+              transition={{
+                duration: 1.5,
                 repeat: Infinity,
-                ease: EASING_FRAMER.inOut,
-              }
-        }
-        className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px] text-primary"
-      >
-        {stageIcon}
-      </motion.div>
+                ease: 'easeOut',
+              }}
+              className="absolute inset-0 rounded-full bg-primary/30"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.5, 1.5],
+                opacity: [0.4, 0, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: 'easeOut',
+                delay: 0.3,
+              }}
+              className="absolute inset-0 rounded-full bg-primary/20"
+            />
+          </>
+        )}
+        {/* Icon Container */}
+        <motion.div
+          animate={iconAnimation}
+          transition={
+            prefersReducedMotion
+              ? { duration: 0 }
+              : {
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: EASING_FRAMER.inOut,
+                }
+          }
+          className="relative z-10 flex items-center justify-center w-[32px] h-[32px] rounded-full bg-primary/10 text-primary"
+        >
+          {stageIcon}
+        </motion.div>
+      </div>
 
       {/* Status Text - Proper flex layout */}
       <div className="flex-1 min-w-0">
