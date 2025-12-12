@@ -7,7 +7,7 @@ import { announce, getLoadingAriaAttributes } from '../lib/aria'
 import { useRippleEffect } from '../hooks/use-ripple-effect'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { useComposedRefs } from '../hooks/use-composed-refs'
-import { LoadingIcon, SuccessIcon, ErrorIcon } from './button-state-icons'
+import { LoadingIcon, SuccessIcon, ErrorIcon } from './icons'
 import { Button as ShadcnButton } from './ui/button'
 
 /**

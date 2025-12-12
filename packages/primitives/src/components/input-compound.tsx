@@ -9,10 +9,7 @@ import { getErrorAriaAttributes } from '../lib/aria'
 import { useComposedRefs } from '../hooks/use-composed-refs'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { Label } from './ui/label'
-import {
-  CloseIcon,
-  CharacterCount as SharedCharacterCount,
-} from './button-state-icons'
+import { CloseIcon, CharacterCount as SharedCharacterCount } from './icons'
 
 // ============================================================================
 // Input Context

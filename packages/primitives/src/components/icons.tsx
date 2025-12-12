@@ -1,6 +1,13 @@
 import * as React from 'react'
 import { cn } from '../lib/utils'
 
+// ============================================================================
+// Shared Icons & Display Components
+// ============================================================================
+// This file contains reusable icons and small display components used across
+// the primitives package. Includes both generic icons (CloseIcon) and
+// button-specific state icons (LoadingIcon, SuccessIcon, ErrorIcon).
+
 /**
  * Close/X icon used in dialogs, input clear buttons, etc.
  * Uses Radix Icons' Cross2 icon path
@@ -67,6 +74,10 @@ export const CharacterCount: React.FC<CharacterCountProps> = React.memo(
   }
 )
 CharacterCount.displayName = 'CharacterCount'
+
+// ============================================================================
+// Button State Icons
+// ============================================================================
 
 /**
  * Loading spinner icon for button loading state

@@ -8,7 +8,7 @@ import { useComposedRefs } from '../hooks/use-composed-refs'
 import { ErrorMessage } from './error-message'
 import { Textarea as ShadcnTextarea } from './ui/textarea'
 import { Label } from './ui/label'
-import { CharacterCount } from './button-state-icons'
+import { CharacterCount } from './icons'
 
 // ============================================================================
 // Variants

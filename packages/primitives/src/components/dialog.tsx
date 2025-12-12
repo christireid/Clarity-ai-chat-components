@@ -10,7 +10,7 @@ import {
 } from 'framer-motion'
 import { cn } from '../lib/utils'
 import { saveFocus, getFocusableElements, announce } from '../lib/aria'
-import { CloseIcon } from './button-state-icons'
+import { CloseIcon } from './icons'
 import {
   springPresets,
   easingPresets,

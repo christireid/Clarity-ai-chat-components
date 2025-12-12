@@ -244,8 +244,8 @@ export {
   ErrorIcon,
   CloseIcon,
   CharacterCount,
-} from './components/button-state-icons'
-export type { CharacterCountProps } from './components/button-state-icons'
+} from './components/icons'
+export type { CharacterCountProps } from './components/icons'
 
 export { Kbd, useFormattedShortcut } from './components/kbd'
 export type {

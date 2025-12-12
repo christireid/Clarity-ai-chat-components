@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { LoadingIcon, SuccessIcon, ErrorIcon } from '../button-state-icons'
+import { LoadingIcon, SuccessIcon, ErrorIcon } from '../icons'
 
 describe('Button State Icons', () => {
   describe('LoadingIcon', () => {
@@ -23,7 +23,9 @@ describe('Button State Icons', () => {
     })
 
     it('should accept custom className', () => {
-      const { container } = render(<LoadingIcon className="custom-loading h-6 w-6" />)
+      const { container } = render(
+        <LoadingIcon className="custom-loading h-6 w-6" />
+      )
       const svg = container.querySelector('.custom-loading')
       expect(svg).toBeInTheDocument()
       expect(svg).toHaveClass('h-6', 'w-6')
@@ -53,7 +55,9 @@ describe('Button State Icons', () => {
 
     it('should have scale-in animation class', () => {
       const { container } = render(<SuccessIcon />)
-      const svg = container.querySelector('.animate-\\[scale-in_0\\.2s_ease-out\\]')
+      const svg = container.querySelector(
+        '.animate-\\[scale-in_0\\.2s_ease-out\\]'
+      )
       expect(svg).toBeInTheDocument()
     })
 
@@ -64,7 +68,9 @@ describe('Button State Icons', () => {
     })
 
     it('should accept custom className', () => {
-      const { container } = render(<SuccessIcon className="custom-success h-8 w-8" />)
+      const { container } = render(
+        <SuccessIcon className="custom-success h-8 w-8" />
+      )
       const svg = container.querySelector('.custom-success')
       expect(svg).toBeInTheDocument()
       expect(svg).toHaveClass('h-8', 'w-8')
@@ -92,7 +98,9 @@ describe('Button State Icons', () => {
 
     it('should have shake animation class', () => {
       const { container } = render(<ErrorIcon />)
-      const svg = container.querySelector('.animate-\\[shake_0\\.4s_ease-in-out\\]')
+      const svg = container.querySelector(
+        '.animate-\\[shake_0\\.4s_ease-in-out\\]'
+      )
       expect(svg).toBeInTheDocument()
     })
 
@@ -103,7 +111,9 @@ describe('Button State Icons', () => {
     })
 
     it('should accept custom className', () => {
-      const { container } = render(<ErrorIcon className="custom-error h-10 w-10" />)
+      const { container } = render(
+        <ErrorIcon className="custom-error h-10 w-10" />
+      )
       const svg = container.querySelector('.custom-error')
       expect(svg).toBeInTheDocument()
       expect(svg).toHaveClass('h-10', 'w-10')
@@ -126,10 +136,10 @@ describe('Button State Icons', () => {
     it('should memoize LoadingIcon', () => {
       const { rerender } = render(<LoadingIcon />)
       const firstRender = screen.getByRole('generic')
-      
+
       rerender(<LoadingIcon />)
       const secondRender = screen.getByRole('generic')
-      
+
       // Component should be memoized (same reference in real scenario)
       expect(firstRender).toBeInTheDocument()
       expect(secondRender).toBeInTheDocument()
@@ -138,10 +148,10 @@ describe('Button State Icons', () => {
     it('should memoize SuccessIcon', () => {
       const { rerender } = render(<SuccessIcon />)
       const firstRender = screen.getByRole('generic')
-      
+
       rerender(<SuccessIcon />)
       const secondRender = screen.getByRole('generic')
-      
+
       expect(firstRender).toBeInTheDocument()
       expect(secondRender).toBeInTheDocument()
     })
@@ -149,10 +159,10 @@ describe('Button State Icons', () => {
     it('should memoize ErrorIcon', () => {
       const { rerender } = render(<ErrorIcon />)
       const firstRender = screen.getByRole('generic')
-      
+
       rerender(<ErrorIcon />)
       const secondRender = screen.getByRole('generic')
-      
+
       expect(firstRender).toBeInTheDocument()
       expect(secondRender).toBeInTheDocument()
     })

@@ -11,7 +11,7 @@ import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { ErrorMessage } from './error-message'
 import { Input as ShadcnInput } from './ui/input'
 import { Label } from './ui/label'
-import { CloseIcon, CharacterCount } from './button-state-icons'
+import { CloseIcon, CharacterCount } from './icons'
 
 /**
  * Input variant styles using Class Variance Authority
