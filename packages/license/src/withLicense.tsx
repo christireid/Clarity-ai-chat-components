@@ -7,9 +7,15 @@
  */
 
 import * as React from 'react'
-import { LicenseInfo } from './LicenseInfo'
-import { verifyLicense } from './verifyLicense'
 import { WatermarkOverlay } from './Watermark'
+import { LicenseLoadingSkeleton } from './LicenseUI'
+import { useLicenseStatus, useIsHydrated } from './hooks'
+import {
+  isPlanSufficient,
+  hasWarnedRecently,
+  markWarningShown,
+  isDevelopment,
+} from './constants'
 import type { LicensePlan, LicenseStatus } from './types'
 
 /**
@@ -33,39 +39,6 @@ export interface WithLicenseOptions {
 
   /** Custom fallback component for unlicensed state */
   fallback?: React.ComponentType<{ status: LicenseStatus }>
-}
-
-/**
- * Track if we've already logged the warning for this session.
- * Uses a Map with timestamps for automatic cleanup of old entries.
- */
-const warnedComponents = new Map<string, number>()
-
-/** Maximum age for warned components (1 hour) */
-const WARNING_TTL_MS = 60 * 60 * 1000
-
-/**
- * Check if a component has been warned recently.
- * Automatically cleans up old entries to prevent memory leaks.
- */
-function hasWarnedRecently(componentName: string): boolean {
-  const now = Date.now()
-
-  // Clean up old entries (older than TTL)
-  for (const [name, timestamp] of warnedComponents.entries()) {
-    if (now - timestamp > WARNING_TTL_MS) {
-      warnedComponents.delete(name)
-    }
-  }
-
-  return warnedComponents.has(componentName)
-}
-
-/**
- * Mark a component as warned.
- */
-function markAsWarned(componentName: string): void {
-  warnedComponents.set(componentName, Date.now())
 }
 
 /**
@@ -102,10 +75,29 @@ export function withLicense<P extends object>(
   } = options
 
   const LicensedComponent: React.FC<P> = (props) => {
+    // Use reactive hook for license status - updates when license key changes
+    const baseStatus = useLicenseStatus()
+
+    // Compute final status with plan requirements
     const status = React.useMemo(() => {
-      const key = LicenseInfo.getLicenseKey()
-      return verifyLicense(key, { requiredPlan })
-    }, [])
+      if (!requiredPlan) return baseStatus
+
+      // Check plan sufficiency
+      const isValid =
+        baseStatus.status === 'Valid' || baseStatus.status === 'GracePeriod'
+      if (
+        isValid &&
+        baseStatus.payload &&
+        !isPlanSufficient(baseStatus.payload.plan, requiredPlan)
+      ) {
+        return {
+          ...baseStatus,
+          status: 'PlanMismatch' as const,
+          reason: `Requires ${requiredPlan} plan, current: ${baseStatus.payload.plan}`,
+        }
+      }
+      return baseStatus
+    }, [baseStatus, requiredPlan])
 
     // Show console warning once per component type (with TTL to prevent memory leaks)
     React.useEffect(() => {
@@ -113,9 +105,10 @@ export function withLicense<P extends object>(
         status.status !== 'Valid' &&
         status.status !== 'GracePeriod' &&
         showConsoleWarning &&
+        isDevelopment() &&
         !hasWarnedRecently(componentName)
       ) {
-        markAsWarned(componentName)
+        markWarningShown(componentName)
         console.warn(
           `%c[Clarity Chat]%c ${componentName} requires a valid license.\n` +
             `Status: ${status.status}\n` +
@@ -226,12 +219,10 @@ export function withLicenseStatus<P extends object>(
   const ComponentWithLicenseStatus: React.FC<
     Omit<P, keyof WithLicenseStatusProps>
   > = (props) => {
-    const licenseStatus = React.useMemo(() => {
-      const key = LicenseInfo.getLicenseKey()
-      return verifyLicense(key)
-    }, [])
-
-    const isLicensed = licenseStatus.status === 'Valid'
+    // Use reactive hook - updates when license key changes
+    const licenseStatus = useLicenseStatus()
+    const isLicensed =
+      licenseStatus.status === 'Valid' || licenseStatus.status === 'GracePeriod'
 
     return (
       <WrappedComponent
@@ -246,3 +237,76 @@ export function withLicenseStatus<P extends object>(
 
   return ComponentWithLicenseStatus
 }
+
+/**
+ * Props for LicenseGate component
+ */
+export interface LicenseGateProps {
+  /** Required plan level */
+  requiredPlan: LicensePlan
+  /** Child content to render when licensed */
+  children: React.ReactNode
+  /** Optional fallback to render when not licensed */
+  fallback?: React.ReactNode
+  /** Optional loading content shown during SSR hydration (defaults to skeleton) */
+  loading?: React.ReactNode
+  /** Disable default loading skeleton */
+  noLoadingSkeleton?: boolean
+}
+
+// Default loading element - created once to avoid recreating on each render
+const defaultLoadingElement = React.createElement(LicenseLoadingSkeleton)
+
+/**
+ * Component that only renders children if properly licensed.
+ * Does not show watermark - just gates access to content.
+ * Reactive to license changes and SSR-safe.
+ *
+ * @example
+ * ```tsx
+ * <LicenseGate
+ *   requiredPlan="enterprise"
+ *   fallback={<UpgradePrompt />}
+ *   loading={<Skeleton />}
+ * >
+ *   <EnterpriseFeature />
+ * </LicenseGate>
+ * ```
+ */
+export function LicenseGate({
+  requiredPlan,
+  children,
+  fallback = null,
+  loading,
+  noLoadingSkeleton = false,
+}: LicenseGateProps): React.ReactElement {
+  // Determine loading content: explicit loading prop > default skeleton > null
+  const loadingContent =
+    loading !== undefined
+      ? loading
+      : noLoadingSkeleton
+        ? null
+        : defaultLoadingElement
+  const isHydrated = useIsHydrated()
+  const status = useLicenseStatus()
+
+  // During SSR/hydration, show loading state to prevent flash
+  if (!isHydrated) {
+    return <>{loadingContent}</>
+  }
+
+  // Check if license is valid and meets plan requirements
+  const isValid = status.status === 'Valid' || status.status === 'GracePeriod'
+  const hasSufficientPlan =
+    isValid &&
+    status.payload &&
+    isPlanSufficient(status.payload.plan, requiredPlan)
+
+  if (!isValid || !hasSufficientPlan) {
+    return <>{fallback}</>
+  }
+
+  return <>{children}</>
+}
+
+LicenseGate.displayName = 'LicenseGate'
