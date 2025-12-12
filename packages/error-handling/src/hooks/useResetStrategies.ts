@@ -68,8 +68,10 @@ export function useResetStrategies(
   } = options
 
   const hasError = useRef(false)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
-  const prevKeysRef = useRef<unknown[]>()
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  )
+  const prevKeysRef = useRef<unknown[] | undefined>(undefined)
 
   const reset = useCallback(
     (reason: ResetReason = 'manual') => {

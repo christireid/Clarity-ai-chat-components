@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <rect x="40" y="40" width="1120" height="550" rx="12" fill="#1e293b"/>
+
+  <!-- Header -->
+  <rect x="40" y="40" width="1120" height="60" rx="12" fill="#334155"/>
+  <circle cx="80" cy="70" r="12" fill="#8b5cf6"/>
+  <rect x="105" y="60" width="180" height="20" rx="4" fill="#64748b"/>
+
+  <!-- Tab bar -->
+  <rect x="60" y="120" width="140" height="36" rx="8" fill="#8b5cf6"/>
+  <rect x="80" y="130" width="100" height="16" rx="2" fill="#c4b5fd"/>
+  <rect x="220" y="120" width="140" height="36" rx="8" fill="#334155"/>
+  <rect x="240" y="130" width="100" height="16" rx="2" fill="#64748b"/>
+  <rect x="380" y="120" width="140" height="36" rx="8" fill="#334155"/>
+  <rect x="400" y="130" width="100" height="16" rx="2" fill="#64748b"/>
+
+  <!-- Battery indicator -->
+  <rect x="1040" y="125" width="80" height="28" rx="6" fill="#334155" stroke="#475569" stroke-width="2"/>
+  <rect x="1048" y="133" width="50" height="12" rx="2" fill="#22c55e"/>
+  <text x="1055" y="145" fill="#22c55e" font-family="system-ui" font-size="10">87%</text>
+
+  <!-- Performance Dashboard Panel -->
+  <rect x="60" y="180" width="540" height="200" rx="8" fill="#334155"/>
+  <rect x="80" y="200" width="150" height="16" rx="2" fill="#64748b"/>
+
+  <!-- Metrics cards -->
+  <rect x="80" y="230" width="110" height="60" rx="6" fill="#1e293b"/>
+  <text x="135" y="255" fill="#8b5cf6" font-family="system-ui" font-size="18" text-anchor="middle">60</text>
+  <text x="135" y="275" fill="#64748b" font-family="system-ui" font-size="10" text-anchor="middle">FPS</text>
+
+  <rect x="200" y="230" width="110" height="60" rx="6" fill="#1e293b"/>
+  <text x="255" y="255" fill="#22c55e" font-family="system-ui" font-size="18" text-anchor="middle">24</text>
+  <text x="255" y="275" fill="#64748b" font-family="system-ui" font-size="10" text-anchor="middle">Renders</text>
+
+  <rect x="320" y="230" width="110" height="60" rx="6" fill="#1e293b"/>
+  <text x="375" y="255" fill="#f59e0b" font-family="system-ui" font-size="18" text-anchor="middle">48MB</text>
+  <text x="375" y="275" fill="#64748b" font-family="system-ui" font-size="10" text-anchor="middle">Memory</text>
+
+  <rect x="440" y="230" width="110" height="60" rx="6" fill="#1e293b"/>
+  <text x="495" y="255" fill="#3b82f6" font-family="system-ui" font-size="18" text-anchor="middle">45ms</text>
+  <text x="495" y="275" fill="#64748b" font-family="system-ui" font-size="10" text-anchor="middle">Latency</text>
+
+  <!-- Performance chart placeholder -->
+  <rect x="80" y="310" width="500" height="50" rx="4" fill="#1e293b"/>
+  <polyline points="100,345 150,330 200,340 250,320 300,335 350,315 400,330 450,310 500,325 550,305" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+
+  <!-- Suggestions Panel -->
+  <rect x="620" y="180" width="520" height="200" rx="8" fill="#334155"/>
+  <rect x="640" y="200" width="180" height="16" rx="2" fill="#64748b"/>
+
+  <!-- Suggestion chips -->
+  <rect x="640" y="235" width="200" height="36" rx="18" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+  <rect x="660" y="247" width="160" height="12" rx="2" fill="#8b5cf6"/>
+
+  <rect x="860" y="235" width="160" height="36" rx="18" fill="#1e293b"/>
+  <rect x="880" y="247" width="120" height="12" rx="2" fill="#64748b"/>
+
+  <rect x="640" y="285" width="180" height="36" rx="18" fill="#1e293b"/>
+  <rect x="660" y="297" width="140" height="12" rx="2" fill="#64748b"/>
+
+  <rect x="840" y="285" width="170" height="36" rx="18" fill="#1e293b"/>
+  <rect x="860" y="297" width="130" height="12" rx="2" fill="#64748b"/>
+
+  <rect x="640" y="335" width="220" height="36" rx="18" fill="#1e293b"/>
+  <rect x="660" y="347" width="180" height="12" rx="2" fill="#64748b"/>
+
+  <!-- Battery-Aware Status -->
+  <rect x="60" y="400" width="540" height="140" rx="8" fill="#334155"/>
+  <rect x="80" y="420" width="200" height="16" rx="2" fill="#64748b"/>
+  <circle cx="95" cy="470" r="30" fill="#1e293b" stroke="#22c55e" stroke-width="4"/>
+  <text x="95" y="475" fill="#22c55e" font-family="system-ui" font-size="12" text-anchor="middle">OK</text>
+  <rect x="150" y="455" width="400" height="12" rx="2" fill="#64748b"/>
+  <rect x="150" y="475" width="350" height="12" rx="2" fill="#64748b"/>
+  <rect x="150" y="495" width="280" height="12" rx="2" fill="#64748b"/>
+
+  <!-- Chat Preview -->
+  <rect x="620" y="400" width="520" height="140" rx="8" fill="#334155"/>
+  <rect x="900" y="420" width="200" height="40" rx="8" fill="#8b5cf6"/>
+  <rect x="920" y="432" width="160" height="12" rx="2" fill="#c4b5fd"/>
+  <rect x="640" y="480" width="280" height="40" rx="8" fill="#1e293b"/>
+  <rect x="660" y="492" width="200" height="12" rx="2" fill="#64748b"/>
+
+  <!-- Label -->
+  <text x="600" y="600" fill="#64748b" font-family="system-ui, sans-serif" font-size="14" text-anchor="middle">Advanced Features - Battery-Aware &amp; Performance Demo</text>
+</svg>

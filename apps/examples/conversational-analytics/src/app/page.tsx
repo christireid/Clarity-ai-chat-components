@@ -20,14 +20,7 @@ import { InsightCards } from '@/components/InsightCards'
 import { ChartGallery } from '@/components/ChartGallery'
 import { DataExplorer } from '@/components/DataExplorer'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  BarChart3,
-  Database,
-  Sparkles,
-  TrendingUp,
-  Zap,
-  Lightbulb,
-} from 'lucide-react'
+import { BarChart, Search } from 'lucide-react'
 
 export default function ConversationalAnalytics() {
   const [activeView, setActiveView] = useState<
@@ -124,7 +117,7 @@ export default function ConversationalAnalytics() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
-                  <BarChart3 className="w-6 h-6 text-white" />
+                  <BarChart className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -145,7 +138,7 @@ export default function ConversationalAnalytics() {
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <Zap className="w-4 h-4 inline mr-2" />
+                  <span className="mr-2">⚡</span>
                   Chat
                 </button>
                 <button
@@ -156,7 +149,7 @@ export default function ConversationalAnalytics() {
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <BarChart3 className="w-4 h-4 inline mr-2" />
+                  <span className="mr-2">📊</span>
                   Dashboard
                 </button>
                 <button
@@ -167,7 +160,7 @@ export default function ConversationalAnalytics() {
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <Database className="w-4 h-4 inline mr-2" />
+                  <span className="mr-2">🗄️</span>
                   Explorer
                 </button>
               </div>
@@ -197,7 +190,7 @@ export default function ConversationalAnalytics() {
                     {insights.length > 0 && (
                       <div className="mt-6">
                         <h3 className="font-semibold mb-3 flex items-center">
-                          <Lightbulb className="w-4 h-4 mr-2 text-yellow-500" />
+                          <span className="mr-2">💡</span>
                           Key Insights
                         </h3>
                         <InsightCards insights={insights.slice(-5)} />
@@ -225,7 +218,7 @@ export default function ConversationalAnalytics() {
                               {Array.isArray(message.metadata?.insights) && (
                                 <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
                                   <h4 className="font-semibold mb-2 flex items-center">
-                                    <Sparkles className="w-4 h-4 mr-2 text-yellow-600 dark:text-yellow-400" />
+                                    <span className="mr-2">✨</span>
                                     AI Insights
                                   </h4>
                                   <ul className="space-y-1">
@@ -273,7 +266,7 @@ export default function ConversationalAnalytics() {
                 <aside className="w-96 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-y-auto">
                   <div className="p-4">
                     <h3 className="font-semibold mb-4 flex items-center">
-                      <TrendingUp className="w-4 h-4 mr-2" />
+                      <span className="mr-2">📈</span>
                       Generated Charts
                     </h3>
                     <ChartGallery charts={generatedCharts} />

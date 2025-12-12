@@ -13,8 +13,7 @@ interface ModelConfig {
   model: string
   temperature?: number
   maxTokens?: number
-  // Note: apiKey is intentionally NOT accepted from client for security
-  // API keys should only come from server-side environment variables
+  apiKey?: string // Provided by server from environment variables, not from client
 }
 
 interface TokenUsage {
@@ -23,17 +22,20 @@ interface TokenUsage {
   totalTokens: number
 }
 
-type StreamChunk = 
+type StreamChunk =
   | { type: 'token'; content: string }
   | { type: 'done'; usage: TokenUsage }
   | { type: 'error'; error: string }
 
 // OpenAI Adapter
-async function* streamOpenAI(messages: ChatMessage[], config: ModelConfig): AsyncGenerator<StreamChunk> {
+async function* streamOpenAI(
+  messages: ChatMessage[],
+  config: ModelConfig
+): AsyncGenerator<StreamChunk> {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${config.apiKey}`,
+      Authorization: `Bearer ${config.apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -58,13 +60,16 @@ async function* streamOpenAI(messages: ChatMessage[], config: ModelConfig): Asyn
     if (done) break
 
     const chunk = decoder.decode(value, { stream: true })
-    const lines = chunk.split('\n').filter(line => line.trim() !== '')
+    const lines = chunk.split('\n').filter((line) => line.trim() !== '')
 
     for (const line of lines) {
       if (line.startsWith('data: ')) {
         const data = line.slice(6)
         if (data === '[DONE]') {
-          yield { type: 'done', usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 } }
+          yield {
+            type: 'done',
+            usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+          }
           return
         }
 
@@ -83,9 +88,12 @@ async function* streamOpenAI(messages: ChatMessage[], config: ModelConfig): Asyn
 }
 
 // Anthropic Adapter
-async function* streamAnthropic(messages: ChatMessage[], config: ModelConfig): AsyncGenerator<StreamChunk> {
-  const systemMessage = messages.find(m => m.role === 'system')
-  const userMessages = messages.filter(m => m.role !== 'system')
+async function* streamAnthropic(
+  messages: ChatMessage[],
+  config: ModelConfig
+): AsyncGenerator<StreamChunk> {
+  const systemMessage = messages.find((m) => m.role === 'system')
+  const userMessages = messages.filter((m) => m.role !== 'system')
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -117,19 +125,22 @@ async function* streamAnthropic(messages: ChatMessage[], config: ModelConfig): A
     if (done) break
 
     const chunk = decoder.decode(value, { stream: true })
-    const lines = chunk.split('\n').filter(line => line.trim() !== '')
+    const lines = chunk.split('\n').filter((line) => line.trim() !== '')
 
     for (const line of lines) {
       if (line.startsWith('data: ')) {
         const data = line.slice(6)
-        
+
         try {
           const json = JSON.parse(data)
-          
+
           if (json.type === 'content_block_delta' && json.delta?.text) {
             yield { type: 'token', content: json.delta.text }
           } else if (json.type === 'message_stop') {
-            yield { type: 'done', usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 } }
+            yield {
+              type: 'done',
+              usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+            }
             return
           }
         } catch (e) {
@@ -140,11 +151,14 @@ async function* streamAnthropic(messages: ChatMessage[], config: ModelConfig): A
   }
 }
 
-// Google AI Adapter  
-async function* streamGoogle(messages: ChatMessage[], config: ModelConfig): AsyncGenerator<StreamChunk> {
-  const contents = messages.map(m => ({
+// Google AI Adapter
+async function* streamGoogle(
+  messages: ChatMessage[],
+  config: ModelConfig
+): AsyncGenerator<StreamChunk> {
+  const contents = messages.map((m) => ({
     role: m.role === 'user' ? 'user' : 'model',
-    parts: [{ text: m.content }]
+    parts: [{ text: m.content }],
   }))
 
   const response = await fetch(
@@ -175,7 +189,7 @@ async function* streamGoogle(messages: ChatMessage[], config: ModelConfig): Asyn
     if (done) break
 
     const chunk = decoder.decode(value, { stream: true })
-    const lines = chunk.split('\n').filter(line => line.trim() !== '')
+    const lines = chunk.split('\n').filter((line) => line.trim() !== '')
 
     for (const line of lines) {
       try {
@@ -190,7 +204,10 @@ async function* streamGoogle(messages: ChatMessage[], config: ModelConfig): Asyn
     }
   }
 
-  yield { type: 'done', usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 } }
+  yield {
+    type: 'done',
+    usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+  }
 }
 
 // Cost estimation
@@ -211,7 +228,10 @@ function estimateCost(usage: TokenUsage, model: string): number {
   }
 
   const pricing = costs[model] || { input: 0, output: 0 }
-  return (usage.promptTokens * pricing.input / 1000) + (usage.completionTokens * pricing.output / 1000)
+  return (
+    (usage.promptTokens * pricing.input) / 1000 +
+    (usage.completionTokens * pricing.output) / 1000
+  )
 }
 
 // Helper to get the correct adapter based on provider
@@ -251,7 +271,9 @@ export async function POST(request: NextRequest) {
 
     if (!config || !config.provider || !config.model) {
       return new Response(
-        JSON.stringify({ error: 'Valid config with provider and model is required' }),
+        JSON.stringify({
+          error: 'Valid config with provider and model is required',
+        }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
@@ -272,9 +294,9 @@ export async function POST(request: NextRequest) {
 
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: `API key not found for provider: ${config.provider}`,
-          hint: `Set ${config.provider.toUpperCase()}_API_KEY environment variable`
+          hint: `Set ${config.provider.toUpperCase()}_API_KEY environment variable`,
         }),
         { status: 401, headers: { 'Content-Type': 'application/json' } }
       )
@@ -302,10 +324,12 @@ export async function POST(request: NextRequest) {
             // Send each chunk as SSE
             if (chunk.type === 'token') {
               controller.enqueue(
-                encoder.encode(createSSEMessage({
-                  type: 'token',
-                  content: chunk.content
-                }))
+                encoder.encode(
+                  createSSEMessage({
+                    type: 'token',
+                    content: chunk.content,
+                  })
+                )
               )
               completionTokens++
             } else if (chunk.type === 'done') {
@@ -316,26 +340,30 @@ export async function POST(request: NextRequest) {
               const usage = {
                 promptTokens: 50, // Rough estimate
                 completionTokens,
-                totalTokens: 50 + completionTokens
+                totalTokens: 50 + completionTokens,
               }
 
               const cost = estimateCost(usage, config.model)
 
               // Send completion message
               controller.enqueue(
-                encoder.encode(createSSEMessage({
-                  type: 'done',
-                  usage,
-                  cost,
-                  duration
-                }))
+                encoder.encode(
+                  createSSEMessage({
+                    type: 'done',
+                    usage,
+                    cost,
+                    duration,
+                  })
+                )
               )
             } else if (chunk.type === 'error') {
               controller.enqueue(
-                encoder.encode(createSSEMessage({
-                  type: 'error',
-                  error: chunk.error
-                }))
+                encoder.encode(
+                  createSSEMessage({
+                    type: 'error',
+                    error: chunk.error,
+                  })
+                )
               )
             }
           }
@@ -344,18 +372,20 @@ export async function POST(request: NextRequest) {
           controller.close()
         } catch (error: any) {
           console.error('Streaming error:', error)
-          
+
           // Send error message
           controller.enqueue(
-            encoder.encode(createSSEMessage({
-              type: 'error',
-              error: error.message || 'An error occurred during streaming'
-            }))
+            encoder.encode(
+              createSSEMessage({
+                type: 'error',
+                error: error.message || 'An error occurred during streaming',
+              })
+            )
           )
-          
+
           controller.close()
         }
-      }
+      },
     })
 
     // Return SSE response
@@ -363,19 +393,19 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     })
   } catch (error: any) {
     console.error('API error:', error)
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message || 'Internal server error',
-        details: error.stack 
+        details: error.stack,
       }),
-      { 
-        status: 500, 
-        headers: { 'Content-Type': 'application/json' } 
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
       }
     )
   }

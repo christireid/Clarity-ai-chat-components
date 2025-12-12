@@ -1,6 +1,6 @@
 'use client'
 
-import { Lightbulb } from 'lucide-react'
+// Using emoji for lightbulb icon
 import { motion } from 'framer-motion'
 
 interface Insight {
@@ -25,8 +25,10 @@ export function InsightCards({ insights }: InsightCardsProps) {
           className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg p-3 border border-yellow-200 dark:border-yellow-800"
         >
           <div className="flex items-start space-x-2">
-            <Lightbulb className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-gray-700 dark:text-gray-300">{insight.text}</p>
+            <span className="mt-0.5 flex-shrink-0">💡</span>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {insight.text}
+            </p>
           </div>
         </motion.div>
       ))}

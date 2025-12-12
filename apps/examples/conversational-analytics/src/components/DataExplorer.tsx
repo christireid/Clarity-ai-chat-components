@@ -1,16 +1,32 @@
 'use client'
 
-import { Database, Table, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useState } from 'react'
 
 export function DataExplorer() {
   const [selectedTable, setSelectedTable] = useState<string | null>(null)
 
   const tables = [
-    { name: 'sales', columns: ['id', 'date', 'amount', 'region', 'product'], rowCount: 12450 },
-    { name: 'users', columns: ['id', 'email', 'created_at', 'status'], rowCount: 8470 },
-    { name: 'products', columns: ['id', 'name', 'category', 'price'], rowCount: 234 },
-    { name: 'orders', columns: ['id', 'user_id', 'total', 'status', 'created_at'], rowCount: 15230 },
+    {
+      name: 'sales',
+      columns: ['id', 'date', 'amount', 'region', 'product'],
+      rowCount: 12450,
+    },
+    {
+      name: 'users',
+      columns: ['id', 'email', 'created_at', 'status'],
+      rowCount: 8470,
+    },
+    {
+      name: 'products',
+      columns: ['id', 'name', 'category', 'price'],
+      rowCount: 234,
+    },
+    {
+      name: 'orders',
+      columns: ['id', 'user_id', 'total', 'status', 'created_at'],
+      rowCount: 15230,
+    },
   ]
 
   return (
@@ -28,7 +44,7 @@ export function DataExplorer() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="font-semibold flex items-center">
-                <Database className="w-5 h-5 mr-2" />
+                <span className="mr-2">🗄️</span>
                 Data Sources
               </h2>
             </div>
@@ -46,7 +62,7 @@ export function DataExplorer() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <Table className="w-4 h-4" />
+                        <span>📋</span>
                         <span className="font-medium">{table.name}</span>
                       </div>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -72,15 +88,19 @@ export function DataExplorer() {
                   Columns
                 </h3>
                 <div className="space-y-2">
-                  {tables.find(t => t.name === selectedTable)?.columns.map((column, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded"
-                    >
-                      <code className="text-sm">{column}</code>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">string</span>
-                    </div>
-                  ))}
+                  {tables
+                    .find((t) => t.name === selectedTable)
+                    ?.columns.map((column, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded"
+                      >
+                        <code className="text-sm">{column}</code>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          string
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>

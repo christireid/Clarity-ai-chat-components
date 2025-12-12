@@ -154,7 +154,7 @@ export function ErrorAnalyticsProvider({
         errorCode: isClarity ? error.code : undefined,
         message: error.message,
         recoverable: isClarity ? error.recoverable : true,
-        provider: context?.provider as string | undefined,
+        provider: context?.['provider'] as string | undefined,
         retryCount: 0,
         recovered: false,
       }

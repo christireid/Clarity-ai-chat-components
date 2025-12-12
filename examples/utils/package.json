@@ -25,6 +25,10 @@
     "./keyboard": {
       "types": "./keyboard/KeyboardShortcutsGuide.tsx",
       "import": "./keyboard/KeyboardShortcutsGuide.tsx"
+    },
+    "./pages": {
+      "types": "./pages/index.ts",
+      "import": "./pages/index.ts"
     }
   },
   "peerDependencies": {

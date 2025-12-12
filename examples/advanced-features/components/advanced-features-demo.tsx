@@ -12,10 +12,26 @@ interface Props {
 
 function EnhancedSuggestionsDemo() {
   const [suggestions] = useState([
-    { text: 'Explain this concept in simpler terms', confidence: 0.92, category: 'clarify' },
-    { text: 'Can you provide an example?', confidence: 0.88, category: 'example' },
-    { text: 'What are the best practices?', confidence: 0.85, category: 'best-practices' },
-    { text: 'How does this compare to alternatives?', confidence: 0.78, category: 'compare' },
+    {
+      text: 'Explain this concept in simpler terms',
+      confidence: 0.92,
+      category: 'clarify',
+    },
+    {
+      text: 'Can you provide an example?',
+      confidence: 0.88,
+      category: 'example',
+    },
+    {
+      text: 'What are the best practices?',
+      confidence: 0.85,
+      category: 'best-practices',
+    },
+    {
+      text: 'How does this compare to alternatives?',
+      confidence: 0.78,
+      category: 'compare',
+    },
   ])
 
   return (
@@ -46,9 +62,7 @@ function EnhancedSuggestionsDemo() {
                 <span className="text-xs text-muted-foreground">
                   {Math.round(suggestion.confidence * 100)}% match
                 </span>
-                <div
-                  className="w-16 h-1.5 bg-muted-foreground/20 rounded-full overflow-hidden"
-                >
+                <div className="w-16 h-1.5 bg-muted-foreground/20 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary rounded-full"
                     style={{ width: `${suggestion.confidence * 100}%` }}
@@ -77,61 +91,189 @@ function EnhancedSuggestionsDemo() {
 }
 
 // =============================================================================
-// Battery Aware Demo
+// Battery Aware Demo with Real API
 // =============================================================================
 
-function BatteryAwareDemo() {
-  const [batteryLevel, setBatteryLevel] = useState(0.65)
-  const [isCharging, setIsCharging] = useState(false)
+interface BatteryManager {
+  charging: boolean
+  chargingTime: number
+  dischargingTime: number
+  level: number
+  addEventListener: (type: string, listener: () => void) => void
+  removeEventListener: (type: string, listener: () => void) => void
+}
 
-  const recommendations = batteryLevel < 0.2
-    ? { level: 'aggressive', disableAnimations: true, updateInterval: 2000 }
-    : batteryLevel < 0.5
-    ? { level: 'moderate', disableAnimations: false, updateInterval: 1000 }
-    : { level: 'none', disableAnimations: false, updateInterval: 500 }
+declare global {
+  interface Navigator {
+    getBattery?: () => Promise<BatteryManager>
+  }
+}
+
+function useBatteryStatus() {
+  const [batteryLevel, setBatteryLevel] = useState(1)
+  const [isCharging, setIsCharging] = useState(true)
+  const [isSupported, setIsSupported] = useState<boolean | null>(null)
+  const [simulationMode, setSimulationMode] = useState(false)
+
+  useEffect(() => {
+    // Check if Battery API is supported
+    if (typeof navigator === 'undefined' || !navigator.getBattery) {
+      setIsSupported(false)
+      setSimulationMode(true)
+      setBatteryLevel(0.65) // Default simulation value
+      setIsCharging(false)
+      return
+    }
+
+    setIsSupported(true)
+
+    navigator
+      .getBattery()
+      .then((battery) => {
+        // Initial values
+        setBatteryLevel(battery.level)
+        setIsCharging(battery.charging)
+
+        // Event listeners for updates
+        const updateLevel = () => setBatteryLevel(battery.level)
+        const updateCharging = () => setIsCharging(battery.charging)
+
+        battery.addEventListener('levelchange', updateLevel)
+        battery.addEventListener('chargingchange', updateCharging)
+
+        return () => {
+          battery.removeEventListener('levelchange', updateLevel)
+          battery.removeEventListener('chargingchange', updateCharging)
+        }
+      })
+      .catch(() => {
+        setIsSupported(false)
+        setSimulationMode(true)
+        setBatteryLevel(0.65)
+        setIsCharging(false)
+      })
+  }, [])
+
+  return {
+    batteryLevel,
+    setBatteryLevel,
+    isCharging,
+    setIsCharging,
+    isSupported,
+    simulationMode,
+    setSimulationMode,
+  }
+}
+
+function BatteryAwareDemo() {
+  const {
+    batteryLevel,
+    setBatteryLevel,
+    isCharging,
+    setIsCharging,
+    isSupported,
+    simulationMode,
+    setSimulationMode,
+  } = useBatteryStatus()
+
+  const recommendations =
+    batteryLevel < 0.2
+      ? { level: 'aggressive', disableAnimations: true, updateInterval: 2000 }
+      : batteryLevel < 0.5
+        ? { level: 'moderate', disableAnimations: false, updateInterval: 1000 }
+        : { level: 'none', disableAnimations: false, updateInterval: 500 }
 
   return (
     <div className="space-y-6">
       <div className="p-6 bg-card border rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">Battery Status</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Battery Status</h3>
+          {isSupported !== null && (
+            <span
+              className={`text-xs px-2 py-1 rounded ${
+                isSupported
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+              }`}
+            >
+              {isSupported ? 'Live API' : 'Simulation Mode'}
+            </span>
+          )}
+        </div>
 
-        {/* Battery simulation controls */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">
-            Simulate Battery Level: {Math.round(batteryLevel * 100)}%
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={batteryLevel * 100}
-            onChange={(e) => setBatteryLevel(parseInt(e.target.value) / 100)}
-            className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-          />
-          <div className="flex justify-between text-xs text-muted-foreground mt-1">
-            <span>Critical (5%)</span>
-            <span>Low (20%)</span>
-            <span>Medium (50%)</span>
-            <span>Full (100%)</span>
+        {/* API Status Notice */}
+        {isSupported === false && (
+          <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+            <p className="text-sm text-yellow-800 dark:text-yellow-200">
+              Battery Status API is not supported in this browser. Using
+              simulation mode.
+              <br />
+              <span className="text-xs text-yellow-600 dark:text-yellow-400">
+                (Supported in Chrome, Edge, Opera on desktop)
+              </span>
+            </p>
           </div>
-        </div>
+        )}
 
-        <div className="flex items-center gap-2 mb-4">
-          <input
-            type="checkbox"
-            id="charging"
-            checked={isCharging}
-            onChange={(e) => setIsCharging(e.target.checked)}
-            className="rounded"
-          />
-          <label htmlFor="charging" className="text-sm">Charging</label>
-        </div>
+        {/* Toggle simulation mode when API is supported */}
+        {isSupported && (
+          <div className="flex items-center gap-2 mb-4">
+            <input
+              type="checkbox"
+              id="simulation-mode"
+              checked={simulationMode}
+              onChange={(e) => setSimulationMode(e.target.checked)}
+              className="rounded"
+            />
+            <label htmlFor="simulation-mode" className="text-sm">
+              Enable simulation mode (override real values)
+            </label>
+          </div>
+        )}
+
+        {/* Battery simulation controls - shown when in simulation mode */}
+        {(simulationMode || !isSupported) && (
+          <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+            <label className="block text-sm font-medium mb-2">
+              Simulate Battery Level: {Math.round(batteryLevel * 100)}%
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={batteryLevel * 100}
+              onChange={(e) => setBatteryLevel(parseInt(e.target.value) / 100)}
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <span>Critical (5%)</span>
+              <span>Low (20%)</span>
+              <span>Medium (50%)</span>
+              <span>Full (100%)</span>
+            </div>
+
+            <div className="flex items-center gap-2 mt-4">
+              <input
+                type="checkbox"
+                id="charging"
+                checked={isCharging}
+                onChange={(e) => setIsCharging(e.target.checked)}
+                className="rounded"
+              />
+              <label htmlFor="charging" className="text-sm">
+                Charging
+              </label>
+            </div>
+          </div>
+        )}
 
         {/* Battery indicator */}
         <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
-          <div className={`w-12 h-6 border-2 rounded-sm relative ${
-            batteryLevel < 0.2 ? 'border-red-500' : 'border-green-500'
-          }`}>
+          <div
+            className={`w-12 h-6 border-2 rounded-sm relative ${
+              batteryLevel < 0.2 ? 'border-red-500' : 'border-green-500'
+            }`}
+          >
             <div
               className={`absolute inset-0.5 rounded-sm transition-all ${
                 batteryLevel < 0.2 ? 'bg-red-500' : 'bg-green-500'
@@ -143,7 +285,11 @@ function BatteryAwareDemo() {
           <div>
             <p className="font-medium">{Math.round(batteryLevel * 100)}%</p>
             <p className="text-xs text-muted-foreground">
-              {isCharging ? 'Charging' : batteryLevel < 0.2 ? 'Low battery' : 'On battery'}
+              {isCharging
+                ? '⚡ Charging'
+                : batteryLevel < 0.2
+                  ? '🔴 Low battery'
+                  : '🔋 On battery'}
             </p>
           </div>
         </div>
@@ -152,27 +298,41 @@ function BatteryAwareDemo() {
       <div className="p-6 bg-card border rounded-lg">
         <h3 className="text-lg font-semibold mb-4">Active Optimizations</h3>
         <div className="space-y-3">
-          <div className={`flex items-center justify-between p-3 rounded-lg ${
-            recommendations.disableAnimations ? 'bg-yellow-100 dark:bg-yellow-900/20' : 'bg-muted'
-          }`}>
+          <div
+            className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+              recommendations.disableAnimations
+                ? 'bg-yellow-100 dark:bg-yellow-900/20'
+                : 'bg-muted'
+            }`}
+          >
             <span className="text-sm">Animations</span>
-            <span className={`text-sm font-medium ${
-              recommendations.disableAnimations ? 'text-yellow-700 dark:text-yellow-400' : 'text-green-600'
-            }`}>
+            <span
+              className={`text-sm font-medium ${
+                recommendations.disableAnimations
+                  ? 'text-yellow-700 dark:text-yellow-400'
+                  : 'text-green-600'
+              }`}
+            >
               {recommendations.disableAnimations ? 'Disabled' : 'Enabled'}
             </span>
           </div>
           <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
             <span className="text-sm">Update Interval</span>
-            <span className="text-sm font-medium">{recommendations.updateInterval}ms</span>
+            <span className="text-sm font-medium">
+              {recommendations.updateInterval}ms
+            </span>
           </div>
           <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
             <span className="text-sm">Optimization Level</span>
-            <span className={`text-sm font-medium px-2 py-0.5 rounded ${
-              recommendations.level === 'aggressive' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
-              recommendations.level === 'moderate' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' :
-              'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-            }`}>
+            <span
+              className={`text-sm font-medium px-2 py-0.5 rounded ${
+                recommendations.level === 'aggressive'
+                  ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                  : recommendations.level === 'moderate'
+                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                    : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+              }`}
+            >
               {recommendations.level}
             </span>
           </div>
@@ -194,9 +354,9 @@ function PerformanceDashboardDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       setFps(55 + Math.random() * 10)
-      setMemory(prev => ({
+      setMemory((prev) => ({
         ...prev,
-        used: Math.min(prev.limit, 40 + Math.random() * 20)
+        used: Math.min(prev.limit, 40 + Math.random() * 20),
       }))
     }, 1000)
     return () => clearInterval(interval)
@@ -216,14 +376,22 @@ function PerformanceDashboardDemo() {
         <h3 className="text-lg font-semibold mb-4">Core Web Vitals</h3>
         <div className="grid grid-cols-4 gap-4">
           {webVitals.map((vital) => (
-            <div key={vital.name} className="text-center p-4 bg-muted rounded-lg">
+            <div
+              key={vital.name}
+              className="text-center p-4 bg-muted rounded-lg"
+            >
               <p className="text-xs text-muted-foreground mb-1">{vital.name}</p>
-              <p className="text-2xl font-bold">{vital.value}{vital.unit}</p>
-              <span className={`text-xs px-2 py-0.5 rounded ${
-                vital.status === 'good'
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
-              }`}>
+              <p className="text-2xl font-bold">
+                {vital.value}
+                {vital.unit}
+              </p>
+              <span
+                className={`text-xs px-2 py-0.5 rounded ${
+                  vital.status === 'good'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                    : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                }`}
+              >
                 {vital.status}
               </span>
             </div>
@@ -241,16 +409,22 @@ function PerformanceDashboardDemo() {
                 key={i}
                 className="flex-1 bg-primary/80 rounded-t transition-all"
                 style={{
-                  height: `${(55 + Math.sin(i * 0.5) * 5) / 60 * 100}%`,
+                  height: `${((55 + Math.sin(i * 0.5) * 5) / 60) * 100}%`,
                 }}
               />
             ))}
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Current FPS</span>
-            <span className={`text-2xl font-bold ${
-              fps >= 55 ? 'text-green-600' : fps >= 30 ? 'text-yellow-600' : 'text-red-600'
-            }`}>
+            <span
+              className={`text-2xl font-bold ${
+                fps >= 55
+                  ? 'text-green-600'
+                  : fps >= 30
+                    ? 'text-yellow-600'
+                    : 'text-red-600'
+              }`}
+            >
               {Math.round(fps)}
             </span>
           </div>
@@ -281,7 +455,9 @@ function PerformanceDashboardDemo() {
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xl font-bold">{Math.round(memory.used)}%</span>
+              <span className="text-xl font-bold">
+                {Math.round(memory.used)}%
+              </span>
             </div>
           </div>
           <div className="mt-4 text-center">
