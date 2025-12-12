@@ -1,11 +1,17 @@
-import { useState } from 'react'
-import { ChevronDown } from 'lucide-react'
+'use client'
+
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useInView } from 'framer-motion'
+import { ChevronDown, Sparkles } from 'lucide-react'
+import Link from 'next/link'
+import { durations } from '@/lib/constants'
 
 const faqs = [
   {
-    question: 'Is there a free trial?',
+    question: 'Is there a free tier?',
     answer:
-      'Yes! The Free tier is fully functional with 15+ core components. You can use it forever for learning and prototyping. Pro and Enterprise plans come with a 30-day money-back guarantee.',
+      'Yes! The Starter tier is completely free with 15+ core components. Use it forever for learning and prototyping. Pro and Enterprise plans come with a 30-day money-back guarantee.',
   },
   {
     question: 'What happens when my annual license expires?',
@@ -25,7 +31,7 @@ const faqs = [
   {
     question: 'Can I use this in a SaaS product?',
     answer:
-      "Yes, but you need an Enterprise license for SaaS products. Pro licenses are for end-user applications only.",
+      'Yes, but you need an Enterprise license for SaaS products. Pro licenses are for end-user applications only.',
   },
   {
     question: "What's the difference between Annual and Lifetime?",
@@ -35,102 +41,136 @@ const faqs = [
   {
     question: 'Do you offer refunds?',
     answer:
-      'Yes! We offer a 30-day money-back guarantee on all Pro and Enterprise plans. Contact us at support@codeclarity.ai for refunds.',
+      'Yes! We offer a 30-day money-back guarantee on all Pro and Enterprise plans. No questions asked.',
   },
   {
     question: 'Can I upgrade from Pro to Enterprise?',
     answer:
-      "Absolutely! We'll credit your Pro license toward the first year of Enterprise. Contact sales@codeclarity.ai for upgrade pricing.",
+      "Absolutely! We'll credit your Pro license toward the first year of Enterprise. Contact us for upgrade pricing.",
   },
 ]
 
-export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
+function FAQItem({
+  faq,
+  index,
+  isOpen,
+  onToggle,
+}: {
+  faq: (typeof faqs)[0]
+  index: number
+  isOpen: boolean
+  onToggle: () => void
+}) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-50px' })
 
   return (
-    <section className="py-24 sm:py-32 bg-white dark:bg-gray-900">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 10 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+      transition={{ duration: durations.moderate, delay: index * 0.05 }}
+      className="glass-card border border-white/10 rounded-xl overflow-hidden"
+    >
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
+        aria-expanded={isOpen}
+      >
+        <span className="font-semibold text-white pr-4">{faq.question}</span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: durations.fast }}
+          className="flex-shrink-0"
+        >
+          <ChevronDown className="h-5 w-5 text-clarity-400" />
+        </motion.div>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: durations.moderate }}
+          >
+            <div className="px-6 pb-6">
+              <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+export default function FAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+  const headerRef = useRef(null)
+  const isHeaderInView = useInView(headerRef, { once: true, margin: '-100px' })
+
+  return (
+    <section id="faq" className="relative py-24 sm:py-32 bg-surface-900">
+      {/* Background */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cosmic-500/50 to-transparent" />
+
+      <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Section header */}
-        <div className="text-center mb-16">
-          <h2 className="text-base font-semibold text-brand-600 mb-2">FAQ</h2>
-          <p className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Frequently Asked Questions
+        <motion.div
+          ref={headerRef}
+          initial={{ opacity: 0, y: 20 }}
+          animate={
+            isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+          }
+          transition={{ duration: durations.slow }}
+          className="text-center mb-12"
+        >
+          <span className="inline-block px-4 py-1.5 rounded-full bg-cosmic-500/10 border border-cosmic-500/20 text-cosmic-400 text-sm font-medium mb-4">
+            FAQ
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+            Got <span className="gradient-text">Questions?</span>
+          </h2>
+          <p className="text-lg text-gray-400">
+            Everything you need to know before getting started.
           </p>
-          <p className="text-xl text-gray-600 dark:text-gray-300">
-            Have a question? We've got answers.
-          </p>
-        </div>
+        </motion.div>
 
         {/* FAQ accordion */}
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <div
+            <FAQItem
               key={index}
-              className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-              >
-                <span className="font-semibold text-gray-900 dark:text-white pr-4">
-                  {faq.question}
-                </span>
-                <ChevronDown
-                  className={`h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0 transition-transform ${
-                    openIndex === index ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-              {openIndex === index && (
-                <div className="px-6 pb-6">
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.answer}</p>
-                </div>
-              )}
-            </div>
+              faq={faq}
+              index={index}
+              isOpen={openIndex === index}
+              onToggle={() => setOpenIndex(openIndex === index ? null : index)}
+            />
           ))}
         </div>
 
         {/* More questions CTA */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 dark:text-gray-300 mb-4">Still have questions?</p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center text-brand-600 font-semibold hover:text-brand-700 transition-colors"
-          >
-            Contact our team
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isHeaderInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ delay: 0.5, duration: durations.slow }}
+          className="mt-12 text-center"
+        >
+          <div className="inline-flex items-center gap-3 px-6 py-4 rounded-xl glass-card border border-white/10">
+            <Sparkles className="w-5 h-5 text-clarity-400" />
+            <span className="text-gray-400">Still have questions?</span>
+            <Link
+              href="https://github.com/christireid/Clarity-ai-chat-components/discussions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-clarity-400 hover:text-clarity-300 font-semibold transition-colors"
+            >
+              Ask on GitHub
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </section>
   )
 }
-
-function Link({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
-  return (
-    <a href={href} className={className}>
-      {children}
-    </a>
-  )
-}
-
-function ArrowRight({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M17 8l4 4m0 0l-4 4m4-4H3"
-      />
-    </svg>
-  )
-}
-
-

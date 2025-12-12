@@ -5,25 +5,38 @@ const footerLinks = {
   product: [
     { name: 'Features', href: '#features' },
     { name: 'Pricing', href: '#pricing' },
-    { name: 'Examples', href: '/docs/examples' },
-    { name: 'Changelog', href: '/changelog' },
+    { name: 'Testimonials', href: '#testimonials' },
+    { name: 'FAQ', href: '#faq' },
   ],
   resources: [
     { name: 'Documentation', href: '/docs' },
     { name: 'Getting Started', href: '/docs/guides/getting-started' },
     { name: 'API Reference', href: '/docs/api' },
-    { name: 'Cookbook', href: '/docs/cookbook' },
+    { name: 'Examples', href: '/docs/examples' },
   ],
-  company: [
-    { name: 'About', href: '/about' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'Enterprise', href: '/enterprise' },
+  developers: [
+    {
+      name: 'GitHub',
+      href: 'https://github.com/christireid/Clarity-ai-chat-components',
+    },
+    {
+      name: 'Discussions',
+      href: 'https://github.com/christireid/Clarity-ai-chat-components/discussions',
+    },
+    {
+      name: 'Issues',
+      href: 'https://github.com/christireid/Clarity-ai-chat-components/issues',
+    },
+    {
+      name: 'Releases',
+      href: 'https://github.com/christireid/Clarity-ai-chat-components/releases',
+    },
   ],
   legal: [
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Terms of Service', href: '/terms' },
-    { name: 'License', href: '/license' },
+    {
+      name: 'MIT License',
+      href: 'https://github.com/christireid/Clarity-ai-chat-components/blob/main/LICENSE',
+    },
   ],
 }
 
@@ -133,12 +146,20 @@ export default function Footer() {
                 </ul>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">Company</h3>
+                <h3 className="text-sm font-semibold text-white">Developers</h3>
                 <ul className="mt-4 space-y-3">
-                  {footerLinks.company.map((item) => (
+                  {footerLinks.developers.map((item) => (
                     <li key={item.name}>
                       <Link
                         href={item.href}
+                        target={
+                          item.href.startsWith('http') ? '_blank' : undefined
+                        }
+                        rel={
+                          item.href.startsWith('http')
+                            ? 'noopener noreferrer'
+                            : undefined
+                        }
                         className="text-sm text-gray-400 hover:text-white transition-colors"
                       >
                         {item.name}
@@ -154,6 +175,14 @@ export default function Footer() {
                     <li key={item.name}>
                       <Link
                         href={item.href}
+                        target={
+                          item.href.startsWith('http') ? '_blank' : undefined
+                        }
+                        rel={
+                          item.href.startsWith('http')
+                            ? 'noopener noreferrer'
+                            : undefined
+                        }
                         className="text-sm text-gray-400 hover:text-white transition-colors"
                       >
                         {item.name}

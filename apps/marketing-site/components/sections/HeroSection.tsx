@@ -23,6 +23,15 @@ const trustBadges = [
   { icon: Zap, label: '27KB gzipped' },
 ]
 
+// Company logos for social proof - using text-based logos for reliability
+const companyLogos = [
+  { name: 'TechCorp', color: 'text-blue-400' },
+  { name: 'HealthAI', color: 'text-green-400' },
+  { name: 'ShopSmart', color: 'text-purple-400' },
+  { name: 'FinanceFlow', color: 'text-cyan-400' },
+  { name: 'EduTech', color: 'text-pink-400' },
+]
+
 export default function HeroSection() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-surface-950">
@@ -49,26 +58,43 @@ export default function HeroSection() {
             transition={{ duration: durations.slow }}
             className="text-center lg:text-left"
           >
-            {/* Badge */}
+            {/* Badge with company logos */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1, duration: durations.moderate }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium mb-6"
+              className="mb-6"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>Trusted by 1,000+ developers</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-clarity-500/10 border border-clarity-500/20 text-clarity-400 text-sm font-medium mb-4">
+                <Sparkles className="w-4 h-4" />
+                <span>Ship AI Chat in Days, Not Months</span>
+              </div>
+
+              {/* Company logos row */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-4">
+                <span className="text-xs text-gray-500 uppercase tracking-wider">
+                  Trusted by
+                </span>
+                {companyLogos.map((company) => (
+                  <span
+                    key={company.name}
+                    className={`text-sm font-semibold ${company.color} opacity-70 hover:opacity-100 transition-opacity`}
+                  >
+                    {company.name}
+                  </span>
+                ))}
+              </div>
             </motion.div>
 
-            {/* Headline */}
+            {/* Headline - Benefit-driven */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: durations.slow }}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6"
             >
-              Build AI Chat{' '}
-              <span className="gradient-text">Faster Than Ever</span>
+              Stop Building Chat UI.{' '}
+              <span className="gradient-text">Start Shipping AI.</span>
             </motion.h1>
 
             {/* Subheadline */}
@@ -78,9 +104,8 @@ export default function HeroSection() {
               transition={{ delay: 0.3, duration: durations.slow }}
               className="text-lg sm:text-xl text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0"
             >
-              Production-ready React components for AI chat. Multi-provider
-              support, intelligent memory, and 40%+ token cost savings. Ship in
-              days, not months.
+              50+ production-ready React components for AI chat. Switch
+              providers in one line. Cut token costs 40%. Launch this weekend.
             </motion.p>
 
             {/* CTAs */}
@@ -115,7 +140,7 @@ export default function HeroSection() {
               transition={{ delay: 0.5, duration: durations.slow }}
               className="flex flex-wrap gap-6 justify-center lg:justify-start"
             >
-              {trustBadges.map((badge, i) => {
+              {trustBadges.map((badge) => {
                 const Icon = badge.icon
                 return (
                   <div
@@ -141,7 +166,7 @@ export default function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Stats bar */}
+        {/* Stats bar - User-focused metrics */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -152,7 +177,7 @@ export default function HeroSection() {
             <div className="text-3xl sm:text-4xl font-bold text-clarity-400 mb-1">
               50+
             </div>
-            <div className="text-sm text-gray-400">Components</div>
+            <div className="text-sm text-gray-400">Ready Components</div>
           </div>
           <div className="text-center">
             <div className="text-3xl sm:text-4xl font-bold text-clarity-400 mb-1">
@@ -164,13 +189,13 @@ export default function HeroSection() {
             <div className="text-3xl sm:text-4xl font-bold text-clarity-400 mb-1">
               40%
             </div>
-            <div className="text-sm text-gray-400">Cost Reduction</div>
+            <div className="text-sm text-gray-400">Token Savings</div>
           </div>
           <div className="text-center">
             <div className="text-3xl sm:text-4xl font-bold text-clarity-400 mb-1">
-              181
+              $400K+
             </div>
-            <div className="text-sm text-gray-400">Tests Passing</div>
+            <div className="text-sm text-gray-400">Dev Costs Saved</div>
           </div>
         </motion.div>
       </div>

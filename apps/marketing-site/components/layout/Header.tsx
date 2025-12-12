@@ -8,9 +8,10 @@ import { durations } from '@/lib/constants'
 
 const navigation = [
   { name: 'Features', href: '#features' },
+  { name: 'Testimonials', href: '#testimonials' },
   { name: 'Pricing', href: '#pricing' },
+  { name: 'FAQ', href: '#faq' },
   { name: 'Docs', href: '/docs' },
-  { name: 'Examples', href: '/docs/examples' },
 ]
 
 export default function Header() {
