@@ -7,9 +7,8 @@
  */
 
 import * as React from 'react'
-import { LicenseInfo } from './LicenseInfo'
-import { verifyLicense } from './verifyLicense'
 import { WatermarkOverlay } from './Watermark'
+import { LicenseLoadingSkeleton } from './LicenseUI'
 import { useLicenseStatus, useIsHydrated } from './hooks'
 import {
   isPlanSufficient,
@@ -76,10 +75,29 @@ export function withLicense<P extends object>(
   } = options
 
   const LicensedComponent: React.FC<P> = (props) => {
+    // Use reactive hook for license status - updates when license key changes
+    const baseStatus = useLicenseStatus()
+
+    // Compute final status with plan requirements
     const status = React.useMemo(() => {
-      const key = LicenseInfo.getLicenseKey()
-      return verifyLicense(key, { requiredPlan })
-    }, [])
+      if (!requiredPlan) return baseStatus
+
+      // Check plan sufficiency
+      const isValid =
+        baseStatus.status === 'Valid' || baseStatus.status === 'GracePeriod'
+      if (
+        isValid &&
+        baseStatus.payload &&
+        !isPlanSufficient(baseStatus.payload.plan, requiredPlan)
+      ) {
+        return {
+          ...baseStatus,
+          status: 'PlanMismatch' as const,
+          reason: `Requires ${requiredPlan} plan, current: ${baseStatus.payload.plan}`,
+        }
+      }
+      return baseStatus
+    }, [baseStatus, requiredPlan])
 
     // Show console warning once per component type (with TTL to prevent memory leaks)
     React.useEffect(() => {
@@ -201,12 +219,10 @@ export function withLicenseStatus<P extends object>(
   const ComponentWithLicenseStatus: React.FC<
     Omit<P, keyof WithLicenseStatusProps>
   > = (props) => {
-    const licenseStatus = React.useMemo(() => {
-      const key = LicenseInfo.getLicenseKey()
-      return verifyLicense(key)
-    }, [])
-
-    const isLicensed = licenseStatus.status === 'Valid'
+    // Use reactive hook - updates when license key changes
+    const licenseStatus = useLicenseStatus()
+    const isLicensed =
+      licenseStatus.status === 'Valid' || licenseStatus.status === 'GracePeriod'
 
     return (
       <WrappedComponent
@@ -232,9 +248,14 @@ export interface LicenseGateProps {
   children: React.ReactNode
   /** Optional fallback to render when not licensed */
   fallback?: React.ReactNode
-  /** Optional loading content shown during SSR hydration */
+  /** Optional loading content shown during SSR hydration (defaults to skeleton) */
   loading?: React.ReactNode
+  /** Disable default loading skeleton */
+  noLoadingSkeleton?: boolean
 }
+
+// Default loading element - created once to avoid recreating on each render
+const defaultLoadingElement = React.createElement(LicenseLoadingSkeleton)
 
 /**
  * Component that only renders children if properly licensed.
@@ -256,14 +277,22 @@ export function LicenseGate({
   requiredPlan,
   children,
   fallback = null,
-  loading = null,
+  loading,
+  noLoadingSkeleton = false,
 }: LicenseGateProps): React.ReactElement {
+  // Determine loading content: explicit loading prop > default skeleton > null
+  const loadingContent =
+    loading !== undefined
+      ? loading
+      : noLoadingSkeleton
+        ? null
+        : defaultLoadingElement
   const isHydrated = useIsHydrated()
   const status = useLicenseStatus()
 
   // During SSR/hydration, show loading state to prevent flash
   if (!isHydrated) {
-    return <>{loading}</>
+    return <>{loadingContent}</>
   }
 
   // Check if license is valid and meets plan requirements

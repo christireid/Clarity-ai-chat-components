@@ -61,6 +61,20 @@ export type {
   LicenseStatusAnnouncerProps,
 } from './Watermark'
 
+// UI Components (status display, warnings, prompts)
+export {
+  LicenseLoadingSkeleton,
+  LicenseStatusBadge,
+  LicenseExpiryWarning,
+  LicenseUpgradePrompt,
+} from './LicenseUI'
+export type {
+  LicenseLoadingSkeletonProps,
+  LicenseStatusBadgeProps,
+  LicenseExpiryWarningProps,
+  LicenseUpgradePromptProps,
+} from './LicenseUI'
+
 // HOCs and Gate Components
 export {
   withLicense,
@@ -95,4 +109,5 @@ export {
   isPlanSufficient,
   clearWarnings,
   isDevelopment,
+  getWarningCount,
 } from './constants'
