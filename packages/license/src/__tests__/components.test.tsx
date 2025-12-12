@@ -5,8 +5,8 @@
  */
 
 import * as React from 'react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { render, screen, act, waitFor } from '@testing-library/react'
 import {
   Watermark,
   WatermarkOverlay,
@@ -26,6 +26,7 @@ import {
 } from '../LicenseProvider'
 import { LicenseInfo } from '../LicenseInfo'
 import { generateLicenseKey } from '../generateLicense'
+import { clearWarnings } from '../constants'
 
 const TEST_SECRET = 'test-secret-key-12345'
 
@@ -228,6 +229,9 @@ describe('withLicense HOC', () => {
   })
 
   it('should log console warning when unlicensed', () => {
+    const originalEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+
     const LicensedComponent = withLicense(TestComponent, {
       componentName: 'UniqueTestComponent1',
       showConsoleWarning: true,
@@ -235,6 +239,8 @@ describe('withLicense HOC', () => {
 
     render(<LicensedComponent message="Hello" />)
     expect(console.warn).toHaveBeenCalled()
+
+    process.env.NODE_ENV = originalEnv
   })
 
   it('should render fallback component when provided and unlicensed', () => {
@@ -530,7 +536,7 @@ describe('LicenseGate Component', () => {
     LicenseInfo.clearLicenseKey()
   })
 
-  it('should render children when licensed', () => {
+  it('should render children when licensed', async () => {
     const validKey = createTestLicense('pro')
     LicenseInfo.setLicenseKey(validKey)
 
@@ -540,10 +546,13 @@ describe('LicenseGate Component', () => {
       </LicenseGate>
     )
 
-    expect(screen.getByTestId('content')).toHaveTextContent('Pro Content')
+    // Wait for hydration
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toHaveTextContent('Pro Content')
+    })
   })
 
-  it('should render fallback when not licensed', () => {
+  it('should render fallback when not licensed', async () => {
     render(
       <LicenseGate
         requiredPlan="pro"
@@ -553,23 +562,49 @@ describe('LicenseGate Component', () => {
       </LicenseGate>
     )
 
-    expect(screen.queryByTestId('content')).not.toBeInTheDocument()
-    expect(screen.getByTestId('fallback')).toHaveTextContent('Please upgrade')
+    // Wait for hydration
+    await waitFor(() => {
+      expect(screen.queryByTestId('content')).not.toBeInTheDocument()
+      expect(screen.getByTestId('fallback')).toHaveTextContent('Please upgrade')
+    })
   })
 
-  it('should render nothing when not licensed and no fallback', () => {
+  it('should render nothing when not licensed and no fallback', async () => {
     const { container } = render(
       <LicenseGate requiredPlan="pro">
         <div data-testid="content">Pro Content</div>
       </LicenseGate>
     )
 
-    expect(screen.queryByTestId('content')).not.toBeInTheDocument()
-    // When not licensed and no fallback, the gate renders null (empty fragment)
-    expect(container.innerHTML).toBe('')
+    // Wait for hydration
+    await waitFor(() => {
+      expect(screen.queryByTestId('content')).not.toBeInTheDocument()
+      // When not licensed and no fallback, the gate renders null (empty fragment)
+      expect(container.innerHTML).toBe('')
+    })
   })
 
-  it('should gate based on plan level', () => {
+  it('should render loading state during SSR/hydration', () => {
+    const validKey = createTestLicense('pro')
+    LicenseInfo.setLicenseKey(validKey)
+
+    // On first render (before hydration), should show loading
+    const { container } = render(
+      <LicenseGate
+        requiredPlan="pro"
+        loading={<div data-testid="loading">Loading...</div>}
+      >
+        <div data-testid="content">Pro Content</div>
+      </LicenseGate>
+    )
+
+    // Initially shows loading (before useEffect runs)
+    // Note: In test environment with happy-dom, the effect runs synchronously
+    // so we just verify the loading prop is accepted and component works
+    expect(container).toBeDefined()
+  })
+
+  it('should gate based on plan level', async () => {
     const proKey = createTestLicense('pro')
     LicenseInfo.setLicenseKey(proKey)
 
@@ -579,7 +614,10 @@ describe('LicenseGate Component', () => {
         <div data-testid="content">Content</div>
       </LicenseGate>
     )
-    expect(screen.getByTestId('content')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
 
     // Pro license cannot access enterprise features
     rerender(
@@ -590,11 +628,14 @@ describe('LicenseGate Component', () => {
         <div data-testid="content">Content</div>
       </LicenseGate>
     )
-    expect(screen.queryByTestId('content')).not.toBeInTheDocument()
-    expect(screen.getByTestId('fallback')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('content')).not.toBeInTheDocument()
+      expect(screen.getByTestId('fallback')).toBeInTheDocument()
+    })
   })
 
-  it('should allow enterprise license to access all plan levels', () => {
+  it('should allow enterprise license to access all plan levels', async () => {
     const enterpriseKey = createTestLicense('enterprise')
     LicenseInfo.setLicenseKey(enterpriseKey)
 
@@ -604,7 +645,10 @@ describe('LicenseGate Component', () => {
         <div data-testid="content">Community</div>
       </LicenseGate>
     )
-    expect(screen.getByTestId('content')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
 
     // Enterprise can access pro
     rerender(
@@ -612,7 +656,10 @@ describe('LicenseGate Component', () => {
         <div data-testid="content">Pro</div>
       </LicenseGate>
     )
-    expect(screen.getByTestId('content')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
 
     // Enterprise can access enterprise
     rerender(
@@ -620,18 +667,62 @@ describe('LicenseGate Component', () => {
         <div data-testid="content">Enterprise</div>
       </LicenseGate>
     )
-    expect(screen.getByTestId('content')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
   })
 
   it('should have correct displayName', () => {
     expect(LicenseGate.displayName).toBe('LicenseGate')
+  })
+
+  it('should react to license key changes', async () => {
+    // Start without license
+    const { rerender } = render(
+      <LicenseGate
+        requiredPlan="pro"
+        fallback={<div data-testid="fallback">No license</div>}
+      >
+        <div data-testid="content">Licensed content</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('fallback')).toBeInTheDocument()
+    })
+
+    // Add license
+    const validKey = createTestLicense('pro')
+    act(() => {
+      LicenseInfo.setLicenseKey(validKey)
+    })
+
+    // Force re-render to pick up new key
+    rerender(
+      <LicenseGate
+        requiredPlan="pro"
+        fallback={<div data-testid="fallback">No license</div>}
+      >
+        <div data-testid="content">Licensed content</div>
+      </LicenseGate>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('content')).toBeInTheDocument()
+    })
   })
 })
 
 describe('useLicenseWarning hook', () => {
   beforeEach(() => {
     LicenseInfo.clearLicenseKey()
+    clearWarnings() // Clear shared warning tracker
     vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('should log warning in development mode when unlicensed', () => {

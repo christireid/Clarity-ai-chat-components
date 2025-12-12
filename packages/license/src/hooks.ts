@@ -6,16 +6,15 @@
  * @packageDocumentation
  */
 
-import {
-  useMemo,
-  useState,
-  useEffect,
-  useSyncExternalStore,
-  useRef,
-} from 'react'
+import { useMemo, useState, useEffect, useSyncExternalStore } from 'react'
 import { LicenseInfo } from './LicenseInfo'
 import { verifyLicense } from './verifyLicense'
-import { isPlanSufficient } from './constants'
+import {
+  isPlanSufficient,
+  hasWarnedRecently,
+  markWarningShown,
+  isDevelopment,
+} from './constants'
 import type { LicenseStatus, LicensePlan } from './types'
 
 /**
@@ -225,7 +224,7 @@ export function useRequireLicense(featureName = 'This feature'): void {
 /**
  * Hook that logs a console warning for unlicensed usage (development only).
  * Used internally by license-gated components.
- * Only logs once per feature per session.
+ * Only logs once per feature per session (shared with withLicense HOC).
  *
  * @param featureName - Name of the feature requiring license
  * @param requiredPlan - Minimum required plan level (default: 'pro')
@@ -244,11 +243,13 @@ export function useLicenseWarning(
   featureName: string,
   requiredPlan: LicensePlan = 'pro'
 ): void {
-  const warningShownRef = useRef(false)
   const status = useLicenseStatus()
 
   useEffect(() => {
-    if (warningShownRef.current) return
+    // Use shared warning tracker for deduplication across all license warnings
+    const warningKey = `hook:${featureName}`
+
+    if (hasWarnedRecently(warningKey)) return
 
     const isValid = status.status === 'Valid' || status.status === 'GracePeriod'
     const hasSufficientPlan =
@@ -257,12 +258,8 @@ export function useLicenseWarning(
       isPlanSufficient(status.payload.plan, requiredPlan)
 
     if (!isValid || !hasSufficientPlan) {
-      const isDev =
-        typeof process !== 'undefined' &&
-        process.env?.NODE_ENV === 'development'
-
-      if (isDev) {
-        warningShownRef.current = true
+      if (isDevelopment()) {
+        markWarningShown(warningKey)
         const reason = !isValid
           ? (status.reason ?? 'No valid license')
           : `Requires ${requiredPlan} plan, current: ${status.payload?.plan}`

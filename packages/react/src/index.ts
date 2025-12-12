@@ -1053,18 +1053,32 @@ export {
 
 // License exports for convenience (re-exported from @clarity-chat/license)
 export {
+  // Core
   LicenseInfo,
+  verifyLicense,
+  isLicenseValid,
+  // Hooks
   useLicenseStatus,
   useIsLicensed,
   useHasPlan,
   useLicenseInfo,
-  verifyLicense,
-  isLicenseValid,
+  useLicenseWarning,
+  useIsHydrated,
+  // Context
+  LicenseProvider,
+  useLicenseContext,
+  useLicenseContextOptional,
+  // Components
   Watermark,
   WatermarkOverlay,
+  LicenseGate,
+  // HOCs
   withLicense,
   withLicenseStatus,
   createLicenseWrapper,
+  // Utilities
+  clearWarnings,
+  isDevelopment,
 } from '@clarity-chat/license'
 
 export type {
@@ -1077,6 +1091,9 @@ export type {
   WithLicenseStatusProps,
   WatermarkProps,
   WatermarkOverlayProps,
+  LicenseGateProps,
+  LicenseContextValue,
+  LicenseProviderProps,
 } from '@clarity-chat/license'
 
 // Pro Component Utilities

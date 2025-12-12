@@ -10,6 +10,13 @@ import * as React from 'react'
 import { LicenseInfo } from './LicenseInfo'
 import { verifyLicense } from './verifyLicense'
 import { WatermarkOverlay } from './Watermark'
+import { useLicenseStatus, useIsHydrated } from './hooks'
+import {
+  isPlanSufficient,
+  hasWarnedRecently,
+  markWarningShown,
+  isDevelopment,
+} from './constants'
 import type { LicensePlan, LicenseStatus } from './types'
 
 /**
@@ -33,39 +40,6 @@ export interface WithLicenseOptions {
 
   /** Custom fallback component for unlicensed state */
   fallback?: React.ComponentType<{ status: LicenseStatus }>
-}
-
-/**
- * Track if we've already logged the warning for this session.
- * Uses a Map with timestamps for automatic cleanup of old entries.
- */
-const warnedComponents = new Map<string, number>()
-
-/** Maximum age for warned components (1 hour) */
-const WARNING_TTL_MS = 60 * 60 * 1000
-
-/**
- * Check if a component has been warned recently.
- * Automatically cleans up old entries to prevent memory leaks.
- */
-function hasWarnedRecently(componentName: string): boolean {
-  const now = Date.now()
-
-  // Clean up old entries (older than TTL)
-  for (const [name, timestamp] of warnedComponents.entries()) {
-    if (now - timestamp > WARNING_TTL_MS) {
-      warnedComponents.delete(name)
-    }
-  }
-
-  return warnedComponents.has(componentName)
-}
-
-/**
- * Mark a component as warned.
- */
-function markAsWarned(componentName: string): void {
-  warnedComponents.set(componentName, Date.now())
 }
 
 /**
@@ -113,9 +87,10 @@ export function withLicense<P extends object>(
         status.status !== 'Valid' &&
         status.status !== 'GracePeriod' &&
         showConsoleWarning &&
+        isDevelopment() &&
         !hasWarnedRecently(componentName)
       ) {
-        markAsWarned(componentName)
+        markWarningShown(componentName)
         console.warn(
           `%c[Clarity Chat]%c ${componentName} requires a valid license.\n` +
             `Status: ${status.status}\n` +
@@ -257,15 +232,22 @@ export interface LicenseGateProps {
   children: React.ReactNode
   /** Optional fallback to render when not licensed */
   fallback?: React.ReactNode
+  /** Optional loading content shown during SSR hydration */
+  loading?: React.ReactNode
 }
 
 /**
  * Component that only renders children if properly licensed.
  * Does not show watermark - just gates access to content.
+ * Reactive to license changes and SSR-safe.
  *
  * @example
  * ```tsx
- * <LicenseGate requiredPlan="enterprise" fallback={<UpgradePrompt />}>
+ * <LicenseGate
+ *   requiredPlan="enterprise"
+ *   fallback={<UpgradePrompt />}
+ *   loading={<Skeleton />}
+ * >
  *   <EnterpriseFeature />
  * </LicenseGate>
  * ```
@@ -274,14 +256,24 @@ export function LicenseGate({
   requiredPlan,
   children,
   fallback = null,
+  loading = null,
 }: LicenseGateProps): React.ReactElement {
-  const hasLicense = React.useMemo(() => {
-    const key = LicenseInfo.getLicenseKey()
-    const status = verifyLicense(key, { requiredPlan })
-    return status.status === 'Valid' || status.status === 'GracePeriod'
-  }, [requiredPlan])
+  const isHydrated = useIsHydrated()
+  const status = useLicenseStatus()
 
-  if (!hasLicense) {
+  // During SSR/hydration, show loading state to prevent flash
+  if (!isHydrated) {
+    return <>{loading}</>
+  }
+
+  // Check if license is valid and meets plan requirements
+  const isValid = status.status === 'Valid' || status.status === 'GracePeriod'
+  const hasSufficientPlan =
+    isValid &&
+    status.payload &&
+    isPlanSufficient(status.payload.plan, requiredPlan)
+
+  if (!isValid || !hasSufficientPlan) {
     return <>{fallback}</>
   }
 
