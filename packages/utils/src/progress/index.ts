@@ -46,6 +46,7 @@ type OraFactory = (options: {
 let oraFactory: OraFactory | null | undefined = undefined // undefined = not loaded yet
 let currentSpinner: Spinner | null = null
 let isSilent = false
+let useFallbackOutput = true // Output to console when ora is not available
 
 /**
  * Lazily load ora (only when first spinner is created)
@@ -60,14 +61,14 @@ async function getOra(): Promise<OraFactory | null> {
     oraFactory = oraModule.default as OraFactory
     return oraFactory
   } catch {
-    // ora not available - spinners will be no-ops
+    // ora not available - will use console fallback
     oraFactory = null
     return null
   }
 }
 
 /**
- * Create a no-op spinner for when ora is not available or silent mode is enabled
+ * Create a no-op spinner for silent mode
  */
 function createNoOpSpinner(text: string): Spinner {
   const noOp: Spinner = {
@@ -82,12 +83,64 @@ function createNoOpSpinner(text: string): Spinner {
 }
 
 /**
+ * Create a console-based fallback spinner when ora is not available
+ * Outputs to console with appropriate icons
+ */
+function createFallbackSpinner(initialText: string): Spinner {
+  let currentText = initialText
+  let isActive = false
+
+  const fallback: Spinner = {
+    get text() {
+      return currentText
+    },
+    set text(value: string) {
+      currentText = value
+    },
+    start: () => {
+      if (!isActive) {
+        isActive = true
+        console.log(`⏳ ${currentText}...`)
+      }
+      return fallback
+    },
+    stop: () => {
+      isActive = false
+      return fallback
+    },
+    succeed: (msg?: string) => {
+      isActive = false
+      console.log(`✓ ${msg ?? currentText}`)
+      return fallback
+    },
+    fail: (msg?: string) => {
+      isActive = false
+      console.error(`✗ ${msg ?? currentText}`)
+      return fallback
+    },
+    warn: (msg?: string) => {
+      isActive = false
+      console.warn(`⚠ ${msg ?? currentText}`)
+      return fallback
+    },
+  }
+
+  return fallback
+}
+
+/**
  * Configure progress utilities
  *
  * @param options - Configuration options
+ * @param options.silent - Suppress all output
+ * @param options.fallbackOutput - Use console output when ora is unavailable (default: true)
  */
-export function configureProgress(options: { silent?: boolean }): void {
+export function configureProgress(options: {
+  silent?: boolean
+  fallbackOutput?: boolean
+}): void {
   isSilent = options.silent ?? false
+  useFallbackOutput = options.fallbackOutput ?? true
 }
 
 /**
@@ -115,7 +168,12 @@ export async function startSpinner(text: string): Promise<Spinner> {
   const ora = await getOra()
 
   if (!ora) {
-    return createNoOpSpinner(text)
+    // Use console fallback when ora is not available
+    const spinner = useFallbackOutput
+      ? createFallbackSpinner(text)
+      : createNoOpSpinner(text)
+    currentSpinner = spinner.start()
+    return currentSpinner
   }
 
   // Stop any existing spinner
@@ -142,8 +200,17 @@ export async function startSpinner(text: string): Promise<Spinner> {
  * @returns Spinner instance
  */
 export function startSpinnerSync(text: string): Spinner {
-  if (isSilent || !oraFactory) {
+  if (isSilent) {
     return createNoOpSpinner(text)
+  }
+
+  if (!oraFactory) {
+    // Use console fallback when ora is not available
+    const spinner = useFallbackOutput
+      ? createFallbackSpinner(text)
+      : createNoOpSpinner(text)
+    currentSpinner = spinner.start()
+    return currentSpinner
   }
 
   // Stop any existing spinner

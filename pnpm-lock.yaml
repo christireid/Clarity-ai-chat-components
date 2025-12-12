@@ -1587,9 +1587,9 @@ importers:
 
   packages/dev-tools:
     dependencies:
-      '@clarity-chat/errors':
+      '@clarity-chat/utils':
         specifier: workspace:*
-        version: link:../errors
+        version: link:../utils
       boxen:
         specifier: ^8.0.1
         version: 8.0.1

@@ -51,6 +51,7 @@ export {
   memoize,
   memoizeAsync,
   type MemoizeOptions,
+  type TTLCacheOptions,
 } from './cache/index.js'
 
 // ============================================================================

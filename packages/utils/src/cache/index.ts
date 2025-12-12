@@ -158,6 +158,18 @@ export class LRUCache<K, V> {
 }
 
 /**
+ * Options for TTLCache
+ */
+export interface TTLCacheOptions {
+  /**
+   * Enable automatic pruning of expired entries at a regular interval.
+   * Set to a number (in ms) to enable, or false to disable.
+   * Default: false (disabled)
+   */
+  autoPrune?: number | false
+}
+
+/**
  * Time-based cache with automatic expiration
  *
  * Entries automatically expire after their TTL (Time To Live).
@@ -171,18 +183,51 @@ export class LRUCache<K, V> {
  *
  * // Returns undefined if expired
  * const token = cache.get('session')
+ *
+ * // Enable auto-pruning every 30 seconds
+ * const autoPruningCache = new TTLCache<string, Data>(60000, { autoPrune: 30000 })
+ * // Don't forget to dispose when done!
+ * autoPruningCache.dispose()
  * ```
  */
 export class TTLCache<K, V> {
   private cache = new Map<K, { value: V; expiry: number }>()
   private readonly defaultTTL: number
+  private pruneInterval: ReturnType<typeof setInterval> | null = null
 
   /**
    * Create a new TTL cache
    * @param defaultTTLMs - Default time-to-live in milliseconds
+   * @param options - Cache options including auto-prune settings
    */
-  constructor(defaultTTLMs: number) {
+  constructor(defaultTTLMs: number, options: TTLCacheOptions = {}) {
     this.defaultTTL = defaultTTLMs
+
+    if (options.autoPrune && options.autoPrune > 0) {
+      this.pruneInterval = setInterval(() => {
+        this.prune()
+      }, options.autoPrune)
+
+      // Prevent the interval from keeping the process alive
+      if (
+        typeof this.pruneInterval === 'object' &&
+        'unref' in this.pruneInterval
+      ) {
+        this.pruneInterval.unref()
+      }
+    }
+  }
+
+  /**
+   * Dispose the cache and stop any auto-pruning intervals
+   * Call this when you're done using the cache to prevent memory leaks
+   */
+  dispose(): void {
+    if (this.pruneInterval) {
+      clearInterval(this.pruneInterval)
+      this.pruneInterval = null
+    }
+    this.cache.clear()
   }
 
   /**
