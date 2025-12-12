@@ -3,6 +3,15 @@
  *
  * Renders user code in real-time with error handling and console interception.
  * Uses a sandboxed iframe for security.
+ *
+ * SECURITY NOTE: This component requires 'unsafe-eval' in CSP because Babel
+ * needs eval() to transpile JSX code in the browser. The iframe is sandboxed
+ * with only 'allow-scripts' permission (no same-origin, forms, popups, etc.).
+ *
+ * For production code editing, consider:
+ * - Server-side compilation with a secure sandbox (e.g., Docker containers)
+ * - WebContainer-based sandboxing (StackBlitz approach)
+ * - Monaco Editor with TypeScript compilation worker
  */
 
 import { useEffect, useState, useRef, useCallback } from 'react'

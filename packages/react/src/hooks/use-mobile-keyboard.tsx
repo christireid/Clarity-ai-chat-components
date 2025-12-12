@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useSafeTimeout } from './use-safe-timeout'
 
 /**
  * Mobile keyboard state
@@ -37,7 +38,7 @@ export interface UseMobileKeyboardOptions {
  */
 function isMobileDevice(): boolean {
   if (typeof window === 'undefined') return false
-  
+
   return (
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
@@ -47,7 +48,7 @@ function isMobileDevice(): boolean {
 
 /**
  * Production-ready mobile keyboard detection hook.
- * 
+ *
  * **Features:**
  * - Detects keyboard show/hide events
  * - Estimates keyboard height
@@ -55,31 +56,31 @@ function isMobileDevice(): boolean {
  * - Handles viewport changes
  * - iOS and Android support
  * - Debounced resize handling
- * 
+ *
  * **Use Cases:**
  * - Adjust UI when keyboard appears
  * - Scroll chat input into view
  * - Prevent content from being hidden
  * - Improve mobile UX
- * 
+ *
  * **Platform Notes:**
  * - iOS: Uses visualViewport API and focusin/focusout events
  * - Android: Uses window resize detection
  * - Falls back gracefully on desktop
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage
  * function ChatInput() {
  *   const { isKeyboardVisible, keyboardHeight } = useMobileKeyboard()
- *   
+ *
  *   return (
  *     <div style={{ marginBottom: keyboardHeight }}>
  *       <input />
  *     </div>
  *   )
  * }
- * 
+ *
  * // With callbacks
  * function ChatWindow() {
  *   const keyboard = useMobileKeyboard({
@@ -92,14 +93,14 @@ function isMobileDevice(): boolean {
  *     autoScroll: true,
  *     scrollOffset: 20
  *   })
- *   
+ *
  *   return <div>...</div>
  * }
- * 
+ *
  * // Conditional rendering
  * function ChatFooter() {
  *   const { isKeyboardVisible, isMobile } = useMobileKeyboard()
- *   
+ *
  *   if (!isMobile) return <FullFooter />
  *   if (isKeyboardVisible) return <CompactFooter />
  *   return <DefaultFooter />
@@ -121,12 +122,19 @@ export function useMobileKeyboard(
     isKeyboardVisible: false,
     keyboardHeight: 0,
     isMobile: isMobileDevice(),
-    originalViewportHeight: typeof window !== 'undefined' ? window.innerHeight : 0,
+    originalViewportHeight:
+      typeof window !== 'undefined' ? window.innerHeight : 0,
   }))
 
-  const debounceTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
+  // Use useSafeTimeout for automatic cleanup on unmount - prevents memory leaks
+  const { setSafeTimeout, clearSafeTimeout, clearAllTimeouts } =
+    useSafeTimeout()
   const previousHeightRef = React.useRef<number>(
     typeof window !== 'undefined' ? window.innerHeight : 0
+  )
+  // Track debounce timer ID for proper debouncing (cancel previous before setting new)
+  const debounceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
   )
 
   /**
@@ -134,26 +142,26 @@ export function useMobileKeyboard(
    */
   const scrollToFocusedElement = React.useCallback(() => {
     const activeElement = document.activeElement as HTMLElement
-    
+
     if (
       activeElement &&
       (activeElement.tagName === 'INPUT' ||
         activeElement.tagName === 'TEXTAREA' ||
         activeElement.isContentEditable)
     ) {
-      setTimeout(() => {
+      setSafeTimeout(() => {
         activeElement.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         })
-        
+
         // Additional scroll offset
         if (scrollOffset > 0) {
           window.scrollBy(0, scrollOffset)
         }
       }, 300)
     }
-  }, [scrollOffset])
+  }, [scrollOffset, setSafeTimeout])
 
   /**
    * Handle viewport/window resize
@@ -161,11 +169,14 @@ export function useMobileKeyboard(
   const handleResize = React.useCallback(() => {
     if (!state.isMobile) return
 
+    // Cancel previous debounce timer to ensure proper debouncing
     if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
+      clearSafeTimeout(debounceTimerRef.current)
     }
 
-    debounceTimerRef.current = setTimeout(() => {
+    // Debounced resize handling with automatic cleanup via useSafeTimeout
+    debounceTimerRef.current = setSafeTimeout(() => {
+      debounceTimerRef.current = null
       const currentHeight = window.visualViewport?.height || window.innerHeight
       const previousHeight = previousHeightRef.current
       const heightDifference = previousHeight - currentHeight
@@ -175,7 +186,7 @@ export function useMobileKeyboard(
 
       if (isKeyboardVisible) {
         const keyboardHeight = heightDifference
-        
+
         setState((prev) => ({
           ...prev,
           isKeyboardVisible: true,
@@ -207,6 +218,8 @@ export function useMobileKeyboard(
     onKeyboardHide,
     autoScroll,
     scrollToFocusedElement,
+    setSafeTimeout,
+    clearSafeTimeout,
   ])
 
   /**
@@ -215,7 +228,7 @@ export function useMobileKeyboard(
   const handleFocusIn = React.useCallback(
     (e: FocusEvent) => {
       const target = e.target as HTMLElement
-      
+
       if (
         !state.isMobile ||
         !(
@@ -228,11 +241,11 @@ export function useMobileKeyboard(
       }
 
       // On iOS, visual viewport will change when keyboard shows
-      setTimeout(() => {
+      setSafeTimeout(() => {
         handleResize()
       }, 100)
     },
-    [state.isMobile, handleResize]
+    [state.isMobile, handleResize, setSafeTimeout]
   )
 
   /**
@@ -241,7 +254,7 @@ export function useMobileKeyboard(
   const handleFocusOut = React.useCallback(() => {
     if (!state.isMobile) return
 
-    setTimeout(() => {
+    setSafeTimeout(() => {
       // Check if no input is focused
       const activeElement = document.activeElement
       if (
@@ -260,7 +273,7 @@ export function useMobileKeyboard(
         previousHeightRef.current = window.innerHeight
       }
     }, 100)
-  }, [state.isMobile, onKeyboardHide])
+  }, [state.isMobile, onKeyboardHide, setSafeTimeout])
 
   /**
    * Setup event listeners
@@ -284,9 +297,8 @@ export function useMobileKeyboard(
     document.addEventListener('focusout', handleFocusOut)
 
     return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-      }
+      // Timer cleanup is handled automatically by useSafeTimeout hook
+      clearAllTimeouts()
 
       if (window.visualViewport) {
         window.visualViewport.removeEventListener('resize', handleResize)
@@ -297,7 +309,13 @@ export function useMobileKeyboard(
       document.removeEventListener('focusin', handleFocusIn)
       document.removeEventListener('focusout', handleFocusOut)
     }
-  }, [state.isMobile, handleResize, handleFocusIn, handleFocusOut])
+  }, [
+    state.isMobile,
+    handleResize,
+    handleFocusIn,
+    handleFocusOut,
+    clearAllTimeouts,
+  ])
 
   return state
 }
@@ -318,7 +336,7 @@ export function useMobileViewportHeight(): number {
       // Use visual viewport if available (more accurate on mobile)
       const vh = window.visualViewport?.height || window.innerHeight
       setHeight(vh)
-      
+
       // Also update CSS custom property
       document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`)
     }
@@ -327,7 +345,8 @@ export function useMobileViewportHeight(): number {
 
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', updateHeight)
-      return () => window.visualViewport?.removeEventListener('resize', updateHeight)
+      return () =>
+        window.visualViewport?.removeEventListener('resize', updateHeight)
     } else {
       window.addEventListener('resize', updateHeight)
       return () => window.removeEventListener('resize', updateHeight)
@@ -340,9 +359,31 @@ export function useMobileViewportHeight(): number {
 /**
  * Utility hook to prevent body scroll when keyboard is visible
  * Useful for modal/fullscreen chat interfaces
+ *
+ * @param state - Optional keyboard state from useMobileKeyboard. If not provided,
+ *                creates its own instance. Pass state from an existing useMobileKeyboard
+ *                call to avoid creating duplicate instances in the same component tree.
+ *
+ * @example
+ * ```tsx
+ * // Option 1: Standalone usage (creates its own hook instance)
+ * function ChatModal() {
+ *   useMobileKeyboardScrollLock()
+ *   return <div>...</div>
+ * }
+ *
+ * // Option 2: Shared state (recommended when using both hooks)
+ * function ChatModal() {
+ *   const keyboardState = useMobileKeyboard()
+ *   useMobileKeyboardScrollLock(keyboardState)
+ *   return <div style={{ paddingBottom: keyboardState.keyboardHeight }}>...</div>
+ * }
+ * ```
  */
-export function useMobileKeyboardScrollLock(): void {
-  const { isKeyboardVisible, isMobile } = useMobileKeyboard()
+export function useMobileKeyboardScrollLock(state?: MobileKeyboardState): void {
+  // Use provided state or create own instance for backwards compatibility
+  const ownState = useMobileKeyboard()
+  const { isKeyboardVisible, isMobile } = state ?? ownState
 
   React.useEffect(() => {
     if (!isMobile || !isKeyboardVisible) return

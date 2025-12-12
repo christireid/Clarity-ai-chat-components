@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { cn } from '../../utils/cn'
 import { normalizeLanguage, escapeHtml } from './utils'
+import { sanitizeCodeHtml } from '../../utils/sanitize-html'
 import { CODE_THEMES, type CodeThemeName, DEFAULT_DARK_THEME } from './themes'
 import { CodeBlockHeader } from './CodeBlockHeader'
 import { CodeBlockCopyButton } from './CodeBlockCopyButton'
@@ -231,8 +232,9 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
         >
           <div
             className="whitespace-pre-wrap break-words"
+            // SECURITY: Sanitize HTML output from syntax highlighter to prevent XSS
             dangerouslySetInnerHTML={{
-              __html: highlightedHtml || escapeHtml(code),
+              __html: sanitizeCodeHtml(highlightedHtml || escapeHtml(code)),
             }}
           />
 

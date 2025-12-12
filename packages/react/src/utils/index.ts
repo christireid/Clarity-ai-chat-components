@@ -218,3 +218,18 @@ export {
   type DeduplicationOptions,
   type DeduplicationStats,
 } from './request-deduplication'
+
+// Security utilities
+export {
+  safeEvaluate,
+  detectDangerousPatterns,
+  formatEvaluateResult,
+  type SafeEvaluateResult,
+} from './safe-evaluate'
+
+export {
+  sanitizeCodeHtml,
+  escapeHtmlEntities,
+  createSafeCodeHtml,
+  detectDangerousHtml,
+} from './sanitize-html'
