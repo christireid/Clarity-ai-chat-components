@@ -1,0 +1,396 @@
+{
+  "ClarityChat Complete": {
+    "prefix": ["cc-chat", "clarity-chat", "cc-complete"],
+    "body": [
+      "import { ClarityChat } from '@clarity-chat/react'",
+      "",
+      "<ClarityChat",
+      "  api=\"${1:/api/chat}\"",
+      "  placeholder=\"${2:Type your message...}\"",
+      "  ${3:showTimestamp}",
+      "  ${4:enableMarkdown}",
+      "/>"
+    ],
+    "description": "Complete Clarity Chat component"
+  },
+
+  "ClarityChat with Memory": {
+    "prefix": ["cc-chat-memory", "clarity-memory"],
+    "body": [
+      "import { ClarityChat, MemoryProvider } from '@clarity-chat/react'",
+      "",
+      "<MemoryProvider",
+      "  strategy=\"${1|hybrid,sliding-window,summarization|}\"",
+      "  maxTokens={${2:2000}}",
+      ">",
+      "  <ClarityChat",
+      "    api=\"${3:/api/chat}\"",
+      "    placeholder=\"${4:Type your message...}\"",
+      "    showTimestamp",
+      "    enableMarkdown",
+      "  />",
+      "</MemoryProvider>"
+    ],
+    "description": "Clarity Chat with memory management"
+  },
+
+  "ClarityChatPresets": {
+    "prefix": ["cc-presets", "clarity-presets"],
+    "body": [
+      "import { ClarityChatPresets } from '@clarity-chat/react'",
+      "",
+      "<ClarityChatPresets",
+      "  variant=\"${1|minimal,standard,enterprise|}\"",
+      "  api=\"${2:/api/chat}\"",
+      "/>"
+    ],
+    "description": "Pre-configured Clarity Chat variant"
+  },
+
+  "Chat Window with Components": {
+    "prefix": ["cc-window", "chat-window"],
+    "body": [
+      "import {",
+      "  ChatWindow,",
+      "  ChatInput,",
+      "  MessageList,",
+      "  useClarityChat,",
+      "} from '@clarity-chat/react'",
+      "",
+      "export function ${1:Chat}() {",
+      "  const {",
+      "    messages,",
+      "    input,",
+      "    handleInputChange,",
+      "    handleSubmit,",
+      "    isLoading,",
+      "  } = useClarityChat({",
+      "    api: '${2:/api/chat}',",
+      "  })",
+      "",
+      "  return (",
+      "    <ChatWindow className=\"${3:h-screen}\">",
+      "      <MessageList messages={messages} isLoading={isLoading} />",
+      "      <ChatInput",
+      "        value={input}",
+      "        onChange={handleInputChange}",
+      "        onSubmit={handleSubmit}",
+      "        isLoading={isLoading}",
+      "        placeholder=\"${4:Type a message...}\"",
+      "      />",
+      "    </ChatWindow>",
+      "  )",
+      "}"
+    ],
+    "description": "Chat window with input and message list"
+  },
+
+  "ChatWindow": {
+    "prefix": ["cc-chatwindow"],
+    "body": [
+      "<ChatWindow className=\"${1:h-screen}\">",
+      "  ${2:children}",
+      "</ChatWindow>"
+    ],
+    "description": "Chat window container"
+  },
+
+  "MessageList": {
+    "prefix": ["cc-messagelist", "cc-messages"],
+    "body": [
+      "<MessageList",
+      "  messages={${1:messages}}",
+      "  isLoading={${2:isLoading}}",
+      "  ${3:showTimestamp}",
+      "/>"
+    ],
+    "description": "Message list component"
+  },
+
+  "ChatInput": {
+    "prefix": ["cc-chatinput", "cc-input"],
+    "body": [
+      "<ChatInput",
+      "  value={${1:input}}",
+      "  onChange={${2:handleInputChange}}",
+      "  onSubmit={${3:handleSubmit}}",
+      "  isLoading={${4:isLoading}}",
+      "  placeholder=\"${5:Type a message...}\"",
+      "/>"
+    ],
+    "description": "Chat input component"
+  },
+
+  "MessageBubble": {
+    "prefix": ["cc-bubble", "cc-message-bubble"],
+    "body": [
+      "<MessageBubble",
+      "  message={${1:message}}",
+      "  variant=\"${2|default,compact,minimal|}\"",
+      "  ${3:showTimestamp}",
+      "/>"
+    ],
+    "description": "Message bubble component"
+  },
+
+  "StreamingMessage": {
+    "prefix": ["cc-streaming", "streaming-message"],
+    "body": [
+      "<StreamingMessage",
+      "  content={${1:content}}",
+      "  isStreaming={${2:isStreaming}}",
+      "  ${3:showCursor}",
+      "/>"
+    ],
+    "description": "Streaming message with cursor"
+  },
+
+  "ThinkingIndicator": {
+    "prefix": ["cc-thinking", "thinking-indicator"],
+    "body": [
+      "<ThinkingIndicator",
+      "  variant=\"${1|dots,pulse,spinner|}\"",
+      "  text=\"${2:AI is thinking...}\"",
+      "/>"
+    ],
+    "description": "AI thinking animation"
+  },
+
+  "TypingIndicator": {
+    "prefix": ["cc-typing", "typing-indicator"],
+    "body": ["<TypingIndicator isTyping={${1:isTyping}} />"],
+    "description": "Typing indicator"
+  },
+
+  "MemoryProvider": {
+    "prefix": ["cc-memory-provider", "memory-provider"],
+    "body": [
+      "<MemoryProvider",
+      "  strategy=\"${1|hybrid,sliding-window,summarization|}\"",
+      "  maxTokens={${2:2000}}",
+      ">",
+      "  ${3:children}",
+      "</MemoryProvider>"
+    ],
+    "description": "Memory context provider"
+  },
+
+  "ClarityChatProvider": {
+    "prefix": ["cc-provider", "clarity-provider"],
+    "body": [
+      "<ClarityChatProvider",
+      "  config={{",
+      "    api: '${1:/api/chat}',",
+      "    ${2:// Additional config}",
+      "  }}",
+      ">",
+      "  ${3:children}",
+      "</ClarityChatProvider>"
+    ],
+    "description": "Main Clarity Chat provider"
+  },
+
+  "TokenBudgetDisplay": {
+    "prefix": ["cc-token-display", "token-budget"],
+    "body": [
+      "<TokenBudgetDisplay",
+      "  stats={${1:tokenStats}}",
+      "  maxTokens={${2:4000}}",
+      "  ${3:showWarning}",
+      "/>"
+    ],
+    "description": "Token usage visualization"
+  },
+
+  "TokenCounter": {
+    "prefix": ["cc-token-counter"],
+    "body": [
+      "<TokenCounter",
+      "  count={${1:tokenCount}}",
+      "  maxTokens={${2:4000}}",
+      "/>"
+    ],
+    "description": "Token count display"
+  },
+
+  "MarkdownRenderer": {
+    "prefix": ["cc-markdown", "markdown-renderer"],
+    "body": [
+      "<MarkdownRenderer",
+      "  content={${1:content}}",
+      "  ${2:enableCodeHighlight}",
+      "/>"
+    ],
+    "description": "Markdown content renderer"
+  },
+
+  "CodeBlock": {
+    "prefix": ["cc-codeblock", "code-block"],
+    "body": [
+      "<CodeBlock",
+      "  code={${1:code}}",
+      "  language=\"${2:typescript}\"",
+      "  ${3:showLineNumbers}",
+      "  ${4:enableCopy}",
+      "/>"
+    ],
+    "description": "Syntax highlighted code block"
+  },
+
+  "ErrorBoundary": {
+    "prefix": ["cc-error-boundary"],
+    "body": [
+      "<ErrorBoundary",
+      "  fallback={<${1:ErrorFallback} />}",
+      "  onError={${2:handleError}}",
+      ">",
+      "  ${3:children}",
+      "</ErrorBoundary>"
+    ],
+    "description": "Error boundary wrapper"
+  },
+
+  "ModelSelector": {
+    "prefix": ["cc-model-selector", "model-selector"],
+    "body": [
+      "<ModelSelector",
+      "  models={[${1:'gpt-4-turbo', 'claude-3-opus'}]}",
+      "  value={${2:selectedModel}}",
+      "  onChange={${3:setSelectedModel}}",
+      "/>"
+    ],
+    "description": "AI model selector dropdown"
+  },
+
+  "SettingsPanel": {
+    "prefix": ["cc-settings", "settings-panel"],
+    "body": [
+      "<SettingsPanel",
+      "  settings={${1:settings}}",
+      "  onChange={${2:handleSettingsChange}}",
+      "/>"
+    ],
+    "description": "Chat settings panel"
+  },
+
+  "Complete Chat Page": {
+    "prefix": ["cc-page", "clarity-chat-page"],
+    "body": [
+      "'use client'",
+      "",
+      "import {",
+      "  ClarityChat,",
+      "  MemoryProvider,",
+      "  ClarityChatProvider,",
+      "} from '@clarity-chat/react'",
+      "",
+      "export default function ChatPage() {",
+      "  return (",
+      "    <ClarityChatProvider config={{ api: '${1:/api/chat}' }}>",
+      "      <MemoryProvider strategy=\"${2:hybrid}\" maxTokens={${3:2000}}>",
+      "        <div className=\"h-screen flex flex-col\">",
+      "          <header className=\"p-4 border-b\">",
+      "            <h1 className=\"text-xl font-semibold\">${4:AI Chat}</h1>",
+      "          </header>",
+      "          <main className=\"flex-1 overflow-hidden\">",
+      "            <ClarityChat",
+      "              placeholder=\"${5:Type your message...}\"",
+      "              showTimestamp",
+      "              enableMarkdown",
+      "            />",
+      "          </main>",
+      "        </div>",
+      "      </MemoryProvider>",
+      "    </ClarityChatProvider>",
+      "  )",
+      "}"
+    ],
+    "description": "Complete chat page component"
+  },
+
+  "Chat with Custom Styling": {
+    "prefix": ["cc-styled", "clarity-styled"],
+    "body": [
+      "import { ClarityChat } from '@clarity-chat/react'",
+      "",
+      "<ClarityChat",
+      "  api=\"${1:/api/chat}\"",
+      "  classNames={{",
+      "    root: '${2:h-screen}',",
+      "    messageList: '${3:p-4}',",
+      "    userMessage: '${4:bg-blue-500 text-white}',",
+      "    assistantMessage: '${5:bg-gray-100}',",
+      "    input: '${6:border rounded-lg}',",
+      "  }}",
+      "/>"
+    ],
+    "description": "Clarity Chat with custom Tailwind styling"
+  },
+
+  "Chat Import All": {
+    "prefix": ["cc-import-all", "clarity-imports"],
+    "body": [
+      "import {",
+      "  // Components",
+      "  ClarityChat,",
+      "  ChatWindow,",
+      "  ChatInput,",
+      "  MessageList,",
+      "  MessageBubble,",
+      "  StreamingMessage,",
+      "  ThinkingIndicator,",
+      "  // Providers",
+      "  ClarityChatProvider,",
+      "  MemoryProvider,",
+      "  // Hooks",
+      "  useClarityChat,",
+      "  useMemoryContext,",
+      "  useTokenBudgetMonitor,",
+      "  // Types",
+      "  type CoreMessage,",
+      "  type UseClarityChatOptions,",
+      "} from '@clarity-chat/react'"
+    ],
+    "description": "Import all common Clarity Chat exports"
+  },
+
+  "Chat Import Components": {
+    "prefix": ["cc-import-components"],
+    "body": [
+      "import {",
+      "  ClarityChat,",
+      "  ChatWindow,",
+      "  ChatInput,",
+      "  MessageList,",
+      "  StreamingMessage,",
+      "} from '@clarity-chat/react'"
+    ],
+    "description": "Import Clarity Chat components"
+  },
+
+  "Chat Import Hooks": {
+    "prefix": ["cc-import-hooks"],
+    "body": [
+      "import {",
+      "  useClarityChat,",
+      "  useMemoryContext,",
+      "  useTokenBudgetMonitor,",
+      "  useStreamingSSE,",
+      "} from '@clarity-chat/react'"
+    ],
+    "description": "Import Clarity Chat hooks"
+  },
+
+  "Chat Import Types": {
+    "prefix": ["cc-import-types"],
+    "body": [
+      "import type {",
+      "  CoreMessage,",
+      "  UseClarityChatOptions,",
+      "  ClarityMemoryOptions,",
+      "  TokenBudgetStats,",
+      "} from '@clarity-chat/react'"
+    ],
+    "description": "Import Clarity Chat types"
+  }
+}
