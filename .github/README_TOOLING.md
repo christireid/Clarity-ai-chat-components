@@ -186,6 +186,45 @@ New component?         → /review-react + /review-clarity-chat
 Styling changes?       → /review-tailwind
 ```
 
+#### CLI Scripts
+
+Generate review prompts directly from the command line:
+
+```bash
+# Interactive mode - choose review type and files
+pnpm review
+
+# Run specific review type
+pnpm review --type security --file src/actions/user.ts
+pnpm review --type performance --staged
+
+# Copy to clipboard or save to file
+pnpm review --type full --output clipboard
+pnpm review --type react --output file
+```
+
+#### Pre-commit Checks
+
+Automated lightweight checks run on every commit via Husky + lint-staged:
+
+| Check | What It Catches |
+|-------|-----------------|
+| Arbitrary Tailwind | `w-[342px]` instead of design tokens |
+| Hardcoded Colors | `bg-[#f5f5f5]` instead of theme colors |
+| Missing 'use client' | Files with hooks but no directive |
+| Explicit `any` | Untyped variables |
+| `dangerouslySetInnerHTML` | Potential XSS vectors |
+| Native `<img>` | Missing next/image optimization |
+| Inline arrows in JSX | Unstable onClick callbacks |
+| Console.log | Debug code in production |
+
+Run checks manually:
+
+```bash
+pnpm review:check src/components/
+pnpm review:check:staged
+```
+
 **Documentation**: See `docs/prompts/REACT_NEXTJS_CODE_REVIEW_PROMPT.md` for detailed criteria.
 
 ### 6. **VSCode Extension** 💻
