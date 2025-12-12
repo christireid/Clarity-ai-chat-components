@@ -73,6 +73,13 @@ function PlaygroundContent() {
     [actions]
   )
 
+  const handlePreviewStatus = useCallback(
+    (status: 'idle' | 'compiling' | 'rendering' | 'success' | 'error') => {
+      actions.setPreviewStatus(status)
+    },
+    [actions]
+  )
+
   return (
     <div
       className={`h-screen flex flex-col ${state.theme === 'dark' ? 'dark' : ''}`}
@@ -369,6 +376,7 @@ function PlaygroundContent() {
                   onRunRef={runPreviewRef}
                   onConsoleEntry={handleConsoleEntry}
                   onError={actions.setError}
+                  onPreviewStatus={handlePreviewStatus}
                 />
               </PreviewErrorBoundary>
             </ErrorBoundary>

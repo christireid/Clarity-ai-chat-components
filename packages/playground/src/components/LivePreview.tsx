@@ -6,8 +6,10 @@
  */
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { AlertCircle, Play } from 'lucide-react'
+import { AlertCircle, Play, Loader2 } from 'lucide-react'
 import type { ConsoleLogEntry, PlaygroundError } from '../types'
+import type { PreviewStatus } from '../contexts/PlaygroundContext'
+import { cn } from '../utils/cn'
 
 interface LivePreviewProps {
   code: string
@@ -16,9 +18,10 @@ interface LivePreviewProps {
   onRunRef?: React.MutableRefObject<(() => void) | null>
   onConsoleEntry?: (entry: Omit<ConsoleLogEntry, 'id' | 'timestamp'>) => void
   onError?: (error: PlaygroundError | null) => void
+  onPreviewStatus?: (status: PreviewStatus) => void
 }
 
-// Generate iframe HTML with console interception
+// Generate iframe HTML with console interception and status reporting
 function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
   return `
 <!DOCTYPE html>
@@ -61,6 +64,9 @@ function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
 <body>
   <div id="root"></div>
   <script>
+    // Notify parent that we're starting to compile
+    window.parent.postMessage({ type: 'playground-status', status: 'compiling' }, '*');
+
     // Console interception - must be before any other scripts
     (function() {
       const originalConsole = {
@@ -80,9 +86,16 @@ function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
         }
         if (typeof arg === 'object') {
           try {
-            return JSON.stringify(arg, null, 2);
+            const seen = new WeakSet();
+            return JSON.stringify(arg, (key, value) => {
+              if (typeof value === 'object' && value !== null) {
+                if (seen.has(value)) return '[Circular]';
+                seen.add(value);
+              }
+              return value;
+            }, 2);
           } catch (e) {
-            return '[Circular Object]';
+            return '[Object - cannot stringify]';
           }
         }
         return String(arg);
@@ -123,6 +136,7 @@ function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
             stack: error ? error.stack : null,
           }
         }, '*');
+        window.parent.postMessage({ type: 'playground-status', status: 'error' }, '*');
         return false;
       };
 
@@ -136,10 +150,14 @@ function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
             stack: error instanceof Error ? error.stack : null,
           }
         }, '*');
+        window.parent.postMessage({ type: 'playground-status', status: 'error' }, '*');
       };
     })();
   </script>
   <script type="text/babel" data-presets="react">
+    // Notify parent that we're rendering
+    window.parent.postMessage({ type: 'playground-status', status: 'rendering' }, '*');
+
     try {
       ${code}
 
@@ -150,6 +168,10 @@ function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
 
         // Notify parent that render was successful
         window.parent.postMessage({ type: 'playground-render-success' }, '*');
+        window.parent.postMessage({ type: 'playground-status', status: 'success' }, '*');
+      } else {
+        // No component defined - still success
+        window.parent.postMessage({ type: 'playground-status', status: 'success' }, '*');
       }
     } catch (error) {
       // Display error in preview
@@ -186,11 +208,21 @@ function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
           stack: error?.stack || null,
         }
       }, '*');
+      window.parent.postMessage({ type: 'playground-status', status: 'error' }, '*');
     }
   </script>
 </body>
 </html>
   `.trim()
+}
+
+// Status indicator labels
+const STATUS_LABELS: Record<PreviewStatus, string> = {
+  idle: '',
+  compiling: 'Compiling...',
+  rendering: 'Rendering...',
+  success: '',
+  error: 'Error',
 }
 
 export function LivePreview({
@@ -200,11 +232,15 @@ export function LivePreview({
   onRunRef,
   onConsoleEntry,
   onError,
+  onPreviewStatus,
 }: LivePreviewProps) {
   const [error, setError] = useState<string | null>(null)
-  const [isRunning, setIsRunning] = useState(false)
+  const [previewStatus, setPreviewStatus] = useState<PreviewStatus>('idle')
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const isProcessing =
+    previewStatus === 'compiling' || previewStatus === 'rendering'
 
   // Handle messages from iframe
   useEffect(() => {
@@ -222,6 +258,11 @@ export function LivePreview({
           message: data.message,
           args: data.args,
         })
+      }
+
+      if (data.type === 'playground-status') {
+        setPreviewStatus(data.status)
+        onPreviewStatus?.(data.status)
       }
 
       if (data.type === 'playground-error') {
@@ -243,10 +284,11 @@ export function LivePreview({
 
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [onConsoleEntry, onError])
+  }, [onConsoleEntry, onError, onPreviewStatus])
 
   const runPreview = useCallback(() => {
-    setIsRunning(true)
+    setPreviewStatus('compiling')
+    onPreviewStatus?.('compiling')
     setError(null)
 
     try {
@@ -263,11 +305,11 @@ export function LivePreview({
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error'
       setError(message)
+      setPreviewStatus('error')
+      onPreviewStatus?.('error')
       onError?.({ message })
-    } finally {
-      setIsRunning(false)
     }
-  }, [code, theme, onError])
+  }, [code, theme, onError, onPreviewStatus])
 
   // Expose run function to parent via ref
   useEffect(() => {
@@ -326,12 +368,23 @@ export function LivePreview({
         </div>
       )}
 
-      <div className="flex-1 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden min-h-[400px]">
+      <div className="flex-1 relative border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden min-h-[400px]">
+        {/* Loading indicator */}
+        {isProcessing && (
+          <div className="absolute top-2 right-2 z-10 flex items-center gap-2 px-3 py-1.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium shadow-sm">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>{STATUS_LABELS[previewStatus]}</span>
+          </div>
+        )}
+
         <iframe
           ref={iframeRef}
           title="Live code preview"
           sandbox="allow-scripts"
-          className={`w-full h-full ${isRunning ? 'opacity-50' : ''}`}
+          className={cn(
+            'w-full h-full transition-opacity duration-200',
+            isProcessing && 'opacity-70'
+          )}
           aria-label="Live preview of the code"
         />
       </div>

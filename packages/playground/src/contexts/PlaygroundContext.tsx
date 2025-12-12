@@ -32,6 +32,18 @@ import {
 const STORAGE_KEY = 'clarity-playground-state'
 const STORAGE_VERSION = 1
 
+// Console limits
+const MAX_CONSOLE_ENTRIES = 500
+const MAX_OBJECT_DEPTH = 5
+
+// Preview status types
+export type PreviewStatus =
+  | 'idle'
+  | 'compiling'
+  | 'rendering'
+  | 'success'
+  | 'error'
+
 // Default settings
 const DEFAULT_SETTINGS: PlaygroundSettings = {
   autoRun: true,
@@ -57,6 +69,7 @@ interface PlaygroundFullState {
   showConsole: boolean
   isLoading: boolean
   lastSaved: Date | null
+  previewStatus: PreviewStatus
 }
 
 // Action types
@@ -75,6 +88,7 @@ type PlaygroundAction =
   | { type: 'SET_LOADING'; isLoading: boolean }
   | { type: 'SET_LAST_SAVED'; date: Date }
   | { type: 'RESET_TO_TEMPLATE' }
+  | { type: 'SET_PREVIEW_STATUS'; status: PreviewStatus }
   | {
       type: 'LOAD_STATE'
       state: Partial<PlaygroundFullState>
@@ -93,6 +107,61 @@ const initialState: PlaygroundFullState = {
   showConsole: false,
   isLoading: false,
   lastSaved: null,
+  previewStatus: 'idle',
+}
+
+/**
+ * Safely format a value for console display.
+ * Handles circular references and limits depth.
+ */
+function formatConsoleValue(value: unknown, depth = 0): string {
+  if (depth > MAX_OBJECT_DEPTH) return '[Max depth exceeded]'
+
+  if (value === null) return 'null'
+  if (value === undefined) return 'undefined'
+  if (typeof value === 'function')
+    return `[Function: ${value.name || 'anonymous'}]`
+  if (typeof value === 'symbol') return value.toString()
+
+  if (value instanceof Error) {
+    return `${value.name}: ${value.message}${value.stack ? '\n' + value.stack : ''}`
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString()
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '[]'
+    if (depth >= MAX_OBJECT_DEPTH) return `[Array(${value.length})]`
+    const items = value
+      .slice(0, 100)
+      .map((item) => formatConsoleValue(item, depth + 1))
+    const suffix =
+      value.length > 100 ? `, ... ${value.length - 100} more items` : ''
+    return `[${items.join(', ')}${suffix}]`
+  }
+
+  if (typeof value === 'object') {
+    try {
+      const seen = new WeakSet()
+      return JSON.stringify(
+        value,
+        (_, v) => {
+          if (typeof v === 'object' && v !== null) {
+            if (seen.has(v)) return '[Circular]'
+            seen.add(v)
+          }
+          return v
+        },
+        2
+      )
+    } catch {
+      return '[Object - cannot stringify]'
+    }
+  }
+
+  return String(value)
 }
 
 // Reducer
@@ -125,14 +194,24 @@ function playgroundReducer(
         settings: { ...state.settings, ...action.settings },
       }
 
-    case 'ADD_CONSOLE_ENTRY':
+    case 'ADD_CONSOLE_ENTRY': {
+      // Enforce max console entries limit
+      const newEntries = [...state.consoleEntries, action.entry]
+      const limitedEntries =
+        newEntries.length > MAX_CONSOLE_ENTRIES
+          ? newEntries.slice(-MAX_CONSOLE_ENTRIES)
+          : newEntries
       return {
         ...state,
-        consoleEntries: [...state.consoleEntries, action.entry],
+        consoleEntries: limitedEntries,
       }
+    }
 
     case 'CLEAR_CONSOLE':
       return { ...state, consoleEntries: [] }
+
+    case 'SET_PREVIEW_STATUS':
+      return { ...state, previewStatus: action.status }
 
     case 'SET_ERROR':
       return { ...state, error: action.error }
@@ -185,6 +264,7 @@ interface PlaygroundContextValue {
     addConsoleEntry: (entry: Omit<ConsoleLogEntry, 'id' | 'timestamp'>) => void
     clearConsole: () => void
     setError: (error: PlaygroundError | null) => void
+    setPreviewStatus: (status: PreviewStatus) => void
     toggleSettings: () => void
     toggleExportMenu: () => void
     closeExportMenu: () => void
@@ -319,10 +399,13 @@ export function PlaygroundProvider({ children }: PlaygroundProviderProps) {
     const addConsoleEntry = (
       entry: Omit<ConsoleLogEntry, 'id' | 'timestamp'>
     ) => {
+      // Format args for better display
+      const formattedArgs = entry.args?.map((arg) => formatConsoleValue(arg))
       dispatch({
         type: 'ADD_CONSOLE_ENTRY',
         entry: {
           ...entry,
+          args: formattedArgs,
           id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
           timestamp: new Date(),
         },
@@ -342,6 +425,10 @@ export function PlaygroundProvider({ children }: PlaygroundProviderProps) {
           args: error.stack ? [error.stack] : undefined,
         })
       }
+    }
+
+    const setPreviewStatus = (status: PreviewStatus) => {
+      dispatch({ type: 'SET_PREVIEW_STATUS', status })
     }
 
     const toggleSettings = () => {
@@ -427,6 +514,7 @@ export function PlaygroundProvider({ children }: PlaygroundProviderProps) {
       addConsoleEntry,
       clearConsole,
       setError,
+      setPreviewStatus,
       toggleSettings,
       toggleExportMenu,
       closeExportMenu,

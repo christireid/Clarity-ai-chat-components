@@ -24,3 +24,5 @@ export {
   downloadAsZip,
   copyCode,
 } from './export'
+
+export { cn } from './cn'
