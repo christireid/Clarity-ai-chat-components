@@ -1,0 +1,23 @@
+{
+  "name": "Clarity Chat",
+  "short_name": "Clarity",
+  "description": "Production-ready React components for AI chat. Multi-provider support, intelligent memory, 40%+ cost savings.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00d4ff",
+  "icons": [
+    {
+      "src": "/icon",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["developer", "tools", "productivity"],
+  "orientation": "portrait-primary"
+}
