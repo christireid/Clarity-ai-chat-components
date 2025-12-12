@@ -1,0 +1,261 @@
+/**
+ * Code Block Font Configuration
+ *
+ * Premium monospace fonts for code display.
+ * Includes Fira Code (with ligatures), JetBrains Mono, and Source Code Pro.
+ *
+ * Usage:
+ * - Import this CSS file in your app entry point or tailwind config
+ * - Or use the font-face declarations if bundling fonts locally
+ */
+
+/* ============================================================================
+   Font Imports (CDN)
+   ============================================================================ */
+
+/* Fira Code - Primary font with ligatures */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
+
+/* JetBrains Mono - Alternative with ligatures */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* Source Code Pro - Clean, no ligatures */
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap');
+
+/* ============================================================================
+   Font Family Utilities
+   ============================================================================ */
+
+.font-fira-code {
+  font-family:
+    'Fira Code', 'Fira Code VF', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
+    Consolas, 'Liberation Mono', monospace;
+}
+
+.font-jetbrains-mono {
+  font-family:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+}
+
+.font-source-code-pro {
+  font-family:
+    'Source Code Pro', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+}
+
+/* ============================================================================
+   Ligature Control
+   ============================================================================ */
+
+/* Enable ligatures - for fonts that support them */
+.font-ligatures {
+  font-feature-settings:
+    'liga' 1,
+    'calt' 1,
+    'cv01' 1,
+    'cv02' 1;
+  font-variant-ligatures: common-ligatures contextual;
+  text-rendering: optimizeLegibility;
+}
+
+/* Disable ligatures - for accessibility or preference */
+.no-ligatures,
+.font-no-ligatures {
+  font-feature-settings:
+    'liga' 0,
+    'calt' 0;
+  font-variant-ligatures: none;
+}
+
+/* ============================================================================
+   Code Block Base Styles
+   ============================================================================ */
+
+.code-block {
+  /* Typography defaults */
+  font-size: 14px;
+  line-height: 1.6;
+  tab-size: 2;
+  -moz-tab-size: 2;
+
+  /* Text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Shiki output normalization */
+.code-block pre.shiki {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  overflow: visible;
+}
+
+.code-block pre.shiki code {
+  display: block;
+  width: 100%;
+  background: transparent;
+}
+
+/* ============================================================================
+   Line Highlighting
+   ============================================================================ */
+
+/* Highlighted line */
+.code-block .code-line.highlighted {
+  display: block;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  background-color: hsl(var(--primary) / 0.1);
+  border-left: 3px solid hsl(var(--primary));
+}
+
+/* Diff: Added line */
+.code-block .code-line.diff-add {
+  display: block;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  background-color: rgba(34, 197, 94, 0.15);
+  border-left: 3px solid #22c55e;
+}
+
+/* Diff: Removed line */
+.code-block .code-line.diff-remove {
+  display: block;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  background-color: rgba(239, 68, 68, 0.15);
+  border-left: 3px solid #ef4444;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+/* ============================================================================
+   Scrollbar Styling
+   ============================================================================ */
+
+.code-block::-webkit-scrollbar,
+.code-block pre::-webkit-scrollbar,
+.code-block > div::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.code-block::-webkit-scrollbar-track,
+.code-block pre::-webkit-scrollbar-track,
+.code-block > div::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-block::-webkit-scrollbar-thumb,
+.code-block pre::-webkit-scrollbar-thumb,
+.code-block > div::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover,
+.code-block pre::-webkit-scrollbar-thumb:hover,
+.code-block > div::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Firefox scrollbar */
+.code-block,
+.code-block pre,
+.code-block > div {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+/* ============================================================================
+   Focus Styles (Accessibility)
+   ============================================================================ */
+
+.code-block [tabindex='0']:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+/* ============================================================================
+   Selection Styling
+   ============================================================================ */
+
+.code-block ::selection {
+  background: hsl(var(--primary) / 0.3);
+}
+
+.code-block ::-moz-selection {
+  background: hsl(var(--primary) / 0.3);
+}
+
+/* ============================================================================
+   Reduced Motion Support
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .code-block * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .code-block .animate-pulse {
+    animation: none !important;
+    opacity: 0.7;
+  }
+
+  .code-block .animate-ping {
+    animation: none !important;
+    opacity: 0.5;
+  }
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+
+@media print {
+  .code-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .code-block button {
+    display: none !important;
+  }
+
+  .code-block .code-line.highlighted,
+  .code-block .code-line.diff-add,
+  .code-block .code-line.diff-remove {
+    border-left-width: 2px;
+  }
+}
+
+/* ============================================================================
+   Streaming Code Block Specific
+   ============================================================================ */
+
+.streaming-code-block[data-streaming='true'] {
+  /* Subtle pulsing border during streaming */
+  animation: streaming-border 2s ease-in-out infinite;
+}
+
+@keyframes streaming-border {
+  0%,
+  100% {
+    border-color: hsl(var(--border));
+  }
+  50% {
+    border-color: hsl(var(--primary) / 0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .streaming-code-block[data-streaming='true'] {
+    animation: none;
+    border-color: hsl(var(--primary) / 0.3);
+  }
+}
