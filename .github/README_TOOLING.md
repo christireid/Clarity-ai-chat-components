@@ -207,22 +207,61 @@ pnpm review --type react --output file
 
 Automated lightweight checks run on every commit via Husky + lint-staged:
 
-| Check | What It Catches |
-|-------|-----------------|
-| Arbitrary Tailwind | `w-[342px]` instead of design tokens |
-| Hardcoded Colors | `bg-[#f5f5f5]` instead of theme colors |
-| Missing 'use client' | Files with hooks but no directive |
-| Explicit `any` | Untyped variables |
-| `dangerouslySetInnerHTML` | Potential XSS vectors |
-| Native `<img>` | Missing next/image optimization |
-| Inline arrows in JSX | Unstable onClick callbacks |
-| Console.log | Debug code in production |
+| Check | What It Catches | Fixable |
+|-------|-----------------|---------|
+| Arbitrary Tailwind | `w-[342px]` instead of design tokens | |
+| Hardcoded Colors | `bg-[#f5f5f5]` instead of theme colors | |
+| Missing 'use client' | Files with hooks but no directive | 🔧 |
+| Explicit `any` | Untyped variables | |
+| `dangerouslySetInnerHTML` | Potential XSS vectors | |
+| Native `<img>` | Missing next/image optimization | |
+| Inline arrows in JSX | Unstable onClick callbacks | |
+| Console.log | Debug code in production | 🔧 |
+| TODO/FIXME | Unresolved comments | |
 
 Run checks manually:
 
 ```bash
+# Check files or directories
 pnpm review:check src/components/
 pnpm review:check:staged
+
+# Auto-fix fixable issues
+pnpm review:check:fix src/
+
+# JSON output for CI integration
+pnpm review:check:json --staged > results.json
+
+# Run tests for the review system
+pnpm review:test
+```
+
+#### Suppression Comments
+
+Suppress specific rules when needed:
+
+```tsx
+// Suppress on same line
+console.log('debug') // review-ignore: consoleLog
+
+// Suppress next line
+// review-ignore-next-line: explicitAny
+const data: any = {}
+
+// Suppress entire file
+// review-ignore-file: todoComments, consoleLog
+
+// Suppress all rules
+// review-ignore: all
+```
+
+#### Criteria Sync
+
+Validate that automated checks align with review criteria:
+
+```bash
+pnpm review:sync         # Validate alignment
+pnpm review:sync:report  # Detailed coverage report
 ```
 
 **Documentation**: See `docs/prompts/REACT_NEXTJS_CODE_REVIEW_PROMPT.md` for detailed criteria.
