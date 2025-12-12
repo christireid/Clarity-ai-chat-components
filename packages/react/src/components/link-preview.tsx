@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Card, Badge, cn } from '@clarity-chat/primitives'
 
 // ============================================================================
@@ -9,6 +9,8 @@ import { Card, Badge, cn } from '@clarity-chat/primitives'
 // ============================================================================
 
 export type LinkPreviewVariant = 'card' | 'compact' | 'inline'
+
+export type EmbedType = 'youtube' | 'twitter' | 'github' | 'vimeo' | 'spotify' | 'default'
 
 export interface LinkMetadata {
   url: string
@@ -18,6 +20,10 @@ export interface LinkMetadata {
   siteName?: string
   favicon?: string
   type?: 'website' | 'article' | 'video' | 'music' | 'profile'
+  /** Detected embed type for rich rendering */
+  embedType?: EmbedType
+  /** Platform-specific ID (e.g., YouTube video ID) */
+  embedId?: string
 }
 
 export interface LinkPreviewProps {
@@ -39,6 +45,8 @@ export interface LinkPreviewProps {
   showDomain?: boolean
   /** Show description text */
   showDescription?: boolean
+  /** Allow expanding long descriptions */
+  expandableDescription?: boolean
   /** Fallback content when no metadata */
   fallback?: React.ReactNode
   /** Custom className */
@@ -68,8 +76,14 @@ export interface LinkPreviewErrorProps {
 export interface UseLinkPreviewOptions {
   /** Cache duration in milliseconds (default: 5 minutes) */
   cacheDuration?: number
+  /** Maximum cache size for LRU eviction (default: 100) */
+  maxCacheSize?: number
   /** Custom fetch function for metadata */
   fetchFn?: (url: string) => Promise<LinkMetadata>
+  /** API endpoint for metadata fetching (used if no fetchFn provided) */
+  apiEndpoint?: string
+  /** Request timeout in milliseconds (default: 10000) */
+  timeout?: number
 }
 
 export interface UseLinkPreviewReturn {
@@ -81,8 +95,180 @@ export interface UseLinkPreviewReturn {
   clearCache: () => void
 }
 
+/** Configuration for the default metadata fetcher */
+export interface MetadataFetcherConfig {
+  /** API endpoint that proxies metadata requests */
+  endpoint: string
+  /** Optional API key for authenticated requests */
+  apiKey?: string
+  /** Request timeout in milliseconds */
+  timeout?: number
+  /** Custom headers to include */
+  headers?: Record<string, string>
+}
+
 // ============================================================================
-// Metadata Cache
+// URL Validation & Sanitization (Option B)
+// ============================================================================
+
+/** Allowed URL protocols for security */
+const ALLOWED_PROTOCOLS = ['http:', 'https:']
+
+/** Dangerous URL patterns to block */
+const DANGEROUS_PATTERNS = [
+  /^javascript:/i,
+  /^data:/i,
+  /^vbscript:/i,
+  /^file:/i,
+]
+
+/**
+ * Validates if a string is a safe HTTP/HTTPS URL
+ * @param urlString - The URL string to validate
+ * @returns true if the URL is valid and safe
+ */
+export function isValidUrl(urlString: string): boolean {
+  if (!urlString || typeof urlString !== 'string') {
+    return false
+  }
+
+  // Check for dangerous patterns first
+  for (const pattern of DANGEROUS_PATTERNS) {
+    if (pattern.test(urlString.trim())) {
+      return false
+    }
+  }
+
+  try {
+    const url = new URL(urlString)
+    return ALLOWED_PROTOCOLS.includes(url.protocol)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Sanitizes a URL by ensuring it's valid and safe
+ * @param urlString - The URL to sanitize
+ * @returns The sanitized URL or null if invalid
+ */
+export function sanitizeUrl(urlString: string): string | null {
+  if (!isValidUrl(urlString)) {
+    return null
+  }
+
+  try {
+    const url = new URL(urlString)
+    // Reconstruct URL to normalize it
+    return url.href
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Extracts domain from a URL safely
+ */
+function getDomain(url: string): string {
+  if (!isValidUrl(url)) {
+    return url
+  }
+  try {
+    return new URL(url).hostname.replace('www.', '')
+  } catch {
+    return url
+  }
+}
+
+// ============================================================================
+// Rich Embed Detection (Option F - Foundation)
+// ============================================================================
+
+interface EmbedPattern {
+  type: EmbedType
+  patterns: RegExp[]
+  extractId: (url: string) => string | null
+}
+
+const EMBED_PATTERNS: EmbedPattern[] = [
+  {
+    type: 'youtube',
+    patterns: [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+      /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+    ],
+    extractId: (url: string) => {
+      for (const pattern of EMBED_PATTERNS[0].patterns) {
+        const match = url.match(pattern)
+        if (match) return match[1]
+      }
+      return null
+    },
+  },
+  {
+    type: 'vimeo',
+    patterns: [/vimeo\.com\/(\d+)/],
+    extractId: (url: string) => {
+      const match = url.match(/vimeo\.com\/(\d+)/)
+      return match ? match[1] : null
+    },
+  },
+  {
+    type: 'twitter',
+    patterns: [
+      /(?:twitter\.com|x\.com)\/\w+\/status\/(\d+)/,
+    ],
+    extractId: (url: string) => {
+      const match = url.match(/(?:twitter\.com|x\.com)\/\w+\/status\/(\d+)/)
+      return match ? match[1] : null
+    },
+  },
+  {
+    type: 'github',
+    patterns: [
+      /github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+)/,
+    ],
+    extractId: (url: string) => {
+      const match = url.match(/github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+)/)
+      return match ? match[1].replace(/\/$/, '') : null
+    },
+  },
+  {
+    type: 'spotify',
+    patterns: [
+      /open\.spotify\.com\/(track|album|playlist|artist)\/([a-zA-Z0-9]+)/,
+    ],
+    extractId: (url: string) => {
+      const match = url.match(/open\.spotify\.com\/(track|album|playlist|artist)\/([a-zA-Z0-9]+)/)
+      return match ? `${match[1]}/${match[2]}` : null
+    },
+  },
+]
+
+/**
+ * Detects the embed type and extracts ID from a URL
+ */
+export function detectEmbedType(url: string): { type: EmbedType; id: string | null } {
+  if (!isValidUrl(url)) {
+    return { type: 'default', id: null }
+  }
+
+  for (const embedPattern of EMBED_PATTERNS) {
+    for (const pattern of embedPattern.patterns) {
+      if (pattern.test(url)) {
+        return {
+          type: embedPattern.type,
+          id: embedPattern.extractId(url),
+        }
+      }
+    }
+  }
+
+  return { type: 'default', id: null }
+}
+
+// ============================================================================
+// LRU Cache with Eviction (Option C)
 // ============================================================================
 
 interface CacheEntry {
@@ -90,8 +276,63 @@ interface CacheEntry {
   timestamp: number
 }
 
-const metadataCache = new Map<string, CacheEntry>()
 const DEFAULT_CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const DEFAULT_MAX_CACHE_SIZE = 100
+
+class LRUCache<K, V> {
+  private cache = new Map<K, V>()
+  private readonly maxSize: number
+
+  constructor(maxSize: number = DEFAULT_MAX_CACHE_SIZE) {
+    this.maxSize = maxSize
+  }
+
+  get(key: K): V | undefined {
+    if (!this.cache.has(key)) return undefined
+
+    // Move to end (most recently used)
+    const value = this.cache.get(key)!
+    this.cache.delete(key)
+    this.cache.set(key, value)
+    return value
+  }
+
+  set(key: K, value: V): void {
+    // Delete if exists to update position
+    if (this.cache.has(key)) {
+      this.cache.delete(key)
+    }
+
+    // Evict oldest if at capacity
+    if (this.cache.size >= this.maxSize) {
+      const oldestKey = this.cache.keys().next().value
+      if (oldestKey !== undefined) {
+        this.cache.delete(oldestKey)
+      }
+    }
+
+    this.cache.set(key, value)
+  }
+
+  delete(key: K): boolean {
+    return this.cache.delete(key)
+  }
+
+  clear(): void {
+    this.cache.clear()
+  }
+
+  get size(): number {
+    return this.cache.size
+  }
+
+  has(key: K): boolean {
+    return this.cache.has(key)
+  }
+}
+
+// Module-level cache instance with LRU eviction
+const metadataCache = new LRUCache<string, CacheEntry>(DEFAULT_MAX_CACHE_SIZE)
 
 function getCachedMetadata(url: string, cacheDuration: number): LinkMetadata | null {
   const entry = metadataCache.get(url)
@@ -111,33 +352,95 @@ function setCachedMetadata(url: string, metadata: LinkMetadata): void {
 }
 
 // ============================================================================
-// Utility Functions
+// Metadata Fetcher (Option A - Real Implementation)
 // ============================================================================
 
-function getDomain(url: string): string {
-  try {
-    return new URL(url).hostname.replace('www.', '')
-  } catch {
-    return url
+/**
+ * Default metadata fetcher that calls a backend API endpoint
+ * The backend should handle CORS and return Open Graph / Twitter Card metadata
+ */
+export async function createMetadataFetcher(config: MetadataFetcherConfig) {
+  return async function fetchMetadata(url: string): Promise<LinkMetadata> {
+    if (!isValidUrl(url)) {
+      throw new Error('Invalid URL')
+    }
+
+    const controller = new AbortController()
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      config.timeout || 10000
+    )
+
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...config.headers,
+      }
+
+      if (config.apiKey) {
+        headers['Authorization'] = `Bearer ${config.apiKey}`
+      }
+
+      const response = await fetch(
+        `${config.endpoint}?url=${encodeURIComponent(url)}`,
+        {
+          method: 'GET',
+          headers,
+          signal: controller.signal,
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch metadata: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      // Detect embed type
+      const { type: embedType, id: embedId } = detectEmbedType(url)
+
+      return {
+        url,
+        title: data.title || data.og_title,
+        description: data.description || data.og_description,
+        image: data.image || data.og_image,
+        siteName: data.site_name || data.og_site_name,
+        favicon: data.favicon,
+        type: data.type || 'website',
+        embedType,
+        embedId,
+      }
+    } finally {
+      clearTimeout(timeoutId)
+    }
   }
 }
 
-function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
+/**
+ * Fallback metadata extractor for demo/development
+ * Uses URL parsing to provide basic metadata
+ */
+export function createFallbackMetadata(url: string): LinkMetadata {
+  if (!isValidUrl(url)) {
+    return { url }
+  }
 
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
+  const { type: embedType, id: embedId } = detectEmbedType(url)
+  const domain = getDomain(url)
 
-    const handler = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches)
-    }
+  // Generate reasonable fallback data based on URL
+  const siteName = domain.split('.')[0]
+  const capitalizedSiteName = siteName.charAt(0).toUpperCase() + siteName.slice(1)
 
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
-
-  return prefersReducedMotion
+  return {
+    url,
+    title: capitalizedSiteName,
+    siteName: capitalizedSiteName,
+    favicon: `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+    type: 'website',
+    embedType,
+    embedId,
+  }
 }
 
 // ============================================================================
@@ -208,6 +511,7 @@ export function LinkPreviewError({
   className,
 }: LinkPreviewErrorProps) {
   const domain = getDomain(url)
+  const isInvalidUrl = !isValidUrl(url)
 
   return (
     <Card
@@ -215,6 +519,7 @@ export function LinkPreviewError({
         'p-4 border-destructive/20 bg-destructive/5 shadow-sm',
         className
       )}
+      role="alert"
     >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 w-10 h-10 rounded bg-destructive/10 flex items-center justify-center text-destructive">
@@ -234,7 +539,7 @@ export function LinkPreviewError({
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-foreground">
-            Failed to load preview
+            {isInvalidUrl ? 'Invalid URL' : 'Failed to load preview'}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5 truncate">
             {domain}
@@ -243,7 +548,7 @@ export function LinkPreviewError({
             <p className="text-xs text-destructive/80 mt-1">{error}</p>
           )}
         </div>
-        {onRetry && (
+        {onRetry && !isInvalidUrl && (
           <button
             onClick={onRetry}
             className="flex-shrink-0 text-xs text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
@@ -258,6 +563,55 @@ export function LinkPreviewError({
 }
 
 LinkPreviewError.displayName = 'LinkPreviewError'
+
+// ============================================================================
+// Expandable Description Component (Option E)
+// ============================================================================
+
+interface ExpandableDescriptionProps {
+  description: string
+  maxLength?: number
+  className?: string
+}
+
+function ExpandableDescription({
+  description,
+  maxLength = 120,
+  className,
+}: ExpandableDescriptionProps) {
+  const [isExpanded, setIsExpanded] = React.useState(false)
+  const needsExpansion = description.length > maxLength
+  const prefersReducedMotion = useReducedMotion()
+
+  const displayText = needsExpansion && !isExpanded
+    ? description.slice(0, maxLength).trim() + '...'
+    : description
+
+  return (
+    <div className={className}>
+      <motion.p
+        className="text-xs text-muted-foreground/90"
+        initial={false}
+        animate={{ height: 'auto' }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
+      >
+        {displayText}
+      </motion.p>
+      {needsExpansion && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsExpanded(!isExpanded)
+          }}
+          className="text-xs text-primary hover:underline mt-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+          aria-expanded={isExpanded}
+        >
+          {isExpanded ? 'Show less' : 'Show more'}
+        </button>
+      )}
+    </div>
+  )
+}
 
 // ============================================================================
 // LinkPreviewCompact Component
@@ -279,12 +633,20 @@ export function LinkPreviewCompact({
   const [faviconError, setFaviconError] = React.useState(false)
   const domain = getDomain(metadata.url)
   const prefersReducedMotion = useReducedMotion()
+  const isValid = isValidUrl(metadata.url)
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (onClick && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault()
       onClick()
     }
+  }
+
+  // Show error state for invalid URLs
+  if (!isValid) {
+    return (
+      <LinkPreviewError url={metadata.url} error="Invalid URL format" className={className} />
+    )
   }
 
   const content = (
@@ -339,6 +701,13 @@ export function LinkPreviewCompact({
           <p className="text-xs text-muted-foreground truncate">{domain}</p>
         </div>
 
+        {/* Embed type badge */}
+        {metadata.embedType && metadata.embedType !== 'default' && (
+          <Badge variant="secondary" className="text-[10px] uppercase flex-shrink-0">
+            {metadata.embedType}
+          </Badge>
+        )}
+
         {/* Arrow indicator for clickable */}
         {onClick && (
           <svg
@@ -378,6 +747,82 @@ export function LinkPreviewCompact({
 LinkPreviewCompact.displayName = 'LinkPreviewCompact'
 
 // ============================================================================
+// Rich Embed Components (Option F - Foundation)
+// ============================================================================
+
+interface RichEmbedProps {
+  embedType: EmbedType
+  embedId: string
+  metadata: LinkMetadata
+  className?: string
+}
+
+/**
+ * YouTube embed component
+ */
+function YouTubeEmbed({ embedId, metadata, className }: Omit<RichEmbedProps, 'embedType'>) {
+  const [showEmbed, setShowEmbed] = React.useState(false)
+
+  if (!showEmbed) {
+    // Show thumbnail with play button overlay
+    return (
+      <div className={cn('relative rounded-lg overflow-hidden bg-black aspect-video', className)}>
+        <img
+          src={`https://img.youtube.com/vi/${embedId}/maxresdefault.jpg`}
+          alt={metadata.title || 'YouTube video'}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            // Fallback to hqdefault if maxresdefault not available
+            e.currentTarget.src = `https://img.youtube.com/vi/${embedId}/hqdefault.jpg`
+          }}
+        />
+        <button
+          onClick={() => setShowEmbed(true)}
+          className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors group"
+          aria-label="Play video"
+        >
+          <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center group-hover:bg-red-700 transition-colors">
+            <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </button>
+        <Badge className="absolute bottom-2 left-2 bg-black/70 text-white">
+          YouTube
+        </Badge>
+      </div>
+    )
+  }
+
+  return (
+    <div className={cn('relative rounded-lg overflow-hidden aspect-video', className)}>
+      <iframe
+        src={`https://www.youtube.com/embed/${embedId}?autoplay=1`}
+        title={metadata.title || 'YouTube video'}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="absolute inset-0 w-full h-full"
+      />
+    </div>
+  )
+}
+
+/**
+ * Renders appropriate rich embed based on type
+ */
+export function RichEmbed({ embedType, embedId, metadata, className }: RichEmbedProps) {
+  switch (embedType) {
+    case 'youtube':
+      return <YouTubeEmbed embedId={embedId} metadata={metadata} className={className} />
+    // Add more embed types as needed
+    default:
+      return null
+  }
+}
+
+RichEmbed.displayName = 'RichEmbed'
+
+// ============================================================================
 // LinkPreview Component (Main)
 // ============================================================================
 
@@ -391,6 +836,7 @@ export function LinkPreview({
   showFavicon = true,
   showDomain = true,
   showDescription = true,
+  expandableDescription = false,
   fallback,
   className,
   'aria-label': ariaLabel,
@@ -399,6 +845,7 @@ export function LinkPreview({
   const [faviconError, setFaviconError] = React.useState(false)
   const prefersReducedMotion = useReducedMotion()
   const domain = getDomain(metadata.url)
+  const isValid = isValidUrl(metadata.url)
 
   // Reset image error when metadata changes
   React.useEffect(() => {
@@ -409,6 +856,17 @@ export function LinkPreview({
   // Loading state
   if (loading) {
     return <LinkPreviewSkeleton variant={variant} className={className} />
+  }
+
+  // URL validation - show error for invalid URLs
+  if (!isValid && metadata.url) {
+    return (
+      <LinkPreviewError
+        url={metadata.url}
+        error="Invalid or unsafe URL"
+        className={className}
+      />
+    )
   }
 
   // Fallback for missing required data
@@ -432,7 +890,7 @@ export function LinkPreview({
   if (variant === 'inline') {
     return (
       <a
-        href={metadata.url}
+        href={sanitizeUrl(metadata.url) || '#'}
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
@@ -474,6 +932,12 @@ export function LinkPreview({
     )
   }
 
+  // Check for rich embed support
+  const hasRichEmbed = metadata.embedType &&
+    metadata.embedType !== 'default' &&
+    metadata.embedId &&
+    metadata.embedType === 'youtube' // Currently only YouTube supported
+
   // Handle keyboard navigation for card
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (onClick && (event.key === 'Enter' || event.key === ' ')) {
@@ -489,10 +953,10 @@ export function LinkPreview({
         'group relative overflow-hidden transition-all shadow-sm',
         onClick && 'cursor-pointer hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
       )}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
-      tabIndex={onClick ? 0 : undefined}
-      role={onClick ? 'link' : undefined}
+      onClick={hasRichEmbed ? undefined : onClick}
+      onKeyDown={hasRichEmbed ? undefined : handleKeyDown}
+      tabIndex={onClick && !hasRichEmbed ? 0 : undefined}
+      role={onClick && !hasRichEmbed ? 'link' : undefined}
       aria-label={ariaLabel || (onClick ? `Open link: ${metadata.title || domain}` : `Link preview: ${metadata.title || domain}`)}
     >
       {/* Remove button */}
@@ -517,9 +981,20 @@ export function LinkPreview({
         </button>
       )}
 
+      {/* Rich Embed (YouTube, etc.) */}
+      {hasRichEmbed && metadata.embedId && (
+        <div className="p-4 pb-0">
+          <RichEmbed
+            embedType={metadata.embedType!}
+            embedId={metadata.embedId}
+            metadata={metadata}
+          />
+        </div>
+      )}
+
       <div className="flex gap-3.5 p-4">
-        {/* Image */}
-        {showImage && (
+        {/* Image (only if no rich embed) */}
+        {showImage && !hasRichEmbed && (
           metadata.image && !imageError ? (
             <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-muted">
               <img
@@ -566,6 +1041,11 @@ export function LinkPreview({
               <p className="text-xs text-muted-foreground/90 truncate">
                 {metadata.siteName || domain}
               </p>
+              {metadata.embedType && metadata.embedType !== 'default' && (
+                <Badge variant="secondary" className="text-[10px] uppercase">
+                  {metadata.embedType}
+                </Badge>
+              )}
             </div>
           )}
 
@@ -578,9 +1058,13 @@ export function LinkPreview({
 
           {/* Description */}
           {showDescription && metadata.description && (
-            <p className="text-xs text-muted-foreground/90 line-clamp-2">
-              {metadata.description}
-            </p>
+            expandableDescription ? (
+              <ExpandableDescription description={metadata.description} />
+            ) : (
+              <p className="text-xs text-muted-foreground/90 line-clamp-2">
+                {metadata.description}
+              </p>
+            )
           )}
 
           {/* URL Badge */}
@@ -605,7 +1089,7 @@ export function LinkPreview({
       </div>
 
       {/* Bottom Border Effect */}
-      {onClick && !prefersReducedMotion && (
+      {onClick && !prefersReducedMotion && !hasRichEmbed && (
         <div
           className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200"
           aria-hidden="true"
@@ -639,7 +1123,12 @@ LinkPreview.displayName = 'LinkPreview'
 // ============================================================================
 
 export function useLinkPreview(options: UseLinkPreviewOptions = {}): UseLinkPreviewReturn {
-  const { cacheDuration = DEFAULT_CACHE_DURATION, fetchFn } = options
+  const {
+    cacheDuration = DEFAULT_CACHE_DURATION,
+    fetchFn,
+    apiEndpoint,
+    timeout = 10000,
+  } = options
 
   const [loading, setLoading] = React.useState(false)
   const [metadata, setMetadata] = React.useState<LinkMetadata | null>(null)
@@ -649,10 +1138,18 @@ export function useLinkPreview(options: UseLinkPreviewOptions = {}): UseLinkPrev
   const pendingRequests = React.useRef<Map<string, Promise<LinkMetadata>>>(new Map())
 
   const fetchMetadata = React.useCallback(async (url: string): Promise<LinkMetadata> => {
+    // Validate URL first
+    if (!isValidUrl(url)) {
+      const errorMsg = 'Invalid or unsafe URL'
+      setError(errorMsg)
+      throw new Error(errorMsg)
+    }
+
     // Check cache first
     const cached = getCachedMetadata(url, cacheDuration)
     if (cached) {
       setMetadata(cached)
+      setError(null)
       return cached
     }
 
@@ -674,20 +1171,25 @@ export function useLinkPreview(options: UseLinkPreviewOptions = {}): UseLinkPrev
         if (fetchFn) {
           // Use custom fetch function
           result = await fetchFn(url)
+        } else if (apiEndpoint) {
+          // Use provided API endpoint
+          const fetcher = await createMetadataFetcher({
+            endpoint: apiEndpoint,
+            timeout,
+          })
+          result = await fetcher(url)
         } else {
-          // Default mock implementation
-          // In production, this should call your backend API
-          await new Promise((resolve) => setTimeout(resolve, 500))
+          // Use fallback metadata (extracts from URL)
+          // Simulate network delay for consistent UX
+          await new Promise((resolve) => setTimeout(resolve, 300))
+          result = createFallbackMetadata(url)
+        }
 
-          result = {
-            url,
-            title: 'Example Website Title',
-            description: 'This is a description of the linked content that provides context.',
-            image: 'https://via.placeholder.com/400x300',
-            siteName: 'Example Site',
-            favicon: 'https://via.placeholder.com/16x16',
-            type: 'website',
-          }
+        // Ensure embed detection is done
+        if (!result.embedType) {
+          const { type, id } = detectEmbedType(url)
+          result.embedType = type
+          result.embedId = id || undefined
         }
 
         setCachedMetadata(url, result)
@@ -705,7 +1207,7 @@ export function useLinkPreview(options: UseLinkPreviewOptions = {}): UseLinkPrev
 
     pendingRequests.current.set(url, fetchPromise)
     return fetchPromise
-  }, [cacheDuration, fetchFn])
+  }, [cacheDuration, fetchFn, apiEndpoint, timeout])
 
   const reset = React.useCallback(() => {
     setMetadata(null)
@@ -755,9 +1257,10 @@ export function InlineLink({
   const { metadata, loading, error, fetchMetadata } = useLinkPreview()
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const prefersReducedMotion = useReducedMotion()
+  const isValid = isValidUrl(url)
 
   const handleMouseEnter = () => {
-    if (!showHoverPreview) return
+    if (!showHoverPreview || !isValid) return
 
     // Debounce the preview fetch
     timeoutRef.current = setTimeout(() => {
@@ -777,7 +1280,7 @@ export function InlineLink({
   }
 
   const handleFocus = () => {
-    if (showHoverPreview && !metadata && !loading && !error) {
+    if (showHoverPreview && isValid && !metadata && !loading && !error) {
       fetchMetadata(url)
     }
   }
@@ -791,10 +1294,25 @@ export function InlineLink({
     }
   }, [])
 
+  // For invalid URLs, show a warning style
+  if (!isValid) {
+    return (
+      <span
+        className={cn(
+          'text-destructive/70 cursor-not-allowed',
+          className
+        )}
+        title="Invalid URL"
+      >
+        {children || url}
+      </span>
+    )
+  }
+
   return (
     <span className="relative inline-block">
       <a
-        href={url}
+        href={sanitizeUrl(url) || '#'}
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
@@ -810,7 +1328,7 @@ export function InlineLink({
             onPreview(url)
           }
         }}
-        aria-describedby={showPreview && metadata ? `preview-${url}` : undefined}
+        aria-describedby={showPreview && metadata ? `preview-${url.replace(/[^a-z0-9]/gi, '-')}` : undefined}
       >
         {children || url}
       </a>
@@ -820,7 +1338,7 @@ export function InlineLink({
         <AnimatePresence>
           {showPreview && (metadata || loading) && (
             <motion.div
-              id={`preview-${url}`}
+              id={`preview-${url.replace(/[^a-z0-9]/gi, '-')}`}
               role="tooltip"
               initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -835,7 +1353,7 @@ export function InlineLink({
               ) : metadata ? (
                 <LinkPreview
                   metadata={metadata}
-                  onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}
+                  onClick={() => window.open(sanitizeUrl(url) || url, '_blank', 'noopener,noreferrer')}
                 />
               ) : null}
             </motion.div>
@@ -873,12 +1391,16 @@ export interface SmartLinkPreviewProps {
   showDomain?: boolean
   /** Show description text */
   showDescription?: boolean
+  /** Allow expanding long descriptions */
+  expandableDescription?: boolean
   /** Fallback content when loading fails */
   fallback?: React.ReactNode
   /** Custom className */
   className?: string
   /** Custom fetch function */
   fetchFn?: (url: string) => Promise<LinkMetadata>
+  /** API endpoint for metadata fetching */
+  apiEndpoint?: string
 }
 
 export function SmartLinkPreview({
@@ -892,18 +1414,42 @@ export function SmartLinkPreview({
   showFavicon = true,
   showDomain = true,
   showDescription = true,
+  expandableDescription = false,
   fallback,
   className,
   fetchFn,
+  apiEndpoint,
 }: SmartLinkPreviewProps) {
-  const { metadata, loading, error, fetchMetadata } = useLinkPreview({ fetchFn })
+  const { metadata, loading, error, fetchMetadata } = useLinkPreview({ fetchFn, apiEndpoint })
+
+  // Validate URL immediately
+  const isValid = isValidUrl(url)
 
   // Fetch metadata on mount
   React.useEffect(() => {
+    if (!isValid) {
+      onError?.(new Error('Invalid or unsafe URL'))
+      return
+    }
+
     fetchMetadata(url)
       .then((data) => onLoad?.(data))
       .catch((err) => onError?.(err instanceof Error ? err : new Error(String(err))))
-  }, [url, fetchMetadata, onLoad, onError])
+  }, [url, fetchMetadata, onLoad, onError, isValid])
+
+  // Invalid URL state
+  if (!isValid) {
+    if (fallback) {
+      return <>{fallback}</>
+    }
+    return (
+      <LinkPreviewError
+        url={url}
+        error="Invalid or unsafe URL"
+        className={className}
+      />
+    )
+  }
 
   // Error state
   if (error && !loading) {
@@ -925,13 +1471,14 @@ export function SmartLinkPreview({
     <LinkPreview
       metadata={metadata || { url }}
       variant={variant}
-      onClick={onClick || (() => window.open(url, '_blank', 'noopener,noreferrer'))}
+      onClick={onClick || (() => window.open(sanitizeUrl(url) || url, '_blank', 'noopener,noreferrer'))}
       onRemove={onRemove}
       loading={loading}
       showImage={showImage}
       showFavicon={showFavicon}
       showDomain={showDomain}
       showDescription={showDescription}
+      expandableDescription={expandableDescription}
       className={className}
     />
   )

@@ -268,13 +268,23 @@ export { PromptLibrary } from './components/prompt-library'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
 export {
+  // Components
   LinkPreview,
   LinkPreviewSkeleton,
   LinkPreviewError,
   LinkPreviewCompact,
   InlineLink,
   SmartLinkPreview,
+  RichEmbed,
+  // Hook
   useLinkPreview,
+  // Utilities
+  isValidUrl,
+  sanitizeUrl,
+  detectEmbedType,
+  createMetadataFetcher,
+  createFallbackMetadata,
+  // Types
   type LinkMetadata,
   type LinkPreviewProps,
   type LinkPreviewVariant,
@@ -285,6 +295,8 @@ export {
   type SmartLinkPreviewProps,
   type UseLinkPreviewOptions,
   type UseLinkPreviewReturn,
+  type MetadataFetcherConfig,
+  type EmbedType,
 } from './components/link-preview'
 export { KnowledgeBaseViewer } from './components/knowledge-base-viewer'
 export { ExportDialog } from './components/export-dialog'

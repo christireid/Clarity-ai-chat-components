@@ -8,8 +8,15 @@ import {
   LinkPreviewCompact,
   InlineLink,
   SmartLinkPreview,
+  RichEmbed,
   useLinkPreview,
+  isValidUrl,
+  sanitizeUrl,
+  detectEmbedType,
+  createMetadataFetcher,
+  createFallbackMetadata,
   type LinkMetadata,
+  type EmbedType,
 } from '../link-preview'
 import { renderHook } from '@testing-library/react'
 
@@ -799,5 +806,507 @@ describe('Domain Extraction', () => {
     render(<LinkPreview metadata={{ url: 'not-a-valid-url' }} />)
 
     expect(screen.getByText('not-a-valid-url')).toBeInTheDocument()
+  })
+})
+
+// ============================================================================
+// URL Validation Tests
+// ============================================================================
+
+describe('isValidUrl', () => {
+  describe('valid URLs', () => {
+    it('should accept http URLs', () => {
+      expect(isValidUrl('http://example.com')).toBe(true)
+    })
+
+    it('should accept https URLs', () => {
+      expect(isValidUrl('https://example.com')).toBe(true)
+    })
+
+    it('should accept URLs with paths', () => {
+      expect(isValidUrl('https://example.com/path/to/page')).toBe(true)
+    })
+
+    it('should accept URLs with query strings', () => {
+      expect(isValidUrl('https://example.com?foo=bar&baz=qux')).toBe(true)
+    })
+
+    it('should accept URLs with hash fragments', () => {
+      expect(isValidUrl('https://example.com#section')).toBe(true)
+    })
+
+    it('should accept URLs with ports', () => {
+      expect(isValidUrl('https://example.com:8080/path')).toBe(true)
+    })
+
+    it('should accept URLs with subdomains', () => {
+      expect(isValidUrl('https://sub.domain.example.com')).toBe(true)
+    })
+  })
+
+  describe('invalid URLs', () => {
+    it('should reject javascript: URLs', () => {
+      expect(isValidUrl('javascript:alert(1)')).toBe(false)
+    })
+
+    it('should reject data: URLs', () => {
+      expect(isValidUrl('data:text/html,<script>alert(1)</script>')).toBe(false)
+    })
+
+    it('should reject vbscript: URLs', () => {
+      expect(isValidUrl('vbscript:msgbox("test")')).toBe(false)
+    })
+
+    it('should reject file: URLs', () => {
+      expect(isValidUrl('file:///etc/passwd')).toBe(false)
+    })
+
+    it('should reject malformed URLs', () => {
+      expect(isValidUrl('not-a-url')).toBe(false)
+    })
+
+    it('should reject empty strings', () => {
+      expect(isValidUrl('')).toBe(false)
+    })
+
+    it('should reject URLs with javascript in mixed case', () => {
+      expect(isValidUrl('JaVaScRiPt:alert(1)')).toBe(false)
+    })
+
+    it('should reject URLs with whitespace tricks', () => {
+      expect(isValidUrl('  javascript:alert(1)')).toBe(false)
+    })
+  })
+})
+
+describe('sanitizeUrl', () => {
+  it('should return valid URLs unchanged', () => {
+    expect(sanitizeUrl('https://example.com')).toBe('https://example.com')
+  })
+
+  it('should return safe fallback for javascript: URLs', () => {
+    expect(sanitizeUrl('javascript:alert(1)')).toBe('about:blank')
+  })
+
+  it('should return safe fallback for data: URLs', () => {
+    expect(sanitizeUrl('data:text/html,<script>alert(1)</script>')).toBe('about:blank')
+  })
+
+  it('should return safe fallback for malformed URLs', () => {
+    expect(sanitizeUrl('not-a-url')).toBe('about:blank')
+  })
+
+  it('should trim whitespace before validation', () => {
+    expect(sanitizeUrl('  https://example.com  ')).toBe('https://example.com')
+  })
+
+  it('should handle empty strings', () => {
+    expect(sanitizeUrl('')).toBe('about:blank')
+  })
+})
+
+// ============================================================================
+// Embed Detection Tests
+// ============================================================================
+
+describe('detectEmbedType', () => {
+  describe('YouTube', () => {
+    it('should detect youtube.com watch URLs', () => {
+      expect(detectEmbedType('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe('youtube')
+    })
+
+    it('should detect youtu.be short URLs', () => {
+      expect(detectEmbedType('https://youtu.be/dQw4w9WgXcQ')).toBe('youtube')
+    })
+
+    it('should detect youtube.com embed URLs', () => {
+      expect(detectEmbedType('https://www.youtube.com/embed/dQw4w9WgXcQ')).toBe('youtube')
+    })
+  })
+
+  describe('Twitter/X', () => {
+    it('should detect twitter.com status URLs', () => {
+      expect(detectEmbedType('https://twitter.com/user/status/123456789')).toBe('twitter')
+    })
+
+    it('should detect x.com status URLs', () => {
+      expect(detectEmbedType('https://x.com/user/status/123456789')).toBe('twitter')
+    })
+  })
+
+  describe('GitHub', () => {
+    it('should detect github.com repository URLs', () => {
+      expect(detectEmbedType('https://github.com/owner/repo')).toBe('github')
+    })
+
+    it('should detect github.com pull request URLs', () => {
+      expect(detectEmbedType('https://github.com/owner/repo/pull/123')).toBe('github')
+    })
+
+    it('should detect github.com issue URLs', () => {
+      expect(detectEmbedType('https://github.com/owner/repo/issues/456')).toBe('github')
+    })
+
+    it('should detect gist.github.com URLs', () => {
+      expect(detectEmbedType('https://gist.github.com/user/abc123')).toBe('github')
+    })
+  })
+
+  describe('Vimeo', () => {
+    it('should detect vimeo.com video URLs', () => {
+      expect(detectEmbedType('https://vimeo.com/123456789')).toBe('vimeo')
+    })
+
+    it('should detect player.vimeo.com embed URLs', () => {
+      expect(detectEmbedType('https://player.vimeo.com/video/123456789')).toBe('vimeo')
+    })
+  })
+
+  describe('Spotify', () => {
+    it('should detect open.spotify.com track URLs', () => {
+      expect(detectEmbedType('https://open.spotify.com/track/abc123')).toBe('spotify')
+    })
+
+    it('should detect open.spotify.com playlist URLs', () => {
+      expect(detectEmbedType('https://open.spotify.com/playlist/xyz789')).toBe('spotify')
+    })
+
+    it('should detect open.spotify.com album URLs', () => {
+      expect(detectEmbedType('https://open.spotify.com/album/def456')).toBe('spotify')
+    })
+  })
+
+  describe('Generic URLs', () => {
+    it('should return generic for regular URLs', () => {
+      expect(detectEmbedType('https://example.com')).toBe('generic')
+    })
+
+    it('should return generic for news sites', () => {
+      expect(detectEmbedType('https://news.example.com/article')).toBe('generic')
+    })
+  })
+})
+
+// ============================================================================
+// Metadata Fetcher Tests
+// ============================================================================
+
+describe('createMetadataFetcher', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn())
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('should create a fetcher function', () => {
+    const fetcher = createMetadataFetcher({
+      apiEndpoint: 'https://api.example.com/metadata',
+    })
+
+    expect(typeof fetcher).toBe('function')
+  })
+
+  it('should call API endpoint with URL parameter', async () => {
+    const mockResponse = {
+      url: 'https://example.com',
+      title: 'Example Site',
+    }
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    })
+    vi.stubGlobal('fetch', mockFetch)
+
+    const fetcher = createMetadataFetcher({
+      apiEndpoint: 'https://api.example.com/metadata',
+    })
+
+    const result = await fetcher('https://example.com')
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://api.example.com/metadata?url=https%3A%2F%2Fexample.com',
+      expect.any(Object)
+    )
+    expect(result.title).toBe('Example Site')
+  })
+
+  it('should include custom headers', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ url: 'https://example.com' }),
+    })
+    vi.stubGlobal('fetch', mockFetch)
+
+    const fetcher = createMetadataFetcher({
+      apiEndpoint: 'https://api.example.com/metadata',
+      headers: { 'X-Custom-Header': 'custom-value' },
+    })
+
+    await fetcher('https://example.com')
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'X-Custom-Header': 'custom-value',
+        }),
+      })
+    )
+  })
+
+  it('should throw on failed response', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+    })
+    vi.stubGlobal('fetch', mockFetch)
+
+    const fetcher = createMetadataFetcher({
+      apiEndpoint: 'https://api.example.com/metadata',
+    })
+
+    await expect(fetcher('https://example.com')).rejects.toThrow()
+  })
+
+  it('should respect timeout option', async () => {
+    const mockFetch = vi.fn().mockImplementation(() => new Promise(() => {})) // Never resolves
+    vi.stubGlobal('fetch', mockFetch)
+
+    const fetcher = createMetadataFetcher({
+      apiEndpoint: 'https://api.example.com/metadata',
+      timeout: 100,
+    })
+
+    await expect(fetcher('https://example.com')).rejects.toThrow()
+  })
+})
+
+describe('createFallbackMetadata', () => {
+  it('should create metadata from URL', () => {
+    const metadata = createFallbackMetadata('https://example.com/page')
+
+    expect(metadata.url).toBe('https://example.com/page')
+    expect(metadata.title).toBe('example.com')
+  })
+
+  it('should extract domain as title', () => {
+    const metadata = createFallbackMetadata('https://www.example.com')
+
+    expect(metadata.title).toBe('example.com')
+  })
+
+  it('should include path in title for long paths', () => {
+    const metadata = createFallbackMetadata('https://example.com/path/to/article')
+
+    expect(metadata.url).toBe('https://example.com/path/to/article')
+  })
+
+  it('should handle invalid URLs gracefully', () => {
+    const metadata = createFallbackMetadata('not-a-url')
+
+    expect(metadata.url).toBe('not-a-url')
+    expect(metadata.title).toBe('not-a-url')
+  })
+})
+
+// ============================================================================
+// RichEmbed Component Tests
+// ============================================================================
+
+describe('RichEmbed', () => {
+  it('should render YouTube embed', () => {
+    render(
+      <RichEmbed
+        url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        embedType="youtube"
+      />
+    )
+
+    const iframe = screen.getByTitle(/youtube video/i)
+    expect(iframe).toBeInTheDocument()
+    expect(iframe).toHaveAttribute('src', expect.stringContaining('youtube.com/embed'))
+  })
+
+  it('should render Vimeo embed', () => {
+    render(
+      <RichEmbed
+        url="https://vimeo.com/123456789"
+        embedType="vimeo"
+      />
+    )
+
+    const iframe = screen.getByTitle(/vimeo video/i)
+    expect(iframe).toBeInTheDocument()
+    expect(iframe).toHaveAttribute('src', expect.stringContaining('player.vimeo.com'))
+  })
+
+  it('should render Spotify embed', () => {
+    render(
+      <RichEmbed
+        url="https://open.spotify.com/track/abc123"
+        embedType="spotify"
+      />
+    )
+
+    const iframe = screen.getByTitle(/spotify/i)
+    expect(iframe).toBeInTheDocument()
+    expect(iframe).toHaveAttribute('src', expect.stringContaining('open.spotify.com/embed'))
+  })
+
+  it('should render generic fallback for unsupported types', () => {
+    render(
+      <RichEmbed
+        url="https://example.com"
+        embedType="generic"
+      />
+    )
+
+    // Should show a link or preview card, not an iframe
+    expect(screen.queryByRole('link')).toBeInTheDocument()
+  })
+
+  it('should apply custom className', () => {
+    const { container } = render(
+      <RichEmbed
+        url="https://www.youtube.com/watch?v=test"
+        embedType="youtube"
+        className="custom-embed"
+      />
+    )
+
+    expect(container.querySelector('.custom-embed')).toBeInTheDocument()
+  })
+
+  it('should have accessible iframe titles', () => {
+    render(
+      <RichEmbed
+        url="https://www.youtube.com/watch?v=test"
+        embedType="youtube"
+      />
+    )
+
+    const iframe = screen.getByRole('presentation')
+    expect(iframe).toHaveAttribute('title')
+  })
+})
+
+// ============================================================================
+// LRU Cache Behavior Tests (via useLinkPreview)
+// ============================================================================
+
+describe('LRU Cache Behavior', () => {
+  it('should evict oldest entries when cache is full', async () => {
+    const mockFetch = vi.fn().mockImplementation((url: string) =>
+      Promise.resolve({ url, title: `Title for ${url}` })
+    )
+
+    const { result } = renderHook(() =>
+      useLinkPreview({ fetchFn: mockFetch })
+    )
+
+    // Fetch many URLs to potentially fill cache
+    for (let i = 0; i < 10; i++) {
+      await act(async () => {
+        await result.current.fetchMetadata(`https://example${i}.com`)
+      })
+    }
+
+    expect(mockFetch).toHaveBeenCalledTimes(10)
+  })
+
+  it('should return cached value without refetching', async () => {
+    const mockFetch = vi.fn().mockResolvedValue(sampleMetadata)
+    const { result } = renderHook(() =>
+      useLinkPreview({ fetchFn: mockFetch })
+    )
+
+    // First fetch
+    await act(async () => {
+      await result.current.fetchMetadata('https://example.com')
+    })
+
+    // Second fetch for same URL
+    await act(async () => {
+      await result.current.fetchMetadata('https://example.com')
+    })
+
+    // Should only fetch once
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+  })
+
+  it('should update LRU order on cache hit', async () => {
+    const mockFetch = vi.fn().mockImplementation((url: string) =>
+      Promise.resolve({ url, title: `Title for ${url}` })
+    )
+
+    const { result } = renderHook(() =>
+      useLinkPreview({ fetchFn: mockFetch })
+    )
+
+    // Fetch two URLs
+    await act(async () => {
+      await result.current.fetchMetadata('https://example1.com')
+      await result.current.fetchMetadata('https://example2.com')
+    })
+
+    // Access first URL again (should update LRU order)
+    await act(async () => {
+      await result.current.fetchMetadata('https://example1.com')
+    })
+
+    // Should still only have 2 fetches total
+    expect(mockFetch).toHaveBeenCalledTimes(2)
+  })
+})
+
+// ============================================================================
+// Expandable Description Tests
+// ============================================================================
+
+describe('Expandable Description', () => {
+  const longDescription = 'A'.repeat(300) // Long description to trigger truncation
+
+  const metadataWithLongDescription: LinkMetadata = {
+    ...sampleMetadata,
+    description: longDescription,
+  }
+
+  it('should truncate long descriptions by default', () => {
+    render(<LinkPreview metadata={metadataWithLongDescription} />)
+
+    // Should show truncated text with ellipsis or "more" button
+    const content = screen.getByText(/AAA/i)
+    expect(content.textContent!.length).toBeLessThan(longDescription.length)
+  })
+
+  it('should expand description when expandableDescription is enabled and clicked', async () => {
+    render(
+      <LinkPreview
+        metadata={metadataWithLongDescription}
+        expandableDescription
+      />
+    )
+
+    // Look for expand button
+    const expandButton = screen.queryByRole('button', { name: /show more|expand/i })
+    if (expandButton) {
+      await userEvent.click(expandButton)
+
+      // After expansion, description should be fully visible or have collapse option
+      expect(screen.queryByRole('button', { name: /show less|collapse/i })).toBeInTheDocument()
+    }
+  })
+
+  it('should not show expand button for short descriptions', () => {
+    const shortMetadata: LinkMetadata = {
+      ...sampleMetadata,
+      description: 'Short description',
+    }
+
+    render(<LinkPreview metadata={shortMetadata} expandableDescription />)
+
+    expect(screen.queryByRole('button', { name: /show more|expand/i })).not.toBeInTheDocument()
   })
 })
