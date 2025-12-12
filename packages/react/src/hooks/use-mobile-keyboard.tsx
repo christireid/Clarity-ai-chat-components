@@ -359,9 +359,31 @@ export function useMobileViewportHeight(): number {
 /**
  * Utility hook to prevent body scroll when keyboard is visible
  * Useful for modal/fullscreen chat interfaces
+ *
+ * @param state - Optional keyboard state from useMobileKeyboard. If not provided,
+ *                creates its own instance. Pass state from an existing useMobileKeyboard
+ *                call to avoid creating duplicate instances in the same component tree.
+ *
+ * @example
+ * ```tsx
+ * // Option 1: Standalone usage (creates its own hook instance)
+ * function ChatModal() {
+ *   useMobileKeyboardScrollLock()
+ *   return <div>...</div>
+ * }
+ *
+ * // Option 2: Shared state (recommended when using both hooks)
+ * function ChatModal() {
+ *   const keyboardState = useMobileKeyboard()
+ *   useMobileKeyboardScrollLock(keyboardState)
+ *   return <div style={{ paddingBottom: keyboardState.keyboardHeight }}>...</div>
+ * }
+ * ```
  */
-export function useMobileKeyboardScrollLock(): void {
-  const { isKeyboardVisible, isMobile } = useMobileKeyboard()
+export function useMobileKeyboardScrollLock(state?: MobileKeyboardState): void {
+  // Use provided state or create own instance for backwards compatibility
+  const ownState = useMobileKeyboard()
+  const { isKeyboardVisible, isMobile } = state ?? ownState
 
   React.useEffect(() => {
     if (!isMobile || !isKeyboardVisible) return

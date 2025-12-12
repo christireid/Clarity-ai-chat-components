@@ -19,11 +19,14 @@ export interface PerformanceMetrics {
 }
 
 /**
- * Circular buffer for O(1) operations on fixed-size arrays
- * Used to store render times without O(n) shift operations
+ * Numeric circular buffer for O(1) operations on fixed-size number arrays.
+ * Used to store render times without O(n) shift operations.
+ *
+ * Note: This is intentionally NOT generic to ensure type-safety for sum().
+ * Using a specific numeric type prevents accidental misuse with non-numeric values.
  */
-class CircularBuffer<T> {
-  private buffer: T[]
+class NumericCircularBuffer {
+  private buffer: number[]
   private head: number = 0
   private count: number = 0
   private readonly capacity: number
@@ -32,14 +35,14 @@ class CircularBuffer<T> {
     // Validate capacity to prevent divide-by-zero and undefined behavior
     if (!Number.isInteger(capacity) || capacity < 1) {
       throw new Error(
-        `CircularBuffer: capacity must be a positive integer, got ${capacity}`
+        `NumericCircularBuffer: capacity must be a positive integer, got ${capacity}`
       )
     }
     this.capacity = capacity
     this.buffer = new Array(capacity)
   }
 
-  push(item: T): void {
+  push(item: number): void {
     this.buffer[this.head] = item
     this.head = (this.head + 1) % this.capacity
     if (this.count < this.capacity) {
@@ -47,7 +50,7 @@ class CircularBuffer<T> {
     }
   }
 
-  toArray(): T[] {
+  toArray(): number[] {
     if (this.count === 0) return []
     if (this.count < this.capacity) {
       return this.buffer.slice(0, this.count)
@@ -60,7 +63,7 @@ class CircularBuffer<T> {
     return this.count
   }
 
-  get last(): T | undefined {
+  get last(): number | undefined {
     if (this.count === 0) return undefined
     const lastIndex = (this.head - 1 + this.capacity) % this.capacity
     return this.buffer[lastIndex]
@@ -71,7 +74,7 @@ class CircularBuffer<T> {
     let total = 0
     for (let i = 0; i < this.count; i++) {
       const index = (this.head - this.count + i + this.capacity) % this.capacity
-      total += this.buffer[index] as number
+      total += this.buffer[index]
     }
     return total
   }
@@ -86,8 +89,8 @@ export function useRenderPerformance(
 ): PerformanceMetrics {
   const renderCount = React.useRef(0)
   // Use circular buffer instead of array.shift() for O(1) performance
-  const renderTimes = React.useRef<CircularBuffer<number>>(
-    new CircularBuffer(100)
+  const renderTimes = React.useRef<NumericCircularBuffer>(
+    new NumericCircularBuffer(100)
   )
   const startTime = React.useRef<number>(0)
 
