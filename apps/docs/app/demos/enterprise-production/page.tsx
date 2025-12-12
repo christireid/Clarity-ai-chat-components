@@ -40,7 +40,12 @@ interface LogEntry {
   details: string
 }
 
-const generateId = () => crypto.randomUUID()
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+}
 
 export default function EnterpriseProductionDemo() {
   const [isLive, setIsLive] = useState(true)
@@ -53,7 +58,7 @@ export default function EnterpriseProductionDemo() {
     uptime: 99.99,
   })
   const [logs, setLogs] = useState<LogEntry[]>([])
-  const [tenants, setTenants] = useState([
+  const [tenants] = useState([
     { id: 'acme', name: 'Acme Corp', users: 1250, requests: 45000 },
     { id: 'globex', name: 'Globex Inc', users: 890, requests: 32000 },
     { id: 'stark', name: 'Stark Industries', users: 2100, requests: 78000 },
@@ -61,6 +66,9 @@ export default function EnterpriseProductionDemo() {
   ])
 
   const logContainerRef = useRef<HTMLDivElement>(null)
+  // Use ref to avoid stale closure in interval callbacks
+  const tenantsRef = useRef(tenants)
+  tenantsRef.current = tenants
 
   // Simulate live metrics updates
   useEffect(() => {
@@ -120,14 +128,15 @@ export default function EnterpriseProductionDemo() {
     if (!isLive) return
 
     const interval = setInterval(() => {
-      // Simulate an error and recovery
+      // Simulate an error and recovery - use ref to avoid stale closure
+      const currentTenants = tenantsRef.current
       const errorLog: LogEntry = {
         id: generateId(),
         timestamp: new Date(),
         level: 'error',
         action: 'Connection error',
         user: 'system',
-        tenant: tenants[Math.floor(Math.random() * tenants.length)].id,
+        tenant: currentTenants[Math.floor(Math.random() * currentTenants.length)].id,
         details: 'WebSocket connection dropped',
       }
       setLogs(prev => [errorLog, ...prev].slice(0, 50))
@@ -148,7 +157,7 @@ export default function EnterpriseProductionDemo() {
     }, 15000)
 
     return () => clearInterval(interval)
-  }, [isLive, tenants])
+  }, [isLive])
 
   const metricCards: MetricCard[] = [
     { label: 'Active Connections', value: metrics.connections.toLocaleString(), change: '+12%', icon: Users, color: 'text-blue-600' },

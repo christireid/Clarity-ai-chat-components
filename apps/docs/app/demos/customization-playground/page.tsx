@@ -8,10 +8,8 @@ import {
   Copy,
   Check,
   ArrowRight,
-  Download,
   Sun,
   Moon,
-  Monitor,
   Bot,
   User,
   MessageSquare
@@ -109,8 +107,18 @@ export default function Chat() {
 }`
   }
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(generateCode())
+  const copyCode = async () => {
+    const code = generateCode()
+    try {
+      await navigator.clipboard.writeText(code)
+    } catch {
+      const textarea = document.createElement('textarea')
+      textarea.value = code
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }

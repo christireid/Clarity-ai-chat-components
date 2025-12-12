@@ -86,7 +86,12 @@ interface Message {
   isStreaming?: boolean
 }
 
-const generateId = () => crypto.randomUUID()
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+}
 
 const apiRouteCode = `// app/api/chat/route.ts
 import { createClarityStream } from '@clarity-chat/server'
@@ -129,25 +134,46 @@ export default function ProviderHotswapDemo() {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
-  const switchCountRef = useRef(0)
+  const [switchCount, setSwitchCount] = useState(0)
+  const isMountedRef = useRef(true)
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
     threshold: 100,
   })
 
-  const copyCode = (code: string, id: string) => {
-    navigator.clipboard.writeText(code)
-    setCopiedCode(id)
-    setTimeout(() => setCopiedCode(null), 2000)
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  const copyCode = async (code: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopiedCode(id)
+      setTimeout(() => setCopiedCode(null), 2000)
+    } catch {
+      const textarea = document.createElement('textarea')
+      textarea.value = code
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+      setCopiedCode(id)
+      setTimeout(() => setCopiedCode(null), 2000)
+    }
   }
 
   const handleProviderSwitch = (providerId: string) => {
     if (providerId === activeProvider) return
 
-    const provider = providers.find(p => p.id === providerId)!
+    const provider = providers.find(p => p.id === providerId)
+    if (!provider) return // Guard against invalid providerId
+
     setActiveProvider(providerId)
-    switchCountRef.current++
+    setSwitchCount(prev => prev + 1)
 
     // Add a system message about the switch
     const switchMessage: Message = {
@@ -166,6 +192,7 @@ export default function ProviderHotswapDemo() {
     let currentText = ''
 
     for (let i = 0; i < words.length; i++) {
+      if (!isMountedRef.current) return
       currentText += (i > 0 ? ' ' : '') + words[i]
       setMessages(prev => prev.map(msg =>
         msg.id === messageId ? { ...msg, text: currentText } : msg
@@ -174,6 +201,7 @@ export default function ProviderHotswapDemo() {
       await new Promise(r => setTimeout(r, 25 + Math.random() * 25))
     }
 
+    if (!isMountedRef.current) return
     setMessages(prev => prev.map(msg =>
       msg.id === messageId ? { ...msg, isStreaming: false } : msg
     ))
@@ -261,7 +289,7 @@ export default function ProviderHotswapDemo() {
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-text-secondary">Select Provider</span>
                   <span className="text-xs text-text-secondary">
-                    Switches: {switchCountRef.current}
+                    Switches: {switchCount}
                   </span>
                 </div>
                 <div className="flex gap-2">

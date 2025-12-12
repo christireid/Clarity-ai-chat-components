@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Zap,
@@ -53,7 +53,13 @@ interface Message {
   isStreaming?: boolean
 }
 
-const generateId = () => crypto.randomUUID()
+const generateId = () => {
+  // Fallback for non-secure contexts or older browsers
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+}
 
 const demoResponses: Record<string, string> = {
   default: "I'm the Clarity Chat demo! This entire chat was built with just a few lines of code. Try asking about features, streaming, theming, or anything else!",
@@ -85,16 +91,37 @@ export default function ZeroToChatDemo() {
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const isMountedRef = useRef(true)
+
+  // Cleanup on unmount to prevent state updates after unmount
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
     threshold: 100,
   })
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(showExpanded ? expandedCode : heroCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(showExpanded ? expandedCode : heroCode)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Fallback: select text in a temporary textarea
+      const textarea = document.createElement('textarea')
+      textarea.value = showExpanded ? expandedCode : heroCode
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   const simulateStream = async (text: string, messageId: string) => {
@@ -102,6 +129,7 @@ export default function ZeroToChatDemo() {
     let currentText = ''
 
     for (let i = 0; i < words.length; i++) {
+      if (!isMountedRef.current) return // Bail if unmounted
       currentText += (i > 0 ? ' ' : '') + words[i]
       setMessages(prev => prev.map(msg =>
         msg.id === messageId ? { ...msg, text: currentText } : msg
@@ -110,6 +138,7 @@ export default function ZeroToChatDemo() {
       await new Promise(r => setTimeout(r, 30 + Math.random() * 30))
     }
 
+    if (!isMountedRef.current) return // Check again before final update
     setMessages(prev => prev.map(msg =>
       msg.id === messageId ? { ...msg, isStreaming: false } : msg
     ))

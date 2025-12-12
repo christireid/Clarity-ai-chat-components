@@ -40,7 +40,12 @@ interface Message {
   timestamp: Date
 }
 
-const generateId = () => crypto.randomUUID()
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+}
 
 const CONTEXT_WINDOW = 128000 // 128K context window
 const INPUT_COST_PER_1K = 0.01 // $0.01 per 1K input tokens

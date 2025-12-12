@@ -159,8 +159,17 @@ export default function StreamingStatesDemo() {
     setIsAutoPlaying(false)
   }
 
-  const copyCode = () => {
-    navigator.clipboard.writeText(demoCode)
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(demoCode)
+    } catch {
+      const textarea = document.createElement('textarea')
+      textarea.value = demoCode
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
