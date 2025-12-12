@@ -435,6 +435,24 @@ describe('memoize', () => {
     memoized({ a: 1, b: 2 }) // Same value, different reference
     expect(fn).toHaveBeenCalledTimes(1) // JSON.stringify creates same key
   })
+
+  it('should cache undefined return values', () => {
+    const fn = vi.fn(() => undefined)
+    const memoized = memoize(fn)
+
+    expect(memoized()).toBeUndefined()
+    expect(memoized()).toBeUndefined()
+    expect(fn).toHaveBeenCalledTimes(1) // Should only call once, cache undefined
+  })
+
+  it('should cache null return values', () => {
+    const fn = vi.fn(() => null)
+    const memoized = memoize(fn)
+
+    expect(memoized()).toBeNull()
+    expect(memoized()).toBeNull()
+    expect(fn).toHaveBeenCalledTimes(1) // Should only call once, cache null
+  })
 })
 
 describe('memoizeAsync', () => {

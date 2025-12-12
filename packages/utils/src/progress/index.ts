@@ -358,7 +358,8 @@ export class ProgressTracker {
    */
   increment(itemName?: string): void {
     this.current++
-    const percent = Math.round((this.current / this.total) * 100)
+    const percent =
+      this.total > 0 ? Math.round((this.current / this.total) * 100) : 0
     const text = itemName
       ? `${this.label} (${this.current}/${this.total}) - ${itemName}`
       : `${this.label} (${this.current}/${this.total}) ${percent}%`
@@ -415,7 +416,8 @@ export class ProgressTracker {
     return {
       current: this.current,
       total: this.total,
-      percent: Math.round((this.current / this.total) * 100),
+      percent:
+        this.total > 0 ? Math.round((this.current / this.total) * 100) : 0,
     }
   }
 }

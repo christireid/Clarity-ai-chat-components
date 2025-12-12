@@ -365,9 +365,10 @@ export function memoize<Args extends unknown[], Result>(
   return (...args: Args): Result => {
     const key = keyFn ? keyFn(...args) : JSON.stringify(args)
 
-    const cached = cache.get(key)
-    if (cached !== undefined) {
-      return cached
+    // Use has() to check existence, not value comparison
+    // This correctly handles cached undefined/null values
+    if (cache.has(key)) {
+      return cache.get(key) as Result
     }
 
     const result = fn(...args)
@@ -412,9 +413,10 @@ export function memoizeAsync<Args extends unknown[], Result>(
   return async (...args: Args): Promise<Result> => {
     const key = keyFn ? keyFn(...args) : JSON.stringify(args)
 
-    const cached = cache.get(key)
-    if (cached !== undefined) {
-      return cached
+    // Use has() to check existence, not value comparison
+    // This correctly handles in-flight promises
+    if (cache.has(key)) {
+      return cache.get(key) as Promise<Result>
     }
 
     const promise = fn(...args)

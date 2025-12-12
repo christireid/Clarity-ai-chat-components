@@ -296,6 +296,12 @@ export async function pool<T>(
   tasks: Array<() => Promise<T>>,
   concurrency = 5
 ): Promise<T[]> {
+  // Handle edge cases
+  if (tasks.length === 0) return []
+  if (concurrency < 1) {
+    throw new Error('Concurrency must be at least 1')
+  }
+
   const results: T[] = []
   const executing: Promise<void>[] = []
   let index = 0
@@ -344,7 +350,13 @@ export async function pool<T>(
  */
 export function createAbortController(ms: number): AbortController {
   const controller = new AbortController()
-  setTimeout(() => controller.abort(), ms)
+  const timeoutId = setTimeout(() => controller.abort(), ms)
+
+  // Clear timeout when aborted (manually or by timeout) to prevent timer leak
+  controller.signal.addEventListener('abort', () => clearTimeout(timeoutId), {
+    once: true,
+  })
+
   return controller
 }
 

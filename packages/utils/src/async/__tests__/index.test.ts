@@ -473,6 +473,16 @@ describe('pool', () => {
 
     await expect(pool(tasks, 2)).rejects.toThrow('Task failed')
   })
+
+  it('should throw error for invalid concurrency', async () => {
+    const tasks = [async () => 1]
+    await expect(pool(tasks, 0)).rejects.toThrow(
+      'Concurrency must be at least 1'
+    )
+    await expect(pool(tasks, -1)).rejects.toThrow(
+      'Concurrency must be at least 1'
+    )
+  })
 })
 
 describe('createAbortController', () => {
