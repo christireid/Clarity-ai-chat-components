@@ -149,7 +149,8 @@
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "shiki": "^3.19.0",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "@csstools/css-syntax-patches-for-csstree": "^1.0.15",

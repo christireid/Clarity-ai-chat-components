@@ -477,9 +477,9 @@ function App() {
 ## More Recipes
 
 - [Best Practices](./best-practices.md) - Production patterns
-- [API Reference](../apps/docs/app/api/) - Complete API docs
-- [Examples](../apps/examples/) - More examples
-- [Storybook](../apps/storybook/) - Interactive examples
+- [API Reference](./api-reference.md) - Complete API docs
+- [Examples](../apps/examples/README.md) - More examples
+- [Troubleshooting](./troubleshooting.md) - Common issues and solutions
 
 ---
 

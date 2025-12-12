@@ -62,3 +62,14 @@ export {
 
 // Feedback components
 export { ErrorFeedback, ErrorFeedbackButton } from './ErrorFeedback'
+
+// Clarity-specific errors with actionable messages
+export {
+  ClarityError,
+  validateArrayProp,
+  validateRequiredProp,
+  validateMessageRole,
+  validateMessagesArray,
+  type ClarityErrorCode,
+  type ClarityErrorContext,
+} from './clarity-error'

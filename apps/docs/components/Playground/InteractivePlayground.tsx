@@ -375,17 +375,39 @@ export function InteractivePlayground({
                 </div>
               ) : (
                 <div className="p-4" key={previewKey}>
-                  <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4 min-h-[200px]">
+                  <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 min-h-[200px] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
                     <div className="text-center text-text-secondary">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-bg-secondary rounded-lg text-sm">
-                        <Eye className="w-4 h-4" />
-                        Preview would render here
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-100 dark:bg-brand-900/30 mb-4">
+                        <Eye className="w-8 h-8 text-brand-500" />
                       </div>
-                      <p className="mt-4 text-xs text-text-tertiary">
-                        Live preview requires a sandboxed execution environment.
-                        <br />
-                        Press Cmd/Ctrl + Enter to run.
+                      <h4 className="font-semibold text-text-primary mb-2">
+                        Code Editor Mode
+                      </h4>
+                      <p className="text-sm text-text-tertiary max-w-sm mx-auto mb-4">
+                        Edit and copy the code above. To see live previews, check out our{' '}
+                        <a
+                          href="/playground"
+                          className="text-brand-500 hover:underline font-medium"
+                        >
+                          Interactive Playground
+                        </a>{' '}
+                        or{' '}
+                        <a
+                          href="https://storybook.clarity-chat.dev"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand-500 hover:underline font-medium"
+                        >
+                          Storybook
+                        </a>
+                        .
                       </p>
+                      <div className="flex items-center justify-center gap-3 text-xs text-text-tertiary">
+                        <kbd className="px-2 py-1 bg-bg-tertiary rounded text-xs font-mono">
+                          Cmd/Ctrl + Enter
+                        </kbd>
+                        <span>to validate syntax</span>
+                      </div>
                     </div>
                   </div>
                 </div>

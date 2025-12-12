@@ -10,35 +10,42 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock window.scrollTo
-Object.defineProperty(window, 'scrollTo', {
-  writable: true,
-  value: vi.fn(),
-})
+// Only setup DOM mocks if we're in a browser-like environment
+// This allows @vitest-environment node tests to run without errors
+if (typeof window !== 'undefined') {
+  // Mock window.scrollTo
+  Object.defineProperty(window, 'scrollTo', {
+    writable: true,
+    value: vi.fn(),
+  })
 
-// Mock window.matchMedia (can be overridden in tests)
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((query: string) => {
-    const mediaQuery = {
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }
-    return mediaQuery
-  }),
-})
+  // Mock window.matchMedia (can be overridden in tests)
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => {
+      const mediaQuery = {
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }
+      return mediaQuery
+    }),
+  })
+}
 
-// Mock document.hidden
-Object.defineProperty(document, 'hidden', {
-  writable: true,
-  value: false,
-})
+// Only setup document mocks if document exists
+if (typeof document !== 'undefined') {
+  // Mock document.hidden
+  Object.defineProperty(document, 'hidden', {
+    writable: true,
+    value: false,
+  })
+}
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {

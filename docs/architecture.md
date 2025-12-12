@@ -6,21 +6,22 @@ High-level overview of how Clarity Chat is structured and how components work to
 
 ## System Overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Clarity Chat Ecosystem                     │
-└─────────────────────────────────────────────────────────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-        ▼                     ▼                     ▼
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│   UI Layer   │    │  Hooks Layer  │    │  AI Layer    │
-│              │    │              │    │              │
-│ Components   │    │ useClarityChat│    │ Memory      │
-│ Primitives   │    │ useStreaming  │    │ RAG         │
-│ Themes       │    │ useMemory    │    │ Agents      │
-└──────────────┘    └──────────────┘    └──────────────┘
+```mermaid
+flowchart TB
+    subgraph Ecosystem["Clarity Chat Ecosystem"]
+        direction TB
+        UI["🎨 UI Layer<br/>Components, Primitives, Themes"]
+        Hooks["⚡ Hooks Layer<br/>useClarityChat, useStreaming, useMemory"]
+        AI["🤖 AI Layer<br/>Memory, RAG, Agents"]
+    end
+
+    UI --> Hooks
+    Hooks --> AI
+
+    style Ecosystem fill:#f8fafc,stroke:#e2e8f0
+    style UI fill:#dbeafe,stroke:#3b82f6
+    style Hooks fill:#fef3c7,stroke:#f59e0b
+    style AI fill:#dcfce7,stroke:#22c55e
 ```
 
 ---
@@ -31,25 +32,33 @@ High-level overview of how Clarity Chat is structured and how components work to
 
 **Purpose:** Visual presentation and user interaction
 
-```
-ChatWindow (Container)
-    ├── MessageList (Virtualized)
-    │   └── Message (Individual)
-    │       ├── MessageBubble
-    │       ├── MessageActions
-    │       └── MessageMetadata
-    ├── ChatInput
-    │   ├── Textarea
-    │   ├── VoiceInput (optional)
-    │   └── FileUpload (optional)
-    └── TokenCounter (optional)
+```mermaid
+graph TD
+    CW[ChatWindow] --> ML[MessageList<br/>Virtualized]
+    CW --> CI[ChatInput]
+    CW --> TC[TokenCounter<br/>optional]
+
+    ML --> M[Message]
+    M --> MB[MessageBubble]
+    M --> MA[MessageActions]
+    M --> MM[MessageMetadata]
+
+    CI --> TA[Textarea]
+    CI --> VI[VoiceInput<br/>optional]
+    CI --> FU[FileUpload<br/>optional]
+
+    style CW fill:#3b82f6,stroke:#1d4ed8,color:#fff
+    style ML fill:#60a5fa,stroke:#3b82f6
+    style CI fill:#60a5fa,stroke:#3b82f6
+    style TC fill:#93c5fd,stroke:#60a5fa
+    style M fill:#93c5fd,stroke:#60a5fa
 ```
 
 **Key Components:**
-- `ChatWindow` - Main container
-- `Message` - Individual message display
-- `ChatInput` - User input
-- `MessageList` - Virtualized list
+- `ChatWindow` - Main container orchestrating all chat UI
+- `Message` - Individual message display with actions
+- `ChatInput` - User input with voice and file support
+- `MessageList` - Virtualized list for performance
 
 ---
 
@@ -57,23 +66,29 @@ ChatWindow (Container)
 
 **Purpose:** State management and business logic
 
-```
-useClarityChat (Flagship)
-    ├── useChatEnhanced
-    │   ├── useStreamingSSE
-    │   ├── useErrorRecovery
-    │   └── useTokenTracker
-    └── useMemory (optional)
-        ├── useSlidingContextManager
-        ├── useVectorStoreAdapter
-        └── useMemoryRetrieval
+```mermaid
+graph TD
+    UC[useClarityChat<br/>Flagship Hook] --> UCE[useChatEnhanced]
+    UC --> UM[useMemory<br/>optional]
+
+    UCE --> USSE[useStreamingSSE]
+    UCE --> UER[useErrorRecovery]
+    UCE --> UTT[useTokenTracker]
+
+    UM --> USCM[useSlidingContextManager]
+    UM --> UVSA[useVectorStoreAdapter]
+    UM --> UMR[useMemoryRetrieval]
+
+    style UC fill:#f59e0b,stroke:#d97706,color:#fff
+    style UCE fill:#fbbf24,stroke:#f59e0b
+    style UM fill:#fbbf24,stroke:#f59e0b
 ```
 
 **Key Hooks:**
-- `useClarityChat` - Main chat hook
-- `useStreamingSSE` - Streaming support
-- `useMemory` - Memory management
-- `useTokenTracker` - Token optimization
+- `useClarityChat` - Main chat hook with memory integration
+- `useStreamingSSE` - Server-Sent Events streaming support
+- `useMemory` - Memory management with multiple strategies
+- `useTokenTracker` - Real-time token usage and cost tracking
 
 ---
 
@@ -81,21 +96,33 @@ useClarityChat (Flagship)
 
 **Purpose:** AI features and integrations
 
-```
-AI Infrastructure
-    ├── Memory System
-    │   ├── Sliding Window
-    │   ├── Semantic Chunks
-    │   └── Vector Store
-    ├── RAG Pipeline
-    │   ├── Document Loaders
-    │   ├── Text Splitting
-    │   ├── Embeddings
-    │   └── Retrieval
-    └── Agent System
-        ├── ReAct Pattern
-        ├── Tool Calling
-        └── Orchestration
+```mermaid
+graph TD
+    subgraph Memory["Memory System"]
+        SW[Sliding Window]
+        SC[Semantic Chunks]
+        VS[Vector Store]
+    end
+
+    subgraph RAG["RAG Pipeline"]
+        DL[Document Loaders]
+        TS[Text Splitting]
+        EM[Embeddings]
+        RT[Retrieval]
+    end
+
+    subgraph Agents["Agent System"]
+        RP[ReAct Pattern]
+        TC[Tool Calling]
+        OR[Orchestration]
+    end
+
+    Memory --> RAG
+    RAG --> Agents
+
+    style Memory fill:#dcfce7,stroke:#22c55e
+    style RAG fill:#e0e7ff,stroke:#6366f1
+    style Agents fill:#fce7f3,stroke:#ec4899
 ```
 
 ---
@@ -104,164 +131,203 @@ AI Infrastructure
 
 ### Message Flow
 
-```
-User Input
-    │
-    ▼
-ChatInput Component
-    │
-    ▼
-useClarityChat Hook
-    │
-    ├── Token Tracking
-    ├── Memory Retrieval (if enabled)
-    └── API Request
-        │
-        ▼
-    Streaming Response (SSE/WebSocket)
-        │
-        ▼
-    Message State Update
-        │
-        ▼
-    MessageList Component
-        │
-        ▼
-    Message Component (rendered)
+```mermaid
+sequenceDiagram
+    participant U as 👤 User
+    participant CI as ChatInput
+    participant H as useClarityChat
+    participant M as Memory System
+    participant API as AI API
+    participant ML as MessageList
+
+    U->>CI: Types message
+    CI->>H: onSendMessage(content)
+    H->>H: Token tracking
+    H->>M: Retrieve context (if enabled)
+    M-->>H: Context bundle
+    H->>API: POST /api/chat (SSE)
+
+    loop Streaming Response
+        API-->>H: Token chunk
+        H-->>ML: Update message state
+        ML-->>U: Render streaming text
+    end
+
+    H->>M: Store message
+    ML->>U: Final rendered message
 ```
 
 ### Memory Flow
 
-```
-New Message
-    │
-    ▼
-Memory System
-    │
-    ├── Store Message
-    ├── Update Context Window
-    └── Retrieve Relevant Memories
-        │
-        ▼
-    Context Enrichment
-        │
-        ▼
-    API Request (with context)
+```mermaid
+sequenceDiagram
+    participant Msg as New Message
+    participant MS as Memory System
+    participant VDB as Vector Store
+    participant CE as Context Engine
+    participant API as AI API
+
+    Msg->>MS: Process message
+    MS->>MS: Calculate importance score
+    MS->>VDB: Store embedding
+    MS->>MS: Update context window
+
+    Note over MS,CE: Context Retrieval
+    MS->>VDB: Semantic search
+    VDB-->>MS: Relevant memories
+    MS->>CE: Bundle context
+    CE-->>API: Enriched request
 ```
 
 ---
 
 ## Component Relationships
 
-### ChatWindow → MessageList → Message
+```mermaid
+graph TB
+    subgraph Container["ChatWindow Container"]
+        State[Manages State]
+        Send[Handles Sending]
+        Render[Renders Children]
+    end
 
-```
-ChatWindow (Container)
-    ├── Manages overall state
-    ├── Handles message sending
-    └── Renders MessageList
-        │
-        └── MessageList (Virtualized)
-            ├── Manages scroll position
-            ├── Virtualizes rendering
-            └── Renders Message components
-                │
-                └── Message (Individual)
-                    ├── Displays content
-                    ├── Handles interactions
-                    └── Shows metadata
+    subgraph List["MessageList"]
+        Scroll[Manages Scroll]
+        Virtual[Virtualizes Rendering]
+        RenderMsg[Renders Messages]
+    end
+
+    subgraph Msg["Message Component"]
+        Display[Displays Content]
+        Actions[Handles Interactions]
+        Meta[Shows Metadata]
+    end
+
+    Container --> List
+    List --> Msg
+
+    style Container fill:#3b82f6,stroke:#1d4ed8,color:#fff
+    style List fill:#60a5fa,stroke:#3b82f6
+    style Msg fill:#93c5fd,stroke:#60a5fa
 ```
 
 ---
 
-## Hook Relationships
+## Hook Composition
 
-### useClarityChat Composition
+```mermaid
+graph LR
+    subgraph Core["useClarityChat"]
+        direction TB
+        Main[Main Logic]
+    end
 
-```
-useClarityChat
-    │
-    ├── useChatEnhanced
-    │   ├── useStreamingSSE
-    │   │   └── Handles SSE connection
-    │   ├── useErrorRecovery
-    │   │   └── Handles errors & retries
-    │   └── useTokenTracker
-    │       └── Tracks token usage
-    │
-    └── useMemory (optional)
-        ├── useSlidingContextManager
-        │   └── Manages context window
-        └── useVectorStoreAdapter
-            └── Vector store integration
+    subgraph Enhanced["useChatEnhanced"]
+        SSE[useStreamingSSE<br/>SSE Connection]
+        Error[useErrorRecovery<br/>Retry Logic]
+        Token[useTokenTracker<br/>Usage Tracking]
+    end
+
+    subgraph MemoryHooks["useMemory"]
+        Sliding[useSlidingContextManager<br/>Context Window]
+        Vector[useVectorStoreAdapter<br/>Vector Integration]
+    end
+
+    Core --> Enhanced
+    Core --> MemoryHooks
+
+    style Core fill:#f59e0b,stroke:#d97706,color:#fff
+    style Enhanced fill:#fef3c7,stroke:#f59e0b
+    style MemoryHooks fill:#fef3c7,stroke:#f59e0b
 ```
 
 ---
 
 ## Theme System
 
-### Theme Architecture
+```mermaid
+graph TD
+    TP[ThemeProvider<br/>Root] --> TC[Theme Context]
+    TP --> TA[Theme Application]
 
-```
-ThemeProvider (Root)
-    │
-    ├── Theme Context
-    │   ├── Colors
-    │   ├── Typography
-    │   ├── Spacing
-    │   └── Shadows
-    │
-    └── Theme Application
-        ├── CSS Variables
-        ├── Tailwind Classes
-        └── Component Styles
+    TC --> Colors[Colors]
+    TC --> Typography[Typography]
+    TC --> Spacing[Spacing]
+    TC --> Shadows[Shadows]
+
+    TA --> CSS[CSS Variables]
+    TA --> TW[Tailwind Classes]
+    TA --> Styles[Component Styles]
+
+    style TP fill:#8b5cf6,stroke:#7c3aed,color:#fff
+    style TC fill:#a78bfa,stroke:#8b5cf6
+    style TA fill:#a78bfa,stroke:#8b5cf6
 ```
 
 ---
 
 ## State Management
 
-### Component State
+```mermaid
+graph TD
+    subgraph Local["Local State (useState)"]
+        UI[UI-specific state<br/>modals, inputs]
+    end
 
-```
-Component State
-    ├── Local State (useState)
-    │   └── UI-specific state
-    ├── Hook State (useClarityChat)
-    │   └── Chat state (messages, loading)
-    └── Context State (ThemeProvider, MemoryProvider)
-        └── Global state
+    subgraph Hook["Hook State (useClarityChat)"]
+        Chat[Chat state<br/>messages, loading, error]
+    end
+
+    subgraph Context["Context State (Providers)"]
+        Theme[ThemeProvider]
+        Memory[MemoryProvider]
+    end
+
+    Local --> Hook
+    Hook --> Context
+
+    style Local fill:#fecaca,stroke:#ef4444
+    style Hook fill:#fef08a,stroke:#eab308
+    style Context fill:#bbf7d0,stroke:#22c55e
 ```
 
 ---
 
 ## Performance Optimizations
 
-### Virtualization
+### Virtualization Strategy
 
-```
-MessageList
-    │
-    ├── Virtual Scrolling
-    │   └── Only renders visible messages
-    ├── Memoization
-    │   └── Prevents unnecessary re-renders
-    └── Lazy Loading
-        └── Loads messages on demand
+```mermaid
+graph LR
+    subgraph Visible["Viewport"]
+        V1[Message 5]
+        V2[Message 6]
+        V3[Message 7]
+    end
+
+    subgraph Above["Above Viewport"]
+        A1[Message 1-4<br/>Not Rendered]
+    end
+
+    subgraph Below["Below Viewport"]
+        B1[Message 8-100+<br/>Not Rendered]
+    end
+
+    Above -.-> Visible
+    Visible -.-> Below
+
+    style Visible fill:#22c55e,stroke:#16a34a,color:#fff
+    style Above fill:#f3f4f6,stroke:#d1d5db
+    style Below fill:#f3f4f6,stroke:#d1d5db
 ```
 
 ### Memory Optimization
 
-```
-Memory System
-    │
-    ├── Sliding Window
-    │   └── Limits context size
-    ├── Token Optimization
-    │   └── Compresses context
-    └── Semantic Caching
-        └── Reuses similar contexts
-```
+| Strategy | Purpose | Impact |
+|----------|---------|--------|
+| Sliding Window | Limits context size | -50% token usage |
+| Token Optimization | Compresses context | -30% additional |
+| Semantic Caching | Reuses similar contexts | -40% API calls |
 
 ---
 
@@ -269,26 +335,33 @@ Memory System
 
 ### API Integration
 
-```
-useClarityChat
-    │
-    └── API Request
-        ├── Endpoint: /api/chat
-        ├── Method: POST
-        ├── Body: { messages, context }
-        └── Response: SSE Stream
+```mermaid
+sequenceDiagram
+    participant Hook as useClarityChat
+    participant API as /api/chat
+    participant AI as AI Provider
+
+    Hook->>API: POST { messages, context }
+    API->>AI: Forward request
+    AI-->>API: SSE Stream
+    API-->>Hook: Stream response
+
+    Note over Hook,AI: Supports OpenAI, Anthropic, Google
 ```
 
 ### Vector Store Integration
 
-```
-Memory System
-    │
-    └── Vector Store
-        ├── Pinecone
-        ├── Qdrant
-        ├── Weaviate
-        └── Chroma
+```mermaid
+graph LR
+    MS[Memory System] --> VS{Vector Store}
+
+    VS --> P[Pinecone]
+    VS --> Q[Qdrant]
+    VS --> W[Weaviate]
+    VS --> C[Chroma]
+
+    style MS fill:#22c55e,stroke:#16a34a,color:#fff
+    style VS fill:#f59e0b,stroke:#d97706,color:#fff
 ```
 
 ---
@@ -297,47 +370,31 @@ Memory System
 
 ```
 packages/
-├── react/                    # Main library
+├── react/                    # Main library (@clarity-chat/react)
 │   ├── src/
-│   │   ├── components/        # UI components
-│   │   ├── hooks/            # React hooks
+│   │   ├── components/       # 70+ UI components
+│   │   ├── hooks/            # 35+ React hooks
 │   │   ├── memory/           # Memory system
 │   │   ├── theme/            # Theme system
-│   │   └── utils/           # Utilities
-│   └── styles.css           # Global styles
-├── primitives/               # Base UI components
-├── types/                   # TypeScript types
-└── error-handling/          # Error handling
+│   │   └── utils/            # Utilities
+│   └── styles.css            # Global styles
+├── primitives/               # Base UI components (@clarity-chat/primitives)
+├── memory/                   # Memory package (@clarity-chat/memory)
+├── types/                    # TypeScript types (@clarity-chat/types)
+└── cli/                      # CLI tool (@clarity-chat/cli)
 ```
 
 ---
 
 ## Key Design Decisions
 
-### 1. Component Composition
-
-**Decision:** Small, composable components  
-**Rationale:** Flexibility and reusability
-
-### 2. Hook-Based Architecture
-
-**Decision:** Business logic in hooks  
-**Rationale:** Separation of concerns, testability
-
-### 3. Virtual Scrolling
-
-**Decision:** Virtualized message lists  
-**Rationale:** Performance with large message counts
-
-### 4. Memory System
-
-**Decision:** Pluggable memory strategies  
-**Rationale:** Flexibility for different use cases
-
-### 5. Theme System
-
-**Decision:** CSS variables + Tailwind  
-**Rationale:** Easy customization, performance
+| Decision | Rationale | Trade-off |
+|----------|-----------|-----------|
+| **Component Composition** | Flexibility and reusability | More components to learn |
+| **Hook-Based Architecture** | Separation of concerns, testability | Requires React knowledge |
+| **Virtual Scrolling** | Performance with 1000+ messages | Slightly more complex |
+| **Pluggable Memory** | Flexibility for different use cases | Configuration needed |
+| **CSS Variables + Tailwind** | Easy customization, performance | Bundle size consideration |
 
 ---
 
@@ -366,8 +423,8 @@ const customData = useCustomHook(messages)
 ```tsx
 // Create custom theme
 const customTheme = {
-  colors: { ... },
-  spacing: { ... },
+  colors: { primary: '#your-color' },
+  spacing: { sm: '0.5rem' },
 }
 
 <ThemeProvider theme={customTheme}>
@@ -379,11 +436,11 @@ const customTheme = {
 
 ## Next Steps
 
-- [Component API Reference](./apps/docs/app/api/components.md)
-- [Hooks API Reference](./apps/docs/app/api/hooks.md)
-- [Memory Guide](./docs/clarity-memory/GETTING_STARTED.md)
-- [Performance Guide](./PERFORMANCE_GUIDE.md)
+- [API Reference](./api-reference.md) - Complete API documentation
+- [Getting Started](./getting-started.md) - Quick start guide
+- [Memory Guide](./clarity-memory/GETTING_STARTED.md) - Memory system documentation
+- [Best Practices](./best-practices.md) - Production patterns
 
 ---
 
-**Last Updated:** [Date]
+**Last Updated:** December 2025

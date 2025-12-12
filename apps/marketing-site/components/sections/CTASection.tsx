@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import Link from 'next/link'
-import { Copy, Check, ArrowRight, Sparkles } from 'lucide-react'
+import { Copy, Check, ArrowRight, Zap } from 'lucide-react'
 import { durations } from '@/lib/constants'
 
 export default function CTASection() {
@@ -49,29 +49,29 @@ export default function CTASection() {
           transition={{ duration: durations.slow }}
           className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-clarity-500/20 to-cosmic-500/20 border border-white/10 mb-8"
         >
-          <Sparkles className="w-8 h-8 text-clarity-400" />
+          <Zap className="w-8 h-8 text-clarity-400" />
         </motion.div>
 
-        {/* Heading */}
+        {/* Heading - Bold, action-oriented */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: durations.slow, delay: 0.1 }}
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6"
         >
-          Ready to Build Your
-          <span className="gradient-text"> AI Chat App?</span>
+          Your AI Chat Ships
+          <span className="gradient-text"> This Weekend.</span>
         </motion.h2>
 
-        {/* Description */}
+        {/* Description - Urgency and value */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: durations.slow, delay: 0.2 }}
           className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto"
         >
-          Join 1,000+ developers building amazing AI chat experiences. Start
-          free, upgrade when you're ready.
+          One command. Production-ready chat UI. What takes agencies 12 months
+          takes you 12 minutes.
         </motion.p>
 
         {/* Install command */}
@@ -115,14 +115,14 @@ export default function CTASection() {
             href="/docs/guides/getting-started"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold text-white rounded-xl bg-gradient-to-r from-clarity-500 to-cosmic-500 hover:from-clarity-400 hover:to-cosmic-400 transition-all shadow-lg shadow-clarity-500/20 hover:shadow-clarity-400/30 hover:-translate-y-0.5"
           >
-            Get Started Free
+            Start Building Now
             <ArrowRight className="w-5 h-5" />
           </Link>
           <Link
             href="/docs"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold text-white rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/30 transition-all"
           >
-            Read Documentation
+            Read the Docs
           </Link>
         </motion.div>
 
@@ -135,15 +135,15 @@ export default function CTASection() {
         >
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span>Free tier available</span>
+            <span>Free forever tier</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span>No credit card required</span>
+            <span>No credit card</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span>Cancel anytime</span>
+            <span>30-day money back</span>
           </div>
         </motion.div>
       </div>

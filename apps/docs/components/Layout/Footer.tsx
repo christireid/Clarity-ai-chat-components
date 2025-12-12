@@ -18,7 +18,7 @@ const footerNavigation = {
     { name: 'API Reference', href: '/reference/api' },
   ],
   community: [
-    { name: 'GitHub', href: 'https://github.com/clarity-chat/ui' },
+    { name: 'GitHub', href: 'https://github.com/christireid/Clarity-ai-chat-components' },
     { name: 'Storybook', href: 'https://storybook.clarity-chat.dev' },
     { name: 'Examples', href: '/examples' },
     { name: 'Blog', href: '/blog' },
@@ -32,7 +32,7 @@ const footerNavigation = {
 }
 
 const socialLinks = [
-  { name: 'GitHub', href: 'https://github.com/clarity-chat/ui', icon: Github },
+  { name: 'GitHub', href: 'https://github.com/christireid/Clarity-ai-chat-components', icon: Github },
   { name: 'Twitter', href: 'https://twitter.com/claritychat', icon: Twitter },
   { name: 'YouTube', href: 'https://youtube.com/@claritychat', icon: Youtube },
 ]

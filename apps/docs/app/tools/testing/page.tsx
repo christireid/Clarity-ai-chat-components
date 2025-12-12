@@ -30,8 +30,16 @@ export default function TestingToolsPage() {
           <li>✅ Benchmark scripts and bundle analyzer to catch regressions</li>
         </ul>
         <Callout type="info">
-          See <Link href="/COMPLETE_TESTING_SUMMARY">COMPLETE_TESTING_SUMMARY.md</Link>{' '}
-          for the original audit logs and pass/fail history.
+          See the{' '}
+          <a
+            href="https://github.com/christireid/Clarity-ai-chat-components/blob/main/COMPLETE_TESTING_SUMMARY.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-600 hover:underline"
+          >
+            COMPLETE_TESTING_SUMMARY.md
+          </a>{' '}
+          on GitHub for the original audit logs and pass/fail history.
         </Callout>
       </section>
 
@@ -113,7 +121,15 @@ console.log('Response', result.choices[0].message)
           <li>Reports: bundle/benchmark artifacts uploaded with each run</li>
         </ul>
         <p>
-          📄 Reference pipeline: <Link href="/CI_CD_FINAL_STATUS">CI_CD_FINAL_STATUS.md</Link>
+          📄 Reference pipeline:{' '}
+          <a
+            href="https://github.com/christireid/Clarity-ai-chat-components/blob/main/CI_CD_FINAL_STATUS.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-600 hover:underline"
+          >
+            CI_CD_FINAL_STATUS.md
+          </a>
         </p>
       </section>
 

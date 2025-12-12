@@ -243,7 +243,7 @@ const products = await fetch('/api/products/search', {
             Add AI shopping assistance to your store and increase conversion rates.
           </p>
           <a
-            href="https://github.com/clarity-chat/ui/tree/main/examples/ecommerce-assistant"
+            href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/ecommerce-assistant"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-colors"

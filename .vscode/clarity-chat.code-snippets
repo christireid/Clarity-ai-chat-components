@@ -1,6 +1,7 @@
 {
   "Clarity Chat Component": {
     "prefix": "cccomp",
+    "scope": "typescript,typescriptreact",
     "body": [
       "import { forwardRef } from 'react'",
       "import { cn } from '@/lib/utils'",
@@ -45,6 +46,7 @@
 
   "Clarity Chat Hook": {
     "prefix": "cchook",
+    "scope": "typescript,typescriptreact",
     "body": [
       "import { useState, useCallback, useEffect } from 'react'",
       "",
@@ -83,6 +85,7 @@
 
   "Clarity Chat Test - Component": {
     "prefix": "cctestc",
+    "scope": "typescript,typescriptreact",
     "body": [
       "import { describe, it, expect, vi } from 'vitest'",
       "import { render, screen, fireEvent } from '@testing-library/react'",
@@ -111,6 +114,7 @@
 
   "Clarity Chat Test - Hook": {
     "prefix": "cctesth",
+    "scope": "typescript,typescriptreact",
     "body": [
       "import { describe, it, expect, vi } from 'vitest'",
       "import { renderHook, act } from '@testing-library/react'",
@@ -143,6 +147,7 @@
 
   "Clarity Chat Story": {
     "prefix": "ccstory",
+    "scope": "typescript,typescriptreact",
     "body": [
       "import type { Meta, StoryObj } from '@storybook/react'",
       "import { ${1:ComponentName} } from './${1:ComponentName}'",
@@ -179,6 +184,7 @@
 
   "Clarity Chat Context": {
     "prefix": "cccontext",
+    "scope": "typescript,typescriptreact",
     "body": [
       "import { createContext, useContext, useState, ReactNode } from 'react'",
       "",
@@ -236,6 +242,7 @@
 
   "Clarity Chat Type Guard": {
     "prefix": "cctypeguard",
+    "scope": "typescript,typescriptreact",
     "body": [
       "/**",
       " * Type guard for ${1:TypeName}",
@@ -253,6 +260,7 @@
 
   "Clarity Chat Error Class": {
     "prefix": "ccerror",
+    "scope": "typescript,typescriptreact",
     "body": [
       "/**",
       " * ${1:ErrorName} - ${2:Brief description}",
@@ -279,12 +287,14 @@
 
   "Console Log Debug": {
     "prefix": "clog",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
     "body": ["console.log('[DEBUG ${1:location}]', ${2:value})"],
     "description": "Quick console.log with location tag"
   },
 
   "JSDoc Comment Block": {
     "prefix": "ccjsdoc",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
     "body": [
       "/**",
       " * ${1:Description}",
@@ -299,5 +309,199 @@
       " */"
     ],
     "description": "Create a JSDoc comment block"
+  },
+
+  "Code Review - Critical": {
+    "prefix": "crcritical",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "body": [
+      "// CRITICAL: ${1:Issue description}",
+      "// Impact: ${2:Security|Performance|Type Safety}",
+      "// Fix: ${3:Recommended fix}",
+      "$0"
+    ],
+    "description": "Mark a critical code review issue"
+  },
+
+  "Code Review - Improvement": {
+    "prefix": "crimprove",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "body": [
+      "// IMPROVE: ${1:Suggestion}",
+      "// Benefit: ${2:Why this helps}",
+      "$0"
+    ],
+    "description": "Mark a code review improvement suggestion"
+  },
+
+  "Code Review - Security": {
+    "prefix": "crsecurity",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "body": [
+      "// SECURITY: ${1:Vulnerability type}",
+      "// Risk: ${2|High,Medium,Low|}",
+      "// Attack: ${3:How it could be exploited}",
+      "// Fix: ${4:Recommended fix}",
+      "$0"
+    ],
+    "description": "Mark a security vulnerability"
+  },
+
+  "Code Review - Performance": {
+    "prefix": "crperf",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "body": [
+      "// PERF: ${1:Performance issue}",
+      "// Impact: ${2:Re-renders/bundle size/latency}",
+      "// Fix: ${3:Optimization approach}",
+      "$0"
+    ],
+    "description": "Mark a performance issue"
+  },
+
+  "Code Review - TypeScript": {
+    "prefix": "crtype",
+    "scope": "typescript,typescriptreact",
+    "body": [
+      "// TYPE: ${1:Type issue}",
+      "// Problem: ${2:Why this is unsafe}",
+      "// Fix: ${3:Proper typing}",
+      "$0"
+    ],
+    "description": "Mark a TypeScript type issue"
+  },
+
+  "Code Review - Tailwind": {
+    "prefix": "crtailwind",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "body": [
+      "// TAILWIND: ${1:Styling issue}",
+      "// Before: ${2:Current classes}",
+      "// After: ${3:Recommended classes}",
+      "$0"
+    ],
+    "description": "Mark a Tailwind CSS issue"
+  },
+
+  "Code Review - TODO": {
+    "prefix": "crtodo",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "body": [
+      "// TODO(review): ${1:Action needed}",
+      "// Priority: ${2|High,Medium,Low|}",
+      "// Assignee: ${3:@username}",
+      "$0"
+    ],
+    "description": "Mark a review action item"
+  },
+
+  "Server Component Pattern": {
+    "prefix": "ccserver",
+    "scope": "typescript,typescriptreact",
+    "body": [
+      "// Server Component - Data Fetching",
+      "import { db } from '@/lib/db'",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "export default async function ${1:ComponentName}({ $3 }: ${1:ComponentName}Props) {",
+      "  const data = await db.$4.findMany()",
+      "",
+      "  return (",
+      "    <div className=\"$5\">",
+      "      $0",
+      "    </div>",
+      "  )",
+      "}"
+    ],
+    "description": "Create a NextJS Server Component with data fetching"
+  },
+
+  "Client Component Pattern": {
+    "prefix": "ccclient",
+    "scope": "typescript,typescriptreact",
+    "body": [
+      "'use client'",
+      "",
+      "import { useState, useCallback, memo } from 'react'",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "export const ${1:ComponentName} = memo(function ${1:ComponentName}({",
+      "  $3",
+      "}: ${1:ComponentName}Props) {",
+      "  const [state, setState] = useState($4)",
+      "",
+      "  const handleAction = useCallback(() => {",
+      "    $5",
+      "  }, [])",
+      "",
+      "  return (",
+      "    <div className=\"$6\">",
+      "      $0",
+      "    </div>",
+      "  )",
+      "})"
+    ],
+    "description": "Create a NextJS Client Component with memo and hooks"
+  },
+
+  "Server Action Pattern": {
+    "prefix": "ccaction",
+    "scope": "typescript,typescriptreact",
+    "body": [
+      "'use server'",
+      "",
+      "import { z } from 'zod'",
+      "import { revalidatePath } from 'next/cache'",
+      "",
+      "const ${1:ActionName}Schema = z.object({",
+      "  ${2:field}: z.string().min(1),",
+      "})",
+      "",
+      "export async function ${3:actionName}(formData: FormData) {",
+      "  const parsed = ${1:ActionName}Schema.safeParse({",
+      "    ${2:field}: formData.get('${2:field}'),",
+      "  })",
+      "",
+      "  if (!parsed.success) {",
+      "    return { error: parsed.error.flatten() }",
+      "  }",
+      "",
+      "  // Safe to use validated data",
+      "  $0",
+      "",
+      "  revalidatePath('/${4:path}')",
+      "  return { success: true }",
+      "}"
+    ],
+    "description": "Create a NextJS Server Action with Zod validation"
+  },
+
+  "Memoized Callback": {
+    "prefix": "ccmemo",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "body": [
+      "const ${1:handlerName} = useCallback(($2) => {",
+      "  $0",
+      "}, [${3:deps}])"
+    ],
+    "description": "Create a memoized callback with useCallback"
+  },
+
+  "Memoized Value": {
+    "prefix": "ccusememo",
+    "scope": "javascript,javascriptreact,typescript,typescriptreact",
+    "body": [
+      "const ${1:value} = useMemo(() => {",
+      "  $0",
+      "  return ${2:result}",
+      "}, [${3:deps}])"
+    ],
+    "description": "Create a memoized value with useMemo"
   }
 }

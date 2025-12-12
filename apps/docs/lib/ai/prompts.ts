@@ -90,8 +90,8 @@ export const ERROR_PROMPT = `I encountered an issue while processing your reques
 - An unexpected error
 
 Please try again in a moment. If the problem persists, you can:
-- Check the [documentation](/docs) directly
-- Visit our [GitHub repository](https://github.com/your-org/clarity-chat) for support
+- Check the [documentation](/learn/quick-start) directly
+- Visit our [GitHub repository](https://github.com/christireid/Clarity-ai-chat-components) for support
 - Report issues in our issue tracker
 
 I apologize for the inconvenience! 🙏`
@@ -163,11 +163,14 @@ const CONTEXTUAL_LINKS: Record<
  * Get contextual links based on current page
  */
 export function getContextualLinks(
-  currentPath: string
+  currentPath?: string
 ): Array<{ label: string; path: string }> {
-  for (const [prefix, links] of Object.entries(CONTEXTUAL_LINKS)) {
-    if (currentPath.startsWith(prefix)) {
-      return links
+  // Guard against undefined or null currentPath
+  if (currentPath && typeof currentPath === 'string') {
+    for (const [prefix, links] of Object.entries(CONTEXTUAL_LINKS)) {
+      if (currentPath.startsWith(prefix)) {
+        return links
+      }
     }
   }
   // Default links
@@ -181,13 +184,16 @@ export function getContextualLinks(
 /**
  * Generate a contextual system prompt based on the current page
  */
-export function getContextualPrompt(currentPath: string): string {
+export function getContextualPrompt(currentPath?: string): string {
   let contextAddition = ''
 
-  for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
-    if (currentPath.startsWith(prefix)) {
-      contextAddition = context
-      break
+  // Guard against undefined or null currentPath
+  if (currentPath && typeof currentPath === 'string') {
+    for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
+      if (currentPath.startsWith(prefix)) {
+        contextAddition = context
+        break
+      }
     }
   }
 
@@ -201,15 +207,18 @@ export function getContextualPrompt(currentPath: string): string {
  * @param personality - Personality mode (technical, friendly, concise)
  */
 export function getPromptWithContextAndPersonality(
-  currentPath: string,
+  currentPath?: string,
   personality: PersonalityMode = 'friendly'
 ): string {
   let contextAddition = ''
 
-  for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
-    if (currentPath.startsWith(prefix)) {
-      contextAddition = context
-      break
+  // Guard against undefined or null currentPath
+  if (currentPath && typeof currentPath === 'string') {
+    for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
+      if (currentPath.startsWith(prefix)) {
+        contextAddition = context
+        break
+      }
     }
   }
 
