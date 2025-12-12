@@ -11,13 +11,13 @@
   "dependencies": {
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/react": "workspace:*",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "framer-motion": "^12.23.25"
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "framer-motion": "^12.23.26"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "typescript": "^5.9.3",
     "vite": "^7.2.6"
