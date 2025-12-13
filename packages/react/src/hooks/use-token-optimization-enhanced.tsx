@@ -33,6 +33,7 @@ import { PromptCacheManager, createAnthropicCachedMessages, type CacheStats } fr
 
 // Import existing utilities
 import { compressPrompt, type CompressionResult } from '../utils/prompt-compression'
+import { intelligentCompress, type LLMLinguaConfig } from '../utils/llmlingua-compressor'
 import { SmartCache } from '../utils/smart-cache'
 
 // Import utilities from token-optimization for unified API
@@ -87,10 +88,16 @@ export interface EnhancedTokenOptimizationOptions {
   enablePromptCompression?: boolean
   /** Compression aggressiveness */
   compressionLevel?: 'conservative' | 'balanced' | 'aggressive'
+  /** Advanced compression config (LLMLingua) */
+  compressionConfig?: LLMLinguaConfig
 
   // ============ Cost Tracking ============
   /** Enable real-time cost tracking */
   enableCostTracking?: boolean
+  /** Token budget (in USD) */
+  budget?: number
+  /** Callback when budget is exceeded */
+  onBudgetExceeded?: (cost: number, budget: number) => void
 
   /** Enable statistics collection */
   enableStats?: boolean
@@ -100,6 +107,10 @@ export interface EnhancedTokenOptimizationOptions {
   enableHistoryLimiting?: boolean
   /** History limiting options */
   historyLimiting?: HistoryLimitingOptions
+  /** Custom summarization function for 'summarize' strategy */
+  summarizeMessage?: (message: CoreMessage) => Promise<CoreMessage>
+  /** Custom embedding function for 'smart' strategy */
+  calculateEmbedding?: (text: string) => Promise<number[]>
 
   /** Enable request throttling */
   enableThrottling?: boolean
@@ -350,6 +361,9 @@ export function useTokenOptimizationEnhanced(
   /** Optimize text prompt */
   optimizePrompt: (prompt: string) => Promise<EnhancedOptimizationResult>
 
+  /** Optimize history (limit conversation messages) */
+  optimizeHistory: (messages: CoreMessage[]) => Promise<CoreMessage[]>
+
   /** Prepare messages with caching */
   prepareMessages: (
     messages: CoreMessage[]
@@ -370,7 +384,7 @@ export function useTokenOptimizationEnhanced(
 
   // ========== From basic hook ==========
   /** Limit conversation history */
-  optimizeHistory: (messages: CoreMessage[]) => CoreMessage[]
+  limitHistory: (messages: CoreMessage[]) => Promise<CoreMessage[]>
 
   /** Check if request can be made (throttling) */
   canMakeRequest: () => boolean
@@ -423,11 +437,16 @@ export function useTokenOptimizationEnhanced(
     similarityThreshold = 0.85,
     enablePromptCompression = presetConfig.enablePromptCompression ?? true,
     compressionLevel = presetConfig.compressionLevel ?? 'balanced',
+    compressionConfig = {},
     enableCostTracking = true,
+    budget,
+    onBudgetExceeded,
     enableStats = true,
     // From basic hook
     enableHistoryLimiting = presetConfig.enableHistoryLimiting ?? false,
     historyLimiting = {},
+    summarizeMessage,
+    calculateEmbedding,
     enableThrottling = false,
     throttling = {},
     enableModelRouting = presetConfig.enableModelRouting ?? false,
@@ -605,6 +624,12 @@ export function useTokenOptimizationEnhanced(
           outputTokens: 0,
         })
 
+        // Check budget
+        const newTotalCost = stats.costs.totalCost + cost.totalCost
+        if (budget && newTotalCost > budget && onBudgetExceeded) {
+          onBudgetExceeded(newTotalCost, budget)
+        }
+
         setStats(prev => ({
           ...prev,
           costs: {
@@ -645,15 +670,39 @@ export function useTokenOptimizationEnhanced(
 
       // Apply compression
       if (enablePromptCompression) {
-        const options =
-          compressionLevel === 'aggressive'
-            ? { removeFillers: true, useAbbreviations: true, reducePunctuation: true }
-            : compressionLevel === 'conservative'
-            ? { removeFillers: false, useAbbreviations: false, reducePunctuation: true }
-            : { removeFillers: true, useAbbreviations: false, reducePunctuation: true }
+        // Use intelligent compression (LLMLingua style)
+        const targetRatio = 
+          compressionLevel === 'aggressive' ? 0.4 :
+          compressionLevel === 'conservative' ? 0.8 : 0.6
+        
+        // Use custom config if provided, otherwise derive from level
+        const config: Partial<LLMLinguaConfig> = {
+          targetRatio,
+          ...compressionConfig
+        }
 
-        compressionResult = compressPrompt(prompt, options)
-        content = compressionResult.compressed
+        // Run intelligent compression
+        const intelligentResult = await intelligentCompress(prompt, {
+          targetRatio: config.targetRatio,
+          preserveFirst: config.preserveFirst ?? 100,
+          preserveLast: config.preserveLast ?? 50,
+          // Use basic compression options as fallback/guidance
+          preserveCode: true
+        })
+
+        content = intelligentResult.compressed
+        
+        // Adapt to CompressionResult format for compatibility
+        compressionResult = {
+          compressed: intelligentResult.compressed,
+          original: intelligentResult.original,
+          originalLength: intelligentResult.original.length,
+          compressedLength: intelligentResult.compressed.length,
+          savingsPercent: (1 - intelligentResult.compressionRatio) * 100,
+          originalTokens: intelligentResult.originalTokens,
+          compressedTokens: intelligentResult.compressedTokens,
+          tokenSavings: intelligentResult.originalTokens - intelligentResult.compressedTokens
+        }
 
         // Update stats
         if (enableStats) {
@@ -686,6 +735,12 @@ export function useTokenOptimizationEnhanced(
           outputTokens: 0,
         })
 
+        // Check budget
+        const newTotalCost = stats.costs.totalCost + cost.totalCost
+        if (budget && newTotalCost > budget && onBudgetExceeded) {
+          onBudgetExceeded(newTotalCost, budget)
+        }
+
         setStats(prev => ({
           ...prev,
           costs: {
@@ -709,6 +764,7 @@ export function useTokenOptimizationEnhanced(
     [
       enablePromptCompression,
       compressionLevel,
+      compressionConfig,
       model,
       enableAccurateTokenization,
       enableCostTracking,
@@ -853,9 +909,128 @@ export function useTokenOptimizationEnhanced(
    * Optimize history (limit conversation messages)
    */
   const optimizeHistory = React.useCallback(
-    (messages: CoreMessage[]): CoreMessage[] => {
+    async (messages: CoreMessage[]): Promise<CoreMessage[]> => {
       if (!enableHistoryLimiting) {
         return messages
+      }
+
+      // Handle summarization strategy
+      if (historyLimiting.strategy === 'summarize' && summarizeMessage) {
+        const { maxMessages = 10, keepLast = 2 } = historyLimiting
+        
+        // If we're under the limit, don't summarize yet
+        if (messages.length <= maxMessages) {
+          return messages
+        }
+
+        const systemMessage = messages.find(m => m.role === 'system')
+        const otherMessages = messages.filter(m => m.role !== 'system')
+        
+        // Keep last N messages intact
+        const recentMessages = otherMessages.slice(-keepLast)
+        const messagesToSummarize = otherMessages.slice(0, -keepLast)
+        
+        if (messagesToSummarize.length === 0) {
+           return [...(systemMessage ? [systemMessage] : []), ...recentMessages]
+        }
+
+        // Create a message representing the conversation to be summarized
+        // In a real app, you might want to summarize in chunks
+        const textToSummarize = messagesToSummarize
+          .map(m => `${m.role}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`)
+          .join('\n')
+        
+        try {
+          // Create a dummy message for the summarizer
+          const summary = await summarizeMessage({
+            role: 'user', 
+            content: `Summarize the following conversation history:\n${textToSummarize}`
+          })
+          
+          // Return system + summary + recent
+          return [
+            ...(systemMessage ? [systemMessage] : []),
+            { role: 'assistant', content: `[Previous conversation summary]: ${summary.content}` },
+            ...recentMessages
+          ]
+        } catch (error) {
+          console.warn('Summarization failed, falling back to sliding window', error)
+          // Fallback to sliding window
+        }
+      }
+
+      // Handle smart strategy with embeddings
+      if (historyLimiting.strategy === 'smart' && calculateEmbedding) {
+        const { maxTokens = 2000, keepLast = 2 } = historyLimiting
+        
+        const systemMessage = messages.find(m => m.role === 'system')
+        const otherMessages = messages.filter(m => m.role !== 'system')
+        
+        // Always keep last N messages
+        const recentMessages = otherMessages.slice(-keepLast)
+        const candidateMessages = otherMessages.slice(0, -keepLast)
+        
+        // If no candidates, just return
+        if (candidateMessages.length === 0) {
+           return [...(systemMessage ? [systemMessage] : []), ...recentMessages]
+        }
+
+        // Get query (last user message)
+        const lastUserMessage = [...messages].reverse().find(m => m.role === 'user')
+        if (!lastUserMessage) {
+           return limitHistory(messages, historyLimiting)
+        }
+
+        try {
+          const queryText = typeof lastUserMessage.content === 'string' 
+            ? lastUserMessage.content 
+            : JSON.stringify(lastUserMessage.content)
+            
+          const queryEmbedding = await calculateEmbedding(queryText)
+          
+          // Calculate similarity for candidates
+          const scoredCandidates = await Promise.all(candidateMessages.map(async (msg) => {
+             const text = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
+             const embedding = await calculateEmbedding(text)
+             
+             // Cosine similarity
+             const similarity = queryEmbedding.reduce((sum, val, i) => sum + val * embedding[i], 0)
+             
+             return { msg, similarity, tokens: await countTokens(text, { model }).then(r => r.total) }
+          }))
+          
+          // Sort by similarity
+          scoredCandidates.sort((a, b) => b.similarity - a.similarity)
+          
+          // Select based on token budget
+          let currentTokens = await countTokens(
+            JSON.stringify([...(systemMessage ? [systemMessage] : []), ...recentMessages]), 
+            { model }
+          ).then(r => r.total)
+          
+          const keptCandidates: CoreMessage[] = []
+          
+          for (const candidate of scoredCandidates) {
+            if (currentTokens + candidate.tokens <= maxTokens) {
+              keptCandidates.push(candidate.msg)
+              currentTokens += candidate.tokens
+            }
+          }
+          
+          // Restore chronological order for kept candidates
+          // We need to know original index or just filter original list
+          const keptSet = new Set(keptCandidates)
+          const finalCandidates = candidateMessages.filter(m => keptSet.has(m))
+          
+          return [
+            ...(systemMessage ? [systemMessage] : []),
+            ...finalCandidates,
+            ...recentMessages
+          ]
+          
+        } catch (error) {
+          console.warn('Smart history optimization failed, falling back to default', error)
+        }
       }
 
       const originalLength = messages.length
@@ -874,7 +1049,14 @@ export function useTokenOptimizationEnhanced(
 
       return limited
     },
-    [enableHistoryLimiting, historyLimiting, enableStats]
+    [
+      enableHistoryLimiting, 
+      historyLimiting, 
+      summarizeMessage, 
+      calculateEmbedding, 
+      enableStats, 
+      model
+    ]
   )
 
   /**
