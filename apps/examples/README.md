@@ -1,226 +1,225 @@
 # Clarity Chat Component Examples
 
-This directory contains example applications showcasing Clarity Chat Components.
+> **26 Production-Ready Examples** showcasing Clarity Chat Components
 
-## 📦 Examples
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples)
 
-### 🆕 **minimal-chat** (NEW!)
-The absolute simplest way to use Clarity Chat - just 5 lines of code!
+---
 
-**Features:**
-- Simplest possible setup
-- Zero configuration
-- Copy-pasteable code
+## Quick Navigation
 
-**[→ View Minimal Example](./minimal-chat/)**
+- [Hero Examples](#-hero-examples) - Best showcases
+- [Getting Started](#-getting-started) - Beginner friendly
+- [Core Features](#-core-features) - Chat fundamentals
+- [Analytics](#-analytics--optimization) - Token & cost tracking
+- [AI/ML](#-aiml-features) - RAG, multi-provider
+- [Enterprise](#-enterprise-features) - Production-ready
+- [Design System](#-design-system) - Theming & components
+- [Industry Solutions](#-industry-solutions) - Domain-specific
 
-### 🆕 **customized-chat** (NEW!)
-Shows how to customize ClarityChat with different options and callbacks.
+---
 
-**Features:**
-- Theme customization
-- Memory integration
-- Event callbacks
-- Header customization
+## 🏆 Hero Examples
 
-**[→ View Customized Example](./customized-chat/)**
+Our top three showcases demonstrating the full power of Clarity Chat:
 
-### 1. **basic-chat**
-Simple chat interface with message operations (edit, regenerate, delete) and undo/redo support.
+### 1. AI Research Platform
+Enterprise-grade multi-agent RAG system with knowledge visualization.
+```
+apps/examples/ai-research-platform
+```
+[![Deploy](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples/ai-research-platform)
 
-**Features:**
-- Message operations
-- Undo/Redo functionality
-- Token tracking
-- Auto-scroll
-- Error handling
+### 2. Enterprise AI Ops
+Full operations dashboard with safety review, evaluation, and monitoring.
+```
+apps/examples/enterprise-ai-ops
+```
+[![Deploy](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples/enterprise-ai-ops)
 
-### 2. **advanced-chat-features**
-Comprehensive demonstration of all modern AI chat features.
+### 3. Comprehensive Chat Demo
+All features working together: edit, regenerate, export, search, command palette.
+```
+apps/examples/comprehensive-chat-demo
+```
+[![Deploy](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples/comprehensive-chat-demo)
 
-**Features:**
-- Message operations (edit, regenerate, delete)
-- Undo/Redo with keyboard shortcuts
-- Conversation branching
-- Export functionality (Markdown, JSON, plain text)
-- Token tracking and cost estimation
-- Auto-scroll
-
-### 3. **comprehensive-chat-demo**
-Complete integration example showing all features working together.
-
-**Features:**
-- All message operations
-- Multiple conversations with list
-- Advanced search with filters
-- Command palette (Ctrl+K)
-- Citation display (RAG)
-- Token tracking
-- Export functionality
-- Keyboard shortcuts throughout
-
-### 3. **design-system-showcase**
-Interactive showcase of the design system with live examples of all design tokens, components, and animation patterns.
-
-**Features:**
-- Design tokens visualization
-- Component showcases (Buttons, Forms, Cards, Overlays, Chat, Animations)
-- Live interactive examples
-- Pattern demonstrations
-
-### 2. **component-demo**
-Simple demonstrations of common component patterns and usage.
-
-**Features:**
-- Basic component usage
-- Form patterns
-- Dialog examples
-- Chat interface example
-- Feature grid layouts
-
-### 3. **theme-builder**
-Interactive tool for customizing and building custom themes.
-
-**Features:**
-- Live color picker
-- Theme presets
-- Real-time preview
-- Export functionality
-- Accessibility contrast checking
-
-### 4. **performance-dashboard**
-Real-time performance monitoring and benchmarking dashboard.
-
-**Features:**
-- Live render performance metrics
-- Component benchmarks
-- Performance budgets
-- Data visualization with Recharts
-- Export capabilities
+---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Beginner Examples
 
-Make sure all packages are built first:
+| Example | Description | Complexity |
+|---------|-------------|------------|
+| [minimal-chat](./minimal-chat) | 5 lines of code - simplest possible | ⭐ |
+| [basic-chat](./basic-chat) | Simple chat with message operations | ⭐ |
+| [customized-chat](./customized-chat) | Custom styling and callbacks | ⭐ |
+
+### Prerequisites
 
 ```bash
 # From workspace root
 npm install
 npm run build --workspace=@clarity-chat/primitives
-npm run build --workspace=@clarity-chat/react  
+npm run build --workspace=@clarity-chat/react
 npm run build --workspace=@clarity-chat/types
 ```
 
-### Running Examples
-
-Each example can be run independently:
+### Running an Example
 
 ```bash
-# Design System Showcase
-cd examples/design-system-showcase
-npm install
-npm run dev
-
-# Component Demo  
-cd examples/component-demo
-npm install
-npm run dev
-
-# Theme Builder
-cd examples/theme-builder
-npm install
-npm run dev
-
-# Performance Dashboard
-cd examples/performance-dashboard
+cd apps/examples/basic-chat
 npm install
 npm run dev
 ```
 
-## 📝 Note on Building Examples
+---
 
-**Current Status:** The examples are designed for development mode (`npm run dev`) and work perfectly for exploring and testing components.
+## 💬 Core Features
 
-**Build Limitations:** Some examples may encounter TypeScript strictness issues during `npm run build` due to:
-- Strict type checking in build mode
-- Complex type inference with workspace dependencies
-- Type definition generation in the react package
+| Example | Features | Status |
+|---------|----------|--------|
+| [streaming-chat](./streaming-chat) | SSE streaming, cancellation, stop generation | ✅ |
+| [advanced-chat-features](./advanced-chat-features) | Edit, regenerate, delete, undo/redo | ✅ |
+| [comprehensive-chat-demo](./comprehensive-chat-demo) | All features + search + command palette | ✅ |
+| [ai-assistant](./ai-assistant) | TanStack Query integration | ✅ |
 
-**Recommendation:** Use `npm run dev` for development and exploration. For production builds, additional type refinements may be needed.
+---
 
-## 🎯 What to Explore
+## 📊 Analytics & Optimization
 
-### Design Patterns
-- Modern shadows and borders
-- Smooth animations
-- Accessible focus states
-- Interactive feedback
-- Responsive layouts
+| Example | Features | Status |
+|---------|----------|--------|
+| [analytics-console-demo](./analytics-console-demo) | Token usage dashboard, cost analytics | ✅ |
+| [token-optimization-demo](./token-optimization-demo) | In-chat token tracking | ✅ |
+| [performance-dashboard](./performance-dashboard) | Component benchmarking | ✅ |
+| [conversational-analytics](./conversational-analytics) | Conversation insights | ✅ |
 
-### Component Usage
-- Form handling
-- Chat interfaces
-- Modal patterns
-- Tooltip placement
-- Card interactions
+---
 
-### Theming
-- Color customization
-- Design token usage
-- Dark mode support
-- Accessibility considerations
+## 🤖 AI/ML Features
 
-### Performance
-- Render optimization
-- Component benchmarks
-- Budget monitoring
-- Profiling tools
+| Example | Features | API Keys Required |
+|---------|----------|-------------------|
+| [rag-workbench-demo](./rag-workbench-demo) | RAG, vector search, citations | OpenAI, Anthropic, Google |
+| [model-comparison-demo](./model-comparison-demo) | Compare AI providers | OpenAI, Anthropic, Google |
+| [code-assistant](./code-assistant) | Code generation, debugging | OpenAI |
+| [ai-research-platform](./ai-research-platform) | Multi-agent, knowledge graph | OpenAI, Anthropic, Google |
 
-## 📚 Documentation
+---
 
-For complete documentation on using Clarity Chat Components, see:
-- [Main Documentation](../apps/docs/)
-- [Component Guide](../COMPONENT_PATTERNS_GUIDE.md)
-- [Design System Guide](../DESIGN_SYSTEM_GUIDE.md)
-- [Quick Start Guide](../QUICK_START_GUIDE.md)
-- [Performance Guide](../PERFORMANCE_GUIDE.md)
+## 🏢 Enterprise Features
 
-## 🤝 Contributing
+| Example | Features | Status |
+|---------|----------|--------|
+| [enterprise-ai-ops](./enterprise-ai-ops) | Safety review, evaluation, monitoring | ✅ |
+| [complex-chat](./complex-chat) | Enterprise patterns, sidebar | ✅ |
+| [multi-user-chat](./multi-user-chat) | Remix + WebSockets | ✅ |
 
-These examples serve as both documentation and testing grounds. Feel free to:
-- Add new examples
-- Improve existing patterns
-- Fix any issues
-- Enhance documentation
+---
 
-## ⚡ Quick Commands
+## 🎨 Design System
+
+| Example | Features | Status |
+|---------|----------|--------|
+| [design-system-showcase](./design-system-showcase) | All components, variants, tokens | ✅ |
+| [theme-builder](./theme-builder) | Interactive theme editor | ✅ |
+| [component-demo](./component-demo) | Component patterns | ✅ |
+| [examples-showcase](./examples-showcase) | Multi-view example browser | ✅ |
+
+---
+
+## 🏪 Industry Solutions
+
+| Example | Industry | Features |
+|---------|----------|----------|
+| [ecommerce-assistant](./ecommerce-assistant) | E-Commerce | Product search, cart, recommendations |
+| [customer-support](./customer-support) | Support | Ticket management, Supabase |
+| [vercel-ai-sdk-compatible](./vercel-ai-sdk-compatible) | Integration | Vercel AI SDK patterns |
+
+---
+
+## 📚 Documentation Integration
+
+### Feature → Example Mapping
+
+See [EXAMPLES_INDEX.md](./EXAMPLES_INDEX.md) for complete feature-to-example mapping.
+
+### JSON Index
+
+See [examples-index.json](./examples-index.json) for programmatic access.
+
+---
+
+## 🔑 API Keys Setup
+
+Examples requiring API keys have `.env.example` files:
 
 ```bash
-# Install all example dependencies
-for dir in */; do cd "$dir" && npm install && cd ..; done
+# Copy and configure
+cp .env.example .env.local
 
-# Run all examples in dev mode (open in separate terminals)
-cd design-system-showcase && npm run dev
-cd component-demo && npm run dev  
-cd theme-builder && npm run dev
-cd performance-dashboard && npm run dev
+# Required keys (check each example)
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=AIza...
 ```
 
-## 🎨 Design Philosophy
+---
 
-All examples follow the Clarity Chat design principles:
+## 📝 Example Structure
+
+Each example follows this structure:
+
+```
+example-name/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx        # Main page
+│   │   ├── layout.tsx      # Layout with CSS
+│   │   ├── globals.css     # Tailwind CSS
+│   │   └── api/            # API routes (if needed)
+├── package.json
+├── README.md               # Detailed documentation
+├── .env.example            # Environment template
+├── tailwind.config.js
+└── next.config.ts
+```
+
+---
+
+## 🎯 Design Philosophy
+
+All examples follow Clarity Chat design principles:
+
 - ✅ Clean, modern aesthetics
+- ✅ Consistent Header / Footer / "How to Use" pattern
+- ✅ Friendly error handling (no white screen crashes)
 - ✅ Smooth, purposeful animations
 - ✅ Accessible by default (WCAG 2.1 AAA)
 - ✅ Responsive and mobile-friendly
 - ✅ Performance-optimized
 
+---
+
+## 🤝 Contributing
+
+These examples serve as both documentation and testing grounds:
+
+1. Add new examples for new features
+2. Follow the established patterns
+3. Include comprehensive README
+4. Add `.env.example` if API keys needed
+5. Test both `dev` and `build` modes
+
+---
+
 ## 📞 Support
 
-For questions or issues with examples:
-1. Check the main documentation
-2. Review component source code in `/packages`
+For questions or issues:
+1. Check the example's README
+2. Review [EXAMPLES_INDEX.md](./EXAMPLES_INDEX.md)
 3. Open an issue on GitHub
 
 ---

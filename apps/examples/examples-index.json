@@ -1,0 +1,205 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-12-12",
+  "categories": {
+    "core": {
+      "label": "Core Chat Features",
+      "examples": [
+        {
+          "id": "basic-chat",
+          "title": "Basic Chat",
+          "description": "Simple chat implementation with ChatWindow",
+          "features": ["ChatWindow", "Messages", "Input"],
+          "complexity": "beginner",
+          "path": "./basic-chat"
+        },
+        {
+          "id": "minimal-chat",
+          "title": "Minimal Chat",
+          "description": "5-line implementation for quick start",
+          "features": ["ClarityChat"],
+          "complexity": "beginner",
+          "path": "./minimal-chat"
+        },
+        {
+          "id": "streaming-chat",
+          "title": "Streaming Chat",
+          "description": "Real-time SSE streaming with cancellation",
+          "features": ["SSE", "Streaming", "AbortController"],
+          "complexity": "intermediate",
+          "path": "./streaming-chat"
+        },
+        {
+          "id": "comprehensive-chat-demo",
+          "title": "Comprehensive Chat Demo",
+          "description": "All features working together",
+          "features": ["Edit", "Regenerate", "Delete", "Undo", "Redo", "Export", "Search", "CommandPalette"],
+          "complexity": "advanced",
+          "path": "./comprehensive-chat-demo"
+        }
+      ]
+    },
+    "analytics": {
+      "label": "Analytics & Optimization",
+      "examples": [
+        {
+          "id": "analytics-console-demo",
+          "title": "Analytics Console",
+          "description": "Token usage tracking and cost analytics dashboard",
+          "features": ["TokenCounter", "CostAnalytics", "Charts"],
+          "complexity": "intermediate",
+          "path": "./analytics-console-demo"
+        },
+        {
+          "id": "token-optimization-demo",
+          "title": "Token Optimization",
+          "description": "In-chat token tracking and optimization",
+          "features": ["TokenTracker", "Optimization"],
+          "complexity": "intermediate",
+          "path": "./token-optimization-demo"
+        },
+        {
+          "id": "performance-dashboard",
+          "title": "Performance Dashboard",
+          "description": "Component performance benchmarking",
+          "features": ["Benchmarks", "Metrics"],
+          "complexity": "intermediate",
+          "path": "./performance-dashboard"
+        }
+      ]
+    },
+    "ai-ml": {
+      "label": "AI/ML Features",
+      "examples": [
+        {
+          "id": "rag-workbench-demo",
+          "title": "RAG Workbench",
+          "description": "Retrieval-augmented generation demo",
+          "features": ["RAG", "VectorSearch", "Citations"],
+          "complexity": "advanced",
+          "path": "./rag-workbench-demo"
+        },
+        {
+          "id": "model-comparison-demo",
+          "title": "Model Comparison",
+          "description": "Compare OpenAI, Anthropic, and Google models",
+          "features": ["MultiProvider", "Comparison"],
+          "complexity": "intermediate",
+          "path": "./model-comparison-demo"
+        },
+        {
+          "id": "code-assistant",
+          "title": "Code Assistant",
+          "description": "AI-powered code debugging and generation",
+          "features": ["CodeGeneration", "Debugging", "Review"],
+          "complexity": "intermediate",
+          "path": "./code-assistant"
+        }
+      ]
+    },
+    "design": {
+      "label": "Design System",
+      "examples": [
+        {
+          "id": "theme-builder",
+          "title": "Theme Builder",
+          "description": "Interactive theme customization tool",
+          "features": ["ThemeProvider", "Customization"],
+          "complexity": "intermediate",
+          "path": "./theme-builder"
+        },
+        {
+          "id": "design-system-showcase",
+          "title": "Design System Showcase",
+          "description": "All components and variants",
+          "features": ["Components", "Variants"],
+          "complexity": "beginner",
+          "path": "./design-system-showcase"
+        },
+        {
+          "id": "component-demo",
+          "title": "Component Demo",
+          "description": "Individual component demonstrations",
+          "features": ["Primitives", "Patterns"],
+          "complexity": "beginner",
+          "path": "./component-demo"
+        }
+      ]
+    },
+    "enterprise": {
+      "label": "Enterprise Features",
+      "examples": [
+        {
+          "id": "enterprise-ai-ops",
+          "title": "Enterprise AI Ops",
+          "description": "Full operations dashboard with safety and evaluation",
+          "features": ["SafetyReview", "Evaluation", "Monitoring"],
+          "complexity": "advanced",
+          "path": "./enterprise-ai-ops",
+          "hero": true
+        },
+        {
+          "id": "ai-research-platform",
+          "title": "AI Research Platform",
+          "description": "Multi-agent RAG with knowledge visualization",
+          "features": ["MultiAgent", "KnowledgeGraph", "Memory"],
+          "complexity": "advanced",
+          "path": "./ai-research-platform",
+          "hero": true
+        }
+      ]
+    },
+    "industry": {
+      "label": "Industry Solutions",
+      "examples": [
+        {
+          "id": "ecommerce-assistant",
+          "title": "E-Commerce Assistant",
+          "description": "Product search and recommendations",
+          "features": ["ProductSearch", "Cart", "Recommendations"],
+          "complexity": "intermediate",
+          "path": "./ecommerce-assistant"
+        },
+        {
+          "id": "customer-support",
+          "title": "Customer Support",
+          "description": "Ticket management with Supabase",
+          "features": ["Tickets", "Supabase"],
+          "complexity": "intermediate",
+          "path": "./customer-support"
+        },
+        {
+          "id": "conversational-analytics",
+          "title": "Conversational Analytics",
+          "description": "Conversation insights and metrics",
+          "features": ["Analytics", "Insights"],
+          "complexity": "intermediate",
+          "path": "./conversational-analytics"
+        }
+      ]
+    }
+  },
+  "featureMap": {
+    "ChatWindow": ["basic-chat", "streaming-chat", "comprehensive-chat-demo"],
+    "Streaming": ["streaming-chat", "ai-assistant"],
+    "SSE": ["streaming-chat"],
+    "TokenCounter": ["analytics-console-demo", "token-optimization-demo", "comprehensive-chat-demo"],
+    "MessageOperations": ["comprehensive-chat-demo", "advanced-chat-features"],
+    "RAG": ["rag-workbench-demo", "ai-research-platform"],
+    "MultiProvider": ["model-comparison-demo"],
+    "ThemeProvider": ["theme-builder", "design-system-showcase"],
+    "CodeGeneration": ["code-assistant"],
+    "SafetyReview": ["enterprise-ai-ops"],
+    "KnowledgeGraph": ["ai-research-platform"]
+  },
+  "heroExamples": [
+    "ai-research-platform",
+    "enterprise-ai-ops",
+    "comprehensive-chat-demo"
+  ],
+  "complexityLevels": {
+    "beginner": ["minimal-chat", "basic-chat", "customized-chat", "design-system-showcase", "component-demo"],
+    "intermediate": ["streaming-chat", "advanced-chat-features", "token-optimization-demo", "analytics-console-demo", "model-comparison-demo", "code-assistant", "theme-builder", "ecommerce-assistant", "customer-support"],
+    "advanced": ["comprehensive-chat-demo", "ai-research-platform", "enterprise-ai-ops", "rag-workbench-demo"]
+  }
+}

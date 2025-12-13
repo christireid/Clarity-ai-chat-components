@@ -1,5 +1,8 @@
 # 💻 AI Code Assistant Demo
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fchristireid%2FClarity-ai-chat-components&project-name=code-assistant&root-directory=apps%2Fexamples%2Fcode-assistant&env=OPENAI_API_KEY)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/christireid/Clarity-ai-chat-components/tree/main/apps/examples/code-assistant)
+
 Intelligent code assistant that helps with programming tasks, debugging, code generation, and code
 review.
 

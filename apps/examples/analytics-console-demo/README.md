@@ -1,8 +1,12 @@
 # Analytics Console Demo
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fchristireid%2FClarity-ai-chat-components&project-name=analytics-console&root-directory=apps%2Fexamples%2Fanalytics-console-demo)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/christireid/Clarity-ai-chat-components/tree/main/apps/examples/analytics-console-demo)
+
 **Token Usage Tracking & Cost Analytics for AI Applications**
 
-A comprehensive analytics dashboard for monitoring AI API usage, tracking costs, and optimizing token consumption across multiple models and providers.
+A comprehensive analytics dashboard for monitoring AI API usage, tracking costs, and optimizing
+token consumption across multiple models and providers.
 
 ## 🎯 What This Demonstrates
 
@@ -16,6 +20,7 @@ A comprehensive analytics dashboard for monitoring AI API usage, tracking costs,
 ## 🚀 Features
 
 ### 1. Request Logging
+
 - Capture all AI API requests
 - Track tokens (input/output/total)
 - Calculate costs per request
@@ -23,6 +28,7 @@ A comprehensive analytics dashboard for monitoring AI API usage, tracking costs,
 - Response time monitoring
 
 ### 2. Analytics Dashboard
+
 - **Total Usage**: Cumulative tokens and costs
 - **Daily Breakdown**: Usage trends over time
 - **Model Distribution**: Which models are used most
@@ -30,6 +36,7 @@ A comprehensive analytics dashboard for monitoring AI API usage, tracking costs,
 - **Token Efficiency**: Tokens per request averages
 
 ### 3. Data Visualizations
+
 - Line charts for usage trends
 - Pie charts for model distribution
 - Bar charts for cost comparison
@@ -37,6 +44,7 @@ A comprehensive analytics dashboard for monitoring AI API usage, tracking costs,
 - Export data as CSV/JSON
 
 ### 4. Budget Management
+
 - Set monthly budget limits
 - Real-time spending alerts
 - Projected monthly costs
@@ -94,16 +102,22 @@ interface DailySummary {
   totalRequests: number
   totalTokens: number
   totalCost: number
-  byProvider: Record<string, {
-    requests: number
-    tokens: number
-    cost: number
-  }>
-  byModel: Record<string, {
-    requests: number
-    tokens: number
-    cost: number
-  }>
+  byProvider: Record<
+    string,
+    {
+      requests: number
+      tokens: number
+      cost: number
+    }
+  >
+  byModel: Record<
+    string,
+    {
+      requests: number
+      tokens: number
+      cost: number
+    }
+  >
 }
 ```
 
@@ -136,9 +150,9 @@ await fetch('/api/analytics/log', {
     responseTime: 2500,
     metadata: {
       endpoint: '/api/chat',
-      userId: 'user-123'
-    }
-  })
+      userId: 'user-123',
+    },
+  }),
 })
 ```
 
@@ -160,7 +174,7 @@ const response = await fetch('/api/analytics/daily?days=30')
 const dailyData = await response.json()
 
 // Display in chart
-dailyData.forEach(day => {
+dailyData.forEach((day) => {
   console.log(`${day.date}: ${day.totalRequests} requests, $${day.totalCost}`)
 })
 ```
@@ -168,6 +182,7 @@ dailyData.forEach(day => {
 ## 📊 Dashboard Screens
 
 ### 1. Overview
+
 - Total requests (all-time)
 - Total tokens consumed
 - Total cost
@@ -176,24 +191,28 @@ dailyData.forEach(day => {
 - Budget utilization
 
 ### 2. Usage Trends
+
 - Line chart: Requests over time
 - Line chart: Tokens over time
 - Line chart: Cost over time
 - Selectable time range (7/30/90 days)
 
 ### 3. Model Analytics
+
 - Pie chart: Model usage distribution
 - Bar chart: Cost by model
 - Table: Model efficiency metrics
 - Most/least expensive models
 
 ### 4. Provider Comparison
+
 - Pie chart: Provider usage share
 - Bar chart: Cost by provider
 - Table: Provider statistics
 - Recommendations
 
 ### 5. Recent Activity
+
 - Live feed of recent requests
 - Real-time updates
 - Detailed request viewer
@@ -202,39 +221,27 @@ dailyData.forEach(day => {
 ## 🎨 UI Components
 
 ### Summary Cards
+
 ```tsx
-<SummaryCard
-  title="Total Requests"
-  value="15,234"
-  change="+12.5%"
-  icon="📊"
-/>
+<SummaryCard title="Total Requests" value="15,234" change="+12.5%" icon="📊" />
 ```
 
 ### Usage Chart
+
 ```tsx
-<UsageChart
-  data={dailyData}
-  metric="tokens"
-  timeRange="30d"
-/>
+<UsageChart data={dailyData} metric="tokens" timeRange="30d" />
 ```
 
 ### Model Distribution
+
 ```tsx
-<ModelPieChart
-  data={modelStats}
-  showPercentages={true}
-/>
+<ModelPieChart data={modelStats} showPercentages={true} />
 ```
 
 ### Activity Feed
+
 ```tsx
-<ActivityFeed
-  entries={recentEntries}
-  limit={50}
-  realTime={true}
-/>
+<ActivityFeed entries={recentEntries} limit={50} realTime={true} />
 ```
 
 ## 📈 Cost Calculation
@@ -242,29 +249,26 @@ dailyData.forEach(day => {
 ### Pricing Tables (per 1K tokens)
 
 **OpenAI**:
+
 - GPT-4 Turbo: $0.01 input, $0.03 output
 - GPT-3.5 Turbo: $0.0015 input, $0.002 output
 
 **Anthropic**:
+
 - Claude 3 Opus: $0.015 input, $0.075 output
 - Claude 3 Sonnet: $0.003 input, $0.015 output
 - Claude 3 Haiku: $0.00025 input, $0.00125 output
 
 **Google**:
+
 - Gemini Pro: $0.00025 input, $0.0005 output
 
 ### Calculation Example
+
 ```typescript
-function calculateCost(
-  promptTokens: number,
-  completionTokens: number,
-  model: string
-): number {
+function calculateCost(promptTokens: number, completionTokens: number, model: string): number {
   const pricing = PRICING_TABLE[model]
-  return (
-    (promptTokens * pricing.input / 1000) +
-    (completionTokens * pricing.output / 1000)
-  )
+  return (promptTokens * pricing.input) / 1000 + (completionTokens * pricing.output) / 1000
 }
 ```
 
@@ -347,10 +351,10 @@ import { logAnalytics } from '@/lib/analytics'
 export function AnalyticsWrappedChat() {
   const handleStream = async (message, config) => {
     const startTime = Date.now()
-    
+
     // Make AI request
     const result = await streamChat(message, config)
-    
+
     // Log analytics
     await logAnalytics({
       provider: config.provider,
@@ -360,10 +364,10 @@ export function AnalyticsWrappedChat() {
       cost: result.cost,
       responseTime: Date.now() - startTime
     })
-    
+
     return result
   }
-  
+
   return <ChatInterface onSend={handleStream} />
 }
 ```
@@ -375,13 +379,13 @@ export function AnalyticsWrappedChat() {
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/api/chat')) {
     const response = await next()
-    
+
     // Extract usage from response headers
     const usage = response.headers.get('x-ai-usage')
     if (usage) {
       await logAnalytics(JSON.parse(usage))
     }
-    
+
     return response
   }
 }
@@ -400,12 +404,12 @@ export const ANALYTICS_CONFIG = {
   budget: {
     monthly: 100, // USD
     alertThreshold: 0.8, // 80%
-    notifyEmail: true
+    notifyEmail: true,
   },
   export: {
     format: 'csv', // or 'json'
-    includeMetadata: true
-  }
+    includeMetadata: true,
+  },
 }
 ```
 
@@ -421,14 +425,17 @@ export const ANALYTICS_CONFIG = {
 ## 🐛 Troubleshooting
 
 **High memory usage**:
+
 - Implement pagination for large datasets
 - Use database instead of in-memory storage
 
 **Slow dashboard**:
+
 - Enable caching for aggregate queries
 - Pre-calculate daily summaries
 
 **Missing entries**:
+
 - Check logging middleware is enabled
 - Verify API endpoint accessibility
 

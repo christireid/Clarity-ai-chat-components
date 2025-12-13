@@ -1,6 +1,10 @@
 # Streaming Chat Demo
 
-Next.js application demonstrating real-time streaming responses with Server-Sent Events (SSE), including stream cancellation and progress tracking.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fchristireid%2FClarity-ai-chat-components&project-name=streaming-chat&root-directory=apps%2Fexamples%2Fstreaming-chat&env=OPENAI_API_KEY)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/christireid/Clarity-ai-chat-components/tree/main/apps/examples/streaming-chat)
+
+Next.js application demonstrating real-time streaming responses with Server-Sent Events (SSE),
+including stream cancellation and progress tracking.
 
 ## Features
 
@@ -13,7 +17,7 @@ Next.js application demonstrating real-time streaming responses with Server-Sent
 ✅ **Error Boundary** - Graceful error handling  
 ✅ **Progress Indicator** - Visual feedback during streaming  
 ✅ **TypeScript** - Full type safety  
-✅ **Next.js 14** - App router with React Server Components  
+✅ **Next.js 14** - App router with React Server Components
 
 ## Quick Start
 
@@ -34,6 +38,7 @@ Open [http://localhost:3000](http://localhost:3000)
 ## Architecture
 
 ### Tech Stack
+
 - **Next.js 14** - App router, React Server Components
 - **TypeScript** - Type safety
 - **Clarity Chat Components** - UI components and hooks
@@ -69,7 +74,7 @@ const decoder = new TextDecoder()
 while (true) {
   const { done, value } = await reader.read()
   if (done) break
-  
+
   const chunk = decoder.decode(value, { stream: true })
   // Process chunk...
 }
@@ -83,13 +88,19 @@ Messages have dynamic status during streaming:
 type MessageStatus = 'sending' | 'sent' | 'error'
 
 // Creating message
-{ status: 'sending' } // While streaming
+{
+  status: 'sending'
+} // While streaming
 
 // Stream complete
-{ status: 'sent' }    // Success
+{
+  status: 'sent'
+} // Success
 
 // Error occurred
-{ status: 'error' }   // Failed
+{
+  status: 'error'
+} // Failed
 ```
 
 ### 3. Stream Cancellation
@@ -99,8 +110,8 @@ Use AbortController to cancel ongoing requests:
 ```typescript
 const abortController = new AbortController()
 
-fetch('/api/chat', { 
-  signal: abortController.signal 
+fetch('/api/chat', {
+  signal: abortController.signal,
 })
 
 // Later...
@@ -117,12 +128,8 @@ let accumulatedContent = ''
 // For each chunk
 accumulatedContent += parsed.content
 
-setMessages(prev =>
-  prev.map(msg =>
-    msg.id === streamingMsgId
-      ? { ...msg, content: accumulatedContent }
-      : msg
-  )
+setMessages((prev) =>
+  prev.map((msg) => (msg.id === streamingMsgId ? { ...msg, content: accumulatedContent } : msg))
 )
 ```
 
@@ -145,6 +152,7 @@ const { scrollRef } = useAutoScroll({
 ### Client Side (page.tsx)
 
 **State Management:**
+
 ```typescript
 const [messages, setMessages] = useState<Message[]>([])
 const [isStreaming, setIsStreaming] = useState(false)
@@ -152,47 +160,49 @@ const abortControllerRef = useRef<AbortController | null>(null)
 ```
 
 **Sending Message:**
+
 ```typescript
 const handleSendMessage = async (content: string) => {
   // 1. Add user message
-  const userMessage = { /* ... */ }
-  setMessages(prev => [...prev, userMessage])
-  
-  // 2. Create streaming assistant message
-  const assistantMessage = { 
-    content: '', 
-    status: 'sending' 
+  const userMessage = {
+    /* ... */
   }
-  setMessages(prev => [...prev, assistantMessage])
-  
+  setMessages((prev) => [...prev, userMessage])
+
+  // 2. Create streaming assistant message
+  const assistantMessage = {
+    content: '',
+    status: 'sending',
+  }
+  setMessages((prev) => [...prev, assistantMessage])
+
   // 3. Stream response
   const response = await fetch('/api/chat', {
     method: 'POST',
     body: JSON.stringify({ messages }),
     signal: abortController.signal,
   })
-  
+
   // 4. Read stream
   const reader = response.body?.getReader()
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
-    
+
     // Update message incrementally
     accumulatedContent += chunk
-    setMessages(prev => prev.map(/* update */))
+    setMessages((prev) => prev.map(/* update */))
   }
-  
+
   // 5. Mark complete
-  setMessages(prev => prev.map(msg => 
-    msg.id === assistantMessage.id
-      ? { ...msg, status: 'sent' }
-      : msg
-  ))
+  setMessages((prev) =>
+    prev.map((msg) => (msg.id === assistantMessage.id ? { ...msg, status: 'sent' } : msg))
+  )
 }
 ```
 
 **Cancelling Stream:**
+
 ```typescript
 const handleCancel = () => {
   if (abortControllerRef.current) {
@@ -205,44 +215,41 @@ const handleCancel = () => {
 ### Server Side (api/chat/route.ts)
 
 **Streaming Response:**
+
 ```typescript
 export async function POST(req: Request) {
   const { messages } = await req.json()
-  
+
   // Create readable stream
   const stream = new ReadableStream({
     async start(controller) {
       // Simulate streaming
-      const response = "Your AI response here"
+      const response = 'Your AI response here'
       const words = response.split(' ')
-      
+
       for (const word of words) {
         // Send SSE formatted chunk
-        const chunk = `data: ${JSON.stringify({ 
-          content: word + ' ' 
+        const chunk = `data: ${JSON.stringify({
+          content: word + ' ',
         })}\n\n`
-        
-        controller.enqueue(
-          new TextEncoder().encode(chunk)
-        )
-        
-        await new Promise(r => setTimeout(r, 50))
+
+        controller.enqueue(new TextEncoder().encode(chunk))
+
+        await new Promise((r) => setTimeout(r, 50))
       }
-      
+
       // Signal completion
-      controller.enqueue(
-        new TextEncoder().encode('data: [DONE]\n\n')
-      )
+      controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'))
       controller.close()
-    }
+    },
   })
-  
+
   return new Response(stream, {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-    }
+      Connection: 'keep-alive',
+    },
   })
 }
 ```
@@ -257,24 +264,24 @@ import { ChatWindow, useAutoScroll } from '@clarity-chat/react'
 function StreamingChat() {
   const [messages, setMessages] = useState<Message[]>([])
   const { scrollRef } = useAutoScroll({ dependencies: [messages] })
-  
+
   const handleSendMessage = async (content: string) => {
     // Add user message
     setMessages(prev => [...prev, userMessage])
-    
+
     // Create streaming message
     const streamMsg = { content: '', status: 'sending' }
     setMessages(prev => [...prev, streamMsg])
-    
+
     // Stream response
     const response = await fetch('/api/chat', { /* ... */ })
     const reader = response.body?.getReader()
-    
+
     let accumulated = ''
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
-      
+
       accumulated += decoder.decode(value)
       setMessages(prev => prev.map(msg =>
         msg.id === streamMsg.id
@@ -282,7 +289,7 @@ function StreamingChat() {
           : msg
       ))
     }
-    
+
     // Mark complete
     setMessages(prev => prev.map(msg =>
       msg.id === streamMsg.id
@@ -290,10 +297,10 @@ function StreamingChat() {
         : msg
     ))
   }
-  
+
   return (
     <div ref={scrollRef}>
-      <ChatWindow 
+      <ChatWindow
         messages={messages}
         onSendMessage={handleSendMessage}
       />
@@ -311,12 +318,12 @@ const [isStreaming, setIsStreaming] = useState(false)
 const handleSendMessage = async (content: string) => {
   abortControllerRef.current = new AbortController()
   setIsStreaming(true)
-  
+
   try {
     const response = await fetch('/api/chat', {
       signal: abortControllerRef.current.signal,
     })
-    
+
     // Stream handling...
   } catch (error) {
     if (error.name === 'AbortError') {
@@ -348,14 +355,14 @@ const { tokens, addMessage } = useTokenTracker({
 const handleSendMessage = async (content: string) => {
   // Track user message
   addMessage({ role: 'user', content })
-  
+
   // ... streaming ...
-  
+
   // Track assistant message
   addMessage({ role: 'assistant', content: accumulatedContent })
 }
 
-<TokenCounter 
+<TokenCounter
   currentTokens={tokens}
   maxTokens={16000}
 />
@@ -369,13 +376,13 @@ Adjust delay in API route:
 
 ```typescript
 // Fast streaming (10ms per chunk)
-await new Promise(r => setTimeout(r, 10))
+await new Promise((r) => setTimeout(r, 10))
 
 // Slow streaming (100ms per chunk)
-await new Promise(r => setTimeout(r, 100))
+await new Promise((r) => setTimeout(r, 100))
 
 // Realistic (30-50ms per chunk)
-await new Promise(r => setTimeout(r, 30 + Math.random() * 20))
+await new Promise((r) => setTimeout(r, 30 + Math.random() * 20))
 ```
 
 ### Integrate Real AI API
@@ -388,36 +395,36 @@ import OpenAI from 'openai'
 export async function POST(req: Request) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const { messages } = await req.json()
-  
+
   const stream = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages,
     stream: true,
   })
-  
+
   const encoder = new TextEncoder()
-  
+
   return new Response(
     new ReadableStream({
       async start(controller) {
         for await (const chunk of stream) {
           const content = chunk.choices[0]?.delta?.content || ''
-          
+
           if (content) {
             const data = `data: ${JSON.stringify({ content })}\n\n`
             controller.enqueue(encoder.encode(data))
           }
         }
-        
+
         controller.enqueue(encoder.encode('data: [DONE]\n\n'))
         controller.close()
-      }
+      },
     }),
     {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-      }
+      },
     }
   )
 }
@@ -444,20 +451,20 @@ try {
 } catch (error) {
   if (error.name === 'AbortError') {
     // User cancelled
-    setMessages(prev => 
-      prev.filter(msg => msg.id !== streamMsg.id)
-    )
+    setMessages((prev) => prev.filter((msg) => msg.id !== streamMsg.id))
   } else {
     // Network or other error
-    setMessages(prev => prev.map(msg =>
-      msg.id === streamMsg.id
-        ? { 
-            ...msg, 
-            content: 'Error: ' + error.message,
-            status: 'error'
-          }
-        : msg
-    ))
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === streamMsg.id
+          ? {
+              ...msg,
+              content: 'Error: ' + error.message,
+              status: 'error',
+            }
+          : msg
+      )
+    )
   }
 }
 ```
@@ -476,21 +483,25 @@ try {
 ## Troubleshooting
 
 ### Stream not working
+
 - Check Content-Type is `text/event-stream`
 - Ensure chunks are SSE formatted: `data: {...}\n\n`
 - Verify no buffering middleware
 
 ### Auto-scroll issues
+
 - Confirm scrollRef attached to scrollable container
 - Ensure messages array in dependencies
 - Check overflow-auto on container
 
 ### Cancellation not working
+
 - Verify AbortController passed to fetch
 - Check signal reference not lost
 - Ensure abort() called correctly
 
 ### Type errors
+
 - Use Message type from @clarity-chat/types
 - Include all required fields (chatId, status, etc.)
 - Status must be 'sending' | 'sent' | 'error'
@@ -506,6 +517,7 @@ try {
 ## Next Steps
 
 To learn more:
+
 - Try [AI Assistant](../ai-assistant) for optimistic updates
 - Check [Enterprise Knowledge Hub](../enterprise-knowledge-hub) for RAG
 - Explore [Complete Features Demo](../complete-features-demo) for all features

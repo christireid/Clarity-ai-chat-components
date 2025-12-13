@@ -1,91 +1,162 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { ChatWindow, TypingIndicator } from '@clarity-chat/react'
-import type { StreamMessage } from '@clarity-chat/types'
+import { Send } from 'lucide-react'
 
-export default function Home() {
+interface StreamMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  status: 'sending' | 'sent' | 'error'
+}
+
+// Typing indicator component
+function TypingIndicator() {
+  return (
+    <div className="flex items-center gap-1">
+      <span
+        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+        style={{ animationDelay: '0ms' }}
+      />
+      <span
+        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+        style={{ animationDelay: '150ms' }}
+      />
+      <span
+        className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+        style={{ animationDelay: '300ms' }}
+      />
+    </div>
+  )
+}
+
+// API Key Missing Card Component
+function ApiKeyMissingCard({ provider }: { provider: string }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-lg border border-slate-200 p-8 text-center">
+        <div className="w-16 h-16 mx-auto mb-6 bg-amber-100 rounded-full flex items-center justify-center text-3xl">
+          ⚠️
+        </div>
+        <h1 className="text-xl font-bold text-slate-900 mb-2">
+          API Key Required
+        </h1>
+        <p className="text-slate-600 mb-6">
+          This demo requires a <strong>{provider}</strong> API key to function.
+        </p>
+        <div className="bg-slate-50 rounded-lg p-4 mb-6 text-left">
+          <p className="text-sm font-mono mb-2">
+            1. Create a{' '}
+            <code className="bg-slate-200 px-1.5 py-0.5 rounded">
+              .env.local
+            </code>{' '}
+            file
+          </p>
+          <p className="text-sm font-mono">
+            2. Add:{' '}
+            <code className="bg-slate-200 px-1.5 py-0.5 rounded">
+              OPENAI_API_KEY=sk-...
+            </code>
+          </p>
+        </div>
+        <a
+          href="https://platform.openai.com/api-keys"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-500 transition-colors"
+        >
+          Get API Key →
+        </a>
+      </div>
+    </div>
+  )
+}
+
+export default function StreamingChatDemo() {
   const [messages, setMessages] = useState<StreamMessage[]>([
     {
       id: '1',
-      chatId: 'streaming-demo',
       role: 'assistant',
       content:
         "Hello! I'm your AI assistant with real-time streaming support. Try asking me something!",
-      createdAt: new Date(Date.now() - 5000),
-      updatedAt: new Date(Date.now() - 5000),
       status: 'sent',
     },
   ])
+  const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [apiKeyMissing, setApiKeyMissing] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
 
   const handleSendMessage = useCallback(
     async (content: string) => {
-      // Create user message
+      if (!content.trim()) return
+      setError(null)
+      setInput('')
+
       const userMessage: StreamMessage = {
         id: Date.now().toString(),
-        chatId: 'streaming-demo',
         role: 'user',
         content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
         status: 'sent',
       }
 
       setMessages((prev) => [...prev, userMessage])
       setIsLoading(true)
       setIsStreaming(true)
+      setTimeout(scrollToBottom, 100)
 
-      // Create streaming assistant message
       const assistantMessage: StreamMessage = {
         id: (Date.now() + 1).toString(),
-        chatId: 'streaming-demo',
         role: 'assistant',
         content: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
         status: 'sending',
       }
 
       setMessages((prev) => [...prev, assistantMessage])
-
-      // Create abort controller for cancellation
       abortControllerRef.current = new AbortController()
 
       try {
-        // Call streaming API
         const response = await fetch('/api/chat', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: [...messages, userMessage],
+            messages: [...messages, userMessage].map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
           }),
           signal: abortControllerRef.current.signal,
         })
 
         if (!response.ok) {
-          throw new Error('Failed to get response')
+          const errorData = await response.json().catch(() => ({}))
+          if (
+            response.status === 500 &&
+            errorData.message?.includes('API key')
+          ) {
+            setApiKeyMissing(true)
+            return
+          }
+          throw new Error(errorData.message || 'Failed to get response')
         }
 
         const reader = response.body?.getReader()
         const decoder = new TextDecoder()
 
-        if (!reader) {
-          throw new Error('No reader available')
-        }
+        if (!reader) throw new Error('No reader available')
 
         let accumulatedContent = ''
 
         while (true) {
           const { done, value } = await reader.read()
-
-          if (done) {
-            break
-          }
+          if (done) break
 
           const chunk = decoder.decode(value, { stream: true })
           const lines = chunk.split('\n')
@@ -93,17 +164,12 @@ export default function Home() {
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               const data = line.slice(6)
-
-              if (data === '[DONE]') {
-                break
-              }
+              if (data === '[DONE]') break
 
               try {
                 const parsed = JSON.parse(data)
                 if (parsed.content) {
                   accumulatedContent += parsed.content
-
-                  // Update message with new content
                   setMessages((prev) =>
                     prev.map((msg) =>
                       msg.id === assistantMessage.id
@@ -115,6 +181,7 @@ export default function Home() {
                         : msg
                     )
                   )
+                  scrollToBottom()
                 }
               } catch {
                 // Skip invalid JSON
@@ -123,24 +190,21 @@ export default function Home() {
           }
         }
 
-        // Mark streaming as complete
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMessage.id
-              ? { ...msg, status: 'sent' as const, updatedAt: new Date() }
+              ? { ...msg, status: 'sent' as const }
               : msg
           )
         )
-      } catch (error: any) {
+      } catch (err: unknown) {
+        const error = err as Error
         if (error.name === 'AbortError') {
-          console.log('Request cancelled')
-          // Remove incomplete message
           setMessages((prev) =>
             prev.filter((msg) => msg.id !== assistantMessage.id)
           )
         } else {
-          console.error('Error:', error)
-          // Update message with error
+          setError(error.message || 'Something went wrong')
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === assistantMessage.id
@@ -148,7 +212,6 @@ export default function Home() {
                     ...msg,
                     content: 'Sorry, I encountered an error. Please try again.',
                     status: 'error' as const,
-                    updatedAt: new Date(),
                   }
                 : msg
             )
@@ -160,7 +223,7 @@ export default function Home() {
         abortControllerRef.current = null
       }
     },
-    [messages]
+    [messages, scrollToBottom]
   )
 
   const handleCancel = useCallback(() => {
@@ -171,104 +234,155 @@ export default function Home() {
     }
   }, [])
 
+  if (apiKeyMissing) {
+    return <ApiKeyMissingCard provider="OpenAI" />
+  }
+
   return (
-    <main
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        padding: '2rem',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '900px',
-          marginBottom: '2rem',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '0.5rem',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '2rem',
-              fontWeight: 'bold',
-            }}
-          >
-            Streaming Chat Demo
-          </h1>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Header */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-50">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center text-xl">
+                📡
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-slate-900">
+                  Streaming Chat
+                </h1>
+                <p className="text-sm text-slate-600">
+                  Real-time SSE streaming demo
+                </p>
+              </div>
+            </div>
+            <a
+              href="/"
+              className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              ← Back to Docs
+            </a>
+          </div>
         </div>
-        <p
-          style={{
-            color: 'var(--foreground)',
-            opacity: 0.7,
-            marginBottom: '0.5rem',
-          }}
-        >
-          Real-time AI responses with Server-Sent Events (SSE) streaming
-        </p>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-8">
+        {/* How to Use Card */}
+        <div className="bg-white rounded-lg border border-slate-200 p-4 mb-6">
+          <h2 className="text-base font-semibold text-slate-900 mb-2">
+            💡 How to Use
+          </h2>
+          <p className="text-sm text-slate-600">
+            This demo shows real-time streaming responses using Server-Sent
+            Events (SSE). Type a message and watch the AI response appear
+            character by character. Click "Stop" to cancel generation
+            mid-stream.
+          </p>
+        </div>
+
+        {/* Error Banner */}
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+            <span>⚠️</span>
+            <p className="text-sm text-red-700 flex-1">{error}</p>
+            <button
+              onClick={() => setError(null)}
+              className="text-sm text-red-700 hover:text-red-900 font-medium"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Streaming Indicator */}
         {isStreaming && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1rem',
-              padding: '0.5rem 1rem',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
-              borderRadius: '6px',
-            }}
-          >
-            <TypingIndicator
-              variant="dots"
-              showAvatar={false}
-              label="AI is generating response"
-            />
-            <span style={{ fontSize: '0.875rem', marginLeft: '-0.5rem' }}>
-              Streaming response...
-            </span>
+          <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <TypingIndicator />
+              <span className="text-sm text-blue-700">
+                Streaming response...
+              </span>
+            </div>
             <button
               onClick={handleCancel}
-              style={{
-                padding: '0.25rem 0.75rem',
-                fontSize: '0.875rem',
-                backgroundColor: 'white',
-                border: '1px solid rgba(128, 128, 128, 0.3)',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginLeft: 'auto',
-              }}
+              className="px-3 py-1 text-sm bg-white border border-blue-200 text-blue-700 rounded hover:bg-blue-50 transition-colors"
             >
               Stop
             </button>
           </div>
         )}
-      </div>
 
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '900px',
-          height: '600px',
-          border: '1px solid rgba(128, 128, 128, 0.2)',
-          borderRadius: '8px',
-          overflow: 'hidden',
-        }}
-      >
-        <ChatWindow
-          messages={messages}
-          isLoading={isLoading}
-          onSendMessage={handleSendMessage}
-        />
-      </div>
-    </main>
+        {/* Chat Window */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="h-[500px] overflow-y-auto p-4 space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                    message.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-100 text-slate-900'
+                  }`}
+                >
+                  <div className="whitespace-pre-wrap text-sm">
+                    {message.content}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className="border-t border-slate-200 p-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleSendMessage(input)
+              }}
+              className="flex gap-3"
+            >
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                disabled={isLoading || !input.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </form>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white/80 backdrop-blur-sm border-t border-slate-200">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between text-sm text-slate-600">
+            <p>Streaming Chat Demo • Clarity Chat Components</p>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-slate-900 transition-colors">
+                📖 Documentation
+              </a>
+              <a href="#" className="hover:text-slate-900 transition-colors">
+                💻 GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }

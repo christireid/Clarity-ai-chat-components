@@ -1,5 +1,8 @@
 # Model Comparison Demo
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fchristireid%2FClarity-ai-chat-components&project-name=model-comparison&root-directory=apps%2Fexamples%2Fmodel-comparison-demo&env=OPENAI_API_KEY,ANTHROPIC_API_KEY,GOOGLE_API_KEY)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/christireid/Clarity-ai-chat-components/tree/main/apps/examples/model-comparison-demo)
+
 Compare AI model responses side-by-side with real-time streaming using Clarity Chat.
 
 ## Features

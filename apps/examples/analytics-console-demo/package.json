@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Analytics Console - Token Usage Tracking & Cost Analytics",
+  "description": "Analytics Console - Token Usage Tracking & Cost Analytics powered by Clarity Chat",
   "scripts": {
     "dev": "next dev -p 3003",
     "build": "next build",
@@ -16,7 +16,8 @@
     "next": "^16.0.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "recharts": "^2.10.3"
+    "recharts": "^2.10.3",
+    "lucide-react": "^0.552.0"
   },
   "devDependencies": {
     "@types/node": "^20",
