@@ -221,6 +221,12 @@ export function useDashboardData<T>(
     debug = false,
   } = options
 
+  if (typeof fetcher !== 'function') {
+    throw new Error(
+      'useDashboardData: "fetcher" is required and must be a function returning a Promise.'
+    )
+  }
+
   const reducer = React.useMemo(
     () => createReducer<T>(initialData),
     [initialData]

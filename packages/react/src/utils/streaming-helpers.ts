@@ -152,6 +152,12 @@ export async function processStream(
   stream: ReadableStream<Uint8Array>,
   options: StreamOptions = {}
 ): Promise<StreamResult> {
+  if (!stream || typeof (stream as ReadableStream<Uint8Array>).getReader !== 'function') {
+    throw new Error(
+      '[processStream] Invalid stream: expected a ReadableStream<Uint8Array>.'
+    )
+  }
+
   const {
     signal,
     format = 'sse',
@@ -242,7 +248,12 @@ export async function processStream(
 
       // Prevent buffer overflow
       if (buffer.length > maxChunkSize) {
-        console.warn('[processStream] Buffer size exceeded, flushing...')
+        if (
+          typeof process !== 'undefined' &&
+          process.env?.NODE_ENV !== 'production'
+        ) {
+          console.warn('[processStream] Buffer size exceeded, flushing...')
+        }
         handleLine(buffer)
         buffer = ''
       }

@@ -243,6 +243,7 @@ export class BatchRequestManager {
   private batchTimer: ReturnType<typeof setTimeout> | null = null
   private oldestQueueTime: number = 0
   private cancelledJobs: Set<string> = new Set()
+  private destroyed = false
 
   constructor(config: BatchConfig) {
     this.config = {
@@ -260,6 +261,22 @@ export class BatchRequestManager {
    * Returns a promise that resolves when the batch completes.
    */
   addRequest(request: BatchRequest): Promise<BatchResult> {
+    if (this.destroyed) {
+      const p = Promise.reject(new Error('BatchRequestManager has been destroyed'))
+      p.catch(() => {})
+      return p
+    }
+    if (!request || typeof request.id !== 'string' || request.id.trim().length === 0) {
+      const p = Promise.reject(new Error('Invalid request: "id" is required'))
+      p.catch(() => {})
+      return p
+    }
+    if (this.queue.has(request.id) || this.pendingPromises.has(request.id)) {
+      const p = Promise.reject(new Error(`Duplicate request id: ${request.id}`))
+      p.catch(() => {})
+      return p
+    }
+
     const promise = new Promise<BatchResult>((resolve, reject) => {
       // Store request
       this.queue.set(request.id, request)
@@ -430,6 +447,7 @@ export class BatchRequestManager {
    * Call this when the manager is no longer needed to prevent timer leaks
    */
   destroy(): void {
+    this.destroyed = true
     this.clearQueue()
     // Clear all stored data
     this.jobs.clear()
