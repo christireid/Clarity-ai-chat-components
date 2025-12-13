@@ -238,6 +238,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       children,
       onClick,
+      onKeyDown,
       ...props
     },
     forwardedRef
@@ -338,6 +339,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       onClick?.(e)
     }
 
+    // Ensure keyboard activation works consistently in test environments (happy-dom/jsdom),
+    // where native "Enter/Space triggers click" behavior can be inconsistent.
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      onKeyDown?.(e)
+      if (e.defaultPrevented) return
+      if (isDisabled) return
+
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        internalRef.current?.click()
+      }
+    }
+
     // Render state-specific content
     let stateContent: React.ReactNode = null
     switch (currentState) {
@@ -396,6 +410,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={composedRef}
         disabled={isDisabled}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
         // ARIA attributes for accessibility
         {...getLoadingAriaAttributes(currentState === 'loading')}
         aria-disabled={isDisabled || undefined}

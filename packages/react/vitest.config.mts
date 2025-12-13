@@ -15,7 +15,8 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'happy-dom',
+    // Use jsdom for best compatibility with @testing-library/user-event keyboard interactions.
+    environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     // Memory-optimized configuration for large test suites
     // Using vmThreads with singleThread for optimal memory usage

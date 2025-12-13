@@ -11,7 +11,7 @@ import {
   SparklesIcon,
   CheckCircleIcon,
 } from './icons'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER, duration as motionDuration } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 
 export interface ThinkingIndicatorProps {
@@ -134,7 +134,7 @@ export function ThinkingIndicator({
                 opacity: [0.6, 0, 0],
               }}
               transition={{
-                duration: durations.slower,
+                duration: motionDuration('slower'),
                 repeat: Infinity,
                 ease: 'easeOut',
               }}
@@ -146,7 +146,7 @@ export function ThinkingIndicator({
                 opacity: [0.4, 0, 0],
               }}
               transition={{
-                duration: durations.slower,
+                duration: motionDuration('slower'),
                 repeat: Infinity,
                 ease: 'easeOut',
                 delay: 0.3,
@@ -162,7 +162,7 @@ export function ThinkingIndicator({
             prefersReducedMotion
               ? { duration: 0 }
               : {
-                  duration: durations.slower,
+                  duration: motionDuration('slower'),
                   repeat: Infinity,
                   ease: EASING_FRAMER.inOut,
                 }

@@ -13,6 +13,7 @@ afterEach(() => {
 
 // Mock window.scrollTo
 Object.defineProperty(window, 'scrollTo', {
+  configurable: true,
   writable: true,
   value: vi.fn(),
 })
@@ -40,6 +41,7 @@ vi.mock('framer-motion', async () => {
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
+  configurable: true,
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
@@ -100,5 +102,13 @@ const storageMock = {
   key: vi.fn(),
 }
 
-global.localStorage = storageMock as any
-global.sessionStorage = storageMock as any
+Object.defineProperty(window, 'localStorage', {
+  value: storageMock,
+  writable: true,
+  configurable: true,
+})
+Object.defineProperty(window, 'sessionStorage', {
+  value: storageMock,
+  writable: true,
+  configurable: true,
+})

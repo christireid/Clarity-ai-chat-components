@@ -290,25 +290,6 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
     }
   }, [])
 
-  const scheduleStaleCheck = React.useCallback(
-    (key: string) => {
-      const config = sourceConfigsMap.get(key)
-      const staleTime = config?.staleTime ?? 5 * 60 * 1000
-
-      if (staleTime > 0) {
-        clearStaleTimeout(key)
-        const timeout = setTimeout(() => {
-          if (isMountedRef.current) {
-            log(`Source ${key} marked as stale`)
-            dispatch({ type: 'SET_STALE', key })
-          }
-        }, staleTime)
-        staleTimeoutsRef.current.set(key, timeout)
-      }
-    },
-    [sourceConfigsMap, clearStaleTimeout, log]
-  )
-
   const fetchSource = React.useCallback(
     async (key: string): Promise<void> => {
       const config = sourceConfigsMap.get(key)
@@ -331,7 +312,6 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
 
           log(`Source ${key} fetched successfully`)
           dispatch({ type: 'FETCH_SUCCESS', key, payload: data })
-          scheduleStaleCheck(key)
           return
         } catch (err) {
           if (!isMountedRef.current) return
@@ -354,7 +334,7 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
         }
       }
     },
-    [sourceConfigsMap, scheduleStaleCheck, onError, log]
+    [sourceConfigsMap, onError, log]
   )
 
   const refetchAll = React.useCallback(async () => {
@@ -429,6 +409,48 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       onAllSuccess(data)
     }
   }, [sourcesState, sourceKeys, onAllSuccess])
+
+  // Stale time handling
+  // Schedule stale timers in an effect so test suites can control time progression deterministically.
+  React.useEffect(() => {
+    for (const key of sourceKeys) {
+      const state = sourcesState[key]
+      const config = sourceConfigsMap.get(key)
+      const staleTime = config?.staleTime
+
+      // Only schedule if explicitly configured and we have fetched data.
+      if (!staleTime || staleTime <= 0 || !state?.lastFetchedAt) {
+        clearStaleTimeout(key)
+        continue
+      }
+
+      // If already stale, don't keep a timer around.
+      if (state.isStale) {
+        clearStaleTimeout(key)
+        continue
+      }
+
+      // If a timer already exists for this key, keep it.
+      if (staleTimeoutsRef.current.has(key)) {
+        continue
+      }
+
+      const timeout = setTimeout(() => {
+        if (isMountedRef.current) {
+          log(`Source ${key} marked as stale`)
+          dispatch({ type: 'SET_STALE', key })
+        }
+      }, staleTime)
+
+      staleTimeoutsRef.current.set(key, timeout)
+    }
+    // Clean up timers for keys that no longer exist
+    for (const existingKey of Array.from(staleTimeoutsRef.current.keys())) {
+      if (!sourceKeys.includes(existingKey)) {
+        clearStaleTimeout(existingKey)
+      }
+    }
+  }, [sourcesState, sourceKeys, sourceConfigsMap, clearStaleTimeout, log])
 
   // Compute derived state
   const isLoading = requiredKeys.some((key) => sourcesState[key]?.isLoading)

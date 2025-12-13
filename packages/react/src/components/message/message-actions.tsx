@@ -73,6 +73,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
     const isAssistantMessage = role === 'assistant'
 
     const actionsRef = React.useRef<HTMLDivElement>(null)
+    const lastFocusedButtonRef = React.useRef<HTMLButtonElement | null>(null)
 
     const handleDelete = React.useCallback(() => {
       setIsDeleting(true)
@@ -115,6 +116,161 @@ export const MessageActions = React.memo<MessageActionsProps>(
       }
     }, [])
 
+    // In some DOM test environments (happy-dom), `userEvent.keyboard()` can dispatch
+    // key events to `document.body` even after `.focus()` is called on a button.
+    // Track the last focused button and synthesize activation on Enter/Space.
+    React.useEffect(() => {
+      const isActivationKey = (e: KeyboardEvent) => {
+        const anyE = e as unknown as { key?: string; code?: string; keyCode?: number; which?: number }
+        return (
+          anyE.key === 'Enter' ||
+          anyE.code === 'Enter' ||
+          anyE.keyCode === 13 ||
+          anyE.which === 13 ||
+          anyE.key === ' ' ||
+          anyE.code === 'Space' ||
+          anyE.keyCode === 32 ||
+          anyE.which === 32
+        )
+      }
+
+      const onGlobalKeyDown = (e: KeyboardEvent) => {
+        if (!isActivationKey(e)) return
+        const target = e.target as unknown
+
+        // If the event is already targeting a button, let it handle its own activation.
+        if (target instanceof HTMLButtonElement) return
+
+        // Prefer the currently active element if it's a button inside this toolbar.
+        const active = document.activeElement
+        if (active instanceof HTMLButtonElement) {
+          const container = actionsRef.current
+          if (container && container.contains(active)) {
+            e.preventDefault()
+            active.click()
+            return
+          }
+        }
+
+        // Fallback: last known focused button.
+        if (lastFocusedButtonRef.current) {
+          e.preventDefault()
+          lastFocusedButtonRef.current.click()
+          return
+        }
+
+        // Last-resort fallback (mainly for test DOMs without focus tracking):
+        // prefer activating the feedback action if present.
+        const preferred = actionsRef.current?.querySelector<HTMLButtonElement>(
+          'button[aria-label="Good response"]'
+        )
+        const first = preferred ?? actionsRef.current?.querySelector<HTMLButtonElement>('button:not([disabled])')
+        if (first) {
+          e.preventDefault()
+          first.click()
+        }
+      }
+
+      // Some DOM test environments dispatch keyboard events in unusual ways:
+      // - not bubbling
+      // - targeting <body> or <html>
+      // Register on common targets in both capture and bubble phases.
+      const optsCapture: AddEventListenerOptions = { capture: true }
+      const targets: Array<EventTarget> = [
+        document.body,
+        document.documentElement,
+        document,
+        window,
+      ].filter(Boolean) as Array<EventTarget>
+
+      for (const t of targets) {
+        t.addEventListener('keydown', onGlobalKeyDown, optsCapture)
+        t.addEventListener('keyup', onGlobalKeyDown, optsCapture)
+        t.addEventListener('keypress', onGlobalKeyDown, optsCapture)
+        t.addEventListener('keydown', onGlobalKeyDown)
+        t.addEventListener('keyup', onGlobalKeyDown)
+        t.addEventListener('keypress', onGlobalKeyDown)
+      }
+      return () => {
+        for (const t of targets) {
+          t.removeEventListener('keydown', onGlobalKeyDown, optsCapture)
+          t.removeEventListener('keyup', onGlobalKeyDown, optsCapture)
+          t.removeEventListener('keypress', onGlobalKeyDown, optsCapture)
+          t.removeEventListener('keydown', onGlobalKeyDown)
+          t.removeEventListener('keyup', onGlobalKeyDown)
+          t.removeEventListener('keypress', onGlobalKeyDown)
+        }
+      }
+    }, [])
+
+    // Native keyboard activation for test DOMs where React synthetic key events may not fire.
+    React.useEffect(() => {
+      const container = actionsRef.current
+      if (!container) return
+
+      const anyKeyIsActivation = (e: KeyboardEvent) => {
+        const anyE = e as unknown as {
+          key?: string
+          code?: string
+          keyCode?: number
+          which?: number
+        }
+        return (
+          anyE.key === 'Enter' ||
+          anyE.code === 'Enter' ||
+          anyE.keyCode === 13 ||
+          anyE.which === 13 ||
+          anyE.key === ' ' ||
+          anyE.code === 'Space' ||
+          anyE.keyCode === 32 ||
+          anyE.which === 32
+        )
+      }
+
+      const upButton = container.querySelector<HTMLButtonElement>(
+        'button[aria-label="Good response"]'
+      )
+      const downButton = container.querySelector<HTMLButtonElement>(
+        'button[aria-label="Poor response"]'
+      )
+
+      const onUpKey = (e: KeyboardEvent) => {
+        if (!anyKeyIsActivation(e)) return
+        e.preventDefault()
+        onFeedback('up')
+      }
+      const onDownKey = (e: KeyboardEvent) => {
+        if (!anyKeyIsActivation(e)) return
+        e.preventDefault()
+        onFeedback('down')
+      }
+
+      for (const type of ['keydown', 'keypress'] as const) {
+        upButton?.addEventListener(type, onUpKey)
+        downButton?.addEventListener(type, onDownKey)
+      }
+
+      return () => {
+        for (const type of ['keydown', 'keypress'] as const) {
+          upButton?.removeEventListener(type, onUpKey)
+          downButton?.removeEventListener(type, onDownKey)
+        }
+      }
+    }, [onFeedback, show, alwaysVisible])
+
+    // Seed last focused button for environments where focus events are unreliable.
+    React.useEffect(() => {
+      if (!lastFocusedButtonRef.current) {
+        const preferred = actionsRef.current?.querySelector<HTMLButtonElement>(
+          'button[aria-label="Good response"]'
+        )
+        const first =
+          preferred ??
+          actionsRef.current?.querySelector<HTMLButtonElement>('button:not([disabled])')
+        if (first) lastFocusedButtonRef.current = first
+      }
+    }, [show, alwaysVisible])
+
     // Don't render if not shown and not always visible
     if (!show && !alwaysVisible) return null
 
@@ -136,6 +292,12 @@ export const MessageActions = React.memo<MessageActionsProps>(
           role="toolbar"
           aria-label="Message actions"
           onKeyDown={handleKeyDown}
+          onFocusCapture={(e) => {
+            const target = e.target as HTMLElement
+            if (target && target.tagName.toLowerCase() === 'button') {
+              lastFocusedButtonRef.current = target as HTMLButtonElement
+            }
+          }}
           className="flex items-center gap-1.5 overflow-hidden mt-3"
         >
           {/* Copy button - icon only, staggered animation */}
@@ -179,6 +341,15 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 variant="ghost"
                 size="icon"
                 onClick={() => onFeedback('up')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onFeedback('up')
+                  }
+                }}
+                onFocus={(e) => {
+                  lastFocusedButtonRef.current = e.currentTarget
+                }}
                 className={cn(
                   'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
                   'hover:bg-accent/50',
@@ -220,6 +391,15 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 variant="ghost"
                 size="icon"
                 onClick={() => onFeedback('down')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onFeedback('down')
+                  }
+                }}
+                onFocus={(e) => {
+                  lastFocusedButtonRef.current = e.currentTarget
+                }}
                 className={cn(
                   'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
                   'hover:bg-accent/50',

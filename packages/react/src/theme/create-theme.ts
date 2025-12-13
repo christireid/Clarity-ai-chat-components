@@ -17,6 +17,7 @@ import {
 } from './modern-presets'
 import { toHSLString, generatePaletteFromBrandColor } from './color-utils'
 import { CSS_VAR_PREFIX } from './tokens/colors'
+import { radiusPresets, type RadiusPreset } from './tokens/radius'
 
 /**
  * Theme preset name type
@@ -124,18 +125,8 @@ function normalizeColors(
 /**
  * Get radius value based on preset
  */
-function getRadiusValue(
-  preset: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
-): string {
-  const radiusMap = {
-    none: '0',
-    sm: '0.25rem',
-    md: '0.375rem',
-    lg: '0.5rem',
-    xl: '0.75rem',
-    full: '9999px',
-  }
-  return radiusMap[preset]
+function getRadiusValue(preset: RadiusPreset): string {
+  return radiusPresets[preset]
 }
 
 /**

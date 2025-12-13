@@ -10,7 +10,7 @@ import {
   cn,
   formatRelativeTime,
 } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER, duration as motionDuration } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -323,7 +323,7 @@ export function Message({
       animate={{ opacity: 1, x: 0, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{
-        duration: ANIMATION_DURATION.normal / 1000,
+        duration: motionDuration('normal'),
         ease: EASING_FRAMER.out,
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -392,7 +392,7 @@ export function Message({
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: isHovered ? 1 : 0.7 }}
-                  transition={{ duration: durations.normal }}
+                  transition={{ duration: motionDuration('normal') }}
                   className="text-xs text-muted-foreground/90 whitespace-nowrap"
                 >
                   {formatRelativeTime(message.createdAt)}

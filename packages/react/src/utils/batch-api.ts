@@ -242,6 +242,9 @@ export class BatchRequestManager {
   }
   private batchTimer: ReturnType<typeof setTimeout> | null = null
   private oldestQueueTime: number = 0
+  private processingTimers: Map<string, ReturnType<typeof setTimeout>> = new Map()
+  private cancelledJobs: Set<string> = new Set()
+  private destroyed: boolean = false
 
   constructor(config: BatchConfig) {
     this.config = {
@@ -260,6 +263,11 @@ export class BatchRequestManager {
    */
   addRequest(request: BatchRequest): Promise<BatchResult> {
     return new Promise((resolve, reject) => {
+      if (this.destroyed) {
+        reject(new Error('BatchRequestManager is destroyed'))
+        return
+      }
+
       // Store request
       this.queue.set(request.id, request)
       this.pendingPromises.set(request.id, { resolve, reject })
@@ -282,6 +290,9 @@ export class BatchRequestManager {
    */
   async submitBatch(): Promise<BatchJob | null> {
     if (this.queue.size === 0) {
+      return null
+    }
+    if (this.destroyed) {
       return null
     }
 
@@ -320,23 +331,34 @@ export class BatchRequestManager {
     this.queue.clear()
     this.oldestQueueTime = 0
 
-    // Process batch (in a real implementation, this would call the provider API)
-    // Note: Processing is intentionally not awaited to allow non-blocking batch submission.
-    // Use getResults(job.id) or listen to onStatusChange to know when complete.
-    this.processBatch(job, requests).catch(error => {
-      job.status = 'failed'
-      job.error = error instanceof Error ? error.message : String(error)
-      this.config.onStatusChange(job)
-
-      // Reject all pending promises for this batch
-      for (const requestId of job.requestIds) {
-        const pending = this.pendingPromises.get(requestId)
-        if (pending) {
-          pending.reject(error instanceof Error ? error : new Error(String(error)))
-          this.pendingPromises.delete(requestId)
-        }
+    // Process batch asynchronously (non-blocking) on the next tick so callers can:
+    // - observe the initial 'pending' status
+    // - cancel immediately after submitBatch()
+    const timer = setTimeout(() => {
+      // If cancelled before processing starts, do nothing.
+      if (this.destroyed || this.cancelledJobs.has(job.id)) {
+        return
       }
-    })
+
+      this.processBatch(job, requests).catch(error => {
+        if (this.destroyed) return
+        job.status = 'failed'
+        job.error = error instanceof Error ? error.message : String(error)
+        this.config.onStatusChange(job)
+
+        // Reject all pending promises for this batch
+        for (const requestId of job.requestIds) {
+          const pending = this.pendingPromises.get(requestId)
+          if (pending) {
+            pending.reject(error instanceof Error ? error : new Error(String(error)))
+            this.pendingPromises.delete(requestId)
+          }
+        }
+      }).finally(() => {
+        this.processingTimers.delete(job.id)
+      })
+    }, 0)
+    this.processingTimers.set(job.id, timer)
 
     return job
   }
@@ -358,6 +380,14 @@ export class BatchRequestManager {
 
     job.status = 'cancelled'
     this.config.onStatusChange(job)
+    this.cancelledJobs.add(jobId)
+
+    // Cancel scheduled processing if it hasn't started yet
+    const timer = this.processingTimers.get(jobId)
+    if (timer) {
+      clearTimeout(timer)
+      this.processingTimers.delete(jobId)
+    }
 
     // Reject pending promises
     for (const requestId of job.requestIds) {
@@ -423,7 +453,13 @@ export class BatchRequestManager {
    * Call this when the manager is no longer needed to prevent timer leaks
    */
   destroy(): void {
+    this.destroyed = true
     this.clearQueue()
+    for (const timer of this.processingTimers.values()) {
+      clearTimeout(timer)
+    }
+    this.processingTimers.clear()
+    this.cancelledJobs.clear()
     // Clear all stored data
     this.jobs.clear()
     this.results.clear()
@@ -461,6 +497,11 @@ export class BatchRequestManager {
    *   3. Retrieve results from response
    */
   private async processBatch(job: BatchJob, requests: BatchRequest[]): Promise<void> {
+    if (this.destroyed) return
+    if (this.cancelledJobs.has(job.id)) {
+      return
+    }
+
     job.status = 'in_progress'
     this.config.onStatusChange(job)
 
@@ -475,6 +516,13 @@ export class BatchRequestManager {
 
     // Simulated processing (remove in production)
     for (let i = 0; i < requests.length; i++) {
+      if (this.destroyed) return
+      if (this.cancelledJobs.has(job.id)) {
+        job.status = 'cancelled'
+        this.config.onStatusChange(job)
+        return
+      }
+
       const request = requests[i]
 
       // Estimate tokens for cost tracking
@@ -506,6 +554,9 @@ export class BatchRequestManager {
 
       // Report progress
       this.config.onProgress(i + 1, requests.length)
+
+      // Yield to event loop so cancellation can take effect in tests and real UIs.
+      await new Promise((resolve) => setTimeout(resolve, 0))
     }
 
     // Store results
@@ -621,7 +672,7 @@ export function shouldUseBatch(
     maxWaitAcceptable?: number
   } = {}
 ): { useBatch: boolean; reason: string } {
-  const { urgency = 'normal', minSavingsThreshold = 0.01, maxWaitAcceptable = 86400000 } = options
+  const { urgency = 'normal', minSavingsThreshold = 0, maxWaitAcceptable = 86400000 } = options
 
   // High urgency requests should not be batched
   if (urgency === 'high') {

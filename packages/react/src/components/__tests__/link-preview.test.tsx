@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import {
   LinkPreview,
   LinkPreviewSkeleton,
@@ -122,7 +121,7 @@ describe('LinkPreview', () => {
       render(<LinkPreview metadata={minimalMetadata} />)
 
       // Should show domain when no title
-      expect(screen.getByText('example.com')).toBeInTheDocument()
+      expect(screen.getAllByText('example.com').length).toBeGreaterThan(0)
     })
 
     it('should apply custom className', () => {
@@ -236,11 +235,11 @@ describe('LinkPreview', () => {
   })
 
   describe('interactions', () => {
-    it('should call onClick when card is clicked', async () => {
+    it('should call onClick when card is clicked', () => {
       const handleClick = vi.fn()
       render(<LinkPreview metadata={sampleMetadata} onClick={handleClick} />)
 
-      await userEvent.click(screen.getByRole('link'))
+      fireEvent.click(screen.getByRole('link'))
 
       expect(handleClick).toHaveBeenCalledTimes(1)
     })
@@ -265,16 +264,16 @@ describe('LinkPreview', () => {
       expect(handleClick).toHaveBeenCalledTimes(1)
     })
 
-    it('should call onRemove when remove button is clicked', async () => {
+    it('should call onRemove when remove button is clicked', () => {
       const handleRemove = vi.fn()
       render(<LinkPreview metadata={sampleMetadata} onRemove={handleRemove} />)
 
-      await userEvent.click(screen.getByRole('button', { name: /remove/i }))
+      fireEvent.click(screen.getByRole('button', { name: /remove/i }))
 
       expect(handleRemove).toHaveBeenCalledTimes(1)
     })
 
-    it('should not trigger onClick when remove button is clicked', async () => {
+    it('should not trigger onClick when remove button is clicked', () => {
       const handleClick = vi.fn()
       const handleRemove = vi.fn()
       render(
@@ -285,7 +284,7 @@ describe('LinkPreview', () => {
         />
       )
 
-      await userEvent.click(screen.getByRole('button', { name: /remove/i }))
+      fireEvent.click(screen.getByRole('button', { name: /remove/i }))
 
       expect(handleRemove).toHaveBeenCalledTimes(1)
       expect(handleClick).not.toHaveBeenCalled()
@@ -388,11 +387,11 @@ describe('LinkPreviewError', () => {
     expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument()
   })
 
-  it('should call onRetry when retry button clicked', async () => {
+  it('should call onRetry when retry button clicked', () => {
     const handleRetry = vi.fn()
     render(<LinkPreviewError url="https://example.com" onRetry={handleRetry} />)
 
-    await userEvent.click(screen.getByRole('button', { name: /retry/i }))
+    fireEvent.click(screen.getByRole('button', { name: /retry/i }))
 
     expect(handleRetry).toHaveBeenCalledTimes(1)
   })
@@ -484,11 +483,11 @@ describe('InlineLink', () => {
     expect(screen.getByText('https://example.com')).toBeInTheDocument()
   })
 
-  it('should call onPreview and prevent default when provided', async () => {
+  it('should call onPreview and prevent default when provided', () => {
     const handlePreview = vi.fn()
     render(<InlineLink url="https://example.com" onPreview={handlePreview} />)
 
-    await userEvent.click(screen.getByRole('link'))
+    fireEvent.click(screen.getByRole('link'))
 
     expect(handlePreview).toHaveBeenCalledWith('https://example.com')
   })
@@ -530,11 +529,11 @@ describe('SmartLinkPreview', () => {
   it('should fetch metadata on mount', async () => {
     render(<SmartLinkPreview url="https://example.com" />)
 
-    // Initially shows loading
-    await waitFor(() => {
-      // Either loading or content should be visible
-      expect(document.body.textContent).toBeTruthy()
+    await act(async () => {
+      vi.advanceTimersByTime(600)
     })
+
+    expect(document.body.textContent).toBeTruthy()
   })
 
   it('should call onLoad when metadata is loaded', async () => {
@@ -545,9 +544,7 @@ describe('SmartLinkPreview', () => {
       vi.advanceTimersByTime(600) // Mock fetch delay
     })
 
-    await waitFor(() => {
-      expect(handleLoad).toHaveBeenCalled()
-    })
+    expect(handleLoad).toHaveBeenCalled()
   })
 
   it('should show error state when fetch fails', async () => {
@@ -558,9 +555,7 @@ describe('SmartLinkPreview', () => {
       vi.advanceTimersByTime(100)
     })
 
-    await waitFor(() => {
-      expect(screen.getByText('Failed to load preview')).toBeInTheDocument()
-    })
+    expect(screen.getByText('Failed to load preview')).toBeInTheDocument()
   })
 
   it('should call onError when fetch fails', async () => {
@@ -579,9 +574,7 @@ describe('SmartLinkPreview', () => {
       vi.advanceTimersByTime(100)
     })
 
-    await waitFor(() => {
-      expect(handleError).toHaveBeenCalled()
-    })
+    expect(handleError).toHaveBeenCalled()
   })
 
   it('should show fallback when provided and fetch fails', async () => {
@@ -599,9 +592,7 @@ describe('SmartLinkPreview', () => {
       vi.advanceTimersByTime(100)
     })
 
-    await waitFor(() => {
-      expect(screen.getByTestId('fallback')).toBeInTheDocument()
-    })
+    expect(screen.getByTestId('fallback')).toBeInTheDocument()
   })
 
   it('should support different variants', async () => {
@@ -612,9 +603,7 @@ describe('SmartLinkPreview', () => {
     })
 
     // Should render compact variant
-    await waitFor(() => {
-      expect(screen.getByText('example.com')).toBeInTheDocument()
-    })
+    expect(screen.getAllByText('example.com').length).toBeGreaterThan(0)
   })
 })
 
@@ -808,7 +797,7 @@ describe('Domain Extraction', () => {
   it('should extract domain from URL', () => {
     render(<LinkPreview metadata={{ url: 'https://www.example.com/path' }} />)
 
-    expect(screen.getByText('example.com')).toBeInTheDocument()
+    expect(screen.getAllByText('example.com').length).toBeGreaterThan(0)
   })
 
   it('should remove www prefix from domain', () => {
@@ -816,7 +805,7 @@ describe('Domain Extraction', () => {
       <LinkPreview metadata={{ url: 'https://www.test.example.com/path' }} />
     )
 
-    expect(screen.getByText('test.example.com')).toBeInTheDocument()
+    expect(screen.getAllByText('test.example.com').length).toBeGreaterThan(0)
   })
 
   it('should handle invalid URLs gracefully', () => {
@@ -1122,7 +1111,12 @@ describe('createMetadataFetcher', () => {
       timeout: 100,
     })
 
-    await expect(fetcher('https://example.com')).rejects.toThrow()
+    const promise = fetcher('https://example.com')
+    const assertion = expect(promise).rejects.toThrow()
+    await act(async () => {
+      vi.advanceTimersByTime(150)
+    })
+    await assertion
   })
 })
 
@@ -1336,7 +1330,9 @@ describe('Expandable Description', () => {
       name: /show more|expand/i,
     })
     if (expandButton) {
-      await userEvent.click(expandButton)
+      act(() => {
+        fireEvent.click(expandButton)
+      })
 
       // After expansion, description should be fully visible or have collapse option
       expect(

@@ -162,6 +162,7 @@ export class StreamingResponseMonitor {
   private chunksProcessed: number = 0
   private lastChunks: string[] = []
   private stopped: boolean = false
+  private stopReason: ChunkAnalysis['reason'] | undefined
 
   constructor(config: StreamingOptimizationConfig = {}) {
     this.config = {
@@ -185,8 +186,8 @@ export class StreamingResponseMonitor {
     if (this.stopped) {
       return {
         shouldContinue: false,
-        reason: 'user-stop',
-        confidence: 1,
+        reason: this.stopReason ?? 'user-stop',
+        confidence: 1.0,
         currentTokens: this.tokenCount,
       }
     }
@@ -253,6 +254,7 @@ export class StreamingResponseMonitor {
    */
   forceStop(): void {
     this.stopped = true
+    this.stopReason = 'user-stop'
   }
 
   /**
@@ -267,6 +269,7 @@ export class StreamingResponseMonitor {
     this.chunksProcessed = 0
     this.lastChunks = []
     this.stopped = false
+    this.stopReason = undefined
   }
 
   /**
@@ -331,18 +334,18 @@ export class StreamingResponseMonitor {
   private detectRepetition(): ChunkAnalysis | null {
     if (this.lastChunks.length < 10) return null
 
-    const recentText = this.lastChunks.join('')
-    const windowSize = Math.min(this.config.repetitionWindowSize, recentText.length / 2)
-
-    if (windowSize < 20) return null
-
-    // Check for repeated patterns
-    const lastWindow = recentText.slice(-windowSize)
-    const previousWindow = recentText.slice(-windowSize * 2, -windowSize)
-
-    if (previousWindow && lastWindow === previousWindow) {
-      return this.createStopResult('repetition', 0.9)
+    // Prefer chunk-sequence repetition detection (robust vs char-window alignment).
+    // Check if the last N chunks exactly match the previous N chunks.
+    const maxWindowChunks = Math.min(10, Math.floor(this.lastChunks.length / 2))
+    for (let windowChunks = Math.min(5, maxWindowChunks); windowChunks >= 2; windowChunks--) {
+      const lastSeq = this.lastChunks.slice(-windowChunks).join('')
+      const prevSeq = this.lastChunks.slice(-windowChunks * 2, -windowChunks).join('')
+      if (lastSeq && prevSeq && lastSeq === prevSeq) {
+        return this.createStopResult('repetition', 0.9)
+      }
     }
+
+    const recentText = this.lastChunks.join('')
 
     // Check for stuck loops (same words repeating)
     const words = recentText.split(/\s+/).slice(-30)
@@ -365,6 +368,7 @@ export class StreamingResponseMonitor {
     signal?: string
   ): ChunkAnalysis {
     this.stopped = true
+    this.stopReason = reason
     this.stopEvents++
     this.totalConfidence += confidence
 
@@ -606,8 +610,12 @@ export function estimateResponseLength(query: string): 'short' | 'medium' | 'lon
   }
 
   // Default based on query length
-  if (query.length < 50) return 'short'
-  if (query.length > 200) return 'long'
+  // Heuristics tuned for typical questions:
+  // - < 30 chars tends to be short (yes/no, quick fact)
+  // - 30-160 chars tends to be medium (most questions)
+  // - > 160 chars tends to be long (multi-part prompts)
+  if (query.length < 30) return 'short'
+  if (query.length > 160) return 'long'
   return 'medium'
 }
 

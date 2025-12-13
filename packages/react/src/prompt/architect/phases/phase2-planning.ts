@@ -871,22 +871,82 @@ export function getPatternsByCategory(
  */
 export function suggestPatternsForUseCase(useCase: string): DesignPattern[] {
   const normalizedUseCase = useCase.toLowerCase()
+  const useCaseWordsRaw = normalizedUseCase.split(/[^a-z0-9]+/i).filter(Boolean)
+  const normalizeWord = (w: string) => {
+    // Very small stemmer: handle plurals and common suffixes.
+    if (w.endsWith('ies') && w.length > 4) return w.slice(0, -3) + 'y'
+    if (w.endsWith('s') && w.length > 3) return w.slice(0, -1)
+    return w
+  }
+  const useCaseWords = new Set(useCaseWordsRaw.map(normalizeWord))
+
+  const synonymBoost: Record<string, string[]> = {
+    notify: ['notification', 'event', 'observer', 'publish', 'subscribe'],
+    event: ['notification', 'notify', 'observer', 'publish', 'subscribe'],
+    stream: ['pipeline', 'iterator', 'observer'],
+    state: ['change', 'update', 'mutation'],
+  }
+
   const matches: Array<{ pattern: DesignPattern; score: number }> = []
 
   for (const [pattern, info] of Object.entries(DESIGN_PATTERN_CATALOG)) {
     let score = 0
+
+    // Base boost: direct mention of the pattern name.
+    if (normalizedUseCase.includes(info.name.toLowerCase())) {
+      score += 3
+    }
+
     for (const uc of info.useCases) {
       if (normalizedUseCase.includes(uc.toLowerCase())) {
         score += 2
       }
       // Check for keyword overlap
-      const ucWords = uc.toLowerCase().split(/\s+/)
+      const ucWords = uc
+        .toLowerCase()
+        .split(/[^a-z0-9]+/i)
+        .filter(Boolean)
+        .map(normalizeWord)
+
       for (const word of ucWords) {
-        if (word.length > 3 && normalizedUseCase.includes(word)) {
+        if (word.length <= 2) continue
+
+        if (useCaseWords.has(word)) {
+          score += word.length > 4 ? 2 : 1
+          continue
+        }
+
+        // Synonym boosts (e.g., "event" should match "events"/"notification")
+        const boosts = synonymBoost[word]
+        if (boosts && boosts.some((b) => useCaseWords.has(normalizeWord(b)))) {
+          score += 1
+        }
+
+        // Fuzzy: substring/prefix match to handle "event" vs "events".
+        if (normalizedUseCase.includes(word) || word.includes(normalizedUseCase)) {
           score += 1
         }
       }
     }
+
+    // Intent keyword overlap (often higher signal than name)
+    const intentWords = info.intent
+      .toLowerCase()
+      .split(/[^a-z0-9]+/i)
+      .filter(Boolean)
+      .map(normalizeWord)
+    for (const w of intentWords) {
+      if (w.length > 3 && useCaseWords.has(w)) score += 1
+    }
+
+    // Heuristic: "event/notification/subscribe" should strongly suggest OBSERVER.
+    if (
+      (pattern === 'OBSERVER' || info.name.toLowerCase() === 'observer') &&
+      (useCaseWords.has('event') || useCaseWords.has('notification') || useCaseWords.has('notify'))
+    ) {
+      score += 5
+    }
+
     if (score > 0) {
       matches.push({ pattern: pattern as DesignPattern, score })
     }

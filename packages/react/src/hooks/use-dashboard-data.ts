@@ -241,7 +241,7 @@ export function useDashboardData<T>(
     null
   )
   const pollingIntervalRef = React.useRef<ReturnType<
-    typeof setInterval
+    typeof setTimeout
   > | null>(null)
   const staleTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -268,7 +268,7 @@ export function useDashboardData<T>(
       retryTimeoutRef.current = null
     }
     if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current)
+      clearTimeout(pollingIntervalRef.current)
       pollingIntervalRef.current = null
     }
     if (staleTimeoutRef.current) {
@@ -277,20 +277,10 @@ export function useDashboardData<T>(
     }
   }, [])
 
-  const scheduleStaleCheck = React.useCallback(() => {
-    if (staleTime > 0) {
-      staleTimeoutRef.current = setTimeout(() => {
-        if (isMountedRef.current) {
-          log('Data marked as stale')
-          dispatch({ type: 'SET_STALE' })
-        }
-      }, staleTime)
-    }
-  }, [staleTime, log])
-
   const fetchData = React.useCallback(
     async (isRefetch = false) => {
-      // Prevent overlapping requests during polling
+      // Prevent overlapping requests during polling/background refetch only.
+      // Manual refetch should be allowed to start a new request (race-safe via requestIdRef).
       if (isFetchingRef.current && isRefetch) {
         log('Skipping fetch - request already in progress')
         return
@@ -325,12 +315,6 @@ export function useDashboardData<T>(
         // Reset retry count on success
         retryCountRef.current = 0
         onSuccess?.(data)
-
-        // Schedule stale check
-        if (staleTimeoutRef.current) {
-          clearTimeout(staleTimeoutRef.current)
-        }
-        scheduleStaleCheck()
       } catch (err) {
         // Check if this request is still the current one (not stale)
         if (requestIdRef.current !== currentRequestId) {
@@ -379,10 +363,32 @@ export function useDashboardData<T>(
       enableRetry,
       maxRetries,
       retryBackoffMs,
-      scheduleStaleCheck,
       log,
     ]
   )
+
+  const scheduleNextPoll = React.useCallback(() => {
+    if (!pollingInterval || pollingInterval <= 0) return
+    if (!isMountedRef.current) return
+
+    if (pollingIntervalRef.current) {
+      clearTimeout(pollingIntervalRef.current)
+      pollingIntervalRef.current = null
+    }
+
+    pollingIntervalRef.current = setTimeout(() => {
+      if (!isMountedRef.current) return
+
+      // If a request is in flight, skip this poll and wait for the next successful fetch
+      // to schedule polling again. This avoids runaway timers in test environments.
+      if (isFetchingRef.current) {
+        log('Skipping poll - request already in progress')
+        return
+      }
+
+      fetchData(true)
+    }, pollingInterval)
+  }, [pollingInterval, fetchData, log])
 
   const refetch = React.useCallback(async () => {
     // Reset retry count in both state and ref
@@ -403,6 +409,33 @@ export function useDashboardData<T>(
   const invalidate = React.useCallback(() => {
     dispatch({ type: 'SET_STALE' })
   }, [])
+
+  // Stale-time handling: schedule staleness after successful fetch.
+  // This is kept in an effect so tests can deterministically advance time.
+  React.useEffect(() => {
+    if (staleTimeoutRef.current) {
+      clearTimeout(staleTimeoutRef.current)
+      staleTimeoutRef.current = null
+    }
+
+    if (!staleTime || staleTime <= 0) return
+    if (!state.lastFetchedAt) return
+    if (state.isStale) return
+
+    staleTimeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        log('Data marked as stale')
+        dispatch({ type: 'SET_STALE' })
+      }
+    }, staleTime)
+
+    return () => {
+      if (staleTimeoutRef.current) {
+        clearTimeout(staleTimeoutRef.current)
+        staleTimeoutRef.current = null
+      }
+    }
+  }, [state.lastFetchedAt, state.isStale, staleTime, log])
 
   // Store previous data for rollback
   const previousDataRef = React.useRef<T | null>(null)
@@ -459,25 +492,33 @@ export function useDashboardData<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
 
+  // Schedule polling after successful fetches
+  React.useEffect(() => {
+    if (!pollingInterval || pollingInterval <= 0) return
+    if (state.lastFetchedAt === null) return
+    if (isFetchingRef.current) return
+    scheduleNextPoll()
+  }, [pollingInterval, state.lastFetchedAt, scheduleNextPoll])
+
   // Polling
   React.useEffect(() => {
     if (pollingInterval && pollingInterval > 0) {
       log(`Starting polling with interval ${pollingInterval}ms`)
-      pollingIntervalRef.current = setInterval(() => {
-        if (isMountedRef.current) {
-          fetchData(true)
-        }
-      }, pollingInterval)
+      // Polling uses a single-shot timeout scheduled after successful fetches.
+      // If we already have data, start the polling loop now.
+      if (state.lastFetchedAt !== null && !isFetchingRef.current) {
+        scheduleNextPoll()
+      }
 
       return () => {
         if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current as NodeJS.Timeout)
+          clearTimeout(pollingIntervalRef.current as NodeJS.Timeout)
           pollingIntervalRef.current = null
         }
       }
     }
     return undefined
-  }, [pollingInterval, fetchData, log])
+  }, [pollingInterval, scheduleNextPoll, log, state.lastFetchedAt])
 
   return {
     ...state,
