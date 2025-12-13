@@ -14,16 +14,35 @@ export interface CodeBlock {
 
 /**
  * Extract code blocks from markdown content
+ *
+ * Improved regex to handle:
+ * - Optional language identifier
+ * - Whitespace variations
+ * - Code blocks without immediate newlines
  */
 export function extractCodeBlocks(content: string): CodeBlock[] {
-  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
+  // Regex explanation:
+  // ```             Match opening backticks
+  // (?:[\w-]+)?     Non-capturing group for optional language (alphanumeric + hyphens)
+  // \s*             Match any whitespace (newlines, spaces) after opening
+  // ([\s\S]*?)      Capture the code content (non-greedy)
+  // \s*             Match any trailing whitespace
+  // ```             Match closing backticks
+  const codeBlockRegex = /```(?:([\w-]+)?)?\s*([\s\S]*?)\s*```/g
   const blocks: CodeBlock[] = []
   let match
 
   while ((match = codeBlockRegex.exec(content)) !== null) {
+    // If language group is undefined, default to text
+    const language = match[1] || 'text'
+    const code = match[2].trim()
+
+    // Skip empty blocks
+    if (!code) continue
+
     blocks.push({
-      language: match[1] || 'text',
-      code: match[2].trim(),
+      language: language.toLowerCase(),
+      code,
       startIndex: match.index,
       endIndex: match.index + match[0].length,
     })
@@ -57,6 +76,7 @@ export function isPlaygroundCompatible(
     /<\w+[\s/>]/, // JSX tags
     /export\s+(default\s+)?function/,
     /const.*=.*\(.*\)\s*=>/, // Arrow function components
+    /class.*extends.*Component/,
   ]
 
   return reactPatterns.some((pattern) => pattern.test(code))
@@ -100,6 +120,10 @@ root.render(<App />);
             react: '^18.2.0',
             'react-dom': '^18.2.0',
             '@clarity-chat/react': 'latest',
+            'lucide-react': 'latest',
+            'framer-motion': 'latest',
+            clsx: 'latest',
+            'tailwind-merge': 'latest',
           },
           devDependencies: {
             typescript: '^5.0.0',

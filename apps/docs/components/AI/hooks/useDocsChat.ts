@@ -38,6 +38,7 @@ export function useDocsChat() {
     useState<StreamingStatus>('idle')
   const [retryCount, setRetryCount] = useState(0)
   const [currentCitations, setCurrentCitations] = useState<Citation[]>([])
+  const [suggestedFollowUps, setSuggestedFollowUps] = useState<string[]>([])
 
   // Refs
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -151,6 +152,50 @@ export function useDocsChat() {
     )
   }, [])
 
+  // Simple heuristics to generate follow-up questions based on content
+  const generateFollowUps = useCallback((content: string) => {
+    const suggestions: string[] = []
+    const lowerContent = content.toLowerCase()
+
+    if (
+      lowerContent.includes('install') ||
+      lowerContent.includes('npm') ||
+      lowerContent.includes('yarn')
+    ) {
+      suggestions.push('How do I configure the theme?')
+    }
+    if (
+      lowerContent.includes('theme') ||
+      lowerContent.includes('color') ||
+      lowerContent.includes('style')
+    ) {
+      suggestions.push('Show me a dark mode example')
+    }
+    if (
+      lowerContent.includes('component') ||
+      lowerContent.includes('ui') ||
+      lowerContent.includes('button')
+    ) {
+      suggestions.push('What hooks are available?')
+    }
+    if (
+      lowerContent.includes('hook') ||
+      lowerContent.includes('usechat') ||
+      lowerContent.includes('state')
+    ) {
+      suggestions.push('How do I handle streaming?')
+    }
+    if (
+      lowerContent.includes('stream') ||
+      lowerContent.includes('real-time') ||
+      lowerContent.includes('sse')
+    ) {
+      suggestions.push('How do I optimize token usage?')
+    }
+
+    setSuggestedFollowUps(suggestions.slice(0, 3))
+  }, [])
+
   // Internal send message handler with validation and automatic retry
   const handleSendMessageInternal = useCallback(
     async (content: string, currentRetry = 0) => {
@@ -173,6 +218,7 @@ export function useDocsChat() {
         }
         setMessages((prev) => [...prev, userMessage])
         tokenTracker.addMessage({ role: 'user', content })
+        setSuggestedFollowUps([]) // Clear previous suggestions
       }
 
       setIsLoading(true)
@@ -304,6 +350,7 @@ export function useDocsChat() {
                         : m
                     )
                   )
+                  generateFollowUps(finalContent)
                   setAiStatus(undefined)
                 }
               } catch (parseError) {
@@ -326,6 +373,7 @@ export function useDocsChat() {
             )
           )
           tokenTracker.addMessage({ role: 'assistant', content: finalContent })
+          generateFollowUps(finalContent)
         }
 
         abortControllerRef.current = null
@@ -426,6 +474,7 @@ export function useDocsChat() {
       tokenTracker,
       isRetryableError,
       calculateRetryDelay,
+      generateFollowUps,
     ]
   )
 
@@ -469,6 +518,21 @@ export function useDocsChat() {
   // Feedback handler
   const handleFeedback = useCallback(
     async (messageId: string, type: 'up' | 'down') => {
+      // Optimistically update UI
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? {
+                ...m,
+                feedback: {
+                  type,
+                  timestamp: new Date(),
+                },
+              }
+            : m
+        )
+      )
+
       try {
         const response = await fetch('/api/feedback', {
           method: 'POST',
@@ -493,6 +557,12 @@ export function useDocsChat() {
       } catch (error) {
         console.error('Failed to submit feedback:', error)
         toast.error('Failed to submit feedback. Please try again.')
+        // Revert optimistic update on failure
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === messageId ? { ...m, feedback: undefined } : m
+          )
+        )
       }
     },
     [sessionId, toast]
@@ -532,6 +602,7 @@ export function useDocsChat() {
     clearSavedConversation()
     tokenTracker.clear()
     setCurrentCitations([])
+    setSuggestedFollowUps([])
     toast.info('Conversation cleared')
   }, [clearSavedConversation, tokenTracker, toast])
 
@@ -546,6 +617,7 @@ export function useDocsChat() {
     tokenTracker,
     isOnline,
     messageQueue,
+    suggestedFollowUps,
     handleSendMessage,
     handleMessageRetry,
     handleFeedback,

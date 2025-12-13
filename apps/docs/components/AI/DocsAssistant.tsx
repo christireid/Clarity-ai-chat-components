@@ -37,7 +37,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertCircle, Search, Terminal } from 'lucide-react'
+import { AlertCircle, Search, Terminal, History } from 'lucide-react'
 import {
   // Components
   ChatWindow,
@@ -49,6 +49,7 @@ import {
   NetworkStatus,
   TokenCounter,
   VoiceInput,
+  FollowUpSuggestions,
   // Hooks
   useToast,
   useKeyboardShortcuts,
@@ -63,6 +64,7 @@ import {
 import { ChatButton } from './ChatButton'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { CompactPromptSelector, useSelectedPrompt } from './PromptSelector'
+import { HistorySidebar } from './HistorySidebar'
 import { cn } from '@/lib/utils'
 import { durations } from '@/lib/animations'
 
@@ -98,6 +100,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [showExportDialog, setShowExportDialog] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
 
   // Refs
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -113,6 +116,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     tokenTracker,
     isOnline,
     messageQueue,
+    suggestedFollowUps,
     handleSendMessage,
     handleMessageRetry,
     handleFeedback,
@@ -139,11 +143,18 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     branchState,
     currentBranch,
     switchBranch: switchBranchInternal,
+    createBranch,
     hasBranches,
   } = useBranching({
     onBranchSwitch: (branch) => {
       setMessages(branch.messages)
       toast.info(`Switched to: ${branch.name}`)
+      setShowHistory(false)
+    },
+    onBranchCreate: (branch) => {
+      setMessages(branch.messages)
+      toast.success(`Created new chat: ${branch.name}`)
+      setShowHistory(false)
     },
   })
 
@@ -185,12 +196,14 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       callback: () => {
         if (showSearch) {
           setShowSearch(false)
+        } else if (showHistory) {
+          setShowHistory(false)
         } else if (isOpen) {
           setIsOpen(false)
           restoreFocus()
         }
       },
-      description: 'Close assistant or search',
+      description: 'Close assistant, history or search',
     },
     {
       key: 'mod+k',
@@ -224,6 +237,10 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     },
     [switchBranchInternal, messages, toast]
   )
+
+  const handleCreateBranch = useCallback(() => {
+    createBranch(`Chat ${branchState.branches.length + 1}`, [])
+  }, [createBranch, branchState.branches.length])
 
   // Open code in playground handler
   const handleOpenInPlayground = useCallback(
@@ -262,16 +279,15 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
   // Check if messages have playground-compatible code (memoized)
   const messagesWithPlaygroundCode = useMemo(() => {
-    const result = new Set<string>()
+    const result = new Map<string, string>() // messageId -> language
     for (const message of messages) {
       if (message.role !== 'assistant') continue
       const codeBlocks = extractCodeBlocks(message.content)
-      if (
-        codeBlocks.some((block) =>
-          isPlaygroundCompatible(block.language, block.code)
-        )
-      ) {
-        result.add(message.id)
+      const compatibleBlock = codeBlocks.find((block) =>
+        isPlaygroundCompatible(block.language, block.code)
+      )
+      if (compatibleBlock) {
+        result.set(message.id, compatibleBlock.language)
       }
     }
     return result
@@ -303,6 +319,13 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const handleSelectSuggestion = useCallback(
     (suggestion: PromptSuggestion) => {
       handleSendMessage(suggestion.text)
+    },
+    [handleSendMessage]
+  )
+
+  const handleSelectFollowUp = useCallback(
+    (text: string) => {
+      handleSendMessage(text)
     },
     [handleSendMessage]
   )
@@ -369,6 +392,16 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               Chat with the Clarity Chat documentation assistant.
             </span>
 
+            {/* History Sidebar */}
+            <HistorySidebar
+              isOpen={showHistory}
+              onClose={() => setShowHistory(false)}
+              branches={branchState.branches}
+              currentBranchId={branchState.currentBranchId}
+              onSwitchBranch={switchBranch}
+              onCreateBranch={handleCreateBranch}
+            />
+
             {/* Network Status Indicator */}
             <NetworkStatus
               className="absolute top-2 right-12 z-10"
@@ -399,49 +432,20 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               />
             </div>
 
-            {/* Branch Selector */}
-            {hasBranches && (
-              <div className="absolute top-2 left-4 z-10 flex items-center gap-2">
-                <svg
-                  className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                {branchState.branches.length > 1 ? (
-                  <>
-                    <label htmlFor="branch-selector" className="sr-only">
-                      Select conversation branch
-                    </label>
-                    <select
-                      id="branch-selector"
-                      value={branchState.currentBranchId}
-                      onChange={(e) => switchBranch(e.target.value)}
-                      className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                      aria-label="Switch conversation branch"
-                    >
-                      {branchState.branches.map((branch) => (
-                        <option key={branch.id} value={branch.id}>
-                          {branch.name}
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                ) : (
-                  <span className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md">
-                    {currentBranch.name}
-                  </span>
+            {/* Branch Selector Toggle */}
+            <div className="absolute top-2 left-4 z-10">
+              <button
+                onClick={() => setShowHistory((prev) => !prev)}
+                className={cn(
+                  'flex items-center gap-2 px-2 py-1 text-xs font-medium rounded-md transition-colors',
+                  'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
                 )}
-              </div>
-            )}
+                aria-label="Toggle chat history"
+              >
+                <History className="w-3.5 h-3.5" />
+                {currentBranch.name}
+              </button>
+            </div>
 
             {/* Search Toggle Button */}
             {messages.length > 0 && (
@@ -482,7 +486,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
             {/* Token Counter */}
             {tokenTracker.tokens > 0 && (
-              <div className="absolute top-2 left-4 z-10 max-w-[200px]">
+              <div className="absolute top-2 left-4 z-10 max-w-[200px] mt-8 lg:mt-0 lg:left-32">
                 <TokenCounter
                   currentTokens={tokenTracker.tokens}
                   maxTokens={MODEL_MAX_TOKENS}
@@ -544,7 +548,16 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                       aria-label="Open code in CodeSandbox playground"
                     >
                       <Terminal className="w-3.5 h-3.5" />
-                      Try Code
+                      Try{' '}
+                      {messagesWithPlaygroundCode.get(
+                        [...messages]
+                          .reverse()
+                          .find(
+                            (m) =>
+                              m.role === 'assistant' &&
+                              messagesWithPlaygroundCode.has(m.id)
+                          )?.id || ''
+                      ) || 'Code'}
                     </button>
                   )}
                 </div>
@@ -557,7 +570,17 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 />
               }
               className="h-full flex flex-col"
-            />
+            >
+              {/* Follow-up Suggestions at bottom of chat */}
+              {suggestedFollowUps.length > 0 && !isLoading && (
+                <div className="px-4 pb-4">
+                  <FollowUpSuggestions
+                    suggestions={suggestedFollowUps}
+                    onSelect={handleSelectFollowUp}
+                  />
+                </div>
+              )}
+            </ChatWindow>
 
             {/* Citations Panel */}
             <AnimatePresence>
