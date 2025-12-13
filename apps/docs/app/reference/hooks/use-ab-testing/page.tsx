@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useABTesting - Clarity Chat Components',
-  description: 'Hook for managing A/B tests with variant assignment, experiment tracking, and statistical analysis.',
+  description:
+    'Hook for managing A/B tests with variant assignment, experiment tracking, and statistical analysis.',
 }
 
 const optionsProps: Prop[] = [
@@ -37,7 +36,8 @@ export default function UseABTestingPage() {
         <span className="docs-badge">Hook</span>
         <h1>useABTesting</h1>
         <p className="docs-lead">
-          Hook for managing A/B tests with variant assignment, experiment tracking, conversion tracking, and statistical analysis.
+          Hook for managing A/B tests with variant assignment, experiment
+          tracking, conversion tracking, and statistical analysis.
         </p>
       </div>
 
@@ -53,9 +53,7 @@ export default function UseABTestingPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Assign users to experiment variants:
-        </p>
+        <p>Assign users to experiment variants:</p>
         <CodePlayground
           initialCode={`import { useABTesting } from '@clarity-chat/react'
 
@@ -85,9 +83,7 @@ function ExperimentComponent() {
 
       <section className="docs-section">
         <h2>Experiment Results</h2>
-        <p>
-          Get experiment results and metrics:
-        </p>
+        <p>Get experiment results and metrics:</p>
         <CodePlayground
           initialCode={`import { useABTesting } from '@clarity-chat/react'
 
@@ -114,9 +110,7 @@ function ResultsView() {
 
       <section className="docs-section">
         <h2>Conversion Tracking</h2>
-        <p>
-          Track conversions for experiments:
-        </p>
+        <p>Track conversions for experiments:</p>
         <CodePlayground
           initialCode={`import { useABTesting } from '@clarity-chat/react'
 
@@ -147,9 +141,7 @@ function ConversionTracking() {
 
       <section className="docs-section">
         <h2>Statistical Significance</h2>
-        <p>
-          Check statistical significance:
-        </p>
+        <p>Check statistical significance:</p>
         <CodePlayground
           initialCode={`import { useABTesting } from '@clarity-chat/react'
 
@@ -176,9 +168,7 @@ function SignificanceCheck() {
 
       <section className="docs-section">
         <h2>Experiment Recommendations</h2>
-        <p>
-          Get experiment recommendations:
-        </p>
+        <p>Get experiment recommendations:</p>
         <CodePlayground
           initialCode={`import { useABTesting } from '@clarity-chat/react'
 
@@ -213,18 +203,32 @@ function Recommendations() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>getVariant</code>: Function to get assigned variant for experiment</li>
-          <li><code>trackConversion</code>: Function to track conversions</li>
-          <li><code>experiments</code>: Array of all experiments</li>
-          <li><code>getExperiment</code>: Function to get experiment by ID</li>
-          <li><code>isInExperiment</code>: Function to check if user is in experiment</li>
+          <li>
+            <code>getVariant</code>: Function to get assigned variant for
+            experiment
+          </li>
+          <li>
+            <code>trackConversion</code>: Function to track conversions
+          </li>
+          <li>
+            <code>experiments</code>: Array of all experiments
+          </li>
+          <li>
+            <code>getExperiment</code>: Function to get experiment by ID
+          </li>
+          <li>
+            <code>isInExperiment</code>: Function to check if user is in
+            experiment
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use consistent <code>userId</code> for consistent variant assignment</li>
+          <li>
+            Use consistent <code>userId</code> for consistent variant assignment
+          </li>
           <li>Track conversions for all significant actions</li>
           <li>Wait for statistical significance before concluding</li>
           <li>Follow experiment recommendations</li>
@@ -235,8 +239,18 @@ function Recommendations() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/ab-testing-dashboard">ABTestingDashboard</a> - A/B testing dashboard</li>
-          <li><a href="/reference/components/user-interaction-analytics">UserInteractionAnalytics</a> - Interaction analytics</li>
+          <li>
+            <a href="/reference/components/ab-testing-dashboard">
+              ABTestingDashboard
+            </a>{' '}
+            - A/B testing dashboard
+          </li>
+          <li>
+            <a href="/reference/components/user-interaction-analytics">
+              UserInteractionAnalytics
+            </a>{' '}
+            - Interaction analytics
+          </li>
         </ul>
       </section>
     </div>

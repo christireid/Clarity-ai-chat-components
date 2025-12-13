@@ -6,11 +6,10 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Memory Integration Recipe | Clarity Chat Cookbook',
-  description: 'Learn how to add conversation memory to your chat application for context-aware conversations.',
+  description:
+    'Learn how to add conversation memory to your chat application for context-aware conversations.',
 }
 
 export default function MemoryIntegrationPage() {
@@ -21,14 +20,16 @@ export default function MemoryIntegrationPage() {
       <h1>Memory Integration Recipe</h1>
 
       <p className="lead">
-        Add conversation memory to your chat application so the AI remembers context
-        across messages. Perfect for multi-turn conversations and context-aware applications.
+        Add conversation memory to your chat application so the AI remembers
+        context across messages. Perfect for multi-turn conversations and
+        context-aware applications.
       </p>
 
       <Callout type="info" title="What is Memory?">
         <p>
-          Memory allows the AI to remember previous messages in a conversation, enabling
-          natural multi-turn dialogues where the AI can reference earlier context.
+          Memory allows the AI to remember previous messages in a conversation,
+          enabling natural multi-turn dialogues where the AI can reference
+          earlier context.
         </p>
       </Callout>
 
@@ -37,7 +38,7 @@ export default function MemoryIntegrationPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Enable memory with just a few lines:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { ClarityChat } from '@clarity-chat/react'
@@ -64,10 +65,12 @@ function Chat() {
           Choose the right memory strategy for your use case:
         </p>
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">Sliding Window (Recommended)</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          Sliding Window (Recommended)
+        </h3>
         <p className="mb-4 text-gray-600 dark:text-gray-400">
-          Keeps the most recent messages within a token budget. Automatically trims older
-          messages when the budget is exceeded.
+          Keeps the most recent messages within a token budget. Automatically
+          trims older messages when the budget is exceeded.
         </p>
         <EnhancedCodeBlock
           language="tsx"
@@ -120,7 +123,7 @@ function Chat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           For custom UIs, use the hook directly:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
@@ -157,7 +160,9 @@ function Chat() {
           Persist memory across sessions using localStorage or a backend:
         </p>
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">LocalStorage Persistence</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          LocalStorage Persistence
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat } from '@clarity-chat/react'
@@ -248,7 +253,7 @@ function Chat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Monitor memory usage to optimize performance:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat } from '@clarity-chat/react'
@@ -289,11 +294,26 @@ function Chat() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Choose the right strategy</strong> - Sliding window for most cases, summary for very long conversations</li>
-          <li><strong>Set appropriate token budgets</strong> - Balance context vs. cost</li>
-          <li><strong>Monitor memory usage</strong> - Use memoryInfo to track usage</li>
-          <li><strong>Persist important conversations</strong> - Save to backend for long-term storage</li>
-          <li><strong>Clear memory when needed</strong> - Reset conversations with chat.setMessages([])</li>
+          <li>
+            <strong>Choose the right strategy</strong> - Sliding window for most
+            cases, summary for very long conversations
+          </li>
+          <li>
+            <strong>Set appropriate token budgets</strong> - Balance context vs.
+            cost
+          </li>
+          <li>
+            <strong>Monitor memory usage</strong> - Use memoryInfo to track
+            usage
+          </li>
+          <li>
+            <strong>Persist important conversations</strong> - Save to backend
+            for long-term storage
+          </li>
+          <li>
+            <strong>Clear memory when needed</strong> - Reset conversations with
+            chat.setMessages([])
+          </li>
         </ul>
       </section>
 
@@ -320,7 +340,10 @@ function Chat() {
       </section>
 
       <Pagination
-        prev={{ title: '3-Line Quick Start', href: '/cookbook/quick-start-3-lines' }}
+        prev={{
+          title: '3-Line Quick Start',
+          href: '/cookbook/quick-start-3-lines',
+        }}
         next={{ title: 'Streaming Setup', href: '/cookbook/streaming-setup' }}
       />
     </>

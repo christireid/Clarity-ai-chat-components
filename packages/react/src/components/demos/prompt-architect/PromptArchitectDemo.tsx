@@ -357,7 +357,7 @@ export function PromptArchitectDemo({
       // Cmd/Ctrl+S to save version (prevent browser save dialog)
       if (isMod && e.key === 's') {
         e.preventDefault()
-        saveVersion()
+        saveVersion(`Version ${state.versions.length + 1}`)
       }
     }
 

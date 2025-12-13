@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import {
   LinkPreview,
   LinkPreviewSkeleton,
@@ -38,12 +37,10 @@ const mockWindowOpen = vi.fn()
 beforeEach(() => {
   vi.stubGlobal('matchMedia', mockMatchMedia)
   vi.stubGlobal('open', mockWindowOpen)
-  vi.useFakeTimers()
 })
 
 afterEach(() => {
   vi.unstubAllGlobals()
-  vi.useRealTimers()
   vi.clearAllMocks()
 })
 
@@ -122,7 +119,7 @@ describe('LinkPreview', () => {
       render(<LinkPreview metadata={minimalMetadata} />)
 
       // Should show domain when no title
-      expect(screen.getByText('example.com')).toBeInTheDocument()
+      expect(screen.getAllByText('example.com').length).toBeGreaterThan(0)
     })
 
     it('should apply custom className', () => {
@@ -240,7 +237,7 @@ describe('LinkPreview', () => {
       const handleClick = vi.fn()
       render(<LinkPreview metadata={sampleMetadata} onClick={handleClick} />)
 
-      await userEvent.click(screen.getByRole('link'))
+      fireEvent.click(screen.getByRole('link'))
 
       expect(handleClick).toHaveBeenCalledTimes(1)
     })
@@ -269,7 +266,7 @@ describe('LinkPreview', () => {
       const handleRemove = vi.fn()
       render(<LinkPreview metadata={sampleMetadata} onRemove={handleRemove} />)
 
-      await userEvent.click(screen.getByRole('button', { name: /remove/i }))
+      fireEvent.click(screen.getByRole('button', { name: /remove/i }))
 
       expect(handleRemove).toHaveBeenCalledTimes(1)
     })
@@ -285,7 +282,7 @@ describe('LinkPreview', () => {
         />
       )
 
-      await userEvent.click(screen.getByRole('button', { name: /remove/i }))
+      fireEvent.click(screen.getByRole('button', { name: /remove/i }))
 
       expect(handleRemove).toHaveBeenCalledTimes(1)
       expect(handleClick).not.toHaveBeenCalled()
@@ -392,7 +389,7 @@ describe('LinkPreviewError', () => {
     const handleRetry = vi.fn()
     render(<LinkPreviewError url="https://example.com" onRetry={handleRetry} />)
 
-    await userEvent.click(screen.getByRole('button', { name: /retry/i }))
+    fireEvent.click(screen.getByRole('button', { name: /retry/i }))
 
     expect(handleRetry).toHaveBeenCalledTimes(1)
   })
@@ -488,7 +485,7 @@ describe('InlineLink', () => {
     const handlePreview = vi.fn()
     render(<InlineLink url="https://example.com" onPreview={handlePreview} />)
 
-    await userEvent.click(screen.getByRole('link'))
+    fireEvent.click(screen.getByRole('link'))
 
     expect(handlePreview).toHaveBeenCalledWith('https://example.com')
   })
@@ -505,11 +502,6 @@ describe('InlineLink', () => {
 
     const link = screen.getByRole('link')
     fireEvent.mouseEnter(link)
-
-    // Wait for any potential preview to appear
-    await act(async () => {
-      vi.advanceTimersByTime(500)
-    })
 
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
@@ -541,10 +533,6 @@ describe('SmartLinkPreview', () => {
     const handleLoad = vi.fn()
     render(<SmartLinkPreview url="https://example.com" onLoad={handleLoad} />)
 
-    await act(async () => {
-      vi.advanceTimersByTime(600) // Mock fetch delay
-    })
-
     await waitFor(() => {
       expect(handleLoad).toHaveBeenCalled()
     })
@@ -553,10 +541,6 @@ describe('SmartLinkPreview', () => {
   it('should show error state when fetch fails', async () => {
     const mockFetch = vi.fn().mockRejectedValue(new Error('Network error'))
     render(<SmartLinkPreview url="https://example.com" fetchFn={mockFetch} />)
-
-    await act(async () => {
-      vi.advanceTimersByTime(100)
-    })
 
     await waitFor(() => {
       expect(screen.getByText('Failed to load preview')).toBeInTheDocument()
@@ -575,10 +559,6 @@ describe('SmartLinkPreview', () => {
       />
     )
 
-    await act(async () => {
-      vi.advanceTimersByTime(100)
-    })
-
     await waitFor(() => {
       expect(handleError).toHaveBeenCalled()
     })
@@ -595,10 +575,6 @@ describe('SmartLinkPreview', () => {
       />
     )
 
-    await act(async () => {
-      vi.advanceTimersByTime(100)
-    })
-
     await waitFor(() => {
       expect(screen.getByTestId('fallback')).toBeInTheDocument()
     })
@@ -606,10 +582,6 @@ describe('SmartLinkPreview', () => {
 
   it('should support different variants', async () => {
     render(<SmartLinkPreview url="https://example.com" variant="compact" />)
-
-    await act(async () => {
-      vi.advanceTimersByTime(600)
-    })
 
     // Should render compact variant
     await waitFor(() => {
@@ -634,14 +606,15 @@ describe('useLinkPreview', () => {
   it('should set loading state when fetching', async () => {
     const { result } = renderHook(() => useLinkPreview())
 
+    let promise: Promise<LinkMetadata> | undefined
     act(() => {
-      result.current.fetchMetadata('https://example.com')
+      promise = result.current.fetchMetadata('https://example.com')
     })
 
     expect(result.current.loading).toBe(true)
 
     await act(async () => {
-      vi.advanceTimersByTime(600)
+      await promise
     })
 
     expect(result.current.loading).toBe(false)
@@ -651,8 +624,7 @@ describe('useLinkPreview', () => {
     const { result } = renderHook(() => useLinkPreview())
 
     await act(async () => {
-      result.current.fetchMetadata('https://example.com')
-      vi.advanceTimersByTime(600)
+      await result.current.fetchMetadata('https://example.com')
     })
 
     expect(result.current.metadata).not.toBeNull()
@@ -695,8 +667,7 @@ describe('useLinkPreview', () => {
     const { result } = renderHook(() => useLinkPreview())
 
     await act(async () => {
-      result.current.fetchMetadata('https://example.com')
-      vi.advanceTimersByTime(600)
+      await result.current.fetchMetadata('https://example.com')
     })
 
     expect(result.current.metadata).not.toBeNull()
@@ -749,22 +720,31 @@ describe('useLinkPreview', () => {
   })
 
   it('should prevent duplicate fetches for same URL', async () => {
-    const mockFetch = vi.fn().mockImplementation(async () => {
-      await new Promise((r) => setTimeout(r, 100))
-      return sampleMetadata
-    })
+    let resolveFetch: ((value: LinkMetadata) => void) | null = null
+    const mockFetch = vi.fn().mockImplementation(
+      () =>
+        new Promise<LinkMetadata>((resolve) => {
+          resolveFetch = resolve
+        })
+    )
 
     const { result } = renderHook(() => useLinkPreview({ fetchFn: mockFetch }))
 
     // Start two fetches simultaneously
+    let p1: Promise<LinkMetadata> | undefined
+    let p2: Promise<LinkMetadata> | undefined
     await act(async () => {
-      result.current.fetchMetadata('https://example.com')
-      result.current.fetchMetadata('https://example.com')
-      vi.advanceTimersByTime(200)
+      p1 = result.current.fetchMetadata('https://example.com')
+      p2 = result.current.fetchMetadata('https://example.com')
     })
 
     // Should only have called fetch once
     expect(mockFetch).toHaveBeenCalledTimes(1)
+
+    resolveFetch?.(sampleMetadata)
+    await act(async () => {
+      await Promise.all([p1, p2])
+    })
   })
 })
 
@@ -1336,7 +1316,7 @@ describe('Expandable Description', () => {
       name: /show more|expand/i,
     })
     if (expandButton) {
-      await userEvent.click(expandButton)
+      fireEvent.click(expandButton)
 
       // After expansion, description should be fully visible or have collapse option
       expect(

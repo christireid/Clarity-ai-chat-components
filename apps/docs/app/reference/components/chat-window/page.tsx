@@ -36,7 +36,7 @@ function BasicChatDemo() {
       createdAt: new Date(),
       updatedAt: new Date(),
     }
-    setMessages(prev => [...prev, newMessage])
+    setMessages((prev) => [...prev, newMessage])
 
     // Simulate AI response after a delay
     setTimeout(() => {
@@ -49,7 +49,7 @@ function BasicChatDemo() {
         createdAt: new Date(),
         updatedAt: new Date(),
       }
-      setMessages(prev => [...prev, aiResponse])
+      setMessages((prev) => [...prev, aiResponse])
     }, 1000)
   }, [])
 
@@ -69,65 +69,77 @@ const chatWindowProps: Prop[] = [
     name: 'messages',
     type: 'Message[] | CoreMessage[]',
     required: true,
-    description: 'Array of message objects to display. Accepts either Message[] (from @clarity-chat/types) or CoreMessage[] (Vercel AI SDK compatible format).',
+    description:
+      'Array of message objects to display. Accepts either Message[] (from @clarity-chat/types) or CoreMessage[] (Vercel AI SDK compatible format).',
   },
   {
     name: 'onSendMessage',
     type: '(content: string) => void',
     required: true,
-    description: 'Callback function triggered when user sends a message. Receives the message content as a string.',
+    description:
+      'Callback function triggered when user sends a message. Receives the message content as a string.',
   },
   {
     name: 'isLoading',
     type: 'boolean',
     default: 'false',
-    description: 'Whether the chat is currently loading a response. Shows a loading indicator in the message list.',
+    description:
+      'Whether the chat is currently loading a response. Shows a loading indicator in the message list.',
   },
   {
     name: 'aiStatus',
     type: 'AIStatus',
-    description: 'AI processing status for the thinking indicator. Shows when the AI is processing (thinking, reasoning, etc.).',
+    description:
+      'AI processing status for the thinking indicator. Shows when the AI is processing (thinking, reasoning, etc.).',
   },
   {
     name: 'onMessageCopy',
     type: '(messageId: string, content: string) => void',
-    description: 'Callback when a message is copied to clipboard. Receives message ID and content.',
+    description:
+      'Callback when a message is copied to clipboard. Receives message ID and content.',
   },
   {
     name: 'onMessageFeedback',
     type: '(messageId: string, type: "up" | "down") => void',
-    description: 'Callback when user provides feedback on a message (thumbs up/down).',
+    description:
+      'Callback when user provides feedback on a message (thumbs up/down).',
   },
   {
     name: 'onMessageRetry',
     type: '(messageId: string) => void',
-    description: 'Callback when user requests to retry a message. Enables retry button on failed messages.',
+    description:
+      'Callback when user requests to retry a message. Enables retry button on failed messages.',
   },
   {
     name: 'onEditMessage',
     type: '(messageId: string) => void',
-    description: 'Callback when user edits a message. Enables edit functionality.',
+    description:
+      'Callback when user edits a message. Enables edit functionality.',
   },
   {
     name: 'onRegenerateMessage',
     type: '(messageId: string) => void',
-    description: 'Callback when user requests message regeneration. Enables regenerate button.',
+    description:
+      'Callback when user requests message regeneration. Enables regenerate button.',
   },
   {
     name: 'onDeleteMessage',
     type: '(messageId: string) => void',
-    description: 'Callback when user deletes a message. Enables delete functionality.',
+    description:
+      'Callback when user deletes a message. Enables delete functionality.',
   },
   {
     name: 'emptyState',
     type: 'ReactNode',
-    description: 'Custom content to display when there are no messages. Defaults to a welcome message with bot icon.',
+    description:
+      'Custom content to display when there are no messages. Defaults to a welcome message with bot icon.',
   },
   {
     name: 'showHeader',
     type: 'boolean',
     default: 'false',
-    description: 'Show header with session information at the top of the chat window.',
+    description:
+      'Show header with session information at the top of the chat window.',
   },
   {
     name: 'sessionTitle',
@@ -138,70 +150,75 @@ const chatWindowProps: Prop[] = [
   {
     name: 'sessionSubtitle',
     type: 'string',
-    description: 'Subtitle or description displayed in the header when showHeader is true.',
+    description:
+      'Subtitle or description displayed in the header when showHeader is true.',
   },
   {
     name: 'headerActions',
     type: 'ReactNode',
-    description: 'Custom actions to display in the header (e.g., settings button, menu).',
+    description:
+      'Custom actions to display in the header (e.g., settings button, menu).',
   },
   {
     name: 'showMessageCount',
     type: 'boolean',
     default: 'false',
-    description: 'Show message count badge in the header when showHeader is true.',
+    description:
+      'Show message count badge in the header when showHeader is true.',
   },
   {
     name: 'onExport',
     type: '() => void',
-    description: 'Callback function triggered when user exports the conversation. Shows export button in header.',
+    description:
+      'Callback function triggered when user exports the conversation. Shows export button in header.',
   },
   {
     name: 'onClear',
     type: '() => void',
-    description: 'Callback function triggered when user clears the chat. Shows clear button in header.',
+    description:
+      'Callback function triggered when user clears the chat. Shows clear button in header.',
   },
   {
     name: 'className',
     type: 'string',
-    description: 'Additional CSS classes to apply to the chat container element.',
+    description:
+      'Additional CSS classes to apply to the chat container element.',
   },
 ]
-
-export const dynamic = 'force-dynamic'
 
 export default function ChatWindowPage() {
   return (
     <ToastProvider>
-    <>
-      <Breadcrumbs />
+      <>
+        <Breadcrumbs />
 
-      <h1>ChatWindow</h1>
+        <h1>ChatWindow</h1>
 
-      <p className="lead">
-        The ChatWindow component is the primary container for building chat
-        interfaces. It handles message display, input, and all core chat
-        functionality.
-      </p>
-
-      <Callout type="info">
-        <p>
-          This component is highly customizable and works out-of-the-box with
-          sensible defaults. You can progressively enhance it with features like
-          reactions, typing indicators, and more.
+        <p className="lead">
+          The ChatWindow component is the primary container for building chat
+          interfaces. It handles message display, input, and all core chat
+          functionality.
         </p>
-      </Callout>
 
-      <ViewInStorybook component="ChatWindow" />
+        <Callout type="info">
+          <p>
+            This component is highly customizable and works out-of-the-box with
+            sensible defaults. You can progressively enhance it with features
+            like reactions, typing indicators, and more.
+          </p>
+        </Callout>
 
-      <section className="my-12">
-        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-        <p className="mb-6 text-gray-600 dark:text-gray-400">
-          Experiment with the ChatWindow component! Try different configurations including
-          avatars, timestamps, and loading states to see how they enhance the chat experience.
-        </p>
-        <CodePlayground
-          initialCode={`function Example() {
+        <ViewInStorybook component="ChatWindow" />
+
+        <section className="my-12">
+          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+          <p className="mb-6 text-gray-600 dark:text-gray-400">
+            Experiment with the ChatWindow component! Try different
+            configurations including avatars, timestamps, and loading states to
+            see how they enhance the chat experience.
+          </p>
+          <CodePlayground
+            initialCode={`function Example() {
   const [messages, setMessages] = React.useState([
     {
       id: '1',
@@ -246,29 +263,30 @@ export default function ChatWindowPage() {
 }
 
 render(<Example />)`}
-        />
-      </section>
+          />
+        </section>
 
-      <h2 id="import">Import</h2>
+        <h2 id="import">Import</h2>
 
-      <EnhancedCodeBlock
-        code={`import { ChatWindow } from '@clarity-chat/react'
+        <EnhancedCodeBlock
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
-        language="tsx"
-      />
+          language="tsx"
+        />
 
-      <h2 id="basic-usage">Basic Usage</h2>
+        <h2 id="basic-usage">Basic Usage</h2>
 
-      <p>
-        ChatWindow is a composable component that accepts messages and handles rendering,
-        input, and user interactions. It works with both <code>Message[]</code> from{' '}
-        <code>@clarity-chat/types</code> and <code>CoreMessage[]</code> from Vercel AI SDK.
-      </p>
+        <p>
+          ChatWindow is a composable component that accepts messages and handles
+          rendering, input, and user interactions. It works with both{' '}
+          <code>Message[]</code> from <code>@clarity-chat/types</code> and{' '}
+          <code>CoreMessage[]</code> from Vercel AI SDK.
+        </p>
 
-      <ComponentPreview
-        title="Simple Chat Interface"
-        description="A minimal chat window with messages and input"
-        code={`import { useState, useCallback } from 'react'
+        <ComponentPreview
+          title="Simple Chat Interface"
+          description="A minimal chat window with messages and input"
+          code={`import { useState, useCallback } from 'react'
 import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
@@ -310,18 +328,19 @@ function BasicChat() {
     </ToastProvider>
   )
 }`}
-      >
-        <BasicChatDemo />
-      </ComponentPreview>
+        >
+          <BasicChatDemo />
+        </ComponentPreview>
 
-      <h2 id="with-header">With Header</h2>
+        <h2 id="with-header">With Header</h2>
 
-      <p>
-        Add a header with session information, message count, and action buttons:
-      </p>
+        <p>
+          Add a header with session information, message count, and action
+          buttons:
+        </p>
 
-      <EnhancedCodeBlock
-        code={`import { ChatWindow } from '@clarity-chat/react'
+        <EnhancedCodeBlock
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/react'
 
 function ChatWithHeader() {
@@ -353,18 +372,18 @@ function ChatWithHeader() {
     />
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <h2 id="with-ai-status">With AI Status Indicator</h2>
+        <h2 id="with-ai-status">With AI Status Indicator</h2>
 
-      <p>
-        Show thinking indicator when AI is processing with detailed status:
-      </p>
+        <p>
+          Show thinking indicator when AI is processing with detailed status:
+        </p>
 
-      <EnhancedCodeBlock
-        code={`import { ChatWindow } from '@clarity-chat/react'
+        <EnhancedCodeBlock
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { AIStatus } from '@clarity-chat/types'
 
 function ChatWithAIStatus() {
@@ -400,18 +419,16 @@ function ChatWithAIStatus() {
     />
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <h2 id="message-operations">Message Operations</h2>
+        <h2 id="message-operations">Message Operations</h2>
 
-      <p>
-        Enable message editing, deletion, regeneration, and feedback:
-      </p>
+        <p>Enable message editing, deletion, regeneration, and feedback:</p>
 
-      <EnhancedCodeBlock
-        code={`import { ChatWindow } from '@clarity-chat/react'
+        <EnhancedCodeBlock
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
 function ChatWithOperations() {
@@ -453,18 +470,16 @@ function ChatWithOperations() {
     />
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <h2 id="custom-empty-state">Custom Empty State</h2>
+        <h2 id="custom-empty-state">Custom Empty State</h2>
 
-      <p>
-        Provide a custom empty state when there are no messages:
-      </p>
+        <p>Provide a custom empty state when there are no messages:</p>
 
-      <EnhancedCodeBlock
-        code={`import { ChatWindow } from '@clarity-chat/react'
+        <EnhancedCodeBlock
+          code={`import { ChatWindow } from '@clarity-chat/react'
 
 function ChatWithCustomEmptyState() {
   const customEmptyState = (
@@ -489,18 +504,18 @@ function ChatWithCustomEmptyState() {
     />
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <h2 id="with-useclaritychat">With useClarityChat Hook</h2>
+        <h2 id="with-useclaritychat">With useClarityChat Hook</h2>
 
-      <p>
-        ChatWindow works seamlessly with the <code>useClarityChat</code> hook:
-      </p>
+        <p>
+          ChatWindow works seamlessly with the <code>useClarityChat</code> hook:
+        </p>
 
-      <EnhancedCodeBlock
-        code={`import { ChatWindow, useClarityChat } from '@clarity-chat/react'
+        <EnhancedCodeBlock
+          code={`import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 
 function ChatWithHook() {
   const chat = useClarityChat({
@@ -520,31 +535,30 @@ function ChatWithHook() {
     />
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <Callout type="tip">
-        <p>
-          For drop-in usage without manual hook integration, use the{' '}
-          <a href="/reference/components/clarity-chat">ClarityChat</a> component instead.
-        </p>
-      </Callout>
+        <Callout type="tip">
+          <p>
+            For drop-in usage without manual hook integration, use the{' '}
+            <a href="/reference/components/clarity-chat">ClarityChat</a>{' '}
+            component instead.
+          </p>
+        </Callout>
 
-      <h2 id="props">Props</h2>
+        <h2 id="props">Props</h2>
 
-      <PropsTable props={chatWindowProps} />
+        <PropsTable props={chatWindowProps} />
 
-      <h2 id="message-type">Message Type</h2>
+        <h2 id="message-type">Message Type</h2>
 
-      <p>
-        ChatWindow accepts messages in two formats:
-      </p>
+        <p>ChatWindow accepts messages in two formats:</p>
 
-      <h3>Message Format (from @clarity-chat/types)</h3>
+        <h3>Message Format (from @clarity-chat/types)</h3>
 
-      <EnhancedCodeBlock
-        code={`interface Message {
+        <EnhancedCodeBlock
+          code={`interface Message {
   id: string
   chatId: string
   role: 'user' | 'assistant' | 'system'
@@ -557,14 +571,14 @@ function ChatWithHook() {
   updatedAt: Date
   editHistory?: MessageEdit[]
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <h3>CoreMessage Format (Vercel AI SDK compatible)</h3>
+        <h3>CoreMessage Format (Vercel AI SDK compatible)</h3>
 
-      <EnhancedCodeBlock
-        code={`interface CoreMessage {
+        <EnhancedCodeBlock
+          code={`interface CoreMessage {
   id?: string
   role: 'user' | 'assistant' | 'system' | 'function' | 'tool'
   content: string | Array<{
@@ -581,23 +595,24 @@ function ChatWithHook() {
     result?: any
   }>
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <Callout type="info">
-        <p>
-          ChatWindow automatically converts <code>CoreMessage[]</code> to <code>Message[]</code>{' '}
-          format internally, so you can use either format seamlessly.
-        </p>
-      </Callout>
+        <Callout type="info">
+          <p>
+            ChatWindow automatically converts <code>CoreMessage[]</code> to{' '}
+            <code>Message[]</code> format internally, so you can use either
+            format seamlessly.
+          </p>
+        </Callout>
 
-      <h2 id="advanced-examples">Advanced Examples</h2>
+        <h2 id="advanced-examples">Advanced Examples</h2>
 
-      <h3>Complete Chat with All Features</h3>
+        <h3>Complete Chat with All Features</h3>
 
-      <EnhancedCodeBlock
-        code={`import { useState, useCallback } from 'react'
+        <EnhancedCodeBlock
+          code={`import { useState, useCallback } from 'react'
 import { ChatWindow, useClarityChat, MemoryProvider } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
@@ -651,21 +666,21 @@ function CompleteChat() {
     </MemoryProvider>
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <Callout type="warning">
-        <p>
-          <strong>Note:</strong> The API endpoint <code>/api/chat</code> is a placeholder.
-          You'll need to implement your own backend API endpoint.
-        </p>
-      </Callout>
+        <Callout type="warning">
+          <p>
+            <strong>Note:</strong> The API endpoint <code>/api/chat</code> is a
+            placeholder. You'll need to implement your own backend API endpoint.
+          </p>
+        </Callout>
 
-      <h3>With Message Attachments</h3>
+        <h3>With Message Attachments</h3>
 
-      <EnhancedCodeBlock
-        code={`import { ChatWindow } from '@clarity-chat/react'
+        <EnhancedCodeBlock
+          code={`import { ChatWindow } from '@clarity-chat/react'
 import type { Message, MessageAttachment } from '@clarity-chat/types'
 
 function ChatWithAttachments() {
@@ -698,114 +713,144 @@ function ChatWithAttachments() {
     />
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <h2 id="related">Related</h2>
+        <h2 id="related">Related</h2>
 
-      <ul>
-        <li>
-          <a href="/reference/components/clarity-chat">ClarityChat</a> - Drop-in component with built-in state management
-        </li>
-        <li>
-          <a href="/reference/components/clarity-chat-presets">ClarityChatPresets</a> - Pre-configured variants
-        </li>
-        <li>
-          <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat state hook
-        </li>
-        <li>
-          <a href="/reference/components/message-list">MessageList</a> - Message display component
-        </li>
-        <li>
-          <a href="/reference/components/chat-input">ChatInput</a> - Input component
-        </li>
-        <li>
-          <a href="/reference/components/message">Message</a> - Individual message component
-        </li>
-      </ul>
-
-      <h2 id="accessibility">Accessibility</h2>
-
-      <p>ChatWindow is built with accessibility in mind and follows WCAG 2.1 AA guidelines:</p>
-
-      <ul>
-        <li>✅ Full keyboard navigation support (Tab, Enter, Escape)</li>
-        <li>✅ ARIA labels and roles for screen readers</li>
-        <li>✅ Focus management for input and interactive elements</li>
-        <li>✅ High contrast mode compatible</li>
-        <li>✅ Reduced motion support (respects <code>prefers-reduced-motion</code>)</li>
-        <li>✅ Semantic HTML structure</li>
-        <li>✅ Proper heading hierarchy</li>
-        <li>✅ Screen reader announcements for new messages</li>
-      </ul>
-
-      <Callout type="tip">
-        <p>
-          The component automatically handles focus management when new messages arrive
-          and provides proper ARIA live regions for screen reader announcements.
-        </p>
-      </Callout>
-
-      <h2 id="performance">Performance</h2>
-
-      <p>ChatWindow is optimized for performance with large message lists:</p>
-
-      <ul>
-        <li>
-          <strong>Automatic message conversion:</strong> Efficiently converts <code>CoreMessage[]</code> to <code>Message[]</code> using memoization
-        </li>
-        <li>
-          <strong>Optimized rendering:</strong> Uses React 19 compiler optimizations for automatic memoization
-        </li>
-        <li>
-          <strong>Message grouping:</strong> Groups consecutive messages from the same sender for better visual performance
-        </li>
-        <li>
-          <strong>Lazy loading:</strong> Message attachments and images are loaded on demand
-        </li>
-      </ul>
-
-      <Callout type="tip">
-        <p>For optimal performance with 1000+ messages:</p>
         <ul>
           <li>
-            Use <a href="/reference/components/virtualized-message-list">VirtualizedMessageList</a> for very large message lists
+            <a href="/reference/components/clarity-chat">ClarityChat</a> -
+            Drop-in component with built-in state management
           </li>
-          <li>Implement pagination or infinite scroll for message history</li>
-          <li>Debounce typing indicators and status updates</li>
-          <li>Lazy load message attachments and media</li>
-          <li>Use <code>React.memo</code> for custom message renderers</li>
+          <li>
+            <a href="/reference/components/clarity-chat-presets">
+              ClarityChatPresets
+            </a>{' '}
+            - Pre-configured variants
+          </li>
+          <li>
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
+            Chat state hook
+          </li>
+          <li>
+            <a href="/reference/components/message-list">MessageList</a> -
+            Message display component
+          </li>
+          <li>
+            <a href="/reference/components/chat-input">ChatInput</a> - Input
+            component
+          </li>
+          <li>
+            <a href="/reference/components/message">Message</a> - Individual
+            message component
+          </li>
         </ul>
-      </Callout>
 
-      <h2 id="troubleshooting">Troubleshooting</h2>
+        <h2 id="accessibility">Accessibility</h2>
 
-      <h3>Messages not displaying</h3>
-      <p>
-        Ensure your messages array contains valid <code>Message</code> or <code>CoreMessage</code> objects
-        with required fields: <code>id</code>, <code>role</code>, <code>content</code>, <code>createdAt</code>, <code>updatedAt</code>.
-      </p>
+        <p>
+          ChatWindow is built with accessibility in mind and follows WCAG 2.1 AA
+          guidelines:
+        </p>
 
-      <h3>Input not working</h3>
-      <p>
-        Make sure <code>onSendMessage</code> is a valid function. The component will throw a helpful
-        error message if the prop is missing or invalid.
-      </p>
+        <ul>
+          <li>✅ Full keyboard navigation support (Tab, Enter, Escape)</li>
+          <li>✅ ARIA labels and roles for screen readers</li>
+          <li>✅ Focus management for input and interactive elements</li>
+          <li>✅ High contrast mode compatible</li>
+          <li>
+            ✅ Reduced motion support (respects{' '}
+            <code>prefers-reduced-motion</code>)
+          </li>
+          <li>✅ Semantic HTML structure</li>
+          <li>✅ Proper heading hierarchy</li>
+          <li>✅ Screen reader announcements for new messages</li>
+        </ul>
 
-      <h3>Header not showing</h3>
-      <p>
-        Set <code>showHeader={true}</code> to display the header. The header requires at least
-        <code>sessionTitle</code> to display properly.
-      </p>
+        <Callout type="tip">
+          <p>
+            The component automatically handles focus management when new
+            messages arrive and provides proper ARIA live regions for screen
+            reader announcements.
+          </p>
+        </Callout>
 
-      <Pagination
-        next={{
-          title: 'Message',
-          href: '/reference/components/message',
-        }}
-      />
-    </>
+        <h2 id="performance">Performance</h2>
+
+        <p>ChatWindow is optimized for performance with large message lists:</p>
+
+        <ul>
+          <li>
+            <strong>Automatic message conversion:</strong> Efficiently converts{' '}
+            <code>CoreMessage[]</code> to <code>Message[]</code> using
+            memoization
+          </li>
+          <li>
+            <strong>Optimized rendering:</strong> Uses React 19 compiler
+            optimizations for automatic memoization
+          </li>
+          <li>
+            <strong>Message grouping:</strong> Groups consecutive messages from
+            the same sender for better visual performance
+          </li>
+          <li>
+            <strong>Lazy loading:</strong> Message attachments and images are
+            loaded on demand
+          </li>
+        </ul>
+
+        <Callout type="tip">
+          <p>For optimal performance with 1000+ messages:</p>
+          <ul>
+            <li>
+              Use{' '}
+              <a href="/reference/components/virtualized-message-list">
+                VirtualizedMessageList
+              </a>{' '}
+              for very large message lists
+            </li>
+            <li>Implement pagination or infinite scroll for message history</li>
+            <li>Debounce typing indicators and status updates</li>
+            <li>Lazy load message attachments and media</li>
+            <li>
+              Use <code>React.memo</code> for custom message renderers
+            </li>
+          </ul>
+        </Callout>
+
+        <h2 id="troubleshooting">Troubleshooting</h2>
+
+        <h3>Messages not displaying</h3>
+        <p>
+          Ensure your messages array contains valid <code>Message</code> or{' '}
+          <code>CoreMessage</code> objects with required fields: <code>id</code>
+          , <code>role</code>, <code>content</code>, <code>createdAt</code>,{' '}
+          <code>updatedAt</code>.
+        </p>
+
+        <h3>Input not working</h3>
+        <p>
+          Make sure <code>onSendMessage</code> is a valid function. The
+          component will throw a helpful error message if the prop is missing or
+          invalid.
+        </p>
+
+        <h3>Header not showing</h3>
+        <p>
+          Set <code>showHeader={true}</code> to display the header. The header
+          requires at least
+          <code>sessionTitle</code> to display properly.
+        </p>
+
+        <Pagination
+          next={{
+            title: 'Message',
+            href: '/reference/components/message',
+          }}
+        />
+      </>
     </ToastProvider>
   )
 }

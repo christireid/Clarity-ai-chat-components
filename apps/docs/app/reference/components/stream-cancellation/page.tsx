@@ -1,7 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'StreamCancellation - Clarity Chat Components',
@@ -14,7 +13,9 @@ export default function StreamCancellationPage() {
       <div className="docs-header">
         <span className="docs-badge">Component</span>
         <h1>StreamCancellation</h1>
-        <p className="docs-lead">Allows users to cancel active generations and recover gracefully.</p>
+        <p className="docs-lead">
+          Allows users to cancel active generations and recover gracefully.
+        </p>
       </div>
 
       <section className="docs-section">

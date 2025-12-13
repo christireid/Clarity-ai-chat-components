@@ -133,7 +133,9 @@ function getRadiusValue(
     md: '0.375rem',
     lg: '0.5rem',
     xl: '0.75rem',
-    full: '9999px',
+    // "full" preset sets the base radius large; fully-rounded components should
+    // still use the `full` token (9999px) directly.
+    full: '1rem',
   }
   return radiusMap[preset]
 }

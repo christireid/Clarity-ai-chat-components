@@ -6,14 +6,17 @@
  */
 
 import * as React from 'react'
-import { motion } from 'framer-motion'
+import { motion, type HTMLMotionProps } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import {
   createPulseAnimation,
   createShimmerAnimation,
 } from '../animations/utils'
 
-export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface SkeletonProps extends Omit<
+  HTMLMotionProps<'div'>,
+  'children'
+> {
   /** Animation type */
   variant?: 'pulse' | 'shimmer' | 'none'
   /** Width of skeleton (CSS value) */
@@ -70,7 +73,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
   if (variant === 'none') {
     return (
-      <div
+      <motion.div
         className={cn(
           'bg-muted/60 backdrop-blur-sm',
           roundedClasses[rounded],

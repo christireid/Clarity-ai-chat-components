@@ -4,8 +4,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Cookbook: Rate Limiting & Quotas',
   description:
@@ -19,8 +17,8 @@ export default function RateLimitingRecipePage() {
         <span className="docs-badge">Cookbook</span>
         <h1>Rate Limiting &amp; Quotas</h1>
         <p className="docs-lead">
-          Learn how to throttle incoming requests, track token usage, and enforce
-          per-tenant limits before the bill arrives.
+          Learn how to throttle incoming requests, track token usage, and
+          enforce per-tenant limits before the bill arrives.
         </p>
       </div>
 
@@ -160,17 +158,32 @@ export async function POST(
       <section className="docs-section">
         <h2>Tips</h2>
         <ul>
-          <li>Store quota + rate limit history for analytics (send to <code>UsageDashboard</code>)</li>
-          <li>Expose remaining quota to admins so they can take action early</li>
-          <li>Use <code>WebhookManager</code> to alert billing teams when quotas are exceeded</li>
-          <li>Pair with <code>QuotaManager</code>’s <code>onWarning</code> hook to send proactive emails</li>
+          <li>
+            Store quota + rate limit history for analytics (send to{' '}
+            <code>UsageDashboard</code>)
+          </li>
+          <li>
+            Expose remaining quota to admins so they can take action early
+          </li>
+          <li>
+            Use <code>WebhookManager</code> to alert billing teams when quotas
+            are exceeded
+          </li>
+          <li>
+            Pair with <code>QuotaManager</code>’s <code>onWarning</code> hook to
+            send proactive emails
+          </li>
         </ul>
         <Callout type="success">
-          Related docs: <Link href="/guides/security">Security &amp; Compliance Guide</Link>{' '}
-          and <Link href="/guides/production-deployment">Production Deployment Guide</Link>.
+          Related docs:{' '}
+          <Link href="/guides/security">Security &amp; Compliance Guide</Link>{' '}
+          and{' '}
+          <Link href="/guides/production-deployment">
+            Production Deployment Guide
+          </Link>
+          .
         </Callout>
       </section>
     </div>
   )
 }
-

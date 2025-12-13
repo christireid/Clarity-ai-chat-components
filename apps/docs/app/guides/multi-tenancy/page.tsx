@@ -7,8 +7,6 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
-export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
-
 export const metadata: Metadata = {
   title: 'Multi Tenancy - Clarity Chat',
   description: 'Guide for multi-tenancy in Clarity Chat',
@@ -18,7 +16,13 @@ export default async function MultiTenancyGuidePage() {
   // Read markdown file
   let content: string
   try {
-    const filePath = join(process.cwd(), 'content', 'vitepress-migration', 'guide', 'multi-tenancy.md')
+    const filePath = join(
+      process.cwd(),
+      'content',
+      'vitepress-migration',
+      'guide',
+      'multi-tenancy.md'
+    )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
     console.error('Failed to read multi-tenancy guide', error)
@@ -28,11 +32,10 @@ export default async function MultiTenancyGuidePage() {
   // Parse MDX
   const { content: mdxContent } = matter(content)
 
-
   return (
     <>
       <Breadcrumbs />
-      
+
       <div className="docs-content">
         <div className="prose prose-lg max-w-none dark:prose-invert">
           <MDXRemote source={mdxContent} components={mdxComponents} />

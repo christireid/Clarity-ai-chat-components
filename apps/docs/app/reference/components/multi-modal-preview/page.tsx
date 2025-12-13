@@ -4,11 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Multi-Modal Preview - Clarity Chat Components',
-  description: 'Preview multiple file types - images, videos, audio, PDFs - in a unified interface.',
+  description:
+    'Preview multiple file types - images, videos, audio, PDFs - in a unified interface.',
 }
 
 export default function MultiModalPreviewPage() {
@@ -18,14 +17,16 @@ export default function MultiModalPreviewPage() {
         <span className="docs-badge">Component</span>
         <h1>Multi-Modal Preview</h1>
         <p className="docs-lead">
-          Show previews of different file types - images, videos, audio, PDFs - all in one consistent interface. Like a universal file viewer.
+          Show previews of different file types - images, videos, audio, PDFs -
+          all in one consistent interface. Like a universal file viewer.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          When users upload files or AI generates images/audio, this component shows nice previews. It handles all the different file types for you.
+          When users upload files or AI generates images/audio, this component
+          shows nice previews. It handles all the different file types for you.
         </p>
       </section>
 
@@ -110,31 +111,30 @@ const multiModalProps = [
     name: 'attachments',
     type: 'AttachmentPreview[]',
     required: true,
-    description: 'Array of file attachments to preview'
+    description: 'Array of file attachments to preview',
   },
   {
     name: 'onOpen',
     type: '(attachment: AttachmentPreview) => void',
     required: false,
-    description: 'Callback when user opens/clicks an attachment'
+    description: 'Callback when user opens/clicks an attachment',
   },
   {
     name: 'onRetry',
     type: '(attachment: AttachmentPreview) => void',
     required: false,
-    description: 'Callback to retry failed uploads'
+    description: 'Callback to retry failed uploads',
   },
   {
     name: 'onRemove',
     type: '(attachment: AttachmentPreview) => void',
     required: false,
-    description: 'Callback to remove an attachment'
+    description: 'Callback to remove an attachment',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

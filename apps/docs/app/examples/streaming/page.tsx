@@ -4,11 +4,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Streaming Chat Demo - Clarity Chat',
-  description: 'Advanced streaming experience that renders tokens as soon as they arrive from the server.',
+  description:
+    'Advanced streaming experience that renders tokens as soon as they arrive from the server.',
 }
 
 export default function StreamingPage() {
@@ -18,7 +17,8 @@ export default function StreamingPage() {
         <span className="docs-badge">Example</span>
         <h1>Streaming Chat Demo</h1>
         <p className="docs-lead">
-          Advanced streaming experience that renders tokens as soon as they arrive from the server.
+          Advanced streaming experience that renders tokens as soon as they
+          arrive from the server.
         </p>
       </div>
 
@@ -41,16 +41,26 @@ npm install
 npm run dev`}
         />
         <p>
-          Ensure the <code>.env.local</code> file contains your API key and SSE endpoint configuration.
+          Ensure the <code>.env.local</code> file contains your API key and SSE
+          endpoint configuration.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Architecture</h2>
         <ul>
-          <li><strong>API Route</strong> – Next.js route streams data using <code>TextEncoderStream</code>.</li>
-          <li><strong>Client Hook</strong> – <code>useStreamingChat</code> collects partial deltas and updates messages.</li>
-          <li><strong>UI</strong> – <code>StreamingMessage</code> animates text reveal and caret.</li>
+          <li>
+            <strong>API Route</strong> – Next.js route streams data using{' '}
+            <code>TextEncoderStream</code>.
+          </li>
+          <li>
+            <strong>Client Hook</strong> – <code>useStreamingChat</code>{' '}
+            collects partial deltas and updates messages.
+          </li>
+          <li>
+            <strong>UI</strong> – <code>StreamingMessage</code> animates text
+            reveal and caret.
+          </li>
         </ul>
       </section>
 
@@ -68,7 +78,8 @@ await streamMessage({
 })`}
         />
         <p>
-          Inspect <code>examples/streaming-chat</code> for environment setup, API handlers, and UI integration tips.
+          Inspect <code>examples/streaming-chat</code> for environment setup,
+          API handlers, and UI integration tips.
         </p>
       </section>
     </div>

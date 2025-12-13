@@ -293,7 +293,7 @@ export function Message({
   // assertion to preserve the plugin reference while satisfying the type checker.
   // See: https://github.com/rehypejs/rehype-highlight/issues/26
   const rehypePlugins = React.useMemo(
-    () => [rehypeHighlight] as readonly [typeof rehypeHighlight],
+    () => [rehypeHighlight] as unknown as any[],
     []
   )
 

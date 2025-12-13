@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Hook Dependencies Guide - Clarity Chat Components',
-  description: 'Understand hook dependencies, when hooks depend on each other, and how to manage hook composition effectively.',
+  description:
+    'Understand hook dependencies, when hooks depend on each other, and how to manage hook composition effectively.',
 }
 
 export default function HookDependenciesPage() {
@@ -18,7 +17,8 @@ export default function HookDependenciesPage() {
         <span className="docs-badge">Guide</span>
         <h1>Hook Dependencies</h1>
         <p className="docs-lead">
-          Understand hook dependencies, when hooks depend on each other, and how to manage hook composition effectively.
+          Understand hook dependencies, when hooks depend on each other, and how
+          to manage hook composition effectively.
         </p>
       </div>
 
@@ -34,9 +34,7 @@ export default function HookDependenciesPage() {
 
       <section className="docs-section">
         <h2>Hook Composition</h2>
-        <p>
-          Compose hooks in the correct order:
-        </p>
+        <p>Compose hooks in the correct order:</p>
         <CodePlayground
           initialCode={`import {
   useClarityChat,
@@ -75,9 +73,7 @@ function ChatWithHooks() {
 
       <section className="docs-section">
         <h2>Dependency Order</h2>
-        <p>
-          Order hooks by dependency:
-        </p>
+        <p>Order hooks by dependency:</p>
         <CodePlayground
           initialCode={`// Correct order
 function CorrectHookOrder() {
@@ -115,9 +111,7 @@ function IncorrectHookOrder() {
 
       <section className="docs-section">
         <h2>Avoiding Dependency Cycles</h2>
-        <p>
-          Avoid circular dependencies:
-        </p>
+        <p>Avoid circular dependencies:</p>
         <CodePlayground
           initialCode={`// ❌ Circular dependency
 function CircularDependency() {
@@ -152,9 +146,7 @@ function NoCircularDependency() {
 
       <section className="docs-section">
         <h2>Conditional Hooks</h2>
-        <p>
-          Handle conditional hook usage:
-        </p>
+        <p>Handle conditional hook usage:</p>
         <CodePlayground
           initialCode={`// ✅ Conditional hooks (same order)
 function ConditionalHooks({ enableOptimization }: { enableOptimization: boolean }) {
@@ -182,17 +174,31 @@ function WrongConditionalHooks({ enableOptimization }: { enableOptimization: boo
 
       <section className="docs-section">
         <h2>Hook Dependencies Map</h2>
-        <p>
-          Common hook dependencies:
-        </p>
+        <p>Common hook dependencies:</p>
         <ul>
-          <li><strong>useClarityChat</strong>: No dependencies (base hook)</li>
-          <li><strong>useTokenOptimizationEnhanced</strong>: Depends on messages (from useClarityChat)</li>
-          <li><strong>useTokenBudgetMonitor</strong>: Depends on messages (from useClarityChat or useTokenOptimizationEnhanced)</li>
-          <li><strong>useStreaming</strong>: Depends on useClarityChat</li>
-          <li><strong>useContextMonitor</strong>: Depends on messages</li>
-          <li><strong>useBatteryAware</strong>: No dependencies (independent)</li>
-          <li><strong>useMobileKeyboard</strong>: No dependencies (independent)</li>
+          <li>
+            <strong>useClarityChat</strong>: No dependencies (base hook)
+          </li>
+          <li>
+            <strong>useTokenOptimizationEnhanced</strong>: Depends on messages
+            (from useClarityChat)
+          </li>
+          <li>
+            <strong>useTokenBudgetMonitor</strong>: Depends on messages (from
+            useClarityChat or useTokenOptimizationEnhanced)
+          </li>
+          <li>
+            <strong>useStreaming</strong>: Depends on useClarityChat
+          </li>
+          <li>
+            <strong>useContextMonitor</strong>: Depends on messages
+          </li>
+          <li>
+            <strong>useBatteryAware</strong>: No dependencies (independent)
+          </li>
+          <li>
+            <strong>useMobileKeyboard</strong>: No dependencies (independent)
+          </li>
         </ul>
       </section>
 
@@ -210,8 +216,13 @@ function WrongConditionalHooks({ enableOptimization }: { enableOptimization: boo
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/composition-patterns">Composition Patterns</a> - Hook composition</li>
-          <li><a href="/guides/data-flow">Data Flow</a> - Data flow documentation</li>
+          <li>
+            <a href="/guides/composition-patterns">Composition Patterns</a> -
+            Hook composition
+          </li>
+          <li>
+            <a href="/guides/data-flow">Data Flow</a> - Data flow documentation
+          </li>
         </ul>
       </section>
     </div>

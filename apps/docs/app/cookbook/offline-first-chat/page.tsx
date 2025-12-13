@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Offline-First Chat Recipe - Clarity Chat Components',
-  description: 'Build an offline-first chat application with IndexedDB storage and automatic sync.',
+  description:
+    'Build an offline-first chat application with IndexedDB storage and automatic sync.',
 }
 
 export default function OfflineFirstChatRecipePage() {
@@ -18,7 +17,8 @@ export default function OfflineFirstChatRecipePage() {
         <span className="docs-badge">Recipe</span>
         <h1>Offline-First Chat</h1>
         <p className="docs-lead">
-          Build an offline-first chat application with IndexedDB storage, automatic sync, and pending operation queue.
+          Build an offline-first chat application with IndexedDB storage,
+          automatic sync, and pending operation queue.
         </p>
       </div>
 
@@ -36,16 +36,15 @@ export default function OfflineFirstChatRecipePage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This recipe shows how to build an offline-first chat application that works seamlessly when the user is offline,
-          storing messages locally and automatically syncing when connection is restored.
+          This recipe shows how to build an offline-first chat application that
+          works seamlessly when the user is offline, storing messages locally
+          and automatically syncing when connection is restored.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Basic Setup</h2>
-        <p>
-          Set up offline chat with automatic sync:
-        </p>
+        <p>Set up offline chat with automatic sync:</p>
         <CodePlayground
           initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -79,9 +78,7 @@ function OfflineChatApp() {
 
       <section className="docs-section">
         <h2>Send Messages Offline</h2>
-        <p>
-          Send messages that queue when offline:
-        </p>
+        <p>Send messages that queue when offline:</p>
         <CodePlayground
           initialCode={`import { useOfflineChat } from '@clarity-chat/react'
 
@@ -117,9 +114,7 @@ function OfflineMessageSender() {
 
       <section className="docs-section">
         <h2>Load Stored Messages</h2>
-        <p>
-          Load messages from IndexedDB on app start:
-        </p>
+        <p>Load messages from IndexedDB on app start:</p>
         <CodePlayground
           initialCode={`import { useOfflineChat } from '@clarity-chat/react'
 
@@ -151,9 +146,7 @@ function LoadStoredMessages() {
 
       <section className="docs-section">
         <h2>Sync Status Indicator</h2>
-        <p>
-          Show sync status to users:
-        </p>
+        <p>Show sync status to users:</p>
         <CodePlayground
           initialCode={`function SyncStatus({ syncStatus, pendingCount }: { syncStatus: string, pendingCount: number }) {
   return (
@@ -172,9 +165,7 @@ function LoadStoredMessages() {
 
       <section className="docs-section">
         <h2>Complete Example</h2>
-        <p>
-          Complete offline-first chat implementation:
-        </p>
+        <p>Complete offline-first chat implementation:</p>
         <CodePlayground
           initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
 import { ChatWindow, ChatInput } from '@clarity-chat/react'
@@ -270,8 +261,16 @@ function CompleteOfflineChat() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/offline-chat-sync">OfflineChatSync</a> - Offline sync component</li>
-          <li><a href="/reference/hooks/use-offline-chat">useOfflineChat</a> - Offline chat hook</li>
+          <li>
+            <a href="/reference/components/offline-chat-sync">
+              OfflineChatSync
+            </a>{' '}
+            - Offline sync component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-offline-chat">useOfflineChat</a> -
+            Offline chat hook
+          </li>
         </ul>
       </section>
     </div>

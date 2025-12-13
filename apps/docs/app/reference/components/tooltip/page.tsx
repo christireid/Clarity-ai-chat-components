@@ -6,11 +6,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Tooltip - Clarity Chat Components',
-  description: 'Display contextual information on hover or focus with customizable positioning and styling.',
+  description:
+    'Display contextual information on hover or focus with customizable positioning and styling.',
 }
 
 export default function TooltipPage() {
@@ -20,7 +19,8 @@ export default function TooltipPage() {
         <span className="docs-badge">Component</span>
         <h1>Tooltip</h1>
         <p className="docs-lead">
-          Display contextual information on hover or focus with customizable positioning, delays, and styling.
+          Display contextual information on hover or focus with customizable
+          positioning, delays, and styling.
         </p>
       </div>
 
@@ -29,8 +29,9 @@ export default function TooltipPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>Tooltip</code> component provides additional context or information when users hover over
-          or focus on an element. It supports multiple positions, custom delays, and rich content.
+          The <code>Tooltip</code> component provides additional context or
+          information when users hover over or focus on an element. It supports
+          multiple positions, custom delays, and rich content.
         </p>
       </section>
 
@@ -61,16 +62,14 @@ render(<BasicTooltips />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="Tooltip Props"
-          data={tooltipProps}
-        />
+        <ApiTable title="Tooltip Props" data={tooltipProps} />
       </section>
 
       <section className="docs-section">
         <h2>Positions</h2>
         <p>
-          Tooltips can be positioned in 12 different locations around the trigger element.
+          Tooltips can be positioned in 12 different locations around the
+          trigger element.
         </p>
         <CodePlayground
           initialCode={`function TooltipPositions() {
@@ -139,9 +138,7 @@ render(<TooltipPositions />)`}
 
       <section className="docs-section">
         <h2>With Delay</h2>
-        <p>
-          Control when tooltips appear and disappear with custom delays.
-        </p>
+        <p>Control when tooltips appear and disappear with custom delays.</p>
         <CodePlayground
           initialCode={`function TooltipDelays() {
   return (
@@ -171,9 +168,7 @@ render(<TooltipDelays />)`}
 
       <section className="docs-section">
         <h2>Rich Content</h2>
-        <p>
-          Tooltips can contain rich HTML content, not just plain text.
-        </p>
+        <p>Tooltips can contain rich HTML content, not just plain text.</p>
         <CodePlayground
           initialCode={`function RichContentTooltips() {
   const userTooltip = (
@@ -253,9 +248,7 @@ render(<RichContentTooltips />)`}
 
       <section className="docs-section">
         <h2>Variants</h2>
-        <p>
-          Use different color variants to convey semantic meaning.
-        </p>
+        <p>Use different color variants to convey semantic meaning.</p>
         <CodePlayground
           initialCode={`function TooltipVariants() {
   return (
@@ -293,9 +286,7 @@ render(<TooltipVariants />)`}
 
       <section className="docs-section">
         <h2>Arrow Styles</h2>
-        <p>
-          Choose between arrow, no arrow, or custom arrow styles.
-        </p>
+        <p>Choose between arrow, no arrow, or custom arrow styles.</p>
         <CodePlayground
           initialCode={`function ArrowStyles() {
   return (
@@ -345,9 +336,7 @@ render(<ArrowStyles />)`}
 
       <section className="docs-section">
         <h2>On Disabled Elements</h2>
-        <p>
-          Show tooltips even on disabled elements using a wrapper approach.
-        </p>
+        <p>Show tooltips even on disabled elements using a wrapper approach.</p>
         <CodePlayground
           initialCode={`function DisabledTooltips() {
   return (
@@ -450,9 +439,7 @@ render(<InteractiveTooltips />)`}
 
       <section className="docs-section">
         <h2>Click to Toggle</h2>
-        <p>
-          Show tooltips on click instead of hover.
-        </p>
+        <p>Show tooltips on click instead of hover.</p>
         <CodePlayground
           initialCode={`function ClickTooltips() {
   return (
@@ -503,9 +490,7 @@ render(<ClickTooltips />)`}
 
       <section className="docs-section">
         <h2>Conditional Tooltips</h2>
-        <p>
-          Show tooltips only when certain conditions are met.
-        </p>
+        <p>Show tooltips only when certain conditions are met.</p>
         <CodePlayground
           initialCode={`function ConditionalTooltips() {
   const [showTooltip, setShowTooltip] = React.useState(true)
@@ -556,7 +541,8 @@ render(<ConditionalTooltips />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Tooltip with Keyboard Shortcut</h3>
-        <pre><code>{`import { Tooltip, Button } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Tooltip, Button } from '@clarity-chat/react'
 
 const TooltipWithShortcut = () => (
   <Tooltip
@@ -571,10 +557,12 @@ const TooltipWithShortcut = () => (
   >
     <Button variant="primary">Save</Button>
   </Tooltip>
-)`}</code></pre>
+)`}</code>
+        </pre>
 
         <h3>Dynamic Tooltip Content</h3>
-        <pre><code>{`function DynamicTooltip() {
+        <pre>
+          <code>{`function DynamicTooltip() {
   const [status, setStatus] = useState('idle')
 
   const getTooltipContent = () => {
@@ -591,18 +579,22 @@ const TooltipWithShortcut = () => (
       <Button onClick={handleSave}>Save</Button>
     </Tooltip>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Tooltip with Auto-hide</h3>
-        <pre><code>{`<Tooltip
+        <pre>
+          <code>{`<Tooltip
   content="This tooltip auto-hides after 3 seconds"
   autoHide={3000}
 >
   <Button>Hover me</Button>
-</Tooltip>`}</code></pre>
+</Tooltip>`}</code>
+        </pre>
 
         <h3>Tooltip Group</h3>
-        <pre><code>{`import { TooltipProvider } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { TooltipProvider } from '@clarity-chat/react'
 
 // Share delay settings across multiple tooltips
 <TooltipProvider delay={300}>
@@ -615,7 +607,8 @@ const TooltipWithShortcut = () => (
   <Tooltip content="Tooltip 3">
     <Button>Button 3</Button>
   </Tooltip>
-</TooltipProvider>`}</code></pre>
+</TooltipProvider>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -637,7 +630,8 @@ const TooltipWithShortcut = () => (
         </ul>
 
         <h3>ARIA Attributes</h3>
-        <pre><code>{`// Automatically added by the Tooltip component
+        <pre>
+          <code>{`// Automatically added by the Tooltip component
 <button
   aria-describedby="tooltip-id"
   onMouseEnter={showTooltip}
@@ -652,13 +646,20 @@ const TooltipWithShortcut = () => (
   aria-hidden={!isVisible}
 >
   Tooltip content
-</div>`}</code></pre>
+</div>`}</code>
+        </pre>
 
         <h3>Keyboard Support</h3>
         <ul>
-          <li><kbd>Esc</kbd> - Close tooltip</li>
-          <li><kbd>Tab</kbd> - Show tooltip on focus</li>
-          <li><kbd>Shift+Tab</kbd> - Hide tooltip on blur</li>
+          <li>
+            <kbd>Esc</kbd> - Close tooltip
+          </li>
+          <li>
+            <kbd>Tab</kbd> - Show tooltip on focus
+          </li>
+          <li>
+            <kbd>Shift+Tab</kbd> - Hide tooltip on blur
+          </li>
         </ul>
       </section>
 
@@ -666,8 +667,8 @@ const TooltipWithShortcut = () => (
         <h2>Best Practices</h2>
 
         <Callout type="tip" title="Use Tooltips Sparingly">
-          Tooltips should provide helpful context, not essential information.
-          If something is critical, put it in the visible UI.
+          Tooltips should provide helpful context, not essential information. If
+          something is critical, put it in the visible UI.
         </Callout>
 
         <Callout type="warning" title="Mobile Considerations">
@@ -705,7 +706,8 @@ const TooltipWithShortcut = () => (
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { Tooltip, TooltipProps } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Tooltip, TooltipProps } from '@clarity-chat/react'
 
 interface TooltipProps {
   content: React.ReactNode
@@ -725,7 +727,8 @@ interface TooltipProps {
   className?: string
   onShow?: () => void
   onHide?: () => void
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -758,85 +761,86 @@ const tooltipProps = [
     name: 'content',
     type: 'React.ReactNode',
     required: true,
-    description: 'Tooltip content (text or JSX)'
+    description: 'Tooltip content (text or JSX)',
   },
   {
     name: 'children',
     type: 'React.ReactElement',
     required: true,
-    description: 'Element that triggers the tooltip (must be a single element)'
+    description: 'Element that triggers the tooltip (must be a single element)',
   },
   {
     name: 'position',
     type: "'top' | 'top-start' | 'top-end' | 'right' | 'right-start' | 'right-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end'",
     required: false,
     default: "'top'",
-    description: 'Position of tooltip relative to trigger element'
+    description: 'Position of tooltip relative to trigger element',
   },
   {
     name: 'variant',
     type: "'default' | 'primary' | 'success' | 'warning' | 'error' | 'info'",
     required: false,
     default: "'default'",
-    description: 'Visual style variant'
+    description: 'Visual style variant',
   },
   {
     name: 'delay',
     type: 'number',
     required: false,
     default: '500',
-    description: 'Delay in milliseconds before showing tooltip'
+    description: 'Delay in milliseconds before showing tooltip',
   },
   {
     name: 'arrow',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'Show arrow pointing to trigger element'
+    description: 'Show arrow pointing to trigger element',
   },
   {
     name: 'interactive',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Allow user to interact with tooltip content (e.g., click links)'
+    description:
+      'Allow user to interact with tooltip content (e.g., click links)',
   },
   {
     name: 'trigger',
     type: "'hover' | 'click' | 'focus'",
     required: false,
     default: "'hover'",
-    description: 'Event that triggers tooltip'
+    description: 'Event that triggers tooltip',
   },
   {
     name: 'disabled',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Disable tooltip'
+    description: 'Disable tooltip',
   },
   {
     name: 'autoHide',
     type: 'number',
     required: false,
-    description: 'Automatically hide tooltip after specified milliseconds'
+    description: 'Automatically hide tooltip after specified milliseconds',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
+    description: 'Additional CSS classes',
   },
   {
     name: 'onShow',
     type: '() => void',
     required: false,
-    description: 'Callback when tooltip is shown'
+    description: 'Callback when tooltip is shown',
   },
   {
     name: 'onHide',
     type: '() => void',
     required: false,
-    description: 'Callback when tooltip is hidden'
-  }
+    description: 'Callback when tooltip is hidden',
+  },
 ]

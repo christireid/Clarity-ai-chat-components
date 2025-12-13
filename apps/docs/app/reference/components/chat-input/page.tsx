@@ -18,7 +18,7 @@ function BasicInputDemo() {
   const handleSubmit = useCallback(async (text: string) => {
     console.log('Sending:', text)
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     setValue('')
   }, [])
 
@@ -40,7 +40,7 @@ function CharacterLimitDemo() {
 
   const handleSubmit = useCallback(async (text: string) => {
     console.log('Sending:', text)
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     setValue('')
   }, [])
 
@@ -76,7 +76,8 @@ const chatInputProps: Prop[] = [
     name: 'onSubmit',
     type: '(value: string) => void | Promise<void>',
     required: true,
-    description: 'Callback function called when the message is submitted (Enter key or button click). Can be async.',
+    description:
+      'Callback function called when the message is submitted (Enter key or button click). Can be async.',
   },
   {
     name: 'placeholder',
@@ -88,24 +89,28 @@ const chatInputProps: Prop[] = [
     name: 'disabled',
     type: 'boolean',
     default: 'false',
-    description: 'Disable the input and submit button. Useful during loading states.',
+    description:
+      'Disable the input and submit button. Useful during loading states.',
   },
   {
     name: 'maxLength',
     type: 'number',
-    description: 'Maximum character count. Enables character counter and validation.',
+    description:
+      'Maximum character count. Enables character counter and validation.',
   },
   {
     name: 'showCharCounter',
     type: 'boolean',
     default: 'true',
-    description: 'Show character counter. Only visible when maxLength is set and input has content.',
+    description:
+      'Show character counter. Only visible when maxLength is set and input has content.',
   },
   {
     name: 'warningThreshold',
     type: 'number',
     default: '0.8',
-    description: 'Warning threshold as a percentage (0-1). Counter turns yellow when this percentage is reached.',
+    description:
+      'Warning threshold as a percentage (0-1). Counter turns yellow when this percentage is reached.',
   },
   {
     name: 'animateHeight',
@@ -126,8 +131,6 @@ const chatInputProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
-
 export default function ChatInputPage() {
   return (
     <ToastProvider>
@@ -138,14 +141,16 @@ export default function ChatInputPage() {
 
         <p className="lead">
           A composable chat input component with character counting, validation,
-          smooth animations, and keyboard shortcuts. Perfect for building custom chat interfaces.
+          smooth animations, and keyboard shortcuts. Perfect for building custom
+          chat interfaces.
         </p>
 
         <Callout type="info">
           <p>
             For drop-in usage with built-in state management, use the{' '}
-            <a href="/reference/components/clarity-chat">ClarityChat</a> component instead.
-            ChatInput is ideal when you need more control over the input behavior.
+            <a href="/reference/components/clarity-chat">ClarityChat</a>{' '}
+            component instead. ChatInput is ideal when you need more control
+            over the input behavior.
           </p>
         </Callout>
 
@@ -154,8 +159,8 @@ export default function ChatInputPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Experiment with the ChatInput component! Try typing, test character limits,
-            and see the animations in action.
+            Experiment with the ChatInput component! Try typing, test character
+            limits, and see the animations in action.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -268,10 +273,12 @@ function ChatWithLimit() {
               <strong>Normal (0-79%):</strong> Blue color, normal font weight
             </li>
             <li>
-              <strong>Warning (80-99%):</strong> Yellow color, medium font weight
+              <strong>Warning (80-99%):</strong> Yellow color, medium font
+              weight
             </li>
             <li>
-              <strong>Over Limit (100%+):</strong> Red color, bold font, pulsing animation
+              <strong>Over Limit (100%+):</strong> Red color, bold font, pulsing
+              animation
             </li>
           </ul>
         </Callout>
@@ -279,8 +286,8 @@ function ChatWithLimit() {
         <h2 id="async-submit">Async Submit</h2>
 
         <p>
-          The <code>onSubmit</code> callback can be async. The button automatically
-          shows loading, success, and error states:
+          The <code>onSubmit</code> callback can be async. The button
+          automatically shows loading, success, and error states:
         </p>
 
         <EnhancedCodeBlock
@@ -324,17 +331,16 @@ function ChatWithAsyncSubmit() {
 
         <Callout type="info">
           <p>
-            <strong>Button States:</strong> The submit button automatically transitions
-            through states: <code>idle</code> → <code>loading</code> → <code>success</code> or <code>error</code>.
-            You don't need to manage these states manually.
+            <strong>Button States:</strong> The submit button automatically
+            transitions through states: <code>idle</code> → <code>loading</code>{' '}
+            → <code>success</code> or <code>error</code>. You don't need to
+            manage these states manually.
           </p>
         </Callout>
 
         <h2 id="disabled-state">Disabled State</h2>
 
-        <p>
-          Disable the input during loading or when chat is unavailable:
-        </p>
+        <p>Disable the input during loading or when chat is unavailable:</p>
 
         <EnhancedCodeBlock
           code={`import { ChatInput } from '@clarity-chat/react'
@@ -384,17 +390,27 @@ function ChatWithDisabledState() {
 
         <ul>
           <li>
-            <kbd className="px-2 py-1 text-xs border rounded bg-muted">Enter</kbd> - Submit message (if valid and not over limit)
+            <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+              Enter
+            </kbd>{' '}
+            - Submit message (if valid and not over limit)
           </li>
           <li>
-            <kbd className="px-2 py-1 text-xs border rounded bg-muted">Shift</kbd> + <kbd className="px-2 py-1 text-xs border rounded bg-muted">Enter</kbd> - Insert new line
+            <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+              Shift
+            </kbd>{' '}
+            +{' '}
+            <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+              Enter
+            </kbd>{' '}
+            - Insert new line
           </li>
         </ul>
 
         <Callout type="tip">
           <p>
-            When the input exceeds <code>maxLength</code>, pressing Enter triggers
-            a shake animation to indicate the message is too long.
+            When the input exceeds <code>maxLength</code>, pressing Enter
+            triggers a shake animation to indicate the message is too long.
           </p>
         </Callout>
 
@@ -494,13 +510,16 @@ function ChatWithValidation() {
 
         <ul>
           <li>
-            <strong>React 19 optimizations:</strong> Automatic memoization of event handlers
+            <strong>React 19 optimizations:</strong> Automatic memoization of
+            event handlers
           </li>
           <li>
-            <strong>Debounced animations:</strong> Smooth transitions without performance impact
+            <strong>Debounced animations:</strong> Smooth transitions without
+            performance impact
           </li>
           <li>
-            <strong>Efficient re-renders:</strong> Only re-renders when necessary
+            <strong>Efficient re-renders:</strong> Only re-renders when
+            necessary
           </li>
         </ul>
 
@@ -508,16 +527,22 @@ function ChatWithValidation() {
 
         <ul>
           <li>
-            <a href="/reference/components/advanced-chat-input">AdvancedChatInput</a> - Enhanced version with file uploads, mentions, and commands
+            <a href="/reference/components/advanced-chat-input">
+              AdvancedChatInput
+            </a>{' '}
+            - Enhanced version with file uploads, mentions, and commands
           </li>
           <li>
-            <a href="/reference/components/chat-window">ChatWindow</a> - Complete chat interface that includes ChatInput
+            <a href="/reference/components/chat-window">ChatWindow</a> -
+            Complete chat interface that includes ChatInput
           </li>
           <li>
-            <a href="/reference/components/clarity-chat">ClarityChat</a> - Drop-in component with built-in input
+            <a href="/reference/components/clarity-chat">ClarityChat</a> -
+            Drop-in component with built-in input
           </li>
           <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat state hook for integration
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
+            Chat state hook for integration
           </li>
         </ul>
 

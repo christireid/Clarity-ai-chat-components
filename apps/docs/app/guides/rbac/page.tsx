@@ -5,8 +5,6 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Rbac - Clarity Chat',
   description: 'Guide for rbac in Clarity Chat',
@@ -16,7 +14,13 @@ export default async function RbacGuidePage() {
   // Read markdown file
   let content: string
   try {
-    const filePath = join(process.cwd(), 'content', 'vitepress-migration', 'guide', 'rbac.md')
+    const filePath = join(
+      process.cwd(),
+      'content',
+      'vitepress-migration',
+      'guide',
+      'rbac.md'
+    )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
     console.error('Failed to read rbac guide', error)
@@ -29,7 +33,7 @@ export default async function RbacGuidePage() {
   return (
     <>
       <Breadcrumbs />
-      
+
       <div className="docs-content">
         <div className="prose prose-lg max-w-none dark:prose-invert">
           <pre className="whitespace-pre-wrap">{mdxContent}</pre>

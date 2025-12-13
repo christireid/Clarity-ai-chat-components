@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Prompt Testing Guide - Clarity Chat Components',
-  description: 'Learn how to test prompts systematically with datasets, evaluation metrics, and continuous testing workflows.',
+  description:
+    'Learn how to test prompts systematically with datasets, evaluation metrics, and continuous testing workflows.',
 }
 
 export default function PromptTestingPage() {
@@ -18,7 +17,8 @@ export default function PromptTestingPage() {
         <span className="docs-badge">Guide</span>
         <h1>Prompt Testing</h1>
         <p className="docs-lead">
-          Learn how to test prompts systematically with datasets, evaluation metrics, A/B testing, and continuous testing workflows.
+          Learn how to test prompts systematically with datasets, evaluation
+          metrics, A/B testing, and continuous testing workflows.
         </p>
       </div>
 
@@ -35,15 +35,14 @@ export default function PromptTestingPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Prompt testing helps ensure your prompts produce consistent, high-quality results across different inputs and scenarios.
+          Prompt testing helps ensure your prompts produce consistent,
+          high-quality results across different inputs and scenarios.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Test Dataset Creation</h2>
-        <p>
-          Create test datasets:
-        </p>
+        <p>Create test datasets:</p>
         <CodePlayground
           initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
@@ -79,9 +78,7 @@ function TestSetup() {
 
       <section className="docs-section">
         <h2>Running Tests</h2>
-        <p>
-          Run prompt tests:
-        </p>
+        <p>Run prompt tests:</p>
         <CodePlayground
           initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
@@ -109,9 +106,7 @@ function RunTests() {
 
       <section className="docs-section">
         <h2>Evaluating Results</h2>
-        <p>
-          Evaluate test results:
-        </p>
+        <p>Evaluate test results:</p>
         <CodePlayground
           initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
@@ -139,9 +134,7 @@ function EvaluateResults({ results }: { results: TestResult[] }) {
 
       <section className="docs-section">
         <h2>A/B Testing Prompts</h2>
-        <p>
-          Compare prompt versions:
-        </p>
+        <p>Compare prompt versions:</p>
         <CodePlayground
           initialCode={`import { PromptTestHarness } from '@clarity-chat/react'
 
@@ -175,9 +168,7 @@ function ABTestPrompts() {
 
       <section className="docs-section">
         <h2>Continuous Testing</h2>
-        <p>
-          Set up continuous testing:
-        </p>
+        <p>Set up continuous testing:</p>
         <CodePlayground
           initialCode={`// CI/CD integration
 import { runPromptTests } from '@clarity-chat/react/testing'
@@ -227,8 +218,18 @@ jobs:
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/prompt-test-harness">PromptTestHarness</a> - Prompt testing component</li>
-          <li><a href="/reference/components/evaluation-dashboard">EvaluationDashboard</a> - Evaluation dashboard</li>
+          <li>
+            <a href="/reference/components/prompt-test-harness">
+              PromptTestHarness
+            </a>{' '}
+            - Prompt testing component
+          </li>
+          <li>
+            <a href="/reference/components/evaluation-dashboard">
+              EvaluationDashboard
+            </a>{' '}
+            - Evaluation dashboard
+          </li>
         </ul>
       </section>
     </div>

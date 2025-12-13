@@ -953,20 +953,54 @@ export function suggestPatternsForUseCase(useCase: string): DesignPattern[] {
   const normalizedUseCase = useCase.toLowerCase()
   const matches: Array<{ pattern: DesignPattern; score: number }> = []
 
+  const tokenize = (text: string): string[] => {
+    return text
+      .toLowerCase()
+      .split(/[^a-z0-9]+/g)
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .map((t) => (t.length > 3 && t.endsWith('s') ? t.slice(0, -1) : t))
+  }
+
+  const useCaseTokens = new Set(tokenize(useCase))
+
   for (const [pattern, info] of Object.entries(DESIGN_PATTERN_CATALOG)) {
     let score = 0
+    const intentTokens = tokenize(info.intent)
     for (const uc of info.useCases) {
-      if (normalizedUseCase.includes(uc.toLowerCase())) {
-        score += 2
+      const ucNormalized = uc.toLowerCase()
+      const ucTokens = tokenize(uc)
+
+      // Strong match if a whole phrase appears.
+      if (
+        normalizedUseCase.includes(ucNormalized) ||
+        ucNormalized.includes(normalizedUseCase)
+      ) {
+        score += 6
       }
-      // Check for keyword overlap
-      const ucWords = uc.toLowerCase().split(/\s+/)
-      for (const word of ucWords) {
-        if (word.length > 3 && normalizedUseCase.includes(word)) {
-          score += 1
-        }
+
+      // Token overlap (handles pluralization and word order changes).
+      for (const token of ucTokens) {
+        if (useCaseTokens.has(token)) score += 2
       }
     }
+
+    // Intent overlap (helps when use case phrasing differs).
+    for (const token of intentTokens) {
+      if (useCaseTokens.has(token)) score += 1
+    }
+
+    // Lightweight domain heuristics to improve suggestions.
+    if (pattern === 'OBSERVER') {
+      if (
+        useCaseTokens.has('event') ||
+        useCaseTokens.has('notify') ||
+        useCaseTokens.has('notification')
+      ) {
+        score += 8
+      }
+    }
+
     if (score > 0) {
       matches.push({ pattern: pattern as DesignPattern, score })
     }

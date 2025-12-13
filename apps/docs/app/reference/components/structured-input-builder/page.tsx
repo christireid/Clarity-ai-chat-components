@@ -1,15 +1,61 @@
+'use client'
+
 import React from 'react'
+import { StructuredInputBuilder } from '@clarity-chat/react'
 import { Metadata } from 'next'
+import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
+import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-export const dynamic = 'force-dynamic'
+function BasicBuilderDemo() {
+  const [values, setValues] = React.useState({})
 
-export const metadata: Metadata = {
-  title: 'StructuredInputBuilder - Clarity Chat Components',
-  description: 'Build structured prompts with token optimization, field prioritization, and validation.',
+  const fields = [
+    {
+      id: 'topic',
+      name: 'topic',
+      label: 'Topic',
+      type: 'text' as const,
+      required: true,
+      placeholder: 'e.g. Quantum Physics',
+    },
+    {
+      id: 'tone',
+      name: 'tone',
+      label: 'Tone',
+      type: 'select' as const,
+      options: [
+        { value: 'professional', label: 'Professional' },
+        { value: 'casual', label: 'Casual' },
+        { value: 'funny', label: 'Funny' },
+      ],
+      required: true,
+    },
+    {
+      id: 'details',
+      name: 'details',
+      label: 'Additional Details',
+      type: 'textarea' as const,
+      rows: 3,
+    },
+  ]
+
+  return (
+    <div className="w-full max-w-lg p-6 border border-border rounded-lg bg-background">
+      <StructuredInputBuilder
+        fields={fields}
+        values={values}
+        onChange={setValues}
+        onSubmit={(result) => alert(JSON.stringify(result, null, 2))}
+      />
+    </div>
+  )
 }
 
 const props: Prop[] = [
@@ -17,119 +63,138 @@ const props: Prop[] = [
     name: 'fields',
     type: 'StructuredInputField[]',
     required: true,
-    description: 'Field configurations',
+    description: 'Field configurations defining the input structure.',
   },
   {
     name: 'values',
     type: 'Record<string, string>',
     required: true,
-    description: 'Current field values',
+    description: 'Current field values state object.',
   },
   {
     name: 'onChange',
     type: '(values: Record<string, string>) => void',
     required: true,
-    description: 'Callback when values change',
+    description: 'Callback when any field value changes.',
   },
   {
     name: 'onSubmit',
     type: '(result: StructuredInputResult) => void',
-    description: 'Callback when user submits the form',
+    description: 'Callback when user submits the form.',
   },
   {
     name: 'maxTokens',
     type: 'number',
-    description: 'Maximum input tokens budget',
+    description: 'Maximum input tokens budget for optimization.',
   },
   {
     name: 'showTokenBreakdown',
     type: 'boolean',
-    description: 'Show token estimates per field',
+    default: 'false',
+    description: 'Show visual token estimates per field.',
   },
   {
     name: 'showTotalTokens',
     type: 'boolean',
-    description: 'Show total token count',
+    default: 'false',
+    description: 'Show total token count summary.',
   },
   {
     name: 'formatPrompt',
     type: '(values: Record<string, string>, fields: StructuredInputField[]) => string',
-    description: 'Custom prompt formatter',
+    description: 'Custom function to format the final prompt string.',
   },
   {
     name: 'displayMode',
     type: '"form" | "compact" | "inline"',
-    description: 'Display mode',
-  },
-  {
-    name: 'size',
-    type: '"sm" | "md" | "lg"',
-    description: 'Size variant',
+    default: '"form"',
+    description: 'Visual layout mode for the builder.',
   },
   {
     name: 'disabled',
     type: 'boolean',
-    description: 'Disabled state',
+    default: 'false',
+    description: 'Disable all inputs.',
   },
   {
     name: 'className',
     type: 'string',
-    description: 'Additional CSS classes',
+    description: 'Additional CSS classes.',
   },
 ]
 
 export default function StructuredInputBuilderPage() {
   return (
     <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Component</span>
-        <h1>StructuredInputBuilder</h1>
-        <p className="docs-lead">
-          Build structured prompts with token optimization, field prioritization, validation, and automatic prompt formatting.
-        </p>
-      </div>
+      <Breadcrumbs />
 
-      <YouWillLearn
-        items={[
-          'Create structured input forms for prompts',
-          'Configure field priorities for token optimization',
-          'Validate field inputs',
-          'Format prompts automatically',
-          'Track token usage per field',
-        ]}
-      />
+      <ScrollReveal>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+            StructuredInputBuilder
+          </h1>
+          <p className="text-xl text-text-secondary leading-relaxed">
+            Build complex structured prompts with token optimization, field
+            prioritization, validation, and automatic prompt formatting. Perfect
+            for "mad libs" style prompt engineering.
+          </p>
+        </div>
+      </ScrollReveal>
 
-      <section className="docs-section">
-        <h2>Basic Usage</h2>
-        <p>
-          Create a structured input form with field definitions:
+      <ScrollReveal delay={0.1}>
+        <ViewInStorybook component="StructuredInputBuilder" />
+      </ScrollReveal>
+
+      <ScrollReveal delay={0.2}>
+        <YouWillLearn
+          items={[
+            'Create structured input forms for prompts',
+            'Configure field priorities for token optimization',
+            'Validate field inputs',
+            'Format prompts automatically',
+            'Track token usage per field',
+          ]}
+        />
+      </ScrollReveal>
+
+      <ScrollReveal delay={0.3}>
+        <h2 id="basic-usage">Basic Usage</h2>
+        <p className="mb-4">
+          Define your fields and manage the state. The component handles
+          rendering and formatting.
         </p>
-        <CodePlayground
-          initialCode={`import { StructuredInputBuilder } from '@clarity-chat/react'
+        <ComponentPreview
+          title="Prompt Builder"
+          description="A simple form to build a structured prompt."
+          code={`import { useState } from 'react'
+import { StructuredInputBuilder } from '@clarity-chat/react'
 
 function PromptBuilder() {
-  const [values, setValues] = React.useState({})
+  const [values, setValues] = useState({})
 
   const fields = [
     {
-      id: 'instruction',
-      name: 'instruction',
-      label: 'Instruction',
-      type: 'textarea' as const,
+      id: 'topic',
+      name: 'topic',
+      label: 'Topic',
+      type: 'text',
       required: true,
-      section: 'instruction' as const,
-      priority: 'critical' as const,
-      rows: 3,
     },
     {
-      id: 'context',
-      name: 'context',
-      label: 'Context',
-      type: 'textarea' as const,
-      required: false,
-      section: 'context' as const,
-      priority: 'high' as const,
-      rows: 5,
+      id: 'tone',
+      name: 'tone',
+      label: 'Tone',
+      type: 'select',
+      options: [
+        { value: 'professional', label: 'Professional' },
+        { value: 'casual', label: 'Casual' },
+      ],
+    },
+    {
+      id: 'details',
+      name: 'details',
+      label: 'Additional Details',
+      type: 'textarea',
     },
   ]
 
@@ -138,250 +203,174 @@ function PromptBuilder() {
       fields={fields}
       values={values}
       onChange={setValues}
-      onSubmit={(result) => {
-        console.log('Formatted prompt:', result.formattedPrompt)
-        console.log('Total tokens:', result.totalTokens)
-      }}
+      onSubmit={(result) => console.log(result)}
     />
+  )
+}`}
+        >
+          <BasicBuilderDemo />
+        </ComponentPreview>
+      </ScrollReveal>
+
+      <ScrollReveal delay={0.4}>
+        <h2 id="token-optimization">Token Optimization</h2>
+        <p className="mb-4">
+          Configure field priorities to automatically trim content when
+          exceeding token limits:
+        </p>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`const fields = [
+  {
+    id: 'instruction',
+    priority: 'critical', // Never trimmed
+    // ...
+  },
+  {
+    id: 'context',
+    priority: 'high', // Trimmed only if critical fits
+    // ...
+  },
+  {
+    id: 'examples',
+    priority: 'low', // Trimmed first
+    // ...
+  }
+]
+
+<StructuredInputBuilder
+  fields={fields}
+  maxTokens={1000}
+  showTokenBreakdown
+/>`}
+        />
+      </ScrollReveal>
+
+      <ScrollReveal delay={0.5}>
+        <section className="my-12">
+          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+          <p className="mb-6 text-muted-foreground">
+            Experiment with different field types and priorities.
+          </p>
+          <CodePlayground
+            initialCode={`function Example() {
+  const [values, setValues] = React.useState({})
+
+  const fields = [
+    {
+      id: 'task',
+      name: 'task',
+      label: 'Task',
+      type: 'textarea',
+      required: true,
+      priority: 'critical',
+      placeholder: 'What should the AI do?'
+    },
+    {
+      id: 'context',
+      name: 'context',
+      label: 'Context',
+      type: 'textarea',
+      priority: 'medium',
+      placeholder: 'Background information...'
+    }
+  ]
+
+  return (
+    <div className="p-4 border rounded-lg bg-background">
+      <StructuredInputBuilder
+        fields={fields}
+        values={values}
+        onChange={setValues}
+        showTokenBreakdown
+        showTotalTokens
+      />
+      <div className="mt-4 p-3 bg-muted rounded text-xs font-mono">
+        {JSON.stringify(values, null, 2)}
+      </div>
+    </div>
   )
 }
 
-render(<PromptBuilder />)`}
-        />
-      </section>
+render(<Example />)`}
+          />
+        </section>
+      </ScrollReveal>
 
-      <section className="docs-section">
-        <h2>Field Types</h2>
-        <p>
-          Support for multiple field types:
-        </p>
-        <CodePlayground
-          initialCode={`import { StructuredInputBuilder } from '@clarity-chat/react'
+      <ScrollReveal delay={0.6}>
+        <div className="grid md:grid-cols-2 gap-8 my-12">
+          <div>
+            <h3 className="text-xl font-bold mb-4">Field Types</h3>
+            <ul className="space-y-2">
+              <li>
+                <code>text</code> - Single line input
+              </li>
+              <li>
+                <code>textarea</code> - Multi-line text area
+              </li>
+              <li>
+                <code>select</code> - Dropdown selection
+              </li>
+              <li>
+                <code>number</code> - Numeric input
+              </li>
+              <li>
+                <code>toggle</code> - Boolean switch
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold mb-4">Priority Levels</h3>
+            <ul className="space-y-2">
+              <li>
+                <span className="font-semibold text-red-500">critical</span> -
+                Never trimmed
+              </li>
+              <li>
+                <span className="font-semibold text-orange-500">high</span> -
+                Trimmed last
+              </li>
+              <li>
+                <span className="font-semibold text-yellow-500">medium</span> -
+                Standard priority
+              </li>
+              <li>
+                <span className="font-semibold text-blue-500">low</span> -
+                Trimmed first
+              </li>
+            </ul>
+          </div>
+        </div>
+      </ScrollReveal>
 
-function FieldTypesExample() {
-  const fields = [
-    {
-      id: 'text',
-      name: 'text',
-      label: 'Text Input',
-      type: 'text' as const,
-      required: true,
-    },
-    {
-      id: 'textarea',
-      name: 'textarea',
-      label: 'Textarea',
-      type: 'textarea' as const,
-      rows: 5,
-    },
-    {
-      id: 'select',
-      name: 'select',
-      label: 'Select',
-      type: 'select' as const,
-      options: [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' },
-      ],
-    },
-    {
-      id: 'number',
-      name: 'number',
-      label: 'Number',
-      type: 'number' as const,
-    },
-    {
-      id: 'toggle',
-      name: 'toggle',
-      label: 'Toggle',
-      type: 'toggle' as const,
-    },
-  ]
-
-  return (
-    <StructuredInputBuilder
-      fields={fields}
-      values={{}}
-      onChange={() => {}}
-    />
-  )
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Token Optimization</h2>
-        <p>
-          Configure field priorities for intelligent token trimming:
-        </p>
-        <CodePlayground
-          initialCode={`import { StructuredInputBuilder } from '@clarity-chat/react'
-
-function OptimizedBuilder() {
-  const fields = [
-    {
-      id: 'critical',
-      name: 'critical',
-      label: 'Critical Field',
-      type: 'textarea' as const,
-      priority: 'critical' as const,  // Preserved during trimming
-    },
-    {
-      id: 'high',
-      name: 'high',
-      label: 'High Priority',
-      type: 'textarea' as const,
-      priority: 'high' as const,
-    },
-    {
-      id: 'low',
-      name: 'low',
-      label: 'Low Priority',
-      type: 'textarea' as const,
-      priority: 'low' as const,  // Trimmed first
-    },
-  ]
-
-  return (
-    <StructuredInputBuilder
-      fields={fields}
-      values={{}}
-      onChange={() => {}}
-      maxTokens={2000}
-      showTokenBreakdown={true}
-      showTotalTokens={true}
-    />
-  )
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Field Validation</h2>
-        <p>
-          Add custom validation to fields:
-        </p>
-        <CodePlayground
-          initialCode={`import { StructuredInputBuilder } from '@clarity-chat/react'
-
-function ValidatedBuilder() {
-  const fields = [
-    {
-      id: 'email',
-      name: 'email',
-      label: 'Email',
-      type: 'text' as const,
-      validate: (value: string) => {
-        const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/
-        return emailRegex.test(value) || 'Invalid email address'
-      },
-    },
-    {
-      id: 'maxLength',
-      name: 'description',
-      label: 'Description',
-      type: 'textarea' as const,
-      maxLength: 500,
-      validate: (value: string) => {
-        return value.length <= 500 || 'Description must be 500 characters or less'
-      },
-    },
-  ]
-
-  return (
-    <StructuredInputBuilder
-      fields={fields}
-      values={{}}
-      onChange={() => {}}
-      onSubmit={(result) => {
-        if (result.isValid) {
-          console.log('Valid submission:', result.values)
-        } else {
-          console.log('Validation errors:', result.errors)
-        }
-      }}
-    />
-  )
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Custom Prompt Formatting</h2>
-        <p>
-          Provide custom prompt formatting logic:
-        </p>
-        <CodePlayground
-          initialCode={`import { StructuredInputBuilder } from '@clarity-chat/react'
-
-function CustomFormatter() {
-  const formatPrompt = (values: Record<string, string>, fields: any[]) => {
-    // Custom formatting logic
-    return \`Instruction: \${values.instruction}\\n\\nContext: \${values.context}\`
-  }
-
-  return (
-    <StructuredInputBuilder
-      fields={fields}
-      values={{}}
-      onChange={() => {}}
-      formatPrompt={formatPrompt}
-      onSubmit={(result) => {
-        console.log('Custom formatted:', result.formattedPrompt)
-      }}
-    />
-  )
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Props</h2>
+      <ScrollReveal delay={0.7}>
+        <h2 id="props">Props</h2>
         <PropsTable props={props} />
-      </section>
+      </ScrollReveal>
 
-      <section className="docs-section">
-        <h2>Field Priority Levels</h2>
-        <ul>
-          <li><strong>critical</strong>: Never trimmed, always preserved</li>
-          <li><strong>high</strong>: Trimmed only when necessary</li>
-          <li><strong>medium</strong>: Trimmed before high priority fields</li>
-          <li><strong>low</strong>: Trimmed first when token budget is exceeded</li>
-        </ul>
-      </section>
-
-      <section className="docs-section">
-        <h2>Field Sections</h2>
-        <ul>
-          <li><strong>instruction</strong>: Core instructions</li>
-          <li><strong>context</strong>: Background context</li>
-          <li><strong>reference</strong>: Reference materials</li>
-          <li><strong>question</strong>: User question</li>
-          <li><strong>constraint</strong>: Constraints and requirements</li>
-          <li><strong>example</strong>: Example inputs/outputs</li>
-        </ul>
-      </section>
-
-      <section className="docs-section">
-        <h2>Best Practices</h2>
-        <ul>
-          <li>Set appropriate <code>priority</code> levels for token optimization</li>
-          <li>Use <code>section</code> types to organize prompt structure</li>
-          <li>Enable <code>showTokenBreakdown</code> to help users understand token usage</li>
-          <li>Set <code>maxTokens</code> to enforce token budgets</li>
-          <li>Use validation functions for data quality</li>
-          <li>Provide helpful descriptions for each field</li>
-        </ul>
-      </section>
-
-      <section className="docs-section">
-        <h2>Related</h2>
-        <ul>
-          <li><a href="/reference/components/token-counter">TokenCounter</a> - Token usage display</li>
-          <li><a href="/reference/hooks/use-structured-input">useStructuredInput</a> - Structured input hook</li>
-          <li><a href="/guides/token-optimization">Token Optimization Guide</a> - Optimization strategies</li>
-        </ul>
-      </section>
+      <ScrollReveal delay={0.8}>
+        <h2 id="related">Related</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          <a
+            href="/reference/components/token-counter"
+            className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+          >
+            <h3 className="font-semibold mb-1">TokenCounter</h3>
+            <p className="text-sm text-muted-foreground">
+              Standalone token counting component
+            </p>
+          </a>
+          <a
+            href="/guides/token-optimization"
+            className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+          >
+            <h3 className="font-semibold mb-1">Token Optimization Guide</h3>
+            <p className="text-sm text-muted-foreground">
+              Learn about optimization strategies
+            </p>
+          </a>
+        </div>
+      </ScrollReveal>
     </div>
   )
 }

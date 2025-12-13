@@ -4,7 +4,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Themed Chat Example',
@@ -114,28 +113,29 @@ export default function ThemedChatExample() {
   return (
     <>
       <Breadcrumbs />
-      
+
       <h1>Themed Chat Example</h1>
-      
+
       <p className="lead">
-        Learn how to customize your chat interface with themes and implement dark mode support.
-        This example shows theme switching, custom colors, and responsive design.
+        Learn how to customize your chat interface with themes and implement
+        dark mode support. This example shows theme switching, custom colors,
+        and responsive design.
       </p>
 
       <Callout type="info">
         <p>
-          <strong>What you'll learn:</strong> Theme configuration, dark mode implementation,
-          custom styling, and ThemeProvider usage.
+          <strong>What you'll learn:</strong> Theme configuration, dark mode
+          implementation, custom styling, and ThemeProvider usage.
         </p>
       </Callout>
 
       <h2 id="live-demo">Live Demo</h2>
 
-      <p>Click the theme toggle button to switch between light and dark modes!</p>
+      <p>
+        Click the theme toggle button to switch between light and dark modes!
+      </p>
 
-      <CodePlayground
-        initialCode={themedChatCode}
-      />
+      <CodePlayground initialCode={themedChatCode} />
 
       <h2 id="how-it-works">How It Works</h2>
 
@@ -378,8 +378,9 @@ function App() {
 
       <Callout type="tip">
         <p>
-          Use <code>transition</code> for smooth theme changes, but be careful not to transition
-          all properties as it can impact performance. Only transition color-related properties.
+          Use <code>transition</code> for smooth theme changes, but be careful
+          not to transition all properties as it can impact performance. Only
+          transition color-related properties.
         </p>
       </Callout>
 
@@ -394,9 +395,10 @@ function App() {
 
       <Callout type="success">
         <p>
-          <strong>Congratulations!</strong> You now know how to theme your chat interface.
-          Try combining this with <a href="/examples/custom-styling">custom styling</a> for
-          even more customization options.
+          <strong>Congratulations!</strong> You now know how to theme your chat
+          interface. Try combining this with{' '}
+          <a href="/examples/custom-styling">custom styling</a> for even more
+          customization options.
         </p>
       </Callout>
 
