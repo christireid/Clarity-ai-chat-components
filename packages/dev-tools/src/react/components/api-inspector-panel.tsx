@@ -9,6 +9,18 @@
 import * as React from 'react'
 import { useAPIInspector } from '../hooks/use-api-inspector'
 import type { APICallLog } from '../../debug/api-inspector'
+import {
+  SearchIcon,
+  DownloadIcon,
+  CopyIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  AlertCircleIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  TrashIcon,
+  InboxIcon,
+} from './icons'
 
 export interface APIInspectorPanelProps {
   /** Additional CSS classes */
@@ -25,162 +37,6 @@ export interface APIInspectorPanelProps {
 
 type FilterStatus = 'all' | 'completed' | 'pending' | 'error'
 type FilterProvider = 'all' | 'openai' | 'anthropic' | 'google'
-
-/**
- * Icons for the inspector panel
- */
-const Icons = {
-  Search: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.35-4.35" />
-    </svg>
-  ),
-  Download: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" y1="15" x2="12" y2="3" />
-    </svg>
-  ),
-  Copy: () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-    </svg>
-  ),
-  Check: () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  ),
-  ChevronDown: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  ),
-  AlertCircle: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="8" x2="12" y2="12" />
-      <line x1="12" y1="16" x2="12.01" y2="16" />
-    </svg>
-  ),
-  CheckCircle: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>
-  ),
-  Clock: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  ),
-  Trash: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
-  ),
-  Inbox: () => (
-    <svg
-      width="48"
-      height="48"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
-      <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-    </svg>
-  ),
-}
 
 /**
  * API Inspector Panel Component
@@ -318,7 +174,7 @@ export function APIInspectorPanel({
             aria-label="Clear all logs"
             title="Clear logs"
           >
-            <Icons.Trash />
+            <TrashIcon />
           </button>
         </div>
       </header>
@@ -366,7 +222,7 @@ export function APIInspectorPanel({
         >
           <div className="search-input-wrapper">
             <span className="search-icon" aria-hidden="true">
-              <Icons.Search />
+              <SearchIcon />
             </span>
             <input
               type="search"
@@ -422,7 +278,7 @@ export function APIInspectorPanel({
               onClick={handleExport}
               aria-label="Export logs to JSON"
             >
-              <Icons.Download />
+              <DownloadIcon />
               <span>Export</span>
             </button>
           )}
@@ -479,7 +335,7 @@ function EmptyState({ hasFilters }: { hasFilters: boolean }) {
   return (
     <div className="empty-state" role="status">
       <div className="empty-state-icon" aria-hidden="true">
-        <Icons.Inbox />
+        <InboxIcon size="xl" />
       </div>
       <h3 className="empty-state-title">
         {hasFilters ? 'No matching logs' : 'No API calls yet'}
@@ -517,9 +373,9 @@ function APICallLogItem({
       ? 'completed'
       : 'pending'
   const statusIcon = {
-    error: <Icons.AlertCircle />,
-    completed: <Icons.CheckCircle />,
-    pending: <Icons.Clock />,
+    error: <AlertCircleIcon />,
+    completed: <CheckCircleIcon />,
+    pending: <ClockIcon />,
   }[status]
 
   const providerClass = log.provider.toLowerCase()
@@ -584,7 +440,7 @@ function APICallLogItem({
             {statusIcon}
           </span>
           <span className="expand-icon" aria-hidden="true">
-            <Icons.ChevronDown />
+            <ChevronDownIcon />
           </span>
         </div>
       </div>
@@ -608,7 +464,7 @@ function APICallLogItem({
                 }}
                 aria-label={isCopied ? 'Copied!' : 'Copy log to clipboard'}
               >
-                {isCopied ? <Icons.Check /> : <Icons.Copy />}
+                {isCopied ? <CheckIcon /> : <CopyIcon />}
                 <span>{isCopied ? 'Copied!' : 'Copy'}</span>
               </button>
             </header>

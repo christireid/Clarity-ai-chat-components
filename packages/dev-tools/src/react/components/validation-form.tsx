@@ -12,6 +12,17 @@ import {
   useAPIKeyValidation,
   useChatConfigValidation,
 } from '../hooks/use-validation'
+import {
+  ShieldIcon,
+  CheckIcon,
+  AlertTriangleIcon,
+  XCircleIcon,
+  CheckCircleIcon,
+  InfoIcon,
+  KeyIcon,
+  SettingsIcon,
+  GlobeIcon,
+} from './icons'
 
 export interface ValidationFormProps {
   /** Additional CSS classes */
@@ -22,148 +33,6 @@ export interface ValidationFormProps {
   showHints?: boolean
   /** Auto-validate on mount */
   autoValidate?: boolean
-}
-
-/**
- * Icons for the validation form
- */
-const Icons = {
-  Shield: () => (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  ),
-  Check: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  ),
-  AlertTriangle: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-      <line x1="12" y1="9" x2="12" y2="13" />
-      <line x1="12" y1="17" x2="12.01" y2="17" />
-    </svg>
-  ),
-  XCircle: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="15" y1="9" x2="9" y2="15" />
-      <line x1="9" y1="9" x2="15" y2="15" />
-    </svg>
-  ),
-  CheckCircle: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>
-  ),
-  Info: () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="16" x2="12" y2="12" />
-      <line x1="12" y1="8" x2="12.01" y2="8" />
-    </svg>
-  ),
-  Key: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4" />
-    </svg>
-  ),
-  Settings: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  ),
-  Globe: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  ),
 }
 
 /**
@@ -189,17 +58,17 @@ export function ValidationForm({
 
   const typeConfig = {
     env: {
-      icon: <Icons.Globe />,
+      icon: <GlobeIcon />,
       title: 'Environment Validation',
       description: 'Validate your environment variables and configuration',
     },
     'api-key': {
-      icon: <Icons.Key />,
+      icon: <KeyIcon />,
       title: 'API Key Validation',
       description: 'Verify your AI provider API keys are correctly configured',
     },
     'chat-config': {
-      icon: <Icons.Settings />,
+      icon: <SettingsIcon />,
       title: 'Chat Configuration',
       description: 'Validate your chat settings and model parameters',
     },
@@ -259,7 +128,7 @@ function EnvValidationForm({ validation, showHints }: EnvValidationFormProps) {
     <form onSubmit={handleSubmit} className="validation-form-inner">
       {showHints && (
         <div className="form-hint">
-          <Icons.Info />
+          <InfoIcon size="sm" />
           <span>
             This will validate environment variables like API keys and
             configuration settings.
@@ -316,7 +185,7 @@ function APIKeyValidationForm({
     <form onSubmit={handleSubmit} className="validation-form-inner">
       {showHints && (
         <div className="form-hint">
-          <Icons.Info />
+          <InfoIcon size="sm" />
           <span>
             Leave the API key field empty to use the environment variable.
           </span>
@@ -425,7 +294,7 @@ function ChatConfigValidationForm({
     <form onSubmit={handleSubmit} className="validation-form-inner">
       {showHints && (
         <div className="form-hint">
-          <Icons.Info />
+          <InfoIcon size="sm" />
           <span>Configure model settings and validate the configuration.</span>
         </div>
       )}
@@ -543,7 +412,7 @@ function SubmitButton({
         </>
       ) : (
         <>
-          <Icons.Shield />
+          <ShieldIcon size="lg" />
           <span>{label}</span>
         </>
       )}
@@ -575,7 +444,7 @@ function ValidationResults({
     return (
       <div className="validation-results success" role="alert">
         <div className="result-header">
-          <Icons.CheckCircle />
+          <CheckCircleIcon />
           <span>All validations passed</span>
         </div>
         <p className="result-description">
@@ -591,7 +460,7 @@ function ValidationResults({
       role="alert"
     >
       <div className="result-header">
-        {valid ? <Icons.AlertTriangle /> : <Icons.XCircle />}
+        {valid ? <AlertTriangleIcon /> : <XCircleIcon />}
         <span>
           {valid ? 'Validation passed with warnings' : 'Validation failed'}
         </span>
@@ -600,7 +469,7 @@ function ValidationResults({
       {errors.length > 0 && (
         <div className="result-section errors">
           <h4>
-            <Icons.XCircle />
+            <XCircleIcon />
             Errors ({errors.length})
           </h4>
           <ul className="issues-list">
@@ -617,7 +486,7 @@ function ValidationResults({
       {warnings.length > 0 && (
         <div className="result-section warnings">
           <h4>
-            <Icons.AlertTriangle />
+            <AlertTriangleIcon />
             Warnings ({warnings.length})
           </h4>
           <ul className="issues-list">

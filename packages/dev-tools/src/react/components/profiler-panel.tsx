@@ -9,6 +9,17 @@
 import * as React from 'react'
 import { useProfiler } from '../hooks/use-profiler'
 import type { PerformanceMetrics } from '../../performance/profiler'
+import {
+  ZapIcon,
+  ClockIcon,
+  TrendingUpIcon,
+  TrendingDownIcon,
+  TrashIcon,
+  ActivityIcon,
+  ChevronDownIcon,
+  MemoryIcon,
+  ArrowUpDownIcon,
+} from './icons'
 
 export interface ProfilerPanelProps {
   /** Additional CSS classes */
@@ -23,152 +34,6 @@ export interface ProfilerPanelProps {
   enableGrouping?: boolean
   /** Sort order */
   sortOrder?: 'duration' | 'name' | 'time'
-}
-
-/**
- * Icons for the profiler panel
- */
-const Icons = {
-  Zap: () => (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-    </svg>
-  ),
-  Clock: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  ),
-  TrendingUp: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-      <polyline points="17 6 23 6 23 12" />
-    </svg>
-  ),
-  TrendingDown: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
-      <polyline points="17 18 23 18 23 12" />
-    </svg>
-  ),
-  Trash: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
-  ),
-  Activity: () => (
-    <svg
-      width="48"
-      height="48"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-    </svg>
-  ),
-  ChevronDown: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  ),
-  Memory: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <rect x="9" y="9" width="6" height="6" />
-      <path d="M9 1v3" />
-      <path d="M15 1v3" />
-      <path d="M9 20v3" />
-      <path d="M15 20v3" />
-      <path d="M20 9h3" />
-      <path d="M20 14h3" />
-      <path d="M1 9h3" />
-      <path d="M1 14h3" />
-    </svg>
-  ),
-  ArrowUpDown: () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m7 15 5 5 5-5" />
-      <path d="m7 9 5-5 5 5" />
-    </svg>
-  ),
 }
 
 /**
@@ -251,7 +116,7 @@ export function ProfilerPanel({
       {/* Header */}
       <header className="profiler-header">
         <h2>
-          <Icons.Zap />
+          <ZapIcon size="lg" />
           Performance Profiler
         </h2>
         <div className="profiler-controls">
@@ -271,7 +136,7 @@ export function ProfilerPanel({
             aria-label="Clear metrics"
             title="Clear all metrics"
           >
-            <Icons.Trash />
+            <TrashIcon />
           </button>
         </div>
       </header>
@@ -285,7 +150,7 @@ export function ProfilerPanel({
         >
           <div className="summary-item">
             <div className="summary-icon">
-              <Icons.Activity />
+              <ActivityIcon size="xl" />
             </div>
             <div className="summary-content">
               <span className="summary-label">Operations</span>
@@ -294,7 +159,7 @@ export function ProfilerPanel({
           </div>
           <div className="summary-item">
             <div className="summary-icon">
-              <Icons.Clock />
+              <ClockIcon />
             </div>
             <div className="summary-content">
               <span className="summary-label">Total Time</span>
@@ -305,7 +170,7 @@ export function ProfilerPanel({
           </div>
           <div className="summary-item">
             <div className="summary-icon">
-              <Icons.TrendingUp />
+              <TrendingUpIcon />
             </div>
             <div className="summary-content">
               <span className="summary-label">Average</span>
@@ -317,7 +182,7 @@ export function ProfilerPanel({
           {summary.slowestOperation && (
             <div className="summary-item highlight-slow">
               <div className="summary-icon">
-                <Icons.TrendingDown />
+                <TrendingDownIcon />
               </div>
               <div className="summary-content">
                 <span className="summary-label">Slowest</span>
@@ -333,7 +198,7 @@ export function ProfilerPanel({
           {summary.fastestOperation && (
             <div className="summary-item highlight-fast">
               <div className="summary-icon">
-                <Icons.Zap />
+                <ZapIcon />
               </div>
               <div className="summary-content">
                 <span className="summary-label">Fastest</span>
@@ -381,7 +246,7 @@ export function ProfilerPanel({
             onClick={cycleSortOrder}
             aria-label={`Sort by ${currentSortOrder}`}
           >
-            <Icons.ArrowUpDown />
+            <ArrowUpDownIcon size="sm" />
             <span>Sort: {currentSortOrder}</span>
           </button>
           <span className="metrics-count">
@@ -425,7 +290,7 @@ function EmptyState() {
   return (
     <div className="empty-state" role="status">
       <div className="empty-state-icon" aria-hidden="true">
-        <Icons.Activity />
+        <ActivityIcon size="xl" />
       </div>
       <h3 className="empty-state-title">No metrics recorded</h3>
       <p className="empty-state-description">
@@ -485,12 +350,12 @@ function MetricItem({
             className="metric-memory"
             aria-label={`Memory change: ${formatMemory(metric.memoryDelta.heapUsed)}`}
           >
-            <Icons.Memory />
+            <MemoryIcon />
             <span>{formatMemory(metric.memoryDelta.heapUsed)}</span>
           </div>
         )}
         <span className="expand-icon" aria-hidden="true">
-          <Icons.ChevronDown />
+          <ChevronDownIcon />
         </span>
       </div>
 

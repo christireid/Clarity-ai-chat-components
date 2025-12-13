@@ -12,6 +12,16 @@ import { ProfilerPanel } from './profiler-panel'
 import { ValidationForm } from './validation-form'
 import { TimeTravelPanel } from './time-travel-panel'
 import { ModelComparisonPanel } from './model-comparison-panel'
+import { PanelErrorBoundary } from './error-boundary'
+import {
+  InspectorIcon,
+  ProfilerIcon,
+  ValidationIcon,
+  TimeTravelIcon,
+  ComparisonIcon,
+  KeyboardIcon,
+  CloseIcon,
+} from './icons'
 
 export interface DevToolsDashboardProps {
   /** Additional CSS classes */
@@ -58,109 +68,14 @@ interface TabConfig {
   description: string
 }
 
-/**
- * SVG Icons for tabs - inline for bundle size optimization
- */
-const Icons = {
-  Inspector: () => (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.35-4.35" />
-    </svg>
-  ),
-  Profiler: () => (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-    </svg>
-  ),
-  Validation: () => (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M9 11l3 3L22 4" />
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-    </svg>
-  ),
-  TimeTravel: () => (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  ),
-  Comparison: () => (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 3h5v5" />
-      <path d="M8 3H3v5" />
-      <path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3" />
-      <path d="m15 9 6-6" />
-    </svg>
-  ),
-  Keyboard: () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="20" height="16" x="2" y="4" rx="2" ry="2" />
-      <path d="M6 8h.001" />
-      <path d="M10 8h.001" />
-      <path d="M14 8h.001" />
-      <path d="M18 8h.001" />
-      <path d="M8 12h.001" />
-      <path d="M12 12h.001" />
-      <path d="M16 12h.001" />
-      <path d="M7 16h10" />
-    </svg>
-  ),
-}
+// Tab icon mapping using shared icons
+const TabIcons = {
+  inspector: InspectorIcon,
+  profiler: ProfilerIcon,
+  validation: ValidationIcon,
+  'time-travel': TimeTravelIcon,
+  'model-comparison': ComparisonIcon,
+} as const
 
 /**
  * Developer Tools Dashboard Component
@@ -189,46 +104,51 @@ export function DevToolsDashboard({
     const availableTabs: TabConfig[] = []
 
     if (showInspector) {
+      const Icon = TabIcons.inspector
       availableTabs.push({
         id: 'inspector',
         label: 'API Inspector',
-        icon: <Icons.Inspector />,
+        icon: <Icon size="lg" />,
         shortcut: '1',
         description: 'Monitor and debug API calls in real-time',
       })
     }
     if (showProfiler) {
+      const Icon = TabIcons.profiler
       availableTabs.push({
         id: 'profiler',
         label: 'Profiler',
-        icon: <Icons.Profiler />,
+        icon: <Icon size="lg" />,
         shortcut: '2',
         description: 'Track performance metrics and bottlenecks',
       })
     }
     if (showValidation) {
+      const Icon = TabIcons.validation
       availableTabs.push({
         id: 'validation',
         label: 'Validation',
-        icon: <Icons.Validation />,
+        icon: <Icon size="lg" />,
         shortcut: '3',
         description: 'Validate configuration and API keys',
       })
     }
     if (showTimeTravel) {
+      const Icon = TabIcons['time-travel']
       availableTabs.push({
         id: 'time-travel',
         label: 'Time Travel',
-        icon: <Icons.TimeTravel />,
+        icon: <Icon size="lg" />,
         shortcut: '4',
         description: 'Debug state changes with time-travel',
       })
     }
     if (showModelComparison) {
+      const Icon = TabIcons['model-comparison']
       availableTabs.push({
         id: 'model-comparison',
         label: 'Model Comparison',
-        icon: <Icons.Comparison />,
+        icon: <Icon size="lg" />,
         shortcut: '5',
         description: 'Compare AI model responses and costs',
       })
@@ -353,7 +273,7 @@ export function DevToolsDashboard({
             aria-label="Show keyboard shortcuts"
             title="Keyboard shortcuts (?)"
           >
-            <Icons.Keyboard />
+            <KeyboardIcon size="sm" />
             <span className="keyboard-hint-text">?</span>
           </button>
         )}
@@ -410,11 +330,31 @@ export function DevToolsDashboard({
           >
             {activeTab === tab.id && (
               <>
-                {tab.id === 'inspector' && <APIInspectorPanel />}
-                {tab.id === 'profiler' && <ProfilerPanel />}
-                {tab.id === 'validation' && <ValidationForm type="env" />}
-                {tab.id === 'time-travel' && <TimeTravelPanel />}
-                {tab.id === 'model-comparison' && <ModelComparisonPanel />}
+                {tab.id === 'inspector' && (
+                  <PanelErrorBoundary panelName="API Inspector">
+                    <APIInspectorPanel />
+                  </PanelErrorBoundary>
+                )}
+                {tab.id === 'profiler' && (
+                  <PanelErrorBoundary panelName="Profiler">
+                    <ProfilerPanel />
+                  </PanelErrorBoundary>
+                )}
+                {tab.id === 'validation' && (
+                  <PanelErrorBoundary panelName="Validation">
+                    <ValidationForm type="env" />
+                  </PanelErrorBoundary>
+                )}
+                {tab.id === 'time-travel' && (
+                  <PanelErrorBoundary panelName="Time Travel">
+                    <TimeTravelPanel />
+                  </PanelErrorBoundary>
+                )}
+                {tab.id === 'model-comparison' && (
+                  <PanelErrorBoundary panelName="Model Comparison">
+                    <ModelComparisonPanel />
+                  </PanelErrorBoundary>
+                )}
               </>
             )}
           </div>
@@ -449,16 +389,7 @@ export function DevToolsDashboard({
                 onClick={() => setShowShortcuts(false)}
                 aria-label="Close shortcuts"
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
+                <CloseIcon size={20} />
               </button>
             </header>
             <div className="shortcuts-content">

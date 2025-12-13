@@ -8,7 +8,21 @@
 
 import * as React from 'react'
 import { useTimeTravel } from '../hooks/use-time-travel'
+import type { StateSnapshot, StateTransition } from '../../debug/time-travel'
 import { TimeTravelDebugger } from '../../debug/time-travel'
+import {
+  ClockIcon,
+  RewindIcon,
+  FastForwardIcon,
+  SkipBackIcon,
+  SkipForwardIcon,
+  TrashIcon,
+  PlayIcon,
+  PauseIcon,
+  MessageSquareIcon,
+  GitCommitIcon,
+  HistoryIcon,
+} from './icons'
 
 export interface TimeTravelPanelProps {
   /** Additional CSS classes */
@@ -19,159 +33,6 @@ export interface TimeTravelPanelProps {
   compact?: boolean
   /** Enable auto-record on state changes */
   autoRecord?: boolean
-}
-
-/**
- * Icons for the time travel panel
- */
-const Icons = {
-  Clock: () => (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  ),
-  Rewind: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="11 19 2 12 11 5 11 19" />
-      <polygon points="22 19 13 12 22 5 22 19" />
-    </svg>
-  ),
-  FastForward: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="13 19 22 12 13 5 13 19" />
-      <polygon points="2 19 11 12 2 5 2 19" />
-    </svg>
-  ),
-  SkipBack: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="19 20 9 12 19 4 19 20" />
-      <line x1="5" y1="19" x2="5" y2="5" />
-    </svg>
-  ),
-  SkipForward: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="5 4 15 12 5 20 5 4" />
-      <line x1="19" y1="5" x2="19" y2="19" />
-    </svg>
-  ),
-  Trash: () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
-  ),
-  Play: () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <polygon points="5 3 19 12 5 21 5 3" />
-    </svg>
-  ),
-  Pause: () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <rect x="6" y="4" width="4" height="16" />
-      <rect x="14" y="4" width="4" height="16" />
-    </svg>
-  ),
-  MessageSquare: () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  ),
-  GitCommit: () => (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="4" />
-      <line x1="1.05" y1="12" x2="7" y2="12" />
-      <line x1="17.01" y1="12" x2="22.96" y2="12" />
-    </svg>
-  ),
-  History: () => (
-    <svg
-      width="48"
-      height="48"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-      <path d="M12 7v5l4 2" />
-    </svg>
-  ),
 }
 
 /**
@@ -250,7 +111,7 @@ export function TimeTravelPanel({
       {/* Header */}
       <header className="time-travel-header">
         <h2>
-          <Icons.Clock />
+          <ClockIcon size="lg" />
           Time Travel Debugger
         </h2>
         <div className="time-travel-controls">
@@ -260,7 +121,7 @@ export function TimeTravelPanel({
             aria-label="Clear all snapshots"
             title="Clear snapshots"
           >
-            <Icons.Trash />
+            <TrashIcon />
           </button>
         </div>
       </header>
@@ -312,7 +173,7 @@ export function TimeTravelPanel({
               aria-label="Jump to first snapshot"
               title="First"
             >
-              <Icons.SkipBack />
+              <SkipBackIcon />
             </button>
             <button
               className="dt-btn dt-btn-ghost dt-btn-icon"
@@ -324,7 +185,7 @@ export function TimeTravelPanel({
               aria-label="Go back one snapshot"
               title="Previous"
             >
-              <Icons.Rewind />
+              <RewindIcon />
             </button>
             <button
               className="dt-btn dt-btn-primary dt-btn-icon playback-btn"
@@ -332,7 +193,7 @@ export function TimeTravelPanel({
               aria-label={isPlaying ? 'Pause playback' : 'Start playback'}
               title={isPlaying ? 'Pause' : 'Play'}
             >
-              {isPlaying ? <Icons.Pause /> : <Icons.Play />}
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>
             <button
               className="dt-btn dt-btn-ghost dt-btn-icon"
@@ -344,7 +205,7 @@ export function TimeTravelPanel({
               aria-label="Go forward one snapshot"
               title="Next"
             >
-              <Icons.FastForward />
+              <FastForwardIcon />
             </button>
             <button
               className="dt-btn dt-btn-ghost dt-btn-icon"
@@ -353,7 +214,7 @@ export function TimeTravelPanel({
               aria-label="Jump to last snapshot"
               title="Last"
             >
-              <Icons.SkipForward />
+              <SkipForwardIcon />
             </button>
           </div>
 
@@ -509,7 +370,7 @@ function EmptyState() {
   return (
     <div className="empty-state" role="status">
       <div className="empty-state-icon" aria-hidden="true">
-        <Icons.History />
+        <HistoryIcon size="xl" />
       </div>
       <h3 className="empty-state-title">No snapshots recorded</h3>
       <p className="empty-state-description">
@@ -525,8 +386,8 @@ function EmptyState() {
  */
 interface TimelineItemProps {
   entry: {
-    snapshot: any
-    transition?: any
+    snapshot: StateSnapshot
+    transition?: StateTransition
     isCurrent: boolean
   }
   index: number
@@ -558,7 +419,7 @@ function TimelineItem({
         className={`timeline-marker ${isCurrent ? 'active' : ''}`}
         aria-hidden="true"
       >
-        {isCurrent ? <Icons.Play /> : <span className="marker-dot" />}
+        {isCurrent ? <PlayIcon /> : <span className="marker-dot" />}
       </div>
 
       {/* Content */}
@@ -586,12 +447,12 @@ function TimelineItem({
         </header>
         <div className="timeline-info">
           <span className="info-badge">
-            <Icons.MessageSquare />
+            <MessageSquareIcon size="sm" />
             {snapshot.messages.length} messages
           </span>
           {transition && (
             <span className="info-badge action">
-              <Icons.GitCommit />
+              <GitCommitIcon size="sm" />
               {transition.action}
             </span>
           )}
