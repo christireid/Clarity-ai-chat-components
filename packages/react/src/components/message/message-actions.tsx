@@ -11,6 +11,7 @@ import {
 } from '../icons'
 import {
   ANIMATION_DURATION,
+  DURATION_SECONDS as durations,
   EASING_FRAMER,
   INTERACTION_VARIANTS,
 } from '../../animations/constants'
