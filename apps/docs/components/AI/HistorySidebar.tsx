@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, Clock, Plus, Trash2, ChevronLeft } from 'lucide-react'
+import { useReducedMotion } from '@clarity-chat/react'
+import { drawerTransition, durations } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { ConversationBranch } from './hooks/useBranching'
 
@@ -23,14 +25,34 @@ export function HistorySidebar({
   onSwitchBranch,
   onCreateBranch,
 }: HistorySidebarProps) {
+  const prefersReducedMotion = useReducedMotion()
+
+  const variants = useMemo(() => {
+    if (prefersReducedMotion) {
+      return {
+        initial: { opacity: 0, x: 0 },
+        animate: { opacity: 1, x: 0 },
+        exit: { opacity: 0, x: 0 },
+        transition: { duration: durations.fast },
+      }
+    }
+    return {
+      ...drawerTransition('left'),
+      initial: { ...drawerTransition('left').initial, opacity: 0 },
+      animate: { ...drawerTransition('left').animate, opacity: 1 },
+      exit: { ...drawerTransition('left').exit, opacity: 0 },
+      transition: { type: 'spring', stiffness: 300, damping: 30 },
+    }
+  }, [prefersReducedMotion])
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ x: '-100%', opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: '-100%', opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          variants={variants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
           className="absolute inset-y-0 left-0 z-20 w-64 bg-secondary/50 backdrop-blur-md border-r border-border/50 flex flex-col"
         >
           <div className="p-4 border-b border-border/50 flex items-center justify-between">
