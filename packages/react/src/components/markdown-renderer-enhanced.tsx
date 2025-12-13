@@ -16,17 +16,17 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
-// rehypeHighlight is now loaded async (react-markdown v10 feature)
 import rehypeKatex from 'rehype-katex'
 import rehypeRaw from 'rehype-raw'
 import { cn } from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
 import { DownloadIcon, WrapTextIcon } from './icons'
 import { CodeWindowHeader } from './code/CodeWindowHeader'
+import { MarkdownCodeBlock } from './message/markdown-code-block'
 
 // Import KaTeX CSS
 import 'katex/dist/katex.min.css'
-import 'highlight.js/styles/github-dark.css'
+// Removed highlight.js CSS as we are using Prism via MarkdownCodeBlock
 
 // ============================================================================
 // Types
@@ -147,12 +147,12 @@ function CodeBlock({
             "!m-0 !p-4 !bg-transparent overflow-x-auto flex-1 font-fira-code",
             wrapText ? "whitespace-pre-wrap break-all" : "whitespace-pre"
           )}>
-            <code 
-              className={cn("block text-sm leading-6", className)} 
-              {...props}
-            >
-              {children}
-            </code>
+            <MarkdownCodeBlock 
+               className={className}
+               style={{ lineHeight: '1.5rem', fontSize: '14px' }}
+             >
+               {children}
+            </MarkdownCodeBlock>
           </pre>
         </div>
       </div>
@@ -229,15 +229,10 @@ export function MarkdownRendererEnhanced({
   const rehypePlugins = useMemo(() => {
     const plugins: any[] = []
     if (allowHtml) plugins.push(rehypeRaw)
-    if (enableHighlight) {
-      plugins.push(async () => {
-        const { default: rehypeHighlight } = await import('rehype-highlight')
-        return rehypeHighlight
-      })
-    }
     if (enableMath) plugins.push(rehypeKatex)
+    // Removed rehypeHighlight to avoid conflicts
     return plugins
-  }, [allowHtml, enableHighlight, enableMath])
+  }, [allowHtml, enableMath])
 
   // Custom component overrides
   const components = useMemo<Partial<Components>>(() => ({

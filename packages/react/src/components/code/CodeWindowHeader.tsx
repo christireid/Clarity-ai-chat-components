@@ -48,17 +48,23 @@ export function CodeWindowHeader({
 }: CodeWindowHeaderProps) {
 
   const handleDownload = () => {
-    const blob = new Blob([codeString], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    // Basic extension detection
-    const ext = language && language !== 'text' ? language : 'txt'
-    a.download = filename || `snippet.${ext}`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    try {
+      if (typeof window === 'undefined' || !codeString) return
+      
+      const blob = new Blob([codeString], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      // Basic extension detection
+      const ext = language && language !== 'text' ? language : 'txt'
+      a.download = filename || `snippet.${ext}`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('Failed to download code:', err)
+    }
   }
 
   return (
@@ -70,7 +76,7 @@ export function CodeWindowHeader({
       {/* Left: Window Controls & Filename/Language */}
       <div className="flex items-center gap-3">
         {/* Mac-style Window Controls */}
-        <div className="flex items-center gap-1.5 opacity-75 hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1.5 opacity-75 hover:opacity-100 transition-opacity" aria-hidden="true">
           <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
           <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
           <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
@@ -110,6 +116,7 @@ export function CodeWindowHeader({
             ) : (
               <ChevronUpIcon className="h-4 w-4" />
             )}
+            <span className="sr-only">{isFolded ? "Expand code" : "Collapse code"}</span>
           </Button>
         )}
 
@@ -125,6 +132,7 @@ export function CodeWindowHeader({
             title="Toggle word wrap"
           >
             <WrapTextIcon className="h-4 w-4" />
+            <span className="sr-only">Toggle word wrap</span>
           </Button>
         )}
 
@@ -136,6 +144,7 @@ export function CodeWindowHeader({
           title="Download code"
         >
           <DownloadIcon className="h-4 w-4" />
+          <span className="sr-only">Download code</span>
         </Button>
 
         {showCopyButton && (

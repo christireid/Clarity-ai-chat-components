@@ -3,11 +3,9 @@
 import * as React from 'react'
 import ReactMarkdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight'
 import { cn } from '@clarity-chat/primitives'
 import { CopyButton } from '../copy-button'
 import { MarkdownCodeBlock } from './markdown-code-block'
-import { DownloadIcon, WrapTextIcon } from '../icons'
 import { CodeWindowHeader } from '../code/CodeWindowHeader'
 
 // ============================================================================
@@ -112,11 +110,10 @@ function PreBlock({ children, ...props }: PreBlockProps) {
  */
 export function useMarkdownPlugins() {
   const remarkPlugins = React.useMemo(() => [remarkGfm], [])
-
-  const rehypePlugins = React.useMemo(
-    () => [rehypeHighlight] as readonly [typeof rehypeHighlight],
-    []
-  )
+  
+  // Removed rehype-highlight to prevent duplicate highlighting
+  // Prism (MarkdownCodeBlock) handles syntax highlighting client-side
+  const rehypePlugins = React.useMemo(() => [], [])
 
   return { remarkPlugins, rehypePlugins }
 }
