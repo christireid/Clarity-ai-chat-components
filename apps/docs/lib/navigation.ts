@@ -97,6 +97,7 @@ export const referenceNavigation: NavItem[] = [
     title: 'Core Components',
     items: [
       { title: 'ClarityChat', href: '/reference/components/clarity-chat' },
+      { title: 'ChatRecipes', href: '/reference/components/chat-recipes' },
       { title: 'ChatLayout', href: '/reference/components/chat-layout' },
       { title: 'ChatWindow', href: '/reference/components/chat-window' },
       { title: 'Message', href: '/reference/components/message' },
@@ -209,6 +210,9 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useStreamableUI', href: '/reference/hooks/use-streamable-ui' },
       { title: 'useMessageOperations', href: '/reference/hooks/use-message-operations' },
       { title: 'useDashboardData', href: '/reference/hooks/use-dashboard-data' },
+      { title: 'useCircuitBreaker', href: '/reference/hooks/use-circuit-breaker' },
+      { title: 'useRetryWithBackoff', href: '/reference/hooks/use-retry-with-backoff' },
+      { title: 'useRequestDeduplication', href: '/reference/hooks/use-request-deduplication' },
     ],
   },
   {
