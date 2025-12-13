@@ -10,6 +10,7 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 const models: ModelInfo[] = [
   {
@@ -118,35 +119,40 @@ export default function ModelSelectorPage() {
     <div className="docs-content">
       <Breadcrumbs />
 
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
-          ModelSelector
-        </h1>
-        <p className="text-xl text-text-secondary leading-relaxed">
-          A sophisticated dropdown component for switching between AI models. It displays key metrics like speed, cost, and quality to help users make informed decisions.
-        </p>
-      </div>
+      <ScrollReveal>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+            ModelSelector
+          </h1>
+          <p className="text-xl text-text-secondary leading-relaxed">
+            A sophisticated dropdown component for switching between AI models. It displays key metrics like speed, cost, and quality to help users make informed decisions.
+          </p>
+        </div>
+      </ScrollReveal>
 
-      <ViewInStorybook component="ModelSelector" />
+      <ScrollReveal delay={0.1}>
+        <ViewInStorybook component="ModelSelector" />
+      </ScrollReveal>
 
-      <h2 id="import">Import</h2>
-
-      <EnhancedCodeBlock
-        code={`import { ModelSelector } from '@clarity-chat/react'
+      <ScrollReveal delay={0.2}>
+        <h2 id="import">Import</h2>
+        <EnhancedCodeBlock
+          code={`import { ModelSelector } from '@clarity-chat/react'
 import type { ModelInfo } from '@clarity-chat/react'`}
-        language="tsx"
-      />
+          language="tsx"
+        />
+      </ScrollReveal>
 
-      <h2 id="usage">Usage</h2>
+      <ScrollReveal delay={0.3}>
+        <h2 id="usage">Usage</h2>
+        <p className="mb-4">
+          Pass an array of <code>ModelInfo</code> objects and handle the state for the selected value.
+        </p>
 
-      <p className="mb-4">
-        Pass an array of <code>ModelInfo</code> objects and handle the state for the selected value.
-      </p>
-
-      <ComponentPreview
-        title="Basic Model Selector"
-        description="Select between different AI models with visual indicators."
-        code={`import { useState } from 'react'
+        <ComponentPreview
+          title="Basic Model Selector"
+          description="Select between different AI models with visual indicators."
+          code={`import { useState } from 'react'
 import { ModelSelector } from '@clarity-chat/react'
 import type { ModelInfo } from '@clarity-chat/react'
 
@@ -176,18 +182,21 @@ function App() {
     />
   )
 }`}
-      >
-        <BasicModelSelectorDemo />
-      </ComponentPreview>
+        >
+          <BasicModelSelectorDemo />
+        </ComponentPreview>
+      </ScrollReveal>
 
-      <h2 id="props">Props</h2>
-      <PropsTable props={modelSelectorProps} />
+      <ScrollReveal delay={0.4}>
+        <h2 id="props">Props</h2>
+        <PropsTable props={modelSelectorProps} />
+      </ScrollReveal>
 
-      <h2 id="types">Types</h2>
-      
-      <h3>ModelInfo</h3>
-      <EnhancedCodeBlock
-        code={`interface ModelInfo {
+      <ScrollReveal delay={0.5}>
+        <h2 id="types">Types</h2>
+        <h3>ModelInfo</h3>
+        <EnhancedCodeBlock
+          code={`interface ModelInfo {
   id: string
   name: string
   provider: string
@@ -200,15 +209,18 @@ function App() {
   cost?: 'low' | 'medium' | 'high'
   quality?: 'good' | 'excellent' | 'best'
 }`}
-        language="tsx"
-      />
+          language="tsx"
+        />
+      </ScrollReveal>
 
-      <Callout type="tip">
-        <p>
-          The <code>speed</code>, <code>cost</code>, and <code>quality</code> fields automatically map to colored badges
-          in the UI: green (good), yellow (moderate), and red (poor/expensive/slow).
-        </p>
-      </Callout>
+      <ScrollReveal delay={0.6}>
+        <Callout type="tip">
+          <p>
+            The <code>speed</code>, <code>cost</code>, and <code>quality</code> fields automatically map to colored badges
+            in the UI: green (good), yellow (moderate), and red (poor/expensive/slow).
+          </p>
+        </Callout>
+      </ScrollReveal>
     </div>
   )
 }

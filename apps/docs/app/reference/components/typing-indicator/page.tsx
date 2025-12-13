@@ -7,6 +7,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 function TypingIndicatorDemo() {
   return (
@@ -76,50 +77,61 @@ export const dynamic = 'force-dynamic'
 
 export default function TypingIndicatorPage() {
   return (
-    <>
+    <div className="docs-content">
       <Breadcrumbs />
 
-      <h1>TypingIndicator</h1>
+      <ScrollReveal>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+            TypingIndicator
+          </h1>
+          <p className="text-xl text-text-secondary leading-relaxed">
+            A classic "typing..." indicator with multiple animation styles, used to
+            show that the AI is generating a response or performing an action.
+          </p>
+        </div>
+      </ScrollReveal>
 
-      <p className="lead">
-        A classic "typing..." indicator with multiple animation styles, used to
-        show that the AI is generating a response or performing an action.
-      </p>
+      <ScrollReveal delay={0.1}>
+        <ViewInStorybook component="TypingIndicator" />
+      </ScrollReveal>
 
-      <ViewInStorybook component="TypingIndicator" />
+      <ScrollReveal delay={0.2}>
+        <h2 id="import">Import</h2>
+        <EnhancedCodeBlock
+          code={`import { TypingIndicator } from '@clarity-chat/react'`}
+          language="tsx"
+        />
+      </ScrollReveal>
 
-      <h2 id="import">Import</h2>
+      <ScrollReveal delay={0.3}>
+        <h2 id="usage">Usage</h2>
+        <ComponentPreview
+          title="Basic Usage"
+          description="Default typing indicator with avatar."
+          code={`<TypingIndicator />`}
+        >
+          <TypingIndicatorDemo />
+        </ComponentPreview>
+      </ScrollReveal>
 
-      <EnhancedCodeBlock
-        code={`import { TypingIndicator } from '@clarity-chat/react'`}
-        language="tsx"
-      />
-
-      <h2 id="usage">Usage</h2>
-
-      <ComponentPreview
-        title="Basic Usage"
-        description="Default typing indicator with avatar."
-        code={`<TypingIndicator />`}
-      >
-        <TypingIndicatorDemo />
-      </ComponentPreview>
-
-      <h2 id="variants">Variants</h2>
-
-      <ComponentPreview
-        title="Animation Variants"
-        description="Different animation styles for the typing bubble."
-        code={`<TypingIndicator variant="dots" />
+      <ScrollReveal delay={0.4}>
+        <h2 id="variants">Variants</h2>
+        <ComponentPreview
+          title="Animation Variants"
+          description="Different animation styles for the typing bubble."
+          code={`<TypingIndicator variant="dots" />
 <TypingIndicator variant="pulse" />
 <TypingIndicator variant="wave" />`}
-      >
-        <VariantsDemo />
-      </ComponentPreview>
+        >
+          <VariantsDemo />
+        </ComponentPreview>
+      </ScrollReveal>
 
-      <h2 id="props">Props</h2>
-
-      <PropsTable props={typingIndicatorProps} />
-    </>
+      <ScrollReveal delay={0.5}>
+        <h2 id="props">Props</h2>
+        <PropsTable props={typingIndicatorProps} />
+      </ScrollReveal>
+    </div>
   )
 }

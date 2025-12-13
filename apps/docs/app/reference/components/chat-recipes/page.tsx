@@ -5,6 +5,7 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 const chatCompleteProps: Prop[] = [
   {
@@ -42,77 +43,85 @@ export const dynamic = 'force-dynamic'
 
 export default function ChatRecipesPage() {
   return (
-    <>
+    <div className="docs-content">
       <Breadcrumbs />
 
-      <h1>Chat Recipes</h1>
+      <ScrollReveal>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+            Chat Recipes
+          </h1>
+          <p className="text-xl text-text-secondary leading-relaxed">
+            Pre-configured combinations of Clarity Chat features for common use cases.
+            These "recipes" let you drop in complex functionality with a single component.
+          </p>
+        </div>
+      </ScrollReveal>
 
-      <p className="lead">
-        Pre-configured combinations of Clarity Chat features for common use cases.
-        These "recipes" let you drop in complex functionality with a single component.
-      </p>
-
-      <h2 id="import">Import</h2>
-
-      <EnhancedCodeBlock
-        code={`import { 
+      <ScrollReveal delay={0.1}>
+        <h2 id="import">Import</h2>
+        <EnhancedCodeBlock
+          code={`import { 
   ChatComplete, 
   ChatWithMemory, 
   ChatWithAnalytics 
 } from '@clarity-chat/react'`}
-        language="tsx"
-      />
+          language="tsx"
+        />
+      </ScrollReveal>
 
-      <h2 id="chat-complete">ChatComplete</h2>
-
-      <p>
-        The "batteries-included" component. It enables memory, error handling, persistence,
-        and analytics hooks by default. Perfect for production applications.
-      </p>
-
-      <EnhancedCodeBlock
-        code={`<ChatComplete
+      <ScrollReveal delay={0.2}>
+        <h2 id="chat-complete">ChatComplete</h2>
+        <p className="mb-4">
+          The "batteries-included" component. It enables memory, error handling, persistence,
+          and analytics hooks by default. Perfect for production applications.
+        </p>
+        <EnhancedCodeBlock
+          code={`<ChatComplete
   api="/api/chat"
   memoryStrategy="vector-store"
   onMessageSent={(content) => analytics.track('message_sent', { content })}
   onError={(error) => analytics.track('error', { error })}
 />`}
-        language="tsx"
-      />
+          language="tsx"
+        />
+      </ScrollReveal>
 
-      <h3>Props</h3>
-      <PropsTable props={chatCompleteProps} />
+      <ScrollReveal delay={0.3}>
+        <h3 className="mt-6 mb-4">Props</h3>
+        <PropsTable props={chatCompleteProps} />
+      </ScrollReveal>
 
-      <h2 id="chat-with-memory">ChatWithMemory</h2>
-
-      <p>
-        Focused on context retention. Use this when you need long-term memory via
-        vector stores or smart context window management.
-      </p>
-
-      <EnhancedCodeBlock
-        code={`<ChatWithMemory 
+      <ScrollReveal delay={0.4}>
+        <h2 id="chat-with-memory" className="mt-12">ChatWithMemory</h2>
+        <p className="mb-4">
+          Focused on context retention. Use this when you need long-term memory via
+          vector stores or smart context window management.
+        </p>
+        <EnhancedCodeBlock
+          code={`<ChatWithMemory 
   api="/api/chat" 
   strategy="vector-store" 
   maxTokens={4000} 
 />`}
-        language="tsx"
-      />
+          language="tsx"
+        />
+      </ScrollReveal>
 
-      <h2 id="chat-with-analytics">ChatWithAnalytics</h2>
-
-      <p>
-        Automatically tracks key events like message sent, message received, and errors.
-      </p>
-
-      <EnhancedCodeBlock
-        code={`<ChatWithAnalytics
+      <ScrollReveal delay={0.5}>
+        <h2 id="chat-with-analytics" className="mt-12">ChatWithAnalytics</h2>
+        <p className="mb-4">
+          Automatically tracks key events like message sent, message received, and errors.
+        </p>
+        <EnhancedCodeBlock
+          code={`<ChatWithAnalytics
   api="/api/chat"
   onMessageSent={(content) => track('sent', content)}
   onMessageReceived={(id) => track('received', id)}
 />`}
-        language="tsx"
-      />
-    </>
+          language="tsx"
+        />
+      </ScrollReveal>
+    </div>
   )
 }

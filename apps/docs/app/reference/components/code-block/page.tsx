@@ -2,11 +2,11 @@
 
 import { CodeBlock } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
-import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 function BasicCodeBlockDemo() {
   const code = `function greeting(name: string) {
@@ -74,29 +74,39 @@ export const dynamic = 'force-dynamic'
 
 export default function CodeBlockPage() {
   return (
-    <>
+    <div className="docs-content">
       <Breadcrumbs />
 
-      <h1>CodeBlock</h1>
+      <ScrollReveal>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+            CodeBlock
+          </h1>
+          <p className="text-xl text-text-secondary leading-relaxed">
+            A world-class code display component with Shiki-powered syntax highlighting,
+            line numbers, highlighting, and diff visualization.
+          </p>
+        </div>
+      </ScrollReveal>
 
-      <p className="lead">
-        A world-class code display component with Shiki-powered syntax highlighting,
-        line numbers, highlighting, and diff visualization.
-      </p>
+      <ScrollReveal delay={0.1}>
+        <ViewInStorybook component="CodeBlock" />
+      </ScrollReveal>
 
-      <h2 id="import">Import</h2>
+      <ScrollReveal delay={0.2}>
+        <h2 id="import">Import</h2>
+        <EnhancedCodeBlock
+          code={`import { CodeBlock } from '@clarity-chat/react'`}
+          language="tsx"
+        />
+      </ScrollReveal>
 
-      <EnhancedCodeBlock
-        code={`import { CodeBlock } from '@clarity-chat/react'`}
-        language="tsx"
-      />
-
-      <h2 id="usage">Usage</h2>
-
-      <ComponentPreview
-        title="Syntax Highlighting"
-        description="Displays code with syntax highlighting and line numbers."
-        code={`<CodeBlock
+      <ScrollReveal delay={0.3}>
+        <h2 id="usage">Usage</h2>
+        <ComponentPreview
+          title="Syntax Highlighting"
+          description="Displays code with syntax highlighting and line numbers."
+          code={`<CodeBlock
   language="typescript"
   title="greeting.ts"
   showLineNumbers
@@ -107,13 +117,15 @@ export default function CodeBlockPage() {
   return true;
 }\`}
 </CodeBlock>`}
-      >
-        <BasicCodeBlockDemo />
-      </ComponentPreview>
+        >
+          <BasicCodeBlockDemo />
+        </ComponentPreview>
+      </ScrollReveal>
 
-      <h2 id="props">Props</h2>
-
-      <PropsTable props={codeBlockProps} />
-    </>
+      <ScrollReveal delay={0.4}>
+        <h2 id="props">Props</h2>
+        <PropsTable props={codeBlockProps} />
+      </ScrollReveal>
+    </div>
   )
 }
