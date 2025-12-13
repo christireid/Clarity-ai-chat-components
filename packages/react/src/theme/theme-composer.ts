@@ -15,11 +15,12 @@ import type {
   AnimationConfig,
   ComponentOverrides,
 } from './theme-config'
+import { modernThemes, type ModernThemePresetName } from './modern-presets'
 import {
-  modernThemes,
-  type ModernThemePresetName,
-} from './modern-presets'
-import { hexToHSLString, getContrastingForeground } from './color-utils'
+  hexToHSLString,
+  hslStringToHex,
+  getContrastingForeground,
+} from './color-utils'
 import { autoAdjustForContrast, generateColorScale } from './color-advanced'
 
 // ============================================================================
@@ -637,48 +638,7 @@ export class ThemeBuilder {
     // Helper to convert HSL string to hex for color calculations
     const toHex = (color: string): string => {
       if (color.startsWith('#')) return color
-      // Parse HSL string like "220 14% 4%" to hex
-      const parts = color.split(' ')
-      if (parts.length < 3) return '#000000'
-      const h = parseFloat(parts[0] || '0')
-      const s = parseFloat(parts[1] || '0')
-      const l = parseFloat(parts[2] || '0')
-      // Simple HSL to hex conversion
-      const hslToHex = (h: number, s: number, l: number): string => {
-        s /= 100
-        l /= 100
-        const c = (1 - Math.abs(2 * l - 1)) * s
-        const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
-        const m = l - c / 2
-        let r = 0,
-          g = 0,
-          b = 0
-        if (h < 60) {
-          r = c
-          g = x
-        } else if (h < 120) {
-          r = x
-          g = c
-        } else if (h < 180) {
-          g = c
-          b = x
-        } else if (h < 240) {
-          g = x
-          b = c
-        } else if (h < 300) {
-          r = x
-          b = c
-        } else {
-          r = c
-          b = x
-        }
-        const toHexComponent = (n: number) =>
-          Math.round((n + m) * 255)
-            .toString(16)
-            .padStart(2, '0')
-        return `#${toHexComponent(r)}${toHexComponent(g)}${toHexComponent(b)}`
-      }
-      return hslToHex(h, s, l)
+      return hslStringToHex(color)
     }
 
     try {
@@ -696,7 +656,11 @@ export class ThemeBuilder {
 
       // Fix foreground/background contrast
       const fgHex = toHex(colors.foreground)
-      const adjustedFg = autoAdjustForContrast(fgHex, bgHex, this.contrastTarget)
+      const adjustedFg = autoAdjustForContrast(
+        fgHex,
+        bgHex,
+        this.contrastTarget
+      )
       if (adjustedFg !== fgHex) {
         fixed.foreground = hexToHSLString(adjustedFg)
       }
@@ -715,7 +679,9 @@ export class ThemeBuilder {
       }
     } catch {
       // If contrast fixing fails, return original colors
-      console.warn('[ThemeBuilder] Auto-contrast adjustment failed, using original colors')
+      console.warn(
+        '[ThemeBuilder] Auto-contrast adjustment failed, using original colors'
+      )
     }
 
     return fixed
@@ -731,7 +697,11 @@ export class ThemeBuilder {
  * Later themes override earlier ones
  */
 export function composeThemes(
-  ...themes: (ModernThemePresetName | CompleteThemeConfig | PartialThemeConfig)[]
+  ...themes: (
+    | ModernThemePresetName
+    | CompleteThemeConfig
+    | PartialThemeConfig
+  )[]
 ): CompleteThemeConfig {
   let result: CompleteThemeConfig = { ...modernThemes['default'] }
 
@@ -879,7 +849,8 @@ export function createBrandTheme(
   } = {}
 ): CompleteThemeConfig {
   const builder = new ThemeBuilder({
-    base: options.base || (options.mode === 'dark' ? 'default-dark' : 'default'),
+    base:
+      options.base || (options.mode === 'dark' ? 'default-dark' : 'default'),
     mode: options.mode || 'light',
   })
 
@@ -908,7 +879,8 @@ export function createMultiColorTheme(
   } = {}
 ): CompleteThemeConfig {
   const builder = new ThemeBuilder({
-    base: options.base || (options.mode === 'dark' ? 'default-dark' : 'default'),
+    base:
+      options.base || (options.mode === 'dark' ? 'default-dark' : 'default'),
     mode: options.mode || 'light',
   })
     .name(options.name || 'custom-multi')
