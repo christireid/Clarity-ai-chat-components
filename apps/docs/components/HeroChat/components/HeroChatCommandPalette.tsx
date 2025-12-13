@@ -11,6 +11,15 @@ import {
   Command as CommandIcon,
   Settings,
   LucideIcon,
+  PanelLeft,
+  Plus,
+  Mic,
+  Copy,
+  MessageSquare,
+  Volume2,
+  RefreshCw,
+  Database,
+  GitBranch,
 } from 'lucide-react'
 
 interface CommandItem {
@@ -29,10 +38,42 @@ interface HeroChatCommandPaletteProps {
 }
 
 export const DEFAULT_COMMANDS: CommandItem[] = [
+  // Navigation
+  { id: 'sidebar', icon: PanelLeft, label: 'Toggle Sidebar', shortcut: '⌘B' },
+  { id: 'new', icon: Plus, label: 'New Conversation', shortcut: '⌘N' },
+  { id: 'search', icon: Search, label: 'Search Conversations', shortcut: '⌘F' },
+
+  // Actions
   { id: 'clear', icon: Trash2, label: 'Clear History', shortcut: '⌘⇧K' },
+  {
+    id: 'regenerate',
+    icon: RefreshCw,
+    label: 'Regenerate Response',
+    shortcut: '⌘R',
+  },
+  { id: 'copy', icon: Copy, label: 'Copy Last Response', shortcut: '⌘⇧C' },
+
+  // Input
+  { id: 'voice', icon: Mic, label: 'Start Voice Input', shortcut: '⌘⇧V' },
+  { id: 'focus', icon: MessageSquare, label: 'Focus Input', shortcut: '/' },
+
+  // Output
+  { id: 'speak', icon: Volume2, label: 'Read Last Response', shortcut: '⌘⇧S' },
+  {
+    id: 'export',
+    icon: Download,
+    label: 'Export Conversation',
+    shortcut: '⌘E',
+  },
+  {
+    id: 'export-all',
+    icon: Database,
+    label: 'Export All Conversations',
+    shortcut: '⌘⇧E',
+  },
+
+  // Settings
   { id: 'theme', icon: Sun, label: 'Toggle Theme', shortcut: '⌘T' },
-  { id: 'search', icon: Search, label: 'Search Messages', shortcut: '⌘F' },
-  { id: 'export', icon: Download, label: 'Export Chat', shortcut: '⌘E' },
   {
     id: 'shortcuts',
     icon: CommandIcon,

@@ -76,6 +76,7 @@ export function HeroChatInput({
             style={{ minHeight: '48px', maxHeight: '120px' }}
             aria-describedby="char-count"
             disabled={isStreaming}
+            data-chat-input
           />
           <div
             id="char-count"

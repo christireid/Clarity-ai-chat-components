@@ -11,7 +11,6 @@ import {
   ChevronLeft,
   Search,
   Download,
-  GitBranch,
 } from 'lucide-react'
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { Conversation } from '../hooks/useHeroChat'
@@ -214,6 +213,7 @@ export function HeroChatSidebar({
                   placeholder="Search conversations..."
                   className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm text-slate-900 dark:text-white placeholder-slate-400"
                   aria-label="Search conversations"
+                  data-sidebar-search
                 />
                 {searchQuery && (
                   <button
@@ -373,12 +373,6 @@ export function HeroChatSidebar({
                                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                     {conv.messages.length} message
                                     {conv.messages.length !== 1 ? 's' : ''}
-                                    {conv.branchedFrom && (
-                                      <span className="ml-2 inline-flex items-center gap-0.5">
-                                        <GitBranch className="w-3 h-3" />
-                                        branch
-                                      </span>
-                                    )}
                                   </p>
                                 </div>
 

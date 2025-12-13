@@ -32,6 +32,13 @@ import {
   HeroChatSidebar,
   HeroChatTokenCounter,
   PROMPT_SUGGESTIONS,
+  // New enhanced components
+  HeroChatErrorBoundary,
+  HeroChatTypingIndicator,
+  HeroChatOfflineBanner,
+  HeroChatVoicePreview,
+  HeroChatStorageIndicator,
+  exportAllConversations,
 } from './components'
 
 // Hooks
@@ -118,7 +125,7 @@ function useAutoScroll(dependencies: unknown[]) {
 // MAIN COMPONENT
 // ============================================================================
 
-export function HeroChat({ className = '' }: HeroChatProps) {
+function HeroChatInner({ className = '' }: HeroChatProps) {
   // -------------------------------------------------------------------------
   // State from useHeroChat hook
   // -------------------------------------------------------------------------
@@ -267,13 +274,80 @@ export function HeroChat({ className = '' }: HeroChatProps) {
   const executeCommand = useCallback(
     (commandId: string) => {
       switch (commandId) {
+        // Navigation
+        case 'sidebar':
+          setShowSidebar((prev) => !prev)
+          break
+        case 'new':
+          createConversation()
+          showToast('New conversation created')
+          break
+        case 'search':
+          setShowSidebar(true)
+          // Focus search input after sidebar opens
+          setTimeout(() => {
+            const searchInput = document.querySelector('[data-sidebar-search]')
+            if (searchInput instanceof HTMLInputElement) {
+              searchInput.focus()
+            }
+          }, 100)
+          break
+
+        // Actions
         case 'clear':
           clearMessages()
           showToast('Chat history cleared')
           break
-        case 'theme':
-          cycleTheme()
+        case 'regenerate': {
+          const lastAssistant = [...messages]
+            .reverse()
+            .find((m) => m.role === 'assistant')
+          if (lastAssistant) {
+            regenerateMessage(lastAssistant.id)
+          } else {
+            showToast('No response to regenerate', 'error')
+          }
           break
+        }
+        case 'copy': {
+          const lastResponse = [...messages]
+            .reverse()
+            .find((m) => m.role === 'assistant')
+          if (lastResponse) {
+            copyMessage(lastResponse.content)
+            showToast('Response copied')
+          } else {
+            showToast('No response to copy', 'error')
+          }
+          break
+        }
+
+        // Input
+        case 'voice':
+          handleVoiceToggle()
+          break
+        case 'focus': {
+          const chatInput = document.querySelector('[data-chat-input]')
+          if (chatInput instanceof HTMLTextAreaElement) {
+            chatInput.focus()
+          }
+          break
+        }
+
+        // Output
+        case 'speak': {
+          const lastToSpeak = [...messages]
+            .reverse()
+            .find((m) => m.role === 'assistant')
+          if (lastToSpeak) {
+            const utterance = new SpeechSynthesisUtterance(lastToSpeak.content)
+            speechSynthesis.speak(utterance)
+            showToast('Speaking...')
+          } else {
+            showToast('No response to speak', 'error')
+          }
+          break
+        }
         case 'export': {
           const data = JSON.stringify(messages, null, 2)
           const blob = new Blob([data], { type: 'application/json' })
@@ -286,12 +360,41 @@ export function HeroChat({ className = '' }: HeroChatProps) {
           showToast('Chat exported')
           break
         }
+        case 'export-all':
+          exportAllConversations(conversations)
+          showToast('All conversations exported')
+          break
+
+        // Settings
+        case 'theme':
+          cycleTheme()
+          break
+        case 'shortcuts':
+          showToast(
+            'Keyboard shortcuts: ⌘K (palette), ⌘B (sidebar), ⌘T (theme)'
+          )
+          break
+        case 'settings':
+          showToast('Settings panel coming soon')
+          break
+
         default:
           showToast('Command not implemented yet')
       }
       closeCommandPalette()
     },
-    [clearMessages, cycleTheme, messages, showToast, closeCommandPalette]
+    [
+      clearMessages,
+      cycleTheme,
+      messages,
+      conversations,
+      showToast,
+      closeCommandPalette,
+      createConversation,
+      regenerateMessage,
+      copyMessage,
+      handleVoiceToggle,
+    ]
   )
 
   // -------------------------------------------------------------------------
@@ -336,17 +439,29 @@ export function HeroChat({ className = '' }: HeroChatProps) {
       // Escape closes modals
       if (e.key === 'Escape') {
         setContextMenu(null)
+        setShowSidebar(false)
       }
       // Cmd+T toggles theme
-      if (e.metaKey && e.key === 't') {
+      if ((e.metaKey || e.ctrlKey) && e.key === 't') {
         e.preventDefault()
         cycleTheme()
+      }
+      // Cmd+B toggles sidebar
+      if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+        e.preventDefault()
+        setShowSidebar((prev) => !prev)
+      }
+      // Cmd+Shift+E exports all conversations
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'e') {
+        e.preventDefault()
+        exportAllConversations(conversations)
+        showToast('All conversations exported')
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [cycleTheme])
+  }, [cycleTheme, conversations, showToast])
 
   // -------------------------------------------------------------------------
   // Convert messages for display
@@ -370,6 +485,9 @@ export function HeroChat({ className = '' }: HeroChatProps) {
         className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/30 pointer-events-none"
         aria-hidden="true"
       />
+
+      {/* Offline banner */}
+      <HeroChatOfflineBanner />
 
       {/* Sidebar */}
       <HeroChatSidebar
@@ -434,6 +552,11 @@ export function HeroChat({ className = '' }: HeroChatProps) {
           ))}
         </AnimatePresence>
 
+        {/* Typing indicator when streaming */}
+        {isStreaming && displayMessages.length > 0 && (
+          <HeroChatTypingIndicator />
+        )}
+
         {/* Scroll to bottom button */}
         <AnimatePresence>
           {isUserScrolling && displayMessages.length > 0 && (
@@ -456,6 +579,14 @@ export function HeroChat({ className = '' }: HeroChatProps) {
         tokenUsage={tokenUsage}
         estimatedCost={estimatedCost}
         isStreaming={isStreaming}
+      />
+
+      {/* Voice Preview (when recording) */}
+      <HeroChatVoicePreview
+        isRecording={isRecording}
+        transcript={voiceTranscript}
+        isSupported={isVoiceSupported}
+        onStop={stopVoiceInput}
       />
 
       {/* Input area */}
@@ -485,5 +616,24 @@ export function HeroChat({ className = '' }: HeroChatProps) {
       {/* Toast */}
       <HeroChatToast toast={toast} />
     </div>
+  )
+}
+
+// ============================================================================
+// EXPORTED COMPONENT WITH ERROR BOUNDARY
+// ============================================================================
+
+export function HeroChat(props: HeroChatProps) {
+  return (
+    <HeroChatErrorBoundary
+      onReset={() => {
+        // Clear any persisted state that might be causing issues
+        if (typeof window !== 'undefined') {
+          window.location.reload()
+        }
+      }}
+    >
+      <HeroChatInner {...props} />
+    </HeroChatErrorBoundary>
   )
 }

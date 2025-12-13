@@ -2,13 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  HardDrive,
-  Download,
-  Upload,
-  AlertTriangle,
-  Trash2,
-} from 'lucide-react'
+import { Database, Download, Upload, AlertTriangle, Trash2 } from 'lucide-react'
+import { durations } from '@/lib/animations'
 import { Conversation } from '../hooks/useHeroChat'
 
 interface HeroChatStorageIndicatorProps {
@@ -95,7 +90,7 @@ export function HeroChatStorageIndicator({
         aria-expanded={isExpanded}
         aria-label="Storage settings"
       >
-        <HardDrive className="w-4 h-4" />
+        <Database className="w-4 h-4" />
         <span>{usageFormatted}</span>
         {showWarning && <AlertTriangle className="w-4 h-4" />}
       </button>

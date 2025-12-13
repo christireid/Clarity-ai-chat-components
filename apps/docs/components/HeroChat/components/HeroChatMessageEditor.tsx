@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, X, CornerDownLeft } from 'lucide-react'
+import { Check, X, ArrowRight } from 'lucide-react'
 import { durations } from '@/lib/animations'
 
 interface HeroChatMessageEditorProps {
@@ -114,7 +114,7 @@ export function HeroChatMessageEditor({
       {/* Actions bar */}
       <div className="flex items-center justify-between mt-2">
         <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-          <CornerDownLeft className="w-3 h-3" />
+          <ArrowRight className="w-3 h-3" />
           <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-xs">
             {typeof navigator !== 'undefined' &&
             navigator.platform?.includes('Mac')
