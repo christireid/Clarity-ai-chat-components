@@ -1,0 +1,52 @@
+/* ==========================================================================
+   Virtual List Styles
+   ========================================================================== */
+
+.virtual-list {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dt-color-gray-300) transparent;
+}
+
+.virtual-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.virtual-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.virtual-list::-webkit-scrollbar-thumb {
+  background-color: var(--dt-color-gray-300);
+  border-radius: var(--dt-radius-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.virtual-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--dt-color-gray-400);
+}
+
+.virtual-list-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dt-text-tertiary);
+  font-size: var(--dt-text-sm);
+}
+
+.virtual-list-no-items {
+  padding: var(--dt-space-8);
+  text-align: center;
+}
+
+/* Dark mode adjustments */
+.dev-tools-dark .virtual-list::-webkit-scrollbar-thumb {
+  background-color: var(--dt-color-gray-600);
+}
+
+.dev-tools-dark .virtual-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--dt-color-gray-500);
+}
