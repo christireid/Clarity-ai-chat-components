@@ -1,5 +1,24 @@
 import type { NavItem } from '@/components/Navigation/Sidebar'
 
+export const demosNavigation: NavItem[] = [
+  {
+    title: 'Interactive Demos',
+    items: [
+      { title: '🚀 All Demos', href: '/demos' },
+      { title: '⚡ Zero to Chat', href: '/demos/zero-to-chat' },
+      { title: '🔄 Provider Hot-Swap', href: '/demos/provider-hotswap' },
+      { title: '▶️ Streaming States', href: '/demos/streaming-states' },
+      { title: '📊 Token Visualizer', href: '/demos/token-visualizer' },
+      { title: '🧠 Memory & Context', href: '/demos/memory-context' },
+      { title: '🎨 Customization Playground', href: '/demos/customization-playground' },
+      { title: '🔧 Tool Calling / Agents', href: '/demos/tool-calling' },
+      { title: '♿ Accessibility Audit', href: '/demos/accessibility-audit' },
+      { title: '📦 Bundle Comparison', href: '/demos/bundle-comparison' },
+      { title: '🏢 Enterprise Production', href: '/demos/enterprise-production' },
+    ],
+  },
+]
+
 export const learnNavigation: NavItem[] = [
   {
     title: 'Getting Started',
