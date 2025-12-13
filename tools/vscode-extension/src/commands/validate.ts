@@ -111,8 +111,8 @@ async function checkCodePatterns(issues: string[], warnings: string[]) {
     const document = await vscode.workspace.openTextDocument(file)
     const text = document.getText()
 
-    // Check for hardcoded API keys
-    if (/['"]sk-[a-zA-Z0-9]{48,}['"]/.test(text)) {
+    // Check for hardcoded API keys (OpenAI sk-*, Anthropic sk-ant-*, Google AIza*)
+    if (/['"](?:sk-[a-zA-Z0-9_-]{20,}|sk-ant-[a-zA-Z0-9_-]{20,}|AIza[a-zA-Z0-9_-]{30,})['"]/.test(text)) {
       issues.push(`Possible hardcoded API key in ${file.path}`)
     }
 
@@ -140,6 +140,8 @@ function showValidationResults(issues: string[], warnings: string[]) {
     <!DOCTYPE html>
     <html>
     <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
       <style>
         body {
           font-family: var(--vscode-font-family);
