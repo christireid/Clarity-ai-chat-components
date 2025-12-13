@@ -1102,10 +1102,12 @@ class VectorStore {
   async search(query: string, topK = 3): Promise<Document[]> {
     const queryEmbedding = await this.getEmbedding(query)
 
-    const scored = this.documents.map(doc => ({
-      doc,
-      score: this.cosineSimilarity(queryEmbedding, doc.embedding!)
-    }))
+    const scored = this.documents
+      .filter(doc => doc.embedding != null)
+      .map(doc => ({
+        doc,
+        score: this.cosineSimilarity(queryEmbedding, doc.embedding as number[])
+      }))
 
     return scored
       .sort((a, b) => b.score - a.score)
