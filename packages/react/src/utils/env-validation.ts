@@ -104,9 +104,7 @@ export function validateAIProvider(
   }
 
   if (options.throwOnError && !result.isValid) {
-    throw new Error(
-      `AI Provider configuration invalid:\n${errors.join('\n')}`
-    )
+    throw new Error(`AI Provider configuration invalid:\n${errors.join('\n')}`)
   }
 
   return result
@@ -138,7 +136,9 @@ export function validateVectorStore(
       } else if (isProduction()) {
         errors.push(`Missing required environment variable: ${varName}`)
       } else {
-        warnings.push(`${varName} not set. Vector search features may be limited.`)
+        warnings.push(
+          `${varName} not set. Vector search features may be limited.`
+        )
       }
     }
   }
@@ -166,9 +166,7 @@ export function validateVectorStore(
   }
 
   if (options.throwOnError && !result.isValid) {
-    throw new Error(
-      `Vector store configuration invalid:\n${errors.join('\n')}`
-    )
+    throw new Error(`Vector store configuration invalid:\n${errors.join('\n')}`)
   }
 
   return result
@@ -244,9 +242,7 @@ export function validateClarityChatConfig(
   }
 
   if (options.throwOnError && !result.isValid) {
-    throw new Error(
-      `Clarity Chat configuration invalid:\n${errors.join('\n')}`
-    )
+    throw new Error(`Clarity Chat configuration invalid:\n${errors.join('\n')}`)
   }
 
   return result

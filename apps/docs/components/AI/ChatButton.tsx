@@ -23,7 +23,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
       className="fixed bottom-6 right-6 z-50 group/container"
     >
       {/* Keyboard Shortcut Tooltip - Desktop only */}
@@ -33,7 +33,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: durations.normal }}
             className={cn(
               'hidden lg:block',
               'absolute bottom-full right-0 mb-2',
@@ -43,7 +43,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
               'whitespace-nowrap'
             )}
           >
-            Press {isMac ? '⌘' : 'Ctrl'}+A
+            Press {isMac ? '⌘' : 'Ctrl'}+.
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -70,7 +70,11 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
           'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2',
           'group'
         )}
-        aria-label={isOpen ? 'Close AI Assistant (Esc)' : `Open AI Assistant (${isMac ? 'Cmd' : 'Ctrl'}+A)`}
+        aria-label={
+          isOpen
+            ? 'Close AI Assistant (Esc)'
+            : `Open AI Assistant (${isMac ? 'Cmd' : 'Ctrl'}+.)`
+        }
       >
         {/* Icon Container */}
         <div className="relative">
@@ -81,7 +85,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
                 initial={{ rotate: -90, scale: 0 }}
                 animate={{ rotate: 0, scale: 1 }}
                 exit={{ rotate: 90, scale: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: durations.normal }}
               >
                 <X className="w-5 h-5" />
               </motion.div>
@@ -91,7 +95,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
                 initial={{ rotate: 90, scale: 0 }}
                 animate={{ rotate: 0, scale: 1 }}
                 exit={{ rotate: -90, scale: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: durations.normal }}
                 className="relative"
               >
                 <MessageSquare className="w-5 h-5" />
@@ -102,7 +106,11 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 180 }}
-                      transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 200,
+                        damping: 15,
+                      }}
                       className="absolute -top-1 -right-1"
                     >
                       <Sparkles className="w-3 h-3 text-yellow-300" />
@@ -120,7 +128,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
             width: isOpen ? 0 : 'auto',
             opacity: isOpen ? 0 : 1,
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: durations.moderate }}
           className="overflow-hidden whitespace-nowrap"
         >
           Ask AI

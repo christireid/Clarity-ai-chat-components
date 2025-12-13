@@ -304,6 +304,12 @@ export const cookbookNavigation: NavItem[] = [
 
 export const examplesNavigation: NavItem[] = [
   {
+    title: 'Featured',
+    items: [
+      { title: '🌟 Tool Calling Showcase', href: '/examples/tool-calling-showcase' },
+    ],
+  },
+  {
     title: 'Basic',
     items: [
       { title: 'Simple Chat', href: '/examples/simple-chat' },
