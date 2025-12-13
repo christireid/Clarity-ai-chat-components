@@ -115,6 +115,12 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
     topErrors: [],
   })
 
+  const suppressConsoleCaptureRef = useRef(0)
+  const originalConsoleRef = useRef<{
+    error: typeof console.error
+    warn: typeof console.warn
+  } | null>(null)
+
   const userRef = useRef<{
     userId?: string
     email?: string
@@ -154,37 +160,37 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
   // Update error statistics
   const updateStats = useCallback((report: ErrorReport) => {
     setErrorStats((prev) => {
-      const newStats = { ...prev }
-      
-      // Increment total
-      newStats.totalErrors++
-      
-      // Increment severity count
-      newStats.bySeverity = {
+      const bySeverity: ErrorStats['bySeverity'] = {
         ...prev.bySeverity,
-        [report.severity]: prev.bySeverity[report.severity] + 1,
+        [report.severity]: (prev.bySeverity[report.severity] ?? 0) + 1,
       }
 
-      // Update hourly stats
       const hour = new Date(report.timestamp).getHours()
-      newStats.byHour = prev.byHour.map((h) =>
+      const byHour: ErrorStats['byHour'] = prev.byHour.map((h) =>
         h.hour === hour ? { ...h, count: h.count + 1 } : h
       )
 
-      // Update top errors
-      const existingError = newStats.topErrors.find((e) => e.message === report.message)
-      if (existingError) {
-        existingError.count++
-      } else {
-        newStats.topErrors.push({ message: report.message, count: 1 })
+      const existingIndex = prev.topErrors.findIndex((e) => e.message === report.message)
+      const nextTopErrorsUnsorted =
+        existingIndex >= 0
+          ? prev.topErrors.map((e, i) =>
+              i === existingIndex ? { ...e, count: e.count + 1 } : e
+            )
+          : [...prev.topErrors, { message: report.message, count: 1 }]
+
+      const topErrors: ErrorStats['topErrors'] = nextTopErrorsUnsorted
+        .slice()
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+
+      return {
+        ...prev,
+        totalErrors: prev.totalErrors + 1,
+        bySeverity,
+        byHour,
+        topErrors,
+        lastError: report.timestamp,
       }
-      newStats.topErrors.sort((a, b) => b.count - a.count)
-      newStats.topErrors = newStats.topErrors.slice(0, 10)
-
-      // Update last error timestamp
-      newStats.lastError = report.timestamp
-
-      return newStats
     })
   }, [])
 
@@ -226,13 +232,21 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
       onError?.(filteredReport)
 
       // Report to all providers
-      providers.forEach((provider) => {
-        try {
-          provider.reportError(filteredReport)
-        } catch (providerError) {
-          console.error(`Error reporting to provider ${provider.name}:`, providerError)
-        }
-      })
+      suppressConsoleCaptureRef.current++
+      try {
+        providers.forEach((provider) => {
+          try {
+            provider.reportError(filteredReport)
+          } catch (providerError) {
+            ;(originalConsoleRef.current?.error ?? console.error)(
+              `Error reporting to provider ${provider.name}:`,
+              providerError
+            )
+          }
+        })
+      } finally {
+        suppressConsoleCaptureRef.current--
+      }
     },
     [enabled, sampleRate, sessionId, providers, beforeSend, onError, globalContext, globalTags, updateStats]
   )
@@ -280,13 +294,21 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
       onError?.(filteredReport)
 
       // Report to all providers
-      providers.forEach((provider) => {
-        try {
-          provider.reportError(filteredReport)
-        } catch (providerError) {
-          console.error(`Error reporting to provider ${provider.name}:`, providerError)
-        }
-      })
+      suppressConsoleCaptureRef.current++
+      try {
+        providers.forEach((provider) => {
+          try {
+            provider.reportError(filteredReport)
+          } catch (providerError) {
+            ;(originalConsoleRef.current?.error ?? console.error)(
+              `Error reporting to provider ${provider.name}:`,
+              providerError
+            )
+          }
+        })
+      } finally {
+        suppressConsoleCaptureRef.current--
+      }
     },
     [enabled, sampleRate, sessionId, providers, beforeSend, onError, globalContext, globalTags, updateStats]
   )
@@ -392,14 +414,17 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
 
     const originalError = console.error
     const originalWarn = console.warn
+    originalConsoleRef.current = { error: originalError, warn: originalWarn }
 
     console.error = (...args: any[]) => {
       originalError.apply(console, args)
+      if (suppressConsoleCaptureRef.current > 0) return
       reportError(args.join(' '), { type: 'console_error' })
     }
 
     console.warn = (...args: any[]) => {
       originalWarn.apply(console, args)
+      if (suppressConsoleCaptureRef.current > 0) return
       reportErrorDetailed({
         message: args.join(' '),
         severity: 'warning',
@@ -410,6 +435,7 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
     return () => {
       console.error = originalError
       console.warn = originalWarn
+      originalConsoleRef.current = null
     }
   }, [enabled, captureConsole, reportError, reportErrorDetailed])
 
