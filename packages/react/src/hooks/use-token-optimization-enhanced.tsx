@@ -36,6 +36,10 @@ import { compressPrompt, type CompressionResult } from '../utils/prompt-compress
 import { intelligentCompress, type LLMLinguaConfig } from '../utils/llmlingua-compressor'
 import { SmartCache } from '../utils/smart-cache'
 
+// Import persistent cache utilities
+import { createPersistentSemanticCache, type SemanticCacheConfig } from '../utils/semantic-cache-persistent'
+import { MODEL_REGISTRY, type ModelId } from '../utils/tokenization/model-registry'
+
 // Import utilities from token-optimization for unified API
 import {
   limitHistory,
@@ -82,6 +86,8 @@ export interface EnhancedTokenOptimizationOptions {
   enableSemanticCaching?: boolean
   /** Similarity threshold for semantic caching */
   similarityThreshold?: number
+  /** Persist semantic cache across sessions (default: false) */
+  persistCache?: boolean
 
   // ============ Compression ============
   /** Enable prompt compression */
@@ -111,6 +117,11 @@ export interface EnhancedTokenOptimizationOptions {
   summarizeMessage?: (message: CoreMessage) => Promise<CoreMessage>
   /** Custom embedding function for 'smart' strategy */
   calculateEmbedding?: (text: string) => Promise<number[]>
+
+  /** Enable PII redaction */
+  enablePIIRedaction?: boolean
+  /** Enable dynamic context sizing based on model */
+  enableDynamicContext?: boolean
 
   /** Enable request throttling */
   enableThrottling?: boolean
@@ -228,6 +239,13 @@ export interface EnhancedOptimizationStats {
   prefilling: {
     prefilledResponses: number
     preambleTokensSaved: number
+  }
+
+  /** PII redaction stats */
+  piiRedaction: {
+    emailsRedacted: number
+    phonesRedacted: number
+    totalTokensSaved: number
   }
 
   /** Prompt structure stats (NEW) */
@@ -417,6 +435,9 @@ export function useTokenOptimizationEnhanced(
     questionPosition?: 'start' | 'middle' | 'end'
   }
 
+  /** Redact PII from text */
+  redactPII: (text: string) => string
+
   /** Get statistics */
   stats: EnhancedOptimizationStats
 
@@ -438,6 +459,7 @@ export function useTokenOptimizationEnhanced(
     cachingProvider = 'auto',
     enableSemanticCaching = presetConfig.enableSemanticCaching ?? false,
     similarityThreshold = 0.85,
+    persistCache = false,
     enablePromptCompression = presetConfig.enablePromptCompression ?? true,
     compressionLevel = presetConfig.compressionLevel ?? 'balanced',
     compressionConfig = {},
@@ -450,6 +472,8 @@ export function useTokenOptimizationEnhanced(
     historyLimiting = {},
     summarizeMessage,
     calculateEmbedding,
+    enablePIIRedaction = false,
+    enableDynamicContext = false,
     enableThrottling = false,
     throttling = {},
     enableModelRouting = presetConfig.enableModelRouting ?? false,
@@ -478,17 +502,26 @@ export function useTokenOptimizationEnhanced(
     [cachingProvider, model, enableStats]
   )
 
-  const semanticCache = React.useMemo(
-    () =>
-      enableSemanticCaching
-        ? new SmartCache({
-            maxSize: 100,
-            enableSemanticMatching: true,
-            similarityThreshold,
-          })
-        : null,
-    [enableSemanticCaching, similarityThreshold]
-  )
+  const semanticCache = React.useMemo(() => {
+    if (!enableSemanticCaching) return null
+
+    if (persistCache && calculateEmbedding) {
+      // Use persistent cache with IndexedDB
+      return createPersistentSemanticCache({
+        embedFunction: calculateEmbedding,
+        similarityThreshold,
+        maxEntries: 1000,
+        ttlMs: 7 * 24 * 60 * 60 * 1000 // 7 days default for persistence
+      })
+    }
+
+    // Use in-memory cache
+    return new SmartCache({
+      maxSize: 100,
+      enableSemanticMatching: true,
+      similarityThreshold,
+    })
+  }, [enableSemanticCaching, similarityThreshold, persistCache, calculateEmbedding])
 
   // Initialize embedding cache for smart history
   const embeddingCache = React.useRef<Map<string, number[]>>(new Map())
@@ -552,6 +585,11 @@ export function useTokenOptimizationEnhanced(
       prefilledResponses: 0,
       preambleTokensSaved: 0,
     },
+    piiRedaction: {
+      emailsRedacted: 0,
+      phonesRedacted: 0,
+      totalTokensSaved: 0,
+    },
     promptStructure: {
       restructuredPrompts: 0,
       questionsMovedToEnd: 0,
@@ -564,17 +602,66 @@ export function useTokenOptimizationEnhanced(
   })
 
   /**
+   * PII Redaction
+   */
+  const redactPII = React.useCallback(
+    (text: string): string => {
+      if (!enablePIIRedaction) return text
+
+      let redacted = text
+      let totalSaved = 0
+      
+      // Email regex
+      const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g
+      const emails = redacted.match(emailRegex) || []
+      redacted = redacted.replace(emailRegex, '<EMAIL_REDACTED>')
+      
+      // Phone regex (simple)
+      const phoneRegex = /(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g
+      const phones = redacted.match(phoneRegex) || []
+      redacted = redacted.replace(phoneRegex, '<PHONE_REDACTED>')
+
+      // Rough token estimation: email ~4-8 tokens, phone ~4-6 tokens
+      const emailSaved = emails.length * 5 
+      const phoneSaved = phones.length * 5
+      totalSaved = emailSaved + phoneSaved
+
+      if (enableStats && totalSaved > 0) {
+        setStats(prev => ({
+          ...prev,
+          piiRedaction: {
+            emailsRedacted: prev.piiRedaction.emailsRedacted + emails.length,
+            phonesRedacted: prev.piiRedaction.phonesRedacted + phones.length,
+            totalTokensSaved: prev.piiRedaction.totalTokensSaved + totalSaved
+          }
+        }))
+      }
+
+      return redacted
+    },
+    [enablePIIRedaction, enableStats]
+  )
+
+  /**
    * Optimize structured data
    */
   const optimizeData = React.useCallback(
     async (data: any): Promise<EnhancedOptimizationResult> => {
+      // PII Redaction first
+      let processedData = data
+      if (enablePIIRedaction) {
+        const jsonStr = JSON.stringify(data)
+        const redactedStr = redactPII(jsonStr)
+        processedData = JSON.parse(redactedStr)
+      }
+
       // Apply TOON optimization
       let content: string
       let format: 'json' | 'toon' = 'json'
       let toonResult: ToonOptimizationResult | undefined
 
       if (enableToon) {
-        const result = autoOptimize(data, { minSavingsPercent: toonMinSavings })
+        const result = autoOptimize(processedData, { minSavingsPercent: toonMinSavings })
         content = result.data
         format = result.format
         toonResult = result
@@ -672,6 +759,12 @@ export function useTokenOptimizationEnhanced(
   const optimizePrompt = React.useCallback(
     async (prompt: string): Promise<EnhancedOptimizationResult> => {
       let content = prompt
+      
+      // PII Redaction
+      if (enablePIIRedaction) {
+        content = redactPII(content)
+      }
+
       let compressionResult: CompressionResult | undefined
 
       // Apply compression
@@ -967,9 +1060,22 @@ export function useTokenOptimizationEnhanced(
 
       // Handle smart strategy with embeddings
       if (historyLimiting.strategy === 'smart' && calculateEmbedding) {
-        const { maxTokens = 2000, keepLast = 2 } = historyLimiting
-        
-        const systemMessage = messages.find(m => m.role === 'system')
+         let dynamicMaxTokens = historyLimiting.maxTokens ?? 2000
+         if (enableDynamicContext && model) {
+            const config = MODEL_REGISTRY[model as ModelId]
+            if (config) {
+               dynamicMaxTokens = Math.max(1000, config.contextWindow - (config.recommendedOutputReserve + 1000))
+            }
+         }
+
+         return applySmartStrategy(
+           messages,
+           systemMessage,
+           otherMessages,
+           dynamicMaxTokens,
+           historyLimiting.keepLast ?? 2
+         )
+      }
         const otherMessages = messages.filter(m => m.role !== 'system')
         
         // Always keep last N messages
@@ -1362,6 +1468,7 @@ export function useTokenOptimizationEnhanced(
     // New optimizations
     getPrefill,
     restructurePrompt,
+    redactPII,
     // Stats
     stats,
     resetStats,
