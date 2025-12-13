@@ -331,13 +331,49 @@ export async function downloadAsZip(
 }
 
 /**
- * Copies code to clipboard
+ * Copies text to clipboard with fallback for older browsers
  */
-export async function copyCode(code: string): Promise<boolean> {
+export async function copyToClipboard(text: string): Promise<boolean> {
+  // Try modern Clipboard API first
+  if (
+    navigator.clipboard &&
+    typeof navigator.clipboard.writeText === 'function'
+  ) {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      // Fall through to fallback
+    }
+  }
+
+  // Fallback for older browsers using execCommand
   try {
-    await navigator.clipboard.writeText(code)
-    return true
+    const textArea = document.createElement('textarea')
+    textArea.value = text
+
+    // Avoid scrolling to bottom
+    textArea.style.top = '0'
+    textArea.style.left = '0'
+    textArea.style.position = 'fixed'
+    textArea.style.opacity = '0'
+    textArea.style.pointerEvents = 'none'
+
+    document.body.appendChild(textArea)
+    textArea.focus()
+    textArea.select()
+
+    const success = document.execCommand('copy')
+    document.body.removeChild(textArea)
+    return success
   } catch {
     return false
   }
+}
+
+/**
+ * Copies code to clipboard (alias for copyToClipboard for backwards compatibility)
+ */
+export async function copyCode(code: string): Promise<boolean> {
+  return copyToClipboard(code)
 }

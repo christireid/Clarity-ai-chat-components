@@ -1484,7 +1484,7 @@ const multiModal: PlaygroundTemplate = {
   description: 'Chat interface supporting text, images, and files',
   category: 'advanced',
   tags: ['multi-modal', 'images', 'files', 'upload'],
-  code: `import React, { useState, useRef } from 'react'
+  code: `import React, { useState, useRef, useEffect } from 'react'
 
 function Component() {
   const [messages, setMessages] = useState([
@@ -1497,6 +1497,17 @@ function Component() {
   ])
   const [input, setInput] = useState('')
   const fileInputRef = useRef(null)
+
+  // Cleanup object URLs to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      messages.forEach(msg => {
+        if (msg.preview) {
+          URL.revokeObjectURL(msg.preview)
+        }
+      })
+    }
+  }, [])
 
   const handleSend = () => {
     if (!input.trim()) return
@@ -1525,13 +1536,14 @@ function Component() {
     if (!file) return
 
     const isImage = file.type.startsWith('image/')
+    const preview = isImage ? URL.createObjectURL(file) : null
 
     setMessages(prev => [...prev, {
       id: Date.now(),
       role: 'user',
       type: isImage ? 'image' : 'file',
       content: file.name,
-      preview: isImage ? URL.createObjectURL(file) : null
+      preview
     }])
 
     // Simulate response

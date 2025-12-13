@@ -21,6 +21,7 @@ import {
   ChevronDown,
   ExternalLink,
 } from 'lucide-react'
+import { copyToClipboard } from '../utils'
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -148,12 +149,10 @@ export class ErrorBoundary extends Component<
   handleCopyError = async () => {
     const { error, errorInfo } = this.state
     const errorText = `Error: ${error?.message}\n\nStack:\n${error?.stack}\n\nComponent Stack:\n${errorInfo?.componentStack}`
-    try {
-      await navigator.clipboard.writeText(errorText)
+    const success = await copyToClipboard(errorText)
+    if (success) {
       this.setState({ copied: true })
       setTimeout(() => this.setState({ copied: false }), 2000)
-    } catch {
-      // Silently fail
     }
   }
 

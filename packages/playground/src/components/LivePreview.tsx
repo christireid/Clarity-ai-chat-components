@@ -42,9 +42,6 @@ function generatePreviewHTML(code: string, theme: 'light' | 'dark'): string {
   const isDark = theme === 'dark'
   const bgColor = isDark ? '#0f172a' : '#ffffff'
   const textColor = isDark ? '#f8fafc' : '#0f172a'
-  // Border color available for future use
-  const _borderColor = isDark ? '#334155' : '#e2e8f0'
-  void _borderColor
 
   return `
 <!DOCTYPE html>
@@ -388,9 +385,15 @@ export function LivePreview({
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const compilationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
 
   const isProcessing =
     previewStatus === 'compiling' || previewStatus === 'rendering'
+
+  // Compilation timeout duration (10 seconds)
+  const COMPILATION_TIMEOUT_MS = 10000
 
   // Handle messages from iframe
   useEffect(() => {
@@ -416,6 +419,11 @@ export function LivePreview({
 
         if (data.status === 'success' || data.status === 'error') {
           setIsInitialLoad(false)
+          // Clear compilation timeout on completion
+          if (compilationTimeoutRef.current) {
+            clearTimeout(compilationTimeoutRef.current)
+            compilationTimeoutRef.current = null
+          }
         }
       }
 
@@ -441,9 +449,24 @@ export function LivePreview({
   }, [onConsoleEntry, onError, onPreviewStatus])
 
   const runPreview = useCallback(() => {
+    // Clear any existing compilation timeout
+    if (compilationTimeoutRef.current) {
+      clearTimeout(compilationTimeoutRef.current)
+    }
+
     setPreviewStatus('compiling')
     onPreviewStatus?.('compiling')
     setError(null)
+
+    // Set compilation timeout to prevent hanging
+    compilationTimeoutRef.current = setTimeout(() => {
+      setError(
+        'Compilation timed out. The code may contain an infinite loop or heavy computation.'
+      )
+      setPreviewStatus('error')
+      onPreviewStatus?.('error')
+      onError?.({ message: 'Compilation timed out' })
+    }, COMPILATION_TIMEOUT_MS)
 
     try {
       const html = generatePreviewHTML(code, theme)
@@ -457,13 +480,18 @@ export function LivePreview({
         }
       }
     } catch (err) {
+      // Clear timeout on error
+      if (compilationTimeoutRef.current) {
+        clearTimeout(compilationTimeoutRef.current)
+        compilationTimeoutRef.current = null
+      }
       const message = err instanceof Error ? err.message : 'Unknown error'
       setError(message)
       setPreviewStatus('error')
       onPreviewStatus?.('error')
       onError?.({ message })
     }
-  }, [code, theme, onError, onPreviewStatus])
+  }, [code, theme, onError, onPreviewStatus, COMPILATION_TIMEOUT_MS])
 
   // Expose run function to parent via ref
   useEffect(() => {
@@ -496,6 +524,15 @@ export function LivePreview({
       }
     }
   }, [autoRun, runPreview])
+
+  // Cleanup compilation timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (compilationTimeoutRef.current) {
+        clearTimeout(compilationTimeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <div className="h-full flex flex-col">

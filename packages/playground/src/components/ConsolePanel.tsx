@@ -23,6 +23,7 @@ import {
   Filter,
 } from 'lucide-react'
 import type { ConsoleLogEntry } from '../types'
+import { copyToClipboard } from '../utils'
 
 interface ConsolePanelProps {
   entries: ConsoleLogEntry[]
@@ -302,33 +303,27 @@ export function ConsolePanel({
   }
 
   const handleCopyEntry = useCallback(async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-    } catch {
-      // Silently fail
-    }
+    await copyToClipboard(text)
   }, [])
 
   const handleCopyAll = useCallback(async () => {
-    try {
-      const text = filteredEntries
-        .map((e) => {
-          const timestamp = e.timestamp.toLocaleTimeString()
-          const args = e.args ? ' ' + e.args.join(' ') : ''
-          return `[${timestamp}] [${e.level.toUpperCase()}] ${e.message}${args}`
-        })
-        .join('\n')
-      await navigator.clipboard.writeText(text)
+    const text = filteredEntries
+      .map((e) => {
+        const timestamp = e.timestamp.toLocaleTimeString()
+        const args = e.args ? ' ' + e.args.join(' ') : ''
+        return `[${timestamp}] [${e.level.toUpperCase()}] ${e.message}${args}`
+      })
+      .join('\n')
+    const success = await copyToClipboard(text)
+    if (success) {
       setCopiedAll(true)
       setTimeout(() => setCopiedAll(false), 2000)
-    } catch {
-      // Silently fail
     }
   }, [filteredEntries])
 
   return (
     <div
-      className={`panel overflow-hidden ${className}`}
+      className={`panel overflow-hidden relative ${className}`}
       role="region"
       aria-label="Console output"
     >
