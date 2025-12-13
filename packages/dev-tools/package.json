@@ -2,9 +2,21 @@
   "name": "@clarity-chat/dev-tools",
   "version": "1.0.0",
   "type": "module",
-  "description": "Developer tools for debugging, testing, and validation in Clarity Chat",
+  "description": "Premium developer tools for debugging, testing, and validation in Clarity Chat AI applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles": {
+      "import": "./src/styles/dev-tools.css"
+    },
+    "./styles/dev-tools.css": {
+      "import": "./src/styles/dev-tools.css"
+    }
+  },
   "bin": {
     "clarity-dev": "./dist/cli/index.js"
   },
@@ -31,11 +43,17 @@
     "debugging",
     "testing",
     "validation",
-    "cli"
+    "cli",
+    "react-19",
+    "ai",
+    "performance",
+    "profiling"
   ],
   "author": "Clarity Chat",
   "license": "MIT",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css"
+  ],
   "dependencies": {
     "@clarity-chat/utils": "workspace:*",
     "chalk": "^5.6.2",
@@ -61,6 +79,5 @@
     "react-dom": "^19.2.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
-  },
-  "sideEffects": false
+  }
 }
