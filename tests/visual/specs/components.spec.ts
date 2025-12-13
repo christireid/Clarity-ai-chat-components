@@ -6,7 +6,22 @@
 
 import { test, expect } from '@playwright/test'
 
+function attachPageDiagnostics(page: any) {
+  // Helps debug cases where Storybook keeps #storybook-root hidden due to runtime errors.
+  page.on('pageerror', (err: any) => {
+    // eslint-disable-next-line no-console
+    console.error('[playwright-visual][pageerror]', err)
+  })
+  page.on('console', (msg: any) => {
+    if (msg.type?.() === 'error') {
+      // eslint-disable-next-line no-console
+      console.error('[playwright-visual][console.error]', msg.text?.())
+    }
+  })
+}
+
 async function waitForStoryReady(page: any) {
+  attachPageDiagnostics(page)
   // Storybook iframe keeps the root nodes hidden until the story is fully loaded.
   await expect(page.locator('#storybook-root')).toBeVisible({ timeout: 30000 })
   await expect(page.locator('#storybook-root *').first()).toBeVisible({

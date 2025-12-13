@@ -5,10 +5,11 @@ export default defineConfig({
   // Keep baselines and diffs in stable, CI-friendly locations
   snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
   outputDir: '__diff_output__',
-  fullyParallel: true,
+  // Visual tests share a single Storybook dev server; parallelism can cause flakiness.
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   reporter: [['html'], ['json', { outputFile: 'test-results.json' }]],
   use: {
     baseURL: 'http://localhost:6006',
