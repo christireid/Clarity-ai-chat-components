@@ -34,9 +34,13 @@ describe('ChatWindow Component', () => {
 
   describe('Rendering', () => {
     it('should render the chat window with messages', () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
       expect(screen.getByText('Hello')).toBeInTheDocument()
-      expect(screen.getByText('Hi there! How can I help you?')).toBeInTheDocument()
+      expect(
+        screen.getByText('Hi there! How can I help you?')
+      ).toBeInTheDocument()
     })
 
     it('should render empty state with no messages', () => {
@@ -62,7 +66,9 @@ describe('ChatWindow Component', () => {
 
   describe('Message Input', () => {
     it('should allow typing in the input field', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       const textarea = screen.getByRole('textbox')
       fireEvent.change(textarea, { target: { value: 'New message' } })
@@ -71,7 +77,9 @@ describe('ChatWindow Component', () => {
     })
 
     it('should call onSendMessage when form is submitted', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
       const user = userEvent.setup()
 
       const textarea = screen.getByRole('textbox')
@@ -91,7 +99,9 @@ describe('ChatWindow Component', () => {
     })
 
     it('should clear input after sending message', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
       const user = userEvent.setup()
 
       const textarea = screen.getByRole('textbox')
@@ -112,7 +122,11 @@ describe('ChatWindow Component', () => {
 
     it('should disable input when loading', () => {
       render(
-        <ChatWindow messages={mockMessages} isLoading={true} onSendMessage={mockOnSendMessage} />
+        <ChatWindow
+          messages={mockMessages}
+          isLoading={true}
+          onSendMessage={mockOnSendMessage}
+        />
       )
 
       const textarea = screen.getByRole('textbox')
@@ -120,7 +134,9 @@ describe('ChatWindow Component', () => {
     })
 
     it('should not send empty messages', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       const textarea = screen.getByRole('textbox')
       fireEvent.keyDown(textarea, { key: 'Enter', code: 'Enter' })
@@ -129,7 +145,9 @@ describe('ChatWindow Component', () => {
     })
 
     it('should not send whitespace-only messages', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       const textarea = screen.getByRole('textbox')
       fireEvent.change(textarea, { target: { value: '   ' } })
@@ -170,7 +188,9 @@ describe('ChatWindow Component', () => {
         },
       ]
 
-      rerender(<ChatWindow messages={newMessages} onSendMessage={mockOnSendMessage} />)
+      rerender(
+        <ChatWindow messages={newMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       expect(screen.getByText('Another message')).toBeInTheDocument()
     })
@@ -230,14 +250,18 @@ describe('ChatWindow Component', () => {
 
   describe('Accessibility', () => {
     it('should have accessible input with label', () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       const textarea = screen.getByRole('textbox')
       expect(textarea).toBeInTheDocument()
     })
 
     it('should support keyboard navigation', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       const textarea = screen.getByRole('textbox')
 
@@ -247,7 +271,9 @@ describe('ChatWindow Component', () => {
     })
 
     it('should have proper ARIA attributes', () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       const textarea = screen.getByRole('textbox')
       expect(textarea).toHaveAttribute('aria-disabled', 'false')
@@ -255,7 +281,11 @@ describe('ChatWindow Component', () => {
 
     it('should indicate disabled state accessibly', () => {
       render(
-        <ChatWindow messages={mockMessages} isLoading={true} onSendMessage={mockOnSendMessage} />
+        <ChatWindow
+          messages={mockMessages}
+          isLoading={true}
+          onSendMessage={mockOnSendMessage}
+        />
       )
 
       const textarea = screen.getByRole('textbox')
@@ -280,25 +310,28 @@ describe('ChatWindow Component', () => {
 
   describe('Integration', () => {
     it('should handle rapid message sending', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
       const user = userEvent.setup()
 
       const getTextarea = () => screen.getByRole('textbox')
-      const getSendButton = () => screen.getByRole('button', { name: /send message/i })
+      const getSendButton = () =>
+        screen.getByRole('button', { name: /send message/i })
 
       fireEvent.change(getTextarea(), { target: { value: 'Message 1' } })
       await waitFor(() => expect(getTextarea()).toHaveValue('Message 1'))
       await waitFor(() => expect(getSendButton()).not.toBeDisabled())
       await user.click(getSendButton())
       await waitFor(() => expect(mockOnSendMessage).toHaveBeenCalledTimes(1))
-      await new Promise(resolve => setTimeout(resolve, 350))
+      await new Promise((resolve) => setTimeout(resolve, 350))
 
       fireEvent.change(getTextarea(), { target: { value: 'Message 2' } })
       await waitFor(() => expect(getTextarea()).toHaveValue('Message 2'))
       await waitFor(() => expect(getSendButton()).not.toBeDisabled())
       await user.click(getSendButton())
       await waitFor(() => expect(mockOnSendMessage).toHaveBeenCalledTimes(2))
-      await new Promise(resolve => setTimeout(resolve, 350))
+      await new Promise((resolve) => setTimeout(resolve, 350))
 
       fireEvent.change(getTextarea(), { target: { value: 'Message 3' } })
       await waitFor(() => expect(getTextarea()).toHaveValue('Message 3'))
@@ -346,7 +379,9 @@ describe('ChatWindow Component', () => {
 
   describe('Edge Cases', () => {
     it('should handle very long messages', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       const longMessage = 'A'.repeat(10000)
       const textarea = screen.getByRole('textbox')
@@ -356,7 +391,9 @@ describe('ChatWindow Component', () => {
     })
 
     it('should handle messages with newlines', async () => {
-      render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+      render(
+        <ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />
+      )
 
       const textarea = screen.getByRole('textbox') as HTMLTextAreaElement
       fireEvent.change(textarea, { target: { value: 'Line 1\nLine 2' } })
@@ -372,7 +409,12 @@ describe('ChatWindow Component', () => {
 
     it('should handle undefined isLoading', () => {
       expect(() =>
-        render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
+        render(
+          <ChatWindow
+            messages={mockMessages}
+            onSendMessage={mockOnSendMessage}
+          />
+        )
       ).not.toThrow()
     })
   })

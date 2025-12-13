@@ -8,10 +8,10 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-
 export const metadata: Metadata = {
   title: 'useChatEnhanced Hook | Clarity Chat',
-  description: 'Enhanced chat hook with Vercel AI SDK compatibility. Mid-level API for building custom chat interfaces.',
+  description:
+    'Enhanced chat hook with Vercel AI SDK compatibility. Mid-level API for building custom chat interfaces.',
 }
 
 const useChatEnhancedOptions: Prop[] = [
@@ -46,7 +46,8 @@ const useChatEnhancedOptions: Prop[] = [
   {
     name: 'fetch',
     type: 'typeof fetch',
-    description: 'Custom fetch implementation (for testing or custom behavior).',
+    description:
+      'Custom fetch implementation (for testing or custom behavior).',
   },
   {
     name: 'maxSteps',
@@ -123,7 +124,8 @@ const useChatEnhancedReturn: Prop[] = [
   {
     name: 'append',
     type: '(message: CoreMessage | Pick<CoreMessage, "role" | "content">, options?: { data?: Record<string, any> }) => Promise<string | null>',
-    description: 'Add a new message and trigger AI response. Returns message ID.',
+    description:
+      'Add a new message and trigger AI response. Returns message ID.',
   },
   {
     name: 'reload',
@@ -180,22 +182,25 @@ export default function UseChatEnhancedPage() {
       <h1>useChatEnhanced</h1>
 
       <p className="lead">
-        Enhanced chat hook with full Vercel AI SDK compatibility. This is the mid-level
-        API for building custom chat interfaces with streaming support and message management.
+        Enhanced chat hook with full Vercel AI SDK compatibility. This is the
+        mid-level API for building custom chat interfaces with streaming support
+        and message management.
       </p>
 
       <Callout type="info" title="Architecture Layer">
         <p>
-          <strong>useChatEnhanced</strong> is a mid-level hook that provides Vercel AI SDK
-          compatibility plus additional enterprise features. For simpler use cases, use
-          top-level <code>useClarityChat</code> instead. For basic chat, use <code>useChat</code>.
+          <strong>useChatEnhanced</strong> is a mid-level hook that provides
+          Vercel AI SDK compatibility plus additional enterprise features. For
+          simpler use cases, use top-level <code>useClarityChat</code> instead.
+          For basic chat, use <code>useChat</code>.
         </p>
       </Callout>
 
       <Callout type="warning" title="Vercel AI SDK Compatible">
         <p>
-          This hook is fully compatible with Vercel AI SDK's <code>useChat</code> hook.
-          You can migrate from Vercel AI SDK by simply changing the import path.
+          This hook is fully compatible with Vercel AI SDK's{' '}
+          <code>useChat</code> hook. You can migrate from Vercel AI SDK by
+          simply changing the import path.
         </p>
       </Callout>
 
@@ -204,7 +209,7 @@ export default function UseChatEnhancedPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the hook:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useChatEnhanced, ChatWindow } from '@clarity-chat/react'
@@ -317,7 +322,9 @@ function Chat() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Message Transformation</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Message Transformation
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useChatEnhanced } from '@clarity-chat/react'
@@ -399,7 +406,8 @@ function Chat() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Message Format</h2>
         <p className="mb-4 text-gray-600 dark:text-gray-400">
-          Messages use the <code>CoreMessage</code> format (Vercel AI SDK compatible):
+          Messages use the <code>CoreMessage</code> format (Vercel AI SDK
+          compatible):
         </p>
         <EnhancedCodeBlock
           language="tsx"
@@ -453,7 +461,8 @@ const { messages, append, isLoading } = useChatEnhanced({
         />
         <Callout type="success" title="Drop-in Replacement">
           <p>
-            <code>useChatEnhanced</code> is a drop-in replacement for Vercel AI SDK's
+            <code>useChatEnhanced</code> is a drop-in replacement for Vercel AI
+            SDK's
             <code>useChat</code>. All props and return values are identical.
           </p>
         </Callout>
@@ -462,7 +471,8 @@ const { messages, append, isLoading } = useChatEnhanced({
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Architecture</h2>
         <p className="mb-4 text-gray-600 dark:text-gray-400">
-          <strong>useChatEnhanced</strong> is built on top of <code>useChat</code> and provides:
+          <strong>useChatEnhanced</strong> is built on top of{' '}
+          <code>useChat</code> and provides:
         </p>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
           <li>Full Vercel AI SDK compatibility</li>
@@ -472,17 +482,24 @@ const { messages, append, isLoading } = useChatEnhanced({
           <li>Agent workflow support (maxSteps)</li>
         </ul>
         <p className="mb-4 text-gray-600 dark:text-gray-400">
-          For Clarity-specific features (memory, token optimization), use <code>useClarityChat</code> instead.
+          For Clarity-specific features (memory, token optimization), use{' '}
+          <code>useClarityChat</code> instead.
         </p>
       </section>
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Performance Considerations</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li>Messages are automatically memoized to prevent unnecessary re-renders</li>
+          <li>
+            Messages are automatically memoized to prevent unnecessary
+            re-renders
+          </li>
           <li>Streaming responses are optimized for performance</li>
           <li>Abort controller is properly cleaned up on unmount</li>
-          <li>Component mount state is tracked to prevent state updates after unmount</li>
+          <li>
+            Component mount state is tracked to prevent state updates after
+            unmount
+          </li>
         </ul>
       </section>
 
@@ -509,7 +526,10 @@ const { messages, append, isLoading } = useChatEnhanced({
       </section>
 
       <Pagination
-        prev={{ title: 'useChatHandlers', href: '/reference/hooks/use-chat-handlers' }}
+        prev={{
+          title: 'useChatHandlers',
+          href: '/reference/hooks/use-chat-handlers',
+        }}
         next={{ title: 'useChat', href: '/reference/hooks/use-chat' }}
       />
     </>

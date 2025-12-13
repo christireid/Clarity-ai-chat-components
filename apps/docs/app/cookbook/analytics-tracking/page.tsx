@@ -4,10 +4,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Analytics & Tracking - Cookbook - Clarity Chat',
-  description: 'Track chat usage, costs, user behavior, and key metrics in your AI application.',
+  description:
+    'Track chat usage, costs, user behavior, and key metrics in your AI application.',
 }
 
 export default function AnalyticsTrackingPage() {
@@ -17,7 +17,8 @@ export default function AnalyticsTrackingPage() {
         <span className="docs-badge">Cookbook</span>
         <h1>Analytics & Tracking</h1>
         <p className="docs-lead">
-          Know what's happening in your chat app. Track costs, usage, popular questions, and user behavior. Make data-driven decisions.
+          Know what's happening in your chat app. Track costs, usage, popular
+          questions, and user behavior. Make data-driven decisions.
         </p>
       </div>
 
@@ -284,4 +285,3 @@ import { PerformanceDashboard } from '@clarity-chat/react'
     </div>
   )
 }
-

@@ -6,7 +6,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Deploy to AWS - Clarity Chat',
-  description: 'Deploy Clarity Chat on AWS with Lambda, API Gateway, and CloudFront.',
+  description:
+    'Deploy Clarity Chat on AWS with Lambda, API Gateway, and CloudFront.',
 }
 
 export default function AWSDeploymentPage() {
@@ -16,13 +17,15 @@ export default function AWSDeploymentPage() {
         <span className="docs-badge">Deployment</span>
         <h1>Deploy to AWS</h1>
         <p className="docs-lead">
-          Deploy Clarity Chat on AWS using Lambda, API Gateway, S3, and CloudFront for a scalable, production-ready setup.
+          Deploy Clarity Chat on AWS using Lambda, API Gateway, S3, and
+          CloudFront for a scalable, production-ready setup.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Architecture Overview</h2>
-        <pre><code>{`┌──────────────┐
+        <pre>
+          <code>{`┌──────────────┐
 │   Route 53   │  DNS
 └──────┬───────┘
        │
@@ -48,7 +51,8 @@ export default function AWSDeploymentPage() {
 ┌────▼────┐          ┌───────▼──────┐
 │DynamoDB │          │  Other AWS   │
 │         │          │  Services    │
-└─────────┘          └──────────────┘`}</code></pre>
+└─────────┘          └──────────────┘`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -56,12 +60,15 @@ export default function AWSDeploymentPage() {
         <p>Use SST for the easiest AWS deployment experience:</p>
 
         <h3>1. Install SST</h3>
-        <pre><code>{`npx create-sst@latest
+        <pre>
+          <code>{`npx create-sst@latest
 cd my-sst-app
-npm install @clarity-chat/react`}</code></pre>
+npm install @clarity-chat/react`}</code>
+        </pre>
 
         <h3>2. Configure SST</h3>
-        <pre><code>{`// sst.config.ts
+        <pre>
+          <code>{`// sst.config.ts
 import { SSTConfig } from 'sst'
 import { NextjsSite } from 'sst/constructs'
 
@@ -89,16 +96,21 @@ export default {
       })
     })
   }
-} satisfies SSTConfig`}</code></pre>
+} satisfies SSTConfig`}</code>
+        </pre>
 
         <h3>3. Deploy</h3>
-        <pre><code>{`npx sst deploy --stage production`}</code></pre>
+        <pre>
+          <code>{`npx sst deploy --stage production`}</code>
+        </pre>
 
         <Callout type="info" title="SST Benefits">
-          • Automatic Lambda configuration<br/>
-          • Response streaming support<br/>
-          • Local development with AWS services<br/>
-          • Live Lambda debugging
+          • Automatic Lambda configuration
+          <br />
+          • Response streaming support
+          <br />
+          • Local development with AWS services
+          <br />• Live Lambda debugging
         </Callout>
       </section>
 
@@ -107,11 +119,14 @@ export default {
         <p>Managed hosting for Next.js applications:</p>
 
         <h3>1. Install Amplify CLI</h3>
-        <pre><code>{`npm install -g @aws-amplify/cli
-amplify configure`}</code></pre>
+        <pre>
+          <code>{`npm install -g @aws-amplify/cli
+amplify configure`}</code>
+        </pre>
 
         <h3>2. Initialize Amplify</h3>
-        <pre><code>{`amplify init
+        <pre>
+          <code>{`amplify init
 # Choose:
 # - Do you want to use an existing environment? No
 # - Enter a name for the environment: production
@@ -119,18 +134,22 @@ amplify configure`}</code></pre>
 # - Choose the type of app: javascript
 # - Framework: react
 # - Build command: npm run build
-# - Start command: npm run start`}</code></pre>
+# - Start command: npm run start`}</code>
+        </pre>
 
         <h3>3. Add Hosting</h3>
-        <pre><code>{`amplify add hosting
+        <pre>
+          <code>{`amplify add hosting
 # Choose:
 # - Select the plugin: Hosting with Amplify Console
 # - type: Manual deployment
 
-amplify publish`}</code></pre>
+amplify publish`}</code>
+        </pre>
 
         <h3>4. Configure Response Streaming</h3>
-        <pre><code>{`// amplify/backend/function/chatapi/src/index.js
+        <pre>
+          <code>{`// amplify/backend/function/chatapi/src/index.js
 export const handler = awslambda.streamifyResponse(
   async (event, responseStream, context) => {
     const httpResponseMetadata = {
@@ -153,14 +172,16 @@ export const handler = awslambda.streamifyResponse(
     
     responseStream.end()
   }
-)`}</code></pre>
+)`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Option 3: Manual Lambda + API Gateway</h2>
 
         <h3>1. Create Lambda Function</h3>
-        <pre><code>{`// lambda/chat/index.mjs
+        <pre>
+          <code>{`// lambda/chat/index.mjs
 import { OpenAI } from 'openai'
 
 const openai = new OpenAI({
@@ -186,10 +207,12 @@ export const handler = awslambda.streamifyResponse(
     
     responseStream.end()
   }
-)`}</code></pre>
+)`}</code>
+        </pre>
 
         <h3>2. Deploy with AWS CLI</h3>
-        <pre><code>{`# Package function
+        <pre>
+          <code>{`# Package function
 zip -r function.zip index.mjs node_modules
 
 # Create function
@@ -206,10 +229,12 @@ aws lambda create-function \\
 # Enable response streaming
 aws lambda update-function-configuration \\
   --function-name clarity-chat-api \\
-  --invoke-mode RESPONSE_STREAM`}</code></pre>
+  --invoke-mode RESPONSE_STREAM`}</code>
+        </pre>
 
         <h3>3. Create API Gateway</h3>
-        <pre><code>{`# Create REST API
+        <pre>
+          <code>{`# Create REST API
 aws apigatewayv2 create-api \\
   --name clarity-chat \\
   --protocol-type HTTP \\
@@ -227,10 +252,12 @@ aws apigatewayv2 create-integration \\
 aws apigatewayv2 create-route \\
   --api-id API_ID \\
   --route-key 'POST /chat' \\
-  --target integrations/INTEGRATION_ID`}</code></pre>
+  --target integrations/INTEGRATION_ID`}</code>
+        </pre>
 
         <h3>4. Deploy Frontend to S3 + CloudFront</h3>
-        <pre><code>{`# Build Next.js app
+        <pre>
+          <code>{`# Build Next.js app
 npm run build
 npm run export
 
@@ -245,12 +272,14 @@ aws cloudfront create-distribution \\
 # Invalidate cache after updates
 aws cloudfront create-invalidation \\
   --distribution-id DISTRIBUTION_ID \\
-  --paths "/*"`}</code></pre>
+  --paths "/*"`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Infrastructure as Code (Terraform)</h2>
-        <pre><code>{`# main.tf
+        <pre>
+          <code>{`# main.tf
 terraform {
   required_providers {
     aws = {
@@ -348,13 +377,15 @@ resource "aws_cloudfront_distribution" "frontend" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Environment Variables</h2>
         <p>Store secrets in AWS Secrets Manager or Parameter Store:</p>
-        <pre><code>{`# Store secret
+        <pre>
+          <code>{`# Store secret
 aws secretsmanager create-secret \\
   --name /clarity-chat/openai-api-key \\
   --secret-string sk-...
@@ -366,14 +397,16 @@ const client = new SecretsManagerClient({ region: 'us-east-1' })
 const response = await client.send(
   new GetSecretValueCommand({ SecretId: '/clarity-chat/openai-api-key' })
 )
-const apiKey = response.SecretString`}</code></pre>
+const apiKey = response.SecretString`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Monitoring & Logging</h2>
 
         <h3>CloudWatch Logs</h3>
-        <pre><code>{`// Lambda function logging
+        <pre>
+          <code>{`// Lambda function logging
 console.log('Request received:', JSON.stringify(event))
 console.error('Error:', error.message)
 
@@ -381,10 +414,12 @@ console.error('Error:', error.message)
 fields @timestamp, @message
 | filter @message like /Error/
 | sort @timestamp desc
-| limit 20`}</code></pre>
+| limit 20`}</code>
+        </pre>
 
         <h3>CloudWatch Metrics</h3>
-        <pre><code>{`// Custom metrics
+        <pre>
+          <code>{`// Custom metrics
 import { CloudWatchClient, PutMetricDataCommand } from '@aws-sdk/client-cloudwatch'
 
 const cloudwatch = new CloudWatchClient({ region: 'us-east-1' })
@@ -397,10 +432,12 @@ await cloudwatch.send(new PutMetricDataCommand({
     Unit: 'Count',
     Timestamp: new Date()
   }]
-}))`}</code></pre>
+}))`}</code>
+        </pre>
 
         <h3>X-Ray Tracing</h3>
-        <pre><code>{`// Enable X-Ray in Lambda
+        <pre>
+          <code>{`// Enable X-Ray in Lambda
 import AWSXRay from 'aws-xray-sdk-core'
 const AWS = AWSXRay.captureAWS(require('aws-sdk'))
 
@@ -414,7 +451,8 @@ try {
 } catch (error) {
   subsegment.addError(error)
   subsegment.close()
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -437,18 +475,21 @@ try {
         </ul>
 
         <h3>CloudFront Caching</h3>
-        <pre><code>{`# Cache static assets aggressively
+        <pre>
+          <code>{`# Cache static assets aggressively
 Cache-Control: public, max-age=31536000, immutable
 
 # Cache API responses with short TTL
-Cache-Control: public, max-age=60, stale-while-revalidate=120`}</code></pre>
+Cache-Control: public, max-age=60, stale-while-revalidate=120`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Security Best Practices</h2>
 
         <h3>IAM Roles</h3>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   "Version": "2012-10-17",
   "Statement": [
     {
@@ -468,17 +509,21 @@ Cache-Control: public, max-age=60, stale-while-revalidate=120`}</code></pre>
       "Resource": "arn:aws:secretsmanager:*:*:secret:/clarity-chat/*"
     }
   ]
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>API Gateway Throttling</h3>
-        <pre><code>{`# Set throttling limits
+        <pre>
+          <code>{`# Set throttling limits
 aws apigatewayv2 update-stage \\
   --api-id API_ID \\
   --stage-name production \\
-  --throttle-settings RateLimit=100,BurstLimit=200`}</code></pre>
+  --throttle-settings RateLimit=100,BurstLimit=200`}</code>
+        </pre>
 
         <h3>WAF Protection</h3>
-        <pre><code>{`# Create WAF Web ACL
+        <pre>
+          <code>{`# Create WAF Web ACL
 aws wafv2 create-web-acl \\
   --name clarity-chat-waf \\
   --scope REGIONAL \\
@@ -488,7 +533,8 @@ aws wafv2 create-web-acl \\
 # Associate with API Gateway
 aws wafv2 associate-web-acl \\
   --web-acl-arn WAF_ARN \\
-  --resource-arn API_GATEWAY_ARN`}</code></pre>
+  --resource-arn API_GATEWAY_ARN`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">

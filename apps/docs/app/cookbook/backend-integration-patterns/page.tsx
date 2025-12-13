@@ -6,10 +6,10 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Backend Integration Patterns | Clarity Chat Cookbook',
-  description: 'Learn backend integration patterns for different frameworks and architectures.',
+  description:
+    'Learn backend integration patterns for different frameworks and architectures.',
 }
 
 export default function BackendIntegrationPatternsPage() {
@@ -20,8 +20,8 @@ export default function BackendIntegrationPatternsPage() {
       <h1>Backend Integration Patterns</h1>
 
       <p className="lead">
-        Learn how to integrate Clarity Chat with different backend frameworks and
-        architectures. Patterns for Express, FastAPI, NestJS, and more.
+        Learn how to integrate Clarity Chat with different backend frameworks
+        and architectures. Patterns for Express, FastAPI, NestJS, and more.
       </p>
 
       <Callout type="info" title="Backend Flexibility">
@@ -37,7 +37,7 @@ export default function BackendIntegrationPatternsPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Complete Express.js integration:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`// server.js
@@ -105,7 +105,7 @@ app.listen(3000, () => {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           FastAPI streaming endpoint:
         </p>
-        
+
         <EnhancedCodeBlock
           language="python"
           code={`# main.py
@@ -172,7 +172,7 @@ async def chat(request: Request):
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           NestJS controller with streaming:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`// chat.controller.ts
@@ -248,7 +248,7 @@ export class ChatService {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Add authentication to your endpoints:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`// Express.js with JWT
@@ -285,7 +285,7 @@ function authenticateToken(req, res, next) {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Implement rate limiting:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`// Express.js with express-rate-limit
@@ -310,7 +310,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Comprehensive error handling:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`app.post('/api/chat', async (req, res) => {
@@ -380,7 +380,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Add logging and monitoring:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`// Express.js with Winston
@@ -430,14 +430,35 @@ app.post('/api/chat', async (req, res) => {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Validate inputs</strong> - Always validate message format and content</li>
-          <li><strong>Handle errors gracefully</strong> - Return user-friendly error messages</li>
-          <li><strong>Implement rate limiting</strong> - Prevent abuse and control costs</li>
-          <li><strong>Add authentication</strong> - Secure your endpoints</li>
-          <li><strong>Log requests</strong> - Track usage and debug issues</li>
-          <li><strong>Monitor performance</strong> - Track response times and errors</li>
-          <li><strong>Use environment variables</strong> - Never hardcode API keys</li>
-          <li><strong>Handle streaming errors</strong> - Clean up streams on errors</li>
+          <li>
+            <strong>Validate inputs</strong> - Always validate message format
+            and content
+          </li>
+          <li>
+            <strong>Handle errors gracefully</strong> - Return user-friendly
+            error messages
+          </li>
+          <li>
+            <strong>Implement rate limiting</strong> - Prevent abuse and control
+            costs
+          </li>
+          <li>
+            <strong>Add authentication</strong> - Secure your endpoints
+          </li>
+          <li>
+            <strong>Log requests</strong> - Track usage and debug issues
+          </li>
+          <li>
+            <strong>Monitor performance</strong> - Track response times and
+            errors
+          </li>
+          <li>
+            <strong>Use environment variables</strong> - Never hardcode API keys
+          </li>
+          <li>
+            <strong>Handle streaming errors</strong> - Clean up streams on
+            errors
+          </li>
         </ul>
       </section>
 
@@ -464,8 +485,14 @@ app.post('/api/chat', async (req, res) => {
       </section>
 
       <Pagination
-        prev={{ title: 'Real-Time Collaboration', href: '/cookbook/real-time-collaboration' }}
-        next={{ title: 'Next.js Integration', href: '/cookbook/nextjs-integration' }}
+        prev={{
+          title: 'Real-Time Collaboration',
+          href: '/cookbook/real-time-collaboration',
+        }}
+        next={{
+          title: 'Next.js Integration',
+          href: '/cookbook/nextjs-integration',
+        }}
       />
     </>
   )

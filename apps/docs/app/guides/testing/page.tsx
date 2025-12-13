@@ -3,7 +3,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-
 export const metadata: Metadata = {
   title: 'Testing Guide - Clarity Chat',
   description:
@@ -18,19 +17,34 @@ export default function TestingGuidePage() {
         <h1>Testing Strategy</h1>
         <p className="docs-lead">
           A production chat surface touches models, storage, streams, and
-          accessibility. This guide shows how to keep all of it covered with fast
-          feedback loops.
+          accessibility. This guide shows how to keep all of it covered with
+          fast feedback loops.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Testing Layers</h2>
         <ul>
-          <li>🧪 <strong>Unit &amp; Hook Tests</strong> — <code>@clarity-chat/dev-tools</code> mocks models</li>
-          <li>🧭 <strong>Accessibility Tests</strong> — axe-core &amp; jest-axe enforce WCAG AAA</li>
-          <li>🌐 <strong>Integration Tests</strong> — Playwright runs full chat flows in Chromium/WebKit</li>
-          <li>🔍 <strong>Performance Budgets</strong> — benchmark scripts catch regression drift</li>
-          <li>🩺 <strong>Health Checks</strong> — CLI doctor command validates project configuration</li>
+          <li>
+            🧪 <strong>Unit &amp; Hook Tests</strong> —{' '}
+            <code>@clarity-chat/dev-tools</code> mocks models
+          </li>
+          <li>
+            🧭 <strong>Accessibility Tests</strong> — axe-core &amp; jest-axe
+            enforce WCAG AAA
+          </li>
+          <li>
+            🌐 <strong>Integration Tests</strong> — Playwright runs full chat
+            flows in Chromium/WebKit
+          </li>
+          <li>
+            🔍 <strong>Performance Budgets</strong> — benchmark scripts catch
+            regression drift
+          </li>
+          <li>
+            🩺 <strong>Health Checks</strong> — CLI doctor command validates
+            project configuration
+          </li>
         </ul>
         <Callout type="info">
           The repository already includes evidence of every layer in{' '}
@@ -71,15 +85,17 @@ describe('useChat', () => {
 `}
         />
         <p>
-          Mock scenarios cover timeouts, rate limits, multi-turn threads, streaming
-          chunks, and auth failures. You can provide custom responses for edge cases.
+          Mock scenarios cover timeouts, rate limits, multi-turn threads,
+          streaming chunks, and auth failures. You can provide custom responses
+          for edge cases.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Accessibility Unit Tests</h2>
         <p>
-          Ensure every component passes axe checks and retains WCAG AAA guarantees.
+          Ensure every component passes axe checks and retains WCAG AAA
+          guarantees.
         </p>
         <CodeBlock
           language="tsx"
@@ -107,16 +123,16 @@ it('ChatWindow is accessible', async () => {
 `}
         />
         <Callout type="warning">
-          Run accessibility tests in CI. They catch regressions from innocuous-looking
-          markup changes faster than manual QA.
+          Run accessibility tests in CI. They catch regressions from
+          innocuous-looking markup changes faster than manual QA.
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Playwright E2E Flows</h2>
         <p>
-          Drive the entire chat stack (frontend + API route) with Playwright. The
-          repo already includes mobile and desktop projects.
+          Drive the entire chat stack (frontend + API route) with Playwright.
+          The repo already includes mobile and desktop projects.
         </p>
         <CodeBlock
           language="ts"
@@ -142,17 +158,17 @@ test.describe('Chat happy path', () => {
 `}
         />
         <p>
-          Add Playwright to your CI pipeline with{' '}
-          <code>npm run test:e2e</code>. For visual regression coverage, integrate
-          with Chromatic or Playwright’s built-in snapshot tooling.
+          Add Playwright to your CI pipeline with <code>npm run test:e2e</code>.
+          For visual regression coverage, integrate with Chromatic or
+          Playwright’s built-in snapshot tooling.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Project Health Checks</h2>
         <p>
-          The CLI includes commands that catch misconfigurations before QA touches
-          the app.
+          The CLI includes commands that catch misconfigurations before QA
+          touches the app.
         </p>
         <CodeBlock
           language="bash"
@@ -174,19 +190,29 @@ clarity-chat upgrade --interactive`}
       <section className="docs-section">
         <h2>Testing Checklist</h2>
         <ul>
-          <li>✅ Unit tests with mocked providers cover success + failure paths</li>
+          <li>
+            ✅ Unit tests with mocked providers cover success + failure paths
+          </li>
           <li>✅ jest-axe suite runs on every PR</li>
           <li>✅ Playwright runs headless in CI against production build</li>
-          <li>✅ <code>npm run analyze</code> and <code>npm run benchmark</code> publishing artifacts</li>
-          <li>✅ CLI <code>doctor</code> runs before deploy to validate env config</li>
-          <li>✅ Manual exploration: streaming interruptions, offline/online toggles, accessibility shortcuts</li>
+          <li>
+            ✅ <code>npm run analyze</code> and <code>npm run benchmark</code>{' '}
+            publishing artifacts
+          </li>
+          <li>
+            ✅ CLI <code>doctor</code> runs before deploy to validate env config
+          </li>
+          <li>
+            ✅ Manual exploration: streaming interruptions, offline/online
+            toggles, accessibility shortcuts
+          </li>
         </ul>
         <Callout type="success">
           The repository already documents 61 passing enterprise tests. Use that
-          baseline to negotiate SLAs with stakeholders and grow coverage over time.
+          baseline to negotiate SLAs with stakeholders and grow coverage over
+          time.
         </Callout>
       </section>
     </div>
   )
 }
-

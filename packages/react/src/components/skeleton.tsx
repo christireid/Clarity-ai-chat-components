@@ -13,7 +13,10 @@ import {
   createShimmerAnimation,
 } from '../animations/utils'
 
-export interface SkeletonProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
+export interface SkeletonProps extends Omit<
+  HTMLMotionProps<'div'>,
+  'children'
+> {
   /** Animation type */
   variant?: 'pulse' | 'shimmer' | 'none'
   /** Width of skeleton (CSS value) */

@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'DocumentIntegration - Clarity Chat Components',
-  description: 'Integrate with document platforms (Google Docs, Notion, Confluence) for content extraction and RAG.',
+  description:
+    'Integrate with document platforms (Google Docs, Notion, Confluence) for content extraction and RAG.',
 }
 
 const props: Prop[] = [
@@ -71,7 +71,8 @@ export default function DocumentIntegrationPage() {
         <span className="docs-badge">Component</span>
         <h1>DocumentIntegration</h1>
         <p className="docs-lead">
-          Integrate with document platforms (Google Docs, Notion, Confluence, Dropbox, OneDrive, SharePoint) for content extraction and RAG.
+          Integrate with document platforms (Google Docs, Notion, Confluence,
+          Dropbox, OneDrive, SharePoint) for content extraction and RAG.
         </p>
       </div>
 
@@ -87,9 +88,7 @@ export default function DocumentIntegrationPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Integrate with document platforms:
-        </p>
+        <p>Integrate with document platforms:</p>
         <CodePlayground
           initialCode={`import { DocumentIntegration } from '@clarity-chat/react'
 
@@ -113,9 +112,7 @@ function DocumentSelector() {
 
       <section className="docs-section">
         <h2>Custom Fetch Functions</h2>
-        <p>
-          Provide custom fetch and list functions:
-        </p>
+        <p>Provide custom fetch and list functions:</p>
         <CodePlayground
           initialCode={`import { DocumentIntegration } from '@clarity-chat/react'
 
@@ -139,9 +136,7 @@ function CustomIntegration() {
 
       <section className="docs-section">
         <h2>Document Export</h2>
-        <p>
-          Export documents in various formats:
-        </p>
+        <p>Export documents in various formats:</p>
         <CodePlayground
           initialCode={`import { DocumentIntegration } from '@clarity-chat/react'
 
@@ -164,9 +159,7 @@ function WithExport() {
 
       <section className="docs-section">
         <h2>Multi-Select</h2>
-        <p>
-          Enable multi-select for multiple documents:
-        </p>
+        <p>Enable multi-select for multiple documents:</p>
         <CodePlayground
           initialCode={`import { DocumentIntegration } from '@clarity-chat/react'
 
@@ -186,9 +179,7 @@ function MultiSelectDocs() {
 
       <section className="docs-section">
         <h2>RAG Integration</h2>
-        <p>
-          Use documents for RAG (Retrieval-Augmented Generation):
-        </p>
+        <p>Use documents for RAG (Retrieval-Augmented Generation):</p>
         <CodePlayground
           initialCode={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react'
 
@@ -224,15 +215,33 @@ function RAGIntegration() {
       <section className="docs-section">
         <h2>Supported Platforms</h2>
         <ul>
-          <li><strong>google-docs</strong>: Google Docs</li>
-          <li><strong>google-sheets</strong>: Google Sheets</li>
-          <li><strong>google-slides</strong>: Google Slides</li>
-          <li><strong>notion</strong>: Notion</li>
-          <li><strong>confluence</strong>: Confluence</li>
-          <li><strong>dropbox</strong>: Dropbox</li>
-          <li><strong>onedrive</strong>: OneDrive</li>
-          <li><strong>sharepoint</strong>: SharePoint</li>
-          <li><strong>local</strong>: Local files</li>
+          <li>
+            <strong>google-docs</strong>: Google Docs
+          </li>
+          <li>
+            <strong>google-sheets</strong>: Google Sheets
+          </li>
+          <li>
+            <strong>google-slides</strong>: Google Slides
+          </li>
+          <li>
+            <strong>notion</strong>: Notion
+          </li>
+          <li>
+            <strong>confluence</strong>: Confluence
+          </li>
+          <li>
+            <strong>dropbox</strong>: Dropbox
+          </li>
+          <li>
+            <strong>onedrive</strong>: OneDrive
+          </li>
+          <li>
+            <strong>sharepoint</strong>: SharePoint
+          </li>
+          <li>
+            <strong>local</strong>: Local files
+          </li>
         </ul>
       </section>
 
@@ -250,8 +259,18 @@ function RAGIntegration() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-document-integration">useDocumentIntegration</a> - Document integration hook</li>
-          <li><a href="/reference/components/semantic-message-search">SemanticMessageSearch</a> - Semantic search component</li>
+          <li>
+            <a href="/reference/hooks/use-document-integration">
+              useDocumentIntegration
+            </a>{' '}
+            - Document integration hook
+          </li>
+          <li>
+            <a href="/reference/components/semantic-message-search">
+              SemanticMessageSearch
+            </a>{' '}
+            - Semantic search component
+          </li>
         </ul>
       </section>
     </div>

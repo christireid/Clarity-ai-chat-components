@@ -6,7 +6,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Enterprise SSO Setup - Cookbook',
-  description: 'Configure SAML/OIDC authentication with role-based access control.',
+  description:
+    'Configure SAML/OIDC authentication with role-based access control.',
 }
 
 export default function EnterpriseSSOCookbook() {
@@ -16,15 +17,17 @@ export default function EnterpriseSSOCookbook() {
         <span className="docs-badge">Enterprise</span>
         <h1>Enterprise SSO Setup</h1>
         <p className="docs-lead">
-          Configure single sign-on with SAML/OIDC and implement role-based access control for enterprise deployments.
+          Configure single sign-on with SAML/OIDC and implement role-based
+          access control for enterprise deployments.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Set up enterprise-grade authentication with support for SAML 2.0, OIDC, and custom
-          identity providers. Includes multi-tenancy and granular permissions.
+          Set up enterprise-grade authentication with support for SAML 2.0,
+          OIDC, and custom identity providers. Includes multi-tenancy and
+          granular permissions.
         </p>
         <Callout type="info" title="Enterprise Feature">
           SSO and advanced RBAC features require the Enterprise license.
@@ -33,7 +36,8 @@ export default function EnterpriseSSOCookbook() {
 
       <section className="docs-section">
         <h2>SSO Configuration</h2>
-        <pre><code>{`// app/api/auth/[...nextauth]/route.ts
+        <pre>
+          <code>{`// app/api/auth/[...nextauth]/route.ts
 import { SSOProvider } from '@clarity-chat/react/enterprise'
 import NextAuth from 'next-auth'
 
@@ -74,12 +78,14 @@ export const authOptions = {
 }
 
 export const handler = NextAuth(authOptions)
-export { handler as GET, handler as POST }`}</code></pre>
+export { handler as GET, handler as POST }`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Role-Based Access Control</h2>
-        <pre><code>{`// lib/rbac.ts
+        <pre>
+          <code>{`// lib/rbac.ts
 import { RBACManager } from '@clarity-chat/react/enterprise'
 
 export const rbac = new RBACManager({
@@ -119,12 +125,14 @@ export function requirePermission(permission: string) {
       return new Response('Forbidden', { status: 403 })
     }
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Multi-Tenancy Setup</h2>
-        <pre><code>{`// lib/tenancy.ts
+        <pre>
+          <code>{`// lib/tenancy.ts
 import { TenantManager } from '@clarity-chat/react/enterprise'
 
 export const tenantManager = new TenantManager({
@@ -145,12 +153,14 @@ export async function withTenant(req: Request) {
     // All DB queries are automatically scoped to this tenant
     return await handleRequest(req)
   })
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>SSO Configuration UI</h2>
-        <pre><code>{`import { SSOConfigWizard } from '@clarity-chat/react/enterprise'
+        <pre>
+          <code>{`import { SSOConfigWizard } from '@clarity-chat/react/enterprise'
 
 export default function AdminSSOPage() {
   const handleSSOConfig = async (config) => {
@@ -170,12 +180,14 @@ export default function AdminSSOPage() {
       />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>User Provisioning</h2>
-        <pre><code>{`// SCIM 2.0 provisioning endpoint
+        <pre>
+          <code>{`// SCIM 2.0 provisioning endpoint
 // app/api/scim/v2/Users/route.ts
 import { SCIMHandler } from '@clarity-chat/react/enterprise'
 
@@ -210,12 +222,14 @@ const scim = new SCIMHandler({
 export const GET = scim.handleList
 export const POST = scim.handleCreate
 export const PUT = scim.handleUpdate
-export const DELETE = scim.handleDelete`}</code></pre>
+export const DELETE = scim.handleDelete`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Audit Logging</h2>
-        <pre><code>{`import { AuditLogger } from '@clarity-chat/react/enterprise'
+        <pre>
+          <code>{`import { AuditLogger } from '@clarity-chat/react/enterprise'
 
 const auditLogger = new AuditLogger({
   storage: 'database', // or 's3', 'cloudwatch'
@@ -242,12 +256,14 @@ const logs = await auditLogger.query({
   events: ['user.login', 'user.logout'],
   startDate: new Date('2024-01-01'),
   endDate: new Date()
-})`}</code></pre>
+})`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Session Management</h2>
-        <pre><code>{`import { SessionManager } from '@clarity-chat/react/enterprise'
+        <pre>
+          <code>{`import { SessionManager } from '@clarity-chat/react/enterprise'
 
 const sessionManager = new SessionManager({
   store: 'redis',
@@ -265,16 +281,23 @@ const sessionManager = new SessionManager({
 await sessionManager.revokeAllSessions(userId)
 
 // List active sessions
-const sessions = await sessionManager.getActiveSessions(userId)`}</code></pre>
+const sessions = await sessionManager.getActiveSessions(userId)`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use certificate-based SAML authentication for maximum security</li>
+          <li>
+            Use certificate-based SAML authentication for maximum security
+          </li>
           <li>Implement session timeout and idle timeout separately</li>
-          <li>Log all authentication and authorization events for audit trails</li>
-          <li>Support JIT (Just-In-Time) provisioning for seamless onboarding</li>
+          <li>
+            Log all authentication and authorization events for audit trails
+          </li>
+          <li>
+            Support JIT (Just-In-Time) provisioning for seamless onboarding
+          </li>
           <li>Validate SSO assertions and tokens thoroughly</li>
           <li>Implement graceful fallback for SSO failures</li>
           <li>Test SSO configuration in staging before production</li>
@@ -286,31 +309,48 @@ const sessions = await sessionManager.getActiveSessions(userId)`}</code></pre>
       <section className="docs-section">
         <h2>Security Checklist</h2>
         <Callout type="warning" title="Security Requirements">
-          ✅ HTTPS enforced for all SSO callbacks<br/>
-          ✅ Certificate validation for SAML assertions<br/>
-          ✅ Token signature verification for OIDC<br/>
-          ✅ Rate limiting on auth endpoints<br/>
-          ✅ Session fixation protection<br/>
-          ✅ CSRF protection on login flows<br/>
-          ✅ Audit logging for all auth events<br/>
-          ✅ Password policies for local accounts<br/>
-          ✅ MFA support (optional but recommended)<br/>
-          ✅ IP allowlisting for admin accounts
+          ✅ HTTPS enforced for all SSO callbacks
+          <br />
+          ✅ Certificate validation for SAML assertions
+          <br />
+          ✅ Token signature verification for OIDC
+          <br />
+          ✅ Rate limiting on auth endpoints
+          <br />
+          ✅ Session fixation protection
+          <br />
+          ✅ CSRF protection on login flows
+          <br />
+          ✅ Audit logging for all auth events
+          <br />
+          ✅ Password policies for local accounts
+          <br />
+          ✅ MFA support (optional but recommended)
+          <br />✅ IP allowlisting for admin accounts
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/components/sso-config-wizard" className="docs-card">
+          <a
+            href="/reference/components/sso-config-wizard"
+            className="docs-card"
+          >
             <h3>SSO Config Wizard</h3>
             <p>UI component for SSO setup</p>
           </a>
-          <a href="/reference/components/auth-tenant-dashboard" className="docs-card">
+          <a
+            href="/reference/components/auth-tenant-dashboard"
+            className="docs-card"
+          >
             <h3>Tenant Dashboard</h3>
             <p>Manage tenants and users</p>
           </a>
-          <a href="/reference/components/api-token-manager" className="docs-card">
+          <a
+            href="/reference/components/api-token-manager"
+            className="docs-card"
+          >
             <h3>API Token Manager</h3>
             <p>Manage API tokens</p>
           </a>

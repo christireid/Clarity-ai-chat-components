@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'OutputPreferenceSelector - Clarity Chat Components',
-  description: 'Select output verbosity preference with intelligent token limit calculation based on context.',
+  description:
+    'Select output verbosity preference with intelligent token limit calculation based on context.',
 }
 
 const props: Prop[] = [
@@ -47,7 +47,8 @@ const props: Prop[] = [
   {
     name: 'displayMode',
     type: '"compact" | "expanded"',
-    description: 'Display mode: compact (inline) or expanded (with descriptions)',
+    description:
+      'Display mode: compact (inline) or expanded (with descriptions)',
   },
   {
     name: 'disabled',
@@ -73,7 +74,8 @@ export default function OutputPreferenceSelectorPage() {
         <span className="docs-badge">Component</span>
         <h1>OutputPreferenceSelector</h1>
         <p className="docs-lead">
-          Select output verbosity preference with intelligent token limit calculation based on context and model capacity.
+          Select output verbosity preference with intelligent token limit
+          calculation based on context and model capacity.
         </p>
       </div>
 
@@ -89,9 +91,7 @@ export default function OutputPreferenceSelectorPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Select output preference with default configuration:
-        </p>
+        <p>Select output preference with default configuration:</p>
         <CodePlayground
           initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
 
@@ -119,7 +119,8 @@ render(<ChatWithPreference />)`}
       <section className="docs-section">
         <h2>With Token Calculation</h2>
         <p>
-          Calculate optimal token limits based on model capacity and input tokens:
+          Calculate optimal token limits based on model capacity and input
+          tokens:
         </p>
         <CodePlayground
           initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
@@ -144,9 +145,7 @@ function TokenAwareSelector() {
 
       <section className="docs-section">
         <h2>Task-Specific Preferences</h2>
-        <p>
-          Configure task-specific token calculations:
-        </p>
+        <p>Configure task-specific token calculations:</p>
         <CodePlayground
           initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
 
@@ -170,9 +169,7 @@ function TaskSpecificSelector() {
 
       <section className="docs-section">
         <h2>Display Modes</h2>
-        <p>
-          Use compact or expanded display modes:
-        </p>
+        <p>Use compact or expanded display modes:</p>
         <CodePlayground
           initialCode={`import { OutputPreferenceSelector } from '@clarity-chat/react'
 
@@ -206,32 +203,63 @@ function ExpandedSelector() {
       <section className="docs-section">
         <h2>Output Preference Values</h2>
         <ul>
-          <li><strong>concise</strong>: Short, to-the-point responses (~500 tokens)</li>
-          <li><strong>balanced</strong>: Standard response length (~1000 tokens)</li>
-          <li><strong>detailed</strong>: Comprehensive explanations (~2000 tokens)</li>
+          <li>
+            <strong>concise</strong>: Short, to-the-point responses (~500
+            tokens)
+          </li>
+          <li>
+            <strong>balanced</strong>: Standard response length (~1000 tokens)
+          </li>
+          <li>
+            <strong>detailed</strong>: Comprehensive explanations (~2000 tokens)
+          </li>
         </ul>
         <p>
-          Actual token limits are calculated based on <code>modelCapacity</code>, <code>inputTokens</code>, and <code>taskType</code>.
+          Actual token limits are calculated based on <code>modelCapacity</code>
+          , <code>inputTokens</code>, and <code>taskType</code>.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Provide <code>modelCapacity</code> and <code>inputTokens</code> for accurate calculations</li>
-          <li>Use <code>taskType</code> for task-specific optimizations</li>
-          <li>Enable <code>showTokenEstimate</code> to help users understand token usage</li>
-          <li>Use <code>compact</code> mode for inline placement</li>
-          <li>Use <code>expanded</code> mode when space allows for better UX</li>
+          <li>
+            Provide <code>modelCapacity</code> and <code>inputTokens</code> for
+            accurate calculations
+          </li>
+          <li>
+            Use <code>taskType</code> for task-specific optimizations
+          </li>
+          <li>
+            Enable <code>showTokenEstimate</code> to help users understand token
+            usage
+          </li>
+          <li>
+            Use <code>compact</code> mode for inline placement
+          </li>
+          <li>
+            Use <code>expanded</code> mode when space allows for better UX
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/token-counter">TokenCounter</a> - Token usage display</li>
-          <li><a href="/reference/hooks/use-output-preference">useOutputPreference</a> - Output preference hook</li>
-          <li><a href="/guides/token-optimization">Token Optimization Guide</a> - Optimization strategies</li>
+          <li>
+            <a href="/reference/components/token-counter">TokenCounter</a> -
+            Token usage display
+          </li>
+          <li>
+            <a href="/reference/hooks/use-output-preference">
+              useOutputPreference
+            </a>{' '}
+            - Output preference hook
+          </li>
+          <li>
+            <a href="/guides/token-optimization">Token Optimization Guide</a> -
+            Optimization strategies
+          </li>
         </ul>
       </section>
     </div>

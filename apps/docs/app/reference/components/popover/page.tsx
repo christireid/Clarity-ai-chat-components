@@ -1,14 +1,13 @@
-import React from 'react';
-import { Metadata } from 'next';
-;
-import { ApiTable } from '@/components/Demo/ApiTable';
-import { Callout } from '@/components/MDX/Callout';
-
+import React from 'react'
+import { Metadata } from 'next'
+import { ApiTable } from '@/components/Demo/ApiTable'
+import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'Popover Component - Clarity Chat Components',
-  description: 'A flexible floating content container that displays rich contextual information relative to a trigger element.',
-};
+  description:
+    'A flexible floating content container that displays rich contextual information relative to a trigger element.',
+}
 
 export default function PopoverPage() {
   return (
@@ -17,7 +16,8 @@ export default function PopoverPage() {
         <div>
           <h1>Popover</h1>
           <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
-            A flexible floating content container that displays rich contextual information relative to a trigger element.
+            A flexible floating content container that displays rich contextual
+            information relative to a trigger element.
           </p>
         </div>
       </header>
@@ -25,14 +25,17 @@ export default function PopoverPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The Popover component creates a floating content panel that can contain any rich content including
-          text, images, forms, and interactive elements. Unlike tooltips (which are for simple text),
-          popovers are ideal for complex contextual information that requires user interaction.
+          The Popover component creates a floating content panel that can
+          contain any rich content including text, images, forms, and
+          interactive elements. Unlike tooltips (which are for simple text),
+          popovers are ideal for complex contextual information that requires
+          user interaction.
         </p>
 
         <Callout type="info" title="When to Use">
-          Use Popover for rich interactive content. Use Tooltip for simple text hints.
-          Use Dropdown for action menus. Use Modal for content requiring full attention.
+          Use Popover for rich interactive content. Use Tooltip for simple text
+          hints. Use Dropdown for action menus. Use Modal for content requiring
+          full attention.
         </Callout>
       </section>
 
@@ -80,110 +83,112 @@ render(<BasicPopover />)`}
               name: 'trigger',
               type: 'ReactNode',
               default: 'undefined',
-              description: 'Element that triggers the popover'
+              description: 'Element that triggers the popover',
             },
             {
               name: 'content',
               type: 'ReactNode',
               default: 'undefined',
-              description: 'Content to display in the popover'
+              description: 'Content to display in the popover',
             },
             {
               name: 'isOpen',
               type: 'boolean',
               default: 'undefined',
-              description: 'Controlled open state'
+              description: 'Controlled open state',
             },
             {
               name: 'onOpenChange',
               type: '(isOpen: boolean) => void',
               default: 'undefined',
-              description: 'Callback when open state changes'
+              description: 'Callback when open state changes',
             },
             {
               name: 'defaultOpen',
               type: 'boolean',
               default: 'false',
-              description: 'Initial open state for uncontrolled usage'
+              description: 'Initial open state for uncontrolled usage',
             },
             {
               name: 'placement',
               type: "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'",
               default: "'bottom'",
-              description: 'Placement of popover relative to trigger'
+              description: 'Placement of popover relative to trigger',
             },
             {
               name: 'offset',
               type: 'number',
               default: '8',
-              description: 'Distance in pixels from trigger'
+              description: 'Distance in pixels from trigger',
             },
             {
               name: 'flip',
               type: 'boolean',
               default: 'true',
-              description: 'Whether to flip placement when there is insufficient space'
+              description:
+                'Whether to flip placement when there is insufficient space',
             },
             {
               name: 'arrow',
               type: 'boolean',
               default: 'true',
-              description: 'Whether to show arrow pointing to trigger'
+              description: 'Whether to show arrow pointing to trigger',
             },
             {
               name: 'triggerOn',
               type: "'click' | 'hover' | 'focus'",
               default: "'click'",
-              description: 'How the popover is triggered'
+              description: 'How the popover is triggered',
             },
             {
               name: 'closeOnClickOutside',
               type: 'boolean',
               default: 'true',
-              description: 'Whether clicking outside closes the popover'
+              description: 'Whether clicking outside closes the popover',
             },
             {
               name: 'closeOnEsc',
               type: 'boolean',
               default: 'true',
-              description: 'Whether pressing Escape closes the popover'
+              description: 'Whether pressing Escape closes the popover',
             },
             {
               name: 'hoverDelay',
               type: 'number',
               default: '200',
-              description: 'Delay in ms before opening on hover'
+              description: 'Delay in ms before opening on hover',
             },
             {
               name: 'hoverLeaveDelay',
               type: 'number',
               default: '300',
-              description: 'Delay in ms before closing when leaving hover'
+              description: 'Delay in ms before closing when leaving hover',
             },
             {
               name: 'width',
               type: 'number | string',
               default: "'auto'",
-              description: 'Width of the popover'
+              description: 'Width of the popover',
             },
             {
               name: 'maxWidth',
               type: 'number',
               default: '320',
-              description: 'Maximum width in pixels'
+              description: 'Maximum width in pixels',
             },
             {
               name: 'className',
               type: 'string',
               default: 'undefined',
-              description: 'Additional CSS classes for popover container'
+              description: 'Additional CSS classes for popover container',
             },
             {
               name: 'portal',
               type: 'boolean',
               default: 'true',
-              description: 'Whether to render in a portal (for proper z-index stacking)'
-            }
+              description:
+                'Whether to render in a portal (for proper z-index stacking)',
+            },
           ]}
         />
       </section>
@@ -191,7 +196,8 @@ render(<BasicPopover />)`}
       <section className="docs-section">
         <h2>Placement Options</h2>
         <p>
-          Position the popover in 12 different locations relative to the trigger element.
+          Position the popover in 12 different locations relative to the trigger
+          element.
         </p>
         <CodePlayground
           initialCode={`import { Popover, Button } from '@clarity/chat-components';
@@ -232,9 +238,7 @@ render(<PopoverPlacement />)`}
 
       <section className="docs-section">
         <h2>Trigger Methods</h2>
-        <p>
-          Open popovers on click, hover, or focus events.
-        </p>
+        <p>Open popovers on click, hover, or focus events.</p>
         <CodePlayground
           initialCode={`import { Popover, Button } from '@clarity/chat-components';
 
@@ -285,7 +289,8 @@ render(<PopoverTriggers />)`}
       <section className="docs-section">
         <h2>Rich Content</h2>
         <p>
-          Popovers can contain complex content including images, forms, and interactive elements.
+          Popovers can contain complex content including images, forms, and
+          interactive elements.
         </p>
         <CodePlayground
           initialCode={`import { Popover, Button } from '@clarity/chat-components';
@@ -342,9 +347,7 @@ render(<RichPopover />)`}
 
       <section className="docs-section">
         <h2>Form in Popover</h2>
-        <p>
-          Use popovers for inline forms and input collection.
-        </p>
+        <p>Use popovers for inline forms and input collection.</p>
         <CodePlayground
           initialCode={`import { useState } from 'react';
 import { Popover, Button } from '@clarity/chat-components';
@@ -424,7 +427,8 @@ render(<FormPopover />)`}
       <section className="docs-section">
         <h2>With Arrow</h2>
         <p>
-          Add an arrow indicator pointing from the popover to the trigger element.
+          Add an arrow indicator pointing from the popover to the trigger
+          element.
         </p>
         <CodePlayground
           initialCode={`import { Popover, Button } from '@clarity/chat-components';
@@ -462,7 +466,8 @@ render(<PopoverWithArrow />)`}
       <section className="docs-section">
         <h2>Controlled vs Uncontrolled</h2>
         <p>
-          Use controlled mode for programmatic control or uncontrolled for simpler usage.
+          Use controlled mode for programmatic control or uncontrolled for
+          simpler usage.
         </p>
         <CodePlayground
           initialCode={`import { useState } from 'react';
@@ -558,9 +563,7 @@ render(<NestedPopovers />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Info Card Popover</h3>
-        <p>
-          Display detailed information cards on hover or click.
-        </p>
+        <p>Display detailed information cards on hover or click.</p>
         <CodePlayground
           initialCode={`import { Popover } from '@clarity/chat-components';
 
@@ -599,9 +602,7 @@ render(<InfoCardPopover />)`}
         />
 
         <h3>Share Popover</h3>
-        <p>
-          Create social sharing popovers with multiple options.
-        </p>
+        <p>Create social sharing popovers with multiple options.</p>
         <CodePlayground
           initialCode={`import { Popover, Button } from '@clarity/chat-components';
 
@@ -658,9 +659,7 @@ render(<SharePopover />)`}
         />
 
         <h3>Color Picker Popover</h3>
-        <p>
-          Use popovers for inline selectors and pickers.
-        </p>
+        <p>Use popovers for inline selectors and pickers.</p>
         <CodePlayground
           initialCode={`import { useState } from 'react';
 import { Popover } from '@clarity/chat-components';
@@ -720,19 +719,38 @@ export default function ColorPickerPopover() {
 
         <h3>ARIA Attributes</h3>
         <ul>
-          <li><code>role="dialog"</code> - For interactive popovers</li>
-          <li><code>aria-haspopup="dialog"</code> - On trigger element</li>
-          <li><code>aria-expanded</code> - Indicates open/closed state</li>
-          <li><code>aria-controls</code> - Links trigger to popover content</li>
-          <li><code>aria-labelledby</code> - If popover has a title</li>
-          <li><code>aria-describedby</code> - Links to popover content</li>
+          <li>
+            <code>role="dialog"</code> - For interactive popovers
+          </li>
+          <li>
+            <code>aria-haspopup="dialog"</code> - On trigger element
+          </li>
+          <li>
+            <code>aria-expanded</code> - Indicates open/closed state
+          </li>
+          <li>
+            <code>aria-controls</code> - Links trigger to popover content
+          </li>
+          <li>
+            <code>aria-labelledby</code> - If popover has a title
+          </li>
+          <li>
+            <code>aria-describedby</code> - Links to popover content
+          </li>
         </ul>
 
         <h3>Keyboard Navigation</h3>
         <ul>
-          <li><kbd>Enter</kbd> / <kbd>Space</kbd> - Open popover (when trigger is focused)</li>
-          <li><kbd>Esc</kbd> - Close popover</li>
-          <li><kbd>Tab</kbd> - Navigate through focusable elements inside popover</li>
+          <li>
+            <kbd>Enter</kbd> / <kbd>Space</kbd> - Open popover (when trigger is
+            focused)
+          </li>
+          <li>
+            <kbd>Esc</kbd> - Close popover
+          </li>
+          <li>
+            <kbd>Tab</kbd> - Navigate through focusable elements inside popover
+          </li>
           <li>Focus is trapped within interactive popovers</li>
           <li>Focus returns to trigger when popover closes</li>
         </ul>
@@ -740,15 +758,19 @@ export default function ColorPickerPopover() {
         <h3>Focus Management</h3>
         <ul>
           <li>Trigger element is always keyboard accessible</li>
-          <li>First focusable element receives focus when popover opens (for interactive content)</li>
+          <li>
+            First focusable element receives focus when popover opens (for
+            interactive content)
+          </li>
           <li>Focus is restored to trigger when popover closes</li>
           <li>Non-interactive popovers (hover) don't trap focus</li>
         </ul>
 
         <Callout type="warning" title="Interactive Content">
-          For popovers with interactive content (forms, buttons), use <code>triggerOn="click"</code>
-          to ensure keyboard users can access the content. Hover-only popovers should contain
-          only non-interactive information.
+          For popovers with interactive content (forms, buttons), use{' '}
+          <code>triggerOn="click"</code>
+          to ensure keyboard users can access the content. Hover-only popovers
+          should contain only non-interactive information.
         </Callout>
       </section>
 
@@ -757,7 +779,9 @@ export default function ColorPickerPopover() {
 
         <h3>When to Use</h3>
         <ul>
-          <li>✅ Rich contextual information that needs more space than a tooltip</li>
+          <li>
+            ✅ Rich contextual information that needs more space than a tooltip
+          </li>
           <li>✅ Inline forms and quick actions without navigating away</li>
           <li>✅ User profile cards and detailed previews</li>
           <li>✅ Color pickers, date pickers, and other inline selectors</li>
@@ -770,15 +794,23 @@ export default function ColorPickerPopover() {
           <li>❌ Action menus - use Dropdown instead</li>
           <li>❌ Content requiring full attention - use Modal instead</li>
           <li>❌ Primary navigation - use dedicated nav components</li>
-          <li>❌ Critical information - ensure it's also available elsewhere</li>
+          <li>
+            ❌ Critical information - ensure it's also available elsewhere
+          </li>
         </ul>
 
         <h3>Design Guidelines</h3>
         <ul>
           <li>Keep popover content focused and concise</li>
-          <li>Use appropriate <code>maxWidth</code> to prevent overly wide popovers</li>
+          <li>
+            Use appropriate <code>maxWidth</code> to prevent overly wide
+            popovers
+          </li>
           <li>Position popovers to avoid covering important content</li>
-          <li>Include a clear way to dismiss (X button, Cancel button, or click outside)</li>
+          <li>
+            Include a clear way to dismiss (X button, Cancel button, or click
+            outside)
+          </li>
           <li>For forms, include both submit and cancel actions</li>
           <li>Use arrows to visually connect popover to trigger</li>
           <li>Don't nest popovers more than 2 levels deep</li>
@@ -787,27 +819,32 @@ export default function ColorPickerPopover() {
 
         <h3>Interaction Guidelines</h3>
         <ul>
-          <li>Use <code>triggerOn="click"</code> for interactive content</li>
-          <li>Use <code>triggerOn="hover"</code> for informational content only</li>
-          <li>Use <code>triggerOn="focus"</code> for form field help text</li>
+          <li>
+            Use <code>triggerOn="click"</code> for interactive content
+          </li>
+          <li>
+            Use <code>triggerOn="hover"</code> for informational content only
+          </li>
+          <li>
+            Use <code>triggerOn="focus"</code> for form field help text
+          </li>
           <li>Don't auto-open popovers on page load</li>
           <li>Allow clicking outside to close for non-critical popovers</li>
           <li>For mobile, consider using Modal instead of Popover</li>
         </ul>
 
         <Callout type="info" title="Mobile Considerations">
-          Popovers may not work well on mobile devices with limited screen space.
-          Consider alternative patterns like bottom sheets, modals, or inline expansion
-          for mobile-first experiences.
+          Popovers may not work well on mobile devices with limited screen
+          space. Consider alternative patterns like bottom sheets, modals, or
+          inline expansion for mobile-first experiences.
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <p>
-          The Popover component is fully typed with TypeScript:
-        </p>
-        <pre><code>{`import { ReactNode } from 'react';
+        <p>The Popover component is fully typed with TypeScript:</p>
+        <pre>
+          <code>{`import { ReactNode } from 'react';
 
 type PopoverPlacement = 
   | 'top' | 'top-start' | 'top-end'
@@ -849,18 +886,29 @@ interface PopoverProps {
   className?: string;
 }
 
-export default function Popover(props: PopoverProps): JSX.Element;`}</code></pre>
+export default function Popover(props: PopoverProps): JSX.Element;`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Related Components</h2>
         <ul>
-          <li><a href="/reference/components/tooltip">Tooltip</a> - Simple text hints</li>
-          <li><a href="/reference/components/dropdown">Dropdown</a> - Action menus</li>
-          <li><a href="/reference/components/modal">Modal</a> - Full-page dialogs</li>
-          <li><a href="/reference/components/drawer">Drawer</a> - Side panel overlays</li>
+          <li>
+            <a href="/reference/components/tooltip">Tooltip</a> - Simple text
+            hints
+          </li>
+          <li>
+            <a href="/reference/components/dropdown">Dropdown</a> - Action menus
+          </li>
+          <li>
+            <a href="/reference/components/modal">Modal</a> - Full-page dialogs
+          </li>
+          <li>
+            <a href="/reference/components/drawer">Drawer</a> - Side panel
+            overlays
+          </li>
         </ul>
       </section>
     </div>
-  );
+  )
 }

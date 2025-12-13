@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'MobileOptimizedMessage & MobileChatWindow - Clarity Chat Components',
-  description: 'Mobile-optimized chat components with swipe gestures, pull-to-refresh, haptic feedback, and touch-optimized interactions.',
+  description:
+    'Mobile-optimized chat components with swipe gestures, pull-to-refresh, haptic feedback, and touch-optimized interactions.',
 }
 
 const messageProps: Prop[] = [
@@ -96,7 +96,8 @@ export default function MobileOptimizedMessagePage() {
         <span className="docs-badge">Component</span>
         <h1>MobileOptimizedMessage & MobileChatWindow</h1>
         <p className="docs-lead">
-          Mobile-optimized chat components with swipe gestures, pull-to-refresh, haptic feedback, large tap targets, and touch-optimized interactions.
+          Mobile-optimized chat components with swipe gestures, pull-to-refresh,
+          haptic feedback, large tap targets, and touch-optimized interactions.
         </p>
       </div>
 
@@ -112,15 +113,15 @@ export default function MobileOptimizedMessagePage() {
 
       <Callout type="info">
         <p>
-          <strong>Mobile-First:</strong> These components are specifically designed for mobile devices with touch-optimized interactions and gestures.
+          <strong>Mobile-First:</strong> These components are specifically
+          designed for mobile devices with touch-optimized interactions and
+          gestures.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Use mobile-optimized message component:
-        </p>
+        <p>Use mobile-optimized message component:</p>
         <CodePlayground
           initialCode={`import { MobileOptimizedMessage } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -146,9 +147,7 @@ function MobileMessage({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Mobile Chat Window</h2>
-        <p>
-          Complete mobile-optimized chat window:
-        </p>
+        <p>Complete mobile-optimized chat window:</p>
         <CodePlayground
           initialCode={`import { MobileChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -178,9 +177,7 @@ function MobileChat({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Swipe Gestures</h2>
-        <p>
-          Configure swipe actions:
-        </p>
+        <p>Configure swipe actions:</p>
         <CodePlayground
           initialCode={`import { MobileOptimizedMessage } from '@clarity-chat/react'
 
@@ -218,9 +215,7 @@ function WithSwipeActions({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Pull-to-Refresh</h2>
-        <p>
-          Enable pull-to-refresh:
-        </p>
+        <p>Enable pull-to-refresh:</p>
         <CodePlayground
           initialCode={`import { MobileChatWindow } from '@clarity-chat/react'
 
@@ -243,9 +238,7 @@ function WithRefresh({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Haptic Feedback</h2>
-        <p>
-          Enable haptic feedback for better UX:
-        </p>
+        <p>Enable haptic feedback for better UX:</p>
         <CodePlayground
           initialCode={`import { MobileOptimizedMessage } from '@clarity-chat/react'
 
@@ -268,9 +261,7 @@ function WithHaptics({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Large Tap Targets</h2>
-        <p>
-          Use large tap targets for better mobile UX:
-        </p>
+        <p>Use large tap targets for better mobile UX:</p>
         <CodePlayground
           initialCode={`import { MobileOptimizedMessage } from '@clarity-chat/react'
 
@@ -300,12 +291,26 @@ function LargeTargets({ message }: { message: Message }) {
       <section className="docs-section">
         <h2>Mobile Chat Configuration</h2>
         <ul>
-          <li><code>enableSwipe</code>: Enable swipe gestures (default: true)</li>
-          <li><code>enablePullToRefresh</code>: Enable pull-to-refresh (default: true)</li>
-          <li><code>largeTapTargets</code>: Use large tap targets (default: true)</li>
-          <li><code>enableHaptics</code>: Enable haptic feedback (default: true)</li>
-          <li><code>swipeThreshold</code>: Swipe threshold in pixels (default: 80)</li>
-          <li><code>pullThreshold</code>: Pull-to-refresh threshold in pixels (default: 100)</li>
+          <li>
+            <code>enableSwipe</code>: Enable swipe gestures (default: true)
+          </li>
+          <li>
+            <code>enablePullToRefresh</code>: Enable pull-to-refresh (default:
+            true)
+          </li>
+          <li>
+            <code>largeTapTargets</code>: Use large tap targets (default: true)
+          </li>
+          <li>
+            <code>enableHaptics</code>: Enable haptic feedback (default: true)
+          </li>
+          <li>
+            <code>swipeThreshold</code>: Swipe threshold in pixels (default: 80)
+          </li>
+          <li>
+            <code>pullThreshold</code>: Pull-to-refresh threshold in pixels
+            (default: 100)
+          </li>
         </ul>
       </section>
 
@@ -324,10 +329,24 @@ function LargeTargets({ message }: { message: Message }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-mobile-optimization">useMobileOptimization</a> - Mobile optimization hook</li>
-          <li><a href="/reference/hooks/use-mobile-keyboard">useMobileKeyboard</a> - Mobile keyboard detection</li>
-          <li><a href="/reference/hooks/use-battery-aware">useBatteryAware</a> - Battery-aware optimizations</li>
-          <li><a href="/guides/mobile-optimization">Mobile Optimization Guide</a> - Mobile best practices</li>
+          <li>
+            <a href="/reference/hooks/use-mobile-optimization">
+              useMobileOptimization
+            </a>{' '}
+            - Mobile optimization hook
+          </li>
+          <li>
+            <a href="/reference/hooks/use-mobile-keyboard">useMobileKeyboard</a>{' '}
+            - Mobile keyboard detection
+          </li>
+          <li>
+            <a href="/reference/hooks/use-battery-aware">useBatteryAware</a> -
+            Battery-aware optimizations
+          </li>
+          <li>
+            <a href="/guides/mobile-optimization">Mobile Optimization Guide</a>{' '}
+            - Mobile best practices
+          </li>
         </ul>
       </section>
     </div>

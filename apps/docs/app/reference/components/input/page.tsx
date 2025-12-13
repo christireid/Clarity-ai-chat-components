@@ -1,15 +1,15 @@
-import React from 'react';
-import { Metadata } from 'next';
-import { ApiTable } from '@/components/Demo/ApiTable';
-import { Callout } from '@/components/MDX/Callout';
-import { ViewInStorybook } from '@/components/Links/StorybookLink';
-import { CodePlayground } from '@/components/Playground/CodePlayground';
-
+import React from 'react'
+import { Metadata } from 'next'
+import { ApiTable } from '@/components/Demo/ApiTable'
+import { Callout } from '@/components/MDX/Callout'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Input Component - Clarity Chat Components',
-  description: 'A text input component for collecting user text input in forms and interfaces.',
-};
+  description:
+    'A text input component for collecting user text input in forms and interfaces.',
+}
 
 export default function InputPage() {
   return (
@@ -18,7 +18,8 @@ export default function InputPage() {
         <div>
           <h1>Input</h1>
           <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
-            A text input component for collecting user text input in forms and interfaces.
+            A text input component for collecting user text input in forms and
+            interfaces.
           </p>
         </div>
       </header>
@@ -28,17 +29,17 @@ export default function InputPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The Input component provides a flexible text input field with support for various types,
-          sizes, states, and validation. Essential for forms, search bars, chat inputs, and any
-          text entry interface.
+          The Input component provides a flexible text input field with support
+          for various types, sizes, states, and validation. Essential for forms,
+          search bars, chat inputs, and any text entry interface.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Interactive Playground</h2>
         <p className="mb-6">
-          Experiment with the Input component! Try different types, placeholders,
-          and states to build the perfect input experience.
+          Experiment with the Input component! Try different types,
+          placeholders, and states to build the perfect input experience.
         </p>
         <CodePlayground
           initialCode={`function Example() {
@@ -79,24 +80,114 @@ render(<BasicInput />)`}
         <ApiTable
           title="Input Props"
           data={[
-            { name: 'type', type: "'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search'", default: "'text'", description: 'Input type' },
-            { name: 'value', type: 'string', default: 'undefined', description: 'Controlled value' },
-            { name: 'defaultValue', type: 'string', default: 'undefined', description: 'Uncontrolled default value' },
-            { name: 'placeholder', type: 'string', default: 'undefined', description: 'Placeholder text' },
-            { name: 'label', type: 'string', default: 'undefined', description: 'Input label' },
-            { name: 'helperText', type: 'string', default: 'undefined', description: 'Helper text below input' },
-            { name: 'error', type: 'string | boolean', default: 'undefined', description: 'Error message or state' },
-            { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Input size' },
-            { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Whether input spans full width' },
-            { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether input is disabled' },
-            { name: 'readOnly', type: 'boolean', default: 'false', description: 'Whether input is read-only' },
-            { name: 'required', type: 'boolean', default: 'false', description: 'Whether input is required' },
-            { name: 'leftIcon', type: 'ReactNode', default: 'undefined', description: 'Icon on the left side' },
-            { name: 'rightIcon', type: 'ReactNode', default: 'undefined', description: 'Icon on the right side' },
-            { name: 'onChange', type: '(e: ChangeEvent) => void', default: 'undefined', description: 'Change handler' },
-            { name: 'onFocus', type: '(e: FocusEvent) => void', default: 'undefined', description: 'Focus handler' },
-            { name: 'onBlur', type: '(e: FocusEvent) => void', default: 'undefined', description: 'Blur handler' },
-            { name: 'className', type: 'string', default: 'undefined', description: 'Additional CSS classes' }
+            {
+              name: 'type',
+              type: "'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search'",
+              default: "'text'",
+              description: 'Input type',
+            },
+            {
+              name: 'value',
+              type: 'string',
+              default: 'undefined',
+              description: 'Controlled value',
+            },
+            {
+              name: 'defaultValue',
+              type: 'string',
+              default: 'undefined',
+              description: 'Uncontrolled default value',
+            },
+            {
+              name: 'placeholder',
+              type: 'string',
+              default: 'undefined',
+              description: 'Placeholder text',
+            },
+            {
+              name: 'label',
+              type: 'string',
+              default: 'undefined',
+              description: 'Input label',
+            },
+            {
+              name: 'helperText',
+              type: 'string',
+              default: 'undefined',
+              description: 'Helper text below input',
+            },
+            {
+              name: 'error',
+              type: 'string | boolean',
+              default: 'undefined',
+              description: 'Error message or state',
+            },
+            {
+              name: 'size',
+              type: "'sm' | 'md' | 'lg'",
+              default: "'md'",
+              description: 'Input size',
+            },
+            {
+              name: 'fullWidth',
+              type: 'boolean',
+              default: 'false',
+              description: 'Whether input spans full width',
+            },
+            {
+              name: 'disabled',
+              type: 'boolean',
+              default: 'false',
+              description: 'Whether input is disabled',
+            },
+            {
+              name: 'readOnly',
+              type: 'boolean',
+              default: 'false',
+              description: 'Whether input is read-only',
+            },
+            {
+              name: 'required',
+              type: 'boolean',
+              default: 'false',
+              description: 'Whether input is required',
+            },
+            {
+              name: 'leftIcon',
+              type: 'ReactNode',
+              default: 'undefined',
+              description: 'Icon on the left side',
+            },
+            {
+              name: 'rightIcon',
+              type: 'ReactNode',
+              default: 'undefined',
+              description: 'Icon on the right side',
+            },
+            {
+              name: 'onChange',
+              type: '(e: ChangeEvent) => void',
+              default: 'undefined',
+              description: 'Change handler',
+            },
+            {
+              name: 'onFocus',
+              type: '(e: FocusEvent) => void',
+              default: 'undefined',
+              description: 'Focus handler',
+            },
+            {
+              name: 'onBlur',
+              type: '(e: FocusEvent) => void',
+              default: 'undefined',
+              description: 'Blur handler',
+            },
+            {
+              name: 'className',
+              type: 'string',
+              default: 'undefined',
+              description: 'Additional CSS classes',
+            },
           ]}
         />
       </section>
@@ -187,7 +278,8 @@ render(<ControlledInput />)`}
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+        <pre>
+          <code>{`interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   helperText?: string;
   error?: string | boolean;
@@ -197,17 +289,27 @@ render(<ControlledInput />)`}
   rightIcon?: ReactNode;
 }
 
-export default function Input(props: InputProps): JSX.Element;`}</code></pre>
+export default function Input(props: InputProps): JSX.Element;`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Related Components</h2>
         <ul>
-          <li><a href="/reference/components/textarea">Textarea</a> - Multi-line text input</li>
-          <li><a href="/reference/components/select">Select</a> - Dropdown selection</li>
-          <li><a href="/reference/components/message-input">MessageInput</a> - Chat message input</li>
+          <li>
+            <a href="/reference/components/textarea">Textarea</a> - Multi-line
+            text input
+          </li>
+          <li>
+            <a href="/reference/components/select">Select</a> - Dropdown
+            selection
+          </li>
+          <li>
+            <a href="/reference/components/message-input">MessageInput</a> -
+            Chat message input
+          </li>
         </ul>
       </section>
     </div>
-  );
+  )
 }

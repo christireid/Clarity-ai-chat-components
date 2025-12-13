@@ -73,7 +73,8 @@ const modelSelectorProps: Prop[] = [
     name: 'models',
     type: 'ModelInfo[]',
     required: true,
-    description: 'Array of available models with their capabilities and metrics.',
+    description:
+      'Array of available models with their capabilities and metrics.',
   },
   {
     name: 'value',
@@ -112,7 +113,6 @@ const modelSelectorProps: Prop[] = [
   },
 ]
 
-
 export default function ModelSelectorPage() {
   return (
     <div className="docs-content">
@@ -124,7 +124,9 @@ export default function ModelSelectorPage() {
             ModelSelector
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            A sophisticated dropdown component for switching between AI models. It displays key metrics like speed, cost, and quality to help users make informed decisions.
+            A sophisticated dropdown component for switching between AI models.
+            It displays key metrics like speed, cost, and quality to help users
+            make informed decisions.
           </p>
         </div>
       </ScrollReveal>
@@ -145,7 +147,8 @@ import type { ModelInfo } from '@clarity-chat/react'`}
       <ScrollReveal delay={0.3}>
         <h2 id="usage">Usage</h2>
         <p className="mb-4">
-          Pass an array of <code>ModelInfo</code> objects and handle the state for the selected value.
+          Pass an array of <code>ModelInfo</code> objects and handle the state
+          for the selected value.
         </p>
 
         <ComponentPreview
@@ -215,8 +218,9 @@ function App() {
       <ScrollReveal delay={0.6}>
         <Callout type="tip">
           <p>
-            The <code>speed</code>, <code>cost</code>, and <code>quality</code> fields automatically map to colored badges
-            in the UI: green (good), yellow (moderate), and red (poor/expensive/slow).
+            The <code>speed</code>, <code>cost</code>, and <code>quality</code>{' '}
+            fields automatically map to colored badges in the UI: green (good),
+            yellow (moderate), and red (poor/expensive/slow).
           </p>
         </Callout>
       </ScrollReveal>

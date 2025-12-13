@@ -35,10 +35,7 @@ function BasicStreamingDemo() {
 
   return (
     <div className="w-full max-w-2xl border border-border rounded-lg p-4">
-      <StreamingMessage
-        content={content}
-        isStreaming={isStreaming}
-      />
+      <StreamingMessage content={content} isStreaming={isStreaming} />
     </div>
   )
 }
@@ -53,7 +50,10 @@ function StreamingWithToolsDemo() {
       type: 'function',
       function: {
         name: 'get_weather',
-        arguments: JSON.stringify({ location: 'San Francisco', unit: 'celsius' }),
+        arguments: JSON.stringify({
+          location: 'San Francisco',
+          unit: 'celsius',
+        }),
       },
     },
   ])
@@ -80,19 +80,22 @@ const streamingMessageProps: Prop[] = [
     name: 'content',
     type: 'string',
     required: true,
-    description: 'Accumulated message content. Updates as streaming progresses.',
+    description:
+      'Accumulated message content. Updates as streaming progresses.',
   },
   {
     name: 'isStreaming',
     type: 'boolean',
     default: 'false',
-    description: 'Whether streaming is currently in progress. Shows streaming cursor when true.',
+    description:
+      'Whether streaming is currently in progress. Shows streaming cursor when true.',
   },
   {
     name: 'toolCalls',
     type: 'ToolCall[]',
     default: '[]',
-    description: 'Array of tool calls made during streaming. Displayed with approve/reject buttons.',
+    description:
+      'Array of tool calls made during streaming. Displayed with approve/reject buttons.',
   },
   {
     name: 'citations',
@@ -104,12 +107,14 @@ const streamingMessageProps: Prop[] = [
     name: 'thinkingSteps',
     type: 'string[]',
     default: '[]',
-    description: 'Array of thinking steps (chain-of-thought) shown during reasoning.',
+    description:
+      'Array of thinking steps (chain-of-thought) shown during reasoning.',
   },
   {
     name: 'currentThinkingStep',
     type: 'string',
-    description: 'Current thinking step being processed. Shown with loading indicator.',
+    description:
+      'Current thinking step being processed. Shown with loading indicator.',
   },
   {
     name: 'error',
@@ -137,7 +142,8 @@ const streamingMessageProps: Prop[] = [
   {
     name: 'onToolApprove',
     type: '(toolCall: ToolCall) => void',
-    description: 'Callback when user approves a tool call. Shows approve button.',
+    description:
+      'Callback when user approves a tool call. Shows approve button.',
   },
   {
     name: 'onToolReject',
@@ -151,7 +157,6 @@ const streamingMessageProps: Prop[] = [
   },
 ]
 
-
 export default function StreamingMessagePage() {
   return (
     <ToastProvider>
@@ -161,14 +166,17 @@ export default function StreamingMessagePage() {
         <h1>StreamingMessage</h1>
 
         <p className="lead">
-          A specialized component for displaying AI responses with token-by-token streaming,
-          tool calls, thinking steps, citations, and error handling. Perfect for real-time AI interactions.
+          A specialized component for displaying AI responses with
+          token-by-token streaming, tool calls, thinking steps, citations, and
+          error handling. Perfect for real-time AI interactions.
         </p>
 
         <Callout type="info">
           <p>
-            StreamingMessage is designed specifically for streaming responses. For regular messages,
-            use the <a href="/reference/components/message">Message</a> component instead.
+            StreamingMessage is designed specifically for streaming responses.
+            For regular messages, use the{' '}
+            <a href="/reference/components/message">Message</a> component
+            instead.
           </p>
         </Callout>
 
@@ -177,7 +185,8 @@ export default function StreamingMessagePage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Watch a message stream in real-time! See how content appears token by token.
+            Watch a message stream in real-time! See how content appears token
+            by token.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -223,7 +232,8 @@ import '@clarity-chat/react/styles.css'`}
         <h2 id="basic-usage">Basic Usage</h2>
 
         <p>
-          StreamingMessage displays content as it streams in, with a blinking cursor indicator:
+          StreamingMessage displays content as it streams in, with a blinking
+          cursor indicator:
         </p>
 
         <ComponentPreview
@@ -310,9 +320,7 @@ function StreamingWithTools() {
 
         <h2 id="with-citations">With Citations</h2>
 
-        <p>
-          Display citations and sources referenced in the response:
-        </p>
+        <p>Display citations and sources referenced in the response:</p>
 
         <EnhancedCodeBlock
           code={`import { StreamingMessage } from '@clarity-chat/react'
@@ -350,9 +358,7 @@ function StreamingWithCitations() {
 
         <h2 id="with-thinking-steps">With Thinking Steps</h2>
 
-        <p>
-          Show chain-of-thought reasoning steps during AI processing:
-        </p>
+        <p>Show chain-of-thought reasoning steps during AI processing:</p>
 
         <EnhancedCodeBlock
           code={`import { StreamingMessage } from '@clarity-chat/react'
@@ -381,9 +387,7 @@ function StreamingWithThinking() {
 
         <h2 id="error-handling">Error Handling</h2>
 
-        <p>
-          Display error messages when streaming fails:
-        </p>
+        <p>Display error messages when streaming fails:</p>
 
         <EnhancedCodeBlock
           code={`import { StreamingMessage } from '@clarity-chat/react'
@@ -404,7 +408,8 @@ function StreamingWithError() {
         <h2 id="partial-json">Partial JSON Rendering</h2>
 
         <p>
-          StreamingMessage automatically detects and renders partial JSON during streaming:
+          StreamingMessage automatically detects and renders partial JSON during
+          streaming:
         </p>
 
         <EnhancedCodeBlock
@@ -429,8 +434,9 @@ function StreamingJSON() {
 
         <Callout type="tip">
           <p>
-            StreamingMessage uses smart JSON parsing to extract complete JSON objects from
-            partial streams, displaying them formatted while showing remaining text separately.
+            StreamingMessage uses smart JSON parsing to extract complete JSON
+            objects from partial streams, displaying them formatted while
+            showing remaining text separately.
           </p>
         </Callout>
 
@@ -551,9 +557,7 @@ function CompleteStreamingExample() {
 
         <h2 id="integration-with-hooks">Integration with Hooks</h2>
 
-        <p>
-          StreamingMessage works seamlessly with streaming hooks:
-        </p>
+        <p>StreamingMessage works seamlessly with streaming hooks:</p>
 
         <EnhancedCodeBlock
           code={`import { StreamingMessage } from '@clarity-chat/react'
@@ -580,9 +584,12 @@ function StreamingWithHook() {
 
         <Callout type="info">
           <p>
-            See the <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> and{' '}
-            <a href="/reference/hooks/use-streaming-websocket">useStreamingWebSocket</a> hooks
-            for complete streaming integration examples.
+            See the{' '}
+            <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> and{' '}
+            <a href="/reference/hooks/use-streaming-websocket">
+              useStreamingWebSocket
+            </a>{' '}
+            hooks for complete streaming integration examples.
           </p>
         </Callout>
 
@@ -604,13 +611,16 @@ function StreamingWithHook() {
 
         <ul>
           <li>
-            <strong>Efficient rendering:</strong> Only re-renders when content changes
+            <strong>Efficient rendering:</strong> Only re-renders when content
+            changes
           </li>
           <li>
-            <strong>Memoized parsing:</strong> JSON parsing is memoized to avoid re-parsing
+            <strong>Memoized parsing:</strong> JSON parsing is memoized to avoid
+            re-parsing
           </li>
           <li>
-            <strong>Smooth animations:</strong> Streaming cursor and transitions are optimized
+            <strong>Smooth animations:</strong> Streaming cursor and transitions
+            are optimized
           </li>
         </ul>
 
@@ -618,16 +628,22 @@ function StreamingWithHook() {
 
         <ul>
           <li>
-            <a href="/reference/components/message">Message</a> - For non-streaming messages
+            <a href="/reference/components/message">Message</a> - For
+            non-streaming messages
           </li>
           <li>
-            <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> - SSE streaming hook
+            <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> -
+            SSE streaming hook
           </li>
           <li>
-            <a href="/reference/hooks/use-streaming-websocket">useStreamingWebSocket</a> - WebSocket streaming hook
+            <a href="/reference/hooks/use-streaming-websocket">
+              useStreamingWebSocket
+            </a>{' '}
+            - WebSocket streaming hook
           </li>
           <li>
-            <a href="/reference/components/chat-window">ChatWindow</a> - Complete chat interface
+            <a href="/reference/components/chat-window">ChatWindow</a> -
+            Complete chat interface
           </li>
         </ul>
 

@@ -211,7 +211,8 @@
 
 /* Pulse animation for retry states */
 @keyframes errorPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -221,7 +222,8 @@
 
 /* Glow pulse animation */
 @keyframes errorGlowPulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 var(--error-color-error);
   }
   50% {
@@ -231,13 +233,21 @@
 
 /* Shake animation for errors */
 @keyframes errorShake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-6px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(6px);
   }
 }
@@ -269,7 +279,8 @@
 
 /* Jiggle animation for attention */
 @keyframes errorJiggle {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   25% {
@@ -282,7 +293,8 @@
 
 /* Float animation for icons */
 @keyframes errorFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -292,7 +304,8 @@
 
 /* Heartbeat animation */
 @keyframes errorHeartbeat {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   14% {
@@ -356,7 +369,9 @@
 
 /* Dots loading animation */
 @keyframes errorDotPulse {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0.6);
     opacity: 0.5;
   }
@@ -482,7 +497,8 @@
 
 /* Border glow animation */
 @keyframes errorBorderGlow {
-  0%, 100% {
+  0%,
+  100% {
     border-color: rgba(239, 68, 68, 0.3);
   }
   50% {
@@ -518,7 +534,8 @@
 
 /* Timer tick animation */
 @keyframes errorTimerTick {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -532,44 +549,54 @@
 
 /* Entry animations */
 .error-fade-in {
-  animation: errorFadeIn var(--error-duration-normal) var(--error-ease-out) forwards;
+  animation: errorFadeIn var(--error-duration-normal) var(--error-ease-out)
+    forwards;
 }
 
 .error-slide-up {
-  animation: errorSlideUp var(--error-duration-normal) var(--error-ease-bounce) forwards;
+  animation: errorSlideUp var(--error-duration-normal) var(--error-ease-bounce)
+    forwards;
 }
 
 .error-slide-in-right {
-  animation: errorSlideInRight var(--error-duration-normal) var(--error-ease-out) forwards;
+  animation: errorSlideInRight var(--error-duration-normal)
+    var(--error-ease-out) forwards;
 }
 
 .error-slide-in-left {
-  animation: errorSlideInLeft var(--error-duration-normal) var(--error-ease-out) forwards;
+  animation: errorSlideInLeft var(--error-duration-normal) var(--error-ease-out)
+    forwards;
 }
 
 .error-bounce-in {
-  animation: errorBounceIn var(--error-duration-slow) var(--error-ease-out) forwards;
+  animation: errorBounceIn var(--error-duration-slow) var(--error-ease-out)
+    forwards;
 }
 
 .error-pop-in {
-  animation: errorPopIn var(--error-duration-normal) var(--error-ease-spring) forwards;
+  animation: errorPopIn var(--error-duration-normal) var(--error-ease-spring)
+    forwards;
 }
 
 .error-expand-in {
-  animation: errorExpandIn var(--error-duration-normal) var(--error-ease-out) forwards;
+  animation: errorExpandIn var(--error-duration-normal) var(--error-ease-out)
+    forwards;
 }
 
 /* Exit animations */
 .error-fade-out {
-  animation: errorFadeOut var(--error-duration-normal) var(--error-ease-out) forwards;
+  animation: errorFadeOut var(--error-duration-normal) var(--error-ease-out)
+    forwards;
 }
 
 .error-slide-out-right {
-  animation: errorSlideOutRight var(--error-duration-normal) var(--error-ease-out) forwards;
+  animation: errorSlideOutRight var(--error-duration-normal)
+    var(--error-ease-out) forwards;
 }
 
 .error-collapse {
-  animation: errorCollapse var(--error-duration-slow) var(--error-ease-out) forwards;
+  animation: errorCollapse var(--error-duration-slow) var(--error-ease-out)
+    forwards;
 }
 
 .error-recovery-fade {
@@ -619,7 +646,12 @@
 }
 
 .error-progress-shimmer {
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
   background-size: 200% 100%;
   animation: errorProgressShimmer 1.5s linear infinite;
 }
@@ -628,9 +660,15 @@
   animation: errorDotPulse 1.4s ease-in-out infinite both;
 }
 
-.error-dot-pulse:nth-child(1) { animation-delay: -0.32s; }
-.error-dot-pulse:nth-child(2) { animation-delay: -0.16s; }
-.error-dot-pulse:nth-child(3) { animation-delay: 0s; }
+.error-dot-pulse:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.error-dot-pulse:nth-child(2) {
+  animation-delay: -0.16s;
+}
+.error-dot-pulse:nth-child(3) {
+  animation-delay: 0s;
+}
 
 .error-skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -670,7 +708,12 @@
   left: 0;
   width: 50%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   animation: errorShimmer 2s ease-in-out infinite;
 }
 
@@ -687,13 +730,27 @@
    Delay Utilities
    ============================================================================= */
 
-.error-delay-100 { animation-delay: 100ms; }
-.error-delay-200 { animation-delay: 200ms; }
-.error-delay-300 { animation-delay: 300ms; }
-.error-delay-400 { animation-delay: 400ms; }
-.error-delay-500 { animation-delay: 500ms; }
-.error-delay-700 { animation-delay: 700ms; }
-.error-delay-1000 { animation-delay: 1000ms; }
+.error-delay-100 {
+  animation-delay: 100ms;
+}
+.error-delay-200 {
+  animation-delay: 200ms;
+}
+.error-delay-300 {
+  animation-delay: 300ms;
+}
+.error-delay-400 {
+  animation-delay: 400ms;
+}
+.error-delay-500 {
+  animation-delay: 500ms;
+}
+.error-delay-700 {
+  animation-delay: 700ms;
+}
+.error-delay-1000 {
+  animation-delay: 1000ms;
+}
 
 /* =============================================================================
    Interactive States

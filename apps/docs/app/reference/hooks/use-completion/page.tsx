@@ -8,10 +8,10 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-
 export const metadata: Metadata = {
   title: 'useCompletion Hook | Clarity Chat',
-  description: 'Hook for managing text completion state with streaming support. Ideal for single-turn completions, autocomplete, and text generation.',
+  description:
+    'Hook for managing text completion state with streaming support. Ideal for single-turn completions, autocomplete, and text generation.',
 }
 
 const useCompletionOptions: Prop[] = [
@@ -80,7 +80,8 @@ const useCompletionReturn: Prop[] = [
   {
     name: 'complete',
     type: '(prompt: string, options?: CompletionRequestOptions) => Promise<string>',
-    description: 'Generate completion for a prompt. Returns the full completion.',
+    description:
+      'Generate completion for a prompt. Returns the full completion.',
   },
   {
     name: 'isLoading',
@@ -112,15 +113,16 @@ export default function UseCompletionPage() {
       <h1>useCompletion</h1>
 
       <p className="lead">
-        Hook for managing text completion state with streaming support. Ideal for
-        single-turn completions, autocomplete, and text generation.
+        Hook for managing text completion state with streaming support. Ideal
+        for single-turn completions, autocomplete, and text generation.
       </p>
 
       <Callout type="info" title="Architecture Layer">
         <p>
-          <strong>useCompletion</strong> is a mid-level hook for text completions.
-          For chat interfaces, use top-level <code>useClarityChat</code> instead.
-          For structured output, use <code>useClarityObject</code> instead.
+          <strong>useCompletion</strong> is a mid-level hook for text
+          completions. For chat interfaces, use top-level{' '}
+          <code>useClarityChat</code> instead. For structured output, use{' '}
+          <code>useClarityObject</code> instead.
         </p>
       </Callout>
 
@@ -129,7 +131,7 @@ export default function UseCompletionPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the hook:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useCompletion } from '@clarity-chat/react'
@@ -261,7 +263,9 @@ function TextGenerator() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Progress Tracking</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Progress Tracking
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useCompletion } from '@clarity-chat/react'
@@ -337,18 +341,30 @@ function Completion() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Use Cases</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Autocomplete</strong> - Complete user input as they type</li>
-          <li><strong>Text generation</strong> - Generate stories, articles, code</li>
-          <li><strong>Code completion</strong> - IDE-like code suggestions</li>
-          <li><strong>Email drafting</strong> - Help users write emails</li>
-          <li><strong>Content creation</strong> - Generate blog posts, social media content</li>
+          <li>
+            <strong>Autocomplete</strong> - Complete user input as they type
+          </li>
+          <li>
+            <strong>Text generation</strong> - Generate stories, articles, code
+          </li>
+          <li>
+            <strong>Code completion</strong> - IDE-like code suggestions
+          </li>
+          <li>
+            <strong>Email drafting</strong> - Help users write emails
+          </li>
+          <li>
+            <strong>Content creation</strong> - Generate blog posts, social
+            media content
+          </li>
         </ul>
       </section>
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">vs useClarityChat</h2>
         <p className="mb-4 text-gray-600 dark:text-gray-400">
-          <code>useCompletion</code> is for single-turn completions, while <code>useClarityChat</code>
+          <code>useCompletion</code> is for single-turn completions, while{' '}
+          <code>useClarityChat</code>
           is for multi-turn conversations:
         </p>
         <div className="overflow-x-auto">
@@ -410,7 +426,10 @@ function Completion() {
 
       <Pagination
         prev={{ title: 'useAssistant', href: '/reference/hooks/use-assistant' }}
-        next={{ title: 'useMessageOperations', href: '/reference/hooks/use-message-operations' }}
+        next={{
+          title: 'useMessageOperations',
+          href: '/reference/hooks/use-message-operations',
+        }}
       />
     </>
   )

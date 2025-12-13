@@ -6,10 +6,10 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Custom Tool Integration Recipe | Clarity Chat Cookbook',
-  description: 'Learn how to integrate custom tools and functions with your chat application for extended AI capabilities.',
+  description:
+    'Learn how to integrate custom tools and functions with your chat application for extended AI capabilities.',
 }
 
 export default function CustomToolIntegrationPage() {
@@ -20,15 +20,16 @@ export default function CustomToolIntegrationPage() {
       <h1>Custom Tool Integration Recipe</h1>
 
       <p className="lead">
-        Integrate custom tools and functions with your chat application to extend
-        AI capabilities. Perfect for adding domain-specific functionality like
-        database queries, API calls, and custom business logic.
+        Integrate custom tools and functions with your chat application to
+        extend AI capabilities. Perfect for adding domain-specific functionality
+        like database queries, API calls, and custom business logic.
       </p>
 
       <Callout type="info" title="What are Tools?">
         <p>
-          Tools allow the AI to call your functions during conversations. For example,
-          the AI can search the web, query a database, or call your API when needed.
+          Tools allow the AI to call your functions during conversations. For
+          example, the AI can search the web, query a database, or call your API
+          when needed.
         </p>
       </Callout>
 
@@ -37,7 +38,7 @@ export default function CustomToolIntegrationPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Add tool support with useClarityChatWithTools:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChatWithTools, ChatWindow } from '@clarity-chat/react'
@@ -83,7 +84,7 @@ function ChatWithTools() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Define tools with OpenAPI schema:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`interface Tool {
@@ -227,7 +228,7 @@ const tools: Tool[] = [
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Use the assistant hook for more control:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useAssistant } from '@clarity-chat/react'
@@ -261,7 +262,7 @@ function AssistantWithTools() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Require user approval before executing tools:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useAssistant } from '@clarity-chat/react'
@@ -296,7 +297,7 @@ function AssistantWithApproval() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Handle tool execution errors:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`const tool = {
@@ -322,20 +323,44 @@ function AssistantWithApproval() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Write clear descriptions</strong> - Help the AI understand when to use each tool</li>
-          <li><strong>Validate inputs</strong> - Always validate tool arguments before execution</li>
-          <li><strong>Handle errors gracefully</strong> - Return meaningful error messages</li>
-          <li><strong>Limit tool scope</strong> - Only expose necessary functionality</li>
-          <li><strong>Require approval for sensitive operations</strong> - Ask user before executing risky tools</li>
-          <li><strong>Log tool executions</strong> - Track tool usage for debugging and analytics</li>
-          <li><strong>Rate limit tools</strong> - Prevent abuse of expensive operations</li>
+          <li>
+            <strong>Write clear descriptions</strong> - Help the AI understand
+            when to use each tool
+          </li>
+          <li>
+            <strong>Validate inputs</strong> - Always validate tool arguments
+            before execution
+          </li>
+          <li>
+            <strong>Handle errors gracefully</strong> - Return meaningful error
+            messages
+          </li>
+          <li>
+            <strong>Limit tool scope</strong> - Only expose necessary
+            functionality
+          </li>
+          <li>
+            <strong>Require approval for sensitive operations</strong> - Ask
+            user before executing risky tools
+          </li>
+          <li>
+            <strong>Log tool executions</strong> - Track tool usage for
+            debugging and analytics
+          </li>
+          <li>
+            <strong>Rate limit tools</strong> - Prevent abuse of expensive
+            operations
+          </li>
         </ul>
       </section>
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/hooks/use-clarity-chat-with-tools" className="docs-card">
+          <a
+            href="/reference/hooks/use-clarity-chat-with-tools"
+            className="docs-card"
+          >
             <h3>useClarityChatWithTools Hook</h3>
             <p>Top-level hook with tool support</p>
           </a>

@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'ApiTokenManager - Clarity Chat Components',
-  description: 'Manage API access tokens with creation, regeneration, revocation, and scope management.',
+  description:
+    'Manage API access tokens with creation, regeneration, revocation, and scope management.',
 }
 
 const props: Prop[] = [
@@ -47,7 +47,8 @@ export default function ApiTokenManagerPage() {
         <span className="docs-badge">Component</span>
         <h1>ApiTokenManager</h1>
         <p className="docs-lead">
-          Manage API access tokens with creation, regeneration, revocation, scope management, and usage tracking.
+          Manage API access tokens with creation, regeneration, revocation,
+          scope management, and usage tracking.
         </p>
       </div>
 
@@ -63,15 +64,14 @@ export default function ApiTokenManagerPage() {
 
       <Callout type="warning">
         <p>
-          <strong>Security:</strong> API tokens provide access to your account. Store them securely and rotate regularly.
+          <strong>Security:</strong> API tokens provide access to your account.
+          Store them securely and rotate regularly.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Manage API tokens:
-        </p>
+        <p>Manage API tokens:</p>
         <CodePlayground
           initialCode={`import { ApiTokenManager } from '@clarity-chat/react'
 
@@ -115,9 +115,7 @@ function TokenManagement() {
 
       <section className="docs-section">
         <h2>Token Scopes</h2>
-        <p>
-          Manage token scopes:
-        </p>
+        <p>Manage token scopes:</p>
         <CodePlayground
           initialCode={`import { ApiTokenManager } from '@clarity-chat/react'
 
@@ -153,9 +151,7 @@ function WithScopes() {
 
       <section className="docs-section">
         <h2>Token Status</h2>
-        <p>
-          Track token status:
-        </p>
+        <p>Track token status:</p>
         <CodePlayground
           initialCode={`import { ApiTokenManager } from '@clarity-chat/react'
 
@@ -203,9 +199,15 @@ function StatusTracking() {
       <section className="docs-section">
         <h2>Token Status Types</h2>
         <ul>
-          <li><strong>active</strong>: Token is active and can be used</li>
-          <li><strong>expired</strong>: Token has expired</li>
-          <li><strong>revoked</strong>: Token has been revoked</li>
+          <li>
+            <strong>active</strong>: Token is active and can be used
+          </li>
+          <li>
+            <strong>expired</strong>: Token has expired
+          </li>
+          <li>
+            <strong>revoked</strong>: Token has been revoked
+          </li>
         </ul>
       </section>
 
@@ -223,8 +225,16 @@ function StatusTracking() {
 
       <section className="docs-section">
         <h2>Related</h2>
-        <li><a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> - Multi-tenant setup</li>
-        <li><a href="/reference/components/auth-tenant-dashboard">AuthTenantDashboard</a> - Tenant authentication</li>
+        <li>
+          <a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> -
+          Multi-tenant setup
+        </li>
+        <li>
+          <a href="/reference/components/auth-tenant-dashboard">
+            AuthTenantDashboard
+          </a>{' '}
+          - Tenant authentication
+        </li>
       </section>
     </div>
   )

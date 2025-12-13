@@ -12,7 +12,6 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-
 function BasicDragDemo() {
   const [droppedItem, setDroppedItem] = useState<string | null>(null)
 
@@ -136,8 +135,9 @@ export default function DraggablePage() {
             </h1>
 
             <p className="text-xl text-text-secondary leading-relaxed">
-              Primitives for building rich drag-and-drop interactions.
-              Create sortable lists, file upload zones, and interactive canvases with smooth physics-based animations.
+              Primitives for building rich drag-and-drop interactions. Create
+              sortable lists, file upload zones, and interactive canvases with
+              smooth physics-based animations.
             </p>
           </div>
         </ScrollReveal>
@@ -149,7 +149,8 @@ export default function DraggablePage() {
         <ScrollReveal delay={0.2}>
           <h2 id="basic-usage">Basic Usage</h2>
           <p className="mb-4">
-            Wrap elements in <code>Draggable</code> to make them movable, and use <code>DropZone</code> to define valid drop targets.
+            Wrap elements in <code>Draggable</code> to make them movable, and
+            use <code>DropZone</code> to define valid drop targets.
           </p>
 
           <ComponentPreview
@@ -241,7 +242,8 @@ render(<Example />)`}
         <ScrollReveal delay={0.5}>
           <h2 id="kanban-example">Kanban Board Example</h2>
           <p className="mb-4">
-            Build complex interfaces like Kanban boards using <code>useDragDrop</code> hook:
+            Build complex interfaces like Kanban boards using{' '}
+            <code>useDragDrop</code> hook:
           </p>
           <EnhancedCodeBlock
             language="tsx"
@@ -279,7 +281,7 @@ function KanbanBoard() {
 
         <ScrollReveal delay={0.6}>
           <h2 id="props">Props</h2>
-          
+
           <h3 className="text-xl font-semibold mt-8 mb-4">Draggable</h3>
           <PropsTable props={draggableProps} />
 
@@ -290,27 +292,47 @@ function KanbanBoard() {
         <ScrollReveal delay={0.7}>
           <h2 id="animations">Physics & Animations</h2>
           <p className="mb-4">
-            Draggable uses Framer Motion under the hood for smooth, spring-based physics.
-            Drag interactions feel natural and responsive with:
+            Draggable uses Framer Motion under the hood for smooth, spring-based
+            physics. Drag interactions feel natural and responsive with:
           </p>
           <ul className="mb-8 space-y-2">
-            <li>🎯 <strong>Elastic constraints:</strong> Items bounce back when dragged too far</li>
-            <li>👻 <strong>Ghost previews:</strong> Visual feedback while dragging</li>
-            <li>✨ <strong>Drop animations:</strong> Smooth transitions when released</li>
-            <li>📱 <strong>Touch support:</strong> Optimized for mobile gestures</li>
+            <li>
+              🎯 <strong>Elastic constraints:</strong> Items bounce back when
+              dragged too far
+            </li>
+            <li>
+              👻 <strong>Ghost previews:</strong> Visual feedback while dragging
+            </li>
+            <li>
+              ✨ <strong>Drop animations:</strong> Smooth transitions when
+              released
+            </li>
+            <li>
+              📱 <strong>Touch support:</strong> Optimized for mobile gestures
+            </li>
           </ul>
         </ScrollReveal>
 
         <ScrollReveal delay={0.8}>
           <h2 id="related">Related</h2>
           <div className="grid md:grid-cols-2 gap-4">
-            <a href="/reference/components/file-upload" className="p-4 border rounded-lg hover:border-brand-500 transition-colors">
+            <a
+              href="/reference/components/file-upload"
+              className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
               <h3 className="font-semibold mb-1">FileUpload</h3>
-              <p className="text-sm text-muted-foreground">Specialized drag-and-drop for files</p>
+              <p className="text-sm text-muted-foreground">
+                Specialized drag-and-drop for files
+              </p>
             </a>
-            <a href="/reference/components/chat-window" className="p-4 border rounded-lg hover:border-brand-500 transition-colors">
+            <a
+              href="/reference/components/chat-window"
+              className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
               <h3 className="font-semibold mb-1">ChatWindow</h3>
-              <p className="text-sm text-muted-foreground">Uses drag-and-drop for attachments</p>
+              <p className="text-sm text-muted-foreground">
+                Uses drag-and-drop for attachments
+              </p>
             </a>
           </div>
         </ScrollReveal>

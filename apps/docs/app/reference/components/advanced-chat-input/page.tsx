@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from 'react'
 import { ToastProvider, AdvancedChatInput } from '@clarity-chat/react'
-import type { MessageAttachment, SavedPrompt, InputSuggestion } from '@clarity-chat/react'
+import type {
+  MessageAttachment,
+  SavedPrompt,
+  InputSuggestion,
+} from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -13,16 +17,18 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-
 // Basic demo component
 function BasicAdvancedInputDemo() {
   const [value, setValue] = useState('')
 
-  const handleSubmit = useCallback((text: string, attachments?: MessageAttachment[]) => {
-    console.log('Message:', text)
-    console.log('Attachments:', attachments)
-    setValue('')
-  }, [])
+  const handleSubmit = useCallback(
+    (text: string, attachments?: MessageAttachment[]) => {
+      console.log('Message:', text)
+      console.log('Attachments:', attachments)
+      setValue('')
+    },
+    []
+  )
 
   return (
     <div className="w-full max-w-2xl border border-border rounded-lg bg-background">
@@ -40,25 +46,31 @@ function BasicAdvancedInputDemo() {
 function FileUploadDemo() {
   const [value, setValue] = useState('')
 
-  const handleFileUpload = useCallback(async (files: File[]): Promise<MessageAttachment[]> => {
-    // Simulate file upload
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    return files.map(file => ({
-      id: `${Date.now()}-${file.name}`,
-      type: file.type.startsWith('image/') ? 'image' : 'document',
-      name: file.name,
-      size: file.size,
-      mimeType: file.type,
-      url: URL.createObjectURL(file),
-    }))
-  }, [])
+  const handleFileUpload = useCallback(
+    async (files: File[]): Promise<MessageAttachment[]> => {
+      // Simulate file upload
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-  const handleSubmit = useCallback((text: string, attachments?: MessageAttachment[]) => {
-    console.log('Message:', text)
-    console.log('Attachments:', attachments)
-    setValue('')
-  }, [])
+      return files.map((file) => ({
+        id: `${Date.now()}-${file.name}`,
+        type: file.type.startsWith('image/') ? 'image' : 'document',
+        name: file.name,
+        size: file.size,
+        mimeType: file.type,
+        url: URL.createObjectURL(file),
+      }))
+    },
+    []
+  )
+
+  const handleSubmit = useCallback(
+    (text: string, attachments?: MessageAttachment[]) => {
+      console.log('Message:', text)
+      console.log('Attachments:', attachments)
+      setValue('')
+    },
+    []
+  )
 
   return (
     <div className="w-full max-w-2xl border border-border rounded-lg bg-background">
@@ -91,17 +103,20 @@ const advancedChatInputProps: Prop[] = [
     name: 'onSubmit',
     type: '(value: string, attachments?: MessageAttachment[]) => void',
     required: true,
-    description: 'Callback function called when the message is submitted. Receives message text and optional attachments array.',
+    description:
+      'Callback function called when the message is submitted. Receives message text and optional attachments array.',
   },
   {
     name: 'onSuggestionRequest',
     type: '(query: string, trigger: "@" | "/") => Promise<InputSuggestion[]>',
-    description: 'Async function to load autocomplete suggestions. Called when user types @ or / followed by text.',
+    description:
+      'Async function to load autocomplete suggestions. Called when user types @ or / followed by text.',
   },
   {
     name: 'onFileUpload',
     type: '(files: File[]) => Promise<MessageAttachment[]>',
-    description: 'Async function to handle file uploads. Should return an array of MessageAttachment objects.',
+    description:
+      'Async function to handle file uploads. Should return an array of MessageAttachment objects.',
   },
   {
     name: 'maxFiles',
@@ -113,23 +128,27 @@ const advancedChatInputProps: Prop[] = [
     name: 'acceptedFileTypes',
     type: 'string[]',
     default: '["image/*", "application/pdf", ".txt", ".doc", ".docx"]',
-    description: 'Array of accepted MIME types or file extensions for file uploads.',
+    description:
+      'Array of accepted MIME types or file extensions for file uploads.',
   },
   {
     name: 'savedPrompts',
     type: 'SavedPrompt[]',
     default: '[]',
-    description: 'Array of saved prompts for @ autocomplete. Used when onSuggestionRequest is not provided.',
+    description:
+      'Array of saved prompts for @ autocomplete. Used when onSuggestionRequest is not provided.',
   },
   {
     name: 'onPromptSelect',
     type: '(prompt: SavedPrompt) => void',
-    description: 'Callback when a saved prompt is selected from @ autocomplete.',
+    description:
+      'Callback when a saved prompt is selected from @ autocomplete.',
   },
   {
     name: 'onLinkPaste',
     type: '(url: string) => Promise<{ title: string; description?: string; image?: string }>',
-    description: 'Async function to fetch link preview metadata when a URL is pasted.',
+    description:
+      'Async function to fetch link preview metadata when a URL is pasted.',
   },
   {
     name: 'disabled',
@@ -168,8 +187,9 @@ export default function AdvancedChatInputPage() {
             </h1>
 
             <p className="text-xl text-text-secondary leading-relaxed">
-              An enhanced chat input component with file uploads, @mentions, /commands,
-              autocomplete, and drag-and-drop support. Perfect for feature-rich chat interfaces.
+              An enhanced chat input component with file uploads, @mentions,
+              /commands, autocomplete, and drag-and-drop support. Perfect for
+              feature-rich chat interfaces.
             </p>
           </div>
         </ScrollReveal>
@@ -177,9 +197,10 @@ export default function AdvancedChatInputPage() {
         <ScrollReveal delay={0.1}>
           <Callout type="info" className="mb-8">
             <p>
-              AdvancedChatInput extends the basic <a href="/reference/components/chat-input">ChatInput</a>{' '}
-              component with additional features. Use it when you need file attachments, autocomplete,
-              or command support.
+              AdvancedChatInput extends the basic{' '}
+              <a href="/reference/components/chat-input">ChatInput</a> component
+              with additional features. Use it when you need file attachments,
+              autocomplete, or command support.
             </p>
           </Callout>
         </ScrollReveal>
@@ -192,7 +213,8 @@ export default function AdvancedChatInputPage() {
           <section className="my-12">
             <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
             <p className="mb-6 text-muted-foreground">
-              Try typing @ or / to see autocomplete, upload files, and test all features!
+              Try typing @ or / to see autocomplete, upload files, and test all
+              features!
             </p>
             <CodePlayground
               initialCode={`function Example() {
@@ -236,8 +258,9 @@ import '@clarity-chat/react/styles.css'`}
           <h2 id="basic-usage">Basic Usage</h2>
 
           <p className="mb-4">
-            AdvancedChatInput works similarly to ChatInput but includes additional features.
-            The <code>onSubmit</code> callback receives both the message text and optional attachments:
+            AdvancedChatInput works similarly to ChatInput but includes
+            additional features. The <code>onSubmit</code> callback receives
+            both the message text and optional attachments:
           </p>
 
           <ComponentPreview
@@ -274,8 +297,8 @@ function SimpleAdvancedInput() {
           <h2 id="file-uploads">File Uploads</h2>
 
           <p className="mb-4">
-            Enable file uploads with drag-and-drop support. Files can be uploaded via
-            button click or by dragging files onto the input area:
+            Enable file uploads with drag-and-drop support. Files can be
+            uploaded via button click or by dragging files onto the input area:
           </p>
 
           <ComponentPreview
@@ -333,9 +356,9 @@ function ChatWithFileUpload() {
           <h2 id="autocomplete">@Mentions and /Commands</h2>
 
           <p className="mb-4">
-            Enable autocomplete for @mentions (prompts) and /commands. The component
-            automatically detects when users type <code>@</code> or <code>/</code> and
-            shows suggestions:
+            Enable autocomplete for @mentions (prompts) and /commands. The
+            component automatically detects when users type <code>@</code> or{' '}
+            <code>/</code> and shows suggestions:
           </p>
 
           <EnhancedCodeBlock
@@ -421,11 +444,31 @@ function ChatWithAutocomplete() {
               <strong>Autocomplete Behavior:</strong>
             </p>
             <ul>
-              <li>Type <code>@</code> to trigger prompt/mention autocomplete</li>
-              <li>Type <code>/</code> to trigger command autocomplete</li>
+              <li>
+                Type <code>@</code> to trigger prompt/mention autocomplete
+              </li>
+              <li>
+                Type <code>/</code> to trigger command autocomplete
+              </li>
               <li>Use arrow keys to navigate suggestions</li>
-              <li>Press <kbd className="px-1 py-0.5 text-xs border rounded bg-muted">Tab</kbd> or <kbd className="px-1 py-0.5 text-xs border rounded bg-muted">Enter</kbd> to select</li>
-              <li>Press <kbd className="px-1 py-0.5 text-xs border rounded bg-muted">Esc</kbd> to close</li>
+              <li>
+                Press{' '}
+                <kbd className="px-1 py-0.5 text-xs border rounded bg-muted">
+                  Tab
+                </kbd>{' '}
+                or{' '}
+                <kbd className="px-1 py-0.5 text-xs border rounded bg-muted">
+                  Enter
+                </kbd>{' '}
+                to select
+              </li>
+              <li>
+                Press{' '}
+                <kbd className="px-1 py-0.5 text-xs border rounded bg-muted">
+                  Esc
+                </kbd>{' '}
+                to close
+              </li>
             </ul>
           </Callout>
         </ScrollReveal>
@@ -489,37 +532,74 @@ function ChatWithLinkPreview() {
         <ScrollReveal delay={1.0}>
           <h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
 
-          <p className="mb-4">AdvancedChatInput supports comprehensive keyboard navigation:</p>
+          <p className="mb-4">
+            AdvancedChatInput supports comprehensive keyboard navigation:
+          </p>
 
           <div className="grid md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-xl font-semibold mb-2">Input</h3>
               <ul className="space-y-2">
                 <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">Enter</kbd> - Send message
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    Enter
+                  </kbd>{' '}
+                  - Send message
                 </li>
                 <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">Shift</kbd> + <kbd className="px-2 py-1 text-xs border rounded bg-muted">Enter</kbd> - New line
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    Shift
+                  </kbd>{' '}
+                  +{' '}
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    Enter
+                  </kbd>{' '}
+                  - New line
                 </li>
                 <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">@</kbd> - Trigger mentions/prompts
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    @
+                  </kbd>{' '}
+                  - Trigger mentions/prompts
                 </li>
                 <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">/</kbd> - Trigger commands
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    /
+                  </kbd>{' '}
+                  - Trigger commands
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="text-xl font-semibold mb-2">Autocomplete Navigation</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Autocomplete Navigation
+              </h3>
               <ul className="space-y-2">
                 <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">↑</kbd> / <kbd className="px-2 py-1 text-xs border rounded bg-muted">↓</kbd> - Navigate suggestions
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    ↑
+                  </kbd>{' '}
+                  /{' '}
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    ↓
+                  </kbd>{' '}
+                  - Navigate suggestions
                 </li>
                 <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">Tab</kbd> or <kbd className="px-2 py-1 text-xs border rounded bg-muted">Enter</kbd> - Select suggestion
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    Tab
+                  </kbd>{' '}
+                  or{' '}
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    Enter
+                  </kbd>{' '}
+                  - Select suggestion
                 </li>
                 <li>
-                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">Esc</kbd> - Close suggestions
+                  <kbd className="px-2 py-1 text-xs border rounded bg-muted">
+                    Esc
+                  </kbd>{' '}
+                  - Close suggestions
                 </li>
               </ul>
             </div>
@@ -680,8 +760,9 @@ function CompleteAdvancedChat() {
 
           <Callout type="warning">
             <p>
-              <strong>Note:</strong> The API endpoints (<code>/api/upload</code>, <code>/api/prompts/search</code>, etc.)
-              are placeholders. You'll need to implement your own backend endpoints.
+              <strong>Note:</strong> The API endpoints (<code>/api/upload</code>
+              , <code>/api/prompts/search</code>, etc.) are placeholders. You'll
+              need to implement your own backend endpoints.
             </p>
           </Callout>
         </ScrollReveal>
@@ -708,17 +789,20 @@ function CompleteAdvancedChat() {
 
           <ul className="mb-8">
             <li>
-              <strong>React Concurrent Features:</strong> Uses <code>useTransition</code> for
-              non-blocking suggestion updates
+              <strong>React Concurrent Features:</strong> Uses{' '}
+              <code>useTransition</code> for non-blocking suggestion updates
             </li>
             <li>
-              <strong>Memoized handlers:</strong> Event handlers are memoized to prevent unnecessary re-renders
+              <strong>Memoized handlers:</strong> Event handlers are memoized to
+              prevent unnecessary re-renders
             </li>
             <li>
-              <strong>Efficient file handling:</strong> File previews use object URLs for fast rendering
+              <strong>Efficient file handling:</strong> File previews use object
+              URLs for fast rendering
             </li>
             <li>
-              <strong>Debounced autocomplete:</strong> Suggestions are loaded efficiently without blocking UI
+              <strong>Debounced autocomplete:</strong> Suggestions are loaded
+              efficiently without blocking UI
             </li>
           </ul>
         </ScrollReveal>
@@ -728,16 +812,20 @@ function CompleteAdvancedChat() {
 
           <ul>
             <li>
-              <a href="/reference/components/chat-input">ChatInput</a> - Basic chat input component
+              <a href="/reference/components/chat-input">ChatInput</a> - Basic
+              chat input component
             </li>
             <li>
-              <a href="/reference/components/chat-window">ChatWindow</a> - Complete chat interface
+              <a href="/reference/components/chat-window">ChatWindow</a> -
+              Complete chat interface
             </li>
             <li>
-              <a href="/reference/components/file-upload">FileUpload</a> - Standalone file upload component
+              <a href="/reference/components/file-upload">FileUpload</a> -
+              Standalone file upload component
             </li>
             <li>
-              <a href="/reference/components/clarity-chat">ClarityChat</a> - Drop-in component with built-in input
+              <a href="/reference/components/clarity-chat">ClarityChat</a> -
+              Drop-in component with built-in input
             </li>
           </ul>
         </ScrollReveal>

@@ -35,11 +35,13 @@ render(<Example />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <pre><code>{`interface TokenOptimizationBadgeProps {
+        <pre>
+          <code>{`interface TokenOptimizationBadgeProps {
   className?: string
   savingsPercent?: number // 0-100
   status?: 'idle' | 'optimizing' | 'optimized' | 'error'
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
     </div>
   )

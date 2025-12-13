@@ -9,7 +9,13 @@ import { isClarityError, ClarityError } from '../errors/base-error'
 // =============================================================================
 
 export type ToastType = 'error' | 'warning' | 'success' | 'info'
-export type ToastPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center'
+export type ToastPosition =
+  | 'top-right'
+  | 'top-left'
+  | 'bottom-right'
+  | 'bottom-left'
+  | 'top-center'
+  | 'bottom-center'
 
 export interface Toast {
   id: string
@@ -127,7 +133,8 @@ const toastKeyframes = `
 const toastConfigs = {
   error: {
     gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-    bgGradient: 'linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(220, 38, 38, 0.02) 100%)',
+    bgGradient:
+      'linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(220, 38, 38, 0.02) 100%)',
     borderColor: 'rgba(239, 68, 68, 0.2)',
     iconBg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
     progressColor: '#ef4444',
@@ -136,7 +143,8 @@ const toastConfigs = {
   },
   warning: {
     gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-    bgGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(217, 119, 6, 0.02) 100%)',
+    bgGradient:
+      'linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(217, 119, 6, 0.02) 100%)',
     borderColor: 'rgba(245, 158, 11, 0.2)',
     iconBg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
     progressColor: '#f59e0b',
@@ -145,7 +153,8 @@ const toastConfigs = {
   },
   success: {
     gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-    bgGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(5, 150, 105, 0.02) 100%)',
+    bgGradient:
+      'linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(5, 150, 105, 0.02) 100%)',
     borderColor: 'rgba(16, 185, 129, 0.2)',
     iconBg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
     progressColor: '#10b981',
@@ -154,7 +163,8 @@ const toastConfigs = {
   },
   info: {
     gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-    bgGradient: 'linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(37, 99, 235, 0.02) 100%)',
+    bgGradient:
+      'linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(37, 99, 235, 0.02) 100%)',
     borderColor: 'rgba(59, 130, 246, 0.2)',
     iconBg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
     progressColor: '#3b82f6',
@@ -169,7 +179,16 @@ const toastConfigs = {
 
 function ErrorIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="12" r="10" />
       <line x1="15" y1="9" x2="9" y2="15" />
       <line x1="9" y1="9" x2="15" y2="15" />
@@ -179,7 +198,16 @@ function ErrorIcon() {
 
 function WarningIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
       <line x1="12" y1="9" x2="12" y2="13" />
       <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -189,14 +217,25 @@ function WarningIcon() {
 
 function SuccessIcon({ animate }: { animate: boolean }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="12" r="10" />
       <path
         d="M9 12l2 2 4-4"
         style={{
           strokeDasharray: 24,
           strokeDashoffset: animate ? 0 : 24,
-          animation: animate ? 'toastSuccessCheck 0.4s ease-out 0.2s forwards' : 'none',
+          animation: animate
+            ? 'toastSuccessCheck 0.4s ease-out 0.2s forwards'
+            : 'none',
         }}
       />
     </svg>
@@ -205,7 +244,16 @@ function SuccessIcon({ animate }: { animate: boolean }) {
 
 function InfoIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="12" r="10" />
       <line x1="12" y1="16" x2="12" y2="12" />
       <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -215,10 +263,14 @@ function InfoIcon() {
 
 function getIcon(type: ToastType, animate: boolean) {
   switch (type) {
-    case 'error': return <ErrorIcon />
-    case 'warning': return <WarningIcon />
-    case 'success': return <SuccessIcon animate={animate} />
-    case 'info': return <InfoIcon />
+    case 'error':
+      return <ErrorIcon />
+    case 'warning':
+      return <WarningIcon />
+    case 'success':
+      return <SuccessIcon animate={animate} />
+    case 'info':
+      return <InfoIcon />
   }
 }
 
@@ -264,8 +316,10 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
   const getAnimation = () => {
     if (prefersReducedMotion) return 'none'
     if (isExiting) return 'toastSlideOut 0.3s ease-out forwards'
-    if (position.includes('left')) return 'toastSlideInLeft 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
-    if (position.includes('center')) return 'toastSlideInCenter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
+    if (position.includes('left'))
+      return 'toastSlideInLeft 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
+    if (position.includes('center'))
+      return 'toastSlideInCenter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
     return 'toastSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
   }
 
@@ -318,7 +372,10 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
       if (timerRef.current) {
         clearInterval(timerRef.current)
         timerRef.current = null
-        remainingTimeRef.current = Math.max(0, remainingTimeRef.current - (Date.now() - startTimeRef.current))
+        remainingTimeRef.current = Math.max(
+          0,
+          remainingTimeRef.current - (Date.now() - startTimeRef.current)
+        )
       }
     } else if (remainingTimeRef.current > 0) {
       // Resume: restart timer with remaining time
@@ -403,7 +460,9 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: `0 4px 12px ${config.shadowColor}`,
-            animation: !prefersReducedMotion ? 'toastIconPop 0.4s ease-out' : 'none',
+            animation: !prefersReducedMotion
+              ? 'toastIconPop 0.4s ease-out'
+              : 'none',
           }}
         >
           {getIcon(toast.type, !prefersReducedMotion)}
@@ -546,14 +605,22 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
               e.currentTarget.style.color = 'var(--error-color-muted, #9ca3af)'
             }}
             onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
-              e.currentTarget.style.outline = '2px solid var(--error-color-info, #3b82f6)'
+              e.currentTarget.style.outline =
+                '2px solid var(--error-color-info, #3b82f6)'
               e.currentTarget.style.outlineOffset = '2px'
             }}
             onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
               e.currentTarget.style.outline = 'none'
             }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -656,7 +723,8 @@ export function ToastProvider({
         type: 'error',
         title: options?.title ?? (isClarity ? err.name : 'Error'),
         message:
-          options?.message ?? (isClarity ? (err as ClarityError).userMessage : err.message),
+          options?.message ??
+          (isClarity ? (err as ClarityError).userMessage : err.message),
         error: err,
         ...options,
       })
@@ -711,7 +779,16 @@ export function ToastProvider({
       showSuccess,
       showInfo,
     }),
-    [toasts, addToast, removeToast, clearAll, showError, showWarning, showSuccess, showInfo]
+    [
+      toasts,
+      addToast,
+      removeToast,
+      clearAll,
+      showError,
+      showWarning,
+      showSuccess,
+      showInfo,
+    ]
   )
 
   // Calculate container position styles
@@ -731,11 +808,26 @@ export function ToastProvider({
       case 'top-left':
         return { ...base, top: offset, left: offset }
       case 'bottom-right':
-        return { ...base, bottom: offset, right: offset, flexDirection: 'column-reverse' }
+        return {
+          ...base,
+          bottom: offset,
+          right: offset,
+          flexDirection: 'column-reverse',
+        }
       case 'bottom-left':
-        return { ...base, bottom: offset, left: offset, flexDirection: 'column-reverse' }
+        return {
+          ...base,
+          bottom: offset,
+          left: offset,
+          flexDirection: 'column-reverse',
+        }
       case 'top-center':
-        return { ...base, top: offset, left: '50%', transform: 'translateX(-50%)' }
+        return {
+          ...base,
+          top: offset,
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }
       case 'bottom-center':
         return {
           ...base,
@@ -754,7 +846,11 @@ export function ToastProvider({
       <style>{toastKeyframes}</style>
       {children}
       {/* Toast container */}
-      <div style={getPositionStyles()} aria-live="polite" aria-label="Notifications">
+      <div
+        style={getPositionStyles()}
+        aria-live="polite"
+        aria-label="Notifications"
+      >
         {toasts.map((toast, index) => (
           <div key={toast.id} style={{ pointerEvents: 'auto' }}>
             <ToastItem

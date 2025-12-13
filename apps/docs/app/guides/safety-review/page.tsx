@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Safety Review Guide - Clarity Chat Components',
-  description: 'Learn how to review AI-generated content for safety, including PII detection, prompt injection prevention, and content moderation.',
+  description:
+    'Learn how to review AI-generated content for safety, including PII detection, prompt injection prevention, and content moderation.',
 }
 
 export default function SafetyReviewPage() {
@@ -17,7 +17,9 @@ export default function SafetyReviewPage() {
         <span className="docs-badge">Guide</span>
         <h1>Safety Review</h1>
         <p className="docs-lead">
-          Learn how to review AI-generated content for safety, including PII detection, prompt injection prevention, jailbreak detection, and content moderation.
+          Learn how to review AI-generated content for safety, including PII
+          detection, prompt injection prevention, jailbreak detection, and
+          content moderation.
         </p>
       </div>
 
@@ -34,15 +36,14 @@ export default function SafetyReviewPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Safety review ensures AI-generated content is safe, secure, and compliant with your policies.
+          Safety review ensures AI-generated content is safe, secure, and
+          compliant with your policies.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>PII Detection</h2>
-        <p>
-          Detect personally identifiable information:
-        </p>
+        <p>Detect personally identifiable information:</p>
         <CodePlayground
           initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
@@ -89,9 +90,7 @@ function detectPII(content: string) {
 
       <section className="docs-section">
         <h2>Prompt Injection Prevention</h2>
-        <p>
-          Prevent prompt injection attacks:
-        </p>
+        <p>Prevent prompt injection attacks:</p>
         <CodePlayground
           initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
@@ -138,9 +137,7 @@ function detectPromptInjection(content: string) {
 
       <section className="docs-section">
         <h2>Jailbreak Detection</h2>
-        <p>
-          Detect jailbreak attempts:
-        </p>
+        <p>Detect jailbreak attempts:</p>
         <CodePlayground
           initialCode={`function JailbreakDetection({ content }: { content: string }) {
   const highlights = detectJailbreak(content)
@@ -184,9 +181,7 @@ function detectJailbreak(content: string) {
 
       <section className="docs-section">
         <h2>Content Moderation</h2>
-        <p>
-          Moderate content for safety:
-        </p>
+        <p>Moderate content for safety:</p>
         <CodePlayground
           initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
@@ -225,9 +220,7 @@ async function moderateContent(content: string) {
 
       <section className="docs-section">
         <h2>Complete Safety Review</h2>
-        <p>
-          Complete safety review workflow:
-        </p>
+        <p>Complete safety review workflow:</p>
         <CodePlayground
           initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
@@ -283,8 +276,18 @@ function CompleteSafetyReview({ content }: { content: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/safety-review-console">SafetyReviewConsole</a> - Safety review component</li>
-          <li><a href="/reference/components/message-actions-secure">MessageActionsSecure</a> - Secure message actions</li>
+          <li>
+            <a href="/reference/components/safety-review-console">
+              SafetyReviewConsole
+            </a>{' '}
+            - Safety review component
+          </li>
+          <li>
+            <a href="/reference/components/message-actions-secure">
+              MessageActionsSecure
+            </a>{' '}
+            - Secure message actions
+          </li>
         </ul>
       </section>
     </div>

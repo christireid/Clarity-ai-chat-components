@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'useInteractionTracking - Clarity Chat Components',
-  description: 'Hook for tracking user interactions, feature discovery, and engagement metrics.',
+  description:
+    'Hook for tracking user interactions, feature discovery, and engagement metrics.',
 }
 
 const optionsProps: Prop[] = [
@@ -41,7 +41,8 @@ export default function UseInteractionTrackingPage() {
         <span className="docs-badge">Hook</span>
         <h1>useInteractionTracking</h1>
         <p className="docs-lead">
-          Hook for tracking user interactions, feature discovery, engagement metrics, and user journeys.
+          Hook for tracking user interactions, feature discovery, engagement
+          metrics, and user journeys.
         </p>
       </div>
 
@@ -57,9 +58,7 @@ export default function UseInteractionTrackingPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Track user interactions:
-        </p>
+        <p>Track user interactions:</p>
         <CodePlayground
           initialCode={`import { useInteractionTracking } from '@clarity-chat/react'
 
@@ -89,9 +88,7 @@ function TrackedComponent() {
 
       <section className="docs-section">
         <h2>Feature Discovery</h2>
-        <p>
-          Track feature discovery:
-        </p>
+        <p>Track feature discovery:</p>
         <CodePlayground
           initialCode={`import { useInteractionTracking } from '@clarity-chat/react'
 
@@ -118,9 +115,7 @@ function FeatureTracking() {
 
       <section className="docs-section">
         <h2>User Journey</h2>
-        <p>
-          Track user journey through the application:
-        </p>
+        <p>Track user journey through the application:</p>
         <CodePlayground
           initialCode={`import { useInteractionTracking } from '@clarity-chat/react'
 
@@ -151,9 +146,7 @@ function JourneyTracking() {
 
       <section className="docs-section">
         <h2>Engagement Metrics</h2>
-        <p>
-          Get engagement metrics:
-        </p>
+        <p>Get engagement metrics:</p>
         <CodePlayground
           initialCode={`import { useInteractionTracking } from '@clarity-chat/react'
 
@@ -176,9 +169,7 @@ function EngagementMetrics() {
 
       <section className="docs-section">
         <h2>Event Callbacks</h2>
-        <p>
-          Handle events with callbacks:
-        </p>
+        <p>Handle events with callbacks:</p>
         <CodePlayground
           initialCode={`import { useInteractionTracking } from '@clarity-chat/react'
 
@@ -204,13 +195,29 @@ function WithCallbacks() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>trackEvent</code>: Function to track interaction events</li>
-          <li><code>trackFeatureDiscovery</code>: Function to track feature discovery</li>
-          <li><code>trackJourneyStep</code>: Function to track journey steps</li>
-          <li><code>events</code>: Array of all tracked events</li>
-          <li><code>sessions</code>: Array of session analytics</li>
-          <li><code>features</code>: Array of feature interaction data</li>
-          <li><code>getEngagementMetrics</code>: Function to get engagement metrics</li>
+          <li>
+            <code>trackEvent</code>: Function to track interaction events
+          </li>
+          <li>
+            <code>trackFeatureDiscovery</code>: Function to track feature
+            discovery
+          </li>
+          <li>
+            <code>trackJourneyStep</code>: Function to track journey steps
+          </li>
+          <li>
+            <code>events</code>: Array of all tracked events
+          </li>
+          <li>
+            <code>sessions</code>: Array of session analytics
+          </li>
+          <li>
+            <code>features</code>: Array of feature interaction data
+          </li>
+          <li>
+            <code>getEngagementMetrics</code>: Function to get engagement
+            metrics
+          </li>
         </ul>
       </section>
 
@@ -228,8 +235,18 @@ function WithCallbacks() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/user-interaction-analytics">UserInteractionAnalytics</a> - Analytics dashboard</li>
-          <li><a href="/reference/components/ab-testing-dashboard">ABTestingDashboard</a> - A/B testing dashboard</li>
+          <li>
+            <a href="/reference/components/user-interaction-analytics">
+              UserInteractionAnalytics
+            </a>{' '}
+            - Analytics dashboard
+          </li>
+          <li>
+            <a href="/reference/components/ab-testing-dashboard">
+              ABTestingDashboard
+            </a>{' '}
+            - A/B testing dashboard
+          </li>
         </ul>
       </section>
     </div>

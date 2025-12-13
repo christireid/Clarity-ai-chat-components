@@ -6,7 +6,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { Pagination } from '@/components/Navigation/Pagination'
 
-
 export default function TokenOptimizationGuidePage() {
   return (
     <>
@@ -16,21 +15,26 @@ export default function TokenOptimizationGuidePage() {
         <header>
           <h1 className="text-4xl font-bold mb-3">Token Optimization Guide</h1>
           <p className="text-lg text-muted-foreground">
-            Comprehensive guide to reducing token usage and costs through TOON format, prompt caching, compression,
-            semantic caching, history limiting, and model routing.
+            Comprehensive guide to reducing token usage and costs through TOON
+            format, prompt caching, compression, semantic caching, history
+            limiting, and model routing.
           </p>
         </header>
 
         <section>
           <h2 className="text-3xl font-semibold mb-4">Overview</h2>
           <p className="mb-4">
-            Token optimization is crucial for reducing costs and staying within model context limits. Clarity Chat
-            provides multiple optimization strategies that can reduce token usage by 20-90% depending on your use case.
+            Token optimization is crucial for reducing costs and staying within
+            model context limits. Clarity Chat provides multiple optimization
+            strategies that can reduce token usage by 20-90% depending on your
+            use case.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
             <div className="p-4 border-2 border-destructive/20 rounded-xl">
-              <div className="font-semibold text-destructive mb-2">❌ Without Optimization</div>
+              <div className="font-semibold text-destructive mb-2">
+                ❌ Without Optimization
+              </div>
               <ul className="text-sm space-y-1 text-muted-foreground">
                 <li>• High token costs</li>
                 <li>• Context window overflow</li>
@@ -41,7 +45,9 @@ export default function TokenOptimizationGuidePage() {
             </div>
 
             <div className="p-4 border-2 border-green-500/20 rounded-xl bg-green-500/5">
-              <div className="font-semibold text-green-600 dark:text-green-400 mb-2">✅ With Optimization</div>
+              <div className="font-semibold text-green-600 dark:text-green-400 mb-2">
+                ✅ With Optimization
+              </div>
               <ul className="text-sm space-y-1 text-muted-foreground">
                 <li>• 20-90% cost reduction</li>
                 <li>• Stay within context limits</li>
@@ -54,63 +60,94 @@ export default function TokenOptimizationGuidePage() {
 
           <Callout type="info">
             <p>
-              <strong>The Impact:</strong> Proper token optimization can reduce API costs by 50-80% while improving
-              response times and staying within model context limits. The strategies work together for maximum savings.
+              <strong>The Impact:</strong> Proper token optimization can reduce
+              API costs by 50-80% while improving response times and staying
+              within model context limits. The strategies work together for
+              maximum savings.
             </p>
           </Callout>
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">Optimization Strategies</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            Optimization Strategies
+          </h2>
           <p className="mb-4">
-            Clarity Chat provides multiple optimization strategies, each targeting different aspects of token usage:
+            Clarity Chat provides multiple optimization strategies, each
+            targeting different aspects of token usage:
           </p>
 
           <div className="overflow-x-auto mb-4">
             <table className="w-full border-collapse border border-border">
               <thead>
                 <tr className="bg-muted">
-                  <th className="border border-border p-2 text-left">Strategy</th>
-                  <th className="border border-border p-2 text-left">Savings</th>
-                  <th className="border border-border p-2 text-left">Use Case</th>
-                  <th className="border border-border p-2 text-left">Complexity</th>
+                  <th className="border border-border p-2 text-left">
+                    Strategy
+                  </th>
+                  <th className="border border-border p-2 text-left">
+                    Savings
+                  </th>
+                  <th className="border border-border p-2 text-left">
+                    Use Case
+                  </th>
+                  <th className="border border-border p-2 text-left">
+                    Complexity
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td className="border border-border p-2"><strong>TOON Format</strong></td>
+                  <td className="border border-border p-2">
+                    <strong>TOON Format</strong>
+                  </td>
                   <td className="border border-border p-2">30-60%</td>
-                  <td className="border border-border p-2">Structured data (JSON)</td>
+                  <td className="border border-border p-2">
+                    Structured data (JSON)
+                  </td>
                   <td className="border border-border p-2">Low</td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>Prompt Caching</strong></td>
+                  <td className="border border-border p-2">
+                    <strong>Prompt Caching</strong>
+                  </td>
                   <td className="border border-border p-2">50-90%</td>
                   <td className="border border-border p-2">Repeated prompts</td>
                   <td className="border border-border p-2">Medium</td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>Prompt Compression</strong></td>
+                  <td className="border border-border p-2">
+                    <strong>Prompt Compression</strong>
+                  </td>
                   <td className="border border-border p-2">20-35%</td>
                   <td className="border border-border p-2">Long prompts</td>
                   <td className="border border-border p-2">Low</td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>Semantic Caching</strong></td>
+                  <td className="border border-border p-2">
+                    <strong>Semantic Caching</strong>
+                  </td>
                   <td className="border border-border p-2">30-70%</td>
                   <td className="border border-border p-2">Similar queries</td>
                   <td className="border border-border p-2">High</td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>History Limiting</strong></td>
+                  <td className="border border-border p-2">
+                    <strong>History Limiting</strong>
+                  </td>
                   <td className="border border-border p-2">Variable</td>
-                  <td className="border border-border p-2">Long conversations</td>
+                  <td className="border border-border p-2">
+                    Long conversations
+                  </td>
                   <td className="border border-border p-2">Low</td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>Model Routing</strong></td>
+                  <td className="border border-border p-2">
+                    <strong>Model Routing</strong>
+                  </td>
                   <td className="border border-border p-2">40-60%</td>
-                  <td className="border border-border p-2">Mixed complexity queries</td>
+                  <td className="border border-border p-2">
+                    Mixed complexity queries
+                  </td>
                   <td className="border border-border p-2">Medium</td>
                 </tr>
               </tbody>
@@ -119,15 +156,19 @@ export default function TokenOptimizationGuidePage() {
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">1. TOON Format (30-60% Savings)</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            1. TOON Format (30-60% Savings)
+          </h2>
           <p className="mb-4">
-            TOON (Token-Oriented Object Notation) is a compact format for structured data that reduces token usage
-            by 30-60% compared to JSON. It's perfect for sending arrays of objects to LLMs.
+            TOON (Token-Oriented Object Notation) is a compact format for
+            structured data that reduces token usage by 30-60% compared to JSON.
+            It's perfect for sending arrays of objects to LLMs.
           </p>
 
           <h3 className="text-2xl font-semibold mb-3">How TOON Works</h3>
           <p className="mb-4">
-            TOON converts JSON arrays into a tabular format that's more token-efficient:
+            TOON converts JSON arrays into a tabular format that's more
+            token-efficient:
           </p>
 
           <EnhancedCodeBlock
@@ -177,23 +218,30 @@ function ToonExample() {
 
           <Callout type="tip">
             <p>
-              <strong>When to Use TOON:</strong> Use TOON for structured data like arrays of objects, tables, or
-              lists. It's automatically selected when savings exceed your threshold (default 20%).
+              <strong>When to Use TOON:</strong> Use TOON for structured data
+              like arrays of objects, tables, or lists. It's automatically
+              selected when savings exceed your threshold (default 20%).
             </p>
           </Callout>
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">2. Prompt Caching (50-90% Savings)</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            2. Prompt Caching (50-90% Savings)
+          </h2>
           <p className="mb-4">
-            Prompt caching allows you to cache system prompts and context that doesn't change between requests,
-            dramatically reducing token usage for repeated content.
+            Prompt caching allows you to cache system prompts and context that
+            doesn't change between requests, dramatically reducing token usage
+            for repeated content.
           </p>
 
-          <h3 className="text-2xl font-semibold mb-3">How Prompt Caching Works</h3>
+          <h3 className="text-2xl font-semibold mb-3">
+            How Prompt Caching Works
+          </h3>
           <p className="mb-4">
-            With prompt caching, the first request sends the full prompt, and subsequent requests reference the
-            cached version. This is especially effective for system prompts that remain constant.
+            With prompt caching, the first request sends the full prompt, and
+            subsequent requests reference the cached version. This is especially
+            effective for system prompts that remain constant.
           </p>
 
           <EnhancedCodeBlock
@@ -224,24 +272,37 @@ function PromptCachingExample() {
 
           <Callout type="info">
             <p>
-              <strong>Provider Support:</strong> Prompt caching is supported by Anthropic (Claude) and OpenAI (GPT-4).
-              The provider is auto-detected from your model, or you can specify it manually.
+              <strong>Provider Support:</strong> Prompt caching is supported by
+              Anthropic (Claude) and OpenAI (GPT-4). The provider is
+              auto-detected from your model, or you can specify it manually.
             </p>
           </Callout>
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">3. Prompt Compression (20-35% Savings)</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            3. Prompt Compression (20-35% Savings)
+          </h2>
           <p className="mb-4">
-            Prompt compression reduces token usage by removing redundancy, shortening verbose text, and preserving
-            essential information. Three compression levels are available.
+            Prompt compression reduces token usage by removing redundancy,
+            shortening verbose text, and preserving essential information. Three
+            compression levels are available.
           </p>
 
           <h3 className="text-2xl font-semibold mb-3">Compression Levels</h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li><strong>Conservative:</strong> Minimal changes, preserves most detail (20-25% savings)</li>
-            <li><strong>Balanced:</strong> Good balance of compression and quality (25-30% savings)</li>
-            <li><strong>Aggressive:</strong> Maximum compression, some detail loss (30-35% savings)</li>
+            <li>
+              <strong>Conservative:</strong> Minimal changes, preserves most
+              detail (20-25% savings)
+            </li>
+            <li>
+              <strong>Balanced:</strong> Good balance of compression and quality
+              (25-30% savings)
+            </li>
+            <li>
+              <strong>Aggressive:</strong> Maximum compression, some detail loss
+              (30-35% savings)
+            </li>
           </ul>
 
           <EnhancedCodeBlock
@@ -272,10 +333,13 @@ function CompressionExample() {
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">4. Semantic Caching (30-70% Savings)</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            4. Semantic Caching (30-70% Savings)
+          </h2>
           <p className="mb-4">
-            Semantic caching stores and retrieves responses based on semantic similarity, allowing you to reuse
-            responses for similar queries without calling the LLM again.
+            Semantic caching stores and retrieves responses based on semantic
+            similarity, allowing you to reuse responses for similar queries
+            without calling the LLM again.
           </p>
 
           <EnhancedCodeBlock
@@ -304,8 +368,9 @@ function SemanticCacheExample() {
 
           <Callout type="tip">
             <p>
-              <strong>Similarity Threshold:</strong> Set a higher threshold (0.9+) for exact matches, or lower
-              (0.7-0.8) for more flexible matching. Balance between cache hits and response quality.
+              <strong>Similarity Threshold:</strong> Set a higher threshold
+              (0.9+) for exact matches, or lower (0.7-0.8) for more flexible
+              matching. Balance between cache hits and response quality.
             </p>
           </Callout>
         </section>
@@ -313,8 +378,9 @@ function SemanticCacheExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">5. History Limiting</h2>
           <p className="mb-4">
-            History limiting automatically trims old messages to stay within token budgets, keeping the most
-            relevant context while removing older, less important messages.
+            History limiting automatically trims old messages to stay within
+            token budgets, keeping the most relevant context while removing
+            older, less important messages.
           </p>
 
           <EnhancedCodeBlock
@@ -350,10 +416,13 @@ function HistoryLimitingExample() {
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">6. Model Routing (40-60% Savings)</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            6. Model Routing (40-60% Savings)
+          </h2>
           <p className="mb-4">
-            Model routing automatically selects the most cost-effective model based on query complexity, using
-            cheaper models for simple queries and more powerful models for complex ones.
+            Model routing automatically selects the most cost-effective model
+            based on query complexity, using cheaper models for simple queries
+            and more powerful models for complex ones.
           </p>
 
           <EnhancedCodeBlock
@@ -387,7 +456,8 @@ function ModelRoutingExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Using Presets</h2>
           <p className="mb-4">
-            For quick setup, use presets that configure multiple optimizations at once:
+            For quick setup, use presets that configure multiple optimizations
+            at once:
           </p>
 
           <EnhancedCodeBlock
@@ -425,29 +495,51 @@ function PresetExample() {
               <thead>
                 <tr className="bg-muted">
                   <th className="border border-border p-2 text-left">Preset</th>
-                  <th className="border border-border p-2 text-left">Optimizations</th>
-                  <th className="border border-border p-2 text-left">Best For</th>
+                  <th className="border border-border p-2 text-left">
+                    Optimizations
+                  </th>
+                  <th className="border border-border p-2 text-left">
+                    Best For
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td className="border border-border p-2"><strong>aggressive</strong></td>
-                  <td className="border border-border p-2">All optimizations</td>
+                  <td className="border border-border p-2">
+                    <strong>aggressive</strong>
+                  </td>
+                  <td className="border border-border p-2">
+                    All optimizations
+                  </td>
                   <td className="border border-border p-2">Maximum savings</td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>balanced</strong></td>
-                  <td className="border border-border p-2">TOON, caching, compression, history limiting</td>
+                  <td className="border border-border p-2">
+                    <strong>balanced</strong>
+                  </td>
+                  <td className="border border-border p-2">
+                    TOON, caching, compression, history limiting
+                  </td>
                   <td className="border border-border p-2">Most use cases</td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>conservative</strong></td>
-                  <td className="border border-border p-2">TOON, compression</td>
-                  <td className="border border-border p-2">Safe optimizations</td>
+                  <td className="border border-border p-2">
+                    <strong>conservative</strong>
+                  </td>
+                  <td className="border border-border p-2">
+                    TOON, compression
+                  </td>
+                  <td className="border border-border p-2">
+                    Safe optimizations
+                  </td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>realtime</strong></td>
-                  <td className="border border-border p-2">TOON, semantic cache, conservative compression</td>
+                  <td className="border border-border p-2">
+                    <strong>realtime</strong>
+                  </td>
+                  <td className="border border-border p-2">
+                    TOON, semantic cache, conservative compression
+                  </td>
                   <td className="border border-border p-2">Low latency</td>
                 </tr>
               </tbody>
@@ -492,50 +584,89 @@ function CostTrackingExample() {
 
           <h3 className="text-2xl font-semibold mb-3">1. Start with Presets</h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Use <code>preset: 'balanced'</code> for most use cases</li>
+            <li>
+              Use <code>preset: 'balanced'</code> for most use cases
+            </li>
             <li>Customize individual options only if needed</li>
             <li>Monitor statistics to understand impact</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">2. Enable Cost Tracking</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            2. Enable Cost Tracking
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Set <code>enableCostTracking: true</code> to monitor savings</li>
-            <li>Review <code>stats.costs</code> regularly</li>
+            <li>
+              Set <code>enableCostTracking: true</code> to monitor savings
+            </li>
+            <li>
+              Review <code>stats.costs</code> regularly
+            </li>
             <li>Use savings data to justify optimizations</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">3. Use TOON for Structured Data</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            3. Use TOON for Structured Data
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Enable <code>enableToon</code> for JSON/object data</li>
-            <li>Set <code>toonMinSavings</code> threshold (default 20%)</li>
+            <li>
+              Enable <code>enableToon</code> for JSON/object data
+            </li>
+            <li>
+              Set <code>toonMinSavings</code> threshold (default 20%)
+            </li>
             <li>TOON is automatically selected when beneficial</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">4. Cache Repeated Prompts</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            4. Cache Repeated Prompts
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Enable <code>enablePromptCaching</code> for system prompts</li>
+            <li>
+              Enable <code>enablePromptCaching</code> for system prompts
+            </li>
             <li>Use with Anthropic or OpenAI models</li>
             <li>Provides 50-90% savings on repeated context</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">5. Compress Long Prompts</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            5. Compress Long Prompts
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Use <code>enablePromptCompression</code> for verbose prompts</li>
-            <li>Start with <code>compressionLevel: 'balanced'</code></li>
+            <li>
+              Use <code>enablePromptCompression</code> for verbose prompts
+            </li>
+            <li>
+              Start with <code>compressionLevel: 'balanced'</code>
+            </li>
             <li>Use aggressive compression only if quality is acceptable</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">6. Limit History Appropriately</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            6. Limit History Appropriately
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Enable <code>enableHistoryLimiting</code> for long conversations</li>
-            <li>Set <code>maxTokens</code> based on your model's context window</li>
-            <li>Always keep system messages (<code>keepSystem: true</code>)</li>
+            <li>
+              Enable <code>enableHistoryLimiting</code> for long conversations
+            </li>
+            <li>
+              Set <code>maxTokens</code> based on your model's context window
+            </li>
+            <li>
+              Always keep system messages (<code>keepSystem: true</code>)
+            </li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">7. Route Models Intelligently</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            7. Route Models Intelligently
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Use <code>enableModelRouting</code> to save costs on simple queries</li>
-            <li>Set appropriate <code>complexityThreshold</code></li>
+            <li>
+              Use <code>enableModelRouting</code> to save costs on simple
+              queries
+            </li>
+            <li>
+              Set appropriate <code>complexityThreshold</code>
+            </li>
             <li>Monitor routing decisions to optimize thresholds</li>
           </ul>
         </section>
@@ -604,24 +735,37 @@ function CompleteOptimizationExample() {
           <h2 className="text-3xl font-semibold mb-4">Related</h2>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground">
             <li>
-              <a href="/reference/hooks/use-token-optimization-enhanced" className="text-primary underline">
+              <a
+                href="/reference/hooks/use-token-optimization-enhanced"
+                className="text-primary underline"
+              >
                 useTokenOptimizationEnhanced Hook
-              </a> – Comprehensive token optimization hook
+              </a>{' '}
+              – Comprehensive token optimization hook
             </li>
             <li>
-              <a href="/reference/hooks/use-token-budget-monitor" className="text-primary underline">
+              <a
+                href="/reference/hooks/use-token-budget-monitor"
+                className="text-primary underline"
+              >
                 useTokenBudgetMonitor Hook
-              </a> – Real-time token budget monitoring
+              </a>{' '}
+              – Real-time token budget monitoring
             </li>
             <li>
-              <a href="/reference/hooks/use-token-tracker" className="text-primary underline">
+              <a
+                href="/reference/hooks/use-token-tracker"
+                className="text-primary underline"
+              >
                 useTokenTracker Hook
-              </a> – Token usage and cost tracking
+              </a>{' '}
+              – Token usage and cost tracking
             </li>
             <li>
               <a href="/guides/memory" className="text-primary underline">
                 Memory System Guide
-              </a> – Memory strategies for context management
+              </a>{' '}
+              – Memory strategies for context management
             </li>
           </ul>
         </section>

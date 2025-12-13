@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'useAvailabilityCheck - Clarity Chat Components',
-  description: 'Hook for checking calendar availability and finding free time slots.',
+  description:
+    'Hook for checking calendar availability and finding free time slots.',
 }
 
 const optionsProps: Prop[] = [
@@ -36,7 +36,8 @@ export default function UseAvailabilityCheckPage() {
         <span className="docs-badge">Hook</span>
         <h1>useAvailabilityCheck</h1>
         <p className="docs-lead">
-          Hook for checking calendar availability, finding free time slots, and suggesting meeting times.
+          Hook for checking calendar availability, finding free time slots, and
+          suggesting meeting times.
         </p>
       </div>
 
@@ -52,9 +53,7 @@ export default function UseAvailabilityCheckPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Check availability:
-        </p>
+        <p>Check availability:</p>
         <CodePlayground
           initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react'
 
@@ -86,9 +85,7 @@ function AvailabilityView() {
 
       <section className="docs-section">
         <h2>Find Free Slots</h2>
-        <p>
-          Find free time slots for meetings:
-        </p>
+        <p>Find free time slots for meetings:</p>
         <CodePlayground
           initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react'
 
@@ -118,9 +115,7 @@ function FreeSlotFinder() {
 
       <section className="docs-section">
         <h2>Suggest Meeting Times</h2>
-        <p>
-          Suggest optimal meeting times:
-        </p>
+        <p>Suggest optimal meeting times:</p>
         <CodePlayground
           initialCode={`import { useAvailabilityCheck } from '@clarity-chat/react'
 
@@ -151,20 +146,37 @@ function MeetingTimeSuggestions() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>availability</code>: Array of availability slots</li>
-          <li><code>loading</code>: Whether operation is in progress</li>
-          <li><code>checkAvailability</code>: Function to check availability for date range</li>
-          <li><code>findFreeSlots</code>: Function to find free time slots</li>
-          <li><code>suggestMeetingTime</code>: Function to suggest meeting times</li>
+          <li>
+            <code>availability</code>: Array of availability slots
+          </li>
+          <li>
+            <code>loading</code>: Whether operation is in progress
+          </li>
+          <li>
+            <code>checkAvailability</code>: Function to check availability for
+            date range
+          </li>
+          <li>
+            <code>findFreeSlots</code>: Function to find free time slots
+          </li>
+          <li>
+            <code>suggestMeetingTime</code>: Function to suggest meeting times
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Availability Slot Status</h2>
         <ul>
-          <li><strong>free</strong>: Time slot is available</li>
-          <li><strong>busy</strong>: Time slot is busy</li>
-          <li><strong>tentative</strong>: Time slot is tentatively busy</li>
+          <li>
+            <strong>free</strong>: Time slot is available
+          </li>
+          <li>
+            <strong>busy</strong>: Time slot is busy
+          </li>
+          <li>
+            <strong>tentative</strong>: Time slot is tentatively busy
+          </li>
         </ul>
       </section>
 
@@ -172,8 +184,12 @@ function MeetingTimeSuggestions() {
         <h2>Best Practices</h2>
         <ul>
           <li>Check availability before scheduling meetings</li>
-          <li>Use <code>findFreeSlots</code> to find available time slots</li>
-          <li>Use <code>suggestMeetingTime</code> for optimal scheduling</li>
+          <li>
+            Use <code>findFreeSlots</code> to find available time slots
+          </li>
+          <li>
+            Use <code>suggestMeetingTime</code> for optimal scheduling
+          </li>
           <li>Consider multiple calendars when checking availability</li>
           <li>Handle busy/tentative slots appropriately</li>
         </ul>
@@ -182,8 +198,18 @@ function MeetingTimeSuggestions() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/calendar-integration">CalendarIntegration</a> - Calendar integration component</li>
-          <li><a href="/reference/hooks/use-calendar-integration">useCalendarIntegration</a> - Calendar integration hook</li>
+          <li>
+            <a href="/reference/components/calendar-integration">
+              CalendarIntegration
+            </a>{' '}
+            - Calendar integration component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-calendar-integration">
+              useCalendarIntegration
+            </a>{' '}
+            - Calendar integration hook
+          </li>
         </ul>
       </section>
     </div>

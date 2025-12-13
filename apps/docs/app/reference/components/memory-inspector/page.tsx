@@ -4,10 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Memory Inspector - Clarity Chat Components',
-  description: 'Inspect and manage what the AI remembers from conversations - debug memory, remove outdated info, or promote important details.',
+  description:
+    'Inspect and manage what the AI remembers from conversations - debug memory, remove outdated info, or promote important details.',
 }
 
 export default function MemoryInspectorPage() {
@@ -17,20 +17,24 @@ export default function MemoryInspectorPage() {
         <span className="docs-badge">Component</span>
         <h1>Memory Inspector</h1>
         <p className="docs-lead">
-          See what your AI remembers. Like opening the AI's notebook to see what notes it took during your conversation.
+          See what your AI remembers. Like opening the AI's notebook to see what
+          notes it took during your conversation.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          AI assistants can "remember" things from your conversation - your name, preferences, previous topics. The Memory Inspector lets you SEE what it remembered and MANAGE it (remove outdated info, promote important details).
+          AI assistants can "remember" things from your conversation - your
+          name, preferences, previous topics. The Memory Inspector lets you SEE
+          what it remembered and MANAGE it (remove outdated info, promote
+          important details).
         </p>
-        
+
         <Callout type="info" title="What's AI Memory?">
-          Modern AI can store information between messages. For example, if you say
-          "My name is Sarah" early on, it remembers for the whole conversation. This
-          component lets you see and manage that memory.
+          Modern AI can store information between messages. For example, if you
+          say "My name is Sarah" early on, it remembers for the whole
+          conversation. This component lets you see and manage that memory.
         </Callout>
       </section>
 
@@ -74,13 +78,19 @@ render(<SimpleMemory />)`}
 
       <section className="docs-section">
         <h2>Memory Scopes</h2>
-        <p>
-          Memories can be scoped to different levels:
-        </p>
+        <p>Memories can be scoped to different levels:</p>
         <ul>
-          <li><strong>Session</strong> 💬 - Just this conversation (cleared when chat ends)</li>
-          <li><strong>Thread</strong> 🧵 - This topic/thread (persists across sessions)</li>
-          <li><strong>Global</strong> 🌍 - Permanent user memory (never forgotten)</li>
+          <li>
+            <strong>Session</strong> 💬 - Just this conversation (cleared when
+            chat ends)
+          </li>
+          <li>
+            <strong>Thread</strong> 🧵 - This topic/thread (persists across
+            sessions)
+          </li>
+          <li>
+            <strong>Global</strong> 🌍 - Permanent user memory (never forgotten)
+          </li>
         </ul>
 
         <CodePlayground
@@ -128,7 +138,8 @@ render(<MemoryScopes />)`}
       <section className="docs-section">
         <h2>Managing Memories</h2>
         <p>
-          Add remove and promote actions to let users control what the AI remembers.
+          Add remove and promote actions to let users control what the AI
+          remembers.
         </p>
         <CodePlayground
           initialCode={`import { useState } from 'react'
@@ -213,15 +224,12 @@ render(<ManageableMemory />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="MemoryInspector Props"
-          data={memoryProps}
-        />
+        <ApiTable title="MemoryInspector Props" data={memoryProps} />
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
-        
+
         <h3>When to Use</h3>
         <ul>
           <li>✅ Building AI with persistent memory across conversations</li>
@@ -240,14 +248,15 @@ render(<ManageableMemory />)`}
         </ul>
 
         <Callout type="warning" title="Privacy Consideration">
-          Always give users control over what's remembered. Add clear remove/clear
-          options and explain what data persists.
+          Always give users control over what's remembered. Add clear
+          remove/clear options and explain what data persists.
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { 
+        <pre>
+          <code>{`import { 
   MemoryInspector,
   type MemoryInspectorProps,
   type MemoryItem,
@@ -270,7 +279,8 @@ const [memories, setMemories] = useState<MemoryItem[]>([])
 
 const handleRemove = (memory: MemoryItem) => {
   setMemories(prev => prev.filter(m => m.id !== memory.id))
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -299,58 +309,57 @@ const memoryProps = [
     name: 'memories',
     type: 'MemoryItem[]',
     required: true,
-    description: 'Array of memory items to display'
+    description: 'Array of memory items to display',
   },
   {
     name: 'isLoading',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Show loading skeleton'
+    description: 'Show loading skeleton',
   },
   {
     name: 'onRemove',
     type: '(memory: MemoryItem) => void',
     required: false,
-    description: 'Callback when user removes a memory'
+    description: 'Callback when user removes a memory',
   },
   {
     name: 'onPromote',
     type: '(memory: MemoryItem) => void',
     required: false,
-    description: 'Callback to promote memory to higher scope'
+    description: 'Callback to promote memory to higher scope',
   },
   {
     name: 'onRefresh',
     type: '() => void',
     required: false,
-    description: 'Callback to refresh memories from backend'
+    description: 'Callback to refresh memories from backend',
   },
   {
     name: 'title',
     type: 'string',
     required: false,
     default: "'Conversation memory'",
-    description: 'Section heading'
+    description: 'Section heading',
   },
   {
     name: 'subtitle',
     type: 'string',
     required: false,
-    description: 'Description text'
+    description: 'Description text',
   },
   {
     name: 'showHeaderActions',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'Show refresh and clear all buttons in header'
+    description: 'Show refresh and clear all buttons in header',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

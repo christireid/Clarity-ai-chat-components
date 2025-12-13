@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Enterprise Deployment Guide - Clarity Chat Components',
-  description: 'Learn how to deploy Clarity Chat Components in enterprise environments with high availability, scaling, and security.',
+  description:
+    'Learn how to deploy Clarity Chat Components in enterprise environments with high availability, scaling, and security.',
 }
 
 export default function EnterpriseDeploymentPage() {
@@ -17,7 +17,8 @@ export default function EnterpriseDeploymentPage() {
         <span className="docs-badge">Guide</span>
         <h1>Enterprise Deployment</h1>
         <p className="docs-lead">
-          Learn how to deploy Clarity Chat Components in enterprise environments with high availability, scaling, security, and monitoring.
+          Learn how to deploy Clarity Chat Components in enterprise environments
+          with high availability, scaling, security, and monitoring.
         </p>
       </div>
 
@@ -33,9 +34,7 @@ export default function EnterpriseDeploymentPage() {
 
       <section className="docs-section">
         <h2>High Availability</h2>
-        <p>
-          Deploy with high availability:
-        </p>
+        <p>Deploy with high availability:</p>
         <CodePlayground
           initialCode={`// docker-compose.yml
 version: '3.8'
@@ -65,9 +64,7 @@ services:
 
       <section className="docs-section">
         <h2>Scaling</h2>
-        <p>
-          Scale horizontally:
-        </p>
+        <p>Scale horizontally:</p>
         <CodePlayground
           initialCode={`// Kubernetes deployment
 apiVersion: apps/v1
@@ -105,9 +102,7 @@ spec:
 
       <section className="docs-section">
         <h2>Security Configuration</h2>
-        <p>
-          Configure security:
-        </p>
+        <p>Configure security:</p>
         <CodePlayground
           initialCode={`// Security headers
 const securityHeaders = {
@@ -141,9 +136,7 @@ const limiter = rateLimit({
 
       <section className="docs-section">
         <h2>Monitoring</h2>
-        <p>
-          Set up monitoring:
-        </p>
+        <p>Set up monitoring:</p>
         <CodePlayground
           initialCode={`// Monitoring setup
 import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
@@ -193,8 +186,16 @@ app.get('/health', (req, res) => {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/multi-tenancy-setup">Multi-Tenancy Setup</a> - Multi-tenant setup</li>
-          <li><a href="/reference/components/performance-analytics-dashboard">PerformanceAnalyticsDashboard</a> - Performance monitoring</li>
+          <li>
+            <a href="/guides/multi-tenancy-setup">Multi-Tenancy Setup</a> -
+            Multi-tenant setup
+          </li>
+          <li>
+            <a href="/reference/components/performance-analytics-dashboard">
+              PerformanceAnalyticsDashboard
+            </a>{' '}
+            - Performance monitoring
+          </li>
         </ul>
       </section>
     </div>

@@ -23,10 +23,12 @@ export default function TroubleshootingPage() {
       <section className="docs-section">
         <h2>Quick Diagnostics</h2>
         <Callout type="info" title="Debug Mode">
-          Enable debug mode to see detailed logs:<br/>
+          Enable debug mode to see detailed logs:
+          <br />
           <code>NEXT_PUBLIC_DEBUG=true npm run dev</code>
         </Callout>
-        <pre><code>{`// Add to your app
+        <pre>
+          <code>{`// Add to your app
 import { enableDebugMode } from '@clarity-chat/react'
 
 if (process.env.NODE_ENV === 'development') {
@@ -35,82 +37,132 @@ if (process.env.NODE_ENV === 'development') {
     logRequests: true,
     logTokens: true
   })
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Installation & Setup Issues</h2>
 
         <h3>Module Not Found</h3>
-        <p><strong>Error:</strong> <code>Cannot find module '@clarity-chat/react'</code></p>
-        <p><strong>Solutions:</strong></p>
+        <p>
+          <strong>Error:</strong>{' '}
+          <code>Cannot find module '@clarity-chat/react'</code>
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
         <ul>
-          <li>Verify installation: <code>npm list @clarity-chat/react</code></li>
-          <li>Clear node_modules: <code>rm -rf node_modules package-lock.json && npm install</code></li>
+          <li>
+            Verify installation: <code>npm list @clarity-chat/react</code>
+          </li>
+          <li>
+            Clear node_modules:{' '}
+            <code>rm -rf node_modules package-lock.json && npm install</code>
+          </li>
           <li>Check package.json has correct version</li>
           <li>Restart your dev server</li>
         </ul>
 
         <h3>Type Errors</h3>
-        <p><strong>Error:</strong> <code>Property 'X' does not exist on type...</code></p>
-        <p><strong>Solutions:</strong></p>
+        <p>
+          <strong>Error:</strong>{' '}
+          <code>Property 'X' does not exist on type...</code>
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
         <ul>
-          <li>Install type definitions: <code>npm install --save-dev @types/node</code></li>
+          <li>
+            Install type definitions:{' '}
+            <code>npm install --save-dev @types/node</code>
+          </li>
           <li>Ensure TypeScript version ≥ 4.9</li>
           <li>Add to tsconfig.json:</li>
         </ul>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   "compilerOptions": {
     "moduleResolution": "bundler",
     "jsx": "preserve",
     "strict": true
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>CSS Not Loading</h3>
-        <p><strong>Issue:</strong> Components appear unstyled</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Import in app/layout.tsx or _app.tsx
+        <p>
+          <strong>Issue:</strong> Components appear unstyled
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Import in app/layout.tsx or _app.tsx
 import '@clarity-chat/react/styles.css'
 
 // Or use CSS modules
-import styles from '@clarity-chat/react/styles.module.css'`}</code></pre>
+import styles from '@clarity-chat/react/styles.module.css'`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>API & Streaming Issues</h2>
 
         <h3>Streaming Not Working</h3>
-        <p><strong>Issue:</strong> Messages appear all at once instead of streaming</p>
-        <p><strong>Solutions:</strong></p>
+        <p>
+          <strong>Issue:</strong> Messages appear all at once instead of
+          streaming
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
         <ul>
-          <li><strong>Vercel:</strong> Enable streaming in vercel.json:</li>
+          <li>
+            <strong>Vercel:</strong> Enable streaming in vercel.json:
+          </li>
         </ul>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   "functions": {
     "app/api/chat/route.ts": {
       "maxDuration": 30
     }
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
         <ul>
-          <li><strong>AWS Lambda:</strong> Use response streaming:</li>
+          <li>
+            <strong>AWS Lambda:</strong> Use response streaming:
+          </li>
         </ul>
-        <pre><code>{`// Configure Lambda for streaming
+        <pre>
+          <code>{`// Configure Lambda for streaming
 export const handler = awslambda.streamifyResponse(async (event) => {
   // Your streaming code
-})`}</code></pre>
+})`}</code>
+        </pre>
         <ul>
-          <li><strong>Node.js:</strong> Set proper headers:</li>
+          <li>
+            <strong>Node.js:</strong> Set proper headers:
+          </li>
         </ul>
-        <pre><code>{`res.setHeader('Content-Type', 'text/event-stream')
+        <pre>
+          <code>{`res.setHeader('Content-Type', 'text/event-stream')
 res.setHeader('Cache-Control', 'no-cache')
-res.setHeader('Connection', 'keep-alive')`}</code></pre>
+res.setHeader('Connection', 'keep-alive')`}</code>
+        </pre>
 
         <h3>CORS Errors</h3>
-        <p><strong>Error:</strong> <code>Access-Control-Allow-Origin</code> blocked</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// next.config.js
+        <p>
+          <strong>Error:</strong> <code>Access-Control-Allow-Origin</code>{' '}
+          blocked
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// next.config.js
 module.exports = {
   async headers() {
     return [
@@ -124,12 +176,18 @@ module.exports = {
       }
     ]
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Rate Limit Errors</h3>
-        <p><strong>Error:</strong> <code>429 Too Many Requests</code></p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`import { RateLimiter } from '@clarity-chat/react/utils'
+        <p>
+          <strong>Error:</strong> <code>429 Too Many Requests</code>
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`import { RateLimiter } from '@clarity-chat/react/utils'
 
 const limiter = new RateLimiter({
   tokensPerInterval: 10,
@@ -149,24 +207,49 @@ export async function POST(req: Request) {
   }
   
   // Process request
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>OpenAI API Errors</h3>
-        <p><strong>Error:</strong> <code>Invalid API key</code></p>
-        <p><strong>Checklist:</strong></p>
+        <p>
+          <strong>Error:</strong> <code>Invalid API key</code>
+        </p>
+        <p>
+          <strong>Checklist:</strong>
+        </p>
         <ul>
-          <li>Verify key in <code>.env.local</code>: <code>OPENAI_API_KEY=sk-...</code></li>
+          <li>
+            Verify key in <code>.env.local</code>:{' '}
+            <code>OPENAI_API_KEY=sk-...</code>
+          </li>
           <li>Restart dev server after adding env vars</li>
-          <li>Check API key has credits: <a href="https://platform.openai.com/usage">platform.openai.com/usage</a></li>
+          <li>
+            Check API key has credits:{' '}
+            <a href="https://platform.openai.com/usage">
+              platform.openai.com/usage
+            </a>
+          </li>
           <li>Verify key permissions (some keys are read-only)</li>
         </ul>
 
-        <p><strong>Error:</strong> <code>Model not found</code></p>
-        <p><strong>Solutions:</strong></p>
+        <p>
+          <strong>Error:</strong> <code>Model not found</code>
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
         <ul>
-          <li>Verify model name: <code>gpt-4</code>, <code>gpt-3.5-turbo</code>, etc.</li>
-          <li>Check account has access to model (GPT-4 requires special access)</li>
-          <li>Use model aliases: <code>gpt-4-turbo</code> → <code>gpt-4-0125-preview</code></li>
+          <li>
+            Verify model name: <code>gpt-4</code>, <code>gpt-3.5-turbo</code>,
+            etc.
+          </li>
+          <li>
+            Check account has access to model (GPT-4 requires special access)
+          </li>
+          <li>
+            Use model aliases: <code>gpt-4-turbo</code> →{' '}
+            <code>gpt-4-0125-preview</code>
+          </li>
         </ul>
       </section>
 
@@ -174,9 +257,14 @@ export async function POST(req: Request) {
         <h2>Performance Issues</h2>
 
         <h3>Slow Rendering</h3>
-        <p><strong>Issue:</strong> UI feels sluggish during streaming</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Use virtualization for long message lists
+        <p>
+          <strong>Issue:</strong> UI feels sluggish during streaming
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Use virtualization for long message lists
 import { VirtualizedMessageList } from '@clarity-chat/react'
 
 <VirtualizedMessageList
@@ -192,12 +280,18 @@ import { MessageOptimized } from '@clarity-chat/react'
   content={message.content}
   renderStrategy="incremental"
   chunkSize={100}
-/>`}</code></pre>
+/>`}</code>
+        </pre>
 
         <h3>Memory Leaks</h3>
-        <p><strong>Issue:</strong> Memory usage grows over time</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Clean up event listeners
+        <p>
+          <strong>Issue:</strong> Memory usage grows over time
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Clean up event listeners
 useEffect(() => {
   const handler = (event) => {
     // ...
@@ -217,28 +311,40 @@ const { messages } = useChat({
     // Archive old messages
     archiveMessages(overflow)
   }
-})`}</code></pre>
+})`}</code>
+        </pre>
 
         <h3>Bundle Size Too Large</h3>
-        <p><strong>Issue:</strong> Large JavaScript bundles</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Use dynamic imports
+        <p>
+          <strong>Issue:</strong> Large JavaScript bundles
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Use dynamic imports
 const ChatWindow = dynamic(() => import('@clarity-chat/react').then(mod => mod.ChatWindow))
 
 // Tree-shake unused components
 import { ChatWindow } from '@clarity-chat/react/components/chat-window'
 
 // Analyze bundle
-npm run build && npx @next/bundle-analyzer`}</code></pre>
+npm run build && npx @next/bundle-analyzer`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Memory & Context Issues</h2>
 
         <h3>Vector Store Errors</h3>
-        <p><strong>Error:</strong> <code>Failed to connect to Pinecone</code></p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Verify environment variables
+        <p>
+          <strong>Error:</strong> <code>Failed to connect to Pinecone</code>
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Verify environment variables
 PINECONE_API_KEY=your-key
 PINECONE_ENVIRONMENT=us-west1-gcp
 PINECONE_INDEX=clarity-chat
@@ -248,12 +354,19 @@ import { Pinecone } from '@pinecone-database/pinecone'
 
 const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY })
 const indexes = await pinecone.listIndexes()
-console.log('Available indexes:', indexes)`}</code></pre>
+console.log('Available indexes:', indexes)`}</code>
+        </pre>
 
         <h3>Context Window Exceeded</h3>
-        <p><strong>Error:</strong> <code>This model's maximum context length is...</code></p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`import { useTokenOptimization } from '@clarity-chat/react/hooks'
+        <p>
+          <strong>Error:</strong>{' '}
+          <code>This model's maximum context length is...</code>
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`import { useTokenOptimization } from '@clarity-chat/react/hooks'
 
 const { optimizedMessages } = useTokenOptimization(messages, {
   slidingWindow: {
@@ -264,12 +377,18 @@ const { optimizedMessages } = useTokenOptimization(messages, {
     algorithm: 'llmlingua',
     targetRatio: 0.6
   }
-})`}</code></pre>
+})`}</code>
+        </pre>
 
         <h3>Embeddings Too Slow</h3>
-        <p><strong>Issue:</strong> Slow document processing</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Batch embeddings
+        <p>
+          <strong>Issue:</strong> Slow document processing
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Batch embeddings
 import { RequestBatcher } from '@clarity-chat/react/utils'
 
 const batcher = new RequestBatcher({
@@ -287,16 +406,22 @@ const batcher = new RequestBatcher({
 import { SmartCache } from '@clarity-chat/react/utils'
 
 const cache = new SmartCache({ maxSize: 10000, ttl: 86400000 })
-const embedding = await cache.getOrSet(\`emb:\${text}\`, () => getEmbedding(text))`}</code></pre>
+const embedding = await cache.getOrSet(\`emb:\${text}\`, () => getEmbedding(text))`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>UI & Styling Issues</h2>
 
         <h3>Dark Mode Not Working</h3>
-        <p><strong>Issue:</strong> Theme doesn't switch properly</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Wrap app with ThemeProvider
+        <p>
+          <strong>Issue:</strong> Theme doesn't switch properly
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Wrap app with ThemeProvider
 import { ThemeProvider } from '@clarity-chat/react'
 
 export default function App() {
@@ -312,12 +437,18 @@ import { ThemeProvider } from 'next-themes'
 
 <ThemeProvider attribute="class" defaultTheme="system">
   <ChatWindow />
-</ThemeProvider>`}</code></pre>
+</ThemeProvider>`}</code>
+        </pre>
 
         <h3>Markdown Not Rendering</h3>
-        <p><strong>Issue:</strong> Code blocks or formatting broken</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Install remark/rehype plugins
+        <p>
+          <strong>Issue:</strong> Code blocks or formatting broken
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Install remark/rehype plugins
 npm install remark-gfm rehype-highlight
 
 // Configure in ChatWindow
@@ -327,12 +458,18 @@ npm install remark-gfm rehype-highlight
     remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypeHighlight]
   }}
-/>`}</code></pre>
+/>`}</code>
+        </pre>
 
         <h3>Mobile Layout Issues</h3>
-        <p><strong>Issue:</strong> Components not responsive</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Use responsive container
+        <p>
+          <strong>Issue:</strong> Components not responsive
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Use responsive container
 <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
   <ChatWindow
     messages={messages}
@@ -347,16 +484,22 @@ const { isKeyboardOpen, keyboardHeight } = useMobileKeyboard()
 
 <div style={{ paddingBottom: isKeyboardOpen ? keyboardHeight : 0 }}>
   <ChatWindow />
-</div>`}</code></pre>
+</div>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Build & Deployment Issues</h2>
 
         <h3>Build Failures</h3>
-        <p><strong>Error:</strong> Build fails in production</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Fix server/client imports
+        <p>
+          <strong>Error:</strong> Build fails in production
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Fix server/client imports
 // Mark client components
 'use client'
 
@@ -373,22 +516,40 @@ import dynamic from 'next/dynamic'
 const ChatWindow = dynamic(
   () => import('@clarity-chat/react').then(mod => mod.ChatWindow),
   { ssr: false }
-)`}</code></pre>
+)`}</code>
+        </pre>
 
         <h3>Environment Variables Not Working</h3>
-        <p><strong>Issue:</strong> Env vars undefined in production</p>
-        <p><strong>Solutions:</strong></p>
+        <p>
+          <strong>Issue:</strong> Env vars undefined in production
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
         <ul>
-          <li><strong>Vercel:</strong> Add in dashboard → Settings → Environment Variables</li>
-          <li><strong>Netlify:</strong> Site Settings → Environment → Environment Variables</li>
-          <li>Prefix client vars: <code>NEXT_PUBLIC_</code></li>
+          <li>
+            <strong>Vercel:</strong> Add in dashboard → Settings → Environment
+            Variables
+          </li>
+          <li>
+            <strong>Netlify:</strong> Site Settings → Environment → Environment
+            Variables
+          </li>
+          <li>
+            Prefix client vars: <code>NEXT_PUBLIC_</code>
+          </li>
           <li>Rebuild after adding variables</li>
         </ul>
 
         <h3>Serverless Function Timeouts</h3>
-        <p><strong>Error:</strong> Function execution timed out</p>
-        <p><strong>Solutions:</strong></p>
-        <pre><code>{`// Increase timeout (Vercel)
+        <p>
+          <strong>Error:</strong> Function execution timed out
+        </p>
+        <p>
+          <strong>Solutions:</strong>
+        </p>
+        <pre>
+          <code>{`// Increase timeout (Vercel)
 // vercel.json
 {
   "functions": {
@@ -412,14 +573,16 @@ export async function POST(req: Request) {
   })
   
   return new Response(stream)
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Debugging Strategies</h2>
 
         <h3>Enable Verbose Logging</h3>
-        <pre><code>{`// Log all events
+        <pre>
+          <code>{`// Log all events
 import { ChatWindow } from '@clarity-chat/react'
 
 <ChatWindow
@@ -427,7 +590,8 @@ import { ChatWindow } from '@clarity-chat/react'
     console.log(\`[DEBUG] \${event}\`, data)
   }}
   debug={true}
-/>`}</code></pre>
+/>`}</code>
+        </pre>
 
         <h3>Network Inspection</h3>
         <p>Use browser DevTools Network tab:</p>
@@ -448,7 +612,8 @@ import { ChatWindow } from '@clarity-chat/react'
         </ul>
 
         <h3>Error Boundaries</h3>
-        <pre><code>{`import { ErrorBoundary } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ErrorBoundary } from '@clarity-chat/react'
 
 <ErrorBoundary
   fallback={(error, reset) => (
@@ -464,7 +629,8 @@ import { ChatWindow } from '@clarity-chat/react'
   }}
 >
   <ChatWindow />
-</ErrorBoundary>`}</code></pre>
+</ErrorBoundary>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -475,15 +641,18 @@ import { ChatWindow } from '@clarity-chat/react'
         </Callout>
 
         <h3>1. Mutating State Directly</h3>
-        <pre><code>{`// ❌ Don't
+        <pre>
+          <code>{`// ❌ Don't
 messages.push(newMessage)
 setMessages(messages)
 
 // ✅ Do
-setMessages([...messages, newMessage])`}</code></pre>
+setMessages([...messages, newMessage])`}</code>
+        </pre>
 
         <h3>2. Missing Dependencies</h3>
-        <pre><code>{`// ❌ Don't
+        <pre>
+          <code>{`// ❌ Don't
 useEffect(() => {
   fetchData(userId)
 }, [])  // Missing userId
@@ -491,10 +660,12 @@ useEffect(() => {
 // ✅ Do
 useEffect(() => {
   fetchData(userId)
-}, [userId])`}</code></pre>
+}, [userId])`}</code>
+        </pre>
 
         <h3>3. Async State Updates</h3>
-        <pre><code>{`// ❌ Don't
+        <pre>
+          <code>{`// ❌ Don't
 const handleSend = async (message) => {
   setIsLoading(true)
   await sendMessage(message)
@@ -509,10 +680,12 @@ const handleSend = async (message) => {
   } finally {
     setIsLoading(false)
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>4. Memory Leaks in Streams</h3>
-        <pre><code>{`// ❌ Don't
+        <pre>
+          <code>{`// ❌ Don't
 const stream = getStream()
 stream.on('data', handleData)
 // Forgot to clean up
@@ -526,17 +699,22 @@ useEffect(() => {
     stream.off('data', handleData)
     stream.close()
   }
-}, [])`}</code></pre>
+}, [])`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Getting Help</h2>
 
         <Callout type="info" title="Support Channels">
-          • GitHub Issues: <a href="https://github.com/christireid/Clarity-ai-chat-components/issues">Report bugs</a><br/>
-          • Discord: <a href="https://discord.gg/clarity-chat">Community chat</a><br/>
-          • Stack Overflow: Tag <code>[clarity-chat]</code><br/>
-          • Email: support@clarity-chat.dev
+          • GitHub Issues:{' '}
+          <a href="https://github.com/christireid/Clarity-ai-chat-components/issues">
+            Report bugs
+          </a>
+          <br />• Discord:{' '}
+          <a href="https://discord.gg/clarity-chat">Community chat</a>
+          <br />• Stack Overflow: Tag <code>[clarity-chat]</code>
+          <br />• Email: support@clarity-chat.dev
         </Callout>
 
         <h3>Before Asking for Help</h3>
@@ -549,7 +727,8 @@ useEffect(() => {
         </ul>
 
         <h3>Creating a Bug Report</h3>
-        <pre><code>{`## Description
+        <pre>
+          <code>{`## Description
 Brief description of the issue
 
 ## Reproduction
@@ -572,7 +751,8 @@ What actually happens
 ## Code Sample
 \`\`\`tsx
 // Minimal reproduction
-\`\`\``}</code></pre>
+\`\`\``}</code>
+        </pre>
       </section>
 
       <section className="docs-section">

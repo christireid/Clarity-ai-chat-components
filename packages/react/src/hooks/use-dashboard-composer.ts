@@ -295,20 +295,20 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
   }, [sourceConfigs])
 
   const requiredKeys = React.useMemo(
-    () =>
-      sourceConfigs
-        .filter((s) => s.required !== false)
-        .map((s) => s.key),
+    () => sourceConfigs.filter((s) => s.required !== false).map((s) => s.key),
     [sourceConfigs]
   )
 
-  const clearStaleTimeout = React.useCallback((key: string) => {
-    const timeout = staleTimeoutsRef.current.get(key)
-    if (timeout) {
-      clock.clearTimeout(timeout)
-      staleTimeoutsRef.current.delete(key)
-    }
-  }, [clock])
+  const clearStaleTimeout = React.useCallback(
+    (key: string) => {
+      const timeout = staleTimeoutsRef.current.get(key)
+      if (timeout) {
+        clock.clearTimeout(timeout)
+        staleTimeoutsRef.current.delete(key)
+      }
+    },
+    [clock]
+  )
 
   // Track lastFetchedAt to schedule staleness timers after commit (not during fetch)
   const lastFetchedAtRef = React.useRef<Map<string, number | null>>(new Map())
@@ -334,7 +334,12 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
           if (!isMountedRef.current) return
 
           log(`Source ${key} fetched successfully`)
-          dispatch({ type: 'FETCH_SUCCESS', key, payload: data, fetchedAt: clock.now() })
+          dispatch({
+            type: 'FETCH_SUCCESS',
+            key,
+            payload: data,
+            fetchedAt: clock.now(),
+          })
           return
         } catch (err) {
           if (!isMountedRef.current) return
@@ -476,7 +481,14 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
 
       staleTimeoutsRef.current.set(key, timeout)
     }
-  }, [sourceKeys, sourcesState, sourceConfigsMap, clearStaleTimeout, log, clock])
+  }, [
+    sourceKeys,
+    sourcesState,
+    sourceConfigsMap,
+    clearStaleTimeout,
+    log,
+    clock,
+  ])
 
   // Compute derived state
   const isLoading = requiredKeys.some((key) => sourcesState[key]?.isLoading)

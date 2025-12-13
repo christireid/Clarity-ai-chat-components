@@ -13,7 +13,6 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-
 function BasicBuilderDemo() {
   const [values, setValues] = React.useState({})
 
@@ -135,8 +134,9 @@ export default function StructuredInputBuilderPage() {
             StructuredInputBuilder
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            Build complex structured prompts with token optimization, field prioritization, validation, and automatic prompt formatting.
-            Perfect for "mad libs" style prompt engineering.
+            Build complex structured prompts with token optimization, field
+            prioritization, validation, and automatic prompt formatting. Perfect
+            for "mad libs" style prompt engineering.
           </p>
         </div>
       </ScrollReveal>
@@ -160,7 +160,8 @@ export default function StructuredInputBuilderPage() {
       <ScrollReveal delay={0.3}>
         <h2 id="basic-usage">Basic Usage</h2>
         <p className="mb-4">
-          Define your fields and manage the state. The component handles rendering and formatting.
+          Define your fields and manage the state. The component handles
+          rendering and formatting.
         </p>
         <ComponentPreview
           title="Prompt Builder"
@@ -214,7 +215,8 @@ function PromptBuilder() {
       <ScrollReveal delay={0.4}>
         <h2 id="token-optimization">Token Optimization</h2>
         <p className="mb-4">
-          Configure field priorities to automatically trim content when exceeding token limits:
+          Configure field priorities to automatically trim content when
+          exceeding token limits:
         </p>
         <EnhancedCodeBlock
           language="tsx"
@@ -300,20 +302,42 @@ render(<Example />)`}
           <div>
             <h3 className="text-xl font-bold mb-4">Field Types</h3>
             <ul className="space-y-2">
-              <li><code>text</code> - Single line input</li>
-              <li><code>textarea</code> - Multi-line text area</li>
-              <li><code>select</code> - Dropdown selection</li>
-              <li><code>number</code> - Numeric input</li>
-              <li><code>toggle</code> - Boolean switch</li>
+              <li>
+                <code>text</code> - Single line input
+              </li>
+              <li>
+                <code>textarea</code> - Multi-line text area
+              </li>
+              <li>
+                <code>select</code> - Dropdown selection
+              </li>
+              <li>
+                <code>number</code> - Numeric input
+              </li>
+              <li>
+                <code>toggle</code> - Boolean switch
+              </li>
             </ul>
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Priority Levels</h3>
             <ul className="space-y-2">
-              <li><span className="font-semibold text-red-500">critical</span> - Never trimmed</li>
-              <li><span className="font-semibold text-orange-500">high</span> - Trimmed last</li>
-              <li><span className="font-semibold text-yellow-500">medium</span> - Standard priority</li>
-              <li><span className="font-semibold text-blue-500">low</span> - Trimmed first</li>
+              <li>
+                <span className="font-semibold text-red-500">critical</span> -
+                Never trimmed
+              </li>
+              <li>
+                <span className="font-semibold text-orange-500">high</span> -
+                Trimmed last
+              </li>
+              <li>
+                <span className="font-semibold text-yellow-500">medium</span> -
+                Standard priority
+              </li>
+              <li>
+                <span className="font-semibold text-blue-500">low</span> -
+                Trimmed first
+              </li>
             </ul>
           </div>
         </div>
@@ -327,13 +351,23 @@ render(<Example />)`}
       <ScrollReveal delay={0.8}>
         <h2 id="related">Related</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          <a href="/reference/components/token-counter" className="p-4 border rounded-lg hover:border-brand-500 transition-colors">
+          <a
+            href="/reference/components/token-counter"
+            className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+          >
             <h3 className="font-semibold mb-1">TokenCounter</h3>
-            <p className="text-sm text-muted-foreground">Standalone token counting component</p>
+            <p className="text-sm text-muted-foreground">
+              Standalone token counting component
+            </p>
           </a>
-          <a href="/guides/token-optimization" className="p-4 border rounded-lg hover:border-brand-500 transition-colors">
+          <a
+            href="/guides/token-optimization"
+            className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+          >
             <h3 className="font-semibold mb-1">Token Optimization Guide</h3>
-            <p className="text-sm text-muted-foreground">Learn about optimization strategies</p>
+            <p className="text-sm text-muted-foreground">
+              Learn about optimization strategies
+            </p>
           </a>
         </div>
       </ScrollReveal>

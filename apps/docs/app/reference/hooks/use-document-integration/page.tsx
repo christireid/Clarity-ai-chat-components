@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'useDocumentIntegration - Clarity Chat Components',
-  description: 'Hook for integrating with document platforms to fetch, extract, and export documents.',
+  description:
+    'Hook for integrating with document platforms to fetch, extract, and export documents.',
 }
 
 const optionsProps: Prop[] = [
@@ -36,7 +36,8 @@ export default function UseDocumentIntegrationPage() {
         <span className="docs-badge">Hook</span>
         <h1>useDocumentIntegration</h1>
         <p className="docs-lead">
-          Hook for integrating with document platforms (Google Docs, Notion, Confluence) to fetch, extract content, and export documents.
+          Hook for integrating with document platforms (Google Docs, Notion,
+          Confluence) to fetch, extract content, and export documents.
         </p>
       </div>
 
@@ -52,9 +53,7 @@ export default function UseDocumentIntegrationPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Integrate with document platforms:
-        </p>
+        <p>Integrate with document platforms:</p>
         <CodePlayground
           initialCode={`import { useDocumentIntegration } from '@clarity-chat/react'
 
@@ -96,9 +95,7 @@ function DocumentManager() {
 
       <section className="docs-section">
         <h2>Content Extraction for RAG</h2>
-        <p>
-          Extract content chunks for RAG:
-        </p>
+        <p>Extract content chunks for RAG:</p>
         <CodePlayground
           initialCode={`import { useDocumentIntegration } from '@clarity-chat/react'
 
@@ -133,9 +130,7 @@ function RAGExtraction() {
 
       <section className="docs-section">
         <h2>Document Export</h2>
-        <p>
-          Export documents in various formats:
-        </p>
+        <p>Export documents in various formats:</p>
         <CodePlayground
           initialCode={`import { useDocumentIntegration } from '@clarity-chat/react'
 
@@ -170,20 +165,36 @@ function DocumentExporter() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>documents</code>: Array of document metadata</li>
-          <li><code>loading</code>: Whether operation is in progress</li>
-          <li><code>error</code>: Error message if any</li>
-          <li><code>listDocuments</code>: Function to list documents from platform</li>
-          <li><code>fetchDocument</code>: Function to fetch document content</li>
-          <li><code>extractContent</code>: Function to extract content chunks</li>
-          <li><code>exportDocument</code>: Function to export document</li>
+          <li>
+            <code>documents</code>: Array of document metadata
+          </li>
+          <li>
+            <code>loading</code>: Whether operation is in progress
+          </li>
+          <li>
+            <code>error</code>: Error message if any
+          </li>
+          <li>
+            <code>listDocuments</code>: Function to list documents from platform
+          </li>
+          <li>
+            <code>fetchDocument</code>: Function to fetch document content
+          </li>
+          <li>
+            <code>extractContent</code>: Function to extract content chunks
+          </li>
+          <li>
+            <code>exportDocument</code>: Function to export document
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use <code>apiEndpoint</code> for secure server-side document access</li>
+          <li>
+            Use <code>apiEndpoint</code> for secure server-side document access
+          </li>
           <li>Extract chunks with appropriate size and overlap for RAG</li>
           <li>Cache document content for performance</li>
           <li>Handle errors gracefully</li>
@@ -194,8 +205,18 @@ function DocumentExporter() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/document-integration">DocumentIntegration</a> - Document integration component</li>
-          <li><a href="/reference/components/semantic-message-search">SemanticMessageSearch</a> - Semantic search component</li>
+          <li>
+            <a href="/reference/components/document-integration">
+              DocumentIntegration
+            </a>{' '}
+            - Document integration component
+          </li>
+          <li>
+            <a href="/reference/components/semantic-message-search">
+              SemanticMessageSearch
+            </a>{' '}
+            - Semantic search component
+          </li>
         </ul>
       </section>
     </div>

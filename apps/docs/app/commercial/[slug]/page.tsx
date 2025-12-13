@@ -9,34 +9,39 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
-
 interface CommercialPageProps {
   params: Promise<{ slug: string }>
 }
 
 // Commercial page metadata
-const commercialPages: Record<string, { title: string; description: string }> = {
-  pricing: {
-    title: 'Pricing - Clarity Chat',
-    description: 'Choose the plan that fits your needs. All plans include our core component library.',
-  },
-  'case-studies': {
-    title: 'Case Studies - Clarity Chat',
-    description: 'See how teams are using Clarity Chat to build amazing AI chat experiences.',
-  },
-  terms: {
-    title: 'Terms of Service - Clarity Chat',
-    description: 'Terms and conditions for using Clarity Chat products and services.',
-  },
-  privacy: {
-    title: 'Privacy Policy - Clarity Chat',
-    description: 'How we collect, use, and protect your personal information.',
-  },
-  enterprise: {
-    title: 'Enterprise - Clarity Chat',
-    description: 'Enterprise features, support, and custom solutions for large organizations.',
-  },
-}
+const commercialPages: Record<string, { title: string; description: string }> =
+  {
+    pricing: {
+      title: 'Pricing - Clarity Chat',
+      description:
+        'Choose the plan that fits your needs. All plans include our core component library.',
+    },
+    'case-studies': {
+      title: 'Case Studies - Clarity Chat',
+      description:
+        'See how teams are using Clarity Chat to build amazing AI chat experiences.',
+    },
+    terms: {
+      title: 'Terms of Service - Clarity Chat',
+      description:
+        'Terms and conditions for using Clarity Chat products and services.',
+    },
+    privacy: {
+      title: 'Privacy Policy - Clarity Chat',
+      description:
+        'How we collect, use, and protect your personal information.',
+    },
+    enterprise: {
+      title: 'Enterprise - Clarity Chat',
+      description:
+        'Enterprise features, support, and custom solutions for large organizations.',
+    },
+  }
 
 // Map slugs to file names
 const slugToFile: Record<string, string> = {
@@ -51,7 +56,9 @@ export async function generateStaticParams() {
   return Object.keys(commercialPages).map((slug) => ({ slug }))
 }
 
-export async function generateMetadata({ params }: CommercialPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: CommercialPageProps): Promise<Metadata> {
   const { slug } = await params
   const page = commercialPages[slug]
 
@@ -84,10 +91,17 @@ export default async function CommercialPage({ params }: CommercialPageProps) {
     }
 
     // Check if it's an enterprise page (in subdirectory)
-    const filePath = slug === 'enterprise'
-      ? join(process.cwd(), 'content', 'guides-migration', 'enterprise', fileName)
-      : join(process.cwd(), 'content', 'commercial', fileName)
-    
+    const filePath =
+      slug === 'enterprise'
+        ? join(
+            process.cwd(),
+            'content',
+            'guides-migration',
+            'enterprise',
+            fileName
+          )
+        : join(process.cwd(), 'content', 'commercial', fileName)
+
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
     console.error(`Failed to read commercial page: ${slug}`, error)
@@ -100,7 +114,7 @@ export default async function CommercialPage({ params }: CommercialPageProps) {
   return (
     <>
       <Breadcrumbs />
-      
+
       <div className="docs-content">
         <Link
           href="/commercial"

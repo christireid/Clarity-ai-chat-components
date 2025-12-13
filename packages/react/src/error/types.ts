@@ -77,7 +77,11 @@ export interface ErrorProvider {
   reportError: (report: ErrorReport) => void | Promise<void>
 
   /** Set user context */
-  setUser?: (userId: string, email?: string, userData?: Record<string, any>) => void
+  setUser?: (
+    userId: string,
+    email?: string,
+    userData?: Record<string, any>
+  ) => void
 
   /** Set global context/tags */
   setContext?: (context: Record<string, any>) => void

@@ -140,7 +140,11 @@ export type {
 } from './components/RetryCountdown'
 
 // Toast notification system
-export { ToastProvider, useToast, useToastOptional } from './components/ErrorToast'
+export {
+  ToastProvider,
+  useToast,
+  useToastOptional,
+} from './components/ErrorToast'
 export type {
   Toast,
   ToastType,

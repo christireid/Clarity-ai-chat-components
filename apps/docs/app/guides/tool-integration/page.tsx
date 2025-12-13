@@ -6,7 +6,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { Pagination } from '@/components/Navigation/Pagination'
 
-
 export default function ToolIntegrationGuidePage() {
   return (
     <>
@@ -16,22 +15,26 @@ export default function ToolIntegrationGuidePage() {
         <header>
           <h1 className="text-4xl font-bold mb-3">Tool Integration Guide</h1>
           <p className="text-lg text-muted-foreground">
-            Comprehensive guide to integrating AI tool calls, creating custom tool UIs, handling tool execution,
-            and implementing approval workflows.
+            Comprehensive guide to integrating AI tool calls, creating custom
+            tool UIs, handling tool execution, and implementing approval
+            workflows.
           </p>
         </header>
 
         <section>
           <h2 className="text-3xl font-semibold mb-4">Overview</h2>
           <p className="mb-4">
-            Tool integration allows AI assistants to call external functions and APIs, extending their capabilities
-            beyond text generation. Clarity Chat provides a complete system for handling tool calls, displaying
+            Tool integration allows AI assistants to call external functions and
+            APIs, extending their capabilities beyond text generation. Clarity
+            Chat provides a complete system for handling tool calls, displaying
             tool invocations, executing tools, and rendering results.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
             <div className="p-4 border-2 border-blue-500/20 rounded-xl bg-blue-500/5">
-              <div className="font-semibold text-blue-600 dark:text-blue-400 mb-2">✅ With Tools</div>
+              <div className="font-semibold text-blue-600 dark:text-blue-400 mb-2">
+                ✅ With Tools
+              </div>
               <ul className="text-sm space-y-1 text-muted-foreground">
                 <li>• Access external APIs</li>
                 <li>• Perform calculations</li>
@@ -55,8 +58,9 @@ export default function ToolIntegrationGuidePage() {
 
           <Callout type="info">
             <p>
-              <strong>Tool Flow:</strong> AI requests tool → Tool invocation card shown → User approves (optional) →
-              Tool executes → Result displayed → AI uses result in response.
+              <strong>Tool Flow:</strong> AI requests tool → Tool invocation
+              card shown → User approves (optional) → Tool executes → Result
+              displayed → AI uses result in response.
             </p>
           </Callout>
         </section>
@@ -64,7 +68,8 @@ export default function ToolIntegrationGuidePage() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Tool Call Structure</h2>
           <p className="mb-4">
-            Tool calls follow a standard structure that works across different AI providers:
+            Tool calls follow a standard structure that works across different
+            AI providers:
           </p>
 
           <EnhancedCodeBlock
@@ -100,7 +105,8 @@ const toolCall: ToolCall = {
 
           <h3 className="text-2xl font-semibold mb-3 mt-8">Tool Definitions</h3>
           <p className="mb-4">
-            Tools are defined with a schema that describes their name, description, and parameters:
+            Tools are defined with a schema that describes their name,
+            description, and parameters:
           </p>
 
           <EnhancedCodeBlock
@@ -143,8 +149,8 @@ const response = await openai.chat.completions.create({
         <section>
           <h2 className="text-3xl font-semibold mb-4">Tool Invocation Cards</h2>
           <p className="mb-4">
-            The <code>ToolInvocationCard</code> component displays tool calls with status, approval buttons,
-            and result visualization:
+            The <code>ToolInvocationCard</code> component displays tool calls
+            with status, approval buttons, and result visualization:
           </p>
 
           <EnhancedCodeBlock
@@ -201,20 +207,33 @@ function ToolCardExample() {
           </p>
 
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li><strong>pending:</strong> Awaiting approval or execution</li>
-            <li><strong>approved:</strong> Approved but not yet executed</li>
-            <li><strong>rejected:</strong> User rejected the tool call</li>
-            <li><strong>executing:</strong> Tool is currently running</li>
-            <li><strong>success:</strong> Tool executed successfully</li>
-            <li><strong>error:</strong> Tool execution failed</li>
+            <li>
+              <strong>pending:</strong> Awaiting approval or execution
+            </li>
+            <li>
+              <strong>approved:</strong> Approved but not yet executed
+            </li>
+            <li>
+              <strong>rejected:</strong> User rejected the tool call
+            </li>
+            <li>
+              <strong>executing:</strong> Tool is currently running
+            </li>
+            <li>
+              <strong>success:</strong> Tool executed successfully
+            </li>
+            <li>
+              <strong>error:</strong> Tool execution failed
+            </li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-3xl font-semibold mb-4">Tool UI Registry</h2>
           <p className="mb-4">
-            The tool UI registry allows you to create custom UI components for rendering tool results.
-            This provides a better user experience than showing raw JSON.
+            The tool UI registry allows you to create custom UI components for
+            rendering tool results. This provides a better user experience than
+            showing raw JSON.
           </p>
 
           <h3 className="text-2xl font-semibold mb-3">Creating a Registry</h3>
@@ -257,7 +276,9 @@ const toolRegistry = createToolUIRegistry({
             showLineNumbers
           />
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">Using the Registry</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            Using the Registry
+          </h3>
           <EnhancedCodeBlock
             code={`import { ClarityToolResult } from '@clarity-chat/react'
 
@@ -290,7 +311,8 @@ function ToolResultExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Approval Workflows</h2>
           <p className="mb-4">
-            For sensitive operations, you can require user approval before executing tools:
+            For sensitive operations, you can require user approval before
+            executing tools:
           </p>
 
           <EnhancedCodeBlock
@@ -354,9 +376,12 @@ function ApprovalWorkflow() {
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">Displaying Tool Calls in Messages</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            Displaying Tool Calls in Messages
+          </h2>
           <p className="mb-4">
-            Tool calls are automatically displayed in streaming messages using the <code>StreamingMessage</code> component:
+            Tool calls are automatically displayed in streaming messages using
+            the <code>StreamingMessage</code> component:
           </p>
 
           <EnhancedCodeBlock
@@ -520,23 +545,33 @@ function ChatWithTools() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Best Practices</h2>
 
-          <h3 className="text-2xl font-semibold mb-3">1. Define Clear Tool Schemas</h3>
+          <h3 className="text-2xl font-semibold mb-3">
+            1. Define Clear Tool Schemas
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Provide clear descriptions for tools and parameters</li>
-            <li>Use appropriate parameter types (string, number, boolean, object)</li>
+            <li>
+              Use appropriate parameter types (string, number, boolean, object)
+            </li>
             <li>Mark required parameters explicitly</li>
             <li>Include examples in descriptions when helpful</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">2. Implement Approval for Sensitive Operations</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            2. Implement Approval for Sensitive Operations
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Require approval for destructive operations (delete, update, send)</li>
+            <li>
+              Require approval for destructive operations (delete, update, send)
+            </li>
             <li>Auto-execute safe read-only operations</li>
             <li>Show clear descriptions of what the tool will do</li>
             <li>Provide context about why the tool is being called</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">3. Create Custom Tool UIs</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            3. Create Custom Tool UIs
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Use the tool UI registry for better UX</li>
             <li>Display results in a user-friendly format</li>
@@ -544,7 +579,9 @@ function ChatWithTools() {
             <li>Handle errors gracefully with fallback UI</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">4. Handle Errors Gracefully</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            4. Handle Errors Gracefully
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Show clear error messages when tools fail</li>
             <li>Provide retry options for transient failures</li>
@@ -552,7 +589,9 @@ function ChatWithTools() {
             <li>Allow users to cancel long-running tools</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">5. Optimize Tool Execution</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            5. Optimize Tool Execution
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Cache tool results when appropriate</li>
             <li>Batch multiple tool calls when possible</li>
@@ -560,7 +599,9 @@ function ChatWithTools() {
             <li>Set timeouts for tool execution</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">6. Security Considerations</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            6. Security Considerations
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Validate tool arguments before execution</li>
             <li>Sanitize inputs to prevent injection attacks</li>
@@ -571,9 +612,12 @@ function ChatWithTools() {
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">Server-Side Tool Execution</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            Server-Side Tool Execution
+          </h2>
           <p className="mb-4">
-            Tools should be executed on the server for security. Here's an example API route:
+            Tools should be executed on the server for security. Here's an
+            example API route:
           </p>
 
           <EnhancedCodeBlock
@@ -627,29 +671,46 @@ async function search(args: { query: string; limit?: number }) {
           <h2 className="text-3xl font-semibold mb-4">Related</h2>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground">
             <li>
-              <a href="/reference/components/tool-invocation-card" className="text-primary underline">
+              <a
+                href="/reference/components/tool-invocation-card"
+                className="text-primary underline"
+              >
                 ToolInvocationCard Component
-              </a> – Display tool calls with approval workflow
+              </a>{' '}
+              – Display tool calls with approval workflow
             </li>
             <li>
-              <a href="/reference/components/clarity-tool-result" className="text-primary underline">
+              <a
+                href="/reference/components/clarity-tool-result"
+                className="text-primary underline"
+              >
                 ClarityToolResult Component
-              </a> – Render tool results with custom UIs
+              </a>{' '}
+              – Render tool results with custom UIs
             </li>
             <li>
-              <a href="/reference/components/streaming-message" className="text-primary underline">
+              <a
+                href="/reference/components/streaming-message"
+                className="text-primary underline"
+              >
                 StreamingMessage Component
-              </a> – Display tool calls in streaming messages
+              </a>{' '}
+              – Display tool calls in streaming messages
             </li>
             <li>
-              <a href="/reference/hooks/use-clarity-chat" className="text-primary underline">
+              <a
+                href="/reference/hooks/use-clarity-chat"
+                className="text-primary underline"
+              >
                 useClarityChat Hook
-              </a> – Chat hook with tool call support
+              </a>{' '}
+              – Chat hook with tool call support
             </li>
             <li>
               <a href="/guides/agents" className="text-primary underline">
                 Agent System Guide
-              </a> – Advanced agent workflows with tools
+              </a>{' '}
+              – Advanced agent workflows with tools
             </li>
           </ul>
         </section>

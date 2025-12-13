@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'useStructuredInput - Clarity Chat Components',
-  description: 'Hook for managing structured input forms with token optimization and validation.',
+  description:
+    'Hook for managing structured input forms with token optimization and validation.',
 }
 
 const optionsProps: Prop[] = [
@@ -42,7 +42,8 @@ export default function UseStructuredInputPage() {
         <span className="docs-badge">Hook</span>
         <h1>useStructuredInput</h1>
         <p className="docs-lead">
-          Hook for managing structured input forms with token optimization, field prioritization, and validation.
+          Hook for managing structured input forms with token optimization,
+          field prioritization, and validation.
         </p>
       </div>
 
@@ -58,9 +59,7 @@ export default function UseStructuredInputPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Manage structured input form:
-        </p>
+        <p>Manage structured input form:</p>
         <CodePlayground
           initialCode={`import { useStructuredInput } from '@clarity-chat/react'
 
@@ -125,9 +124,7 @@ function PromptBuilder() {
 
       <section className="docs-section">
         <h2>Token Tracking</h2>
-        <p>
-          Track token usage per field:
-        </p>
+        <p>Track token usage per field:</p>
         <CodePlayground
           initialCode={`import { useStructuredInput } from '@clarity-chat/react'
 
@@ -153,9 +150,7 @@ function WithTokenTracking() {
 
       <section className="docs-section">
         <h2>Custom Prompt Formatting</h2>
-        <p>
-          Provide custom prompt formatting:
-        </p>
+        <p>Provide custom prompt formatting:</p>
         <CodePlayground
           initialCode={`import { useStructuredInput } from '@clarity-chat/react'
 
@@ -175,9 +170,7 @@ function CustomFormatter() {
 
       <section className="docs-section">
         <h2>Field Validation</h2>
-        <p>
-          Validate fields with custom validation functions:
-        </p>
+        <p>Validate fields with custom validation functions:</p>
         <CodePlayground
           initialCode={`import { useStructuredInput } from '@clarity-chat/react'
 
@@ -216,23 +209,44 @@ function WithValidation() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>values</code>: Current field values</li>
-          <li><code>setValue</code>: Function to update a field value</li>
-          <li><code>result</code>: Structured input result (values, formattedPrompt, tokenBreakdown, errors, isValid)</li>
-          <li><code>errors</code>: Validation errors by field ID</li>
-          <li><code>isValid</code>: Whether all required fields are valid</li>
-          <li><code>submit</code>: Function to submit and validate form</li>
-          <li><code>tokenBreakdown</code>: Token breakdown by field</li>
+          <li>
+            <code>values</code>: Current field values
+          </li>
+          <li>
+            <code>setValue</code>: Function to update a field value
+          </li>
+          <li>
+            <code>result</code>: Structured input result (values,
+            formattedPrompt, tokenBreakdown, errors, isValid)
+          </li>
+          <li>
+            <code>errors</code>: Validation errors by field ID
+          </li>
+          <li>
+            <code>isValid</code>: Whether all required fields are valid
+          </li>
+          <li>
+            <code>submit</code>: Function to submit and validate form
+          </li>
+          <li>
+            <code>tokenBreakdown</code>: Token breakdown by field
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Set appropriate <code>priority</code> levels for token optimization</li>
-          <li>Use <code>section</code> types to organize prompt structure</li>
+          <li>
+            Set appropriate <code>priority</code> levels for token optimization
+          </li>
+          <li>
+            Use <code>section</code> types to organize prompt structure
+          </li>
           <li>Enable validation for data quality</li>
-          <li>Set <code>maxTokens</code> to enforce token budgets</li>
+          <li>
+            Set <code>maxTokens</code> to enforce token budgets
+          </li>
           <li>Use custom formatters for specific prompt formats</li>
         </ul>
       </section>
@@ -240,8 +254,16 @@ function WithValidation() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/structured-input-builder">StructuredInputBuilder</a> - Structured input component</li>
-          <li><a href="/guides/token-optimization">Token Optimization Guide</a> - Optimization strategies</li>
+          <li>
+            <a href="/reference/components/structured-input-builder">
+              StructuredInputBuilder
+            </a>{' '}
+            - Structured input component
+          </li>
+          <li>
+            <a href="/guides/token-optimization">Token Optimization Guide</a> -
+            Optimization strategies
+          </li>
         </ul>
       </section>
     </div>

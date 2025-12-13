@@ -1,7 +1,11 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
+import {
+  ToastProvider,
+  ClarityToolResult,
+  createToolUIRegistry,
+} from '@clarity-chat/react'
 import type { CoreMessage } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -18,12 +22,20 @@ function WeatherResult({ data, toolCall }: { data: any; toolCall?: any }) {
     <div className="p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-2xl">🌤️</span>
-        <h3 className="font-semibold">Weather in {toolCall?.args?.location || 'Unknown'}</h3>
+        <h3 className="font-semibold">
+          Weather in {toolCall?.args?.location || 'Unknown'}
+        </h3>
       </div>
       <div className="space-y-1">
-        <p><strong>Temperature:</strong> {data.temperature}°C</p>
-        <p><strong>Condition:</strong> {data.condition}</p>
-        <p><strong>Humidity:</strong> {data.humidity}%</p>
+        <p>
+          <strong>Temperature:</strong> {data.temperature}°C
+        </p>
+        <p>
+          <strong>Condition:</strong> {data.condition}
+        </p>
+        <p>
+          <strong>Humidity:</strong> {data.humidity}%
+        </p>
       </div>
     </div>
   )
@@ -114,30 +126,35 @@ const clarityToolResultProps: Prop[] = [
     name: 'registry',
     type: 'ToolComponentRegistry',
     required: true,
-    description: 'Registry mapping tool names to React components. Created with createToolUIRegistry().',
+    description:
+      'Registry mapping tool names to React components. Created with createToolUIRegistry().',
   },
   {
     name: 'toolCall',
     type: 'ToolCall',
     required: true,
-    description: 'Tool call information containing name, args, and optional id.',
+    description:
+      'Tool call information containing name, args, and optional id.',
   },
   {
     name: 'result',
     type: 'unknown',
     required: true,
-    description: 'Tool execution result. Passed as `data` prop to the registered component.',
+    description:
+      'Tool execution result. Passed as `data` prop to the registered component.',
   },
   {
     name: 'messages',
     type: 'CoreMessage[]',
     required: true,
-    description: 'All messages in the conversation. Passed to tool components for context.',
+    description:
+      'All messages in the conversation. Passed to tool components for context.',
   },
   {
     name: 'fallback',
     type: 'React.ComponentType<{ toolCall: ToolCall; result: unknown }>',
-    description: 'Custom fallback component for unregistered tools. Defaults to JSON display.',
+    description:
+      'Custom fallback component for unregistered tools. Defaults to JSON display.',
   },
   {
     name: 'componentProps',
@@ -154,12 +171,14 @@ const clarityToolResultProps: Prop[] = [
     name: 'enableErrorBoundary',
     type: 'boolean',
     default: 'true',
-    description: 'Wrap tool component in error boundary to catch rendering errors.',
+    description:
+      'Wrap tool component in error boundary to catch rendering errors.',
   },
   {
     name: 'errorFallback',
     type: 'React.ComponentType<{ error: Error; toolCall: ToolCall }>',
-    description: 'Custom error fallback component. Used when tool component throws an error.',
+    description:
+      'Custom error fallback component. Used when tool component throws an error.',
   },
   {
     name: 'className',
@@ -167,7 +186,6 @@ const clarityToolResultProps: Prop[] = [
     description: 'Additional CSS classes to apply to the container element.',
   },
 ]
-
 
 export default function ClarityToolResultPage() {
   return (
@@ -178,15 +196,16 @@ export default function ClarityToolResultPage() {
         <h1>ClarityToolResult</h1>
 
         <p className="lead">
-          Renders tool execution results using registered UI components. Provides a registry pattern
-          for mapping tool names to custom React components, with automatic fallback for unregistered tools.
+          Renders tool execution results using registered UI components.
+          Provides a registry pattern for mapping tool names to custom React
+          components, with automatic fallback for unregistered tools.
         </p>
 
         <Callout type="info">
           <p>
-            ClarityToolResult uses a registry pattern to map tool names to React components.
-            This allows you to create custom, user-friendly UI for each tool's results instead
-            of showing raw JSON.
+            ClarityToolResult uses a registry pattern to map tool names to React
+            components. This allows you to create custom, user-friendly UI for
+            each tool's results instead of showing raw JSON.
           </p>
         </Callout>
 
@@ -195,7 +214,8 @@ export default function ClarityToolResultPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Try different tool results! See how registered tools get custom UI while unregistered ones fall back to JSON.
+            Try different tool results! See how registered tools get custom UI
+            while unregistered ones fall back to JSON.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -236,7 +256,8 @@ import '@clarity-chat/react/styles.css'`}
         <h2 id="basic-usage">Basic Usage</h2>
 
         <p>
-          Create a registry of tool components and use ClarityToolResult to render results:
+          Create a registry of tool components and use ClarityToolResult to
+          render results:
         </p>
 
         <ComponentPreview
@@ -326,9 +347,7 @@ export { toolRegistry }`}
 
         <h2 id="tool-component-props">Tool Component Props</h2>
 
-        <p>
-          Tool components receive the following props:
-        </p>
+        <p>Tool components receive the following props:</p>
 
         <EnhancedCodeBlock
           code={`interface ToolComponentProps<TData = any> {
@@ -350,9 +369,7 @@ export { toolRegistry }`}
 
         <h2 id="multiple-tools">Multiple Tools</h2>
 
-        <p>
-          Register multiple tools in a single registry:
-        </p>
+        <p>Register multiple tools in a single registry:</p>
 
         <ComponentPreview
           title="Multiple Tool Results"
@@ -409,7 +426,8 @@ const registry = createToolUIRegistry({
         <h2 id="fallback">Fallback for Unregistered Tools</h2>
 
         <p>
-          When a tool isn't registered, ClarityToolResult falls back to displaying JSON:
+          When a tool isn't registered, ClarityToolResult falls back to
+          displaying JSON:
         </p>
 
         <ComponentPreview
@@ -446,9 +464,7 @@ function UnregisteredTool() {
 
         <h2 id="custom-fallback">Custom Fallback Component</h2>
 
-        <p>
-          Provide a custom fallback component for unregistered tools:
-        </p>
+        <p>Provide a custom fallback component for unregistered tools:</p>
 
         <EnhancedCodeBlock
           code={`import { ClarityToolResult, createToolUIRegistry } from '@clarity-chat/react'
@@ -484,7 +500,8 @@ const registry = createToolUIRegistry({
         <h2 id="error-handling">Error Handling</h2>
 
         <p>
-          ClarityToolResult includes error boundary support to catch rendering errors:
+          ClarityToolResult includes error boundary support to catch rendering
+          errors:
         </p>
 
         <EnhancedCodeBlock
@@ -723,19 +740,24 @@ function StreamingWithToolResults() {
 
         <ul>
           <li>
-            <strong>Create reusable components:</strong> Design tool result components to be reusable across your app
+            <strong>Create reusable components:</strong> Design tool result
+            components to be reusable across your app
           </li>
           <li>
-            <strong>Handle errors gracefully:</strong> Use error boundaries and provide fallbacks
+            <strong>Handle errors gracefully:</strong> Use error boundaries and
+            provide fallbacks
           </li>
           <li>
-            <strong>Type your data:</strong> Use TypeScript to type tool result data for better developer experience
+            <strong>Type your data:</strong> Use TypeScript to type tool result
+            data for better developer experience
           </li>
           <li>
-            <strong>Keep components focused:</strong> Each tool component should focus on rendering that tool's results
+            <strong>Keep components focused:</strong> Each tool component should
+            focus on rendering that tool's results
           </li>
           <li>
-            <strong>Provide fallbacks:</strong> Always have a fallback for unregistered tools
+            <strong>Provide fallbacks:</strong> Always have a fallback for
+            unregistered tools
           </li>
         </ul>
 
@@ -744,7 +766,10 @@ function StreamingWithToolResults() {
         <p>ClarityToolResult maintains accessibility:</p>
 
         <ul>
-          <li>✅ Error boundaries prevent crashes from affecting the rest of the UI</li>
+          <li>
+            ✅ Error boundaries prevent crashes from affecting the rest of the
+            UI
+          </li>
           <li>✅ Semantic HTML in tool components</li>
           <li>✅ Screen reader compatibility</li>
         </ul>
@@ -753,16 +778,26 @@ function StreamingWithToolResults() {
 
         <ul>
           <li>
-            <a href="/reference/components/tool-invocation-card">ToolInvocationCard</a> - Display tool calls with approval workflow
+            <a href="/reference/components/tool-invocation-card">
+              ToolInvocationCard
+            </a>{' '}
+            - Display tool calls with approval workflow
           </li>
           <li>
-            <a href="/reference/components/agent-run-feed">AgentRunFeed</a> - Display multiple agent execution steps
+            <a href="/reference/components/agent-run-feed">AgentRunFeed</a> -
+            Display multiple agent execution steps
           </li>
           <li>
-            <a href="/reference/components/streaming-message">StreamingMessage</a> - Display streaming responses
+            <a href="/reference/components/streaming-message">
+              StreamingMessage
+            </a>{' '}
+            - Display streaming responses
           </li>
           <li>
-            <a href="/reference/hooks/use-clarity-chat-with-tools">useClarityChatWithTools</a> - Hook for tool-enabled chat
+            <a href="/reference/hooks/use-clarity-chat-with-tools">
+              useClarityChatWithTools
+            </a>{' '}
+            - Hook for tool-enabled chat
           </li>
         </ul>
 

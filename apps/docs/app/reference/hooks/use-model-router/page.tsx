@@ -6,7 +6,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'useModelRouter - Clarity Chat Hooks',
-  description: 'Intelligently route requests to different models based on cost, latency, and quality.',
+  description:
+    'Intelligently route requests to different models based on cost, latency, and quality.',
 }
 
 export default function UseModelRouterPage() {
@@ -16,15 +17,17 @@ export default function UseModelRouterPage() {
         <span className="docs-badge">Hook</span>
         <h1>useModelRouter</h1>
         <p className="docs-lead">
-          Route requests to optimal models based on complexity, cost, and performance requirements.
+          Route requests to optimal models based on complexity, cost, and
+          performance requirements.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>useModelRouter</code> hook automatically selects the best model for each request
-          based on configurable routing rules, balancing cost, speed, and quality.
+          The <code>useModelRouter</code> hook automatically selects the best
+          model for each request based on configurable routing rules, balancing
+          cost, speed, and quality.
         </p>
       </section>
 
@@ -82,48 +85,54 @@ render(<SmartChat />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="useModelRouter Parameters"
-          data={hookParams}
-        />
+        <ApiTable title="useModelRouter Parameters" data={hookParams} />
       </section>
 
       <section className="docs-section">
         <h2>Routing Strategies</h2>
-        
+
         <h3>Cost-Optimized</h3>
         <p>Use cheapest model that meets quality requirements:</p>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   strategy: 'cost-optimized',
   qualityThreshold: 0.8  // Minimum acceptable quality
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Latency-Optimized</h3>
         <p>Use fastest model:</p>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   strategy: 'latency-optimized',
   maxLatencyMs: 2000
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Quality-Optimized</h3>
         <p>Use highest quality model:</p>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   strategy: 'quality-optimized',
   maxCostPer1kTokens: 0.05  // Cost ceiling
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Complexity-Based</h3>
         <p>Route based on task complexity:</p>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   strategy: 'complexity-based',
   simpleTaskModel: 'gpt-3.5-turbo',
   complexTaskModel: 'gpt-4',
   complexityThreshold: 0.7
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Custom Rules</h3>
         <p>Define custom routing logic:</p>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   strategy: 'custom',
   routingFn: async (message, models) => {
     if (message.includes('translate')) {
@@ -134,12 +143,14 @@ render(<SmartChat />)`}
     }
     return models.find(m => m.quality === 'high')
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Advanced Example</h2>
-        <pre><code>{`import { useModelRouter } from '@clarity-chat/react/hooks'
+        <pre>
+          <code>{`import { useModelRouter } from '@clarity-chat/react/hooks'
 
 function ProductionChat() {
   const { route, stats, override } = useModelRouter({
@@ -218,26 +229,34 @@ function ProductionChat() {
       <ChatWindow onSend={handleSend} />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Start with cost-optimized strategy and monitor quality metrics</li>
+          <li>
+            Start with cost-optimized strategy and monitor quality metrics
+          </li>
           <li>Set up fallback chains for reliability</li>
           <li>Track routing decisions for analysis and optimization</li>
           <li>A/B test different strategies with a subset of traffic</li>
           <li>Set budget limits to prevent runaway costs</li>
           <li>Cache routing decisions for similar queries</li>
-          <li>Consider context window limits when routing long conversations</li>
+          <li>
+            Consider context window limits when routing long conversations
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/hooks/use-token-optimization" className="docs-card">
+          <a
+            href="/reference/hooks/use-token-optimization"
+            className="docs-card"
+          >
             <h3>useTokenOptimization</h3>
             <p>Reduce token usage</p>
           </a>
@@ -256,36 +275,36 @@ const hookParams = [
     name: 'config',
     type: 'ModelRouterConfig',
     required: true,
-    description: 'Router configuration'
+    description: 'Router configuration',
   },
   {
     name: 'config.models',
     type: 'Model[]',
     required: true,
-    description: 'Available models'
+    description: 'Available models',
   },
   {
     name: 'config.strategy',
     type: "'cost-optimized' | 'latency-optimized' | 'quality-optimized' | 'complexity-based' | 'adaptive' | 'custom'",
     required: true,
-    description: 'Routing strategy'
+    description: 'Routing strategy',
   },
   {
     name: 'config.fallbacks',
     type: 'Fallback[]',
     required: false,
-    description: 'Fallback model chain'
+    description: 'Fallback model chain',
   },
   {
     name: 'config.budget',
     type: 'BudgetConfig',
     required: false,
-    description: 'Cost constraints'
+    description: 'Cost constraints',
   },
   {
     name: 'config.onRoute',
     type: '(model: Model, message: string, decision: Decision) => void',
     required: false,
-    description: 'Callback after routing decision'
-  }
+    description: 'Callback after routing decision',
+  },
 ]

@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Performance Optimization Patterns - Clarity Chat Components',
-  description: 'Learn performance optimization patterns for Clarity Chat Components including memoization, virtualization, and lazy loading.',
+  description:
+    'Learn performance optimization patterns for Clarity Chat Components including memoization, virtualization, and lazy loading.',
 }
 
 export default function PerformanceOptimizationPatternsPage() {
@@ -17,7 +17,9 @@ export default function PerformanceOptimizationPatternsPage() {
         <span className="docs-badge">Guide</span>
         <h1>Performance Optimization Patterns</h1>
         <p className="docs-lead">
-          Learn performance optimization patterns for Clarity Chat Components including memoization, virtualization, lazy loading, and code splitting.
+          Learn performance optimization patterns for Clarity Chat Components
+          including memoization, virtualization, lazy loading, and code
+          splitting.
         </p>
       </div>
 
@@ -33,9 +35,7 @@ export default function PerformanceOptimizationPatternsPage() {
 
       <section className="docs-section">
         <h2>Memoization</h2>
-        <p>
-          Use React.memo and useMemo for optimization:
-        </p>
+        <p>Use React.memo and useMemo for optimization:</p>
         <CodePlayground
           initialCode={`import { memo, useMemo } from 'react'
 import { Message } from '@clarity-chat/react'
@@ -66,9 +66,7 @@ function ChatWindow({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Virtualization</h2>
-        <p>
-          Virtualize long message lists:
-        </p>
+        <p>Virtualize long message lists:</p>
         <CodePlayground
           initialCode={`import { useVirtualizer } from '@tanstack/react-virtual'
 import { MessageList } from '@clarity-chat/react'
@@ -113,9 +111,7 @@ function VirtualizedMessageList({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Lazy Loading</h2>
-        <p>
-          Lazy load components and features:
-        </p>
+        <p>Lazy load components and features:</p>
         <CodePlayground
           initialCode={`import { lazy, Suspense } from 'react'
 import { ChatWindow } from '@clarity-chat/react'
@@ -149,9 +145,7 @@ function LazyLoadedChat() {
 
       <section className="docs-section">
         <h2>Code Splitting</h2>
-        <p>
-          Split code by route or feature:
-        </p>
+        <p>Split code by route or feature:</p>
         <CodePlayground
           initialCode={`// app/chat/page.tsx
 import dynamic from 'next/dynamic'
@@ -182,9 +176,7 @@ function ChatWithFeatures() {
 
       <section className="docs-section">
         <h2>Debouncing and Throttling</h2>
-        <p>
-          Optimize frequent updates:
-        </p>
+        <p>Optimize frequent updates:</p>
         <CodePlayground
           initialCode={`import { useDebouncedCallback } from 'use-debounce'
 import { ChatInput } from '@clarity-chat/react'
@@ -231,8 +223,18 @@ function OptimizedChatInput() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/performance-analytics-dashboard">PerformanceAnalyticsDashboard</a> - Performance monitoring</li>
-          <li><a href="/guides/state-management-patterns">State Management Patterns</a> - State optimization</li>
+          <li>
+            <a href="/reference/components/performance-analytics-dashboard">
+              PerformanceAnalyticsDashboard
+            </a>{' '}
+            - Performance monitoring
+          </li>
+          <li>
+            <a href="/guides/state-management-patterns">
+              State Management Patterns
+            </a>{' '}
+            - State optimization
+          </li>
         </ul>
       </section>
     </div>

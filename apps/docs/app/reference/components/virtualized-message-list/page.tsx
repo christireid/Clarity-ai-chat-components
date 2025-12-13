@@ -1,7 +1,11 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
-import { ToastProvider, VirtualizedMessageList, Message } from '@clarity-chat/react'
+import {
+  ToastProvider,
+  VirtualizedMessageList,
+  Message,
+} from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -12,7 +16,6 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
-
 
 // Generate demo messages
 function generateDemoMessages(count: number): MessageType[] {
@@ -40,7 +43,10 @@ function BasicVirtualizedDemo() {
   }, [])
 
   return (
-    <div className="w-full max-w-2xl border border-border rounded-lg bg-background" style={{ height: '400px' }}>
+    <div
+      className="w-full max-w-2xl border border-border rounded-lg bg-background"
+      style={{ height: '400px' }}
+    >
       <VirtualizedMessageList
         messages={messages}
         renderMessage={renderMessage}
@@ -55,46 +61,54 @@ const virtualizedMessageListProps: Prop[] = [
     name: 'messages',
     type: 'Message[]',
     required: true,
-    description: 'Array of message objects to render. Works efficiently with thousands of messages.',
+    description:
+      'Array of message objects to render. Works efficiently with thousands of messages.',
   },
   {
     name: 'renderMessage',
     type: '(message: Message, index: number) => React.ReactNode',
     required: true,
-    description: 'Render function for each message. Receives the message object and its index.',
+    description:
+      'Render function for each message. Receives the message object and its index.',
   },
   {
     name: 'estimatedItemSize',
     type: 'number',
     default: '150',
-    description: 'Initial height estimate in pixels. Used before actual measurement. Should be close to average message height.',
+    description:
+      'Initial height estimate in pixels. Used before actual measurement. Should be close to average message height.',
   },
   {
     name: 'overscanCount',
     type: 'number',
     default: '3',
-    description: 'Number of items to render outside the visible area. Prevents blank gaps during scrolling.',
+    description:
+      'Number of items to render outside the visible area. Prevents blank gaps during scrolling.',
   },
   {
     name: 'autoScrollToBottom',
     type: 'boolean',
     default: 'true',
-    description: 'Automatically scroll to bottom when new messages arrive (if user is near bottom).',
+    description:
+      'Automatically scroll to bottom when new messages arrive (if user is near bottom).',
   },
   {
     name: 'onScroll',
     type: '(scrollOffset: number) => void',
-    description: 'Callback fired when scroll position changes. Useful for analytics or multi-pane layouts.',
+    description:
+      'Callback fired when scroll position changes. Useful for analytics or multi-pane layouts.',
   },
   {
     name: 'threshold',
     type: 'number',
-    description: 'Message count threshold for enabling virtualization. If not set, virtualization is always enabled.',
+    description:
+      'Message count threshold for enabling virtualization. If not set, virtualization is always enabled.',
   },
   {
     name: 'itemKey',
     type: '(index: number, data: Message[]) => string',
-    description: 'Custom key resolver function. Useful for optimistic updates or synthetic IDs. Defaults to message.id.',
+    description:
+      'Custom key resolver function. Useful for optimistic updates or synthetic IDs. Defaults to message.id.',
   },
   {
     name: 'className',
@@ -116,8 +130,9 @@ export default function VirtualizedMessageListPage() {
             </h1>
 
             <p className="text-xl text-text-secondary leading-relaxed">
-              High-performance message rendering for conversations with thousands of messages.
-              Uses virtual scrolling (windowing) to maintain 60fps performance regardless of list size.
+              High-performance message rendering for conversations with
+              thousands of messages. Uses virtual scrolling (windowing) to
+              maintain 60fps performance regardless of list size.
             </p>
           </div>
         </ScrollReveal>
@@ -126,8 +141,9 @@ export default function VirtualizedMessageListPage() {
           <Callout type="info" className="mb-8">
             <p>
               For smaller conversations (&lt;100 messages), use{' '}
-              <a href="/reference/components/message-list">MessageList</a> instead.
-              VirtualizedMessageList is optimized for large message lists (1000+ messages).
+              <a href="/reference/components/message-list">MessageList</a>{' '}
+              instead. VirtualizedMessageList is optimized for large message
+              lists (1000+ messages).
             </p>
           </Callout>
         </ScrollReveal>
@@ -140,7 +156,8 @@ export default function VirtualizedMessageListPage() {
           <section className="my-12">
             <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
             <p className="mb-6 text-muted-foreground">
-              Try scrolling through 100 messages! Notice how smoothly it performs thanks to virtualization.
+              Try scrolling through 100 messages! Notice how smoothly it
+              performs thanks to virtualization.
             </p>
             <CodePlayground
               initialCode={`function Example() {
@@ -190,8 +207,9 @@ import type { Message as MessageType } from '@clarity-chat/types'`}
         <ScrollReveal delay={0.5}>
           <h2 id="basic-usage">Basic Usage</h2>
           <p className="mb-4">
-            VirtualizedMessageList requires a <code>renderMessage</code> function to render each message.
-            This gives you full control over message rendering:
+            VirtualizedMessageList requires a <code>renderMessage</code>{' '}
+            function to render each message. This gives you full control over
+            message rendering:
           </p>
 
           <ComponentPreview
@@ -231,21 +249,26 @@ function SimpleVirtualizedList() {
             <div>
               <h2 id="why-virtualization">Why Virtualization?</h2>
               <p className="mb-4 text-muted-foreground">
-                Virtual scrolling only renders messages that are visible in the viewport, plus a few
-                extra for smooth scrolling. This provides significant performance benefits:
+                Virtual scrolling only renders messages that are visible in the
+                viewport, plus a few extra for smooth scrolling. This provides
+                significant performance benefits:
               </p>
               <ul className="space-y-2">
                 <li>
-                  ⚡ <strong>Memory efficient:</strong> Only visible messages are in the DOM
+                  ⚡ <strong>Memory efficient:</strong> Only visible messages
+                  are in the DOM
                 </li>
                 <li>
-                  🚀 <strong>Fast rendering:</strong> Initial render time is constant regardless of message count
+                  🚀 <strong>Fast rendering:</strong> Initial render time is
+                  constant regardless of message count
                 </li>
                 <li>
-                  🎞️ <strong>Smooth scrolling:</strong> No performance degradation with thousands of messages
+                  🎞️ <strong>Smooth scrolling:</strong> No performance
+                  degradation with thousands of messages
                 </li>
                 <li>
-                  📱 <strong>Better UX:</strong> Maintains 60fps scrolling even with 10,000+ messages
+                  📱 <strong>Better UX:</strong> Maintains 60fps scrolling even
+                  with 10,000+ messages
                 </li>
               </ul>
             </div>
@@ -282,12 +305,13 @@ function SimpleVirtualizedList() {
 
         <ScrollReveal delay={0.8}>
           <h2 id="advanced-usage">Advanced Usage</h2>
-          
+
           <div className="space-y-8">
             <div>
               <h3 className="text-xl font-semibold mb-4">Scroll Management</h3>
               <p className="mb-4 text-muted-foreground">
-                Control auto-scrolling and track scroll position for features like "Scroll to Bottom" buttons.
+                Control auto-scrolling and track scroll position for features
+                like "Scroll to Bottom" buttons.
               </p>
               <EnhancedCodeBlock
                 language="tsx"
@@ -305,7 +329,8 @@ function SimpleVirtualizedList() {
             <div>
               <h3 className="text-xl font-semibold mb-4">Custom Item Keys</h3>
               <p className="mb-4 text-muted-foreground">
-                Provide a custom key function for better React reconciliation, especially with dynamic updates.
+                Provide a custom key function for better React reconciliation,
+                especially with dynamic updates.
               </p>
               <EnhancedCodeBlock
                 language="tsx"
@@ -325,13 +350,23 @@ function SimpleVirtualizedList() {
         <ScrollReveal delay={0.9}>
           <h2 id="related">Related</h2>
           <div className="grid md:grid-cols-2 gap-4">
-            <a href="/reference/components/message-list" className="block p-4 border rounded-lg hover:border-brand-500 transition-colors">
+            <a
+              href="/reference/components/message-list"
+              className="block p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
               <h3 className="font-semibold mb-1">MessageList</h3>
-              <p className="text-sm text-muted-foreground">Standard list for smaller conversations.</p>
+              <p className="text-sm text-muted-foreground">
+                Standard list for smaller conversations.
+              </p>
             </a>
-            <a href="/reference/components/chat-window" className="block p-4 border rounded-lg hover:border-brand-500 transition-colors">
+            <a
+              href="/reference/components/chat-window"
+              className="block p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
               <h3 className="font-semibold mb-1">ChatWindow</h3>
-              <p className="text-sm text-muted-foreground">Full chat interface component.</p>
+              <p className="text-sm text-muted-foreground">
+                Full chat interface component.
+              </p>
             </a>
           </div>
         </ScrollReveal>

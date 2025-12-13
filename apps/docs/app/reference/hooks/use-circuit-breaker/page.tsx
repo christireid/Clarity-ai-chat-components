@@ -16,7 +16,8 @@ const hookProps: Prop[] = [
     name: 'resetTimeout',
     type: 'number',
     default: '30000',
-    description: 'Time in ms to wait before attempting to close the circuit (half-open).',
+    description:
+      'Time in ms to wait before attempting to close the circuit (half-open).',
   },
   {
     name: 'fallback',
@@ -58,7 +59,6 @@ const returnProps: Prop[] = [
   },
 ]
 
-
 export default function UseCircuitBreakerPage() {
   return (
     <>
@@ -67,8 +67,9 @@ export default function UseCircuitBreakerPage() {
       <h1>useCircuitBreaker</h1>
 
       <p className="lead">
-        A robust implementation of the Circuit Breaker pattern for React. It prevents
-        cascading failures by stopping requests to a failing service after a threshold is reached.
+        A robust implementation of the Circuit Breaker pattern for React. It
+        prevents cascading failures by stopping requests to a failing service
+        after a threshold is reached.
       </p>
 
       <h2 id="import">Import</h2>
@@ -109,9 +110,16 @@ const handleFetch = async () => {
           <strong>Circuit States:</strong>
         </p>
         <ul>
-          <li><strong>CLOSED:</strong> Normal operation. Requests go through.</li>
-          <li><strong>OPEN:</strong> Failing. Requests are blocked immediately.</li>
-          <li><strong>HALF_OPEN:</strong> Testing. Allows one request to check if service recovered.</li>
+          <li>
+            <strong>CLOSED:</strong> Normal operation. Requests go through.
+          </li>
+          <li>
+            <strong>OPEN:</strong> Failing. Requests are blocked immediately.
+          </li>
+          <li>
+            <strong>HALF_OPEN:</strong> Testing. Allows one request to check if
+            service recovered.
+          </li>
         </ul>
       </Callout>
 

@@ -22,7 +22,8 @@ const returnProps: Prop[] = [
   {
     name: 'execute',
     type: '<T>(key: string, fn: () => Promise<T>) => Promise<T>',
-    description: 'Execute a unique request. Reuses pending promise if key matches.',
+    description:
+      'Execute a unique request. Reuses pending promise if key matches.',
   },
   {
     name: 'executeDebounced',
@@ -41,7 +42,6 @@ const returnProps: Prop[] = [
   },
 ]
 
-
 export default function UseRequestDeduplicationPage() {
   return (
     <>
@@ -50,8 +50,9 @@ export default function UseRequestDeduplicationPage() {
       <h1>useRequestDeduplication</h1>
 
       <p className="lead">
-        Prevents duplicate API requests from double-clicks, React StrictMode re-renders,
-        or rapid user interactions. Identical concurrent requests share the same promise.
+        Prevents duplicate API requests from double-clicks, React StrictMode
+        re-renders, or rapid user interactions. Identical concurrent requests
+        share the same promise.
       </p>
 
       <h2 id="import">Import</h2>

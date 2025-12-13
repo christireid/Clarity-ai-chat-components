@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Provider Pattern Guide - Clarity Chat Components',
-  description: 'Learn how to use provider patterns for shared configuration, state, and context in Clarity Chat Components.',
+  description:
+    'Learn how to use provider patterns for shared configuration, state, and context in Clarity Chat Components.',
 }
 
 export default function ProviderPatternPage() {
@@ -17,7 +17,8 @@ export default function ProviderPatternPage() {
         <span className="docs-badge">Guide</span>
         <h1>Provider Pattern</h1>
         <p className="docs-lead">
-          Learn how to use provider patterns for shared configuration, state, and context across Clarity Chat Components.
+          Learn how to use provider patterns for shared configuration, state,
+          and context across Clarity Chat Components.
         </p>
       </div>
 
@@ -33,9 +34,7 @@ export default function ProviderPatternPage() {
 
       <section className="docs-section">
         <h2>MemoryProvider</h2>
-        <p>
-          Use MemoryProvider for conversation memory:
-        </p>
+        <p>Use MemoryProvider for conversation memory:</p>
         <CodePlayground
           initialCode={`import { MemoryProvider, useMemoryContext } from '@clarity-chat/react'
 
@@ -67,9 +66,7 @@ function ChatApp() {
 
       <section className="docs-section">
         <h2>ThemeProvider</h2>
-        <p>
-          Use ThemeProvider for theming:
-        </p>
+        <p>Use ThemeProvider for theming:</p>
         <CodePlayground
           initialCode={`import { ThemeProvider } from '@clarity-chat/react'
 
@@ -104,9 +101,7 @@ function CustomThemedChat() {
 
       <section className="docs-section">
         <h2>Custom Provider</h2>
-        <p>
-          Create custom providers:
-        </p>
+        <p>Create custom providers:</p>
         <CodePlayground
           initialCode={`import { createContext, useContext, useState } from 'react'
 
@@ -171,9 +166,7 @@ function ChatComponent() {
 
       <section className="docs-section">
         <h2>Provider Composition</h2>
-        <p>
-          Compose multiple providers:
-        </p>
+        <p>Compose multiple providers:</p>
         <CodePlayground
           initialCode={`import {
   MemoryProvider,
@@ -218,9 +211,20 @@ function AppWithProviders() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/composition-patterns">Composition Patterns</a> - Composition guide</li>
-          <li><a href="/guides/state-management-patterns">State Management Patterns</a> - State management</li>
-          <li><a href="/reference/components/memory-provider">MemoryProvider</a> - Memory provider component</li>
+          <li>
+            <a href="/guides/composition-patterns">Composition Patterns</a> -
+            Composition guide
+          </li>
+          <li>
+            <a href="/guides/state-management-patterns">
+              State Management Patterns
+            </a>{' '}
+            - State management
+          </li>
+          <li>
+            <a href="/reference/components/memory-provider">MemoryProvider</a> -
+            Memory provider component
+          </li>
         </ul>
       </section>
     </div>

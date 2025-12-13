@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Progressive Web App Recipe - Clarity Chat Components',
-  description: 'Build a Progressive Web App (PWA) with offline support, service workers, and app-like experience.',
+  description:
+    'Build a Progressive Web App (PWA) with offline support, service workers, and app-like experience.',
 }
 
 export default function ProgressiveWebAppRecipePage() {
@@ -17,7 +17,8 @@ export default function ProgressiveWebAppRecipePage() {
         <span className="docs-badge">Recipe</span>
         <h1>Progressive Web App</h1>
         <p className="docs-lead">
-          Build a Progressive Web App (PWA) with offline support, service workers, push notifications, and app-like experience.
+          Build a Progressive Web App (PWA) with offline support, service
+          workers, push notifications, and app-like experience.
         </p>
       </div>
 
@@ -34,15 +35,14 @@ export default function ProgressiveWebAppRecipePage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This recipe shows how to build a Progressive Web App (PWA) with offline support, push notifications, and app-like experience.
+          This recipe shows how to build a Progressive Web App (PWA) with
+          offline support, push notifications, and app-like experience.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Service Worker Setup</h2>
-        <p>
-          Register service worker for offline support:
-        </p>
+        <p>Register service worker for offline support:</p>
         <CodePlayground
           initialCode={`// public/sw.js
 self.addEventListener('install', (event) => {
@@ -74,9 +74,7 @@ if ('serviceWorker' in navigator) {
 
       <section className="docs-section">
         <h2>Offline Chat with IndexedDB</h2>
-        <p>
-          Use OfflineChatSync for offline functionality:
-        </p>
+        <p>Use OfflineChatSync for offline functionality:</p>
         <CodePlayground
           initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -113,9 +111,7 @@ function PWAChat({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>App Manifest</h2>
-        <p>
-          Create app manifest for PWA:
-        </p>
+        <p>Create app manifest for PWA:</p>
         <CodePlayground
           initialCode={`// public/manifest.json
 {
@@ -147,9 +143,7 @@ function PWAChat({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Push Notifications</h2>
-        <p>
-          Enable push notifications:
-        </p>
+        <p>Enable push notifications:</p>
         <CodePlayground
           initialCode={`async function requestNotificationPermission() {
   if ('Notification' in window) {
@@ -180,9 +174,7 @@ React.useEffect(() => {
 
       <section className="docs-section">
         <h2>Install Prompt</h2>
-        <p>
-          Handle app installation:
-        </p>
+        <p>Handle app installation:</p>
         <CodePlayground
           initialCode={`function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = React.useState<any>(null)
@@ -222,9 +214,7 @@ React.useEffect(() => {
 
       <section className="docs-section">
         <h2>Complete PWA Setup</h2>
-        <p>
-          Complete PWA implementation:
-        </p>
+        <p>Complete PWA implementation:</p>
         <CodePlayground
           initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
 import { useEffect, useState } from 'react'
@@ -283,9 +273,20 @@ function PWAApp() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/offline-chat-sync">OfflineChatSync</a> - Offline sync component</li>
-          <li><a href="/reference/hooks/use-offline-chat">useOfflineChat</a> - Offline chat hook</li>
-          <li><a href="/cookbook/offline-first-chat">Offline-First Chat Recipe</a> - Offline implementation</li>
+          <li>
+            <a href="/reference/components/offline-chat-sync">
+              OfflineChatSync
+            </a>{' '}
+            - Offline sync component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-offline-chat">useOfflineChat</a> -
+            Offline chat hook
+          </li>
+          <li>
+            <a href="/cookbook/offline-first-chat">Offline-First Chat Recipe</a>{' '}
+            - Offline implementation
+          </li>
         </ul>
       </section>
     </div>

@@ -3,7 +3,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-
 export const metadata: Metadata = {
   title: 'Performance Guide - Clarity Chat',
   description:
@@ -27,14 +26,21 @@ export default function PerformanceGuidePage() {
         <h2>Targets &amp; Baselines</h2>
         <ul>
           <li>🚀 Initial render under 200&nbsp;ms on mid-tier laptops</li>
-          <li>⚡ Re-renders under 16&nbsp;ms (60&nbsp;fps) even during streaming</li>
-          <li>🧠 Memory usage stays below 80% of heap limit on long sessions</li>
-          <li>📈 Bundle size &lt; 180&nbsp;KB for the main React entry (pre-tree-shake)</li>
+          <li>
+            ⚡ Re-renders under 16&nbsp;ms (60&nbsp;fps) even during streaming
+          </li>
+          <li>
+            🧠 Memory usage stays below 80% of heap limit on long sessions
+          </li>
+          <li>
+            📈 Bundle size &lt; 180&nbsp;KB for the main React entry
+            (pre-tree-shake)
+          </li>
         </ul>
         <Callout type="info">
           The React package is aggressively memoized and tree-shakeable. Use the
-          supplied monitoring widgets to keep an eye on your own usage patterns in
-          staging and production.
+          supplied monitoring widgets to keep an eye on your own usage patterns
+          in staging and production.
         </Callout>
       </section>
 
@@ -128,9 +134,9 @@ function ChatWithMetrics() {
 }`}
         />
         <Callout type="tip">
-          Wrap dashboards in <code>{`process.env.NODE_ENV !== 'production'`}</code>{' '}
-          checks or a “Developer Mode” toggle so they do not leak into end-user
-          bundles.
+          Wrap dashboards in{' '}
+          <code>{`process.env.NODE_ENV !== 'production'`}</code> checks or a
+          “Developer Mode” toggle so they do not leak into end-user bundles.
         </Callout>
       </section>
 
@@ -153,8 +159,8 @@ npm run size`}
         />
         <p>
           The reports live in <code>bundle-reports/</code> and{' '}
-          <code>benchmark-results/</code>. Commit them as build artifacts or pipe
-          to your observability stack.
+          <code>benchmark-results/</code>. Commit them as build artifacts or
+          pipe to your observability stack.
         </p>
       </section>
 
@@ -208,8 +214,8 @@ async function streamWithTracing(request: ChatRequest) {
 }`}
         />
         <p>
-          Send these traces to observability backends like Datadog, Honeycomb, or
-          OpenTelemetry (implement the <code>ObservabilityBackend</code>{' '}
+          Send these traces to observability backends like Datadog, Honeycomb,
+          or OpenTelemetry (implement the <code>ObservabilityBackend</code>{' '}
           interface). Correlate render spikes with API latency to pinpoint which
           models, browsers, or tenants need optimizations.
         </p>
@@ -220,18 +226,27 @@ async function streamWithTracing(request: ChatRequest) {
         <ul>
           <li>✅ Virtualize message lists when {'>'}400 items</li>
           <li>✅ Debounce streaming updates to 30–60&nbsp;ms intervals</li>
-          <li>✅ Use <code>startTransition</code> (built into <code>useChatEnhanced</code>) for heavy updates</li>
-          <li>✅ Memoize expensive render props (Markdown renderer, code blocks)</li>
-          <li>✅ Lazy-load rarely used enterprise widgets (UsageDashboard, AI Ops)</li>
-          <li>✅ Monitor <code>renderCount</code> in staging and ensure regression alerts</li>
+          <li>
+            ✅ Use <code>startTransition</code> (built into{' '}
+            <code>useChatEnhanced</code>) for heavy updates
+          </li>
+          <li>
+            ✅ Memoize expensive render props (Markdown renderer, code blocks)
+          </li>
+          <li>
+            ✅ Lazy-load rarely used enterprise widgets (UsageDashboard, AI Ops)
+          </li>
+          <li>
+            ✅ Monitor <code>renderCount</code> in staging and ensure regression
+            alerts
+          </li>
         </ul>
         <Callout type="warning">
-          Keep an eye on third-party SDKs (analytics, experimentation). They often
-          cause more re-renders than the chat UI itself. Wrap them in{' '}
+          Keep an eye on third-party SDKs (analytics, experimentation). They
+          often cause more re-renders than the chat UI itself. Wrap them in{' '}
           <code>React.lazy</code> and only mount when required.
         </Callout>
       </section>
     </div>
   )
 }
-

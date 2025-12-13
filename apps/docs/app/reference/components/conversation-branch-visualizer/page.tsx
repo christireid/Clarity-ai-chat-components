@@ -6,10 +6,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { ApiTable } from '@/components/Demo/ApiTable'
 
-
 export const metadata: Metadata = {
   title: 'ConversationBranchVisualizer',
-  description: 'Visualise speculative conversation branches with Claude-style tree navigation.',
+  description:
+    'Visualise speculative conversation branches with Claude-style tree navigation.',
 }
 
 const props = [
@@ -17,7 +17,8 @@ const props = [
     name: 'branches',
     type: 'ConversationBranch[]',
     required: true,
-    description: 'Flat list of branches with ids, parent references, and metadata.',
+    description:
+      'Flat list of branches with ids, parent references, and metadata.',
   },
   {
     name: 'currentBranchId',
@@ -39,7 +40,8 @@ const props = [
   {
     name: 'onBranchDelete',
     type: '(branchId: string) => void',
-    description: 'Triggered when the user deletes a branch (only leaf nodes can be removed).',
+    description:
+      'Triggered when the user deletes a branch (only leaf nodes can be removed).',
   },
   {
     name: 'onBranchRename',
@@ -65,12 +67,36 @@ const props = [
 ]
 
 const hookReturn = [
-  { name: 'branches', type: 'ConversationBranch[]', description: 'Managed branch list.' },
-  { name: 'currentBranchId', type: 'string', description: 'Currently active branch id.' },
-  { name: 'createBranch', type: '(parentId: string, messageId?: string) => void', description: 'Create a new child branch.' },
-  { name: 'switchBranch', type: '(branchId: string) => void', description: 'Activate a branch.' },
-  { name: 'deleteBranch', type: '(branchId: string) => void', description: 'Remove a branch and fallback to parent/main.' },
-  { name: 'renameBranch', type: '(branchId: string, title: string) => void', description: 'Update branch title.' },
+  {
+    name: 'branches',
+    type: 'ConversationBranch[]',
+    description: 'Managed branch list.',
+  },
+  {
+    name: 'currentBranchId',
+    type: 'string',
+    description: 'Currently active branch id.',
+  },
+  {
+    name: 'createBranch',
+    type: '(parentId: string, messageId?: string) => void',
+    description: 'Create a new child branch.',
+  },
+  {
+    name: 'switchBranch',
+    type: '(branchId: string) => void',
+    description: 'Activate a branch.',
+  },
+  {
+    name: 'deleteBranch',
+    type: '(branchId: string) => void',
+    description: 'Remove a branch and fallback to parent/main.',
+  },
+  {
+    name: 'renameBranch',
+    type: '(branchId: string, title: string) => void',
+    description: 'Update branch title.',
+  },
 ]
 
 export default function ConversationBranchVisualizerPage() {
@@ -80,14 +106,16 @@ export default function ConversationBranchVisualizerPage() {
 
       <h1>ConversationBranchVisualizer</h1>
       <p className="lead">
-        Offer Claude-style speculative conversations with a tree view of branches. Ideal for reviewer
-        workflows, red-teaming, and creative ideation.
+        Offer Claude-style speculative conversations with a tree view of
+        branches. Ideal for reviewer workflows, red-teaming, and creative
+        ideation.
       </p>
 
       <Callout type="success">
         <p>
-          Pair with <code>useBranchManagement</code> for state management, and feed branch metadata (message counts,
-          token usage, etc.) to the UI for richer context.
+          Pair with <code>useBranchManagement</code> for state management, and
+          feed branch metadata (message counts, token usage, etc.) to the UI for
+          richer context.
         </p>
       </Callout>
 
@@ -147,16 +175,21 @@ return (
       <h2 id="ux-patterns">UX Patterns</h2>
       <ul>
         <li>
-          Show branch metadata (message counts, preview snippets) using the <code>metadata</code> field for quick scanning.
+          Show branch metadata (message counts, preview snippets) using the{' '}
+          <code>metadata</code> field for quick scanning.
         </li>
         <li>
-          Highlight the active path—users can understand branching context instantly.
+          Highlight the active path—users can understand branching context
+          instantly.
         </li>
         <li>
-          Disable delete actions for branches with children to avoid orphaned nodes (handled by default component logic).
+          Disable delete actions for branches with children to avoid orphaned
+          nodes (handled by default component logic).
         </li>
         <li>
-          Combine with <code>ExportDialog</code> to share specific branch transcripts with stakeholders.</li>
+          Combine with <code>ExportDialog</code> to share specific branch
+          transcripts with stakeholders.
+        </li>
       </ul>
 
       <h2 id="props">Props</h2>
@@ -164,14 +197,20 @@ return (
 
       <h2 id="use-branch-management">`useBranchManagement`</h2>
       <p>
-        Lightweight hook for managing an in-memory branch tree. Provide your own persistence layer to sync with
-        databases or collaboration services.
+        Lightweight hook for managing an in-memory branch tree. Provide your own
+        persistence layer to sync with databases or collaboration services.
       </p>
       <ApiTable data={hookReturn} />
 
       <Pagination
-        prev={{ href: '/reference/components/message-timeline', title: 'MessageTimeline' }}
-        next={{ href: '/reference/components/markdown-renderer-enhanced', title: 'MarkdownRendererEnhanced' }}
+        prev={{
+          href: '/reference/components/message-timeline',
+          title: 'MessageTimeline',
+        }}
+        next={{
+          href: '/reference/components/markdown-renderer-enhanced',
+          title: 'MarkdownRendererEnhanced',
+        }}
       />
     </>
   )

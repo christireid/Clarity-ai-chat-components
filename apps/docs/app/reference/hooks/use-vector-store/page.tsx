@@ -8,7 +8,6 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-
 export const metadata: Metadata = {
   title: 'useVectorStore Hook | Clarity Chat',
   description: 'React hook for working with vector stores in UI components.',
@@ -59,7 +58,8 @@ const useVectorStoreReturn: Prop[] = [
   {
     name: 'search',
     type: '(input: number[] | string | VectorQuery, options?: Omit<VectorQuery, "vector" | "text">) => Promise<VectorMatch[]>',
-    description: 'Search the vector store. Accepts vector, text, or query object.',
+    description:
+      'Search the vector store. Accepts vector, text, or query object.',
   },
   {
     name: 'addDocuments',
@@ -96,15 +96,16 @@ export default function UseVectorStorePage() {
       <h1>useVectorStore</h1>
 
       <p className="lead">
-        React hook for working with vector stores in UI components. Provides a simple
-        interface for searching, adding documents, and managing vector data with automatic
-        initialization and error handling.
+        React hook for working with vector stores in UI components. Provides a
+        simple interface for searching, adding documents, and managing vector
+        data with automatic initialization and error handling.
       </p>
 
       <Callout type="info" title="Vector Stores">
         <p>
-          Vector stores enable semantic search by storing documents as vectors (embeddings).
-          This hook provides a React-friendly interface for all vector store operations.
+          Vector stores enable semantic search by storing documents as vectors
+          (embeddings). This hook provides a React-friendly interface for all
+          vector store operations.
         </p>
       </Callout>
 
@@ -113,7 +114,7 @@ export default function UseVectorStorePage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the hook:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useVectorStore } from '@clarity-chat/react'
@@ -248,7 +249,9 @@ function DocumentManager() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">Searching with Vectors</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          Searching with Vectors
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useVectorStore } from '@clarity-chat/react'
@@ -279,7 +282,9 @@ function VectorSearch() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Different Providers</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Different Providers
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useVectorStore } from '@clarity-chat/react'
@@ -484,13 +489,34 @@ function VectorStoreStats() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Check status</strong> - Always check status before operations</li>
-          <li><strong>Handle initialization</strong> - Initialize manually if autoInitialize is false</li>
-          <li><strong>Error handling</strong> - Handle errors gracefully and provide retry options</li>
-          <li><strong>Use metadata</strong> - Store useful metadata with documents for filtering</li>
-          <li><strong>Batch operations</strong> - Batch document additions for better performance</li>
-          <li><strong>Monitor stats</strong> - Use getStats to monitor store health</li>
-          <li><strong>Reset on errors</strong> - Use reset() to recover from errors</li>
+          <li>
+            <strong>Check status</strong> - Always check status before
+            operations
+          </li>
+          <li>
+            <strong>Handle initialization</strong> - Initialize manually if
+            autoInitialize is false
+          </li>
+          <li>
+            <strong>Error handling</strong> - Handle errors gracefully and
+            provide retry options
+          </li>
+          <li>
+            <strong>Use metadata</strong> - Store useful metadata with documents
+            for filtering
+          </li>
+          <li>
+            <strong>Batch operations</strong> - Batch document additions for
+            better performance
+          </li>
+          <li>
+            <strong>Monitor stats</strong> - Use getStats to monitor store
+            health
+          </li>
+          <li>
+            <strong>Reset on errors</strong> - Use reset() to recover from
+            errors
+          </li>
         </ul>
       </section>
 
@@ -518,7 +544,10 @@ function VectorStoreStats() {
 
       <Pagination
         prev={{ title: 'useAgent', href: '/reference/hooks/use-agent' }}
-        next={{ title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' }}
+        next={{
+          title: 'useClarityChat',
+          href: '/reference/hooks/use-clarity-chat',
+        }}
       />
     </>
   )

@@ -263,9 +263,9 @@ export function useDashboardData<T>(
   const retryTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
   )
-  const pollingIntervalRef = React.useRef<ReturnType<
-    typeof setTimeout
-  > | null>(null)
+  const pollingIntervalRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
   const staleTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
   )
@@ -343,7 +343,11 @@ export function useDashboardData<T>(
         if (!isMountedRef.current) return
 
         log('Fetch successful', data)
-        dispatch({ type: 'FETCH_SUCCESS', payload: data, fetchedAt: clock.now() })
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: data,
+          fetchedAt: clock.now(),
+        })
         // Reset retry count on success
         retryCountRef.current = 0
         onSuccess?.(data)
@@ -487,7 +491,14 @@ export function useDashboardData<T>(
       log('Data marked as stale')
       dispatch({ type: 'SET_STALE' })
     }, staleTime)
-  }, [state.lastFetchedAt, staleTime, state.isStale, log, clearStaleTimer, clock])
+  }, [
+    state.lastFetchedAt,
+    staleTime,
+    state.isStale,
+    log,
+    clearStaleTimer,
+    clock,
+  ])
 
   // Polling
   React.useEffect(() => {

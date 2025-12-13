@@ -182,7 +182,6 @@ const useClarityObjectReturnProps: Prop[] = [
   },
 ]
 
-
 export default function UseClarityObjectPage() {
   return (
     <ToastProvider>

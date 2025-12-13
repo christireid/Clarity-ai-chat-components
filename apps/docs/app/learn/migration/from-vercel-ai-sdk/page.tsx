@@ -6,7 +6,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Migrate from Vercel AI SDK - Clarity Chat',
-  description: 'Step-by-step guide to migrating from Vercel AI SDK to Clarity Chat.',
+  description:
+    'Step-by-step guide to migrating from Vercel AI SDK to Clarity Chat.',
 }
 
 export default function MigrateFromVercelAISDKPage() {
@@ -16,19 +17,24 @@ export default function MigrateFromVercelAISDKPage() {
         <span className="docs-badge">Migration</span>
         <h1>Migrate from Vercel AI SDK</h1>
         <p className="docs-lead">
-          Comprehensive guide to migrating your Vercel AI SDK application to Clarity Chat with improved UI and features.
+          Comprehensive guide to migrating your Vercel AI SDK application to
+          Clarity Chat with improved UI and features.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Why Migrate?</h2>
         <Callout type="info" title="Clarity Chat Advantages">
-          • **Production-ready UI components** out of the box<br/>
-          • **Enterprise features**: SSO, RBAC, audit logging<br/>
-          • **Token optimization**: Built-in compression and caching<br/>
-          • **Better DX**: Comprehensive TypeScript support<br/>
-          • **Advanced memory**: Semantic search and RAG<br/>
-          • **Performance**: Optimized rendering and virtualization
+          • **Production-ready UI components** out of the box
+          <br />
+          • **Enterprise features**: SSO, RBAC, audit logging
+          <br />
+          • **Token optimization**: Built-in compression and caching
+          <br />
+          • **Better DX**: Comprehensive TypeScript support
+          <br />
+          • **Advanced memory**: Semantic search and RAG
+          <br />• **Performance**: Optimized rendering and virtualization
         </Callout>
       </section>
 
@@ -81,22 +87,35 @@ export default function MigrateFromVercelAISDKPage() {
         <h2>Migration Steps</h2>
 
         <h3>1. Install Clarity Chat</h3>
-        <pre><code>{`npm install @clarity-chat/react
+        <pre>
+          <code>{`npm install @clarity-chat/react
 # Keep ai package for now if needed
-# npm install ai`}</code></pre>
+# npm install ai`}</code>
+        </pre>
 
         <h3>2. Update Imports</h3>
-        <p><strong>Before (Vercel AI SDK):</strong></p>
-        <pre><code>{`import { useChat } from 'ai/react'
-import { Message } from 'ai'`}</code></pre>
+        <p>
+          <strong>Before (Vercel AI SDK):</strong>
+        </p>
+        <pre>
+          <code>{`import { useChat } from 'ai/react'
+import { Message } from 'ai'`}</code>
+        </pre>
 
-        <p><strong>After (Clarity Chat):</strong></p>
-        <pre><code>{`import { useChat, ChatWindow } from '@clarity-chat/react'
-import type { Message } from '@clarity-chat/react/types'`}</code></pre>
+        <p>
+          <strong>After (Clarity Chat):</strong>
+        </p>
+        <pre>
+          <code>{`import { useChat, ChatWindow } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/react/types'`}</code>
+        </pre>
 
         <h3>3. Replace Custom UI with Components</h3>
-        <p><strong>Before:</strong></p>
-        <pre><code>{`export default function Chat() {
+        <p>
+          <strong>Before:</strong>
+        </p>
+        <pre>
+          <code>{`export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat()
 
   return (
@@ -118,10 +137,14 @@ import type { Message } from '@clarity-chat/react/types'`}</code></pre>
       </form>
     </div>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
-        <p><strong>After:</strong></p>
-        <pre><code>{`export default function Chat() {
+        <p>
+          <strong>After:</strong>
+        </p>
+        <pre>
+          <code>{`export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat()
 
   return (
@@ -134,7 +157,8 @@ import type { Message } from '@clarity-chat/react/types'`}</code></pre>
       placeholder="Say something..."
     />
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <Callout type="success" title="Result">
           You get a production-ready chat UI with streaming, markdown rendering,
@@ -146,8 +170,11 @@ import type { Message } from '@clarity-chat/react/types'`}</code></pre>
         <h2>API Route Migration</h2>
 
         <h3>OpenAI Streaming</h3>
-        <p><strong>Before (Vercel AI SDK):</strong></p>
-        <pre><code>{`// app/api/chat/route.ts
+        <p>
+          <strong>Before (Vercel AI SDK):</strong>
+        </p>
+        <pre>
+          <code>{`// app/api/chat/route.ts
 import OpenAI from 'openai'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
@@ -164,10 +191,14 @@ export async function POST(req: Request) {
 
   const stream = OpenAIStream(response)
   return new StreamingTextResponse(stream)
-}`}</code></pre>
+}`}</code>
+        </pre>
 
-        <p><strong>After (Clarity Chat):</strong></p>
-        <pre><code>{`// app/api/chat/route.ts
+        <p>
+          <strong>After (Clarity Chat):</strong>
+        </p>
+        <pre>
+          <code>{`// app/api/chat/route.ts
 import { OpenAIChatHandler } from '@clarity-chat/react/server'
 
 const handler = new OpenAIChatHandler({
@@ -181,7 +212,8 @@ const handler = new OpenAIChatHandler({
 
 export async function POST(req: Request) {
   return handler.handleRequest(req)
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <Callout type="info" title="Benefits">
           Clarity Chat's handler includes memory management, token tracking,
@@ -193,7 +225,8 @@ export async function POST(req: Request) {
         <h2>Feature Upgrades</h2>
 
         <h3>Add Memory & RAG</h3>
-        <pre><code>{`import { ChatWindow, MemoryProvider } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ChatWindow, MemoryProvider } from '@clarity-chat/react'
 import { useChat } from '@clarity-chat/react/hooks'
 
 export default function ChatWithMemory() {
@@ -220,10 +253,12 @@ export default function ChatWithMemory() {
       />
     </MemoryProvider>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Add File Upload</h3>
-        <pre><code>{`<ChatWindow
+        <pre>
+          <code>{`<ChatWindow
   messages={messages}
   onSendMessage={sendMessage}
   enableFileUpload={true}
@@ -233,10 +268,12 @@ export default function ChatWithMemory() {
     // Process file
     await processDocument(file)
   }}
-/>`}</code></pre>
+/>`}</code>
+        </pre>
 
         <h3>Add Custom Theming</h3>
-        <pre><code>{`import { ThemeProvider } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ThemeProvider } from '@clarity-chat/react'
 
 <ThemeProvider
   theme={{
@@ -250,7 +287,8 @@ export default function ChatWithMemory() {
   }}
 >
   <ChatWindow {...props} />
-</ThemeProvider>`}</code></pre>
+</ThemeProvider>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -267,43 +305,69 @@ export default function ChatWithMemory() {
           </thead>
           <tbody>
             <tr>
-              <td><code>messages</code></td>
-              <td><code>messages</code></td>
+              <td>
+                <code>messages</code>
+              </td>
+              <td>
+                <code>messages</code>
+              </td>
               <td>Same API</td>
             </tr>
             <tr>
-              <td><code>input</code></td>
-              <td><code>input</code></td>
+              <td>
+                <code>input</code>
+              </td>
+              <td>
+                <code>input</code>
+              </td>
               <td>Same API</td>
             </tr>
             <tr>
-              <td><code>handleInputChange</code></td>
-              <td><code>handleInputChange</code></td>
+              <td>
+                <code>handleInputChange</code>
+              </td>
+              <td>
+                <code>handleInputChange</code>
+              </td>
               <td>Same API</td>
             </tr>
             <tr>
-              <td><code>handleSubmit</code></td>
-              <td><code>handleSubmit</code></td>
+              <td>
+                <code>handleSubmit</code>
+              </td>
+              <td>
+                <code>handleSubmit</code>
+              </td>
               <td>Same API</td>
             </tr>
             <tr>
-              <td><code>isLoading</code></td>
-              <td><code>isLoading</code></td>
+              <td>
+                <code>isLoading</code>
+              </td>
+              <td>
+                <code>isLoading</code>
+              </td>
               <td>Same API</td>
             </tr>
             <tr>
               <td>N/A</td>
-              <td><code>tokenCount</code></td>
+              <td>
+                <code>tokenCount</code>
+              </td>
               <td>New: Track usage</td>
             </tr>
             <tr>
               <td>N/A</td>
-              <td><code>error</code></td>
+              <td>
+                <code>error</code>
+              </td>
               <td>New: Error state</td>
             </tr>
             <tr>
               <td>N/A</td>
-              <td><code>retry</code></td>
+              <td>
+                <code>retry</code>
+              </td>
               <td>New: Retry failed requests</td>
             </tr>
           </tbody>
@@ -319,18 +383,25 @@ export default function ChatWithMemory() {
         <h2>Advanced Migrations</h2>
 
         <h3>Tool/Function Calling</h3>
-        <p><strong>Before:</strong></p>
-        <pre><code>{`const { messages } = useChat({
+        <p>
+          <strong>Before:</strong>
+        </p>
+        <pre>
+          <code>{`const { messages } = useChat({
   experimental_onFunctionCall: async ({ messages, functionCall }) => {
     if (functionCall.name === 'get_weather') {
       const weather = await getWeather(functionCall.arguments.location)
       return { result: weather }
     }
   }
-})`}</code></pre>
+})`}</code>
+        </pre>
 
-        <p><strong>After:</strong></p>
-        <pre><code>{`import { useAgent } from '@clarity-chat/react/hooks'
+        <p>
+          <strong>After:</strong>
+        </p>
+        <pre>
+          <code>{`import { useAgent } from '@clarity-chat/react/hooks'
 
 const tools = [
   {
@@ -348,18 +419,26 @@ const tools = [
 const { messages } = useAgent({
   endpoint: '/api/agent',
   tools
-})`}</code></pre>
+})`}</code>
+        </pre>
 
         <h3>Custom Message Renderer</h3>
-        <p><strong>Before:</strong></p>
-        <pre><code>{`{messages.map(m => (
+        <p>
+          <strong>Before:</strong>
+        </p>
+        <pre>
+          <code>{`{messages.map(m => (
   <div key={m.id}>
     {m.content}
   </div>
-))}`}</code></pre>
+))}`}</code>
+        </pre>
 
-        <p><strong>After:</strong></p>
-        <pre><code>{`<ChatWindow
+        <p>
+          <strong>After:</strong>
+        </p>
+        <pre>
+          <code>{`<ChatWindow
   messages={messages}
   renderMessage={(message) => (
     <CustomMessage
@@ -368,7 +447,8 @@ const { messages } = useAgent({
       metadata={message.metadata}
     />
   )}
-/>`}</code></pre>
+/>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -386,7 +466,9 @@ const { messages } = useAgent({
 
         <h3>Phase 2: Migrate UI</h3>
         <ul>
-          <li>Replace custom chat components with <code>ChatWindow</code></li>
+          <li>
+            Replace custom chat components with <code>ChatWindow</code>
+          </li>
           <li>Keep existing API routes</li>
           <li>Test thoroughly in staging</li>
         </ul>
@@ -416,7 +498,8 @@ const { messages } = useAgent({
       <section className="docs-section">
         <h2>Compatibility Layer</h2>
         <p>Use both libraries during migration:</p>
-        <pre><code>{`// utils/chat-adapter.ts
+        <pre>
+          <code>{`// utils/chat-adapter.ts
 import { useChat as useVercelChat } from 'ai/react'
 import { useChat as useClarityChat } from '@clarity-chat/react'
 
@@ -426,7 +509,8 @@ export function useChat(config: ChatConfig) {
     return useClarityChat(config)
   }
   return useVercelChat(config)
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -436,7 +520,8 @@ export function useChat(config: ChatConfig) {
         </Callout>
 
         <h3>1. Message Format</h3>
-        <pre><code>{`// Vercel AI SDK
+        <pre>
+          <code>{`// Vercel AI SDK
 interface Message {
   id: string
   role: 'user' | 'assistant' | 'system' | 'function'
@@ -453,10 +538,12 @@ interface Message {
     cost?: number
     citations?: Citation[]
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>2. Error Handling</h3>
-        <pre><code>{`// Vercel AI SDK
+        <pre>
+          <code>{`// Vercel AI SDK
 const { error } = useChat()
 
 // Clarity Chat (enhanced)
@@ -465,7 +552,8 @@ const { error, retry, resetError } = useChat({
     console.error('Chat error:', error)
     // Custom error handling
   }
-})`}</code></pre>
+})`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -511,9 +599,10 @@ const { error, retry, resetError } = useChat({
       <section className="docs-section">
         <h2>Success Stories</h2>
         <Callout type="success" title="Real Migration">
-          "We migrated from Vercel AI SDK to Clarity Chat in 2 days. The production-ready
-          components saved us 3 weeks of UI development, and the built-in memory system
-          improved our RAG quality by 40%." - CTO, AI Startup
+          "We migrated from Vercel AI SDK to Clarity Chat in 2 days. The
+          production-ready components saved us 3 weeks of UI development, and
+          the built-in memory system improved our RAG quality by 40%." - CTO, AI
+          Startup
         </Callout>
       </section>
 
@@ -540,10 +629,16 @@ const { error, retry, resetError } = useChat({
       <section className="docs-section">
         <h2>Need Help?</h2>
         <ul>
-          <li>📖 <a href="/learn/quick-start">Quick Start Guide</a></li>
-          <li>💬 <a href="https://discord.gg/clarity-chat">Discord Community</a></li>
+          <li>
+            📖 <a href="/learn/quick-start">Quick Start Guide</a>
+          </li>
+          <li>
+            💬 <a href="https://discord.gg/clarity-chat">Discord Community</a>
+          </li>
           <li>📧 Email: migrations@clarity-chat.dev</li>
-          <li>🎯 <a href="/contact">Enterprise Migration Support</a></li>
+          <li>
+            🎯 <a href="/contact">Enterprise Migration Support</a>
+          </li>
         </ul>
       </section>
 
@@ -554,7 +649,10 @@ const { error, retry, resetError } = useChat({
             <h3>Quick Start</h3>
             <p>Get started with Clarity Chat</p>
           </a>
-          <a href="/learn/tutorials/building-first-chatbot" className="docs-card">
+          <a
+            href="/learn/tutorials/building-first-chatbot"
+            className="docs-card"
+          >
             <h3>Build First Chatbot</h3>
             <p>30-minute tutorial</p>
           </a>

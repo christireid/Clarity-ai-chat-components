@@ -6,7 +6,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-
 export default function ClarityChatPresetsPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -18,8 +17,12 @@ export default function ClarityChatPresetsPage() {
           </div>
           <h1 className="text-4xl font-bold mb-4">ClarityChatPresets</h1>
           <p className="text-xl text-muted-foreground mb-4">
-            Pre-configured chat components for common use cases. These presets wrap{' '}
-            <Link href="/reference/components/clarity-chat" className="text-brand-600 hover:underline">
+            Pre-configured chat components for common use cases. These presets
+            wrap{' '}
+            <Link
+              href="/reference/components/clarity-chat"
+              className="text-brand-600 hover:underline"
+            >
               ClarityChat
             </Link>{' '}
             with sensible defaults for specific scenarios.
@@ -34,15 +37,20 @@ export default function ClarityChatPresetsPage() {
       <ScrollReveal delay={0.1}>
         <Callout type="info" title="When to Use Presets">
           <p className="mb-2">
-            Presets are perfect when you want to get started quickly with a common use case.
-            They provide sensible defaults while still allowing you to customize all{' '}
-            <Link href="/reference/components/clarity-chat" className="text-brand-600 hover:underline">
+            Presets are perfect when you want to get started quickly with a
+            common use case. They provide sensible defaults while still allowing
+            you to customize all{' '}
+            <Link
+              href="/reference/components/clarity-chat"
+              className="text-brand-600 hover:underline"
+            >
               ClarityChat
             </Link>{' '}
             props.
           </p>
           <p>
-            For more control, use <code className="bg-muted px-1 rounded">ClarityChat</code> directly
+            For more control, use{' '}
+            <code className="bg-muted px-1 rounded">ClarityChat</code> directly
             or compose with mid-level APIs.
           </p>
         </Callout>
@@ -78,8 +86,8 @@ function SimpleChat() {
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4">WithMemory Preset</h2>
           <p className="text-muted-foreground mb-4">
-            Context-aware conversations with memory management. Perfect for long conversations
-            that need to remember context.
+            Context-aware conversations with memory management. Perfect for long
+            conversations that need to remember context.
           </p>
           <CodePlayground
             code={`import { ClarityChatPresets, MemoryProvider } from '@clarity-chat/react'
@@ -141,8 +149,9 @@ function App() {
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4">Enterprise Preset</h2>
           <p className="text-muted-foreground mb-4">
-            Full-featured configuration optimized for production enterprise use cases.
-            Includes memory, prompt optimization, and all enterprise features.
+            Full-featured configuration optimized for production enterprise use
+            cases. Includes memory, prompt optimization, and all enterprise
+            features.
           </p>
           <CodePlayground
             code={`import { ClarityChatPresets, MemoryProvider } from '@clarity-chat/react'
@@ -184,7 +193,8 @@ function App() {
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4">Streaming Preset</h2>
           <p className="text-muted-foreground mb-4">
-            Optimized for real-time streaming updates. Supports both SSE (default) and WebSocket.
+            Optimized for real-time streaming updates. Supports both SSE
+            (default) and WebSocket.
           </p>
           <CodePlayground
             code={`import { ClarityChatPresets } from '@clarity-chat/react'
@@ -220,8 +230,14 @@ function WebSocketChat() {
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4">Customizing Presets</h2>
           <p className="text-muted-foreground mb-4">
-            All presets accept all <Link href="/reference/components/clarity-chat" className="text-brand-600 hover:underline">ClarityChat</Link> props,
-            so you can customize them to your needs.
+            All presets accept all{' '}
+            <Link
+              href="/reference/components/clarity-chat"
+              className="text-brand-600 hover:underline"
+            >
+              ClarityChat
+            </Link>{' '}
+            props, so you can customize them to your needs.
           </p>
           <CodePlayground
             code={`import { ClarityChatPresets } from '@clarity-chat/react'
@@ -305,33 +321,40 @@ function CustomizedChat() {
             <div className="border-l-4 border-brand-500 pl-4">
               <h3 className="font-semibold mb-2">Start with Simple</h3>
               <p className="text-sm text-muted-foreground">
-                Begin with <code className="bg-muted px-1 rounded">Simple</code> preset and add
-                features as needed. You can always customize any prop.
+                Begin with <code className="bg-muted px-1 rounded">Simple</code>{' '}
+                preset and add features as needed. You can always customize any
+                prop.
               </p>
             </div>
             <div className="border-l-4 border-brand-500 pl-4">
-              <h3 className="font-semibold mb-2">Use Enterprise for Production</h3>
+              <h3 className="font-semibold mb-2">
+                Use Enterprise for Production
+              </h3>
               <p className="text-sm text-muted-foreground">
-                For production applications, use <code className="bg-muted px-1 rounded">Enterprise</code> preset
+                For production applications, use{' '}
+                <code className="bg-muted px-1 rounded">Enterprise</code> preset
                 for cost optimization and best performance.
               </p>
             </div>
             <div className="border-l-4 border-brand-500 pl-4">
               <h3 className="font-semibold mb-2">Wrap with MemoryProvider</h3>
               <p className="text-sm text-muted-foreground">
-                When using <code className="bg-muted px-1 rounded">WithMemory</code> or{' '}
-                <code className="bg-muted px-1 rounded">Enterprise</code> with vector-store strategy,
-                wrap your app with <code className="bg-muted px-1 rounded">MemoryProvider</code>.
-                <strong className="block mt-1">Note:</strong> MemoryProvider requires a{' '}
-                <code className="bg-muted px-1 rounded">config</code> prop with at least{' '}
+                When using{' '}
+                <code className="bg-muted px-1 rounded">WithMemory</code> or{' '}
+                <code className="bg-muted px-1 rounded">Enterprise</code> with
+                vector-store strategy, wrap your app with{' '}
+                <code className="bg-muted px-1 rounded">MemoryProvider</code>.
+                <strong className="block mt-1">Note:</strong> MemoryProvider
+                requires a <code className="bg-muted px-1 rounded">config</code>{' '}
+                prop with at least{' '}
                 <code className="bg-muted px-1 rounded">maxTokens</code>.
               </p>
             </div>
             <div className="border-l-4 border-brand-500 pl-4">
               <h3 className="font-semibold mb-2">Customize as Needed</h3>
               <p className="text-sm text-muted-foreground">
-                All presets accept all ClarityChat props, so you can customize them
-                to match your exact requirements.
+                All presets accept all ClarityChat props, so you can customize
+                them to match your exact requirements.
               </p>
             </div>
           </div>
@@ -348,7 +371,8 @@ function CustomizedChat() {
             >
               <h3 className="font-semibold mb-2">ClarityChat Component</h3>
               <p className="text-sm text-muted-foreground">
-                The component that presets are based on. Use this for more control.
+                The component that presets are based on. Use this for more
+                control.
               </p>
             </Link>
             <Link

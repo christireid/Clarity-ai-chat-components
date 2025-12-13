@@ -9,10 +9,10 @@ import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { FeedbackWidget } from '@/components/FeedbackWidget'
 
-
 export const metadata: Metadata = {
   title: 'useAssistant Hook | Clarity Chat',
-  description: 'Hook for managing AI assistant interactions with tool calling support, multi-step workflows, and thread/run management.',
+  description:
+    'Hook for managing AI assistant interactions with tool calling support, multi-step workflows, and thread/run management.',
 }
 
 const useAssistantOptions: Prop[] = [
@@ -81,7 +81,8 @@ const useAssistantReturn: Prop[] = [
   {
     name: 'append',
     type: '(message: CoreMessage | Pick<CoreMessage, "role" | "content">) => Promise<string | null>',
-    description: 'Add a new message and trigger assistant response. Returns message ID.',
+    description:
+      'Add a new message and trigger assistant response. Returns message ID.',
   },
   {
     name: 'status',
@@ -130,9 +131,10 @@ export default function UseAssistantPage() {
 
       <Callout type="info" title="Architecture Layer">
         <p>
-          <strong>useAssistant</strong> is a mid-level hook for assistant interactions.
-          For chat with tools, use top-level <code>useClarityChatWithTools</code> instead.
-          For standalone agents, use <code>createAgent</code> instead.
+          <strong>useAssistant</strong> is a mid-level hook for assistant
+          interactions. For chat with tools, use top-level{' '}
+          <code>useClarityChatWithTools</code> instead. For standalone agents,
+          use <code>createAgent</code> instead.
         </p>
       </Callout>
 
@@ -141,7 +143,7 @@ export default function UseAssistantPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the hook:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useAssistant } from '@clarity-chat/react'
@@ -238,7 +240,9 @@ function Assistant() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Thread Management</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Thread Management
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useAssistant } from '@clarity-chat/react'
@@ -270,7 +274,9 @@ function Assistant() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Status Tracking</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Status Tracking
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useAssistant } from '@clarity-chat/react'
@@ -298,7 +304,9 @@ function Assistant() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Manual Tool Execution</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Manual Tool Execution
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useAssistant } from '@clarity-chat/react'
@@ -338,12 +346,24 @@ function Assistant() {
           The assistant goes through these states:
         </p>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>idle</strong> - Not doing anything</li>
-          <li><strong>loading</strong> - Initial API call</li>
-          <li><strong>streaming</strong> - Receiving content</li>
-          <li><strong>processing_tools</strong> - Executing tool calls</li>
-          <li><strong>complete</strong> - Finished successfully</li>
-          <li><strong>error</strong> - Error occurred</li>
+          <li>
+            <strong>idle</strong> - Not doing anything
+          </li>
+          <li>
+            <strong>loading</strong> - Initial API call
+          </li>
+          <li>
+            <strong>streaming</strong> - Receiving content
+          </li>
+          <li>
+            <strong>processing_tools</strong> - Executing tool calls
+          </li>
+          <li>
+            <strong>complete</strong> - Finished successfully
+          </li>
+          <li>
+            <strong>error</strong> - Error occurred
+          </li>
         </ul>
       </section>
 
@@ -393,7 +413,10 @@ function Assistant() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/hooks/use-clarity-chat-with-tools" className="docs-card">
+          <a
+            href="/reference/hooks/use-clarity-chat-with-tools"
+            className="docs-card"
+          >
             <h3>useClarityChatWithTools Hook</h3>
             <p>Top-level hook with tool support</p>
           </a>
@@ -413,8 +436,14 @@ function Assistant() {
       </section>
 
       <Pagination
-        prev={{ title: 'useChatEnhanced', href: '/reference/hooks/use-chat-enhanced' }}
-        next={{ title: 'useCompletion', href: '/reference/hooks/use-completion' }}
+        prev={{
+          title: 'useChatEnhanced',
+          href: '/reference/hooks/use-chat-enhanced',
+        }}
+        next={{
+          title: 'useCompletion',
+          href: '/reference/hooks/use-completion',
+        }}
       />
 
       {/* Feedback Widget */}

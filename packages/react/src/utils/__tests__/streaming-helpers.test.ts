@@ -31,7 +31,11 @@ describe('streaming-helpers (SSE)', () => {
     ]
 
     const stream = streamFromChunks(chunks)
-    const result = await processStream(stream, { format: 'sse', onData, onChunk })
+    const result = await processStream(stream, {
+      format: 'sse',
+      onData,
+      onChunk,
+    })
 
     expect(result.content).toBe('hello world')
     expect(onChunk.mock.calls.map((c) => c[0]).join('')).toBe('hello world')
@@ -53,11 +57,14 @@ describe('streaming-helpers (SSE)', () => {
     ]
 
     const stream = streamFromChunks(chunks)
-    const result = await processStream(stream, { format: 'sse', onData, onChunk })
+    const result = await processStream(stream, {
+      format: 'sse',
+      onData,
+      onChunk,
+    })
 
     expect(result.content).toBe('AB')
     expect(onChunk).toHaveBeenCalled()
     expect(onData).toHaveBeenCalled()
   })
 })
-

@@ -44,16 +44,24 @@ function BasicBudgetMonitorDemo() {
   }, [messages, updateMessages])
 
   const addMessage = useCallback(() => {
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
-      { role: 'user' as const, content: 'This is a longer message that will add more tokens to the conversation.' },
+      {
+        role: 'user' as const,
+        content:
+          'This is a longer message that will add more tokens to the conversation.',
+      },
     ])
   }, [])
 
   const handleTrim = useCallback(() => {
     const result = trimToCritical()
     if (result) {
-      setMessages(prev => prev.filter((_, i) => !result.removedItems.some(item => item.index === i)))
+      setMessages((prev) =>
+        prev.filter(
+          (_, i) => !result.removedItems.some((item) => item.index === i)
+        )
+      )
     }
   }, [trimToCritical])
 
@@ -63,22 +71,30 @@ function BasicBudgetMonitorDemo() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold">Token Usage</span>
-            <span className={`text-sm font-bold ${
-              isExceeded ? 'text-red-600' :
-              isCritical ? 'text-orange-600' :
-              isWarning ? 'text-yellow-600' :
-              'text-green-600'
-            }`}>
+            <span
+              className={`text-sm font-bold ${
+                isExceeded
+                  ? 'text-red-600'
+                  : isCritical
+                    ? 'text-orange-600'
+                    : isWarning
+                      ? 'text-yellow-600'
+                      : 'text-green-600'
+              }`}
+            >
               {usage.utilizationPercent.toFixed(1)}%
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all ${
-                isExceeded ? 'bg-red-600' :
-                isCritical ? 'bg-orange-600' :
-                isWarning ? 'bg-yellow-600' :
-                'bg-green-600'
+                isExceeded
+                  ? 'bg-red-600'
+                  : isCritical
+                    ? 'bg-orange-600'
+                    : isWarning
+                      ? 'bg-yellow-600'
+                      : 'bg-green-600'
               }`}
               style={{ width: `${Math.min(usage.utilizationPercent, 100)}%` }}
             />
@@ -90,13 +106,15 @@ function BasicBudgetMonitorDemo() {
 
         {isWarning && !isCritical && (
           <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-sm">
-            ⚠️ Warning: Token usage is high ({usage.utilizationPercent.toFixed(1)}%)
+            ⚠️ Warning: Token usage is high (
+            {usage.utilizationPercent.toFixed(1)}%)
           </div>
         )}
 
         {isCritical && (
           <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded text-sm">
-            🚨 Critical: Token usage is very high ({usage.utilizationPercent.toFixed(1)}%)
+            🚨 Critical: Token usage is very high (
+            {usage.utilizationPercent.toFixed(1)}%)
           </div>
         )}
 
@@ -142,56 +160,66 @@ const tokenBudgetConfigProps: Prop[] = [
     name: 'maxInputTokens',
     type: 'number',
     required: true,
-    description: 'Maximum input tokens for the model (e.g., 128000 for GPT-4 Turbo).',
+    description:
+      'Maximum input tokens for the model (e.g., 128000 for GPT-4 Turbo).',
   },
   {
     name: 'warningThreshold',
     type: 'number',
     default: '0.8',
-    description: 'Warning threshold as decimal (0.8 = 80%). Triggers onWarning callback.',
+    description:
+      'Warning threshold as decimal (0.8 = 80%). Triggers onWarning callback.',
   },
   {
     name: 'criticalThreshold',
     type: 'number',
     default: '0.95',
-    description: 'Critical threshold as decimal (0.95 = 95%). Triggers onCritical callback.',
+    description:
+      'Critical threshold as decimal (0.95 = 95%). Triggers onCritical callback.',
   },
   {
     name: 'reservedForOutput',
     type: 'number',
     default: '4096',
-    description: 'Tokens reserved for output response. Effective max = maxInputTokens - reservedForOutput.',
+    description:
+      'Tokens reserved for output response. Effective max = maxInputTokens - reservedForOutput.',
   },
   {
     name: 'model',
     type: 'ModelName',
-    description: 'Model name for accurate token counting (e.g., "gpt-4", "claude-3-5-sonnet").',
+    description:
+      'Model name for accurate token counting (e.g., "gpt-4", "claude-3-5-sonnet").',
   },
   {
     name: 'onWarning',
     type: '(usage: TokenUsage) => void',
-    description: 'Callback when warning threshold is crossed. Receives current usage metrics.',
+    description:
+      'Callback when warning threshold is crossed. Receives current usage metrics.',
   },
   {
     name: 'onCritical',
     type: '(usage: TokenUsage) => void',
-    description: 'Callback when critical threshold is crossed. Receives current usage metrics.',
+    description:
+      'Callback when critical threshold is crossed. Receives current usage metrics.',
   },
   {
     name: 'onExceeded',
     type: '(usage: TokenUsage) => void',
-    description: 'Callback when exceeded (over 100%). Receives current usage metrics.',
+    description:
+      'Callback when exceeded (over 100%). Receives current usage metrics.',
   },
   {
     name: 'autoTrim',
     type: 'boolean',
     default: 'false',
-    description: 'Auto-trigger trimming at critical threshold. Calls onAutoTrim after trimming.',
+    description:
+      'Auto-trigger trimming at critical threshold. Calls onAutoTrim after trimming.',
   },
   {
     name: 'onAutoTrim',
     type: '(result: TrimResult) => void',
-    description: 'Callback after auto-trim occurs. Receives trim result with details.',
+    description:
+      'Callback after auto-trim occurs. Receives trim result with details.',
   },
   {
     name: 'debounceMs',
@@ -203,7 +231,8 @@ const tokenBudgetConfigProps: Prop[] = [
     name: 'useAccurateTokenization',
     type: 'boolean',
     default: 'false',
-    description: 'Use accurate tokenization (slower but precise). Requires js-tiktoken.',
+    description:
+      'Use accurate tokenization (slower but precise). Requires js-tiktoken.',
   },
 ]
 
@@ -211,17 +240,20 @@ const tokenBudgetMonitorReturnProps: Prop[] = [
   {
     name: 'usage',
     type: 'TokenUsage',
-    description: 'Current token usage metrics (current, max, available, utilizationPercent, status).',
+    description:
+      'Current token usage metrics (current, max, available, utilizationPercent, status).',
   },
   {
     name: 'isWarning',
     type: 'boolean',
-    description: 'Whether currently in warning state (utilization >= warningThreshold).',
+    description:
+      'Whether currently in warning state (utilization >= warningThreshold).',
   },
   {
     name: 'isCritical',
     type: 'boolean',
-    description: 'Whether currently in critical state (utilization >= criticalThreshold).',
+    description:
+      'Whether currently in critical state (utilization >= criticalThreshold).',
   },
   {
     name: 'isExceeded',
@@ -236,35 +268,40 @@ const tokenBudgetMonitorReturnProps: Prop[] = [
   {
     name: 'calculateTokens',
     type: '(text: string) => Promise<number>',
-    description: 'Calculate tokens for text. Returns promise for async tokenization.',
+    description:
+      'Calculate tokens for text. Returns promise for async tokenization.',
   },
   {
     name: 'updateMessages',
     type: '(messages: BudgetMessage[]) => void',
-    description: 'Update messages and recalculate usage. Call when messages change.',
+    description:
+      'Update messages and recalculate usage. Call when messages change.',
   },
   {
     name: 'trimToCritical',
     type: '() => TrimResult | null',
-    description: 'Manually trigger trim to get below critical threshold. Returns trim result or null.',
+    description:
+      'Manually trigger trim to get below critical threshold. Returns trim result or null.',
   },
   {
     name: 'reset',
     type: '() => void',
-    description: 'Reset the monitor state (clear usage, messages, trim result).',
+    description:
+      'Reset the monitor state (clear usage, messages, trim result).',
   },
   {
     name: 'lastTrimResult',
     type: 'TrimResult | null',
-    description: 'Last trim result if any. Contains details about what was removed.',
+    description:
+      'Last trim result if any. Contains details about what was removed.',
   },
   {
     name: 'isCalculating',
     type: 'boolean',
-    description: 'Whether currently calculating tokens (useful for loading states).',
+    description:
+      'Whether currently calculating tokens (useful for loading states).',
   },
 ]
-
 
 export default function UseTokenBudgetMonitorPage() {
   return (
@@ -275,8 +312,9 @@ export default function UseTokenBudgetMonitorPage() {
         <h1>useTokenBudgetMonitor</h1>
 
         <p className="lead">
-          Real-time token budget monitoring with threshold-based warnings, automatic trimming,
-          and immediate cost awareness. Prevents context overflow and provides proactive alerts.
+          Real-time token budget monitoring with threshold-based warnings,
+          automatic trimming, and immediate cost awareness. Prevents context
+          overflow and provides proactive alerts.
         </p>
 
         <ViewInStorybook component="useTokenBudgetMonitor" />
@@ -284,7 +322,8 @@ export default function UseTokenBudgetMonitorPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Monitor token usage in real-time! Add messages and see warnings when approaching limits.
+            Monitor token usage in real-time! Add messages and see warnings when
+            approaching limits.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -323,9 +362,7 @@ import type { TokenBudgetConfig, TokenBudgetMonitorReturn, TokenUsage, TrimResul
 
         <h2 id="basic-usage">Basic Usage</h2>
 
-        <p>
-          Monitor token usage with threshold-based warnings:
-        </p>
+        <p>Monitor token usage with threshold-based warnings:</p>
 
         <ComponentPreview
           title="Basic Token Budget Monitor"
@@ -373,9 +410,7 @@ function BasicMonitor() {
 
         <h2 id="auto-trimming">Auto-Trimming</h2>
 
-        <p>
-          Automatically trim messages when critical threshold is reached:
-        </p>
+        <p>Automatically trim messages when critical threshold is reached:</p>
 
         <EnhancedCodeBlock
           code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
@@ -421,9 +456,7 @@ function AutoTrimMonitor() {
 
         <h2 id="manual-trimming">Manual Trimming</h2>
 
-        <p>
-          Manually trigger trimming when needed:
-        </p>
+        <p>Manually trigger trimming when needed:</p>
 
         <EnhancedCodeBlock
           code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
@@ -474,9 +507,7 @@ function ManualTrimMonitor() {
 
         <h2 id="check-before-sending">Check Before Sending</h2>
 
-        <p>
-          Check if adding a message would exceed the budget:
-        </p>
+        <p>Check if adding a message would exceed the budget:</p>
 
         <EnhancedCodeBlock
           code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
@@ -530,9 +561,7 @@ function CheckBeforeSend() {
 
         <h2 id="status-indicators">Status Indicators</h2>
 
-        <p>
-          Use status to show different UI states:
-        </p>
+        <p>Use status to show different UI states:</p>
 
         <EnhancedCodeBlock
           code={`import { useTokenBudgetMonitor } from '@clarity-chat/react'
@@ -805,22 +834,24 @@ function CompleteBudgetMonitorExample() {
 
         <h2 id="status-values">Status Values</h2>
 
-        <p>
-          Token usage status can be one of:
-        </p>
+        <p>Token usage status can be one of:</p>
 
         <ul>
           <li>
-            <strong>safe:</strong> Below warning threshold (utilization &lt; warningThreshold)
+            <strong>safe:</strong> Below warning threshold (utilization &lt;
+            warningThreshold)
           </li>
           <li>
-            <strong>warning:</strong> At or above warning threshold (utilization &gt;= warningThreshold)
+            <strong>warning:</strong> At or above warning threshold (utilization
+            &gt;= warningThreshold)
           </li>
           <li>
-            <strong>critical:</strong> At or above critical threshold (utilization &gt;= criticalThreshold)
+            <strong>critical:</strong> At or above critical threshold
+            (utilization &gt;= criticalThreshold)
           </li>
           <li>
-            <strong>exceeded:</strong> Over 100% utilization (utilization &gt;= 1.0)
+            <strong>exceeded:</strong> Over 100% utilization (utilization &gt;=
+            1.0)
           </li>
         </ul>
 
@@ -828,28 +859,36 @@ function CompleteBudgetMonitorExample() {
 
         <ul>
           <li>
-            <strong>Set appropriate thresholds:</strong> Use 0.8 for warning and 0.95 for critical
+            <strong>Set appropriate thresholds:</strong> Use 0.8 for warning and
+            0.95 for critical
           </li>
           <li>
-            <strong>Reserve output tokens:</strong> Always set <code>reservedForOutput</code> to ensure space for responses
+            <strong>Reserve output tokens:</strong> Always set{' '}
+            <code>reservedForOutput</code> to ensure space for responses
           </li>
           <li>
-            <strong>Update on message changes:</strong> Call <code>updateMessages</code> whenever messages change
+            <strong>Update on message changes:</strong> Call{' '}
+            <code>updateMessages</code> whenever messages change
           </li>
           <li>
-            <strong>Use pre-computed tokens:</strong> Provide <code>tokens</code> in <code>BudgetMessage</code> for performance
+            <strong>Use pre-computed tokens:</strong> Provide{' '}
+            <code>tokens</code> in <code>BudgetMessage</code> for performance
           </li>
           <li>
-            <strong>Mark non-trimmable messages:</strong> Set <code>trimmable: false</code> for system prompts
+            <strong>Mark non-trimmable messages:</strong> Set{' '}
+            <code>trimmable: false</code> for system prompts
           </li>
           <li>
-            <strong>Set priorities:</strong> Use <code>priority</code> to control trimming order (lower = trim first)
+            <strong>Set priorities:</strong> Use <code>priority</code> to
+            control trimming order (lower = trim first)
           </li>
           <li>
-            <strong>Check before sending:</strong> Use <code>wouldExceed</code> to prevent exceeding budget
+            <strong>Check before sending:</strong> Use <code>wouldExceed</code>{' '}
+            to prevent exceeding budget
           </li>
           <li>
-            <strong>Handle callbacks:</strong> Provide <code>onWarning</code>, <code>onCritical</code>, and <code>onExceeded</code> for alerts
+            <strong>Handle callbacks:</strong> Provide <code>onWarning</code>,{' '}
+            <code>onCritical</code>, and <code>onExceeded</code> for alerts
           </li>
         </ul>
 
@@ -857,13 +896,18 @@ function CompleteBudgetMonitorExample() {
 
         <ul>
           <li>
-            <a href="/reference/hooks/use-token-optimization-enhanced">useTokenOptimizationEnhanced</a> - Comprehensive token optimization
+            <a href="/reference/hooks/use-token-optimization-enhanced">
+              useTokenOptimizationEnhanced
+            </a>{' '}
+            - Comprehensive token optimization
           </li>
           <li>
-            <a href="/reference/hooks/use-token-tracker">useTokenTracker</a> - Token usage and cost tracking
+            <a href="/reference/hooks/use-token-tracker">useTokenTracker</a> -
+            Token usage and cost tracking
           </li>
           <li>
-            <a href="/guides/token-optimization">Token Optimization Guide</a> - Token management strategies
+            <a href="/guides/token-optimization">Token Optimization Guide</a> -
+            Token management strategies
           </li>
         </ul>
 

@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Multi-Agent Orchestration Recipe - Clarity Chat Components',
-  description: 'Build multi-agent systems with agent orchestration, tool coordination, and agent communication.',
+  description:
+    'Build multi-agent systems with agent orchestration, tool coordination, and agent communication.',
 }
 
 export default function MultiAgentOrchestrationPage() {
@@ -17,7 +17,8 @@ export default function MultiAgentOrchestrationPage() {
         <span className="docs-badge">Recipe</span>
         <h1>Multi-Agent Orchestration</h1>
         <p className="docs-lead">
-          Build multi-agent systems with agent orchestration, tool coordination, agent communication, and result aggregation.
+          Build multi-agent systems with agent orchestration, tool coordination,
+          agent communication, and result aggregation.
         </p>
       </div>
 
@@ -34,15 +35,14 @@ export default function MultiAgentOrchestrationPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This recipe shows how to build multi-agent systems where multiple AI agents work together to solve complex tasks.
+          This recipe shows how to build multi-agent systems where multiple AI
+          agents work together to solve complex tasks.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Agent Creation</h2>
-        <p>
-          Create multiple specialized agents:
-        </p>
+        <p>Create multiple specialized agents:</p>
         <CodePlayground
           initialCode={`import { createAgent } from '@clarity-chat/react'
 
@@ -71,9 +71,7 @@ const writingAgent = createAgent({
 
       <section className="docs-section">
         <h2>Agent Orchestration</h2>
-        <p>
-          Orchestrate agents in a workflow:
-        </p>
+        <p>Orchestrate agents in a workflow:</p>
         <CodePlayground
           initialCode={`import { createAgent } from '@clarity-chat/react'
 
@@ -102,9 +100,7 @@ async function orchestrateAgents(query: string) {
 
       <section className="docs-section">
         <h2>Parallel Agent Execution</h2>
-        <p>
-          Execute agents in parallel:
-        </p>
+        <p>Execute agents in parallel:</p>
         <CodePlayground
           initialCode={`async function parallelAgents(query: string) {
   // Execute multiple agents in parallel
@@ -124,9 +120,7 @@ async function orchestrateAgents(query: string) {
 
       <section className="docs-section">
         <h2>Agent Communication</h2>
-        <p>
-          Enable agent-to-agent communication:
-        </p>
+        <p>Enable agent-to-agent communication:</p>
         <CodePlayground
           initialCode={`function AgentChat() {
   const [agentMessages, setAgentMessages] = useState([])
@@ -155,9 +149,7 @@ async function orchestrateAgents(query: string) {
 
       <section className="docs-section">
         <h2>Complete Multi-Agent System</h2>
-        <p>
-          Complete multi-agent orchestration:
-        </p>
+        <p>Complete multi-agent orchestration:</p>
         <CodePlayground
           initialCode={`import { createAgent, AgentOrchestrator } from '@clarity-chat/react'
 
@@ -204,8 +196,13 @@ function MultiAgentSystem() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/agent-run-feed">AgentRunFeed</a> - Agent execution feed</li>
-          <li><a href="/reference/hooks/use-agent">useAgent</a> - Agent hook</li>
+          <li>
+            <a href="/reference/components/agent-run-feed">AgentRunFeed</a> -
+            Agent execution feed
+          </li>
+          <li>
+            <a href="/reference/hooks/use-agent">useAgent</a> - Agent hook
+          </li>
         </ul>
       </section>
     </div>

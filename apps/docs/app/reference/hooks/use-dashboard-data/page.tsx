@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-
 export const metadata: Metadata = {
   title: 'useDashboardData Hook | Clarity Chat',
   description:
@@ -18,8 +17,8 @@ export default function UseDashboardDataPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useDashboardData</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Data fetching hook for analytics dashboards. Provides loading states, error handling,
-          automatic refresh, and data caching.
+          Data fetching hook for analytics dashboards. Provides loading states,
+          error handling, automatic refresh, and data caching.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Mid-Level (Composable) •{' '}
@@ -33,14 +32,25 @@ export default function UseDashboardDataPage() {
           <li>Building analytics dashboards that display chat metrics</li>
           <li>Creating admin panels with auto-refreshing data</li>
           <li>When you need polling with configurable intervals</li>
-          <li>Implementing dashboards with loading states and error handling</li>
+          <li>
+            Implementing dashboards with loading states and error handling
+          </li>
         </ul>
 
         <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>For real-time data - use WebSocket with <code className="bg-muted px-2 py-1 rounded">useStreamingWebSocket</code></li>
+          <li>
+            For real-time data - use WebSocket with{' '}
+            <code className="bg-muted px-2 py-1 rounded">
+              useStreamingWebSocket
+            </code>
+          </li>
           <li>For simple one-time fetches - use React Query or SWR directly</li>
-          <li>For chat message fetching - use <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> instead</li>
+          <li>
+            For chat message fetching - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">useClarityChat</code>{' '}
+            instead
+          </li>
         </ul>
       </section>
 
@@ -107,9 +117,12 @@ function AnalyticsDashboard() {
                 <tbody className="divide-y">
                   <tr>
                     <td className="p-3 font-mono text-sm">fetchFn</td>
-                    <td className="p-3 font-mono text-sm">() =&gt; Promise&lt;T&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      () =&gt; Promise&lt;T&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      <strong>Required.</strong> Function to fetch dashboard data.
+                      <strong>Required.</strong> Function to fetch dashboard
+                      data.
                     </td>
                   </tr>
                   <tr>
@@ -142,7 +155,9 @@ function AnalyticsDashboard() {
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">onError</td>
-                    <td className="p-3 font-mono text-sm">(error: Error) =&gt; void</td>
+                    <td className="p-3 font-mono text-sm">
+                      (error: Error) =&gt; void
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Error callback for logging/reporting.
                     </td>
@@ -167,32 +182,46 @@ function AnalyticsDashboard() {
                   <tr>
                     <td className="p-3 font-mono text-sm">data</td>
                     <td className="p-3 font-mono text-sm">T | null</td>
-                    <td className="p-3 text-sm text-muted-foreground">Fetched data.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Fetched data.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">isLoading</td>
                     <td className="p-3 font-mono text-sm">boolean</td>
-                    <td className="p-3 text-sm text-muted-foreground">Initial loading state.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Initial loading state.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">isRefreshing</td>
                     <td className="p-3 font-mono text-sm">boolean</td>
-                    <td className="p-3 text-sm text-muted-foreground">Background refresh state.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Background refresh state.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">error</td>
                     <td className="p-3 font-mono text-sm">Error | null</td>
-                    <td className="p-3 text-sm text-muted-foreground">Error from last fetch.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Error from last fetch.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">refresh</td>
-                    <td className="p-3 font-mono text-sm">() =&gt; Promise&lt;void&gt;</td>
-                    <td className="p-3 text-sm text-muted-foreground">Manually trigger refresh.</td>
+                    <td className="p-3 font-mono text-sm">
+                      () =&gt; Promise&lt;void&gt;
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Manually trigger refresh.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">lastUpdated</td>
                     <td className="p-3 font-mono text-sm">Date | null</td>
-                    <td className="p-3 text-sm text-muted-foreground">Timestamp of last fetch.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Timestamp of last fetch.
+                    </td>
                   </tr>
                 </tbody>
               </table>

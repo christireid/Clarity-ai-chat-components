@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Customization Strategies - Clarity Chat Components',
-  description: 'Learn strategies for customizing Clarity Chat Components to match your brand and requirements.',
+  description:
+    'Learn strategies for customizing Clarity Chat Components to match your brand and requirements.',
 }
 
 export default function CustomizationStrategiesPage() {
@@ -17,7 +17,8 @@ export default function CustomizationStrategiesPage() {
         <span className="docs-badge">Guide</span>
         <h1>Customization Strategies</h1>
         <p className="docs-lead">
-          Learn strategies for customizing Clarity Chat Components to match your brand, design system, and specific requirements.
+          Learn strategies for customizing Clarity Chat Components to match your
+          brand, design system, and specific requirements.
         </p>
       </div>
 
@@ -33,9 +34,7 @@ export default function CustomizationStrategiesPage() {
 
       <section className="docs-section">
         <h2>Theming</h2>
-        <p>
-          Customize themes and colors:
-        </p>
+        <p>Customize themes and colors:</p>
         <CodePlayground
           initialCode={`import { ThemeProvider } from '@clarity-chat/react'
 
@@ -72,9 +71,7 @@ function CustomThemedChat() {
 
       <section className="docs-section">
         <h2>Style Overrides</h2>
-        <p>
-          Override component styles:
-        </p>
+        <p>Override component styles:</p>
         <CodePlayground
           initialCode={`import { ChatWindow } from '@clarity-chat/react'
 import './custom-chat.css'
@@ -109,9 +106,7 @@ function TailwindChat() {
 
       <section className="docs-section">
         <h2>Custom Components</h2>
-        <p>
-          Create custom components:
-        </p>
+        <p>Create custom components:</p>
         <CodePlayground
           initialCode={`import { Message, MessageProps } from '@clarity-chat/react'
 
@@ -144,9 +139,7 @@ function CustomChat() {
 
       <section className="docs-section">
         <h2>Component Composition</h2>
-        <p>
-          Compose custom chat interfaces:
-        </p>
+        <p>Compose custom chat interfaces:</p>
         <CodePlayground
           initialCode={`import {
   ChatInput,
@@ -182,9 +175,7 @@ function CustomChatInterface() {
 
       <section className="docs-section">
         <h2>Design System Integration</h2>
-        <p>
-          Integrate with your design system:
-        </p>
+        <p>Integrate with your design system:</p>
         <CodePlayground
           initialCode={`import { Button, Input } from '@your-design-system/ui'
 import { ChatInput } from '@clarity-chat/react'
@@ -233,8 +224,14 @@ function CSSVariableChat() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/composition-patterns">Composition Patterns</a> - Composition guide</li>
-          <li><a href="/guides/component-hierarchy">Component Hierarchy</a> - Component structure</li>
+          <li>
+            <a href="/guides/composition-patterns">Composition Patterns</a> -
+            Composition guide
+          </li>
+          <li>
+            <a href="/guides/component-hierarchy">Component Hierarchy</a> -
+            Component structure
+          </li>
         </ul>
       </section>
     </div>

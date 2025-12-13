@@ -9,7 +9,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { InstallationFlow } from '@/components/Diagrams/InstallationFlow'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-
 export default function InstallationPage() {
   return (
     <>
@@ -36,15 +35,21 @@ export default function InstallationPage() {
         <ul className="space-y-2 mb-6">
           <li className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-brand-500" />
-            <span><strong>React 18.0.0</strong> or higher</span>
+            <span>
+              <strong>React 18.0.0</strong> or higher
+            </span>
           </li>
           <li className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-brand-500" />
-            <span><strong>Node.js 18.0.0</strong> or higher</span>
+            <span>
+              <strong>Node.js 18.0.0</strong> or higher
+            </span>
           </li>
           <li className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-brand-500" />
-            <span><strong>TypeScript 5.0.0</strong> or higher (recommended)</span>
+            <span>
+              <strong>TypeScript 5.0.0</strong> or higher (recommended)
+            </span>
           </li>
         </ul>
       </ScrollReveal>
@@ -62,31 +67,49 @@ export default function InstallationPage() {
         <div className="space-y-6">
           <div>
             <h3 className="text-lg font-semibold mb-2">npm</h3>
-            <EnhancedCodeBlock code="npm install @clarity-chat/react" language="bash" showCopyButton />
+            <EnhancedCodeBlock
+              code="npm install @clarity-chat/react"
+              language="bash"
+              showCopyButton
+            />
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">yarn</h3>
-            <EnhancedCodeBlock code="yarn add @clarity-chat/react" language="bash" showCopyButton />
+            <EnhancedCodeBlock
+              code="yarn add @clarity-chat/react"
+              language="bash"
+              showCopyButton
+            />
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">pnpm</h3>
-            <EnhancedCodeBlock code="pnpm add @clarity-chat/react" language="bash" showCopyButton />
+            <EnhancedCodeBlock
+              code="pnpm add @clarity-chat/react"
+              language="bash"
+              showCopyButton
+            />
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">bun</h3>
-            <EnhancedCodeBlock code="bun add @clarity-chat/react" language="bash" showCopyButton />
+            <EnhancedCodeBlock
+              code="bun add @clarity-chat/react"
+              language="bash"
+              showCopyButton
+            />
           </div>
         </div>
       </ScrollReveal>
 
       <ScrollReveal delay={0.4}>
-        <h2 id="peer-dependencies" className="mt-8">Peer Dependencies</h2>
+        <h2 id="peer-dependencies" className="mt-8">
+          Peer Dependencies
+        </h2>
         <p className="mb-4">
-          Clarity Chat UI has the following peer dependencies that should already
-          be in your project:
+          Clarity Chat UI has the following peer dependencies that should
+          already be in your project:
         </p>
 
         <EnhancedCodeBlock
@@ -105,8 +128,12 @@ export default function InstallationPage() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.5}>
-        <h2 id="import-styles" className="mt-8">Import Styles</h2>
-        <p className="mb-4">Import the CSS file in your root component or entry file:</p>
+        <h2 id="import-styles" className="mt-8">
+          Import Styles
+        </h2>
+        <p className="mb-4">
+          Import the CSS file in your root component or entry file:
+        </p>
 
         <EnhancedCodeBlock
           code={`// In your main App.tsx or index.tsx
@@ -117,7 +144,9 @@ import '@clarity-chat/react/styles.css'`}
       </ScrollReveal>
 
       <ScrollReveal delay={0.6}>
-        <h2 id="framework-setup" className="mt-8">Framework-Specific Setup</h2>
+        <h2 id="framework-setup" className="mt-8">
+          Framework-Specific Setup
+        </h2>
 
         <div className="space-y-8">
           <div>
@@ -150,7 +179,9 @@ export default function RootLayout({
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Vite</h3>
-            <p className="mb-4">For Vite projects, import styles in your main.tsx:</p>
+            <p className="mb-4">
+              For Vite projects, import styles in your main.tsx:
+            </p>
             <EnhancedCodeBlock
               code={`// src/main.tsx
 import React from 'react'
@@ -171,7 +202,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Create React App</h3>
-            <p className="mb-4">For CRA projects, import styles in index.tsx:</p>
+            <p className="mb-4">
+              For CRA projects, import styles in index.tsx:
+            </p>
             <EnhancedCodeBlock
               code={`// src/index.tsx
 import React from 'react'
@@ -197,10 +230,12 @@ root.render(
       </ScrollReveal>
 
       <ScrollReveal delay={0.7}>
-        <h2 id="typescript" className="mt-8">TypeScript Configuration</h2>
+        <h2 id="typescript" className="mt-8">
+          TypeScript Configuration
+        </h2>
         <p className="mb-4">
-          Clarity Chat UI is written in TypeScript and includes type definitions.
-          No additional setup needed!
+          Clarity Chat UI is written in TypeScript and includes type
+          definitions. No additional setup needed!
         </p>
 
         <Callout type="success" className="mb-4">
@@ -210,7 +245,9 @@ root.render(
           </p>
         </Callout>
 
-        <p className="mb-4">For optimal experience, ensure your tsconfig.json includes:</p>
+        <p className="mb-4">
+          For optimal experience, ensure your tsconfig.json includes:
+        </p>
 
         <EnhancedCodeBlock
           code={`{
@@ -232,7 +269,9 @@ root.render(
       </ScrollReveal>
 
       <ScrollReveal delay={0.8}>
-        <h2 id="tailwind-css" className="mt-8">Tailwind CSS (Optional)</h2>
+        <h2 id="tailwind-css" className="mt-8">
+          Tailwind CSS (Optional)
+        </h2>
         <p className="mb-4">
           Clarity Chat UI uses Tailwind CSS internally but doesn't require it in
           your project. However, if you want to customize styles using Tailwind:
@@ -257,7 +296,9 @@ module.exports = {
       </ScrollReveal>
 
       <ScrollReveal delay={0.9}>
-        <h2 id="verification" className="mt-8">Verify Installation</h2>
+        <h2 id="verification" className="mt-8">
+          Verify Installation
+        </h2>
         <p className="mb-4">Test your installation with a simple component:</p>
 
         <EnhancedCodeBlock
@@ -282,14 +323,16 @@ export default App`}
         <Callout type="tip" className="mt-4">
           <p>
             If you see the chat window, you're all set! If you encounter issues,
-            check our{' '}
-            <a href="/learn/troubleshooting">Troubleshooting Guide</a>.
+            check our <a href="/learn/troubleshooting">Troubleshooting Guide</a>
+            .
           </p>
         </Callout>
       </ScrollReveal>
 
       <ScrollReveal delay={1.0}>
-        <h2 id="cdn" className="mt-8">CDN (Not Recommended)</h2>
+        <h2 id="cdn" className="mt-8">
+          CDN (Not Recommended)
+        </h2>
         <p className="mb-4">
           While not recommended for production, you can use Clarity Chat via CDN
           for quick prototyping:

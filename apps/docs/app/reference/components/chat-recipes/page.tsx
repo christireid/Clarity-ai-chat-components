@@ -1,6 +1,10 @@
 'use client'
 
-import { ChatWithMemory, ChatComplete, ChatWithAnalytics } from '@clarity-chat/react'
+import {
+  ChatWithMemory,
+  ChatComplete,
+  ChatWithAnalytics,
+} from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
@@ -39,7 +43,6 @@ const chatCompleteProps: Prop[] = [
   },
 ]
 
-
 export default function ChatRecipesPage() {
   return (
     <div className="docs-content">
@@ -51,8 +54,9 @@ export default function ChatRecipesPage() {
             Chat Recipes
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            Pre-configured combinations of Clarity Chat features for common use cases.
-            These "recipes" let you drop in complex functionality with a single component.
+            Pre-configured combinations of Clarity Chat features for common use
+            cases. These "recipes" let you drop in complex functionality with a
+            single component.
           </p>
         </div>
       </ScrollReveal>
@@ -72,8 +76,9 @@ export default function ChatRecipesPage() {
       <ScrollReveal delay={0.2}>
         <h2 id="chat-complete">ChatComplete</h2>
         <p className="mb-4">
-          The "batteries-included" component. It enables memory, error handling, persistence,
-          and analytics hooks by default. Perfect for production applications.
+          The "batteries-included" component. It enables memory, error handling,
+          persistence, and analytics hooks by default. Perfect for production
+          applications.
         </p>
         <EnhancedCodeBlock
           code={`<ChatComplete
@@ -92,10 +97,12 @@ export default function ChatRecipesPage() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.4}>
-        <h2 id="chat-with-memory" className="mt-12">ChatWithMemory</h2>
+        <h2 id="chat-with-memory" className="mt-12">
+          ChatWithMemory
+        </h2>
         <p className="mb-4">
-          Focused on context retention. Use this when you need long-term memory via
-          vector stores or smart context window management.
+          Focused on context retention. Use this when you need long-term memory
+          via vector stores or smart context window management.
         </p>
         <EnhancedCodeBlock
           code={`<ChatWithMemory 
@@ -108,9 +115,12 @@ export default function ChatRecipesPage() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.5}>
-        <h2 id="chat-with-analytics" className="mt-12">ChatWithAnalytics</h2>
+        <h2 id="chat-with-analytics" className="mt-12">
+          ChatWithAnalytics
+        </h2>
         <p className="mb-4">
-          Automatically tracks key events like message sent, message received, and errors.
+          Automatically tracks key events like message sent, message received,
+          and errors.
         </p>
         <EnhancedCodeBlock
           code={`<ChatWithAnalytics

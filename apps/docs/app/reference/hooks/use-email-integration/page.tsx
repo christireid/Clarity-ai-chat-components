@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'useEmailIntegration - Clarity Chat Components',
-  description: 'Hook for integrating with email providers to read, send, and manage emails.',
+  description:
+    'Hook for integrating with email providers to read, send, and manage emails.',
 }
 
 const optionsProps: Prop[] = [
@@ -31,7 +31,8 @@ export default function UseEmailIntegrationPage() {
         <span className="docs-badge">Hook</span>
         <h1>useEmailIntegration</h1>
         <p className="docs-lead">
-          Hook for integrating with email providers (Gmail, Outlook, Yahoo, IMAP, Exchange) to read, send, and manage emails.
+          Hook for integrating with email providers (Gmail, Outlook, Yahoo,
+          IMAP, Exchange) to read, send, and manage emails.
         </p>
       </div>
 
@@ -48,9 +49,7 @@ export default function UseEmailIntegrationPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Integrate with email providers:
-        </p>
+        <p>Integrate with email providers:</p>
         <CodePlayground
           initialCode={`import { useEmailIntegration } from '@clarity-chat/react'
 
@@ -84,9 +83,7 @@ function EmailManager() {
 
       <section className="docs-section">
         <h2>Connect Email Account</h2>
-        <p>
-          Connect email accounts:
-        </p>
+        <p>Connect email accounts:</p>
         <CodePlayground
           initialCode={`import { useEmailIntegration } from '@clarity-chat/react'
 
@@ -110,9 +107,7 @@ function AccountConnector() {
 
       <section className="docs-section">
         <h2>Send Email</h2>
-        <p>
-          Send emails from chat:
-        </p>
+        <p>Send emails from chat:</p>
         <CodePlayground
           initialCode={`import { useEmailIntegration } from '@clarity-chat/react'
 
@@ -135,9 +130,7 @@ function EmailSender() {
 
       <section className="docs-section">
         <h2>Search Emails</h2>
-        <p>
-          Search email threads:
-        </p>
+        <p>Search email threads:</p>
         <CodePlayground
           initialCode={`import { useEmailIntegration } from '@clarity-chat/react'
 
@@ -168,15 +161,33 @@ function EmailSearch() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>accounts</code>: Array of email accounts</li>
-          <li><code>threads</code>: Array of email threads</li>
-          <li><code>notifications</code>: Array of email notifications</li>
-          <li><code>loading</code>: Whether operation is in progress</li>
-          <li><code>connectAccount</code>: Function to connect email account</li>
-          <li><code>fetchThreads</code>: Function to fetch email threads</li>
-          <li><code>fetchMessages</code>: Function to fetch messages for thread</li>
-          <li><code>sendEmail</code>: Function to send email</li>
-          <li><code>searchThreads</code>: Function to search email threads</li>
+          <li>
+            <code>accounts</code>: Array of email accounts
+          </li>
+          <li>
+            <code>threads</code>: Array of email threads
+          </li>
+          <li>
+            <code>notifications</code>: Array of email notifications
+          </li>
+          <li>
+            <code>loading</code>: Whether operation is in progress
+          </li>
+          <li>
+            <code>connectAccount</code>: Function to connect email account
+          </li>
+          <li>
+            <code>fetchThreads</code>: Function to fetch email threads
+          </li>
+          <li>
+            <code>fetchMessages</code>: Function to fetch messages for thread
+          </li>
+          <li>
+            <code>sendEmail</code>: Function to send email
+          </li>
+          <li>
+            <code>searchThreads</code>: Function to search email threads
+          </li>
         </ul>
       </section>
 
@@ -194,8 +205,16 @@ function EmailSearch() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/email-integration">EmailIntegration</a> - Email integration component</li>
-          <li><a href="/reference/components/chat-window">ChatWindow</a> - Main chat interface</li>
+          <li>
+            <a href="/reference/components/email-integration">
+              EmailIntegration
+            </a>{' '}
+            - Email integration component
+          </li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> - Main
+            chat interface
+          </li>
         </ul>
       </section>
     </div>

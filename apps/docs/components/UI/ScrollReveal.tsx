@@ -109,11 +109,7 @@ export function ScrollReveal({
   const variants = animationVariants[animation]
 
   if (shouldReduceMotion) {
-    return (
-      <div className={className}>
-        {children}
-      </div>
-    )
+    return <div className={className}>{children}</div>
   }
 
   if (stagger) {

@@ -1,14 +1,12 @@
-import React from 'react';
-import { Metadata } from 'next';
-;
-import { ApiTable } from '@/components/Demo/ApiTable';
+import React from 'react'
+import { Metadata } from 'next'
+import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-
 
 export const metadata: Metadata = {
   title: 'Textarea Component - Clarity Chat Components',
   description: 'A multi-line text input component for longer text entry.',
-};
+}
 
 export default function TextareaPage() {
   return (
@@ -45,13 +43,48 @@ render(<BasicTextarea />)`}
         <ApiTable
           title="Textarea Props"
           data={[
-            { name: 'value', type: 'string', default: 'undefined', description: 'Controlled value' },
-            { name: 'placeholder', type: 'string', default: 'undefined', description: 'Placeholder text' },
-            { name: 'rows', type: 'number', default: '3', description: 'Number of visible rows' },
-            { name: 'resize', type: "'none' | 'vertical' | 'horizontal' | 'both'", default: "'vertical'", description: 'Resize behavior' },
-            { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether textarea is disabled' },
-            { name: 'error', type: 'string | boolean', default: 'undefined', description: 'Error state' },
-            { name: 'onChange', type: '(e: ChangeEvent) => void', default: 'undefined', description: 'Change handler' }
+            {
+              name: 'value',
+              type: 'string',
+              default: 'undefined',
+              description: 'Controlled value',
+            },
+            {
+              name: 'placeholder',
+              type: 'string',
+              default: 'undefined',
+              description: 'Placeholder text',
+            },
+            {
+              name: 'rows',
+              type: 'number',
+              default: '3',
+              description: 'Number of visible rows',
+            },
+            {
+              name: 'resize',
+              type: "'none' | 'vertical' | 'horizontal' | 'both'",
+              default: "'vertical'",
+              description: 'Resize behavior',
+            },
+            {
+              name: 'disabled',
+              type: 'boolean',
+              default: 'false',
+              description: 'Whether textarea is disabled',
+            },
+            {
+              name: 'error',
+              type: 'string | boolean',
+              default: 'undefined',
+              description: 'Error state',
+            },
+            {
+              name: 'onChange',
+              type: '(e: ChangeEvent) => void',
+              default: 'undefined',
+              description: 'Change handler',
+            },
           ]}
         />
       </section>
@@ -59,10 +92,16 @@ render(<BasicTextarea />)`}
       <section className="docs-section">
         <h2>Related Components</h2>
         <ul>
-          <li><a href="/reference/components/input">Input</a> - Single-line text input</li>
-          <li><a href="/reference/components/message-input">MessageInput</a> - Chat message input</li>
+          <li>
+            <a href="/reference/components/input">Input</a> - Single-line text
+            input
+          </li>
+          <li>
+            <a href="/reference/components/message-input">MessageInput</a> -
+            Chat message input
+          </li>
         </ul>
       </section>
     </div>
-  );
+  )
 }

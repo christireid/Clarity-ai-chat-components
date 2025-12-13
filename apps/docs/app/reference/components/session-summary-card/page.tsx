@@ -4,10 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Session Summary Card - Clarity Chat Components',
-  description: 'Display AI-generated conversation summaries with key highlights, metrics, and next actions.',
+  description:
+    'Display AI-generated conversation summaries with key highlights, metrics, and next actions.',
 }
 
 export default function SessionSummaryCardPage() {
@@ -17,19 +17,23 @@ export default function SessionSummaryCardPage() {
         <span className="docs-badge">Component</span>
         <h1>Session Summary Card</h1>
         <p className="docs-lead">
-          Show a TL;DR of your conversation. Like Cliff Notes for your chat - highlights what was discussed, decisions made, and what to do next.
+          Show a TL;DR of your conversation. Like Cliff Notes for your chat -
+          highlights what was discussed, decisions made, and what to do next.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          After a long conversation, this component shows an AI-generated summary. Perfect for team handoffs, meeting recaps, or helping users remember what they discussed.
+          After a long conversation, this component shows an AI-generated
+          summary. Perfect for team handoffs, meeting recaps, or helping users
+          remember what they discussed.
         </p>
-        
+
         <Callout type="info" title="When Is This Useful?">
-          Long conversations are hard to remember. Summaries help users quickly recall
-          what happened and what they should do next. Think "meeting minutes" but automated.
+          Long conversations are hard to remember. Summaries help users quickly
+          recall what happened and what they should do next. Think "meeting
+          minutes" but automated.
         </Callout>
       </section>
 
@@ -115,7 +119,8 @@ render(<TrendingSummary />)`}
 
       <section className="docs-section">
         <h2>Generating Summaries with AI</h2>
-        <pre><code>{`// Generate summary using OpenAI
+        <pre>
+          <code>{`// Generate summary using OpenAI
 async function generateSummary(messages: Message[]) {
   const response = await openai.chat.completions.create({
     model: 'gpt-4',
@@ -143,7 +148,8 @@ useEffect(() => {
   if (messages.length > 5) {
     generateSummary(messages).then(setSummary)
   }
-}, [messages])`}</code></pre>
+}, [messages])`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -160,7 +166,10 @@ useEffect(() => {
       <section className="docs-section">
         <h2>Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/components/conversation-timeline" className="docs-card">
+          <a
+            href="/reference/components/conversation-timeline"
+            className="docs-card"
+          >
             <h3>Conversation Timeline</h3>
             <p>Detailed event timeline</p>
           </a>
@@ -179,43 +188,42 @@ const summaryProps = [
     name: 'summary',
     type: 'SessionSummaryHighlights',
     required: true,
-    description: 'Summary with highlights and next actions'
+    description: 'Summary with highlights and next actions',
   },
   {
     name: 'metrics',
     type: 'SessionMetric[]',
     required: true,
-    description: 'Conversation metrics to display'
+    description: 'Conversation metrics to display',
   },
   {
     name: 'onAction',
     type: '(action: string) => void',
     required: false,
-    description: 'Callback when next action is clicked'
+    description: 'Callback when next action is clicked',
   },
   {
     name: 'onExport',
     type: '() => void',
     required: false,
-    description: 'Callback to export summary'
+    description: 'Callback to export summary',
   },
   {
     name: 'title',
     type: 'string',
     required: false,
-    description: 'Section heading'
+    description: 'Section heading',
   },
   {
     name: 'subtitle',
     type: 'string',
     required: false,
-    description: 'Description text'
+    description: 'Description text',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

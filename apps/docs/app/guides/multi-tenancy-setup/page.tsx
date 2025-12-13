@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Multi-Tenancy Setup Guide - Clarity Chat Components',
-  description: 'Learn how to set up multi-tenancy with tenant isolation, seat management, and SSO configuration.',
+  description:
+    'Learn how to set up multi-tenancy with tenant isolation, seat management, and SSO configuration.',
 }
 
 export default function MultiTenancySetupPage() {
@@ -17,7 +17,8 @@ export default function MultiTenancySetupPage() {
         <span className="docs-badge">Guide</span>
         <h1>Multi-Tenancy Setup</h1>
         <p className="docs-lead">
-          Learn how to set up multi-tenancy with tenant isolation, seat management, SSO configuration, and API token management.
+          Learn how to set up multi-tenancy with tenant isolation, seat
+          management, SSO configuration, and API token management.
         </p>
       </div>
 
@@ -34,15 +35,15 @@ export default function MultiTenancySetupPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Multi-tenancy allows you to serve multiple organizations (tenants) from a single application instance, with complete data isolation and separate configurations.
+          Multi-tenancy allows you to serve multiple organizations (tenants)
+          from a single application instance, with complete data isolation and
+          separate configurations.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Tenant Context Setup</h2>
-        <p>
-          Set up tenant context:
-        </p>
+        <p>Set up tenant context:</p>
         <CodePlayground
           initialCode={`import { TenantProvider } from '@clarity-chat/react'
 
@@ -72,9 +73,7 @@ function ChatApp() {
 
       <section className="docs-section">
         <h2>Seat Management</h2>
-        <p>
-          Manage seats for tenants:
-        </p>
+        <p>Manage seats for tenants:</p>
         <CodePlayground
           initialCode={`import { SeatInviteDialog, AuthTenantDashboard } from '@clarity-chat/react'
 
@@ -108,9 +107,7 @@ function TenantManagement({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>SSO Configuration</h2>
-        <p>
-          Configure SSO for tenants:
-        </p>
+        <p>Configure SSO for tenants:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard, AuthTenantDashboard } from '@clarity-chat/react'
 
@@ -136,9 +133,7 @@ function SSOSetup({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>API Token Management</h2>
-        <p>
-          Manage API tokens per tenant:
-        </p>
+        <p>Manage API tokens per tenant:</p>
         <CodePlayground
           initialCode={`import { ApiTokenManager } from '@clarity-chat/react'
 
@@ -169,9 +164,7 @@ function TokenManagement({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>Complete Multi-Tenant Setup</h2>
-        <p>
-          Complete multi-tenant setup:
-        </p>
+        <p>Complete multi-tenant setup:</p>
         <CodePlayground
           initialCode={`import {
   TenantProvider,
@@ -211,9 +204,22 @@ function MultiTenantApp({ tenantId }: { tenantId: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> - Complete recipe</li>
-          <li><a href="/reference/components/auth-tenant-dashboard">AuthTenantDashboard</a> - Tenant dashboard</li>
-          <li><a href="/reference/components/sso-config-wizard">SSOConfigWizard</a> - SSO configuration</li>
+          <li>
+            <a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> -
+            Complete recipe
+          </li>
+          <li>
+            <a href="/reference/components/auth-tenant-dashboard">
+              AuthTenantDashboard
+            </a>{' '}
+            - Tenant dashboard
+          </li>
+          <li>
+            <a href="/reference/components/sso-config-wizard">
+              SSOConfigWizard
+            </a>{' '}
+            - SSO configuration
+          </li>
         </ul>
       </section>
     </div>

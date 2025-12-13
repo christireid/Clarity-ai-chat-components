@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'MessageActionsSecure - Clarity Chat Components',
-  description: 'Secure message actions with security validation, PII detection, threat indicators, and reporting capabilities.',
+  description:
+    'Secure message actions with security validation, PII detection, threat indicators, and reporting capabilities.',
 }
 
 const props: Prop[] = [
@@ -104,7 +104,8 @@ export default function MessageActionsSecurePage() {
         <span className="docs-badge">Component</span>
         <h1>MessageActionsSecure</h1>
         <p className="docs-lead">
-          Secure message actions with security validation, PII detection indicators, threat warnings, and reporting capabilities.
+          Secure message actions with security validation, PII detection
+          indicators, threat warnings, and reporting capabilities.
         </p>
       </div>
 
@@ -120,15 +121,15 @@ export default function MessageActionsSecurePage() {
 
       <Callout type="warning">
         <p>
-          <strong>Security Features:</strong> This component provides security indicators and reporting capabilities. Always validate security information server-side.
+          <strong>Security Features:</strong> This component provides security
+          indicators and reporting capabilities. Always validate security
+          information server-side.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Use secure message actions with security info:
-        </p>
+        <p>Use secure message actions with security info:</p>
         <CodePlayground
           initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
@@ -163,9 +164,7 @@ function SecureMessageActions({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>PII Detection</h2>
-        <p>
-          Display PII detection indicators:
-        </p>
+        <p>Display PII detection indicators:</p>
         <CodePlayground
           initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
@@ -194,9 +193,7 @@ function WithPIIDetection({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Security Warnings</h2>
-        <p>
-          Handle security warnings and threats:
-        </p>
+        <p>Handle security warnings and threats:</p>
         <CodePlayground
           initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
@@ -228,9 +225,7 @@ function WithWarnings({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Security Details Tooltip</h2>
-        <p>
-          The component automatically shows security details on hover:
-        </p>
+        <p>The component automatically shows security details on hover:</p>
         <CodePlayground
           initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
@@ -260,9 +255,7 @@ function WithDetails({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Reporting Unsafe Content</h2>
-        <p>
-          Enable reporting for unsafe content:
-        </p>
+        <p>Enable reporting for unsafe content:</p>
         <CodePlayground
           initialCode={`import { MessageActionsSecure } from '@clarity-chat/react'
 
@@ -301,23 +294,46 @@ function WithReporting({ message }: { message: Message }) {
       <section className="docs-section">
         <h2>Security Info Properties</h2>
         <ul>
-          <li><code>validated</code>: Whether message passed security validation</li>
-          <li><code>piiDetected</code>: Whether PII was detected</li>
-          <li><code>piiCount</code>: Number of PII entities found</li>
-          <li><code>threats</code>: Array of detected security threats</li>
-          <li><code>sanitized</code>: Whether message was sanitized/modified</li>
-          <li><code>confidence</code>: Confidence score of validation (0-1)</li>
-          <li><code>method</code>: Security check method used</li>
+          <li>
+            <code>validated</code>: Whether message passed security validation
+          </li>
+          <li>
+            <code>piiDetected</code>: Whether PII was detected
+          </li>
+          <li>
+            <code>piiCount</code>: Number of PII entities found
+          </li>
+          <li>
+            <code>threats</code>: Array of detected security threats
+          </li>
+          <li>
+            <code>sanitized</code>: Whether message was sanitized/modified
+          </li>
+          <li>
+            <code>confidence</code>: Confidence score of validation (0-1)
+          </li>
+          <li>
+            <code>method</code>: Security check method used
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Security Indicators</h2>
         <ul>
-          <li><strong>Green Shield</strong>: Message validated, no threats</li>
-          <li><strong>Orange Warning</strong>: Security warnings detected</li>
-          <li><strong>PII Badge</strong>: PII detected and redacted</li>
-          <li><strong>Report Button</strong>: Available for reporting unsafe content</li>
+          <li>
+            <strong>Green Shield</strong>: Message validated, no threats
+          </li>
+          <li>
+            <strong>Orange Warning</strong>: Security warnings detected
+          </li>
+          <li>
+            <strong>PII Badge</strong>: PII detected and redacted
+          </li>
+          <li>
+            <strong>Report Button</strong>: Available for reporting unsafe
+            content
+          </li>
         </ul>
       </section>
 
@@ -336,8 +352,14 @@ function WithReporting({ message }: { message: Message }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-security">useSecurity</a> - Security validation hook</li>
-          <li><a href="/reference/components/chat-window">ChatWindow</a> - Main chat interface</li>
+          <li>
+            <a href="/reference/hooks/use-security">useSecurity</a> - Security
+            validation hook
+          </li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> - Main
+            chat interface
+          </li>
         </ul>
       </section>
     </div>

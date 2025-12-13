@@ -23,7 +23,9 @@ function BasicLayoutDemo() {
     <div className="h-[400px] w-full border border-border rounded-lg overflow-hidden">
       <ChatLayout
         header={<div className="p-4 border-b bg-card">Header</div>}
-        sidebar={<div className="p-4 border-r w-64 bg-muted/30">Sidebar Content</div>}
+        sidebar={
+          <div className="p-4 border-r w-64 bg-muted/30">Sidebar Content</div>
+        }
         footer={<div className="p-4 border-t bg-card">Footer</div>}
       >
         <ChatWindow
@@ -71,7 +73,6 @@ const chatLayoutProps: Prop[] = [
   },
 ]
 
-
 export default function ChatLayoutPage() {
   return (
     <>
@@ -80,8 +81,8 @@ export default function ChatLayoutPage() {
       <h1>ChatLayout</h1>
 
       <p className="lead">
-        A mid-level layout component that provides a consistent structure for chat
-        applications with optional sidebar, header, and footer slots.
+        A mid-level layout component that provides a consistent structure for
+        chat applications with optional sidebar, header, and footer slots.
       </p>
 
       <ViewInStorybook component="ChatLayout" />

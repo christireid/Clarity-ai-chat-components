@@ -6,7 +6,8 @@ import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'Custom Theming - Cookbook - Clarity Chat',
-  description: 'Create custom themes and implement dark mode for your chat interface.',
+  description:
+    'Create custom themes and implement dark mode for your chat interface.',
 }
 
 export default function CustomThemingPage() {
@@ -16,7 +17,8 @@ export default function CustomThemingPage() {
         <span className="docs-badge">Cookbook</span>
         <h1>Custom Theming</h1>
         <p className="docs-lead">
-          Make the chat match your brand. Change colors, add your logo, implement dark mode. Make it yours.
+          Make the chat match your brand. Change colors, add your logo,
+          implement dark mode. Make it yours.
         </p>
       </div>
 
@@ -339,4 +341,3 @@ render(<ThemeDemo />)`}
     </div>
   )
 }
-

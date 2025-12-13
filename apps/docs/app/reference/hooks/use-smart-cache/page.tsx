@@ -8,10 +8,10 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-
 export const metadata: Metadata = {
   title: 'useSmartCache Hook | Clarity Chat',
-  description: 'Cache LLM responses and embeddings to avoid duplicate calls and reduce costs.',
+  description:
+    'Cache LLM responses and embeddings to avoid duplicate calls and reduce costs.',
 }
 
 const useSmartCacheOptions: Prop[] = [
@@ -91,8 +91,9 @@ export default function UseSmartCachePage() {
       <h1>useSmartCache</h1>
 
       <p className="lead">
-        Cache LLM responses and embeddings to avoid duplicate calls and reduce costs.
-        Supports memory, localStorage, and IndexedDB storage with automatic expiration.
+        Cache LLM responses and embeddings to avoid duplicate calls and reduce
+        costs. Supports memory, localStorage, and IndexedDB storage with
+        automatic expiration.
       </p>
 
       <Callout type="info" title="Cost Savings">
@@ -107,7 +108,7 @@ export default function UseSmartCachePage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the hook:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useSmartCache } from '@clarity-chat/react'
@@ -213,7 +214,9 @@ function PersistentCache() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Custom Key Generator</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Custom Key Generator
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useSmartCache } from '@clarity-chat/react'
@@ -239,7 +242,9 @@ function SemanticCache() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Cache Statistics</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Cache Statistics
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useSmartCache } from '@clarity-chat/react'
@@ -328,19 +333,40 @@ function CachedChat() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Use semantic keys</strong> - Normalize queries to cache similar requests</li>
-          <li><strong>Set appropriate TTL</strong> - Balance freshness vs. cache hits</li>
-          <li><strong>Monitor hit rate</strong> - Aim for 40-60% hit rate for good savings</li>
-          <li><strong>Clear stale entries</strong> - Periodically clear expired cache</li>
-          <li><strong>Use IndexedDB for large data</strong> - Better for embeddings and large responses</li>
-          <li><strong>Invalidate on updates</strong> - Clear cache when data changes</li>
+          <li>
+            <strong>Use semantic keys</strong> - Normalize queries to cache
+            similar requests
+          </li>
+          <li>
+            <strong>Set appropriate TTL</strong> - Balance freshness vs. cache
+            hits
+          </li>
+          <li>
+            <strong>Monitor hit rate</strong> - Aim for 40-60% hit rate for good
+            savings
+          </li>
+          <li>
+            <strong>Clear stale entries</strong> - Periodically clear expired
+            cache
+          </li>
+          <li>
+            <strong>Use IndexedDB for large data</strong> - Better for
+            embeddings and large responses
+          </li>
+          <li>
+            <strong>Invalidate on updates</strong> - Clear cache when data
+            changes
+          </li>
         </ul>
       </section>
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/hooks/use-token-optimization" className="docs-card">
+          <a
+            href="/reference/hooks/use-token-optimization"
+            className="docs-card"
+          >
             <h3>useTokenOptimization Hook</h3>
             <p>Token optimization coordinator</p>
           </a>
@@ -360,8 +386,14 @@ function CachedChat() {
       </section>
 
       <Pagination
-        prev={{ title: 'useTokenOptimization', href: '/reference/hooks/use-token-optimization' }}
-        next={{ title: 'useMessageOperations', href: '/reference/hooks/use-message-operations' }}
+        prev={{
+          title: 'useTokenOptimization',
+          href: '/reference/hooks/use-token-optimization',
+        }}
+        next={{
+          title: 'useMessageOperations',
+          href: '/reference/hooks/use-message-operations',
+        }}
       />
     </>
   )

@@ -6,10 +6,10 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Error Handling Recipe | Clarity Chat Cookbook',
-  description: 'Learn how to handle errors gracefully in your chat application with retry logic and user-friendly messages.',
+  description:
+    'Learn how to handle errors gracefully in your chat application with retry logic and user-friendly messages.',
 }
 
 export default function ErrorHandlingPage() {
@@ -20,14 +20,15 @@ export default function ErrorHandlingPage() {
       <h1>Error Handling Recipe</h1>
 
       <p className="lead">
-        Implement robust error handling in your chat application with retry logic,
-        user-friendly messages, and graceful degradation.
+        Implement robust error handling in your chat application with retry
+        logic, user-friendly messages, and graceful degradation.
       </p>
 
       <Callout type="warning" title="Errors Happen">
         <p>
           Network failures, API rate limits, and service outages are inevitable.
-          Good error handling makes your app feel reliable even when things go wrong.
+          Good error handling makes your app feel reliable even when things go
+          wrong.
         </p>
       </Callout>
 
@@ -36,7 +37,7 @@ export default function ErrorHandlingPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           ClarityChat includes built-in error handling:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { ClarityChat } from '@clarity-chat/react'
@@ -102,7 +103,9 @@ function Chat() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">Authentication Errors</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          Authentication Errors
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { ClarityChat } from '@clarity-chat/react'
@@ -128,7 +131,7 @@ function Chat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Access error state directly:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
@@ -174,7 +177,7 @@ function Chat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Implement automatic retry with exponential backoff:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat } from '@clarity-chat/react'
@@ -219,7 +222,7 @@ function Chat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Use React Error Boundaries for catastrophic errors:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { ErrorBoundary } from '@clarity-chat/react'
@@ -244,11 +247,13 @@ function ChatApp() {
       </section>
 
       <section className="my-12">
-        <h2 className="text-2xl font-bold mb-4">User-Friendly Error Messages</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          User-Friendly Error Messages
+        </h2>
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Transform technical errors into user-friendly messages:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`function getErrorMessage(error: Error): string {
@@ -302,7 +307,7 @@ function ChatApp() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Log errors for debugging and monitoring:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { ClarityChat } from '@clarity-chat/react'
@@ -338,13 +343,33 @@ function Chat() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Always handle errors</strong> - Never let errors go unhandled</li>
-          <li><strong>Show user-friendly messages</strong> - Don't expose technical details</li>
-          <li><strong>Provide retry options</strong> - Let users retry failed operations</li>
-          <li><strong>Log errors for debugging</strong> - Use error tracking services</li>
-          <li><strong>Handle different error types</strong> - Network, rate limit, auth, etc.</li>
-          <li><strong>Use error boundaries</strong> - Catch catastrophic errors</li>
-          <li><strong>Implement retry logic</strong> - Automatic retry with backoff</li>
+          <li>
+            <strong>Always handle errors</strong> - Never let errors go
+            unhandled
+          </li>
+          <li>
+            <strong>Show user-friendly messages</strong> - Don't expose
+            technical details
+          </li>
+          <li>
+            <strong>Provide retry options</strong> - Let users retry failed
+            operations
+          </li>
+          <li>
+            <strong>Log errors for debugging</strong> - Use error tracking
+            services
+          </li>
+          <li>
+            <strong>Handle different error types</strong> - Network, rate limit,
+            auth, etc.
+          </li>
+          <li>
+            <strong>Use error boundaries</strong> - Catch catastrophic errors
+          </li>
+          <li>
+            <strong>Implement retry logic</strong> - Automatic retry with
+            backoff
+          </li>
         </ul>
       </section>
 

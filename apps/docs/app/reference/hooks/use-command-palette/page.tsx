@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-
 export const metadata: Metadata = {
   title: 'useCommandPalette Hook | Clarity Chat',
   description:
@@ -18,8 +17,9 @@ export default function UseCommandPalettePage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useCommandPalette</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Hook for managing command palette state with built-in keyboard shortcut support.
-          Default shortcut is Cmd+K (Mac) or Ctrl+K (Windows/Linux).
+          Hook for managing command palette state with built-in keyboard
+          shortcut support. Default shortcut is Cmd+K (Mac) or Ctrl+K
+          (Windows/Linux).
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Mid-Level (Composable) •{' '}
@@ -30,17 +30,37 @@ export default function UseCommandPalettePage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
-          <li>Adding a command palette (Cmd+K) for quick actions in your chat app</li>
-          <li>Implementing search functionality with keyboard shortcut activation</li>
-          <li>When you need to track open/close state with global keyboard shortcuts</li>
+          <li>
+            Adding a command palette (Cmd+K) for quick actions in your chat app
+          </li>
+          <li>
+            Implementing search functionality with keyboard shortcut activation
+          </li>
+          <li>
+            When you need to track open/close state with global keyboard
+            shortcuts
+          </li>
           <li>Building power-user features with keyboard-driven navigation</li>
         </ul>
 
         <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>For simple modals - use <code className="bg-muted px-2 py-1 rounded">Modal</code> component instead</li>
-          <li>For general keyboard shortcuts - use <code className="bg-muted px-2 py-1 rounded">useKeyboardShortcuts</code></li>
-          <li>When you only need the visual component - use <code className="bg-muted px-2 py-1 rounded">CommandPalette</code> directly</li>
+          <li>
+            For simple modals - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">Modal</code> component
+            instead
+          </li>
+          <li>
+            For general keyboard shortcuts - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">
+              useKeyboardShortcuts
+            </code>
+          </li>
+          <li>
+            When you only need the visual component - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">CommandPalette</code>{' '}
+            directly
+          </li>
         </ul>
       </section>
 
@@ -109,7 +129,8 @@ function App() {
                     <td className="p-3 font-mono text-sm">shortcut</td>
                     <td className="p-3 font-mono text-sm">string</td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      Keyboard shortcut (e.g., 'mod+k', 'ctrl+shift+p'). Default: 'mod+k'.
+                      Keyboard shortcut (e.g., 'mod+k', 'ctrl+shift+p').
+                      Default: 'mod+k'.
                     </td>
                   </tr>
                   <tr>
@@ -135,7 +156,9 @@ function App() {
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">onToggle</td>
-                    <td className="p-3 font-mono text-sm">(isOpen: boolean) =&gt; void</td>
+                    <td className="p-3 font-mono text-sm">
+                      (isOpen: boolean) =&gt; void
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Callback when palette toggles.
                     </td>
@@ -144,7 +167,8 @@ function App() {
                     <td className="p-3 font-mono text-sm">enableInInput</td>
                     <td className="p-3 font-mono text-sm">boolean</td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      Allow shortcut when focused on input elements. Default: false.
+                      Allow shortcut when focused on input elements. Default:
+                      false.
                     </td>
                   </tr>
                 </tbody>
@@ -167,27 +191,39 @@ function App() {
                   <tr>
                     <td className="p-3 font-mono text-sm">isOpen</td>
                     <td className="p-3 font-mono text-sm">boolean</td>
-                    <td className="p-3 text-sm text-muted-foreground">Whether palette is open.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Whether palette is open.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">open</td>
                     <td className="p-3 font-mono text-sm">() =&gt; void</td>
-                    <td className="p-3 text-sm text-muted-foreground">Open the palette.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Open the palette.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">close</td>
                     <td className="p-3 font-mono text-sm">() =&gt; void</td>
-                    <td className="p-3 text-sm text-muted-foreground">Close the palette.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Close the palette.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">toggle</td>
                     <td className="p-3 font-mono text-sm">() =&gt; void</td>
-                    <td className="p-3 text-sm text-muted-foreground">Toggle open/closed.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Toggle open/closed.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">setOpen</td>
-                    <td className="p-3 font-mono text-sm">(open: boolean) =&gt; void</td>
-                    <td className="p-3 text-sm text-muted-foreground">Set open state directly.</td>
+                    <td className="p-3 font-mono text-sm">
+                      (open: boolean) =&gt; void
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Set open state directly.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">shortcutDisplay</td>

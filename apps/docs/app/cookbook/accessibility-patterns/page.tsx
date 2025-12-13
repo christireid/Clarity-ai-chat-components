@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Accessibility Patterns Recipe - Clarity Chat Components',
-  description: 'Learn accessibility patterns for Clarity Chat Components, including ARIA attributes, keyboard navigation, and screen reader support.',
+  description:
+    'Learn accessibility patterns for Clarity Chat Components, including ARIA attributes, keyboard navigation, and screen reader support.',
 }
 
 export default function AccessibilityPatternsPage() {
@@ -17,7 +17,9 @@ export default function AccessibilityPatternsPage() {
         <span className="docs-badge">Recipe</span>
         <h1>Accessibility Patterns</h1>
         <p className="docs-lead">
-          Learn accessibility patterns for Clarity Chat Components, including ARIA attributes, keyboard navigation, screen reader support, and WCAG compliance.
+          Learn accessibility patterns for Clarity Chat Components, including
+          ARIA attributes, keyboard navigation, screen reader support, and WCAG
+          compliance.
         </p>
       </div>
 
@@ -33,9 +35,7 @@ export default function AccessibilityPatternsPage() {
 
       <section className="docs-section">
         <h2>ARIA Attributes</h2>
-        <p>
-          Add ARIA attributes for accessibility:
-        </p>
+        <p>Add ARIA attributes for accessibility:</p>
         <CodePlayground
           initialCode={`import { ChatWindow } from '@clarity-chat/react'
 
@@ -82,9 +82,7 @@ function AccessibleMessage({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Keyboard Navigation</h2>
-        <p>
-          Implement keyboard navigation:
-        </p>
+        <p>Implement keyboard navigation:</p>
         <CodePlayground
           initialCode={`import { ChatInput } from '@clarity-chat/react'
 import { useKeyboardNavigation } from '@clarity-chat/react'
@@ -132,9 +130,7 @@ function KeyboardAccessibleChat() {
 
       <section className="docs-section">
         <h2>Screen Reader Support</h2>
-        <p>
-          Support screen readers:
-        </p>
+        <p>Support screen readers:</p>
         <CodePlayground
           initialCode={`import { ChatWindow } from '@clarity-chat/react'
 
@@ -193,9 +189,7 @@ function AccessibleMessage({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Focus Management</h2>
-        <p>
-          Manage focus for accessibility:
-        </p>
+        <p>Manage focus for accessibility:</p>
         <CodePlayground
           initialCode={`import { useEffect, useRef } from 'react'
 import { ChatWindow } from '@clarity-chat/react'
@@ -246,9 +240,7 @@ function FocusManagedChat() {
 
       <section className="docs-section">
         <h2>WCAG Compliance</h2>
-        <p>
-          Ensure WCAG compliance:
-        </p>
+        <p>Ensure WCAG compliance:</p>
         <CodePlayground
           initialCode={`// WCAG 2.1 AA compliance checklist
 
@@ -319,8 +311,14 @@ function WCAGCompliantChat() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/accessibility-basics">Accessibility Basics</a> - Accessibility guide</li>
-          <li><a href="/reference/components/chat-window">ChatWindow</a> - Chat window component</li>
+          <li>
+            <a href="/guides/accessibility-basics">Accessibility Basics</a> -
+            Accessibility guide
+          </li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> - Chat
+            window component
+          </li>
         </ul>
       </section>
     </div>

@@ -44,7 +44,8 @@ const codeBlockProps: Prop[] = [
     name: 'theme',
     type: 'string',
     default: "'github-dark'",
-    description: 'Color theme (e.g., "github-dark", "dracula", "material-theme").',
+    description:
+      'Color theme (e.g., "github-dark", "dracula", "material-theme").',
   },
   {
     name: 'showLineNumbers',
@@ -70,7 +71,6 @@ const codeBlockProps: Prop[] = [
   },
 ]
 
-
 export default function CodeBlockPage() {
   return (
     <div className="docs-content">
@@ -82,8 +82,8 @@ export default function CodeBlockPage() {
             CodeBlock
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            A world-class code display component with Shiki-powered syntax highlighting,
-            line numbers, highlighting, and diff visualization.
+            A world-class code display component with Shiki-powered syntax
+            highlighting, line numbers, highlighting, and diff visualization.
           </p>
         </div>
       </ScrollReveal>

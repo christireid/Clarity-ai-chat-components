@@ -73,7 +73,6 @@ const typingIndicatorProps: Prop[] = [
   },
 ]
 
-
 export default function TypingIndicatorPage() {
   return (
     <div className="docs-content">
@@ -85,8 +84,9 @@ export default function TypingIndicatorPage() {
             TypingIndicator
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            A classic "typing..." indicator with multiple animation styles, used to
-            show that the AI is generating a response or performing an action.
+            A classic "typing..." indicator with multiple animation styles, used
+            to show that the AI is generating a response or performing an
+            action.
           </p>
         </div>
       </ScrollReveal>

@@ -14,7 +14,8 @@ export default function AdvancedMessageSearchPage() {
         <span className="docs-badge">Component</span>
         <h1>AdvancedMessageSearch</h1>
         <p className="docs-lead">
-          Search messages by keyword, filters, and semantic similarity with instant results.
+          Search messages by keyword, filters, and semantic similarity with
+          instant results.
         </p>
       </div>
 

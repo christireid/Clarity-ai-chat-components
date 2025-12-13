@@ -4,10 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Context Card - Clarity Chat Components',
-  description: 'Display RAG context sources with file metadata, thumbnails, and management actions.',
+  description:
+    'Display RAG context sources with file metadata, thumbnails, and management actions.',
 }
 
 export default function ContextCardPage() {
@@ -17,20 +17,25 @@ export default function ContextCardPage() {
         <span className="docs-badge">Component</span>
         <h1>Context Card</h1>
         <p className="docs-lead">
-          Display RAG context sources with rich metadata, thumbnails, and management actions. Perfect for showing documents, images, videos, and other context attached to AI conversations.
+          Display RAG context sources with rich metadata, thumbnails, and
+          management actions. Perfect for showing documents, images, videos, and
+          other context attached to AI conversations.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>ContextCard</code> component displays a single context item (document, image, video, etc.) with its metadata, status, and actions. It's commonly used in RAG (Retrieval-Augmented Generation) systems to show what sources the AI is using.
+          The <code>ContextCard</code> component displays a single context item
+          (document, image, video, etc.) with its metadata, status, and actions.
+          It's commonly used in RAG (Retrieval-Augmented Generation) systems to
+          show what sources the AI is using.
         </p>
-        
+
         <Callout type="info" title="What's RAG?">
-          RAG (Retrieval-Augmented Generation) means the AI can access your documents,
-          images, and other files to give better answers. Each context card represents one
-          piece of information the AI can use.
+          RAG (Retrieval-Augmented Generation) means the AI can access your
+          documents, images, and other files to give better answers. Each
+          context card represents one piece of information the AI can use.
         </Callout>
       </section>
 
@@ -63,7 +68,8 @@ render(<SimpleContext />)`}
       <section className="docs-section">
         <h2>Context Types</h2>
         <p>
-          Context cards automatically show appropriate icons and colors based on the content type.
+          Context cards automatically show appropriate icons and colors based on
+          the content type.
         </p>
         <CodePlayground
           initialCode={`function ContextTypes() {
@@ -117,9 +123,7 @@ render(<ContextTypes />)`}
 
       <section className="docs-section">
         <h2>With Actions</h2>
-        <p>
-          Add management actions like toggle, preview, and remove.
-        </p>
+        <p>Add management actions like toggle, preview, and remove.</p>
         <CodePlayground
           initialCode={`import { useState } from 'react'
 
@@ -181,9 +185,7 @@ render(<InteractiveContext />)`}
 
       <section className="docs-section">
         <h2>With Thumbnails</h2>
-        <p>
-          Show visual previews for images and videos.
-        </p>
+        <p>Show visual previews for images and videos.</p>
         <CodePlayground
           initialCode={`function ThumbnailContexts() {
   const contexts = [
@@ -334,16 +336,14 @@ render(<RAGDocumentManager />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="ContextCard Props"
-          data={contextCardProps}
-        />
+        <ApiTable title="ContextCard Props" data={contextCardProps} />
       </section>
 
       <section className="docs-section">
         <h2>Context Type</h2>
         <p>The Context object structure:</p>
-        <pre><code>{`interface Context {
+        <pre>
+          <code>{`interface Context {
   id: string
   type: 'document' | 'image' | 'video' | 'audio' | 'link' | 'text'
   name: string
@@ -360,12 +360,13 @@ render(<RAGDocumentManager />)`}
     date?: string            // Document date
     [key: string]: any       // Additional metadata
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
-        
+
         <h3>When to Use</h3>
         <ul>
           <li>✅ Showing RAG documents attached to a conversation</li>
@@ -401,7 +402,8 @@ render(<RAGDocumentManager />)`}
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { ContextCard, type ContextCardProps, type Context } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ContextCard, type ContextCardProps, type Context } from '@clarity-chat/react'
 
 // Full type definition
 interface ContextCardProps {
@@ -420,7 +422,8 @@ const handleToggle = (id: string) => {
   setContexts(prev => prev.map(ctx =>
     ctx.id === id ? { ...ctx, isActive: !ctx.isActive } : ctx
   ))
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -430,7 +433,10 @@ const handleToggle = (id: string) => {
             <h3>Context Manager</h3>
             <p>Full context management UI</p>
           </a>
-          <a href="/reference/components/context-visualizer" className="docs-card">
+          <a
+            href="/reference/components/context-visualizer"
+            className="docs-card"
+          >
             <h3>Context Visualizer</h3>
             <p>Visual context relationships</p>
           </a>
@@ -453,38 +459,37 @@ const contextCardProps = [
     name: 'context',
     type: 'Context',
     required: true,
-    description: 'Context data object with metadata'
+    description: 'Context data object with metadata',
   },
   {
     name: 'onRemove',
     type: '(id: string) => void',
     required: false,
-    description: 'Callback when remove button is clicked'
+    description: 'Callback when remove button is clicked',
   },
   {
     name: 'onToggle',
     type: '(id: string) => void',
     required: false,
-    description: 'Callback when activate/deactivate is clicked'
+    description: 'Callback when activate/deactivate is clicked',
   },
   {
     name: 'onPreview',
     type: '(context: Context) => void',
     required: false,
-    description: 'Callback when card or preview button is clicked'
+    description: 'Callback when card or preview button is clicked',
   },
   {
     name: 'showActions',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'Show action buttons (toggle, preview, remove)'
+    description: 'Show action buttons (toggle, preview, remove)',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

@@ -5,10 +5,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-
 export const metadata: Metadata = {
   title: 'Avatar - Clarity Chat Components',
-  description: 'Display user profile pictures with fallbacks, status indicators, and group avatars.',
+  description:
+    'Display user profile pictures with fallbacks, status indicators, and group avatars.',
 }
 
 export default function AvatarPage() {
@@ -18,7 +18,8 @@ export default function AvatarPage() {
         <span className="docs-badge">Component</span>
         <h1>Avatar</h1>
         <p className="docs-lead">
-          Display user profile pictures with automatic fallbacks, status indicators, sizes, and group avatars.
+          Display user profile pictures with automatic fallbacks, status
+          indicators, sizes, and group avatars.
         </p>
       </div>
 
@@ -27,9 +28,9 @@ export default function AvatarPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>Avatar</code> component displays user profile pictures with smart fallbacks when
-          images fail to load. It supports various sizes, shapes, status indicators, and can be grouped
-          to show multiple users.
+          The <code>Avatar</code> component displays user profile pictures with
+          smart fallbacks when images fail to load. It supports various sizes,
+          shapes, status indicators, and can be grouped to show multiple users.
         </p>
       </section>
 
@@ -68,16 +69,14 @@ render(<BasicAvatar />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="Avatar Props"
-          data={avatarProps}
-        />
+        <ApiTable title="Avatar Props" data={avatarProps} />
       </section>
 
       <section className="docs-section">
         <h2>Sizes</h2>
         <p>
-          Avatars come in multiple predefined sizes from extra small to extra large.
+          Avatars come in multiple predefined sizes from extra small to extra
+          large.
         </p>
         <CodePlayground
           initialCode={`function AvatarSizes() {
@@ -147,8 +146,8 @@ render(<AvatarSizes />)`}
       <section className="docs-section">
         <h2>Fallback Behavior</h2>
         <p>
-          When an image fails to load, the Avatar displays initials derived from the user's name
-          with a generated background color.
+          When an image fails to load, the Avatar displays initials derived from
+          the user's name with a generated background color.
         </p>
         <CodePlayground
           initialCode={`function FallbackAvatars() {
@@ -231,9 +230,7 @@ render(<FallbackAvatars />)`}
 
       <section className="docs-section">
         <h2>With Status Indicator</h2>
-        <p>
-          Show user presence status with a colored indicator.
-        </p>
+        <p>Show user presence status with a colored indicator.</p>
         <CodePlayground
           initialCode={`function StatusAvatars() {
   return (
@@ -323,9 +320,7 @@ render(<StatusAvatars />)`}
 
       <section className="docs-section">
         <h2>Shapes</h2>
-        <p>
-          Avatars can be circular (default), rounded square, or square.
-        </p>
+        <p>Avatars can be circular (default), rounded square, or square.</p>
         <CodePlayground
           initialCode={`function AvatarShapes() {
   return (
@@ -400,9 +395,7 @@ render(<AvatarShapes />)`}
 
       <section className="docs-section">
         <h2>Avatar Group</h2>
-        <p>
-          Display multiple avatars in a compact, overlapping group.
-        </p>
+        <p>Display multiple avatars in a compact, overlapping group.</p>
         <CodePlayground
           initialCode={`function AvatarGroups() {
   const users = [
@@ -490,9 +483,7 @@ render(<AvatarGroups />)`}
 
       <section className="docs-section">
         <h2>With Badge</h2>
-        <p>
-          Add notification badges or counts to avatars.
-        </p>
+        <p>Add notification badges or counts to avatars.</p>
         <CodePlayground
           initialCode={`function AvatarWithBadge() {
   return (
@@ -549,9 +540,7 @@ render(<AvatarWithBadge />)`}
 
       <section className="docs-section">
         <h2>Interactive Avatars</h2>
-        <p>
-          Make avatars clickable for profile views or actions.
-        </p>
+        <p>Make avatars clickable for profile views or actions.</p>
         <CodePlayground
           initialCode={`function InteractiveAvatars() {
   const [clicked, setClicked] = React.useState(null)
@@ -603,9 +592,7 @@ render(<InteractiveAvatars />)`}
 
       <section className="docs-section">
         <h2>Custom Colors</h2>
-        <p>
-          Override the default color scheme for fallback avatars.
-        </p>
+        <p>Override the default color scheme for fallback avatars.</p>
         <CodePlayground
           initialCode={`function CustomColorAvatars() {
   return (
@@ -679,9 +666,7 @@ render(<CustomColorAvatars />)`}
 
       <section className="docs-section">
         <h2>Loading State</h2>
-        <p>
-          Show a skeleton loader while the avatar image is loading.
-        </p>
+        <p>Show a skeleton loader while the avatar image is loading.</p>
         <CodePlayground
           initialCode={`function LoadingAvatars() {
   const [isLoading, setIsLoading] = React.useState(true)
@@ -732,7 +717,8 @@ render(<LoadingAvatars />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Dynamic Color Generation</h3>
-        <pre><code>{`// Generate consistent colors based on user ID or name
+        <pre>
+          <code>{`// Generate consistent colors based on user ID or name
 function generateColor(str) {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
@@ -746,10 +732,12 @@ function generateColor(str) {
 <Avatar
   name="John Doe"
   backgroundColor={generateColor('john-doe-id')}
-/>`}</code></pre>
+/>`}</code>
+        </pre>
 
         <h3>With Tooltip</h3>
-        <pre><code>{`import { Avatar, Tooltip } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Avatar, Tooltip } from '@clarity-chat/react'
 
 <Tooltip content="John Doe - Senior Developer">
   <Avatar
@@ -757,10 +745,12 @@ function generateColor(str) {
     name="John Doe"
     status="online"
   />
-</Tooltip>`}</code></pre>
+</Tooltip>`}</code>
+        </pre>
 
         <h3>Avatar with Dropdown</h3>
-        <pre><code>{`import { Avatar, Dropdown } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Avatar, Dropdown } from '@clarity-chat/react'
 
 function AvatarMenu() {
   const menuItems = [
@@ -781,37 +771,46 @@ function AvatarMenu() {
       </button>
     </Dropdown>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Lazy Loading Images</h3>
-        <pre><code>{`<Avatar
+        <pre>
+          <code>{`<Avatar
   src="/large-avatar.jpg"
   name="User Name"
   loading="lazy"
   onLoad={() => console.log('Avatar loaded')}
   onError={() => console.log('Avatar failed to load')}
-/>`}</code></pre>
+/>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Accessibility</h2>
 
         <Callout type="info" title="Screen Reader Support">
-          The Avatar component includes proper alt text and ARIA labels for screen readers.
-          Always provide meaningful <code>alt</code> or <code>name</code> props.
+          The Avatar component includes proper alt text and ARIA labels for
+          screen readers. Always provide meaningful <code>alt</code> or{' '}
+          <code>name</code> props.
         </Callout>
 
         <h3>Best Practices</h3>
         <ul>
-          <li>Always provide <code>alt</code> text for images</li>
-          <li>Include <code>name</code> for fallback initials</li>
+          <li>
+            Always provide <code>alt</code> text for images
+          </li>
+          <li>
+            Include <code>name</code> for fallback initials
+          </li>
           <li>Use semantic HTML for interactive avatars</li>
           <li>Ensure sufficient color contrast for text</li>
           <li>Make interactive avatars keyboard accessible</li>
         </ul>
 
         <h3>ARIA Attributes</h3>
-        <pre><code>{`<Avatar
+        <pre>
+          <code>{`<Avatar
   src="/avatar.jpg"
   alt="John Doe"
   role="img"
@@ -824,20 +823,21 @@ function AvatarMenu() {
   onClick={handleClick}
 >
   <Avatar src="/avatar.jpg" alt="John Doe" />
-</button>`}</code></pre>
+</button>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
 
         <Callout type="tip" title="Optimize Images">
-          Use appropriately sized images for avatars. For a 64px avatar, don't load a 1024px image.
-          Consider using CDN image resizing services.
+          Use appropriately sized images for avatars. For a 64px avatar, don't
+          load a 1024px image. Consider using CDN image resizing services.
         </Callout>
 
         <Callout type="warning" title="Handle Loading States">
-          Always handle image loading failures gracefully with fallbacks. The Avatar component
-          does this automatically with initials.
+          Always handle image loading failures gracefully with fallbacks. The
+          Avatar component does this automatically with initials.
         </Callout>
 
         <h3>Image Optimization</h3>
@@ -869,7 +869,8 @@ function AvatarMenu() {
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { Avatar, AvatarProps, AvatarGroup } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Avatar, AvatarProps, AvatarGroup } from '@clarity-chat/react'
 
 interface AvatarProps {
   src?: string
@@ -895,7 +896,8 @@ interface AvatarGroupProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   spacing?: number
   className?: string
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -928,89 +930,90 @@ const avatarProps = [
     name: 'src',
     type: 'string',
     required: false,
-    description: 'Image URL for the avatar'
+    description: 'Image URL for the avatar',
   },
   {
     name: 'alt',
     type: 'string',
     required: true,
-    description: 'Alt text for the avatar image (accessibility)'
+    description: 'Alt text for the avatar image (accessibility)',
   },
   {
     name: 'name',
     type: 'string',
     required: false,
-    description: 'User name for generating initials when image is unavailable'
+    description: 'User name for generating initials when image is unavailable',
   },
   {
     name: 'size',
     type: "'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'",
     required: false,
     default: "'md'",
-    description: 'Size of the avatar. xs=24px, sm=32px, md=40px, lg=48px, xl=64px, 2xl=80px'
+    description:
+      'Size of the avatar. xs=24px, sm=32px, md=40px, lg=48px, xl=64px, 2xl=80px',
   },
   {
     name: 'shape',
     type: "'circle' | 'rounded' | 'square'",
     required: false,
     default: "'circle'",
-    description: 'Shape of the avatar'
+    description: 'Shape of the avatar',
   },
   {
     name: 'status',
     type: "'online' | 'away' | 'busy' | 'offline'",
     required: false,
-    description: 'User presence status indicator'
+    description: 'User presence status indicator',
   },
   {
     name: 'isLoading',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Show loading skeleton'
+    description: 'Show loading skeleton',
   },
   {
     name: 'backgroundColor',
     type: 'string',
     required: false,
-    description: 'Custom background color for fallback initials'
+    description: 'Custom background color for fallback initials',
   },
   {
     name: 'textColor',
     type: 'string',
     required: false,
     default: "'#ffffff'",
-    description: 'Text color for fallback initials'
+    description: 'Text color for fallback initials',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
+    description: 'Additional CSS classes',
   },
   {
     name: 'loading',
     type: "'eager' | 'lazy'",
     required: false,
     default: "'eager'",
-    description: 'Image loading strategy'
+    description: 'Image loading strategy',
   },
   {
     name: 'onClick',
     type: '() => void',
     required: false,
-    description: 'Click handler for interactive avatars'
+    description: 'Click handler for interactive avatars',
   },
   {
     name: 'onLoad',
     type: '() => void',
     required: false,
-    description: 'Callback when image loads successfully'
+    description: 'Callback when image loads successfully',
   },
   {
     name: 'onError',
     type: '() => void',
     required: false,
-    description: 'Callback when image fails to load'
-  }
+    description: 'Callback when image fails to load',
+  },
 ]

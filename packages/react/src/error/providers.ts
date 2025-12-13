@@ -8,7 +8,9 @@
 import type { ErrorProvider, ErrorReport } from './types'
 
 function isDev(): boolean {
-  return typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production'
+  return (
+    typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production'
+  )
 }
 
 function safeDevLog(...args: unknown[]): void {
@@ -24,7 +26,10 @@ function safeDevError(...args: unknown[]): void {
 
 function hasLocalStorage(): boolean {
   try {
-    return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+    return (
+      typeof window !== 'undefined' &&
+      typeof window.localStorage !== 'undefined'
+    )
   } catch {
     return false
   }
@@ -64,12 +69,13 @@ export function createSentryProvider(config: SentryConfig): ErrorProvider {
       // In real implementation, would import @sentry/react
       // For now, we'll use a mock implementation.
       if (config.debug) safeDevLog('[Sentry] Provider initialized')
-      
+
       // Mock Sentry object
       Sentry = {
         init: () => {},
         captureException: (error: Error, context?: any) => {
-          if (config.debug) safeDevLog('[Sentry] Captured exception', { error, context })
+          if (config.debug)
+            safeDevLog('[Sentry] Captured exception', { error, context })
         },
         setUser: (user: any) => {
           if (config.debug) safeDevLog('[Sentry] Set user')
@@ -94,7 +100,7 @@ export function createSentryProvider(config: SentryConfig): ErrorProvider {
       if (!Sentry) return
 
       const error = report.originalError || new Error(report.message)
-      
+
       Sentry.captureException(error, {
         level: report.severity,
         tags: report.tags,
@@ -116,7 +122,11 @@ export function createSentryProvider(config: SentryConfig): ErrorProvider {
       })
     },
 
-    setUser: (userId: string, email?: string, userData?: Record<string, any>) => {
+    setUser: (
+      userId: string,
+      email?: string,
+      userData?: Record<string, any>
+    ) => {
       if (!Sentry) return
       Sentry.setUser({ id: userId, email, ...userData })
     },
@@ -159,7 +169,7 @@ export function createRollbarProvider(config: RollbarConfig): ErrorProvider {
 
     initialize: async () => {
       if (config.debug) safeDevLog('[Rollbar] Provider initialized')
-      
+
       // Mock Rollbar object
       Rollbar = {
         error: (error: Error | string, custom?: any) => {
@@ -211,7 +221,11 @@ export function createRollbarProvider(config: RollbarConfig): ErrorProvider {
       }
     },
 
-    setUser: (userId: string, email?: string, userData?: Record<string, any>) => {
+    setUser: (
+      userId: string,
+      email?: string,
+      userData?: Record<string, any>
+    ) => {
       if (!Rollbar) return
       Rollbar.configure({
         payload: {
@@ -244,7 +258,7 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
 
     initialize: async () => {
       if (config.debug) safeDevLog('[Bugsnag] Provider initialized')
-      
+
       // Mock Bugsnag object
       Bugsnag = {
         start: () => {},
@@ -277,7 +291,7 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
 
       Bugsnag.notify(error, (event: any) => {
         event.severity = report.severity === 'fatal' ? 'error' : report.severity
-        
+
         if (report.userId) {
           event.setUser(report.userId, report.userEmail)
         }
@@ -296,7 +310,11 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
       })
     },
 
-    setUser: (userId: string, email?: string, userData?: Record<string, any>) => {
+    setUser: (
+      userId: string,
+      email?: string,
+      userData?: Record<string, any>
+    ) => {
       if (!Bugsnag) return
       Bugsnag.setUser(userId, email, userData?.['name'])
       if (userData) {
@@ -331,7 +349,9 @@ interface CustomAPIConfig {
  * })
  * ```
  */
-export function createCustomAPIProvider(config: CustomAPIConfig): ErrorProvider {
+export function createCustomAPIProvider(
+  config: CustomAPIConfig
+): ErrorProvider {
   return {
     name: 'custom-api',
 
@@ -360,7 +380,10 @@ export function createCustomAPIProvider(config: CustomAPIConfig): ErrorProvider 
         })
 
         if (!response.ok) {
-          safeDevError('Failed to report error to custom API:', response.statusText)
+          safeDevError(
+            'Failed to report error to custom API:',
+            response.statusText
+          )
         }
       } catch (error) {
         safeDevError('Error reporting to custom API:', error)
@@ -384,20 +407,16 @@ export function createConsoleErrorProvider(): ErrorProvider {
           report.severity === 'fatal' || report.severity === 'error'
             ? '#dc2626'
             : report.severity === 'warning'
-            ? '#f59e0b'
-            : '#3b82f6'
+              ? '#f59e0b'
+              : '#3b82f6'
         };
         padding: 2px 6px;
         border-radius: 3px;
         font-weight: bold;
       `
 
-      console.group(
-        `%c${report.severity.toUpperCase()}`,
-        style,
-        report.message
-      )
-      
+      console.group(`%c${report.severity.toUpperCase()}`, style, report.message)
+
       if (report.stack) {
         console.error('Stack:', report.stack)
       }
@@ -425,7 +444,11 @@ export function createConsoleErrorProvider(): ErrorProvider {
       console.groupEnd()
     },
 
-    setUser: (userId: string, email?: string, userData?: Record<string, any>) => {
+    setUser: (
+      userId: string,
+      email?: string,
+      userData?: Record<string, any>
+    ) => {
       console.log('[Error Reporter] Set user:', { userId, email, ...userData })
     },
 
@@ -443,7 +466,9 @@ export function createConsoleErrorProvider(): ErrorProvider {
  * LocalStorage provider for offline error tracking
  * Stores errors in localStorage for later retrieval
  */
-export function createLocalStorageErrorProvider(maxErrors: number = 50): ErrorProvider {
+export function createLocalStorageErrorProvider(
+  maxErrors: number = 50
+): ErrorProvider {
   const STORAGE_KEY = 'error_reports'
 
   return {

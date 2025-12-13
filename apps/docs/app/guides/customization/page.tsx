@@ -3,10 +3,10 @@ import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Customization Guide - Clarity Chat',
-  description: 'Learn how to customize Clarity Chat components to match your brand and design system.',
+  description:
+    'Learn how to customize Clarity Chat components to match your brand and design system.',
 }
 
 export default function CustomizationGuidePage() {
@@ -22,9 +22,12 @@ export default function CustomizationGuidePage() {
       </div>
 
       <Callout type="tip" className="my-6">
-        For advanced customization strategies including component composition and
-        extending functionality, see the{' '}
-        <Link href="/guides/customization-strategies" className="font-medium underline">
+        For advanced customization strategies including component composition
+        and extending functionality, see the{' '}
+        <Link
+          href="/guides/customization-strategies"
+          className="font-medium underline"
+        >
           Customization Strategies
         </Link>{' '}
         guide.
@@ -33,8 +36,8 @@ export default function CustomizationGuidePage() {
       <section className="docs-section">
         <h2>Theme Customization</h2>
         <p>
-          Clarity Chat uses CSS variables for theming, making it easy to customize
-          colors, typography, and spacing to match your brand.
+          Clarity Chat uses CSS variables for theming, making it easy to
+          customize colors, typography, and spacing to match your brand.
         </p>
 
         <CodePlayground
@@ -60,7 +63,8 @@ export default function CustomizationGuidePage() {
       <section className="docs-section">
         <h2>Component Props</h2>
         <p>
-          All Clarity Chat components accept standard styling props for quick customization:
+          All Clarity Chat components accept standard styling props for quick
+          customization:
         </p>
 
         <CodePlayground
@@ -87,7 +91,8 @@ function MyChat() {
         <h2>Tailwind CSS Integration</h2>
         <p>
           Clarity Chat works seamlessly with Tailwind CSS. Use Tailwind classes
-          directly on components or configure the design tokens in your Tailwind config:
+          directly on components or configure the design tokens in your Tailwind
+          config:
         </p>
 
         <CodePlayground
@@ -114,8 +119,8 @@ module.exports = {
       <section className="docs-section">
         <h2>CSS-in-JS Support</h2>
         <p>
-          For CSS-in-JS libraries like styled-components or Emotion, access design
-          tokens via the <code>useDesignTokens</code> hook:
+          For CSS-in-JS libraries like styled-components or Emotion, access
+          design tokens via the <code>useDesignTokens</code> hook:
         </p>
 
         <CodePlayground
@@ -143,31 +148,19 @@ const StyledMessage = styled.div\`
       <section className="docs-section">
         <h2>Related Guides</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          <Link
-            href="/guides/customization-strategies"
-            className="docs-card"
-          >
+          <Link href="/guides/customization-strategies" className="docs-card">
             <h3>Customization Strategies</h3>
             <p>Advanced patterns for customizing components.</p>
           </Link>
-          <Link
-            href="/guides/theming"
-            className="docs-card"
-          >
+          <Link href="/guides/theming" className="docs-card">
             <h3>Theming Guide</h3>
             <p>Complete theming system documentation.</p>
           </Link>
-          <Link
-            href="/reference/hooks/use-design-tokens"
-            className="docs-card"
-          >
+          <Link href="/reference/hooks/use-design-tokens" className="docs-card">
             <h3>useDesignTokens Hook</h3>
             <p>Programmatic access to design tokens.</p>
           </Link>
-          <Link
-            href="/cookbook/custom-theming"
-            className="docs-card"
-          >
+          <Link href="/cookbook/custom-theming" className="docs-card">
             <h3>Custom Theming Recipe</h3>
             <p>Step-by-step theming implementation.</p>
           </Link>

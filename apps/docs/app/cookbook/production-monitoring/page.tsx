@@ -6,7 +6,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Production Monitoring & Observability - Cookbook',
-  description: 'Set up comprehensive monitoring, logging, and alerting for production AI apps.',
+  description:
+    'Set up comprehensive monitoring, logging, and alerting for production AI apps.',
 }
 
 export default function ProductionMonitoringCookbook() {
@@ -16,24 +17,27 @@ export default function ProductionMonitoringCookbook() {
         <span className="docs-badge">Cookbook</span>
         <h1>Production Monitoring & Observability</h1>
         <p className="docs-lead">
-          Implement comprehensive monitoring, tracing, and alerting for production AI applications.
+          Implement comprehensive monitoring, tracing, and alerting for
+          production AI applications.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Monitor performance, track usage, detect anomalies, and maintain SLAs in production
-          with integrated observability tools.
+          Monitor performance, track usage, detect anomalies, and maintain SLAs
+          in production with integrated observability tools.
         </p>
         <Callout type="warning" title="Production Ready">
-          This recipe covers enterprise-grade monitoring suitable for high-traffic applications.
+          This recipe covers enterprise-grade monitoring suitable for
+          high-traffic applications.
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Complete Monitoring Setup</h2>
-        <pre><code>{`// app/providers/monitoring-provider.tsx
+        <pre>
+          <code>{`// app/providers/monitoring-provider.tsx
 import { 
   Tracer, 
   MetricsCollector, 
@@ -73,12 +77,14 @@ export function MonitoringProvider({ children }) {
       </MetricsContext.Provider>
     </TracingContext.Provider>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Custom Metrics</h2>
-        <pre><code>{`import { useMetrics } from '@clarity-chat/react/hooks'
+        <pre>
+          <code>{`import { useMetrics } from '@clarity-chat/react/hooks'
 
 export function ChatWindow() {
   const metrics = useMetrics()
@@ -106,12 +112,14 @@ export function ChatWindow() {
       throw error
     }
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Distributed Tracing</h2>
-        <pre><code>{`import { useTracer } from '@clarity-chat/react/hooks'
+        <pre>
+          <code>{`import { useTracer } from '@clarity-chat/react/hooks'
 
 export async function POST(req: Request) {
   const tracer = useTracer()
@@ -140,12 +148,14 @@ export async function POST(req: Request) {
     
     return Response.json(response)
   })
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Alerting Rules</h2>
-        <pre><code>{`// monitoring/alerts.ts
+        <pre>
+          <code>{`// monitoring/alerts.ts
 export const alertRules = [
   {
     name: 'HighErrorRate',
@@ -175,12 +185,14 @@ export const alertRules = [
     severity: 'info',
     actions: ['slack']
   }
-]`}</code></pre>
+]`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Health Checks</h2>
-        <pre><code>{`// app/api/health/route.ts
+        <pre>
+          <code>{`// app/api/health/route.ts
 import { checkDependencies } from '@/lib/monitoring'
 
 export async function GET() {
@@ -204,12 +216,14 @@ export async function GET() {
 
   const statusCode = health.status === 'healthy' ? 200 : 503
   return Response.json(health, { status: statusCode })
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Log Aggregation</h2>
-        <pre><code>{`// lib/logger.ts
+        <pre>
+          <code>{`// lib/logger.ts
 import { Logger } from '@clarity-chat/react/logging'
 
 export const logger = new Logger({
@@ -242,12 +256,14 @@ logger.info('Chat message sent', {
   messageId,
   model: 'gpt-4',
   tokens: 150
-})`}</code></pre>
+})`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Dashboard Configuration</h2>
-        <pre><code>{`// monitoring/dashboards/main.json
+        <pre>
+          <code>{`// monitoring/dashboards/main.json
 {
   "name": "Clarity Chat - Main Dashboard",
   "panels": [
@@ -279,16 +295,21 @@ logger.info('Chat message sent', {
       "type": "stat"
     }
   ]
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use sampling in production to reduce overhead (10-20% is typical)</li>
+          <li>
+            Use sampling in production to reduce overhead (10-20% is typical)
+          </li>
           <li>Set up alerts for both technical and business metrics</li>
           <li>Implement graceful degradation when monitoring services fail</li>
-          <li>Tag all metrics with relevant dimensions (user, tenant, model, etc.)</li>
+          <li>
+            Tag all metrics with relevant dimensions (user, tenant, model, etc.)
+          </li>
           <li>Create runbooks for common alerts</li>
           <li>Review dashboards regularly and remove unused metrics</li>
           <li>Set up synthetic monitoring for critical flows</li>
@@ -299,23 +320,34 @@ logger.info('Chat message sent', {
       <section className="docs-section">
         <h2>Monitoring Checklist</h2>
         <Callout type="info" title="Production Checklist">
-          ✅ Request/error rates and latency percentiles<br/>
-          ✅ Token usage and costs per user/tenant<br/>
-          ✅ Model performance metrics (TTFT, tokens/sec)<br/>
-          ✅ Memory and cache hit rates<br/>
-          ✅ Queue depths and worker utilization<br/>
-          ✅ Dependency health checks<br/>
-          ✅ Alert coverage for SLA violations<br/>
-          ✅ Log aggregation and search<br/>
-          ✅ Distributed tracing across services<br/>
-          ✅ Synthetic monitoring for critical paths
+          ✅ Request/error rates and latency percentiles
+          <br />
+          ✅ Token usage and costs per user/tenant
+          <br />
+          ✅ Model performance metrics (TTFT, tokens/sec)
+          <br />
+          ✅ Memory and cache hit rates
+          <br />
+          ✅ Queue depths and worker utilization
+          <br />
+          ✅ Dependency health checks
+          <br />
+          ✅ Alert coverage for SLA violations
+          <br />
+          ✅ Log aggregation and search
+          <br />
+          ✅ Distributed tracing across services
+          <br />✅ Synthetic monitoring for critical paths
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/components/performance-dashboard" className="docs-card">
+          <a
+            href="/reference/components/performance-dashboard"
+            className="docs-card"
+          >
             <h3>Performance Dashboard</h3>
             <p>Built-in performance monitoring</p>
           </a>

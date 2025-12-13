@@ -133,7 +133,8 @@ describe('BatchRequestManager', () => {
       await vi.runAllTimersAsync()
 
       expect(onStatusChange).toHaveBeenCalled()
-      const lastCall = onStatusChange.mock.calls[onStatusChange.mock.calls.length - 1][0]
+      const lastCall =
+        onStatusChange.mock.calls[onStatusChange.mock.calls.length - 1][0]
       expect(lastCall.status).toBe('completed')
     })
 
@@ -348,7 +349,10 @@ describe('estimateBatchSavings', () => {
 
   it('should calculate 50% savings', () => {
     const requests: Array<{ messages: BatchMessage[]; model?: string }> = [
-      { messages: [{ role: 'user', content: 'Hello World!' }], model: 'gpt-4o-mini' },
+      {
+        messages: [{ role: 'user', content: 'Hello World!' }],
+        model: 'gpt-4o-mini',
+      },
     ]
 
     const estimate = estimateBatchSavings(requests)

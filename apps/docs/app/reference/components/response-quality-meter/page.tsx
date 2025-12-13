@@ -4,10 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Response Quality Meter - Clarity Chat Components',
-  description: 'Visualize AI response quality metrics like groundedness, coverage, and confidence scores.',
+  description:
+    'Visualize AI response quality metrics like groundedness, coverage, and confidence scores.',
 }
 
 export default function ResponseQualityMeterPage() {
@@ -17,19 +17,24 @@ export default function ResponseQualityMeterPage() {
         <span className="docs-badge">Component</span>
         <h1>Response Quality Meter</h1>
         <p className="docs-lead">
-          Show how good the AI's answer was. Like a report card for each response - is it grounded in facts? Did it cover everything? How confident is it?
+          Show how good the AI's answer was. Like a report card for each
+          response - is it grounded in facts? Did it cover everything? How
+          confident is it?
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          When you evaluate AI responses (using tools like LangSmith, Braintrust, or custom scoring), this component displays those scores in a beautiful, easy-to-understand way.
+          When you evaluate AI responses (using tools like LangSmith,
+          Braintrust, or custom scoring), this component displays those scores
+          in a beautiful, easy-to-understand way.
         </p>
-        
+
         <Callout type="info" title="What Are Quality Metrics?">
-          AI evaluation tools measure things like: Is the answer based on real data (groundedness)?
-          Did it answer the full question (coverage)? How confident is the AI? This shows those scores.
+          AI evaluation tools measure things like: Is the answer based on real
+          data (groundedness)? Did it answer the full question (coverage)? How
+          confident is the AI? This shows those scores.
         </Callout>
       </section>
 
@@ -210,7 +215,8 @@ render(<RAGQualityDashboard />)`}
 
       <section className="docs-section">
         <h2>Integration Example</h2>
-        <pre><code>{`// Integrate with LangSmith evaluation
+        <pre>
+          <code>{`// Integrate with LangSmith evaluation
 import { ResponseQualityMeter } from '@clarity-chat/react'
 import { evaluate } from 'langsmith'
 
@@ -239,7 +245,8 @@ return (
     metrics={metrics}
     overallScore={overall}
   />
-)`}</code></pre>
+)`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -253,8 +260,8 @@ return (
         </ul>
 
         <Callout type="tip" title="When to Show This">
-          Great for admin dashboards, quality monitoring, and debugging. Don't show
-          to end users - they just want answers, not technical scores.
+          Great for admin dashboards, quality monitoring, and debugging. Don't
+          show to end users - they just want answers, not technical scores.
         </Callout>
       </section>
 
@@ -265,7 +272,10 @@ return (
             <h3>Usage Dashboard</h3>
             <p>API usage and limits</p>
           </a>
-          <a href="/reference/components/performance-dashboard" className="docs-card">
+          <a
+            href="/reference/components/performance-dashboard"
+            className="docs-card"
+          >
             <h3>Performance Dashboard</h3>
             <p>Speed and latency metrics</p>
           </a>
@@ -280,38 +290,37 @@ const qualityProps = [
     name: 'metrics',
     type: 'ResponseQualityMetric[]',
     required: true,
-    description: 'Array of quality metrics to display'
+    description: 'Array of quality metrics to display',
   },
   {
     name: 'overallLabel',
     type: 'string',
     required: false,
     default: "'Overall score'",
-    description: 'Label for the overall score'
+    description: 'Label for the overall score',
   },
   {
     name: 'overallScore',
     type: 'number',
     required: false,
-    description: 'Overall quality score (0-1)'
+    description: 'Overall quality score (0-1)',
   },
   {
     name: 'title',
     type: 'string',
     required: false,
-    description: 'Section heading'
+    description: 'Section heading',
   },
   {
     name: 'subtitle',
     type: 'string',
     required: false,
-    description: 'Description text'
+    description: 'Description text',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

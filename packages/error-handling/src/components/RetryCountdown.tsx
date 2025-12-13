@@ -90,9 +90,30 @@ const colorConfigs = {
 }
 
 const sizeConfigs = {
-  sm: { container: 64, ring: 54, stroke: 4, font: '1rem', iconSize: 14, padding: '0.75rem' },
-  md: { container: 88, ring: 76, stroke: 5, font: '1.5rem', iconSize: 18, padding: '1rem' },
-  lg: { container: 112, ring: 98, stroke: 6, font: '2rem', iconSize: 22, padding: '1.25rem' },
+  sm: {
+    container: 64,
+    ring: 54,
+    stroke: 4,
+    font: '1rem',
+    iconSize: 14,
+    padding: '0.75rem',
+  },
+  md: {
+    container: 88,
+    ring: 76,
+    stroke: 5,
+    font: '1.5rem',
+    iconSize: 18,
+    padding: '1rem',
+  },
+  lg: {
+    container: 112,
+    ring: 98,
+    stroke: 6,
+    font: '2rem',
+    iconSize: 22,
+    padding: '1.25rem',
+  },
 }
 
 /**
@@ -128,7 +149,9 @@ export function RetryCountdown({
   const [isHovered, setIsHovered] = React.useState(false)
   const [isComplete, setIsComplete] = React.useState(false)
   const prefersReducedMotion = usePrefersReducedMotion()
-  const intervalRef = React.useRef<ReturnType<typeof setInterval> | undefined>(undefined)
+  const intervalRef = React.useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined
+  )
   const totalTime = React.useRef(remainingMs)
 
   const colors = colorConfigs[colorScheme]
@@ -170,7 +193,8 @@ export function RetryCountdown({
   const circumference = 2 * Math.PI * (sizes.ring / 2 - sizes.stroke)
   const strokeDashoffset = circumference * (1 - progress)
 
-  const displayMessage = message || (seconds > 0 ? 'Retrying automatically...' : 'Retrying now...')
+  const displayMessage =
+    message || (seconds > 0 ? 'Retrying automatically...' : 'Retrying now...')
 
   // Inline variant
   if (variant === 'inline') {
@@ -202,7 +226,9 @@ export function RetryCountdown({
             stroke={colors.primary}
             strokeWidth="2"
             style={{
-              animation: !prefersReducedMotion ? 'retryCountdownSpin 2s linear infinite' : 'none',
+              animation: !prefersReducedMotion
+                ? 'retryCountdownSpin 2s linear infinite'
+                : 'none',
             }}
           >
             <path d="M21 12a9 9 0 11-6.219-8.56" />
@@ -228,7 +254,9 @@ export function RetryCountdown({
             borderRadius: '12px',
             background: colors.bg,
             border: `1px solid ${colors.primary}20`,
-            animation: !prefersReducedMotion ? 'retryCountdownFadeIn 0.3s ease-out' : 'none',
+            animation: !prefersReducedMotion
+              ? 'retryCountdownFadeIn 0.3s ease-out'
+              : 'none',
           }}
           role="timer"
           aria-live="polite"
@@ -247,7 +275,14 @@ export function RetryCountdown({
               viewBox="0 0 32 32"
               style={{ transform: 'rotate(-90deg)' }}
             >
-              <circle cx="16" cy="16" r="13" fill="none" stroke={`${colors.primary}20`} strokeWidth="3" />
+              <circle
+                cx="16"
+                cy="16"
+                r="13"
+                fill="none"
+                stroke={`${colors.primary}20`}
+                strokeWidth="3"
+              />
               <circle
                 cx="16"
                 cy="16"
@@ -259,7 +294,9 @@ export function RetryCountdown({
                 strokeDasharray={81.68}
                 strokeDashoffset={81.68 * (1 - progress)}
                 style={{
-                  transition: prefersReducedMotion ? 'none' : 'stroke-dashoffset 0.1s linear',
+                  transition: prefersReducedMotion
+                    ? 'none'
+                    : 'stroke-dashoffset 0.1s linear',
                 }}
               />
             </svg>
@@ -278,7 +315,12 @@ export function RetryCountdown({
               {seconds}
             </div>
           </div>
-          <span style={{ fontSize: '0.8125rem', color: 'var(--error-color-muted, #6b7280)' }}>
+          <span
+            style={{
+              fontSize: '0.8125rem',
+              color: 'var(--error-color-muted, #6b7280)',
+            }}
+          >
             {displayMessage}
           </span>
           {showRetryButton && onRetryNow && seconds > 0 && (
@@ -341,12 +383,20 @@ export function RetryCountdown({
               fontWeight: 700,
               color: colors.primary,
               fontVariantNumeric: 'tabular-nums',
-              animation: !prefersReducedMotion && seconds <= 3 ? 'retryCountdownTick 1s ease-in-out' : 'none',
+              animation:
+                !prefersReducedMotion && seconds <= 3
+                  ? 'retryCountdownTick 1s ease-in-out'
+                  : 'none',
             }}
           >
             {seconds}
           </span>
-          <span style={{ fontSize: '0.8125rem', color: 'var(--error-color-muted, #9ca3af)' }}>
+          <span
+            style={{
+              fontSize: '0.8125rem',
+              color: 'var(--error-color-muted, #9ca3af)',
+            }}
+          >
             seconds
           </span>
         </div>
@@ -360,15 +410,19 @@ export function RetryCountdown({
       <style>{countdownKeyframes}</style>
       <div
         className={className}
-        style={{
-          '--glow-color': colors.glow,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem',
-          padding: sizes.padding,
-          animation: !prefersReducedMotion ? 'retryCountdownFadeIn 0.4s ease-out' : 'none',
-        } as React.CSSProperties}
+        style={
+          {
+            '--glow-color': colors.glow,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1rem',
+            padding: sizes.padding,
+            animation: !prefersReducedMotion
+              ? 'retryCountdownFadeIn 0.4s ease-out'
+              : 'none',
+          } as React.CSSProperties
+        }
         role="timer"
         aria-live="polite"
         aria-label={`Retrying in ${seconds} seconds`}
@@ -379,9 +433,10 @@ export function RetryCountdown({
               position: 'relative',
               width: sizes.container,
               height: sizes.container,
-              animation: !prefersReducedMotion && isHovered
-                ? 'retryCountdownPulse 2s ease-in-out infinite'
-                : 'none',
+              animation:
+                !prefersReducedMotion && isHovered
+                  ? 'retryCountdownPulse 2s ease-in-out infinite'
+                  : 'none',
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -396,7 +451,10 @@ export function RetryCountdown({
                   background: colors.gradient,
                   opacity: 0.15,
                   filter: 'blur(12px)',
-                  animation: seconds <= 3 ? 'retryCountdownGlow 1s ease-in-out infinite' : 'none',
+                  animation:
+                    seconds <= 3
+                      ? 'retryCountdownGlow 1s ease-in-out infinite'
+                      : 'none',
                 }}
                 aria-hidden="true"
               />
@@ -408,7 +466,9 @@ export function RetryCountdown({
               viewBox={`0 0 ${sizes.ring} ${sizes.ring}`}
               style={{
                 transform: 'rotate(-90deg)',
-                filter: !prefersReducedMotion ? `drop-shadow(0 0 6px ${colors.glow})` : 'none',
+                filter: !prefersReducedMotion
+                  ? `drop-shadow(0 0 6px ${colors.glow})`
+                  : 'none',
               }}
             >
               {/* Background circle */}
@@ -422,7 +482,13 @@ export function RetryCountdown({
               />
               {/* Gradient definition */}
               <defs>
-                <linearGradient id={`countdown-gradient-${colorScheme}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient
+                  id={`countdown-gradient-${colorScheme}`}
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
                   <stop offset="0%" stopColor={colors.primary} />
                   <stop offset="100%" stopColor={colors.secondary} />
                 </linearGradient>
@@ -439,7 +505,9 @@ export function RetryCountdown({
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
                 style={{
-                  transition: prefersReducedMotion ? 'none' : 'stroke-dashoffset 0.1s linear',
+                  transition: prefersReducedMotion
+                    ? 'none'
+                    : 'stroke-dashoffset 0.1s linear',
                 }}
               />
             </svg>
@@ -464,7 +532,9 @@ export function RetryCountdown({
                   stroke={colors.primary}
                   strokeWidth="2"
                   style={{
-                    animation: !prefersReducedMotion ? 'retryCountdownSpin 1s linear infinite' : 'none',
+                    animation: !prefersReducedMotion
+                      ? 'retryCountdownSpin 1s linear infinite'
+                      : 'none',
                   }}
                 >
                   <path d="M21 12a9 9 0 11-6.219-8.56" />
@@ -478,9 +548,10 @@ export function RetryCountdown({
                       color: 'var(--error-color-text, #1f2937)',
                       fontVariantNumeric: 'tabular-nums',
                       lineHeight: 1,
-                      animation: !prefersReducedMotion && seconds <= 3
-                        ? 'retryCountdownTick 1s ease-in-out'
-                        : 'none',
+                      animation:
+                        !prefersReducedMotion && seconds <= 3
+                          ? 'retryCountdownTick 1s ease-in-out'
+                          : 'none',
                     }}
                   >
                     {seconds}
@@ -518,7 +589,12 @@ export function RetryCountdown({
             >
               {seconds}
             </span>
-            <span style={{ fontSize: '0.875rem', color: 'var(--error-color-muted, #6b7280)' }}>
+            <span
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--error-color-muted, #6b7280)',
+              }}
+            >
               seconds
             </span>
           </div>

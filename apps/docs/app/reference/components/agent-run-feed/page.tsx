@@ -54,7 +54,9 @@ function LiveAgentFeedDemo() {
   const [steps, setSteps] = useState<AgentRunStep[]>([])
 
   useEffect(() => {
-    const sequence: Array<Omit<AgentRunStep, 'id' | 'startedAt' | 'completedAt'> & { delay: number }> = [
+    const sequence: Array<
+      Omit<AgentRunStep, 'id' | 'startedAt' | 'completedAt'> & { delay: number }
+    > = [
       {
         title: 'Planning',
         detail: 'Breaking down the task into steps',
@@ -90,12 +92,12 @@ function LiveAgentFeedDemo() {
           ...step,
           startedAt: new Date(),
         }
-        setSteps(prev => [...prev, newStep])
+        setSteps((prev) => [...prev, newStep])
 
         // Mark as succeeded after delay
         setTimeout(() => {
-          setSteps(prev =>
-            prev.map(s =>
+          setSteps((prev) =>
+            prev.map((s) =>
               s.id === newStep.id
                 ? {
                     ...s,
@@ -127,17 +129,20 @@ const agentRunFeedProps: Prop[] = [
     name: 'steps',
     type: 'AgentRunStep[]',
     required: true,
-    description: 'Array of agent execution steps. Each step represents one action in the agent workflow.',
+    description:
+      'Array of agent execution steps. Each step represents one action in the agent workflow.',
   },
   {
     name: 'onRetry',
     type: '(step: AgentRunStep) => void',
-    description: 'Callback when user retries a failed step. Shows retry button for failed steps.',
+    description:
+      'Callback when user retries a failed step. Shows retry button for failed steps.',
   },
   {
     name: 'onOpenLogs',
     type: '(step: AgentRunStep) => void',
-    description: 'Callback when user opens detailed logs for a step. Shows "View logs" button.',
+    description:
+      'Callback when user opens detailed logs for a step. Shows "View logs" button.',
   },
   {
     name: 'title',
@@ -148,7 +153,8 @@ const agentRunFeedProps: Prop[] = [
   {
     name: 'subtitle',
     type: 'string',
-    default: '"Observe how the orchestrator called tools, merged evidence, and delivered the final answer."',
+    default:
+      '"Observe how the orchestrator called tools, merged evidence, and delivered the final answer."',
     description: 'Subtitle/description displayed below the title.',
   },
   {
@@ -157,7 +163,6 @@ const agentRunFeedProps: Prop[] = [
     description: 'Additional CSS classes to apply to the container element.',
   },
 ]
-
 
 export default function AgentRunFeedPage() {
   return (
@@ -168,15 +173,17 @@ export default function AgentRunFeedPage() {
         <h1>AgentRunFeed</h1>
 
         <p className="lead">
-          Display AI agent execution steps in real-time, showing tool calls, reasoning,
-          and multi-step workflows. Perfect for debugging agents or showing users what's happening behind the scenes.
+          Display AI agent execution steps in real-time, showing tool calls,
+          reasoning, and multi-step workflows. Perfect for debugging agents or
+          showing users what's happening behind the scenes.
         </p>
 
         <Callout type="info">
           <p>
-            <strong>What's an AI Agent?</strong> An agent can use tools (call APIs, search databases, run code)
-            to solve problems. Unlike simple chatbots, agents make plans and take multiple steps.
-            AgentRunFeed visualizes these steps as they happen.
+            <strong>What's an AI Agent?</strong> An agent can use tools (call
+            APIs, search databases, run code) to solve problems. Unlike simple
+            chatbots, agents make plans and take multiple steps. AgentRunFeed
+            visualizes these steps as they happen.
           </p>
         </Callout>
 
@@ -185,7 +192,8 @@ export default function AgentRunFeedPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Watch an agent execute steps in real-time! See how it progresses through the workflow.
+            Watch an agent execute steps in real-time! See how it progresses
+            through the workflow.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -228,7 +236,8 @@ import '@clarity-chat/react/styles.css'`}
         <h2 id="basic-usage">Basic Usage</h2>
 
         <p>
-          AgentRunFeed displays a list of agent execution steps with status indicators:
+          AgentRunFeed displays a list of agent execution steps with status
+          indicators:
         </p>
 
         <ComponentPreview
@@ -265,9 +274,7 @@ function SimpleAgentFeed() {
 
         <h2 id="live-execution">Live Agent Execution</h2>
 
-        <p>
-          Update steps in real-time as the agent executes:
-        </p>
+        <p>Update steps in real-time as the agent executes:</p>
 
         <ComponentPreview
           title="Live Execution"
@@ -328,9 +335,7 @@ function LiveAgentExecution() {
 
         <h2 id="with-retry">With Retry and Logs</h2>
 
-        <p>
-          Enable retry for failed steps and log viewing:
-        </p>
+        <p>Enable retry for failed steps and log viewing:</p>
 
         <EnhancedCodeBlock
           code={`import { AgentRunFeed } from '@clarity-chat/react'
@@ -400,9 +405,7 @@ function AgentWithRetry() {
 
         <h2 id="status-indicators">Status Indicators</h2>
 
-        <p>
-          Each step displays a status badge with appropriate colors:
-        </p>
+        <p>Each step displays a status badge with appropriate colors:</p>
 
         <ul>
           <li>
@@ -421,9 +424,7 @@ function AgentWithRetry() {
 
         <h2 id="step-details">Step Details</h2>
 
-        <p>
-          Steps can include additional information:
-        </p>
+        <p>Steps can include additional information:</p>
 
         <EnhancedCodeBlock
           code={`import { AgentRunFeed } from '@clarity-chat/react'
@@ -475,9 +476,7 @@ function DetailedSteps() {
 
         <h2 id="integration-with-langchain">Integration with LangChain</h2>
 
-        <p>
-          Stream agent steps from LangChain:
-        </p>
+        <p>Stream agent steps from LangChain:</p>
 
         <EnhancedCodeBlock
           code={`import { AgentRunFeed } from '@clarity-chat/react'
@@ -616,26 +615,32 @@ function CompleteAgentFeed() {
 
         <ul>
           <li>
-            <strong>Update in real-time:</strong> Update steps as the agent executes for best UX
+            <strong>Update in real-time:</strong> Update steps as the agent
+            executes for best UX
           </li>
           <li>
-            <strong>Show tool names:</strong> Include <code>tool</code> property so users understand what's happening
+            <strong>Show tool names:</strong> Include <code>tool</code> property
+            so users understand what's happening
           </li>
           <li>
-            <strong>Include timing:</strong> Provide <code>startedAt</code> and <code>completedAt</code> for performance debugging
+            <strong>Include timing:</strong> Provide <code>startedAt</code> and{' '}
+            <code>completedAt</code> for performance debugging
           </li>
           <li>
-            <strong>Provide retry:</strong> Enable retry for failed steps to improve reliability
+            <strong>Provide retry:</strong> Enable retry for failed steps to
+            improve reliability
           </li>
           <li>
-            <strong>Add log viewing:</strong> Provide detailed logs for debugging complex issues
+            <strong>Add log viewing:</strong> Provide detailed logs for
+            debugging complex issues
           </li>
         </ul>
 
         <Callout type="tip">
           <p>
-            <strong>UX Consideration:</strong> For end users, you might want to hide this by default
-            and show a simple loading spinner. Expose this view in "advanced" or "debug" mode.
+            <strong>UX Consideration:</strong> For end users, you might want to
+            hide this by default and show a simple loading spinner. Expose this
+            view in "advanced" or "debug" mode.
           </p>
         </Callout>
 
@@ -655,16 +660,28 @@ function CompleteAgentFeed() {
 
         <ul>
           <li>
-            <a href="/reference/components/tool-invocation-card">ToolInvocationCard</a> - Individual tool call details
+            <a href="/reference/components/tool-invocation-card">
+              ToolInvocationCard
+            </a>{' '}
+            - Individual tool call details
           </li>
           <li>
-            <a href="/reference/components/clarity-tool-result">ClarityToolResult</a> - Render tool results with custom UI
+            <a href="/reference/components/clarity-tool-result">
+              ClarityToolResult
+            </a>{' '}
+            - Render tool results with custom UI
           </li>
           <li>
-            <a href="/reference/components/streaming-message">StreamingMessage</a> - Display streaming responses
+            <a href="/reference/components/streaming-message">
+              StreamingMessage
+            </a>{' '}
+            - Display streaming responses
           </li>
           <li>
-            <a href="/reference/components/thinking-indicator">ThinkingIndicator</a> - Simple "AI is thinking" loader
+            <a href="/reference/components/thinking-indicator">
+              ThinkingIndicator
+            </a>{' '}
+            - Simple "AI is thinking" loader
           </li>
         </ul>
 

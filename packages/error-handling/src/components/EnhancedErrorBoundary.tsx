@@ -116,7 +116,8 @@ function DefaultFallback({ error, resetErrorBoundary }: FallbackProps) {
     width: '100%',
     padding: '2rem',
     borderRadius: '20px',
-    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+    background:
+      'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
     backdropFilter: 'blur(20px)',
     border: '1px solid rgba(239, 68, 68, 0.15)',
     boxShadow: isHovered
@@ -167,7 +168,8 @@ function DefaultFallback({ error, resetErrorBoundary }: FallbackProps) {
               left: 0,
               right: 0,
               height: '4px',
-              background: 'linear-gradient(90deg, #ef4444 0%, #f87171 50%, #ef4444 100%)',
+              background:
+                'linear-gradient(90deg, #ef4444 0%, #f87171 50%, #ef4444 100%)',
               backgroundSize: '200% 100%',
             }}
             aria-hidden="true"
@@ -305,7 +307,8 @@ function DefaultFallback({ error, resetErrorBoundary }: FallbackProps) {
                 marginTop: '1.25rem',
                 padding: '0.875rem 1rem',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.04) 100%)',
+                background:
+                  'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.04) 100%)',
                 border: '1px solid rgba(16, 185, 129, 0.2)',
                 display: 'flex',
                 alignItems: 'flex-start',
@@ -358,7 +361,8 @@ function DefaultFallback({ error, resetErrorBoundary }: FallbackProps) {
                   fontSize: '0.875rem',
                   fontWeight: 600,
                   color: 'white',
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  background:
+                    'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                   border: 'none',
                   borderRadius: '12px',
                   cursor: isRetrying ? 'not-allowed' : 'pointer',
@@ -369,12 +373,14 @@ function DefaultFallback({ error, resetErrorBoundary }: FallbackProps) {
                 onMouseOver={(e) => {
                   if (!isRetrying) {
                     e.currentTarget.style.transform = 'translateY(-2px)'
-                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.45)'
+                    e.currentTarget.style.boxShadow =
+                      '0 6px 20px rgba(59, 130, 246, 0.45)'
                   }
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(59, 130, 246, 0.35)'
+                  e.currentTarget.style.boxShadow =
+                    '0 4px 14px rgba(59, 130, 246, 0.35)'
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.outline = '2px solid #3b82f6'

@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'BatteryIndicator - Clarity Chat Components',
-  description: 'Battery status indicator with optimization recommendations for mobile devices.',
+  description:
+    'Battery status indicator with optimization recommendations for mobile devices.',
 }
 
 const props: Prop[] = [
@@ -51,7 +51,8 @@ export default function BatteryIndicatorPage() {
         <span className="docs-badge">Component</span>
         <h1>BatteryIndicator</h1>
         <p className="docs-lead">
-          Battery status indicator with optimization recommendations for 30-50% longer battery life on mobile devices.
+          Battery status indicator with optimization recommendations for 30-50%
+          longer battery life on mobile devices.
         </p>
       </div>
 
@@ -67,23 +68,23 @@ export default function BatteryIndicatorPage() {
 
       <Callout type="info" className="my-6">
         <p>
-          <strong>New in 2025:</strong> This component provides battery-aware features that can extend
-          battery life by 30-50% on mobile devices through automatic optimization.
+          <strong>New in 2025:</strong> This component provides battery-aware
+          features that can extend battery life by 30-50% on mobile devices
+          through automatic optimization.
         </p>
       </Callout>
 
       <Callout type="warning" className="my-6">
         <p>
-          <strong>Browser Support:</strong> The Battery API is not available in all browsers. The component
-          gracefully handles unsupported browsers by returning null.
+          <strong>Browser Support:</strong> The Battery API is not available in
+          all browsers. The component gracefully handles unsupported browsers by
+          returning null.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Display battery status with default configuration:
-        </p>
+        <p>Display battery status with default configuration:</p>
         <CodePlayground
           initialCode={`import { BatteryIndicator } from '@clarity-chat/react'
 
@@ -105,9 +106,7 @@ render(<ChatWithBattery />)`}
 
       <section className="docs-section">
         <h2>Battery-Aware Configuration</h2>
-        <p>
-          Configure battery-aware optimizations:
-        </p>
+        <p>Configure battery-aware optimizations:</p>
         <CodePlayground
           initialCode={`import { BatteryIndicator, useBatteryAware } from '@clarity-chat/react'
 
@@ -143,9 +142,7 @@ function OptimizedChat() {
 
       <section className="docs-section">
         <h2>Position Options</h2>
-        <p>
-          Position the indicator in different locations:
-        </p>
+        <p>Position the indicator in different locations:</p>
         <CodePlayground
           initialCode={`import { BatteryIndicator } from '@clarity-chat/react'
 
@@ -171,9 +168,7 @@ function PositionedIndicators() {
 
       <section className="docs-section">
         <h2>Compact Mode</h2>
-        <p>
-          Use compact mode for minimal UI footprint:
-        </p>
+        <p>Use compact mode for minimal UI footprint:</p>
         <CodePlayground
           initialCode={`import { BatteryIndicator } from '@clarity-chat/react'
 
@@ -191,9 +186,7 @@ function CompactIndicator() {
 
       <section className="docs-section">
         <h2>With Recommendations</h2>
-        <p>
-          Display optimization recommendations:
-        </p>
+        <p>Display optimization recommendations:</p>
         <CodePlayground
           initialCode={`import { BatteryIndicator, useBatteryAware } from '@clarity-chat/react'
 
@@ -231,44 +224,75 @@ function ChatWithRecommendations() {
       <section className="docs-section">
         <h2>Configuration Options</h2>
         <ul>
-          <li><strong>batterySaverThreshold</strong>: <code>number</code> - Battery level (0-1) to enable saver mode</li>
-          <li><strong>autoOptimize</strong>: <code>boolean</code> - Automatically apply optimizations</li>
-          <li><strong>updateInterval</strong>: <code>number</code> - Update interval in milliseconds</li>
+          <li>
+            <strong>batterySaverThreshold</strong>: <code>number</code> -
+            Battery level (0-1) to enable saver mode
+          </li>
+          <li>
+            <strong>autoOptimize</strong>: <code>boolean</code> - Automatically
+            apply optimizations
+          </li>
+          <li>
+            <strong>updateInterval</strong>: <code>number</code> - Update
+            interval in milliseconds
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use <code>top-right</code> or <code>top-left</code> for non-intrusive placement</li>
-          <li>Enable <code>showTooltip</code> for detailed information on hover</li>
-          <li>Use <code>compact</code> mode for minimal UI footprint</li>
-          <li>Configure <code>batterySaverThreshold</code> based on your app's needs</li>
-          <li>Handle unsupported browsers gracefully (component returns null)</li>
+          <li>
+            Use <code>top-right</code> or <code>top-left</code> for
+            non-intrusive placement
+          </li>
+          <li>
+            Enable <code>showTooltip</code> for detailed information on hover
+          </li>
+          <li>
+            Use <code>compact</code> mode for minimal UI footprint
+          </li>
+          <li>
+            Configure <code>batterySaverThreshold</code> based on your app's
+            needs
+          </li>
+          <li>
+            Handle unsupported browsers gracefully (component returns null)
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Browser Support</h2>
-        <p>
-          The Battery API is supported in:
-        </p>
+        <p>The Battery API is supported in:</p>
         <ul>
           <li>Chrome/Edge (Android)</li>
           <li>Firefox (Android)</li>
           <li>Safari (iOS) - Limited support</li>
         </ul>
         <p>
-          The component gracefully handles unsupported browsers by returning null.
+          The component gracefully handles unsupported browsers by returning
+          null.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-battery-aware">useBatteryAware</a> - Battery-aware hook</li>
-          <li><a href="/guides/mobile">Mobile Guide</a> - Mobile optimization strategies</li>
-          <li><a href="/reference/components/mobile-chat-optimized">MobileChatWindow</a> - Mobile-optimized chat</li>
+          <li>
+            <a href="/reference/hooks/use-battery-aware">useBatteryAware</a> -
+            Battery-aware hook
+          </li>
+          <li>
+            <a href="/guides/mobile">Mobile Guide</a> - Mobile optimization
+            strategies
+          </li>
+          <li>
+            <a href="/reference/components/mobile-chat-optimized">
+              MobileChatWindow
+            </a>{' '}
+            - Mobile-optimized chat
+          </li>
         </ul>
       </section>
     </div>

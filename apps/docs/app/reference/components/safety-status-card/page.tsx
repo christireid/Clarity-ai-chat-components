@@ -4,10 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Safety Status Card - Clarity Chat Components',
-  description: 'Display AI safety check results - content moderation, policy compliance, and safety guardrails.',
+  description:
+    'Display AI safety check results - content moderation, policy compliance, and safety guardrails.',
 }
 
 export default function SafetyStatusCardPage() {
@@ -17,19 +17,23 @@ export default function SafetyStatusCardPage() {
         <span className="docs-badge">Component</span>
         <h1>Safety Status Card</h1>
         <p className="docs-lead">
-          Show safety check results for AI responses. Like a security checkpoint - did the AI say anything unsafe, inappropriate, or against your policies?
+          Show safety check results for AI responses. Like a security checkpoint
+          - did the AI say anything unsafe, inappropriate, or against your
+          policies?
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Before showing AI responses to users, you might run safety checks (using OpenAI Moderation API, custom filters, etc.). This component displays those check results in a clear, actionable way.
+          Before showing AI responses to users, you might run safety checks
+          (using OpenAI Moderation API, custom filters, etc.). This component
+          displays those check results in a clear, actionable way.
         </p>
-        
+
         <Callout type="info" title="Why Safety Checks Matter">
-          AI can sometimes generate inappropriate content. Safety checks catch issues
-          before users see them - protecting your users and your brand.
+          AI can sometimes generate inappropriate content. Safety checks catch
+          issues before users see them - protecting your users and your brand.
         </Callout>
       </section>
 
@@ -126,7 +130,8 @@ render(<SafetyIssues />)`}
 
       <section className="docs-section">
         <h2>Integration Example</h2>
-        <pre><code>{`// Using OpenAI Moderation API
+        <pre>
+          <code>{`// Using OpenAI Moderation API
 import { SafetyStatusCard } from '@clarity-chat/react'
 import OpenAI from 'openai'
 
@@ -169,7 +174,8 @@ useEffect(() => {
   if (aiResponse) {
     checkSafety(aiResponse).then(setSafetyChecks)
   }
-}, [aiResponse])`}</code></pre>
+}, [aiResponse])`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -183,15 +189,19 @@ useEffect(() => {
         </ul>
 
         <Callout type="warning" title="Not a Replacement for Backend Checks">
-          This component shows results. Always run safety checks on your backend/server,
-          not just in the frontend. Users can bypass frontend checks.
+          This component shows results. Always run safety checks on your
+          backend/server, not just in the frontend. Users can bypass frontend
+          checks.
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/components/response-quality-meter" className="docs-card">
+          <a
+            href="/reference/components/response-quality-meter"
+            className="docs-card"
+          >
             <h3>Response Quality Meter</h3>
             <p>Quality metrics</p>
           </a>
@@ -206,43 +216,42 @@ const safetyProps = [
     name: 'checks',
     type: 'SafetyCheck[]',
     required: true,
-    description: 'Array of safety checks performed'
+    description: 'Array of safety checks performed',
   },
   {
     name: 'lastReviewedAt',
     type: 'Date',
     required: false,
-    description: 'When checks were last run'
+    description: 'When checks were last run',
   },
   {
     name: 'onReviewPolicy',
     type: '() => void',
     required: false,
-    description: 'Callback to review safety policies'
+    description: 'Callback to review safety policies',
   },
   {
     name: 'onAcknowledge',
     type: '(check: SafetyCheck) => void',
     required: false,
-    description: 'Callback when user acknowledges a check'
+    description: 'Callback when user acknowledges a check',
   },
   {
     name: 'title',
     type: 'string',
     required: false,
-    description: 'Section heading'
+    description: 'Section heading',
   },
   {
     name: 'subtitle',
     type: 'string',
     required: false,
-    description: 'Description text'
+    description: 'Description text',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

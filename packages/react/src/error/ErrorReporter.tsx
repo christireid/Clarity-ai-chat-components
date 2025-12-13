@@ -5,24 +5,37 @@
  * It automatically captures unhandled errors and provides utilities for manual error reporting.
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
-import type { 
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from 'react'
+import type {
   // ErrorProvider, // Reserved for future use
-  ErrorReport, 
-  ErrorReporterConfig, 
-  ErrorStats 
+  ErrorReport,
+  ErrorReporterConfig,
+  ErrorStats,
 } from './types'
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function redactValue(value: unknown, replacement: string, depth: number): unknown {
+function redactValue(
+  value: unknown,
+  replacement: string,
+  depth: number
+): unknown {
   if (depth <= 0) return replacement
-  if (Array.isArray(value)) return value.map((v) => redactValue(v, replacement, depth - 1))
+  if (Array.isArray(value))
+    return value.map((v) => redactValue(v, replacement, depth - 1))
   if (isPlainObject(value)) {
     const out: Record<string, unknown> = {}
-    for (const [k, v] of Object.entries(value)) out[k] = redactValue(v, replacement, depth - 1)
+    for (const [k, v] of Object.entries(value))
+      out[k] = redactValue(v, replacement, depth - 1)
     return out
   }
   return replacement
@@ -32,16 +45,18 @@ function sanitizeReport(
   report: ErrorReport,
   redact?: ErrorReporterConfig['redact']
 ): ErrorReport {
-  const keys = (redact?.keys ?? [
-    'authorization',
-    'cookie',
-    'token',
-    'apikey',
-    'apiKey',
-    'password',
-    'secret',
-    'session',
-  ]).map((k) => k.toLowerCase())
+  const keys = (
+    redact?.keys ?? [
+      'authorization',
+      'cookie',
+      'token',
+      'apikey',
+      'apiKey',
+      'password',
+      'secret',
+      'session',
+    ]
+  ).map((k) => k.toLowerCase())
 
   const maxDepth = redact?.maxDepth ?? 5
   const replacement = redact?.replacement ?? '[REDACTED]'
@@ -55,7 +70,9 @@ function sanitizeReport(
 
     const out: Record<string, unknown> = {}
     for (const [k, v] of Object.entries(obj)) {
-      out[k] = shouldRedactKey(k) ? redactValue(v, replacement, 1) : sanitizeObject(v, depth - 1)
+      out[k] = shouldRedactKey(k)
+        ? redactValue(v, replacement, 1)
+        : sanitizeObject(v, depth - 1)
     }
     return out
   }
@@ -79,7 +96,11 @@ interface ErrorReporterContextValue {
   reportErrorDetailed: (report: Partial<ErrorReport>) => void
 
   /** Set user context */
-  setUser: (userId: string, email?: string, userData?: Record<string, any>) => void
+  setUser: (
+    userId: string,
+    email?: string,
+    userData?: Record<string, any>
+  ) => void
 
   /** Set global context */
   setContext: (context: Record<string, any>) => void
@@ -94,7 +115,9 @@ interface ErrorReporterContextValue {
   isEnabled: boolean
 }
 
-const ErrorReporterContext = createContext<ErrorReporterContextValue | undefined>(undefined)
+const ErrorReporterContext = createContext<
+  ErrorReporterContextValue | undefined
+>(undefined)
 
 /**
  * Error Reporter Provider Props
@@ -155,7 +178,10 @@ function getEnvironment() {
  * }
  * ```
  */
-export function ErrorReporterProvider({ children, config }: ErrorReporterProviderProps) {
+export function ErrorReporterProvider({
+  children,
+  config,
+}: ErrorReporterProviderProps) {
   const [sessionId] = useState(generateSessionId)
   const [errorStats, setErrorStats] = useState<ErrorStats>({
     totalErrors: 0,
@@ -182,9 +208,11 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
     email?: string
     userData?: Record<string, any>
   }>({})
-  
+
   const contextRef = useRef<Record<string, any>>({})
-  const breadcrumbsRef = useRef<Array<{ message: string; data?: Record<string, any>; timestamp: number }>>([])
+  const breadcrumbsRef = useRef<
+    Array<{ message: string; data?: Record<string, any>; timestamp: number }>
+  >([])
 
   const {
     providers,
@@ -205,7 +233,6 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
 
     let cancelled = false
     activeProvidersRef.current = providers
-
     ;(async () => {
       const results = await Promise.allSettled(
         providers.map(async (provider) => {
@@ -270,7 +297,9 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
         h.hour === hour ? { ...h, count: h.count + 1 } : h
       )
 
-      const existingIndex = prev.topErrors.findIndex((e) => e.message === report.message)
+      const existingIndex = prev.topErrors.findIndex(
+        (e) => e.message === report.message
+      )
       const nextTopErrorsUnsorted =
         existingIndex >= 0
           ? prev.topErrors.map((e, i) =>
@@ -338,12 +367,14 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
       try {
         activeProvidersRef.current.forEach((provider) => {
           try {
-            void Promise.resolve(provider.reportError(filteredReport)).catch((providerError) => {
-              ;(originalConsoleRef.current?.error ?? console.error)(
-                `Error reporting to provider ${provider.name}:`,
-                providerError
-              )
-            })
+            void Promise.resolve(provider.reportError(filteredReport)).catch(
+              (providerError) => {
+                ;(originalConsoleRef.current?.error ?? console.error)(
+                  `Error reporting to provider ${provider.name}:`,
+                  providerError
+                )
+              }
+            )
           } catch (providerError) {
             ;(originalConsoleRef.current?.error ?? console.error)(
               `Error reporting to provider ${provider.name}:`,
@@ -355,7 +386,17 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
         suppressConsoleCaptureRef.current--
       }
     },
-    [enabled, sampleRate, sessionId, beforeSend, onError, globalContext, globalTags, updateStats, redact]
+    [
+      enabled,
+      sampleRate,
+      sessionId,
+      beforeSend,
+      onError,
+      globalContext,
+      globalTags,
+      updateStats,
+      redact,
+    ]
   )
 
   // Report error with full options
@@ -407,12 +448,14 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
       try {
         activeProvidersRef.current.forEach((provider) => {
           try {
-            void Promise.resolve(provider.reportError(filteredReport)).catch((providerError) => {
-              ;(originalConsoleRef.current?.error ?? console.error)(
-                `Error reporting to provider ${provider.name}:`,
-                providerError
-              )
-            })
+            void Promise.resolve(provider.reportError(filteredReport)).catch(
+              (providerError) => {
+                ;(originalConsoleRef.current?.error ?? console.error)(
+                  `Error reporting to provider ${provider.name}:`,
+                  providerError
+                )
+              }
+            )
           } catch (providerError) {
             ;(originalConsoleRef.current?.error ?? console.error)(
               `Error reporting to provider ${provider.name}:`,
@@ -424,7 +467,17 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
         suppressConsoleCaptureRef.current--
       }
     },
-    [enabled, sampleRate, sessionId, beforeSend, onError, globalContext, globalTags, updateStats, redact]
+    [
+      enabled,
+      sampleRate,
+      sessionId,
+      beforeSend,
+      onError,
+      globalContext,
+      globalTags,
+      updateStats,
+      redact,
+    ]
   )
 
   // Set user context
@@ -589,7 +642,11 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
     isEnabled: enabled,
   }
 
-  return <ErrorReporterContext.Provider value={value}>{children}</ErrorReporterContext.Provider>
+  return (
+    <ErrorReporterContext.Provider value={value}>
+      {children}
+    </ErrorReporterContext.Provider>
+  )
 }
 
 /**
@@ -620,7 +677,9 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
 export function useErrorReporter() {
   const context = useContext(ErrorReporterContext)
   if (!context) {
-    throw new Error('useErrorReporter must be used within an ErrorReporterProvider')
+    throw new Error(
+      'useErrorReporter must be used within an ErrorReporterProvider'
+    )
   }
   return context
 }

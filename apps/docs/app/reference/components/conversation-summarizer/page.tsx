@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'ConversationSummarizer - Clarity Chat Components',
-  description: 'AI-powered conversation summarization with multiple detail levels, key topics, and action items.',
+  description:
+    'AI-powered conversation summarization with multiple detail levels, key topics, and action items.',
 }
 
 const props: Prop[] = [
@@ -62,7 +62,8 @@ export default function ConversationSummarizerPage() {
         <span className="docs-badge">Component</span>
         <h1>ConversationSummarizer</h1>
         <p className="docs-lead">
-          AI-powered conversation summarization with multiple detail levels, key topics extraction, and action items.
+          AI-powered conversation summarization with multiple detail levels, key
+          topics extraction, and action items.
         </p>
       </div>
 
@@ -78,16 +79,15 @@ export default function ConversationSummarizerPage() {
 
       <Callout type="info" className="my-6">
         <p>
-          <strong>New in 2025:</strong> This component provides 70% faster conversation review with AI-powered
-          summarization at three detail levels: brief, detailed, and comprehensive.
+          <strong>New in 2025:</strong> This component provides 70% faster
+          conversation review with AI-powered summarization at three detail
+          levels: brief, detailed, and comprehensive.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Generate summaries manually with default configuration:
-        </p>
+        <p>Generate summaries manually with default configuration:</p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -125,9 +125,7 @@ render(<ChatWithSummaries />)`}
 
       <section className="docs-section">
         <h2>Automatic Summarization</h2>
-        <p>
-          Configure automatic summarization at intervals:
-        </p>
+        <p>Configure automatic summarization at intervals:</p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -158,9 +156,7 @@ function AutoSummarizeChat({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Summary Levels</h2>
-        <p>
-          Generate summaries at different detail levels:
-        </p>
+        <p>Generate summaries at different detail levels:</p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
 
@@ -190,9 +186,7 @@ function MultiLevelSummaries({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Key Topics and Action Items</h2>
-        <p>
-          Extract key topics and action items from conversations:
-        </p>
+        <p>Extract key topics and action items from conversations:</p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
 
@@ -226,9 +220,7 @@ function RichSummaries({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Custom Summarization</h2>
-        <p>
-          Provide custom summarization logic:
-        </p>
+        <p>Provide custom summarization logic:</p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer, type ConversationSummary, type SummaryLevel } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -266,9 +258,7 @@ function CustomSummarizer({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Summary History</h2>
-        <p>
-          Show history of generated summaries:
-        </p>
+        <p>Show history of generated summaries:</p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
 
@@ -300,24 +290,63 @@ function SummariesWithHistory({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Configuration Options</h2>
         <ul>
-          <li><strong>trigger</strong>: <code>'manual' | 'auto' | 'interval'</code> - When to generate summaries</li>
-          <li><strong>interval</strong>: <code>number</code> - Number of messages or milliseconds for interval trigger</li>
-          <li><strong>levels</strong>: <code>SummaryLevel[]</code> - Available summary levels</li>
-          <li><strong>provider</strong>: <code>{'{ type, model, apiKey?, endpoint? }'}</code> - LLM provider configuration</li>
-          <li><strong>includeActionItems</strong>: <code>boolean</code> - Extract action items</li>
-          <li><strong>includeKeyTopics</strong>: <code>boolean</code> - Extract key topics</li>
-          <li><strong>includeCodeSnippets</strong>: <code>boolean</code> - Extract code snippets</li>
-          <li><strong>maxLength</strong>: <code>{'{ brief, detailed, comprehensive }'}</code> - Maximum length per level</li>
+          <li>
+            <strong>trigger</strong>:{' '}
+            <code>'manual' | 'auto' | 'interval'</code> - When to generate
+            summaries
+          </li>
+          <li>
+            <strong>interval</strong>: <code>number</code> - Number of messages
+            or milliseconds for interval trigger
+          </li>
+          <li>
+            <strong>levels</strong>: <code>SummaryLevel[]</code> - Available
+            summary levels
+          </li>
+          <li>
+            <strong>provider</strong>:{' '}
+            <code>{'{ type, model, apiKey?, endpoint? }'}</code> - LLM provider
+            configuration
+          </li>
+          <li>
+            <strong>includeActionItems</strong>: <code>boolean</code> - Extract
+            action items
+          </li>
+          <li>
+            <strong>includeKeyTopics</strong>: <code>boolean</code> - Extract
+            key topics
+          </li>
+          <li>
+            <strong>includeCodeSnippets</strong>: <code>boolean</code> - Extract
+            code snippets
+          </li>
+          <li>
+            <strong>maxLength</strong>:{' '}
+            <code>{'{ brief, detailed, comprehensive }'}</code> - Maximum length
+            per level
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use <code>interval</code> trigger for long conversations to keep summaries up-to-date</li>
-          <li>Enable <code>includeActionItems</code> for task-oriented conversations</li>
-          <li>Use <code>brief</code> level for quick overviews, <code>comprehensive</code> for detailed analysis</li>
-          <li>Configure appropriate <code>maxLength</code> values based on your use case</li>
+          <li>
+            Use <code>interval</code> trigger for long conversations to keep
+            summaries up-to-date
+          </li>
+          <li>
+            Enable <code>includeActionItems</code> for task-oriented
+            conversations
+          </li>
+          <li>
+            Use <code>brief</code> level for quick overviews,{' '}
+            <code>comprehensive</code> for detailed analysis
+          </li>
+          <li>
+            Configure appropriate <code>maxLength</code> values based on your
+            use case
+          </li>
           <li>Show history for conversations with multiple summary points</li>
         </ul>
       </section>
@@ -325,9 +354,20 @@ function SummariesWithHistory({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/memory">Memory Guide</a> - Conversation memory management</li>
-          <li><a href="/guides/analytics">Analytics Guide</a> - Tracking conversation metrics</li>
-          <li><a href="/cookbook/conversation-branching">Conversation Branching</a> - Branching patterns</li>
+          <li>
+            <a href="/guides/memory">Memory Guide</a> - Conversation memory
+            management
+          </li>
+          <li>
+            <a href="/guides/analytics">Analytics Guide</a> - Tracking
+            conversation metrics
+          </li>
+          <li>
+            <a href="/cookbook/conversation-branching">
+              Conversation Branching
+            </a>{' '}
+            - Branching patterns
+          </li>
         </ul>
       </section>
     </div>

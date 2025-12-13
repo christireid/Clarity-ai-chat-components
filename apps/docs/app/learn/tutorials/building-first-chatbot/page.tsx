@@ -6,7 +6,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Tutorial: Building Your First Chatbot',
-  description: 'Step-by-step guide to building a production-ready chatbot in 30 minutes.',
+  description:
+    'Step-by-step guide to building a production-ready chatbot in 30 minutes.',
 }
 
 export default function BuildingFirstChatbotTutorial() {
@@ -16,14 +17,16 @@ export default function BuildingFirstChatbotTutorial() {
         <span className="docs-badge">Tutorial</span>
         <h1>Building Your First Chatbot</h1>
         <p className="docs-lead">
-          Create a fully-functional AI chatbot with streaming, memory, and beautiful UI in 30 minutes.
+          Create a fully-functional AI chatbot with streaming, memory, and
+          beautiful UI in 30 minutes.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>What You'll Build</h2>
         <p>
-          By the end of this tutorial, you'll have a production-ready chatbot with:
+          By the end of this tutorial, you'll have a production-ready chatbot
+          with:
         </p>
         <ul>
           <li>Real-time streaming responses</li>
@@ -33,30 +36,41 @@ export default function BuildingFirstChatbotTutorial() {
           <li>Mobile-responsive design</li>
         </ul>
         <Callout type="info" title="Prerequisites">
-          • Node.js 18+ installed<br/>
-          • Basic React/Next.js knowledge<br/>
-          • OpenAI API key (<a href="https://platform.openai.com">get one here</a>)
+          • Node.js 18+ installed
+          <br />
+          • Basic React/Next.js knowledge
+          <br />• OpenAI API key (
+          <a href="https://platform.openai.com">get one here</a>)
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Step 1: Setup Project</h2>
         <p>Create a new Next.js project and install dependencies:</p>
-        <pre><code>{`npx create-next-app@latest my-chatbot
+        <pre>
+          <code>{`npx create-next-app@latest my-chatbot
 cd my-chatbot
-npm install @clarity-chat/react ai openai`}</code></pre>
+npm install @clarity-chat/react ai openai`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Step 2: Configure Environment</h2>
-        <p>Create a <code>.env.local</code> file with your API key:</p>
-        <pre><code>{`OPENAI_API_KEY=sk-...`}</code></pre>
+        <p>
+          Create a <code>.env.local</code> file with your API key:
+        </p>
+        <pre>
+          <code>{`OPENAI_API_KEY=sk-...`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Step 3: Create Chat API Route</h2>
-        <p>Create <code>app/api/chat/route.ts</code>:</p>
-        <pre><code>{`import OpenAI from 'openai'
+        <p>
+          Create <code>app/api/chat/route.ts</code>:
+        </p>
+        <pre>
+          <code>{`import OpenAI from 'openai'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 
 const openai = new OpenAI({
@@ -80,12 +94,15 @@ export async function POST(req: Request) {
 
   const stream = OpenAIStream(response)
   return new StreamingTextResponse(stream)
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Step 4: Create Chat Component</h2>
-        <p>Update <code>app/page.tsx</code>:</p>
+        <p>
+          Update <code>app/page.tsx</code>:
+        </p>
         <CodePlayground
           initialCode={`'use client'
 import { useState } from 'react'
@@ -167,8 +184,11 @@ render(<Home />)`}
 
       <section className="docs-section">
         <h2>Step 5: Add Styling</h2>
-        <p>Import Clarity Chat styles in <code>app/layout.tsx</code>:</p>
-        <pre><code>{`import '@clarity-chat/react/styles.css'
+        <p>
+          Import Clarity Chat styles in <code>app/layout.tsx</code>:
+        </p>
+        <pre>
+          <code>{`import '@clarity-chat/react/styles.css'
 import './globals.css'
 
 export default function RootLayout({
@@ -181,13 +201,19 @@ export default function RootLayout({
       <body>{children}</body>
     </html>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Step 6: Run Your Chatbot</h2>
-        <pre><code>{`npm run dev`}</code></pre>
-        <p>Open <a href="http://localhost:3000">http://localhost:3000</a> and start chatting!</p>
+        <pre>
+          <code>{`npm run dev`}</code>
+        </pre>
+        <p>
+          Open <a href="http://localhost:3000">http://localhost:3000</a> and
+          start chatting!
+        </p>
         <Callout type="success" title="Congratulations!">
           You've built your first AI chatbot! 🎉
         </Callout>
@@ -195,9 +221,10 @@ export default function RootLayout({
 
       <section className="docs-section">
         <h2>Next Steps: Add Features</h2>
-        
+
         <h3>Add Conversation Memory</h3>
-        <pre><code>{`// app/api/chat/route.ts
+        <pre>
+          <code>{`// app/api/chat/route.ts
 import { MemoryService } from '@clarity-chat/react/server'
 
 const memory = new MemoryService({
@@ -222,10 +249,12 @@ export async function POST(req: Request) {
   }
   
   // ... rest of the code
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Add File Upload</h3>
-        <pre><code>{`import { ChatWindow } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ChatWindow } from '@clarity-chat/react'
 
 <ChatWindow
   // ... existing props
@@ -240,10 +269,12 @@ export async function POST(req: Request) {
       body: formData
     })
   }}
-/>`}</code></pre>
+/>`}</code>
+        </pre>
 
         <h3>Add Custom Theming</h3>
-        <pre><code>{`import { ThemeProvider } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ThemeProvider } from '@clarity-chat/react'
 
 <ThemeProvider
   theme={{
@@ -258,17 +289,22 @@ export async function POST(req: Request) {
   }}
 >
   <ChatWindow {...props} />
-</ThemeProvider>`}</code></pre>
+</ThemeProvider>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Troubleshooting</h2>
-        
+
         <h3>API Key Issues</h3>
         <p>If you see authentication errors, make sure:</p>
         <ul>
-          <li>Your <code>.env.local</code> file is in the project root</li>
-          <li>You've restarted the dev server after adding environment variables</li>
+          <li>
+            Your <code>.env.local</code> file is in the project root
+          </li>
+          <li>
+            You've restarted the dev server after adding environment variables
+          </li>
           <li>Your API key is valid and has credits</li>
         </ul>
 
@@ -282,7 +318,9 @@ export async function POST(req: Request) {
 
         <h3>Styles Not Applying</h3>
         <p>Make sure you've imported the CSS:</p>
-        <pre><code>{`import '@clarity-chat/react/styles.css'`}</code></pre>
+        <pre>
+          <code>{`import '@clarity-chat/react/styles.css'`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">

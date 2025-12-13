@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Component Optimization Guide - Clarity Chat Components',
-  description: 'Learn how to optimize Clarity Chat Components for performance, including rendering optimization, memoization, and code splitting.',
+  description:
+    'Learn how to optimize Clarity Chat Components for performance, including rendering optimization, memoization, and code splitting.',
 }
 
 export default function ComponentOptimizationPage() {
@@ -17,7 +17,9 @@ export default function ComponentOptimizationPage() {
         <span className="docs-badge">Guide</span>
         <h1>Component Optimization</h1>
         <p className="docs-lead">
-          Learn how to optimize Clarity Chat Components for performance, including rendering optimization, memoization, code splitting, and bundle size reduction.
+          Learn how to optimize Clarity Chat Components for performance,
+          including rendering optimization, memoization, code splitting, and
+          bundle size reduction.
         </p>
       </div>
 
@@ -33,9 +35,7 @@ export default function ComponentOptimizationPage() {
 
       <section className="docs-section">
         <h2>Rendering Optimization</h2>
-        <p>
-          Optimize component rendering:
-        </p>
+        <p>Optimize component rendering:</p>
         <CodePlayground
           initialCode={`import { memo, useMemo } from 'react'
 import { Message } from '@clarity-chat/react'
@@ -66,9 +66,7 @@ function ChatWindow({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Reducing Re-renders</h2>
-        <p>
-          Reduce unnecessary re-renders:
-        </p>
+        <p>Reduce unnecessary re-renders:</p>
         <CodePlayground
           initialCode={`import { useCallback, useMemo } from 'react'
 import { ChatInput } from '@clarity-chat/react'
@@ -107,9 +105,7 @@ const MessageList = memo(({ messages }: { messages: Message[] }) => {
 
       <section className="docs-section">
         <h2>Code Splitting</h2>
-        <p>
-          Split component code:
-        </p>
+        <p>Split component code:</p>
         <CodePlayground
           initialCode={`import { lazy, Suspense } from 'react'
 
@@ -148,9 +144,7 @@ const SettingsPage = lazy(() => import('./SettingsPage'))`}
 
       <section className="docs-section">
         <h2>Bundle Size Optimization</h2>
-        <p>
-          Optimize bundle size:
-        </p>
+        <p>Optimize bundle size:</p>
         <CodePlayground
           initialCode={`// Import only what you need
 import { ChatWindow } from '@clarity-chat/react'
@@ -193,9 +187,7 @@ export default {
 
       <section className="docs-section">
         <h2>Performance Measurement</h2>
-        <p>
-          Measure component performance:
-        </p>
+        <p>Measure component performance:</p>
         <CodePlayground
           initialCode={`import { Profiler } from 'react'
 import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
@@ -257,8 +249,18 @@ function AnalyticsChat() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/performance-optimization-patterns">Performance Optimization Patterns</a> - General optimization guide</li>
-          <li><a href="/reference/components/performance-analytics-dashboard">PerformanceAnalyticsDashboard</a> - Performance monitoring</li>
+          <li>
+            <a href="/guides/performance-optimization-patterns">
+              Performance Optimization Patterns
+            </a>{' '}
+            - General optimization guide
+          </li>
+          <li>
+            <a href="/reference/components/performance-analytics-dashboard">
+              PerformanceAnalyticsDashboard
+            </a>{' '}
+            - Performance monitoring
+          </li>
         </ul>
       </section>
     </div>

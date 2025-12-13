@@ -50,7 +50,7 @@ function MessageWithActionsDemo() {
 
   const handleFeedback = useCallback((type: 'up' | 'down') => {
     console.log('Feedback:', type)
-    setMessage(prev => ({
+    setMessage((prev) => ({
       ...prev,
       feedback: { type, timestamp: new Date() },
     }))
@@ -76,12 +76,14 @@ const messageProps: Prop[] = [
     name: 'message',
     type: 'Message',
     required: true,
-    description: 'Message object from @clarity-chat/types containing id, role, content, status, etc.',
+    description:
+      'Message object from @clarity-chat/types containing id, role, content, status, etc.',
   },
   {
     name: 'onCopy',
     type: '(content: string) => void',
-    description: 'Callback when message is copied to clipboard. Receives the message content.',
+    description:
+      'Callback when message is copied to clipboard. Receives the message content.',
   },
   {
     name: 'onFeedback',
@@ -101,12 +103,14 @@ const messageProps: Prop[] = [
   {
     name: 'onRegenerate',
     type: '(messageId: string) => void',
-    description: 'Callback when user requests to regenerate a message. Receives the message ID.',
+    description:
+      'Callback when user requests to regenerate a message. Receives the message ID.',
   },
   {
     name: 'onDelete',
     type: '(messageId: string) => void',
-    description: 'Callback when user deletes a message. Receives the message ID.',
+    description:
+      'Callback when user deletes a message. Receives the message ID.',
   },
   {
     name: 'showAvatar',
@@ -124,24 +128,28 @@ const messageProps: Prop[] = [
     name: 'isGroupStart',
     type: 'boolean',
     default: 'true',
-    description: 'Whether this message is the first in a group of consecutive messages from the same sender.',
+    description:
+      'Whether this message is the first in a group of consecutive messages from the same sender.',
   },
   {
     name: 'isGroupEnd',
     type: 'boolean',
     default: 'true',
-    description: 'Whether this message is the last in a group of consecutive messages from the same sender.',
+    description:
+      'Whether this message is the last in a group of consecutive messages from the same sender.',
   },
   {
     name: 'isGrouped',
     type: 'boolean',
     default: 'false',
-    description: 'Whether this message is part of a group (affects spacing and avatar display).',
+    description:
+      'Whether this message is part of a group (affects spacing and avatar display).',
   },
   {
     name: 'errorDetails',
     type: 'ErrorDetails | string',
-    description: 'Error details to display for failed messages. Can be an ErrorDetails object or error message string.',
+    description:
+      'Error details to display for failed messages. Can be an ErrorDetails object or error message string.',
   },
   {
     name: 'className',
@@ -149,7 +157,6 @@ const messageProps: Prop[] = [
     description: 'Additional CSS classes to apply to the message container.',
   },
 ]
-
 
 export default function MessagePage() {
   return (
@@ -160,15 +167,17 @@ export default function MessagePage() {
         <h1>Message</h1>
 
         <p className="lead">
-          A low-level component for rendering individual chat messages with markdown support,
-          actions (copy, feedback, retry, edit, delete), and smooth animations.
+          A low-level component for rendering individual chat messages with
+          markdown support, actions (copy, feedback, retry, edit, delete), and
+          smooth animations.
         </p>
 
         <Callout type="info">
           <p>
             For displaying multiple messages, use the{' '}
-            <a href="/reference/components/message-list">MessageList</a> component.
-            For complete chat interfaces, use <a href="/reference/components/clarity-chat">ClarityChat</a>.
+            <a href="/reference/components/message-list">MessageList</a>{' '}
+            component. For complete chat interfaces, use{' '}
+            <a href="/reference/components/clarity-chat">ClarityChat</a>.
           </p>
         </Callout>
 
@@ -177,7 +186,8 @@ export default function MessagePage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Experiment with the Message component! Try different configurations and see how it renders.
+            Experiment with the Message component! Try different configurations
+            and see how it renders.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -215,8 +225,8 @@ import '@clarity-chat/react/styles.css'`}
         <h2 id="basic-usage">Basic Usage</h2>
 
         <p>
-          Message is a controlled component that accepts a <code>Message</code> object
-          from <code>@clarity-chat/types</code>:
+          Message is a controlled component that accepts a <code>Message</code>{' '}
+          object from <code>@clarity-chat/types</code>:
         </p>
 
         <ComponentPreview
@@ -245,8 +255,8 @@ function SimpleMessage() {
         <h2 id="message-actions">Message Actions</h2>
 
         <p>
-          Enable message actions by providing callback functions. The component automatically
-          shows action buttons on hover:
+          Enable message actions by providing callback functions. The component
+          automatically shows action buttons on hover:
         </p>
 
         <ComponentPreview
@@ -285,7 +295,8 @@ function MessageWithActions() {
         <h2 id="markdown-rendering">Markdown Rendering</h2>
 
         <p>
-          Message automatically renders markdown content with syntax highlighting for code blocks:
+          Message automatically renders markdown content with syntax
+          highlighting for code blocks:
         </p>
 
         <EnhancedCodeBlock
@@ -320,15 +331,18 @@ function greet(name: string) {
 
         <Callout type="tip">
           <p>
-            Message uses <code>react-markdown</code> with <code>remark-gfm</code> for GitHub Flavored Markdown
-            and <code>rehype-highlight</code> for syntax highlighting. All markdown features are supported.
+            Message uses <code>react-markdown</code> with{' '}
+            <code>remark-gfm</code> for GitHub Flavored Markdown and{' '}
+            <code>rehype-highlight</code> for syntax highlighting. All markdown
+            features are supported.
           </p>
         </Callout>
 
         <h2 id="streaming-messages">Streaming Messages</h2>
 
         <p>
-          Messages with <code>status: 'streaming'</code> automatically show a streaming indicator:
+          Messages with <code>status: 'streaming'</code> automatically show a
+          streaming indicator:
         </p>
 
         <EnhancedCodeBlock
@@ -353,9 +367,7 @@ function StreamingMessage() {
 
         <h2 id="error-messages">Error Messages</h2>
 
-        <p>
-          Display error information for failed messages:
-        </p>
+        <p>Display error information for failed messages:</p>
 
         <EnhancedCodeBlock
           code={`import { Message } from '@clarity-chat/react'
@@ -389,7 +401,8 @@ function ErrorMessage() {
         <h2 id="message-grouping">Message Grouping</h2>
 
         <p>
-          Group consecutive messages from the same sender for better visual organization:
+          Group consecutive messages from the same sender for better visual
+          organization:
         </p>
 
         <EnhancedCodeBlock
@@ -440,8 +453,9 @@ function GroupedMessages() {
 
         <Callout type="info">
           <p>
-            <a href="/reference/components/message-list">MessageList</a> automatically handles
-            message grouping for you. You only need to set these props when building custom message lists.
+            <a href="/reference/components/message-list">MessageList</a>{' '}
+            automatically handles message grouping for you. You only need to set
+            these props when building custom message lists.
           </p>
         </Callout>
 
@@ -463,7 +477,8 @@ function GroupedMessages() {
         <h2 id="feedback-animations">Feedback Animations</h2>
 
         <p>
-          When feedback is provided, Message shows a confetti animation for positive feedback:
+          When feedback is provided, Message shows a confetti animation for
+          positive feedback:
         </p>
 
         <EnhancedCodeBlock
@@ -605,13 +620,16 @@ const example = 'code blocks work too!'
 
         <ul>
           <li>
-            <strong>React 19 optimizations:</strong> Automatic memoization of event handlers
+            <strong>React 19 optimizations:</strong> Automatic memoization of
+            event handlers
           </li>
           <li>
-            <strong>Lazy markdown parsing:</strong> Markdown is only parsed when needed
+            <strong>Lazy markdown parsing:</strong> Markdown is only parsed when
+            needed
           </li>
           <li>
-            <strong>Efficient re-renders:</strong> Only re-renders when message data changes
+            <strong>Efficient re-renders:</strong> Only re-renders when message
+            data changes
           </li>
         </ul>
 
@@ -619,16 +637,24 @@ const example = 'code blocks work too!'
 
         <ul>
           <li>
-            <a href="/reference/components/message-list">MessageList</a> - Display multiple messages
+            <a href="/reference/components/message-list">MessageList</a> -
+            Display multiple messages
           </li>
           <li>
-            <a href="/reference/components/virtualized-message-list">VirtualizedMessageList</a> - For large message lists
+            <a href="/reference/components/virtualized-message-list">
+              VirtualizedMessageList
+            </a>{' '}
+            - For large message lists
           </li>
           <li>
-            <a href="/reference/components/streaming-message">StreamingMessage</a> - Specialized component for streaming
+            <a href="/reference/components/streaming-message">
+              StreamingMessage
+            </a>{' '}
+            - Specialized component for streaming
           </li>
           <li>
-            <a href="/reference/components/chat-window">ChatWindow</a> - Complete chat interface
+            <a href="/reference/components/chat-window">ChatWindow</a> -
+            Complete chat interface
           </li>
         </ul>
 

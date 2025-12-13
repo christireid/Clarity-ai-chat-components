@@ -65,7 +65,6 @@ const returnProps: Prop[] = [
   },
 ]
 
-
 export default function UseRetryWithBackoffPage() {
   return (
     <>
@@ -74,8 +73,9 @@ export default function UseRetryWithBackoffPage() {
       <h1>useRetryWithBackoff</h1>
 
       <p className="lead">
-        Automatically retries failed async operations with exponential backoff and jitter.
-        Essential for handling transient network errors in chat applications.
+        Automatically retries failed async operations with exponential backoff
+        and jitter. Essential for handling transient network errors in chat
+        applications.
       </p>
 
       <h2 id="import">Import</h2>

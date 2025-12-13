@@ -13,14 +13,17 @@ import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { Mic, MicOff } from 'lucide-react'
 
-
 function BasicVoiceDemo() {
   const [transcript, setTranscript] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [isSupported, setIsSupported] = useState(true)
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    if (
+      typeof window !== 'undefined' &&
+      !('webkitSpeechRecognition' in window) &&
+      !('SpeechRecognition' in window)
+    ) {
       setIsSupported(false)
     }
   }, [])
@@ -29,7 +32,8 @@ function BasicVoiceDemo() {
     return (
       <div className="w-full max-w-md p-6 border border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-900 rounded-lg text-center">
         <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-          Voice input is not supported in this browser. Please try Chrome, Edge, or Safari.
+          Voice input is not supported in this browser. Please try Chrome, Edge,
+          or Safari.
         </p>
       </div>
     )
@@ -42,10 +46,14 @@ function BasicVoiceDemo() {
           {isListening ? 'Listening...' : 'Click to speak'}
         </p>
         <div className="min-h-[60px] p-3 rounded-md bg-muted/50 w-full text-sm">
-          {transcript || <span className="text-muted-foreground/50 italic">Transcript will appear here...</span>}
+          {transcript || (
+            <span className="text-muted-foreground/50 italic">
+              Transcript will appear here...
+            </span>
+          )}
         </div>
       </div>
-      
+
       <VoiceInput
         onTranscript={setTranscript}
         onStart={() => setIsListening(true)}
@@ -61,13 +69,15 @@ const voiceInputProps: Prop[] = [
     name: 'onTranscript',
     type: '(transcript: string) => void',
     required: true,
-    description: 'Callback when transcript is finalized (or on interim results if showInterim is true).',
+    description:
+      'Callback when transcript is finalized (or on interim results if showInterim is true).',
   },
   {
     name: 'lang',
     type: 'string',
     default: '"en-US"',
-    description: 'Language code for speech recognition (e.g., "en-US", "es-ES", "fr-FR").',
+    description:
+      'Language code for speech recognition (e.g., "en-US", "es-ES", "fr-FR").',
   },
   {
     name: 'showInterim',
@@ -155,8 +165,9 @@ export default function VoiceInputPage() {
             </h1>
 
             <p className="text-xl text-text-secondary leading-relaxed">
-              Enable voice-to-text input with real-time transcription using the Web Speech API.
-              Perfect for hands-free chat, mobile interfaces, and accessibility.
+              Enable voice-to-text input with real-time transcription using the
+              Web Speech API. Perfect for hands-free chat, mobile interfaces,
+              and accessibility.
             </p>
           </div>
         </ScrollReveal>
@@ -164,8 +175,9 @@ export default function VoiceInputPage() {
         <ScrollReveal delay={0.1}>
           <Callout type="info" title="Browser Support" className="mb-8">
             <p>
-              VoiceInput uses the Web Speech API, which is supported in Chrome, Edge, and Safari.
-              The component gracefully degrades on unsupported browsers.
+              VoiceInput uses the Web Speech API, which is supported in Chrome,
+              Edge, and Safari. The component gracefully degrades on unsupported
+              browsers.
             </p>
           </Callout>
         </ScrollReveal>
@@ -177,9 +189,10 @@ export default function VoiceInputPage() {
         <ScrollReveal delay={0.3}>
           <h2 id="basic-usage">Basic Usage</h2>
           <p className="mb-4">
-            The simplest way to use the component is to provide an <code>onTranscript</code> callback:
+            The simplest way to use the component is to provide an{' '}
+            <code>onTranscript</code> callback:
           </p>
-          
+
           <ComponentPreview
             title="Voice Input Demo"
             description="Click the microphone to start speaking."
@@ -258,7 +271,8 @@ render(<Example />)`}
             <div>
               <h3 className="text-xl font-semibold mb-4">With Auto-Submit</h3>
               <p className="mb-4 text-muted-foreground">
-                Automatically submit the form or send message when speech ends (silence detected).
+                Automatically submit the form or send message when speech ends
+                (silence detected).
               </p>
               <EnhancedCodeBlock
                 language="tsx"
@@ -281,9 +295,12 @@ function Chat() {
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold mb-4">Multi-Language Support</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                Multi-Language Support
+              </h3>
               <p className="mb-4 text-muted-foreground">
-                Support different languages by passing the <code>lang</code> prop.
+                Support different languages by passing the <code>lang</code>{' '}
+                prop.
               </p>
               <EnhancedCodeBlock
                 language="tsx"
@@ -314,7 +331,8 @@ function Chat() {
             <div>
               <h3 className="text-xl font-semibold mb-4">Custom Styling</h3>
               <p className="mb-4 text-muted-foreground">
-                Customize the appearance with different variants, sizes, and icons.
+                Customize the appearance with different variants, sizes, and
+                icons.
               </p>
               <EnhancedCodeBlock
                 language="tsx"
@@ -346,20 +364,39 @@ function Chat() {
         <ScrollReveal delay={0.7}>
           <h2 id="features">Features</h2>
           <ul className="mb-8">
-            <li><strong>One-click voice recording</strong> - Simple button interface</li>
-            <li><strong>Real-time transcription</strong> - See text as you speak</li>
-            <li><strong>Visual feedback</strong> - Pulse animation during recording</li>
-            <li><strong>Auto-submit</strong> - Automatically send when speech ends</li>
-            <li><strong>Multi-language support</strong> - Supports 100+ languages</li>
-            <li><strong>Error handling</strong> - Graceful degradation on unsupported browsers</li>
-            <li><strong>Accessibility</strong> - Full keyboard and screen reader support</li>
+            <li>
+              <strong>One-click voice recording</strong> - Simple button
+              interface
+            </li>
+            <li>
+              <strong>Real-time transcription</strong> - See text as you speak
+            </li>
+            <li>
+              <strong>Visual feedback</strong> - Pulse animation during
+              recording
+            </li>
+            <li>
+              <strong>Auto-submit</strong> - Automatically send when speech ends
+            </li>
+            <li>
+              <strong>Multi-language support</strong> - Supports 100+ languages
+            </li>
+            <li>
+              <strong>Error handling</strong> - Graceful degradation on
+              unsupported browsers
+            </li>
+            <li>
+              <strong>Accessibility</strong> - Full keyboard and screen reader
+              support
+            </li>
           </ul>
         </ScrollReveal>
 
         <ScrollReveal delay={0.8}>
           <h2 id="integration">Integration with ChatInput</h2>
           <p className="mb-4">
-            VoiceInput works seamlessly alongside ChatInput for a complete multi-modal experience:
+            VoiceInput works seamlessly alongside ChatInput for a complete
+            multi-modal experience:
           </p>
           <EnhancedCodeBlock
             language="tsx"
@@ -393,20 +430,38 @@ function Chat() {
         <ScrollReveal delay={0.9}>
           <h2 id="related">Related</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a href="/reference/components/chat-input" className="p-4 border rounded-lg hover:border-brand-500 transition-colors">
+            <a
+              href="/reference/components/chat-input"
+              className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
               <h3 className="font-semibold mb-1">ChatInput Component</h3>
-              <p className="text-sm text-muted-foreground">Text input component</p>
+              <p className="text-sm text-muted-foreground">
+                Text input component
+              </p>
             </a>
-            <a href="/reference/components/advanced-chat-input" className="p-4 border rounded-lg hover:border-brand-500 transition-colors">
-              <h3 className="font-semibold mb-1">AdvancedChatInput Component</h3>
-              <p className="text-sm text-muted-foreground">Enhanced input with voice support</p>
+            <a
+              href="/reference/components/advanced-chat-input"
+              className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
+              <h3 className="font-semibold mb-1">
+                AdvancedChatInput Component
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Enhanced input with voice support
+              </p>
             </a>
           </div>
         </ScrollReveal>
 
         <Pagination
-          prev={{ title: 'FileUpload', href: '/reference/components/file-upload' }}
-          next={{ title: 'AdvancedChatInput', href: '/reference/components/advanced-chat-input' }}
+          prev={{
+            title: 'FileUpload',
+            href: '/reference/components/file-upload',
+          }}
+          next={{
+            title: 'AdvancedChatInput',
+            href: '/reference/components/advanced-chat-input',
+          }}
         />
       </div>
     </ToastProvider>

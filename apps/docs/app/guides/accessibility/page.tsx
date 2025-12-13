@@ -3,7 +3,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-
 export const metadata: Metadata = {
   title: 'Accessibility Guide - Clarity Chat',
   description:
@@ -17,24 +16,31 @@ export default function AccessibilityGuidePage() {
         <span className="docs-badge">Guide</span>
         <h1>Enterprise Accessibility</h1>
         <p className="docs-lead">
-          Clarity Chat is the only chat UI toolkit that is certified WCAG&nbsp;2.1
-          AAA. Use this guide to keep your implementation compliant without
-          slowing your team down.
+          Clarity Chat is the only chat UI toolkit that is certified
+          WCAG&nbsp;2.1 AAA. Use this guide to keep your implementation
+          compliant without slowing your team down.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>WCAG 2.1 AAA in Practice</h2>
         <p>
-          The library has been audited against all 78 WCAG&nbsp;2.1 criteria with
-          third-party verification. That means every component already handles:
+          The library has been audited against all 78 WCAG&nbsp;2.1 criteria
+          with third-party verification. That means every component already
+          handles:
         </p>
         <ul>
           <li>✅ Semantic markup and ARIA roles on all interactive surfaces</li>
-          <li>✅ Focus rings, focus restoration, and keyboard-first navigation</li>
+          <li>
+            ✅ Focus rings, focus restoration, and keyboard-first navigation
+          </li>
           <li>✅ 7:1 contrast ratios in both light and dark themes</li>
-          <li>✅ Screen reader announcements for typing, streaming, and errors</li>
-          <li>✅ Touch target sizing (≥ 44&nbsp;px) and motion preference support</li>
+          <li>
+            ✅ Screen reader announcements for typing, streaming, and errors
+          </li>
+          <li>
+            ✅ Touch target sizing (≥ 44&nbsp;px) and motion preference support
+          </li>
         </ul>
         <Callout type="success" title="Certified coverage">
           Review the full audit in <code>ACCESSIBILITY_CERTIFICATION.md</code>.
@@ -142,8 +148,8 @@ function CommandPalette({ onClose }: { onClose: () => void }) {
         />
         <Callout type="tip">
           Need to return focus to the trigger button after closing the dialog?
-          Call <code>useFocusRestoration()</code> before you open it and the hook
-          will restore focus on unmount.
+          Call <code>useFocusRestoration()</code> before you open it and the
+          hook will restore focus on unmount.
         </Callout>
       </section>
 
@@ -181,8 +187,8 @@ function ErrorBanner({ message }: { message: string }) {
         />
         <p>
           Pair announcements with visual affordances for deaf or hard-of-hearing
-          users: status chips, progress bars, and toast notifications are already
-          bundled with accessible colors and roles.
+          users: status chips, progress bars, and toast notifications are
+          already bundled with accessible colors and roles.
         </p>
       </section>
 
@@ -202,8 +208,8 @@ function ErrorBanner({ message }: { message: string }) {
             axe-core audits journeys
           </li>
           <li>
-            <code>npm run test:coverage</code> – verifies the
-            jest-axe snapshots included with the package
+            <code>npm run test:coverage</code> – verifies the jest-axe snapshots
+            included with the package
           </li>
         </ul>
         <Callout type="warning" title="Manual spot checks still matter">
@@ -220,25 +226,30 @@ function ErrorBanner({ message }: { message: string }) {
           content accessible.
         </p>
         <ul className="space-y-2">
-          <li>✔️ Use the provided components instead of divs with click handlers</li>
+          <li>
+            ✔️ Use the provided components instead of divs with click handlers
+          </li>
           <li>✔️ Give every image and upload preview an alt description</li>
           <li>✔️ Keep headings in sequence (h1 → h2 → h3)</li>
           <li>
-            ✔️ Label AI actions clearly (e.g. “Regenerate answer” instead of “Retry”)
+            ✔️ Label AI actions clearly (e.g. “Regenerate answer” instead of
+            “Retry”)
           </li>
           <li>
-            ✔️ Document custom shortcuts inside the keyboard help modal (users rely on it)
+            ✔️ Document custom shortcuts inside the keyboard help modal (users
+            rely on it)
           </li>
           <li>
-            ✔️ Avoid timeouts or auto-dismiss dialogs unless necessary (AAA requires manual control)
+            ✔️ Avoid timeouts or auto-dismiss dialogs unless necessary (AAA
+            requires manual control)
           </li>
         </ul>
         <p>
-          Ship with confidence: every Clarity Chat release is re-certified against
-          WCAG&nbsp;2.1 AAA, Section&nbsp;508, EN&nbsp;301&nbsp;549, and ADA guidelines.
+          Ship with confidence: every Clarity Chat release is re-certified
+          against WCAG&nbsp;2.1 AAA, Section&nbsp;508, EN&nbsp;301&nbsp;549, and
+          ADA guidelines.
         </p>
       </section>
     </div>
   )
 }
-

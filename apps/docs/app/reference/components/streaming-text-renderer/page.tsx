@@ -12,12 +12,12 @@ import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { Callout } from '@/components/MDX/Callout'
 
-
 function BasicStreamingDemo() {
   const [text, setText] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
 
-  const fullText = "Here is a streaming response that simulates how an LLM would generate text token by token. Notice the cursor effect!"
+  const fullText =
+    'Here is a streaming response that simulates how an LLM would generate text token by token. Notice the cursor effect!'
 
   const startStream = () => {
     setText('')
@@ -37,13 +37,13 @@ function BasicStreamingDemo() {
   return (
     <div className="w-full max-w-lg p-6 border border-border rounded-lg bg-background">
       <div className="mb-4 min-h-[80px] font-mono text-sm">
-        <StreamingTextRenderer 
-          text={text} 
-          isStreaming={isStreaming} 
+        <StreamingTextRenderer
+          text={text}
+          isStreaming={isStreaming}
           cursor="▋"
         />
       </div>
-      <button 
+      <button
         onClick={startStream}
         disabled={isStreaming}
         className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 disabled:opacity-50"
@@ -102,8 +102,8 @@ export default function StreamingTextRendererPage() {
             StreamingTextRenderer
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            A low-level component for rendering text streams with customizable cursor effects. 
-            The engine behind <code>StreamingMessage</code>.
+            A low-level component for rendering text streams with customizable
+            cursor effects. The engine behind <code>StreamingMessage</code>.
           </p>
         </div>
       </ScrollReveal>
@@ -115,8 +115,13 @@ export default function StreamingTextRendererPage() {
       <ScrollReveal delay={0.2}>
         <Callout type="info" className="mb-8">
           <p>
-            <strong>Note:</strong> Most users should use <a href="/reference/components/streaming-message">StreamingMessage</a> which handles markdown, tools, and layout. 
-            Use <code>StreamingTextRenderer</code> only for raw text output or custom implementations.
+            <strong>Note:</strong> Most users should use{' '}
+            <a href="/reference/components/streaming-message">
+              StreamingMessage
+            </a>{' '}
+            which handles markdown, tools, and layout. Use{' '}
+            <code>StreamingTextRenderer</code> only for raw text output or
+            custom implementations.
           </p>
         </Callout>
       </ScrollReveal>

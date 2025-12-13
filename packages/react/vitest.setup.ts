@@ -21,7 +21,8 @@ if (typeof window !== 'undefined') {
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', async () => {
-  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion')
+  const actual =
+    await vi.importActual<typeof import('framer-motion')>('framer-motion')
   return {
     ...actual,
     motion: new Proxy(actual.motion, {
@@ -30,7 +31,15 @@ vi.mock('framer-motion', async () => {
         if (typeof prop === 'string') {
           return ({ children, ...props }: any) => {
             // Remove animation props
-            const { animate, initial, exit, transition, whileHover, whileTap, ...restProps } = props
+            const {
+              animate,
+              initial,
+              exit,
+              transition,
+              whileHover,
+              whileTap,
+              ...restProps
+            } = props
             return React.createElement(prop, restProps, children)
           }
         }
@@ -90,7 +99,6 @@ if (typeof window !== 'undefined') {
     addEventListener() {}
     removeEventListener() {}
   }
-
   ;(window as any).webkitSpeechRecognition = (window as any).SpeechRecognition
 }
 

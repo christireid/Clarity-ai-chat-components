@@ -6,7 +6,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'ClarityChat Component | Clarity Chat',
   description:
@@ -18,12 +17,14 @@ const clarityChatProps: Prop[] = [
     name: 'api',
     type: 'string',
     required: true,
-    description: 'API endpoint URL for chat requests. This is the only required prop.',
+    description:
+      'API endpoint URL for chat requests. This is the only required prop.',
   },
   {
     name: 'chatId',
     type: 'string',
-    description: 'Optional chat ID for conversation persistence across sessions.',
+    description:
+      'Optional chat ID for conversation persistence across sessions.',
   },
   {
     name: 'className',
@@ -124,23 +125,27 @@ const clarityChatProps: Prop[] = [
   {
     name: 'memory',
     type: 'ClarityMemoryOptions',
-    description: 'Memory integration configuration. See useClarityChat documentation.',
+    description:
+      'Memory integration configuration. See useClarityChat documentation.',
   },
   {
     name: 'transport',
     type: '"sse" | "websocket"',
     default: '"sse"',
-    description: 'Transport protocol for streaming. Default is Server-Sent Events.',
+    description:
+      'Transport protocol for streaming. Default is Server-Sent Events.',
   },
   {
     name: 'websocket',
     type: 'ClarityWebSocketOptions',
-    description: 'WebSocket-specific options (only used when transport is "websocket").',
+    description:
+      'WebSocket-specific options (only used when transport is "websocket").',
   },
   {
     name: 'promptOptimization',
     type: 'ClarityPromptOptimizationOptions',
-    description: 'Prompt optimization configuration for token budget management.',
+    description:
+      'Prompt optimization configuration for token budget management.',
   },
 ]
 
@@ -154,8 +159,8 @@ export default function ClarityChatPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">ClarityChat</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          The simplest way to add AI chat to your app. Just provide an API endpoint
-          and you're done. All the complexity is handled internally.
+          The simplest way to add AI chat to your app. Just provide an API
+          endpoint and you're done. All the complexity is handled internally.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready) •{' '}
@@ -193,8 +198,8 @@ function App() {
 }`}
         />
         <p className="mt-4 text-sm text-muted-foreground">
-          That's it! You now have a fully functional AI chat interface with streaming,
-          error handling, and all production-ready features.
+          That's it! You now have a fully functional AI chat interface with
+          streaming, error handling, and all production-ready features.
         </p>
       </section>
 
@@ -252,7 +257,9 @@ function CustomHeaderChat() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">With Prompt Optimization</h2>
+        <h2 className="text-3xl font-semibold mb-4">
+          With Prompt Optimization
+        </h2>
         <CodePlayground
           code={`import { ClarityChat } from '@clarity-chat/react'
 
@@ -274,7 +281,9 @@ function OptimizedChat() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">With WebSocket Transport</h2>
+        <h2 className="text-3xl font-semibold mb-4">
+          With WebSocket Transport
+        </h2>
         <CodePlayground
           code={`import { ClarityChat } from '@clarity-chat/react'
 
@@ -354,14 +363,19 @@ function AdvancedChat() {
             <h3 className="font-semibold mb-2">Always Import Styles</h3>
             <p className="text-sm text-muted-foreground">
               Don't forget to import the CSS file:{' '}
-              <code className="bg-muted px-1 rounded">import '@clarity-chat/react/styles.css'</code>
+              <code className="bg-muted px-1 rounded">
+                import '@clarity-chat/react/styles.css'
+              </code>
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">
             <h3 className="font-semibold mb-2">Use Presets for Common Cases</h3>
             <p className="text-sm text-muted-foreground">
               For common use cases, consider using{' '}
-              <Link href="/reference/components/clarity-chat-presets" className="text-brand-600 hover:underline">
+              <Link
+                href="/reference/components/clarity-chat-presets"
+                className="text-brand-600 hover:underline"
+              >
                 ClarityChatPresets
               </Link>{' '}
               for even simpler integration.
@@ -370,15 +384,20 @@ function AdvancedChat() {
           <div className="border-l-4 border-brand-500 pl-4">
             <h3 className="font-semibold mb-2">Handle Errors</h3>
             <p className="text-sm text-muted-foreground">
-              Always provide an <code className="bg-muted px-1 rounded">onError</code> callback to handle
-              errors gracefully in production.
+              Always provide an{' '}
+              <code className="bg-muted px-1 rounded">onError</code> callback to
+              handle errors gracefully in production.
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">
-            <h3 className="font-semibold mb-2">Enable Memory for Long Conversations</h3>
+            <h3 className="font-semibold mb-2">
+              Enable Memory for Long Conversations
+            </h3>
             <p className="text-sm text-muted-foreground">
-              For conversations that need context beyond the token limit, enable memory with
-              the <code className="bg-muted px-1 rounded">vector-store</code> strategy.
+              For conversations that need context beyond the token limit, enable
+              memory with the{' '}
+              <code className="bg-muted px-1 rounded">vector-store</code>{' '}
+              strategy.
             </p>
           </div>
         </div>

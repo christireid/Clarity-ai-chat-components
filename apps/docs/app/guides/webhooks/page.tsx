@@ -7,7 +7,6 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
-
 export const metadata: Metadata = {
   title: 'Webhooks - Clarity Chat',
   description: 'Guide for webhooks in Clarity Chat',
@@ -17,7 +16,13 @@ export default async function WebhooksGuidePage() {
   // Read markdown file
   let content: string
   try {
-    const filePath = join(process.cwd(), 'content', 'vitepress-migration', 'guide', 'webhooks.md')
+    const filePath = join(
+      process.cwd(),
+      'content',
+      'vitepress-migration',
+      'guide',
+      'webhooks.md'
+    )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
     console.error('Failed to read webhooks guide', error)
@@ -27,11 +32,10 @@ export default async function WebhooksGuidePage() {
   // Parse MDX
   const { content: mdxContent } = matter(content)
 
-
   return (
     <>
       <Breadcrumbs />
-      
+
       <div className="docs-content">
         <div className="prose prose-lg max-w-none dark:prose-invert">
           <MDXRemote source={mdxContent} components={mdxComponents} />

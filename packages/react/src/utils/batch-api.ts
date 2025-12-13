@@ -164,7 +164,10 @@ export interface BatchExecutorContext {
 }
 
 export interface BatchExecutor {
-  execute: (requests: BatchRequest[], context: BatchExecutorContext) => Promise<BatchResult[]>
+  execute: (
+    requests: BatchRequest[],
+    context: BatchExecutorContext
+  ) => Promise<BatchResult[]>
 }
 
 /**
@@ -208,7 +211,10 @@ export interface BatchStats {
 /**
  * Provider-specific pricing for batch API (50% discount)
  */
-const BATCH_PRICING: Record<string, { inputPer1M: number; outputPer1M: number }> = {
+const BATCH_PRICING: Record<
+  string,
+  { inputPer1M: number; outputPer1M: number }
+> = {
   // OpenAI - 50% off
   'gpt-4o': { inputPer1M: 1.25, outputPer1M: 5.0 },
   'gpt-4o-mini': { inputPer1M: 0.075, outputPer1M: 0.3 },
@@ -259,10 +265,13 @@ export class BatchRequestManager {
   private queue: Map<string, BatchRequest> = new Map()
   private jobs: Map<string, BatchJob> = new Map()
   private results: Map<string, BatchResult[]> = new Map()
-  private pendingPromises: Map<string, {
-    resolve: (result: BatchResult) => void
-    reject: (error: Error) => void
-  }> = new Map()
+  private pendingPromises: Map<
+    string,
+    {
+      resolve: (result: BatchResult) => void
+      reject: (error: Error) => void
+    }
+  > = new Map()
   private stats: BatchStats = {
     totalBatched: 0,
     totalCompleted: 0,
@@ -310,7 +319,11 @@ export class BatchRequestManager {
     if (this.destroyed) {
       return Promise.reject(new Error('BatchRequestManager has been destroyed'))
     }
-    if (!request || typeof request.id !== 'string' || request.id.trim().length === 0) {
+    if (
+      !request ||
+      typeof request.id !== 'string' ||
+      request.id.trim().length === 0
+    ) {
       return Promise.reject(new Error('Invalid request: "id" is required'))
     }
     if (this.queue.has(request.id) || this.pendingPromises.has(request.id)) {
@@ -381,11 +394,14 @@ export class BatchRequestManager {
     const waitTime = Date.now() - this.oldestQueueTime
     this.stats.totalBatched += requestIds.length
     this.stats.averageBatchSize =
-      (this.stats.averageBatchSize * (this.stats.totalBatched - requestIds.length) +
+      (this.stats.averageBatchSize *
+        (this.stats.totalBatched - requestIds.length) +
         requestIds.length) /
       this.stats.totalBatched
     this.stats.averageWaitTime =
-      (this.stats.averageWaitTime * (this.stats.totalBatched - requestIds.length) + waitTime) /
+      (this.stats.averageWaitTime *
+        (this.stats.totalBatched - requestIds.length) +
+        waitTime) /
       this.stats.totalBatched
 
     // Clear queue
@@ -396,7 +412,7 @@ export class BatchRequestManager {
     // Process batch (in a real implementation, this would call the provider API)
     // Note: Processing is intentionally not awaited to allow non-blocking batch submission.
     // The simulation yields to the event loop so callers can observe `pending` first.
-    void this.processBatch(job, requests).catch(error => {
+    void this.processBatch(job, requests).catch((error) => {
       job.status = 'failed'
       job.error = error instanceof Error ? error.message : String(error)
       this.config.onStatusChange(job)
@@ -527,7 +543,10 @@ export class BatchRequestManager {
    *   2. Poll GET /v1/messages/batches/{id} until complete
    *   3. Retrieve results from response
    */
-  private async processBatch(job: BatchJob, requests: BatchRequest[]): Promise<void> {
+  private async processBatch(
+    job: BatchJob,
+    requests: BatchRequest[]
+  ): Promise<void> {
     // Yield so callers can observe `pending` before transitioning to `in_progress`.
     await new Promise<void>((resolve) => setTimeout(resolve, 0))
     if (this.cancelledJobs.has(job.id) || job.status === 'cancelled') return
@@ -537,7 +556,8 @@ export class BatchRequestManager {
     const results = await this.executor.execute(requests, {
       provider: this.config.provider,
       onProgress: this.config.onProgress,
-      isCancelled: () => this.cancelledJobs.has(job.id) || job.status === 'cancelled',
+      isCancelled: () =>
+        this.cancelledJobs.has(job.id) || job.status === 'cancelled',
       now: () => Date.now(),
     })
 
@@ -551,7 +571,7 @@ export class BatchRequestManager {
     this.config.onStatusChange(job)
 
     // Update stats
-    const successCount = results.filter(r => r.success).length
+    const successCount = results.filter((r) => r.success).length
     this.stats.totalCompleted += successCount
     this.stats.totalFailed += requests.length - successCount
 
@@ -562,7 +582,10 @@ export class BatchRequestManager {
       if (result.success) {
         pending.resolve(result)
       } else {
-        this.safeRejectPending(result.requestId, new Error(result.error || 'Batch request failed'))
+        this.safeRejectPending(
+          result.requestId,
+          new Error(result.error || 'Batch request failed')
+        )
         continue
       }
       this.pendingPromises.delete(result.requestId)
@@ -668,7 +691,11 @@ export function shouldUseBatch(
     maxWaitAcceptable?: number
   } = {}
 ): { useBatch: boolean; reason: string } {
-  const { urgency = 'normal', minSavingsThreshold = 0.00005, maxWaitAcceptable = 86400000 } = options
+  const {
+    urgency = 'normal',
+    minSavingsThreshold = 0.00005,
+    maxWaitAcceptable = 86400000,
+  } = options
 
   // High urgency requests should not be batched
   if (urgency === 'high') {
@@ -676,11 +703,17 @@ export function shouldUseBatch(
   }
 
   // Estimate tokens
-  const tokens = request.messages.reduce((sum, m) => sum + estimateTokens(m.content), 0)
+  const tokens = request.messages.reduce(
+    (sum, m) => sum + estimateTokens(m.content),
+    0
+  )
 
   // Very small requests have minimal savings
   if (tokens < 100) {
-    return { useBatch: false, reason: 'Request too small for meaningful savings' }
+    return {
+      useBatch: false,
+      reason: 'Request too small for meaningful savings',
+    }
   }
 
   // Estimate savings (use gpt-4o-mini baseline, includes output cost estimate).
@@ -690,14 +723,20 @@ export function shouldUseBatch(
   const savings = regularCost * 0.5
 
   if (savings < minSavingsThreshold) {
-    return { useBatch: false, reason: `Savings $${savings.toFixed(4)} below threshold` }
+    return {
+      useBatch: false,
+      reason: `Savings $${savings.toFixed(4)} below threshold`,
+    }
   }
 
   // Check if wait time is acceptable
   // Batch API typically completes within 24 hours
   if (maxWaitAcceptable < 3600000) {
     // Less than 1 hour
-    return { useBatch: false, reason: 'Wait time requirement too strict for batch API' }
+    return {
+      useBatch: false,
+      reason: 'Wait time requirement too strict for batch API',
+    }
   }
 
   return {
@@ -709,19 +748,19 @@ export function shouldUseBatch(
 /**
  * Create a JSONL file content for OpenAI batch API
  */
-export function createOpenAIBatchFile(
-  requests: BatchRequest[]
-): string {
+export function createOpenAIBatchFile(requests: BatchRequest[]): string {
   return requests
-    .map(req => {
+    .map((req) => {
       const body = {
         model: req.model,
-        messages: req.messages.map(m => ({
+        messages: req.messages.map((m) => ({
           role: m.role,
           content: m.content,
         })),
         ...(req.options?.maxTokens && { max_tokens: req.options.maxTokens }),
-        ...(req.options?.temperature !== undefined && { temperature: req.options.temperature }),
+        ...(req.options?.temperature !== undefined && {
+          temperature: req.options.temperature,
+        }),
       }
 
       return JSON.stringify({
@@ -737,15 +776,13 @@ export function createOpenAIBatchFile(
 /**
  * Create a batch request file for Anthropic
  */
-export function createAnthropicBatchFile(
-  requests: BatchRequest[]
-): object[] {
-  return requests.map(req => ({
+export function createAnthropicBatchFile(requests: BatchRequest[]): object[] {
+  return requests.map((req) => ({
     custom_id: req.id,
     params: {
       model: req.model,
       max_tokens: req.options?.maxTokens ?? 1024,
-      messages: req.messages.map(m => ({
+      messages: req.messages.map((m) => ({
         role: m.role,
         content: m.content,
       })),
@@ -756,13 +793,11 @@ export function createAnthropicBatchFile(
 /**
  * Parse OpenAI batch results
  */
-export function parseOpenAIBatchResults(
-  jsonlContent: string
-): BatchResult[] {
+export function parseOpenAIBatchResults(jsonlContent: string): BatchResult[] {
   return jsonlContent
     .split('\n')
-    .filter(line => line.trim())
-    .map(line => {
+    .filter((line) => line.trim())
+    .map((line) => {
       try {
         const result = JSON.parse(line)
         const response = result.response?.body

@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Remix Integration - Clarity Chat Components',
-  description: 'Learn how to integrate Clarity Chat Components with Remix, including loaders, actions, and streaming.',
+  description:
+    'Learn how to integrate Clarity Chat Components with Remix, including loaders, actions, and streaming.',
 }
 
 export default function RemixIntegrationPage() {
@@ -17,7 +17,8 @@ export default function RemixIntegrationPage() {
         <span className="docs-badge">Recipe</span>
         <h1>Remix Integration</h1>
         <p className="docs-lead">
-          Learn how to integrate Clarity Chat Components with Remix, including loaders, actions, streaming, and form handling.
+          Learn how to integrate Clarity Chat Components with Remix, including
+          loaders, actions, streaming, and form handling.
         </p>
       </div>
 
@@ -33,9 +34,7 @@ export default function RemixIntegrationPage() {
 
       <section className="docs-section">
         <h2>Basic Setup</h2>
-        <p>
-          Set up Clarity Chat in a Remix route:
-        </p>
+        <p>Set up Clarity Chat in a Remix route:</p>
         <CodePlayground
           initialCode={`// app/routes/chat.tsx
 import { useLoaderData } from '@remix-run/react'
@@ -66,9 +65,7 @@ export default function ChatRoute() {
 
       <section className="docs-section">
         <h2>Form Actions</h2>
-        <p>
-          Handle chat messages with Remix actions:
-        </p>
+        <p>Handle chat messages with Remix actions:</p>
         <CodePlayground
           initialCode={`// app/routes/chat.tsx
 import { useActionData, useNavigation } from '@remix-run/react'
@@ -111,9 +108,7 @@ export default function ChatRoute() {
 
       <section className="docs-section">
         <h2>Streaming with Resource Routes</h2>
-        <p>
-          Implement streaming with Remix resource routes:
-        </p>
+        <p>Implement streaming with Remix resource routes:</p>
         <CodePlayground
           initialCode={`// app/routes/api.chat.stream.tsx
 import type { LoaderFunctionArgs } from '@remix-run/node'
@@ -162,9 +157,7 @@ export function StreamingChat() {
 
       <section className="docs-section">
         <h2>Authentication</h2>
-        <p>
-          Handle authentication in Remix:
-        </p>
+        <p>Handle authentication in Remix:</p>
         <CodePlayground
           initialCode={`// app/routes/chat.tsx
 import { requireUserId } from '~/session.server'
@@ -197,9 +190,7 @@ export default function ChatRoute() {
 
       <section className="docs-section">
         <h2>Error Handling</h2>
-        <p>
-          Handle errors in Remix:
-        </p>
+        <p>Handle errors in Remix:</p>
         <CodePlayground
           initialCode={`// app/routes/chat.tsx
 import { useRouteError } from '@remix-run/react'
@@ -242,8 +233,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/cookbook/server-side-rendering">Server-Side Rendering Patterns</a> - SSR patterns</li>
-          <li><a href="/cookbook/nextjs-integration">Next.js Integration</a> - Next.js integration</li>
+          <li>
+            <a href="/cookbook/server-side-rendering">
+              Server-Side Rendering Patterns
+            </a>{' '}
+            - SSR patterns
+          </li>
+          <li>
+            <a href="/cookbook/nextjs-integration">Next.js Integration</a> -
+            Next.js integration
+          </li>
         </ul>
       </section>
     </div>

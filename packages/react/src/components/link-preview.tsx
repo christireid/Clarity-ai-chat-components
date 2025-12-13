@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Card, Badge, cn } from '@clarity-chat/primitives'
-import { DURATION_SECONDS as durations } from '../animations/constants'
+import { duration } from '../animations/constants'
 
 // ============================================================================
 // Types
@@ -215,7 +215,9 @@ const EMBED_PATTERNS: EmbedPattern[] = [
     type: 'vimeo',
     patterns: [/vimeo\.com\/(\d+)/, /player\.vimeo\.com\/video\/(\d+)/],
     extractId: (url: string) => {
-      const match = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/)
+      const match = url.match(
+        /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/
+      )
       return match ? match[1] : null
     },
   },
@@ -239,7 +241,9 @@ const EMBED_PATTERNS: EmbedPattern[] = [
       )
       if (repoMatch) return repoMatch[1].replace(/\/$/, '')
 
-      const gistMatch = url.match(/gist\.github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9]+)/)
+      const gistMatch = url.match(
+        /gist\.github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9]+)/
+      )
       return gistMatch ? gistMatch[1].replace(/\/$/, '') : null
     },
   },
@@ -640,7 +644,7 @@ function ExpandableDescription({
         transition={
           prefersReducedMotion
             ? { duration: 0 }
-            : { duration: durations.normal }
+            : { duration: duration('normal') }
         }
       >
         {displayText}
@@ -716,11 +720,7 @@ export function LinkPreviewCompact({
       onKeyDown={handleKeyDown}
       tabIndex={onClick ? 0 : undefined}
       role={onClick ? 'link' : undefined}
-      aria-label={
-        onClick
-          ? `Open link: ${title}`
-          : `Link preview: ${title}`
-      }
+      aria-label={onClick ? `Open link: ${title}` : `Link preview: ${title}`}
     >
       <div className="flex items-center gap-3">
         {/* Favicon or placeholder */}
@@ -763,13 +763,13 @@ export function LinkPreviewCompact({
         {metadata.embedType &&
           metadata.embedType !== 'default' &&
           metadata.embedType !== 'generic' && (
-          <Badge
-            variant="secondary"
-            className="text-[10px] uppercase flex-shrink-0"
-          >
-            {metadata.embedType}
-          </Badge>
-        )}
+            <Badge
+              variant="secondary"
+              className="text-[10px] uppercase flex-shrink-0"
+            >
+              {metadata.embedType}
+            </Badge>
+          )}
 
         {/* Arrow indicator for clickable */}
         {onClick && (
@@ -800,7 +800,7 @@ export function LinkPreviewCompact({
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -5 }}
-      transition={{ duration: durations.fast }}
+      transition={{ duration: duration('fast') }}
     >
       {content}
     </motion.div>
@@ -1082,10 +1082,7 @@ export function LinkPreview({
       {/* Rich Embed (YouTube, etc.) */}
       {hasRichEmbed && (
         <div className="p-4 pb-0">
-          <RichEmbed
-            url={metadata.url}
-            embedType={inferredEmbedType}
-          />
+          <RichEmbed url={metadata.url} embedType={inferredEmbedType} />
         </div>
       )}
 
@@ -1145,10 +1142,10 @@ export function LinkPreview({
               {inferredEmbedType &&
                 inferredEmbedType !== 'default' &&
                 inferredEmbedType !== 'generic' && (
-                <Badge variant="secondary" className="text-[10px] uppercase">
-                  {inferredEmbedType}
-                </Badge>
-              )}
+                  <Badge variant="secondary" className="text-[10px] uppercase">
+                    {inferredEmbedType}
+                  </Badge>
+                )}
             </div>
           )}
 
@@ -1213,7 +1210,7 @@ export function LinkPreview({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: durations.normal }}
+      transition={{ duration: duration('normal') }}
       className={className}
     >
       {cardContent}
@@ -1464,7 +1461,7 @@ export function InlineLink({
               initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-              transition={{ duration: durations.fast }}
+              transition={{ duration: duration('fast') }}
               className="absolute bottom-full left-0 mb-2 w-80 z-50"
               onMouseEnter={() => setShowPreview(true)}
               onMouseLeave={handleMouseLeave}

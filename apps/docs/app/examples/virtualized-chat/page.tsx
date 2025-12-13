@@ -5,7 +5,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Virtualized Chat Example - Clarity Chat Components',
-  description: 'Render 10k+ messages smoothly with VirtualizedMessageList and MessageList smart threshold.',
+  description:
+    'Render 10k+ messages smoothly with VirtualizedMessageList and MessageList smart threshold.',
 }
 
 export default function VirtualizedChatExamplePage() {
@@ -16,21 +17,29 @@ export default function VirtualizedChatExamplePage() {
         <span className="docs-badge">Performance</span>
         <h1>Virtualized Chat Transcript</h1>
         <p className="docs-lead">
-          Scale to enterprise-sized transcripts without janky scrolling. Virtualization keeps memory usage low and
-          integrates with jump-to-bottom controls.
+          Scale to enterprise-sized transcripts without janky scrolling.
+          Virtualization keeps memory usage low and integrates with
+          jump-to-bottom controls.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This example renders 5,000+ messages and demonstrates how <code>VirtualizedMessageList</code> cooperates with
-          <code>useMessageListScroll</code> to manage sticky scrolling, unread counts, and jump buttons.
+          This example renders 5,000+ messages and demonstrates how{' '}
+          <code>VirtualizedMessageList</code> cooperates with
+          <code>useMessageListScroll</code> to manage sticky scrolling, unread
+          counts, and jump buttons.
         </p>
         <ul>
-          <li>Automatic virtualization when message count crosses <code>virtualizationThreshold</code>.</li>
+          <li>
+            Automatic virtualization when message count crosses{' '}
+            <code>virtualizationThreshold</code>.
+          </li>
           <li>“Jump to latest” button appears when the user scrolls up.</li>
-          <li>Scroll analytics hook to track engagement and attach observers.</li>
+          <li>
+            Scroll analytics hook to track engagement and attach observers.
+          </li>
         </ul>
       </section>
 
@@ -118,8 +127,9 @@ render(<generateMessages />)`}
         <h2>Recommendations</h2>
         <Callout type="tip">
           <p>
-            For analytics dashboards, hook into <code>onScroll</code> and <code>useMessageListPerformance</code> to stream
-            metrics about scroll depth, time spent, and render duration.
+            For analytics dashboards, hook into <code>onScroll</code> and{' '}
+            <code>useMessageListPerformance</code> to stream metrics about
+            scroll depth, time spent, and render duration.
           </p>
         </Callout>
       </section>

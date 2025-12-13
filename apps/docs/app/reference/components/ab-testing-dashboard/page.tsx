@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'ABTestingDashboard - Clarity Chat Components',
-  description: 'A/B testing dashboard with experiment management, variant comparison, and statistical significance testing.',
+  description:
+    'A/B testing dashboard with experiment management, variant comparison, and statistical significance testing.',
 }
 
 const props: Prop[] = [
@@ -52,7 +52,8 @@ export default function ABTestingDashboardPage() {
         <span className="docs-badge">Component</span>
         <h1>ABTestingDashboard</h1>
         <p className="docs-lead">
-          A/B testing dashboard with experiment management, variant comparison, statistical significance testing, and recommendations.
+          A/B testing dashboard with experiment management, variant comparison,
+          statistical significance testing, and recommendations.
         </p>
       </div>
 
@@ -68,9 +69,7 @@ export default function ABTestingDashboardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Display A/B testing dashboard:
-        </p>
+        <p>Display A/B testing dashboard:</p>
         <CodePlayground
           initialCode={`import { ABTestingDashboard, useABTesting } from '@clarity-chat/react'
 
@@ -93,9 +92,7 @@ function ABTestingView() {
 
       <section className="docs-section">
         <h2>Variant Comparison</h2>
-        <p>
-          Compare variant performance:
-        </p>
+        <p>Compare variant performance:</p>
         <CodePlayground
           initialCode={`import { ABTestingDashboard } from '@clarity-chat/react'
 
@@ -115,9 +112,7 @@ function VariantComparison({ experiments }: { experiments: ExperimentResult[] })
 
       <section className="docs-section">
         <h2>Statistical Significance</h2>
-        <p>
-          Display statistical significance tests:
-        </p>
+        <p>Display statistical significance tests:</p>
         <CodePlayground
           initialCode={`import { ABTestingDashboard } from '@clarity-chat/react'
 
@@ -141,9 +136,7 @@ function SignificanceView({ experiments }: { experiments: ExperimentResult[] }) 
 
       <section className="docs-section">
         <h2>Experiment Recommendations</h2>
-        <p>
-          Show experiment recommendations:
-        </p>
+        <p>Show experiment recommendations:</p>
         <CodePlayground
           initialCode={`import { ABTestingDashboard } from '@clarity-chat/react'
 
@@ -172,35 +165,61 @@ function RecommendationsView({ experiments }: { experiments: ExperimentResult[] 
       <section className="docs-section">
         <h2>Experiment Status</h2>
         <ul>
-          <li><strong>draft</strong>: Experiment is being prepared</li>
-          <li><strong>running</strong>: Experiment is active</li>
-          <li><strong>paused</strong>: Experiment is temporarily paused</li>
-          <li><strong>completed</strong>: Experiment has finished</li>
+          <li>
+            <strong>draft</strong>: Experiment is being prepared
+          </li>
+          <li>
+            <strong>running</strong>: Experiment is active
+          </li>
+          <li>
+            <strong>paused</strong>: Experiment is temporarily paused
+          </li>
+          <li>
+            <strong>completed</strong>: Experiment has finished
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Variant Metrics</h2>
-        <p>
-          Each variant tracks:
-        </p>
+        <p>Each variant tracks:</p>
         <ul>
-          <li><code>impressions</code>: Number of times variant was shown</li>
-          <li><code>conversions</code>: Number of conversions</li>
-          <li><code>conversionRate</code>: Conversion rate percentage</li>
-          <li><code>avgEngagementTime</code>: Average engagement time</li>
-          <li><code>bounceRate</code>: Bounce rate percentage</li>
-          <li><code>revenue</code>: Revenue generated (if applicable)</li>
-          <li><code>users</code>: Number of unique users</li>
+          <li>
+            <code>impressions</code>: Number of times variant was shown
+          </li>
+          <li>
+            <code>conversions</code>: Number of conversions
+          </li>
+          <li>
+            <code>conversionRate</code>: Conversion rate percentage
+          </li>
+          <li>
+            <code>avgEngagementTime</code>: Average engagement time
+          </li>
+          <li>
+            <code>bounceRate</code>: Bounce rate percentage
+          </li>
+          <li>
+            <code>revenue</code>: Revenue generated (if applicable)
+          </li>
+          <li>
+            <code>users</code>: Number of unique users
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use <code>useABTesting</code> hook to manage experiments</li>
-          <li>Enable <code>showSignificance</code> to validate results</li>
-          <li>Follow <code>recommendations</code> for experiment actions</li>
+          <li>
+            Use <code>useABTesting</code> hook to manage experiments
+          </li>
+          <li>
+            Enable <code>showSignificance</code> to validate results
+          </li>
+          <li>
+            Follow <code>recommendations</code> for experiment actions
+          </li>
           <li>Compare variants before making decisions</li>
           <li>Wait for statistical significance before concluding</li>
         </ul>
@@ -209,8 +228,16 @@ function RecommendationsView({ experiments }: { experiments: ExperimentResult[] 
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-ab-testing">useABTesting</a> - A/B testing hook</li>
-          <li><a href="/reference/components/user-interaction-analytics">UserInteractionAnalytics</a> - Interaction analytics</li>
+          <li>
+            <a href="/reference/hooks/use-ab-testing">useABTesting</a> - A/B
+            testing hook
+          </li>
+          <li>
+            <a href="/reference/components/user-interaction-analytics">
+              UserInteractionAnalytics
+            </a>{' '}
+            - Interaction analytics
+          </li>
         </ul>
       </section>
     </div>

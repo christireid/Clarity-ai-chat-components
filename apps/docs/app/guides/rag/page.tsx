@@ -6,7 +6,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { Pagination } from '@/components/Navigation/Pagination'
 
-
 export default function RAGGuidePage() {
   return (
     <>
@@ -16,16 +15,19 @@ export default function RAGGuidePage() {
         <header>
           <h1 className="text-4xl font-bold mb-3">RAG Pipeline Guide</h1>
           <p className="text-lg text-muted-foreground">
-            Complete guide to Retrieval-Augmented Generation (RAG) for answering questions about your documents
-            using vector stores, embeddings, and semantic search.
+            Complete guide to Retrieval-Augmented Generation (RAG) for answering
+            questions about your documents using vector stores, embeddings, and
+            semantic search.
           </p>
         </header>
 
         <section>
           <h2 className="text-3xl font-semibold mb-4">Overview</h2>
           <p className="mb-4">
-            RAG (Retrieval-Augmented Generation) allows AI to answer questions using your documents, not just
-            its training data. It combines semantic search with LLM generation to provide accurate, grounded responses.
+            RAG (Retrieval-Augmented Generation) allows AI to answer questions
+            using your documents, not just its training data. It combines
+            semantic search with LLM generation to provide accurate, grounded
+            responses.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
@@ -55,18 +57,20 @@ export default function RAGGuidePage() {
 
           <Callout type="info">
             <p>
-              <strong>How RAG Works:</strong> Documents are split into chunks, converted to embeddings (vectors),
-              and stored in a vector database. When a question is asked, the query is embedded, similar chunks
-              are retrieved, and the LLM generates an answer using that context.
+              <strong>How RAG Works:</strong> Documents are split into chunks,
+              converted to embeddings (vectors), and stored in a vector
+              database. When a question is asked, the query is embedded, similar
+              chunks are retrieved, and the LLM generates an answer using that
+              context.
             </p>
           </Callout>
         </section>
 
         <section>
-          <h2 className="text-3xl font-semibold mb-4">RAG Pipeline Architecture</h2>
-          <p className="mb-4">
-            The RAG pipeline consists of several stages:
-          </p>
+          <h2 className="text-3xl font-semibold mb-4">
+            RAG Pipeline Architecture
+          </h2>
+          <p className="mb-4">The RAG pipeline consists of several stages:</p>
 
           <EnhancedCodeBlock
             code={`1. DOCUMENT INGESTION
@@ -102,8 +106,8 @@ export default function RAGGuidePage() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Using useRAGPipeline</h2>
           <p className="mb-4">
-            The <code>useRAGPipeline</code> hook provides a simple API for RAG with automatic vector store
-            and embedding management:
+            The <code>useRAGPipeline</code> hook provides a simple API for RAG
+            with automatic vector store and embedding management:
           </p>
 
           <EnhancedCodeBlock
@@ -140,43 +144,80 @@ function RAGExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Vector Stores</h2>
           <p className="mb-4">
-            Clarity Chat supports multiple vector store providers. Choose based on your needs:
+            Clarity Chat supports multiple vector store providers. Choose based
+            on your needs:
           </p>
 
           <div className="overflow-x-auto mb-4">
             <table className="w-full border-collapse border border-border">
               <thead>
                 <tr className="bg-muted">
-                  <th className="border border-border p-2 text-left">Provider</th>
+                  <th className="border border-border p-2 text-left">
+                    Provider
+                  </th>
                   <th className="border border-border p-2 text-left">Pros</th>
                   <th className="border border-border p-2 text-left">Cons</th>
-                  <th className="border border-border p-2 text-left">Best For</th>
+                  <th className="border border-border p-2 text-left">
+                    Best For
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td className="border border-border p-2"><strong>Pinecone</strong></td>
-                  <td className="border border-border p-2">Easiest setup, fully managed, great performance</td>
-                  <td className="border border-border p-2">Can be expensive at scale</td>
-                  <td className="border border-border p-2">Production apps, quick setup</td>
+                  <td className="border border-border p-2">
+                    <strong>Pinecone</strong>
+                  </td>
+                  <td className="border border-border p-2">
+                    Easiest setup, fully managed, great performance
+                  </td>
+                  <td className="border border-border p-2">
+                    Can be expensive at scale
+                  </td>
+                  <td className="border border-border p-2">
+                    Production apps, quick setup
+                  </td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>Qdrant</strong></td>
-                  <td className="border border-border p-2">Open source, self-hostable, good performance</td>
-                  <td className="border border-border p-2">Requires self-hosting</td>
-                  <td className="border border-border p-2">Self-hosted deployments</td>
+                  <td className="border border-border p-2">
+                    <strong>Qdrant</strong>
+                  </td>
+                  <td className="border border-border p-2">
+                    Open source, self-hostable, good performance
+                  </td>
+                  <td className="border border-border p-2">
+                    Requires self-hosting
+                  </td>
+                  <td className="border border-border p-2">
+                    Self-hosted deployments
+                  </td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>Weaviate</strong></td>
-                  <td className="border border-border p-2">Open source, graph-like queries, good features</td>
-                  <td className="border border-border p-2">More complex setup</td>
-                  <td className="border border-border p-2">Complex queries, graph data</td>
+                  <td className="border border-border p-2">
+                    <strong>Weaviate</strong>
+                  </td>
+                  <td className="border border-border p-2">
+                    Open source, graph-like queries, good features
+                  </td>
+                  <td className="border border-border p-2">
+                    More complex setup
+                  </td>
+                  <td className="border border-border p-2">
+                    Complex queries, graph data
+                  </td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-2"><strong>Chroma</strong></td>
-                  <td className="border border-border p-2">Simple, lightweight, good for development</td>
-                  <td className="border border-border p-2">Less scalable, fewer features</td>
-                  <td className="border border-border p-2">Development, small projects</td>
+                  <td className="border border-border p-2">
+                    <strong>Chroma</strong>
+                  </td>
+                  <td className="border border-border p-2">
+                    Simple, lightweight, good for development
+                  </td>
+                  <td className="border border-border p-2">
+                    Less scalable, fewer features
+                  </td>
+                  <td className="border border-border p-2">
+                    Development, small projects
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -235,15 +276,23 @@ function VectorStoreExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Embeddings</h2>
           <p className="mb-4">
-            Embeddings convert text into numerical vectors that capture semantic meaning. Clarity Chat supports
-            multiple embedding providers:
+            Embeddings convert text into numerical vectors that capture semantic
+            meaning. Clarity Chat supports multiple embedding providers:
           </p>
 
           <h3 className="text-2xl font-semibold mb-3">Embedding Providers</h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li><strong>OpenAI:</strong> text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002</li>
-            <li><strong>Cohere:</strong> embed-english-v3.0, embed-multilingual-v3.0</li>
-            <li><strong>Custom:</strong> Self-hosted or custom embedding models</li>
+            <li>
+              <strong>OpenAI:</strong> text-embedding-3-small,
+              text-embedding-3-large, text-embedding-ada-002
+            </li>
+            <li>
+              <strong>Cohere:</strong> embed-english-v3.0,
+              embed-multilingual-v3.0
+            </li>
+            <li>
+              <strong>Custom:</strong> Self-hosted or custom embedding models
+            </li>
           </ul>
 
           <EnhancedCodeBlock
@@ -285,7 +334,8 @@ function EmbeddingsExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Document Chunking</h2>
           <p className="mb-4">
-            Documents must be split into chunks before embedding. The chunking strategy affects retrieval quality:
+            Documents must be split into chunks before embedding. The chunking
+            strategy affects retrieval quality:
           </p>
 
           <h3 className="text-2xl font-semibold mb-3">Chunking Strategies</h3>
@@ -310,9 +360,12 @@ const chunks = chunkBySize(documentText, 1000, 200) // 1000 chars, 200 overlap`}
             showLineNumbers
           />
 
-          <h4 className="text-xl font-semibold mb-2 mt-8">2. Semantic Chunking</h4>
+          <h4 className="text-xl font-semibold mb-2 mt-8">
+            2. Semantic Chunking
+          </h4>
           <p className="mb-4">
-            Split by paragraphs, sentences, or semantic boundaries. Better quality:
+            Split by paragraphs, sentences, or semantic boundaries. Better
+            quality:
           </p>
 
           <EnhancedCodeBlock
@@ -342,8 +395,9 @@ const chunks = chunkSemantic(documentText, 1000)`}
 
           <Callout type="tip">
             <p>
-              <strong>Best Practices:</strong> Use 500-1500 character chunks with 10-20% overlap. Semantic
-              chunking preserves context better than fixed-size chunking.
+              <strong>Best Practices:</strong> Use 500-1500 character chunks
+              with 10-20% overlap. Semantic chunking preserves context better
+              than fixed-size chunking.
             </p>
           </Callout>
         </section>
@@ -351,7 +405,8 @@ const chunks = chunkSemantic(documentText, 1000)`}
         <section>
           <h2 className="text-3xl font-semibold mb-4">Indexing Documents</h2>
           <p className="mb-4">
-            Index documents by chunking, embedding, and storing in a vector database:
+            Index documents by chunking, embedding, and storing in a vector
+            database:
           </p>
 
           <EnhancedCodeBlock
@@ -403,7 +458,8 @@ async function indexDocument(documentText: string, metadata: Record<string, any>
         <section>
           <h2 className="text-3xl font-semibold mb-4">Retrieval & Reranking</h2>
           <p className="mb-4">
-            Retrieve relevant documents and optionally rerank them for better quality:
+            Retrieve relevant documents and optionally rerank them for better
+            quality:
           </p>
 
           <h3 className="text-2xl font-semibold mb-3">Basic Retrieval</h3>
@@ -468,7 +524,8 @@ function RerankingExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Integrating with Chat</h2>
           <p className="mb-4">
-            Use RAG with <code>useClarityChat</code> to provide document-based answers:
+            Use RAG with <code>useClarityChat</code> to provide document-based
+            answers:
           </p>
 
           <EnhancedCodeBlock
@@ -579,7 +636,8 @@ function MetadataFilterExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Complete Example</h2>
           <p className="mb-4">
-            Here's a complete RAG implementation with document indexing and chat integration:
+            Here's a complete RAG implementation with document indexing and chat
+            integration:
           </p>
 
           <EnhancedCodeBlock
@@ -707,14 +765,18 @@ function CompleteRAGExample() {
             <li>Use 10-20% overlap between chunks</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">2. Use Semantic Chunking</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            2. Use Semantic Chunking
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Split by paragraphs, sentences, or semantic boundaries</li>
             <li>Preserves context better than fixed-size chunking</li>
             <li>Better retrieval quality</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">3. Include Rich Metadata</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            3. Include Rich Metadata
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Store source, date, author, category in metadata</li>
             <li>Use metadata for filtering and citations</li>
@@ -728,14 +790,18 @@ function CompleteRAGExample() {
             <li>Worth the extra API call for production</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">5. Update Embeddings</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            5. Update Embeddings
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Re-embed documents when content changes</li>
             <li>Delete old embeddings before adding new ones</li>
             <li>Track document versions in metadata</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">6. Monitor Quality</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            6. Monitor Quality
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Track retrieval relevance scores</li>
             <li>Monitor answer quality with user feedback</li>
@@ -748,29 +814,31 @@ function CompleteRAGExample() {
 
           <Callout type="warning">
             <p>
-              <strong>Chunk Size:</strong> Too small chunks lose context, too large chunks waste tokens.
-              Find the right balance for your documents (typically 500-1500 characters).
+              <strong>Chunk Size:</strong> Too small chunks lose context, too
+              large chunks waste tokens. Find the right balance for your
+              documents (typically 500-1500 characters).
             </p>
           </Callout>
 
           <Callout type="warning">
             <p>
-              <strong>Overlap:</strong> Use 10-20% overlap between chunks. Otherwise information at chunk
-              boundaries gets lost.
+              <strong>Overlap:</strong> Use 10-20% overlap between chunks.
+              Otherwise information at chunk boundaries gets lost.
             </p>
           </Callout>
 
           <Callout type="warning">
             <p>
-              <strong>Stale Embeddings:</strong> If you update a document, re-embed it! Old embeddings point
-              to old content and won't reflect changes.
+              <strong>Stale Embeddings:</strong> If you update a document,
+              re-embed it! Old embeddings point to old content and won't reflect
+              changes.
             </p>
           </Callout>
 
           <Callout type="warning">
             <p>
-              <strong>Metadata:</strong> Always include source information in metadata for citations and
-              document management.
+              <strong>Metadata:</strong> Always include source information in
+              metadata for citations and document management.
             </p>
           </Callout>
         </section>
@@ -779,29 +847,46 @@ function CompleteRAGExample() {
           <h2 className="text-3xl font-semibold mb-4">Related</h2>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground">
             <li>
-              <a href="/reference/hooks/use-rag-pipeline" className="text-primary underline">
+              <a
+                href="/reference/hooks/use-rag-pipeline"
+                className="text-primary underline"
+              >
                 useRAGPipeline Hook
-              </a> – RAG pipeline hook documentation
+              </a>{' '}
+              – RAG pipeline hook documentation
             </li>
             <li>
-              <a href="/reference/hooks/use-vector-store" className="text-primary underline">
+              <a
+                href="/reference/hooks/use-vector-store"
+                className="text-primary underline"
+              >
                 useVectorStore Hook
-              </a> – Vector store hook documentation
+              </a>{' '}
+              – Vector store hook documentation
             </li>
             <li>
-              <a href="/reference/hooks/use-embeddings" className="text-primary underline">
+              <a
+                href="/reference/hooks/use-embeddings"
+                className="text-primary underline"
+              >
                 useEmbeddings Hook
-              </a> – Embeddings hook documentation
+              </a>{' '}
+              – Embeddings hook documentation
             </li>
             <li>
-              <a href="/reference/components/citation-card" className="text-primary underline">
+              <a
+                href="/reference/components/citation-card"
+                className="text-primary underline"
+              >
                 CitationCard Component
-              </a> – Display document sources
+              </a>{' '}
+              – Display document sources
             </li>
             <li>
               <a href="/guides/memory" className="text-primary underline">
                 Memory System Guide
-              </a> – Memory strategies for context management
+              </a>{' '}
+              – Memory strategies for context management
             </li>
           </ul>
         </section>

@@ -26,11 +26,21 @@ export default function LearnPerformanceGuidePage() {
       <section className="docs-section">
         <h2>Checklist</h2>
         <ul>
-          <li>Enable <strong>virtualized message lists</strong> when {'>'} 400 messages</li>
-          <li>Use <strong>streaming</strong> (SSE/WebSockets) for long responses</li>
+          <li>
+            Enable <strong>virtualized message lists</strong> when {'>'} 400
+            messages
+          </li>
+          <li>
+            Use <strong>streaming</strong> (SSE/WebSockets) for long responses
+          </li>
           <li>Memoize expensive render props (Markdown, code blocks)</li>
-          <li>Track render times with <strong>PerformanceDashboard</strong></li>
-          <li>Run <code>npm run analyze</code> and <code>npm run benchmark</code> before releases</li>
+          <li>
+            Track render times with <strong>PerformanceDashboard</strong>
+          </li>
+          <li>
+            Run <code>npm run analyze</code> and <code>npm run benchmark</code>{' '}
+            before releases
+          </li>
         </ul>
       </section>
 
@@ -38,16 +48,19 @@ export default function LearnPerformanceGuidePage() {
         <h2>Key APIs</h2>
         <ul>
           <li>
-            <code>VirtualizedMessageList</code> — drop into <code>ChatWindow</code> to render large histories
+            <code>VirtualizedMessageList</code> — drop into{' '}
+            <code>ChatWindow</code> to render large histories
           </li>
           <li>
-            <code>useRenderPerformance</code> — grab render metrics per component
+            <code>useRenderPerformance</code> — grab render metrics per
+            component
           </li>
           <li>
             <code>usePerformance</code> — track FPS, CPU, and memory usage
           </li>
           <li>
-            <code>TokenCounter</code> — expose token usage to users to prevent runaway payloads
+            <code>TokenCounter</code> — expose token usage to users to prevent
+            runaway payloads
           </li>
         </ul>
       </section>
@@ -56,24 +69,28 @@ export default function LearnPerformanceGuidePage() {
         <h2>Run the Tooling</h2>
         <ul>
           <li>
-            <code>npm run analyze</code> — generates bundle report (<code>bundle-reports/</code>)
+            <code>npm run analyze</code> — generates bundle report (
+            <code>bundle-reports/</code>)
           </li>
           <li>
-            <code>npm run benchmark</code> — measures render throughput (<code>benchmark-results/</code>)
+            <code>npm run benchmark</code> — measures render throughput (
+            <code>benchmark-results/</code>)
           </li>
           <li>
-            <code>clarity-chat analyze --report</code> — CLI report of bundle size, code splitting, and dependency drift
+            <code>clarity-chat analyze --report</code> — CLI report of bundle
+            size, code splitting, and dependency drift
           </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <Callout type="success">
-          Want to instrument production, set up webhooks, and enforce budgets? Read
-          the <Link href="/guides/performance">Performance Optimization Guide</Link>.
+          Want to instrument production, set up webhooks, and enforce budgets?
+          Read the{' '}
+          <Link href="/guides/performance">Performance Optimization Guide</Link>
+          .
         </Callout>
       </section>
     </div>
   )
 }
-

@@ -289,18 +289,10 @@ export {
   type ContrastReport,
 } from './color-contrast'
 
-// Color token migration utilities (codemod)
-export {
-  colorMigrationMap,
-  reviewPatterns,
-  migrateLine,
-  checkForReview,
-  migrateFile,
-  migrateDirectory,
-  generateReport,
-  type MigrationResult,
-} from './migrate-colors'
-
+// NOTE:
+// `migrate-colors` is a Node-only codemod (uses `fs`/`path`) and should not be
+// exported from the browser-facing theme entrypoint. Keeping it out of the main
+// bundle prevents Vite/Storybook from attempting to resolve Node built-ins.
 // ============================================================================
 // Advanced Color Utilities
 // ============================================================================

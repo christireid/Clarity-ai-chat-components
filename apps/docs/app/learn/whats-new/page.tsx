@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-
 export const metadata: Metadata = {
   title: "What's New | Clarity Chat",
-  description: 'Latest updates to Clarity Chat documentation, new features, and improvements.',
+  description:
+    'Latest updates to Clarity Chat documentation, new features, and improvements.',
 }
 
 export default function WhatsNewPage() {
@@ -13,14 +13,17 @@ export default function WhatsNewPage() {
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">What&apos;s New</h1>
         <p className="text-xl text-muted-foreground">
-          Latest updates to Clarity Chat documentation, new features, and improvements.
+          Latest updates to Clarity Chat documentation, new features, and
+          improvements.
         </p>
       </div>
 
       <section className="mb-12">
         <div className="border-l-4 border-brand-500 pl-4 mb-6">
           <h2 className="text-2xl font-semibold mb-2">December 2025</h2>
-          <p className="text-sm text-muted-foreground">Documentation Enhancement Release</p>
+          <p className="text-sm text-muted-foreground">
+            Documentation Enhancement Release
+          </p>
         </div>
 
         <div className="space-y-8">
@@ -29,10 +32,13 @@ export default function WhatsNewPage() {
               <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded text-xs font-medium">
                 NEW
               </span>
-              <h3 className="text-xl font-semibold">New Hook Reference Pages</h3>
+              <h3 className="text-xl font-semibold">
+                New Hook Reference Pages
+              </h3>
             </div>
             <p className="text-muted-foreground mb-4">
-              Added comprehensive documentation for 7 hooks that were previously undocumented:
+              Added comprehensive documentation for 7 hooks that were previously
+              undocumented:
             </p>
             <div className="grid md:grid-cols-2 gap-3">
               <Link
@@ -42,7 +48,9 @@ export default function WhatsNewPage() {
                 <span className="text-green-500">+</span>
                 <div>
                   <div className="font-medium">useMemoryContext</div>
-                  <div className="text-xs text-muted-foreground">Memory operations hook</div>
+                  <div className="text-xs text-muted-foreground">
+                    Memory operations hook
+                  </div>
                 </div>
               </Link>
               <Link
@@ -52,7 +60,9 @@ export default function WhatsNewPage() {
                 <span className="text-green-500">+</span>
                 <div>
                   <div className="font-medium">useClarityChatWithTools</div>
-                  <div className="text-xs text-muted-foreground">Tool integration hook</div>
+                  <div className="text-xs text-muted-foreground">
+                    Tool integration hook
+                  </div>
                 </div>
               </Link>
               <Link
@@ -62,7 +72,9 @@ export default function WhatsNewPage() {
                 <span className="text-green-500">+</span>
                 <div>
                   <div className="font-medium">useIndexedDB</div>
-                  <div className="text-xs text-muted-foreground">IndexedDB persistence</div>
+                  <div className="text-xs text-muted-foreground">
+                    IndexedDB persistence
+                  </div>
                 </div>
               </Link>
               <Link
@@ -72,7 +84,9 @@ export default function WhatsNewPage() {
                 <span className="text-green-500">+</span>
                 <div>
                   <div className="font-medium">useEmbeddings</div>
-                  <div className="text-xs text-muted-foreground">Embedding generation</div>
+                  <div className="text-xs text-muted-foreground">
+                    Embedding generation
+                  </div>
                 </div>
               </Link>
               <Link
@@ -82,7 +96,9 @@ export default function WhatsNewPage() {
                 <span className="text-green-500">+</span>
                 <div>
                   <div className="font-medium">useDesignTokens</div>
-                  <div className="text-xs text-muted-foreground">Design system tokens</div>
+                  <div className="text-xs text-muted-foreground">
+                    Design system tokens
+                  </div>
                 </div>
               </Link>
               <Link
@@ -92,7 +108,9 @@ export default function WhatsNewPage() {
                 <span className="text-green-500">+</span>
                 <div>
                   <div className="font-medium">useCommandPalette</div>
-                  <div className="text-xs text-muted-foreground">Command palette state</div>
+                  <div className="text-xs text-muted-foreground">
+                    Command palette state
+                  </div>
                 </div>
               </Link>
               <Link
@@ -102,7 +120,9 @@ export default function WhatsNewPage() {
                 <span className="text-green-500">+</span>
                 <div>
                   <div className="font-medium">useDashboardData</div>
-                  <div className="text-xs text-muted-foreground">Dashboard data fetching</div>
+                  <div className="text-xs text-muted-foreground">
+                    Dashboard data fetching
+                  </div>
                 </div>
               </Link>
             </div>
@@ -125,7 +145,9 @@ export default function WhatsNewPage() {
               <span className="text-green-500">+</span>
               <div>
                 <div className="font-medium">MemoryProvider</div>
-                <div className="text-xs text-muted-foreground">Memory context provider for AI memory operations</div>
+                <div className="text-xs text-muted-foreground">
+                  Memory context provider for AI memory operations
+                </div>
               </div>
             </Link>
           </div>
@@ -143,19 +165,30 @@ export default function WhatsNewPage() {
             <ul className="space-y-2 text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-blue-500 mt-1">•</span>
-                <span>New &quot;Memory &amp; Context&quot; section in Reference for memory-related hooks</span>
+                <span>
+                  New &quot;Memory &amp; Context&quot; section in Reference for
+                  memory-related hooks
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-500 mt-1">•</span>
-                <span>New &quot;Providers&quot; section for context provider components</span>
+                <span>
+                  New &quot;Providers&quot; section for context provider
+                  components
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-500 mt-1">•</span>
-                <span>Consolidated getting-started paths to single canonical location</span>
+                <span>
+                  Consolidated getting-started paths to single canonical
+                  location
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-500 mt-1">•</span>
-                <span>Fixed broken internal links throughout documentation</span>
+                <span>
+                  Fixed broken internal links throughout documentation
+                </span>
               </li>
             </ul>
           </div>
@@ -173,15 +206,27 @@ export default function WhatsNewPage() {
             <ul className="space-y-2 text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-purple-500 mt-1">•</span>
-                <span>Moved 61 status reports to <code className="bg-muted px-1 rounded">.archive/status-reports/</code></span>
+                <span>
+                  Moved 61 status reports to{' '}
+                  <code className="bg-muted px-1 rounded">
+                    .archive/status-reports/
+                  </code>
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-purple-500 mt-1">•</span>
-                <span>Moved 38 implementation notes to <code className="bg-muted px-1 rounded">.archive/implementation-notes/</code></span>
+                <span>
+                  Moved 38 implementation notes to{' '}
+                  <code className="bg-muted px-1 rounded">
+                    .archive/implementation-notes/
+                  </code>
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-purple-500 mt-1">•</span>
-                <span>Reduced root directory from 103 to 5 essential markdown files</span>
+                <span>
+                  Reduced root directory from 103 to 5 essential markdown files
+                </span>
               </li>
             </ul>
           </div>

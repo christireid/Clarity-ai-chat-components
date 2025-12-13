@@ -36,7 +36,9 @@ function BasicToolCardDemo() {
 
 // With approval demo
 function ToolCardWithApprovalDemo() {
-  const [status, setStatus] = useState<'pending' | 'approved' | 'executing' | 'success'>('pending')
+  const [status, setStatus] = useState<
+    'pending' | 'approved' | 'executing' | 'success'
+  >('pending')
   const [result, setResult] = useState<any>(null)
 
   const toolCall: ToolCall = {
@@ -88,50 +90,59 @@ const toolInvocationCardProps: Prop[] = [
     name: 'status',
     type: '"pending" | "approved" | "rejected" | "executing" | "success" | "error"',
     default: '"pending"',
-    description: 'Current status of the tool call. Determines badge color and available actions.',
+    description:
+      'Current status of the tool call. Determines badge color and available actions.',
   },
   {
     name: 'result',
     type: 'any',
-    description: 'Tool execution result. Displayed in expandable section when available.',
+    description:
+      'Tool execution result. Displayed in expandable section when available.',
   },
   {
     name: 'error',
     type: 'string',
-    description: 'Error message if tool execution failed. Displayed with error styling.',
+    description:
+      'Error message if tool execution failed. Displayed with error styling.',
   },
   {
     name: 'requiresApproval',
     type: 'boolean',
     default: 'false',
-    description: 'Show approve/reject buttons. When true, tool requires user approval before execution.',
+    description:
+      'Show approve/reject buttons. When true, tool requires user approval before execution.',
   },
   {
     name: 'onApprove',
     type: '(toolCall: ToolCall) => void',
-    description: 'Callback when user approves the tool call. Only shown when requiresApproval is true.',
+    description:
+      'Callback when user approves the tool call. Only shown when requiresApproval is true.',
   },
   {
     name: 'onReject',
     type: '(toolCall: ToolCall) => void',
-    description: 'Callback when user rejects the tool call. Only shown when requiresApproval is true.',
+    description:
+      'Callback when user rejects the tool call. Only shown when requiresApproval is true.',
   },
   {
     name: 'onRetry',
     type: '(toolCall: ToolCall) => void',
-    description: 'Callback to retry a failed tool call. Shows retry button when status is "error".',
+    description:
+      'Callback to retry a failed tool call. Shows retry button when status is "error".',
   },
   {
     name: 'formatArguments',
     type: 'boolean',
     default: 'true',
-    description: 'Format JSON arguments with indentation for better readability.',
+    description:
+      'Format JSON arguments with indentation for better readability.',
   },
   {
     name: 'expandableResult',
     type: 'boolean',
     default: 'true',
-    description: 'Show result in expandable section. When false, result is always visible.',
+    description:
+      'Show result in expandable section. When false, result is always visible.',
   },
   {
     name: 'className',
@@ -139,7 +150,6 @@ const toolInvocationCardProps: Prop[] = [
     description: 'Additional CSS classes to apply to the card container.',
   },
 ]
-
 
 export default function ToolInvocationCardPage() {
   return (
@@ -150,16 +160,21 @@ export default function ToolInvocationCardPage() {
         <h1>ToolInvocationCard</h1>
 
         <p className="lead">
-          A component for displaying tool/function calls with approval workflow, execution status,
-          and result visualization. Perfect for showing AI agent tool usage in conversations.
+          A component for displaying tool/function calls with approval workflow,
+          execution status, and result visualization. Perfect for showing AI
+          agent tool usage in conversations.
         </p>
 
         <Callout type="info">
           <p>
-            ToolInvocationCard is used to display individual tool calls. For displaying multiple
-            agent steps, use <a href="/reference/components/agent-run-feed">AgentRunFeed</a>.
-            For rendering tool results with custom UI, use{' '}
-            <a href="/reference/components/clarity-tool-result">ClarityToolResult</a>.
+            ToolInvocationCard is used to display individual tool calls. For
+            displaying multiple agent steps, use{' '}
+            <a href="/reference/components/agent-run-feed">AgentRunFeed</a>. For
+            rendering tool results with custom UI, use{' '}
+            <a href="/reference/components/clarity-tool-result">
+              ClarityToolResult
+            </a>
+            .
           </p>
         </Callout>
 
@@ -168,7 +183,8 @@ export default function ToolInvocationCardPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Try approving a tool call and watch it execute! See how the status changes through the workflow.
+            Try approving a tool call and watch it execute! See how the status
+            changes through the workflow.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -208,7 +224,8 @@ import '@clarity-chat/react/styles.css'`}
         <h2 id="basic-usage">Basic Usage</h2>
 
         <p>
-          ToolInvocationCard displays a tool call with its function name and arguments:
+          ToolInvocationCard displays a tool call with its function name and
+          arguments:
         </p>
 
         <ComponentPreview
@@ -241,7 +258,8 @@ function SimpleToolCard() {
         <h2 id="approval-workflow">Approval Workflow</h2>
 
         <p>
-          Enable approval workflow to require user confirmation before tool execution:
+          Enable approval workflow to require user confirmation before tool
+          execution:
         </p>
 
         <ComponentPreview
@@ -294,7 +312,8 @@ function ToolWithApproval() {
         <h2 id="status-states">Status States</h2>
 
         <p>
-          ToolInvocationCard supports multiple status states with appropriate visual indicators:
+          ToolInvocationCard supports multiple status states with appropriate
+          visual indicators:
         </p>
 
         <EnhancedCodeBlock
@@ -342,18 +361,24 @@ function ToolWithApproval() {
             <strong>Status Badge Colors:</strong>
           </p>
           <ul>
-            <li><strong>pending/rejected:</strong> Warning (yellow)</li>
-            <li><strong>approved/executing:</strong> Info (blue)</li>
-            <li><strong>success:</strong> Success (green)</li>
-            <li><strong>error:</strong> Destructive (red)</li>
+            <li>
+              <strong>pending/rejected:</strong> Warning (yellow)
+            </li>
+            <li>
+              <strong>approved/executing:</strong> Info (blue)
+            </li>
+            <li>
+              <strong>success:</strong> Success (green)
+            </li>
+            <li>
+              <strong>error:</strong> Destructive (red)
+            </li>
           </ul>
         </Callout>
 
         <h2 id="with-results">Displaying Results</h2>
 
-        <p>
-          Show tool execution results in an expandable section:
-        </p>
+        <p>Show tool execution results in an expandable section:</p>
 
         <EnhancedCodeBlock
           code={`import { ToolInvocationCard } from '@clarity-chat/react'
@@ -390,9 +415,7 @@ function ToolWithResult() {
 
         <h2 id="error-handling">Error Handling</h2>
 
-        <p>
-          Display error messages and provide retry functionality:
-        </p>
+        <p>Display error messages and provide retry functionality:</p>
 
         <EnhancedCodeBlock
           code={`import { ToolInvocationCard } from '@clarity-chat/react'
@@ -427,9 +450,7 @@ function ToolWithError() {
 
         <h2 id="custom-formatting">Custom Argument Formatting</h2>
 
-        <p>
-          Control how arguments are displayed:
-        </p>
+        <p>Control how arguments are displayed:</p>
 
         <EnhancedCodeBlock
           code={`import { ToolInvocationCard } from '@clarity-chat/react'
@@ -550,16 +571,15 @@ function CompleteToolCard() {
 
         <Callout type="warning">
           <p>
-            <strong>Note:</strong> The API endpoint <code>/api/process-payment</code> is a placeholder.
-            You'll need to implement your own backend endpoint for tool execution.
+            <strong>Note:</strong> The API endpoint{' '}
+            <code>/api/process-payment</code> is a placeholder. You'll need to
+            implement your own backend endpoint for tool execution.
           </p>
         </Callout>
 
         <h2 id="integration-with-streaming">Integration with Streaming</h2>
 
-        <p>
-          ToolInvocationCard works seamlessly with streaming messages:
-        </p>
+        <p>ToolInvocationCard works seamlessly with streaming messages:</p>
 
         <EnhancedCodeBlock
           code={`import { ToolInvocationCard, StreamingMessage } from '@clarity-chat/react'
@@ -606,16 +626,26 @@ function StreamingWithTools() {
 
         <ul>
           <li>
-            <a href="/reference/components/agent-run-feed">AgentRunFeed</a> - Display multiple agent execution steps
+            <a href="/reference/components/agent-run-feed">AgentRunFeed</a> -
+            Display multiple agent execution steps
           </li>
           <li>
-            <a href="/reference/components/clarity-tool-result">ClarityToolResult</a> - Render tool results with custom UI
+            <a href="/reference/components/clarity-tool-result">
+              ClarityToolResult
+            </a>{' '}
+            - Render tool results with custom UI
           </li>
           <li>
-            <a href="/reference/components/streaming-message">StreamingMessage</a> - Display streaming responses with tool calls
+            <a href="/reference/components/streaming-message">
+              StreamingMessage
+            </a>{' '}
+            - Display streaming responses with tool calls
           </li>
           <li>
-            <a href="/reference/hooks/use-clarity-chat-with-tools">useClarityChatWithTools</a> - Hook for tool-enabled chat
+            <a href="/reference/hooks/use-clarity-chat-with-tools">
+              useClarityChatWithTools
+            </a>{' '}
+            - Hook for tool-enabled chat
           </li>
         </ul>
 

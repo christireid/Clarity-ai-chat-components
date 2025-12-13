@@ -6,7 +6,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Custom Styling Example - Clarity Chat Components',
-  description: 'Learn how to style Clarity Chat components with custom CSS, Tailwind classes, and CSS-in-JS.',
+  description:
+    'Learn how to style Clarity Chat components with custom CSS, Tailwind classes, and CSS-in-JS.',
 }
 
 export default function CustomStylingExamplePage() {
@@ -17,16 +18,16 @@ export default function CustomStylingExamplePage() {
         <span className="docs-badge">Intermediate</span>
         <h1>Custom Styling</h1>
         <p className="docs-lead">
-          Complete guide to styling Clarity Chat components with custom themes, CSS variables, 
-          Tailwind classes, and CSS-in-JS solutions.
+          Complete guide to styling Clarity Chat components with custom themes,
+          CSS variables, Tailwind classes, and CSS-in-JS solutions.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Clarity Chat components are designed to be highly customizable. This example demonstrates
-          various styling approaches including:
+          Clarity Chat components are designed to be highly customizable. This
+          example demonstrates various styling approaches including:
         </p>
         <ul>
           <li>CSS Variables for theme customization</li>
@@ -41,10 +42,11 @@ export default function CustomStylingExamplePage() {
       <section className="docs-section">
         <h2>Method 1: CSS Variables</h2>
         <p>
-          The simplest way to customize the look and feel is using CSS variables. All components
-          respect a comprehensive set of CSS custom properties.
+          The simplest way to customize the look and feel is using CSS
+          variables. All components respect a comprehensive set of CSS custom
+          properties.
         </p>
-        
+
         <CodePlayground
           initialCode={`function CSSVariablesExample() {
   const messages = [
@@ -98,14 +100,30 @@ render(<CSSVariablesExample />)`}
         <Callout type="tip" title="Available CSS Variables">
           Here are the key CSS variables you can customize:
           <ul>
-            <li><code>--chat-bg</code> - Chat window background</li>
-            <li><code>--message-bg</code> - Message bubble background</li>
-            <li><code>--message-own-bg</code> - Your message background</li>
-            <li><code>--message-text</code> - Message text color</li>
-            <li><code>--input-bg</code> - Input field background</li>
-            <li><code>--button-primary-bg</code> - Primary button color</li>
-            <li><code>--radius</code> - Border radius for elements</li>
-            <li><code>--shadow</code> - Box shadow values</li>
+            <li>
+              <code>--chat-bg</code> - Chat window background
+            </li>
+            <li>
+              <code>--message-bg</code> - Message bubble background
+            </li>
+            <li>
+              <code>--message-own-bg</code> - Your message background
+            </li>
+            <li>
+              <code>--message-text</code> - Message text color
+            </li>
+            <li>
+              <code>--input-bg</code> - Input field background
+            </li>
+            <li>
+              <code>--button-primary-bg</code> - Primary button color
+            </li>
+            <li>
+              <code>--radius</code> - Border radius for elements
+            </li>
+            <li>
+              <code>--shadow</code> - Box shadow values
+            </li>
           </ul>
         </Callout>
       </section>
@@ -113,7 +131,8 @@ render(<CSSVariablesExample />)`}
       <section className="docs-section">
         <h2>Method 2: Tailwind Classes</h2>
         <p>
-          Components accept <code>className</code> props for easy Tailwind customization.
+          Components accept <code>className</code> props for easy Tailwind
+          customization.
         </p>
 
         <CodePlayground
@@ -264,7 +283,8 @@ render(<CustomCSSExample />)`}
       <section className="docs-section">
         <h2>Method 4: Brand Themes</h2>
         <p>
-          Create pre-defined brand themes for consistent styling across your app.
+          Create pre-defined brand themes for consistent styling across your
+          app.
         </p>
 
         <CodePlayground
@@ -404,9 +424,7 @@ export default BrandThemesExample`}
 
       <section className="docs-section">
         <h2>Method 5: Dark Mode</h2>
-        <p>
-          Implement dark mode with automatic system preference detection.
-        </p>
+        <p>Implement dark mode with automatic system preference detection.</p>
 
         <CodePlayground
           initialCode={`import { useState, useEffect } from 'react'
@@ -499,9 +517,7 @@ render(<DarkModeExample />)`}
 
       <section className="docs-section">
         <h2>Method 6: Gradient Themes</h2>
-        <p>
-          Create stunning gradient-based themes for modern, vibrant UIs.
-        </p>
+        <p>Create stunning gradient-based themes for modern, vibrant UIs.</p>
 
         <CodePlayground
           initialCode={`function GradientThemeExample() {
@@ -604,9 +620,7 @@ render(<GradientThemeExample />)`}
 
       <section className="docs-section">
         <h2>Method 7: Component-Specific Styling</h2>
-        <p>
-          Style individual message components with custom renderers.
-        </p>
+        <p>Style individual message components with custom renderers.</p>
 
         <CodePlayground
           initialCode={`function CustomMessageStyling() {
@@ -697,9 +711,11 @@ render(<CustomMessageStyling />)`}
 
         <h3>Theme Context Provider</h3>
         <p>
-          Create a theme context to manage themes across your entire application:
+          Create a theme context to manage themes across your entire
+          application:
         </p>
-        <pre><code>{`// theme-context.tsx
+        <pre>
+          <code>{`// theme-context.tsx
 import { createContext, useContext, useState } from 'react'
 
 const ThemeContext = createContext(null)
@@ -743,13 +759,13 @@ function ThemeSelector() {
       <option value="colorful">Colorful</option>
     </select>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Dynamic Theme Generation</h3>
-        <p>
-          Generate themes dynamically based on brand colors:
-        </p>
-        <pre><code>{`function generateTheme(primaryColor) {
+        <p>Generate themes dynamically based on brand colors:</p>
+        <pre>
+          <code>{`function generateTheme(primaryColor) {
   // Parse the primary color
   const rgb = hexToRgb(primaryColor)
   
@@ -770,13 +786,13 @@ function ThemeSelector() {
 const theme = generateTheme('#3b82f6')
 <div style={theme}>
   <ChatWindow />
-</div>`}</code></pre>
+</div>`}</code>
+        </pre>
 
         <h3>CSS-in-JS with Styled Components</h3>
-        <p>
-          Use styled-components for type-safe, scoped styling:
-        </p>
-        <pre><code>{`import styled from 'styled-components'
+        <p>Use styled-components for type-safe, scoped styling:</p>
+        <pre>
+          <code>{`import styled from 'styled-components'
 import { ChatWindow } from '@clarity-chat/react'
 
 const StyledChatWindow = styled(ChatWindow)\`
@@ -808,13 +824,13 @@ function App() {
       <StyledChatWindow />
     </ThemeProvider>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Responsive Styling</h3>
-        <p>
-          Adapt styling based on screen size:
-        </p>
-        <pre><code>{`const responsiveStyles = {
+        <p>Adapt styling based on screen size:</p>
+        <pre>
+          <code>{`const responsiveStyles = {
   // Mobile
   '@media (max-width: 640px)': {
     '--message-max-width': '90%',
@@ -836,20 +852,21 @@ function App() {
     '--padding': '16px',
     '--radius': '16px'
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
 
         <Callout type="tip" title="Use CSS Variables for Themes">
-          CSS variables provide the best performance and flexibility. They can be changed
-          dynamically without re-rendering components.
+          CSS variables provide the best performance and flexibility. They can
+          be changed dynamically without re-rendering components.
         </Callout>
 
         <Callout type="warning" title="Avoid Inline Styles for Everything">
-          While inline styles work, they can't be overridden easily and don't support
-          pseudo-classes or media queries. Use them sparingly.
+          While inline styles work, they can't be overridden easily and don't
+          support pseudo-classes or media queries. Use them sparingly.
         </Callout>
 
         <h3>Performance Tips</h3>
@@ -857,7 +874,9 @@ function App() {
           <li>Use CSS variables instead of re-rendering with new props</li>
           <li>Leverage CSS transitions for smooth theme changes</li>
           <li>Minimize inline styles - prefer classes</li>
-          <li>Use <code>will-change</code> for animated properties</li>
+          <li>
+            Use <code>will-change</code> for animated properties
+          </li>
           <li>Debounce theme changes to avoid flickering</li>
         </ul>
 
@@ -882,10 +901,9 @@ function App() {
 
       <section className="docs-section">
         <h2>Complete Theme Example</h2>
-        <p>
-          Here's a production-ready theme configuration:
-        </p>
-        <pre><code>{`// themes.ts
+        <p>Here's a production-ready theme configuration:</p>
+        <pre>
+          <code>{`// themes.ts
 export const themes = {
   light: {
     // Layout
@@ -973,7 +991,8 @@ function applyTheme(themeName) {
   Object.entries(theme).forEach(([key, value]) => {
     root.style.setProperty(key, value)
   })
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -1001,20 +1020,37 @@ function applyTheme(themeName) {
       <section className="docs-section">
         <h2>Summary</h2>
         <p>
-          You've learned seven different methods for styling Clarity Chat components:
+          You've learned seven different methods for styling Clarity Chat
+          components:
         </p>
         <ol>
-          <li><strong>CSS Variables</strong> - Simple, performant theme customization</li>
-          <li><strong>Tailwind Classes</strong> - Rapid development with utility classes</li>
-          <li><strong>Custom CSS</strong> - Full control with custom stylesheets</li>
-          <li><strong>Brand Themes</strong> - Pre-defined theme presets</li>
-          <li><strong>Dark Mode</strong> - System-aware theme switching</li>
-          <li><strong>Gradient Themes</strong> - Modern, vibrant designs</li>
-          <li><strong>Component Styling</strong> - Custom message rendering</li>
+          <li>
+            <strong>CSS Variables</strong> - Simple, performant theme
+            customization
+          </li>
+          <li>
+            <strong>Tailwind Classes</strong> - Rapid development with utility
+            classes
+          </li>
+          <li>
+            <strong>Custom CSS</strong> - Full control with custom stylesheets
+          </li>
+          <li>
+            <strong>Brand Themes</strong> - Pre-defined theme presets
+          </li>
+          <li>
+            <strong>Dark Mode</strong> - System-aware theme switching
+          </li>
+          <li>
+            <strong>Gradient Themes</strong> - Modern, vibrant designs
+          </li>
+          <li>
+            <strong>Component Styling</strong> - Custom message rendering
+          </li>
         </ol>
         <p>
-          Choose the approach that best fits your project's needs, or combine multiple methods
-          for maximum flexibility!
+          Choose the approach that best fits your project's needs, or combine
+          multiple methods for maximum flexibility!
         </p>
       </section>
     </div>

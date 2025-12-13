@@ -4,7 +4,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-
 export const metadata: Metadata = {
   title: 'TypeScript Quickstart - Learn Clarity Chat',
   description:
@@ -19,8 +18,8 @@ export default function LearnTypeScriptGuidePage() {
         <h1>TypeScript</h1>
         <p className="docs-lead">
           Clarity Chat is built in TypeScript with 100% type coverage. Use this
-          quickstart to wire up types correctly and avoid implicit <code>any</code>{' '}
-          sneaking into your codebase.
+          quickstart to wire up types correctly and avoid implicit{' '}
+          <code>any</code> sneaking into your codebase.
         </p>
       </div>
 
@@ -28,8 +27,8 @@ export default function LearnTypeScriptGuidePage() {
         <h2>Install Types</h2>
         <p>
           The primary package exports types, but you can optionally install{' '}
-          <code>@clarity-chat/types</code> for shared models between frontend and
-          backend.
+          <code>@clarity-chat/types</code> for shared models between frontend
+          and backend.
         </p>
         <CodeBlock
           language="bash"
@@ -40,8 +39,8 @@ export default function LearnTypeScriptGuidePage() {
       <section className="docs-section">
         <h2>Typed Messages</h2>
         <p>
-          Import base interfaces for messages, tools, and adapters. They keep your
-          API routes and client components aligned.
+          Import base interfaces for messages, tools, and adapters. They keep
+          your API routes and client components aligned.
         </p>
         <CodeBlock
           language="ts"
@@ -97,17 +96,28 @@ export function useSupportChat() {
       <section className="docs-section">
         <h2>Strict Type Safety Tips</h2>
         <ul>
-          <li>Enable <code>"strict": true</code> in <code>tsconfig.json</code></li>
-          <li>Use <code>ProviderConfig</code> and <code>AdapterConfig</code> types to validate adapters</li>
-          <li>For streaming handlers, type responses with <code>StreamingChunk</code></li>
-          <li>Wrap API routes with <code>ValidatedRequest</code> to catch schema mismatches</li>
+          <li>
+            Enable <code>"strict": true</code> in <code>tsconfig.json</code>
+          </li>
+          <li>
+            Use <code>ProviderConfig</code> and <code>AdapterConfig</code> types
+            to validate adapters
+          </li>
+          <li>
+            For streaming handlers, type responses with{' '}
+            <code>StreamingChunk</code>
+          </li>
+          <li>
+            Wrap API routes with <code>ValidatedRequest</code> to catch schema
+            mismatches
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <Callout type="success">
-          Want to see exhaustive examples (mock providers, testing helpers, error
-          boundaries)? Visit the{' '}
+          Want to see exhaustive examples (mock providers, testing helpers,
+          error boundaries)? Visit the{' '}
           <Link href="/guides/testing">Testing Strategy Guide</Link> and{' '}
           <Link href="/guides/state-management">State Management Guide</Link>.
         </Callout>
@@ -115,4 +125,3 @@ export function useSupportChat() {
     </div>
   )
 }
-

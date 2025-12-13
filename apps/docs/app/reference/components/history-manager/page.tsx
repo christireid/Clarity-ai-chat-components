@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'HistoryManager - Clarity Chat Components',
-  description: 'Manage conversation history with token tracking, pruning, and bulk operations.',
+  description:
+    'Manage conversation history with token tracking, pruning, and bulk operations.',
 }
 
 const props: Prop[] = [
@@ -83,7 +83,8 @@ export default function HistoryManagerPage() {
         <span className="docs-badge">Component</span>
         <h1>HistoryManager</h1>
         <p className="docs-lead">
-          Manage conversation history with token tracking, visual usage indicators, and smart pruning capabilities.
+          Manage conversation history with token tracking, visual usage
+          indicators, and smart pruning capabilities.
         </p>
       </div>
 
@@ -99,9 +100,7 @@ export default function HistoryManagerPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Manage conversation history with token tracking:
-        </p>
+        <p>Manage conversation history with token tracking:</p>
         <CodePlayground
           initialCode={`import { HistoryManager, type HistoryMessage } from '@clarity-chat/react'
 
@@ -131,9 +130,7 @@ render(<ChatWithHistory />)`}
 
       <section className="docs-section">
         <h2>Token Tracking</h2>
-        <p>
-          Visualize token usage with color-coded indicators:
-        </p>
+        <p>Visualize token usage with color-coded indicators:</p>
         <CodePlayground
           initialCode={`import { HistoryManager } from '@clarity-chat/react'
 
@@ -155,9 +152,7 @@ function TokenTracking() {
 
       <section className="docs-section">
         <h2>Bulk Operations</h2>
-        <p>
-          Enable bulk delete and pruning operations:
-        </p>
+        <p>Enable bulk delete and pruning operations:</p>
         <CodePlayground
           initialCode={`import { HistoryManager } from '@clarity-chat/react'
 
@@ -180,9 +175,7 @@ function BulkOperations() {
 
       <section className="docs-section">
         <h2>Compact Mode</h2>
-        <p>
-          Use compact mode for smaller displays:
-        </p>
+        <p>Use compact mode for smaller displays:</p>
         <CodePlayground
           initialCode={`import { HistoryManager } from '@clarity-chat/react'
 
@@ -202,9 +195,7 @@ function CompactHistory() {
 
       <section className="docs-section">
         <h2>Token Thresholds</h2>
-        <p>
-          Configure warning and critical thresholds:
-        </p>
+        <p>Configure warning and critical thresholds:</p>
         <CodePlayground
           initialCode={`import { HistoryManager } from '@clarity-chat/react'
 
@@ -232,9 +223,7 @@ function ThresholdHistory() {
 
       <section className="docs-section">
         <h2>Token Usage Bar</h2>
-        <p>
-          The component includes a visual token usage bar that shows:
-        </p>
+        <p>The component includes a visual token usage bar that shows:</p>
         <ul>
           <li>Current token usage (green)</li>
           <li>Warning threshold (yellow)</li>
@@ -246,21 +235,45 @@ function ThresholdHistory() {
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Set <code>maxTokens</code> based on your model's context window</li>
-          <li>Use <code>warningThreshold</code> of 0.8 for early warnings</li>
-          <li>Enable <code>showTokenCounts</code> during development</li>
-          <li>Use <code>compact</code> mode for production</li>
-          <li>Implement <code>onPrune</code> callback to track pruning events</li>
+          <li>
+            Set <code>maxTokens</code> based on your model's context window
+          </li>
+          <li>
+            Use <code>warningThreshold</code> of 0.8 for early warnings
+          </li>
+          <li>
+            Enable <code>showTokenCounts</code> during development
+          </li>
+          <li>
+            Use <code>compact</code> mode for production
+          </li>
+          <li>
+            Implement <code>onPrune</code> callback to track pruning events
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/token-counter">TokenCounter</a> - Simple token counter</li>
-          <li><a href="/reference/hooks/use-token-tracker">useTokenTracker</a> - Token tracking hook</li>
-          <li><a href="/reference/hooks/use-token-budget-monitor">useTokenBudgetMonitor</a> - Budget monitoring</li>
-          <li><a href="/guides/token-optimization">Token Optimization Guide</a> - Optimization strategies</li>
+          <li>
+            <a href="/reference/components/token-counter">TokenCounter</a> -
+            Simple token counter
+          </li>
+          <li>
+            <a href="/reference/hooks/use-token-tracker">useTokenTracker</a> -
+            Token tracking hook
+          </li>
+          <li>
+            <a href="/reference/hooks/use-token-budget-monitor">
+              useTokenBudgetMonitor
+            </a>{' '}
+            - Budget monitoring
+          </li>
+          <li>
+            <a href="/guides/token-optimization">Token Optimization Guide</a> -
+            Optimization strategies
+          </li>
         </ul>
       </section>
     </div>

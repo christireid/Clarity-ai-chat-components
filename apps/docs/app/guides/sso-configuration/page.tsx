@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'SSO Configuration Guide - Clarity Chat Components',
-  description: 'Learn how to configure SSO (Single Sign-On) for enterprise tenants with SAML, OIDC, and OAuth providers.',
+  description:
+    'Learn how to configure SSO (Single Sign-On) for enterprise tenants with SAML, OIDC, and OAuth providers.',
 }
 
 export default function SSOConfigurationPage() {
@@ -17,7 +17,8 @@ export default function SSOConfigurationPage() {
         <span className="docs-badge">Guide</span>
         <h1>SSO Configuration</h1>
         <p className="docs-lead">
-          Learn how to configure SSO (Single Sign-On) for enterprise tenants with SAML, OIDC, and OAuth providers.
+          Learn how to configure SSO (Single Sign-On) for enterprise tenants
+          with SAML, OIDC, and OAuth providers.
         </p>
       </div>
 
@@ -34,15 +35,14 @@ export default function SSOConfigurationPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          SSO allows users to authenticate once and access multiple applications without re-entering credentials.
+          SSO allows users to authenticate once and access multiple applications
+          without re-entering credentials.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>SAML Configuration</h2>
-        <p>
-          Configure SAML SSO:
-        </p>
+        <p>Configure SAML SSO:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
@@ -92,9 +92,7 @@ function SAMLConfiguration({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>OIDC Configuration</h2>
-        <p>
-          Configure OIDC SSO:
-        </p>
+        <p>Configure OIDC SSO:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
@@ -124,9 +122,7 @@ function OIDCConfiguration({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>OAuth Configuration</h2>
-        <p>
-          Configure OAuth SSO:
-        </p>
+        <p>Configure OAuth SSO:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
@@ -156,9 +152,7 @@ function OAuthConfiguration({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>Testing SSO</h2>
-        <p>
-          Test SSO configuration:
-        </p>
+        <p>Test SSO configuration:</p>
         <CodePlayground
           initialCode={`async function testSSO(tenantId: string) {
   // Test SSO login
@@ -199,8 +193,16 @@ function SSOTest({ tenantId }: { tenantId: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/sso-config-wizard">SSOConfigWizard</a> - SSO configuration wizard</li>
-          <li><a href="/guides/multi-tenancy-setup">Multi-Tenancy Setup</a> - Multi-tenant setup</li>
+          <li>
+            <a href="/reference/components/sso-config-wizard">
+              SSOConfigWizard
+            </a>{' '}
+            - SSO configuration wizard
+          </li>
+          <li>
+            <a href="/guides/multi-tenancy-setup">Multi-Tenancy Setup</a> -
+            Multi-tenant setup
+          </li>
         </ul>
       </section>
     </div>

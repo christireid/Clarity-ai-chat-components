@@ -112,7 +112,11 @@ function BasicWebSocketDemo() {
                 <p className="text-xs text-muted-foreground mb-1">
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </p>
-                <p>{typeof msg.data === 'string' ? msg.data : JSON.stringify(msg.data)}</p>
+                <p>
+                  {typeof msg.data === 'string'
+                    ? msg.data
+                    : JSON.stringify(msg.data)}
+                </p>
               </div>
             ))}
           </div>
@@ -133,7 +137,8 @@ const useStreamingWebSocketOptionsProps: Prop[] = [
     name: 'url',
     type: 'string',
     required: true,
-    description: 'WebSocket URL (ws:// or wss://). Must be a valid WebSocket URL.',
+    description:
+      'WebSocket URL (ws:// or wss://). Must be a valid WebSocket URL.',
   },
   {
     name: 'protocols',
@@ -144,7 +149,8 @@ const useStreamingWebSocketOptionsProps: Prop[] = [
     name: 'autoReconnect',
     type: 'boolean',
     default: 'true',
-    description: 'Automatically reconnect on connection loss with exponential backoff.',
+    description:
+      'Automatically reconnect on connection loss with exponential backoff.',
   },
   {
     name: 'maxReconnectAttempts',
@@ -156,7 +162,8 @@ const useStreamingWebSocketOptionsProps: Prop[] = [
     name: 'reconnectDelay',
     type: 'number',
     default: '1000',
-    description: 'Initial reconnection delay in milliseconds. Increases exponentially.',
+    description:
+      'Initial reconnection delay in milliseconds. Increases exponentially.',
   },
   {
     name: 'maxReconnectDelay',
@@ -168,7 +175,8 @@ const useStreamingWebSocketOptionsProps: Prop[] = [
     name: 'enableHeartbeat',
     type: 'boolean',
     default: 'true',
-    description: 'Enable heartbeat/ping-pong mechanism to keep connection alive.',
+    description:
+      'Enable heartbeat/ping-pong mechanism to keep connection alive.',
   },
   {
     name: 'heartbeatInterval',
@@ -180,7 +188,8 @@ const useStreamingWebSocketOptionsProps: Prop[] = [
     name: 'heartbeatTimeout',
     type: 'number',
     default: '5000',
-    description: 'Heartbeat timeout in milliseconds. If no pong received, connection is considered dead.',
+    description:
+      'Heartbeat timeout in milliseconds. If no pong received, connection is considered dead.',
   },
   {
     name: 'heartbeatMessage',
@@ -208,7 +217,8 @@ const useStreamingWebSocketOptionsProps: Prop[] = [
   {
     name: 'onMessage',
     type: '(message: WebSocketMessage) => void',
-    description: 'Callback for each message received. Receives parsed message object.',
+    description:
+      'Callback for each message received. Receives parsed message object.',
   },
   {
     name: 'onError',
@@ -223,7 +233,8 @@ const useStreamingWebSocketOptionsProps: Prop[] = [
   {
     name: 'onReconnecting',
     type: '(attempt: number, delay: number) => void',
-    description: 'Callback when reconnection attempt starts. Receives attempt number and delay.',
+    description:
+      'Callback when reconnection attempt starts. Receives attempt number and delay.',
   },
   {
     name: 'onMaxReconnectAttemptsReached',
@@ -261,7 +272,8 @@ const useStreamingWebSocketReturnProps: Prop[] = [
   {
     name: 'readyState',
     type: 'number',
-    description: 'WebSocket ready state (0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED).',
+    description:
+      'WebSocket ready state (0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED).',
   },
   {
     name: 'connect',
@@ -271,12 +283,14 @@ const useStreamingWebSocketReturnProps: Prop[] = [
   {
     name: 'disconnect',
     type: '(code?: number, reason?: string) => void',
-    description: 'Disconnect from the WebSocket. Optionally provide close code and reason.',
+    description:
+      'Disconnect from the WebSocket. Optionally provide close code and reason.',
   },
   {
     name: 'send',
     type: '(data: string | object | ArrayBuffer | Blob) => boolean',
-    description: 'Send a message. Returns true if sent successfully, false if connection not open.',
+    description:
+      'Send a message. Returns true if sent successfully, false if connection not open.',
   },
   {
     name: 'sendJson',
@@ -305,7 +319,6 @@ const useStreamingWebSocketReturnProps: Prop[] = [
   },
 ]
 
-
 export default function UseStreamingWebSocketPage() {
   return (
     <ToastProvider>
@@ -315,14 +328,17 @@ export default function UseStreamingWebSocketPage() {
         <h1>useStreamingWebSocket</h1>
 
         <p className="lead">
-          A production-ready hook for bidirectional WebSocket streaming with automatic reconnection,
-          heartbeat/ping-pong, message queuing, and lifecycle management.
+          A production-ready hook for bidirectional WebSocket streaming with
+          automatic reconnection, heartbeat/ping-pong, message queuing, and
+          lifecycle management.
         </p>
 
         <Callout type="info">
           <p>
-            For chat streaming, use <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> with{' '}
-            <code>transport: 'websocket'</code>. useStreamingWebSocket is for custom WebSocket implementations.
+            For chat streaming, use{' '}
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> with{' '}
+            <code>transport: 'websocket'</code>. useStreamingWebSocket is for
+            custom WebSocket implementations.
           </p>
         </Callout>
 
@@ -331,7 +347,8 @@ export default function UseStreamingWebSocketPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Try connecting to a WebSocket! Send messages and see them echoed back.
+            Try connecting to a WebSocket! Send messages and see them echoed
+            back.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -373,9 +390,7 @@ import type { WebSocketMessage, UseStreamingWebSocketOptions, UseStreamingWebSoc
 
         <h2 id="basic-usage">Basic Usage</h2>
 
-        <p>
-          Connect to a WebSocket and send/receive messages:
-        </p>
+        <p>Connect to a WebSocket and send/receive messages:</p>
 
         <ComponentPreview
           title="Simple WebSocket Connection"
@@ -420,9 +435,7 @@ function SimpleWebSocket() {
 
         <h2 id="connect-on-mount">Connect on Mount</h2>
 
-        <p>
-          Automatically connect when component mounts:
-        </p>
+        <p>Automatically connect when component mounts:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingWebSocket } from '@clarity-chat/react'
@@ -454,9 +467,7 @@ function AutoConnectWebSocket() {
 
         <h2 id="sending-messages">Sending Messages</h2>
 
-        <p>
-          Send text, JSON, or binary messages:
-        </p>
+        <p>Send text, JSON, or binary messages:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingWebSocket } from '@clarity-chat/react'
@@ -511,9 +522,7 @@ function WebSocketWithSend() {
 
         <h2 id="automatic-reconnection">Automatic Reconnection</h2>
 
-        <p>
-          Configure automatic reconnection with exponential backoff:
-        </p>
+        <p>Configure automatic reconnection with exponential backoff:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingWebSocket } from '@clarity-chat/react'
@@ -553,9 +562,7 @@ function WebSocketWithReconnect() {
 
         <h2 id="heartbeat">Heartbeat/Ping-Pong</h2>
 
-        <p>
-          Keep connection alive with heartbeat mechanism:
-        </p>
+        <p>Keep connection alive with heartbeat mechanism:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingWebSocket } from '@clarity-chat/react'
@@ -589,16 +596,15 @@ function WebSocketWithHeartbeat() {
 
         <Callout type="tip">
           <p>
-            The heartbeat mechanism sends a ping message at regular intervals. If no pong is received
-            within the timeout period, the connection is considered dead and reconnection is attempted.
+            The heartbeat mechanism sends a ping message at regular intervals.
+            If no pong is received within the timeout period, the connection is
+            considered dead and reconnection is attempted.
           </p>
         </Callout>
 
         <h2 id="message-handling">Message Handling</h2>
 
-        <p>
-          Handle different message types:
-        </p>
+        <p>Handle different message types:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingWebSocket } from '@clarity-chat/react'
@@ -675,9 +681,7 @@ function WebSocketWithMessageHandling() {
 
         <h2 id="ready-state">Ready State</h2>
 
-        <p>
-          WebSocket ready state constants:
-        </p>
+        <p>WebSocket ready state constants:</p>
 
         <ul>
           <li>
@@ -828,16 +832,16 @@ function CompleteWebSocketExample() {
 
         <Callout type="warning">
           <p>
-            <strong>Note:</strong> The WebSocket URL <code>wss://api.example.com/ws</code> is a placeholder.
-            You'll need to implement your own WebSocket server or use a service that provides WebSocket endpoints.
+            <strong>Note:</strong> The WebSocket URL{' '}
+            <code>wss://api.example.com/ws</code> is a placeholder. You'll need
+            to implement your own WebSocket server or use a service that
+            provides WebSocket endpoints.
           </p>
         </Callout>
 
         <h2 id="status-values">Status Values</h2>
 
-        <p>
-          Connection status can be one of:
-        </p>
+        <p>Connection status can be one of:</p>
 
         <ul>
           <li>
@@ -867,22 +871,28 @@ function CompleteWebSocketExample() {
 
         <ul>
           <li>
-            <strong>Clean up on unmount:</strong> Always call <code>disconnect()</code> in cleanup
+            <strong>Clean up on unmount:</strong> Always call{' '}
+            <code>disconnect()</code> in cleanup
           </li>
           <li>
-            <strong>Handle errors:</strong> Provide <code>onError</code> callback for error handling
+            <strong>Handle errors:</strong> Provide <code>onError</code>{' '}
+            callback for error handling
           </li>
           <li>
-            <strong>Monitor status:</strong> Use <code>status</code> to show connection state in UI
+            <strong>Monitor status:</strong> Use <code>status</code> to show
+            connection state in UI
           </li>
           <li>
-            <strong>Use reconnection:</strong> Enable <code>autoReconnect</code> for production apps
+            <strong>Use reconnection:</strong> Enable <code>autoReconnect</code>{' '}
+            for production apps
           </li>
           <li>
-            <strong>Enable heartbeat:</strong> Use <code>enableHeartbeat</code> to detect dead connections
+            <strong>Enable heartbeat:</strong> Use <code>enableHeartbeat</code>{' '}
+            to detect dead connections
           </li>
           <li>
-            <strong>Check ready state:</strong> Verify <code>status === 'connected'</code> before sending
+            <strong>Check ready state:</strong> Verify{' '}
+            <code>status === 'connected'</code> before sending
           </li>
         </ul>
 
@@ -890,19 +900,26 @@ function CompleteWebSocketExample() {
 
         <ul>
           <li>
-            <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> - SSE streaming hook
+            <a href="/reference/hooks/use-streaming-sse">useStreamingSSE</a> -
+            SSE streaming hook
           </li>
           <li>
-            <a href="/reference/hooks/use-streamable-ui">useStreamableUI</a> - UI state for streaming
+            <a href="/reference/hooks/use-streamable-ui">useStreamableUI</a> -
+            UI state for streaming
           </li>
           <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat hook with WebSocket support
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
+            Chat hook with WebSocket support
           </li>
           <li>
-            <a href="/reference/components/streaming-message">StreamingMessage</a> - Display streaming content
+            <a href="/reference/components/streaming-message">
+              StreamingMessage
+            </a>{' '}
+            - Display streaming content
           </li>
           <li>
-            <a href="/guides/streaming">Streaming Guide</a> - SSE vs WebSocket comparison
+            <a href="/guides/streaming">Streaming Guide</a> - SSE vs WebSocket
+            comparison
           </li>
         </ul>
 

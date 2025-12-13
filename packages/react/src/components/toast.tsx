@@ -407,7 +407,9 @@ export function useToast(): ToastContextValue {
       ;(globalThis as any).__clarityChatToastProviderWarned ??= false
       if (!(globalThis as any).__clarityChatToastProviderWarned) {
         ;(globalThis as any).__clarityChatToastProviderWarned = true
-        console.warn('[Clarity Chat] ToastProvider missing; falling back to no-op toasts.')
+        console.warn(
+          '[Clarity Chat] ToastProvider missing; falling back to no-op toasts.'
+        )
       }
     }
     return {

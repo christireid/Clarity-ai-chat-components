@@ -4,7 +4,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-
 export const metadata: Metadata = {
   title: 'useTokenOptimizationEnhanced Hook | Clarity Chat',
   description:
@@ -21,19 +20,22 @@ const optionsProps: Prop[] = [
     name: 'enableToon',
     type: 'boolean',
     default: 'false',
-    description: 'Enable TOON format optimization (30-60% savings on structured data).',
+    description:
+      'Enable TOON format optimization (30-60% savings on structured data).',
   },
   {
     name: 'toonMinSavings',
     type: 'number',
     default: '20',
-    description: 'Minimum TOON savings threshold as percentage (0-100). Only use TOON if savings >= this threshold. Default: 20%.',
+    description:
+      'Minimum TOON savings threshold as percentage (0-100). Only use TOON if savings >= this threshold. Default: 20%.',
   },
   {
     name: 'enableAccurateTokenization',
     type: 'boolean',
     default: 'false',
-    description: 'Enable accurate tokenization using js-tiktoken (model-specific counting).',
+    description:
+      'Enable accurate tokenization using js-tiktoken (model-specific counting).',
   },
   {
     name: 'enablePromptCaching',
@@ -98,19 +100,24 @@ export default function UseTokenOptimizationEnhancedPage() {
           <span>🆕</span>
           <span>2025 Enhanced Feature</span>
         </div>
-        <h1 className="text-4xl font-bold mb-4">useTokenOptimizationEnhanced</h1>
+        <h1 className="text-4xl font-bold mb-4">
+          useTokenOptimizationEnhanced
+        </h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Comprehensive token optimization hook with TOON support, accurate tokenization,
-          prompt caching, semantic caching, and real-time cost tracking. Save 50-90% on AI costs.
+          Comprehensive token optimization hook with TOON support, accurate
+          tokenization, prompt caching, semantic caching, and real-time cost
+          tracking. Save 50-90% on AI costs.
         </p>
         <p className="text-muted-foreground">
-          <strong>Since:</strong> 2.0.0 • <strong>Domain:</strong> Token Optimization
+          <strong>Since:</strong> 2.0.0 • <strong>Domain:</strong> Token
+          Optimization
         </p>
       </div>
 
       <Callout type="info" title="Cost Savings">
         <p className="mb-2">
-          This hook can save you <strong>50-90% on AI API costs</strong> through:
+          This hook can save you <strong>50-90% on AI API costs</strong>{' '}
+          through:
         </p>
         <ul className="list-disc list-inside space-y-1 mb-2">
           <li>
@@ -120,14 +127,16 @@ export default function UseTokenOptimizationEnhancedPage() {
             <strong>Prompt Caching:</strong> 50-90% savings on repeated content
           </li>
           <li>
-            <strong>Semantic Caching:</strong> 40-60% savings with similarity matching
+            <strong>Semantic Caching:</strong> 40-60% savings with similarity
+            matching
           </li>
           <li>
             <strong>Prompt Compression:</strong> 20-35% additional savings
           </li>
         </ul>
         <p>
-          Combined with other optimizations, total savings can reach <strong>90%</strong>.
+          Combined with other optimizations, total savings can reach{' '}
+          <strong>90%</strong>.
         </p>
       </Callout>
 
@@ -202,7 +211,8 @@ function OptimizedChat() {
 })`}
             />
             <p className="mt-2 text-sm text-muted-foreground">
-              Enables all optimizations for maximum cost savings. Best for cost-sensitive applications.
+              Enables all optimizations for maximum cost savings. Best for
+              cost-sensitive applications.
             </p>
           </div>
 
@@ -215,7 +225,8 @@ function OptimizedChat() {
 })`}
             />
             <p className="mt-2 text-sm text-muted-foreground">
-              Enables key optimizations while maintaining good user experience. Recommended for most use cases.
+              Enables key optimizations while maintaining good user experience.
+              Recommended for most use cases.
             </p>
           </div>
 
@@ -228,7 +239,8 @@ function OptimizedChat() {
 })`}
             />
             <p className="mt-2 text-sm text-muted-foreground">
-              Enables only safe optimizations. Best when you need guaranteed quality.
+              Enables only safe optimizations. Best when you need guaranteed
+              quality.
             </p>
           </div>
 
@@ -241,16 +253,20 @@ function OptimizedChat() {
 })`}
             />
             <p className="mt-2 text-sm text-muted-foreground">
-              Optimized for low latency. Skips caching for fastest response times.
+              Optimized for low latency. Skips caching for fastest response
+              times.
             </p>
           </div>
         </div>
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">TOON Format Optimization</h2>
+        <h2 className="text-3xl font-semibold mb-4">
+          TOON Format Optimization
+        </h2>
         <p className="text-muted-foreground mb-4">
-          TOON (Token-Oriented Object Notation) provides 30-60% token savings for structured data.
+          TOON (Token-Oriented Object Notation) provides 30-60% token savings
+          for structured data.
         </p>
         <CodePlayground
           code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
@@ -290,7 +306,8 @@ function ToonOptimized() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Prompt Caching</h2>
         <p className="text-muted-foreground mb-4">
-          Save 50-90% on costs by caching repeated prompt content (Anthropic/OpenAI).
+          Save 50-90% on costs by caching repeated prompt content
+          (Anthropic/OpenAI).
         </p>
         <CodePlayground
           code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
@@ -435,23 +452,34 @@ function CostTrackedChat() {
             <tbody className="divide-y">
               <tr>
                 <td className="p-3 font-mono text-sm">optimizeData</td>
-                <td className="p-3 font-mono text-sm">(data: any) =&gt; Promise{'<'}{'EnhancedOptimizationResult'}{'>'}</td>
+                <td className="p-3 font-mono text-sm">
+                  (data: any) =&gt; Promise{'<'}
+                  {'EnhancedOptimizationResult'}
+                  {'>'}
+                </td>
                 <td className="p-3 text-sm text-muted-foreground">
-                  Optimize data with all enabled optimizations. Returns optimized content, tokens, cost, and optimization breakdown.
+                  Optimize data with all enabled optimizations. Returns
+                  optimized content, tokens, cost, and optimization breakdown.
                 </td>
               </tr>
               <tr>
                 <td className="p-3 font-mono text-sm">calculateCost</td>
-                <td className="p-3 font-mono text-sm">(params: {'{'} inputTokens: number, outputTokens: number {'}'}) =&gt; CostCalculation</td>
+                <td className="p-3 font-mono text-sm">
+                  (params: {'{'} inputTokens: number, outputTokens: number {'}'}
+                  ) =&gt; CostCalculation
+                </td>
                 <td className="p-3 text-sm text-muted-foreground">
                   Calculate cost for given token counts based on model pricing.
                 </td>
               </tr>
               <tr>
                 <td className="p-3 font-mono text-sm">stats</td>
-                <td className="p-3 font-mono text-sm">EnhancedOptimizationStats</td>
+                <td className="p-3 font-mono text-sm">
+                  EnhancedOptimizationStats
+                </td>
                 <td className="p-3 text-sm text-muted-foreground">
-                  Comprehensive statistics including TOON, compression, caching, cost tracking, and overall savings.
+                  Comprehensive statistics including TOON, compression, caching,
+                  cost tracking, and overall savings.
                 </td>
               </tr>
             </tbody>
@@ -465,34 +493,43 @@ function CostTrackedChat() {
           <div className="border-l-4 border-brand-500 pl-4">
             <h3 className="font-semibold mb-2">Start with Balanced Preset</h3>
             <p className="text-sm text-muted-foreground">
-              Use <code className="bg-muted px-1 rounded">preset: 'balanced'</code> for most use cases.
-              It provides good savings while maintaining quality.
+              Use{' '}
+              <code className="bg-muted px-1 rounded">preset: 'balanced'</code>{' '}
+              for most use cases. It provides good savings while maintaining
+              quality.
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">
-            <h3 className="font-semibold mb-2">Enable Cost Tracking in Production</h3>
+            <h3 className="font-semibold mb-2">
+              Enable Cost Tracking in Production
+            </h3>
             <p className="text-sm text-muted-foreground">
-              Always enable <code className="bg-muted px-1 rounded">enableCostTracking</code> to monitor
-              your API costs and savings in real-time.
+              Always enable{' '}
+              <code className="bg-muted px-1 rounded">enableCostTracking</code>{' '}
+              to monitor your API costs and savings in real-time.
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">
             <h3 className="font-semibold mb-2">Use TOON for Structured Data</h3>
             <p className="text-sm text-muted-foreground">
-              Enable TOON when sending structured data (JSON objects, arrays) for 30-60% token savings.
+              Enable TOON when sending structured data (JSON objects, arrays)
+              for 30-60% token savings.
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">
-            <h3 className="font-semibold mb-2">Enable Prompt Caching for Repeated Content</h3>
+            <h3 className="font-semibold mb-2">
+              Enable Prompt Caching for Repeated Content
+            </h3>
             <p className="text-sm text-muted-foreground">
-              If you have repeated system prompts or context, enable prompt caching for 50-90% savings
-              on that content.
+              If you have repeated system prompts or context, enable prompt
+              caching for 50-90% savings on that content.
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">
             <h3 className="font-semibold mb-2">Monitor Statistics</h3>
             <p className="text-sm text-muted-foreground">
-              Regularly check <code className="bg-muted px-1 rounded">stats</code> to understand
+              Regularly check{' '}
+              <code className="bg-muted px-1 rounded">stats</code> to understand
               which optimizations are providing the most value.
             </p>
           </div>

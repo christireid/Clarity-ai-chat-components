@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'useCollaborativeSession - Clarity Chat Components',
-  description: 'Hook for managing collaborative editing sessions with user presence, cursor tracking, and session management.',
+  description:
+    'Hook for managing collaborative editing sessions with user presence, cursor tracking, and session management.',
 }
 
 const optionsProps: Prop[] = [
@@ -42,7 +42,8 @@ export default function UseCollaborativeSessionPage() {
         <span className="docs-badge">Hook</span>
         <h1>useCollaborativeSession</h1>
         <p className="docs-lead">
-          Hook for managing collaborative editing sessions with user presence, cursor tracking, message locking, and session lifecycle.
+          Hook for managing collaborative editing sessions with user presence,
+          cursor tracking, message locking, and session lifecycle.
         </p>
       </div>
 
@@ -58,15 +59,15 @@ export default function UseCollaborativeSessionPage() {
 
       <Callout type="info">
         <p>
-          <strong>Real-time Collaboration:</strong> This hook requires a WebSocket or similar real-time connection to sync session state between users.
+          <strong>Real-time Collaboration:</strong> This hook requires a
+          WebSocket or similar real-time connection to sync session state
+          between users.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Manage a collaborative session:
-        </p>
+        <p>Manage a collaborative session:</p>
         <CodePlayground
           initialCode={`import { useCollaborativeSession } from '@clarity-chat/react'
 
@@ -118,9 +119,7 @@ function CollaborativeChat({ sessionId }: { sessionId: string }) {
 
       <section className="docs-section">
         <h2>User Presence</h2>
-        <p>
-          Update and track user presence:
-        </p>
+        <p>Update and track user presence:</p>
         <CodePlayground
           initialCode={`import { useCollaborativeSession } from '@clarity-chat/react'
 
@@ -157,9 +156,7 @@ function PresenceTracking() {
 
       <section className="docs-section">
         <h2>Message Locking</h2>
-        <p>
-          Request and release message locks:
-        </p>
+        <p>Request and release message locks:</p>
         <CodePlayground
           initialCode={`import { useCollaborativeSession } from '@clarity-chat/react'
 
@@ -197,9 +194,7 @@ function MessageLocking() {
 
       <section className="docs-section">
         <h2>Cursor Tracking</h2>
-        <p>
-          Track cursor positions:
-        </p>
+        <p>Track cursor positions:</p>
         <CodePlayground
           initialCode={`import { useCollaborativeSession } from '@clarity-chat/react'
 
@@ -237,14 +232,30 @@ function CursorTracking() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>session</code>: Collaborative session object</li>
-          <li><code>activeUsers</code>: Array of active users</li>
-          <li><code>joinSession</code>: Function to join session</li>
-          <li><code>leaveSession</code>: Function to leave session</li>
-          <li><code>updatePresence</code>: Function to update user presence</li>
-          <li><code>requestLock</code>: Function to request message lock</li>
-          <li><code>releaseLock</code>: Function to release message lock</li>
-          <li><code>updateCursor</code>: Function to update cursor position</li>
+          <li>
+            <code>session</code>: Collaborative session object
+          </li>
+          <li>
+            <code>activeUsers</code>: Array of active users
+          </li>
+          <li>
+            <code>joinSession</code>: Function to join session
+          </li>
+          <li>
+            <code>leaveSession</code>: Function to leave session
+          </li>
+          <li>
+            <code>updatePresence</code>: Function to update user presence
+          </li>
+          <li>
+            <code>requestLock</code>: Function to request message lock
+          </li>
+          <li>
+            <code>releaseLock</code>: Function to release message lock
+          </li>
+          <li>
+            <code>updateCursor</code>: Function to update cursor position
+          </li>
         </ul>
       </section>
 
@@ -263,8 +274,18 @@ function CursorTracking() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/collaborative-editing">CollaborativeEditor</a> - Collaborative editing component</li>
-          <li><a href="/cookbook/real-time-collaboration">Real-time Collaboration Recipe</a> - Complete collaboration setup</li>
+          <li>
+            <a href="/reference/components/collaborative-editing">
+              CollaborativeEditor
+            </a>{' '}
+            - Collaborative editing component
+          </li>
+          <li>
+            <a href="/cookbook/real-time-collaboration">
+              Real-time Collaboration Recipe
+            </a>{' '}
+            - Complete collaboration setup
+          </li>
         </ul>
       </section>
     </div>

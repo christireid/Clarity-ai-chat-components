@@ -15,7 +15,7 @@ import type {
 import {
   DESIGN_PATTERN_CATALOG,
   getPatternInfo,
-  getPatternsByCategory,
+  getPatternIdsByCategory,
   suggestPatternsForUseCase,
   createPatternRecommendation,
 } from '../phases/phase2-planning'
@@ -78,7 +78,9 @@ export interface UseDesignPatternsReturn {
   /** Remove a recommendation */
   removeRecommendation: (pattern: DesignPattern) => void
   /** Get pattern info */
-  getPatternDetails: (pattern: DesignPattern) => ReturnType<typeof getPatternInfo>
+  getPatternDetails: (
+    pattern: DesignPattern
+  ) => ReturnType<typeof getPatternInfo>
   /** Suggest patterns for use case */
   suggestPatterns: (useCase: string) => DesignPattern[]
   /** Check if pattern is selected */
@@ -132,7 +134,11 @@ const ALL_PATTERNS = Object.keys(DESIGN_PATTERN_CATALOG) as DesignPattern[]
 export function useDesignPatterns(
   options: UseDesignPatternsOptions = {}
 ): UseDesignPatternsReturn {
-  const { initialPatterns = [], onPatternSelected, onPatternDeselected } = options
+  const {
+    initialPatterns = [],
+    onPatternSelected,
+    onPatternDeselected,
+  } = options
 
   const [state, setState] = useState<PatternSelectionState>(() => ({
     ...INITIAL_STATE,
@@ -147,7 +153,7 @@ export function useDesignPatterns(
 
     // Filter by category
     if (state.filterCategory !== 'all') {
-      patterns = getPatternsByCategory(state.filterCategory)
+      patterns = getPatternIdsByCategory(state.filterCategory)
     }
 
     // Filter by search query
@@ -199,7 +205,9 @@ export function useDesignPatterns(
         return {
           ...prev,
           selectedPatterns: prev.selectedPatterns.filter((p) => p !== pattern),
-          recommendations: prev.recommendations.filter((r) => r.pattern !== pattern),
+          recommendations: prev.recommendations.filter(
+            (r) => r.pattern !== pattern
+          ),
         }
       })
     },
@@ -291,7 +299,9 @@ export function useDesignPatterns(
   const removeRecommendation = useCallback((pattern: DesignPattern) => {
     setState((prev) => ({
       ...prev,
-      recommendations: prev.recommendations.filter((r) => r.pattern !== pattern),
+      recommendations: prev.recommendations.filter(
+        (r) => r.pattern !== pattern
+      ),
     }))
   }, [])
 
@@ -323,7 +333,7 @@ export function useDesignPatterns(
    * Get patterns by category
    */
   const getByCategory = useCallback(
-    (category: DesignPatternCategory) => getPatternsByCategory(category),
+    (category: DesignPatternCategory) => getPatternIdsByCategory(category),
     []
   )
 

@@ -4,10 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'PerformanceDashboard - Clarity Chat Components',
-  description: 'Track latency, throughput, render times, and streaming performance.',
+  description:
+    'Track latency, throughput, render times, and streaming performance.',
 }
 
 export default function PerformanceDashboardPage() {
@@ -17,19 +17,22 @@ export default function PerformanceDashboardPage() {
         <span className="docs-badge">Component</span>
         <h1>PerformanceDashboard</h1>
         <p className="docs-lead">
-          Observability dashboard for live performance metrics across chat interactions.
+          Observability dashboard for live performance metrics across chat
+          interactions.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          <code>PerformanceDashboard</code> surfaces key metrics like request latency, token speed,
-          frame render times, and dropped frame counts for diagnosing UX issues.
+          <code>PerformanceDashboard</code> surfaces key metrics like request
+          latency, token speed, frame render times, and dropped frame counts for
+          diagnosing UX issues.
         </p>
         <Callout type="info" title="Developer Tool">
-          This component is designed for development, staging, and internal monitoring.
-          Remove it from production builds or gate it behind admin permissions.
+          This component is designed for development, staging, and internal
+          monitoring. Remove it from production builds or gate it behind admin
+          permissions.
         </Callout>
       </section>
 
@@ -103,18 +106,34 @@ render(<Example />)`}
       <section className="docs-section">
         <h2>Metrics Tracked</h2>
         <ul>
-          <li><strong>Request Latency:</strong> Time from request to first token (P50, P95, P99)</li>
-          <li><strong>Token Throughput:</strong> Tokens per second during streaming</li>
-          <li><strong>Render Performance:</strong> Frame times and dropped frames</li>
-          <li><strong>Memory Usage:</strong> Heap size and GC pressure</li>
-          <li><strong>Network:</strong> Request/response sizes and compression ratios</li>
-          <li><strong>Error Rates:</strong> Failed requests and retry counts</li>
+          <li>
+            <strong>Request Latency:</strong> Time from request to first token
+            (P50, P95, P99)
+          </li>
+          <li>
+            <strong>Token Throughput:</strong> Tokens per second during
+            streaming
+          </li>
+          <li>
+            <strong>Render Performance:</strong> Frame times and dropped frames
+          </li>
+          <li>
+            <strong>Memory Usage:</strong> Heap size and GC pressure
+          </li>
+          <li>
+            <strong>Network:</strong> Request/response sizes and compression
+            ratios
+          </li>
+          <li>
+            <strong>Error Rates:</strong> Failed requests and retry counts
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Integration with Observability</h2>
-        <pre><code>{`import { PerformanceDashboard, Tracer } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { PerformanceDashboard, Tracer } from '@clarity-chat/react'
 
 export default function DevTools() {
   const tracer = new Tracer({
@@ -131,18 +150,22 @@ export default function DevTools() {
       />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Tips</h2>
         <Callout type="tip" title="Performance Debugging">
           Use the performance dashboard alongside browser DevTools to correlate
-          metrics with actual user experience. Look for patterns in slow interactions.
+          metrics with actual user experience. Look for patterns in slow
+          interactions.
         </Callout>
         <ul>
           <li>Enable in development and staging environments</li>
-          <li>Use alongside <code>Tracer</code> for end-to-end request spans</li>
+          <li>
+            Use alongside <code>Tracer</code> for end-to-end request spans
+          </li>
           <li>Profile slow renders and large DOM nodes causing reflows</li>
           <li>Set thresholds to catch regressions early</li>
           <li>Export metrics to external monitoring tools</li>
@@ -171,52 +194,52 @@ const performanceDashboardProps = [
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
+    description: 'Additional CSS classes',
   },
   {
     name: 'showCharts',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'Display performance charts'
+    description: 'Display performance charts',
   },
   {
     name: 'refreshIntervalMs',
     type: 'number',
     required: false,
     default: '1000',
-    description: 'Metrics refresh interval'
+    description: 'Metrics refresh interval',
   },
   {
     name: 'compact',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Show compact view with fewer metrics'
+    description: 'Show compact view with fewer metrics',
   },
   {
     name: 'thresholds',
     type: 'PerformanceThresholds',
     required: false,
-    description: 'Alert thresholds for metrics'
+    description: 'Alert thresholds for metrics',
   },
   {
     name: 'onThresholdExceeded',
     type: '(metric: string, value: number) => void',
     required: false,
-    description: 'Callback when threshold exceeded'
+    description: 'Callback when threshold exceeded',
   },
   {
     name: 'tracer',
     type: 'Tracer',
     required: false,
-    description: 'Tracer instance for distributed tracing'
+    description: 'Tracer instance for distributed tracing',
   },
   {
     name: 'showTraces',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Show distributed trace timeline'
-  }
+    description: 'Show distributed trace timeline',
+  },
 ]

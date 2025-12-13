@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'MentionInput & MentionList - Clarity Chat Components',
-  description: 'User mention system with autocomplete, fuzzy search, and mention tracking.',
+  description:
+    'User mention system with autocomplete, fuzzy search, and mention tracking.',
 }
 
 const mentionInputProps: Prop[] = [
@@ -116,7 +116,8 @@ export default function MentionSystemPage() {
         <span className="docs-badge">Component</span>
         <h1>MentionInput & MentionList</h1>
         <p className="docs-lead">
-          User mention system with @mention autocomplete, fuzzy search, keyboard navigation, and mention tracking.
+          User mention system with @mention autocomplete, fuzzy search, keyboard
+          navigation, and mention tracking.
         </p>
       </div>
 
@@ -132,9 +133,7 @@ export default function MentionSystemPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Add mention support to a chat input:
-        </p>
+        <p>Add mention support to a chat input:</p>
         <CodePlayground
           initialCode={`import { MentionInput } from '@clarity-chat/react'
 
@@ -171,9 +170,7 @@ render(<ChatWithMentions />)`}
 
       <section className="docs-section">
         <h2>Fuzzy Search</h2>
-        <p>
-          Enable fuzzy search for better user discovery:
-        </p>
+        <p>Enable fuzzy search for better user discovery:</p>
         <CodePlayground
           initialCode={`import { MentionInput } from '@clarity-chat/react'
 
@@ -193,9 +190,7 @@ function FuzzyMentions() {
 
       <section className="docs-section">
         <h2>Custom Mention Trigger</h2>
-        <p>
-          Use a custom trigger character:
-        </p>
+        <p>Use a custom trigger character:</p>
         <CodePlayground
           initialCode={`import { MentionInput } from '@clarity-chat/react'
 
@@ -215,9 +210,7 @@ function CustomTrigger() {
 
       <section className="docs-section">
         <h2>Mention List</h2>
-        <p>
-          Display all mentions with context:
-        </p>
+        <p>Display all mentions with context:</p>
         <CodePlayground
           initialCode={`import { MentionList } from '@clarity-chat/react'
 
@@ -244,9 +237,7 @@ function MentionsView({ mentions, messages, users }: { mentions: Mention[], mess
 
       <section className="docs-section">
         <h2>Unread Mentions Only</h2>
-        <p>
-          Filter to show only unread mentions:
-        </p>
+        <p>Filter to show only unread mentions:</p>
         <CodePlayground
           initialCode={`import { MentionList } from '@clarity-chat/react'
 
@@ -269,14 +260,20 @@ function UnreadMentions({ mentions, messages, users }: { mentions: Mention[], me
 
       <section className="docs-section">
         <h2>Keyboard Navigation</h2>
-        <p>
-          The MentionInput supports keyboard navigation:
-        </p>
+        <p>The MentionInput supports keyboard navigation:</p>
         <ul>
-          <li><strong>@</strong>: Trigger mention suggestions</li>
-          <li><strong>↑/↓</strong>: Navigate suggestions</li>
-          <li><strong>Enter</strong>: Select mention</li>
-          <li><strong>Escape</strong>: Close suggestions</li>
+          <li>
+            <strong>@</strong>: Trigger mention suggestions
+          </li>
+          <li>
+            <strong>↑/↓</strong>: Navigate suggestions
+          </li>
+          <li>
+            <strong>Enter</strong>: Select mention
+          </li>
+          <li>
+            <strong>Escape</strong>: Close suggestions
+          </li>
         </ul>
       </section>
 
@@ -293,23 +290,41 @@ function UnreadMentions({ mentions, messages, users }: { mentions: Mention[], me
       <section className="docs-section">
         <h2>Mention Data Structure</h2>
         <ul>
-          <li><code>id</code>: Unique mention identifier</li>
-          <li><code>userId</code>: ID of mentioned user</li>
-          <li><code>messageId</code>: ID of message containing mention</li>
-          <li><code>position</code>: Character position in message</li>
-          <li><code>length</code>: Length of mention text</li>
-          <li><code>isRead</code>: Whether mention has been read</li>
-          <li><code>timestamp</code>: When mention was created</li>
+          <li>
+            <code>id</code>: Unique mention identifier
+          </li>
+          <li>
+            <code>userId</code>: ID of mentioned user
+          </li>
+          <li>
+            <code>messageId</code>: ID of message containing mention
+          </li>
+          <li>
+            <code>position</code>: Character position in message
+          </li>
+          <li>
+            <code>length</code>: Length of mention text
+          </li>
+          <li>
+            <code>isRead</code>: Whether mention has been read
+          </li>
+          <li>
+            <code>timestamp</code>: When mention was created
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Enable <code>enableFuzzySearch</code> for better user discovery</li>
+          <li>
+            Enable <code>enableFuzzySearch</code> for better user discovery
+          </li>
           <li>Limit suggestions to 10 users for performance</li>
           <li>Track mention read status for notifications</li>
-          <li>Use <code>showOnlyUnread</code> to filter mentions</li>
+          <li>
+            Use <code>showOnlyUnread</code> to filter mentions
+          </li>
           <li>Handle mention clicks to navigate to messages</li>
         </ul>
       </section>
@@ -317,8 +332,14 @@ function UnreadMentions({ mentions, messages, users }: { mentions: Mention[], me
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/chat-input">ChatInput</a> - Main chat input component</li>
-          <li><a href="/reference/hooks/use-mentions">useMentions</a> - Mention management hook</li>
+          <li>
+            <a href="/reference/components/chat-input">ChatInput</a> - Main chat
+            input component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-mentions">useMentions</a> - Mention
+            management hook
+          </li>
         </ul>
       </section>
     </div>

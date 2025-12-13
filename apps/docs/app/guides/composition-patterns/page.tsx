@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Composition Patterns Guide - Clarity Chat Components',
-  description: 'Learn composition patterns for building custom chat interfaces with Clarity Chat Components.',
+  description:
+    'Learn composition patterns for building custom chat interfaces with Clarity Chat Components.',
 }
 
 export default function CompositionPatternsPage() {
@@ -17,7 +17,8 @@ export default function CompositionPatternsPage() {
         <span className="docs-badge">Guide</span>
         <h1>Composition Patterns</h1>
         <p className="docs-lead">
-          Learn composition patterns for building custom chat interfaces, combining components and hooks effectively.
+          Learn composition patterns for building custom chat interfaces,
+          combining components and hooks effectively.
         </p>
       </div>
 
@@ -33,9 +34,7 @@ export default function CompositionPatternsPage() {
 
       <section className="docs-section">
         <h2>Basic Composition</h2>
-        <p>
-          Compose basic chat interface:
-        </p>
+        <p>Compose basic chat interface:</p>
         <CodePlayground
           initialCode={`import { ChatWindow, ChatInput, useClarityChat } from '@clarity-chat/react'
 
@@ -54,9 +53,7 @@ function BasicChat() {
 
       <section className="docs-section">
         <h2>Feature Composition</h2>
-        <p>
-          Add features to chat:
-        </p>
+        <p>Add features to chat:</p>
         <CodePlayground
           initialCode={`import {
   ChatWindow,
@@ -102,9 +99,7 @@ function FeatureRichChat() {
 
       <section className="docs-section">
         <h2>Provider Composition</h2>
-        <p>
-          Use providers for shared state:
-        </p>
+        <p>Use providers for shared state:</p>
         <CodePlayground
           initialCode={`import {
   MemoryProvider,
@@ -139,9 +134,7 @@ function ChatApp() {
 
       <section className="docs-section">
         <h2>Hook Composition</h2>
-        <p>
-          Compose multiple hooks:
-        </p>
+        <p>Compose multiple hooks:</p>
         <CodePlayground
           initialCode={`import {
   useClarityChat,
@@ -179,9 +172,7 @@ function OptimizedChat() {
 
       <section className="docs-section">
         <h2>Conditional Composition</h2>
-        <p>
-          Conditionally render components:
-        </p>
+        <p>Conditionally render components:</p>
         <CodePlayground
           initialCode={`import {
   ChatWindow,
@@ -203,9 +194,7 @@ function ResponsiveChat() {
 
       <section className="docs-section">
         <h2>Advanced Composition</h2>
-        <p>
-          Advanced composition with multiple features:
-        </p>
+        <p>Advanced composition with multiple features:</p>
         <CodePlayground
           initialCode={`import {
   ChatWindow,
@@ -266,9 +255,20 @@ function AdvancedChat() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/component-hierarchy">Component Hierarchy Guide</a> - Component relationships</li>
-          <li><a href="/guides/state-management-patterns">State Management Patterns</a> - State management</li>
-          <li><a href="/reference/components/chat-window">ChatWindow</a> - Main chat component</li>
+          <li>
+            <a href="/guides/component-hierarchy">Component Hierarchy Guide</a>{' '}
+            - Component relationships
+          </li>
+          <li>
+            <a href="/guides/state-management-patterns">
+              State Management Patterns
+            </a>{' '}
+            - State management
+          </li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> - Main
+            chat component
+          </li>
         </ul>
       </section>
     </div>

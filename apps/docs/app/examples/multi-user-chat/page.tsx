@@ -6,7 +6,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Multi-user Chat Example - Clarity Chat Components',
-  description: 'Complete multi-user chat application with typing indicators, presence, reactions, and real-time updates.',
+  description:
+    'Complete multi-user chat application with typing indicators, presence, reactions, and real-time updates.',
 }
 
 export default function MultiUserChatExamplePage() {
@@ -17,16 +18,18 @@ export default function MultiUserChatExamplePage() {
         <span className="docs-badge">Advanced</span>
         <h1>Multi-user Chat</h1>
         <p className="docs-lead">
-          Build a complete multi-user chat application with typing indicators, user presence, 
-          reactions, message threading, and real-time synchronization.
+          Build a complete multi-user chat application with typing indicators,
+          user presence, reactions, message threading, and real-time
+          synchronization.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This example demonstrates a production-ready multi-user chat application with all the
-          features you'd expect from modern chat platforms like Slack, Discord, or Microsoft Teams.
+          This example demonstrates a production-ready multi-user chat
+          application with all the features you'd expect from modern chat
+          platforms like Slack, Discord, or Microsoft Teams.
         </p>
         <h3>Features Included</h3>
         <ul>
@@ -351,10 +354,9 @@ export default MultiUserChat`}
         <h2>Step-by-Step Breakdown</h2>
 
         <h3>1. User State Management</h3>
-        <p>
-          Track all users in the chat with their online status:
-        </p>
-        <pre><code>{`const [users, setUsers] = useState([
+        <p>Track all users in the chat with their online status:</p>
+        <pre>
+          <code>{`const [users, setUsers] = useState([
   { id: 'user1', name: 'You', avatar: '😊', status: 'online' },
   { id: 'user2', name: 'Alice', avatar: '👩', status: 'online' },
   { id: 'user3', name: 'Bob', avatar: '👨', status: 'away' },
@@ -370,13 +372,13 @@ const updateUserPresence = (userId, status) => {
   } else {
     setOnlineUsers(prev => prev.filter(id => id !== userId))
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>2. Typing Indicators</h3>
-        <p>
-          Show when users are composing messages:
-        </p>
-        <pre><code>{`const [typingUsers, setTypingUsers] = useState([])
+        <p>Show when users are composing messages:</p>
+        <pre>
+          <code>{`const [typingUsers, setTypingUsers] = useState([])
 
 // Start typing
 const startTyping = (userId) => {
@@ -393,13 +395,13 @@ const stopTyping = (userId) => {
   <TypingIndicator 
     users={typingUsers.map(id => users.find(u => u.id === id))}
   />
-)}`}</code></pre>
+)}`}</code>
+        </pre>
 
         <h3>3. Message Reactions</h3>
-        <p>
-          Allow users to react to messages with emojis:
-        </p>
-        <pre><code>{`const handleReaction = (messageId, emoji) => {
+        <p>Allow users to react to messages with emojis:</p>
+        <pre>
+          <code>{`const handleReaction = (messageId, emoji) => {
   setMessages(prev => prev.map(msg => {
     if (msg.id === messageId) {
       const reactions = { ...msg.reactions }
@@ -423,13 +425,13 @@ const stopTyping = (userId) => {
     }
     return msg
   }))
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>4. Read Receipts</h3>
-        <p>
-          Track which users have seen each message:
-        </p>
-        <pre><code>{`// Mark messages as read
+        <p>Track which users have seen each message:</p>
+        <pre>
+          <code>{`// Mark messages as read
 const markAsRead = (messageId, userId) => {
   setMessages(prev => prev.map(msg => {
     if (msg.id === messageId && !msg.readBy.includes(userId)) {
@@ -447,13 +449,13 @@ const markAsRead = (messageId, userId) => {
   <div className="read-receipts">
     Seen by {message.readBy.length}
   </div>
-)}`}</code></pre>
+)}`}</code>
+        </pre>
 
         <h3>5. Avatar Grouping</h3>
-        <p>
-          Group consecutive messages from the same user:
-        </p>
-        <pre><code>{`const showAvatar = (index) => {
+        <p>Group consecutive messages from the same user:</p>
+        <pre>
+          <code>{`const showAvatar = (index) => {
   if (index === 0) return true
   return messages[index - 1].sender.id !== messages[index].sender.id
 }
@@ -463,14 +465,16 @@ const markAsRead = (messageId, userId) => {
   <Avatar user={message.sender} />
 ) : (
   <div className="avatar-spacer" />
-)}`}</code></pre>
+)}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Real-time Integration</h2>
 
         <h3>WebSocket Connection</h3>
-        <pre><code>{`import { useEffect, useRef } from 'react'
+        <pre>
+          <code>{`import { useEffect, useRef } from 'react'
 
 function useWebSocketChat(roomId) {
   const ws = useRef(null)
@@ -557,10 +561,12 @@ function useWebSocketChat(roomId) {
     sendTyping,
     sendReaction
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Firebase Real-time Database</h3>
-        <pre><code>{`import { ref, onValue, push, set, update } from 'firebase/database'
+        <pre>
+          <code>{`import { ref, onValue, push, set, update } from 'firebase/database'
 import { db } from './firebase'
 
 function useFirebaseChat(roomId) {
@@ -627,10 +633,12 @@ function useFirebaseChat(roomId) {
   }
 
   return { messages, onlineUsers, sendMessage, addReaction }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Socket.IO Implementation</h3>
-        <pre><code>{`import { io } from 'socket.io-client'
+        <pre>
+          <code>{`import { io } from 'socket.io-client'
 
 function useSocketIOChat(roomId) {
   const socket = useRef(null)
@@ -684,17 +692,17 @@ function useSocketIOChat(roomId) {
   }
 
   return { messages, sendMessage, emitTyping }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Advanced Features</h2>
 
         <h3>Message Threading</h3>
-        <p>
-          Allow users to reply to specific messages:
-        </p>
-        <pre><code>{`const [threads, setThreads] = useState({})
+        <p>Allow users to reply to specific messages:</p>
+        <pre>
+          <code>{`const [threads, setThreads] = useState({})
 
 const replyToMessage = (parentId, text) => {
   const reply = {
@@ -718,13 +726,13 @@ const replyToMessage = (parentId, text) => {
       <Message key={reply.id} {...reply} isThreaded />
     ))}
   </div>
-)}`}</code></pre>
+)}`}</code>
+        </pre>
 
         <h3>User Mentions</h3>
-        <p>
-          Notify users when they're mentioned:
-        </p>
-        <pre><code>{`const parseMentions = (text) => {
+        <p>Notify users when they're mentioned:</p>
+        <pre>
+          <code>{`const parseMentions = (text) => {
   const mentionRegex = /@(\w+)/g
   const mentions = []
   let match
@@ -756,13 +764,13 @@ const sendMessage = (text) => {
   })
 
   setMessages(prev => [...prev, message])
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Search Messages</h3>
-        <p>
-          Search through message history:
-        </p>
-        <pre><code>{`const [searchQuery, setSearchQuery] = useState('')
+        <p>Search through message history:</p>
+        <pre>
+          <code>{`const [searchQuery, setSearchQuery] = useState('')
 
 const searchMessages = (query) => {
   return messages.filter(msg => 
@@ -779,13 +787,13 @@ const results = searchMessages(searchQuery)
   onChange={(e) => setSearchQuery(e.target.value)}
   placeholder="Search messages..."
 />
-<SearchResults messages={results} />`}</code></pre>
+<SearchResults messages={results} />`}</code>
+        </pre>
 
         <h3>Message Editing</h3>
-        <p>
-          Allow users to edit their own messages:
-        </p>
-        <pre><code>{`const [editingMessageId, setEditingMessageId] = useState(null)
+        <p>Allow users to edit their own messages:</p>
+        <pre>
+          <code>{`const [editingMessageId, setEditingMessageId] = useState(null)
 
 const startEditing = (messageId) => {
   setEditingMessageId(messageId)
@@ -819,13 +827,13 @@ const saveEdit = (messageId, newText) => {
     onSave={(text) => saveEdit(message.id, text)}
     onCancel={() => setEditingMessageId(null)}
   />
-)}`}</code></pre>
+)}`}</code>
+        </pre>
 
         <h3>Presence Status</h3>
-        <p>
-          Show detailed user status (online, away, busy, offline):
-        </p>
-        <pre><code>{`const [userStatuses, setUserStatuses] = useState({})
+        <p>Show detailed user status (online, away, busy, offline):</p>
+        <pre>
+          <code>{`const [userStatuses, setUserStatuses] = useState({})
 
 const updateStatus = (userId, status) => {
   setUserStatuses(prev => ({
@@ -847,19 +855,21 @@ const getStatusColor = (status) => {
 }
 
 // Render status indicator
-<div className={\`status-indicator \${getStatusColor(userStatuses[user.id]?.status)}\`} />`}</code></pre>
+<div className={\`status-indicator \${getStatusColor(userStatuses[user.id]?.status)}\`} />`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Performance Optimization</h2>
 
         <Callout type="tip" title="Virtualize Long Lists">
-          For chats with thousands of messages, use virtualization libraries like
-          react-window or react-virtuoso to only render visible messages.
+          For chats with thousands of messages, use virtualization libraries
+          like react-window or react-virtuoso to only render visible messages.
         </Callout>
 
         <h3>Message Virtualization</h3>
-        <pre><code>{`import { FixedSizeList } from 'react-window'
+        <pre>
+          <code>{`import { FixedSizeList } from 'react-window'
 
 function VirtualizedMessages({ messages }) {
   const Row = ({ index, style }) => (
@@ -878,10 +888,12 @@ function VirtualizedMessages({ messages }) {
       {Row}
     </FixedSizeList>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Lazy Loading</h3>
-        <pre><code>{`const [page, setPage] = useState(1)
+        <pre>
+          <code>{`const [page, setPage] = useState(1)
 const [hasMore, setHasMore] = useState(true)
 
 const loadMoreMessages = async () => {
@@ -914,10 +926,12 @@ useEffect(() => {
   }
 
   return () => observer.disconnect()
-}, [hasMore])`}</code></pre>
+}, [hasMore])`}</code>
+        </pre>
 
         <h3>Debounce Typing Indicators</h3>
-        <pre><code>{`import { debounce } from 'lodash'
+        <pre>
+          <code>{`import { debounce } from 'lodash'
 
 const sendTypingIndicator = debounce(() => {
   socket.emit('typing', { roomId, userId: currentUser.id })
@@ -932,19 +946,21 @@ const handleInputChange = (text) => {
     sendTypingIndicator()
     stopTypingIndicator()
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
 
         <Callout type="warning" title="Handle Connection Loss">
-          Always handle disconnections gracefully. Queue messages locally and retry
-          when connection is restored.
+          Always handle disconnections gracefully. Queue messages locally and
+          retry when connection is restored.
         </Callout>
 
         <h3>Connection Resilience</h3>
-        <pre><code>{`const [isConnected, setIsConnected] = useState(true)
+        <pre>
+          <code>{`const [isConnected, setIsConnected] = useState(true)
 const [messageQueue, setMessageQueue] = useState([])
 
 const sendMessage = (text) => {
@@ -975,7 +991,8 @@ useEffect(() => {
     })
     setMessageQueue([])
   }
-}, [isConnected, messageQueue])`}</code></pre>
+}, [isConnected, messageQueue])`}</code>
+        </pre>
 
         <h3>Security Considerations</h3>
         <ul>
@@ -1011,7 +1028,10 @@ useEffect(() => {
             <h3>MessageInput</h3>
             <p>Rich input component</p>
           </a>
-          <a href="/reference/components/typing-indicator" className="docs-card">
+          <a
+            href="/reference/components/typing-indicator"
+            className="docs-card"
+          >
             <h3>TypingIndicator</h3>
             <p>Typing animation component</p>
           </a>
@@ -1025,7 +1045,8 @@ useEffect(() => {
       <section className="docs-section">
         <h2>Summary</h2>
         <p>
-          You've learned how to build a complete multi-user chat application with:
+          You've learned how to build a complete multi-user chat application
+          with:
         </p>
         <ul>
           <li>Real-time message synchronization</li>
@@ -1037,8 +1058,8 @@ useEffect(() => {
           <li>Connection resilience and error handling</li>
         </ul>
         <p>
-          This example provides a solid foundation for building production-ready chat
-          applications with Clarity Chat Components.
+          This example provides a solid foundation for building production-ready
+          chat applications with Clarity Chat Components.
         </p>
       </section>
     </div>

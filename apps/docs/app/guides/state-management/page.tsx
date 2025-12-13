@@ -3,7 +3,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-
 export const metadata: Metadata = {
   title: 'State Management Guide - Clarity Chat',
   description:
@@ -38,8 +37,8 @@ export default function StateManagementGuidePage() {
           </li>
           <li>
             <strong>Streaming</strong>: <code>useStreamingSSE</code> /
-            <code>useStreamingWebSocket</code> streams tokens into the message in
-            real time.
+            <code>useStreamingWebSocket</code> streams tokens into the message
+            in real time.
           </li>
           <li>
             <strong>Operations</strong>: <code>useMessageOperations</code> adds
@@ -59,7 +58,9 @@ export default function StateManagementGuidePage() {
       </section>
 
       <section className="docs-section">
-        <h2>Quick Start with <code>useChat</code></h2>
+        <h2>
+          Quick Start with <code>useChat</code>
+        </h2>
         <CodeBlock
           language="tsx"
           code={`import { useChat, ChatWindow } from '@clarity-chat/react'
@@ -290,27 +291,27 @@ export function CustomStreaming({ api }: { api: string }) {
           </li>
           <li>
             <strong>Track cost &amp; tokens</strong> using{' '}
-            <code>useTokenTracker</code> and <code>TokenCounter</code> so product
-            managers can enforce budgets without backend changes.
+            <code>useTokenTracker</code> and <code>TokenCounter</code> so
+            product managers can enforce budgets without backend changes.
           </li>
           <li>
             <strong>Instrument state changes</strong> using{' '}
             <code>useAnalytics()</code>, <code>getTracer()</code>, and the
-            provided Redux-style dev tools in <code>@clarity-chat/dev-tools</code>.
+            provided Redux-style dev tools in{' '}
+            <code>@clarity-chat/dev-tools</code>.
           </li>
           <li>
             <strong>Guard against data loss</strong> with{' '}
-            <code>useBeforeUnload</code> (included in <code>useChatEnhanced</code>
-            ) when the user is drafting a message.
+            <code>useBeforeUnload</code> (included in{' '}
+            <code>useChatEnhanced</code>) when the user is drafting a message.
           </li>
         </ul>
         <Callout type="success">
-          Need to plug this into an existing architecture? Everything returned by
-          the hooks is serialisable. Persist it in Prisma, Supabase, DynamoDB, or
-          any datastore you prefer.
+          Need to plug this into an existing architecture? Everything returned
+          by the hooks is serialisable. Persist it in Prisma, Supabase,
+          DynamoDB, or any datastore you prefer.
         </Callout>
       </section>
     </div>
   )
 }
-

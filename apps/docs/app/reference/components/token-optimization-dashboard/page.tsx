@@ -11,19 +11,18 @@ import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { Callout } from '@/components/MDX/Callout'
 
-
 function DashboardDemo() {
   // Mock data for the dashboard
   const mockStats = {
     totalSavings: 154200,
     compressionRatio: 0.65,
     monthlyBudget: 1000000,
-    usedTokens: 450000
+    usedTokens: 450000,
   }
 
   return (
     <div className="w-full border border-border rounded-xl overflow-hidden bg-background shadow-sm">
-      <TokenOptimizationDashboard 
+      <TokenOptimizationDashboard
         stats={mockStats}
         period="last-30-days"
         showCharts={true}
@@ -68,8 +67,9 @@ export default function TokenOptimizationDashboardPage() {
             TokenOptimizationDashboard
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            Visualize your AI token usage, cost savings, and compression efficiency.
-            Gain insights into how your optimization strategies are performing.
+            Visualize your AI token usage, cost savings, and compression
+            efficiency. Gain insights into how your optimization strategies are
+            performing.
           </p>
         </div>
       </ScrollReveal>
@@ -80,9 +80,7 @@ export default function TokenOptimizationDashboardPage() {
 
       <ScrollReveal delay={0.2}>
         <h2 id="preview">Dashboard Preview</h2>
-        <p className="mb-4">
-          A comprehensive view of your token metrics:
-        </p>
+        <p className="mb-4">A comprehensive view of your token metrics:</p>
         <ComponentPreview
           title="Token Dashboard"
           description="Monitoring token usage and savings."
@@ -109,16 +107,28 @@ function AnalyticsView() {
       <ScrollReveal delay={0.3}>
         <div className="grid md:grid-cols-3 gap-6 my-12">
           <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-lg">
-            <h3 className="font-semibold text-green-700 dark:text-green-400 mb-2">Cost Savings</h3>
-            <p className="text-sm text-green-600 dark:text-green-300">Track exact dollar amounts saved through token reduction.</p>
+            <h3 className="font-semibold text-green-700 dark:text-green-400 mb-2">
+              Cost Savings
+            </h3>
+            <p className="text-sm text-green-600 dark:text-green-300">
+              Track exact dollar amounts saved through token reduction.
+            </p>
           </div>
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-lg">
-            <h3 className="font-semibold text-blue-700 dark:text-blue-400 mb-2">Compression Ratio</h3>
-            <p className="text-sm text-blue-600 dark:text-blue-300">Monitor the efficiency of your prompt compression algorithms.</p>
+            <h3 className="font-semibold text-blue-700 dark:text-blue-400 mb-2">
+              Compression Ratio
+            </h3>
+            <p className="text-sm text-blue-600 dark:text-blue-300">
+              Monitor the efficiency of your prompt compression algorithms.
+            </p>
           </div>
           <div className="p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-900/30 rounded-lg">
-            <h3 className="font-semibold text-purple-700 dark:text-purple-400 mb-2">Budget Alerts</h3>
-            <p className="text-sm text-purple-600 dark:text-purple-300">Get visual warnings when approaching token limits.</p>
+            <h3 className="font-semibold text-purple-700 dark:text-purple-400 mb-2">
+              Budget Alerts
+            </h3>
+            <p className="text-sm text-purple-600 dark:text-purple-300">
+              Get visual warnings when approaching token limits.
+            </p>
           </div>
         </div>
       </ScrollReveal>
@@ -153,9 +163,14 @@ function LiveDashboard() {
       <ScrollReveal delay={0.6}>
         <h2 id="related">Related</h2>
         <div className="flex gap-4">
-          <a href="/reference/components/token-optimization-panel" className="block p-4 border rounded-lg hover:border-brand-500 transition-colors w-full">
+          <a
+            href="/reference/components/token-optimization-panel"
+            className="block p-4 border rounded-lg hover:border-brand-500 transition-colors w-full"
+          >
             <h3 className="font-semibold mb-1">TokenOptimizationPanel</h3>
-            <p className="text-sm text-muted-foreground">Inline controls for optimization settings.</p>
+            <p className="text-sm text-muted-foreground">
+              Inline controls for optimization settings.
+            </p>
           </a>
         </div>
       </ScrollReveal>

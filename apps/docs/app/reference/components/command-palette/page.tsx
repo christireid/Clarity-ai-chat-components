@@ -13,18 +13,17 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
-import { 
-  MessageSquare, 
-  Search, 
-  Settings, 
-  Moon, 
-  Sun, 
+import {
+  MessageSquare,
+  Search,
+  Settings,
+  Moon,
+  Sun,
   LogOut,
   Terminal,
   Calculator,
-  Calendar
+  Calendar,
 } from 'lucide-react'
-
 
 function BasicCommandPaletteDemo() {
   const [open, setOpen] = useState(false)
@@ -77,17 +76,18 @@ function BasicCommandPaletteDemo() {
 
   return (
     <div className="flex flex-col items-center justify-center p-8 border rounded-lg bg-background min-h-[200px]">
-      <button 
+      <button
         onClick={() => setOpen(true)}
         className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm font-medium flex items-center gap-2"
       >
         <Terminal className="w-4 h-4" />
         Open Command Palette (⌘K)
       </button>
-      
+
       {lastAction && (
         <div className="mt-4 text-sm text-muted-foreground animate-in fade-in slide-in-from-bottom-2">
-          Last action: <span className="font-semibold text-foreground">{lastAction}</span>
+          Last action:{' '}
+          <span className="font-semibold text-foreground">{lastAction}</span>
         </div>
       )}
 
@@ -175,8 +175,12 @@ export default function CommandPalettePage() {
 
         <ScrollReveal>
           <div className="flex gap-2 mb-3">
-            <Badge variant="subtle" size="sm">Component</Badge>
-            <Badge variant="info" size="sm">Interactive</Badge>
+            <Badge variant="subtle" size="sm">
+              Component
+            </Badge>
+            <Badge variant="info" size="sm">
+              Interactive
+            </Badge>
           </div>
 
           <div className="mb-8">
@@ -185,8 +189,9 @@ export default function CommandPalettePage() {
             </h1>
 
             <p className="text-xl text-text-secondary leading-relaxed">
-              A keyboard-driven command palette interface, inspired by Spotlight and macOS.
-              Give your power users super-powers with instant access to actions and navigation.
+              A keyboard-driven command palette interface, inspired by Spotlight
+              and macOS. Give your power users super-powers with instant access
+              to actions and navigation.
             </p>
           </div>
         </ScrollReveal>
@@ -198,8 +203,9 @@ export default function CommandPalettePage() {
         <ScrollReveal delay={0.2}>
           <Callout type="tip" className="mb-8">
             <p>
-              The CommandPalette is accessible by default, managing focus trap, keyboard navigation,
-              and screen reader announcements automatically.
+              The CommandPalette is accessible by default, managing focus trap,
+              keyboard navigation, and screen reader announcements
+              automatically.
             </p>
           </Callout>
         </ScrollReveal>
@@ -266,7 +272,7 @@ import type { CommandItem } from '@clarity-chat/react'`}
 
         <ScrollReveal delay={0.5}>
           <h2 id="configuration">Configuration</h2>
-          
+
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div>
               <h3 className="text-xl font-semibold mb-4">Command Items</h3>
@@ -290,7 +296,8 @@ import type { CommandItem } from '@clarity-chat/react'`}
             <div>
               <h3 className="text-xl font-semibold mb-4">Grouping</h3>
               <p className="mb-4 text-muted-foreground">
-                Organize commands into logical sections. The component handles rendering group headers.
+                Organize commands into logical sections. The component handles
+                rendering group headers.
               </p>
               <EnhancedCodeBlock
                 language="tsx"
@@ -333,23 +340,44 @@ import type { CommandItem } from '@clarity-chat/react'`}
         <ScrollReveal delay={0.8}>
           <h2 id="accessibility">Accessibility</h2>
           <ul className="mb-8 space-y-2">
-            <li>✅ <strong>Focus Trap:</strong> Keeps focus within the modal when open</li>
-            <li>✅ <strong>Keyboard Navigation:</strong> Arrow keys to move, Enter to select</li>
-            <li>✅ <strong>Screen Reader:</strong> Announces results and selection</li>
-            <li>✅ <strong>ARIA:</strong> Proper roles for combobox/listbox pattern</li>
+            <li>
+              ✅ <strong>Focus Trap:</strong> Keeps focus within the modal when
+              open
+            </li>
+            <li>
+              ✅ <strong>Keyboard Navigation:</strong> Arrow keys to move, Enter
+              to select
+            </li>
+            <li>
+              ✅ <strong>Screen Reader:</strong> Announces results and selection
+            </li>
+            <li>
+              ✅ <strong>ARIA:</strong> Proper roles for combobox/listbox
+              pattern
+            </li>
           </ul>
         </ScrollReveal>
 
         <ScrollReveal delay={0.9}>
           <h2 id="related">Related</h2>
           <div className="grid md:grid-cols-2 gap-4">
-            <a href="/reference/components/advanced-chat-input" className="p-4 border rounded-lg hover:border-brand-500 transition-colors">
+            <a
+              href="/reference/components/advanced-chat-input"
+              className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
               <h3 className="font-semibold mb-1">AdvancedChatInput</h3>
-              <p className="text-sm text-muted-foreground">Inline commands with / slash menu</p>
+              <p className="text-sm text-muted-foreground">
+                Inline commands with / slash menu
+              </p>
             </a>
-            <a href="/reference/hooks/use-keyboard-shortcuts" className="p-4 border rounded-lg hover:border-brand-500 transition-colors">
+            <a
+              href="/reference/hooks/use-keyboard-shortcuts"
+              className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
               <h3 className="font-semibold mb-1">useKeyboardShortcuts</h3>
-              <p className="text-sm text-muted-foreground">Hook for global shortcuts</p>
+              <p className="text-sm text-muted-foreground">
+                Hook for global shortcuts
+              </p>
             </a>
           </div>
         </ScrollReveal>

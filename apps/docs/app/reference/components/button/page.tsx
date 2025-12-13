@@ -5,10 +5,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-
 export const metadata: Metadata = {
   title: 'Button - Clarity Chat Components',
-  description: 'Versatile button component with variants, sizes, icons, and loading states.',
+  description:
+    'Versatile button component with variants, sizes, icons, and loading states.',
 }
 
 export default function ButtonPage() {
@@ -16,12 +16,17 @@ export default function ButtonPage() {
     <div className="docs-content">
       <div className="docs-header">
         <div className="flex gap-2 mb-2">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Component</span>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Stable</span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            Component
+          </span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            Stable
+          </span>
         </div>
         <h1>Button</h1>
         <p className="docs-lead">
-          Versatile button component with multiple variants, sizes, icons, loading states, and full accessibility support.
+          Versatile button component with multiple variants, sizes, icons,
+          loading states, and full accessibility support.
         </p>
       </div>
 
@@ -30,15 +35,17 @@ export default function ButtonPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>Button</code> component provides a consistent, accessible way to trigger actions.
-          It supports various styles, sizes, icons, loading states, and can be rendered as a button or link.
+          The <code>Button</code> component provides a consistent, accessible
+          way to trigger actions. It supports various styles, sizes, icons,
+          loading states, and can be rendered as a button or link.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Interactive Playground</h2>
         <p className="mb-6">
-          Experiment with the Button component! Try different variants, sizes, and states.
+          Experiment with the Button component! Try different variants, sizes,
+          and states.
         </p>
         <CodePlayground
           initialCode={`function Example() {
@@ -75,10 +82,7 @@ render(<BasicButtons />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="Button Props"
-          data={buttonProps}
-        />
+        <ApiTable title="Button Props" data={buttonProps} />
       </section>
 
       <section className="docs-section">
@@ -117,9 +121,7 @@ render(<ButtonVariants />)`}
 
       <section className="docs-section">
         <h2>Sizes</h2>
-        <p>
-          Buttons come in four sizes to fit different contexts.
-        </p>
+        <p>Buttons come in four sizes to fit different contexts.</p>
         <CodePlayground
           initialCode={`function ButtonSizes() {
   return (
@@ -138,9 +140,7 @@ render(<ButtonSizes />)`}
 
       <section className="docs-section">
         <h2>With Icons</h2>
-        <p>
-          Add icons before or after button text, or use icon-only buttons.
-        </p>
+        <p>Add icons before or after button text, or use icon-only buttons.</p>
         <CodePlayground
           initialCode={`function IconButtons() {
   return (
@@ -204,9 +204,7 @@ render(<IconButtons />)`}
 
       <section className="docs-section">
         <h2>Loading State</h2>
-        <p>
-          Show loading spinner while an action is in progress.
-        </p>
+        <p>Show loading spinner while an action is in progress.</p>
         <CodePlayground
           initialCode={`function LoadingButtons() {
   const [isLoading, setIsLoading] = React.useState(false)
@@ -269,9 +267,7 @@ render(<LoadingButtons />)`}
 
       <section className="docs-section">
         <h2>Disabled State</h2>
-        <p>
-          Disable buttons to prevent interaction.
-        </p>
+        <p>Disable buttons to prevent interaction.</p>
         <CodePlayground
           initialCode={`function DisabledButtons() {
   return (
@@ -298,9 +294,7 @@ render(<DisabledButtons />)`}
 
       <section className="docs-section">
         <h2>Full Width</h2>
-        <p>
-          Make buttons span the full width of their container.
-        </p>
+        <p>Make buttons span the full width of their container.</p>
         <CodePlayground
           initialCode={`function FullWidthButtons() {
   return (
@@ -324,9 +318,7 @@ render(<FullWidthButtons />)`}
 
       <section className="docs-section">
         <h2>Button Groups</h2>
-        <p>
-          Group related buttons together for better visual hierarchy.
-        </p>
+        <p>Group related buttons together for better visual hierarchy.</p>
         <CodePlayground
           initialCode={`function ButtonGroups() {
   const [selected, setSelected] = React.useState('day')
@@ -406,7 +398,8 @@ render(<ButtonGroups />)`}
       <section className="docs-section">
         <h2>As Link</h2>
         <p>
-          Render buttons as links for navigation while maintaining button styling.
+          Render buttons as links for navigation while maintaining button
+          styling.
         </p>
         <CodePlayground
           initialCode={`function ButtonLinks() {
@@ -462,9 +455,7 @@ render(<ButtonLinks />)`}
 
       <section className="docs-section">
         <h2>With Keyboard Shortcuts</h2>
-        <p>
-          Display keyboard shortcuts alongside button labels.
-        </p>
+        <p>Display keyboard shortcuts alongside button labels.</p>
         <CodePlayground
           initialCode={`function ShortcutButtons() {
   return (
@@ -499,9 +490,7 @@ render(<ShortcutButtons />)`}
 
       <section className="docs-section">
         <h2>Confirmation Buttons</h2>
-        <p>
-          Implement confirmation flows with button states.
-        </p>
+        <p>Implement confirmation flows with button states.</p>
         <CodePlayground
           initialCode={`function ConfirmationButtons() {
   const [isConfirming, setIsConfirming] = React.useState(false)
@@ -566,7 +555,8 @@ render(<ConfirmationButtons />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Split Button with Dropdown</h3>
-        <pre><code>{`import { Button, Dropdown } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Button, Dropdown } from '@clarity-chat/react'
 
 function SplitButton() {
   const actions = [
@@ -588,10 +578,12 @@ function SplitButton() {
       </Dropdown>
     </div>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Button with Badge</h3>
-        <pre><code>{`import { Button, Badge } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Button, Badge } from '@clarity-chat/react'
 
 <Button variant="primary">
   <div className="relative">
@@ -604,10 +596,12 @@ function SplitButton() {
       5
     </Badge>
   </div>
-</Button>`}</code></pre>
+</Button>`}</code>
+        </pre>
 
         <h3>Async Button with Error Handling</h3>
-        <pre><code>{`function AsyncButton() {
+        <pre>
+          <code>{`function AsyncButton() {
   const [state, setState] = useState('idle') // idle | loading | success | error
 
   const handleClick = async () => {
@@ -641,29 +635,35 @@ function SplitButton() {
       {getButtonContent()}
     </Button>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Button with Tooltip</h3>
-        <pre><code>{`import { Button, Tooltip } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Button, Tooltip } from '@clarity-chat/react'
 
 <Tooltip content="Save your changes (⌘S)">
   <Button variant="primary" iconOnly>
     💾
   </Button>
-</Tooltip>`}</code></pre>
+</Tooltip>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Accessibility</h2>
 
         <Callout type="info" title="Keyboard Navigation">
-          All buttons are keyboard accessible by default. Use Tab to focus and Enter/Space to activate.
+          All buttons are keyboard accessible by default. Use Tab to focus and
+          Enter/Space to activate.
         </Callout>
 
         <h3>Best Practices</h3>
         <ul>
           <li>Use descriptive button labels that explain the action</li>
-          <li>Provide <code>aria-label</code> for icon-only buttons</li>
+          <li>
+            Provide <code>aria-label</code> for icon-only buttons
+          </li>
           <li>Disable buttons during loading to prevent double-submission</li>
           <li>Use appropriate button variants for semantic meaning</li>
           <li>Ensure sufficient color contrast (WCAG AA minimum)</li>
@@ -671,7 +671,8 @@ function SplitButton() {
         </ul>
 
         <h3>ARIA Attributes</h3>
-        <pre><code>{`// Icon-only button
+        <pre>
+          <code>{`// Icon-only button
 <Button iconOnly aria-label="Delete message">
   🗑️
 </Button>
@@ -687,30 +688,47 @@ function SplitButton() {
   onClick={() => setIsActive(!isActive)}
 >
   Toggle Feature
-</Button>`}</code></pre>
+</Button>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
 
         <Callout type="tip" title="Use Semantic Variants">
-          Choose button variants that match the action: primary for main actions,
-          danger for destructive actions, success for confirmations.
+          Choose button variants that match the action: primary for main
+          actions, danger for destructive actions, success for confirmations.
         </Callout>
 
         <Callout type="warning" title="Avoid Too Many Primary Buttons">
-          Each screen should have only one primary action button to avoid confusion.
+          Each screen should have only one primary action button to avoid
+          confusion.
         </Callout>
 
         <h3>When to Use Each Variant</h3>
         <ul>
-          <li><strong>Primary:</strong> Main call-to-action (Save, Submit, Continue)</li>
-          <li><strong>Secondary:</strong> Secondary actions (Cancel, Back)</li>
-          <li><strong>Danger:</strong> Destructive actions (Delete, Remove)</li>
-          <li><strong>Success:</strong> Positive confirmations (Approve, Accept)</li>
-          <li><strong>Outline:</strong> Less prominent actions</li>
-          <li><strong>Ghost:</strong> Tertiary actions, icon buttons</li>
-          <li><strong>Link:</strong> Navigation within text</li>
+          <li>
+            <strong>Primary:</strong> Main call-to-action (Save, Submit,
+            Continue)
+          </li>
+          <li>
+            <strong>Secondary:</strong> Secondary actions (Cancel, Back)
+          </li>
+          <li>
+            <strong>Danger:</strong> Destructive actions (Delete, Remove)
+          </li>
+          <li>
+            <strong>Success:</strong> Positive confirmations (Approve, Accept)
+          </li>
+          <li>
+            <strong>Outline:</strong> Less prominent actions
+          </li>
+          <li>
+            <strong>Ghost:</strong> Tertiary actions, icon buttons
+          </li>
+          <li>
+            <strong>Link:</strong> Navigation within text
+          </li>
         </ul>
 
         <h3>Button Placement</h3>
@@ -733,7 +751,8 @@ function SplitButton() {
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { Button, ButtonProps } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Button, ButtonProps } from '@clarity-chat/react'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 
@@ -761,7 +780,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string
   children: React.ReactNode
   onClick?: (event: React.MouseEvent) => void
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -779,7 +799,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
             <h3>Dropdown</h3>
             <p>Action menus</p>
           </a>
-          <a href="/reference/hooks/use-keyboard-shortcuts" className="docs-card">
+          <a
+            href="/reference/hooks/use-keyboard-shortcuts"
+            className="docs-card"
+          >
             <h3>useKeyboardShortcuts</h3>
             <p>Keyboard shortcut handling</p>
           </a>
@@ -795,72 +818,73 @@ const buttonProps = [
     type: "'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'ghost' | 'link' | 'outline' | 'outline-primary' | 'outline-secondary' | 'outline-danger'",
     required: false,
     default: "'default'",
-    description: 'Visual style variant'
+    description: 'Visual style variant',
   },
   {
     name: 'size',
     type: "'xs' | 'sm' | 'md' | 'lg'",
     required: false,
     default: "'md'",
-    description: 'Button size'
+    description: 'Button size',
   },
   {
     name: 'fullWidth',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Make button span full width of container'
+    description: 'Make button span full width of container',
   },
   {
     name: 'isLoading',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Show loading spinner and disable button'
+    description: 'Show loading spinner and disable button',
   },
   {
     name: 'disabled',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Disable button interaction'
+    description: 'Disable button interaction',
   },
   {
     name: 'iconOnly',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Style as icon-only button (square, no padding). Must provide aria-label.'
+    description:
+      'Style as icon-only button (square, no padding). Must provide aria-label.',
   },
   {
     name: 'as',
     type: "'button' | 'a'",
     required: false,
     default: "'button'",
-    description: 'Render as button or anchor element'
+    description: 'Render as button or anchor element',
   },
   {
     name: 'href',
     type: 'string',
     required: false,
-    description: 'URL when rendering as link (as="a")'
+    description: 'URL when rendering as link (as="a")',
   },
   {
     name: 'children',
     type: 'React.ReactNode',
     required: true,
-    description: 'Button content'
+    description: 'Button content',
   },
   {
     name: 'onClick',
     type: '(event: React.MouseEvent) => void',
     required: false,
-    description: 'Click handler'
+    description: 'Click handler',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]

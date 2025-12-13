@@ -10,7 +10,6 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { TypingIndicator, StreamingMessage } from '@clarity-chat/react'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 
-
 function TypingIndicatorDemo() {
   const [variant, setVariant] = useState<'dots' | 'pulse' | 'wave'>('dots')
 
@@ -52,7 +51,9 @@ function MotionPlayground() {
       <div className="space-y-6">
         <div className="space-y-2">
           <div className="flex justify-between">
-            <label className="text-sm font-medium">Stiffness: {stiffness}</label>
+            <label className="text-sm font-medium">
+              Stiffness: {stiffness}
+            </label>
           </div>
           <input
             type="range"
@@ -62,7 +63,9 @@ function MotionPlayground() {
             onChange={(e) => setStiffness(Number(e.target.value))}
             className="w-full"
           />
-          <p className="text-xs text-muted-foreground">Controls the tightness of the spring. Higher = snappier.</p>
+          <p className="text-xs text-muted-foreground">
+            Controls the tightness of the spring. Higher = snappier.
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -77,7 +80,9 @@ function MotionPlayground() {
             onChange={(e) => setDamping(Number(e.target.value))}
             className="w-full"
           />
-          <p className="text-xs text-muted-foreground">Controls how fast the motion settles. Lower = bouncier.</p>
+          <p className="text-xs text-muted-foreground">
+            Controls how fast the motion settles. Lower = bouncier.
+          </p>
         </div>
 
         <button
@@ -124,8 +129,9 @@ export default function AnimationsConceptPage() {
         <section className="docs-section mb-12">
           <h2>Motion Playground</h2>
           <p className="mb-6">
-            Our animation system is built on spring physics to create natural, responsive interactions.
-            Experiment with the parameters below to see how they affect the feel of UI elements.
+            Our animation system is built on spring physics to create natural,
+            responsive interactions. Experiment with the parameters below to see
+            how they affect the feel of UI elements.
           </p>
           <MotionPlayground />
         </section>
@@ -135,9 +141,10 @@ export default function AnimationsConceptPage() {
         <section className="docs-section mb-12">
           <h2>Motion Tokens</h2>
           <p>
-            Animation behaviour is defined in <code>@clarity-chat/react/animations</code>.
-            Durations and easing values are theme-aware so light/dark themes can have
-            different personalities if needed.
+            Animation behaviour is defined in{' '}
+            <code>@clarity-chat/react/animations</code>. Durations and easing
+            values are theme-aware so light/dark themes can have different
+            personalities if needed.
           </p>
           <CodeBlock
             language="tsx"
@@ -158,12 +165,14 @@ console.log(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
         <section className="docs-section mb-12">
           <h2>Animated Components</h2>
           <p>
-            We provide drop-in components that handle complex animations for you.
+            We provide drop-in components that handle complex animations for
+            you.
           </p>
-          
+
           <h3 className="text-xl font-semibold mt-8 mb-4">Typing Indicator</h3>
           <p className="mb-4">
-            Communicates that the AI is working. Supports multiple physics-based variants.
+            Communicates that the AI is working. Supports multiple physics-based
+            variants.
           </p>
           <ComponentPreview
             title="Typing Indicator"
@@ -178,10 +187,11 @@ console.log(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
 
           <h3 className="text-xl font-semibold mt-8 mb-4">Streaming Message</h3>
           <p className="mb-4">
-            Reveals text token-by-token for a realistic typewriter effect that improves reading comprehension.
+            Reveals text token-by-token for a realistic typewriter effect that
+            improves reading comprehension.
           </p>
           <div className="p-6 border border-border rounded-lg bg-card">
-            <StreamingMessage 
+            <StreamingMessage
               content="This message is streaming in real-time. It uses a smooth reveal animation that makes reading easier and feels more natural than a sudden block of text appearing at once."
               status="streaming"
             />
@@ -193,8 +203,8 @@ console.log(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
         <section className="docs-section mb-12">
           <h2>Custom Motion with framer-motion</h2>
           <p>
-            Because the components are built on top of framer-motion, you can use
-            the exported variants or supply your own.
+            Because the components are built on top of framer-motion, you can
+            use the exported variants or supply your own.
           </p>
           <CodeBlock
             language="tsx"
@@ -232,8 +242,9 @@ function LiveTypingIndicator() {
         <section className="docs-section">
           <h2>Motion &amp; Accessibility</h2>
           <p>
-            Respect user preferences with <code>prefers-reduced-motion</code>. The
-            theme API already adjusts animations when this setting is detected.
+            Respect user preferences with <code>prefers-reduced-motion</code>.
+            The theme API already adjusts animations when this setting is
+            detected.
           </p>
           <CodeBlock
             language="css"
@@ -246,8 +257,9 @@ function LiveTypingIndicator() {
 }`}
           />
           <Callout type="warning">
-            Keep motion purposeful. Message arrivals and contextual UI shifts benefit
-            from animation; raw text entry or critical alerts should remain instant.
+            Keep motion purposeful. Message arrivals and contextual UI shifts
+            benefit from animation; raw text entry or critical alerts should
+            remain instant.
           </Callout>
         </section>
       </ScrollReveal>

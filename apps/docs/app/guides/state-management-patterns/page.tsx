@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'State Management Patterns - Clarity Chat Components',
-  description: 'Learn state management patterns for chat applications including message state, conversation state, and global state.',
+  description:
+    'Learn state management patterns for chat applications including message state, conversation state, and global state.',
 }
 
 export default function StateManagementPatternsPage() {
@@ -17,7 +17,8 @@ export default function StateManagementPatternsPage() {
         <span className="docs-badge">Guide</span>
         <h1>State Management Patterns</h1>
         <p className="docs-lead">
-          Learn state management patterns for chat applications including message state, conversation state, global state, and persistence.
+          Learn state management patterns for chat applications including
+          message state, conversation state, global state, and persistence.
         </p>
       </div>
 
@@ -33,9 +34,7 @@ export default function StateManagementPatternsPage() {
 
       <section className="docs-section">
         <h2>Message State Management</h2>
-        <p>
-          Manage message state with hooks:
-        </p>
+        <p>Manage message state with hooks:</p>
         <CodePlayground
           initialCode={`import { useClarityChat } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -68,9 +67,7 @@ function ChatWithState() {
 
       <section className="docs-section">
         <h2>Conversation State</h2>
-        <p>
-          Manage conversation state:
-        </p>
+        <p>Manage conversation state:</p>
         <CodePlayground
           initialCode={`import { useState, useEffect } from 'react'
 import { useClarityChat } from '@clarity-chat/react'
@@ -114,9 +111,7 @@ function ConversationManager() {
 
       <section className="docs-section">
         <h2>Global State with Context</h2>
-        <p>
-          Use Context for global state:
-        </p>
+        <p>Use Context for global state:</p>
         <CodePlayground
           initialCode={`import { createContext, useContext, useState } from 'react'
 import { useClarityChat } from '@clarity-chat/react'
@@ -159,9 +154,7 @@ function ChatComponent() {
 
       <section className="docs-section">
         <h2>State Persistence</h2>
-        <p>
-          Persist state to localStorage or IndexedDB:
-        </p>
+        <p>Persist state to localStorage or IndexedDB:</p>
         <CodePlayground
           initialCode={`import { useClarityChat } from '@clarity-chat/react'
 import { useLocalStorage } from '@clarity-chat/react'
@@ -194,9 +187,7 @@ function PersistentChat() {
 
       <section className="docs-section">
         <h2>State Synchronization</h2>
-        <p>
-          Sync state across multiple components:
-        </p>
+        <p>Sync state across multiple components:</p>
         <CodePlayground
           initialCode={`import { useClarityChat } from '@clarity-chat/react'
 import { useTokenTracker } from '@clarity-chat/react'
@@ -223,9 +214,7 @@ function SyncedChat() {
 
       <section className="docs-section">
         <h2>Optimistic Updates</h2>
-        <p>
-          Use optimistic updates for better UX:
-        </p>
+        <p>Use optimistic updates for better UX:</p>
         <CodePlayground
           initialCode={`import { useClarityChat } from '@clarity-chat/react'
 import { useOptimistic } from 'react'
@@ -276,9 +265,20 @@ function OptimisticChat() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Main chat hook</li>
-          <li><a href="/reference/hooks/use-local-storage">useLocalStorage</a> - Local storage hook</li>
-          <li><a href="/guides/composition-patterns">Composition Patterns Guide</a> - Composition guide</li>
+          <li>
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
+            Main chat hook
+          </li>
+          <li>
+            <a href="/reference/hooks/use-local-storage">useLocalStorage</a> -
+            Local storage hook
+          </li>
+          <li>
+            <a href="/guides/composition-patterns">
+              Composition Patterns Guide
+            </a>{' '}
+            - Composition guide
+          </li>
         </ul>
       </section>
     </div>

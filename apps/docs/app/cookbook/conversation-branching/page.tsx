@@ -3,10 +3,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Conversation Branching - Cookbook - Clarity Chat',
-  description: 'Implement speculative conversation branches with ConversationBranchVisualizer and useBranchManagement.',
+  description:
+    'Implement speculative conversation branches with ConversationBranchVisualizer and useBranchManagement.',
 }
 
 export default function ConversationBranchingCookbook() {
@@ -17,8 +17,9 @@ export default function ConversationBranchingCookbook() {
         <span className="docs-badge">Blueprint v2.1</span>
         <h1>Conversation Branching</h1>
         <p className="docs-lead">
-          Let users explore alternative replies like Claude. Branch from any message, review iterations, and merge the
-          winning branch back into the main conversation.
+          Let users explore alternative replies like Claude. Branch from any
+          message, review iterations, and merge the winning branch back into the
+          main conversation.
         </p>
       </div>
 
@@ -27,7 +28,9 @@ export default function ConversationBranchingCookbook() {
         <ul>
           <li>Clarity Chat v2.1+</li>
           <li>React 18+</li>
-          <li>Optional: persistence layer (Postgres, Supabase, Firestore, etc.)</li>
+          <li>
+            Optional: persistence layer (Postgres, Supabase, Firestore, etc.)
+          </li>
         </ul>
       </section>
 
@@ -68,7 +71,10 @@ const branchState = useBranchManagement({
 
       <section className="docs-section">
         <h2>3. Fork from Messages</h2>
-        <p>Expose a “Branch from here” action in your message menu and pass the message id to <code>createBranch</code>.</p>
+        <p>
+          Expose a “Branch from here” action in your message menu and pass the
+          message id to <code>createBranch</code>.
+        </p>
         <CodeBlock
           language="tsx"
           code={`const handleBranchFromMessage = (messageId: string) => {
@@ -96,8 +102,9 @@ const branchState = useBranchManagement({
         />
         <Callout type="info">
           <p>
-            Each <code>ConversationBranch</code> contains metadata hooks (message counts, previews, tokens). Store them for
-            analytics dashboards or QA workflows.
+            Each <code>ConversationBranch</code> contains metadata hooks
+            (message counts, previews, tokens). Store them for analytics
+            dashboards or QA workflows.
           </p>
         </Callout>
       </section>

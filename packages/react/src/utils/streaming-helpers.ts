@@ -1,16 +1,16 @@
 /**
  * Shared Streaming Utilities for Chat Hooks
- * 
+ *
  * This module provides reusable streaming logic that eliminates code duplication
  * across useChat, useCompletion, and useAssistant hooks.
- * 
+ *
  * **Key Features:**
  * - Type-safe streaming handlers
  * - Multiple format support (SSE, JSON, plain text)
  * - AbortSignal integration
  * - Error recovery
  * - Progress tracking
- * 
+ *
  * @module streaming-helpers
  */
 
@@ -65,9 +65,11 @@ export interface StreamResult {
 /**
  * Parse SSE (Server-Sent Events) data line
  */
-export function parseSSELine(line: string): { event?: string; data?: string; id?: string } | null {
+export function parseSSELine(
+  line: string
+): { event?: string; data?: string; id?: string } | null {
   const trimmed = line.trim()
-  
+
   if (!trimmed || trimmed.startsWith(':')) {
     return null // Comment or empty line
   }
@@ -128,7 +130,8 @@ class SSEEventParser {
         return null
       }
 
-      const data = this.dataLines.length > 0 ? this.dataLines.join('\n') : undefined
+      const data =
+        this.dataLines.length > 0 ? this.dataLines.join('\n') : undefined
       const event: SSEEvent = {
         event: this.currentEvent.event,
         id: this.currentEvent.id,
@@ -164,7 +167,8 @@ class SSEEventParser {
     ) {
       return null
     }
-    const data = this.dataLines.length > 0 ? this.dataLines.join('\n') : undefined
+    const data =
+      this.dataLines.length > 0 ? this.dataLines.join('\n') : undefined
     const event: SSEEvent = { ...this.currentEvent, data }
     this.reset()
     return event
@@ -192,7 +196,7 @@ export function extractStreamContent(chunk: unknown): string {
 
   if (typeof chunk === 'object' && chunk !== null) {
     const obj = chunk as Record<string, unknown>
-    
+
     // OpenAI chat format
     if (obj['choices'] && Array.isArray(obj['choices'])) {
       const choice = (obj['choices'] as unknown[])[0] as Record<string, unknown>
@@ -219,7 +223,7 @@ export function extractStreamContent(chunk: unknown): string {
 
 /**
  * Process a streaming response with configurable format handling
- * 
+ *
  * @example
  * ```ts
  * const result = await processStream(response.body, {
@@ -234,7 +238,10 @@ export async function processStream(
   stream: ReadableStream<Uint8Array>,
   options: StreamOptions = {}
 ): Promise<StreamResult> {
-  if (!stream || typeof (stream as ReadableStream<Uint8Array>).getReader !== 'function') {
+  if (
+    !stream ||
+    typeof (stream as ReadableStream<Uint8Array>).getReader !== 'function'
+  ) {
     throw new Error(
       '[processStream] Invalid stream: expected a ReadableStream<Uint8Array>.'
     )
@@ -254,7 +261,7 @@ export async function processStream(
   const startTime = performance.now()
   const reader = stream.getReader()
   const decoder = new TextDecoder()
-  
+
   let content = ''
   let buffer = ''
   let chunks = 0
@@ -283,7 +290,9 @@ export async function processStream(
       const parsedJson = onData ? safeParseJSON(event.data) : null
       if (parsedJson) onData?.(parsedJson)
 
-      const processed = parsedJson ? extractStreamContent(parsedJson) : event.data
+      const processed = parsedJson
+        ? extractStreamContent(parsedJson)
+        : event.data
       if (processed) {
         content += processed
         onChunk?.(processed)
@@ -331,7 +340,9 @@ export async function processStream(
           } else if (flushed?.data) {
             const parsedJson = onData ? safeParseJSON(flushed.data) : null
             if (parsedJson) onData?.(parsedJson)
-            const processed = parsedJson ? extractStreamContent(parsedJson) : flushed.data
+            const processed = parsedJson
+              ? extractStreamContent(parsedJson)
+              : flushed.data
             if (processed) {
               content += processed
               onChunk?.(processed)
@@ -387,7 +398,7 @@ export async function processStream(
     }
   } catch (error: unknown) {
     const err = error instanceof Error ? error : new Error(String(error))
-    
+
     // Don't call onError for AbortError
     if (err.name !== 'AbortError') {
       onError?.(err)
@@ -434,7 +445,7 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
 
 /**
  * Create a streaming reader for easy iteration
- * 
+ *
  * @example
  * ```ts
  * for await (const chunk of createStreamReader(response.body)) {
@@ -526,7 +537,7 @@ export class StreamAccumulator {
     let hash = 0
     for (let i = 0; i < chunk.length; i++) {
       const char = chunk.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash // Convert to 32-bit integer
     }
     return hash.toString(36)
@@ -581,7 +592,7 @@ export async function retryStream<T>(
         maxDelay
       )
 
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
 
@@ -596,10 +607,10 @@ export async function mergeStreams(
   signal?: AbortSignal
 ): Promise<string> {
   const results = await Promise.all(
-    streams.map(stream => processStream(stream, { signal }))
+    streams.map((stream) => processStream(stream, { signal }))
   )
 
-  return results.map(r => r.content).join('')
+  return results.map((r) => r.content).join('')
 }
 
 /**

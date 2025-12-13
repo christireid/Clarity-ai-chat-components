@@ -12,13 +12,13 @@ import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-
 const fileUploadProps: Prop[] = [
   {
     name: 'onUpload',
     type: '(files: File[]) => Promise<MessageAttachment[]>',
     required: true,
-    description: 'Async callback to handle file uploads. Must return array of attachment objects.',
+    description:
+      'Async callback to handle file uploads. Must return array of attachment objects.',
   },
   {
     name: 'maxFiles',
@@ -35,7 +35,8 @@ const fileUploadProps: Prop[] = [
   {
     name: 'acceptedFileTypes',
     type: 'string[]',
-    description: 'Array of accepted MIME types (e.g., ["image/*", "application/pdf"]).',
+    description:
+      'Array of accepted MIME types (e.g., ["image/*", "application/pdf"]).',
   },
   {
     name: 'disabled',
@@ -63,19 +64,22 @@ const fileUploadProps: Prop[] = [
 ]
 
 function BasicFileUploadDemo() {
-  const handleUpload = useCallback(async (files: File[]): Promise<MessageAttachment[]> => {
-    // Simulate upload delay
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    return files.map(file => ({
-      id: Math.random().toString(36).substring(7),
-      type: file.type.startsWith('image/') ? 'image' : 'file',
-      url: URL.createObjectURL(file),
-      name: file.name,
-      size: file.size,
-      mimeType: file.type
-    }))
-  }, [])
+  const handleUpload = useCallback(
+    async (files: File[]): Promise<MessageAttachment[]> => {
+      // Simulate upload delay
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      return files.map((file) => ({
+        id: Math.random().toString(36).substring(7),
+        type: file.type.startsWith('image/') ? 'image' : 'file',
+        url: URL.createObjectURL(file),
+        name: file.name,
+        size: file.size,
+        mimeType: file.type,
+      }))
+    },
+    []
+  )
 
   return (
     <div className="w-full max-w-xl p-4 border border-border rounded-lg bg-background">
@@ -100,8 +104,8 @@ export default function FileUploadPage() {
             FileUpload
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            A comprehensive file upload component featuring drag-and-drop, multi-file support,
-            progress tracking, and preview generation.
+            A comprehensive file upload component featuring drag-and-drop,
+            multi-file support, progress tracking, and preview generation.
           </p>
         </div>
       </ScrollReveal>
@@ -116,19 +120,27 @@ export default function FileUploadPage() {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="p-4 rounded-lg bg-secondary/20 border border-border">
               <h3 className="font-semibold mb-2">🖱️ Drag & Drop</h3>
-              <p className="text-sm text-muted-foreground">Intuitive drag and drop interface with visual feedback states.</p>
+              <p className="text-sm text-muted-foreground">
+                Intuitive drag and drop interface with visual feedback states.
+              </p>
             </div>
             <div className="p-4 rounded-lg bg-secondary/20 border border-border">
               <h3 className="font-semibold mb-2">👁️ File Previews</h3>
-              <p className="text-sm text-muted-foreground">Automatic thumbnail generation for images and file type icons.</p>
+              <p className="text-sm text-muted-foreground">
+                Automatic thumbnail generation for images and file type icons.
+              </p>
             </div>
             <div className="p-4 rounded-lg bg-secondary/20 border border-border">
               <h3 className="font-semibold mb-2">📊 Progress Tracking</h3>
-              <p className="text-sm text-muted-foreground">Built-in loading states and progress indicators during upload.</p>
+              <p className="text-sm text-muted-foreground">
+                Built-in loading states and progress indicators during upload.
+              </p>
             </div>
             <div className="p-4 rounded-lg bg-secondary/20 border border-border">
               <h3 className="font-semibold mb-2">🛡️ Validation</h3>
-              <p className="text-sm text-muted-foreground">Client-side validation for file types, sizes, and counts.</p>
+              <p className="text-sm text-muted-foreground">
+                Client-side validation for file types, sizes, and counts.
+              </p>
             </div>
           </div>
         </section>
@@ -146,7 +158,8 @@ import type { MessageAttachment } from '@clarity-chat/types'`}
       <ScrollReveal delay={0.4}>
         <h2 id="usage">Usage</h2>
         <p className="mb-4 text-muted-foreground">
-          The FileUpload component requires an <code>onUpload</code> handler that returns a Promise resolving to an array of attachments.
+          The FileUpload component requires an <code>onUpload</code> handler
+          that returns a Promise resolving to an array of attachments.
         </p>
 
         <ComponentPreview
@@ -229,22 +242,38 @@ render(<Example />)`}
       <ScrollReveal delay={0.6}>
         <h2 id="validation">Validation Patterns</h2>
         <div className="space-y-4">
-          <p className="text-muted-foreground">Common patterns for <code>acceptedFileTypes</code>:</p>
+          <p className="text-muted-foreground">
+            Common patterns for <code>acceptedFileTypes</code>:
+          </p>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="bg-muted p-4 rounded-md">
-              <code className="text-sm font-semibold text-primary">['image/*']</code>
-              <p className="text-sm mt-1 text-muted-foreground">Accept all image formats</p>
+              <code className="text-sm font-semibold text-primary">
+                ['image/*']
+              </code>
+              <p className="text-sm mt-1 text-muted-foreground">
+                Accept all image formats
+              </p>
             </div>
             <div className="bg-muted p-4 rounded-md">
-              <code className="text-sm font-semibold text-primary">['application/pdf']</code>
-              <p className="text-sm mt-1 text-muted-foreground">PDF documents only</p>
+              <code className="text-sm font-semibold text-primary">
+                ['application/pdf']
+              </code>
+              <p className="text-sm mt-1 text-muted-foreground">
+                PDF documents only
+              </p>
             </div>
             <div className="bg-muted p-4 rounded-md">
-              <code className="text-sm font-semibold text-primary">['.csv', '.xlsx']</code>
-              <p className="text-sm mt-1 text-muted-foreground">Spreadsheets by extension</p>
+              <code className="text-sm font-semibold text-primary">
+                ['.csv', '.xlsx']
+              </code>
+              <p className="text-sm mt-1 text-muted-foreground">
+                Spreadsheets by extension
+              </p>
             </div>
             <div className="bg-muted p-4 rounded-md">
-              <code className="text-sm font-semibold text-primary">['video/*', 'audio/*']</code>
+              <code className="text-sm font-semibold text-primary">
+                ['video/*', 'audio/*']
+              </code>
               <p className="text-sm mt-1 text-muted-foreground">Media files</p>
             </div>
           </div>
@@ -260,9 +289,17 @@ render(<Example />)`}
         <h2 id="best-practices">Best Practices</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-8">
           <li>Always validate file types on the server side as well.</li>
-          <li>Set reasonable <code>maxFileSize</code> limits to prevent server overload.</li>
-          <li>Provide immediate feedback using toast notifications for upload errors.</li>
-          <li>Use the <code>disabled</code> prop during parent form submission.</li>
+          <li>
+            Set reasonable <code>maxFileSize</code> limits to prevent server
+            overload.
+          </li>
+          <li>
+            Provide immediate feedback using toast notifications for upload
+            errors.
+          </li>
+          <li>
+            Use the <code>disabled</code> prop during parent form submission.
+          </li>
         </ul>
       </ScrollReveal>
 
@@ -270,13 +307,27 @@ render(<Example />)`}
         <div className="flex flex-col gap-4 border-t border-border pt-8 mt-12">
           <h2 className="text-2xl font-bold">Related Components</h2>
           <div className="grid md:grid-cols-2 gap-4">
-            <a href="/reference/components/advanced-chat-input" className="group p-4 border border-border rounded-lg hover:border-brand-500 transition-colors">
-              <h3 className="font-semibold text-primary group-hover:text-brand-500 mb-1">AdvancedChatInput</h3>
-              <p className="text-sm text-muted-foreground">Chat input with integrated file upload.</p>
+            <a
+              href="/reference/components/advanced-chat-input"
+              className="group p-4 border border-border rounded-lg hover:border-brand-500 transition-colors"
+            >
+              <h3 className="font-semibold text-primary group-hover:text-brand-500 mb-1">
+                AdvancedChatInput
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Chat input with integrated file upload.
+              </p>
             </a>
-            <a href="/reference/components/message-attachment" className="group p-4 border border-border rounded-lg hover:border-brand-500 transition-colors">
-              <h3 className="font-semibold text-primary group-hover:text-brand-500 mb-1">MessageAttachment</h3>
-              <p className="text-sm text-muted-foreground">Component for displaying uploaded files in chat.</p>
+            <a
+              href="/reference/components/message-attachment"
+              className="group p-4 border border-border rounded-lg hover:border-brand-500 transition-colors"
+            >
+              <h3 className="font-semibold text-primary group-hover:text-brand-500 mb-1">
+                MessageAttachment
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Component for displaying uploaded files in chat.
+              </p>
             </a>
           </div>
         </div>

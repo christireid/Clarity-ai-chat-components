@@ -11,6 +11,7 @@ import {
 } from '../icons'
 import {
   ANIMATION_DURATION,
+  DURATION_SECONDS as durations,
   EASING_FRAMER,
   INTERACTION_VARIANTS,
 } from '../../animations/constants'
@@ -129,7 +130,11 @@ export const MessageActions = React.memo<MessageActionsProps>(
       // "click-on-enter" behavior for custom button compositions.
       if (e.key === 'Enter' || e.key === ' ') {
         const active = document.activeElement as HTMLElement | null
-        if (active && container.contains(active) && active.tagName === 'BUTTON') {
+        if (
+          active &&
+          container.contains(active) &&
+          active.tagName === 'BUTTON'
+        ) {
           e.preventDefault()
           ;(active as HTMLButtonElement).click()
           return
@@ -186,7 +191,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.05, duration: 0.2 }}
+            transition={{ delay: 0.05, duration: durations.normal }}
           >
             <CopyButton
               text={messageContent}
@@ -201,7 +206,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
             className="relative"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1, duration: 0.2 }}
+            transition={{ delay: 0.1, duration: durations.normal }}
           >
             <motion.div
               whileHover={{
@@ -217,7 +222,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                     }
                   : {}
               }
-              transition={{ duration: 0.5 }}
+              transition={{ duration: durations.slow }}
             >
               <Button
                 variant="ghost"
@@ -257,7 +262,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15, duration: 0.2 }}
+            transition={{ delay: 0.15, duration: durations.normal }}
             whileHover={{
               scale: 1.15,
               rotate: feedbackGiven === 'down' ? 0 : 12,
@@ -273,7 +278,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                     }
                   : {}
               }
-              transition={{ duration: 0.5 }}
+              transition={{ duration: durations.slow }}
             >
               <Button
                 variant="ghost"
@@ -311,7 +316,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.2 }}
+              transition={{ delay: 0.2, duration: durations.normal }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -332,7 +337,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.2 }}
+              transition={{ delay: 0.2, duration: durations.normal }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -353,7 +358,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.25, duration: 0.2 }}
+              transition={{ delay: 0.25, duration: durations.normal }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -375,7 +380,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ delay: 0.3, duration: 0.2 }}
+              transition={{ delay: 0.3, duration: durations.normal }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -399,7 +404,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                         }
                       : {}
                   }
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: durations.moderate }}
                 >
                   <TrashIcon size={14} />
                 </motion.div>

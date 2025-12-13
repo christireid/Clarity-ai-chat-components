@@ -4,10 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'Mobile Optimization Guide - Clarity Chat Components',
-  description: 'Optimize your chat application for mobile devices with battery awareness and performance optimizations.',
+  description:
+    'Optimize your chat application for mobile devices with battery awareness and performance optimizations.',
 }
 
 export default function MobileOptimizationGuidePage() {
@@ -17,7 +17,8 @@ export default function MobileOptimizationGuidePage() {
         <span className="docs-badge">Guide</span>
         <h1>Mobile Optimization Guide</h1>
         <p className="docs-lead">
-          Learn how to optimize your chat application for mobile devices with battery awareness, performance optimizations, and responsive design.
+          Learn how to optimize your chat application for mobile devices with
+          battery awareness, performance optimizations, and responsive design.
         </p>
       </div>
 
@@ -34,7 +35,8 @@ export default function MobileOptimizationGuidePage() {
       <section className="docs-section">
         <h2>Battery-Aware Optimizations</h2>
         <p>
-          Use the <code>useBatteryAware</code> hook to automatically optimize performance based on battery level:
+          Use the <code>useBatteryAware</code> hook to automatically optimize
+          performance based on battery level:
         </p>
         <CodePlayground
           initialCode={`import { useBatteryAware } from '@clarity-chat/react'
@@ -58,9 +60,7 @@ function MobileChat() {
 
       <section className="docs-section">
         <h2>Battery Indicator</h2>
-        <p>
-          Display battery status to users:
-        </p>
+        <p>Display battery status to users:</p>
         <CodePlayground
           initialCode={`import { BatteryIndicator } from '@clarity-chat/react'
 
@@ -81,7 +81,8 @@ function ChatWithBattery() {
       <section className="docs-section">
         <h2>Mobile Keyboard Handling</h2>
         <p>
-          Use the <code>useMobileKeyboard</code> hook to handle mobile keyboard interactions:
+          Use the <code>useMobileKeyboard</code> hook to handle mobile keyboard
+          interactions:
         </p>
         <CodePlayground
           initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
@@ -100,9 +101,7 @@ function MobileInput() {
 
       <section className="docs-section">
         <h2>Responsive Layout</h2>
-        <p>
-          Use responsive design patterns for mobile:
-        </p>
+        <p>Use responsive design patterns for mobile:</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity-chat/react'
 
@@ -145,9 +144,20 @@ function ResponsiveChat() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-battery-aware">useBatteryAware</a> - Battery monitoring hook</li>
-          <li><a href="/reference/components/battery-indicator">BatteryIndicator</a> - Battery display component</li>
-          <li><a href="/reference/hooks/use-mobile-keyboard">useMobileKeyboard</a> - Mobile keyboard handling</li>
+          <li>
+            <a href="/reference/hooks/use-battery-aware">useBatteryAware</a> -
+            Battery monitoring hook
+          </li>
+          <li>
+            <a href="/reference/components/battery-indicator">
+              BatteryIndicator
+            </a>{' '}
+            - Battery display component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-mobile-keyboard">useMobileKeyboard</a>{' '}
+            - Mobile keyboard handling
+          </li>
         </ul>
       </section>
     </div>

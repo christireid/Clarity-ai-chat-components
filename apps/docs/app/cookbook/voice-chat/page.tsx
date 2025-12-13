@@ -4,7 +4,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import Link from 'next/link'
 
-
 export const metadata: Metadata = {
   title: 'Cookbook: Voice-Enabled Chat',
   description:
@@ -26,14 +25,23 @@ export default function VoiceChatRecipePage() {
       <section className="docs-section">
         <h2>What You’ll Build</h2>
         <ul>
-          <li>🎙️ <strong>Speech-to-text</strong> via the <code>VoiceInput</code> component</li>
-          <li>🧠 <strong>Real-time transcripts</strong> with interim feedback</li>
-          <li>🔁 <strong>Auto-submit</strong> or manual confirm flows</li>
-          <li>🔊 <strong>Optional text-to-speech</strong> playback for responses</li>
+          <li>
+            🎙️ <strong>Speech-to-text</strong> via the <code>VoiceInput</code>{' '}
+            component
+          </li>
+          <li>
+            🧠 <strong>Real-time transcripts</strong> with interim feedback
+          </li>
+          <li>
+            🔁 <strong>Auto-submit</strong> or manual confirm flows
+          </li>
+          <li>
+            🔊 <strong>Optional text-to-speech</strong> playback for responses
+          </li>
         </ul>
         <Callout type="info">
-          Voice features rely on the browser’s Web Speech APIs. Test in Chrome or
-          Edge. Safari supports dictation with permission prompts.
+          Voice features rely on the browser’s Web Speech APIs. Test in Chrome
+          or Edge. Safari supports dictation with permission prompts.
         </Callout>
       </section>
 
@@ -122,7 +130,10 @@ export default function VoiceAssistant() {
 
       <section className="docs-section">
         <h2>3. Text-to-Speech Playback</h2>
-        <p>Use the Web Speech API and listen for assistant messages to narrate them.</p>
+        <p>
+          Use the Web Speech API and listen for assistant messages to narrate
+          them.
+        </p>
         <CodeBlock
           language="tsx"
           code={`import { useEffect } from 'react'
@@ -176,21 +187,31 @@ export function VoiceAssistant() {
       <section className="docs-section">
         <h2>UX Tips</h2>
         <ul>
-          <li>Show a transcript preview while recording so users know they’re being heard</li>
+          <li>
+            Show a transcript preview while recording so users know they’re
+            being heard
+          </li>
           <li>Provide a manual submit option for noisy environments</li>
-          <li>Allow users to toggle TTS off (avoid reading sensitive content aloud)</li>
-          <li>Log <code>onError</code> results to understand microphone/browser issues</li>
+          <li>
+            Allow users to toggle TTS off (avoid reading sensitive content
+            aloud)
+          </li>
+          <li>
+            Log <code>onError</code> results to understand microphone/browser
+            issues
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <Callout type="success">
-          Related recipes: <Link href="/cookbook/multi-modal-chat">Multi-Modal Chat</Link>{' '}
-          for attaching voice transcripts as files, <Link href="/cookbook/analytics-tracking">Analytics Tracking</Link>{' '}
-          to measure voice usage.
+          Related recipes:{' '}
+          <Link href="/cookbook/multi-modal-chat">Multi-Modal Chat</Link> for
+          attaching voice transcripts as files,{' '}
+          <Link href="/cookbook/analytics-tracking">Analytics Tracking</Link> to
+          measure voice usage.
         </Callout>
       </section>
     </div>
   )
 }
-

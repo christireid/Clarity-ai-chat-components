@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-
 export const metadata: Metadata = {
   title: 'useClarityChatWithTools Hook | Clarity Chat',
   description:
@@ -18,27 +17,41 @@ export default function UseClarityChatWithToolsPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useClarityChatWithTools</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Combines useClarityChat with tool UI registry for seamless tool result rendering.
-          Automatically extracts tool calls from messages and renders them using registered components.
+          Combines useClarityChat with tool UI registry for seamless tool result
+          rendering. Automatically extracts tool calls from messages and renders
+          them using registered components.
         </p>
         <p className="text-muted-foreground">
-          <strong>Architecture Layer:</strong> Mid-Level (Composable Building Blocks) •{' '}
-          <strong>Domain:</strong> Tools & Agents
+          <strong>Architecture Layer:</strong> Mid-Level (Composable Building
+          Blocks) • <strong>Domain:</strong> Tools & Agents
         </p>
       </div>
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
-          <li>Building AI agents that call external APIs and display results visually</li>
-          <li>Chat applications with function calling (weather, search, calculations, etc.)</li>
+          <li>
+            Building AI agents that call external APIs and display results
+            visually
+          </li>
+          <li>
+            Chat applications with function calling (weather, search,
+            calculations, etc.)
+          </li>
           <li>When you need custom React components to render tool outputs</li>
-          <li>Applications requiring seamless tool call extraction from AI responses</li>
+          <li>
+            Applications requiring seamless tool call extraction from AI
+            responses
+          </li>
         </ul>
 
         <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>Simple chat without tools - use <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> instead</li>
+          <li>
+            Simple chat without tools - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">useClarityChat</code>{' '}
+            instead
+          </li>
           <li>Backend-only tool execution - handle in your API routes</li>
           <li>When tool results don&apos;t need custom UI rendering</li>
         </ul>
@@ -105,26 +118,33 @@ function ChatWithTools() {
                     <td className="p-3 font-mono text-sm">api</td>
                     <td className="p-3 font-mono text-sm">string</td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      <strong>Required.</strong> API endpoint URL for chat requests.
+                      <strong>Required.</strong> API endpoint URL for chat
+                      requests.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">toolRegistry</td>
-                    <td className="p-3 font-mono text-sm">ToolComponentRegistry</td>
+                    <td className="p-3 font-mono text-sm">
+                      ToolComponentRegistry
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      <strong>Required.</strong> Registry mapping tool names to React components.
+                      <strong>Required.</strong> Registry mapping tool names to
+                      React components.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">autoExtractTools</td>
                     <td className="p-3 font-mono text-sm">boolean</td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      Whether to automatically extract tool results from messages. Default: true.
+                      Whether to automatically extract tool results from
+                      messages. Default: true.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">...rest</td>
-                    <td className="p-3 font-mono text-sm">UseClarityChatOptions</td>
+                    <td className="p-3 font-mono text-sm">
+                      UseClarityChatOptions
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       All options from{' '}
                       <Link
@@ -155,21 +175,29 @@ function ChatWithTools() {
                 <tbody className="divide-y">
                   <tr>
                     <td className="p-3 font-mono text-sm">toolResults</td>
-                    <td className="p-3 font-mono text-sm">ExtractedToolResult[]</td>
+                    <td className="p-3 font-mono text-sm">
+                      ExtractedToolResult[]
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Array of extracted tool results from messages.
                     </td>
                   </tr>
                   <tr>
-                    <td className="p-3 font-mono text-sm">getToolResultsForMessage</td>
-                    <td className="p-3 font-mono text-sm">(messageId: string) =&gt; ExtractedToolResult[]</td>
+                    <td className="p-3 font-mono text-sm">
+                      getToolResultsForMessage
+                    </td>
+                    <td className="p-3 font-mono text-sm">
+                      (messageId: string) =&gt; ExtractedToolResult[]
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Get tool results for a specific message.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">...rest</td>
-                    <td className="p-3 font-mono text-sm">UseClarityChatReturn</td>
+                    <td className="p-3 font-mono text-sm">
+                      UseClarityChatReturn
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       All return values from useClarityChat.
                     </td>

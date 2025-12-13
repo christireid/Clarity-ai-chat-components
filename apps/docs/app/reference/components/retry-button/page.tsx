@@ -13,7 +13,9 @@ export default function RetryButtonPage() {
       <div className="docs-header">
         <span className="docs-badge">Component</span>
         <h1>RetryButton</h1>
-        <p className="docs-lead">Provides retry semantics and feedback for transient failures.</p>
+        <p className="docs-lead">
+          Provides retry semantics and feedback for transient failures.
+        </p>
       </div>
 
       <section className="docs-section">

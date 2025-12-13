@@ -5,10 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export const metadata: Metadata = {
   title: 'CollaborativeEditor - Clarity Chat Components',
-  description: 'Real-time collaborative editing with cursor tracking, presence indicators, and conflict resolution.',
+  description:
+    'Real-time collaborative editing with cursor tracking, presence indicators, and conflict resolution.',
 }
 
 const props: Prop[] = [
@@ -84,7 +84,8 @@ export default function CollaborativeEditorPage() {
         <span className="docs-badge">Component</span>
         <h1>CollaborativeEditor</h1>
         <p className="docs-lead">
-          Real-time collaborative editing with cursor tracking, presence indicators, message locking, and conflict resolution.
+          Real-time collaborative editing with cursor tracking, presence
+          indicators, message locking, and conflict resolution.
         </p>
       </div>
 
@@ -100,15 +101,14 @@ export default function CollaborativeEditorPage() {
 
       <Callout type="info">
         <p>
-          <strong>Real-time Collaboration:</strong> This component requires a WebSocket or similar real-time connection to sync edits between users.
+          <strong>Real-time Collaboration:</strong> This component requires a
+          WebSocket or similar real-time connection to sync edits between users.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Enable collaborative editing for a message:
-        </p>
+        <p>Enable collaborative editing for a message:</p>
         <CodePlayground
           initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -154,9 +154,7 @@ function CollaborativeMessage({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Message Locking</h2>
-        <p>
-          Implement message locking to prevent conflicts:
-        </p>
+        <p>Implement message locking to prevent conflicts:</p>
         <CodePlayground
           initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 
@@ -188,9 +186,7 @@ function WithLocking({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Conflict Resolution</h2>
-        <p>
-          Configure conflict resolution strategy:
-        </p>
+        <p>Configure conflict resolution strategy:</p>
         <CodePlayground
           initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 
@@ -213,9 +209,7 @@ function WithConflictResolution({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Cursor Tracking</h2>
-        <p>
-          Track and display cursor positions:
-        </p>
+        <p>Track and display cursor positions:</p>
         <CodePlayground
           initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 
@@ -239,9 +233,7 @@ function WithCursors({ message }: { message: Message }) {
 
       <section className="docs-section">
         <h2>Presence Indicators</h2>
-        <p>
-          Show presence indicators for active editors:
-        </p>
+        <p>Show presence indicators for active editors:</p>
         <CodePlayground
           initialCode={`import { CollaborativeEditor } from '@clarity-chat/react'
 
@@ -267,21 +259,33 @@ function WithPresence({ message }: { message: Message }) {
       <section className="docs-section">
         <h2>Conflict Resolution Strategies</h2>
         <ul>
-          <li><strong>last-write-wins</strong>: Most recent edit wins (simple, fast)</li>
-          <li><strong>operational-transform</strong>: Transform operations to resolve conflicts (complex, accurate)</li>
-          <li><strong>manual</strong>: Handle conflicts manually (full control)</li>
+          <li>
+            <strong>last-write-wins</strong>: Most recent edit wins (simple,
+            fast)
+          </li>
+          <li>
+            <strong>operational-transform</strong>: Transform operations to
+            resolve conflicts (complex, accurate)
+          </li>
+          <li>
+            <strong>manual</strong>: Handle conflicts manually (full control)
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Edit Operations</h2>
-        <p>
-          Edit operations include:
-        </p>
+        <p>Edit operations include:</p>
         <ul>
-          <li><code>insert</code>: Insert text at position</li>
-          <li><code>delete</code>: Delete text at position</li>
-          <li><code>replace</code>: Replace text at position</li>
+          <li>
+            <code>insert</code>: Insert text at position
+          </li>
+          <li>
+            <code>delete</code>: Delete text at position
+          </li>
+          <li>
+            <code>replace</code>: Replace text at position
+          </li>
         </ul>
       </section>
 
@@ -289,8 +293,13 @@ function WithPresence({ message }: { message: Message }) {
         <h2>Best Practices</h2>
         <ul>
           <li>Use message locking for critical edits</li>
-          <li>Set appropriate <code>lockTimeout</code> based on edit duration</li>
-          <li>Use <code>operational-transform</code> for complex collaborative editing</li>
+          <li>
+            Set appropriate <code>lockTimeout</code> based on edit duration
+          </li>
+          <li>
+            Use <code>operational-transform</code> for complex collaborative
+            editing
+          </li>
           <li>Broadcast cursor positions for better UX</li>
           <li>Show presence indicators to indicate active editors</li>
           <li>Sync operations to server in real-time</li>
@@ -300,8 +309,16 @@ function WithPresence({ message }: { message: Message }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-collaborative-session">useCollaborativeSession</a> - Collaborative session management</li>
-          <li><a href="/reference/components/chat-window">ChatWindow</a> - Main chat interface</li>
+          <li>
+            <a href="/reference/hooks/use-collaborative-session">
+              useCollaborativeSession
+            </a>{' '}
+            - Collaborative session management
+          </li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> - Main
+            chat interface
+          </li>
         </ul>
       </section>
     </div>

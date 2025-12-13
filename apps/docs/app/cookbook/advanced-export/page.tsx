@@ -3,10 +3,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Advanced Export Workflows - Cookbook - Clarity Chat',
-  description: 'Export chat transcripts with analytics, privacy filtering, and multiple formats.',
+  description:
+    'Export chat transcripts with analytics, privacy filtering, and multiple formats.',
 }
 
 export default function AdvancedExportCookbook() {
@@ -17,7 +17,8 @@ export default function AdvancedExportCookbook() {
         <span className="docs-badge">Enterprise</span>
         <h1>Advanced Export Workflows</h1>
         <p className="docs-lead">
-          Generate PDF, Markdown, HTML, JSON, or plain text transcripts with metadata, analytics, and privacy safeguards.
+          Generate PDF, Markdown, HTML, JSON, or plain text transcripts with
+          metadata, analytics, and privacy safeguards.
         </p>
       </div>
 
@@ -97,11 +98,17 @@ fs.writeFileSync('conversation.pdf', pdfBuffer)`}
         <h2>Privacy Tips</h2>
         <Callout type="warning">
           <ul>
-            <li>Enable <code>privacyMode</code> to redact PII automatically.</li>
             <li>
-              Supply a custom <code>messageFilter</code> to exclude system messages or sensitive metadata.
+              Enable <code>privacyMode</code> to redact PII automatically.
             </li>
-            <li>Log every export event with user id, branch id, and format for auditing.</li>
+            <li>
+              Supply a custom <code>messageFilter</code> to exclude system
+              messages or sensitive metadata.
+            </li>
+            <li>
+              Log every export event with user id, branch id, and format for
+              auditing.
+            </li>
           </ul>
         </Callout>
       </section>

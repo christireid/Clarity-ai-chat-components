@@ -6,10 +6,10 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Voice Input Recipe | Clarity Chat Cookbook',
-  description: 'Learn how to add voice-to-text input to your chat application for hands-free interaction.',
+  description:
+    'Learn how to add voice-to-text input to your chat application for hands-free interaction.',
 }
 
 export default function VoiceInputPage() {
@@ -20,14 +20,15 @@ export default function VoiceInputPage() {
       <h1>Voice Input Recipe</h1>
 
       <p className="lead">
-        Add voice-to-text input to your chat application for hands-free interaction.
-        Perfect for mobile apps, accessibility, and modern UX.
+        Add voice-to-text input to your chat application for hands-free
+        interaction. Perfect for mobile apps, accessibility, and modern UX.
       </p>
 
       <Callout type="info" title="Web Speech API">
         <p>
-          Voice input uses the Web Speech API, which is supported in Chrome, Edge, and Safari.
-          The component gracefully degrades on unsupported browsers.
+          Voice input uses the Web Speech API, which is supported in Chrome,
+          Edge, and Safari. The component gracefully degrades on unsupported
+          browsers.
         </p>
       </Callout>
 
@@ -36,7 +37,7 @@ export default function VoiceInputPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Add voice input with just a few lines:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { VoiceInput, ClarityChat } from '@clarity-chat/react'
@@ -64,7 +65,7 @@ function Chat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Integrate voice input with custom chat UI:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat, ChatWindow, VoiceInput } from '@clarity-chat/react'
@@ -100,7 +101,7 @@ function VoiceChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Combine voice input with text input:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { AdvancedChatInput, VoiceInput } from '@clarity-chat/react'
@@ -134,7 +135,7 @@ function ChatInput() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Show real-time transcription as the user speaks:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { VoiceInput } from '@clarity-chat/react'
@@ -169,7 +170,7 @@ function VoiceChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Support multiple languages:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { VoiceInput } from '@clarity-chat/react'
@@ -214,7 +215,7 @@ function MultiLanguageChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Handle errors gracefully:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { VoiceInput } from '@clarity-chat/react'
@@ -246,7 +247,7 @@ function VoiceChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Check browser support before showing voice input:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { VoiceInput } from '@clarity-chat/react'
@@ -287,7 +288,7 @@ function VoiceChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Optimize for mobile devices:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { VoiceInput } from '@clarity-chat/react'
@@ -310,13 +311,34 @@ function MobileVoiceChat() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Request permission early</strong> - Ask for microphone permission on first use</li>
-          <li><strong>Show visual feedback</strong> - Use animations to indicate listening state</li>
-          <li><strong>Handle errors gracefully</strong> - Provide clear error messages</li>
-          <li><strong>Support multiple languages</strong> - Allow users to select their language</li>
-          <li><strong>Show interim results</strong> - Display real-time transcription</li>
-          <li><strong>Auto-submit on speech end</strong> - Improve UX by automatically sending</li>
-          <li><strong>Check browser support</strong> - Hide voice input on unsupported browsers</li>
+          <li>
+            <strong>Request permission early</strong> - Ask for microphone
+            permission on first use
+          </li>
+          <li>
+            <strong>Show visual feedback</strong> - Use animations to indicate
+            listening state
+          </li>
+          <li>
+            <strong>Handle errors gracefully</strong> - Provide clear error
+            messages
+          </li>
+          <li>
+            <strong>Support multiple languages</strong> - Allow users to select
+            their language
+          </li>
+          <li>
+            <strong>Show interim results</strong> - Display real-time
+            transcription
+          </li>
+          <li>
+            <strong>Auto-submit on speech end</strong> - Improve UX by
+            automatically sending
+          </li>
+          <li>
+            <strong>Check browser support</strong> - Hide voice input on
+            unsupported browsers
+          </li>
         </ul>
       </section>
 
@@ -344,7 +366,10 @@ function MobileVoiceChat() {
 
       <Pagination
         prev={{ title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' }}
-        next={{ title: 'Custom Tool Integration', href: '/cookbook/custom-tool-integration' }}
+        next={{
+          title: 'Custom Tool Integration',
+          href: '/cookbook/custom-tool-integration',
+        }}
       />
     </>
   )

@@ -4,7 +4,6 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-
 export const metadata: Metadata = {
   title: 'Best Practices Guide - Clarity Chat',
   description: 'Best practices for using Clarity Chat components effectively.',
@@ -132,9 +131,17 @@ const handleSubmit = async () => {
       <section className="docs-section">
         <h2>Next Steps</h2>
         <ul>
-          <li><a href="/guides/getting-started">Getting Started</a> - Learn the basics</li>
-          <li><a href="/guides/components">Components Guide</a> - Component usage</li>
-          <li><a href="/guides/integration">Integration Guide</a> - Integration patterns</li>
+          <li>
+            <a href="/guides/getting-started">Getting Started</a> - Learn the
+            basics
+          </li>
+          <li>
+            <a href="/guides/components">Components Guide</a> - Component usage
+          </li>
+          <li>
+            <a href="/guides/integration">Integration Guide</a> - Integration
+            patterns
+          </li>
         </ul>
       </section>
     </div>
