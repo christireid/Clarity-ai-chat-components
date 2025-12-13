@@ -365,11 +365,25 @@ export function ChatWindow({
       !('status' in firstMessage) // Message has 'status', CoreMessage doesn't
 
     if (isCoreMessage) {
-      return convertCoreMessagesToMessages(messages as CoreMessage[])
+      const converted = convertCoreMessagesToMessages(messages as CoreMessage[])
+      if (!isLoading) return converted
+
+      // Mark the latest assistant message as streaming for better UX/a11y.
+      // This enables aria-busy in MessageList and hides follow-up suggestions while streaming.
+      for (let i = converted.length - 1; i >= 0; i--) {
+        const msg = converted[i]
+        if (msg?.role === 'assistant') {
+          const next = [...converted]
+          next[i] = { ...msg, status: 'streaming', updatedAt: new Date() }
+          return next
+        }
+      }
+
+      return converted
     }
 
     return messages as Message[]
-  }, [messages])
+  }, [messages, isLoading])
 
   // React 19: Compiler optimizes - no useCallback needed
   const handleSubmit = (content: string) => {

@@ -241,6 +241,7 @@ export function MessageList({
       <ScrollArea
         ref={scrollRef as React.LegacyRef<HTMLDivElement>}
         className="flex-1 min-h-0 bg-transparent px-2 py-4 sm:px-4"
+        data-chat-container
       >
         <AnimatePresence mode="wait" initial={false}>
           {/* Loading skeletons - only when no messages exist */}

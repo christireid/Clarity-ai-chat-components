@@ -37,6 +37,12 @@
 import * as React from 'react'
 import type { MessageRole } from '@clarity-chat/types'
 import { generateId } from '@clarity-chat/primitives'
+import { processStream, type StreamFormat } from '../utils/streaming-helpers'
+import {
+  extractContentFromChunk,
+  parseStreamingChunk,
+  type StreamingChunk,
+} from '../utils/streaming-parser'
 
 /**
  * Core message content type - supports text and multi-modal content
@@ -129,6 +135,19 @@ export interface UseChatOptions {
   experimental?: {
     /** Custom streaming implementation */
     streamProtocol?: 'sse' | 'data' | 'webstream'
+    /**
+     * Optional transport override for advanced use cases.
+     * Used internally by useClarityChat when `transport: 'websocket'`.
+     */
+    transport?: 'http' | 'websocket'
+    /**
+     * WebSocket-specific settings (only used when transport === 'websocket').
+     * If `url` is omitted, `api` is used and normalized to ws/wss when possible.
+     */
+    websocket?: {
+      url?: string
+      protocols?: string | string[]
+    }
     /** Additional options */
     [key: string]: any
   }
@@ -235,6 +254,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const currentAssistantMessageRef = React.useRef<CoreMessage | null>(null)
   const messageIdRef = React.useRef<string | null>(null)
+  const wsRef = React.useRef<WebSocket | null>(null)
 
   // Track if component is mounted
   const mountedRef = React.useRef(true)
@@ -246,12 +266,41 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   }, [])
 
   /**
+   * Normalize an API string into a WebSocket URL.
+   * Accepts ws/wss URLs, http/https URLs, or relative paths (client-only).
+   */
+  const normalizeWebSocketUrl = React.useCallback((input: string): string => {
+    if (input.startsWith('ws://') || input.startsWith('wss://')) return input
+    if (input.startsWith('http://')) return `ws://${input.slice('http://'.length)}`
+    if (input.startsWith('https://')) return `wss://${input.slice('https://'.length)}`
+
+    // Relative path - only valid in browser.
+    if (typeof window === 'undefined') {
+      throw new Error(
+        '[useChatEnhanced] WebSocket transport requires an absolute ws(s):// URL when used outside the browser.'
+      )
+    }
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    return `${protocol}//${window.location.host}${input.startsWith('/') ? input : `/${input}`}`
+  }, [])
+
+  /**
    * Abort current request
    */
   const abort = React.useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
       abortControllerRef.current = null
+    }
+
+    if (wsRef.current) {
+      try {
+        wsRef.current.close(1000, 'Client abort')
+      } catch {
+        // ignore
+      } finally {
+        wsRef.current = null
+      }
     }
   }, [])
 
@@ -280,7 +329,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const append = React.useCallback(
     async (
       message: CoreMessage | Pick<CoreMessage, 'role' | 'content'>,
-      options?: { data?: Record<string, any> }
+      appendOptions?: { data?: Record<string, any> }
     ): Promise<string | null> => {
       const messageId = generateMessageId()
       const fullMessage: CoreMessage = {
@@ -322,20 +371,197 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
         setData(assistantMessage)
 
         try {
-          // Prepare request body
+          // Prepare request body (shared between http + websocket)
+          const transformedMessages = transform
+            ? transform([...messages, fullMessage])
+            : [...messages, fullMessage]
+
           const requestBody: Record<string, any> = {
             ...body,
-            ...options?.data,
-            messages: transform
-              ? transform([...messages, fullMessage])
-              : [...messages, fullMessage],
+            ...appendOptions?.data,
+            messages: transformedMessages,
           }
 
           if (maxSteps !== undefined) {
             requestBody['maxSteps'] = maxSteps
           }
 
-          // Make request
+          const useWsFinal = (experimental?.transport ?? 'http') === 'websocket'
+
+          if (useWsFinal) {
+            // WebSocket transport streaming (client-only)
+            const wsUrl =
+              experimental?.websocket?.url ??
+              normalizeWebSocketUrl(api)
+
+            // Close any previous socket
+            if (wsRef.current) {
+              try {
+                wsRef.current.close(1000, 'New request')
+              } catch {
+                // ignore
+              }
+              wsRef.current = null
+            }
+
+            let accumulatedContent = ''
+            let currentMessage = { ...assistantMessage }
+            let rafScheduled = false
+            let pendingDelta = ''
+
+            const flush = () => {
+              rafScheduled = false
+              if (!pendingDelta) return
+              accumulatedContent += pendingDelta
+              pendingDelta = ''
+              if (!mountedRef.current) return
+              currentMessage = {
+                ...currentMessage,
+                content: accumulatedContent,
+              }
+              currentAssistantMessageRef.current = currentMessage
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMessageId ? currentMessage : msg
+                )
+              )
+              setData(currentMessage)
+            }
+
+            const scheduleFlush = () => {
+              if (rafScheduled) return
+              rafScheduled = true
+              if (typeof requestAnimationFrame !== 'undefined') {
+                requestAnimationFrame(flush)
+              } else {
+                setTimeout(flush, 16)
+              }
+            }
+
+            const mergeToolInvocation = (
+              toolInvocation: NonNullable<StreamingChunk['toolInvocation']>
+            ) => {
+              const invocations = currentMessage.toolInvocations
+                ? [...currentMessage.toolInvocations]
+                : []
+              const idx = invocations.findIndex(
+                (t) => t.toolCallId === toolInvocation.toolCallId
+              )
+              const normalized = {
+                toolCallId: toolInvocation.toolCallId,
+                toolName: toolInvocation.toolName,
+                args: toolInvocation.args ?? {},
+                state: toolInvocation.state,
+                result: toolInvocation.result,
+              }
+              if (idx === -1) invocations.push(normalized)
+              else invocations[idx] = { ...invocations[idx]!, ...normalized }
+              currentMessage = { ...currentMessage, toolInvocations: invocations }
+            }
+
+            await new Promise<void>((resolve, reject) => {
+              const ws = new WebSocket(
+                wsUrl,
+                experimental?.websocket?.protocols
+              )
+              wsRef.current = ws
+
+              let finished = false
+
+              const finish = async () => {
+                if (finished) return
+                finished = true
+                flush()
+                if (mountedRef.current) {
+                  const finalMessage: CoreMessage = {
+                    ...currentMessage,
+                    content: accumulatedContent,
+                  }
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === assistantMessageId ? finalMessage : msg
+                    )
+                  )
+                  setData(finalMessage)
+                  await onFinish?.(finalMessage)
+                }
+                resolve()
+              }
+
+              ws.addEventListener('open', () => {
+                try {
+                  ws.send(
+                    JSON.stringify({
+                      type: 'chat_request',
+                      ...requestBody,
+                    })
+                  )
+                } catch (err) {
+                  reject(err)
+                }
+              })
+
+              ws.addEventListener('message', (event) => {
+                const raw =
+                  typeof event.data === 'string' ? event.data : String(event.data)
+
+                // Done sentinel support
+                if (raw === '[DONE]') {
+                  void finish()
+                  return
+                }
+
+                const parsed = parseStreamingChunk(raw) ?? { content: raw }
+
+                // Recognize explicit done-ish objects
+                const anyParsed = parsed as any
+                if (
+                  anyParsed?.done === true ||
+                  anyParsed?.type === 'done' ||
+                  anyParsed?.event === 'done'
+                ) {
+                  void finish()
+                  return
+                }
+
+                // Tool invocation support
+                if (parsed.toolInvocation) {
+                  mergeToolInvocation(parsed.toolInvocation)
+                  if (mountedRef.current) {
+                    setMessages((prev) =>
+                      prev.map((msg) =>
+                        msg.id === assistantMessageId ? currentMessage : msg
+                      )
+                    )
+                    setData(currentMessage)
+                  }
+                }
+
+                const delta = extractContentFromChunk(parsed)
+                if (delta) {
+                  pendingDelta += delta
+                  scheduleFlush()
+                }
+              })
+
+              ws.addEventListener('error', () => {
+                if (!finished) reject(new Error('WebSocket streaming error'))
+              })
+
+              ws.addEventListener('close', (event) => {
+                // If server closes cleanly, treat as completion.
+                if (event.code === 1000 || event.wasClean) {
+                  void finish()
+                  return
+                }
+                if (!finished) reject(new Error(`WebSocket closed: ${event.code}`))
+              })
+            })
+
+            return assistantMessageId
+          }
+
+          // HTTP transport
           const response = await customFetch(api, {
             method: 'POST',
             headers: {
@@ -361,7 +587,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
               role: 'assistant',
               content: result.content || result.text || '',
             }
-            
+
             if (mountedRef.current) {
               setMessages((prev) =>
                 prev.map((msg) =>
@@ -371,108 +597,81 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
               setData(finalMessage)
               await onFinish?.(finalMessage)
             }
-            
+
             return assistantMessageId
           }
 
-          // Streaming response
-          const reader = response.body.getReader()
-          const decoder = new TextDecoder()
+          // Streaming response (robust buffering + tool support + frame batching)
           let accumulatedContent = ''
           let currentMessage = { ...assistantMessage }
+          let rafScheduled = false
+          let pendingDelta = ''
 
-          while (true) {
-            const { done, value } = await reader.read()
+          const flush = () => {
+            rafScheduled = false
+            if (!pendingDelta) return
+            accumulatedContent += pendingDelta
+            pendingDelta = ''
+            if (!mountedRef.current) return
+            currentMessage = { ...currentMessage, content: accumulatedContent }
+            currentAssistantMessageRef.current = currentMessage
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId ? currentMessage : msg
+              )
+            )
+            setData(currentMessage)
+          }
 
-            if (done) break
+          const scheduleFlush = () => {
+            if (rafScheduled) return
+            rafScheduled = true
+            if (typeof requestAnimationFrame !== 'undefined') {
+              requestAnimationFrame(flush)
+            } else {
+              setTimeout(flush, 16)
+            }
+          }
 
-            const chunk = decoder.decode(value, { stream: true })
-            const lines = chunk.split('\n')
+          const mergeToolInvocation = (
+            toolInvocation: NonNullable<StreamingChunk['toolInvocation']>
+          ) => {
+            const invocations = currentMessage.toolInvocations
+              ? [...currentMessage.toolInvocations]
+              : []
+            const idx = invocations.findIndex(
+              (t) => t.toolCallId === toolInvocation.toolCallId
+            )
+            const normalized = {
+              toolCallId: toolInvocation.toolCallId,
+              toolName: toolInvocation.toolName,
+              args: toolInvocation.args ?? {},
+              state: toolInvocation.state,
+              result: toolInvocation.result,
+            }
+            if (idx === -1) invocations.push(normalized)
+            else invocations[idx] = { ...invocations[idx]!, ...normalized }
+            currentMessage = { ...currentMessage, toolInvocations: invocations }
+          }
 
-            for (const line of lines) {
-              if (!line.trim()) continue
+          const format: StreamFormat =
+            streamProtocol === 'sse' ? 'sse' : 'ndjson'
 
-              // Handle SSE format
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6)
-                if (data === '[DONE]') {
-                  break
-                }
-
-                try {
-                  const parsed = JSON.parse(data)
-                  
-                  // Handle different streaming formats
-                  let contentDelta = ''
-                  
-                  if (parsed.choices?.[0]?.delta?.content) {
-                    // OpenAI chat completions format
-                    contentDelta = parsed.choices[0].delta.content
-                  } else if (parsed.choices?.[0]?.text) {
-                    // OpenAI completions format
-                    contentDelta = parsed.choices[0].text
-                  } else if (parsed.content) {
-                    // Direct content field
-                    contentDelta = typeof parsed.content === 'string' ? parsed.content : ''
-                  } else if (parsed.text) {
-                    // Text field
-                    contentDelta = parsed.text
-                  } else if (parsed.delta) {
-                    // Delta format
-                    contentDelta = typeof parsed.delta === 'string' ? parsed.delta : ''
-                  } else if (parsed.message?.content) {
-                    // Message wrapper format
-                    contentDelta = parsed.message.content
-                  } else if (typeof parsed === 'string') {
-                    // String response
-                    contentDelta = parsed
-                  }
-
-                  if (contentDelta) {
-                    accumulatedContent += contentDelta
-                    
-                    if (mountedRef.current) {
-                      currentMessage = {
-                        ...currentMessage,
-                        content: accumulatedContent,
-                      }
-                      currentAssistantMessageRef.current = currentMessage
-                      setMessages((prev) =>
-                        prev.map((msg) =>
-                          msg.id === assistantMessageId ? currentMessage : msg
-                        )
-                      )
-                      setData(currentMessage)
-                    }
-                  }
-                } catch {
-                  // Non-JSON line, treat as plain text
-                  if (data.trim() && data !== '[DONE]') {
-                    accumulatedContent += data
-                    if (mountedRef.current) {
-                      currentMessage = {
-                        ...currentMessage,
-                        content: accumulatedContent,
-                      }
-                      currentAssistantMessageRef.current = currentMessage
-                      setMessages((prev) =>
-                        prev.map((msg) =>
-                          msg.id === assistantMessageId ? currentMessage : msg
-                        )
-                      )
-                      setData(currentMessage)
-                    }
-                  }
-                }
-              } else if (line.trim()) {
-                // Plain text streaming
-                accumulatedContent += line
+          await processStream(response.body, {
+            signal: abortControllerRef.current.signal,
+            format,
+            onChunk: (delta) => {
+              if (!delta) return
+              pendingDelta += delta
+              scheduleFlush()
+            },
+            onData: (data) => {
+              // Format-aware data parsing happens inside processStream.
+              if (typeof data !== 'object' || data === null) return
+              const chunk = data as StreamingChunk
+              if (chunk.toolInvocation) {
+                mergeToolInvocation(chunk.toolInvocation)
                 if (mountedRef.current) {
-                  currentMessage = {
-                    ...currentMessage,
-                    content: accumulatedContent,
-                  }
-                  currentAssistantMessageRef.current = currentMessage
                   setMessages((prev) =>
                     prev.map((msg) =>
                       msg.id === assistantMessageId ? currentMessage : msg
@@ -481,10 +680,11 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                   setData(currentMessage)
                 }
               }
-            }
-          }
+            },
+          })
 
-          // Finalize message
+          flush()
+
           if (mountedRef.current) {
             const finalMessage: CoreMessage = {
               ...currentMessage,
@@ -520,6 +720,15 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
             abortControllerRef.current = null
             currentAssistantMessageRef.current = null
             messageIdRef.current = null
+            if (wsRef.current) {
+              try {
+                wsRef.current.close(1000, 'Request finished')
+              } catch {
+                // ignore
+              } finally {
+                wsRef.current = null
+              }
+            }
           }
         }
       }
@@ -534,6 +743,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       customFetch,
       maxSteps,
       stream,
+      streamProtocol,
       transform,
       messages,
       generateMessageId,
@@ -542,6 +752,8 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       onError,
       onMessageAppend,
       keepLastMessageOnError,
+      experimental,
+      normalizeWebSocketUrl,
     ]
   )
 

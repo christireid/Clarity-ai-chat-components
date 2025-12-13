@@ -114,7 +114,7 @@ export function useClarityChat(
   // Validate API endpoint
   validateApiEndpoint(options.api)
 
-  const { memory, transport, promptOptimization, ...rest } = options
+  const { memory, transport, websocket, promptOptimization, ...rest } = options
 
   // Get memory context safely (returns null if MemoryProvider is not available)
   const memoryContext = useMemorySafe()
@@ -124,6 +124,22 @@ export function useClarityChat(
 
   // Configure transport protocol
   const streamProtocol = transport === 'websocket' ? 'data' : 'sse'
+
+  // Hook-level experimental transport configuration for useChatEnhanced.
+  // This is what actually switches between HTTP streaming and WebSocket streaming.
+  const experimentalTransport = React.useMemo(() => {
+    if (transport === 'websocket') {
+      return {
+        transport: 'websocket' as const,
+        websocket: {
+          // Allow ws://, wss://, http(s)://, or relative paths; normalized downstream.
+          url: options.api,
+          protocols: websocket?.protocols,
+        },
+      }
+    }
+    return { transport: 'http' as const }
+  }, [transport, options.api, websocket?.protocols])
 
   // Refs for synchronous access
   const memoryContextRef = React.useRef<string>('')
@@ -237,6 +253,7 @@ export function useClarityChat(
   const chat = useChatEnhanced({
     stream: true,
     streamProtocol,
+    experimental: experimentalTransport,
     ...rest,
     transform:
       memory?.enabled && memoryContext?.service

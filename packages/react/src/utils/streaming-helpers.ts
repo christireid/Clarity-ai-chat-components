@@ -65,7 +65,9 @@ export interface StreamResult {
 /**
  * Parse SSE (Server-Sent Events) data line
  */
-export function parseSSELine(line: string): { event?: string; data?: string; id?: string } | null {
+export function parseSSELine(
+  line: string
+): { event?: string; data?: string; id?: string; done?: boolean } | null {
   const trimmed = line.trim()
   
   if (!trimmed || trimmed.startsWith(':')) {
@@ -74,7 +76,8 @@ export function parseSSELine(line: string): { event?: string; data?: string; id?
 
   if (trimmed.startsWith('data:')) {
     const data = trimmed.slice(5).trim()
-    return { data: data === '[DONE]' ? undefined : data }
+    if (data === '[DONE]') return { done: true }
+    return { data }
   }
 
   if (trimmed.startsWith('event:')) {
@@ -136,6 +139,37 @@ export function extractStreamContent(chunk: unknown): string {
 }
 
 /**
+ * Parse a raw line into structured data based on format.
+ * Used by processStream to power the `onData` callback.
+ */
+function parseChunkDataByFormat(line: string, format: StreamFormat): unknown | null {
+  switch (format) {
+    case 'sse': {
+      const parsed = parseSSELine(line)
+      if (!parsed) return null
+      if (parsed.done) return { done: true }
+      if (!parsed.data) return null
+      return safeParseJSON(parsed.data) ?? parsed.data
+    }
+
+    case 'json-stream':
+    case 'ndjson': {
+      // Some servers still prefix "data:" even for ndjson.
+      const trimmed = line.trim()
+      if (trimmed === '[DONE]') return { done: true }
+      const payload = trimmed.startsWith('data:')
+        ? trimmed.slice(5).trim()
+        : trimmed
+      return safeParseJSON(payload) ?? null
+    }
+
+    case 'plain-text':
+    default:
+      return line
+  }
+}
+
+/**
  * Process a streaming response with configurable format handling
  * 
  * @example
@@ -172,6 +206,7 @@ export async function processStream(
   let chunks = 0
   let bytes = 0
   let cancelled = false
+  let sawDone = false
 
   try {
     while (true) {
@@ -211,19 +246,46 @@ export async function processStream(
       for (const line of lines) {
         if (!line.trim()) continue
 
+        // Always honor done markers, even if no onData callback is provided.
+        if (format === 'sse') {
+          const parsed = parseSSELine(line)
+          if (parsed?.done) {
+            sawDone = true
+            break
+          }
+        } else if (
+          (format === 'json-stream' || format === 'ndjson') &&
+          line.trim() === '[DONE]'
+        ) {
+          sawDone = true
+          break
+        }
+
         const processed = processChunkByFormat(line, format)
         if (processed) {
           content += processed
           onChunk?.(processed)
         }
 
-        // Parse data if callback provided
+        // Parse structured data if callback provided (format-aware)
         if (onData) {
-          const parsed = safeParseJSON(line)
-          if (parsed) {
-            onData(parsed)
+          const parsedData = parseChunkDataByFormat(line, format)
+          if (parsedData !== null) {
+            onData(parsedData)
+            if (
+              typeof parsedData === 'object' &&
+              parsedData !== null &&
+              (parsedData as Record<string, unknown>)['done'] === true
+            ) {
+              sawDone = true
+              break
+            }
           }
         }
+      }
+
+      if (sawDone) {
+        break
       }
 
       // Prevent buffer overflow

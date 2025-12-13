@@ -66,7 +66,22 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** Callback when a message is copied */
   onMessageCopy?: (id: string, content: string) => void
   /** Callback when message feedback is provided */
-  onMessageFeedback?: (messageId: string, feedbackType: 'positive' | 'negative') => void
+  onMessageFeedback?: (
+    messageId: string,
+    feedbackType: 'up' | 'down' | 'positive' | 'negative'
+  ) => void
+  /** Callback when retry is requested (message-level) */
+  onMessageRetry?: (messageId: string) => void
+  /** Callback when a message is edited */
+  onEditMessage?: (messageId: string) => void
+  /** Callback when a message is regenerated */
+  onRegenerateMessage?: (messageId: string) => void
+  /** Callback when a message is deleted */
+  onDeleteMessage?: (messageId: string) => void
+  /** Starter prompts to show in empty state */
+  starterPrompts?: import('./prompt-suggestions').PromptSuggestion[]
+  /** Follow-up suggestions shown after last assistant message */
+  followUpSuggestions?: import('./prompt-suggestions').PromptSuggestion[]
   /** Theme for the chat interface */
   theme?: string
   /** Show token counter in input */
@@ -120,6 +135,7 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
  */
 export function ClarityChat({
   api,
+  chatId = 'default',
   className,
   emptyState,
   showHeader,
@@ -129,6 +145,14 @@ export function ClarityChat({
   showMessageCount,
   onExport,
   onClear,
+  onMessageCopy,
+  onMessageFeedback,
+  onMessageRetry,
+  onEditMessage,
+  onRegenerateMessage,
+  onDeleteMessage,
+  starterPrompts,
+  followUpSuggestions,
   ...hookOptions
 }: ClarityChatProps) {
   // Validate required prop with helpful error message
@@ -151,8 +175,8 @@ export function ClarityChat({
 
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = React.useMemo(
-    () => convertCoreMessagesToMessages(chat.messages),
-    [chat.messages]
+    () => convertCoreMessagesToMessages(chat.messages, chatId),
+    [chat.messages, chatId]
   )
 
   const handleSendMessage = React.useCallback(
@@ -160,6 +184,36 @@ export function ClarityChat({
       await chat.append({ role: 'user', content })
     },
     [chat]
+  )
+
+  // Dismissable error banner (since useChatEnhanced doesn't currently expose clearError)
+  const [dismissedErrorMessage, setDismissedErrorMessage] = React.useState<
+    string | null
+  >(null)
+  React.useEffect(() => {
+    setDismissedErrorMessage(null)
+  }, [chat.error?.message])
+
+  const errorMessage =
+    chat.error && chat.error.message !== dismissedErrorMessage
+      ? chat.error.message
+      : null
+
+  const handleDismissError = React.useCallback(() => {
+    setDismissedErrorMessage(chat.error?.message ?? null)
+  }, [chat.error?.message])
+
+  const handleRetry = React.useCallback(() => {
+    void chat.reload()
+  }, [chat])
+
+  const handleFeedback = React.useCallback(
+    (messageId: string, type: 'up' | 'down') => {
+      // Provide both vocabularies for maximum compatibility
+      onMessageFeedback?.(messageId, type)
+      onMessageFeedback?.(messageId, type === 'up' ? 'positive' : 'negative')
+    },
+    [onMessageFeedback]
   )
 
   const handleClear = React.useCallback(() => {
@@ -172,6 +226,7 @@ export function ClarityChat({
       messages={messages}
       isLoading={chat.isLoading}
       onSendMessage={handleSendMessage}
+      onStopGeneration={chat.stop}
       className={className}
       emptyState={emptyState}
       showHeader={showHeader}
@@ -181,6 +236,17 @@ export function ClarityChat({
       showMessageCount={showMessageCount}
       onExport={onExport}
       onClear={onClear ? handleClear : undefined}
+      error={errorMessage}
+      onRetry={chat.error ? handleRetry : undefined}
+      onDismissError={chat.error ? handleDismissError : undefined}
+      onMessageCopy={onMessageCopy}
+      onMessageFeedback={onMessageFeedback ? handleFeedback : undefined}
+      onMessageRetry={onMessageRetry}
+      onEditMessage={onEditMessage}
+      onRegenerateMessage={onRegenerateMessage}
+      onDeleteMessage={onDeleteMessage}
+      starterPrompts={starterPrompts}
+      followUpSuggestions={followUpSuggestions}
     />
   )
 }
