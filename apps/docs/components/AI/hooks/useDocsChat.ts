@@ -21,7 +21,12 @@ import {
   TOKEN_CRITICAL_THRESHOLD,
   generateSessionId,
 } from '../constants'
-import { normalizeSourceUrl, normalizeLinksInContent } from '../utils'
+import {
+  normalizeSourceUrl,
+  normalizeLinksInContent,
+  generateExportContent,
+  downloadExport,
+} from '../utils'
 import { useOfflineQueue, createPendingMessage } from './'
 
 export function useDocsChat() {
@@ -461,6 +466,67 @@ export function useDocsChat() {
     [messages, toast, handleSendMessage]
   )
 
+  // Feedback handler
+  const handleFeedback = useCallback(
+    async (messageId: string, type: 'up' | 'down') => {
+      try {
+        const response = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messageId,
+            feedbackType: type,
+            sessionId,
+            timestamp: new Date().toISOString(),
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`Feedback submission failed: ${response.status}`)
+        }
+
+        toast.success(
+          type === 'up'
+            ? 'Thanks for your feedback!'
+            : "Feedback received. We'll work on improving."
+        )
+      } catch (error) {
+        console.error('Failed to submit feedback:', error)
+        toast.error('Failed to submit feedback. Please try again.')
+      }
+    },
+    [sessionId, toast]
+  )
+
+  // Export handler
+  const handleExportWithFormat = useCallback(
+    async (options: {
+      format: string
+      includeMetadata?: boolean
+      includeImages?: boolean
+    }) => {
+      try {
+        const exportResult = generateExportContent(messages, sessionId, {
+          ...options,
+          format: options.format as 'json' | 'html' | 'markdown',
+        })
+        const downloadResult = downloadExport(exportResult)
+        if (downloadResult.success) {
+          toast.success(
+            `Conversation exported as ${exportResult.extension.toUpperCase()}`
+          )
+        } else {
+          throw new Error(downloadResult.error || 'Download failed')
+        }
+      } catch (error) {
+        console.error('Failed to export conversation:', error)
+        toast.error('Failed to export conversation')
+        throw error
+      }
+    },
+    [messages, sessionId, toast]
+  )
+
   const handleClear = useCallback(() => {
     setMessages([])
     clearSavedConversation()
@@ -482,6 +548,8 @@ export function useDocsChat() {
     messageQueue,
     handleSendMessage,
     handleMessageRetry,
+    handleFeedback,
+    handleExportWithFormat,
     handleClear,
     handleNetworkStatusChange,
   }

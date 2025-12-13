@@ -84,11 +84,8 @@ import {
   extractCodeBlocks,
   isPlaygroundCompatible,
   openInPlayground,
-  generateExportContent,
-  downloadExport,
 } from './utils'
-import { useBranching } from './hooks'
-import { useDocsChat } from './hooks/useDocsChat'
+import { useBranching, useDocsChat } from './hooks'
 
 // ============================================================================
 // Inner Component (wrapped by ErrorBoundary)
@@ -117,6 +114,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     messageQueue,
     handleSendMessage,
     handleMessageRetry,
+    handleFeedback,
+    handleExportWithFormat,
     handleClear,
     handleNetworkStatusChange,
   } = useDocsChat()
@@ -295,35 +294,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     [handleSendMessage]
   )
 
-  // Export handler
-  const handleExportWithFormat = useCallback(
-    async (options: {
-      format: string
-      includeMetadata?: boolean
-      includeImages?: boolean
-    }) => {
-      try {
-        const exportResult = generateExportContent(messages, sessionId, {
-          ...options,
-          format: options.format as 'json' | 'html' | 'markdown',
-        })
-        const downloadResult = downloadExport(exportResult)
-        if (downloadResult.success) {
-          toast.success(
-            `Conversation exported as ${exportResult.extension.toUpperCase()}`
-          )
-        } else {
-          throw new Error(downloadResult.error || 'Download failed')
-        }
-      } catch (error) {
-        console.error('Failed to export conversation:', error)
-        toast.error('Failed to export conversation')
-        throw error
-      }
-    },
-    [messages, sessionId, toast]
-  )
-
   const handleOpenExportDialog = useCallback(() => {
     setShowExportDialog(true)
   }, [])
@@ -334,38 +304,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       handleSendMessage(suggestion.text)
     },
     [handleSendMessage]
-  )
-
-  // Feedback handler
-  const handleFeedback = useCallback(
-    async (messageId: string, type: 'up' | 'down') => {
-      try {
-        const response = await fetch('/api/feedback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messageId,
-            feedbackType: type,
-            sessionId,
-            timestamp: new Date().toISOString(),
-          }),
-        })
-
-        if (!response.ok) {
-          throw new Error(`Feedback submission failed: ${response.status}`)
-        }
-
-        toast.success(
-          type === 'up'
-            ? 'Thanks for your feedback!'
-            : "Feedback received. We'll work on improving."
-        )
-      } catch (error) {
-        console.error('Failed to submit feedback:', error)
-        toast.error('Failed to submit feedback. Please try again.')
-      }
-    },
-    [sessionId, toast]
   )
 
   // Animation variants
@@ -527,7 +465,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  transition={{ duration: durations.normal, ease: 'easeOut' }}
                   className="absolute top-14 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm rounded-lg border border-border/40 shadow-lg overflow-hidden"
                 >
                   <div className="p-3">
@@ -548,7 +486,9 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   currentTokens={tokenTracker.tokens}
                   maxTokens={MODEL_MAX_TOKENS}
                   costPerToken={TOKEN_COST_PER_TOKEN}
-                  showWarning={tokenTracker.isNearLimit || tokenTracker.isCritical}
+                  showWarning={
+                    tokenTracker.isNearLimit || tokenTracker.isCritical
+                  }
                   warningThreshold={TOKEN_WARNING_THRESHOLD}
                   criticalThreshold={TOKEN_CRITICAL_THRESHOLD}
                   showCost
@@ -625,7 +565,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  transition={{ duration: durations.normal, ease: 'easeOut' }}
                   className="border-t border-border/40 bg-muted/30 overflow-hidden"
                 >
                   <div className="p-3">
