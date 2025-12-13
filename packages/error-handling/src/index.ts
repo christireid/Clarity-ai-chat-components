@@ -122,9 +122,32 @@ export type {
 // Additional Components
 // =============================================================================
 
+// Error Display (beautiful error presentation)
+export { ErrorDisplay } from './components/ErrorDisplay'
+export type {
+  ErrorDisplayProps,
+  ErrorSeverity,
+  ErrorSize,
+  ErrorVariant,
+} from './components/ErrorDisplay'
+
 // Retry countdown
 export { RetryCountdown } from './components/RetryCountdown'
-export type { RetryCountdownProps } from './components/RetryCountdown'
+export type {
+  RetryCountdownProps,
+  RetryCountdownVariant,
+  RetryCountdownColorScheme,
+} from './components/RetryCountdown'
+
+// Toast notification system
+export { ToastProvider, useToast, useToastOptional } from './components/ErrorToast'
+export type {
+  Toast,
+  ToastType,
+  ToastPosition,
+  ToastProviderProps,
+  ToastContextValue,
+} from './components/ErrorToast'
 
 // Dev tools (development only)
 export {
