@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from '@/lib/toast'
 
 const navigation = [
+  { name: 'Demos', href: '/demos' },
   { name: 'Learn', href: '/learn/quick-start' },
   { name: 'Docs', href: '/guides' },
   { name: 'Reference', href: '/reference/components' },

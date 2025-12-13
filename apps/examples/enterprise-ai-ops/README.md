@@ -1,5 +1,8 @@
 # Enterprise AI Operations Dashboard
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fchristireid%2FClarity-ai-chat-components&project-name=enterprise-ai-ops&root-directory=apps%2Fexamples%2Fenterprise-ai-ops&env=OPENAI_API_KEY)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/christireid/Clarity-ai-chat-components/tree/main/apps/examples/enterprise-ai-ops)
+
 **Comprehensive observability, safety monitoring, and evaluation platform for AI systems**
 
 ## 🌟 Overview

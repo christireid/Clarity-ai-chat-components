@@ -1,5 +1,8 @@
 # AI Research Platform Demo
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fchristireid%2FClarity-ai-chat-components&project-name=ai-research-platform&root-directory=apps%2Fexamples%2Fai-research-platform&env=OPENAI_API_KEY,ANTHROPIC_API_KEY)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/christireid/Clarity-ai-chat-components/tree/main/apps/examples/ai-research-platform)
+
 **Enterprise AI Research Platform showcasing Multi-Agent RAG System with Knowledge Visualization**
 
 ## 🌟 Overview
