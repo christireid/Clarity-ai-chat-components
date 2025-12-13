@@ -39,7 +39,7 @@ import { resources, handleResourceRead } from './resources/index.js'
 import { prompts, handlePromptGet } from './prompts/index.js'
 import { pluginRegistry } from './plugins/index.js'
 import { logger } from './utils/logger.js'
-import { formatErrorResponse, ValidationError } from './utils/errors.js'
+import { formatErrorResponse, ValidationError, TimeoutError, PluginError } from './utils/errors.js'
 import { serverEvents } from './utils/events.js'
 import { metrics, healthChecker } from './utils/health.js'
 import {
@@ -55,6 +55,39 @@ import { stopCacheCleanup } from './utils/cache.js'
 
 const SERVER_VERSION = '2.0.0'
 const SERVER_NAME = 'clarity-chat-mcp'
+
+/** Tool execution timeout in milliseconds */
+const TOOL_TIMEOUT_MS = parseInt(process.env.MCP_TOOL_TIMEOUT || '30000')
+
+/**
+ * Generate a unique request ID
+ */
+function generateRequestId(prefix: string): string {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+}
+
+/**
+ * Execute a promise with timeout protection
+ */
+async function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  operationName: string
+): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout>
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new TimeoutError(operationName, timeoutMs))
+    }, timeoutMs)
+  })
+
+  try {
+    return await Promise.race([promise, timeoutPromise])
+  } finally {
+    clearTimeout(timeoutId!)
+  }
+}
 
 /**
  * Server configuration options
@@ -145,7 +178,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
  */
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
-  const requestId = `tool-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  const requestId = generateRequestId('tool')
   const startTime = Date.now()
 
   logger.setRequestId(requestId)
@@ -181,16 +214,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
     }
 
-    // Execute plugin before-hooks
+    // Execute plugin before-hooks with error handling
     let processedArgs = args || {}
     if (config.plugins) {
-      processedArgs = await pluginRegistry.executeBeforeToolCallHooks(
-        name,
-        processedArgs
-      )
+      try {
+        processedArgs = await pluginRegistry.executeBeforeToolCallHooks(
+          name,
+          processedArgs
+        )
+      } catch (hookError) {
+        logger.error('Plugin before-hook failed', hookError instanceof Error ? hookError : undefined, { tool: name })
+        throw new PluginError('before-hook', `Before-hook failed: ${hookError instanceof Error ? hookError.message : String(hookError)}`)
+      }
     }
 
-    // Route to appropriate handler
+    // Route to appropriate handler with timeout protection
     let result: unknown
 
     // Check if it's a core tool
@@ -198,24 +236,37 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const isEnhancedToolName = enhancedTools.some((t) => t.name === name)
     const isPluginTool = config.plugins && pluginRegistry.hasToolHandler(name)
 
-    if (isCoreToolName) {
-      result = await handleToolCall(name, processedArgs)
-    } else if (isEnhancedToolName) {
-      result = await handleEnhancedToolCall(name, processedArgs)
-    } else if (isPluginTool) {
-      const handler = pluginRegistry.getToolHandler(name)
-      if (handler) {
-        result = await handler(processedArgs)
+    const executeToolWithTimeout = async (): Promise<unknown> => {
+      if (isCoreToolName) {
+        return handleToolCall(name, processedArgs)
+      } else if (isEnhancedToolName) {
+        return handleEnhancedToolCall(name, processedArgs)
+      } else if (isPluginTool) {
+        const handler = pluginRegistry.getToolHandler(name)
+        if (handler) {
+          return handler(processedArgs)
+        } else {
+          throw new ValidationError(`Tool handler not found: ${name}`)
+        }
       } else {
-        throw new ValidationError(`Tool handler not found: ${name}`)
+        throw new ValidationError(`Unknown tool: ${name}`, { tool: name })
       }
-    } else {
-      throw new ValidationError(`Unknown tool: ${name}`, { tool: name })
     }
 
-    // Execute plugin after-hooks
+    result = await withTimeout(
+      executeToolWithTimeout(),
+      TOOL_TIMEOUT_MS,
+      `tool:${name}`
+    )
+
+    // Execute plugin after-hooks with error handling
     if (config.plugins) {
-      result = await pluginRegistry.executeAfterToolCallHooks(name, result)
+      try {
+        result = await pluginRegistry.executeAfterToolCallHooks(name, result)
+      } catch (hookError) {
+        logger.error('Plugin after-hook failed', hookError instanceof Error ? hookError : undefined, { tool: name })
+        throw new PluginError('after-hook', `After-hook failed: ${hookError instanceof Error ? hookError.message : String(hookError)}`)
+      }
     }
 
     // Record metrics
@@ -301,7 +352,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
  */
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const { uri } = request.params
-  const requestId = `resource-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  const requestId = generateRequestId('resource')
   const startTime = Date.now()
 
   logger.setRequestId(requestId)
@@ -387,7 +438,7 @@ server.setRequestHandler(ListPromptsRequestSchema, async () => {
  */
 server.setRequestHandler(GetPromptRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
-  const requestId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  const requestId = generateRequestId('prompt')
   const startTime = Date.now()
 
   logger.setRequestId(requestId)

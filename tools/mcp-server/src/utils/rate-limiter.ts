@@ -410,40 +410,53 @@ export class RateLimiter {
 }
 
 // =============================================================================
+// Environment-based Configuration
+// =============================================================================
+
+const parseEnvInt = (value: string | undefined, defaultValue: number): number => {
+  if (!value) return defaultValue
+  const parsed = parseInt(value, 10)
+  return isNaN(parsed) ? defaultValue : parsed
+}
+
+// =============================================================================
 // Pre-configured Rate Limiters
 // =============================================================================
 
 /**
  * Default rate limiter for tool calls
- * 100 requests per minute per tool
+ * Default: 100 requests per minute per tool (configurable via env)
  */
 export const toolRateLimiter = new RateLimiter({
-  maxRequests: 100,
-  windowMs: 60 * 1000,
+  maxRequests: parseEnvInt(process.env.MCP_TOOL_RATE_LIMIT, 100),
+  windowMs: parseEnvInt(process.env.MCP_TOOL_RATE_WINDOW_MS, 60 * 1000),
   slidingWindow: true,
   keyGenerator: (ctx) => `tool:${ctx.name}`,
+  maxEntries: parseEnvInt(process.env.MCP_RATE_LIMIT_MAX_ENTRIES, 10000),
 })
 
 /**
  * Rate limiter for resource reads
- * 200 requests per minute per resource
+ * Default: 200 requests per minute per resource (configurable via env)
  */
 export const resourceRateLimiter = new RateLimiter({
-  maxRequests: 200,
-  windowMs: 60 * 1000,
+  maxRequests: parseEnvInt(process.env.MCP_RESOURCE_RATE_LIMIT, 200),
+  windowMs: parseEnvInt(process.env.MCP_RESOURCE_RATE_WINDOW_MS, 60 * 1000),
   slidingWindow: true,
   keyGenerator: (ctx) => `resource:${ctx.name}`,
+  maxEntries: parseEnvInt(process.env.MCP_RATE_LIMIT_MAX_ENTRIES, 10000),
 })
 
 /**
  * Global rate limiter
- * 500 requests per minute total
+ * Default: 500 requests per minute total (configurable via env)
  */
 export const globalRateLimiter = new RateLimiter({
-  maxRequests: 500,
-  windowMs: 60 * 1000,
+  maxRequests: parseEnvInt(process.env.MCP_GLOBAL_RATE_LIMIT, 500),
+  windowMs: parseEnvInt(process.env.MCP_GLOBAL_RATE_WINDOW_MS, 60 * 1000),
   slidingWindow: true,
   keyGenerator: () => 'global',
+  maxEntries: parseEnvInt(process.env.MCP_RATE_LIMIT_MAX_ENTRIES, 10000),
 })
 
 // =============================================================================
