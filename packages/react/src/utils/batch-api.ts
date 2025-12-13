@@ -260,7 +260,7 @@ export class BatchRequestManager {
    * Returns a promise that resolves when the batch completes.
    */
   addRequest(request: BatchRequest): Promise<BatchResult> {
-    return new Promise((resolve, reject) => {
+    const promise = new Promise<BatchResult>((resolve, reject) => {
       // Store request
       this.queue.set(request.id, request)
       this.pendingPromises.set(request.id, { resolve, reject })
@@ -276,6 +276,11 @@ export class BatchRequestManager {
         this.submitBatch()
       }
     })
+    // Attach a no-op rejection handler to prevent noisy unhandled rejection warnings
+    // when consumers intentionally fire-and-forget requests or when a manager is
+    // destroyed during test cleanup.
+    promise.catch(() => {})
+    return promise
   }
 
   /**

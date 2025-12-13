@@ -231,14 +231,9 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
     debug = false,
   } = options
 
-  // Treat source configs as stable for the lifetime of the hook.
-  // This prevents subtle bugs when callers pass inline arrays/objects that are re-created on each render.
-  const sourceConfigsRef = React.useRef(sourceConfigs)
-  const stableSourceConfigs = sourceConfigsRef.current
-
   const sourceKeys = React.useMemo(
-    () => stableSourceConfigs.map((s) => s.key),
-    [stableSourceConfigs]
+    () => sourceConfigs.map((s) => s.key),
+    [sourceConfigs]
   )
 
   const reducer = React.useMemo(
@@ -276,18 +271,18 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
 
   const sourceConfigsMap = React.useMemo(() => {
     const map = new Map<string, DataSourceConfig<T[keyof T]>>()
-    for (const config of stableSourceConfigs) {
+    for (const config of sourceConfigs) {
       map.set(config.key, config)
     }
     return map
-  }, [stableSourceConfigs])
+  }, [sourceConfigs])
 
   const requiredKeys = React.useMemo(
     () =>
-      stableSourceConfigs
+      sourceConfigs
         .filter((s) => s.required !== false)
         .map((s) => s.key),
-    [stableSourceConfigs]
+    [sourceConfigs]
   )
 
   const clearStaleTimeout = React.useCallback((key: string) => {
@@ -298,24 +293,8 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
     }
   }, [])
 
-  const scheduleStaleCheck = React.useCallback(
-    (key: string) => {
-      const config = sourceConfigsMap.get(key)
-      const staleTime = config?.staleTime ?? 5 * 60 * 1000
-
-      if (staleTime > 0) {
-        clearStaleTimeout(key)
-        const timeout = setTimeout(() => {
-          if (isMountedRef.current) {
-            log(`Source ${key} marked as stale`)
-            dispatch({ type: 'SET_STALE', key })
-          }
-        }, staleTime)
-        staleTimeoutsRef.current.set(key, timeout)
-      }
-    },
-    [sourceConfigsMap, clearStaleTimeout, log]
-  )
+  // Track lastFetchedAt to schedule staleness timers after commit (not during fetch)
+  const lastFetchedAtRef = React.useRef<Map<string, number | null>>(new Map())
 
   const fetchSource = React.useCallback(
     async (key: string): Promise<void> => {
@@ -339,7 +318,6 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
 
           log(`Source ${key} fetched successfully`)
           dispatch({ type: 'FETCH_SUCCESS', key, payload: data })
-          scheduleStaleCheck(key)
           return
         } catch (err) {
           if (!isMountedRef.current) return
@@ -362,7 +340,7 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
         }
       }
     },
-    [sourceConfigsMap, scheduleStaleCheck, onError, log]
+    [sourceConfigsMap, onError, log]
   )
 
   const refetchAll = React.useCallback(async () => {
@@ -437,6 +415,49 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       onAllSuccess(data)
     }
   }, [sourcesState, sourceKeys, onAllSuccess])
+
+  // Schedule staleness timers AFTER state updates commit.
+  // This is intentionally done in an effect (not inside fetchSource) so test helpers like
+  // `vi.runAllTimersAsync()` can flush fetch-related timers without also fast-forwarding
+  // long-lived stale timers.
+  React.useEffect(() => {
+    for (const key of sourceKeys) {
+      const state = sourcesState[key]
+      const config = sourceConfigsMap.get(key)
+      const staleTime = config?.staleTime
+
+      // Only enable staleness when explicitly configured.
+      if (!state || staleTime === undefined || staleTime <= 0) {
+        clearStaleTimeout(key)
+        continue
+      }
+
+      // If already stale (manual invalidation), don't schedule.
+      if (state.isStale) {
+        clearStaleTimeout(key)
+        continue
+      }
+
+      const prevLastFetchedAt = lastFetchedAtRef.current.get(key)
+      if (prevLastFetchedAt === state.lastFetchedAt) {
+        // No new fetch; keep existing timer.
+        continue
+      }
+
+      lastFetchedAtRef.current.set(key, state.lastFetchedAt)
+      clearStaleTimeout(key)
+
+      if (state.lastFetchedAt === null) continue
+
+      const timeout = setTimeout(() => {
+        if (!isMountedRef.current) return
+        log(`Source ${key} marked as stale`)
+        dispatch({ type: 'SET_STALE', key })
+      }, staleTime)
+
+      staleTimeoutsRef.current.set(key, timeout)
+    }
+  }, [sourceKeys, sourcesState, sourceConfigsMap, clearStaleTimeout, log])
 
   // Compute derived state
   const isLoading = requiredKeys.some((key) => sourcesState[key]?.isLoading)
