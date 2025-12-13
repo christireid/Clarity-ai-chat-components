@@ -11,7 +11,6 @@ import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
 
 function DashboardDemo() {
   // Mock data for the dashboard

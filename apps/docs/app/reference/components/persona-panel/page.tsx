@@ -4,7 +4,6 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Persona Panel - Clarity Chat Components',

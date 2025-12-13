@@ -65,7 +65,6 @@ const returnProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function UseRetryWithBackoffPage() {
   return (

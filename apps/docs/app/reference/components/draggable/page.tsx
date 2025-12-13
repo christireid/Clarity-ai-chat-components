@@ -12,7 +12,6 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-export const dynamic = 'force-dynamic'
 
 function BasicDragDemo() {
   const [droppedItem, setDroppedItem] = useState<string | null>(null)

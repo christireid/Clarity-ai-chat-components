@@ -5,7 +5,6 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'useCollaborativeSession - Clarity Chat Components',

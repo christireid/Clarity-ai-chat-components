@@ -265,7 +265,6 @@ const tokenBudgetMonitorReturnProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function UseTokenBudgetMonitorPage() {
   return (

@@ -112,7 +112,6 @@ const modelSelectorProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function ModelSelectorPage() {
   return (

@@ -39,7 +39,6 @@ const chatCompleteProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function ChatRecipesPage() {
   return (

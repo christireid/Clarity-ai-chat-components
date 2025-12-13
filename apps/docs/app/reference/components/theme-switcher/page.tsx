@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Theme-switcher | Clarity Chat',

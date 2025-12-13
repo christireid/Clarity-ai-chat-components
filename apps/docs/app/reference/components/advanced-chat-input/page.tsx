@@ -13,7 +13,6 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-export const dynamic = 'force-dynamic'
 
 // Basic demo component
 function BasicAdvancedInputDemo() {

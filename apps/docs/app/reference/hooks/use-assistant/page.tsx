@@ -9,7 +9,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { FeedbackWidget } from '@/components/FeedbackWidget'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'useAssistant Hook | Clarity Chat',

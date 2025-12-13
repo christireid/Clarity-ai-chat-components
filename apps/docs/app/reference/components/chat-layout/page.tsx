@@ -71,7 +71,6 @@ const chatLayoutProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function ChatLayoutPage() {
   return (

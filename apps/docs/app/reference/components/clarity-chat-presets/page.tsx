@@ -6,7 +6,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-export const dynamic = 'force-dynamic'
 
 export default function ClarityChatPresetsPage() {
   return (

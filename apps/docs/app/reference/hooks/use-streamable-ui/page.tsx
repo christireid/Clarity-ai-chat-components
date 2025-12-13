@@ -188,7 +188,6 @@ const useStreamableUIStateProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function UseStreamableUIPage() {
   return (

@@ -9,7 +9,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { InstallationFlow } from '@/components/Diagrams/InstallationFlow'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-export const dynamic = 'force-dynamic'
 
 export default function InstallationPage() {
   return (

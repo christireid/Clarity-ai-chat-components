@@ -127,7 +127,6 @@ const messageListProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function MessageListPage() {
   return (

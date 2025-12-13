@@ -13,7 +13,6 @@ import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { LibraryStats } from '@/components/Diagrams/StatisticsShowcase'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
-export const dynamic = 'force-dynamic'
 
 export default function QuickStartPage() {
   return (

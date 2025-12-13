@@ -140,7 +140,6 @@ const toolInvocationCardProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function ToolInvocationCardPage() {
   return (

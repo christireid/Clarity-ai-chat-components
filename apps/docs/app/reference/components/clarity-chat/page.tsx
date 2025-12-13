@@ -6,7 +6,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'ClarityChat Component | Clarity Chat',

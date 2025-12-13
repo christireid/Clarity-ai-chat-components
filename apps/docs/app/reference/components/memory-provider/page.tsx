@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'MemoryProvider Component | Clarity Chat',

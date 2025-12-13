@@ -10,7 +10,6 @@ import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { TypingIndicator, StreamingMessage } from '@clarity-chat/react'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 
-export const dynamic = 'force-dynamic'
 
 function TypingIndicatorDemo() {
   const [variant, setVariant] = useState<'dots' | 'pulse' | 'wave'>('dots')

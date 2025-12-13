@@ -4,7 +4,6 @@ import { Metadata } from 'next';
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Textarea Component - Clarity Chat Components',

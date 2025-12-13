@@ -25,7 +25,6 @@ import {
   Calendar
 } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
 
 function BasicCommandPaletteDemo() {
   const [open, setOpen] = useState(false)

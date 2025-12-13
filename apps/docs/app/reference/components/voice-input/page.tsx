@@ -13,7 +13,6 @@ import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 import { Mic, MicOff } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
 
 function BasicVoiceDemo() {
   const [transcript, setTranscript] = useState('')
