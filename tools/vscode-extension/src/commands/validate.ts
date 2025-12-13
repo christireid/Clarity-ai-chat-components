@@ -4,6 +4,18 @@
 
 import * as vscode from 'vscode'
 
+/**
+ * Escapes HTML special characters to prevent XSS
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 export async function validateConfigCommand() {
   await vscode.window.withProgress({
     location: vscode.ProgressLocation.Notification,
@@ -185,12 +197,12 @@ function showValidationResults(issues: string[], warnings: string[]) {
 
       ${issues.length > 0 ? `
         <h2>❌ Issues (${issues.length})</h2>
-        ${issues.map(issue => `<div class="issue"><span class="icon">❌</span>${issue}</div>`).join('')}
+        ${issues.map(issue => `<div class="issue"><span class="icon">❌</span>${escapeHtml(issue)}</div>`).join('')}
       ` : ''}
 
       ${warnings.length > 0 ? `
         <h2>⚠️ Warnings (${warnings.length})</h2>
-        ${warnings.map(warning => `<div class="warning"><span class="icon">⚠️</span>${warning}</div>`).join('')}
+        ${warnings.map(warning => `<div class="warning"><span class="icon">⚠️</span>${escapeHtml(warning)}</div>`).join('')}
       ` : ''}
     </body>
     </html>

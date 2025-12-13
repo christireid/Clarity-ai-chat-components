@@ -427,6 +427,9 @@ async function showQuickActions(context: vscode.ExtensionContext) {
     picker.hide()
   })
 
+  // Dispose picker when hidden to prevent memory leaks
+  picker.onDidHide(() => picker.dispose())
+
   picker.show()
 }
 
