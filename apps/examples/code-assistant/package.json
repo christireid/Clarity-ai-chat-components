@@ -11,17 +11,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clarity-chat/react": "workspace:*",
-    "@clarity-chat/types": "workspace:*",
     "next": "^16.0.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "openai": "^4.0.0",
-    "@monaco-editor/react": "^4.6.0",
-    "zod": "^3.22.4",
-    "zustand": "^4.4.7",
-    "lucide-react": "^0.552.0",
-    "prism-react-renderer": "^2.3.1"
+    "lucide-react": "^0.552.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

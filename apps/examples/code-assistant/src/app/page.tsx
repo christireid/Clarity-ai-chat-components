@@ -1,33 +1,70 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { ChatWindow, TypingIndicator } from '@clarity-chat/react'
-import { Code2, Terminal, FileCode, Sparkles, AlertCircle } from 'lucide-react'
+import {
+  Code2,
+  Terminal,
+  FileCode,
+  Sparkles,
+  AlertCircle,
+  Send,
+} from 'lucide-react'
 
 interface Message {
   id: string
-  chatId: string
   role: 'user' | 'assistant'
   content: string
-  createdAt: Date
-  updatedAt: Date
   status: 'sending' | 'sent' | 'error'
 }
 
 const quickPrompts = [
   { icon: '🐛', label: 'Debug Code', prompt: 'Help me debug this code:' },
-  { icon: '✨', label: 'Improve Code', prompt: 'Suggest improvements for this code:' },
+  {
+    icon: '✨',
+    label: 'Improve Code',
+    prompt: 'Suggest improvements for this code:',
+  },
   { icon: '📝', label: 'Explain Code', prompt: 'Explain what this code does:' },
-  { icon: '🔄', label: 'Convert Code', prompt: 'Convert this code to TypeScript:' },
-  { icon: '🧪', label: 'Write Tests', prompt: 'Write unit tests for this function:' },
-  { icon: '📖', label: 'Add Docs', prompt: 'Add documentation comments to this code:' },
+  {
+    icon: '🔄',
+    label: 'Convert Code',
+    prompt: 'Convert this code to TypeScript:',
+  },
+  {
+    icon: '🧪',
+    label: 'Write Tests',
+    prompt: 'Write unit tests for this function:',
+  },
+  {
+    icon: '📖',
+    label: 'Add Docs',
+    prompt: 'Add documentation comments to this code:',
+  },
 ]
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-center gap-1">
+      <span
+        className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+        style={{ animationDelay: '0ms' }}
+      />
+      <span
+        className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+        style={{ animationDelay: '150ms' }}
+      />
+      <span
+        className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+        style={{ animationDelay: '300ms' }}
+      />
+    </div>
+  )
+}
 
 export default function CodeAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      chatId: 'code-assistant',
       role: 'assistant',
       content: `# Welcome to AI Code Assistant! 👋
 
@@ -40,49 +77,43 @@ I'm your expert coding companion. I can help you with:
 - **🧪 Testing** - Write unit tests and test cases
 - **📖 Documentation** - Add comments and docs
 
-**Try pasting some code and asking me about it!**
-
-\`\`\`typescript
-// Example: Paste your code here
-function example() {
-  // I'll help you understand or improve it!
-}
-\`\`\``,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+**Try pasting some code and asking me about it!**`,
       status: 'sent',
     },
   ])
+  const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
 
   const handleSendMessage = useCallback(
     async (content: string) => {
+      if (!content.trim()) return
       setError(null)
+      setInput('')
 
       const userMessage: Message = {
         id: Date.now().toString(),
-        chatId: 'code-assistant',
         role: 'user',
         content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
         status: 'sent',
       }
 
       setMessages((prev) => [...prev, userMessage])
       setIsLoading(true)
       setIsStreaming(true)
+      setTimeout(scrollToBottom, 100)
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        chatId: 'code-assistant',
         role: 'assistant',
         content: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
         status: 'sending',
       }
 
@@ -134,10 +165,15 @@ function example() {
                   setMessages((prev) =>
                     prev.map((msg) =>
                       msg.id === assistantMessage.id
-                        ? { ...msg, content: accumulatedContent, status: 'sending' as const }
+                        ? {
+                            ...msg,
+                            content: accumulatedContent,
+                            status: 'sending' as const,
+                          }
                         : msg
                     )
                   )
+                  scrollToBottom()
                 }
               } catch {
                 // Skip invalid JSON
@@ -149,15 +185,18 @@ function example() {
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMessage.id
-              ? { ...msg, status: 'sent' as const, updatedAt: new Date() }
+              ? { ...msg, status: 'sent' as const }
               : msg
           )
         )
-      } catch (err: any) {
-        if (err.name === 'AbortError') {
-          setMessages((prev) => prev.filter((msg) => msg.id !== assistantMessage.id))
+      } catch (err: unknown) {
+        const error = err as Error
+        if (error.name === 'AbortError') {
+          setMessages((prev) =>
+            prev.filter((msg) => msg.id !== assistantMessage.id)
+          )
         } else {
-          setError(err.message || 'Something went wrong')
+          setError(error.message || 'Something went wrong')
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === assistantMessage.id
@@ -176,7 +215,7 @@ function example() {
         abortControllerRef.current = null
       }
     },
-    [messages]
+    [messages, scrollToBottom]
   )
 
   const handleCancel = useCallback(() => {
@@ -188,11 +227,7 @@ function example() {
   }, [])
 
   const handleQuickPrompt = useCallback((prompt: string) => {
-    const textarea = document.querySelector('textarea')
-    if (textarea) {
-      textarea.value = prompt + '\n\n'
-      textarea.focus()
-    }
+    setInput(prompt + '\n\n')
   }, [])
 
   return (
@@ -206,7 +241,9 @@ function example() {
                 <Code2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">AI Code Assistant</h1>
+                <h1 className="text-xl font-bold text-white">
+                  AI Code Assistant
+                </h1>
                 <p className="text-sm text-slate-400">Powered by GPT-4</p>
               </div>
             </div>
@@ -252,16 +289,23 @@ function example() {
                 Supported Languages
               </h2>
               <div className="flex flex-wrap gap-1.5">
-                {['TypeScript', 'JavaScript', 'Python', 'Rust', 'Go', 'Java', 'C++', 'SQL'].map(
-                  (lang) => (
-                    <span
-                      key={lang}
-                      className="px-2 py-0.5 text-xs bg-slate-700/50 text-slate-300 rounded"
-                    >
-                      {lang}
-                    </span>
-                  )
-                )}
+                {[
+                  'TypeScript',
+                  'JavaScript',
+                  'Python',
+                  'Rust',
+                  'Go',
+                  'Java',
+                  'C++',
+                  'SQL',
+                ].map((lang) => (
+                  <span
+                    key={lang}
+                    className="px-2 py-0.5 text-xs bg-slate-700/50 text-slate-300 rounded"
+                  >
+                    {lang}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -301,8 +345,10 @@ function example() {
             {isStreaming && (
               <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <TypingIndicator variant="dots" showAvatar={false} />
-                  <span className="text-sm text-blue-400">Generating code...</span>
+                  <TypingIndicator />
+                  <span className="text-sm text-blue-400">
+                    Generating code...
+                  </span>
                 </div>
                 <button
                   onClick={handleCancel}
@@ -315,12 +361,59 @@ function example() {
 
             {/* Chat Window */}
             <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
-              <div className="h-[calc(100vh-280px)] min-h-[500px]">
-                <ChatWindow
-                  messages={messages}
-                  isLoading={isLoading}
-                  onSendMessage={handleSendMessage}
-                />
+              <div className="h-[calc(100vh-380px)] min-h-[400px] overflow-y-auto p-4 space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                        message.role === 'user'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-slate-700 text-slate-100'
+                      }`}
+                    >
+                      <div className="whitespace-pre-wrap text-sm">
+                        {message.content}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Input Area */}
+              <div className="border-t border-slate-700/50 p-4">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    handleSendMessage(input)
+                  }}
+                  className="flex gap-3"
+                >
+                  <textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        handleSendMessage(input)
+                      }
+                    }}
+                    placeholder="Ask about your code..."
+                    className="flex-1 bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={2}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoading || !input.trim()}
+                    className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <Send className="w-5 h-5" />
+                  </button>
+                </form>
               </div>
             </div>
           </main>
