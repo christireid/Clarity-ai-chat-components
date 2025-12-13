@@ -1,48 +1,164 @@
-import type { Metadata } from 'next'
-import { ViewInStorybook } from '@/components/Links/StorybookLink'
+'use client'
 
+import { useState, useCallback } from 'react'
+import { FileUpload } from '@clarity-chat/react'
+import type { MessageAttachment } from '@clarity-chat/types'
+import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
+import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
+import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { Callout } from '@/components/MDX/Callout'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
+
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: 'File Upload | Clarity Chat',
-  description: 'File upload component with drag-and-drop, validation, and progress tracking.'
+const fileUploadProps: Prop[] = [
+  {
+    name: 'onUpload',
+    type: '(files: File[]) => Promise<MessageAttachment[]>',
+    required: true,
+    description: 'Async callback to handle file uploads. Must return array of attachment objects.',
+  },
+  {
+    name: 'maxFiles',
+    type: 'number',
+    default: '10',
+    description: 'Maximum number of files allowed to be selected at once.',
+  },
+  {
+    name: 'maxFileSize',
+    type: 'number',
+    default: '10485760',
+    description: 'Maximum file size in bytes (default: 10MB).',
+  },
+  {
+    name: 'acceptedFileTypes',
+    type: 'string[]',
+    description: 'Array of accepted MIME types (e.g., ["image/*", "application/pdf"]).',
+  },
+  {
+    name: 'disabled',
+    type: 'boolean',
+    default: 'false',
+    description: 'Disable the upload input.',
+  },
+  {
+    name: 'showPreview',
+    type: 'boolean',
+    default: 'true',
+    description: 'Show preview thumbnails for selected files before upload.',
+  },
+  {
+    name: 'dropzoneText',
+    type: 'string',
+    default: '"Drag & drop files here, or click to select"',
+    description: 'Text displayed in the dropzone area.',
+  },
+  {
+    name: 'className',
+    type: 'string',
+    description: 'Additional CSS classes.',
+  },
+]
+
+function BasicFileUploadDemo() {
+  const handleUpload = useCallback(async (files: File[]): Promise<MessageAttachment[]> => {
+    // Simulate upload delay
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    return files.map(file => ({
+      id: Math.random().toString(36).substring(7),
+      type: file.type.startsWith('image/') ? 'image' : 'file',
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: file.size,
+      mimeType: file.type
+    }))
+  }, [])
+
+  return (
+    <div className="w-full max-w-xl p-4 border border-border rounded-lg bg-background">
+      <FileUpload
+        onUpload={handleUpload}
+        maxFiles={3}
+        maxFileSize={5 * 1024 * 1024}
+        acceptedFileTypes={['image/*', 'application/pdf']}
+      />
+    </div>
+  )
 }
 
 export default function FileUploadPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-4">File Upload</h1>
-      <p className="text-xl text-muted-foreground mb-8">
-        Feature-rich file upload component with drag-and-drop, file validation, size limits, and upload progress tracking.
-      </p>
+    <div className="docs-content">
+      <Breadcrumbs />
 
-      <ViewInStorybook component="FileUpload" />
+      <ScrollReveal>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+            FileUpload
+          </h1>
+          <p className="text-xl text-text-secondary leading-relaxed">
+            A comprehensive file upload component featuring drag-and-drop, multi-file support,
+            progress tracking, and preview generation.
+          </p>
+        </div>
+      </ScrollReveal>
 
-      <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">Features</h2>
-        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>Drag-and-drop file upload</li>
-          <li>Click to browse file selection</li>
-          <li>File type validation</li>
-          <li>File size validation</li>
-          <li>Multiple file support</li>
-          <li>Upload progress tracking</li>
-          <li>Error handling and display</li>
-          <li>File preview before upload</li>
-          <li>Remove files before upload</li>
-        </ul>
-      </section>
+      <ScrollReveal delay={0.1}>
+        <ViewInStorybook component="FileUpload" />
+      </ScrollReveal>
 
-      <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">Usage</h2>
-        <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`import { FileUpload } from '@clarity-chat/react'
+      <ScrollReveal delay={0.2}>
+        <section className="my-12">
+          <h2 className="text-2xl font-bold mb-4">Features</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-lg bg-secondary/20 border border-border">
+              <h3 className="font-semibold mb-2">🖱️ Drag & Drop</h3>
+              <p className="text-sm text-muted-foreground">Intuitive drag and drop interface with visual feedback states.</p>
+            </div>
+            <div className="p-4 rounded-lg bg-secondary/20 border border-border">
+              <h3 className="font-semibold mb-2">👁️ File Previews</h3>
+              <p className="text-sm text-muted-foreground">Automatic thumbnail generation for images and file type icons.</p>
+            </div>
+            <div className="p-4 rounded-lg bg-secondary/20 border border-border">
+              <h3 className="font-semibold mb-2">📊 Progress Tracking</h3>
+              <p className="text-sm text-muted-foreground">Built-in loading states and progress indicators during upload.</p>
+            </div>
+            <div className="p-4 rounded-lg bg-secondary/20 border border-border">
+              <h3 className="font-semibold mb-2">🛡️ Validation</h3>
+              <p className="text-sm text-muted-foreground">Client-side validation for file types, sizes, and counts.</p>
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
+
+      <ScrollReveal delay={0.3}>
+        <h2 id="import">Import</h2>
+        <EnhancedCodeBlock
+          code={`import { FileUpload } from '@clarity-chat/react'
+import type { MessageAttachment } from '@clarity-chat/types'`}
+          language="tsx"
+        />
+      </ScrollReveal>
+
+      <ScrollReveal delay={0.4}>
+        <h2 id="usage">Usage</h2>
+        <p className="mb-4 text-muted-foreground">
+          The FileUpload component requires an <code>onUpload</code> handler that returns a Promise resolving to an array of attachments.
+        </p>
+
+        <ComponentPreview
+          title="Basic File Upload"
+          description="Drag and drop images or PDFs (max 5MB)."
+          code={`import { FileUpload } from '@clarity-chat/react'
 import type { MessageAttachment } from '@clarity-chat/types'
 
-function MyComponent() {
+function UploadDemo() {
   const handleUpload = async (files: File[]): Promise<MessageAttachment[]> => {
-    // Upload files to your server
+    // Simulate API upload
     const uploadPromises = files.map(async (file) => {
       const formData = new FormData()
       formData.append('file', file)
@@ -52,15 +168,7 @@ function MyComponent() {
         body: formData
       })
       
-      const data = await response.json()
-      
-      return {
-        id: data.id,
-        filename: file.name,
-        url: data.url,
-        size: file.size,
-        mimeType: file.type
-      }
+      return await response.json()
     })
     
     return Promise.all(uploadPromises)
@@ -69,130 +177,111 @@ function MyComponent() {
   return (
     <FileUpload
       onUpload={handleUpload}
-      maxFiles={5}
-      maxFileSize={10 * 1024 * 1024}
+      maxFiles={3}
+      maxFileSize={5 * 1024 * 1024} // 5MB
       acceptedFileTypes={['image/*', 'application/pdf']}
     />
   )
-}`}</code>
-        </pre>
-      </section>
+}`}
+        >
+          <BasicFileUploadDemo />
+        </ComponentPreview>
+      </ScrollReveal>
 
-      <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">Props</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b">
-                <th className="p-2 font-semibold">Prop</th>
-                <th className="p-2 font-semibold">Type</th>
-                <th className="p-2 font-semibold">Default</th>
-                <th className="p-2 font-semibold">Description</th>
-              </tr>
-            </thead>
-            <tbody className="text-muted-foreground">
-              <tr className="border-b">
-                <td className="p-2 font-mono text-sm">onUpload</td>
-                <td className="p-2 font-mono text-sm">(files) =&gt; Promise&lt;Attachment[]&gt;</td>
-                <td className="p-2">-</td>
-                <td className="p-2">Upload handler returning attachments</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-2 font-mono text-sm">maxFiles</td>
-                <td className="p-2 font-mono text-sm">number</td>
-                <td className="p-2">10</td>
-                <td className="p-2">Maximum number of files</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-2 font-mono text-sm">maxFileSize</td>
-                <td className="p-2 font-mono text-sm">number</td>
-                <td className="p-2">10485760</td>
-                <td className="p-2">Max size in bytes (10MB default)</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-2 font-mono text-sm">acceptedFileTypes</td>
-                <td className="p-2 font-mono text-sm">string[]</td>
-                <td className="p-2">images, PDFs, docs, videos</td>
-                <td className="p-2">Accepted MIME types</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-2 font-mono text-sm">className</td>
-                <td className="p-2 font-mono text-sm">string</td>
-                <td className="p-2">-</td>
-                <td className="p-2">Additional CSS classes</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <ScrollReveal delay={0.5}>
+        <section className="my-12">
+          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+          <p className="mb-6 text-muted-foreground">
+            Try customizing the accepted file types and limits.
+          </p>
+          <CodePlayground
+            initialCode={`function Example() {
+  const handleUpload = async (files) => {
+    console.log('Uploading...', files)
+    // Simulate 1s upload delay
+    await new Promise(r => setTimeout(r, 1000))
+    
+    return files.map(f => ({
+      id: Date.now().toString(),
+      type: 'file',
+      url: '#',
+      name: f.name,
+      size: f.size
+    }))
+  }
 
-      <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">Examples</h2>
-        
-        <h3 className="text-2xl font-semibold mb-3">Images Only</h3>
-        <pre className="bg-muted p-4 rounded-lg overflow-x-auto mb-6">
-          <code>{`<FileUpload
-  onUpload={handleUpload}
-  maxFiles={3}
-  maxFileSize={5 * 1024 * 1024} // 5MB
-  acceptedFileTypes={['image/jpeg', 'image/png', 'image/gif']}
-/>`}</code>
-        </pre>
+  return (
+    <div className="p-4 bg-white dark:bg-gray-900 rounded-lg">
+      <FileUpload
+        onUpload={handleUpload}
+        maxFiles={5}
+        maxFileSize={1024 * 1024} // 1MB
+        dropzoneText="Drop files here!"
+      />
+    </div>
+  )
+}
 
-        <h3 className="text-2xl font-semibold mb-3">Documents Only</h3>
-        <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-          <code>{`<FileUpload
-  onUpload={handleUpload}
-  maxFiles={10}
-  maxFileSize={25 * 1024 * 1024} // 25MB
-  acceptedFileTypes={[
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain'
-  ]}
-/>`}</code>
-        </pre>
-      </section>
+render(<Example />)`}
+          />
+        </section>
+      </ScrollReveal>
 
-      <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">File Type Patterns</h2>
-        <div className="space-y-4 text-muted-foreground">
-          <div>
-            <strong className="text-foreground">image/*</strong> - All image types
-          </div>
-          <div>
-            <strong className="text-foreground">video/*</strong> - All video types
-          </div>
-          <div>
-            <strong className="text-foreground">application/pdf</strong> - PDF files
-          </div>
-          <div>
-            <strong className="text-foreground">.txt, .doc, .docx</strong> - Specific extensions
+      <ScrollReveal delay={0.6}>
+        <h2 id="validation">Validation Patterns</h2>
+        <div className="space-y-4">
+          <p className="text-muted-foreground">Common patterns for <code>acceptedFileTypes</code>:</p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-muted p-4 rounded-md">
+              <code className="text-sm font-semibold text-primary">['image/*']</code>
+              <p className="text-sm mt-1 text-muted-foreground">Accept all image formats</p>
+            </div>
+            <div className="bg-muted p-4 rounded-md">
+              <code className="text-sm font-semibold text-primary">['application/pdf']</code>
+              <p className="text-sm mt-1 text-muted-foreground">PDF documents only</p>
+            </div>
+            <div className="bg-muted p-4 rounded-md">
+              <code className="text-sm font-semibold text-primary">['.csv', '.xlsx']</code>
+              <p className="text-sm mt-1 text-muted-foreground">Spreadsheets by extension</p>
+            </div>
+            <div className="bg-muted p-4 rounded-md">
+              <code className="text-sm font-semibold text-primary">['video/*', 'audio/*']</code>
+              <p className="text-sm mt-1 text-muted-foreground">Media files</p>
+            </div>
           </div>
         </div>
-      </section>
+      </ScrollReveal>
 
-      <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">Best Practices</h2>
-        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>Set appropriate maxFileSize for your use case</li>
-          <li>Validate file types on both client and server</li>
-          <li>Show upload progress for large files</li>
-          <li>Handle errors gracefully with clear messages</li>
-          <li>Provide feedback during upload process</li>
-          <li>Allow users to cancel uploads</li>
-          <li>Compress images before upload when possible</li>
-        </ul>
-      </section>
+      <ScrollReveal delay={0.7}>
+        <h2 id="props">Props</h2>
+        <PropsTable props={fileUploadProps} />
+      </ScrollReveal>
 
-      <section>
-        <h2 className="text-3xl font-semibold mb-4">Related Components</h2>
-        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li><a href="/reference/components/context-manager" className="text-primary hover:underline">Context Manager</a> - Manage uploaded files</li>
-          <li><a href="/reference/components/advanced-chat-input" className="text-primary hover:underline">Advanced Chat Input</a> - Chat input with file upload</li>
+      <ScrollReveal delay={0.8}>
+        <h2 id="best-practices">Best Practices</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-8">
+          <li>Always validate file types on the server side as well.</li>
+          <li>Set reasonable <code>maxFileSize</code> limits to prevent server overload.</li>
+          <li>Provide immediate feedback using toast notifications for upload errors.</li>
+          <li>Use the <code>disabled</code> prop during parent form submission.</li>
         </ul>
-      </section>
+      </ScrollReveal>
+
+      <ScrollReveal delay={0.9}>
+        <div className="flex flex-col gap-4 border-t border-border pt-8 mt-12">
+          <h2 className="text-2xl font-bold">Related Components</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <a href="/reference/components/advanced-chat-input" className="group p-4 border border-border rounded-lg hover:border-brand-500 transition-colors">
+              <h3 className="font-semibold text-primary group-hover:text-brand-500 mb-1">AdvancedChatInput</h3>
+              <p className="text-sm text-muted-foreground">Chat input with integrated file upload.</p>
+            </a>
+            <a href="/reference/components/message-attachment" className="group p-4 border border-border rounded-lg hover:border-brand-500 transition-colors">
+              <h3 className="font-semibold text-primary group-hover:text-brand-500 mb-1">MessageAttachment</h3>
+              <p className="text-sm text-muted-foreground">Component for displaying uploaded files in chat.</p>
+            </a>
+          </div>
+        </div>
+      </ScrollReveal>
     </div>
   )
 }
