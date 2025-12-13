@@ -97,6 +97,7 @@ export const referenceNavigation: NavItem[] = [
     title: 'Core Components',
     items: [
       { title: 'ClarityChat', href: '/reference/components/clarity-chat' },
+      { title: 'ChatLayout', href: '/reference/components/chat-layout' },
       { title: 'ChatWindow', href: '/reference/components/chat-window' },
       { title: 'Message', href: '/reference/components/message' },
       { title: 'MessageList', href: '/reference/components/message-list' },
@@ -140,6 +141,7 @@ export const referenceNavigation: NavItem[] = [
       { title: 'Avatar', href: '/reference/components/avatar' },
       { title: 'Button', href: '/reference/components/button' },
       { title: 'Badge', href: '/reference/components/badge' },
+      { title: 'CodeBlock', href: '/reference/components/code-block' },
       { title: 'Tooltip', href: '/reference/components/tooltip' },
       { title: 'Modal', href: '/reference/components/modal' },
       { title: 'NetworkStatus', href: '/reference/components/network-status' },
