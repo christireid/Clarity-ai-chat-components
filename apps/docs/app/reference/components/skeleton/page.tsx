@@ -14,7 +14,6 @@ import {
 import { Badge } from '@clarity-chat/primitives'
 import { PageSkeleton, ComponentPageSkeleton, SearchResultsSkeleton } from '@/components/Loading/PageSkeleton'
 
-export const dynamic = 'force-dynamic'
 
 export default function SkeletonLoadersPage() {
   const [showPageSkeleton, setShowPageSkeleton] = useState(false)

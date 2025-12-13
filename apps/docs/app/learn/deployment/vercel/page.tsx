@@ -123,7 +123,6 @@ NEXT_PUBLIC_ANALYTICS_ID=...`}</code></pre>
         <h3>Option 2: Route Segment Config</h3>
         <pre><code>{`// app/api/chat/route.ts
 export const maxDuration = 60
-export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
   // Your streaming code

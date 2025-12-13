@@ -259,7 +259,6 @@ const useTokenTrackerReturnProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function UseTokenTrackerPage() {
   return (

@@ -5,7 +5,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Pagination } from '@/components/Navigation/Pagination'
 
-export const dynamic = 'force-dynamic'
 
 export default function UseTokenOptimizationPage() {
   return (

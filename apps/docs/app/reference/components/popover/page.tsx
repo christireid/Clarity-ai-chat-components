@@ -4,7 +4,6 @@ import { Metadata } from 'next';
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Popover Component - Clarity Chat Components',

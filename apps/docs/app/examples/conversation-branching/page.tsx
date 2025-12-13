@@ -2,7 +2,6 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Conversation Branching Example - Clarity Chat Components',

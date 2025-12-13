@@ -9,7 +9,6 @@ import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 
 
-export const dynamic = 'force-dynamic'
 
 export default function HooksConceptPage() {
   return (

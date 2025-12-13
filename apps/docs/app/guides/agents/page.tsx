@@ -6,7 +6,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { Pagination } from '@/components/Navigation/Pagination'
 
-export const dynamic = 'force-dynamic'
 
 export default function AgentsGuidePage() {
   return (

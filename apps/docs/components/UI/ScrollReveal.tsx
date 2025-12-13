@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import {
   scrollReveal,
   fadeInUp,
@@ -105,7 +105,16 @@ export function ScrollReveal({
   stagger = false,
   staggerDelay = 0.05,
 }: ScrollRevealProps) {
+  const { shouldReduceMotion } = useReducedMotion()
   const variants = animationVariants[animation]
+
+  if (shouldReduceMotion) {
+    return (
+      <div className={className}>
+        {children}
+      </div>
+    )
+  }
 
   if (stagger) {
     return (

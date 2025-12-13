@@ -3,7 +3,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Testing Guide - Clarity Chat',

@@ -9,7 +9,6 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 import matter from 'gray-matter'
 
-export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>

@@ -5,7 +5,6 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Safety - Clarity Chat',

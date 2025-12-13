@@ -4,7 +4,6 @@ import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 import { CodePlayground } from '@/components/Playground/CodePlayground';
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Toast Component - Clarity Chat Components',

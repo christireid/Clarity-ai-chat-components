@@ -158,7 +158,6 @@ const agentRunFeedProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function AgentRunFeedPage() {
   return (

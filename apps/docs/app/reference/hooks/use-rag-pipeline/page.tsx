@@ -8,7 +8,6 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'useRAGPipeline Hook | Clarity Chat',

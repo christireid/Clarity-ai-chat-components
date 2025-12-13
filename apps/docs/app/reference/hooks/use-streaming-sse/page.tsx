@@ -249,7 +249,6 @@ const useStreamingSSEReturnProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
 
 export default function UseStreamingSSEPage() {
   return (

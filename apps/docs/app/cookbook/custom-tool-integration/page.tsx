@@ -6,7 +6,6 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Custom Tool Integration Recipe | Clarity Chat Cookbook',

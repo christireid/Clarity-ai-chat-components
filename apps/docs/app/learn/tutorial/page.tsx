@@ -10,7 +10,6 @@ import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Tutorial: Build a Complete Chat App',
