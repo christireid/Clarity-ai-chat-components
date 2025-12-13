@@ -6,24 +6,23 @@
  *
  * NOTE: Uses header-based authentication (x-goog-api-key) to avoid
  * exposing API keys in URLs/logs.
+ *
+ * SECURITY: API key must be explicitly provided via config.apiKey.
+ * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type {
-  ModelAdapter,
-  // ChatMessage, // Reserved for future use
-  // ModelConfig, // Reserved for future use
-  // StreamChunk, // Reserved for future use
-  // TokenUsage // Reserved for future use
-} from './types'
+import type { ModelAdapter } from './types'
 import { fetchWithTimeout } from '../utils/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/rate-limit-headers'
+import { validateApiKey, DEFAULT_TIMEOUTS } from './shared'
 
 export const googleAdapter: ModelAdapter = {
   name: 'google',
 
   async chat(messages, config) {
-    const timeout = config.timeout ?? 30000 // 30s default for chat
-    const apiKey = config.apiKey || process.env['GOOGLE_API_KEY']
+    // SECURITY: Require explicit API key - no process.env fallback
+    const apiKey = validateApiKey(config.apiKey, 'Google')
+    const timeout = config.timeout ?? DEFAULT_TIMEOUTS.chat
 
     const response = await fetchWithTimeout(
       `${config.baseURL || 'https://generativelanguage.googleapis.com/v1beta'}/models/${config.model}:generateContent`,
@@ -31,7 +30,7 @@ export const googleAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey || '', // Use header instead of URL param
+          'x-goog-api-key': apiKey,
         },
         body: JSON.stringify({
           contents: messages.map((m) => ({
@@ -79,8 +78,9 @@ export const googleAdapter: ModelAdapter = {
   },
 
   async *stream(messages, config) {
-    const timeout = config.timeout ?? 60000 // 60s default for streaming
-    const apiKey = config.apiKey || process.env['GOOGLE_API_KEY']
+    // SECURITY: Require explicit API key - no process.env fallback
+    const apiKey = validateApiKey(config.apiKey, 'Google')
+    const timeout = config.timeout ?? DEFAULT_TIMEOUTS.stream
 
     const response = await fetchWithTimeout(
       `${config.baseURL || 'https://generativelanguage.googleapis.com/v1beta'}/models/${config.model}:streamGenerateContent?alt=sse`,
@@ -88,7 +88,7 @@ export const googleAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey || '', // Use header instead of URL param
+          'x-goog-api-key': apiKey,
         },
         body: JSON.stringify({
           contents: messages.map((m) => ({

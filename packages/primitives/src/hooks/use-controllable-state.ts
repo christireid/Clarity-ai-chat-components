@@ -2,6 +2,9 @@
 
 import * as React from 'react'
 
+// Declare process for environments that may not have @types/node
+declare const process: { env: { NODE_ENV?: string } } | undefined
+
 /**
  * Options for useControllableState hook
  */
@@ -89,7 +92,13 @@ export function useControllableState<T>(
 
   // Warn if switching between controlled and uncontrolled
   React.useEffect(() => {
-    if (process.env['NODE_ENV'] !== 'production') {
+    // Safe check for development environment that works in all bundlers
+    const isDev =
+      typeof process !== 'undefined' &&
+      process.env &&
+      process.env.NODE_ENV !== 'production'
+
+    if (isDev) {
       if (isControlledRef.current !== isControlled) {
         console.warn(
           `[useControllableState] Component is switching from ${

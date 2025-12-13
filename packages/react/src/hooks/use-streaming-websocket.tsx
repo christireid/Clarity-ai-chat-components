@@ -68,6 +68,9 @@ export interface UseStreamingWebSocketOptions {
   /** Connect immediately on mount (default: false) */
   connectOnMount?: boolean
 
+  /** Maximum number of messages to keep in buffer (default: 1000, prevents memory leaks) */
+  maxMessageBufferSize?: number
+
   /** Event handlers */
   onOpen?: (event: Event) => void
   onMessage?: (message: WebSocketMessage) => void
@@ -86,7 +89,7 @@ export interface UseStreamingWebSocketOptions {
 
 /**
  * Return type for useStreamingWebSocket hook (mid-level API)
- * 
+ *
  * Follows the standard hook return pattern:
  * - Data: `messages`, `lastMessage` (received messages)
  * - State: `status`, `readyState`, `error`
@@ -135,13 +138,13 @@ export interface UseStreamingWebSocketReturn {
 
 /**
  * useStreamingWebSocket - Mid-Level WebSocket Streaming Hook
- * 
+ *
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Streaming & Transport
- * 
+ *
  * Production-ready WebSocket streaming hook with automatic reconnection,
  * heartbeat/ping-pong, and lifecycle management.
- * 
+ *
  * For chat streaming, use top-level `useClarityChat` with transport: 'websocket'.
  * For low-level streaming, use `useStreaming` primitive.
  *
@@ -179,16 +182,20 @@ export function useStreamingWebSocket(
   options: UseStreamingWebSocketOptions
 ): UseStreamingWebSocketReturn {
   // Validate URL
-  if (!options.url || typeof options.url !== 'string' || options.url.trim().length === 0) {
+  if (
+    !options.url ||
+    typeof options.url !== 'string' ||
+    options.url.trim().length === 0
+  ) {
     throw new Error(
       'useStreamingWebSocket: "url" option is required.\n' +
-      'Please provide a valid WebSocket URL (ws:// or wss://).\n\n' +
-      'Example:\n' +
-      '  const ws = useStreamingWebSocket({ url: "wss://api.example.com/ws" })\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/streaming'
+        'Please provide a valid WebSocket URL (ws:// or wss://).\n\n' +
+        'Example:\n' +
+        '  const ws = useStreamingWebSocket({ url: "wss://api.example.com/ws" })\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/streaming'
     )
   }
-  
+
   const {
     url,
     protocols,
@@ -202,6 +209,7 @@ export function useStreamingWebSocket(
     heartbeatMessage = 'ping',
     autoParseJson = true,
     connectOnMount = false,
+    maxMessageBufferSize: rawMaxMessageBufferSize = 1000,
     onOpen,
     onMessage,
     onError,
@@ -211,10 +219,15 @@ export function useStreamingWebSocket(
     onHeartbeatFailed,
   } = options
 
+  // Validate and normalize maxMessageBufferSize (must be at least 1 to prevent slice(-0) bug)
+  const maxMessageBufferSize = Math.max(1, Math.floor(rawMaxMessageBufferSize))
+
   // State
   const [status, setStatus] = React.useState<WebSocketStatus>('idle')
   const [messages, setMessages] = React.useState<WebSocketMessage[]>([])
-  const [lastMessage, setLastMessage] = React.useState<WebSocketMessage | null>(null)
+  const [lastMessage, setLastMessage] = React.useState<WebSocketMessage | null>(
+    null
+  )
   const [error, setError] = React.useState<Event | null>(null)
   const [readyState, setReadyState] = React.useState<number>(WebSocket.CLOSED)
   const [reconnectAttempt, setReconnectAttempt] = React.useState(0)
@@ -270,7 +283,9 @@ export function useStreamingWebSocket(
           const timeSinceLastPong = Date.now() - lastPongRef.current
 
           if (timeSinceLastPong > heartbeatTimeout) {
-            console.warn('[useStreamingWebSocket] Heartbeat timeout - connection may be stale')
+            console.warn(
+              '[useStreamingWebSocket] Heartbeat timeout - connection may be stale'
+            )
             onHeartbeatFailed?.()
 
             // Trigger reconnection
@@ -310,7 +325,10 @@ export function useStreamingWebSocket(
    */
   const connect = React.useCallback(() => {
     // Prevent duplicate connections
-    if (wsRef.current?.readyState === WebSocket.OPEN || status === 'connecting') {
+    if (
+      wsRef.current?.readyState === WebSocket.OPEN ||
+      status === 'connecting'
+    ) {
       return
     }
 
@@ -361,7 +379,15 @@ export function useStreamingWebSocket(
           timestamp: Date.now(),
         }
 
-        setMessages((prev) => [...prev, message])
+        // Bounded message buffer to prevent memory leaks
+        setMessages((prev) => {
+          const newMessages = [...prev, message]
+          // Keep only the last maxMessageBufferSize messages
+          if (newMessages.length > maxMessageBufferSize) {
+            return newMessages.slice(-maxMessageBufferSize)
+          }
+          return newMessages
+        })
         setLastMessage(message)
 
         onMessage?.(message)
@@ -410,7 +436,9 @@ export function useStreamingWebSocket(
             connect()
           }, delay)
         } else if (reconnectAttempt >= maxReconnectAttempts) {
-          console.error('[useStreamingWebSocket] Max reconnection attempts reached')
+          console.error(
+            '[useStreamingWebSocket] Max reconnection attempts reached'
+          )
           onMaxReconnectAttemptsReached?.()
           shouldReconnectRef.current = false
         }
@@ -477,25 +505,33 @@ export function useStreamingWebSocket(
   /**
    * Send message through WebSocket
    */
-  const send = React.useCallback((data: string | object | ArrayBuffer | Blob): boolean => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      console.warn('[useStreamingWebSocket] Cannot send - connection not open')
-      return false
-    }
+  const send = React.useCallback(
+    (data: string | object | ArrayBuffer | Blob): boolean => {
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+        console.warn(
+          '[useStreamingWebSocket] Cannot send - connection not open'
+        )
+        return false
+      }
 
-    try {
-      // Convert object to JSON string
-      const payload = typeof data === 'object' && !(data instanceof ArrayBuffer) && !(data instanceof Blob)
-        ? JSON.stringify(data)
-        : data
+      try {
+        // Convert object to JSON string
+        const payload =
+          typeof data === 'object' &&
+          !(data instanceof ArrayBuffer) &&
+          !(data instanceof Blob)
+            ? JSON.stringify(data)
+            : data
 
-      wsRef.current.send(payload as string | ArrayBuffer | Blob)
-      return true
-    } catch (err) {
-      console.error('[useStreamingWebSocket] Send error:', err)
-      return false
-    }
-  }, [])
+        wsRef.current.send(payload as string | ArrayBuffer | Blob)
+        return true
+      } catch (err) {
+        console.error('[useStreamingWebSocket] Send error:', err)
+        return false
+      }
+    },
+    []
+  )
 
   /**
    * Send JSON message (convenience method)

@@ -9,7 +9,12 @@
  * @see {@link https://www.joshwcomeau.com/react/prefers-reduced-motion/} Reduced Motion
  */
 
-import type { Transition, Variants, TargetAndTransition } from 'framer-motion'
+import type {
+  Transition,
+  Variants,
+  Variant,
+  TargetAndTransition,
+} from 'framer-motion'
 
 // ============================================================================
 // Transition Presets
@@ -287,9 +292,9 @@ export function getReducedMotionVariants(
 
   // Return instant state changes (no animation)
   return {
-    initial: normalVariants['initial']!,
-    animate: normalVariants['animate']!,
-    exit: normalVariants['exit']!,
+    initial: normalVariants['initial'] as Variant,
+    animate: normalVariants['animate'] as Variant,
+    exit: normalVariants['exit'] as Variant,
   }
 }
 

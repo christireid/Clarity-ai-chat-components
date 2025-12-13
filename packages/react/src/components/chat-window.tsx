@@ -19,6 +19,26 @@ export interface ChatWindowProps {
   /** AI processing status for thinking indicator */
   aiStatus?: AIStatus
   onSendMessage: (content: string) => void
+  /**
+   * Callback to stop/cancel the current AI generation.
+   * When provided, shows a "Stop" button during loading state.
+   * Use with AbortController for proper cancellation.
+   * @example
+   * ```tsx
+   * const abortRef = useRef<AbortController | null>(null)
+   *
+   * const handleSend = async (content: string) => {
+   *   abortRef.current = new AbortController()
+   *   await sendMessage(content, { signal: abortRef.current.signal })
+   * }
+   *
+   * <ChatWindow
+   *   onSendMessage={handleSend}
+   *   onStopGeneration={() => abortRef.current?.abort()}
+   * />
+   * ```
+   */
+  onStopGeneration?: () => void
   /** Callback when message is copied */
   onMessageCopy?: (messageId: string, content: string) => void
   /** Callback when feedback is given */
@@ -47,6 +67,21 @@ export interface ChatWindowProps {
   onExport?: () => void
   /** Enable clear chat functionality */
   onClear?: () => void
+  /**
+   * Error message to display (e.g., network errors).
+   * Shows a banner above the chat when set.
+   */
+  error?: string | null
+  /**
+   * Callback to retry after an error.
+   * When provided along with `error`, shows a "Retry" button.
+   */
+  onRetry?: () => void
+  /**
+   * Callback to dismiss the error banner.
+   * When provided, shows a dismiss button on the error banner.
+   */
+  onDismissError?: () => void
   className?: string
   /**
    * Starter prompts to show in empty state (2024 AI UX trend)
@@ -86,7 +121,7 @@ const DefaultEmptyState = ({
     className="text-center space-y-8 px-4"
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+    transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
   >
     <motion.div
       className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg ring-1 ring-primary/30"
@@ -95,7 +130,7 @@ const DefaultEmptyState = ({
         rotate: [0, 1, -1, 0],
       }}
       transition={{
-        duration: 4,
+        duration: durations.slower,
         repeat: Infinity,
         ease: 'easeInOut',
       }}
@@ -121,7 +156,11 @@ const DefaultEmptyState = ({
           className="pt-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{
+            delay: 0.2,
+            duration: durations.slow,
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
         >
           <div className="flex items-center justify-center gap-2 mb-4">
             <SparklesIcon size={14} className="text-primary" />
@@ -265,6 +304,7 @@ export function ChatWindow({
   isLoading = false,
   aiStatus,
   onSendMessage,
+  onStopGeneration,
   onMessageCopy,
   onMessageFeedback,
   onMessageRetry,
@@ -279,6 +319,9 @@ export function ChatWindow({
   showMessageCount = false,
   onExport,
   onClear,
+  error,
+  onRetry,
+  onDismissError,
   className,
   starterPrompts,
   followUpSuggestions,
@@ -378,7 +421,10 @@ export function ChatWindow({
           className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-5 py-4 sm:px-6 backdrop-blur-md"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{
+            duration: durations.moderate,
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25">
@@ -462,6 +508,120 @@ export function ChatWindow({
         </motion.div>
       )}
 
+      {/* Error Banner */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{
+              duration: durations.normal,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            className="border-b border-destructive/30 bg-destructive/5"
+            role="alert"
+          >
+            <div className="flex items-center justify-between gap-3 px-4 py-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <svg
+                  className="h-4 w-4 text-destructive shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                <span className="text-sm text-destructive truncate">
+                  {error}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {onRetry && (
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={onRetry}
+                    className="h-7 px-3 text-xs font-medium"
+                  >
+                    Retry
+                  </Button>
+                )}
+                {onDismissError && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={onDismissError}
+                    className="h-7 w-7 p-0"
+                    aria-label="Dismiss error"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Stop Generation Banner */}
+      <AnimatePresence>
+        {isLoading && onStopGeneration && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{
+              duration: durations.normal,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            className="border-b border-amber-300/50 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/50"
+          >
+            <div className="flex items-center justify-between gap-3 px-4 py-2.5">
+              <div className="flex items-center gap-2.5">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: durations.slower,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                  className="h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full"
+                />
+                <span className="text-sm text-amber-700 dark:text-amber-300 font-medium">
+                  AI is generating response...
+                </span>
+              </div>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={onStopGeneration}
+                className="h-7 px-3 text-xs font-medium"
+              >
+                Stop
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
         <MessageList
           messages={normalizedMessages}
@@ -483,7 +643,10 @@ export function ChatWindow({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{
+                duration: durations.normal,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
               className="px-5 pb-3"
             >
               <div className="flex items-center gap-2 mb-3">

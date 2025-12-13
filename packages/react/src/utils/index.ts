@@ -218,3 +218,29 @@ export {
   type DeduplicationOptions,
   type DeduplicationStats,
 } from './request-deduplication'
+
+// Environment validation utilities
+export {
+  validateAIProvider,
+  validateVectorStore,
+  validateClarityChatConfig,
+  shouldUseMockMode,
+  getConfigSummary,
+  type EnvValidationResult,
+  type EnvValidationOptions,
+} from './env-validation'
+
+// Security utilities
+export {
+  safeEvaluate,
+  detectDangerousPatterns,
+  formatEvaluateResult,
+  type SafeEvaluateResult,
+} from './safe-evaluate'
+
+export {
+  sanitizeCodeHtml,
+  escapeHtmlEntities,
+  createSafeCodeHtml,
+  detectDangerousHtml,
+} from './sanitize-html'

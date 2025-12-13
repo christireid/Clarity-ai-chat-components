@@ -3,23 +3,28 @@
  *
  * Adapter for OpenAI's GPT models (GPT-4, GPT-4o, GPT-3.5, etc.)
  * Includes timeout, AbortSignal support, and rate limit header parsing.
+ *
+ * SECURITY: API key must be explicitly provided via config.apiKey.
+ * Never falls back to process.env to prevent exposure in frontend bundles.
  */
 
-import type {
-  ModelAdapter,
-  // ChatMessage, // Used implicitly via ModelAdapter
-  // ModelConfig, // Used implicitly via ModelAdapter
-  // StreamChunk, // Used implicitly via ModelAdapter
-  // TokenUsage // Used implicitly via ModelAdapter
-} from './types'
+import type { ModelAdapter, ToolCall } from './types'
 import { fetchWithTimeout } from '../utils/fetch-with-timeout'
 import { parseRateLimitHeaders } from '../utils/rate-limit-headers'
+import {
+  validateApiKey,
+  createRateLimitError,
+  DEFAULT_TIMEOUTS,
+  type OpenAIToolCall,
+} from './shared'
 
 export const openAIAdapter: ModelAdapter = {
   name: 'openai',
 
   async chat(messages, config) {
-    const timeout = config.timeout ?? 30000 // 30s default for chat
+    // SECURITY: Require explicit API key - no process.env fallback
+    const apiKey = validateApiKey(config.apiKey, 'OpenAI')
+    const timeout = config.timeout ?? DEFAULT_TIMEOUTS.chat
 
     const response = await fetchWithTimeout(
       `${config.baseURL || 'https://api.openai.com/v1'}/chat/completions`,
@@ -27,7 +32,7 @@ export const openAIAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.apiKey || process.env['OPENAI_API_KEY']}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model: config.model,
@@ -76,19 +81,24 @@ export const openAIAdapter: ModelAdapter = {
     return {
       role: 'assistant',
       content: data.choices[0].message.content || '',
-      toolCalls: data.choices[0].message.tool_calls?.map((tc: any) => ({
-        id: tc.id,
-        type: 'function',
-        function: {
-          name: tc.function.name,
-          arguments: tc.function.arguments,
-        },
-      })),
+      // Type-safe tool call mapping
+      toolCalls: data.choices[0].message.tool_calls?.map(
+        (tc: OpenAIToolCall): ToolCall => ({
+          id: tc.id,
+          type: 'function',
+          function: {
+            name: tc.function.name,
+            arguments: tc.function.arguments,
+          },
+        })
+      ),
     }
   },
 
   async *stream(messages, config) {
-    const timeout = config.timeout ?? 60000 // 60s default for streaming
+    // SECURITY: Require explicit API key - no process.env fallback
+    const apiKey = validateApiKey(config.apiKey, 'OpenAI')
+    const timeout = config.timeout ?? DEFAULT_TIMEOUTS.stream
 
     const response = await fetchWithTimeout(
       `${config.baseURL || 'https://api.openai.com/v1'}/chat/completions`,
@@ -96,7 +106,7 @@ export const openAIAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.apiKey || process.env['OPENAI_API_KEY']}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model: config.model,
