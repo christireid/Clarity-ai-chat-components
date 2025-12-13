@@ -763,6 +763,19 @@ export function useVimNavigation<T>({
     useKeyboardNavigation()
   const itemRefs = React.useRef<(HTMLElement | null)[]>([])
 
+  // Use refs for callbacks to prevent stale closures and unnecessary re-renders
+  const callbacksRef = React.useRef({ onSelect, onFocus })
+  React.useEffect(() => {
+    callbacksRef.current = { onSelect, onFocus }
+  }, [onSelect, onFocus])
+
+  // Reset focusedIndex if it becomes out of bounds when items change
+  React.useEffect(() => {
+    if (focusedIndex >= items.length) {
+      setFocusedIndex(items.length > 0 ? items.length - 1 : -1)
+    }
+  }, [items.length, focusedIndex])
+
   // Update refs array when items change
   React.useEffect(() => {
     itemRefs.current = itemRefs.current.slice(0, items.length)
@@ -795,14 +808,14 @@ export function useVimNavigation<T>({
       }
 
       setFocusedIndex(newIndex)
-      onFocus?.(items[newIndex], newIndex)
+      callbacksRef.current.onFocus?.(items[newIndex], newIndex)
       itemRefs.current[newIndex]?.focus()
       announceToScreenReader(
         `Item ${newIndex + 1} of ${items.length}`,
         false
       )
     },
-    [items, focusedIndex, loop, onFocus, announceToScreenReader]
+    [items, focusedIndex, loop, announceToScreenReader]
   )
 
   // Register vim-style shortcuts
@@ -889,7 +902,7 @@ export function useVimNavigation<T>({
         category: 'Navigation',
         handler: () => {
           if (focusedIndex >= 0 && focusedIndex < items.length) {
-            onSelect?.(items[focusedIndex], focusedIndex)
+            callbacksRef.current.onSelect?.(items[focusedIndex], focusedIndex)
           }
         },
         scope,
@@ -899,7 +912,8 @@ export function useVimNavigation<T>({
 
     const unsubscribes = shortcuts.map((s) => registerShortcut(s))
     return () => unsubscribes.forEach((u) => u())
-  }, [enabled, scope, orientation, navigate, focusedIndex, items, onSelect, registerShortcut])
+    // Note: onSelect is accessed via callbacksRef.current to prevent unnecessary re-registrations
+  }, [enabled, scope, orientation, navigate, focusedIndex, items, registerShortcut])
 
   // Set scope when this navigation is active
   React.useEffect(() => {
@@ -918,14 +932,15 @@ export function useVimNavigation<T>({
       'data-focused': focusedIndex === index,
       onFocus: () => {
         setFocusedIndex(index)
-        onFocus?.(items[index], index)
+        callbacksRef.current.onFocus?.(items[index], index)
       },
       onClick: () => {
         setFocusedIndex(index)
-        onSelect?.(items[index], index)
+        callbacksRef.current.onSelect?.(items[index], index)
       },
     }),
-    [focusedIndex, items, onFocus, onSelect]
+    // Note: onFocus/onSelect accessed via callbacksRef.current
+    [focusedIndex, items]
   )
 
   return {
