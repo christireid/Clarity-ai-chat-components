@@ -422,7 +422,7 @@ import { ErrorBoundary } from '@clarity-chat/react'
 
 - [Getting Started Guide](./getting-started.md) - Step-by-step setup
 - [Cookbook](./cookbook/) - Copy-paste ready patterns
-- [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+- [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
 - [Storybook](http://localhost:6006) - Interactive examples
 
 ---

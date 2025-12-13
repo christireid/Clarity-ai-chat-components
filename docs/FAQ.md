@@ -313,7 +313,7 @@ No! Clarity works with existing Vercel AI SDK API routes.
 2. Verify API returns correct format
 3. Check console for errors
 
-See [Troubleshooting Guide](./troubleshooting.md) for more.
+See [Troubleshooting Guide](./TROUBLESHOOTING.md) for more.
 
 ### Streaming not working?
 
@@ -365,4 +365,4 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines. We welcome PRs!
 - 📚 Check [Full Documentation](../packages/react/README.md)
 - 🐛 [Open an Issue](https://github.com/christireid/Clarity-ai-chat-components/issues)
 - 💬 [Join Discord](https://discord.gg/clarity-chat)
-- 📖 Read [Troubleshooting Guide](./troubleshooting.md)
+- 📖 Read [Troubleshooting Guide](./TROUBLESHOOTING.md)
