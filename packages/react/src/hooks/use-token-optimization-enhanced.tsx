@@ -487,6 +487,9 @@ export function useTokenOptimizationEnhanced(
     [enableSemanticCaching, similarityThreshold]
   )
 
+  // Initialize embedding cache for smart history
+  const embeddingCache = React.useRef<Map<string, number[]>>(new Map())
+
   // Initialize throttler (from basic hook)
   const throttler = React.useMemo(
     () => (enableThrottling ? createThrottler(throttling) : null),
@@ -968,6 +971,7 @@ export function useTokenOptimizationEnhanced(
         
         // Always keep last N messages
         const recentMessages = otherMessages.slice(-keepLast)
+        // Candidates for semantic retrieval (excluding recent ones)
         const candidateMessages = otherMessages.slice(0, -keepLast)
         
         // If no candidates, just return
@@ -982,49 +986,97 @@ export function useTokenOptimizationEnhanced(
         }
 
         try {
+          // Calculate/Get embedding for query
           const queryText = typeof lastUserMessage.content === 'string' 
             ? lastUserMessage.content 
             : JSON.stringify(lastUserMessage.content)
             
           const queryEmbedding = await calculateEmbedding(queryText)
           
-          // Calculate similarity for candidates
-          const scoredCandidates = await Promise.all(candidateMessages.map(async (msg) => {
-             const text = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
-             const embedding = await calculateEmbedding(text)
+          // Group candidates into turns (User + Assistant pairs)
+          // This ensures we don't retrieve isolated questions or answers
+          const turns: { user: CoreMessage, assistant?: CoreMessage, timestamp: number }[] = []
+          let currentTurn: Partial<typeof turns[0]> = {}
+          
+          for (let i = 0; i < candidateMessages.length; i++) {
+            const msg = candidateMessages[i]
+            if (msg.role === 'user') {
+              if (currentTurn.user) {
+                // Previous turn incomplete or just user, push it
+                turns.push(currentTurn as any)
+              }
+              currentTurn = { user: msg, timestamp: i }
+            } else if (msg.role === 'assistant' && currentTurn.user) {
+              currentTurn.assistant = msg
+              turns.push(currentTurn as any)
+              currentTurn = {}
+            }
+          }
+          if (currentTurn.user) {
+            turns.push(currentTurn as any)
+          }
+
+          // Score turns based on user message similarity
+          const scoredTurns = await Promise.all(turns.map(async (turn) => {
+             const text = typeof turn.user.content === 'string' 
+               ? turn.user.content 
+               : JSON.stringify(turn.user.content)
+             
+             // Check cache first
+             let embedding = embeddingCache.current.get(text)
+             if (!embedding) {
+               embedding = await calculateEmbedding!(text)
+               embeddingCache.current.set(text, embedding)
+             }
              
              // Cosine similarity
-             const similarity = queryEmbedding.reduce((sum, val, i) => sum + val * embedding[i], 0)
+             const similarity = queryEmbedding.reduce((sum, val, i) => sum + val * embedding![i], 0)
              
-             return { msg, similarity, tokens: await countTokens(text, { model }).then(r => r.total) }
+             // Calculate total tokens for this turn
+             let tokens = await countTokens(text, { model }).then(r => r.total)
+             if (turn.assistant) {
+               const assistText = typeof turn.assistant.content === 'string'
+                 ? turn.assistant.content
+                 : JSON.stringify(turn.assistant.content)
+               tokens += await countTokens(assistText, { model }).then(r => r.total)
+             }
+
+             return { turn, similarity, tokens }
           }))
           
-          // Sort by similarity
-          scoredCandidates.sort((a, b) => b.similarity - a.similarity)
+          // Sort by similarity (descending)
+          scoredTurns.sort((a, b) => b.similarity - a.similarity)
           
-          // Select based on token budget
-          let currentTokens = await countTokens(
+          // Select turns based on token budget
+          // Reserve space for system + recent messages
+          const reservedTokens = await countTokens(
             JSON.stringify([...(systemMessage ? [systemMessage] : []), ...recentMessages]), 
             { model }
           ).then(r => r.total)
           
-          const keptCandidates: CoreMessage[] = []
+          let currentTokens = reservedTokens
+          const keptTurns: typeof turns = []
           
-          for (const candidate of scoredCandidates) {
-            if (currentTokens + candidate.tokens <= maxTokens) {
-              keptCandidates.push(candidate.msg)
-              currentTokens += candidate.tokens
+          for (const scored of scoredTurns) {
+            if (currentTokens + scored.tokens <= maxTokens) {
+              keptTurns.push(scored.turn)
+              currentTokens += scored.tokens
             }
           }
           
-          // Restore chronological order for kept candidates
-          // We need to know original index or just filter original list
-          const keptSet = new Set(keptCandidates)
-          const finalCandidates = candidateMessages.filter(m => keptSet.has(m))
+          // Restore chronological order using original timestamp/index
+          keptTurns.sort((a, b) => a.timestamp - b.timestamp)
+          
+          // Flatten turns back to messages
+          const semanticHistory: CoreMessage[] = []
+          keptTurns.forEach(t => {
+            semanticHistory.push(t.user)
+            if (t.assistant) semanticHistory.push(t.assistant)
+          })
           
           return [
             ...(systemMessage ? [systemMessage] : []),
-            ...finalCandidates,
+            ...semanticHistory,
             ...recentMessages
           ]
           
@@ -1063,6 +1115,11 @@ export function useTokenOptimizationEnhanced(
    * Check if request can be made (throttling)
    */
   const canMakeRequest = React.useCallback((): boolean => {
+    // Check budget first
+    if (enableCostTracking && budget && stats.costs.totalCost >= budget) {
+      return false
+    }
+
     if (!enableThrottling || !throttler) {
       return true
     }
