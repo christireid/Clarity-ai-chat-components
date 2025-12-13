@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
@@ -9,6 +7,7 @@ import {
   Badge,
   cn,
   formatRelativeTime,
+  Textarea,
 } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
@@ -29,7 +28,7 @@ export interface MessageProps {
   onCopy?: (content: string) => void
   onFeedback?: (type: 'up' | 'down') => void
   onRetry?: () => void
-  onEdit?: (messageId: string) => void
+  onEdit?: (messageId: string, newContent: string) => void
   onRegenerate?: (messageId: string) => void
   onDelete?: (messageId: string) => void
   showAvatar?: boolean
@@ -62,6 +61,7 @@ export interface MessageProps {
  * - Streaming indicator
  * - Feedback animations (confetti on positive feedback)
  * - Hover states
+ * - Inline Editing
  *
  * **When to use:**
  * - Building custom message lists
@@ -77,7 +77,7 @@ export interface MessageProps {
  * @param props.onCopy - Optional callback when message is copied
  * @param props.onFeedback - Optional callback for feedback (up/down)
  * @param props.onRetry - Optional callback to retry a message
- * @param props.onEdit - Optional callback to edit a message
+ * @param props.onEdit - Optional callback to edit a message (passes new content)
  * @param props.onRegenerate - Optional callback to regenerate a message
  * @param props.onDelete - Optional callback to delete a message
  * @param props.showAvatar - Show avatar (default: true)
@@ -134,6 +134,8 @@ export function Message({
 }: MessageProps) {
   const [isHovered, setIsHovered] = React.useState(false)
   const [isFocusWithin, setIsFocusWithin] = React.useState(false)
+  const [isEditing, setIsEditing] = React.useState(false)
+  const [editedContent, setEditedContent] = React.useState(message.content)
   const [feedbackGiven, setFeedbackGiven] = React.useState<
     'up' | 'down' | null
   >(message.feedback?.type || null)
@@ -143,6 +145,11 @@ export function Message({
   const isStreaming = message.status === 'streaming'
 
   const [showConfetti, setShowConfetti] = React.useState(false)
+
+  // Reset edited content when message content changes
+  React.useEffect(() => {
+    setEditedContent(message.content)
+  }, [message.content])
 
   // React 19: Compiler optimizes this - no useCallback needed
   const handleFeedback = (type: 'up' | 'down') => {
@@ -155,6 +162,23 @@ export function Message({
       setShowConfetti(true)
       setTimeout(() => setShowConfetti(false), 1000)
     }
+  }
+
+  const handleEditStart = () => {
+    setIsEditing(true)
+    setEditedContent(message.content)
+  }
+
+  const handleEditCancel = () => {
+    setIsEditing(false)
+    setEditedContent(message.content)
+  }
+
+  const handleEditSave = () => {
+    if (editedContent.trim() !== message.content) {
+      onEdit?.(message.id, editedContent)
+    }
+    setIsEditing(false)
   }
 
   // Memoize markdown components to avoid recreation on every render.
@@ -417,48 +441,66 @@ export function Message({
           className={cn(
             // Base streaming stability classes for assistant messages
             !isUser && 'clarity-streaming-container',
-            !isUser && 'prose prose-sm dark:prose-invert max-w-none',
+            !isUser && !isEditing && 'prose prose-sm dark:prose-invert max-w-none',
             // Apply streaming-specific optimizations
             !isUser && isStreaming && 'clarity-streaming-markdown',
-            isUser &&
-              'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30'
+            isUser && !isEditing &&
+              'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30',
+            isEditing && 'w-full'
           )}
         >
-          {/* Tool Invocations */}
-          {!isUser && message.metadata?.toolInvocations && message.metadata.toolInvocations.length > 0 && (
-            <div className="mb-4 flex flex-col gap-2 w-full not-prose">
-              {message.metadata.toolInvocations.map((tool) => (
-                <ToolInvocation
-                  key={tool.toolCallId}
-                  toolCallId={tool.toolCallId}
-                  toolName={tool.toolName}
-                  args={tool.args}
-                  state={tool.state}
-                  result={tool.result}
-                />
-              ))}
+          {isEditing ? (
+            <div className="flex flex-col gap-2 w-full min-w-[300px]">
+              <Textarea
+                value={editedContent}
+                onChange={(e) => setEditedContent(e.target.value)}
+                autoFocus
+                className="min-h-[100px] text-base"
+              />
+              <div className="flex justify-end gap-2">
+                <Button size="sm" variant="ghost" onClick={handleEditCancel}>Cancel</Button>
+                <Button size="sm" onClick={handleEditSave}>Save & Submit</Button>
+              </div>
             </div>
-          )}
-
-          {isUser ? (
-            <p className="m-0 whitespace-pre-wrap text-primary-foreground">
-              {message.content}
-            </p>
           ) : (
-            <div className={cn(isStreaming && 'clarity-streaming-text')}>
-              <ReactMarkdown
-                remarkPlugins={remarkPlugins}
-                rehypePlugins={rehypePlugins}
-                components={markdownComponents}
-              >
-                {message.content}
-              </ReactMarkdown>
-              {/* Cursor inside the streaming wrapper for proper inline positioning */}
-              {/* Note: Cursor is purely visual - parent MessageList handles aria-live announcements */}
-              {isStreaming && (
-                <span aria-hidden="true" className="clarity-streaming-cursor" />
+            <>
+              {/* Tool Invocations */}
+              {!isUser && message.metadata?.toolInvocations && message.metadata.toolInvocations.length > 0 && (
+                <div className="mb-4 flex flex-col gap-2 w-full not-prose">
+                  {message.metadata.toolInvocations.map((tool) => (
+                    <ToolInvocation
+                      key={tool.toolCallId}
+                      toolCallId={tool.toolCallId}
+                      toolName={tool.toolName}
+                      args={tool.args}
+                      state={tool.state}
+                      result={tool.result}
+                    />
+                  ))}
+                </div>
               )}
-            </div>
+
+              {isUser ? (
+                <p className="m-0 whitespace-pre-wrap text-primary-foreground">
+                  {message.content}
+                </p>
+              ) : (
+                <div className={cn(isStreaming && 'clarity-streaming-text')}>
+                  <ReactMarkdown
+                    remarkPlugins={remarkPlugins}
+                    rehypePlugins={rehypePlugins}
+                    components={markdownComponents}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                  {/* Cursor inside the streaming wrapper for proper inline positioning */}
+                  {/* Note: Cursor is purely visual - parent MessageList handles aria-live announcements */}
+                  {isStreaming && (
+                    <span aria-hidden="true" className="clarity-streaming-cursor" />
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -486,7 +528,7 @@ export function Message({
         )}
 
         {/* Actions - Show for both user and assistant messages */}
-        {(isUser || isAssistant) && (
+        {(isUser || isAssistant) && !isEditing && (
           <MessageActions
             messageContent={message.content}
             messageId={message.id}
@@ -496,7 +538,7 @@ export function Message({
             hasError={message.status === 'error'}
             onFeedback={handleFeedback}
             onRetry={onRetry}
-            onEdit={onEdit}
+            onEdit={onEdit ? handleEditStart : undefined}
             onRegenerate={onRegenerate}
             onDelete={onDelete}
             show={isHovered || isFocusWithin || !!feedbackGiven}
@@ -504,7 +546,7 @@ export function Message({
         )}
 
         {/* Metadata */}
-        <MessageMetadata metadata={message.metadata} />
+        {!isEditing && <MessageMetadata metadata={message.metadata} />}
       </div>
     </motion.div>
   )
