@@ -141,5 +141,8 @@
   "bugs": {
     "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
   },
-  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme"
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
+  "dependencies": {
+    "tsx": "^4.21.0"
+  }
 }

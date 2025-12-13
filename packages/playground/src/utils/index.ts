@@ -23,6 +23,7 @@ export {
   openInStackBlitz,
   downloadAsZip,
   copyCode,
+  copyToClipboard,
 } from './export'
 
 export { cn } from './cn'
