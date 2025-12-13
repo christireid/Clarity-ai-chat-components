@@ -16,6 +16,15 @@ interface ProviderInfo {
   dashboardUrl: string
 }
 
+/**
+ * Validation result with detailed error information
+ */
+interface ValidationResult {
+  valid: boolean
+  error?: string
+  errorType?: 'format' | 'invalid' | 'rate_limited' | 'expired' | 'network'
+}
+
 const PROVIDERS: ProviderInfo[] = [
   {
     id: 'openai',
@@ -84,14 +93,14 @@ export class ApiKeyManager {
             break
 
           case 'validateKey':
-            const isValid = await this.validateApiKey(
+            const validationResult = await this.validateApiKey(
               message.provider,
               message.key
             )
             this.panel.webview.postMessage({
               command: 'validationResult',
               provider: message.provider,
-              isValid,
+              ...validationResult,
             })
             break
 
@@ -170,22 +179,222 @@ export class ApiKeyManager {
     await context.secrets.delete(`clarity-chat.${provider}-key`)
   }
 
-  private async validateApiKey(provider: string, key: string): Promise<boolean> {
+  /**
+   * Validates an API key by making a real API call to the provider
+   * @param provider - The provider ID (openai, anthropic, google)
+   * @param key - The API key to validate
+   * @returns ValidationResult with status and error details
+   */
+  private async validateApiKey(
+    provider: string,
+    key: string
+  ): Promise<ValidationResult> {
+    // Basic format validation first
     if (!key || key.length < 10) {
-      return false
+      return { valid: false, error: 'Key is too short', errorType: 'format' }
     }
 
-    // Basic format validation
+    // Format checks
+    const formatCheck = this.checkKeyFormat(provider, key)
+    if (!formatCheck.valid) {
+      return formatCheck
+    }
+
+    // Real API validation
+    try {
+      switch (provider) {
+        case 'openai':
+          return await this.validateOpenAI(key)
+        case 'anthropic':
+          return await this.validateAnthropic(key)
+        case 'google':
+          return await this.validateGoogle(key)
+        default:
+          return { valid: true }
+      }
+    } catch {
+      return {
+        valid: false,
+        error: 'Network error - could not reach API',
+        errorType: 'network',
+      }
+    }
+  }
+
+  /**
+   * Check if the key matches the expected format for the provider
+   */
+  private checkKeyFormat(provider: string, key: string): ValidationResult {
     switch (provider) {
       case 'openai':
-        return key.startsWith('sk-') && key.length > 20
+        if (!key.startsWith('sk-') || key.length < 20) {
+          return {
+            valid: false,
+            error: 'Invalid format. OpenAI keys start with "sk-"',
+            errorType: 'format',
+          }
+        }
+        break
       case 'anthropic':
-        return key.startsWith('sk-ant-') && key.length > 20
+        if (!key.startsWith('sk-ant-') || key.length < 20) {
+          return {
+            valid: false,
+            error: 'Invalid format. Anthropic keys start with "sk-ant-"',
+            errorType: 'format',
+          }
+        }
+        break
       case 'google':
-        return key.startsWith('AIza') && key.length > 20
-      default:
-        return key.length > 10
+        if (!key.startsWith('AIza') || key.length < 20) {
+          return {
+            valid: false,
+            error: 'Invalid format. Google AI keys start with "AIza"',
+            errorType: 'format',
+          }
+        }
+        break
     }
+    return { valid: true }
+  }
+
+  /**
+   * Validate OpenAI API key by fetching models list
+   */
+  private async validateOpenAI(key: string): Promise<ValidationResult> {
+    try {
+      const response = await fetch('https://api.openai.com/v1/models', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${key}`,
+        },
+      })
+
+      if (response.ok) {
+        return { valid: true }
+      }
+
+      const status = response.status
+      if (status === 401) {
+        return {
+          valid: false,
+          error: 'Invalid API key - authentication failed',
+          errorType: 'invalid',
+        }
+      } else if (status === 429) {
+        return {
+          valid: false,
+          error: 'Rate limited - please try again later',
+          errorType: 'rate_limited',
+        }
+      } else if (status === 403) {
+        return {
+          valid: false,
+          error: 'Access denied - key may be expired or restricted',
+          errorType: 'expired',
+        }
+      }
+
+      return { valid: false, error: `API error (${status})`, errorType: 'invalid' }
+    } catch {
+      return { valid: false, error: 'Network error', errorType: 'network' }
+    }
+  }
+
+  /**
+   * Validate Anthropic API key by making a minimal request
+   */
+  private async validateAnthropic(key: string): Promise<ValidationResult> {
+    try {
+      // Use a minimal messages request to validate
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-3-haiku-20240307',
+          max_tokens: 1,
+          messages: [{ role: 'user', content: 'Hi' }],
+        }),
+      })
+
+      // Even if we get a response error about quota, the key is valid
+      if (response.ok || response.status === 400) {
+        return { valid: true }
+      }
+
+      const status = response.status
+      if (status === 401) {
+        return {
+          valid: false,
+          error: 'Invalid API key - authentication failed',
+          errorType: 'invalid',
+        }
+      } else if (status === 429) {
+        // Rate limited but key is valid
+        return { valid: true }
+      } else if (status === 403) {
+        return {
+          valid: false,
+          error: 'Access denied - key may be expired or restricted',
+          errorType: 'expired',
+        }
+      }
+
+      return { valid: false, error: `API error (${status})`, errorType: 'invalid' }
+    } catch {
+      return { valid: false, error: 'Network error', errorType: 'network' }
+    }
+  }
+
+  /**
+   * Validate Google AI API key by listing models
+   */
+  private async validateGoogle(key: string): Promise<ValidationResult> {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1/models?key=${key}`,
+        { method: 'GET' }
+      )
+
+      if (response.ok) {
+        return { valid: true }
+      }
+
+      const status = response.status
+      if (status === 400 || status === 403) {
+        return {
+          valid: false,
+          error: 'Invalid API key',
+          errorType: 'invalid',
+        }
+      } else if (status === 429) {
+        return {
+          valid: false,
+          error: 'Rate limited - please try again later',
+          errorType: 'rate_limited',
+        }
+      }
+
+      return { valid: false, error: `API error (${status})`, errorType: 'invalid' }
+    } catch {
+      return { valid: false, error: 'Network error', errorType: 'network' }
+    }
+  }
+
+  /**
+   * Generate a nonce for CSP
+   */
+  private getNonce(): string {
+    let text = ''
+    const possible =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    for (let i = 0; i < 32; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length))
+    }
+    return text
   }
 
   private async getHtmlForWebview(
@@ -201,11 +410,14 @@ export class ApiKeyManager {
     const providersJson = JSON.stringify(PROVIDERS)
     const keyStatusJson = JSON.stringify(keyStatus)
 
+    const nonce = this.getNonce()
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${nonce}';">
   <title>API Key Manager</title>
   <style>
     :root {
@@ -673,7 +885,7 @@ export class ApiKeyManager {
     <span id="toastMessage"></span>
   </div>
 
-  <script>
+  <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     const providers = ${providersJson};
     const keyStatus = ${keyStatusJson};
@@ -850,15 +1062,22 @@ export class ApiKeyManager {
         const input = document.getElementById('input-' + message.provider);
         const validation = document.getElementById('validation-' + message.provider);
 
-        if (message.isValid) {
+        if (message.valid) {
           input.classList.remove('invalid');
           input.classList.add('valid');
-          validation.innerHTML = '✓ Key format looks valid';
+          validation.innerHTML = '✓ API key verified successfully!';
           validation.className = 'validation-message success';
+          showToast('API key is valid!', 'success');
         } else {
           input.classList.remove('valid');
           input.classList.add('invalid');
-          validation.innerHTML = '✗ Key format appears invalid';
+
+          // Show specific error message
+          const errorIcon = message.errorType === 'network' ? '🌐' :
+                           message.errorType === 'rate_limited' ? '⏱️' :
+                           message.errorType === 'format' ? '📝' : '✗';
+
+          validation.innerHTML = errorIcon + ' ' + (message.error || 'Invalid key');
           validation.className = 'validation-message error';
         }
       }

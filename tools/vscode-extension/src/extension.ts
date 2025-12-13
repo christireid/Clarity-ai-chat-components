@@ -451,7 +451,7 @@ function getActionLabel(action: string): string {
 /**
  * Show welcome panel with onboarding
  */
-async function showWelcomePanel(_context: vscode.ExtensionContext) {
+async function showWelcomePanel(context: vscode.ExtensionContext) {
   const panel = vscode.window.createWebviewPanel(
     'clarityWelcome',
     'Welcome to Clarity Chat',
@@ -462,7 +462,11 @@ async function showWelcomePanel(_context: vscode.ExtensionContext) {
     }
   )
 
-  panel.webview.html = getWelcomeHtml()
+  // Get version from extension manifest
+  const extension = vscode.extensions.getExtension('code-and-clarity.clarity-chat')
+  const version = extension?.packageJSON?.version || context.extension.packageJSON.version || '1.0.0'
+
+  panel.webview.html = getWelcomeHtml(version)
 
   panel.webview.onDidReceiveMessage(async (message) => {
     switch (message.command) {
@@ -493,13 +497,16 @@ async function showWelcomePanel(_context: vscode.ExtensionContext) {
 
 /**
  * Get welcome panel HTML
+ * @param version - The extension version to display
  */
-function getWelcomeHtml(): string {
+function getWelcomeHtml(version: string): string {
+  const nonce = getNonce()
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${nonce}';">
   <title>Welcome to Clarity Chat</title>
   <style>
     :root {
@@ -796,7 +803,7 @@ function getWelcomeHtml(): string {
       <div class="logo">✨</div>
       <h1>Welcome to Clarity Chat</h1>
       <p>Build stunning AI chat applications with intelligent memory, streaming, and token optimization.</p>
-      <span class="version-badge">v1.0.0 - Production Ready</span>
+      <span class="version-badge">v${version} - Production Ready</span>
       <div class="copilot-badge">
         <span>🤖</span>
         <span>GitHub Copilot Integrated - Type @clarity in chat</span>
@@ -937,7 +944,7 @@ function getWelcomeHtml(): string {
     </div>
   </div>
 
-  <script>
+  <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
 
     function sendMessage(command) {
@@ -946,6 +953,19 @@ function getWelcomeHtml(): string {
   </script>
 </body>
 </html>`
+}
+
+/**
+ * Generate a nonce for CSP
+ */
+function getNonce(): string {
+  let text = ''
+  const possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
+  }
+  return text
 }
 
 /**

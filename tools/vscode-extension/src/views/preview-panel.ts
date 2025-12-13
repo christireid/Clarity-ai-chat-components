@@ -420,6 +420,10 @@ export class PreviewPanel {
             await vscode.env.clipboard.writeText(message.code)
             vscode.window.showInformationMessage('Code copied to clipboard!')
             break
+          case 'copyImport':
+            await vscode.env.clipboard.writeText(message.importStatement)
+            vscode.window.showInformationMessage('Import copied to clipboard!')
+            break
           case 'viewDocs':
             vscode.env.openExternal(
               vscode.Uri.parse(
@@ -498,15 +502,30 @@ export class PreviewPanel {
     this.panel.webview.html = this.getHtmlForWebview()
   }
 
+  /**
+   * Generate a nonce for CSP
+   */
+  private getNonce(): string {
+    let text = ''
+    const possible =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    for (let i = 0; i < 32; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length))
+    }
+    return text
+  }
+
   private getHtmlForWebview(): string {
     const componentsJson = JSON.stringify(COMPONENTS)
     const categories = [...new Set(COMPONENTS.map((c) => c.category))]
+    const nonce = this.getNonce()
 
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${nonce}';">
   <title>Clarity Chat Components</title>
   <style>
     :root {
@@ -1222,13 +1241,16 @@ export class PreviewPanel {
       <button class="action-btn primary" onclick="insertSelected()">
         Insert Component
       </button>
+      <button class="action-btn secondary" onclick="copyImport()">
+        Copy Import
+      </button>
       <button class="action-btn secondary" onclick="viewDocs()">
         View Docs
       </button>
     </div>
   </div>
 
-  <script>
+  <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     const components = ${componentsJson};
     let selectedComponent = null;
@@ -1375,6 +1397,15 @@ export class PreviewPanel {
       vscode.postMessage({
         command: 'copyCode',
         code: selectedComponent.example
+      });
+    }
+
+    function copyImport() {
+      if (!selectedComponent) return;
+      const importStatement = \`import { \${selectedComponent.name} } from '@clarity-chat/react'\`;
+      vscode.postMessage({
+        command: 'copyImport',
+        importStatement: importStatement
       });
     }
 
