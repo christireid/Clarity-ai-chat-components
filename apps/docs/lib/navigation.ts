@@ -102,7 +102,7 @@ export const referenceNavigation: NavItem[] = [
       { title: 'ChatWindow', href: '/reference/components/chat-window' },
       { title: 'Message', href: '/reference/components/message' },
       { title: 'MessageList', href: '/reference/components/message-list' },
-      { title: 'MessageInput', href: '/reference/components/message-input' },
+      { title: 'ChatInput', href: '/reference/components/chat-input' },
       { title: 'TypingIndicator', href: '/reference/components/typing-indicator' },
     ],
   },
