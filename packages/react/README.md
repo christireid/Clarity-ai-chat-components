@@ -1,61 +1,54 @@
 # @clarity-chat/react
 
-> **The Most Complete AI Chat Component Library for React** — Enterprise-grade, stupid-simple,
-> drop-in ready.
+**Build beautiful AI chat interfaces in one line of code.**
 
 [![npm version](https://img.shields.io/npm/v/@clarity-chat/react)](https://www.npmjs.com/package/@clarity-chat/react)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## 🎯 Value Proposition
+---
 
-Clarity Chat is the most complete AI chat component library for React. Get a production-ready chat
-interface in **one line**, or compose powerful features with our layered API architecture. Built for
-developers who want enterprise-grade capabilities without the complexity.
-
-**Key Differentiators**:
-
-- ⚡ **One-line setup** - `<ClarityChat api="/api/chat" />` and you're done
-- 🏗️ **Layered architecture** - Start simple, scale to enterprise
-- 🎨 **Production-ready UI** - Beautiful, accessible, responsive components
-- 💾 **Built-in memory** - Three strategies for context retention
-- 🛠️ **Tool UI registry** - Automatic rendering of tool results
-- 📡 **Dual transport** - SSE and WebSocket support
-- 🔒 **Enterprise features** - RBAC, audit, multi-tenancy ready
-- 🛡️ **Runtime validation** - Developer-friendly error messages
-
-## 📦 Installation
+## Installation
 
 ```bash
 npm install @clarity-chat/react
-# or
-pnpm add @clarity-chat/react
-# or
-yarn add @clarity-chat/react
 ```
 
-## 🚀 Quick Start
-
-> 📖 **New to Clarity?**
->
-> - Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
-> - Check the [Developer Guide](../../DEVELOPER_GUIDE.md) for architecture and patterns
-> - See the [Quick Reference](../../QUICK_REFERENCE_ARCHITECTURE.md) for copy-paste snippets
-> - Review the [Architecture Documentation](../../DESIGN.md) for deep dives
-> - Explore [Examples](../../packages/react/src/examples/) for minimal, mid-level, and complex use
->   cases
-
-### Basic Chat (Simplest Way - Top-Level API)
+## Quick Start
 
 ```tsx
 import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
-function MyChat() {
+export default function App() {
   return <ClarityChat api="/api/chat" />
 }
 ```
 
-**That's it!** One component, zero configuration, full-featured chat.
+**That's it.** You now have a production-ready chat with streaming, error handling, and accessibility.
+
+---
+
+## Why Clarity Chat?
+
+| Feature | Clarity Chat | DIY Solution |
+|---------|-------------|--------------|
+| Setup time | 1 line | Days |
+| Streaming | Built-in | Manual |
+| Memory management | 3 strategies | Build from scratch |
+| Accessibility | WCAG AAA | DIY |
+| Token optimization | Automatic | Manual |
+| Error recovery | Auto-retry | Custom logic |
+
+---
+
+## Core Features
+
+- **One-line setup** - `<ClarityChat api="/api/chat" />` and you're done
+- **Layered architecture** - Start simple, scale to enterprise
+- **Beautiful UI** - 70+ production-ready components
+- **Built-in memory** - Three strategies for context retention
+- **Streaming** - SSE and WebSocket support
+- **Enterprise-ready** - RBAC, audit logging, multi-tenancy
 
 ### Basic Chat (With Hook - Mid-Level API)
 

@@ -1,54 +1,59 @@
 # @clarity-chat/cli
 
-> **Beautiful CLI** - Developer productivity toolkit for Clarity Chat
+**The fastest way to scaffold and manage Clarity Chat projects.**
 
-🎨 Beautiful CLI for Clarity Chat - Developer productivity toolkit with interactive wizards, code generation, and comprehensive project management.
+A beautiful, interactive CLI with wizards, code generation, and project health tools.
 
-## ✨ Features
+---
 
-- 🚀 **Project Initialization** - Interactive setup wizard with framework detection
-- ➕ **Component Management** - Add components with automatic dependency installation
-- 🔑 **API Key Manager** - Securely manage provider API keys
-- 🔥 **Dev Server** - Hot reload development server
-- ⚡ **Code Generation** - Generate components, hooks, adapters, and tests
-- 📚 **Documentation** - Quick access to docs and examples
-- 🩺 **Health Check** - Diagnose and fix project issues
-- 🎯 **Enhanced Developer Experience** - Comprehensive error handling, validation, and helpful suggestions
-- 🔒 **Security** - Path validation, secure credential handling, and input sanitization
-- 📊 **Multiple Output Modes** - Human-readable, JSON, quiet, and verbose modes
-- ⌨️ **Shell Completion** - Bash, zsh, and fish completion support
-- ⚙️ **Configuration Management** - Flexible config file support with cosmiconfig
-- 🎨 **Beautiful UI/UX** - Eye-catching gradients, formatted tables, beautiful message boxes, and smooth animations
+## Quick Start
+
+```bash
+# Create a new project (interactive wizard)
+npx @clarity-chat/cli init
+
+# Or install globally
+npm install -g @clarity-chat/cli
+clarity-chat init
+```
+
+---
+
+## What Can It Do?
+
+| Command | Description |
+|---------|-------------|
+| `clarity-chat init` | Create a new project with interactive setup |
+| `clarity-chat add <component>` | Add components to your project |
+| `clarity-chat keys` | Manage API keys (OpenAI, Anthropic, etc.) |
+| `clarity-chat dev` | Start development server |
+| `clarity-chat generate` | Generate components, hooks, or tests |
+| `clarity-chat docs` | Open documentation |
+| `clarity-chat doctor` | Check project health and fix issues |
+
+---
+
+## Features
+
+- **Interactive Wizards** - Guided setup with framework detection
+- **Component Library** - Add pre-built components with one command
+- **API Key Management** - Securely store and validate API keys
+- **Code Generation** - Scaffold components, hooks, adapters, and tests
+- **Health Checks** - Diagnose issues and auto-fix common problems
+- **Shell Completion** - Tab completion for bash, zsh, and fish
+- **Beautiful Output** - Color-coded tables, progress bars, and message boxes
+
+---
 
 ## Installation
 
 ```bash
+# Global install (recommended)
 npm install -g @clarity-chat/cli
-```
 
-Or use without installation:
-
-```bash
+# Or use with npx (no install)
 npx @clarity-chat/cli init
 ```
-
-## 🚀 Quick Start
-
-> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
-
-### Install CLI
-
-```bash
-npm install -g @clarity-chat/cli
-```
-
-### Initialize Project
-
-```bash
-clarity-chat init
-```
-
-That's it! The CLI will guide you through setup interactively.
 
 ## 📖 Commands
 
