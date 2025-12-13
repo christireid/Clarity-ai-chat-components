@@ -29,7 +29,7 @@ Clarity requires React 18+ and works with React 19. TypeScript 5.0+ is recommend
 
 ### Does Clarity work with Next.js?
 
-Yes! Clarity works great with Next.js App Router and Pages Router. See [Getting Started](./getting-started-clarity-chat.md) for examples.
+Yes! Clarity works great with Next.js App Router and Pages Router. See [Getting Started](./getting-started.md) for examples.
 
 ## Installation & Setup
 
@@ -68,7 +68,7 @@ Clarity includes TypeScript definitions. Ensure your `tsconfig.json` has:
 
 ### How do I get started quickly?
 
-See [Getting Started Guide](./getting-started-clarity-chat.md) for a minimal example:
+See [Getting Started Guide](./getting-started.md) for a minimal example:
 
 ```tsx
 import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
@@ -124,7 +124,7 @@ Clarity offers three memory strategies:
 2. **`semantic-chunks`**: Uses semantic search (balanced)
 3. **`vector-store`**: Full vector database (best for long-term)
 
-See [Getting Started](./getting-started-clarity-chat.md#memory-strategies) for details.
+See [Getting Started](./getting-started.md#memory-strategies) for details.
 
 ### How do I enable memory?
 

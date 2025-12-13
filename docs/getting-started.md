@@ -93,6 +93,16 @@ Your chat needs a backend API to communicate with AI providers. The API route ru
 // app/api/chat/route.ts
 export async function POST(req: Request) {
   try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      console.error('OPENAI_API_KEY environment variable is not set')
+      return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
     const { messages } = await req.json()
 
     // Validate input
@@ -107,7 +117,7 @@ export async function POST(req: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: 'gpt-4',
@@ -117,7 +127,8 @@ export async function POST(req: Request) {
     })
 
     if (!response.ok) {
-      const error = await response.text()
+      const errorText = await response.text()
+      console.error('OpenAI API error:', errorText)
       return new Response(JSON.stringify({ error: 'AI provider error' }), {
         status: response.status,
         headers: { 'Content-Type': 'application/json' },
@@ -152,25 +163,39 @@ import express from 'express'
 import OpenAI from 'openai'
 
 const app = express()
-const openai = new OpenAI()
+app.use(express.json()) // Required to parse JSON body
+
+const openai = new OpenAI() // Uses OPENAI_API_KEY env var
 
 app.post('/api/chat', async (req, res) => {
-  const { messages } = req.body
+  try {
+    const { messages } = req.body
 
-  const stream = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages,
-    stream: true,
-  })
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
 
-  res.setHeader('Content-Type', 'text/event-stream')
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages,
+      stream: true,
+    })
 
-  for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content || ''
-    res.write(`data: ${JSON.stringify({ content })}\n\n`)
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content || ''
+      res.write(`data: ${JSON.stringify({ content })}\n\n`)
+    }
+
+    res.end()
+  } catch (error) {
+    console.error('Chat API error:', error)
+    res.status(500).json({ error: 'Internal server error' })
   }
-
-  res.end()
 })
 ```
 
@@ -181,27 +206,37 @@ app.post('/api/chat', async (req, res) => {
 
 ```typescript
 import { Hono } from 'hono'
-import { stream } from 'hono/streaming'
+import { streamSSE } from 'hono/streaming'
 import OpenAI from 'openai'
 
 const app = new Hono()
-const openai = new OpenAI()
+const openai = new OpenAI() // Uses OPENAI_API_KEY env var
 
 app.post('/api/chat', async (c) => {
-  const { messages } = await c.req.json()
+  try {
+    const { messages } = await c.req.json()
 
-  return stream(c, async (stream) => {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages,
-      stream: true,
-    })
-
-    for await (const chunk of response) {
-      const content = chunk.choices[0]?.delta?.content || ''
-      await stream.write(`data: ${JSON.stringify({ content })}\n\n`)
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return c.json({ error: 'Invalid messages format' }, 400)
     }
-  })
+
+    return streamSSE(c, async (stream) => {
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4',
+        messages,
+        stream: true,
+      })
+
+      for await (const chunk of response) {
+        const content = chunk.choices[0]?.delta?.content || ''
+        await stream.writeSSE({ data: JSON.stringify({ content }) })
+      }
+    })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
 })
 ```
 

@@ -237,7 +237,7 @@ See `packages/react/src/examples/complex-examples.tsx` for:
 
 ### Quick Start & Migration
 
-- **[Getting Started with Clarity Chat](../../docs/getting-started-clarity-chat.md)** ⭐ - Quick
+- **[Getting Started with Clarity Chat](../../docs/getting-started.md)** ⭐ - Quick
   start guide
 - **[Clarity vs Vercel AI SDK UI](../../docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
 - **[Migrating from Vercel](../../docs/migrating-from-vercel.md)** - Migration guide

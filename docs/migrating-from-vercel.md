@@ -347,7 +347,7 @@ import type { CoreMessage } from '@clarity-chat/react'
 
 ## Next Steps
 
-- **[Getting Started](./getting-started-clarity-chat.md)** - Learn Clarity basics
+- **[Getting Started](./getting-started.md)** - Learn Clarity basics
 - **[Clarity vs Vercel](./clarity-vs-vercel-ai-sdk-ui.md)** - Detailed comparison
 - **[API Reference](../../packages/react/README.md)** - Complete documentation
 - **[Examples](../../packages/react/src/examples/)** - Code examples
