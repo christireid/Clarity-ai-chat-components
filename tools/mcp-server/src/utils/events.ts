@@ -55,11 +55,12 @@ export class EventEmitter<EventMap extends { [K: string]: unknown } = Record<str
       return () => {} // Return no-op unsubscribe
     }
 
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, new Set())
+    let eventListeners = this.listeners.get(event)
+    if (!eventListeners) {
+      eventListeners = new Set()
+      this.listeners.set(event, eventListeners)
     }
 
-    const eventListeners = this.listeners.get(event)!
     if (eventListeners.size >= this.maxListeners) {
       logger.warn('Max listeners exceeded for event', {
         event: String(event),
@@ -100,8 +101,10 @@ export class EventEmitter<EventMap extends { [K: string]: unknown } = Record<str
       return () => {}
     }
 
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, new Set())
+    let eventListeners = this.listeners.get(event)
+    if (!eventListeners) {
+      eventListeners = new Set()
+      this.listeners.set(event, eventListeners)
     }
 
     const subscription: EventSubscription = {
@@ -109,11 +112,14 @@ export class EventEmitter<EventMap extends { [K: string]: unknown } = Record<str
       once: true,
       id: ++this.subscriptionIdCounter,
     }
-    this.listeners.get(event)!.add(subscription)
+    eventListeners.add(subscription)
     this.handlerToSubscription.set(handler as EventHandler, subscription)
 
     return () => {
-      this.listeners.get(event)?.delete(subscription)
+      eventListeners.delete(subscription)
+      if (eventListeners.size === 0) {
+        this.listeners.delete(event)
+      }
     }
   }
 

@@ -14,6 +14,39 @@ import { EventEmitter } from '../utils/events.js'
 import { z } from 'zod'
 
 // =============================================================================
+// Plugin Lifecycle Timeout Configuration
+// =============================================================================
+
+/** Timeout for plugin lifecycle hooks (in ms) */
+const LIFECYCLE_HOOK_TIMEOUT_MS = parseInt(process.env.MCP_PLUGIN_HOOK_TIMEOUT || '5000')
+
+/**
+ * Execute a lifecycle hook with timeout protection
+ */
+async function withLifecycleTimeout<T>(
+  hook: (() => Promise<T> | T | void) | undefined,
+  hookName: string,
+  pluginId: string
+): Promise<void> {
+  if (!hook) return
+
+  try {
+    await Promise.race([
+      Promise.resolve(hook()),
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`Plugin ${hookName} hook timed out after ${LIFECYCLE_HOOK_TIMEOUT_MS}ms`)),
+          LIFECYCLE_HOOK_TIMEOUT_MS
+        )
+      ),
+    ])
+  } catch (error) {
+    logger.error(`Plugin ${hookName} hook failed: ${pluginId}`, error instanceof Error ? error : undefined)
+    // Don't re-throw - log and continue for lifecycle hooks
+  }
+}
+
+// =============================================================================
 // Plugin Types
 // =============================================================================
 
@@ -240,18 +273,22 @@ class PluginRegistry {
   private resourceHandlers = new Map<string, { pluginId: string; handler: ResourceHandler }>()
   private promptHandlers = new Map<string, { pluginId: string; handler: PromptHandler }>()
   private events = new EventEmitter()
-  private registrationLock = false
+  private registrationQueue: Promise<void> = Promise.resolve()
 
   /**
    * Register a new plugin
    */
   async register(plugin: Plugin, config?: Partial<PluginConfig>): Promise<void> {
-    // Prevent concurrent registration
-    if (this.registrationLock) {
-      throw new ValidationError('Plugin registration in progress, please retry')
-    }
+    // Chain registrations to prevent race conditions
+    const previousRegistration = this.registrationQueue
+    let resolveRegistration: () => void = () => {}
 
-    this.registrationLock = true
+    this.registrationQueue = new Promise<void>((resolve) => {
+      resolveRegistration = resolve
+    })
+
+    // Wait for any previous registration to complete
+    await previousRegistration
 
     try {
       // Check plugin limit
@@ -334,15 +371,8 @@ class PluginRegistry {
       // Store plugin
       this.plugins.set(pluginId, registered)
 
-      // Call lifecycle hook
-      try {
-        await plugin.lifecycle?.onRegister?.()
-      } catch (error) {
-        logger.error(
-          `Plugin onRegister hook failed: ${pluginId}`,
-          error instanceof Error ? error : undefined
-        )
-      }
+      // Call lifecycle hook with timeout protection
+      await withLifecycleTimeout(plugin.lifecycle?.onRegister, 'onRegister', pluginId)
 
       // Auto-enable if configured
       if (finalConfig.enabled) {
@@ -356,7 +386,7 @@ class PluginRegistry {
 
       this.events.emit('plugin:registered', { pluginId, plugin })
     } finally {
-      this.registrationLock = false
+      resolveRegistration()
     }
   }
 
@@ -415,8 +445,8 @@ class PluginRegistry {
         })
       }
 
-      // Call lifecycle hook
-      await plugin.lifecycle?.onEnable?.()
+      // Call lifecycle hook with timeout protection
+      await withLifecycleTimeout(plugin.lifecycle?.onEnable, 'onEnable', pluginId)
 
       registered.state = 'enabled'
       registered.enabledAt = new Date()
@@ -460,15 +490,8 @@ class PluginRegistry {
       this.promptHandlers.delete(prompt.definition.name)
     }
 
-    // Call lifecycle hook
-    try {
-      await plugin.lifecycle?.onDisable?.()
-    } catch (error) {
-      logger.error(
-        `Plugin onDisable hook failed: ${pluginId}`,
-        error instanceof Error ? error : undefined
-      )
-    }
+    // Call lifecycle hook with timeout protection
+    await withLifecycleTimeout(plugin.lifecycle?.onDisable, 'onDisable', pluginId)
 
     registered.state = 'disabled'
     logger.info(`Plugin disabled: ${plugin.metadata.name}`, { pluginId })
@@ -489,15 +512,8 @@ class PluginRegistry {
       await this.disable(pluginId)
     }
 
-    // Call lifecycle hook
-    try {
-      await registered.plugin.lifecycle?.onUnregister?.()
-    } catch (error) {
-      logger.error(
-        `Plugin onUnregister hook failed: ${pluginId}`,
-        error instanceof Error ? error : undefined
-      )
-    }
+    // Call lifecycle hook with timeout protection
+    await withLifecycleTimeout(registered.plugin.lifecycle?.onUnregister, 'onUnregister', pluginId)
 
     this.plugins.delete(pluginId)
     logger.info(`Plugin unregistered: ${registered.plugin.metadata.name}`, {

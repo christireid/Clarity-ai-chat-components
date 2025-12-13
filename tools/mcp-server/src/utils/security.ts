@@ -71,9 +71,17 @@ export function sanitizeString(input: string): string {
  */
 export function validateProjectPath(projectPath: string): string {
   const sanitized = sanitizeString(projectPath)
-  
-  // Check for dangerous patterns
-  if (sanitized.includes('..')) {
+
+  // Check for directory traversal patterns more precisely
+  // path.normalize resolves ".." segments, so we check if result starts with ".."
+  // or contains "..\" or "../" which indicate parent directory references
+  const normalized = path.normalize(sanitized)
+  if (
+    normalized.startsWith('..') ||
+    normalized.includes('..' + path.sep) ||
+    sanitized.includes('../') ||
+    sanitized.includes('..\\')
+  ) {
     throw new PermissionError('Invalid project path: contains parent directory reference')
   }
 
