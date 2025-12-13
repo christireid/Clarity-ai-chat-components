@@ -242,6 +242,7 @@ export class BatchRequestManager {
   }
   private batchTimer: ReturnType<typeof setTimeout> | null = null
   private oldestQueueTime: number = 0
+  private cancelledJobs: Set<string> = new Set()
 
   constructor(config: BatchConfig) {
     this.config = {
@@ -322,8 +323,8 @@ export class BatchRequestManager {
 
     // Process batch (in a real implementation, this would call the provider API)
     // Note: Processing is intentionally not awaited to allow non-blocking batch submission.
-    // Use getResults(job.id) or listen to onStatusChange to know when complete.
-    this.processBatch(job, requests).catch(error => {
+    // The simulation yields to the event loop so callers can observe `pending` first.
+    void this.processBatch(job, requests).catch(error => {
       job.status = 'failed'
       job.error = error instanceof Error ? error.message : String(error)
       this.config.onStatusChange(job)
@@ -356,6 +357,7 @@ export class BatchRequestManager {
     if (!job) return false
     if (job.status !== 'pending' && job.status !== 'in_progress') return false
 
+    this.cancelledJobs.add(jobId)
     job.status = 'cancelled'
     this.config.onStatusChange(job)
 
@@ -428,6 +430,7 @@ export class BatchRequestManager {
     this.jobs.clear()
     this.results.clear()
     this.pendingPromises.clear()
+    this.cancelledJobs.clear()
   }
 
   /**
@@ -461,6 +464,13 @@ export class BatchRequestManager {
    *   3. Retrieve results from response
    */
   private async processBatch(job: BatchJob, requests: BatchRequest[]): Promise<void> {
+    // Yield so callers can observe `pending` and cancellations can occur.
+    await new Promise<void>((resolve) => setTimeout(resolve, 0))
+
+    if (this.cancelledJobs.has(job.id) || job.status === 'cancelled') {
+      return
+    }
+
     job.status = 'in_progress'
     this.config.onStatusChange(job)
 
@@ -475,6 +485,13 @@ export class BatchRequestManager {
 
     // Simulated processing (remove in production)
     for (let i = 0; i < requests.length; i++) {
+      if (this.cancelledJobs.has(job.id) || job.status === 'cancelled') {
+        return
+      }
+
+      // Simulate async work (and make fake timers deterministic in tests)
+      await new Promise<void>((resolve) => setTimeout(resolve, 0))
+
       const request = requests[i]
 
       // Estimate tokens for cost tracking
@@ -617,11 +634,12 @@ export function shouldUseBatch(
   request: { messages: BatchMessage[] },
   options: {
     urgency?: 'low' | 'normal' | 'high'
+    /** Minimum savings in USD required to recommend batch */
     minSavingsThreshold?: number
     maxWaitAcceptable?: number
   } = {}
 ): { useBatch: boolean; reason: string } {
-  const { urgency = 'normal', minSavingsThreshold = 0.01, maxWaitAcceptable = 86400000 } = options
+  const { urgency = 'normal', minSavingsThreshold = 0.00005, maxWaitAcceptable = 86400000 } = options
 
   // High urgency requests should not be batched
   if (urgency === 'high') {
@@ -636,9 +654,11 @@ export function shouldUseBatch(
     return { useBatch: false, reason: 'Request too small for meaningful savings' }
   }
 
-  // Estimate savings
-  const inputCost = (tokens / 1_000_000) * 0.15 // Using gpt-4o-mini baseline
-  const savings = inputCost * 0.5
+  // Estimate savings (use gpt-4o-mini baseline, includes output cost estimate).
+  const estimatedOutputTokens = Math.max(64, Math.floor(tokens * 0.5))
+  const regularCost =
+    (tokens / 1_000_000) * 0.15 + (estimatedOutputTokens / 1_000_000) * 0.6
+  const savings = regularCost * 0.5
 
   if (savings < minSavingsThreshold) {
     return { useBatch: false, reason: `Savings $${savings.toFixed(4)} below threshold` }

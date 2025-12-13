@@ -162,6 +162,9 @@ export class StreamingResponseMonitor {
   private chunksProcessed: number = 0
   private lastChunks: string[] = []
   private stopped: boolean = false
+  private stoppedReason: ChunkAnalysis['reason'] | undefined
+  private stoppedConfidence: number | undefined
+  private stoppedSignal: string | undefined
 
   constructor(config: StreamingOptimizationConfig = {}) {
     this.config = {
@@ -185,8 +188,9 @@ export class StreamingResponseMonitor {
     if (this.stopped) {
       return {
         shouldContinue: false,
-        reason: 'user-stop',
-        confidence: 1,
+        reason: this.stoppedReason ?? 'user-stop',
+        confidence: this.stoppedConfidence ?? 1,
+        detectedSignal: this.stoppedSignal,
         currentTokens: this.tokenCount,
       }
     }
@@ -253,6 +257,9 @@ export class StreamingResponseMonitor {
    */
   forceStop(): void {
     this.stopped = true
+    this.stoppedReason = 'user-stop'
+    this.stoppedConfidence = 1
+    this.stoppedSignal = undefined
   }
 
   /**
@@ -267,6 +274,9 @@ export class StreamingResponseMonitor {
     this.chunksProcessed = 0
     this.lastChunks = []
     this.stopped = false
+    this.stoppedReason = undefined
+    this.stoppedConfidence = undefined
+    this.stoppedSignal = undefined
   }
 
   /**
@@ -365,6 +375,9 @@ export class StreamingResponseMonitor {
     signal?: string
   ): ChunkAnalysis {
     this.stopped = true
+    this.stoppedReason = reason
+    this.stoppedConfidence = confidence
+    this.stoppedSignal = signal
     this.stopEvents++
     this.totalConfidence += confidence
 
@@ -606,8 +619,9 @@ export function estimateResponseLength(query: string): 'short' | 'medium' | 'lon
   }
 
   // Default based on query length
-  if (query.length < 50) return 'short'
-  if (query.length > 200) return 'long'
+  // Keep these thresholds conservative so typical questions fall into "medium".
+  if (query.length < 25) return 'short'
+  if (query.length > 160) return 'long'
   return 'medium'
 }
 

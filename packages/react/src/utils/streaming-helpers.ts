@@ -173,6 +173,38 @@ export async function processStream(
   let bytes = 0
   let cancelled = false
 
+  const handleLine = (line: string): void => {
+    if (!line.trim()) return
+
+    // SSE needs special handling because JSON payloads live in the `data:` field.
+    if (format === 'sse') {
+      const parsedLine = parseSSELine(line)
+      const data = parsedLine?.data
+      if (!data) return
+
+      const parsedJson = onData ? safeParseJSON(data) : null
+      if (parsedJson) onData?.(parsedJson)
+
+      const processed = parsedJson ? extractStreamContent(parsedJson) : data
+      if (processed) {
+        content += processed
+        onChunk?.(processed)
+      }
+      return
+    }
+
+    const processed = processChunkByFormat(line, format)
+    if (processed) {
+      content += processed
+      onChunk?.(processed)
+    }
+
+    if (onData) {
+      const parsed = safeParseJSON(line)
+      if (parsed) onData(parsed)
+    }
+  }
+
   try {
     while (true) {
       // Check for cancellation
@@ -186,11 +218,9 @@ export async function processStream(
       if (done) {
         // Process any remaining buffer
         if (buffer.trim()) {
-          const processed = processChunkByFormat(buffer, format)
-          if (processed) {
-            content += processed
-            onChunk?.(processed)
-          }
+          const remainingLines = buffer.split('\n')
+          for (const line of remainingLines) handleLine(line)
+          buffer = ''
         }
         break
       }
@@ -208,32 +238,12 @@ export async function processStream(
       const lines = buffer.split('\n')
       buffer = lines.pop() || '' // Keep incomplete line in buffer
 
-      for (const line of lines) {
-        if (!line.trim()) continue
-
-        const processed = processChunkByFormat(line, format)
-        if (processed) {
-          content += processed
-          onChunk?.(processed)
-        }
-
-        // Parse data if callback provided
-        if (onData) {
-          const parsed = safeParseJSON(line)
-          if (parsed) {
-            onData(parsed)
-          }
-        }
-      }
+      for (const line of lines) handleLine(line)
 
       // Prevent buffer overflow
       if (buffer.length > maxChunkSize) {
         console.warn('[processStream] Buffer size exceeded, flushing...')
-        const processed = processChunkByFormat(buffer, format)
-        if (processed) {
-          content += processed
-          onChunk?.(processed)
-        }
+        handleLine(buffer)
         buffer = ''
       }
     }

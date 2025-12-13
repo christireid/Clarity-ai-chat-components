@@ -231,9 +231,14 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
     debug = false,
   } = options
 
+  // Treat source configs as stable for the lifetime of the hook.
+  // This prevents subtle bugs when callers pass inline arrays/objects that are re-created on each render.
+  const sourceConfigsRef = React.useRef(sourceConfigs)
+  const stableSourceConfigs = sourceConfigsRef.current
+
   const sourceKeys = React.useMemo(
-    () => sourceConfigs.map((s) => s.key),
-    [sourceConfigs]
+    () => stableSourceConfigs.map((s) => s.key),
+    [stableSourceConfigs]
   )
 
   const reducer = React.useMemo(
@@ -271,15 +276,18 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
 
   const sourceConfigsMap = React.useMemo(() => {
     const map = new Map<string, DataSourceConfig<T[keyof T]>>()
-    for (const config of sourceConfigs) {
+    for (const config of stableSourceConfigs) {
       map.set(config.key, config)
     }
     return map
-  }, [sourceConfigs])
+  }, [stableSourceConfigs])
 
   const requiredKeys = React.useMemo(
-    () => sourceConfigs.filter((s) => s.required !== false).map((s) => s.key),
-    [sourceConfigs]
+    () =>
+      stableSourceConfigs
+        .filter((s) => s.required !== false)
+        .map((s) => s.key),
+    [stableSourceConfigs]
   )
 
   const clearStaleTimeout = React.useCallback((key: string) => {

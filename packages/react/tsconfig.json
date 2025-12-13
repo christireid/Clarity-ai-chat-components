@@ -2,7 +2,20 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {
+      "@clarity-chat/primitives": ["../primitives/src/index.ts"],
+      "@clarity-chat/primitives/*": ["../primitives/src/*"],
+      "@clarity-chat/types": ["../types/src/index.ts"],
+      "@clarity-chat/types/*": ["../types/src/*"],
+      "@clarity-chat/utils": ["../utils/src/index.ts"],
+      "@clarity-chat/utils/*": ["../utils/src/*"],
+      "@clarity-chat/memory": ["../memory/src/index.ts"],
+      "@clarity-chat/memory/*": ["../memory/src/*"],
+      "@clarity-chat/license": ["../license/src/index.ts"],
+      "@clarity-chat/license/*": ["../license/src/*"]
+    },
     // TODO: Re-enable after fixing ~300 index access errors across codebase
     "noUncheckedIndexedAccess": false,
     // TODO: Re-enable after fixing 12 index signature access errors
