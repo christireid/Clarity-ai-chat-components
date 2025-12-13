@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ToastProvider, VoiceInput } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -17,6 +17,23 @@ import { Mic, MicOff } from 'lucide-react'
 function BasicVoiceDemo() {
   const [transcript, setTranscript] = useState('')
   const [isListening, setIsListening] = useState(false)
+  const [isSupported, setIsSupported] = useState(true)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      setIsSupported(false)
+    }
+  }, [])
+
+  if (!isSupported) {
+    return (
+      <div className="w-full max-w-md p-6 border border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-900 rounded-lg text-center">
+        <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+          Voice input is not supported in this browser. Please try Chrome, Edge, or Safari.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full max-w-md p-6 border border-border rounded-lg bg-background flex flex-col items-center gap-4">

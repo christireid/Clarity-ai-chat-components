@@ -20,7 +20,7 @@ function BasicLayoutDemo() {
   ]
 
   return (
-    <div className="h-[400px] border border-border rounded-lg overflow-hidden">
+    <div className="h-[400px] w-full border border-border rounded-lg overflow-hidden">
       <ChatLayout
         header={<div className="p-4 border-b bg-card">Header</div>}
         sidebar={<div className="p-4 border-r w-64 bg-muted/30">Sidebar Content</div>}
