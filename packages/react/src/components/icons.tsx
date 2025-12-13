@@ -359,3 +359,19 @@ export const FlagIcon: React.FC<IconProps> = (props) => (
     <line x1="4" x2="4" y1="22" y2="15" />
   </svg>
 )
+
+export const WrapTextIcon: React.FC<IconProps> = (props) => (
+  <svg {...getIconProps(props)} viewBox="0 0 24 24">
+    <line x1="3" x2="21" y1="6" y2="6" />
+    <path d="M3 12h15a3 3 0 1 1 0 6h-4" />
+    <polyline points="16 16 14 18 16 20" />
+  </svg>
+)
+
+export const ExternalLinkIcon: React.FC<IconProps> = (props) => (
+  <svg {...getIconProps(props)} viewBox="0 0 24 24">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" />
+    <line x1="10" x2="21" y1="14" y2="3" />
+  </svg>
+)
