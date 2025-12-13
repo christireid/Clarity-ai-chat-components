@@ -43,7 +43,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
               'whitespace-nowrap'
             )}
           >
-            Press {isMac ? '⌘' : 'Ctrl'}+A
+            Press {isMac ? '⌘' : 'Ctrl'}+.
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -70,7 +70,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
           'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2',
           'group'
         )}
-        aria-label={isOpen ? 'Close AI Assistant (Esc)' : `Open AI Assistant (${isMac ? 'Cmd' : 'Ctrl'}+A)`}
+        aria-label={isOpen ? 'Close AI Assistant (Esc)' : `Open AI Assistant (${isMac ? 'Cmd' : 'Ctrl'}+.)`}
       >
         {/* Icon Container */}
         <div className="relative">

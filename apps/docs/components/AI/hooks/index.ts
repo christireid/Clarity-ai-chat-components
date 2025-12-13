@@ -6,3 +6,4 @@
 
 export * from './useOfflineQueue'
 export * from './useBranching'
+export * from './useDocsChat'
