@@ -69,14 +69,15 @@ export function isPlaygroundCompatible(
   ]
   if (!supportedLanguages.includes(language.toLowerCase())) return false
 
-  // Check for React-like patterns
+  // Check for React-like patterns with stricter boundaries
+  // We want to avoid matching comments like "// import React"
   const reactPatterns = [
-    /import.*from\s+['"]react['"]/,
-    /import.*@clarity-chat/,
-    /<\w+[\s/>]/, // JSX tags
-    /export\s+(default\s+)?function/,
-    /const.*=.*\(.*\)\s*=>/, // Arrow function components
-    /class.*extends.*Component/,
+    /^\s*import.*from\s+['"]react['"]/m, // Must be at start of line (ignoring whitespace)
+    /^\s*import.*@clarity-chat/m,
+    /^\s*export\s+(default\s+)?function/m,
+    /^\s*class.*extends.*Component/m,
+    /<\w+[\s/>]/, // JSX tags (harder to anchor but distinctive)
+    /const\s+\w+\s*=\s*(\([^)]*\)|props)\s*=>/, // Arrow function components
   ]
 
   return reactPatterns.some((pattern) => pattern.test(code))

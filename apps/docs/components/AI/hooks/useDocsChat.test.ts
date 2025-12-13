@@ -181,4 +181,47 @@ describe('useDocsChat', () => {
     expect(result.current.messages).toEqual([])
     expect(mockToast.info).toHaveBeenCalledWith('Conversation cleared')
   })
+
+  it('handles split stream chunks correctly', async () => {
+    const { result } = renderHook(() => useDocsChat())
+
+    // Mock successful fetch with split chunks
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      body: {
+        getReader: () => ({
+          read: vi
+            .fn()
+            // Chunk 1: Partial JSON
+            .mockResolvedValueOnce({
+              done: false,
+              value: new TextEncoder().encode('data: {"type":"text","con'),
+            })
+            // Chunk 2: Rest of JSON + Next start
+            .mockResolvedValueOnce({
+              done: false,
+              value: new TextEncoder().encode(
+                'tent":"Hello"}\n\ndata: {"type":"te'
+              ),
+            })
+            // Chunk 3: Finish JSON
+            .mockResolvedValueOnce({
+              done: false,
+              value: new TextEncoder().encode('xt","content":" World"}\n\n'),
+            })
+            .mockResolvedValueOnce({
+              done: false,
+              value: new TextEncoder().encode('data: {"type":"done"}\n\n'),
+            })
+            .mockResolvedValueOnce({ done: true }),
+        }),
+      },
+    })
+
+    await act(async () => {
+      await result.current.handleSendMessage('Hello AI')
+    })
+
+    expect(result.current.messages[1].content).toBe('Hello World')
+  })
 })

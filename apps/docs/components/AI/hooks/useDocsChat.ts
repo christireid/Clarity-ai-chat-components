@@ -286,15 +286,20 @@ export function useDocsChat() {
 
         let accumulatedContent = ''
         let sources: Source[] = []
+        let buffer = ''
 
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
 
-          const chunk = decoder.decode(value)
-          const lines = chunk.split('\n')
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          // Keep the last line in the buffer if it doesn't end with a newline
+          // or if it's the last element (which might be empty or incomplete)
+          buffer = lines.pop() || ''
 
           for (const line of lines) {
+            if (line.trim() === '') continue
             if (line.startsWith('data: ')) {
               try {
                 const data = JSON.parse(line.slice(6))
@@ -597,7 +602,38 @@ export function useDocsChat() {
     [messages, sessionId, toast]
   )
 
+  const handleStop = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+      setIsLoading(false)
+      setStreamingStatus('idle')
+      setAiStatus(undefined)
+      // If we stopped during streaming, mark the message as interrupted
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.status === 'streaming'
+            ? {
+                ...m,
+                content: m.content + '\n\n_(Stopped by user)_',
+                status: 'sent' as const,
+              }
+            : m
+        )
+      )
+    }
+  }, [])
+
   const handleClear = useCallback(() => {
+    // Abort any ongoing request first
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+      setIsLoading(false)
+      setStreamingStatus('idle')
+      setAiStatus(undefined)
+    }
+
     setMessages([])
     clearSavedConversation()
     tokenTracker.clear()
@@ -623,6 +659,7 @@ export function useDocsChat() {
     handleFeedback,
     handleExportWithFormat,
     handleClear,
+    handleStop,
     handleNetworkStatusChange,
   }
 }
