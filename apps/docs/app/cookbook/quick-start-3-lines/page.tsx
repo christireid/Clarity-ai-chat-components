@@ -6,7 +6,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: '3-Line Quick Start | Clarity Chat Cookbook',

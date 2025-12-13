@@ -12,7 +12,6 @@ import {
 import { BudgetPieChart } from '@/components/Diagrams/BudgetPieChart'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Financial Advisor Example',
