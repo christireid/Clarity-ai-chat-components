@@ -8,6 +8,7 @@ import { cn } from '@clarity-chat/primitives'
 import { CopyButton } from '../copy-button'
 import { MarkdownCodeBlock } from './markdown-code-block'
 import { DownloadIcon, WrapTextIcon } from '../icons'
+import { CodeWindowHeader } from '../code/CodeWindowHeader'
 
 // ============================================================================
 // Types
@@ -55,71 +56,39 @@ function PreBlock({ children, ...props }: PreBlockProps) {
   const [wrapText, setWrapText] = React.useState(false)
   
   // Extract code string from the code element for copy/download
-  const codeString = React.useMemo(() => {
+  const codeInfo = React.useMemo(() => {
     let text = ''
+    let language = ''
+    
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child) && child.props) {
         const childProps = child.props as Record<string, unknown>
+        
+        // Extract language from className if possible
+        const className = (childProps.className as string) || ''
+        const match = /language-(\w+)/.exec(className)
+        if (match) language = match[1]
+        
         text = (childProps['data-code-string'] as string) || ''
         if (!text && childProps.children) {
           text = extractTextFromNode(childProps.children as React.ReactNode)
         }
       }
     })
-    return text.replace(/\n$/, '')
+    
+    return { text: text.replace(/\n$/, ''), language }
   }, [children])
-
-  const handleDownload = () => {
-    const blob = new Blob([codeString], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'snippet.txt' // We could try to detect extension from class but simpler for now
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
 
   return (
     <div className="relative group/code my-6 rounded-xl border border-border shadow-sm overflow-hidden bg-[#1e1e1e]">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#252526] border-b border-[#333]">
-        <div className="flex items-center gap-1.5 opacity-70 group-hover/code:opacity-100 transition-opacity">
-          <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
-          <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
-          <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
-        </div>
-        
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setWrapText(!wrapText)}
-            className={cn(
-              "p-1.5 rounded-md transition-colors",
-              wrapText ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-white/10"
-            )}
-            title="Toggle word wrap"
-          >
-            <WrapTextIcon size={16} />
-          </button>
-
-          <button
-            onClick={handleDownload}
-            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/10 rounded-md transition-colors"
-            title="Download code"
-          >
-            <DownloadIcon size={16} />
-          </button>
-
-          {codeString && (
-            <CopyButton
-              text={codeString}
-              iconOnly
-              className="w-7 h-7"
-            />
-          )}
-        </div>
-      </div>
+      <CodeWindowHeader
+        codeString={codeInfo.text}
+        language={codeInfo.language}
+        wrapText={wrapText}
+        onToggleWrap={() => setWrapText(!wrapText)}
+        showCopyButton={!!codeInfo.text}
+        theme="dark"
+      />
 
       <pre
         className={cn(

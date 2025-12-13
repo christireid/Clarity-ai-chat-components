@@ -1,14 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { Button, cn } from '@clarity-chat/primitives'
-import { CopyButton } from './copy-button'
-import { 
-  ChevronDownIcon, 
-  ChevronUpIcon, 
-  DownloadIcon, 
-  WrapTextIcon 
-} from './icons'
+import { cn } from '@clarity-chat/primitives'
+import { CodeWindowHeader } from './code/CodeWindowHeader'
 
 /**
  * Enhanced Code Block Component
@@ -104,18 +98,6 @@ export function EnhancedCodeBlock({
     setIsFolded(!isFolded)
   }
 
-  const handleDownload = () => {
-    const blob = new Blob([code], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename || `snippet.${detectedLanguage === 'text' ? 'txt' : detectedLanguage}`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
-
   const getLineClassName = (lineNumber: number) => {
     return cn(
       'px-4 py-0.5 text-sm font-mono transition-colors duration-150',
@@ -133,89 +115,18 @@ export function EnhancedCodeBlock({
         className
       )}
     >
-      {/* Header */}
-      <div className={cn(
-        "flex items-center justify-between px-4 py-2.5 border-b select-none",
-        theme === 'dark' ? "bg-[#252526] border-[#333]" : "bg-gray-50 border-gray-200"
-      )}>
-        {/* Left: Window Controls & Filename/Language */}
-        <div className="flex items-center gap-3">
-          {/* Mac-style Window Controls */}
-          <div className="flex items-center gap-1.5 opacity-75 hover:opacity-100 transition-opacity">
-            <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
-            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
-            <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
-          </div>
-
-          {(filename || detectedLanguage) && (
-            <div className="flex items-center gap-2 ml-2">
-              {filename && (
-                <span className="text-xs font-medium text-muted-foreground">
-                  {filename}
-                </span>
-              )}
-              {detectedLanguage && detectedLanguage !== 'text' && (
-                <span className={cn(
-                  "text-[10px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider opacity-70",
-                  theme === 'dark' ? "bg-white/10 text-white" : "bg-black/5 text-black"
-                )}>
-                  {detectedLanguage}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Right: Actions */}
-        <div className="flex items-center gap-1.5">
-          {shouldFold && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleToggleFold}
-              className="h-7 w-7 text-muted-foreground hover:text-foreground"
-              title={isFolded ? "Expand code" : "Collapse code"}
-            >
-              {isFolded ? (
-                <ChevronDownIcon className="h-4 w-4" />
-              ) : (
-                <ChevronUpIcon className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setWrapText(!wrapText)}
-            className={cn(
-              "h-7 w-7 transition-colors",
-              wrapText ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-            )}
-            title="Toggle word wrap"
-          >
-            <WrapTextIcon className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDownload}
-            className="h-7 w-7 text-muted-foreground hover:text-foreground"
-            title="Download code"
-          >
-            <DownloadIcon className="h-4 w-4" />
-          </Button>
-
-          {showCopyButton && (
-            <CopyButton
-              text={code}
-              iconOnly
-              className="h-7 w-7"
-            />
-          )}
-        </div>
-      </div>
+      <CodeWindowHeader 
+        codeString={code}
+        language={detectedLanguage}
+        filename={filename}
+        isFolded={isFolded}
+        enableFolding={shouldFold} // Only show fold button if it should fold
+        onToggleFold={handleToggleFold}
+        wrapText={wrapText}
+        onToggleWrap={() => setWrapText(!wrapText)}
+        showCopyButton={showCopyButton}
+        theme={theme}
+      />
 
       {/* Code Content */}
       <div className={cn(

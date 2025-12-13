@@ -22,6 +22,7 @@ import rehypeRaw from 'rehype-raw'
 import { cn } from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
 import { DownloadIcon, WrapTextIcon } from './icons'
+import { CodeWindowHeader } from './code/CodeWindowHeader'
 
 // Import KaTeX CSS
 import 'katex/dist/katex.min.css'
@@ -110,18 +111,6 @@ function CodeBlock({
   // Extract clean text for copy/download
   const codeText = useMemo(() => extractTextFromNode(children).replace(/\n$/, ''), [children])
   
-  const handleDownload = () => {
-    const blob = new Blob([codeText], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `snippet.${language || 'txt'}`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
-
   if (inline) {
     return (
       <code className={cn('px-1.5 py-0.5 rounded-md bg-muted text-sm font-mono text-pink-500 dark:text-pink-400', className)} {...props}>
@@ -134,53 +123,14 @@ function CodeBlock({
 
   return (
     <div className="relative group my-6 rounded-xl overflow-hidden border border-border shadow-sm">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
-        {/* Mac-style Window Controls & Language */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
-            <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
-            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
-            <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
-          </div>
-          
-          {language && (
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {language}
-            </span>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setWrapText(!wrapText)}
-            className={cn(
-              "p-1.5 rounded-md transition-colors",
-              wrapText ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            )}
-            title="Toggle word wrap"
-          >
-            <WrapTextIcon size={16} />
-          </button>
-
-          <button
-            onClick={handleDownload}
-            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-            title="Download code"
-          >
-            <DownloadIcon size={16} />
-          </button>
-
-          {enableCopy && (
-            <CopyButton
-              text={codeText}
-              iconOnly
-              className="w-7 h-7"
-            />
-          )}
-        </div>
-      </div>
+      <CodeWindowHeader
+        codeString={codeText}
+        language={language}
+        wrapText={wrapText}
+        onToggleWrap={() => setWrapText(!wrapText)}
+        showCopyButton={enableCopy}
+        theme="dark" // Always dark for code blocks in this renderer
+      />
 
       {/* Code Content */}
       <div className="relative bg-[#1e1e1e] dark:bg-[#1e1e1e] bg-slate-950">
