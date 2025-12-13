@@ -73,13 +73,13 @@ const SESSION_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
 const ANALYTICS_VERSION = '2.0'
 
 let currentSession: SearchSession | null = null
-let sessionTimeoutId: NodeJS.Timeout | null = null
+let sessionTimeoutId: ReturnType<typeof setTimeout> | null = null
 
 /**
  * Generate unique ID
  */
 function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 /**
@@ -161,7 +161,7 @@ function getAnalytics(): SearchAnalytics {
 }
 
 /**
- * Save analytics data to localStorage
+ * Save analytics data to localStorage with quota handling
  */
 function saveAnalytics(data: SearchAnalytics): void {
   if (typeof window === 'undefined') return
@@ -176,8 +176,25 @@ function saveAnalytics(data: SearchAnalytics): void {
       version: ANALYTICS_VERSION,
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed))
-  } catch {
-    // Silently fail on storage errors
+  } catch (error) {
+    // Handle QuotaExceededError by reducing data size
+    if (error instanceof Error && error.name === 'QuotaExceededError') {
+      try {
+        // Try with reduced data
+        const reduced: SearchAnalytics = {
+          queries: data.queries.slice(-Math.floor(MAX_ENTRIES / 2)),
+          clicks: data.clicks.slice(-Math.floor(MAX_ENTRIES / 2)),
+          noResults: [...new Set(data.noResults)].slice(-Math.floor(MAX_ENTRIES / 2)),
+          sessions: data.sessions.slice(-Math.floor(MAX_ENTRIES / 20)),
+          version: ANALYTICS_VERSION,
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(reduced))
+      } catch {
+        // If still failing, remove old data
+        localStorage.removeItem(STORAGE_KEY)
+      }
+    }
+    // Silently fail on other storage errors
   }
 }
 
@@ -371,8 +388,10 @@ export function getSearchInsights(): SearchInsight[] {
 
   // CTR analysis
   const timeSeries = getTimeSeriesData(7)
-  const avgCtr =
-    timeSeries.reduce((sum, d) => sum + d.ctr, 0) / timeSeries.length
+  // Avoid division by zero if no data
+  const avgCtr = timeSeries.length > 0
+    ? timeSeries.reduce((sum, d) => sum + d.ctr, 0) / timeSeries.length
+    : 0
 
   if (avgCtr < 20) {
     insights.push({

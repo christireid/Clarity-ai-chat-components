@@ -8,7 +8,7 @@ import { useDeferredSearch } from '../hooks/use-deferred-search'
 import { SearchIcon } from './icons'
 import { X, Command, ArrowUp, ArrowDown, CornerDownLeft } from 'lucide-react'
 
-const { Suspense, useCallback, useEffect, useRef, useState } = React
+const { Suspense, useCallback, useEffect, useRef, useState, useMemo } = React
 
 // Type assertions for lucide icons
 const XIcon = X as React.ComponentType<{ className?: string }>
@@ -95,6 +95,13 @@ export function MessageSearch({
   const [selectedResultIndex, setSelectedResultIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const onResultsChangeRef = useRef(onResultsChange)
+
+  // Keep ref updated without triggering re-renders
+  useEffect(() => {
+    onResultsChangeRef.current = onResultsChange
+  })
 
   const { filteredMessages, isPending } = useDeferredSearch(
     messages,
@@ -149,10 +156,10 @@ export function MessageSearch({
     }
   }, [])
 
-  // Notify parent of filtered results
+  // Notify parent of filtered results (using ref to avoid infinite loops)
   useEffect(() => {
-    onResultsChange?.(filteredMessages)
-  }, [filteredMessages, onResultsChange])
+    onResultsChangeRef.current?.(filteredMessages)
+  }, [filteredMessages])
 
   // Keyboard shortcut handler
   useEffect(() => {
@@ -259,13 +266,27 @@ export function MessageSearch({
   }
 
   const handleBlur = () => {
+    // Clear any existing timeout
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current)
+    }
     // Delay to allow click on history items
-    setTimeout(() => {
+    blurTimeoutRef.current = setTimeout(() => {
       setIsFocused(false)
       setShowHistory(false)
       setSelectedHistoryIndex(-1)
+      blurTimeoutRef.current = null
     }, 150)
   }
+
+  // Cleanup blur timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (blurTimeoutRef.current) {
+        clearTimeout(blurTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleHistoryItemClick = (query: string) => {
     setSearchQuery(query)
@@ -297,8 +318,6 @@ export function MessageSearch({
 
   const currentSize = sizeClasses[size]
 
-  // Calculate search progress percentage
-  const searchProgress = isPending ? 0 : 100
   const hasResults = filteredMessages.length > 0
   const noResults = searchQuery && !isPending && !hasResults
 
@@ -626,6 +645,7 @@ MessageSearchWithSuspense.displayName = 'MessageSearchWithSuspense'
 
 /**
  * Highlight matching text in content
+ * Uses case-insensitive comparison to safely identify match segments
  */
 export function highlightSearchMatch(
   text: string,
@@ -634,11 +654,17 @@ export function highlightSearchMatch(
 ): React.ReactNode {
   if (!query.trim()) return text
 
-  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  // Escape special regex characters to prevent ReDoS attacks
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  // Limit query length to prevent performance issues
+  const safeQuery = escapedQuery.slice(0, 100)
+  const regex = new RegExp(`(${safeQuery})`, 'gi')
   const parts = text.split(regex)
+  const queryLower = query.toLowerCase()
 
   return parts.map((part, index) =>
-    regex.test(part) ? (
+    // Use case-insensitive comparison instead of regex.test to avoid global flag issues
+    part.toLowerCase() === queryLower ? (
       <mark
         key={index}
         className={cn(

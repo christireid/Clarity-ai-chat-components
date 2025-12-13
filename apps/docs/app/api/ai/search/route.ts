@@ -399,15 +399,19 @@ export async function GET(request: Request) {
       })
     }
 
-    const query = searchParams.get('q')?.trim()
+    const rawQuery = searchParams.get('q')?.trim()
+    // Validate and limit query length to prevent abuse
+    const query = rawQuery ? rawQuery.slice(0, 200) : undefined
     const type = searchParams.get('type') as SearchItemType | null
     const category = searchParams.get('category')
     const useFuzzy = searchParams.get('fuzzy') === 'true'
     const expandSynonyms = searchParams.get('expand') !== 'false'
 
-    // Pagination with cursor support
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)))
+    // Pagination with cursor support - handle NaN from invalid input
+    const parsedPage = parseInt(searchParams.get('page') || '1', 10)
+    const parsedLimit = parseInt(searchParams.get('limit') || '20', 10)
+    const page = Math.max(1, Number.isNaN(parsedPage) ? 1 : parsedPage)
+    const limit = Math.min(100, Math.max(1, Number.isNaN(parsedLimit) ? 20 : parsedLimit))
     const cursor = searchParams.get('cursor')
 
     let results = enhanceSearchData()

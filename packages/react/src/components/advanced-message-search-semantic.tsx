@@ -189,24 +189,34 @@ function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 /**
+ * Escape special regex characters to prevent ReDoS
+ */
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
  * Simple keyword search with TF-IDF-like scoring
  */
 function keywordSearch(query: string, messages: Message[]): Map<string, number> {
   const queryTerms = query.toLowerCase().split(/\s+/).filter(t => t.length > 2)
   const scores = new Map<string, number>()
+  const queryLower = query.toLowerCase()
 
   messages.forEach((message) => {
     const content = message.content.toLowerCase()
     let score = 0
 
     queryTerms.forEach((term) => {
-      const regex = new RegExp(`\\b${term}\\b`, 'gi')
+      // Escape special regex characters to prevent ReDoS
+      const escapedTerm = escapeRegex(term)
+      const regex = new RegExp(`\\b${escapedTerm}\\b`, 'gi')
       const matches = content.match(regex)
       if (matches) {
         score += Math.log(1 + matches.length)
       }
 
-      if (content.includes(query.toLowerCase())) {
+      if (content.includes(queryLower)) {
         score += 5
       }
     })
@@ -324,18 +334,53 @@ export function SemanticMessageSearch({
   const [expandedResults, setExpandedResults] = React.useState<Set<string>>(new Set())
   const [localConfig, setLocalConfig] = React.useState(config)
   const inputRef = React.useRef<HTMLInputElement>(null)
+  const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchAbortRef = React.useRef<AbortController | null>(null)
+  const isMountedRef = React.useRef(true)
+  const onResultsFoundRef = React.useRef(onResultsFound)
+
+  // Keep callback refs updated
+  React.useEffect(() => {
+    onResultsFoundRef.current = onResultsFound
+  })
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current)
+      }
+      if (searchAbortRef.current) {
+        searchAbortRef.current.abort()
+      }
+    }
+  }, [])
 
   // Cache for message embeddings
   const embeddingsCache = React.useRef<Map<string, number[]>>(new Map())
 
-  // Load history from localStorage
+  // Load history from localStorage with validation
   React.useEffect(() => {
     if (typeof window === 'undefined') return
     try {
       const history = localStorage.getItem('clarity-semantic-search-history')
-      if (history) setSearchHistory(JSON.parse(history))
+      if (history) {
+        const parsed = JSON.parse(history)
+        // Validate history structure
+        if (Array.isArray(parsed) && parsed.every((h: unknown) =>
+          typeof h === 'object' && h !== null &&
+          'query' in h && 'timestamp' in h && 'resultCount' in h &&
+          typeof (h as SearchHistoryEntry).query === 'string' &&
+          typeof (h as SearchHistoryEntry).timestamp === 'number' &&
+          typeof (h as SearchHistoryEntry).resultCount === 'number'
+        )) {
+          setSearchHistory(parsed)
+        }
+      }
     } catch {
-      // Silently fail
+      // Silently fail - invalid data will use defaults
     }
   }, [])
 
@@ -427,7 +472,9 @@ export function SemanticMessageSearch({
 
           queryTerms.forEach((term) => {
             if (term.length < 3) return
-            const regex = new RegExp(`(.{0,40})(${term})(.{0,40})`, 'gi')
+            // Escape special regex characters to prevent ReDoS
+            const escapedTerm = escapeRegex(term)
+            const regex = new RegExp(`(.{0,40})(${escapedTerm})(.{0,40})`, 'gi')
             const match = content.match(regex)
             if (match && match[0]) {
               highlights.push(match[0])
@@ -452,7 +499,7 @@ export function SemanticMessageSearch({
   )
 
   /**
-   * Handle search
+   * Handle search with proper cleanup
    */
   const handleSearch = React.useCallback(
     async (searchQuery: string) => {
@@ -461,18 +508,33 @@ export function SemanticMessageSearch({
         return
       }
 
+      // Abort any in-flight search
+      if (searchAbortRef.current) {
+        searchAbortRef.current.abort()
+      }
+      searchAbortRef.current = new AbortController()
+
       setIsSearching(true)
       setError(null)
 
       try {
         let searchResults = await performSemanticSearch(searchQuery)
 
+        // Check if component is still mounted and search wasn't aborted
+        if (!isMountedRef.current || searchAbortRef.current?.signal.aborted) {
+          return
+        }
+
         if (localConfig.reranking?.enabled && onRerank) {
           searchResults = await onRerank(searchQuery, searchResults)
+          // Check again after reranking
+          if (!isMountedRef.current || searchAbortRef.current?.signal.aborted) {
+            return
+          }
         }
 
         setResults(searchResults)
-        onResultsFound?.(searchResults)
+        onResultsFoundRef.current?.(searchResults)
 
         // Add to search history
         setSearchHistory((prev) => {
@@ -495,13 +557,19 @@ export function SemanticMessageSearch({
           return newHistory
         })
       } catch (err) {
+        // Don't show error if aborted or unmounted
+        if (!isMountedRef.current) return
+        if (err instanceof Error && err.name === 'AbortError') return
+
         console.error('Search error:', err)
         setError(err instanceof Error ? err.message : 'Search failed')
       } finally {
-        setIsSearching(false)
+        if (isMountedRef.current) {
+          setIsSearching(false)
+        }
       }
     },
-    [performSemanticSearch, localConfig.reranking, onRerank, onResultsFound]
+    [performSemanticSearch, localConfig.reranking, onRerank]
   )
 
   // Debounced search
@@ -515,12 +583,21 @@ export function SemanticMessageSearch({
     return () => clearTimeout(timer)
   }, [query, handleSearch])
 
-  // Copy result content
+  // Copy result content with timeout cleanup
   const handleCopy = React.useCallback(async (result: SemanticSearchResult) => {
     try {
       await navigator.clipboard.writeText(result.message.content)
       setCopiedId(result.message.id)
-      setTimeout(() => setCopiedId(null), 2000)
+      // Clear any existing timeout
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current)
+      }
+      copyTimeoutRef.current = setTimeout(() => {
+        if (isMountedRef.current) {
+          setCopiedId(null)
+        }
+        copyTimeoutRef.current = null
+      }, 2000)
     } catch {
       // Silently fail
     }

@@ -246,17 +246,48 @@ export const AdvancedMessageSearch = React.memo(
     const [exportFormat, setExportFormat] = React.useState<'json' | 'csv' | 'md'>('json')
     const [copied, setCopied] = React.useState(false)
     const inputRef = React.useRef<HTMLInputElement>(null)
+    const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+    const onResultsChangeRef = React.useRef(onResultsChange)
 
-    // Load saved and recent searches
+    // Keep ref updated without triggering re-renders
+    React.useEffect(() => {
+      onResultsChangeRef.current = onResultsChange
+    })
+
+    // Cleanup timeouts on unmount
+    React.useEffect(() => {
+      return () => {
+        if (copyTimeoutRef.current) {
+          clearTimeout(copyTimeoutRef.current)
+        }
+      }
+    }, [])
+
+    // Load saved and recent searches with validation
     React.useEffect(() => {
       if (typeof window === 'undefined') return
       try {
         const saved = localStorage.getItem(STORAGE_KEY_SAVED)
-        if (saved) setSavedSearches(JSON.parse(saved))
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          // Validate saved searches structure
+          if (Array.isArray(parsed) && parsed.every((s: unknown) =>
+            typeof s === 'object' && s !== null &&
+            'id' in s && 'name' in s && 'filters' in s
+          )) {
+            setSavedSearches(parsed)
+          }
+        }
         const recent = localStorage.getItem(STORAGE_KEY_RECENT)
-        if (recent) setRecentSearches(JSON.parse(recent))
+        if (recent) {
+          const parsed = JSON.parse(recent)
+          // Validate recent searches structure
+          if (Array.isArray(parsed) && parsed.every((r: unknown) => typeof r === 'string')) {
+            setRecentSearches(parsed)
+          }
+        }
       } catch {
-        // Silently fail
+        // Silently fail - invalid data will use defaults
       }
     }, [])
 
@@ -353,10 +384,10 @@ export const AdvancedMessageSearch = React.memo(
       return results
     }, [filteredMessages, filters, sortOption])
 
-    // Notify parent of results
+    // Notify parent of results (using ref to avoid infinite loops)
     React.useEffect(() => {
-      onResultsChange?.(finalResults)
-    }, [finalResults, onResultsChange])
+      onResultsChangeRef.current?.(finalResults)
+    }, [finalResults])
 
     // Extract unique models for filter dropdown
     const availableModels = React.useMemo(() => {
@@ -523,7 +554,14 @@ export const AdvancedMessageSearch = React.memo(
       try {
         await navigator.clipboard.writeText(content)
         setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
+        // Clear any existing timeout before setting a new one
+        if (copyTimeoutRef.current) {
+          clearTimeout(copyTimeoutRef.current)
+        }
+        copyTimeoutRef.current = setTimeout(() => {
+          setCopied(false)
+          copyTimeoutRef.current = null
+        }, 2000)
       } catch {
         // Silently fail
       }
@@ -569,7 +607,6 @@ export const AdvancedMessageSearch = React.memo(
               value={filters.query}
               onChange={(e) => {
                 setFilters((prev) => ({ ...prev, query: e.target.value }))
-                if (e.target.value) addToRecent(e.target.value)
               }}
               placeholder={placeholder}
               className={cn(
@@ -578,12 +615,21 @@ export const AdvancedMessageSearch = React.memo(
                 'focus:border-primary focus:ring-2 focus:ring-primary/20'
               )}
               onKeyDown={(e) => {
-                if (e.key === 'Escape') {
+                if (e.key === 'Enter' && filters.query.trim()) {
+                  // Add to recent on Enter
+                  addToRecent(filters.query.trim())
+                } else if (e.key === 'Escape') {
                   if (filters.query) {
                     setFilters((prev) => ({ ...prev, query: '' }))
                   } else {
                     inputRef.current?.blur()
                   }
+                }
+              }}
+              onBlur={() => {
+                // Add to recent on blur if there's a query
+                if (filters.query.trim()) {
+                  addToRecent(filters.query.trim())
                 }
               }}
             />

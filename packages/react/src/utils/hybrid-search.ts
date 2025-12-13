@@ -312,7 +312,10 @@ export class HybridSearch {
     return Array.from(docs.values())
       .map((doc) => {
         const docScores = scores.get(doc.id)!
-        const avgScore = docScores.reduce((a, b) => a + b, 0) / docScores.length
+        // Avoid division by zero if scores array is empty
+        const avgScore = docScores.length > 0
+          ? docScores.reduce((a, b) => a + b, 0) / docScores.length
+          : 0
         return {
           ...doc,
           score: avgScore,
@@ -470,9 +473,10 @@ export class SimpleBM25Searcher implements KeywordSearcher {
       })
     })
 
-    // Calculate average document length
-    this.avgDocLength =
-      this.docLengths.reduce((a, b) => a + b, 0) / this.documents.length
+    // Calculate average document length (avoid division by zero)
+    this.avgDocLength = this.documents.length > 0
+      ? this.docLengths.reduce((a, b) => a + b, 0) / this.documents.length
+      : 1
 
     // Calculate IDF for each term
     const N = this.documents.length
@@ -499,12 +503,15 @@ export class SimpleBM25Searcher implements KeywordSearcher {
 
         const termFreq = this.getTermFrequency(term, doc.content)
         const docLength = this.docLengths[docIdx] || 1
+        // Ensure avgDocLength is at least 1 to avoid division issues
+        const safeAvgDocLength = Math.max(this.avgDocLength, 1)
 
         // BM25 scoring formula
         const numerator = termFreq * (this.k1 + 1)
         const denominator =
-          termFreq + this.k1 * (1 - this.b + this.b * (docLength / this.avgDocLength))
-        const score = idf * (numerator / denominator)
+          termFreq + this.k1 * (1 - this.b + this.b * (docLength / safeAvgDocLength))
+        // Avoid division by zero in denominator
+        const score = denominator > 0 ? idf * (numerator / denominator) : 0
 
         scores.set(docIdx, (scores.get(docIdx) || 0) + score)
       })

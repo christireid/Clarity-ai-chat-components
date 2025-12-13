@@ -261,8 +261,8 @@ export function fuzzyScore(
 
   // First, try Damerau-Levenshtein for short queries (typo detection)
   if (query.length <= 10) {
-    // Check each word in the text
-    const words = text.split(/[\s\-_]+|(?=[A-Z])/g).filter(Boolean)
+    // Check each word in the text - filter out empty/whitespace strings
+    const words = text.split(/[\s\-_]+|(?=[A-Z])/g).filter(w => w && w.trim().length > 0)
     let bestWordScore = 0
     let bestWordIndices: [number, number][] = []
     let currentPos = 0
@@ -273,7 +273,8 @@ export function fuzzyScore(
 
       if (distance <= maxTypoDistance) {
         const maxLen = Math.max(query.length, word.length)
-        const similarity = 1 - distance / maxLen
+        // Avoid division by zero
+        const similarity = maxLen > 0 ? 1 - distance / maxLen : 0
         const wordScore = weights.fuzzy + similarity * 15
 
         if (wordScore > bestWordScore) {
@@ -319,9 +320,10 @@ export function fuzzyScore(
     }
   }
 
-  if (queryIndex === queryLower.length) {
+  if (queryIndex === queryLower.length && queryLower.length > 0) {
     // All query characters found in order
-    const matchRatio = matchedChars / queryLower.length
+    // Avoid division by zero
+    const matchRatio = queryLower.length > 0 ? matchedChars / queryLower.length : 0
     const gapPenalty = sequenceIndices.length > 1
       ? (sequenceIndices[sequenceIndices.length - 1]![0] - sequenceIndices[0]![0] - queryLower.length) * 0.5
       : 0

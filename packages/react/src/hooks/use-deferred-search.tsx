@@ -161,17 +161,23 @@ function findMatchIndices(text: string, query: string, options: DeferredSearchOp
   const indices: [number, number][] = []
   const searchText = options.caseSensitive ? text : text.toLowerCase()
   const searchQuery = options.caseSensitive ? query : query.toLowerCase()
+  // Limit matches to prevent performance issues
+  const maxMatches = 100
 
   if (options.useRegex) {
     try {
       const flags = options.caseSensitive ? 'g' : 'gi'
-      const regex = new RegExp(query, flags)
+      // Limit regex query length to prevent ReDoS
+      const safeQuery = query.slice(0, 100)
+      const regex = new RegExp(safeQuery, flags)
       let match
-      while ((match = regex.exec(text)) !== null) {
+      let iterations = 0
+      while ((match = regex.exec(text)) !== null && iterations < maxMatches) {
         indices.push([match.index, match.index + match[0].length])
         if (match.index === regex.lastIndex) {
           regex.lastIndex++
         }
+        iterations++
       }
     } catch {
       // Invalid regex, fall through to normal search
@@ -180,19 +186,26 @@ function findMatchIndices(text: string, query: string, options: DeferredSearchOp
 
   if (indices.length === 0) {
     if (options.wholeWord) {
+      const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      // Limit query length to prevent ReDoS
+      const safeEscaped = escapedQuery.slice(0, 100)
       const wordRegex = new RegExp(
-        `\\b${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`,
+        `\\b${safeEscaped}\\b`,
         options.caseSensitive ? 'g' : 'gi'
       )
       let match
-      while ((match = wordRegex.exec(text)) !== null) {
+      let iterations = 0
+      while ((match = wordRegex.exec(text)) !== null && iterations < maxMatches) {
         indices.push([match.index, match.index + match[0].length])
+        iterations++
       }
     } else {
       let pos = 0
-      while ((pos = searchText.indexOf(searchQuery, pos)) !== -1) {
+      let iterations = 0
+      while ((pos = searchText.indexOf(searchQuery, pos)) !== -1 && iterations < maxMatches) {
         indices.push([pos, pos + searchQuery.length])
         pos += 1
+        iterations++
       }
     }
   }
@@ -249,7 +262,7 @@ export function useDeferredSearch(
 
   // Debounce state for custom debounce
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery)
-  const debounceTimerRef = useRef<NodeJS.Timeout>()
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Handle custom debounce
   useEffect(() => {
@@ -494,13 +507,17 @@ export function HighlightedText({
   }
 
   const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const regex = new RegExp(`(${escapedQuery})`, 'gi')
+  // Limit query length to prevent performance issues
+  const safeQuery = escapedQuery.slice(0, 100)
+  const regex = new RegExp(`(${safeQuery})`, 'gi')
   const parts = text.split(regex)
+  const queryLower = query.toLowerCase()
 
   return (
     <span className={className}>
       {parts.map((part, index) =>
-        regex.test(part) ? (
+        // Use case-insensitive comparison instead of regex.test to avoid global flag issues
+        part.toLowerCase() === queryLower ? (
           <mark
             key={index}
             className={
