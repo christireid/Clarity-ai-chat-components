@@ -13,6 +13,61 @@ import type {
   ErrorStats 
 } from './types'
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function redactValue(value: unknown, replacement: string, depth: number): unknown {
+  if (depth <= 0) return replacement
+  if (Array.isArray(value)) return value.map((v) => redactValue(v, replacement, depth - 1))
+  if (isPlainObject(value)) {
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(value)) out[k] = redactValue(v, replacement, depth - 1)
+    return out
+  }
+  return replacement
+}
+
+function sanitizeReport(
+  report: ErrorReport,
+  redact?: ErrorReporterConfig['redact']
+): ErrorReport {
+  const keys = (redact?.keys ?? [
+    'authorization',
+    'cookie',
+    'token',
+    'apikey',
+    'apiKey',
+    'password',
+    'secret',
+    'session',
+  ]).map((k) => k.toLowerCase())
+
+  const maxDepth = redact?.maxDepth ?? 5
+  const replacement = redact?.replacement ?? '[REDACTED]'
+
+  const shouldRedactKey = (key: string) => keys.includes(key.toLowerCase())
+
+  const sanitizeObject = (obj: unknown, depth: number): unknown => {
+    if (depth <= 0) return obj
+    if (Array.isArray(obj)) return obj.map((v) => sanitizeObject(v, depth - 1))
+    if (!isPlainObject(obj)) return obj
+
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(obj)) {
+      out[k] = shouldRedactKey(k) ? redactValue(v, replacement, 1) : sanitizeObject(v, depth - 1)
+    }
+    return out
+  }
+
+  return {
+    ...report,
+    context: sanitizeObject(report.context, maxDepth) as any,
+    tags: sanitizeObject(report.tags, 2) as any,
+    environment: sanitizeObject(report.environment, 2) as any,
+  }
+}
+
 /**
  * Error Reporter Context
  */
@@ -120,6 +175,7 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
     error: typeof console.error
     warn: typeof console.warn
   } | null>(null)
+  const activeProvidersRef = useRef(config.providers)
 
   const userRef = useRef<{
     userId?: string
@@ -140,19 +196,63 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
     onError,
     globalTags = {},
     globalContext = {},
+    redact,
   } = config
 
   // Initialize providers
   useEffect(() => {
     if (!enabled) return
 
-    providers.forEach((provider) => {
-      provider.initialize?.()
+    let cancelled = false
+    activeProvidersRef.current = providers
+
+    ;(async () => {
+      const results = await Promise.allSettled(
+        providers.map(async (provider) => {
+          if (!provider.initialize) return
+          await provider.initialize()
+        })
+      )
+
+      if (cancelled) return
+
+      const okProviders: typeof providers = []
+      for (let i = 0; i < providers.length; i++) {
+        const provider = providers[i]
+        const r = results[i]
+        if (!r || r.status === 'fulfilled') {
+          okProviders.push(provider)
+          continue
+        }
+
+        ;(originalConsoleRef.current?.error ?? console.error)(
+          `[ErrorReporter] Provider "${provider.name}" failed to initialize and will be disabled:`,
+          r.reason
+        )
+      }
+
+      activeProvidersRef.current = okProviders
+    })().catch((e) => {
+      ;(originalConsoleRef.current?.error ?? console.error)(
+        '[ErrorReporter] Failed while initializing providers:',
+        e
+      )
+      activeProvidersRef.current = providers
     })
 
     return () => {
-      providers.forEach((provider) => {
-        provider.destroy?.()
+      cancelled = true
+      const toDestroy = activeProvidersRef.current
+      activeProvidersRef.current = []
+      toDestroy.forEach((provider) => {
+        try {
+          provider.destroy?.()
+        } catch (e) {
+          ;(originalConsoleRef.current?.error ?? console.error)(
+            `[ErrorReporter] Provider "${provider.name}" failed to destroy:`,
+            e
+          )
+        }
       })
     }
   }, [enabled, providers])
@@ -221,8 +321,10 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
         handled: true,
       }
 
+      const sanitized = sanitizeReport(report, redact)
+
       // Apply beforeSend filter
-      const filteredReport = beforeSend ? beforeSend(report) : report
+      const filteredReport = beforeSend ? beforeSend(sanitized) : sanitized
       if (!filteredReport) return
 
       // Update stats
@@ -234,9 +336,14 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
       // Report to all providers
       suppressConsoleCaptureRef.current++
       try {
-        providers.forEach((provider) => {
+        activeProvidersRef.current.forEach((provider) => {
           try {
-            provider.reportError(filteredReport)
+            void Promise.resolve(provider.reportError(filteredReport)).catch((providerError) => {
+              ;(originalConsoleRef.current?.error ?? console.error)(
+                `Error reporting to provider ${provider.name}:`,
+                providerError
+              )
+            })
           } catch (providerError) {
             ;(originalConsoleRef.current?.error ?? console.error)(
               `Error reporting to provider ${provider.name}:`,
@@ -248,7 +355,7 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
         suppressConsoleCaptureRef.current--
       }
     },
-    [enabled, sampleRate, sessionId, providers, beforeSend, onError, globalContext, globalTags, updateStats]
+    [enabled, sampleRate, sessionId, beforeSend, onError, globalContext, globalTags, updateStats, redact]
   )
 
   // Report error with full options
@@ -283,8 +390,10 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
         originalError: report.originalError,
       }
 
+      const sanitized = sanitizeReport(fullReport, redact)
+
       // Apply beforeSend filter
-      const filteredReport = beforeSend ? beforeSend(fullReport) : fullReport
+      const filteredReport = beforeSend ? beforeSend(sanitized) : sanitized
       if (!filteredReport) return
 
       // Update stats
@@ -296,9 +405,14 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
       // Report to all providers
       suppressConsoleCaptureRef.current++
       try {
-        providers.forEach((provider) => {
+        activeProvidersRef.current.forEach((provider) => {
           try {
-            provider.reportError(filteredReport)
+            void Promise.resolve(provider.reportError(filteredReport)).catch((providerError) => {
+              ;(originalConsoleRef.current?.error ?? console.error)(
+                `Error reporting to provider ${provider.name}:`,
+                providerError
+              )
+            })
           } catch (providerError) {
             ;(originalConsoleRef.current?.error ?? console.error)(
               `Error reporting to provider ${provider.name}:`,
@@ -310,7 +424,7 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
         suppressConsoleCaptureRef.current--
       }
     },
-    [enabled, sampleRate, sessionId, providers, beforeSend, onError, globalContext, globalTags, updateStats]
+    [enabled, sampleRate, sessionId, beforeSend, onError, globalContext, globalTags, updateStats, redact]
   )
 
   // Set user context
@@ -320,15 +434,23 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
 
       if (!enabled) return
 
-      providers.forEach((provider) => {
-        try {
-          provider.setUser?.(userId, email, userData)
-        } catch (error) {
-          console.error(`Error setting user in provider ${provider.name}:`, error)
-        }
-      })
+      suppressConsoleCaptureRef.current++
+      try {
+        activeProvidersRef.current.forEach((provider) => {
+          try {
+            provider.setUser?.(userId, email, userData)
+          } catch (error) {
+            ;(originalConsoleRef.current?.error ?? console.error)(
+              `Error setting user in provider ${provider.name}:`,
+              error
+            )
+          }
+        })
+      } finally {
+        suppressConsoleCaptureRef.current--
+      }
     },
-    [enabled, providers]
+    [enabled]
   )
 
   // Set global context
@@ -338,15 +460,23 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
 
       if (!enabled) return
 
-      providers.forEach((provider) => {
-        try {
-          provider.setContext?.(context)
-        } catch (error) {
-          console.error(`Error setting context in provider ${provider.name}:`, error)
-        }
-      })
+      suppressConsoleCaptureRef.current++
+      try {
+        activeProvidersRef.current.forEach((provider) => {
+          try {
+            provider.setContext?.(context)
+          } catch (error) {
+            ;(originalConsoleRef.current?.error ?? console.error)(
+              `Error setting context in provider ${provider.name}:`,
+              error
+            )
+          }
+        })
+      } finally {
+        suppressConsoleCaptureRef.current--
+      }
     },
-    [enabled, providers]
+    [enabled]
   )
 
   // Add breadcrumb
@@ -367,15 +497,23 @@ export function ErrorReporterProvider({ children, config }: ErrorReporterProvide
 
       if (!enabled) return
 
-      providers.forEach((provider) => {
-        try {
-          provider.addBreadcrumb?.(message, data)
-        } catch (error) {
-          console.error(`Error adding breadcrumb in provider ${provider.name}:`, error)
-        }
-      })
+      suppressConsoleCaptureRef.current++
+      try {
+        activeProvidersRef.current.forEach((provider) => {
+          try {
+            provider.addBreadcrumb?.(message, data)
+          } catch (error) {
+            ;(originalConsoleRef.current?.error ?? console.error)(
+              `Error adding breadcrumb in provider ${provider.name}:`,
+              error
+            )
+          }
+        })
+      } finally {
+        suppressConsoleCaptureRef.current--
+      }
     },
-    [enabled, providers]
+    [enabled]
   )
 
   // Auto-report unhandled errors

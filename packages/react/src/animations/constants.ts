@@ -37,6 +37,8 @@ export const ANIMATION_DURATION = {
   fast: 150,
   /** 200ms - Standard UI transitions */
   normal: 200,
+  /** 250ms - Medium emphasis transitions */
+  moderate: 250,
   /** 300ms - Emphasis transitions (modals, menus) */
   slow: 300,
   /** 400ms - Complex transitions (panels, sheets) */
@@ -56,6 +58,7 @@ export const DURATION_CSS = {
   faster: '75ms',
   fast: '150ms',
   normal: '200ms',
+  moderate: '250ms',
   slow: '300ms',
   slower: '400ms',
   slowest: '500ms',
@@ -69,6 +72,7 @@ export const DURATION_SECONDS = {
   faster: 0.075,
   fast: 0.15,
   normal: 0.2,
+  moderate: 0.25,
   slow: 0.3,
   slower: 0.4,
   slowest: 0.5,
@@ -83,6 +87,8 @@ export const TAILWIND_DURATION = {
   faster: 'duration-75',
   fast: 'duration-150',
   normal: 'duration-200',
+  // Tailwind doesn't have 250; 300 is the closest non-jarring default.
+  moderate: 'duration-300',
   slow: 'duration-300',
   slower: 'duration-500', // Tailwind doesn't have 400, using closest
   slowest: 'duration-500',

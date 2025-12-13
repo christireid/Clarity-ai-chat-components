@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Button } from '@clarity-chat/primitives'
+import { DURATION_SECONDS as durations } from '../animations/constants'
 
 export type NetworkStatus = 'online' | 'offline' | 'reconnecting' | 'slow'
 

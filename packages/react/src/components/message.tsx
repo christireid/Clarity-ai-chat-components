@@ -10,7 +10,7 @@ import {
   cn,
   formatRelativeTime,
 } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
+import { ANIMATION_DURATION, DURATION_SECONDS as durations, EASING_FRAMER } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -289,7 +289,7 @@ export function Message({
   // assertion to preserve the plugin reference while satisfying the type checker.
   // See: https://github.com/rehypejs/rehype-highlight/issues/26
   const rehypePlugins = React.useMemo(
-    () => [rehypeHighlight] as readonly [typeof rehypeHighlight],
+    () => [rehypeHighlight] as unknown as any[],
     []
   )
 

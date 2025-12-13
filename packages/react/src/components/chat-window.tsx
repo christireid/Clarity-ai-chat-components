@@ -11,6 +11,7 @@ import { BotIcon, SparklesIcon } from './icons'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
+import { DURATION_SECONDS as durations } from '../animations/constants'
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */

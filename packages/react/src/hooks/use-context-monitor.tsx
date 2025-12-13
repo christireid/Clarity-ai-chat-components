@@ -397,19 +397,17 @@ function generateRecommendations(
   // High utilization - suggest summarization
   if (utilization.utilizationPercent > 70) {
     const potentialSavings = Math.floor(utilization.breakdown.conversationHistory * 0.7)
-    if (potentialSavings > 500) {
-      recommendations.push({
-        id: 'summarize-history',
-        priority: 1,
-        description: 'Summarize conversation history to reduce token usage',
-        estimatedSavings: potentialSavings,
-        action: 'summarize',
-        metadata: {
-          historyTokens: utilization.breakdown.conversationHistory,
-          compressionRatio: 0.3,
-        },
-      })
-    }
+    recommendations.push({
+      id: 'summarize-history',
+      priority: 1,
+      description: 'Summarize conversation history to reduce token usage',
+      estimatedSavings: Math.max(0, potentialSavings),
+      action: 'summarize',
+      metadata: {
+        historyTokens: utilization.breakdown.conversationHistory,
+        compressionRatio: 0.3,
+      },
+    })
   }
 
   // Low density - suggest compression
@@ -606,17 +604,51 @@ export function useContextMonitor(
     ? utilization.utilizationPercent >= resolvedOptions.criticalThreshold * 100
     : false
 
-  return {
-    utilization,
-    warnings,
-    recommendations,
-    history,
-    analyzeMessages,
-    getUtilization,
-    clearHistory,
-    isWarning,
-    isCritical,
+  /**
+   * Keep a stable API object identity so callers can safely create long-lived
+   * integrations (e.g. helpers created once) that always see the latest state.
+   *
+   * This is particularly useful for non-React consumers or helpers that store
+   * a reference to the hook return value.
+   */
+  const apiRef = React.useRef<{
+    utilization: ContextUtilization | null
+    warnings: ContextWarning[]
+    recommendations: OptimizationRecommendation[]
+    history: ContextUtilization[]
+    analyzeMessages: (messages: ContextMessage[]) => ContextUtilization
+    getUtilization: (messages: ContextMessage[]) => ContextUtilization
+    clearHistory: () => void
+    isWarning: boolean
+    isCritical: boolean
+  } | null>(null)
+
+  if (!apiRef.current) {
+    apiRef.current = {
+      utilization: null,
+      warnings: [],
+      recommendations: [],
+      history: [],
+      analyzeMessages,
+      getUtilization,
+      clearHistory,
+      isWarning: false,
+      isCritical: false,
+    }
   }
+
+  // Update the stable object with latest values each render.
+  apiRef.current.utilization = utilization
+  apiRef.current.warnings = warnings
+  apiRef.current.recommendations = recommendations
+  apiRef.current.history = history
+  apiRef.current.analyzeMessages = analyzeMessages
+  apiRef.current.getUtilization = getUtilization
+  apiRef.current.clearHistory = clearHistory
+  apiRef.current.isWarning = isWarning
+  apiRef.current.isCritical = isCritical
+
+  return apiRef.current
 }
 
 /**

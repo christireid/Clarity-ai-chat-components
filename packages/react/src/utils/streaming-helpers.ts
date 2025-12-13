@@ -74,7 +74,7 @@ export function parseSSELine(line: string): { event?: string; data?: string; id?
 
   if (trimmed.startsWith('data:')) {
     const data = trimmed.slice(5).trim()
-    return { data: data === '[DONE]' ? undefined : data }
+    return { data }
   }
 
   if (trimmed.startsWith('event:')) {
@@ -87,6 +87,88 @@ export function parseSSELine(line: string): { event?: string; data?: string; id?
 
   // Plain data line (no prefix)
   return { data: trimmed }
+}
+
+interface SSEEvent {
+  event?: string
+  id?: string
+  data?: string
+}
+
+/**
+ * Minimal SSE event parser (event framing + multi-line data).
+ *
+ * Notes:
+ * - Buffers `data:` lines until a blank line terminates the event.
+ * - Joins multi-line data with `\n` per SSE spec.
+ * - Ignores comment lines starting with `:`.
+ */
+class SSEEventParser {
+  private currentEvent: SSEEvent = {}
+  private dataLines: string[] = []
+
+  reset(): void {
+    this.currentEvent = {}
+    this.dataLines = []
+  }
+
+  /**
+   * Feed a single line (without trailing newline).
+   * Returns a completed event when a blank line terminates the event.
+   */
+  feed(line: string): SSEEvent | null {
+    // Blank line terminates an event.
+    if (!line.trim()) {
+      if (
+        this.currentEvent.event === undefined &&
+        this.currentEvent.id === undefined &&
+        this.dataLines.length === 0
+      ) {
+        this.reset()
+        return null
+      }
+
+      const data = this.dataLines.length > 0 ? this.dataLines.join('\n') : undefined
+      const event: SSEEvent = {
+        event: this.currentEvent.event,
+        id: this.currentEvent.id,
+        data,
+      }
+
+      this.reset()
+      return event
+    }
+
+    const parsed = parseSSELine(line)
+    if (!parsed) return null
+
+    if (parsed.event) this.currentEvent.event = parsed.event
+    if (parsed.id) this.currentEvent.id = parsed.id
+
+    // For SSE, `data:` can appear multiple times; accumulate.
+    if (parsed.data !== undefined) {
+      this.dataLines.push(parsed.data)
+    }
+
+    return null
+  }
+
+  /**
+   * Flush any in-progress event (useful at EOF).
+   */
+  flush(): SSEEvent | null {
+    if (
+      this.currentEvent.event === undefined &&
+      this.currentEvent.id === undefined &&
+      this.dataLines.length === 0
+    ) {
+      return null
+    }
+    const data = this.dataLines.length > 0 ? this.dataLines.join('\n') : undefined
+    const event: SSEEvent = { ...this.currentEvent, data }
+    this.reset()
+    return event
+  }
 }
 
 /**
@@ -178,26 +260,38 @@ export async function processStream(
   let chunks = 0
   let bytes = 0
   let cancelled = false
+  let sseDone = false
+
+  const sseParser = format === 'sse' ? new SSEEventParser() : null
 
   const handleLine = (line: string): void => {
-    if (!line.trim()) return
-
     // SSE needs special handling because JSON payloads live in the `data:` field.
     if (format === 'sse') {
-      const parsedLine = parseSSELine(line)
-      const data = parsedLine?.data
-      if (!data) return
+      const parser = sseParser
+      if (!parser) return
+      const event = parser.feed(line)
+      if (!event) return
 
-      const parsedJson = onData ? safeParseJSON(data) : null
+      // [DONE] is a convention used by some providers.
+      if (event.data?.trim() === '[DONE]') {
+        sseDone = true
+        return
+      }
+
+      if (!event.data) return
+
+      const parsedJson = onData ? safeParseJSON(event.data) : null
       if (parsedJson) onData?.(parsedJson)
 
-      const processed = parsedJson ? extractStreamContent(parsedJson) : data
+      const processed = parsedJson ? extractStreamContent(parsedJson) : event.data
       if (processed) {
         content += processed
         onChunk?.(processed)
       }
       return
     }
+
+    if (!line.trim()) return
 
     const processed = processChunkByFormat(line, format)
     if (processed) {
@@ -228,6 +322,22 @@ export async function processStream(
           for (const line of remainingLines) handleLine(line)
           buffer = ''
         }
+
+        // Flush any in-progress SSE event at EOF.
+        if (format === 'sse' && sseParser && !sseDone) {
+          const flushed = sseParser.flush()
+          if (flushed?.data?.trim() === '[DONE]') {
+            sseDone = true
+          } else if (flushed?.data) {
+            const parsedJson = onData ? safeParseJSON(flushed.data) : null
+            if (parsedJson) onData?.(parsedJson)
+            const processed = parsedJson ? extractStreamContent(parsedJson) : flushed.data
+            if (processed) {
+              content += processed
+              onChunk?.(processed)
+            }
+          }
+        }
         break
       }
 
@@ -244,7 +354,13 @@ export async function processStream(
       const lines = buffer.split('\n')
       buffer = lines.pop() || '' // Keep incomplete line in buffer
 
-      for (const line of lines) handleLine(line)
+      for (const line of lines) {
+        handleLine(line)
+        if (sseDone) break
+      }
+
+      // Stop once we see [DONE] in SSE mode.
+      if (sseDone) break
 
       // Prevent buffer overflow
       if (buffer.length > maxChunkSize) {
@@ -297,6 +413,7 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
     case 'sse': {
       const parsed = parseSSELine(chunk)
       if (parsed?.data) {
+        if (parsed.data.trim() === '[DONE]') return ''
         const jsonData = safeParseJSON(parsed.data)
         return jsonData ? extractStreamContent(jsonData) : parsed.data
       }

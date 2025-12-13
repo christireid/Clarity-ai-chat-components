@@ -122,6 +122,19 @@ export interface ErrorReporterConfig {
 
   /** Global context to add to all reports */
   globalContext?: Record<string, any>
+
+  /**
+   * Redaction settings for sensitive fields in `context`, `tags`, and `environment`.
+   * This runs before `beforeSend`.
+   */
+  redact?: {
+    /** Case-insensitive keys to redact (e.g. "authorization", "token") */
+    keys?: string[]
+    /** Maximum depth for deep-redaction (default: 5) */
+    maxDepth?: number
+    /** Replacement value used for redacted fields (default: "[REDACTED]") */
+    replacement?: string
+  }
 }
 
 /**

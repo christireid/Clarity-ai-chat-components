@@ -84,11 +84,23 @@ export interface UseDashboardDataOptions<T> {
   dependencies?: React.DependencyList
   /** Enable debug logging */
   debug?: boolean
+
+  /**
+   * Optional clock/scheduler injection (useful for deterministic tests).
+   */
+  clock?: {
+    now: () => number
+    setTimeout: (
+      handler: (...args: any[]) => void,
+      timeout?: number
+    ) => ReturnType<typeof setTimeout>
+    clearTimeout: (handle: ReturnType<typeof setTimeout>) => void
+  }
 }
 
 type Action<T> =
   | { type: 'FETCH_START' }
-  | { type: 'FETCH_SUCCESS'; payload: T }
+  | { type: 'FETCH_SUCCESS'; payload: T; fetchedAt: number }
   | { type: 'FETCH_ERROR'; payload: Error }
   | { type: 'REFETCH_START' }
   | { type: 'SET_STALE' }
@@ -118,7 +130,7 @@ function createReducer<T>(initialData?: T) {
           isRefetching: false,
           error: null,
           isStale: false,
-          lastFetchedAt: Date.now(),
+          lastFetchedAt: action.fetchedAt,
           retryCount: 0,
         }
       case 'FETCH_ERROR':
@@ -219,6 +231,11 @@ export function useDashboardData<T>(
     onError,
     dependencies = [],
     debug = false,
+    clock = {
+      now: () => Date.now(),
+      setTimeout: (handler, timeout) => setTimeout(handler, timeout),
+      clearTimeout: (handle) => clearTimeout(handle),
+    },
   } = options
 
   if (typeof fetcher !== 'function') {
@@ -271,25 +288,25 @@ export function useDashboardData<T>(
 
   const clearTimers = React.useCallback(() => {
     if (retryTimeoutRef.current) {
-      clearTimeout(retryTimeoutRef.current)
+      clock.clearTimeout(retryTimeoutRef.current)
       retryTimeoutRef.current = null
     }
     if (pollingIntervalRef.current) {
-      clearTimeout(pollingIntervalRef.current)
+      clock.clearTimeout(pollingIntervalRef.current)
       pollingIntervalRef.current = null
     }
     if (staleTimeoutRef.current) {
-      clearTimeout(staleTimeoutRef.current)
+      clock.clearTimeout(staleTimeoutRef.current)
       staleTimeoutRef.current = null
     }
-  }, [])
+  }, [clock])
 
   const clearStaleTimer = React.useCallback(() => {
     if (staleTimeoutRef.current) {
-      clearTimeout(staleTimeoutRef.current)
+      clock.clearTimeout(staleTimeoutRef.current)
       staleTimeoutRef.current = null
     }
-  }, [])
+  }, [clock])
 
   const fetchData = React.useCallback(
     async (isRefetch = false) => {
@@ -326,7 +343,7 @@ export function useDashboardData<T>(
         if (!isMountedRef.current) return
 
         log('Fetch successful', data)
-        dispatch({ type: 'FETCH_SUCCESS', payload: data })
+        dispatch({ type: 'FETCH_SUCCESS', payload: data, fetchedAt: clock.now() })
         // Reset retry count on success
         retryCountRef.current = 0
         onSuccess?.(data)
@@ -358,7 +375,7 @@ export function useDashboardData<T>(
             `Scheduling retry in ${backoff}ms (attempt ${retryCountRef.current}/${maxRetries})`
           )
 
-          retryTimeoutRef.current = setTimeout(() => {
+          retryTimeoutRef.current = clock.setTimeout(() => {
             if (isMountedRef.current) {
               fetchData(true)
             }
@@ -380,6 +397,7 @@ export function useDashboardData<T>(
       retryBackoffMs,
       clearStaleTimer,
       log,
+      clock,
     ]
   )
 
@@ -464,12 +482,12 @@ export function useDashboardData<T>(
 
     if (!state.lastFetchedAt || staleTime <= 0 || state.isStale) return
 
-    staleTimeoutRef.current = setTimeout(() => {
+    staleTimeoutRef.current = clock.setTimeout(() => {
       if (!isMountedRef.current) return
       log('Data marked as stale')
       dispatch({ type: 'SET_STALE' })
     }, staleTime)
-  }, [state.lastFetchedAt, staleTime, state.isStale, log, clearStaleTimer])
+  }, [state.lastFetchedAt, staleTime, state.isStale, log, clearStaleTimer, clock])
 
   // Polling
   React.useEffect(() => {
@@ -477,7 +495,7 @@ export function useDashboardData<T>(
       log(`Starting polling with interval ${pollingInterval}ms`)
       // Use a single-shot timer + tick state to avoid `runAllTimersAsync()` infinite loops in tests,
       // and to avoid overlapping fetches (fetchData has its own overlap guard).
-      pollingIntervalRef.current = setTimeout(() => {
+      pollingIntervalRef.current = clock.setTimeout(() => {
         if (!isMountedRef.current) return
         Promise.resolve(fetchData(true)).finally(() => {
           if (isMountedRef.current) {
@@ -488,13 +506,13 @@ export function useDashboardData<T>(
 
       return () => {
         if (pollingIntervalRef.current) {
-          clearTimeout(pollingIntervalRef.current)
+          clock.clearTimeout(pollingIntervalRef.current)
           pollingIntervalRef.current = null
         }
       }
     }
     return undefined
-  }, [pollingInterval, fetchData, log, pollTick])
+  }, [pollingInterval, fetchData, log, pollTick, clock])
 
   return {
     ...state,

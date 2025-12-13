@@ -239,18 +239,16 @@ describe('ThemePreviewThumbnail', () => {
       const { container } = render(<ThemePreviewThumbnail preset="default" />)
 
       // Check for 3 circular elements (traffic light dots)
-      const circles = container.querySelectorAll(
-        '[style*="border-radius: 50%"]'
-      )
+      const circles = container.querySelectorAll('.rounded-full')
       expect(circles.length).toBe(3)
     })
 
     it('should render card preview', () => {
       const { container } = render(<ThemePreviewThumbnail preset="default" />)
 
-      // Should have line elements and button
-      const lines = container.querySelectorAll('[style*="border-radius: 1px"]')
-      expect(lines.length).toBeGreaterThan(0)
+      // Should have content "lines" and a button-like block.
+      const lines = container.querySelectorAll('.rounded-sm')
+      expect(lines.length).toBeGreaterThanOrEqual(3)
     })
   })
 })
@@ -352,9 +350,9 @@ describe('ThemePreviewGrid', () => {
     it('should pass size to children', () => {
       const { container } = render(<ThemePreviewGrid size="lg" />)
 
-      // All thumbnails should be 128px wide
+      // Labels use max-width to match the thumbnail width.
       const largeThumbnails = container.querySelectorAll(
-        '[style*="width: 128px"]'
+        '[style*="max-width: 128px"]'
       )
       expect(largeThumbnails.length).toBe(8)
     })

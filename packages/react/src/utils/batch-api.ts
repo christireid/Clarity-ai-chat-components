@@ -132,6 +132,39 @@ export interface BatchConfig {
   onProgress?: (completed: number, total: number) => void
   /** Batch status callback */
   onStatusChange?: (job: BatchJob) => void
+
+  /**
+   * Attach a no-op rejection handler to promises returned by `addRequest`.
+   *
+   * This avoids noisy "UnhandledPromiseRejection" warnings in cases where a
+   * request is cancelled/cleared before user code has a chance to attach a
+   * handler (common in tests and during teardown).
+   *
+   * Default: true.
+   */
+  suppressUnhandledRejections?: boolean
+
+  /**
+   * Optional executor implementation.
+   *
+   * If omitted, the manager uses a deterministic in-memory simulator suitable
+   * for tests and local development. Production usage should provide an
+   * executor that calls the provider's batch API.
+   */
+  executor?: BatchExecutor
+}
+
+export interface BatchExecutorContext {
+  provider: 'openai' | 'anthropic'
+  onProgress: (completed: number, total: number) => void
+  /** Return true if the job was cancelled */
+  isCancelled: () => boolean
+  /** Allows executors to read current time */
+  now: () => number
+}
+
+export interface BatchExecutor {
+  execute: (requests: BatchRequest[], context: BatchExecutorContext) => Promise<BatchResult[]>
 }
 
 /**
@@ -244,15 +277,28 @@ export class BatchRequestManager {
   private oldestQueueTime: number = 0
   private cancelledJobs: Set<string> = new Set()
   private destroyed = false
+  private executor: BatchExecutor
 
   constructor(config: BatchConfig) {
+    const defaultExecutor = config.executor ?? createSimulatedBatchExecutor()
     this.config = {
       provider: config.provider,
       maxBatchSize: config.maxBatchSize ?? 100,
       maxWaitTime: config.maxWaitTime ?? 60000,
       onProgress: config.onProgress ?? (() => {}),
       onStatusChange: config.onStatusChange ?? (() => {}),
+      suppressUnhandledRejections: config.suppressUnhandledRejections ?? true,
+      executor: defaultExecutor,
     }
+    this.executor = defaultExecutor
+  }
+
+  private safeRejectPending(requestId: string, error: Error): void {
+    const pending = this.pendingPromises.get(requestId)
+    if (!pending) return
+    // Reject on a microtask so callers have a chance to attach handlers.
+    queueMicrotask(() => pending.reject(error))
+    this.pendingPromises.delete(requestId)
   }
 
   /**
@@ -262,19 +308,13 @@ export class BatchRequestManager {
    */
   addRequest(request: BatchRequest): Promise<BatchResult> {
     if (this.destroyed) {
-      const p = Promise.reject(new Error('BatchRequestManager has been destroyed'))
-      p.catch(() => {})
-      return p
+      return Promise.reject(new Error('BatchRequestManager has been destroyed'))
     }
     if (!request || typeof request.id !== 'string' || request.id.trim().length === 0) {
-      const p = Promise.reject(new Error('Invalid request: "id" is required'))
-      p.catch(() => {})
-      return p
+      return Promise.reject(new Error('Invalid request: "id" is required'))
     }
     if (this.queue.has(request.id) || this.pendingPromises.has(request.id)) {
-      const p = Promise.reject(new Error(`Duplicate request id: ${request.id}`))
-      p.catch(() => {})
-      return p
+      return Promise.reject(new Error(`Duplicate request id: ${request.id}`))
     }
 
     const promise = new Promise<BatchResult>((resolve, reject) => {
@@ -293,11 +333,21 @@ export class BatchRequestManager {
         this.submitBatch()
       }
     })
-    // Attach a no-op rejection handler to prevent noisy unhandled rejection warnings
-    // when consumers intentionally fire-and-forget requests or when a manager is
-    // destroyed during test cleanup.
-    promise.catch(() => {})
+    if (this.config.suppressUnhandledRejections) {
+      promise.catch(() => {})
+    }
     return promise
+  }
+
+  /**
+   * Enqueue a request in fire-and-forget mode.
+   *
+   * This is intentionally explicit: if you do not plan to `await` the promise
+   * returned by `addRequest`, use this method to avoid noisy unhandled rejection
+   * warnings when the manager is destroyed or the queue is cleared.
+   */
+  enqueueRequest(request: BatchRequest): void {
+    void this.addRequest(request).catch(() => {})
   }
 
   /**
@@ -353,11 +403,10 @@ export class BatchRequestManager {
 
       // Reject all pending promises for this batch
       for (const requestId of job.requestIds) {
-        const pending = this.pendingPromises.get(requestId)
-        if (pending) {
-          pending.reject(error instanceof Error ? error : new Error(String(error)))
-          this.pendingPromises.delete(requestId)
-        }
+        this.safeRejectPending(
+          requestId,
+          error instanceof Error ? error : new Error(String(error))
+        )
       }
     })
 
@@ -385,11 +434,7 @@ export class BatchRequestManager {
 
     // Reject pending promises
     for (const requestId of job.requestIds) {
-      const pending = this.pendingPromises.get(requestId)
-      if (pending) {
-        pending.reject(new Error('Batch cancelled'))
-        this.pendingPromises.delete(requestId)
-      }
+      this.safeRejectPending(requestId, new Error('Batch cancelled'))
     }
 
     return true
@@ -428,11 +473,7 @@ export class BatchRequestManager {
    */
   clearQueue(): void {
     for (const [requestId] of this.queue) {
-      const pending = this.pendingPromises.get(requestId)
-      if (pending) {
-        pending.reject(new Error('Queue cleared'))
-        this.pendingPromises.delete(requestId)
-      }
+      this.safeRejectPending(requestId, new Error('Queue cleared'))
     }
     this.queue.clear()
 
@@ -487,66 +528,18 @@ export class BatchRequestManager {
    *   3. Retrieve results from response
    */
   private async processBatch(job: BatchJob, requests: BatchRequest[]): Promise<void> {
-    // Yield so callers can observe `pending` and cancellations can occur.
+    // Yield so callers can observe `pending` before transitioning to `in_progress`.
     await new Promise<void>((resolve) => setTimeout(resolve, 0))
-
-    if (this.cancelledJobs.has(job.id) || job.status === 'cancelled') {
-      return
-    }
+    if (this.cancelledJobs.has(job.id) || job.status === 'cancelled') return
 
     job.status = 'in_progress'
     this.config.onStatusChange(job)
-
-    const results: BatchResult[] = []
-
-    // ============================================================
-    // PLACEHOLDER: Replace this block with actual provider API calls
-    // ============================================================
-    // Use createOpenAIBatchFile() or createAnthropicBatchFile() to format requests
-    // Use parseOpenAIBatchResults() to parse responses
-    // ============================================================
-
-    // Simulated processing (remove in production)
-    for (let i = 0; i < requests.length; i++) {
-      if (this.cancelledJobs.has(job.id) || job.status === 'cancelled') {
-        return
-      }
-
-      // Simulate async work (and make fake timers deterministic in tests)
-      await new Promise<void>((resolve) => setTimeout(resolve, 0))
-
-      const request = requests[i]
-
-      // Estimate tokens for cost tracking
-      const inputTokens = request.messages.reduce(
-        (sum, m) => sum + estimateTokens(m.content),
-        0
-      )
-
-      const result: BatchResult = {
-        requestId: request.id,
-        success: true,
-        content: `[Batch response for ${request.id}]`,
-        usage: {
-          inputTokens,
-          outputTokens: Math.floor(inputTokens * 0.5), // Estimate
-        },
-      }
-
-      results.push(result)
-      this.stats.totalInputTokens += result.usage?.inputTokens ?? 0
-      this.stats.totalOutputTokens += result.usage?.outputTokens ?? 0
-
-      // Resolve pending promise
-      const pending = this.pendingPromises.get(request.id)
-      if (pending) {
-        pending.resolve(result)
-        this.pendingPromises.delete(request.id)
-      }
-
-      // Report progress
-      this.config.onProgress(i + 1, requests.length)
-    }
+    const results = await this.executor.execute(requests, {
+      provider: this.config.provider,
+      onProgress: this.config.onProgress,
+      isCancelled: () => this.cancelledJobs.has(job.id) || job.status === 'cancelled',
+      now: () => Date.now(),
+    })
 
     // Store results
     this.results.set(job.id, results)
@@ -561,6 +554,19 @@ export class BatchRequestManager {
     const successCount = results.filter(r => r.success).length
     this.stats.totalCompleted += successCount
     this.stats.totalFailed += requests.length - successCount
+
+    // Resolve/reject promises.
+    for (const result of results) {
+      const pending = this.pendingPromises.get(result.requestId)
+      if (!pending) continue
+      if (result.success) {
+        pending.resolve(result)
+      } else {
+        this.safeRejectPending(result.requestId, new Error(result.error || 'Batch request failed'))
+        continue
+      }
+      this.pendingPromises.delete(result.requestId)
+    }
 
     // Calculate savings
     const savings = this.calculateBatchSavings(requests)
@@ -786,4 +792,45 @@ export function parseOpenAIBatchResults(
         }
       }
     })
+}
+
+function createSimulatedBatchExecutor(): BatchExecutor {
+  return {
+    execute: async (requests, context) => {
+      // Yield so callers can observe `pending` and cancellations can occur.
+      await new Promise<void>((resolve) => setTimeout(resolve, 0))
+
+      const results: BatchResult[] = []
+
+      for (let i = 0; i < requests.length; i++) {
+        if (context.isCancelled()) {
+          return results
+        }
+
+        // Simulate async work (and make fake timers deterministic in tests)
+        await new Promise<void>((resolve) => setTimeout(resolve, 0))
+
+        const request = requests[i]
+        const inputTokens = request.messages.reduce(
+          (sum, m) => sum + estimateTokens(m.content),
+          0
+        )
+
+        const result: BatchResult = {
+          requestId: request.id,
+          success: true,
+          content: `[Batch response for ${request.id}]`,
+          usage: {
+            inputTokens,
+            outputTokens: Math.floor(inputTokens * 0.5),
+          },
+        }
+
+        results.push(result)
+        context.onProgress(i + 1, requests.length)
+      }
+
+      return results
+    },
+  }
 }
