@@ -19,6 +19,7 @@ import {
   MarkdownCodeBlock,
   MessageActions,
   MessageMetadata,
+  ToolInvocation,
 } from './message/index'
 import { ErrorMessage, type ErrorDetails } from './error-message'
 import { CopyButton } from './copy-button'
@@ -302,8 +303,8 @@ export function Message({
     message.status === 'streaming'
       ? ', currently streaming'
       : message.status === 'error'
-        ? ', has error'
-        : ''
+      ? ', has error'
+      : ''
   const ariaLabel = `${messageAuthor}${messageTime ? `, ${messageTime}` : ''}${messageStatus}`
 
   // Generate stable content ID for aria-describedby (fallback if message.id is missing)
@@ -423,6 +424,22 @@ export function Message({
               'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30'
           )}
         >
+          {/* Tool Invocations */}
+          {!isUser && message.metadata?.toolInvocations && message.metadata.toolInvocations.length > 0 && (
+            <div className="mb-4 flex flex-col gap-2 w-full not-prose">
+              {message.metadata.toolInvocations.map((tool) => (
+                <ToolInvocation
+                  key={tool.toolCallId}
+                  toolCallId={tool.toolCallId}
+                  toolName={tool.toolName}
+                  args={tool.args}
+                  state={tool.state}
+                  result={tool.result}
+                />
+              ))}
+            </div>
+          )}
+
           {isUser ? (
             <p className="m-0 whitespace-pre-wrap text-primary-foreground">
               {message.content}

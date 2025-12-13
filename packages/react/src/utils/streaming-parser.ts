@@ -9,7 +9,18 @@ export interface StreamingChunk {
   delta?: string
   text?: string
   choices?: Array<{
-    delta?: { content?: string }
+    delta?: { 
+      content?: string;
+      tool_calls?: Array<{
+        index: number;
+        id?: string;
+        type?: 'function';
+        function?: {
+          name?: string;
+          arguments?: string;
+        }
+      }>
+    }
     text?: string
   }>
   message?: { content?: string }
@@ -166,7 +177,8 @@ export async function* parseStreamingResponse(
  */
 export class StreamingAccumulator {
   private content = ''
-  private toolInvocations: Array<StreamingChunk['toolInvocation']> = []
+  private toolInvocations: Array<NonNullable<StreamingChunk['toolInvocation']>> = []
+  private toolCallBuffer: Record<number, { id?: string; name?: string; args: string }> = {}
 
   addChunk(chunk: StreamingChunk): void {
     const content = extractContentFromChunk(chunk)
@@ -177,7 +189,25 @@ export class StreamingAccumulator {
     if (hasToolInvocation(chunk)) {
       const toolInvocation = extractToolInvocation(chunk)
       if (toolInvocation) {
+        // If we get a complete tool invocation object (Vercel AI SDK style), push it directly
+        // Check if we already have it to avoid duplicates if stream sends it multiple times?
+        // Usually Vercel SDK sends 'tool_call' then 'tool_result'.
+        // This simple push might be enough for now.
         this.toolInvocations.push(toolInvocation)
+      }
+    }
+
+    // Handle OpenAI tool_calls delta
+    if (chunk.choices?.[0]?.delta?.tool_calls) {
+      const toolCalls = chunk.choices[0].delta.tool_calls
+      for (const toolCall of toolCalls) {
+        const index = toolCall.index
+        if (!this.toolCallBuffer[index]) {
+          this.toolCallBuffer[index] = { args: '' }
+        }
+        if (toolCall.id) this.toolCallBuffer[index].id = toolCall.id
+        if (toolCall.function?.name) this.toolCallBuffer[index].name = toolCall.function.name
+        if (toolCall.function?.arguments) this.toolCallBuffer[index].args += toolCall.function.arguments
       }
     }
   }
@@ -186,12 +216,38 @@ export class StreamingAccumulator {
     return this.content
   }
 
-  getToolInvocations(): Array<StreamingChunk['toolInvocation']> {
-    return this.toolInvocations.filter((ti): ti is NonNullable<typeof ti> => ti !== null)
+  getToolInvocations(): Array<NonNullable<StreamingChunk['toolInvocation']>> {
+    const bufferedTools = Object.values(this.toolCallBuffer).map(buffered => {
+      // We need at least an ID and Name to be a valid tool call
+      if (!buffered.id || !buffered.name) return null
+
+      let args: Record<string, any> = {}
+      let state: 'call' | 'partial-call' = 'call'
+
+      try {
+        if (buffered.args) {
+          args = JSON.parse(buffered.args)
+        }
+      } catch {
+        // If args are incomplete JSON, it is a partial call
+        state = 'partial-call'
+        // We can expose the partial string as a special property or just empty args
+      }
+
+      return {
+        toolCallId: buffered.id,
+        toolName: buffered.name,
+        args,
+        state,
+      } as NonNullable<StreamingChunk['toolInvocation']>
+    }).filter((t): t is NonNullable<StreamingChunk['toolInvocation']> => t !== null)
+
+    return [...this.toolInvocations, ...bufferedTools]
   }
 
   reset(): void {
     this.content = ''
     this.toolInvocations = []
+    this.toolCallBuffer = {}
   }
 }

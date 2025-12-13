@@ -37,6 +37,11 @@
 import * as React from 'react'
 import type { MessageRole } from '@clarity-chat/types'
 import { generateId } from '@clarity-chat/primitives'
+import { 
+  parseStreamingResponse, 
+  StreamingAccumulator,
+  type StreamingChunk 
+} from '../utils/streaming-parser'
 
 /**
  * Core message content type - supports text and multi-modal content
@@ -290,7 +295,14 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
       // Add user message immediately
       if (message.role === 'user') {
-        setMessages((prev) => [...prev, fullMessage])
+        // If the message is not already in the list (checked by reference or ID if possible, 
+        // but here we assume if the caller passes it, it's new. 
+        // For 'reload', we will handle it differently.)
+        setMessages((prev) => {
+          // Check if message with same ID already exists to prevent duplication
+          if (prev.some(m => m.id === messageId)) return prev
+          return [...prev, fullMessage]
+        })
         onMessageAppend?.(fullMessage)
       }
 
@@ -376,119 +388,34 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           }
 
           // Streaming response
-          const reader = response.body.getReader()
-          const decoder = new TextDecoder()
-          let accumulatedContent = ''
-          let currentMessage = { ...assistantMessage }
-
-          while (true) {
-            const { done, value } = await reader.read()
-
-            if (done) break
-
-            const chunk = decoder.decode(value, { stream: true })
-            const lines = chunk.split('\n')
-
-            for (const line of lines) {
-              if (!line.trim()) continue
-
-              // Handle SSE format
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6)
-                if (data === '[DONE]') {
-                  break
-                }
-
-                try {
-                  const parsed = JSON.parse(data)
-                  
-                  // Handle different streaming formats
-                  let contentDelta = ''
-                  
-                  if (parsed.choices?.[0]?.delta?.content) {
-                    // OpenAI chat completions format
-                    contentDelta = parsed.choices[0].delta.content
-                  } else if (parsed.choices?.[0]?.text) {
-                    // OpenAI completions format
-                    contentDelta = parsed.choices[0].text
-                  } else if (parsed.content) {
-                    // Direct content field
-                    contentDelta = typeof parsed.content === 'string' ? parsed.content : ''
-                  } else if (parsed.text) {
-                    // Text field
-                    contentDelta = parsed.text
-                  } else if (parsed.delta) {
-                    // Delta format
-                    contentDelta = typeof parsed.delta === 'string' ? parsed.delta : ''
-                  } else if (parsed.message?.content) {
-                    // Message wrapper format
-                    contentDelta = parsed.message.content
-                  } else if (typeof parsed === 'string') {
-                    // String response
-                    contentDelta = parsed
-                  }
-
-                  if (contentDelta) {
-                    accumulatedContent += contentDelta
-                    
-                    if (mountedRef.current) {
-                      currentMessage = {
-                        ...currentMessage,
-                        content: accumulatedContent,
-                      }
-                      currentAssistantMessageRef.current = currentMessage
-                      setMessages((prev) =>
-                        prev.map((msg) =>
-                          msg.id === assistantMessageId ? currentMessage : msg
-                        )
-                      )
-                      setData(currentMessage)
-                    }
-                  }
-                } catch {
-                  // Non-JSON line, treat as plain text
-                  if (data.trim() && data !== '[DONE]') {
-                    accumulatedContent += data
-                    if (mountedRef.current) {
-                      currentMessage = {
-                        ...currentMessage,
-                        content: accumulatedContent,
-                      }
-                      currentAssistantMessageRef.current = currentMessage
-                      setMessages((prev) =>
-                        prev.map((msg) =>
-                          msg.id === assistantMessageId ? currentMessage : msg
-                        )
-                      )
-                      setData(currentMessage)
-                    }
-                  }
-                }
-              } else if (line.trim()) {
-                // Plain text streaming
-                accumulatedContent += line
-                if (mountedRef.current) {
-                  currentMessage = {
-                    ...currentMessage,
-                    content: accumulatedContent,
-                  }
-                  currentAssistantMessageRef.current = currentMessage
-                  setMessages((prev) =>
-                    prev.map((msg) =>
-                      msg.id === assistantMessageId ? currentMessage : msg
-                    )
-                  )
-                  setData(currentMessage)
-                }
-              }
+          const accumulator = new StreamingAccumulator()
+          
+          for await (const chunk of parseStreamingResponse(response.body)) {
+            if (!mountedRef.current) break
+            
+            accumulator.addChunk(chunk)
+            
+            const currentMessage: CoreMessage = {
+              ...assistantMessage,
+              content: accumulator.getContent(),
+              toolInvocations: accumulator.getToolInvocations()
             }
+            
+            currentAssistantMessageRef.current = currentMessage
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId ? currentMessage : msg
+              )
+            )
+            setData(currentMessage)
           }
 
           // Finalize message
           if (mountedRef.current) {
             const finalMessage: CoreMessage = {
-              ...currentMessage,
-              content: accumulatedContent,
+              ...assistantMessage,
+              content: accumulator.getContent(),
+              toolInvocations: accumulator.getToolInvocations()
             }
             setMessages((prev) =>
               prev.map((msg) =>
@@ -560,13 +487,16 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       }
       if (lastUserMessageIndex === -1) return null
 
-      // Remove messages after last user message
-      const messagesUpToUser = messages.slice(0, lastUserMessageIndex + 1)
-      setMessages(messagesUpToUser)
+      // Remove messages after last user message, AND the last user message itself
+      // because append() will re-add it.
+      const messagesBeforeUser = messages.slice(0, lastUserMessageIndex)
+      setMessages(messagesBeforeUser)
 
-      // Trigger new assistant response
-      const lastUserMessage = messagesUpToUser[lastUserMessageIndex]
+      // Trigger new assistant response using the found user message
+      const lastUserMessage = messages[lastUserMessageIndex]
       if (!lastUserMessage) return null
+      
+      // We pass the existing message to append, which will add it back to state
       return append(lastUserMessage, options)
     },
     [messages, append]
