@@ -1,8 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Send, Bot, User, Sparkles } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback, memo } from 'react'
+import { Send, Bot, User, Sparkles, Zap, Code, Palette, Wand2, RefreshCw, AlertCircle } from 'lucide-react'
 import { useAutoScroll, useStreaming, TypingIndicator } from '@clarity-chat/react'
+import { motion, AnimatePresence } from 'framer-motion'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { CodeBlock } from '../MDX/CodeBlock'
 
 interface Message {
   id: string
@@ -10,6 +14,7 @@ interface Message {
   sender: 'user' | 'bot'
   timestamp: Date
   isStreaming?: boolean
+  isError?: boolean
 }
 
 // Generate unique message IDs (collision-safe)
@@ -24,13 +29,34 @@ const initialMessages: Message[] = [
   },
 ]
 
+const SUGGESTIONS = [
+  { text: "How do I add streaming?", icon: Zap },
+  { text: "Show me a code snippet", icon: Code },
+  { text: "Can I customize the theme?", icon: Palette },
+  { text: "What hooks are available?", icon: Wand2 },
+]
+
+/**
+ * Memoized Markdown component using react-markdown
+ * This replaces the custom regex parser for robust Markdown support
+ */
+const MemoizedReactMarkdown = memo(
+  ReactMarkdown,
+  (prevProps, nextProps) =>
+    prevProps.children === nextProps.children &&
+    prevProps.className === nextProps.className
+)
+
 export function LiveChatDemo() {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(true)
+  const [isError, setIsError] = useState(false)
 
   // Use ref to avoid closure issues in callbacks
   const currentBotMessageIdRef = useRef<string | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Use the shared useAutoScroll hook from @clarity-chat/react
   const { scrollRef, scrollToBottom, setEnabled } = useAutoScroll({
@@ -39,16 +65,28 @@ export function LiveChatDemo() {
   })
 
   // Use the shared useStreaming hook from @clarity-chat/react
-  // The hook provides `content` which accumulates all streamed text
-  const { content, isStreaming, startStreaming, reset } = useStreaming({
+  const { content, isStreaming, startStreaming, reset: resetStreaming } = useStreaming({
     onError: (error) => {
       console.error('Streaming error:', error)
-      setMessages(prev => [...prev, {
-        id: generateId(),
-        text: "I'm having trouble connecting right now. Please try again in a moment!",
-        sender: 'bot',
-        timestamp: new Date(),
-      }])
+      setIsError(true)
+      setMessages(prev => {
+        const lastMsg = prev[prev.length - 1]
+        // If the last message was the one streaming, mark it as error
+        if (lastMsg && lastMsg.id === currentBotMessageIdRef.current) {
+           return prev.map(msg => 
+             msg.id === lastMsg.id 
+               ? { ...msg, isStreaming: false, isError: true, text: msg.text + "\n\n[Connection interrupted]" } 
+               : msg
+           )
+        }
+        return [...prev, {
+          id: generateId(),
+          text: "I'm having trouble connecting right now. Please try again in a moment!",
+          sender: 'bot',
+          timestamp: new Date(),
+          isError: true
+        }]
+      })
       currentBotMessageIdRef.current = null
     },
     onComplete: () => {
@@ -64,7 +102,6 @@ export function LiveChatDemo() {
   })
 
   // Sync streaming content to the current bot message
-  // This is more reliable than using onChunk with closures
   useEffect(() => {
     const msgId = currentBotMessageIdRef.current
     if (msgId && content) {
@@ -82,19 +119,37 @@ export function LiveChatDemo() {
     }
   }, [isStreaming, scrollToBottom])
 
-  const handleSend = async () => {
-    if (!input.trim() || isTyping || isStreaming) return
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [])
+
+  const handleSend = async (textInput?: string) => {
+    const messageText = textInput || input
+    if (!messageText.trim() || isTyping || isStreaming) return
+
+    // Cancel any previous pending request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+    abortControllerRef.current = new AbortController()
 
     const userMessage: Message = {
       id: generateId(),
-      text: input,
+      text: messageText,
       sender: 'user',
       timestamp: new Date(),
     }
 
-    const currentInput = input
+    const currentInput = messageText
     setMessages(prev => [...prev, userMessage])
     setInput('')
+    setShowSuggestions(false)
+    setIsError(false)
     setEnabled(true) // Enable auto-scroll
     scrollToBottom() // Force scroll
     setIsTyping(true)
@@ -104,6 +159,7 @@ export function LiveChatDemo() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: currentInput }),
+        signal: abortControllerRef.current.signal
       })
 
       if (!response.ok || !response.body) {
@@ -126,126 +182,310 @@ export function LiveChatDemo() {
       // Use the streaming hook to handle the response
       await startStreaming(response.body)
 
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') return
+      
       console.error('Error getting response:', error)
+      setIsError(true)
+      setIsTyping(false)
       setMessages(prev => [...prev, {
         id: generateId(),
         text: "I'm having trouble connecting right now. Please try again in a moment!",
         sender: 'bot',
         timestamp: new Date(),
+        isError: true
       }])
-      setIsTyping(false)
-      reset()
+      resetStreaming()
+    } finally {
+      abortControllerRef.current = null
     }
   }
+
+  const handleReset = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+    setMessages(initialMessages)
+    setInput('')
+    setShowSuggestions(true)
+    setIsTyping(false)
+    setIsError(false)
+    resetStreaming()
+    currentBotMessageIdRef.current = null
+  }, [resetStreaming])
 
   return (
     <div className="max-w-2xl mx-auto">
       {/* Demo Label */}
-      <div className="flex items-center justify-center gap-2 mb-4">
-        <Sparkles className="w-4 h-4 text-brand-500" />
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-center gap-2 mb-4"
+      >
+        <Sparkles className="w-4 h-4 text-brand-500 animate-pulse" />
         <span className="text-sm font-medium text-brand-600 dark:text-brand-400">
           AI-Powered Demo - Ask anything about Clarity Chat!
         </span>
-      </div>
+      </motion.div>
 
       {/* Chat Window */}
-      <div className="rounded-2xl border-2 border-brand-500/20 shadow-2xl overflow-hidden bg-bg-primary">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="rounded-2xl border-2 border-brand-500/20 shadow-2xl overflow-hidden bg-bg-primary relative group"
+      >
         {/* Header */}
-        <div className="bg-gradient-to-r from-brand-500 to-brand-600 px-6 py-4 text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-              <Bot className="w-6 h-6" />
+        <div className="bg-gradient-to-r from-brand-500 to-brand-600 px-6 py-4 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] w-[200%] translate-x-[-100%] animate-[shimmer_3s_infinite]" />
+          
+          <div className="flex items-center justify-between relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner ring-1 ring-white/30">
+                <Bot className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="font-semibold flex items-center gap-2">
+                  Clarity Chat Assistant
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                  </span>
+                </div>
+                <div className="text-xs opacity-90 font-medium">Powered by Gemini</div>
+              </div>
             </div>
-            <div>
-              <div className="font-semibold">Clarity Chat Assistant</div>
-              <div className="text-xs opacity-90">Powered by Gemini</div>
-            </div>
+
+            <motion.button
+              onClick={handleReset}
+              whileHover={{ rotate: 180, scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none"
+              title="Reset Demo"
+              aria-label="Reset chat demo"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </motion.button>
           </div>
         </div>
 
         {/* Messages */}
         <div
           ref={scrollRef as React.RefObject<HTMLDivElement>}
-          className="h-[400px] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-bg-secondary/50 to-bg-primary scroll-smooth"
+          className="h-[450px] overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-bg-secondary/50 to-bg-primary scroll-smooth"
+          role="log"
+          aria-live="polite"
+          aria-label="Chat messages"
         >
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex items-start gap-3 ${
-                message.sender === 'user' ? 'flex-row-reverse' : ''
-              }`}
-            >
-              {/* Avatar */}
-              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                message.sender === 'bot'
-                  ? 'bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400'
-                  : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
-              }`}>
-                {message.sender === 'bot' ? (
-                  <Bot className="w-5 h-5" />
-                ) : (
-                  <User className="w-5 h-5" />
-                )}
-              </div>
-
-              {/* Message Bubble */}
-              <div className={`max-w-[75%] rounded-2xl px-4 py-3 ${
-                message.sender === 'bot'
-                  ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
-                  : 'bg-brand-500 text-white rounded-tr-sm'
-              }`}>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {message.text}
-                  {message.isStreaming && (
-                    <span className="inline-block w-2 h-4 ml-1 bg-brand-500 animate-pulse" />
+          <AnimatePresence initial={false} mode="popLayout">
+            {messages.map((message) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                layout
+                transition={{ duration: 0.3, type: "spring", stiffness: 200, damping: 20 }}
+                className={`flex items-start gap-3 ${
+                  message.sender === 'user' ? 'flex-row-reverse' : ''
+                }`}
+              >
+                {/* Avatar */}
+                <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ring-1 ring-inset ${
+                  message.sender === 'bot'
+                    ? message.isError 
+                      ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 ring-red-500/20'
+                      : 'bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 ring-brand-500/20'
+                    : 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 ring-indigo-500/20'
+                }`}>
+                  {message.sender === 'bot' ? (
+                    message.isError ? <AlertCircle className="w-5 h-5" /> : <Bot className="w-5 h-5" />
+                  ) : (
+                    <User className="w-5 h-5" />
                   )}
-                </p>
-              </div>
-            </div>
-          ))}
+                </div>
 
-          {/* Typing Indicator - using component from @clarity-chat/react */}
-          {isTyping && (
-            <TypingIndicator
-              showAvatar
-              avatarFallback="AI"
-              label="Thinking..."
-              variant="dots"
-            />
-          )}
+                {/* Message Bubble */}
+                <div className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
+                  message.sender === 'bot'
+                    ? message.isError
+                      ? 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 rounded-tl-sm'
+                      : 'bg-white dark:bg-gray-800 text-text-primary rounded-tl-sm border border-border/50'
+                    : 'bg-brand-500 text-white rounded-tr-sm'
+                }`}>
+                  <div className="text-sm">
+                    {message.sender === 'bot' ? (
+                      <>
+                        <div className="markdown-body">
+                          <MemoizedReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              code({ node, className, children, ...props }: any) {
+                                const match = /language-(\w+)/.exec(className || '')
+                                const isInline = !match && !String(children).includes('\n')
+                                
+                                if (!isInline) {
+                                  return (
+                                    <div className="my-3 not-prose w-full overflow-hidden rounded-md">
+                                      <CodeBlock
+                                        code={String(children).replace(/\n$/, '')}
+                                        language={match ? match[1] : 'typescript'}
+                                        className="!my-0 !shadow-none border border-border/50 text-xs"
+                                      />
+                                    </div>
+                                  )
+                                }
+                                return (
+                                  <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono text-xs text-brand-600 dark:text-brand-400 break-words" {...props}>
+                                    {children}
+                                  </code>
+                                )
+                              },
+                              // Style other markdown elements
+                              p: ({ children }) => <p className="leading-relaxed whitespace-pre-wrap mb-2 last:mb-0">{children}</p>,
+                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 my-2">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 my-2">{children}</ol>,
+                              li: ({ children }) => <li className="pl-1">{children}</li>,
+                              strong: ({ children }) => <strong className="font-semibold text-brand-700 dark:text-brand-300">{children}</strong>,
+                              a: ({ href, children }) => (
+                                <a 
+                                  href={href} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="text-brand-600 dark:text-brand-400 hover:underline"
+                                >
+                                  {children}
+                                </a>
+                              ),
+                            }}
+                          >
+                            {message.text}
+                          </MemoizedReactMarkdown>
+                        </div>
+                        {message.isStreaming && (
+                          <span className="inline-block w-1.5 h-4 ml-1 bg-brand-500 animate-pulse align-middle" />
+                        )}
+                      </>
+                    ) : (
+                      <p className="leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {/* Typing Indicator */}
+          <AnimatePresence>
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                className="flex items-center gap-3"
+              >
+                <div className="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 flex items-center justify-center ring-1 ring-inset ring-brand-500/20">
+                  <Bot className="w-5 h-5" />
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-3 border border-border/50 shadow-sm">
+                  <TypingIndicator
+                    label="Thinking..."
+                    variant="dots"
+                    className="text-brand-500"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Input */}
-        <div className="border-t border-border p-4 bg-bg-primary">
+        {/* Input Area */}
+        <div className="border-t border-border p-4 bg-bg-primary relative z-20">
+          {/* Gradient Mask for Suggestions */}
+          <AnimatePresence>
+            {showSuggestions && !isTyping && !isStreaming && !isError && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="relative"
+              >
+                <div className="flex gap-2 mb-3 overflow-x-auto pb-2 scrollbar-hide mask-linear-fade">
+                  {SUGGESTIONS.map((suggestion, idx) => (
+                    <motion.button
+                      key={idx}
+                      whileHover={{ scale: 1.05, backgroundColor: "var(--brand-50)" }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleSend(suggestion.text)}
+                      className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary border border-border rounded-full text-xs font-medium text-text-secondary hover:text-brand-600 hover:border-brand-200 transition-colors whitespace-nowrap shadow-sm focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
+                    >
+                      <suggestion.icon className="w-3 h-3" />
+                      {suggestion.text}
+                    </motion.button>
+                  ))}
+                </div>
+                {/* Fade masks */}
+                <div className="absolute left-0 top-0 bottom-2 w-4 bg-gradient-to-r from-bg-primary to-transparent pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-2 w-4 bg-gradient-to-l from-bg-primary to-transparent pointer-events-none" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <form
             onSubmit={(e) => {
               e.preventDefault()
               handleSend()
             }}
-            className="flex gap-2"
+            className="flex gap-2 relative group/input"
           >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about components, hooks, theming, accessibility..."
+              placeholder={isError ? "Try asking again..." : "Ask about components, hooks, theming..."}
               disabled={isTyping || isStreaming}
-              className="flex-1 px-4 py-3 rounded-lg border border-border bg-bg-secondary text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
+              className={`flex-1 px-4 py-3 pl-4 pr-12 rounded-xl border bg-bg-secondary text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 transition-all shadow-sm disabled:opacity-50 ${
+                isError 
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
+                  : 'border-border focus:border-brand-500 focus:ring-brand-500/50'
+              }`}
             />
-            <button
-              type="submit"
-              disabled={!input.trim() || isTyping || isStreaming}
-              className="px-6 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 disabled:cursor-not-allowed"
-            >
-              <Send className="w-5 h-5" />
-            </button>
+            <AnimatePresence mode="wait">
+              {input.trim() ? (
+                <motion.button
+                  key="send"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                  type="submit"
+                  disabled={isTyping || isStreaming}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="absolute right-2 top-1.5 bottom-1.5 aspect-square bg-brand-500 hover:bg-brand-600 text-white rounded-lg flex items-center justify-center transition-colors shadow-md focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  aria-label="Send message"
+                >
+                  <Send className="w-4 h-4" />
+                </motion.button>
+              ) : (
+                <motion.div
+                  key="empty"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 0.5 }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                  className="absolute right-2 top-1.5 bottom-1.5 aspect-square flex items-center justify-center pointer-events-none"
+                >
+                  <Sparkles className="w-4 h-4 text-text-tertiary" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </form>
-          <p className="text-xs text-text-secondary mt-2 text-center">
-            Try: "How do I add streaming?" or "What hooks are available?"
-          </p>
+          <div className="text-[10px] text-text-secondary mt-2 text-center opacity-70 flex items-center justify-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isError ? 'bg-red-500' : 'bg-green-500'}`} />
+            {isError ? 'Connection interrupted' : 'Powered by Gemini • Reads entire documentation in real-time'}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
