@@ -3,7 +3,7 @@
     "configFile": "/workspace/tests/visual/playwright.config.ts",
     "rootDir": "/workspace/tests/visual/specs",
     "forbidOnly": false,
-    "fullyParallel": true,
+    "fullyParallel": false,
     "globalSetup": null,
     "globalTeardown": null,
     "globalTimeout": 0,
@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 2
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -34,7 +34,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
@@ -49,7 +49,7 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.57.0",
-    "workers": 2,
+    "workers": 1,
     "webServer": {
       "command": "pnpm storybook",
       "url": "http://localhost:6006",
@@ -68,7 +68,7 @@
         {
           "title": "Button Visual Regression",
           "file": "components.spec.ts",
-          "line": 9,
+          "line": 32,
           "column": 6,
           "specs": [
             {
@@ -87,12 +87,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4298,
+                      "duration": 2882,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:11.810Z",
+                      "startTime": "2025-12-13T21:51:45.614Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -102,7 +102,7 @@
               ],
               "id": "21914d481cf54b88bd8b-e0ac26903ab800476b17",
               "file": "components.spec.ts",
-              "line": 10,
+              "line": 33,
               "column": 3
             },
             {
@@ -118,15 +118,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3132,
+                      "duration": 1360,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:11.808Z",
+                      "startTime": "2025-12-13T21:51:48.592Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -136,7 +136,7 @@
               ],
               "id": "21914d481cf54b88bd8b-69471209009a42bd1d08",
               "file": "components.spec.ts",
-              "line": 20,
+              "line": 43,
               "column": 3
             },
             {
@@ -152,15 +152,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1440,
+                      "duration": 1300,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:15.018Z",
+                      "startTime": "2025-12-13T21:51:49.960Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -170,7 +170,7 @@
               ],
               "id": "21914d481cf54b88bd8b-8c34cdbaaf9b6e349137",
               "file": "components.spec.ts",
-              "line": 31,
+              "line": 55,
               "column": 3
             }
           ]
@@ -178,7 +178,7 @@
         {
           "title": "Input Visual Regression",
           "file": "components.spec.ts",
-          "line": 43,
+          "line": 68,
           "column": 6,
           "specs": [
             {
@@ -197,12 +197,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2953,
+                      "duration": 1273,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:16.196Z",
+                      "startTime": "2025-12-13T21:51:51.268Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -212,7 +212,7 @@
               ],
               "id": "21914d481cf54b88bd8b-88c053d373bf88acc556",
               "file": "components.spec.ts",
-              "line": 44,
+              "line": 69,
               "column": 3
             },
             {
@@ -228,15 +228,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2257,
+                      "duration": 1259,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:16.466Z",
+                      "startTime": "2025-12-13T21:51:52.553Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -246,7 +246,7 @@
               ],
               "id": "21914d481cf54b88bd8b-cf75608957dcc7c86cff",
               "file": "components.spec.ts",
-              "line": 53,
+              "line": 78,
               "column": 3
             }
           ]
@@ -254,7 +254,7 @@
         {
           "title": "Card Visual Regression",
           "file": "components.spec.ts",
-          "line": 64,
+          "line": 90,
           "column": 6,
           "specs": [
             {
@@ -270,15 +270,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2520,
+                      "duration": 1294,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:18.732Z",
+                      "startTime": "2025-12-13T21:51:53.818Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -288,7 +288,7 @@
               ],
               "id": "21914d481cf54b88bd8b-df1fcb6a37d9667cbe0b",
               "file": "components.spec.ts",
-              "line": 65,
+              "line": 91,
               "column": 3
             },
             {
@@ -307,12 +307,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1551,
+                      "duration": 1171,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:19.168Z",
+                      "startTime": "2025-12-13T21:51:55.124Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -322,7 +322,7 @@
               ],
               "id": "21914d481cf54b88bd8b-ddd7768330ce8c9f1f38",
               "file": "components.spec.ts",
-              "line": 74,
+              "line": 100,
               "column": 3
             }
           ]
@@ -330,7 +330,7 @@
         {
           "title": "Dialog Visual Regression",
           "file": "components.spec.ts",
-          "line": 85,
+          "line": 114,
           "column": 6,
           "specs": [
             {
@@ -349,12 +349,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1738,
+                      "duration": 1296,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:20.734Z",
+                      "startTime": "2025-12-13T21:51:56.302Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -364,7 +364,7 @@
               ],
               "id": "21914d481cf54b88bd8b-a108b63da053c9546e1e",
               "file": "components.spec.ts",
-              "line": 86,
+              "line": 115,
               "column": 3
             }
           ]
@@ -372,7 +372,7 @@
         {
           "title": "Message Visual Regression",
           "file": "components.spec.ts",
-          "line": 99,
+          "line": 129,
           "column": 6,
           "specs": [
             {
@@ -388,15 +388,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2473,
+                      "duration": 2006,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:21.263Z",
+                      "startTime": "2025-12-13T21:51:57.604Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -406,7 +406,7 @@
               ],
               "id": "21914d481cf54b88bd8b-db29016b53e5f0f947db",
               "file": "components.spec.ts",
-              "line": 100,
+              "line": 130,
               "column": 3
             },
             {
@@ -425,12 +425,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2026,
+                      "duration": 1892,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:22.481Z",
+                      "startTime": "2025-12-13T21:51:59.617Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -440,7 +440,7 @@
               ],
               "id": "21914d481cf54b88bd8b-1009cdd2a47b2d1f1b42",
               "file": "components.spec.ts",
-              "line": 109,
+              "line": 141,
               "column": 3
             }
           ]
@@ -448,7 +448,7 @@
         {
           "title": "Foundation Visual Regression",
           "file": "components.spec.ts",
-          "line": 119,
+          "line": 153,
           "column": 6,
           "specs": [
             {
@@ -464,15 +464,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1624,
+                      "duration": 1153,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:23.750Z",
+                      "startTime": "2025-12-13T21:52:01.517Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -482,7 +482,7 @@
               ],
               "id": "21914d481cf54b88bd8b-c107fb49749b98f15528",
               "file": "components.spec.ts",
-              "line": 120,
+              "line": 154,
               "column": 3
             }
           ]
@@ -490,7 +490,7 @@
         {
           "title": "Dark Mode Visual Regression",
           "file": "components.spec.ts",
-          "line": 130,
+          "line": 164,
           "column": 6,
           "specs": [
             {
@@ -509,12 +509,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2195,
+                      "duration": 1269,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:24.517Z",
+                      "startTime": "2025-12-13T21:52:02.677Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -524,7 +524,7 @@
               ],
               "id": "21914d481cf54b88bd8b-879cb69ea442aa486091",
               "file": "components.spec.ts",
-              "line": 131,
+              "line": 165,
               "column": 3
             }
           ]
@@ -532,7 +532,7 @@
         {
           "title": "Responsive Visual Regression",
           "file": "components.spec.ts",
-          "line": 141,
+          "line": 177,
           "column": 6,
           "specs": [
             {
@@ -548,15 +548,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2527,
+                      "duration": 1334,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:25.386Z",
+                      "startTime": "2025-12-13T21:52:03.954Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -566,7 +566,7 @@
               ],
               "id": "21914d481cf54b88bd8b-e5217303b575a6c493ff",
               "file": "components.spec.ts",
-              "line": 142,
+              "line": 178,
               "column": 3
             },
             {
@@ -585,12 +585,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2278,
+                      "duration": 1300,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-13T14:45:26.720Z",
+                      "startTime": "2025-12-13T21:52:05.297Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -600,7 +600,7 @@
               ],
               "id": "21914d481cf54b88bd8b-44749b5d3640c31fc577",
               "file": "components.spec.ts",
-              "line": 152,
+              "line": 188,
               "column": 3
             }
           ]
@@ -610,8 +610,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-13T14:45:05.320Z",
-    "duration": 23799.288,
+    "startTime": "2025-12-13T21:51:39.138Z",
+    "duration": 27617.511,
     "expected": 14,
     "skipped": 0,
     "unexpected": 0,
