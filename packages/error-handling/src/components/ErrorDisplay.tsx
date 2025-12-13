@@ -126,13 +126,15 @@ function ErrorIcon({ size, color }: { size: number; color: string }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" fill="none" />
-      <path
-        d="M12 7v5"
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
         stroke={color}
         strokeWidth="2"
-        strokeLinecap="round"
+        fill="none"
       />
+      <path d="M12 7v5" stroke={color} strokeWidth="2" strokeLinecap="round" />
       <circle cx="12" cy="16" r="1" fill={color} />
     </svg>
   )
@@ -171,7 +173,14 @@ function InfoIcon({ size, color }: { size: number; color: string }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" fill="none" />
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke={color}
+        strokeWidth="2"
+        fill="none"
+      />
       <path d="M12 11v5" stroke={color} strokeWidth="2" strokeLinecap="round" />
       <circle cx="12" cy="8" r="1" fill={color} />
     </svg>
@@ -458,7 +467,7 @@ export function ErrorDisplay({
               style={{
                 margin: `${sizes.gap} 0 0`,
                 fontSize: sizes.messageSize,
-                color: '#4b5563',
+                color: 'var(--error-color-muted, #4b5563)',
                 lineHeight: 1.6,
               }}
             >
@@ -517,8 +526,12 @@ export function ErrorDisplay({
                   textDecoration: 'none',
                   transition: 'color 0.2s',
                 }}
-                onMouseOver={(e) => (e.currentTarget.style.color = '#2563eb')}
-                onMouseOut={(e) => (e.currentTarget.style.color = '#3b82f6')}
+                onMouseOver={(e: React.MouseEvent<HTMLAnchorElement>) =>
+                  (e.currentTarget.style.color = '#2563eb')
+                }
+                onMouseOut={(e: React.MouseEvent<HTMLAnchorElement>) =>
+                  (e.currentTarget.style.color = '#3b82f6')
+                }
               >
                 <svg
                   width="14"
@@ -626,19 +639,19 @@ export function ErrorDisplay({
                       transition: 'all 0.2s ease',
                       boxShadow: `0 2px 8px ${colors.accentGlow}`,
                     }}
-                    onMouseOver={(e) => {
+                    onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
                       e.currentTarget.style.transform = 'translateY(-1px)'
                       e.currentTarget.style.boxShadow = `0 4px 12px ${colors.accentGlow}`
                     }}
-                    onMouseOut={(e) => {
+                    onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
                       e.currentTarget.style.transform = 'translateY(0)'
                       e.currentTarget.style.boxShadow = `0 2px 8px ${colors.accentGlow}`
                     }}
-                    onFocus={(e) => {
+                    onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
                       e.currentTarget.style.outline = `2px solid ${colors.titleColor}`
                       e.currentTarget.style.outlineOffset = '2px'
                     }}
-                    onBlur={(e) => {
+                    onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
                       e.currentTarget.style.outline = 'none'
                     }}
                   >
@@ -684,7 +697,8 @@ export function ErrorDisplay({
                       e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)'
                     }}
                     onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
-                      e.currentTarget.style.outline = '2px solid var(--error-color-muted, #6b7280)'
+                      e.currentTarget.style.outline =
+                        '2px solid var(--error-color-muted, #6b7280)'
                       e.currentTarget.style.outlineOffset = '2px'
                     }}
                     onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
@@ -724,14 +738,17 @@ export function ErrorDisplay({
               }}
               onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.background = 'rgba(0, 0, 0, 0.08)'
-                e.currentTarget.style.color = 'var(--error-color-muted, #6b7280)'
+                e.currentTarget.style.color =
+                  'var(--error-color-muted, #6b7280)'
               }}
               onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.background = 'rgba(0, 0, 0, 0.04)'
-                e.currentTarget.style.color = 'var(--error-color-muted, #9ca3af)'
+                e.currentTarget.style.color =
+                  'var(--error-color-muted, #9ca3af)'
               }}
               onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
-                e.currentTarget.style.outline = '2px solid var(--error-color-muted, #9ca3af)'
+                e.currentTarget.style.outline =
+                  '2px solid var(--error-color-muted, #9ca3af)'
                 e.currentTarget.style.outlineOffset = '2px'
               }}
               onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {

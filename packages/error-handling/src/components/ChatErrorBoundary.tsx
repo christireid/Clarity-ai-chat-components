@@ -60,7 +60,8 @@ const errorConfigs = {
     title: 'Connection Lost',
     icon: 'wifi',
     gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-    bgGradient: 'linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(220, 38, 38, 0.02) 100%)',
+    bgGradient:
+      'linear-gradient(135deg, rgba(239, 68, 68, 0.06) 0%, rgba(220, 38, 38, 0.02) 100%)',
     borderColor: 'rgba(239, 68, 68, 0.2)',
     accentColor: '#ef4444',
     shadowColor: 'rgba(239, 68, 68, 0.25)',
@@ -69,7 +70,8 @@ const errorConfigs = {
     title: 'Service Issue',
     icon: 'server',
     gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-    bgGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(217, 119, 6, 0.02) 100%)',
+    bgGradient:
+      'linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(217, 119, 6, 0.02) 100%)',
     borderColor: 'rgba(245, 158, 11, 0.2)',
     accentColor: '#f59e0b',
     shadowColor: 'rgba(245, 158, 11, 0.25)',
@@ -78,7 +80,8 @@ const errorConfigs = {
     title: 'Rate Limited',
     icon: 'clock',
     gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-    bgGradient: 'linear-gradient(135deg, rgba(139, 92, 246, 0.06) 0%, rgba(124, 58, 237, 0.02) 100%)',
+    bgGradient:
+      'linear-gradient(135deg, rgba(139, 92, 246, 0.06) 0%, rgba(124, 58, 237, 0.02) 100%)',
     borderColor: 'rgba(139, 92, 246, 0.2)',
     accentColor: '#8b5cf6',
     shadowColor: 'rgba(139, 92, 246, 0.25)',
@@ -87,7 +90,8 @@ const errorConfigs = {
     title: 'Oops!',
     icon: 'alert',
     gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-    bgGradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(79, 70, 229, 0.02) 100%)',
+    bgGradient:
+      'linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(79, 70, 229, 0.02) 100%)',
     borderColor: 'rgba(99, 102, 241, 0.2)',
     accentColor: '#6366f1',
     shadowColor: 'rgba(99, 102, 241, 0.25)',
@@ -97,7 +101,16 @@ const errorConfigs = {
 // Icon components
 function WifiOffIcon({ size = 24 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="1" y1="1" x2="23" y2="23" />
       <path d="M16.72 11.06A10.94 10.94 0 0119 12.55" />
       <path d="M5 12.55a10.94 10.94 0 015.17-2.39" />
@@ -111,7 +124,16 @@ function WifiOffIcon({ size = 24 }: { size?: number }) {
 
 function ServerIcon({ size = 24 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
       <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
       <line x1="6" y1="6" x2="6.01" y2="6" />
@@ -122,7 +144,16 @@ function ServerIcon({ size = 24 }: { size?: number }) {
 
 function ClockIcon({ size = 24 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="12" r="10" />
       <polyline points="12 6 12 12 16 14" />
     </svg>
@@ -131,7 +162,16 @@ function ClockIcon({ size = 24 }: { size?: number }) {
 
 function AlertIcon({ size = 24 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="12" r="10" />
       <line x1="12" y1="8" x2="12" y2="12" />
       <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -141,10 +181,14 @@ function AlertIcon({ size = 24 }: { size?: number }) {
 
 function getIcon(type: string, size: number) {
   switch (type) {
-    case 'wifi': return <WifiOffIcon size={size} />
-    case 'server': return <ServerIcon size={size} />
-    case 'clock': return <ClockIcon size={size} />
-    default: return <AlertIcon size={size} />
+    case 'wifi':
+      return <WifiOffIcon size={size} />
+    case 'server':
+      return <ServerIcon size={size} />
+    case 'clock':
+      return <ClockIcon size={size} />
+    default:
+      return <AlertIcon size={size} />
   }
 }
 
@@ -180,7 +224,9 @@ function ChatErrorFallback({
     message = 'Lost connection to the chat server. Your conversation is safe.'
     showRetry = (error as StreamingError).recoverable
     hasPartialContent = (error as StreamingError).hasPartialContent
-    solution = isClarity ? (error as unknown as ClarityError).solution : undefined
+    solution = isClarity
+      ? (error as unknown as ClarityError).solution
+      : undefined
   } else if (isProvider) {
     const providerErr = error as ProviderError
     if (providerErr.retryAfter) {
@@ -387,7 +433,9 @@ function ChatErrorFallback({
                 border: '1px solid rgba(139, 92, 246, 0.15)',
               }}
             >
-              <div style={{ position: 'relative', width: '36px', height: '36px' }}>
+              <div
+                style={{ position: 'relative', width: '36px', height: '36px' }}
+              >
                 <svg
                   width="36"
                   height="36"
@@ -453,7 +501,8 @@ function ChatErrorFallback({
                 marginTop: '1rem',
                 padding: '0.625rem 0.875rem',
                 borderRadius: '10px',
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.04) 100%)',
+                background:
+                  'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.04) 100%)',
                 border: '1px solid rgba(16, 185, 129, 0.2)',
               }}
             >
@@ -495,7 +544,12 @@ function ChatErrorFallback({
                 gap: '0.5rem',
               }}
             >
-              <span style={{ fontSize: '0.875rem', lineHeight: 1 }} aria-hidden="true">💡</span>
+              <span
+                style={{ fontSize: '0.875rem', lineHeight: 1 }}
+                aria-hidden="true"
+              >
+                💡
+              </span>
               <span
                 style={{
                   fontSize: '0.75rem',
@@ -529,35 +583,38 @@ function ChatErrorFallback({
                   fontSize: '0.8125rem',
                   fontWeight: 600,
                   color: 'white',
-                  background: isRetrying || (countdown !== null && countdown > 0)
-                    ? '#9ca3af'
-                    : config.gradient,
+                  background:
+                    isRetrying || (countdown !== null && countdown > 0)
+                      ? '#9ca3af'
+                      : config.gradient,
                   border: 'none',
                   borderRadius: '10px',
-                  cursor: isRetrying || (countdown !== null && countdown > 0)
-                    ? 'not-allowed'
-                    : 'pointer',
-                  boxShadow: isRetrying || (countdown !== null && countdown > 0)
-                    ? 'none'
-                    : `0 4px 12px ${config.shadowColor}`,
+                  cursor:
+                    isRetrying || (countdown !== null && countdown > 0)
+                      ? 'not-allowed'
+                      : 'pointer',
+                  boxShadow:
+                    isRetrying || (countdown !== null && countdown > 0)
+                      ? 'none'
+                      : `0 4px 12px ${config.shadowColor}`,
                   transition: 'all 0.2s ease',
                   opacity: isRetrying ? 0.8 : 1,
                 }}
-                onMouseOver={(e) => {
+                onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!isRetrying && !(countdown !== null && countdown > 0)) {
                     e.currentTarget.style.transform = 'translateY(-2px)'
                     e.currentTarget.style.boxShadow = `0 6px 16px ${config.shadowColor}`
                   }
                 }}
-                onMouseOut={(e) => {
+                onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.transform = 'translateY(0)'
                   e.currentTarget.style.boxShadow = `0 4px 12px ${config.shadowColor}`
                 }}
-                onFocus={(e) => {
+                onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.outline = `2px solid ${config.accentColor}`
                   e.currentTarget.style.outlineOffset = '2px'
                 }}
-                onBlur={(e) => {
+                onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
                   e.currentTarget.style.outline = 'none'
                 }}
               >
