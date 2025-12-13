@@ -1,0 +1,620 @@
+{
+  "config": {
+    "configFile": "/workspace/tests/visual/playwright.config.ts",
+    "rootDir": "/workspace/tests/visual/specs",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      ["html", null],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/workspace/tests/visual/__diff_output__",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/tests/visual/specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 2,
+    "webServer": {
+      "command": "pnpm storybook",
+      "url": "http://localhost:6006",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "components.spec.ts",
+      "file": "components.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Button Visual Regression",
+          "file": "components.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should match button variants",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4298,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:11.810Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-e0ac26903ab800476b17",
+              "file": "components.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "should match button hover states",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3132,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:11.808Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-69471209009a42bd1d08",
+              "file": "components.spec.ts",
+              "line": 20,
+              "column": 3
+            },
+            {
+              "title": "should match button focus states",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1440,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:15.018Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-8c34cdbaaf9b6e349137",
+              "file": "components.spec.ts",
+              "line": 31,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Input Visual Regression",
+          "file": "components.spec.ts",
+          "line": 43,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should match input states",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2953,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:16.196Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-88c053d373bf88acc556",
+              "file": "components.spec.ts",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "should match input focus ring",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2257,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:16.466Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-cf75608957dcc7c86cff",
+              "file": "components.spec.ts",
+              "line": 53,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Card Visual Regression",
+          "file": "components.spec.ts",
+          "line": 64,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should match card variants",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2520,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:18.732Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-df1fcb6a37d9667cbe0b",
+              "file": "components.spec.ts",
+              "line": 65,
+              "column": 3
+            },
+            {
+              "title": "should match interactive card hover",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1551,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:19.168Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-ddd7768330ce8c9f1f38",
+              "file": "components.spec.ts",
+              "line": 74,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Dialog Visual Regression",
+          "file": "components.spec.ts",
+          "line": 85,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should match dialog overlay",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1738,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:20.734Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-a108b63da053c9546e1e",
+              "file": "components.spec.ts",
+              "line": 86,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Message Visual Regression",
+          "file": "components.spec.ts",
+          "line": 99,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should match message bubbles",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2473,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:21.263Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-db29016b53e5f0f947db",
+              "file": "components.spec.ts",
+              "line": 100,
+              "column": 3
+            },
+            {
+              "title": "should match user vs assistant messages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2026,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:22.481Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-1009cdd2a47b2d1f1b42",
+              "file": "components.spec.ts",
+              "line": 109,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Foundation Visual Regression",
+          "file": "components.spec.ts",
+          "line": 119,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should match theme selector",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1624,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:23.750Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-c107fb49749b98f15528",
+              "file": "components.spec.ts",
+              "line": 120,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Dark Mode Visual Regression",
+          "file": "components.spec.ts",
+          "line": 130,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should match dark mode components",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2195,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:24.517Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-879cb69ea442aa486091",
+              "file": "components.spec.ts",
+              "line": 131,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Responsive Visual Regression",
+          "file": "components.spec.ts",
+          "line": 141,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should match mobile layout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2527,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:25.386Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-e5217303b575a6c493ff",
+              "file": "components.spec.ts",
+              "line": 142,
+              "column": 3
+            },
+            {
+              "title": "should match tablet layout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2278,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-13T14:45:26.720Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21914d481cf54b88bd8b-44749b5d3640c31fc577",
+              "file": "components.spec.ts",
+              "line": 152,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-12-13T14:45:05.320Z",
+    "duration": 23799.288,
+    "expected": 14,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Card, Badge, cn } from '@clarity-chat/primitives'
+import { duration } from '../animations/constants'
 
 // ============================================================================
 // Types
@@ -611,7 +612,7 @@ function ExpandableDescription({
         transition={
           prefersReducedMotion
             ? { duration: 0 }
-            : { duration: durations.normal }
+            : { duration: duration('normal') }
         }
       >
         {displayText}
@@ -764,7 +765,7 @@ export function LinkPreviewCompact({
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -5 }}
-      transition={{ duration: durations.fast }}
+      transition={{ duration: duration('fast') }}
     >
       {content}
     </motion.div>
@@ -1175,7 +1176,7 @@ export function LinkPreview({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: durations.normal }}
+      transition={{ duration: duration('normal') }}
       className={className}
     >
       {cardContent}
@@ -1419,7 +1420,7 @@ export function InlineLink({
               initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-              transition={{ duration: durations.fast }}
+              transition={{ duration: duration('fast') }}
               className="absolute bottom-full left-0 mb-2 w-80 z-50"
               onMouseEnter={() => setShowPreview(true)}
               onMouseLeave={handleMouseLeave}

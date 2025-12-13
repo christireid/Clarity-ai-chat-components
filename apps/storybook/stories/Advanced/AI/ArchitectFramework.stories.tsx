@@ -11,6 +11,7 @@ import {
   ARCHITECT_RECIPES,
 
   // Design patterns
+  DESIGN_PATTERN_CATALOG,
   ALL_PATTERNS,
   getPatternById,
   getPatternsByCategory,
@@ -19,14 +20,11 @@ import {
   getBehavioralPatterns,
 
   // Phase utilities
-  OWASP_CATALOG,
-  CODE_SMELL_CATALOG,
+  OWASP_VULNERABILITIES,
   createSecurityFinding,
   createAuditResult,
   calculateRiskScore,
   createStrategicPlan,
-  DESIGN_PATTERNS,
-  suggestPatternsForUseCase,
   createReviewResult,
 
   // Hooks
@@ -39,6 +37,7 @@ import {
   type DesignPatternCategory,
   type OWASPVulnerability,
   type SecurityFinding,
+  type DebtSeverity,
 } from '@clarity-chat/react'
 
 /**
@@ -132,7 +131,9 @@ function MasterPromptDemo() {
 
   return (
     <Card className="p-6 max-w-4xl">
-      <h3 className="text-lg font-semibold mb-4">Master System Prompt Generator</h3>
+      <h3 className="text-lg font-semibold mb-4">
+        Master System Prompt Generator
+      </h3>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div>
@@ -202,7 +203,8 @@ function MasterPromptDemo() {
 // ============================================================================
 
 function RecipeSelectorDemo() {
-  const [selectedRecipe, setSelectedRecipe] = useState<string>('master-architect')
+  const [selectedRecipe, setSelectedRecipe] =
+    useState<string>('master-architect')
 
   const recipeNames = Object.keys(ARCHITECT_RECIPES)
   const recipe = getArchitectRecipe(selectedRecipe)
@@ -219,7 +221,10 @@ function RecipeSelectorDemo() {
             size="sm"
             onClick={() => setSelectedRecipe(name)}
           >
-            {name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+            {name
+              .split('-')
+              .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+              .join(' ')}
           </Button>
         ))}
       </div>
@@ -232,12 +237,16 @@ function RecipeSelectorDemo() {
           </div>
 
           <div>
-            <h4 className="font-medium text-sm text-muted-foreground">Description</h4>
+            <h4 className="font-medium text-sm text-muted-foreground">
+              Description
+            </h4>
             <p className="text-sm">{recipe.description}</p>
           </div>
 
           <div>
-            <h4 className="font-medium text-sm text-muted-foreground mb-2">Fragments</h4>
+            <h4 className="font-medium text-sm text-muted-foreground mb-2">
+              Fragments
+            </h4>
             <div className="flex gap-2 flex-wrap">
               {recipe.fragments.map((fragment, idx) => (
                 <Badge key={idx} variant="secondary">
@@ -257,8 +266,12 @@ function RecipeSelectorDemo() {
 // ============================================================================
 
 function DesignPatternsCatalogDemo() {
-  const [selectedCategory, setSelectedCategory] = useState<DesignPatternCategory | 'all'>('all')
-  const [selectedPattern, setSelectedPattern] = useState<DesignPattern | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<
+    DesignPatternCategory | 'all'
+  >('all')
+  const [selectedPattern, setSelectedPattern] = useState<DesignPattern | null>(
+    null
+  )
 
   const patterns = useMemo(() => {
     if (selectedCategory === 'all') {
@@ -267,31 +280,37 @@ function DesignPatternsCatalogDemo() {
     return getPatternsByCategory(selectedCategory)
   }, [selectedCategory])
 
-  const patternDetails = selectedPattern ? getPatternById(selectedPattern) : null
+  const patternDetails = selectedPattern
+    ? getPatternById(selectedPattern)
+    : null
 
   return (
     <Card className="p-6 max-w-4xl">
-      <h3 className="text-lg font-semibold mb-4">GoF Design Patterns Catalog</h3>
+      <h3 className="text-lg font-semibold mb-4">
+        GoF Design Patterns Catalog
+      </h3>
 
       <div className="flex gap-2 mb-6">
-        {(['all', 'creational', 'structural', 'behavioral'] as const).map((cat) => (
-          <Button
-            key={cat}
-            variant={selectedCategory === cat ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setSelectedCategory(cat)
-              setSelectedPattern(null)
-            }}
-          >
-            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-            {cat !== 'all' && (
-              <Badge variant="secondary" className="ml-2">
-                {cat === 'creational' ? 5 : cat === 'structural' ? 7 : 11}
-              </Badge>
-            )}
-          </Button>
-        ))}
+        {(['all', 'creational', 'structural', 'behavioral'] as const).map(
+          (cat) => (
+            <Button
+              key={cat}
+              variant={selectedCategory === cat ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => {
+                setSelectedCategory(cat)
+                setSelectedPattern(null)
+              }}
+            >
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              {cat !== 'all' && (
+                <Badge variant="secondary" className="ml-2">
+                  {cat === 'creational' ? 5 : cat === 'structural' ? 7 : 11}
+                </Badge>
+              )}
+            </Button>
+          )
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -326,12 +345,16 @@ function DesignPatternsCatalogDemo() {
               </div>
 
               <div>
-                <h5 className="font-medium text-sm text-muted-foreground">Intent</h5>
+                <h5 className="font-medium text-sm text-muted-foreground">
+                  Intent
+                </h5>
                 <p className="text-sm">{patternDetails.intent}</p>
               </div>
 
               <div>
-                <h5 className="font-medium text-sm text-muted-foreground">Use Cases</h5>
+                <h5 className="font-medium text-sm text-muted-foreground">
+                  Use Cases
+                </h5>
                 <ul className="text-sm list-disc list-inside">
                   {patternDetails.useCases.map((uc, idx) => (
                     <li key={idx}>{uc}</li>
@@ -359,7 +382,9 @@ function DesignPatternsCatalogDemo() {
               </div>
 
               <div>
-                <h5 className="font-medium text-sm text-muted-foreground">Implementation</h5>
+                <h5 className="font-medium text-sm text-muted-foreground">
+                  Implementation
+                </h5>
                 <pre className="bg-muted p-2 rounded text-xs overflow-auto max-h-32">
                   {patternDetails.implementation}
                 </pre>
@@ -383,17 +408,30 @@ function DesignPatternsCatalogDemo() {
 function OWASPCatalogDemo() {
   const [selectedVuln, setSelectedVuln] = useState<string | null>(null)
 
-  const vulnDetails = selectedVuln ? OWASP_CATALOG[selectedVuln as keyof typeof OWASP_CATALOG] : null
+  const vulnDetails = selectedVuln
+    ? OWASP_VULNERABILITIES[selectedVuln as OWASPVulnerability]
+    : null
+
+  const getSeverity = (id: OWASPVulnerability): DebtSeverity => {
+    // Lightweight mapping for demo purposes.
+    if (id === 'A03_INJECTION' || id === 'A01_BROKEN_ACCESS_CONTROL')
+      return 'critical'
+    if (id === 'A02_CRYPTOGRAPHIC_FAILURES' || id === 'A07_AUTH_FAILURES')
+      return 'high'
+    return 'medium'
+  }
 
   return (
     <Card className="p-6 max-w-4xl">
-      <h3 className="text-lg font-semibold mb-4">OWASP Top 10 Security Catalog</h3>
+      <h3 className="text-lg font-semibold mb-4">
+        OWASP Top 10 Security Catalog
+      </h3>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="border rounded-lg p-4 max-h-96 overflow-auto">
           <h4 className="font-medium mb-2">Vulnerabilities</h4>
           <div className="space-y-1">
-            {Object.entries(OWASP_CATALOG).map(([id, vuln]) => (
+            {Object.entries(OWASP_VULNERABILITIES).map(([id, vuln]) => (
               <button
                 key={id}
                 onClick={() => setSelectedVuln(id)}
@@ -405,12 +443,15 @@ function OWASPCatalogDemo() {
                   {vuln.name}
                   <Badge
                     variant={
-                      vuln.severity === 'critical' ? 'destructive' :
-                      vuln.severity === 'high' ? 'warning' : 'secondary'
+                      getSeverity(id as OWASPVulnerability) === 'critical'
+                        ? 'destructive'
+                        : getSeverity(id as OWASPVulnerability) === 'high'
+                          ? 'warning'
+                          : 'secondary'
                     }
                     className="text-xs"
                   >
-                    {vuln.severity}
+                    {getSeverity(id as OWASPVulnerability)}
                   </Badge>
                 </span>
               </button>
@@ -425,33 +466,46 @@ function OWASPCatalogDemo() {
                 <h4 className="font-semibold text-lg">{vulnDetails.name}</h4>
                 <Badge
                   variant={
-                    vulnDetails.severity === 'critical' ? 'destructive' :
-                    vulnDetails.severity === 'high' ? 'warning' : 'secondary'
+                    getSeverity(selectedVuln as OWASPVulnerability) ===
+                    'critical'
+                      ? 'destructive'
+                      : getSeverity(selectedVuln as OWASPVulnerability) ===
+                          'high'
+                        ? 'warning'
+                        : 'secondary'
                   }
                 >
-                  {vulnDetails.severity}
+                  {getSeverity(selectedVuln as OWASPVulnerability)}
                 </Badge>
               </div>
 
               <div>
-                <h5 className="font-medium text-sm text-muted-foreground">Description</h5>
+                <h5 className="font-medium text-sm text-muted-foreground">
+                  Description
+                </h5>
                 <p className="text-sm">{vulnDetails.description}</p>
               </div>
 
               <div>
-                <h5 className="font-medium text-sm text-muted-foreground">Detection Patterns</h5>
+                <h5 className="font-medium text-sm text-muted-foreground">
+                  Detection Patterns
+                </h5>
                 <ul className="text-sm list-disc list-inside">
                   {vulnDetails.patterns.slice(0, 3).map((pattern, idx) => (
-                    <li key={idx} className="font-mono text-xs">{pattern}</li>
+                    <li key={idx} className="font-mono text-xs">
+                      {pattern}
+                    </li>
                   ))}
                 </ul>
               </div>
 
               <div>
-                <h5 className="font-medium text-sm text-muted-foreground">Mitigations</h5>
+                <h5 className="font-medium text-sm text-muted-foreground">
+                  Recommendations
+                </h5>
                 <ul className="text-sm list-disc list-inside">
-                  {vulnDetails.mitigations.slice(0, 3).map((mit, idx) => (
-                    <li key={idx}>{mit}</li>
+                  {vulnDetails.recommendations.slice(0, 3).map((rec, idx) => (
+                    <li key={idx}>{rec}</li>
                   ))}
                 </ul>
               </div>
@@ -497,26 +551,28 @@ function WorkflowDemo() {
       <h3 className="text-lg font-semibold mb-4">4-Phase Workflow</h3>
 
       <div className="flex items-center justify-between mb-6">
-        {(['analysis', 'planning', 'implementation', 'review'] as const).map((phase, idx) => (
-          <div key={phase} className="flex items-center">
-            <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold ${
-                workflow.currentPhase === phase
-                  ? phaseColors[phase]
-                  : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              {idx + 1}
+        {(['analysis', 'planning', 'implementation', 'review'] as const).map(
+          (phase, idx) => (
+            <div key={phase} className="flex items-center">
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center font-bold ${
+                  workflow.currentPhase === phase
+                    ? phaseColors[phase]
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {idx + 1}
+              </div>
+              <div className="ml-2">
+                <p className="text-xs font-medium">{phaseLabels[phase]}</p>
+                <p className="text-xs text-muted-foreground capitalize">
+                  {phase}
+                </p>
+              </div>
+              {idx < 3 && <div className="w-12 h-0.5 bg-muted mx-2" />}
             </div>
-            <div className="ml-2">
-              <p className="text-xs font-medium">{phaseLabels[phase]}</p>
-              <p className="text-xs text-muted-foreground capitalize">{phase}</p>
-            </div>
-            {idx < 3 && (
-              <div className="w-12 h-0.5 bg-muted mx-2" />
-            )}
-          </div>
-        ))}
+          )
+        )}
       </div>
 
       <div className="flex gap-2 mb-4">
@@ -536,7 +592,9 @@ function WorkflowDemo() {
         </Button>
         <Button
           onClick={() => workflow.setPhase('implementation')}
-          variant={workflow.currentPhase === 'implementation' ? 'default' : 'outline'}
+          variant={
+            workflow.currentPhase === 'implementation' ? 'default' : 'outline'
+          }
           size="sm"
         >
           Implementation
@@ -555,13 +613,21 @@ function WorkflowDemo() {
 
       <div className={`p-4 rounded-lg ${phaseColors[workflow.currentPhase]}`}>
         <h4 className="font-semibold mb-2">
-          Phase {['analysis', 'planning', 'implementation', 'review'].indexOf(workflow.currentPhase) + 1}: {phaseLabels[workflow.currentPhase]}
+          Phase{' '}
+          {['analysis', 'planning', 'implementation', 'review'].indexOf(
+            workflow.currentPhase
+          ) + 1}
+          : {phaseLabels[workflow.currentPhase]}
         </h4>
         <p className="text-sm">
-          {workflow.currentPhase === 'analysis' && 'Context gathering, security scanning, code smell detection'}
-          {workflow.currentPhase === 'planning' && 'Chain of thought reasoning, design pattern selection'}
-          {workflow.currentPhase === 'implementation' && 'Style guide adherence, Boy Scout Rule application'}
-          {workflow.currentPhase === 'review' && 'Self-correction, DRY verification, ADR generation'}
+          {workflow.currentPhase === 'analysis' &&
+            'Context gathering, security scanning, code smell detection'}
+          {workflow.currentPhase === 'planning' &&
+            'Chain of thought reasoning, design pattern selection'}
+          {workflow.currentPhase === 'implementation' &&
+            'Style guide adherence, Boy Scout Rule application'}
+          {workflow.currentPhase === 'review' &&
+            'Self-correction, DRY verification, ADR generation'}
         </p>
       </div>
     </Card>
@@ -574,11 +640,29 @@ function WorkflowDemo() {
 
 function PatternSuggestionDemo() {
   const [useCase, setUseCase] = useState('')
-  const [suggestions, setSuggestions] = useState<ReturnType<typeof suggestPatternsForUseCase>>([])
+  const [suggestions, setSuggestions] = useState<DesignPattern[]>([])
 
   const handleSearch = () => {
     if (useCase.trim()) {
-      setSuggestions(suggestPatternsForUseCase(useCase))
+      // Simple heuristic suggestions for demo: rely on catalog keywords.
+      const normalized = useCase.toLowerCase()
+      const matches = (Object.keys(DESIGN_PATTERN_CATALOG) as DesignPattern[])
+        .filter((id) => {
+          const info = DESIGN_PATTERN_CATALOG[id]
+          return (
+            id.toLowerCase().includes(normalized) ||
+            info.name.toLowerCase().includes(normalized) ||
+            info.intent.toLowerCase().includes(normalized) ||
+            info.useCases.some((uc) => uc.toLowerCase().includes(normalized))
+          )
+        })
+        .slice(0, 6)
+
+      setSuggestions(
+        matches.length
+          ? matches
+          : (Object.keys(DESIGN_PATTERN_CATALOG) as DesignPattern[]).slice(0, 6)
+      )
     }
   }
 
@@ -598,14 +682,37 @@ function PatternSuggestionDemo() {
       </div>
 
       <div className="flex gap-2 mb-4 flex-wrap">
-        {['database', 'logging', 'event', 'cache', 'ui components', 'algorithm'].map((example) => (
+        {[
+          'database',
+          'logging',
+          'event',
+          'cache',
+          'ui components',
+          'algorithm',
+        ].map((example) => (
           <Button
             key={example}
             variant="ghost"
             size="sm"
             onClick={() => {
               setUseCase(example)
-              setSuggestions(suggestPatternsForUseCase(example))
+              const normalized = example.toLowerCase()
+              const matches = (
+                Object.keys(DESIGN_PATTERN_CATALOG) as DesignPattern[]
+              )
+                .filter((id) => {
+                  const info = DESIGN_PATTERN_CATALOG[id]
+                  return (
+                    id.toLowerCase().includes(normalized) ||
+                    info.name.toLowerCase().includes(normalized) ||
+                    info.intent.toLowerCase().includes(normalized) ||
+                    info.useCases.some((uc) =>
+                      uc.toLowerCase().includes(normalized)
+                    )
+                  )
+                })
+                .slice(0, 6)
+              setSuggestions(matches)
             }}
           >
             {example}
@@ -615,19 +722,23 @@ function PatternSuggestionDemo() {
 
       {suggestions.length > 0 && (
         <div className="space-y-3">
-          <h4 className="font-medium">Suggested Patterns ({suggestions.length})</h4>
-          {suggestions.map((suggestion) => (
-            <div key={suggestion.pattern} className="border rounded-lg p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">{suggestion.pattern.replace('_', ' ')}</span>
-                <div className="flex gap-2">
-                  <Badge variant="info">{suggestion.category}</Badge>
-                  <Badge variant="success">Score: {Math.round(suggestion.relevanceScore * 100)}%</Badge>
+          <h4 className="font-medium">
+            Suggested Patterns ({suggestions.length})
+          </h4>
+          {suggestions.map((pattern) => {
+            const info = DESIGN_PATTERN_CATALOG[pattern]
+            return (
+              <div key={pattern} className="border rounded-lg p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium">{info.name}</span>
+                  <div className="flex gap-2">
+                    <Badge variant="info">{info.category}</Badge>
+                  </div>
                 </div>
+                <p className="text-sm text-muted-foreground">{info.intent}</p>
               </div>
-              <p className="text-sm text-muted-foreground">{suggestion.reason}</p>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
@@ -648,14 +759,19 @@ function SecurityFindingDemo() {
   const [findings, setFindings] = useState<SecurityFinding[]>([])
 
   const addFinding = (type: OWASPVulnerability) => {
-    const catalog = OWASP_CATALOG[type]
-    const finding = createSecurityFinding({
+    const vuln = OWASP_VULNERABILITIES[type]
+    const severity: DebtSeverity =
+      type === 'A03_INJECTION' || type === 'A01_BROKEN_ACCESS_CONTROL'
+        ? 'critical'
+        : 'high'
+
+    const finding = createSecurityFinding(
       type,
-      severity: catalog.severity,
-      description: `Potential ${catalog.name.toLowerCase()} vulnerability detected`,
-      location: 'src/api/handler.ts:42',
-      recommendation: catalog.mitigations[0],
-    })
+      severity,
+      `Potential ${vuln.name.toLowerCase()} issue detected`,
+      vuln.recommendations[0] ?? 'Review and remediate',
+      { location: 'src/api/handler.ts:42' }
+    )
     setFindings((prev) => [...prev, finding])
   }
 
@@ -663,10 +779,15 @@ function SecurityFindingDemo() {
 
   return (
     <Card className="p-6 max-w-4xl">
-      <h3 className="text-lg font-semibold mb-4">Security Findings Generator</h3>
+      <h3 className="text-lg font-semibold mb-4">
+        Security Findings Generator
+      </h3>
 
       <div className="flex gap-2 mb-4 flex-wrap">
-        <Button size="sm" onClick={() => addFinding('A01_BROKEN_ACCESS_CONTROL')}>
+        <Button
+          size="sm"
+          onClick={() => addFinding('A01_BROKEN_ACCESS_CONTROL')}
+        >
           Add Access Control
         </Button>
         <Button size="sm" onClick={() => addFinding('A03_INJECTION')}>
@@ -683,7 +804,13 @@ function SecurityFindingDemo() {
       <div className="flex items-center gap-4 mb-4">
         <span className="text-sm font-medium">Risk Score:</span>
         <Badge
-          variant={riskScore > 70 ? 'destructive' : riskScore > 40 ? 'warning' : 'success'}
+          variant={
+            riskScore > 70
+              ? 'destructive'
+              : riskScore > 40
+                ? 'warning'
+                : 'success'
+          }
           className="text-lg px-3 py-1"
         >
           {riskScore}/100
@@ -698,14 +825,19 @@ function SecurityFindingDemo() {
                 <span className="font-medium text-sm">{finding.type}</span>
                 <Badge
                   variant={
-                    finding.severity === 'critical' ? 'destructive' :
-                    finding.severity === 'high' ? 'warning' : 'secondary'
+                    finding.severity === 'critical'
+                      ? 'destructive'
+                      : finding.severity === 'high'
+                        ? 'warning'
+                        : 'secondary'
                   }
                 >
                   {finding.severity}
                 </Badge>
               </div>
-              <p className="text-sm text-muted-foreground">{finding.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {finding.description}
+              </p>
               {finding.location && (
                 <p className="text-xs font-mono mt-1">{finding.location}</p>
               )}

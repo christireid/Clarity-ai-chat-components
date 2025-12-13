@@ -1,0 +1,110 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { ComponentHeader, FeatureGrid, StatusBadge } from '../../.storybook/blocks'
+
+<Meta title="Welcome/What's New" />
+
+<div className="max-w-6xl mx-auto">
+  <ComponentHeader
+    title="What's New"
+    status="stable"
+    description="A quick tour of the Storybook upgrades and the library highlights that make Clarity Chat feel premium, polished, and joyful to use."
+  />
+
+  <div className="mb-10 p-6 rounded-2xl border-2 border-border bg-gradient-to-br from-brand-50 via-white to-purple-50 dark:from-brand-950 dark:via-gray-950 dark:to-purple-950">
+    <div className="flex flex-wrap items-center gap-3">
+      <StatusBadge status="stable" />
+      <span className="text-sm font-semibold text-brand-700 dark:text-brand-300">
+        Docs-first navigation • Theme presets • Tested interactions • Modern React
+      </span>
+    </div>
+    <p className="mt-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+      This Storybook is designed to be a "wow" moment: clean information architecture, beautiful defaults,
+      practical examples, and real-world patterns. Everything you see here is meant to be copied into production.
+    </p>
+  </div>
+
+  <FeatureGrid
+    columns={3}
+    features={[
+      {
+        title: 'Guided navigation',
+        description:
+          'A curated sidebar structure with overview pages for each section so you can find anything in a few clicks.',
+        icon: <span className="text-xl">🧭</span>,
+      },
+      {
+        title: 'Theme presets in every story',
+        description:
+          'Switch modes and presets globally to validate contrast, spacing, and brand consistency instantly.',
+        icon: <span className="text-xl">🎨</span>,
+      },
+      {
+        title: 'Realistic, copy-pastable examples',
+        description:
+          'Stories use believable data and UX states (loading, error, streaming) so you can ship with confidence.',
+        icon: <span className="text-xl">🧩</span>,
+      },
+      {
+        title: 'Performance-minded demos',
+        description:
+          'Virtualized lists, long conversations, and streaming examples that stay smooth under real workloads.',
+        icon: <span className="text-xl">⚡</span>,
+      },
+      {
+        title: 'Accessibility baked in',
+        description:
+          'Keyboard navigation, focus styles, and semantic markup are treated as first-class features.',
+        icon: <span className="text-xl">♿</span>,
+      },
+      {
+        title: 'Docs that feel like a product',
+        description:
+          'Custom blocks, polished typography, and scannable structure so the library looks and feels premium.',
+        icon: <span className="text-xl">✨</span>,
+      },
+    ]}
+  />
+
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 my-10">
+    <a
+      href="?path=/docs/welcome-introduction--docs"
+      className="block p-6 rounded-2xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+    >
+      <div className="text-2xl mb-2">🌟</div>
+      <div className="font-semibold">Start with the Introduction</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        The best overview of what Clarity Chat is and why it exists.
+      </div>
+    </a>
+
+    <a
+      href="?path=/docs/welcome-getting-started--docs"
+      className="block p-6 rounded-2xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+    >
+      <div className="text-2xl mb-2">🚀</div>
+      <div className="font-semibold">Get set up in minutes</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        Installation, ThemeProvider wiring, and your first chat window.
+      </div>
+    </a>
+
+    <a
+      href="?path=/story/welcome-playground--interactive-chat"
+      className="block p-6 rounded-2xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+    >
+      <div className="text-2xl mb-2">🧪</div>
+      <div className="font-semibold">Play in the Playground</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        A safe sandbox to experiment with composition and themes.
+      </div>
+    </a>
+  </div>
+
+  <div className="p-6 rounded-2xl border-2 border-border bg-gray-50 dark:bg-gray-950">
+    <h2 className="text-xl font-bold m-0">Coming Next</h2>
+    <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+      We’ll keep tightening the story set by adding more interaction tests and showcasing more end-to-end patterns
+      (streaming, tool calls, and memory) as the library evolves.
+    </p>
+  </div>
+</div>

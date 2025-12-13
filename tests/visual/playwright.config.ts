@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
   testDir: './specs',
+  // Keep baselines and diffs in stable, CI-friendly locations
+  snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+  outputDir: '__diff_output__',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
