@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import { Send, Bot, User, Sparkles, Zap, Code, Palette, Wand2, RefreshCw, AlertCircle } from 'lucide-react'
 import { useAutoScroll, useStreaming, TypingIndicator } from '@clarity-chat/react'
 import { motion, AnimatePresence } from 'framer-motion'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { CodeBlock } from '../MDX/CodeBlock'
 
 interface Message {
@@ -35,128 +37,15 @@ const SUGGESTIONS = [
 ]
 
 /**
- * Enhanced Markdown renderer for the demo
- * Handles code blocks, basic formatting, and lists
+ * Memoized Markdown component using react-markdown
+ * This replaces the custom regex parser for robust Markdown support
  */
-function MarkdownRenderer({ content }: { content: string }) {
-  // Memoize parsing to avoid expensive regex on every render
-  const parts = useMemo(() => {
-    // Regex for code blocks: ```lang ... ```
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
-    const result = []
-    let lastIndex = 0
-    let match
-
-    while ((match = codeBlockRegex.exec(content)) !== null) {
-      // Add text before code block
-      if (match.index > lastIndex) {
-        result.push({
-          type: 'text',
-          content: content.slice(lastIndex, match.index)
-        })
-      }
-
-      // Add code block
-      result.push({
-        type: 'code',
-        language: match[1] || 'typescript',
-        content: match[2].trim()
-      })
-
-      lastIndex = match.index + match[0].length
-    }
-
-    // Add remaining text
-    if (lastIndex < content.length) {
-      result.push({
-        type: 'text',
-        content: content.slice(lastIndex)
-      })
-    }
-
-    return result
-  }, [content])
-
-  return (
-    <div className="space-y-3">
-      {parts.map((part, idx) => {
-        if (part.type === 'code') {
-          return (
-            <div key={idx} className="my-3 not-prose w-full overflow-hidden rounded-md">
-              <CodeBlock
-                code={part.content}
-                language={part.language}
-                className="!my-0 !shadow-none border border-border/50 text-xs"
-              />
-            </div>
-          )
-        }
-
-        // Handle paragraphs and lists
-        const paragraphs = part.content.split('\n\n')
-        return paragraphs.map((paragraph, pIdx) => {
-          if (!paragraph.trim()) return null
-
-          // Check for unordered lists (simple implementation)
-          if (paragraph.match(/^(\s*[-*] .+(\n|$))+/)) {
-            const listItems = paragraph.split('\n').filter(line => line.trim().match(/^[-*] /))
-            return (
-              <ul key={`${idx}-${pIdx}`} className="list-disc pl-5 space-y-1 my-2">
-                {listItems.map((item, liIdx) => (
-                  <li key={liIdx} className="pl-1">
-                    <InlineText text={item.replace(/^[-*] /, '')} />
-                  </li>
-                ))}
-              </ul>
-            )
-          }
-
-          return (
-            <p key={`${idx}-${pIdx}`} className="leading-relaxed whitespace-pre-wrap">
-              <InlineText text={paragraph} />
-            </p>
-          )
-        })
-      })}
-    </div>
-  )
-}
-
-/**
- * Component to handle inline markdown formatting (bold, code)
- */
-function InlineText({ text }: { text: string }) {
-  // Simple parser for **bold** and `code`
-  // We split by code first, then bold
-  const segments = text.split(/(`[^`]+`)/g)
-  
-  return (
-    <>
-      {segments.map((segment, i) => {
-        if (segment.startsWith('`') && segment.endsWith('`')) {
-          return (
-            <code key={i} className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono text-xs text-brand-600 dark:text-brand-400 break-words">
-              {segment.slice(1, -1)}
-            </code>
-          )
-        }
-        
-        // Split remaining text by bold
-        const subSegments = segment.split(/(\*\*[^*]+\*\*)/g)
-        return subSegments.map((sub, j) => {
-          if (sub.startsWith('**') && sub.endsWith('**')) {
-            return (
-              <strong key={`${i}-${j}`} className="font-semibold text-brand-700 dark:text-brand-300">
-                {sub.slice(2, -2)}
-              </strong>
-            )
-          }
-          return sub
-        })
-      })}
-    </>
-  )
-}
+const MemoizedReactMarkdown = memo(
+  ReactMarkdown,
+  (prevProps, nextProps) =>
+    prevProps.children === nextProps.children &&
+    prevProps.className === nextProps.className
+)
 
 export function LiveChatDemo() {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
@@ -428,7 +317,52 @@ export function LiveChatDemo() {
                   <div className="text-sm">
                     {message.sender === 'bot' ? (
                       <>
-                        <MarkdownRenderer content={message.text} />
+                        <div className="markdown-body">
+                          <MemoizedReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              code({ node, className, children, ...props }: any) {
+                                const match = /language-(\w+)/.exec(className || '')
+                                const isInline = !match && !String(children).includes('\n')
+                                
+                                if (!isInline) {
+                                  return (
+                                    <div className="my-3 not-prose w-full overflow-hidden rounded-md">
+                                      <CodeBlock
+                                        code={String(children).replace(/\n$/, '')}
+                                        language={match ? match[1] : 'typescript'}
+                                        className="!my-0 !shadow-none border border-border/50 text-xs"
+                                      />
+                                    </div>
+                                  )
+                                }
+                                return (
+                                  <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono text-xs text-brand-600 dark:text-brand-400 break-words" {...props}>
+                                    {children}
+                                  </code>
+                                )
+                              },
+                              // Style other markdown elements
+                              p: ({ children }) => <p className="leading-relaxed whitespace-pre-wrap mb-2 last:mb-0">{children}</p>,
+                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 my-2">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 my-2">{children}</ol>,
+                              li: ({ children }) => <li className="pl-1">{children}</li>,
+                              strong: ({ children }) => <strong className="font-semibold text-brand-700 dark:text-brand-300">{children}</strong>,
+                              a: ({ href, children }) => (
+                                <a 
+                                  href={href} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="text-brand-600 dark:text-brand-400 hover:underline"
+                                >
+                                  {children}
+                                </a>
+                              ),
+                            }}
+                          >
+                            {message.text}
+                          </MemoizedReactMarkdown>
+                        </div>
                         {message.isStreaming && (
                           <span className="inline-block w-1.5 h-4 ml-1 bg-brand-500 animate-pulse align-middle" />
                         )}
