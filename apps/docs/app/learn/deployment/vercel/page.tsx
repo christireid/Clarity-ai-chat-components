@@ -143,27 +143,59 @@ export async function POST(req: Request) {
 export const runtime = 'edge'
 
 export async function POST(req: Request) {
-  const { messages } = await req.json()
-  
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages,
-      stream: true
-    })
-  })
-  
-  return new Response(response.body, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache'
+  try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'API key not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
     }
-  })
+
+    const { messages } = await req.json()
+
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': \`Bearer \${apiKey}\`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages,
+        stream: true
+      })
+    })
+
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: 'AI provider error' }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache'
+      }
+    })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
 }`}</code></pre>
 
         <Callout type="info" title="Edge Limitations">

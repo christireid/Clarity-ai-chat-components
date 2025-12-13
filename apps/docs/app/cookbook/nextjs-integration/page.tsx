@@ -107,20 +107,44 @@ import { NextRequest } from 'next/server'
 import { StreamingTextResponse } from 'ai'
 
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json()
+  try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'API key not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
 
-  // Create streaming response
-  const stream = await createChatStream(messages)
+    const { messages } = await req.json()
 
-  return new StreamingTextResponse(stream)
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Create streaming response
+    const stream = await createChatStream(messages, apiKey)
+
+    return new StreamingTextResponse(stream)
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
 }
 
-async function createChatStream(messages: any[]) {
-  // Use OpenAI or other provider
+async function createChatStream(messages: any[], apiKey: string) {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
+      'Authorization': \`Bearer \${apiKey}\`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -129,6 +153,10 @@ async function createChatStream(messages: any[]) {
       stream: true,
     }),
   })
+
+  if (!response.ok) {
+    throw new Error('AI provider error')
+  }
 
   return response.body
 }`}
