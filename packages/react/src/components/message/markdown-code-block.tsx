@@ -174,7 +174,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
     // The wrapping structure (div/pre) is handled by the pre component in message.tsx
     return (
       <code
-        className={cn('block text-sm font-mono', className)}
+        className={cn('block font-mono code-metrics', className)} // Enforce metrics
         // SECURITY: Sanitize HTML output from syntax highlighter to prevent XSS
         dangerouslySetInnerHTML={{
           __html: sanitizeCodeHtml(highlightedCode || codeString),

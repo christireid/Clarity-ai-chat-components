@@ -128,7 +128,7 @@ export function EnhancedCodeBlock({
 
       {/* Code Content */}
       <div className={cn(
-        "relative flex bg-[#1e1e1e] text-[#d4d4d4]", // Hardcode dark background for code area to match Prism theme
+        "relative flex bg-[#1e1e1e] text-[#d4d4d4] code-metrics", // Hardcode dark background for code area to match Prism theme
         // Scrollbar styling
         "scrollbar-thin scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/40"
       )}>
@@ -146,7 +146,7 @@ export function EnhancedCodeBlock({
                 <div
                   key={index}
                   className={cn(
-                    "leading-6 h-6 transition-colors", // Matches Prism default line-height often
+                    "transition-colors",
                     isHighlighted && "text-yellow-500 font-bold"
                   )}
                 >
@@ -161,7 +161,7 @@ export function EnhancedCodeBlock({
         {/* We use MarkdownCodeBlock for highlighting. 
             We pass the `displayedCode`.
             We need to ensure line-height matches the gutter. 
-            Prism default is usually relative. We force it here. 
+            Prism default is usually relative. We force it here via code-metrics class.
         */}
         <div 
           className="flex-1 min-w-0 overflow-x-auto relative"
@@ -176,8 +176,11 @@ export function EnhancedCodeBlock({
                   return (
                     <div 
                       key={index}
-                      className="w-full h-6 bg-yellow-500/10 border-l-2 border-yellow-500 absolute left-0 right-0"
-                      style={{ top: `${index * 1.5}rem` }} // Assuming 1.5rem (24px) line height
+                      className="w-full bg-yellow-500/10 border-l-2 border-yellow-500 absolute left-0 right-0"
+                      style={{ 
+                        top: `calc(${index} * var(--code-line-height) + 1rem)`, // 1rem padding top
+                        height: 'var(--code-line-height)'
+                      }} 
                     />
                   )
                })}
@@ -192,8 +195,6 @@ export function EnhancedCodeBlock({
            >
              <MarkdownCodeBlock 
                className={`language-${detectedLanguage}`}
-               // Force line-height to align with gutter
-               style={{ lineHeight: '1.5rem', fontSize: '14px' }}
              >
                {displayedCode}
              </MarkdownCodeBlock>

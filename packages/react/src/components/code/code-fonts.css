@@ -3,10 +3,6 @@
  *
  * Premium monospace fonts for code display.
  * Includes Fira Code (with ligatures), JetBrains Mono, and Source Code Pro.
- *
- * Usage:
- * - Import this CSS file in your app entry point or tailwind config
- * - Or use the font-face declarations if bundling fonts locally
  */
 
 /* ============================================================================
@@ -21,6 +17,21 @@
 
 /* Source Code Pro - Clean, no ligatures */
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap');
+
+/* ============================================================================
+   Variables & Metrics
+   ============================================================================ */
+
+:root {
+  --code-font-size: 14px;
+  --code-line-height: 1.5rem; /* 24px */
+}
+
+/* Class to enforce consistent metrics across code blocks and gutters */
+.code-metrics {
+  font-size: var(--code-font-size);
+  line-height: var(--code-line-height);
+}
 
 /* ============================================================================
    Font Family Utilities
@@ -50,23 +61,15 @@
    Ligature Control
    ============================================================================ */
 
-/* Enable ligatures - for fonts that support them */
 .font-ligatures {
-  font-feature-settings:
-    'liga' 1,
-    'calt' 1,
-    'cv01' 1,
-    'cv02' 1;
+  font-feature-settings: 'liga' 1, 'calt' 1, 'cv01' 1, 'cv02' 1;
   font-variant-ligatures: common-ligatures contextual;
   text-rendering: optimizeLegibility;
 }
 
-/* Disable ligatures - for accessibility or preference */
 .no-ligatures,
 .font-no-ligatures {
-  font-feature-settings:
-    'liga' 0,
-    'calt' 0;
+  font-feature-settings: 'liga' 0, 'calt' 0;
   font-variant-ligatures: none;
 }
 
@@ -76,8 +79,8 @@
 
 .code-block {
   /* Typography defaults */
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: var(--code-font-size);
+  line-height: var(--code-line-height);
   tab-size: 2;
   -moz-tab-size: 2;
 
@@ -148,7 +151,7 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.3); /* gray-400 with opacity */
+  background: rgba(156, 163, 175, 0.3);
   border-radius: 4px;
 }
 
@@ -161,7 +164,7 @@
   scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
 }
 
-/* Original code block scrollbars */
+/* Original code block scrollbars (legacy support) */
 .code-block::-webkit-scrollbar,
 .code-block pre::-webkit-scrollbar,
 .code-block > div::-webkit-scrollbar {
@@ -228,16 +231,6 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-
-  .code-block .animate-pulse {
-    animation: none !important;
-    opacity: 0.7;
-  }
-
-  .code-block .animate-ping {
-    animation: none !important;
-    opacity: 0.5;
-  }
 }
 
 /* ============================================================================
@@ -254,12 +247,6 @@
   .code-block button {
     display: none !important;
   }
-
-  .code-block .code-line.highlighted,
-  .code-block .code-line.diff-add,
-  .code-block .code-line.diff-remove {
-    border-left-width: 2px;
-  }
 }
 
 /* ============================================================================
@@ -267,7 +254,6 @@
    ============================================================================ */
 
 .streaming-code-block[data-streaming='true'] {
-  /* Subtle pulsing border during streaming */
   animation: streaming-border 2s ease-in-out infinite;
 }
 
