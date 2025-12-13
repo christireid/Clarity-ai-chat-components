@@ -2,7 +2,7 @@
 
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { MessageSquare, Palette, Users, FileText, Zap, Command } from 'lucide-react'
+import { MessageSquare, Palette, Users, FileText, Zap, Command, Sparkles, GitBranch, Shield, Eye } from 'lucide-react'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 // Metadata must be exported from a server component, not a client component
@@ -174,6 +174,54 @@ export default function ExamplesPage() {
             Explore interactive examples and learn by doing. All examples include full
             source code and are ready to copy and customize.
           </p>
+        </ScrollReveal>
+
+        {/* Featured Demo */}
+        <ScrollReveal delay={0.1}>
+          <Link
+            href="/examples/tool-calling-showcase"
+            className="group block mb-12 p-6 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-amber-500/10 border-2 border-purple-300 dark:border-purple-700 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-xl hover:shadow-purple-500/10 transition-all"
+          >
+            <div className="flex items-start gap-4 mb-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl shadow-lg shadow-purple-500/25">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full">
+                    FEATURED
+                  </span>
+                  <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300 rounded-full">
+                    New
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                  Advanced Tool Calling Showcase
+                </h2>
+                <p className="text-text-secondary mt-1">
+                  Watch the AI orchestrate multiple tools, render interactive UI components, and request approval for critical actions.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5">
+                <GitBranch className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-medium">Tool Chains</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5">
+                <Zap className="w-4 h-4 text-green-500" />
+                <span className="text-sm font-medium">Generative UI</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5">
+                <Shield className="w-4 h-4 text-amber-500" />
+                <span className="text-sm font-medium">Human-in-Loop</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5">
+                <Eye className="w-4 h-4 text-blue-500" />
+                <span className="text-sm font-medium">Glass Box Debug</span>
+              </div>
+            </div>
+          </Link>
         </ScrollReveal>
 
         <div className="grid gap-12">
