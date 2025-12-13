@@ -7,6 +7,7 @@ import rehypeHighlight from 'rehype-highlight'
 import { cn } from '@clarity-chat/primitives'
 import { CopyButton } from '../copy-button'
 import { MarkdownCodeBlock } from './markdown-code-block'
+import { DownloadIcon, WrapTextIcon } from '../icons'
 
 // ============================================================================
 // Types
@@ -43,30 +44,106 @@ function extractTextFromNode(node: React.ReactNode): string {
 }
 
 // ============================================================================
+// Internal Components
+// ============================================================================
+
+interface PreBlockProps extends React.HTMLAttributes<HTMLPreElement> {
+  node?: unknown
+}
+
+function PreBlock({ children, ...props }: PreBlockProps) {
+  const [wrapText, setWrapText] = React.useState(false)
+  
+  // Extract code string from the code element for copy/download
+  const codeString = React.useMemo(() => {
+    let text = ''
+    React.Children.forEach(children, (child) => {
+      if (React.isValidElement(child) && child.props) {
+        const childProps = child.props as Record<string, unknown>
+        text = (childProps['data-code-string'] as string) || ''
+        if (!text && childProps.children) {
+          text = extractTextFromNode(childProps.children as React.ReactNode)
+        }
+      }
+    })
+    return text.replace(/\n$/, '')
+  }, [children])
+
+  const handleDownload = () => {
+    const blob = new Blob([codeString], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'snippet.txt' // We could try to detect extension from class but simpler for now
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="relative group/code my-6 rounded-xl border border-border shadow-sm overflow-hidden bg-[#1e1e1e]">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-2.5 bg-[#252526] border-b border-[#333]">
+        <div className="flex items-center gap-1.5 opacity-70 group-hover/code:opacity-100 transition-opacity">
+          <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
+          <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
+          <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
+        </div>
+        
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setWrapText(!wrapText)}
+            className={cn(
+              "p-1.5 rounded-md transition-colors",
+              wrapText ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-white/10"
+            )}
+            title="Toggle word wrap"
+          >
+            <WrapTextIcon size={16} />
+          </button>
+
+          <button
+            onClick={handleDownload}
+            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/10 rounded-md transition-colors"
+            title="Download code"
+          >
+            <DownloadIcon size={16} />
+          </button>
+
+          {codeString && (
+            <CopyButton
+              text={codeString}
+              iconOnly
+              className="w-7 h-7"
+            />
+          )}
+        </div>
+      </div>
+
+      <pre
+        className={cn(
+          "relative overflow-x-auto !m-0 !p-4 !bg-transparent font-fira-code",
+          wrapText ? "whitespace-pre-wrap break-all" : "whitespace-pre"
+        )}
+        {...props}
+      >
+        {children}
+      </pre>
+    </div>
+  )
+}
+
+// ============================================================================
 // Hook: useMarkdownPlugins
 // ============================================================================
 
 /**
  * Returns memoized remark and rehype plugin arrays for react-markdown.
- *
- * @returns Object containing remarkPlugins and rehypePlugins arrays
- *
- * @example
- * ```tsx
- * const { remarkPlugins, rehypePlugins } = useMarkdownPlugins()
- * <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
- *   {content}
- * </ReactMarkdown>
- * ```
  */
 export function useMarkdownPlugins() {
-  // Memoize plugin arrays to avoid recreation on every render
   const remarkPlugins = React.useMemo(() => [remarkGfm], [])
 
-  // rehypeHighlight has type incompatibilities due to vfile version mismatches across
-  // the unified ecosystem. This is a known upstream issue. We use a readonly tuple
-  // assertion to preserve the plugin reference while satisfying the type checker.
-  // See: https://github.com/rehypejs/rehype-highlight/issues/26
   const rehypePlugins = React.useMemo(
     () => [rehypeHighlight] as readonly [typeof rehypeHighlight],
     []
@@ -81,15 +158,6 @@ export function useMarkdownPlugins() {
 
 /**
  * Returns memoized custom component overrides for react-markdown.
- * Includes styled code blocks, tables, paragraphs, and more.
- *
- * @returns Partial<Components> object for react-markdown's components prop
- *
- * @example
- * ```tsx
- * const components = useMarkdownComponents()
- * <ReactMarkdown components={components}>{content}</ReactMarkdown>
- * ```
  */
 export function useMarkdownComponents(): Partial<Components> {
   return React.useMemo<Partial<Components>>(() => {
@@ -101,61 +169,24 @@ export function useMarkdownComponents(): Partial<Components> {
     return {
       code: CodeWrapper,
 
-      // Custom pre handler - wrap code blocks with styling and copy button
-      pre: ({
-        children,
-        ...props
-      }: React.HTMLAttributes<HTMLPreElement> & { node?: unknown }) => {
-        // Extract code string from the code element for copy button
-        let codeString = ''
-        React.Children.forEach(children, (child) => {
-          if (React.isValidElement(child) && child.props) {
-            const childProps = child.props as Record<string, unknown>
-            codeString = (childProps['data-code-string'] as string) || ''
-            if (!codeString && childProps.children) {
-              codeString = extractTextFromNode(
-                childProps.children as React.ReactNode
-              )
-            }
-          }
-        })
+      // Custom pre handler
+      pre: (props) => <PreBlock {...props} />,
 
-        return (
-          <div className="relative group/code my-4">
-            <pre
-              className="relative overflow-x-auto bg-muted/50 border border-border rounded-lg p-4"
-              {...props}
-            >
-              {children}
-            </pre>
-            {codeString && (
-              <CopyButton
-                text={codeString}
-                iconOnly
-                className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
-              />
-            )}
-          </div>
-        )
-      },
-
-      // Always use div for paragraphs to prevent hydration mismatches.
-      // The <p> element cannot contain block elements, and detecting them
-      // reliably across server/client is problematic.
+      // Paragraphs
       p: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
         <div className="mb-4 leading-relaxed" {...props}>
           {children}
         </div>
       ),
 
-      // Table components with proper styling
+      // Table components
       table: ({
         children,
         ...props
       }: React.HTMLAttributes<HTMLTableElement>) => (
-        <div className="overflow-x-auto my-4 w-full">
+        <div className="overflow-x-auto my-6 rounded-lg border border-border shadow-sm">
           <table
-            className="min-w-full table-auto border-collapse divide-y divide-border"
+            className="min-w-full table-auto border-collapse divide-y divide-border bg-card"
             {...props}
           >
             {children}
@@ -167,7 +198,7 @@ export function useMarkdownComponents(): Partial<Components> {
         children,
         ...props
       }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-        <thead className="bg-muted" {...props}>
+        <thead className="bg-muted/50" {...props}>
           {children}
         </thead>
       ),
@@ -186,7 +217,7 @@ export function useMarkdownComponents(): Partial<Components> {
         ...props
       }: React.HTMLAttributes<HTMLTableCellElement>) => (
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
+          className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider"
           {...props}
         >
           {children}
@@ -197,7 +228,7 @@ export function useMarkdownComponents(): Partial<Components> {
         children,
         ...props
       }: React.HTMLAttributes<HTMLTableCellElement>) => (
-        <td className="px-6 py-4 text-sm border border-border" {...props}>
+        <td className="px-6 py-4 text-sm border-t border-border/50 text-card-foreground" {...props}>
           {children}
         </td>
       ),
@@ -210,6 +241,29 @@ export function useMarkdownComponents(): Partial<Components> {
           {children}
         </tr>
       ),
+      
+      // Blockquotes
+      blockquote: ({ children, ...props }: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) => (
+        <blockquote
+          className="border-l-4 border-primary/30 pl-4 my-6 italic text-muted-foreground bg-muted/20 py-2 rounded-r-lg"
+          {...props}
+        >
+          {children}
+        </blockquote>
+      ),
+      
+      // Links
+      a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+        <a
+          href={href}
+          className="font-medium text-primary hover:text-primary/80 underline decoration-primary/30 hover:decoration-primary transition-all"
+          target={href?.startsWith('http') ? '_blank' : undefined}
+          rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+          {...props}
+        >
+          {children}
+        </a>
+      ),
     }
   }, [])
 }
@@ -218,37 +272,6 @@ export function useMarkdownComponents(): Partial<Components> {
 // Component: MessageMarkdownRenderer
 // ============================================================================
 
-/**
- * MessageMarkdownRenderer - Renders markdown content with syntax highlighting
- *
- * A dedicated component for rendering markdown in chat messages. Extracts the
- * complex markdown rendering logic from the Message component for better
- * maintainability and testability.
- *
- * Features:
- * - GitHub Flavored Markdown (tables, strikethrough, etc.)
- * - Syntax highlighting for code blocks
- * - Copy button on code blocks
- * - Responsive tables with horizontal scroll
- * - Streaming cursor support
- *
- * @param props - Component props
- * @param props.content - The markdown string to render
- * @param props.isStreaming - Whether content is still being streamed
- * @param props.className - Additional CSS classes
- *
- * @example
- * ```tsx
- * // Basic usage
- * <MessageMarkdownRenderer content={message.content} />
- *
- * // With streaming indicator
- * <MessageMarkdownRenderer
- *   content={partialContent}
- *   isStreaming={true}
- * />
- * ```
- */
 export function MessageMarkdownRenderer({
   content,
   isStreaming = false,

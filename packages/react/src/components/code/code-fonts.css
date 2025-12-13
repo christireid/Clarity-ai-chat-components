@@ -30,12 +30,14 @@
   font-family:
     'Fira Code', 'Fira Code VF', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
     Consolas, 'Liberation Mono', monospace;
+  font-variant-ligatures: common-ligatures contextual;
 }
 
 .font-jetbrains-mono {
   font-family:
     'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
     'Liberation Mono', monospace;
+  font-variant-ligatures: common-ligatures contextual;
 }
 
 .font-source-code-pro {
@@ -135,6 +137,31 @@
    Scrollbar Styling
    ============================================================================ */
 
+/* Custom thin scrollbar utility */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3); /* gray-400 with opacity */
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+}
+
+/* Original code block scrollbars */
 .code-block::-webkit-scrollbar,
 .code-block pre::-webkit-scrollbar,
 .code-block > div::-webkit-scrollbar {
@@ -221,6 +248,7 @@
   .code-block {
     break-inside: avoid;
     page-break-inside: avoid;
+    border: 1px solid #e5e7eb;
   }
 
   .code-block button {

@@ -11,7 +11,7 @@
 
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -20,6 +20,8 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypeRaw from 'rehype-raw'
 import { cn } from '@clarity-chat/primitives'
+import { CopyButton } from './copy-button'
+import { DownloadIcon, WrapTextIcon } from './icons'
 
 // Import KaTeX CSS
 import 'katex/dist/katex.min.css'
@@ -66,6 +68,22 @@ export interface MarkdownRendererProps {
 // ============================================================================
 
 /**
+ * Recursively extracts text content from React nodes.
+ */
+function extractTextFromNode(node: React.ReactNode): string {
+  if (typeof node === 'string') return node
+  if (typeof node === 'number') return String(node)
+  if (Array.isArray(node)) return node.map(extractTextFromNode).join('')
+  if (React.isValidElement(node)) {
+    const nodeProps = node.props as { children?: React.ReactNode }
+    if (nodeProps?.children) {
+      return extractTextFromNode(nodeProps.children)
+    }
+  }
+  return ''
+}
+
+/**
  * Enhanced code block with copy button and line numbers
  */
 interface CodeBlockProps extends React.HTMLAttributes<HTMLElement> {
@@ -84,77 +102,110 @@ function CodeBlock({
   enableCopy = true,
   ...props
 }: CodeBlockProps) {
-  const [copied, setCopied] = React.useState(false)
+  const [wrapText, setWrapText] = useState(false)
+  
   const match = /language-(\w+)/.exec(className || '')
   const language = match ? match[1] : ''
-  const code = String(children).replace(/\n$/, '')
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy code:', err)
-    }
+  
+  // Extract clean text for copy/download
+  const codeText = useMemo(() => extractTextFromNode(children).replace(/\n$/, ''), [children])
+  
+  const handleDownload = () => {
+    const blob = new Blob([codeText], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `snippet.${language || 'txt'}`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   if (inline) {
     return (
-      <code className={cn('px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm font-mono', className)} {...props}>
+      <code className={cn('px-1.5 py-0.5 rounded-md bg-muted text-sm font-mono text-pink-500 dark:text-pink-400', className)} {...props}>
         {children}
       </code>
     )
   }
 
-  const lines = code.split('\n')
+  const lineCount = codeText.split('\n').length
 
   return (
-    <div className="relative group my-4">
-      {/* Language badge and copy button */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 rounded-t-lg">
-        {language && (
-          <span className="text-xs font-semibold text-gray-300 uppercase">
-            {language}
-          </span>
-        )}
-        {enableCopy && (
+    <div className="relative group my-6 rounded-xl overflow-hidden border border-border shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
+        {/* Mac-style Window Controls & Language */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
+            <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
+          </div>
+          
+          {language && (
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {language}
+            </span>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-1">
           <button
-            onClick={handleCopy}
+            onClick={() => setWrapText(!wrapText)}
             className={cn(
-              'px-3 py-1 text-xs font-medium rounded transition-colors',
-              copied
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              "p-1.5 rounded-md transition-colors",
+              wrapText ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
             )}
-            aria-label="Copy code"
+            title="Toggle word wrap"
           >
-            {copied ? '✓ Copied!' : 'Copy'}
+            <WrapTextIcon size={16} />
           </button>
-        )}
+
+          <button
+            onClick={handleDownload}
+            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+            title="Download code"
+          >
+            <DownloadIcon size={16} />
+          </button>
+
+          {enableCopy && (
+            <CopyButton
+              text={codeText}
+              iconOnly
+              className="w-7 h-7"
+            />
+          )}
+        </div>
       </div>
 
-      {/* Code content */}
-      <pre className="!mt-0 !rounded-t-none overflow-x-auto">
-        <code className={className} {...props}>
-          {showLineNumbers ? (
-            <table className="w-full">
-              <tbody>
-                {lines.map((line, i) => (
-                  <tr key={i}>
-                    <td className="pr-4 text-right text-gray-500 select-none border-r border-gray-700">
-                      {i + 1}
-                    </td>
-                    <td className="pl-4">{line || '\n'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            children
+      {/* Code Content */}
+      <div className="relative bg-[#1e1e1e] dark:bg-[#1e1e1e] bg-slate-950">
+        <div className="flex">
+          {showLineNumbers && (
+            <div className="flex-none py-4 px-3 text-right select-none border-r border-white/10 bg-white/5 text-[#858585] text-xs font-mono min-w-[3rem]">
+              {Array.from({ length: lineCount }).map((_, i) => (
+                <div key={i} className="leading-6 h-6">{i + 1}</div>
+              ))}
+            </div>
           )}
-        </code>
-      </pre>
+          
+          <pre className={cn(
+            "!m-0 !p-4 !bg-transparent overflow-x-auto flex-1 font-fira-code",
+            wrapText ? "whitespace-pre-wrap break-all" : "whitespace-pre"
+          )}>
+            <code 
+              className={cn("block text-sm leading-6", className)} 
+              {...props}
+            >
+              {children}
+            </code>
+          </pre>
+        </div>
+      </div>
     </div>
   )
 }
@@ -225,14 +276,10 @@ export function MarkdownRendererEnhanced({
   }, [enableGFM, enableMath])
 
   // Build rehype plugins list
-  // react-markdown v10 supports async plugins (available since v9.1.0)
-  // We can use async loading for heavy plugins like rehypeHighlight to improve initial load
   const rehypePlugins = useMemo(() => {
     const plugins: any[] = []
     if (allowHtml) plugins.push(rehypeRaw)
     if (enableHighlight) {
-      // Use async plugin loading for rehypeHighlight (heavy dependency)
-      // This defers loading until needed, improving initial bundle size
       plugins.push(async () => {
         const { default: rehypeHighlight } = await import('rehype-highlight')
         return rehypeHighlight
@@ -242,57 +289,53 @@ export function MarkdownRendererEnhanced({
     return plugins
   }, [allowHtml, enableHighlight, enableMath])
 
-  // Custom component overrides - using proper Types from react-markdown v10
+  // Custom component overrides
   const components = useMemo<Partial<Components>>(() => ({
     code: ({ className, children, inline, ...props }: React.HTMLAttributes<HTMLElement> & { inline?: boolean }) => {
-      // Extract language from className (format: "language-js")
       const match = /language-(\w+)/.exec(className || '')
       const language = match ? match[1] : undefined
       
-      // Inline code (no language)
       if (inline || !language) {
         return (
-          <code className={cn('px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm font-mono', className)} {...props}>
+          <code className={cn('px-1.5 py-0.5 rounded-md bg-muted text-sm font-mono text-pink-500 dark:text-pink-400', className)} {...props}>
             {children}
           </code>
         )
       }
       
-      // Code block with language - extract from className
-      const codeString = String(children).replace(/\n$/, '')
       return (
         <CodeBlock
           className={className}
           showLineNumbers={showLineNumbers}
           enableCopy={enableCodeCopy}
         >
-          {codeString}
+          {children}
         </CodeBlock>
       )
     },
     // Table styling
     table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
-      <div className="overflow-x-auto my-4">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" {...props}>
+      <div className="overflow-x-auto my-6 rounded-lg border border-border shadow-sm">
+        <table className="min-w-full divide-y divide-border bg-card" {...props}>
           {children}
         </table>
       </div>
     ),
     thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-      <thead className="bg-gray-50 dark:bg-gray-800" {...props}>
+      <thead className="bg-muted/50" {...props}>
         {children}
       </thead>
     ),
     th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
       <th
-        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+        className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider"
         {...props}
       >
         {children}
       </th>
     ),
     td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" {...props}>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-card-foreground border-t border-border/50" {...props}>
         {children}
       </td>
     ),
@@ -300,7 +343,7 @@ export function MarkdownRendererEnhanced({
     a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
       <a
         href={href}
-        className="text-blue-600 dark:text-blue-400 hover:underline"
+        className="font-medium text-primary hover:text-primary/80 underline decoration-primary/30 hover:decoration-primary transition-all"
         target={href?.startsWith('http') ? '_blank' : undefined}
         rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
         {...props}
@@ -311,29 +354,48 @@ export function MarkdownRendererEnhanced({
     // Blockquote styling
     blockquote: ({ children, ...props }: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) => (
       <blockquote
-        className="border-l-4 border-gray-300 dark:border-gray-700 pl-4 my-4 italic text-gray-700 dark:text-gray-300"
+        className="border-l-4 border-primary/30 pl-4 my-6 italic text-muted-foreground bg-muted/20 py-2 rounded-r-lg"
         {...props}
       >
         {children}
       </blockquote>
     ),
-    // Heading IDs for anchor links
+    // Heading styling
     h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-      <h1 className="text-3xl font-bold mt-6 mb-4" {...props}>
+      <h1 className="text-3xl font-bold mt-8 mb-4 tracking-tight text-foreground border-b pb-2 border-border" {...props}>
         {children}
       </h1>
     ),
     h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-      <h2 className="text-2xl font-bold mt-5 mb-3" {...props}>
+      <h2 className="text-2xl font-bold mt-8 mb-4 tracking-tight text-foreground" {...props}>
         {children}
       </h2>
     ),
     h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-      <h3 className="text-xl font-bold mt-4 mb-2" {...props}>
+      <h3 className="text-xl font-semibold mt-6 mb-3 tracking-tight text-foreground" {...props}>
         {children}
       </h3>
     ),
-    // Merge custom components
+    // List styling
+    ul: ({ children, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
+      <ul className="list-disc list-outside ml-6 my-4 text-foreground/90 space-y-1" {...props}>
+        {children}
+      </ul>
+    ),
+    ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
+      <ol className="list-decimal list-outside ml-6 my-4 text-foreground/90 space-y-1" {...props}>
+        {children}
+      </ol>
+    ),
+    li: ({ children, ...props }: React.HTMLAttributes<HTMLLIElement>) => (
+      <li className="pl-1" {...props}>
+        {children}
+      </li>
+    ),
+    // Horizontal Rule
+    hr: ({ ...props }: React.HTMLAttributes<HTMLHRElement>) => (
+      <hr className="my-8 border-border" {...props} />
+    ),
     ...customComponents,
   }), [showLineNumbers, enableCodeCopy, customComponents])
 
