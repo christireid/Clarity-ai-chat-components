@@ -55,7 +55,16 @@ class StateManagerImpl implements ExtensionStateManager {
   }
 
   clear(): void {
+    // Notify all subscribers before clearing
+    const keys = Array.from(this.state.keys())
     this.state.clear()
+    keys.forEach((key) => this.notifySubscribers(key, undefined))
+  }
+
+  /** Clean up all subscribers to prevent memory leaks */
+  dispose(): void {
+    this.state.clear()
+    this.subscribers.clear()
   }
 
   subscribe(key: string, callback: (value: unknown) => void): () => void {
@@ -173,6 +182,12 @@ class EventEmitterImpl implements ExtensionEventEmitter {
     this.handlers.delete(event)
     this.onceHandlers.delete(event)
   }
+
+  /** Clean up all handlers to prevent memory leaks */
+  dispose(): void {
+    this.handlers.clear()
+    this.onceHandlers.clear()
+  }
 }
 
 // ============================================
@@ -205,31 +220,46 @@ class ServiceContainerImpl implements ExtensionServiceContainer {
 // Storage Implementation
 // ============================================
 
+/** Sanitize storage key to prevent injection attacks */
+function sanitizeStorageKey(key: string): string {
+  // Only allow alphanumeric, dashes, underscores, and dots
+  return key.replace(/[^a-zA-Z0-9\-_.]/g, '_')
+}
+
+/** Safely parse JSON with error handling */
+function safeJsonParse<T>(value: string): T | undefined {
+  try {
+    return JSON.parse(value) as T
+  } catch {
+    return undefined
+  }
+}
+
 class StorageImpl implements ExtensionStorage {
   private prefix: string
   private inMemoryFallback = new Map<string, unknown>()
   private useLocalStorage: boolean
 
   constructor(extensionId: string) {
-    this.prefix = `clarity-ext:${extensionId}:`
+    // Sanitize extension ID to prevent storage key injection
+    const safeId = sanitizeStorageKey(extensionId)
+    this.prefix = `clarity-ext:${safeId}:`
     this.useLocalStorage = typeof localStorage !== 'undefined'
   }
 
   async get<T>(key: string): Promise<T | undefined> {
-    const fullKey = this.prefix + key
+    const safeKey = sanitizeStorageKey(key)
+    const fullKey = this.prefix + safeKey
     if (this.useLocalStorage) {
-      try {
-        const value = localStorage.getItem(fullKey)
-        return value ? JSON.parse(value) : undefined
-      } catch {
-        return undefined
-      }
+      const value = localStorage.getItem(fullKey)
+      return value ? safeJsonParse<T>(value) : undefined
     }
     return this.inMemoryFallback.get(fullKey) as T | undefined
   }
 
   async set<T>(key: string, value: T): Promise<void> {
-    const fullKey = this.prefix + key
+    const safeKey = sanitizeStorageKey(key)
+    const fullKey = this.prefix + safeKey
     if (this.useLocalStorage) {
       try {
         localStorage.setItem(fullKey, JSON.stringify(value))
@@ -242,7 +272,8 @@ class StorageImpl implements ExtensionStorage {
   }
 
   async delete(key: string): Promise<boolean> {
-    const fullKey = this.prefix + key
+    const safeKey = sanitizeStorageKey(key)
+    const fullKey = this.prefix + safeKey
     if (this.useLocalStorage) {
       const existed = localStorage.getItem(fullKey) !== null
       localStorage.removeItem(fullKey)
@@ -285,6 +316,33 @@ class StorageImpl implements ExtensionStorage {
       }
     })
     return [...new Set(keys)]
+  }
+}
+
+// ============================================
+// ID Validation
+// ============================================
+
+/** Regex for valid extension IDs: alphanumeric, dashes, underscores, dots, and colons */
+const VALID_EXTENSION_ID_REGEX = /^[a-zA-Z][a-zA-Z0-9\-_.:]*$/
+
+/**
+ * Validate extension ID to prevent injection attacks
+ * @throws Error if the ID is invalid
+ */
+function validateExtensionId(id: string): void {
+  if (!id || typeof id !== 'string') {
+    throw new Error('Extension ID must be a non-empty string')
+  }
+
+  if (id.length > 128) {
+    throw new Error('Extension ID must not exceed 128 characters')
+  }
+
+  if (!VALID_EXTENSION_ID_REGEX.test(id)) {
+    throw new Error(
+      'Extension ID must start with a letter and contain only alphanumeric characters, dashes, underscores, dots, or colons'
+    )
   }
 }
 
@@ -403,6 +461,9 @@ export class ExtensionRegistryImpl implements ExtensionRegistry {
   ): Promise<ExtensionRegistration<TConfig>> {
     const { id } = extension.metadata
 
+    // Validate extension ID
+    validateExtensionId(id)
+
     // Check if already registered
     if (this.extensions.has(id)) {
       throw new Error(`Extension "${id}" is already registered`)
@@ -509,6 +570,11 @@ export class ExtensionRegistryImpl implements ExtensionRegistry {
       }
     } catch (error) {
       this.log(`Error disposing extension "${extensionId}":`, error)
+    }
+
+    // Clean up internal resources to prevent memory leaks
+    if (registration.context) {
+      registration.context.state.dispose?.()
     }
 
     // Remove from registry
@@ -699,12 +765,19 @@ export class ExtensionRegistryImpl implements ExtensionRegistry {
   async dispose(): Promise<void> {
     if (this.healthCheckTimer) {
       clearInterval(this.healthCheckTimer)
+      this.healthCheckTimer = undefined
     }
 
     const extensionIds = Array.from(this.extensions.keys())
     for (const id of extensionIds) {
       await this.unregister(id)
     }
+
+    // Clean up global event emitter
+    this.globalEventEmitter.dispose()
+
+    // Clear all registry event handlers
+    this.eventHandlers.clear()
   }
 
   private createContext<TConfig>(

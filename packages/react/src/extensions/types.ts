@@ -194,6 +194,8 @@ export interface ExtensionStateManager {
   subscribe(key: string, callback: (value: unknown) => void): () => void
   /** Get all state as object */
   getAll(): Record<string, unknown>
+  /** Clean up all state and subscribers to prevent memory leaks */
+  dispose?(): void
 }
 
 /**
@@ -220,6 +222,8 @@ export interface ExtensionEventEmitter {
   once(event: string, handler: (data: unknown) => void): () => void
   /** Remove all handlers for an event */
   off(event: string): void
+  /** Clean up all handlers to prevent memory leaks */
+  dispose?(): void
 }
 
 /**
