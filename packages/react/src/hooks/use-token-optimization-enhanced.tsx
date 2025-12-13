@@ -32,7 +32,7 @@ import { calculateCost, type CostCalculation } from '../utils/tokenization/model
 import { PromptCacheManager, createAnthropicCachedMessages, type CacheStats } from '../utils/prompt-caching'
 
 // Import existing utilities
-import { compressPrompt, type CompressionResult } from '../utils/prompt-compression'
+import { type CompressionResult } from '../utils/prompt-compression'
 import { intelligentCompress, type LLMLinguaConfig } from '../utils/llmlingua-compressor'
 import { SmartCache } from '../utils/smart-cache'
 
