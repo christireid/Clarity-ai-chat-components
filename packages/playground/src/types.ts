@@ -2,6 +2,15 @@
  * Type definitions for Clarity Chat Playground
  */
 
+// Re-export iframe protocol types
+export {
+  type LogLevel,
+  type IframeError,
+  type IframeMessage,
+  isIframeMessage,
+  type MessagePayload,
+} from './types/iframe-protocol'
+
 export interface PlaygroundTemplate {
   /** Unique identifier for the template */
   id: string
