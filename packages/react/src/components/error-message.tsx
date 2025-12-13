@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
-import { AlertCircleIcon, AlertTriangleIcon, RefreshIcon, InfoIcon } from './icons'
+import { cn, Button } from '@clarity-chat/primitives'
+import { AlertCircleIcon, AlertTriangleIcon, RefreshIcon, InfoIcon, PlayIcon } from './icons'
 import { RetryButton, type RetryErrorType } from './retry-button'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
@@ -31,6 +31,8 @@ export interface ErrorDetails {
   technicalDetails?: string
   /** Whether retry is available */
   canRetry?: boolean
+  /** Whether the error allows for continuation (e.g. stream interruption) */
+  canContinue?: boolean
   /** Custom retry button text */
   retryButtonText?: string
 }
@@ -43,6 +45,8 @@ export interface ErrorMessageProps {
   error: ErrorDetails | string
   /** Retry callback */
   onRetry?: () => void | Promise<void>
+  /** Continue callback (for interrupted streams) */
+  onContinue?: () => void | Promise<void>
   /** Dismiss callback */
   onDismiss?: () => void
   /** Show technical details toggle */
@@ -140,37 +144,11 @@ function parseError(error: ErrorDetails | string): ErrorDetails {
 
 /**
  * Enhanced Error Message Component
- *
- * Displays user-friendly error messages with:
- * - Clear error explanations
- * - Suggested resolution actions
- * - Retry functionality with exponential backoff
- * - Technical details toggle (optional)
- * - Smooth animations
- * - Accessibility support
- *
- * @example
- * ```tsx
- * <ErrorMessage
- *   error={{
- *     type: 'network',
- *     title: 'Connection Lost',
- *     message: 'Unable to send message',
- *   }}
- *   onRetry={() => retrySendMessage()}
- * />
- *
- * // Compact mode
- * <ErrorMessage
- *   error="Failed to load data"
- *   onRetry={fetchData}
- *   compact
- * />
- * ```
  */
 export function ErrorMessage({
   error,
   onRetry,
+  onContinue,
   onDismiss,
   showTechnicalDetails = false,
   maxRetryAttempts = 3,
@@ -221,7 +199,17 @@ export function ErrorMessage({
       >
         <IconComponent size={16} className={cn(config.iconColor, 'shrink-0')} />
         <span className="text-sm text-foreground/90 flex-1">{errorDetails.message}</span>
-        {errorDetails.canRetry && onRetry && (
+        {errorDetails.canContinue && onContinue ? (
+          <Button
+             size="sm"
+             variant="ghost"
+             onClick={onContinue}
+             className="h-7 px-2 text-xs font-medium gap-1.5 hover:bg-primary/10 hover:text-primary"
+          >
+            <PlayIcon size={12} />
+            Continue
+          </Button>
+        ) : errorDetails.canRetry && onRetry && (
           <button
             onClick={onRetry}
             className="p-1.5 rounded-lg hover:bg-accent/50 transition-colors"
@@ -240,7 +228,6 @@ export function ErrorMessage({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ 
-        // Framer Motion 12: Spring entrance for full error displays
         type: 'spring',
         damping: 25,
         stiffness: 280,
@@ -368,22 +355,31 @@ export function ErrorMessage({
         </div>
       )}
 
-      {/* Retry Button */}
-      {errorDetails.canRetry && onRetry && (
-        <motion.div
-          initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: getMotionSafeDuration(prefersReducedMotion, 0.2) }}
-        >
-          <RetryButton
-            onRetry={onRetry}
-            errorType={errorDetails.type}
-            maxAttempts={maxRetryAttempts}
-            buttonText={errorDetails.retryButtonText}
-            size="sm"
-          />
-        </motion.div>
-      )}
+      {/* Action Buttons */}
+      <motion.div
+        className="flex items-center gap-3 pt-1"
+        initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: getMotionSafeDuration(prefersReducedMotion, 0.2) }}
+      >
+        {errorDetails.canContinue && onContinue ? (
+          <Button
+            onClick={onContinue}
+            className="gap-2"
+          >
+            <PlayIcon size={16} />
+            Continue Generating
+          </Button>
+        ) : errorDetails.canRetry && onRetry && (
+           <RetryButton
+             onRetry={onRetry}
+             errorType={errorDetails.type}
+             maxAttempts={maxRetryAttempts}
+             buttonText={errorDetails.retryButtonText}
+             size="sm"
+           />
+        )}
+      </motion.div>
     </motion.div>
   )
 }

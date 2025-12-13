@@ -8,7 +8,7 @@ import {
   cn,
   type ButtonState,
 } from '@clarity-chat/primitives'
-import { SendIcon } from './icons'
+import { SendIcon, MicIcon, PaperclipIcon, XCircleIcon } from './icons'
 import {
   useRequestDeduplication,
   isDebouncedError,
@@ -18,7 +18,7 @@ import { DURATION_SECONDS } from '../animations/constants'
 export interface ChatInputProps {
   value: string
   onChange: (value: string) => void
-  onSubmit: (value: string) => void | Promise<void>
+  onSubmit: (value: string, attachments?: File[]) => void | Promise<void>
   placeholder?: string
   disabled?: boolean
   /** Maximum character length */
@@ -32,6 +32,10 @@ export interface ChatInputProps {
   /** Enable focus ring glow animation */
   glowOnFocus?: boolean
   className?: string
+  /** Enable file attachments */
+  allowAttachments?: boolean
+  /** Enable voice input */
+  allowVoice?: boolean
 }
 
 /**
@@ -41,98 +45,7 @@ export interface ChatInputProps {
  * **Domain**: Chat UI
  *
  * A composable input component for chat interfaces with character counting,
- * validation, and smooth animations.
- *
- * For drop-in usage, use top-level `ClarityChat` component instead.
- * For custom input rendering, use low-level primitives.
- *
- * @example
- * ```tsx
- * const [input, setInput] = useState('')
- *
- * <ChatInput
- *   value={input}
- *   onChange={setInput}
- *   onSubmit={async (value) => {
- *     await sendMessage(value)
- *     setInput('')
- *   }}
- *   maxLength={1000}
- * />
- * ```
- *
- * A mid-level building block for chat input functionality. Provides a textarea
- * with character counting, validation, animations, and submit handling.
- *
- * **Features:**
- * - Character counter with warning thresholds
- * - Auto-resizing textarea
- * - Smooth animations (height, focus glow)
- * - Keyboard shortcuts (Enter to submit, Shift+Enter for newline)
- * - Disabled state handling
- * - Max length validation
- *
- * **When to use:**
- * - Building custom chat interfaces
- * - Need input with character counting
- * - Want smooth animations
- *
- * **When NOT to use:**
- * - For simplest setup, use `ClarityChat` component (includes input)
- * - For basic text input without chat features, use standard HTML input
- *
- * @param props - ChatInput configuration
- * @param props.value - Current input value (controlled)
- * @param props.onChange - Callback when value changes
- * @param props.onSubmit - Callback when form is submitted (Enter key or button click)
- * @param props.placeholder - Placeholder text (default: 'Type a message...')
- * @param props.disabled - Disable input (default: false)
- * @param props.maxLength - Maximum character length
- * @param props.showCharCounter - Show character counter (default: true if maxLength is set)
- * @param props.warningThreshold - Warning threshold percentage (default: 0.8 = 80%)
- * @param props.animateHeight - Enable smooth expand/contract animation (default: true)
- * @param props.glowOnFocus - Enable focus ring glow animation (default: true)
- * @param props.className - Optional CSS class name
- *
- * @example Basic usage
- * ```tsx
- * function MyChatInput() {
- *   const [value, setValue] = useState('')
- *
- *   return (
- *     <ChatInput
- *       value={value}
- *       onChange={setValue}
- *       onSubmit={(text) => {
- *         sendMessage(text)
- *         setValue('')
- *       }}
- *     />
- *   )
- * }
- * ```
- *
- * @example With character limit
- * ```tsx
- * <ChatInput
- *   value={value}
- *   onChange={setValue}
- *   onSubmit={handleSubmit}
- *   maxLength={500}
- *   showCharCounter
- *   warningThreshold={0.9} // Warn at 90%
- * />
- * ```
- *
- * @example Disabled state
- * ```tsx
- * <ChatInput
- *   value={value}
- *   onChange={setValue}
- *   onSubmit={handleSubmit}
- *   disabled={isLoading}
- * />
- * ```
+ * validation, smooth animations, and support for file attachments and voice input.
  */
 export function ChatInput({
   value,
@@ -146,39 +59,16 @@ export function ChatInput({
   animateHeight = true,
   glowOnFocus = true,
   className,
+  allowAttachments = true,
+  allowVoice = true,
 }: ChatInputProps) {
-  // Development-only runtime validation (removed from production for performance)
-  if (process.env.NODE_ENV === 'development') {
-    if (typeof value !== 'string') {
-      console.error(
-        'ChatInput: "value" prop must be a string.\n\n' +
-          'Example:\n' +
-          '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
-          'For more help, see: https://clarity-chat.dev/docs/components'
-      )
-    }
-
-    if (typeof onChange !== 'function') {
-      console.error(
-        'ChatInput: "onChange" prop must be a function.\n\n' +
-          'Example:\n' +
-          '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
-          'For more help, see: https://clarity-chat.dev/docs/components'
-      )
-    }
-
-    if (typeof onSubmit !== 'function') {
-      console.error(
-        'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
-          'Example:\n' +
-          '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
-          'For more help, see: https://clarity-chat.dev/docs/components'
-      )
-    }
-  }
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
+  const [attachments, setAttachments] = React.useState<File[]>([])
+  const [isRecording, setIsRecording] = React.useState(false)
+  
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   // Request deduplication to prevent double-submit on rapid clicks
   const { execute: dedupeExecute, isPending } = useRequestDeduplication({
@@ -188,15 +78,14 @@ export function ChatInput({
   // Validate maxLength prop
   const validMaxLength = maxLength && maxLength > 0 ? maxLength : undefined
 
-  // React 19: Compiler automatically optimizes these - no useMemo needed for simple calculations
   const charCount = value.length
   const isOverLimit = validMaxLength ? charCount > validMaxLength : false
   const isNearLimit = validMaxLength
     ? charCount >= validMaxLength * warningThreshold
     : false
-  const hasContent = value.trim().length > 0
+  const hasContent = value.trim().length > 0 || attachments.length > 0
 
-  // Derived styling - compiler optimizes
+  // Derived styling
   const counterColor = isOverLimit
     ? 'text-destructive font-semibold'
     : isNearLimit
@@ -211,7 +100,6 @@ export function ChatInput({
       ? 'bg-[hsl(var(--warning))]'
       : 'bg-primary'
 
-  // Shake animation - keep this as it references DOM directly
   const triggerShakeAnimation = () => {
     textareaRef.current?.animate(
       [
@@ -226,13 +114,11 @@ export function ChatInput({
     )
   }
 
-  // Check if submit is blocked by deduplication
   const isSubmitPending = isPending('chat-submit')
 
-  // React 19: Async action with built-in state management + deduplication
   const handleSubmit = async () => {
     if (
-      !value.trim() ||
+      (!value.trim() && attachments.length === 0) ||
       isOverLimit ||
       disabled ||
       buttonState === 'loading' ||
@@ -243,31 +129,27 @@ export function ChatInput({
 
     setButtonState('loading')
     try {
-      // Wrap submission with deduplication to prevent double-submit
       await dedupeExecute('chat-submit', async () => {
-        await onSubmit(value)
+        await onSubmit(value, attachments)
       })
+      setAttachments([]) // Clear attachments on success
       setButtonState('success')
-      // Auto-reset after showing success
       setTimeout(() => setButtonState('idle'), 1000)
     } catch (error) {
-      // Ignore debounced/deduplicated requests
       if (isDebouncedError(error)) {
         setButtonState('idle')
         return
       }
       setButtonState('error')
       console.error('[ChatInput] Submit error:', error)
-      // Auto-reset after showing error
       setTimeout(() => setButtonState('idle'), 2000)
     }
   }
 
-  // React 19: Compiler optimizes event handlers - no useCallback needed
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      if (value.trim() && !isOverLimit && !disabled) {
+      if ((value.trim() || attachments.length > 0) && !isOverLimit && !disabled) {
         handleSubmit()
       } else if (isOverLimit) {
         triggerShakeAnimation()
@@ -275,18 +157,37 @@ export function ChatInput({
     }
   }
 
-  // Simple handlers - compiler optimizes
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setAttachments(prev => [...prev, ...Array.from(e.target.files!)])
+      // Reset input value so same file can be selected again
+      e.target.value = ''
+    }
+  }
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const toggleVoice = () => {
+    setIsRecording(!isRecording)
+    // TODO: Implement actual Web Speech API integration
+    if (!isRecording) {
+      // Mock dictation
+      setTimeout(() => {
+        onChange(value + " (Voice input simulation)")
+        setIsRecording(false)
+      }, 2000)
+    }
+  }
+
   const handleFocus = () => setIsFocused(true)
   const handleBlur = () => setIsFocused(false)
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     onChange(e.target.value)
 
-  // Focus ring glow animation variants
-  // Leveraging Framer Motion v12's improved type inference - no explicit type needed
   const containerVariants = {
-    idle: {
-      boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
-    },
+    idle: { boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)' },
     focused: glowOnFocus
       ? {
           boxShadow: [
@@ -296,9 +197,7 @@ export function ChatInput({
           ],
           transition: { duration: DURATION_SECONDS.slow, ease: 'easeOut' },
         }
-      : {
-          boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
-        },
+      : { boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)' },
   } as const satisfies import('framer-motion').Variants
 
   return (
@@ -311,8 +210,78 @@ export function ChatInput({
       animate={isFocused ? 'focused' : 'idle'}
       variants={containerVariants}
     >
+      {/* File Attachments Preview */}
+      <AnimatePresence>
+        {attachments.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: 8 }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide"
+          >
+            {attachments.map((file, i) => (
+              <motion.div
+                key={`${file.name}-${i}`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="relative group shrink-0 flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg border border-border/60 text-xs font-medium max-w-[200px]"
+              >
+                <span className="truncate">{file.name}</span>
+                <button 
+                  onClick={() => removeAttachment(i)}
+                  className="p-0.5 hover:bg-destructive/10 rounded-full text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <XCircleIcon size={14} />
+                </button>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex gap-3 items-end">
-        {/* Textarea Container with smooth expand/contract */}
+        {/* Helper Actions (Left) */}
+        {(allowAttachments || allowVoice) && (
+          <div className="flex gap-1 pb-1">
+            {allowAttachments && (
+              <>
+                <input 
+                  type="file" 
+                  multiple 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  onChange={handleFileSelect}
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:text-foreground rounded-lg"
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Attach file"
+                >
+                  <PaperclipIcon size={18} />
+                </Button>
+              </>
+            )}
+            {allowVoice && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-9 w-9 rounded-lg transition-colors",
+                  isRecording ? "text-destructive bg-destructive/10 hover:bg-destructive/20" : "text-muted-foreground hover:text-foreground"
+                )}
+                onClick={toggleVoice}
+                title="Voice input"
+              >
+                <MicIcon size={18} className={isRecording ? "animate-pulse" : ""} />
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Textarea Container */}
         <motion.div
           className="flex-1 relative"
           layout={animateHeight}
@@ -342,7 +311,7 @@ export function ChatInput({
             )}
           />
 
-          {/* Character Counter with progress bar */}
+          {/* Character Counter */}
           {validMaxLength && showCharCounter && (
             <AnimatePresence>
               {charCount > 0 && (
@@ -356,7 +325,6 @@ export function ChatInput({
                   exit={{ opacity: 0, y: 5 }}
                   className="absolute bottom-3 right-3 flex flex-col items-end gap-1.5"
                 >
-                  {/* Progress bar */}
                   <div className="w-20 h-1.5 bg-muted/60 rounded-full overflow-hidden shadow-inner">
                     <motion.div
                       className={cn('h-full', progressColor)}
@@ -367,22 +335,9 @@ export function ChatInput({
                       transition={{ duration: DURATION_SECONDS.normal }}
                     />
                   </div>
-
-                  {/* Counter text */}
                   <motion.div
                     className={cn('text-xs tabular-nums', counterColor)}
-                    animate={
-                      isOverLimit
-                        ? {
-                            scale: [1, 1.05, 1],
-                            transition: {
-                              duration: DURATION_SECONDS.slower,
-                              repeat: Infinity,
-                              ease: 'easeInOut',
-                            },
-                          }
-                        : undefined
-                    }
+                    animate={isOverLimit ? { scale: [1, 1.05, 1], transition: { repeat: Infinity } } : undefined}
                   >
                     {charCount}/{validMaxLength ?? 0}
                   </motion.div>
@@ -392,7 +347,7 @@ export function ChatInput({
           )}
         </motion.div>
 
-        {/* Send Button with state transitions */}
+        {/* Send Button */}
         <Button
           onClick={handleSubmit}
           disabled={disabled || !hasContent || isOverLimit || isSubmitPending}
@@ -412,9 +367,6 @@ export function ChatInput({
                 : buttonState === 'error'
                   ? 'Failed to send'
                   : 'Send message'
-          }
-          aria-describedby={
-            validMaxLength && showCharCounter ? 'char-counter' : undefined
           }
         >
           <AnimatePresence mode="wait">
@@ -451,24 +403,16 @@ export function ChatInput({
         )}
       </AnimatePresence>
 
-      {/* Hint text - increased spacing to prevent crowding with focus ring */}
+      {/* Hint text */}
       <AnimatePresence>
         {isFocused && !hasContent && (
           <motion.p
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="text-xs text-muted-foreground/80 px-1 mt-1"
+            className="text-xs text-muted-foreground/80 px-1 mt-1 ml-[44px]"
           >
-            Press{' '}
-            <kbd className="px-2 py-0.5 text-[10px] font-semibold border border-border/60 rounded-md bg-muted/50 shadow-sm">
-              Enter
-            </kbd>{' '}
-            to send •{' '}
-            <kbd className="px-2 py-0.5 text-[10px] font-semibold border border-border/60 rounded-md bg-muted/50 shadow-sm">
-              Shift + Enter
-            </kbd>{' '}
-            for new line
+            Press <kbd className="px-1 py-0.5 text-[10px] font-semibold border rounded bg-muted/50">Enter</kbd> to send
           </motion.p>
         )}
       </AnimatePresence>

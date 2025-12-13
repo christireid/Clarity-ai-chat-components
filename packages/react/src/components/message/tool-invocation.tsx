@@ -3,27 +3,70 @@ import { Badge, cn } from '@clarity-chat/primitives'
 import { SettingsIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '../icons'
 import { motion, AnimatePresence } from 'framer-motion'
 
+export type ToolRenderer = React.ComponentType<{
+  toolName: string
+  args: Record<string, any>
+  result?: any
+  state: 'partial-call' | 'call' | 'result'
+  toolCallId: string
+}>
+
 export interface ToolInvocationProps {
   toolName: string
   args: Record<string, any>
   state: 'partial-call' | 'call' | 'result'
   result?: any
   toolCallId: string
+  renderers?: Record<string, ToolRenderer>
 }
 
-export function ToolInvocation({ toolName, args, state, result }: ToolInvocationProps) {
+export function ToolInvocation({ 
+  toolName, 
+  args, 
+  state, 
+  result, 
+  toolCallId,
+  renderers 
+}: ToolInvocationProps) {
   const [isExpanded, setIsExpanded] = React.useState(false)
   const isComplete = state === 'result'
   const isPartial = state === 'partial-call'
 
+  // Check for custom renderer
+  const CustomRenderer = renderers?.[toolName]
+  if (CustomRenderer) {
+    return (
+      <CustomRenderer
+        toolName={toolName}
+        args={args}
+        result={result}
+        state={state}
+        toolCallId={toolCallId}
+      />
+    )
+  }
+
+  // Handle keyboard interaction for accessibility
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      setIsExpanded(!isExpanded)
+    }
+  }
+
   return (
     <div className="my-2 max-w-full">
       <div 
+        role="button"
+        aria-expanded={isExpanded}
+        aria-controls={`tool-details-${toolCallId}`}
+        tabIndex={0}
         className={cn(
-          "flex items-center gap-3 p-2.5 rounded-lg border bg-card/50 text-xs font-mono cursor-pointer hover:bg-muted/50 transition-colors select-none",
+          "flex items-center gap-3 p-2.5 rounded-lg border bg-card/50 text-xs font-mono cursor-pointer hover:bg-muted/50 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-primary/50",
           isPartial ? "border-primary/30 bg-primary/5" : "border-border/60"
         )}
         onClick={() => setIsExpanded(!isExpanded)}
+        onKeyDown={handleKeyDown}
       >
         <div className={cn(
           "flex items-center justify-center w-7 h-7 rounded-md shrink-0 transition-colors",
@@ -32,9 +75,9 @@ export function ToolInvocation({ toolName, args, state, result }: ToolInvocation
             : "bg-primary/10 text-primary"
         )}>
           {isComplete ? (
-            <CheckIcon size={14} /> 
+            <CheckIcon size={14} aria-label="Completed" /> 
           ) : (
-            <SettingsIcon size={14} className={isPartial ? "animate-spin" : ""} />
+            <SettingsIcon size={14} className={isPartial ? "animate-spin" : ""} aria-label="Processing" />
           )}
         </div>
         
@@ -54,13 +97,14 @@ export function ToolInvocation({ toolName, args, state, result }: ToolInvocation
         </div>
 
         <div className="text-muted-foreground shrink-0">
-           {isExpanded ? <ChevronUpIcon size={14} /> : <ChevronDownIcon size={14} />}
+           {isExpanded ? <ChevronUpIcon size={14} aria-hidden="true" /> : <ChevronDownIcon size={14} aria-hidden="true" />}
         </div>
       </div>
 
       <AnimatePresence>
         {isExpanded && (
           <motion.div
+            id={`tool-details-${toolCallId}`}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
