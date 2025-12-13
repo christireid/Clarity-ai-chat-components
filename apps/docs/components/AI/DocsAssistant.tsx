@@ -64,6 +64,7 @@ import { ChatButton } from './ChatButton'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { CompactPromptSelector, useSelectedPrompt } from './PromptSelector'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 
 // Local imports
 import type { DocsAssistantProps } from './types'

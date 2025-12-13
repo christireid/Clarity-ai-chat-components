@@ -347,4 +347,58 @@ describe('DocsAssistant Integration', () => {
       expect(screen.getByTestId('loading-state')).toHaveTextContent('idle')
     })
   })
+
+  describe('Interactions', () => {
+    it('sends a message when triggered', async () => {
+      render(<DocsAssistant />)
+
+      await userEvent.click(screen.getByTestId('chat-button'))
+      await waitFor(() =>
+        expect(screen.getByTestId('chat-window')).toBeInTheDocument()
+      )
+
+      // Mock successful fetch
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        body: {
+          getReader: () => ({
+            read: vi
+              .fn()
+              .mockResolvedValueOnce({
+                done: false,
+                value: new TextEncoder().encode(
+                  'data: {"type":"text","content":"Hello"}\n\n'
+                ),
+              })
+              .mockResolvedValueOnce({
+                done: false,
+                value: new TextEncoder().encode('data: {"type":"done"}\n\n'),
+              })
+              .mockResolvedValueOnce({ done: true }),
+          }),
+        },
+      })
+
+      // Click the mock send button (simulates User typing and sending)
+      await userEvent.click(screen.getByTestId('send-btn'))
+
+      // Verify fetch was called
+      await waitFor(() => {
+        expect(mockFetch).toHaveBeenCalledTimes(1)
+        expect(mockFetch).toHaveBeenCalledWith(
+          '/api/docs-assistant',
+          expect.objectContaining({
+            method: 'POST',
+            body: expect.stringContaining('"message":"Test"'),
+          })
+        )
+      })
+
+      // Verify message count increased (User message + Assistant message)
+      await waitFor(() => {
+        // 1 user message + 1 assistant message
+        expect(screen.getByTestId('messages-count')).toHaveTextContent('2')
+      })
+    })
+  })
 })
