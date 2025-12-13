@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode'
+import { getNonce } from '../utils/import-utils'
 
 interface ProviderInfo {
   id: string
@@ -227,10 +228,11 @@ export class ApiKeyManager {
   private checkKeyFormat(provider: string, key: string): ValidationResult {
     switch (provider) {
       case 'openai':
-        if (!key.startsWith('sk-') || key.length < 20) {
+        // OpenAI keys can start with: sk-, sk-proj-, sk-svcacct-, etc.
+        if (!/^sk-[a-zA-Z0-9_-]{20,}$/.test(key)) {
           return {
             valid: false,
-            error: 'Invalid format. OpenAI keys start with "sk-"',
+            error: 'Invalid format. OpenAI keys start with "sk-" followed by alphanumeric characters',
             errorType: 'format',
           }
         }
@@ -262,12 +264,18 @@ export class ApiKeyManager {
    */
   private async validateOpenAI(key: string): Promise<ValidationResult> {
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
       const response = await fetch('https://api.openai.com/v1/models', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${key}`,
         },
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       if (response.ok) {
         return { valid: true }
@@ -292,36 +300,48 @@ export class ApiKeyManager {
           error: 'Access denied - key may be expired or restricted',
           errorType: 'expired',
         }
+      } else if (status >= 500) {
+        // Server errors - not the user's fault
+        return {
+          valid: false,
+          error: 'OpenAI service unavailable - try again later',
+          errorType: 'network',
+        }
       }
 
       return { valid: false, error: `API error (${status})`, errorType: 'invalid' }
-    } catch {
-      return { valid: false, error: 'Network error', errorType: 'network' }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return { valid: false, error: 'Request timed out - check your connection', errorType: 'network' }
+      }
+      return { valid: false, error: 'Network error - check your connection', errorType: 'network' }
     }
   }
 
   /**
-   * Validate Anthropic API key by making a minimal request
+   * Validate Anthropic API key using a lightweight models endpoint check
+   * Note: We avoid the messages endpoint to not incur costs
    */
   private async validateAnthropic(key: string): Promise<ValidationResult> {
     try {
-      // Use a minimal messages request to validate
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
+      // Use the models endpoint which doesn't incur costs
+      // A 401 means invalid key, anything else (including errors) means the key format is accepted
+      const response = await fetch('https://api.anthropic.com/v1/models', {
+        method: 'GET',
         headers: {
           'x-api-key': key,
           'anthropic-version': '2023-06-01',
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          model: 'claude-3-haiku-20240307',
-          max_tokens: 1,
-          messages: [{ role: 'user', content: 'Hi' }],
-        }),
+        signal: controller.signal,
       })
 
-      // Even if we get a response error about quota, the key is valid
-      if (response.ok || response.status === 400) {
+      clearTimeout(timeoutId)
+
+      // 200 = valid, 401 = invalid key, anything else = assume valid (could be permission issue)
+      if (response.ok) {
         return { valid: true }
       }
 
@@ -341,11 +361,21 @@ export class ApiKeyManager {
           error: 'Access denied - key may be expired or restricted',
           errorType: 'expired',
         }
+      } else if (status >= 500) {
+        return {
+          valid: false,
+          error: 'Anthropic service unavailable - try again later',
+          errorType: 'network',
+        }
       }
 
-      return { valid: false, error: `API error (${status})`, errorType: 'invalid' }
-    } catch {
-      return { valid: false, error: 'Network error', errorType: 'network' }
+      // For other errors (like 404 if endpoint changes), assume key format is OK
+      return { valid: true }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return { valid: false, error: 'Request timed out - check your connection', errorType: 'network' }
+      }
+      return { valid: false, error: 'Network error - check your connection', errorType: 'network' }
     }
   }
 
@@ -354,10 +384,15 @@ export class ApiKeyManager {
    */
   private async validateGoogle(key: string): Promise<ValidationResult> {
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1/models?key=${key}`,
-        { method: 'GET' }
+        { method: 'GET', signal: controller.signal }
       )
+
+      clearTimeout(timeoutId)
 
       if (response.ok) {
         return { valid: true }
@@ -376,25 +411,21 @@ export class ApiKeyManager {
           error: 'Rate limited - please try again later',
           errorType: 'rate_limited',
         }
+      } else if (status >= 500) {
+        return {
+          valid: false,
+          error: 'Google AI service unavailable - try again later',
+          errorType: 'network',
+        }
       }
 
       return { valid: false, error: `API error (${status})`, errorType: 'invalid' }
-    } catch {
-      return { valid: false, error: 'Network error', errorType: 'network' }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return { valid: false, error: 'Request timed out - check your connection', errorType: 'network' }
+      }
+      return { valid: false, error: 'Network error - check your connection', errorType: 'network' }
     }
-  }
-
-  /**
-   * Generate a nonce for CSP
-   */
-  private getNonce(): string {
-    let text = ''
-    const possible =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    for (let i = 0; i < 32; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length))
-    }
-    return text
   }
 
   private async getHtmlForWebview(
@@ -410,7 +441,7 @@ export class ApiKeyManager {
     const providersJson = JSON.stringify(PROVIDERS)
     const keyStatusJson = JSON.stringify(keyStatus)
 
-    const nonce = this.getNonce()
+    const nonce = getNonce()
 
     return `<!DOCTYPE html>
 <html lang="en">

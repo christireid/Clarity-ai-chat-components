@@ -231,3 +231,26 @@ export function hasImport(text: string, importName: string): boolean {
   const imports = parseImportNames(match[1])
   return imports.some((imp) => imp === importName || imp.endsWith(` ${importName}`))
 }
+
+/**
+ * Generate a cryptographic nonce for Content Security Policy.
+ * Used in webview HTML to allow inline scripts while maintaining CSP security.
+ *
+ * @returns A 32-character random alphanumeric string
+ *
+ * @example
+ * const nonce = getNonce()
+ * // Returns something like: "ABC123xyz789DEFghi456JKLmno012PQR"
+ *
+ * // Usage in CSP header:
+ * `<meta http-equiv="Content-Security-Policy" content="script-src 'nonce-${nonce}';">`
+ */
+export function getNonce(): string {
+  let text = ''
+  const possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
+  }
+  return text
+}

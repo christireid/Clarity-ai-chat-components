@@ -24,6 +24,7 @@ import { PreviewPanel } from './views/preview-panel'
 import { ApiKeyManager } from './views/api-key-manager'
 import { registerChatParticipant } from './chatParticipant'
 import { ClarityTreeDataProvider } from './views/sidebar-tree'
+import { getNonce } from './utils/import-utils'
 
 let statusBarItem: vscode.StatusBarItem
 let outputChannel: vscode.OutputChannel
@@ -953,19 +954,6 @@ function getWelcomeHtml(version: string): string {
   </script>
 </body>
 </html>`
-}
-
-/**
- * Generate a nonce for CSP
- */
-function getNonce(): string {
-  let text = ''
-  const possible =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length))
-  }
-  return text
 }
 
 /**

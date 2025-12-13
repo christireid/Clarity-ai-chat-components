@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode'
+import { getNonce } from '../utils/import-utils'
 
 interface ComponentInfo {
   name: string
@@ -502,23 +503,10 @@ export class PreviewPanel {
     this.panel.webview.html = this.getHtmlForWebview()
   }
 
-  /**
-   * Generate a nonce for CSP
-   */
-  private getNonce(): string {
-    let text = ''
-    const possible =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    for (let i = 0; i < 32; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length))
-    }
-    return text
-  }
-
   private getHtmlForWebview(): string {
     const componentsJson = JSON.stringify(COMPONENTS)
     const categories = [...new Set(COMPONENTS.map((c) => c.category))]
-    const nonce = this.getNonce()
+    const nonce = getNonce()
 
     return `<!DOCTYPE html>
 <html lang="en">
