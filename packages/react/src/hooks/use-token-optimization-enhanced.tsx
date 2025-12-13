@@ -422,6 +422,9 @@ export function useTokenOptimizationEnhanced(
 
   /** Reset statistics */
   resetStats: () => void
+
+  /** Whether the budget has been exceeded */
+  isBudgetExceeded: boolean
 } {
   // Apply presets
   const presetConfig = getPresetConfig(options.preset)
@@ -1135,7 +1138,7 @@ export function useTokenOptimizationEnhanced(
     }
 
     return canMake
-  }, [enableThrottling, throttler, enableStats])
+  }, [enableThrottling, throttler, enableStats, enableCostTracking, budget, stats.costs.totalCost])
 
   /**
    * Record request (for throttling)
@@ -1362,5 +1365,6 @@ export function useTokenOptimizationEnhanced(
     // Stats
     stats,
     resetStats,
+    isBudgetExceeded: !!(enableCostTracking && budget && stats.costs.totalCost >= budget),
   }
 }
