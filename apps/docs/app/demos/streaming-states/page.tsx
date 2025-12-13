@@ -18,6 +18,9 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
+import { sleep } from '@/lib/demos/utils'
+import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
+import { trackDemoViewed, trackDemoStarted, trackDemoCompleted, trackCodeCopied } from '@/lib/demos/analytics'
 
 type StreamingPhase =
   | 'idle'
@@ -91,16 +94,13 @@ export default function StreamingStatesDemo() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(false)
   const [showImage, setShowImage] = useState(false)
   const [showActions, setShowActions] = useState(false)
-  const [copied, setCopied] = useState(false)
   const cancelRef = useRef(false)
-  const isMountedRef = useRef(true)
+  const isMountedRef = useMountedRef()
+  const { copy, copied } = useCopyToClipboard()
+  const startTimeRef = useRef<number>(0)
 
-  // Cleanup on unmount to prevent state updates after unmount
   useEffect(() => {
-    isMountedRef.current = true
-    return () => {
-      isMountedRef.current = false
-    }
+    trackDemoViewed('streaming-states')
   }, [])
 
   const resetDemo = () => {
@@ -116,8 +116,6 @@ export default function StreamingStatesDemo() {
     }, 100)
   }
 
-  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
-
   const streamText = async (text: string, setter: (s: string) => void) => {
     let current = ''
     for (const char of text) {
@@ -132,6 +130,8 @@ export default function StreamingStatesDemo() {
     if (isAutoPlaying) return
     setIsAutoPlaying(true)
     cancelRef.current = false
+    startTimeRef.current = Date.now()
+    trackDemoStarted('streaming-states')
 
     // Phase 1: Sending
     setPhase('sending')
@@ -167,21 +167,14 @@ export default function StreamingStatesDemo() {
     setPhase('complete')
     setShowActions(true)
     setIsAutoPlaying(false)
+    trackDemoCompleted('streaming-states', Date.now() - startTimeRef.current)
   }
 
   const copyCode = async () => {
-    try {
-      await navigator.clipboard.writeText(demoCode)
-    } catch {
-      const textarea = document.createElement('textarea')
-      textarea.value = demoCode
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
+    const success = await copy(demoCode)
+    if (success) {
+      trackCodeCopied('streaming-states', 'fibonacci')
     }
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   return (

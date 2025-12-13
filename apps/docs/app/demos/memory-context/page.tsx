@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Brain,
@@ -20,6 +20,9 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { useAutoScroll } from '@clarity-chat/react'
+import { generateId, sleep } from '@/lib/demos/utils'
+import { useMountedRef } from '@/lib/demos/hooks'
+import { trackDemoViewed, trackMessageSent } from '@/lib/demos/analytics'
 
 interface MemoryItem {
   id: string
@@ -36,13 +39,6 @@ interface Message {
   sender: 'user' | 'bot'
   timestamp: Date
   memoryUsed?: string[]
-}
-
-const generateId = () => {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
-  }
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 const initialMemory: MemoryItem[] = [
@@ -87,14 +83,10 @@ export default function MemoryContextDemo() {
   const [memory, setMemory] = useState<MemoryItem[]>(initialMemory)
   const [showMemoryPanel, setShowMemoryPanel] = useState(true)
   const [activeMemoryIds, setActiveMemoryIds] = useState<string[]>(['1', '2', '3'])
-  const isMountedRef = useRef(true)
+  const isMountedRef = useMountedRef()
 
-  // Cleanup on unmount to prevent state updates after unmount
   useEffect(() => {
-    isMountedRef.current = true
-    return () => {
-      isMountedRef.current = false
-    }
+    trackDemoViewed('memory-context')
   }, [])
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
@@ -158,6 +150,8 @@ export default function MemoryContextDemo() {
   const handleSend = async () => {
     if (!input.trim() || isTyping) return
 
+    trackMessageSent('memory-context')
+
     const userMessage: Message = {
       id: generateId(),
       text: input,
@@ -171,7 +165,7 @@ export default function MemoryContextDemo() {
     setIsTyping(true)
     scrollToBottom()
 
-    await new Promise(r => setTimeout(r, 1000))
+    await sleep(1000)
     if (!isMountedRef.current) return
 
     const { text, memoryIds, newMemory } = getMemoryResponse(userInput)

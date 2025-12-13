@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Palette,
@@ -16,6 +16,9 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
+import { useCopyToClipboard } from '@/lib/demos/hooks'
+import { trackDemoViewed, trackCodeCopied } from '@/lib/demos/analytics'
+import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
 interface ConfigOption {
   id: string
@@ -70,6 +73,11 @@ export default function CustomizationPlaygroundDemo() {
   const [config, setConfig] = useState<ConfigOption[]>(defaultConfig)
   const [copied, setCopied] = useState(false)
   const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('light')
+
+  // Track demo view
+  useEffect(() => {
+    trackDemoViewed('customization-playground')
+  }, [])
 
   const getConfigValue = (id: string) => config.find(c => c.id === id)?.value
 

@@ -18,6 +18,9 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { useAutoScroll } from '@clarity-chat/react'
+import { generateId, sleep, estimateTokens as estimateTokensUtil } from '@/lib/demos/utils'
+import { useMountedRef } from '@/lib/demos/hooks'
+import { trackDemoViewed, trackMessageSent } from '@/lib/demos/analytics'
 
 interface TokenStats {
   inputTokens: number
@@ -38,13 +41,6 @@ interface Message {
   sender: 'user' | 'bot'
   tokens: number
   timestamp: Date
-}
-
-const generateId = () => {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
-  }
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 const CONTEXT_WINDOW = 128000 // 128K context window
@@ -84,14 +80,10 @@ export default function TokenVisualizerDemo() {
   })
   const [showOptimization, setShowOptimization] = useState(false)
   const messageCountRef = useRef(0)
-  const isMountedRef = useRef(true)
+  const isMountedRef = useMountedRef()
 
-  // Cleanup on unmount to prevent state updates after unmount
   useEffect(() => {
-    isMountedRef.current = true
-    return () => {
-      isMountedRef.current = false
-    }
+    trackDemoViewed('token-visualizer')
   }, [])
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
@@ -128,6 +120,7 @@ export default function TokenVisualizerDemo() {
   const handleSend = async () => {
     if (!input.trim() || isTyping) return
 
+    trackMessageSent('token-visualizer')
     const inputTokens = estimateTokens(input)
     const userMessage: Message = {
       id: generateId(),
@@ -152,7 +145,7 @@ export default function TokenVisualizerDemo() {
       estimatedCost: prev.estimatedCost + (inputTokens * INPUT_COST_PER_1K / 1000),
     }))
 
-    await new Promise(r => setTimeout(r, 800))
+    await sleep(800)
     if (!isMountedRef.current) return
 
     const responseText = sampleResponses[messageCountRef.current % sampleResponses.length]

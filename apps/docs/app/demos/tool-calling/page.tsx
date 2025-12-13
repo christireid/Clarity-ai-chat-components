@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Wrench,
@@ -20,6 +20,9 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { useAutoScroll } from '@clarity-chat/react'
+import { generateId, sleep } from '@/lib/demos/utils'
+import { useMountedRef } from '@/lib/demos/hooks'
+import { trackDemoViewed, trackToolExecuted } from '@/lib/demos/analytics'
 
 interface Tool {
   id: string
@@ -49,13 +52,6 @@ interface Message {
   sender: 'user' | 'bot'
   toolInvocation?: ToolInvocation
   timestamp: Date
-}
-
-const generateId = () => {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
-  }
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 const toolDemos: Record<string, { prompt: string; input: string; output: any; delay: number }> = {
@@ -121,14 +117,10 @@ export default function ToolCallingDemo() {
   ])
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [isExecuting, setIsExecuting] = useState(false)
-  const isMountedRef = useRef(true)
+  const isMountedRef = useMountedRef()
 
-  // Cleanup on unmount to prevent state updates after unmount
   useEffect(() => {
-    isMountedRef.current = true
-    return () => {
-      isMountedRef.current = false
-    }
+    trackDemoViewed('tool-calling')
   }, [])
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
@@ -140,6 +132,7 @@ export default function ToolCallingDemo() {
     if (isExecuting) return
     setIsExecuting(true)
     setSelectedTool(toolId)
+    trackToolExecuted('tool-calling', toolId)
 
     const demo = toolDemos[toolId]
     const tool = tools.find(t => t.id === toolId)
@@ -159,7 +152,7 @@ export default function ToolCallingDemo() {
     scrollToBottom()
 
     // Add bot message with tool invocation starting
-    await new Promise(r => setTimeout(r, 500))
+    await sleep(500)
     if (!isMountedRef.current) {
       setIsExecuting(false)
       return
@@ -180,7 +173,7 @@ export default function ToolCallingDemo() {
     scrollToBottom()
 
     // Update to running
-    await new Promise(r => setTimeout(r, 300))
+    await sleep(300)
     if (!isMountedRef.current) {
       setIsExecuting(false)
       return
@@ -192,7 +185,7 @@ export default function ToolCallingDemo() {
     ))
 
     // Wait for "execution"
-    await new Promise(r => setTimeout(r, demo.delay))
+    await sleep(demo.delay)
     if (!isMountedRef.current) {
       setIsExecuting(false)
       return

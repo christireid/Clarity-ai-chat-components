@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
+import { trackDemoViewed } from '@/lib/demos/analytics'
 
 interface AccessibilityFeature {
   id: string
@@ -84,6 +85,11 @@ export default function AccessibilityAuditDemo() {
   const [focusedElement, setFocusedElement] = useState<string | null>(null)
   const [screenReaderAnnouncement, setScreenReaderAnnouncement] = useState<string>('')
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Track demo view
+  useEffect(() => {
+    trackDemoViewed('accessibility-audit')
+  }, [])
 
   // Keyboard demo playback
   useEffect(() => {

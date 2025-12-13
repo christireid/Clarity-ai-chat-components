@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
+import { trackDemoViewed } from '@/lib/demos/analytics'
 
 interface BundleInfo {
   name: string
@@ -86,6 +87,11 @@ export default function BundleComparisonDemo() {
   const [animationComplete, setAnimationComplete] = useState(false)
   const [selectedTreeShake, setSelectedTreeShake] = useState(0)
   const [runAnimation, setRunAnimation] = useState(false)
+
+  // Track demo view
+  useEffect(() => {
+    trackDemoViewed('bundle-comparison')
+  }, [])
 
   useEffect(() => {
     // Auto-run animation on mount

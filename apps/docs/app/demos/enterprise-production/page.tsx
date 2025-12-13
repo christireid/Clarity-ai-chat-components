@@ -21,6 +21,8 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
+import { generateId } from '@/lib/demos/utils'
+import { trackDemoViewed } from '@/lib/demos/analytics'
 
 interface MetricCard {
   label: string
@@ -40,14 +42,11 @@ interface LogEntry {
   details: string
 }
 
-const generateId = () => {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
-  }
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
-}
-
 export default function EnterpriseProductionDemo() {
+  // Track demo view
+  useEffect(() => {
+    trackDemoViewed('enterprise-production')
+  }, [])
   const [isLive, setIsLive] = useState(true)
   const [metrics, setMetrics] = useState({
     connections: 10247,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   RefreshCw,
@@ -8,16 +8,18 @@ import {
   Copy,
   Check,
   Sparkles,
-  Bot,
   User,
   Send,
-  Zap,
   ArrowRight,
   Code2
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { useAutoScroll, TypingIndicator } from '@clarity-chat/react'
+import { generateId, sleep } from '@/lib/demos/utils'
+import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
+import { trackDemoViewed, trackCodeCopied, trackProviderSwitched, trackMessageSent } from '@/lib/demos/analytics'
+import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
 interface Provider {
   id: string
@@ -86,13 +88,6 @@ interface Message {
   isStreaming?: boolean
 }
 
-const generateId = () => {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
-  }
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
-}
-
 const apiRouteCode = `// app/api/chat/route.ts
 import { createClarityStream } from '@clarity-chat/server'
 
@@ -133,9 +128,9 @@ export default function ProviderHotswapDemo() {
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [switchCount, setSwitchCount] = useState(0)
-  const isMountedRef = useRef(true)
+  const isMountedRef = useMountedRef()
+  const { copy, isCopied } = useCopyToClipboard()
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
@@ -143,26 +138,13 @@ export default function ProviderHotswapDemo() {
   })
 
   useEffect(() => {
-    isMountedRef.current = true
-    return () => {
-      isMountedRef.current = false
-    }
+    trackDemoViewed('provider-hotswap')
   }, [])
 
   const copyCode = async (code: string, id: string) => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopiedCode(id)
-      setTimeout(() => setCopiedCode(null), 2000)
-    } catch {
-      const textarea = document.createElement('textarea')
-      textarea.value = code
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
-      setCopiedCode(id)
-      setTimeout(() => setCopiedCode(null), 2000)
+    const success = await copy(code, id)
+    if (success) {
+      trackCodeCopied('provider-hotswap', id)
     }
   }
 
@@ -170,8 +152,9 @@ export default function ProviderHotswapDemo() {
     if (providerId === activeProvider) return
 
     const provider = providers.find(p => p.id === providerId)
-    if (!provider) return // Guard against invalid providerId
+    if (!provider) return
 
+    trackProviderSwitched('provider-hotswap', activeProvider, providerId)
     setActiveProvider(providerId)
     setSwitchCount(prev => prev + 1)
 
@@ -198,7 +181,7 @@ export default function ProviderHotswapDemo() {
         msg.id === messageId ? { ...msg, text: currentText } : msg
       ))
       scrollToBottom()
-      await new Promise(r => setTimeout(r, 25 + Math.random() * 25))
+      await sleep(25 + Math.random() * 25)
     }
 
     if (!isMountedRef.current) return
@@ -209,6 +192,8 @@ export default function ProviderHotswapDemo() {
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return
+
+    trackMessageSent('provider-hotswap')
 
     const userMessage: Message = {
       id: generateId(),
@@ -223,7 +208,7 @@ export default function ProviderHotswapDemo() {
     setIsTyping(true)
     scrollToBottom()
 
-    await new Promise(r => setTimeout(r, 700))
+    await sleep(700)
 
     const responses = providerResponses[activeProvider]
     let responseText = responses.default
@@ -423,13 +408,15 @@ export default function ProviderHotswapDemo() {
                   <button
                     onClick={() => copyCode(apiRouteCode, 'api')}
                     className="p-2 hover:bg-gray-700 rounded transition-colors"
+                    title="Copy snippet"
                   >
-                    {copiedCode === 'api' ? (
+                    {isCopied('api') ? (
                       <Check className="w-4 h-4 text-green-400" />
                     ) : (
                       <Copy className="w-4 h-4 text-gray-400" />
                     )}
                   </button>
+                  <CopyFullExampleButton demoId="provider-hotswap" variant="compact" />
                 </div>
                 <pre className="p-4 text-sm font-mono text-gray-300 overflow-x-auto">
                   <code>{apiRouteCode}</code>
@@ -446,8 +433,9 @@ export default function ProviderHotswapDemo() {
                   <button
                     onClick={() => copyCode(clientCode, 'client')}
                     className="p-2 hover:bg-gray-700 rounded transition-colors"
+                    title="Copy snippet"
                   >
-                    {copiedCode === 'client' ? (
+                    {isCopied('client') ? (
                       <Check className="w-4 h-4 text-green-400" />
                     ) : (
                       <Copy className="w-4 h-4 text-gray-400" />
