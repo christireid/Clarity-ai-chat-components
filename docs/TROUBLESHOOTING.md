@@ -282,6 +282,69 @@ append(newMessage)
 
 ---
 
+## Security Issues
+
+### API key exposed in browser
+
+**Cause:** You're calling the AI API directly from client-side code.
+
+**Solution:** Always use a server-side API route:
+
+```tsx
+// WRONG - API key visible in browser
+const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  headers: { Authorization: `Bearer ${apiKey}` }, // Exposed!
+})
+
+// CORRECT - Use your backend route
+const response = await fetch('/api/chat', {
+  method: 'POST',
+  body: JSON.stringify({ messages }),
+})
+```
+
+### Environment variable not loading
+
+**Solution:** Ensure proper setup:
+
+```bash
+# Create .env.local (not .env - that may get committed!)
+echo "OPENAI_API_KEY=sk-..." >> .env.local
+
+# Add to .gitignore
+echo ".env.local" >> .gitignore
+```
+
+For Next.js, only `NEXT_PUBLIC_*` variables are exposed to the browser. Keep API keys without that prefix.
+
+### Rate limiting / API abuse
+
+**Solution:** Add rate limiting to your API route:
+
+```tsx
+// Example using Upstash Rate Limit
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 requests per minute
+})
+
+export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for') ?? 'anonymous'
+  const { success } = await ratelimit.limit(ip)
+
+  if (!success) {
+    return new Response('Too many requests', { status: 429 })
+  }
+
+  // ... rest of your handler
+}
+```
+
+---
+
 ## Getting More Help
 
 If your issue isn't listed here:
@@ -308,3 +371,5 @@ If your issue isn't listed here:
 | API errors | Check browser Network tab |
 | TypeScript errors | Restart your IDE |
 | Performance slow | Enable virtualization |
+| Security concerns | Use server-side API routes |
+| Rate limits | Add rate limiting middleware |

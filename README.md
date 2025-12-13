@@ -39,7 +39,8 @@
 <br />
 
 ```tsx
-// Get a production-ready AI chat in 3 lines
+// Production-ready AI chat in 4 lines
+'use client'
 import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
@@ -1520,8 +1521,7 @@ Pre-built prompt templates for common tasks:
 
 ### Quick Start & Migration
 
-- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ - Quick start
-  guide
+- **[Getting Started with Clarity Chat](./docs/getting-started.md)** - Quick start guide
 - **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
 - **[Migrating from Vercel](./docs/migrating-from-vercel.md)** - Migration guide
 

@@ -38,6 +38,8 @@ bun add @clarity-chat/react
 ### Option A: Zero Config (Easiest)
 
 ```tsx
+'use client' // Required for Next.js App Router
+
 import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
@@ -51,6 +53,8 @@ That's it! You have a fully-featured chat with streaming, error handling, and ac
 ### Option B: With Hooks (More Control)
 
 ```tsx
+'use client' // Required for Next.js App Router
+
 import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
@@ -73,38 +77,68 @@ export default function App() {
 }
 ```
 
+> **Note:** The `'use client'` directive is only needed for Next.js App Router. For Vite, Remix, or other frameworks, you can omit it.
+
 ---
 
 ## API Route Setup
 
-Your chat needs a backend API. Here's how to set it up:
+Your chat needs a backend API to communicate with AI providers. The API route runs server-side, keeping your API keys secure.
+
+> **Security Note:** Never expose your AI provider API keys in client-side code. Always use environment variables and server-side routes.
 
 ### Next.js (App Router)
 
 ```tsx
 // app/api/chat/route.ts
-import { NextResponse } from 'next/server'
-
 export async function POST(req: Request) {
-  const { messages } = await req.json()
+  try {
+    const { messages } = await req.json()
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages,
-      stream: true,  // Enable streaming
-    }),
-  })
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
 
-  // Return streaming response
-  return new Response(response.body, {
-    headers: { 'Content-Type': 'text/event-stream' },
-  })
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages,
+        stream: true,
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      return new Response(JSON.stringify({ error: 'AI provider error' }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Return streaming response
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 }
 ```
 
