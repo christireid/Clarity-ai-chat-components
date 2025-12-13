@@ -87,9 +87,12 @@ export function PreviewPane({
         <button
           type="button"
           onClick={onToggleDebugView}
+          aria-pressed={showDebugView}
+          aria-label={showDebugView ? 'Hide debug view' : 'Show debug view'}
           className={cn(
             'px-3 py-1 text-xs font-medium rounded-md',
             'transition-colors duration-200',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
             showDebugView
               ? 'bg-primary text-primary-foreground'
               : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -129,31 +132,37 @@ export function PreviewPane({
             )}
 
             {/* Messages */}
-            <AnimatePresence mode="popLayout">
-              {messages.map((message) => (
-                <PreviewMessage key={message.id} message={message} />
-              ))}
+            <div aria-live="polite" aria-atomic="false">
+              <AnimatePresence mode="popLayout">
+                {messages.map((message) => (
+                  <PreviewMessage key={message.id} message={message} />
+                ))}
 
-              {/* Streaming message */}
-              {isStreaming && streamingContent && (
-                <PreviewMessage
-                  key="streaming"
-                  message={{
-                    id: 'streaming',
-                    role: 'assistant',
-                    content: streamingContent,
-                    isCompiled: true,
-                    timestamp: new Date(),
-                  }}
-                  isStreaming
-                  streamingContent={streamingContent}
-                />
-              )}
-            </AnimatePresence>
+                {/* Streaming message */}
+                {isStreaming && streamingContent && (
+                  <PreviewMessage
+                    key="streaming"
+                    message={{
+                      id: 'streaming',
+                      role: 'assistant',
+                      content: streamingContent,
+                      isCompiled: true,
+                      timestamp: new Date(),
+                    }}
+                    isStreaming
+                    streamingContent={streamingContent}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Error */}
             {error && (
-              <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm"
+              >
                 <strong>Error:</strong> {error}
               </div>
             )}

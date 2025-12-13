@@ -29,6 +29,8 @@ export function ErrorFallback({
 }: ErrorFallbackProps) {
   return (
     <div
+      role="alert"
+      aria-live="assertive"
       className={cn(
         'flex flex-col items-center justify-center h-full min-h-[400px] p-8',
         'bg-background rounded-xl border border-border',

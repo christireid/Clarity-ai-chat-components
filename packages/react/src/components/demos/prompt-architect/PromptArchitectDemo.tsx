@@ -197,6 +197,46 @@ export function PromptArchitectDemo({
   )
   const [lastError, setLastError] = React.useState<string | null>(null)
 
+  // Abort controller for cancelling streaming
+  const abortControllerRef = React.useRef<AbortController | null>(null)
+
+  // Keyboard shortcuts
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey
+
+      // Cmd/Ctrl+Enter to run prompt
+      if (isMod && e.key === 'Enter' && !isRunning) {
+        e.preventDefault()
+        // Trigger run - will be defined below
+        document
+          .querySelector<HTMLButtonElement>('[aria-label="Run prompt"]')
+          ?.click()
+      }
+
+      // Escape to stop streaming or clear
+      if (e.key === 'Escape') {
+        if (isRunning) {
+          abortControllerRef.current?.abort()
+          setIsRunning(false)
+          setStreamingContent('')
+        } else if (previewMessages.length > 0) {
+          setPreviewMessages([])
+          setLastError(null)
+        }
+      }
+
+      // Cmd/Ctrl+S to save version (prevent browser save dialog)
+      if (isMod && e.key === 's') {
+        e.preventDefault()
+        saveVersion()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isRunning, previewMessages.length, saveVersion])
+
   // Run prompt
   const handleRunPrompt = React.useCallback(async () => {
     if (isRunning) return
@@ -484,10 +524,12 @@ To enable live AI responses, provide a Gemini API key.`
             type="button"
             onClick={handleClear}
             disabled={previewMessages.length === 0 && !isRunning}
+            aria-label="Clear conversation"
             className={cn(
               'px-4 py-2 text-sm font-medium rounded-lg',
               'border border-border',
               'hover:bg-muted transition-colors',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
               'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           >
@@ -498,22 +540,27 @@ To enable live AI responses, provide a Gemini API key.`
             type="button"
             onClick={handleRunPrompt}
             disabled={isRunning}
+            aria-label={isRunning ? 'Running prompt' : 'Run prompt'}
             className={cn(
               'px-4 py-2 text-sm font-medium rounded-lg',
               'bg-primary text-primary-foreground',
               'hover:bg-primary/90 transition-colors',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
               'disabled:opacity-50 disabled:cursor-not-allowed',
               'flex items-center gap-2'
             )}
           >
             {isRunning ? (
               <>
-                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                <span
+                  className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                  aria-hidden="true"
+                />
                 Running...
               </>
             ) : (
               <>
-                <span>▶</span>
+                <span aria-hidden="true">▶</span>
                 Run Prompt
               </>
             )}

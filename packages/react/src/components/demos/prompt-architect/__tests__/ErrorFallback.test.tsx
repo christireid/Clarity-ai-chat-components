@@ -64,4 +64,17 @@ describe('ErrorFallback', () => {
 
     expect(screen.getByText('An unexpected error occurred')).toBeInTheDocument()
   })
+
+  it('should have role="alert" for accessibility', () => {
+    render(<ErrorFallback error={mockError} resetError={mockResetError} />)
+
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+
+  it('should have aria-live="assertive" for screen readers', () => {
+    render(<ErrorFallback error={mockError} resetError={mockResetError} />)
+
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveAttribute('aria-live', 'assertive')
+  })
 })

@@ -11,6 +11,7 @@ import { cn } from '../../../../utils/cn'
 import type { DebugViewMode } from '../types'
 import type { CoreMessage } from '../../../../hooks/use-chat-enhanced'
 import { generateDiff } from '../utils/template-compiler'
+import { CopyButton } from './CopyButton'
 
 export interface DebugViewProps {
   /** Current view mode */
@@ -159,9 +160,15 @@ export function DebugView({
             {/* Compiled system prompt */}
             {compiledSystemPrompt && (
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase">
-                  Compiled System Prompt
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase">
+                    Compiled System Prompt
+                  </h4>
+                  <CopyButton
+                    text={compiledSystemPrompt}
+                    label="Copy system prompt"
+                  />
+                </div>
                 <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50">
                   <DiffRenderer
                     template={systemPromptTemplate}
@@ -174,9 +181,15 @@ export function DebugView({
             {/* Compiled user prompt */}
             {compiledUserPrompt && (
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase">
-                  Compiled User Prompt
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase">
+                    Compiled User Prompt
+                  </h4>
+                  <CopyButton
+                    text={compiledUserPrompt}
+                    label="Copy user prompt"
+                  />
+                </div>
                 <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50">
                   <DiffRenderer
                     template={userPromptTemplate}
@@ -194,17 +207,10 @@ export function DebugView({
               <h4 className="text-xs font-semibold text-muted-foreground uppercase">
                 API Messages Array
               </h4>
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    JSON.stringify(messagesArray, null, 2)
-                  )
-                }}
-                className="text-xs text-primary hover:underline"
-              >
-                Copy JSON
-              </button>
+              <CopyButton
+                text={JSON.stringify(messagesArray, null, 2)}
+                label="Copy JSON"
+              />
             </div>
             <div className="p-3 rounded-lg bg-muted/50 border border-border overflow-auto">
               <pre className="font-mono text-xs text-foreground">
