@@ -403,14 +403,23 @@ export function CommandPaletteEnhanced({
 
   // Focus management
   React.useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+
     if (open) {
       saveFocus()
-      setTimeout(() => inputRef.current?.focus(), 50)
+      // Focus input with small delay for animation
+      timeoutId = setTimeout(() => inputRef.current?.focus(), 50)
       setSearch('')
       setSelectedIndex(0)
       setCommandStack([])
     } else {
       restoreFocus()
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
     }
   }, [open, saveFocus, restoreFocus])
 

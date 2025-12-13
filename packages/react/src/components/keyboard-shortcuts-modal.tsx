@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Kbd } from '@clarity-chat/primitives'
 import { useFocusTrap, useFocusRestoration } from '../accessibility/focus-management'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { formatShortcutDisplay } from '../hooks/use-keyboard-navigation'
+import { formatShortcutDisplay, useIsMac } from '../hooks/use-keyboard-navigation'
 
 export interface ShortcutItem {
   id: string
@@ -54,24 +54,27 @@ export function KeyboardShortcutsModal({
   const { saveFocus, restoreFocus } = useFocusRestoration()
   const prefersReducedMotion = useReducedMotion()
 
-  // Detect platform
-  const isMac = React.useMemo(
-    () =>
-      typeof navigator !== 'undefined' &&
-      /Mac|iPod|iPhone|iPad/.test(navigator.platform),
-    []
-  )
+  // Detect platform using SSR-safe hook
+  const isMac = useIsMac()
 
   // Save/restore focus
   React.useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+
     if (open) {
       saveFocus()
-      // Focus search input
-      setTimeout(() => searchInputRef.current?.focus(), 100)
+      // Focus search input with small delay for animation
+      timeoutId = setTimeout(() => searchInputRef.current?.focus(), 100)
     } else {
       restoreFocus()
       setSearchQuery('')
       setSelectedIndex(0)
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
     }
   }, [open, saveFocus, restoreFocus])
 
