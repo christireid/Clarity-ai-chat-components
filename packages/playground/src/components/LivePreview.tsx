@@ -22,10 +22,15 @@ import {
   Code2,
   Zap,
   CircleDot,
+  Square,
 } from 'lucide-react'
 import type { ConsoleLogEntry, PlaygroundError } from '../types'
+import { isIframeMessage } from '../types'
 import type { PreviewStatus } from '../contexts/PlaygroundContext'
 import { cn } from '../utils/cn'
+
+// Compilation timeout duration (10 seconds)
+const COMPILATION_TIMEOUT_MS = 10000
 
 interface LivePreviewProps {
   code: string
@@ -348,14 +353,31 @@ function PreviewSkeleton() {
   )
 }
 
-// Status indicator component
-function StatusIndicator({ status }: { status: PreviewStatus }) {
+// Format elapsed time in seconds
+function formatElapsedTime(ms: number): string {
+  const seconds = Math.floor(ms / 1000)
+  const tenths = Math.floor((ms % 1000) / 100)
+  return `${seconds}.${tenths}s`
+}
+
+// Status indicator component with elapsed time
+function StatusIndicator({
+  status,
+  elapsedMs,
+  onForceStop,
+}: {
+  status: PreviewStatus
+  elapsedMs?: number
+  onForceStop?: () => void
+}) {
   const config = statusConfig[status]
   const Icon = config.icon
 
   if (status === 'idle' || status === 'success') {
     return null
   }
+
+  const isCompiling = status === 'compiling' || status === 'rendering'
 
   return (
     <div
@@ -367,6 +389,21 @@ function StatusIndicator({ status }: { status: PreviewStatus }) {
     >
       <Icon className={cn('w-3.5 h-3.5', config.animate && 'animate-spin')} />
       <span>{config.label}</span>
+      {isCompiling && elapsedMs !== undefined && elapsedMs > 0 && (
+        <span className="opacity-75 tabular-nums">
+          {formatElapsedTime(elapsedMs)}
+        </span>
+      )}
+      {isCompiling && onForceStop && (
+        <button
+          onClick={onForceStop}
+          className="ml-1 p-0.5 hover:bg-white/20 rounded transition-colors"
+          title="Stop compilation"
+          aria-label="Stop compilation"
+        >
+          <Square className="w-3 h-3" />
+        </button>
+      )}
     </div>
   )
 }
@@ -383,19 +420,64 @@ export function LivePreview({
   const [error, setError] = useState<string | null>(null)
   const [previewStatus, setPreviewStatus] = useState<PreviewStatus>('idle')
   const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [elapsedMs, setElapsedMs] = useState(0)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const compilationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   )
+  const elapsedIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const compilationStartRef = useRef<number>(0)
 
   const isProcessing =
     previewStatus === 'compiling' || previewStatus === 'rendering'
 
-  // Compilation timeout duration (10 seconds)
-  const COMPILATION_TIMEOUT_MS = 10000
+  // Terminate the iframe to stop all execution
+  const terminateIframe = useCallback(() => {
+    if (iframeRef.current) {
+      // Clear the iframe content to stop any running code
+      iframeRef.current.srcdoc = ''
+      iframeRef.current.src = 'about:blank'
+    }
+  }, [])
 
-  // Handle messages from iframe
+  // Stop elapsed timer
+  const stopElapsedTimer = useCallback(() => {
+    if (elapsedIntervalRef.current) {
+      clearInterval(elapsedIntervalRef.current)
+      elapsedIntervalRef.current = null
+    }
+    setElapsedMs(0)
+  }, [])
+
+  // Start elapsed timer
+  const startElapsedTimer = useCallback(() => {
+    stopElapsedTimer()
+    compilationStartRef.current = Date.now()
+    elapsedIntervalRef.current = setInterval(() => {
+      setElapsedMs(Date.now() - compilationStartRef.current)
+    }, 100)
+  }, [stopElapsedTimer])
+
+  // Force stop compilation
+  const forceStop = useCallback(() => {
+    // Clear timeouts
+    if (compilationTimeoutRef.current) {
+      clearTimeout(compilationTimeoutRef.current)
+      compilationTimeoutRef.current = null
+    }
+    stopElapsedTimer()
+
+    // Terminate iframe
+    terminateIframe()
+
+    // Update state
+    setPreviewStatus('idle')
+    onPreviewStatus?.('idle')
+    setError('Compilation stopped by user')
+  }, [terminateIframe, stopElapsedTimer, onPreviewStatus])
+
+  // Handle messages from iframe with type-safe validation
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       // Security: Only accept messages from our iframe
@@ -405,48 +487,57 @@ export function LivePreview({
 
       const { data } = event
 
-      if (data.type === 'playground-console' && onConsoleEntry) {
-        onConsoleEntry({
-          level: data.level,
-          message: data.message,
-          args: data.args,
-        })
+      // Validate message structure using type guard
+      if (!isIframeMessage(data)) {
+        return
       }
 
-      if (data.type === 'playground-status') {
-        setPreviewStatus(data.status)
-        onPreviewStatus?.(data.status)
+      switch (data.type) {
+        case 'playground-console':
+          onConsoleEntry?.({
+            level: data.level,
+            message: data.message,
+            args: data.args,
+          })
+          break
 
-        if (data.status === 'success' || data.status === 'error') {
-          setIsInitialLoad(false)
-          // Clear compilation timeout on completion
-          if (compilationTimeoutRef.current) {
-            clearTimeout(compilationTimeoutRef.current)
-            compilationTimeoutRef.current = null
+        case 'playground-status':
+          setPreviewStatus(data.status)
+          onPreviewStatus?.(data.status)
+
+          if (data.status === 'success' || data.status === 'error') {
+            setIsInitialLoad(false)
+            stopElapsedTimer()
+            // Clear compilation timeout on completion
+            if (compilationTimeoutRef.current) {
+              clearTimeout(compilationTimeoutRef.current)
+              compilationTimeoutRef.current = null
+            }
           }
-        }
-      }
+          break
 
-      if (data.type === 'playground-error') {
-        const playgroundError: PlaygroundError = {
-          message: data.error.message,
-          line: data.error.line,
-          column: data.error.column,
-          stack: data.error.stack,
+        case 'playground-error': {
+          const playgroundError: PlaygroundError = {
+            message: data.error.message,
+            line: data.error.line,
+            column: data.error.column,
+            stack: data.error.stack ?? undefined,
+          }
+          setError(data.error.message)
+          onError?.(playgroundError)
+          break
         }
-        setError(data.error.message)
-        onError?.(playgroundError)
-      }
 
-      if (data.type === 'playground-render-success') {
-        setError(null)
-        onError?.(null)
+        case 'playground-render-success':
+          setError(null)
+          onError?.(null)
+          break
       }
     }
 
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [onConsoleEntry, onError, onPreviewStatus])
+  }, [onConsoleEntry, onError, onPreviewStatus, stopElapsedTimer])
 
   const runPreview = useCallback(() => {
     // Clear any existing compilation timeout
@@ -458,10 +549,17 @@ export function LivePreview({
     onPreviewStatus?.('compiling')
     setError(null)
 
-    // Set compilation timeout to prevent hanging
+    // Start elapsed timer
+    startElapsedTimer()
+
+    // Set compilation timeout to prevent hanging - terminates iframe on timeout
     compilationTimeoutRef.current = setTimeout(() => {
+      // Terminate the iframe to actually stop execution
+      terminateIframe()
+      stopElapsedTimer()
+
       setError(
-        'Compilation timed out. The code may contain an infinite loop or heavy computation.'
+        'Compilation timed out after 10 seconds. The code may contain an infinite loop or heavy computation.'
       )
       setPreviewStatus('error')
       onPreviewStatus?.('error')
@@ -485,13 +583,22 @@ export function LivePreview({
         clearTimeout(compilationTimeoutRef.current)
         compilationTimeoutRef.current = null
       }
+      stopElapsedTimer()
       const message = err instanceof Error ? err.message : 'Unknown error'
       setError(message)
       setPreviewStatus('error')
       onPreviewStatus?.('error')
       onError?.({ message })
     }
-  }, [code, theme, onError, onPreviewStatus, COMPILATION_TIMEOUT_MS])
+  }, [
+    code,
+    theme,
+    onError,
+    onPreviewStatus,
+    startElapsedTimer,
+    stopElapsedTimer,
+    terminateIframe,
+  ])
 
   // Expose run function to parent via ref
   useEffect(() => {
@@ -525,11 +632,14 @@ export function LivePreview({
     }
   }, [autoRun, runPreview])
 
-  // Cleanup compilation timeout on unmount
+  // Cleanup timeouts and intervals on unmount
   useEffect(() => {
     return () => {
       if (compilationTimeoutRef.current) {
         clearTimeout(compilationTimeoutRef.current)
+      }
+      if (elapsedIntervalRef.current) {
+        clearInterval(elapsedIntervalRef.current)
       }
     }
   }, [])
@@ -564,8 +674,12 @@ export function LivePreview({
 
       {/* Preview Container */}
       <div className="flex-1 relative preview-container min-h-[400px]">
-        {/* Status Indicator */}
-        <StatusIndicator status={previewStatus} />
+        {/* Status Indicator with elapsed time and stop button */}
+        <StatusIndicator
+          status={previewStatus}
+          elapsedMs={elapsedMs}
+          onForceStop={isProcessing ? forceStop : undefined}
+        />
 
         {/* Initial Loading Skeleton */}
         {isInitialLoad && previewStatus === 'idle' && (
