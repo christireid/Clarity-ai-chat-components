@@ -5,10 +5,10 @@ import { useState } from 'react'
 
 /**
  * **ChatWindow Component**
- * 
+ *
  * Complete chat window component that orchestrates MessageList and ChatInput
  * to provide a full-featured chat interface.
- * 
+ *
  * **Key Features:**
  * - Message display and management
  * - Input handling with send functionality
@@ -16,7 +16,7 @@ import { useState } from 'react'
  * - Empty state handling
  * - Auto-scroll to latest message
  * - Keyboard shortcuts (Enter to send, Shift+Enter for new line)
- * 
+ *
  * **Use Cases:**
  * - AI chat interfaces
  * - Customer support
@@ -96,7 +96,8 @@ const mockMessages: Message[] = [
   {
     id: '2',
     role: 'assistant',
-    content: 'Of course! I\'d be happy to help you with React. What specific topic would you like to discuss?',
+    content:
+      "Of course! I'd be happy to help you with React. What specific topic would you like to discuss?",
     timestamp: Date.now() - 30000,
   },
   {
@@ -179,7 +180,7 @@ const InteractiveTemplate = () => {
       content,
       timestamp: Date.now(),
     }
-    
+
     setMessages([...messages, newMessage])
     setIsLoading(true)
 
@@ -210,7 +211,8 @@ export const Interactive: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Interactive example showing real message sending and receiving. Try sending a message!',
+        story:
+          'Interactive example showing real message sending and receiving. Try sending a message!',
       },
     },
   },
@@ -228,7 +230,8 @@ export const WithError: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'ChatWindow with error state displayed. Errors are shown prominently to users.',
+        story:
+          'ChatWindow with error state displayed. Errors are shown prominently to users.',
       },
     },
   },
@@ -254,7 +257,8 @@ export const Streaming: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'ChatWindow showing a streaming message. Messages appear in real-time as the AI generates them.',
+        story:
+          'ChatWindow showing a streaming message. Messages appear in real-time as the AI generates them.',
       },
     },
   },
@@ -286,7 +290,7 @@ const StreamingAnimationTemplate = () => {
       content,
       timestamp: Date.now(),
     }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
     // Simulate streaming response
@@ -310,13 +314,13 @@ The key benefit is that hooks make your code simpler and more reusable!`
     let accumulated = ''
 
     for (let i = 0; i < words.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
       accumulated += (i === 0 ? '' : ' ') + words[i]
       setStreamingContent(accumulated)
     }
 
     // Finalize message
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         id: (Date.now() + 1).toString(),
@@ -356,7 +360,8 @@ export const StreamingAnimation: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Realistic streaming demo showing word-by-word message generation. Try sending a message to see the streaming effect.',
+        story:
+          'Realistic streaming demo showing word-by-word message generation. Try sending a message to see the streaming effect.',
       },
     },
   },
@@ -370,13 +375,15 @@ const StopGenerationTemplate = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! Ask me anything and you can stop my response mid-generation.',
+      content:
+        'Hello! Ask me anything and you can stop my response mid-generation.',
       timestamp: Date.now() - 5000,
     },
   ])
   const [isLoading, setIsLoading] = useState(false)
   const [streamingContent, setStreamingContent] = useState('')
-  const [abortController, setAbortController] = useState<AbortController | null>(null)
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null)
 
   const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
@@ -385,7 +392,7 @@ const StopGenerationTemplate = () => {
       content,
       timestamp: Date.now(),
     }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
     const controller = new AbortController()
@@ -416,7 +423,7 @@ This is a much better UX than waiting for complete responses.`
         if (controller.signal.aborted) {
           break
         }
-        await new Promise(resolve => setTimeout(resolve, 80))
+        await new Promise((resolve) => setTimeout(resolve, 80))
         accumulated += (i === 0 ? '' : ' ') + words[i]
         setStreamingContent(accumulated)
       }
@@ -426,12 +433,16 @@ This is a much better UX than waiting for complete responses.`
 
     // Finalize with whatever content we have
     if (accumulated) {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: accumulated + (controller.signal.aborted ? '\n\n*[Response stopped by user]*' : ''),
+          content:
+            accumulated +
+            (controller.signal.aborted
+              ? '\n\n*[Response stopped by user]*'
+              : ''),
           timestamp: Date.now(),
         },
       ])
@@ -463,14 +474,16 @@ This is a much better UX than waiting for complete responses.`
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {isLoading && (
-        <div style={{
-          padding: '8px 16px',
-          background: '#fef3c7',
-          borderBottom: '1px solid #fcd34d',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
+        <div
+          style={{
+            padding: '8px 16px',
+            background: '#fef3c7',
+            borderBottom: '1px solid #fcd34d',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <span style={{ fontSize: '14px', color: '#92400e' }}>
             AI is generating response...
           </span>
@@ -507,7 +520,8 @@ export const StopGeneration: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates the Stop Generation feature. Send a message and click "Stop" to cancel the response mid-stream.',
+        story:
+          'Demonstrates the Stop Generation feature. Send a message and click "Stop" to cancel the response mid-stream.',
       },
     },
   },
@@ -521,7 +535,8 @@ const NetworkErrorTemplate = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! This demo simulates network failures. Try sending a message.',
+      content:
+        'Hello! This demo simulates network failures. Try sending a message.',
       timestamp: Date.now() - 5000,
     },
   ])
@@ -540,23 +555,25 @@ const NetworkErrorTemplate = () => {
       content,
       timestamp: Date.now(),
     }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 1500))
 
     if (simulateFailure) {
-      setError('Network error: Unable to connect to AI service. Please check your connection and try again.')
+      setError(
+        'Network error: Unable to connect to AI service. Please check your connection and try again.'
+      )
       setFailedMessage(content)
       setIsLoading(false)
       // Remove the failed user message
-      setMessages(prev => prev.filter(m => m.id !== userMessage.id))
+      setMessages((prev) => prev.filter((m) => m.id !== userMessage.id))
       return
     }
 
     // Success response
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         id: (Date.now() + 1).toString(),
@@ -578,15 +595,17 @@ const NetworkErrorTemplate = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {error && (
-        <div style={{
-          padding: '12px 16px',
-          background: '#fef2f2',
-          borderBottom: '1px solid #fecaca',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-        }}>
+        <div
+          style={{
+            padding: '12px 16px',
+            background: '#fef2f2',
+            borderBottom: '1px solid #fecaca',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '18px' }}>⚠️</span>
             <span style={{ fontSize: '14px', color: '#991b1b' }}>{error}</span>
@@ -625,7 +644,8 @@ export const NetworkError: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates network error handling with retry functionality. The first message will fail, then clicking Retry will succeed.',
+        story:
+          'Demonstrates network error handling with retry functionality. The first message will fail, then clicking Retry will succeed.',
       },
     },
   },
@@ -644,14 +664,16 @@ export const MobileView: Story = {
   },
   decorators: [
     (Story) => (
-      <div style={{
-        width: '375px',
-        height: '667px',
-        border: '8px solid #333',
-        borderRadius: '32px',
-        overflow: 'hidden',
-        background: 'white',
-      }}>
+      <div
+        style={{
+          width: '375px',
+          height: '667px',
+          border: '8px solid #333',
+          borderRadius: '32px',
+          overflow: 'hidden',
+          background: 'white',
+        }}
+      >
         <Story />
       </div>
     ),
@@ -659,7 +681,8 @@ export const MobileView: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'ChatWindow displayed in a mobile phone frame (iPhone SE dimensions). Tests responsive behavior.',
+        story:
+          'ChatWindow displayed in a mobile phone frame (iPhone SE dimensions). Tests responsive behavior.',
       },
     },
   },
@@ -676,15 +699,17 @@ export const CustomEmptyState: Story = {
       console.log('Message sent:', content)
     },
     emptyState: (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        padding: '32px',
-        textAlign: 'center',
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          padding: '32px',
+          textAlign: 'center',
+        }}
+      >
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤖</div>
         <h3 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: 600 }}>
           Welcome to AI Assistant
@@ -692,38 +717,52 @@ export const CustomEmptyState: Story = {
         <p style={{ margin: '0 0 24px', color: '#6b7280', fontSize: '14px' }}>
           I can help you with coding, writing, analysis, and more.
         </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', maxWidth: '280px' }}>
-          <button style={{
-            padding: '10px 16px',
-            background: '#f3f4f6',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            textAlign: 'left',
-          }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            width: '100%',
+            maxWidth: '280px',
+          }}
+        >
+          <button
+            style={{
+              padding: '10px 16px',
+              background: '#f3f4f6',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              textAlign: 'left',
+            }}
+          >
             💡 Explain a concept
           </button>
-          <button style={{
-            padding: '10px 16px',
-            background: '#f3f4f6',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            textAlign: 'left',
-          }}>
+          <button
+            style={{
+              padding: '10px 16px',
+              background: '#f3f4f6',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              textAlign: 'left',
+            }}
+          >
             📝 Help me write something
           </button>
-          <button style={{
-            padding: '10px 16px',
-            background: '#f3f4f6',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            textAlign: 'left',
-          }}>
+          <button
+            style={{
+              padding: '10px 16px',
+              background: '#f3f4f6',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              textAlign: 'left',
+            }}
+          >
             🔧 Debug my code
           </button>
         </div>
@@ -733,7 +772,8 @@ export const CustomEmptyState: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'ChatWindow with a custom empty state showing starter prompts. This provides a better onboarding experience.',
+        story:
+          'ChatWindow with a custom empty state showing starter prompts. This provides a better onboarding experience.',
       },
     },
   },
@@ -794,7 +834,8 @@ You can use multiple \`useState\` calls for different pieces of state.`,
   parameters: {
     docs: {
       description: {
-        story: 'ChatWindow displaying a message with syntax-highlighted code block. Verify the copy button and highlighting work correctly.',
+        story:
+          'ChatWindow displaying a message with syntax-highlighted code block. Verify the copy button and highlighting work correctly.',
       },
     },
   },
@@ -841,7 +882,8 @@ export const WithMarkdownTable: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'ChatWindow displaying a message with a Markdown table. Verify table renders correctly with proper alignment.',
+        story:
+          'ChatWindow displaying a message with a Markdown table. Verify table renders correctly with proper alignment.',
       },
     },
   },

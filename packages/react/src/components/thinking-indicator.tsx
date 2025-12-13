@@ -134,7 +134,7 @@ export function ThinkingIndicator({
                 opacity: [0.6, 0, 0],
               }}
               transition={{
-                duration: 1.5,
+                duration: durations.slower,
                 repeat: Infinity,
                 ease: 'easeOut',
               }}
@@ -146,7 +146,7 @@ export function ThinkingIndicator({
                 opacity: [0.4, 0, 0],
               }}
               transition={{
-                duration: 1.5,
+                duration: durations.slower,
                 repeat: Infinity,
                 ease: 'easeOut',
                 delay: 0.3,
@@ -162,7 +162,7 @@ export function ThinkingIndicator({
             prefersReducedMotion
               ? { duration: 0 }
               : {
-                  duration: 2,
+                  duration: durations.slower,
                   repeat: Infinity,
                   ease: EASING_FRAMER.inOut,
                 }

@@ -7,7 +7,7 @@ import { MarkdownCodeBlock } from './message/markdown-code-block'
 
 /**
  * Enhanced Code Block Component
- * 
+ *
  * Features:
  * - Automatic language detection and highlighting (via Prism)
  * - One-click copy to clipboard with visual feedback
@@ -17,7 +17,7 @@ import { MarkdownCodeBlock } from './message/markdown-code-block'
  * - Download code as file
  * - Mac-like window controls (visual)
  * - Custom themes
- * 
+ *
  * @example
  * ```tsx
  * <EnhancedCodeBlock
@@ -76,24 +76,23 @@ export function EnhancedCodeBlock({
   // Use raw split for logic, but full code for Prism
   const lines = React.useMemo(() => code.split('\n'), [code])
   const shouldFold = enableFolding && lines.length > maxHeight
-  
+
   // If folding is active, we just limit the container height/overflow via CSS or rendering
   // But since we are delegating rendering to MarkdownCodeBlock which takes a string,
-  // we need to slice the STRING if we want to "physically" fold it, 
+  // we need to slice the STRING if we want to "physically" fold it,
   // OR we use CSS max-height.
   // Using string slicing breaks syntax highlighting (context lost).
   // Using CSS max-height is better but line numbers must match.
-  // For simplicity and robustness with Prism, we will render the FULL code 
+  // For simplicity and robustness with Prism, we will render the FULL code
   // and use a container with max-height/overflow-hidden when folded.
-  
+
   // Actually, to truly "fold" and show "Show more", we usually just crop.
   // Cropping plain text is fine. Cropping HTML is hard.
   // We will crop the TEXT passed to Prism.
   // This might result in unclosed scopes at the bottom, but Prism handles partial code reasonably well (usually just loses coloring for that last token).
-  const displayedCode = isFolded && shouldFold 
-    ? lines.slice(0, maxHeight).join('\n') 
-    : code
-    
+  const displayedCode =
+    isFolded && shouldFold ? lines.slice(0, maxHeight).join('\n') : code
+
   const displayedLineCount = isFolded && shouldFold ? maxHeight : lines.length
 
   // Detect language from code if not provided
@@ -113,7 +112,7 @@ export function EnhancedCodeBlock({
         className
       )}
     >
-      <CodeWindowHeader 
+      <CodeWindowHeader
         codeString={code}
         language={detectedLanguage}
         filename={filename}
@@ -127,15 +126,17 @@ export function EnhancedCodeBlock({
       />
 
       {/* Code Content */}
-      <div className={cn(
-        "relative flex bg-[#1e1e1e] text-[#d4d4d4] code-metrics", // Hardcode dark background for code area to match Prism theme
-        // Scrollbar styling
-        "scrollbar-thin scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/40"
-      )}>
+      <div
+        className={cn(
+          'relative flex bg-[#1e1e1e] text-[#d4d4d4] code-metrics', // Hardcode dark background for code area to match Prism theme
+          // Scrollbar styling
+          'scrollbar-thin scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/40'
+        )}
+      >
         {showLineNumbers && (
           <div
             className={cn(
-              'flex-none py-4 px-3 text-right select-none border-r border-white/10 bg-white/5 text-[#858585] text-xs font-mono min-w-[3rem]',
+              'flex-none py-4 px-3 text-right select-none border-r border-white/10 bg-white/5 text-[#858585] text-xs font-mono min-w-[3rem]'
             )}
           >
             {Array.from({ length: displayedLineCount }).map((_, index) => {
@@ -146,8 +147,8 @@ export function EnhancedCodeBlock({
                 <div
                   key={index}
                   className={cn(
-                    "transition-colors",
-                    isHighlighted && "text-yellow-500 font-bold"
+                    'transition-colors',
+                    isHighlighted && 'text-yellow-500 font-bold'
                   )}
                 >
                   {lineNumber}
@@ -163,51 +164,49 @@ export function EnhancedCodeBlock({
             We need to ensure line-height matches the gutter. 
             Prism default is usually relative. We force it here via code-metrics class.
         */}
-        <div 
+        <div
           className="flex-1 min-w-0 overflow-x-auto relative"
           // If we had line highlighting overlays, they would go here absolute positioned
         >
-           {highlightLines.length > 0 && (
+          {highlightLines.length > 0 && (
             <div className="absolute inset-0 pointer-events-none select-none z-0">
-               {/* Render highlights backgrounds */}
-               {Array.from({ length: displayedLineCount }).map((_, index) => {
-                  const lineNumber = startLineNumber + index
-                  if (!highlightLines.includes(lineNumber)) return null
-                  return (
-                    <div 
-                      key={index}
-                      className="w-full bg-yellow-500/10 border-l-2 border-yellow-500 absolute left-0 right-0"
-                      style={{ 
-                        top: `calc(${index} * var(--code-line-height) + 1rem)`, // 1rem padding top
-                        height: 'var(--code-line-height)'
-                      }} 
-                    />
-                  )
-               })}
+              {/* Render highlights backgrounds */}
+              {Array.from({ length: displayedLineCount }).map((_, index) => {
+                const lineNumber = startLineNumber + index
+                if (!highlightLines.includes(lineNumber)) return null
+                return (
+                  <div
+                    key={index}
+                    className="w-full bg-yellow-500/10 border-l-2 border-yellow-500 absolute left-0 right-0"
+                    style={{
+                      top: `calc(${index} * var(--code-line-height) + 1rem)`, // 1rem padding top
+                      height: 'var(--code-line-height)',
+                    }}
+                  />
+                )
+              })}
             </div>
-           )}
+          )}
 
-           <pre 
+          <pre
             className={cn(
-               "!m-0 !p-4 !bg-transparent font-fira-code relative z-10",
-               wrapText ? "whitespace-pre-wrap break-all" : "whitespace-pre"
+              '!m-0 !p-4 !bg-transparent font-fira-code relative z-10',
+              wrapText ? 'whitespace-pre-wrap break-all' : 'whitespace-pre'
             )}
-           >
-             <MarkdownCodeBlock 
-               className={`language-${detectedLanguage}`}
-             >
-               {displayedCode}
-             </MarkdownCodeBlock>
-           </pre>
+          >
+            <MarkdownCodeBlock className={`language-${detectedLanguage}`}>
+              {displayedCode}
+            </MarkdownCodeBlock>
+          </pre>
         </div>
       </div>
 
       {/* Fold Indicator */}
       {isFolded && shouldFold && (
-        <div 
+        <div
           className={cn(
-            "absolute bottom-0 left-0 right-0 h-16 pointer-events-none flex items-end justify-center pb-2",
-            "bg-gradient-to-t from-[#1e1e1e] to-transparent" 
+            'absolute bottom-0 left-0 right-0 h-16 pointer-events-none flex items-end justify-center pb-2',
+            'bg-gradient-to-t from-[#1e1e1e] to-transparent'
           )}
         >
           <span className="text-xs text-muted-foreground bg-background/80 px-3 py-1 rounded-full border shadow-sm backdrop-blur-sm">

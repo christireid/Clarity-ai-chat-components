@@ -144,16 +144,34 @@ export interface BatchingOptions {
  * Common filler words to remove
  */
 const FILLER_WORDS = new Set([
-  'um', 'uh', 'like', 'you know', 'actually', 'basically', 'literally',
-  'really', 'very', 'quite', 'rather', 'pretty', 'somewhat', 'sort of',
-  'kind of', 'a bit', 'a little', 'just', 'only', 'simply', 'merely',
+  'um',
+  'uh',
+  'like',
+  'you know',
+  'actually',
+  'basically',
+  'literally',
+  'really',
+  'very',
+  'quite',
+  'rather',
+  'pretty',
+  'somewhat',
+  'sort of',
+  'kind of',
+  'a bit',
+  'a little',
+  'just',
+  'only',
+  'simply',
+  'merely',
 ])
 
 /**
  * Remove duplicate sentences from text
  */
 function removeDuplicateSentences(text: string): string {
-  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0)
+  const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0)
   const seen = new Set<string>()
   const unique: string[] = []
 
@@ -172,11 +190,11 @@ function removeDuplicateSentences(text: string): string {
  * Remove filler words from text
  */
 function removeFillers(text: string, preserveKeywords: string[] = []): string {
-  const preserveSet = new Set(preserveKeywords.map(k => k.toLowerCase()))
-  
+  const preserveSet = new Set(preserveKeywords.map((k) => k.toLowerCase()))
+
   return text
     .split(/\s+/)
-    .filter(word => {
+    .filter((word) => {
       const lower = word.toLowerCase().replace(/[.,!?;:]$/, '')
       return !FILLER_WORDS.has(lower) || preserveSet.has(lower)
     })
@@ -199,7 +217,7 @@ function simplifySentences(text: string): string {
 
 /**
  * Shorten and simplify a prompt
- * 
+ *
  * @example
  * ```ts
  * const shortened = shortenPrompt(
@@ -269,11 +287,17 @@ export function estimateTokens(text: string): number {
 export function calculateTokenSavings(
   original: string,
   shortened: string
-): { tokensSaved: number; percentage: number; originalTokens: number; shortenedTokens: number } {
+): {
+  tokensSaved: number
+  percentage: number
+  originalTokens: number
+  shortenedTokens: number
+} {
   const originalTokens = estimateTokens(original)
   const shortenedTokens = estimateTokens(shortened)
   const tokensSaved = originalTokens - shortenedTokens
-  const percentage = originalTokens > 0 ? (tokensSaved / originalTokens) * 100 : 0
+  const percentage =
+    originalTokens > 0 ? (tokensSaved / originalTokens) * 100 : 0
 
   return {
     tokensSaved,
@@ -297,9 +321,9 @@ export function limitHistorySlidingWindow(
   const { maxMessages = 10, keepSystemMessage = true } = options
 
   const systemMessages = keepSystemMessage
-    ? messages.filter(m => m.role === 'system')
+    ? messages.filter((m) => m.role === 'system')
     : []
-  const otherMessages = messages.filter(m => m.role !== 'system')
+  const otherMessages = messages.filter((m) => m.role !== 'system')
 
   const recentMessages = otherMessages.slice(-maxMessages)
 
@@ -316,9 +340,9 @@ export function limitHistoryFIFO(
   const { maxTokens = 2000, keepSystemMessage = true, keepLast = 2 } = options
 
   const systemMessages = keepSystemMessage
-    ? messages.filter(m => m.role === 'system')
+    ? messages.filter((m) => m.role === 'system')
     : []
-  const otherMessages = messages.filter(m => m.role !== 'system')
+  const otherMessages = messages.filter((m) => m.role !== 'system')
 
   // Always keep last N messages
   const lastMessages = otherMessages.slice(-keepLast)
@@ -326,13 +350,25 @@ export function limitHistoryFIFO(
 
   // Calculate tokens used by last messages
   let tokensUsed = lastMessages.reduce(
-    (sum, msg) => sum + estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)),
+    (sum, msg) =>
+      sum +
+      estimateTokens(
+        typeof msg.content === 'string'
+          ? msg.content
+          : JSON.stringify(msg.content)
+      ),
     0
   )
 
   // Add system message tokens
   tokensUsed += systemMessages.reduce(
-    (sum, msg) => sum + estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)),
+    (sum, msg) =>
+      sum +
+      estimateTokens(
+        typeof msg.content === 'string'
+          ? msg.content
+          : JSON.stringify(msg.content)
+      ),
     0
   )
 
@@ -341,8 +377,12 @@ export function limitHistoryFIFO(
   for (let i = remainingMessages.length - 1; i >= 0; i--) {
     const msg = remainingMessages[i]
     if (!msg) continue
-    const msgTokens = estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content))
-    
+    const msgTokens = estimateTokens(
+      typeof msg.content === 'string'
+        ? msg.content
+        : JSON.stringify(msg.content)
+    )
+
     if (tokensUsed + msgTokens <= maxTokens) {
       keptMessages.unshift(msg)
       tokensUsed += msgTokens
@@ -364,9 +404,9 @@ export function limitHistorySmart(
   const { maxTokens = 2000, keepSystemMessage = true } = options
 
   const systemMessages = keepSystemMessage
-    ? messages.filter(m => m.role === 'system')
+    ? messages.filter((m) => m.role === 'system')
     : []
-  const otherMessages = messages.filter(m => m.role !== 'system')
+  const otherMessages = messages.filter((m) => m.role !== 'system')
 
   // Group into conversation turns (user + assistant pairs)
   const turns: CoreMessage[][] = []
@@ -389,7 +429,13 @@ export function limitHistorySmart(
 
   // Calculate system message tokens
   let tokensUsed = systemMessages.reduce(
-    (sum, msg) => sum + estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)),
+    (sum, msg) =>
+      sum +
+      estimateTokens(
+        typeof msg.content === 'string'
+          ? msg.content
+          : JSON.stringify(msg.content)
+      ),
     0
   )
 
@@ -399,7 +445,13 @@ export function limitHistorySmart(
     const turn = turns[i]
     if (!turn) continue
     const turnTokens = turn.reduce(
-      (sum, msg) => sum + estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)),
+      (sum, msg) =>
+        sum +
+        estimateTokens(
+          typeof msg.content === 'string'
+            ? msg.content
+            : JSON.stringify(msg.content)
+        ),
       0
     )
 
@@ -416,7 +468,7 @@ export function limitHistorySmart(
 
 /**
  * Limit conversation history based on strategy
- * 
+ *
  * Note: 'summarize' strategy in this synchronous function falls back to 'smart'.
  * For true summarization, use the `optimizeHistory` function in `useTokenOptimizationEnhanced` hook.
  */
@@ -523,18 +575,19 @@ export function createCache(options: CacheOptions = {}): {
  * Generate cache key from message
  */
 export function generateCacheKey(message: string | CoreMessage): string {
-  const text = typeof message === 'string' 
-    ? message 
-    : typeof (message as any).content === 'string'
-    ? (message as any).content
-    : JSON.stringify((message as any).content)
+  const text =
+    typeof message === 'string'
+      ? message
+      : typeof (message as any).content === 'string'
+        ? (message as any).content
+        : JSON.stringify((message as any).content)
 
   // Simple hash function
   let hash = 0
   const normalized = text.toLowerCase().trim()
   for (let i = 0; i < normalized.length; i++) {
     const char = normalized.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
+    hash = (hash << 5) - hash + char
     hash = hash & hash // Convert to 32-bit integer
   }
 
@@ -562,7 +615,7 @@ class RequestThrottler {
 
     // Remove old requests outside time window
     this.requests = this.requests.filter(
-      timestamp => now - timestamp < this.timeWindow
+      (timestamp) => now - timestamp < this.timeWindow
     )
 
     // Check if we're within rate limits
@@ -604,7 +657,9 @@ class RequestThrottler {
 /**
  * Create a request throttler
  */
-export function createThrottler(options: ThrottlingOptions = {}): RequestThrottler {
+export function createThrottler(
+  options: ThrottlingOptions = {}
+): RequestThrottler {
   return new RequestThrottler(options)
 }
 
@@ -682,9 +737,10 @@ export function shouldUseReference(
 ): boolean {
   const { maxSize = 1000 } = options // 1KB default
 
-  const size = typeof data === 'string' 
-    ? new Blob([data]).size 
-    : new Blob([JSON.stringify(data)]).size
+  const size =
+    typeof data === 'string'
+      ? new Blob([data]).size
+      : new Blob([JSON.stringify(data)]).size
 
   return size > maxSize
 }
@@ -695,7 +751,9 @@ export function shouldUseReference(
 export function createReference(
   data: string | object,
   options: ReferenceOptions = {}
-): { type: 'reference'; id: string; originalSize: number } | { type: 'data'; data: string | object } {
+):
+  | { type: 'reference'; id: string; originalSize: number }
+  | { type: 'data'; data: string | object } {
   const { maxSize = 1000, referencePrefix = 'ref_' } = options
 
   if (!shouldUseReference(data, options)) {
@@ -703,9 +761,10 @@ export function createReference(
   }
 
   const id = `${referencePrefix}${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  const size = typeof data === 'string' 
-    ? new Blob([data]).size 
-    : new Blob([JSON.stringify(data)]).size
+  const size =
+    typeof data === 'string'
+      ? new Blob([data]).size
+      : new Blob([JSON.stringify(data)]).size
 
   // In production, store data in backend and return reference
   return {
@@ -740,11 +799,11 @@ export function enforceOutputLimit(
       const lastQuestion = truncated.lastIndexOf('?')
       const lastExclamation = truncated.lastIndexOf('!')
       const lastBoundary = Math.max(lastPeriod, lastQuestion, lastExclamation)
-      
+
       if (lastBoundary > maxCharacters * 0.8) {
         return truncated.slice(0, lastBoundary + 1) + '...'
       }
-      
+
       return truncated + '...'
     }
   }
@@ -755,7 +814,10 @@ export function enforceOutputLimit(
     if (tokens > maxTokens) {
       // Rough approximation: tokens * 4 = characters (using standard ratio)
       const maxChars = Math.floor(maxTokens * 4)
-      return enforceOutputLimit(output, { maxCharacters: maxChars, truncationStrategy })
+      return enforceOutputLimit(output, {
+        maxCharacters: maxChars,
+        truncationStrategy,
+      })
     }
   }
 
@@ -825,9 +887,7 @@ class RequestBatcher {
     const batch = this.queue.splice(0, this.batchSize)
 
     // Process all requests in parallel
-    const results = await Promise.allSettled(
-      batch.map(req => req.request())
-    )
+    const results = await Promise.allSettled(batch.map((req) => req.request()))
 
     // Resolve/reject each promise
     batch.forEach((req, index) => {
@@ -847,7 +907,7 @@ class RequestBatcher {
       clearTimeout(this.timer)
       this.timer = null
     }
-    this.queue.forEach(req => {
+    this.queue.forEach((req) => {
       req.reject(new Error('Batch cleared'))
     })
     this.queue = []
@@ -872,7 +932,7 @@ export function calculateSimilarity(str1: string, str2: string): number {
   const words1 = new Set(str1.toLowerCase().split(/\s+/))
   const words2 = new Set(str2.toLowerCase().split(/\s+/))
 
-  const intersection = new Set([...words1].filter(x => words2.has(x)))
+  const intersection = new Set([...words1].filter((x) => words2.has(x)))
   const union = new Set([...words1, ...words2])
 
   return union.size > 0 ? intersection.size / union.size : 0

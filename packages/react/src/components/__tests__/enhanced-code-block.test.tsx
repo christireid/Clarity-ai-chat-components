@@ -18,7 +18,13 @@ vi.mock('../copy-button', () => ({
 
 // Mock PrismJS via MarkdownCodeBlock
 vi.mock('../message/markdown-code-block', () => ({
-  MarkdownCodeBlock: ({ children, className }: { children: React.ReactNode, className: string }) => (
+  MarkdownCodeBlock: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode
+    className: string
+  }) => (
     <code data-testid="markdown-code-block" className={className}>
       {children}
     </code>
@@ -33,7 +39,9 @@ describe('EnhancedCodeBlock', () => {
 
   it('renders code content', () => {
     render(<EnhancedCodeBlock code={sampleCode} />)
-    expect(screen.getByTestId('markdown-code-block')).toHaveTextContent(sampleCode)
+    expect(screen.getByTestId('markdown-code-block')).toHaveTextContent(
+      sampleCode
+    )
   })
 
   it('displays line numbers by default', () => {
@@ -64,15 +72,17 @@ describe('EnhancedCodeBlock', () => {
   it('handles folding interactions', () => {
     // create long code
     const longCode = Array(30).fill('line').join('\n')
-    render(<EnhancedCodeBlock code={longCode} maxHeight={5} initiallyFolded={true} />)
-    
+    render(
+      <EnhancedCodeBlock code={longCode} maxHeight={5} initiallyFolded={true} />
+    )
+
     // Should show fold indicator
     expect(screen.getByText(/more lines/)).toBeInTheDocument()
-    
+
     // Expand
     const expandButton = screen.getByTitle('Expand code')
     fireEvent.click(expandButton)
-    
+
     // Should hide fold indicator
     expect(screen.queryByText(/more lines/)).not.toBeInTheDocument()
   })
@@ -80,16 +90,16 @@ describe('EnhancedCodeBlock', () => {
   it('toggles word wrap', () => {
     render(<EnhancedCodeBlock code={sampleCode} />)
     const wrapButton = screen.getByTitle('Toggle word wrap')
-    
+
     // Initial state: whitespace-pre
     const pre = screen.getByTestId('markdown-code-block').parentElement
     expect(pre).toHaveClass('whitespace-pre')
-    
+
     // Toggle
     fireEvent.click(wrapButton)
     expect(pre).toHaveClass('whitespace-pre-wrap')
   })
-  
+
   it('handles empty code gracefully', () => {
     render(<EnhancedCodeBlock code="" />)
     expect(screen.getByTestId('markdown-code-block')).toBeInTheDocument()

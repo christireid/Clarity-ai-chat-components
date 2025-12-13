@@ -1,8 +1,23 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback, memo } from 'react'
-import { Send, Bot, User, Sparkles, Zap, Code, Palette, Wand2, RefreshCw, AlertCircle } from 'lucide-react'
-import { useAutoScroll, useStreaming, TypingIndicator } from '@clarity-chat/react'
+import {
+  Send,
+  Bot,
+  User,
+  Sparkles,
+  Zap,
+  Code,
+  Palette,
+  Wand2,
+  RefreshCw,
+  AlertCircle,
+} from 'lucide-react'
+import {
+  useAutoScroll,
+  useStreaming,
+  TypingIndicator,
+} from '@clarity-chat/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -30,10 +45,10 @@ const initialMessages: Message[] = [
 ]
 
 const SUGGESTIONS = [
-  { text: "How do I add streaming?", icon: Zap },
-  { text: "Show me a code snippet", icon: Code },
-  { text: "Can I customize the theme?", icon: Palette },
-  { text: "What hooks are available?", icon: Wand2 },
+  { text: 'How do I add streaming?', icon: Zap },
+  { text: 'Show me a code snippet', icon: Code },
+  { text: 'Can I customize the theme?', icon: Palette },
+  { text: 'What hooks are available?', icon: Wand2 },
 ]
 
 /**
@@ -65,27 +80,40 @@ export function LiveChatDemo() {
   })
 
   // Use the shared useStreaming hook from @clarity-chat/react
-  const { content, isStreaming, startStreaming, reset: resetStreaming } = useStreaming({
+  const {
+    content,
+    isStreaming,
+    startStreaming,
+    reset: resetStreaming,
+  } = useStreaming({
     onError: (error) => {
       console.error('Streaming error:', error)
       setIsError(true)
-      setMessages(prev => {
+      setMessages((prev) => {
         const lastMsg = prev[prev.length - 1]
         // If the last message was the one streaming, mark it as error
         if (lastMsg && lastMsg.id === currentBotMessageIdRef.current) {
-           return prev.map(msg => 
-             msg.id === lastMsg.id 
-               ? { ...msg, isStreaming: false, isError: true, text: msg.text + "\n\n[Connection interrupted]" } 
-               : msg
-           )
+          return prev.map((msg) =>
+            msg.id === lastMsg.id
+              ? {
+                  ...msg,
+                  isStreaming: false,
+                  isError: true,
+                  text: msg.text + '\n\n[Connection interrupted]',
+                }
+              : msg
+          )
         }
-        return [...prev, {
-          id: generateId(),
-          text: "I'm having trouble connecting right now. Please try again in a moment!",
-          sender: 'bot',
-          timestamp: new Date(),
-          isError: true
-        }]
+        return [
+          ...prev,
+          {
+            id: generateId(),
+            text: "I'm having trouble connecting right now. Please try again in a moment!",
+            sender: 'bot',
+            timestamp: new Date(),
+            isError: true,
+          },
+        ]
       })
       currentBotMessageIdRef.current = null
     },
@@ -93,21 +121,23 @@ export function LiveChatDemo() {
       // Mark streaming as complete
       const msgId = currentBotMessageIdRef.current
       if (msgId) {
-        setMessages(prev => prev.map(msg =>
-          msg.id === msgId ? { ...msg, isStreaming: false } : msg
-        ))
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === msgId ? { ...msg, isStreaming: false } : msg
+          )
+        )
         currentBotMessageIdRef.current = null
       }
-    }
+    },
   })
 
   // Sync streaming content to the current bot message
   useEffect(() => {
     const msgId = currentBotMessageIdRef.current
     if (msgId && content) {
-      setMessages(prev => prev.map(msg =>
-        msg.id === msgId ? { ...msg, text: content } : msg
-      ))
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === msgId ? { ...msg, text: content } : msg))
+      )
     }
   }, [content])
 
@@ -146,7 +176,7 @@ export function LiveChatDemo() {
     }
 
     const currentInput = messageText
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
     setShowSuggestions(false)
     setIsError(false)
@@ -159,7 +189,7 @@ export function LiveChatDemo() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: currentInput }),
-        signal: abortControllerRef.current.signal
+        signal: abortControllerRef.current.signal,
       })
 
       if (!response.ok || !response.body) {
@@ -171,30 +201,35 @@ export function LiveChatDemo() {
       // Create placeholder message for streaming
       const botMessageId = generateId()
       currentBotMessageIdRef.current = botMessageId
-      setMessages(prev => [...prev, {
-        id: botMessageId,
-        text: '',
-        sender: 'bot',
-        timestamp: new Date(),
-        isStreaming: true,
-      }])
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: botMessageId,
+          text: '',
+          sender: 'bot',
+          timestamp: new Date(),
+          isStreaming: true,
+        },
+      ])
 
       // Use the streaming hook to handle the response
       await startStreaming(response.body)
-
     } catch (error: any) {
       if (error.name === 'AbortError') return
-      
+
       console.error('Error getting response:', error)
       setIsError(true)
       setIsTyping(false)
-      setMessages(prev => [...prev, {
-        id: generateId(),
-        text: "I'm having trouble connecting right now. Please try again in a moment!",
-        sender: 'bot',
-        timestamp: new Date(),
-        isError: true
-      }])
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: generateId(),
+          text: "I'm having trouble connecting right now. Please try again in a moment!",
+          sender: 'bot',
+          timestamp: new Date(),
+          isError: true,
+        },
+      ])
       resetStreaming()
     } finally {
       abortControllerRef.current = null
@@ -218,7 +253,7 @@ export function LiveChatDemo() {
   return (
     <div className="max-w-2xl mx-auto">
       {/* Demo Label */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-center gap-2 mb-4"
@@ -230,17 +265,17 @@ export function LiveChatDemo() {
       </motion.div>
 
       {/* Chat Window */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: durations.slow }}
         className="rounded-2xl border-2 border-brand-500/20 shadow-2xl overflow-hidden bg-bg-primary relative group"
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-brand-500 to-brand-600 px-6 py-4 text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_50%,transparent_100%)] w-[200%] translate-x-[-100%] animate-[shimmer_3s_infinite]" />
-          
+
           <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner ring-1 ring-white/30">
@@ -254,7 +289,9 @@ export function LiveChatDemo() {
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
                   </span>
                 </div>
-                <div className="text-xs opacity-90 font-medium">Powered by Gemini</div>
+                <div className="text-xs opacity-90 font-medium">
+                  Powered by Gemini
+                </div>
               </div>
             </div>
 
@@ -286,34 +323,47 @@ export function LiveChatDemo() {
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 layout
-                transition={{ duration: 0.3, type: "spring", stiffness: 200, damping: 20 }}
+                transition={{
+                  duration: durations.moderate,
+                  type: 'spring',
+                  stiffness: 200,
+                  damping: 20,
+                }}
                 className={`flex items-start gap-3 ${
                   message.sender === 'user' ? 'flex-row-reverse' : ''
                 }`}
               >
                 {/* Avatar */}
-                <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ring-1 ring-inset ${
-                  message.sender === 'bot'
-                    ? message.isError 
-                      ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 ring-red-500/20'
-                      : 'bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 ring-brand-500/20'
-                    : 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 ring-indigo-500/20'
-                }`}>
+                <div
+                  className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ring-1 ring-inset ${
+                    message.sender === 'bot'
+                      ? message.isError
+                        ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 ring-red-500/20'
+                        : 'bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 ring-brand-500/20'
+                      : 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 ring-indigo-500/20'
+                  }`}
+                >
                   {message.sender === 'bot' ? (
-                    message.isError ? <AlertCircle className="w-5 h-5" /> : <Bot className="w-5 h-5" />
+                    message.isError ? (
+                      <AlertCircle className="w-5 h-5" />
+                    ) : (
+                      <Bot className="w-5 h-5" />
+                    )
                   ) : (
                     <User className="w-5 h-5" />
                   )}
                 </div>
 
                 {/* Message Bubble */}
-                <div className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
-                  message.sender === 'bot'
-                    ? message.isError
-                      ? 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 rounded-tl-sm'
-                      : 'bg-white dark:bg-gray-800 text-text-primary rounded-tl-sm border border-border/50'
-                    : 'bg-brand-500 text-white rounded-tr-sm'
-                }`}>
+                <div
+                  className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
+                    message.sender === 'bot'
+                      ? message.isError
+                        ? 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 rounded-tl-sm'
+                        : 'bg-white dark:bg-gray-800 text-text-primary rounded-tl-sm border border-border/50'
+                      : 'bg-brand-500 text-white rounded-tr-sm'
+                  }`}
+                >
                   <div className="text-sm">
                     {message.sender === 'bot' ? (
                       <>
@@ -321,38 +371,72 @@ export function LiveChatDemo() {
                           <MemoizedReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             components={{
-                              code({ node, className, children, ...props }: any) {
-                                const match = /language-(\w+)/.exec(className || '')
-                                const isInline = !match && !String(children).includes('\n')
-                                
+                              code({
+                                node,
+                                className,
+                                children,
+                                ...props
+                              }: any) {
+                                const match = /language-(\w+)/.exec(
+                                  className || ''
+                                )
+                                const isInline =
+                                  !match && !String(children).includes('\n')
+
                                 if (!isInline) {
                                   return (
                                     <div className="my-3 not-prose w-full overflow-hidden rounded-md">
                                       <CodeBlock
-                                        code={String(children).replace(/\n$/, '')}
-                                        language={match ? match[1] : 'typescript'}
+                                        code={String(children).replace(
+                                          /\n$/,
+                                          ''
+                                        )}
+                                        language={
+                                          match ? match[1] : 'typescript'
+                                        }
                                         className="!my-0 !shadow-none border border-border/50 text-xs"
                                       />
                                     </div>
                                   )
                                 }
                                 return (
-                                  <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono text-xs text-brand-600 dark:text-brand-400 break-words" {...props}>
+                                  <code
+                                    className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono text-xs text-brand-600 dark:text-brand-400 break-words"
+                                    {...props}
+                                  >
                                     {children}
                                   </code>
                                 )
                               },
                               // Style other markdown elements
-                              p: ({ children }) => <p className="leading-relaxed whitespace-pre-wrap mb-2 last:mb-0">{children}</p>,
-                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 my-2">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 my-2">{children}</ol>,
-                              li: ({ children }) => <li className="pl-1">{children}</li>,
-                              strong: ({ children }) => <strong className="font-semibold text-brand-700 dark:text-brand-300">{children}</strong>,
+                              p: ({ children }) => (
+                                <p className="leading-relaxed whitespace-pre-wrap mb-2 last:mb-0">
+                                  {children}
+                                </p>
+                              ),
+                              ul: ({ children }) => (
+                                <ul className="list-disc pl-5 space-y-1 my-2">
+                                  {children}
+                                </ul>
+                              ),
+                              ol: ({ children }) => (
+                                <ol className="list-decimal pl-5 space-y-1 my-2">
+                                  {children}
+                                </ol>
+                              ),
+                              li: ({ children }) => (
+                                <li className="pl-1">{children}</li>
+                              ),
+                              strong: ({ children }) => (
+                                <strong className="font-semibold text-brand-700 dark:text-brand-300">
+                                  {children}
+                                </strong>
+                              ),
                               a: ({ href, children }) => (
-                                <a 
-                                  href={href} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer" 
+                                <a
+                                  href={href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                   className="text-brand-600 dark:text-brand-400 hover:underline"
                                 >
                                   {children}
@@ -368,7 +452,9 @@ export function LiveChatDemo() {
                         )}
                       </>
                     ) : (
-                      <p className="leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                      <p className="leading-relaxed whitespace-pre-wrap">
+                        {message.text}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -405,7 +491,7 @@ export function LiveChatDemo() {
           {/* Gradient Mask for Suggestions */}
           <AnimatePresence>
             {showSuggestions && !isTyping && !isStreaming && !isError && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -415,7 +501,10 @@ export function LiveChatDemo() {
                   {SUGGESTIONS.map((suggestion, idx) => (
                     <motion.button
                       key={idx}
-                      whileHover={{ scale: 1.05, backgroundColor: "var(--brand-50)" }}
+                      whileHover={{
+                        scale: 1.05,
+                        backgroundColor: 'var(--brand-50)',
+                      }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleSend(suggestion.text)}
                       className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary border border-border rounded-full text-xs font-medium text-text-secondary hover:text-brand-600 hover:border-brand-200 transition-colors whitespace-nowrap shadow-sm focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
@@ -443,11 +532,15 @@ export function LiveChatDemo() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={isError ? "Try asking again..." : "Ask about components, hooks, theming..."}
+              placeholder={
+                isError
+                  ? 'Try asking again...'
+                  : 'Ask about components, hooks, theming...'
+              }
               disabled={isTyping || isStreaming}
               className={`flex-1 px-4 py-3 pl-4 pr-12 rounded-xl border bg-bg-secondary text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 transition-all shadow-sm disabled:opacity-50 ${
-                isError 
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
+                isError
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-border focus:border-brand-500 focus:ring-brand-500/50'
               }`}
             />
@@ -481,8 +574,12 @@ export function LiveChatDemo() {
             </AnimatePresence>
           </form>
           <div className="text-[10px] text-text-secondary mt-2 text-center opacity-70 flex items-center justify-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isError ? 'bg-red-500' : 'bg-green-500'}`} />
-            {isError ? 'Connection interrupted' : 'Powered by Gemini • Reads entire documentation in real-time'}
+            <span
+              className={`w-1.5 h-1.5 rounded-full animate-pulse ${isError ? 'bg-red-500' : 'bg-green-500'}`}
+            />
+            {isError
+              ? 'Connection interrupted'
+              : 'Powered by Gemini • Reads entire documentation in real-time'}
           </div>
         </div>
       </motion.div>

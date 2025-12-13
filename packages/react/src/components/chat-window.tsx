@@ -121,7 +121,7 @@ const DefaultEmptyState = ({
     className="text-center space-y-8 px-4"
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+    transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
   >
     <motion.div
       className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg ring-1 ring-primary/30"
@@ -130,7 +130,7 @@ const DefaultEmptyState = ({
         rotate: [0, 1, -1, 0],
       }}
       transition={{
-        duration: 4,
+        duration: durations.slower,
         repeat: Infinity,
         ease: 'easeInOut',
       }}
@@ -156,7 +156,11 @@ const DefaultEmptyState = ({
           className="pt-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{
+            delay: 0.2,
+            duration: durations.slow,
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
         >
           <div className="flex items-center justify-center gap-2 mb-4">
             <SparklesIcon size={14} className="text-primary" />
@@ -417,7 +421,10 @@ export function ChatWindow({
           className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-5 py-4 sm:px-6 backdrop-blur-md"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{
+            duration: durations.moderate,
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25">
@@ -508,7 +515,10 @@ export function ChatWindow({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{
+              duration: durations.normal,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
             className="border-b border-destructive/30 bg-destructive/5"
             role="alert"
           >
@@ -527,7 +537,9 @@ export function ChatWindow({
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                   />
                 </svg>
-                <span className="text-sm text-destructive truncate">{error}</span>
+                <span className="text-sm text-destructive truncate">
+                  {error}
+                </span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {onRetry && (
@@ -548,8 +560,18 @@ export function ChatWindow({
                     className="h-7 w-7 p-0"
                     aria-label="Dismiss error"
                   >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </Button>
                 )}
@@ -566,14 +588,21 @@ export function ChatWindow({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{
+              duration: durations.normal,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
             className="border-b border-amber-300/50 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/50"
           >
             <div className="flex items-center justify-between gap-3 px-4 py-2.5">
               <div className="flex items-center gap-2.5">
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  transition={{
+                    duration: durations.slower,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
                   className="h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full"
                 />
                 <span className="text-sm text-amber-700 dark:text-amber-300 font-medium">
@@ -614,7 +643,10 @@ export function ChatWindow({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{
+                duration: durations.normal,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
               className="px-5 pb-3"
             >
               <div className="flex items-center gap-2 mb-3">

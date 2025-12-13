@@ -52,28 +52,28 @@ interface PreBlockProps extends React.HTMLAttributes<HTMLPreElement> {
 
 function PreBlock({ children, ...props }: PreBlockProps) {
   const [wrapText, setWrapText] = React.useState(false)
-  
+
   // Extract code string from the code element for copy/download
   const codeInfo = React.useMemo(() => {
     let text = ''
     let language = ''
-    
+
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child) && child.props) {
         const childProps = child.props as Record<string, unknown>
-        
+
         // Extract language from className if possible
         const className = (childProps.className as string) || ''
         const match = /language-(\w+)/.exec(className)
         if (match) language = match[1]
-        
+
         text = (childProps['data-code-string'] as string) || ''
         if (!text && childProps.children) {
           text = extractTextFromNode(childProps.children as React.ReactNode)
         }
       }
     })
-    
+
     return { text: text.replace(/\n$/, ''), language }
   }, [children])
 
@@ -90,8 +90,8 @@ function PreBlock({ children, ...props }: PreBlockProps) {
 
       <pre
         className={cn(
-          "relative overflow-x-auto !m-0 !p-4 !bg-transparent font-fira-code",
-          wrapText ? "whitespace-pre-wrap break-all" : "whitespace-pre"
+          'relative overflow-x-auto !m-0 !p-4 !bg-transparent font-fira-code',
+          wrapText ? 'whitespace-pre-wrap break-all' : 'whitespace-pre'
         )}
         {...props}
       >
@@ -110,7 +110,7 @@ function PreBlock({ children, ...props }: PreBlockProps) {
  */
 export function useMarkdownPlugins() {
   const remarkPlugins = React.useMemo(() => [remarkGfm], [])
-  
+
   // Removed rehype-highlight to prevent duplicate highlighting
   // Prism (MarkdownCodeBlock) handles syntax highlighting client-side
   const rehypePlugins = React.useMemo(() => [], [])
@@ -194,7 +194,10 @@ export function useMarkdownComponents(): Partial<Components> {
         children,
         ...props
       }: React.HTMLAttributes<HTMLTableCellElement>) => (
-        <td className="px-6 py-4 text-sm border-t border-border/50 text-card-foreground" {...props}>
+        <td
+          className="px-6 py-4 text-sm border-t border-border/50 text-card-foreground"
+          {...props}
+        >
           {children}
         </td>
       ),
@@ -207,9 +210,12 @@ export function useMarkdownComponents(): Partial<Components> {
           {children}
         </tr>
       ),
-      
+
       // Blockquotes
-      blockquote: ({ children, ...props }: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) => (
+      blockquote: ({
+        children,
+        ...props
+      }: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) => (
         <blockquote
           className="border-l-4 border-primary/30 pl-4 my-6 italic text-muted-foreground bg-muted/20 py-2 rounded-r-lg"
           {...props}
@@ -217,9 +223,13 @@ export function useMarkdownComponents(): Partial<Components> {
           {children}
         </blockquote>
       ),
-      
+
       // Links
-      a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+      a: ({
+        children,
+        href,
+        ...props
+      }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
         <a
           href={href}
           className="font-medium text-primary hover:text-primary/80 underline decoration-primary/30 hover:decoration-primary transition-all"

@@ -170,7 +170,11 @@ function getResponse(content: string): string {
   const lowerContent = content.toLowerCase()
 
   // Check for specific keywords
-  if (lowerContent.includes('hello') || lowerContent.includes('hi ') || lowerContent === 'hi') {
+  if (
+    lowerContent.includes('hello') ||
+    lowerContent.includes('hi ') ||
+    lowerContent === 'hi'
+  ) {
     return DEMO_RESPONSES.greeting
   }
   if (lowerContent.includes('weather')) {
@@ -185,7 +189,11 @@ function getResponse(content: string): string {
   if (lowerContent.includes('typescript') || lowerContent.includes('ts')) {
     return DEMO_RESPONSES.typescript
   }
-  if (lowerContent.includes('code') || lowerContent.includes('example') || lowerContent.includes('function')) {
+  if (
+    lowerContent.includes('code') ||
+    lowerContent.includes('example') ||
+    lowerContent.includes('function')
+  ) {
     return DEMO_RESPONSES.code
   }
   if (lowerContent.includes('help') || lowerContent.includes('what can you')) {
@@ -193,7 +201,8 @@ function getResponse(content: string): string {
   }
 
   // Default contextual response
-  const truncatedQuery = content.length > 60 ? content.substring(0, 60) + '...' : content
+  const truncatedQuery =
+    content.length > 60 ? content.substring(0, 60) + '...' : content
   return `Thanks for your question about "${truncatedQuery}".
 
 In a production environment, this would connect to an AI provider like OpenAI or Anthropic to generate a contextual response based on:
@@ -259,7 +268,7 @@ export async function* streamChatMessage(
     }
 
     await new Promise((resolve) => setTimeout(resolve, 50))
-    
+
     yield {
       content: words[i] + ' ',
       done: i === words.length - 1,
