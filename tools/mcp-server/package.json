@@ -1,7 +1,7 @@
 {
   "name": "@clarity-chat/mcp-server",
-  "version": "1.0.0",
-  "description": "Model Context Protocol server for Clarity Chat - component discovery, documentation, and code generation for AI chat applications",
+  "version": "2.0.0",
+  "description": "World-class Model Context Protocol server for Clarity Chat - component discovery, documentation, code generation, plugin system, and AI chat development tools",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
@@ -13,28 +13,72 @@
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean"
   },
   "keywords": [
     "mcp",
     "model-context-protocol",
     "clarity-chat",
     "ai",
-    "agents"
+    "agents",
+    "chatbot",
+    "claude",
+    "openai",
+    "anthropic",
+    "google-ai",
+    "gemini",
+    "components",
+    "react",
+    "typescript",
+    "accessibility",
+    "wcag",
+    "plugins",
+    "extensible"
   ],
   "author": "Clarity Chat",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clarity-chat/mcp-server"
+  },
+  "homepage": "https://clarity-chat.dev/mcp-server",
+  "bugs": {
+    "url": "https://github.com/clarity-chat/mcp-server/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.24.3",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
+    "@vitest/coverage-v8": "^3.2.4",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4",
-    "@vitest/coverage-v8": "^3.2.4"
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./plugins": {
+      "types": "./dist/plugins/index.d.ts",
+      "import": "./dist/plugins/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js"
+    }
   }
 }

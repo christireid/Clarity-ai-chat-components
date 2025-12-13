@@ -1,0 +1,461 @@
+/**
+ * Health & Diagnostics System for MCP Server
+ *
+ * Provides comprehensive health checks, metrics, and diagnostic tools
+ * for monitoring and troubleshooting the MCP server.
+ *
+ * @module utils/health
+ */
+
+import { logger } from './logger.js'
+import { Cache, projectCache, modelCache, exampleCache } from './cache.js'
+
+// =============================================================================
+// Health Check Types
+// =============================================================================
+
+export enum HealthStatus {
+  HEALTHY = 'healthy',
+  DEGRADED = 'degraded',
+  UNHEALTHY = 'unhealthy',
+}
+
+export interface HealthCheckResult {
+  name: string
+  status: HealthStatus
+  message?: string
+  duration?: number
+  metadata?: Record<string, unknown>
+}
+
+export interface ServerHealth {
+  status: HealthStatus
+  timestamp: string
+  uptime: number
+  version: string
+  checks: HealthCheckResult[]
+  metrics: ServerMetrics
+}
+
+export interface ServerMetrics {
+  requests: {
+    total: number
+    success: number
+    error: number
+    avgDuration: number
+  }
+  tools: {
+    total: number
+    calls: Record<string, number>
+    errors: Record<string, number>
+  }
+  resources: {
+    total: number
+    reads: Record<string, number>
+  }
+  prompts: {
+    total: number
+    gets: Record<string, number>
+  }
+  cache: {
+    project: CacheStats
+    model: CacheStats
+    example: CacheStats
+  }
+  memory: {
+    heapUsed: number
+    heapTotal: number
+    external: number
+    rss: number
+  }
+  plugins: {
+    total: number
+    enabled: number
+  }
+}
+
+interface CacheStats {
+  size: number
+  maxSize: number
+  hits: number
+  misses: number
+  hitRate: number
+}
+
+// =============================================================================
+// Metrics Collector
+// =============================================================================
+
+class MetricsCollector {
+  private startTime = Date.now()
+  private requestCount = 0
+  private successCount = 0
+  private errorCount = 0
+  private totalDuration = 0
+  private toolCalls = new Map<string, number>()
+  private toolErrors = new Map<string, number>()
+  private resourceReads = new Map<string, number>()
+  private promptGets = new Map<string, number>()
+
+  /**
+   * Record a request
+   */
+  recordRequest(duration: number, success: boolean): void {
+    this.requestCount++
+    this.totalDuration += duration
+    if (success) {
+      this.successCount++
+    } else {
+      this.errorCount++
+    }
+  }
+
+  /**
+   * Record a tool call
+   */
+  recordToolCall(name: string, success: boolean): void {
+    this.toolCalls.set(name, (this.toolCalls.get(name) || 0) + 1)
+    if (!success) {
+      this.toolErrors.set(name, (this.toolErrors.get(name) || 0) + 1)
+    }
+  }
+
+  /**
+   * Record a resource read
+   */
+  recordResourceRead(uri: string): void {
+    this.resourceReads.set(uri, (this.resourceReads.get(uri) || 0) + 1)
+  }
+
+  /**
+   * Record a prompt get
+   */
+  recordPromptGet(name: string): void {
+    this.promptGets.set(name, (this.promptGets.get(name) || 0) + 1)
+  }
+
+  /**
+   * Get server uptime in milliseconds
+   */
+  getUptime(): number {
+    return Date.now() - this.startTime
+  }
+
+  /**
+   * Get current metrics
+   */
+  getMetrics(
+    toolCount: number,
+    resourceCount: number,
+    promptCount: number,
+    pluginStats: { total: number; enabled: number }
+  ): ServerMetrics {
+    const memUsage = process.memoryUsage()
+
+    return {
+      requests: {
+        total: this.requestCount,
+        success: this.successCount,
+        error: this.errorCount,
+        avgDuration:
+          this.requestCount > 0 ? this.totalDuration / this.requestCount : 0,
+      },
+      tools: {
+        total: toolCount,
+        calls: Object.fromEntries(this.toolCalls),
+        errors: Object.fromEntries(this.toolErrors),
+      },
+      resources: {
+        total: resourceCount,
+        reads: Object.fromEntries(this.resourceReads),
+      },
+      prompts: {
+        total: promptCount,
+        gets: Object.fromEntries(this.promptGets),
+      },
+      cache: {
+        project: projectCache.getStats(),
+        model: modelCache.getStats(),
+        example: exampleCache.getStats(),
+      },
+      memory: {
+        heapUsed: memUsage.heapUsed,
+        heapTotal: memUsage.heapTotal,
+        external: memUsage.external,
+        rss: memUsage.rss,
+      },
+      plugins: pluginStats,
+    }
+  }
+
+  /**
+   * Reset metrics
+   */
+  reset(): void {
+    this.requestCount = 0
+    this.successCount = 0
+    this.errorCount = 0
+    this.totalDuration = 0
+    this.toolCalls.clear()
+    this.toolErrors.clear()
+    this.resourceReads.clear()
+    this.promptGets.clear()
+  }
+}
+
+// =============================================================================
+// Health Checker
+// =============================================================================
+
+type HealthCheckFn = () => Promise<HealthCheckResult> | HealthCheckResult
+
+class HealthChecker {
+  private checks = new Map<string, HealthCheckFn>()
+
+  /**
+   * Register a health check
+   */
+  register(name: string, check: HealthCheckFn): void {
+    this.checks.set(name, check)
+  }
+
+  /**
+   * Unregister a health check
+   */
+  unregister(name: string): void {
+    this.checks.delete(name)
+  }
+
+  /**
+   * Run all health checks
+   */
+  async runAll(): Promise<HealthCheckResult[]> {
+    const results: HealthCheckResult[] = []
+
+    for (const [name, check] of this.checks) {
+      const startTime = Date.now()
+      try {
+        const result = await check()
+        result.duration = Date.now() - startTime
+        results.push(result)
+      } catch (error) {
+        results.push({
+          name,
+          status: HealthStatus.UNHEALTHY,
+          message:
+            error instanceof Error ? error.message : 'Unknown error',
+          duration: Date.now() - startTime,
+        })
+      }
+    }
+
+    return results
+  }
+
+  /**
+   * Calculate overall status from check results
+   */
+  calculateOverallStatus(results: HealthCheckResult[]): HealthStatus {
+    if (results.some((r) => r.status === HealthStatus.UNHEALTHY)) {
+      return HealthStatus.UNHEALTHY
+    }
+    if (results.some((r) => r.status === HealthStatus.DEGRADED)) {
+      return HealthStatus.DEGRADED
+    }
+    return HealthStatus.HEALTHY
+  }
+}
+
+// =============================================================================
+// Singleton Instances
+// =============================================================================
+
+export const metrics = new MetricsCollector()
+export const healthChecker = new HealthChecker()
+
+// =============================================================================
+// Built-in Health Checks
+// =============================================================================
+
+// Memory health check
+healthChecker.register('memory', () => {
+  const memUsage = process.memoryUsage()
+  const heapUsedPercent = (memUsage.heapUsed / memUsage.heapTotal) * 100
+
+  let status = HealthStatus.HEALTHY
+  let message = 'Memory usage normal'
+
+  if (heapUsedPercent > 90) {
+    status = HealthStatus.UNHEALTHY
+    message = `Critical memory usage: ${heapUsedPercent.toFixed(1)}%`
+  } else if (heapUsedPercent > 75) {
+    status = HealthStatus.DEGRADED
+    message = `High memory usage: ${heapUsedPercent.toFixed(1)}%`
+  }
+
+  return {
+    name: 'memory',
+    status,
+    message,
+    metadata: {
+      heapUsed: memUsage.heapUsed,
+      heapTotal: memUsage.heapTotal,
+      heapUsedPercent: heapUsedPercent.toFixed(1),
+    },
+  }
+})
+
+// Cache health check
+healthChecker.register('cache', () => {
+  const projectStats = projectCache.getStats()
+  const modelStats = modelCache.getStats()
+  const exampleStats = exampleCache.getStats()
+
+  const totalHitRate =
+    (projectStats.hits + modelStats.hits + exampleStats.hits) /
+    Math.max(
+      1,
+      projectStats.hits +
+        projectStats.misses +
+        modelStats.hits +
+        modelStats.misses +
+        exampleStats.hits +
+        exampleStats.misses
+    )
+
+  let status = HealthStatus.HEALTHY
+  let message = `Cache hit rate: ${(totalHitRate * 100).toFixed(1)}%`
+
+  if (totalHitRate < 0.3) {
+    status = HealthStatus.DEGRADED
+    message = `Low cache hit rate: ${(totalHitRate * 100).toFixed(1)}%`
+  }
+
+  return {
+    name: 'cache',
+    status,
+    message,
+    metadata: {
+      project: projectStats,
+      model: modelStats,
+      example: exampleStats,
+    },
+  }
+})
+
+// Event loop health check (checks if event loop is not blocked)
+healthChecker.register('eventLoop', async () => {
+  const start = Date.now()
+  await new Promise((resolve) => setImmediate(resolve))
+  const lag = Date.now() - start
+
+  let status = HealthStatus.HEALTHY
+  let message = `Event loop lag: ${lag}ms`
+
+  if (lag > 100) {
+    status = HealthStatus.UNHEALTHY
+    message = `Critical event loop lag: ${lag}ms`
+  } else if (lag > 50) {
+    status = HealthStatus.DEGRADED
+    message = `High event loop lag: ${lag}ms`
+  }
+
+  return {
+    name: 'eventLoop',
+    status,
+    message,
+    metadata: { lag },
+  }
+})
+
+// =============================================================================
+// Health Service
+// =============================================================================
+
+/**
+ * Get comprehensive server health information
+ */
+export async function getServerHealth(
+  version: string,
+  toolCount: number,
+  resourceCount: number,
+  promptCount: number,
+  pluginStats: { total: number; enabled: number }
+): Promise<ServerHealth> {
+  const checks = await healthChecker.runAll()
+  const status = healthChecker.calculateOverallStatus(checks)
+
+  return {
+    status,
+    timestamp: new Date().toISOString(),
+    uptime: metrics.getUptime(),
+    version,
+    checks,
+    metrics: metrics.getMetrics(
+      toolCount,
+      resourceCount,
+      promptCount,
+      pluginStats
+    ),
+  }
+}
+
+// =============================================================================
+// Diagnostic Helpers
+// =============================================================================
+
+/**
+ * Get diagnostic information for troubleshooting
+ */
+export function getDiagnostics(): {
+  environment: Record<string, string | undefined>
+  process: Record<string, unknown>
+  runtime: Record<string, unknown>
+} {
+  return {
+    environment: {
+      NODE_ENV: process.env.NODE_ENV,
+      DEBUG: process.env.DEBUG,
+      LOG_LEVEL: process.env.LOG_LEVEL,
+    },
+    process: {
+      pid: process.pid,
+      ppid: process.ppid,
+      platform: process.platform,
+      arch: process.arch,
+      nodeVersion: process.version,
+      cwd: process.cwd(),
+    },
+    runtime: {
+      uptime: process.uptime(),
+      cpuUsage: process.cpuUsage(),
+      memoryUsage: process.memoryUsage(),
+    },
+  }
+}
+
+/**
+ * Format bytes to human readable string
+ */
+export function formatBytes(bytes: number): string {
+  const units = ['B', 'KB', 'MB', 'GB']
+  let unitIndex = 0
+  let value = bytes
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024
+    unitIndex++
+  }
+
+  return `${value.toFixed(2)} ${units[unitIndex]}`
+}
+
+/**
+ * Format duration to human readable string
+ */
+export function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`
+  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
+  if (ms < 3600000) return `${(ms / 60000).toFixed(1)}m`
+  return `${(ms / 3600000).toFixed(1)}h`
+}
