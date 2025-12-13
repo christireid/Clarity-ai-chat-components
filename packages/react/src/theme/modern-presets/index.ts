@@ -58,11 +58,7 @@ export {
 }
 
 // New sophisticated presets
-import {
-  oceanLightTheme,
-  oceanDarkTheme,
-  oceanThemeMetadata,
-} from './ocean'
+import { oceanLightTheme, oceanDarkTheme, oceanThemeMetadata } from './ocean'
 export { oceanLightTheme, oceanDarkTheme, oceanThemeMetadata }
 
 import {
@@ -79,11 +75,7 @@ import {
 } from './forest'
 export { forestLightTheme, forestDarkTheme, forestThemeMetadata }
 
-import {
-  roseLightTheme,
-  roseDarkTheme,
-  roseThemeMetadata,
-} from './rose'
+import { roseLightTheme, roseDarkTheme, roseThemeMetadata } from './rose'
 export { roseLightTheme, roseDarkTheme, roseThemeMetadata }
 
 import {
@@ -93,11 +85,7 @@ import {
 } from './midnight'
 export { midnightLightTheme, midnightDarkTheme, midnightThemeMetadata }
 
-import {
-  slateLightTheme,
-  slateDarkTheme,
-  slateThemeMetadata,
-} from './slate'
+import { slateLightTheme, slateDarkTheme, slateThemeMetadata } from './slate'
 export { slateLightTheme, slateDarkTheme, slateThemeMetadata }
 
 import {
@@ -107,11 +95,7 @@ import {
 } from './emerald'
 export { emeraldLightTheme, emeraldDarkTheme, emeraldThemeMetadata }
 
-import {
-  amberLightTheme,
-  amberDarkTheme,
-  amberThemeMetadata,
-} from './amber'
+import { amberLightTheme, amberDarkTheme, amberThemeMetadata } from './amber'
 export { amberLightTheme, amberDarkTheme, amberThemeMetadata }
 
 /**
@@ -527,9 +511,30 @@ export function getModernLightVariant(
  */
 export function getThemesByCategory(): Record<string, ModernThemePresetName[]> {
   return {
-    professional: ['default', 'default-dark', 'neutral', 'neutral-dark', 'slate', 'slate-dark'],
-    vibrant: ['vibrant', 'vibrant-dark', 'rose', 'rose-dark', 'midnight', 'midnight-dark'],
-    nature: ['ocean', 'ocean-dark', 'forest', 'forest-dark', 'emerald', 'emerald-dark'],
+    professional: [
+      'default',
+      'default-dark',
+      'neutral',
+      'neutral-dark',
+      'slate',
+      'slate-dark',
+    ],
+    vibrant: [
+      'vibrant',
+      'vibrant-dark',
+      'rose',
+      'rose-dark',
+      'midnight',
+      'midnight-dark',
+    ],
+    nature: [
+      'ocean',
+      'ocean-dark',
+      'forest',
+      'forest-dark',
+      'emerald',
+      'emerald-dark',
+    ],
     warm: ['sunset', 'sunset-dark', 'amber', 'amber-dark'],
     accessible: ['high-contrast', 'high-contrast-dark'],
   }
@@ -539,14 +544,14 @@ export function getThemesByCategory(): Record<string, ModernThemePresetName[]> {
  * Get light themes only
  */
 export function getLightThemes(): ModernThemePresetName[] {
-  return getModernThemeNames().filter(name => !name.endsWith('-dark'))
+  return getModernThemeNames().filter((name) => !name.endsWith('-dark'))
 }
 
 /**
  * Get dark themes only
  */
 export function getDarkThemes(): ModernThemePresetName[] {
-  return getModernThemeNames().filter(name => name.endsWith('-dark'))
+  return getModernThemeNames().filter((name) => name.endsWith('-dark'))
 }
 
 // ============================================================================

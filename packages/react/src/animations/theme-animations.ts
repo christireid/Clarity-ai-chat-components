@@ -24,7 +24,7 @@ export const ThemeSwitchAnimations = {
     animate: { opacity: 1 },
     exit: { opacity: 0 },
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -35,7 +35,7 @@ export const ThemeSwitchAnimations = {
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 1.02 },
     transition: {
-      duration: 0.25,
+      duration: durations.moderate,
       ease: EASING_FRAMER.spring,
     },
   },
@@ -46,7 +46,7 @@ export const ThemeSwitchAnimations = {
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -5 },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
       ease: EASING_FRAMER.out,
     },
   },
@@ -57,7 +57,7 @@ export const ThemeSwitchAnimations = {
     animate: { opacity: 1, filter: 'blur(0px)' },
     exit: { opacity: 0, filter: 'blur(10px)' },
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -74,7 +74,7 @@ export const ButtonAnimations = {
   /** Standard press */
   press: {
     tap: { scale: 0.97 },
-    transition: { duration: 0.1 },
+    transition: { duration: durations.fast },
   },
 
   /** Springy press */
@@ -94,7 +94,7 @@ export const ButtonAnimations = {
       y: 2,
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     },
-    transition: { duration: 0.1 },
+    transition: { duration: durations.fast },
   },
 
   /** Glow press */
@@ -103,7 +103,7 @@ export const ButtonAnimations = {
       scale: 0.98,
       boxShadow: '0 0 20px rgba(var(--primary-rgb), 0.3)',
     },
-    transition: { duration: 0.15 },
+    transition: { duration: durations.fast },
   },
 
   /** Icon button spin on press */
@@ -128,7 +128,7 @@ export const CardAnimations = {
       boxShadow: '0 20px 40px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.08)',
     },
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.out,
     },
   },
@@ -140,7 +140,7 @@ export const CardAnimations = {
       rotateY,
       scale: 1.02,
     },
-    transition: { duration: 0.2 },
+    transition: { duration: durations.normal },
   }),
 
   /** Shine effect on hover */
@@ -149,7 +149,7 @@ export const CardAnimations = {
       backgroundPosition: '200% center',
     },
     transition: {
-      duration: 0.8,
+      duration: durations.slower,
       ease: 'linear',
     },
   },
@@ -160,7 +160,7 @@ export const CardAnimations = {
       borderColor: 'hsl(var(--primary))',
       boxShadow: '0 0 0 2px hsl(var(--primary) / 0.1)',
     },
-    transition: { duration: 0.2 },
+    transition: { duration: durations.normal },
   },
 
   /** Expandable card (uses scale for 60fps performance) */
@@ -169,7 +169,7 @@ export const CardAnimations = {
     expanded: { scaleY: 1, opacity: 1, originY: 0 },
     collapsed: { scaleY: 0, opacity: 0, originY: 0 },
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -188,7 +188,7 @@ export const InputAnimations = {
       ],
     },
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.out,
     },
   },
@@ -206,7 +206,7 @@ export const InputAnimations = {
       color: 'hsl(var(--primary))',
     },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
       ease: EASING_FRAMER.out,
     },
   },
@@ -215,7 +215,7 @@ export const InputAnimations = {
   errorShake: {
     x: [-8, 8, -6, 6, -4, 4, 0],
     transition: {
-      duration: 0.4,
+      duration: durations.slow,
       ease: EASING_FRAMER.sharp,
     },
   },
@@ -228,7 +228,7 @@ export const InputAnimations = {
       '0 0 0 0 hsl(var(--success) / 0)',
     ],
     transition: {
-      duration: 0.6,
+      duration: durations.slower,
       ease: EASING_FRAMER.out,
     },
   },
@@ -250,11 +250,9 @@ export const ToggleAnimations = {
 
   /** Background color transition */
   trackColor: (checked: boolean) => ({
-    backgroundColor: checked
-      ? 'hsl(var(--primary))'
-      : 'hsl(var(--muted))',
+    backgroundColor: checked ? 'hsl(var(--primary))' : 'hsl(var(--muted))',
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
     },
   }),
 
@@ -264,7 +262,7 @@ export const ToggleAnimations = {
     checked: { pathLength: 1, opacity: 1 },
     unchecked: { pathLength: 0, opacity: 0 },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
       ease: EASING_FRAMER.out,
     },
   },
@@ -296,7 +294,7 @@ export const ModalAnimations = {
     animate: { opacity: 1 },
     exit: { opacity: 0 },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
     },
   },
 
@@ -306,7 +304,7 @@ export const ModalAnimations = {
     animate: { opacity: 1, scale: 1, y: 0 },
     exit: { opacity: 0, scale: 0.98, y: 5 },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
       ease: EASING_FRAMER.spring,
     },
   },
@@ -341,7 +339,7 @@ export const ModalAnimations = {
     animate: { opacity: 1, y: 0, scale: 1 },
     exit: { opacity: 0, y: -10, scale: 0.98 },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
       ease: EASING_FRAMER.out,
     },
   },
@@ -361,7 +359,7 @@ export const ToastAnimations = {
     animate: { opacity: 1, y: 0, scale: 1 },
     exit: { opacity: 0, y: -20, scale: 0.95 },
     transition: {
-      duration: 0.25,
+      duration: durations.moderate,
       ease: EASING_FRAMER.spring,
     },
   },
@@ -372,7 +370,7 @@ export const ToastAnimations = {
     animate: { opacity: 1, y: 0, scale: 1 },
     exit: { opacity: 0, y: 20, scale: 0.95 },
     transition: {
-      duration: 0.25,
+      duration: durations.moderate,
       ease: EASING_FRAMER.spring,
     },
   },
@@ -383,7 +381,7 @@ export const ToastAnimations = {
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: 50 },
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.out,
     },
   },
@@ -425,7 +423,7 @@ export const MenuAnimations = {
     animate: { opacity: 1, scale: 1, y: 0 },
     exit: { opacity: 0, scale: 0.98, y: -5 },
     transition: {
-      duration: 0.15,
+      duration: durations.fast,
       ease: EASING_FRAMER.out,
     },
   },
@@ -436,7 +434,7 @@ export const MenuAnimations = {
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0.95 },
     transition: {
-      duration: 0.1,
+      duration: durations.fast,
       ease: EASING_FRAMER.out,
     },
   },
@@ -448,7 +446,7 @@ export const MenuAnimations = {
       x: 4,
     },
     transition: {
-      duration: 0.15,
+      duration: durations.fast,
     },
   },
 
@@ -458,7 +456,7 @@ export const MenuAnimations = {
     animate: { opacity: 1, x: 0 },
     transition: {
       delay: index * 0.03,
-      duration: 0.2,
+      duration: durations.normal,
       ease: EASING_FRAMER.out,
     },
   }),
@@ -469,7 +467,7 @@ export const MenuAnimations = {
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: -5 },
     transition: {
-      duration: 0.15,
+      duration: durations.fast,
       ease: EASING_FRAMER.out,
     },
   },
@@ -489,7 +487,7 @@ export const TooltipAnimations = {
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0.95 },
     transition: {
-      duration: 0.15,
+      duration: durations.fast,
       ease: EASING_FRAMER.out,
     },
   },
@@ -507,7 +505,7 @@ export const TooltipAnimations = {
       animate: { opacity: 1, x: 0, y: 0 },
       exit: { opacity: 0, ...offsets[position] },
       transition: {
-        duration: 0.15,
+        duration: durations.fast,
         ease: EASING_FRAMER.out,
       },
     }
@@ -526,7 +524,7 @@ export const SkeletonAnimations = {
   shimmer: {
     backgroundPosition: ['-200% 0', '200% 0'],
     transition: {
-      duration: 1.5,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -536,7 +534,7 @@ export const SkeletonAnimations = {
   pulse: {
     opacity: [0.5, 1, 0.5],
     transition: {
-      duration: 1.5,
+      duration: durations.slower,
       repeat: Infinity,
       ease: EASING_FRAMER.inOut,
     },
@@ -546,7 +544,7 @@ export const SkeletonAnimations = {
   wave: (index: number) => ({
     opacity: [0.5, 1, 0.5],
     transition: {
-      duration: 1.5,
+      duration: durations.slower,
       repeat: Infinity,
       delay: index * 0.1,
       ease: EASING_FRAMER.inOut,
@@ -567,7 +565,7 @@ export const ChatAnimations = {
     initial: { opacity: 0, x: 20, scale: 0.95 },
     animate: { opacity: 1, x: 0, scale: 1 },
     transition: {
-      duration: 0.25,
+      duration: durations.moderate,
       ease: EASING_FRAMER.out,
     },
   },
@@ -577,7 +575,7 @@ export const ChatAnimations = {
     initial: { opacity: 0, x: -20, scale: 0.95 },
     animate: { opacity: 1, x: 0, scale: 1 },
     transition: {
-      duration: 0.25,
+      duration: durations.moderate,
       ease: EASING_FRAMER.out,
     },
   },
@@ -587,7 +585,7 @@ export const ChatAnimations = {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
       ease: EASING_FRAMER.out,
     },
   },
@@ -597,7 +595,7 @@ export const ChatAnimations = {
     y: [0, -8, 0],
     opacity: [0.4, 1, 0.4],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       repeat: Infinity,
       delay: index * 0.15,
       ease: EASING_FRAMER.inOut,
@@ -609,7 +607,7 @@ export const ChatAnimations = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     transition: {
-      duration: 0.05,
+      duration: durations.fast,
     },
   },
 
@@ -618,7 +616,7 @@ export const ChatAnimations = {
     initial: { opacity: 0, y: 5 },
     animate: { opacity: 1, y: 0 },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
       delay: 0.1,
     },
   },
@@ -628,7 +626,7 @@ export const ChatAnimations = {
     initial: { scale: 0 },
     animate: { scale: [0, 1.2, 1] },
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.spring,
     },
   },
@@ -647,7 +645,7 @@ export const AvatarAnimations = {
     scale: [1, 1.2, 1],
     opacity: [1, 0.8, 1],
     transition: {
-      duration: 2,
+      duration: durations.slower,
       repeat: Infinity,
       ease: EASING_FRAMER.inOut,
     },
@@ -657,7 +655,7 @@ export const AvatarAnimations = {
   hover: {
     scale: 1.05,
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
     },
   },
 
@@ -687,7 +685,7 @@ export const IconAnimations = {
     initial: { pathLength: 0 },
     animate: { pathLength: 1 },
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.out,
     },
   },
@@ -697,7 +695,7 @@ export const IconAnimations = {
     initial: { pathLength: 0 },
     animate: { pathLength: 1 },
     transition: {
-      duration: 0.2,
+      duration: durations.normal,
       ease: EASING_FRAMER.out,
     },
   },
@@ -708,7 +706,7 @@ export const IconAnimations = {
     return {
       rotate: rotations[direction],
       transition: {
-        duration: 0.2,
+        duration: durations.normal,
         ease: EASING_FRAMER.out,
       },
     }
@@ -718,7 +716,7 @@ export const IconAnimations = {
   refreshSpin: {
     rotate: 360,
     transition: {
-      duration: 0.5,
+      duration: durations.slow,
       ease: 'linear',
     },
   },
@@ -727,7 +725,7 @@ export const IconAnimations = {
   bellRing: {
     rotate: [0, 15, -15, 10, -10, 5, 0],
     transition: {
-      duration: 0.5,
+      duration: durations.slow,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -736,7 +734,7 @@ export const IconAnimations = {
   heartBeat: {
     scale: [1, 1.15, 1],
     transition: {
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -747,7 +745,7 @@ export const IconAnimations = {
     rotate: [0, 10, 0],
     opacity: [1, 0.8, 1],
     transition: {
-      duration: 0.4,
+      duration: durations.slow,
       ease: EASING_FRAMER.spring,
     },
   },
