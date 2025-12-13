@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { EnhancedErrorBoundary, ChatErrorBoundary } from '../../src'
 import { ApiError, ApiErrorCode } from '../../src/errors/api-error'
 import {
@@ -10,6 +10,21 @@ import {
   ProviderError,
   ProviderErrorCode,
 } from '../../src/errors/provider-error'
+
+// Mock matchMedia for reduced motion detection
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+})
 
 // Component that throws an error
 function ThrowingComponent({ error }: { error: Error }) {
@@ -187,7 +202,7 @@ describe('ChatErrorBoundary', () => {
       </ChatErrorBoundary>
     )
 
-    expect(screen.getByText('Connection Error')).toBeInTheDocument()
+    expect(screen.getByText('Connection Lost')).toBeInTheDocument()
   })
 
   it('should display provider error correctly', () => {
@@ -203,10 +218,10 @@ describe('ChatErrorBoundary', () => {
       </ChatErrorBoundary>
     )
 
-    expect(screen.getByText('Openai Error')).toBeInTheDocument()
-    // Multiple elements may contain "30 seconds" (user message and retry countdown)
-    const elements = screen.getAllByText(/30 seconds/)
-    expect(elements.length).toBeGreaterThan(0)
+    // ChatErrorBoundary now shows "Please Wait" for rate limit errors
+    expect(screen.getByText('Please Wait')).toBeInTheDocument()
+    // The countdown shows 30 in the timer
+    expect(screen.getByText('30')).toBeInTheDocument()
   })
 
   it('should show partial content message for streaming errors', () => {
@@ -222,8 +237,9 @@ describe('ChatErrorBoundary', () => {
       </ChatErrorBoundary>
     )
 
+    // The component now shows a different message for partial content
     expect(
-      screen.getByText(/partial response has been preserved/)
+      screen.getByText(/Response preserved - you can continue/)
     ).toBeInTheDocument()
   })
 
@@ -240,7 +256,7 @@ describe('ChatErrorBoundary', () => {
     expect(onError).toHaveBeenCalledWith(error)
   })
 
-  it('should call onRetry when retry button clicked', () => {
+  it('should call onRetry when retry button clicked', async () => {
     const onRetry = vi.fn()
     const error = new StreamingError('Connection lost', {
       code: StreamingErrorCode.CONNECTION_LOST,
@@ -253,7 +269,12 @@ describe('ChatErrorBoundary', () => {
       </ChatErrorBoundary>
     )
 
-    fireEvent.click(screen.getByText('Retry'))
-    expect(onRetry).toHaveBeenCalled()
+    // The button text is now "Try Again"
+    fireEvent.click(screen.getByText('Try Again'))
+
+    // Wait for the async retry delay (400ms) to complete
+    await waitFor(() => {
+      expect(onRetry).toHaveBeenCalled()
+    })
   })
 })

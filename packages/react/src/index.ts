@@ -892,6 +892,10 @@ export {
   type ThemePreviewThumbnailProps,
   type ThemePreviewGridProps,
 } from './components/theme-preview-thumbnail'
+export {
+  ThemeCustomizer,
+  type ThemeCustomizerProps,
+} from './components/ThemeCustomizer'
 
 // ============================================================================
 // ADDITIONAL HOOKS (Utility & Feature Hooks)

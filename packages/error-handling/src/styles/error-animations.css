@@ -1,26 +1,86 @@
 /**
- * Error handling animations
+ * Clarity Chat Error Handling Animations
  *
- * These animations provide visual feedback for error states.
+ * A comprehensive animation system providing beautiful visual feedback
+ * for error states, recovery flows, and user interactions.
+ *
+ * Features:
+ * - Smooth, physics-based animations
+ * - Full prefers-reduced-motion support
+ * - High contrast mode support
+ * - Dark mode compatible
+ *
  * All animations respect prefers-reduced-motion.
  */
 
-/* Error appearance animation */
+/* =============================================================================
+   CSS Custom Properties (Design Tokens)
+   ============================================================================= */
+
+:root {
+  /* Animation durations */
+  --error-duration-fast: 150ms;
+  --error-duration-normal: 300ms;
+  --error-duration-slow: 500ms;
+  --error-duration-slower: 800ms;
+
+  /* Easing functions */
+  --error-ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --error-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --error-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --error-ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --error-ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Colors */
+  --error-color-error: #ef4444;
+  --error-color-warning: #f59e0b;
+  --error-color-success: #10b981;
+  --error-color-info: #3b82f6;
+  --error-color-surface: rgba(255, 255, 255, 0.95);
+  --error-color-text: #1f2937;
+  --error-color-muted: #6b7280;
+
+  /* Shadows */
+  --error-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --error-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --error-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.16);
+  --error-shadow-glow-error: 0 0 24px rgba(239, 68, 68, 0.3);
+  --error-shadow-glow-success: 0 0 24px rgba(16, 185, 129, 0.3);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --error-color-surface: rgba(31, 41, 55, 0.95);
+    --error-color-text: #f9fafb;
+    --error-color-muted: #9ca3af;
+    --error-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.24);
+    --error-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.32);
+    --error-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* =============================================================================
+   Entry Animations
+   ============================================================================= */
+
+/* Smooth fade in with subtle scale */
 @keyframes errorFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
+/* Slide up from bottom */
 @keyframes errorSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -28,10 +88,130 @@
   }
 }
 
-/* Pulse animation for retry in progress */
-@keyframes errorPulse {
-  0%,
+/* Slide in from right */
+@keyframes errorSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide in from left */
+@keyframes errorSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Bounce in with spring physics */
+@keyframes errorBounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
   100% {
+    transform: scale(1);
+  }
+}
+
+/* Pop in animation */
+@keyframes errorPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Expand from center */
+@keyframes errorExpandIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+    clip-path: inset(50% 50% 50% 50% round 12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    clip-path: inset(0% 0% 0% 0% round 12px);
+  }
+}
+
+/* =============================================================================
+   Exit Animations
+   ============================================================================= */
+
+/* Fade out with scale */
+@keyframes errorFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Slide out to right */
+@keyframes errorSlideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Collapse animation */
+@keyframes errorCollapse {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    max-height: 500px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+    max-height: 0;
+    padding: 0;
+    margin-bottom: 0;
+  }
+}
+
+/* =============================================================================
+   Attention Animations
+   ============================================================================= */
+
+/* Pulse animation for retry states */
+@keyframes errorPulse {
+  0%, 100% {
     opacity: 1;
   }
   50% {
@@ -39,28 +219,194 @@
   }
 }
 
-/* Shake animation for repeated failures */
-@keyframes errorShake {
-  0%,
-  100% {
-    transform: translateX(0);
+/* Glow pulse animation */
+@keyframes errorGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--error-color-error);
   }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-4px);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(4px);
+  50% {
+    box-shadow: 0 0 20px 4px var(--error-color-error);
   }
 }
 
-/* Success checkmark animation */
+/* Shake animation for errors */
+@keyframes errorShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-6px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(6px);
+  }
+}
+
+/* Wobble animation */
+@keyframes errorWobble {
+  0% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-12px) rotate(-3deg);
+  }
+  30% {
+    transform: translateX(10px) rotate(2deg);
+  }
+  45% {
+    transform: translateX(-8px) rotate(-2deg);
+  }
+  60% {
+    transform: translateX(6px) rotate(1deg);
+  }
+  75% {
+    transform: translateX(-4px) rotate(-0.5deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Jiggle animation for attention */
+@keyframes errorJiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+/* Float animation for icons */
+@keyframes errorFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Heartbeat animation */
+@keyframes errorHeartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.1);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+/* Icon attention animation */
+@keyframes errorIconAttention {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* =============================================================================
+   Progress & Loading Animations
+   ============================================================================= */
+
+/* Spinner rotation */
+@keyframes errorSpinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Indeterminate progress bar */
+@keyframes errorProgressIndeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* Progress shimmer effect */
+@keyframes errorProgressShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Dots loading animation */
+@keyframes errorDotPulse {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Skeleton loading */
+@keyframes errorSkeleton {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* =============================================================================
+   Success & Recovery Animations
+   ============================================================================= */
+
+/* Success checkmark draw */
+@keyframes errorSuccessCheck {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Success circle expand */
+@keyframes errorSuccessCircle {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Recovery check animation */
 @keyframes errorRecoveryCheck {
   0% {
     transform: scale(0);
@@ -76,7 +422,7 @@
   }
 }
 
-/* Success fade out */
+/* Recovery fade out */
 @keyframes errorRecoveryFadeOut {
   from {
     opacity: 1;
@@ -88,20 +434,91 @@
   }
 }
 
-/* Spinner animation for loading states */
-@keyframes errorSpinner {
-  from {
-    transform: rotate(0deg);
+/* Recovery celebration */
+@keyframes errorRecoveryCelebrate {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    transform: scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.9) rotate(0deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
   }
 }
 
-/* Icon attention animation */
-@keyframes errorIconAttention {
-  0%,
+/* =============================================================================
+   Decorative Animations
+   ============================================================================= */
+
+/* Shimmer effect for cards */
+@keyframes errorShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
   100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Gradient shift */
+@keyframes errorGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Border glow animation */
+@keyframes errorBorderGlow {
+  0%, 100% {
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    border-color: rgba(239, 68, 68, 0.6);
+  }
+}
+
+/* Ripple effect */
+@keyframes errorRipple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* =============================================================================
+   Countdown & Timer Animations
+   ============================================================================= */
+
+/* Countdown circle */
+@keyframes errorCountdown {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 314;
+  }
+}
+
+/* Timer tick animation */
+@keyframes errorTimerTick {
+  0%, 100% {
     transform: scale(1);
   }
   50% {
@@ -109,86 +526,197 @@
   }
 }
 
-/* Progress bar animation */
-@keyframes errorProgressIndeterminate {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(200%);
-  }
-}
+/* =============================================================================
+   Utility Classes
+   ============================================================================= */
 
-/* Classes for use */
+/* Entry animations */
 .error-fade-in {
-  animation: errorFadeIn 0.3s ease-out forwards;
+  animation: errorFadeIn var(--error-duration-normal) var(--error-ease-out) forwards;
 }
 
 .error-slide-up {
-  animation: errorSlideUp 0.4s ease-out forwards;
+  animation: errorSlideUp var(--error-duration-normal) var(--error-ease-bounce) forwards;
 }
 
-.error-pulse {
-  animation: errorPulse 1.5s ease-in-out infinite;
+.error-slide-in-right {
+  animation: errorSlideInRight var(--error-duration-normal) var(--error-ease-out) forwards;
 }
 
-.error-shake {
-  animation: errorShake 0.5s ease-in-out;
+.error-slide-in-left {
+  animation: errorSlideInLeft var(--error-duration-normal) var(--error-ease-out) forwards;
 }
 
-.error-recovery-check {
-  animation: errorRecoveryCheck 0.4s ease-out forwards;
+.error-bounce-in {
+  animation: errorBounceIn var(--error-duration-slow) var(--error-ease-out) forwards;
+}
+
+.error-pop-in {
+  animation: errorPopIn var(--error-duration-normal) var(--error-ease-spring) forwards;
+}
+
+.error-expand-in {
+  animation: errorExpandIn var(--error-duration-normal) var(--error-ease-out) forwards;
+}
+
+/* Exit animations */
+.error-fade-out {
+  animation: errorFadeOut var(--error-duration-normal) var(--error-ease-out) forwards;
+}
+
+.error-slide-out-right {
+  animation: errorSlideOutRight var(--error-duration-normal) var(--error-ease-out) forwards;
+}
+
+.error-collapse {
+  animation: errorCollapse var(--error-duration-slow) var(--error-ease-out) forwards;
 }
 
 .error-recovery-fade {
   animation: errorRecoveryFadeOut 0.3s ease-in forwards;
 }
 
-.error-spinner {
-  animation: errorSpinner 1s linear infinite;
+/* Attention animations */
+.error-pulse {
+  animation: errorPulse 1.5s ease-in-out infinite;
+}
+
+.error-glow-pulse {
+  animation: errorGlowPulse 2s ease-in-out infinite;
+}
+
+.error-shake {
+  animation: errorShake 0.5s var(--error-ease-out);
+}
+
+.error-wobble {
+  animation: errorWobble 0.8s var(--error-ease-out);
+}
+
+.error-jiggle {
+  animation: errorJiggle 0.3s var(--error-ease-out);
+}
+
+.error-float {
+  animation: errorFloat 3s ease-in-out infinite;
+}
+
+.error-heartbeat {
+  animation: errorHeartbeat 1.5s ease-in-out infinite;
 }
 
 .error-icon-attention {
   animation: errorIconAttention 2s ease-in-out infinite;
 }
 
+/* Progress animations */
+.error-spinner {
+  animation: errorSpinner 1s linear infinite;
+}
+
 .error-progress-indeterminate {
   animation: errorProgressIndeterminate 1.5s linear infinite;
 }
 
-/* Reduced motion variants */
-@media (prefers-reduced-motion: reduce) {
-  .error-fade-in,
-  .error-slide-up,
-  .error-pulse,
-  .error-shake,
-  .error-recovery-check,
-  .error-recovery-fade,
-  .error-spinner,
-  .error-icon-attention,
-  .error-progress-indeterminate {
-    animation: none !important;
-    transition: none !important;
-  }
+.error-progress-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: errorProgressShimmer 1.5s linear infinite;
+}
 
-  .error-fade-in {
-    opacity: 1;
-  }
+.error-dot-pulse {
+  animation: errorDotPulse 1.4s ease-in-out infinite both;
+}
 
-  .error-slide-up {
-    opacity: 1;
-    transform: none;
-  }
+.error-dot-pulse:nth-child(1) { animation-delay: -0.32s; }
+.error-dot-pulse:nth-child(2) { animation-delay: -0.16s; }
+.error-dot-pulse:nth-child(3) { animation-delay: 0s; }
 
-  .error-recovery-check {
-    opacity: 1;
-    transform: scale(1);
-  }
+.error-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: errorSkeleton 1.5s ease-in-out infinite;
+}
+
+/* Success animations */
+.error-success-check {
+  animation: errorSuccessCheck 0.4s var(--error-ease-out) 0.2s forwards;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+}
+
+.error-success-circle {
+  animation: errorSuccessCircle 0.5s var(--error-ease-bounce) forwards;
+}
+
+.error-recovery-check {
+  animation: errorRecoveryCheck 0.4s ease-out forwards;
+}
+
+.error-recovery-celebrate {
+  animation: errorRecoveryCelebrate 0.6s var(--error-ease-bounce) forwards;
+}
+
+/* Decorative animations */
+.error-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.error-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: errorShimmer 2s ease-in-out infinite;
+}
+
+.error-gradient-shift {
+  background-size: 200% 200%;
+  animation: errorGradientShift 4s ease infinite;
+}
+
+.error-border-glow {
+  animation: errorBorderGlow 2s ease-in-out infinite;
+}
+
+/* =============================================================================
+   Delay Utilities
+   ============================================================================= */
+
+.error-delay-100 { animation-delay: 100ms; }
+.error-delay-200 { animation-delay: 200ms; }
+.error-delay-300 { animation-delay: 300ms; }
+.error-delay-400 { animation-delay: 400ms; }
+.error-delay-500 { animation-delay: 500ms; }
+.error-delay-700 { animation-delay: 700ms; }
+.error-delay-1000 { animation-delay: 1000ms; }
+
+/* =============================================================================
+   Interactive States
+   ============================================================================= */
+
+/* Button hover lift effect */
+.error-button {
+  transition: all var(--error-duration-fast) var(--error-ease-out);
+}
+
+.error-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--error-shadow-md);
+}
+
+.error-button:active {
+  transform: translateY(0);
+  box-shadow: var(--error-shadow-sm);
 }
 
 /* Focus styles for accessibility */
 .error-button:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--error-color-info);
   outline-offset: 2px;
 }
 
@@ -196,13 +724,158 @@
   outline: none;
 }
 
-/* High contrast mode support */
+/* Card hover effect */
+.error-card {
+  transition: all var(--error-duration-normal) var(--error-ease-out);
+}
+
+.error-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--error-shadow-lg);
+}
+
+/* Link hover effect */
+.error-link {
+  position: relative;
+  transition: color var(--error-duration-fast) var(--error-ease-out);
+}
+
+.error-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width var(--error-duration-normal) var(--error-ease-out);
+}
+
+.error-link:hover::after {
+  width: 100%;
+}
+
+/* =============================================================================
+   Reduced Motion Support
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .error-fade-in,
+  .error-slide-up,
+  .error-slide-in-right,
+  .error-slide-in-left,
+  .error-bounce-in,
+  .error-pop-in,
+  .error-expand-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .error-fade-out,
+  .error-slide-out-right,
+  .error-collapse,
+  .error-recovery-fade {
+    animation: none;
+  }
+
+  .error-pulse,
+  .error-glow-pulse,
+  .error-shake,
+  .error-wobble,
+  .error-jiggle,
+  .error-float,
+  .error-heartbeat,
+  .error-icon-attention,
+  .error-spinner,
+  .error-progress-indeterminate,
+  .error-progress-shimmer,
+  .error-dot-pulse,
+  .error-skeleton,
+  .error-shimmer::after,
+  .error-gradient-shift,
+  .error-border-glow {
+    animation: none;
+  }
+
+  .error-success-check {
+    stroke-dashoffset: 0;
+  }
+
+  .error-success-circle,
+  .error-recovery-check,
+  .error-recovery-celebrate {
+    animation: none;
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =============================================================================
+   High Contrast Mode Support
+   ============================================================================= */
+
 @media (forced-colors: active) {
   .error-container {
     border: 2px solid CanvasText;
+    forced-color-adjust: none;
   }
 
   .error-button {
     border: 2px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+    forced-color-adjust: none;
+  }
+
+  .error-button:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .error-button:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .error-icon {
+    forced-color-adjust: auto;
+  }
+
+  .error-link {
+    color: LinkText;
+  }
+
+  .error-link:hover {
+    color: ActiveText;
+  }
+}
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+
+@media print {
+  .error-fade-in,
+  .error-slide-up,
+  .error-bounce-in,
+  .error-pop-in,
+  .error-pulse,
+  .error-spinner {
+    animation: none;
+  }
+
+  .error-container {
+    box-shadow: none;
+    border: 1px solid #000;
   }
 }
