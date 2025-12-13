@@ -15,6 +15,12 @@
     },
     "./styles/dev-tools.css": {
       "import": "./src/styles/dev-tools.css"
+    },
+    "./styles/modules": {
+      "import": "./src/styles/modules/index.css"
+    },
+    "./styles/modules/*": {
+      "import": "./src/styles/modules/*.css"
     }
   },
   "bin": {

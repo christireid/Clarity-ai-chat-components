@@ -6,11 +6,19 @@
  *
  * @example
  * ```tsx
- * // In your app entry file
+ * // Import all styles (bundled)
  * import '@clarity-chat/dev-tools/styles'
  *
- * // Or import the CSS directly
- * import '@clarity-chat/dev-tools/dist/styles/dev-tools.css'
+ * // Or import specific modules for tree-shaking
+ * import '@clarity-chat/dev-tools/styles/modules'
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Import only the modules you need
+ * import '@clarity-chat/dev-tools/styles/modules/_variables.css'
+ * import '@clarity-chat/dev-tools/styles/modules/_dashboard.css'
+ * import '@clarity-chat/dev-tools/styles/modules/_api-inspector.css'
  * ```
  *
  * @example
@@ -20,10 +28,53 @@
  *   <DevToolsDashboard />
  * </div>
  * ```
+ *
+ * Available CSS Modules:
+ * - _variables.css    - CSS Custom Properties / Design Tokens
+ * - _dark-mode.css    - Dark mode theme overrides
+ * - _animations.css   - Keyframe animations
+ * - _base.css         - Base element styles
+ * - _dashboard.css    - Dashboard component styles
+ * - _api-inspector.css - API Inspector panel styles
+ * - _profiler.css     - Profiler panel styles
+ * - _time-travel.css  - Time Travel panel styles
+ * - _validation.css   - Validation form styles
+ * - _model-comparison.css - Model Comparison panel styles
+ * - _buttons.css      - Button component styles
+ * - _components.css   - Common UI components (empty state, loading, tooltips, badges)
+ * - _code-blocks.css  - Code block styles
+ * - _utilities.css    - Utility classes and responsive design
+ * - _error-boundary.css - Error boundary fallback styles
+ * - _demo.css         - Demo page styles
  */
 
 // Re-export path for bundlers
 export const cssPath = './dev-tools.css'
+
+// Modular CSS exports
+export const modulesPath = './modules/index.css'
+
+// Individual module paths for selective imports
+export const cssModules = {
+  variables: './modules/_variables.css',
+  darkMode: './modules/_dark-mode.css',
+  animations: './modules/_animations.css',
+  base: './modules/_base.css',
+  dashboard: './modules/_dashboard.css',
+  apiInspector: './modules/_api-inspector.css',
+  profiler: './modules/_profiler.css',
+  timeTravel: './modules/_time-travel.css',
+  validation: './modules/_validation.css',
+  modelComparison: './modules/_model-comparison.css',
+  buttons: './modules/_buttons.css',
+  components: './modules/_components.css',
+  codeBlocks: './modules/_code-blocks.css',
+  utilities: './modules/_utilities.css',
+  errorBoundary: './modules/_error-boundary.css',
+  demo: './modules/_demo.css',
+} as const
+
+export type CSSModuleName = keyof typeof cssModules
 
 // Export CSS variables for programmatic access
 export const cssVariables = {

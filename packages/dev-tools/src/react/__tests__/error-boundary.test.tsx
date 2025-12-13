@@ -3,6 +3,7 @@
  * Tests error catching, fallback UI, and recovery
  */
 
+import * as React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import {
@@ -191,7 +192,7 @@ describe('withErrorBoundary HOC', () => {
   })
 
   it('catches errors in wrapped component', () => {
-    function FailingComponent() {
+    function FailingComponent(): React.ReactNode {
       throw new Error('HOC test error')
     }
 
