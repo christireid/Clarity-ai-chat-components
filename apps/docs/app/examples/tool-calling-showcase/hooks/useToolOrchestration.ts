@@ -29,25 +29,28 @@ interface UseToolOrchestrationReturn {
   orchestratorState: OrchestratorState
   pendingApproval: ToolCallState | null
   isProcessingApproval: boolean
+  error: Error | null
   sendMessage: (content: string) => Promise<void>
   handleApprove: () => Promise<void>
   handleReject: () => void
   clearMessages: () => void
+  clearError: () => void
   debugEvents: ReturnType<typeof useDebugEvents>
 }
 
 function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 export function useToolOrchestration(
-  options: UseToolOrchestrationOptions = {}
+  _options: UseToolOrchestrationOptions = {}
 ): UseToolOrchestrationReturn {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [orchestratorState, setOrchestratorState] = useState<OrchestratorState>('idle')
   const [pendingApproval, setPendingApproval] = useState<ToolCallState | null>(null)
   const [isProcessingApproval, setIsProcessingApproval] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
 
   const debugEvents = useDebugEvents()
   const lastPriceRef = useRef<Record<string, number>>({})
@@ -362,13 +365,13 @@ export function useToolOrchestration(
     setMessages([])
     setOrchestratorState('idle')
     setPendingApproval(null)
+    setError(null)
     isProcessingRef.current = false // Ensure lock is released on clear
     debugEvents.clearEvents()
   }, [debugEvents])
 
-  // Get last known price for a symbol
-  const getLastPrice = useCallback((symbol: string): number => {
-    return lastPriceRef.current[symbol] || 100
+  const clearError = useCallback(() => {
+    setError(null)
   }, [])
 
   return {
@@ -377,10 +380,12 @@ export function useToolOrchestration(
     orchestratorState,
     pendingApproval,
     isProcessingApproval,
+    error,
     sendMessage,
     handleApprove,
     handleReject,
     clearMessages,
+    clearError,
     debugEvents,
   }
 }

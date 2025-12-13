@@ -24,16 +24,14 @@ interface UseAIToolOrchestrationReturn {
   orchestratorState: OrchestratorState
   pendingApproval: ToolCallState | null
   isProcessingApproval: boolean
+  error: Error | null
   sendMessage: (content: string) => Promise<void>
   handleApprove: () => Promise<void>
   handleReject: () => void
   clearMessages: () => void
+  clearError: () => void
   debugEvents: ReturnType<typeof useDebugEvents>
   isAIMode: true
-}
-
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 }
 
 export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
@@ -41,9 +39,11 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
   const [pendingApproval, setPendingApproval] = useState<ToolCallState | null>(null)
   const [isProcessingApproval, setIsProcessingApproval] = useState(false)
   const [convertedMessages, setConvertedMessages] = useState<Message[]>([])
+  const [error, setError] = useState<Error | null>(null)
 
   const debugEvents = useDebugEvents()
   const lastPriceRef = useRef<Record<string, number>>({})
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Use AI SDK's useChat hook
   const {
@@ -51,9 +51,11 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
     isLoading,
     append,
     setMessages: setAIMessages,
+    stop,
   } = useChat({
     api: '/examples/tool-calling-showcase/api/chat',
     onResponse: () => {
+      setError(null) // Clear any previous errors
       setOrchestratorState('streaming')
       debugEvents.addEvent('STREAM_START', {})
     },
@@ -80,10 +82,12 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
         }
       }
     },
-    onError: (error) => {
-      console.error('AI Chat error:', error)
-      debugEvents.addEvent('TOOL_ERROR', { error: error.message })
-      setOrchestratorState('completed')
+    onError: (err) => {
+      console.error('AI Chat error:', err)
+      const errorObj = err instanceof Error ? err : new Error(String(err))
+      setError(errorObj)
+      debugEvents.addEvent('TOOL_ERROR', { error: errorObj.message })
+      setOrchestratorState('idle')
     },
   })
 
@@ -180,12 +184,19 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
   }, [pendingApproval, debugEvents])
 
   const clearMessages = useCallback(() => {
+    // Stop any in-flight requests to prevent race conditions
+    stop()
     setAIMessages([])
     setConvertedMessages([])
     setOrchestratorState('idle')
     setPendingApproval(null)
+    setError(null)
     debugEvents.clearEvents()
-  }, [setAIMessages, debugEvents])
+  }, [setAIMessages, debugEvents, stop])
+
+  const clearError = useCallback(() => {
+    setError(null)
+  }, [])
 
   return {
     messages: convertedMessages,
@@ -193,10 +204,12 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
     orchestratorState,
     pendingApproval,
     isProcessingApproval,
+    error,
     sendMessage,
     handleApprove,
     handleReject,
     clearMessages,
+    clearError,
     debugEvents,
     isAIMode: true,
   }

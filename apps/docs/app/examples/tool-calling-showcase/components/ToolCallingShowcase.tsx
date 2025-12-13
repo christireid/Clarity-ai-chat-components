@@ -380,16 +380,19 @@ export function ToolCallingShowcase() {
     orchestratorState,
     pendingApproval,
     isProcessingApproval,
+    error,
     sendMessage,
     handleApprove,
     handleReject,
     clearMessages,
+    clearError,
     debugEvents,
   } = useAI ? aiOrchestration : mockOrchestration
 
   // Local UI state
   const [input, setInput] = useState('')
   const [isDebugExpanded, setIsDebugExpanded] = useState(true)
+  const [isSwitchingMode, setIsSwitchingMode] = useState(false)
 
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -504,20 +507,33 @@ export function ToolCallingShowcase() {
         <div className="flex items-center gap-2">
           {/* AI Mode Toggle */}
           <button
-            onClick={() => {
-              setUseAI(!useAI)
+            onClick={async () => {
+              if (isSwitchingMode || isLoading) return
+              setIsSwitchingMode(true)
               clearMessages()
+              // Small delay to let clearMessages complete
+              await new Promise(r => setTimeout(r, 100))
+              setUseAI(!useAI)
+              setIsSwitchingMode(false)
             }}
+            disabled={isSwitchingMode || isLoading}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-              useAI
-                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/25'
-                : 'bg-gray-100 dark:bg-gray-800 text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-700'
-            }`}
+              isSwitchingMode
+                ? 'bg-gray-200 dark:bg-gray-700 text-muted-foreground cursor-wait'
+                : useAI
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/25'
+                  : 'bg-gray-100 dark:bg-gray-800 text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-700'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
             title={useAI ? 'Using Real AI + Live Data' : 'Using Mock Demo Mode'}
             aria-label={useAI ? 'Switch to mock demo mode' : 'Switch to real AI mode'}
             aria-pressed={useAI}
           >
-            {useAI ? (
+            {isSwitchingMode ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                <span>Switching...</span>
+              </>
+            ) : useAI ? (
               <>
                 <Cpu className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Live AI</span>
@@ -570,7 +586,44 @@ export function ToolCallingShowcase() {
         aria-live="polite"
         aria-relevant="additions"
       >
-        {messages.length === 0 ? (
+        {/* Error Alert */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-950/30 p-4"
+            role="alert"
+            aria-live="assertive"
+          >
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="flex-1">
+                <h4 className="font-medium text-red-700 dark:text-red-400">
+                  {useAI ? 'AI Connection Error' : 'Error'}
+                </h4>
+                <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                  {error.message}
+                </p>
+                <p className="text-xs text-red-500 dark:text-red-400 mt-2">
+                  {useAI && error.message.includes('API key')
+                    ? 'Check that OPENAI_API_KEY and FINNHUB_API_KEY are set in your .env.local file.'
+                    : 'Try again or switch to Demo mode.'}
+                </p>
+                <button
+                  onClick={clearError}
+                  className="mt-3 flex items-center gap-2 px-3 py-1.5 text-sm font-medium
+                             bg-red-100 hover:bg-red-200 dark:bg-red-900/50 dark:hover:bg-red-900
+                             text-red-700 dark:text-red-300 rounded-lg transition-colors"
+                  aria-label="Dismiss error"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+        {messages.length === 0 && !error ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}

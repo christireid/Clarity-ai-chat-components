@@ -14,8 +14,45 @@ import { executeExecuteTrade } from '../../lib/mock-data'
 
 export const maxDuration = 30
 
+// Request validation schema
+const RequestSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(['user', 'assistant', 'system']),
+      content: z.string(),
+    })
+  ).min(1, 'At least one message is required'),
+})
+
 export async function POST(req: Request) {
-  const { messages } = await req.json()
+  // Validate API key is configured
+  if (!process.env.OPENAI_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: 'OPENAI_API_KEY is not configured. Please add it to your .env.local file.' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+
+  // Parse and validate request body
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return new Response(
+      JSON.stringify({ error: 'Invalid JSON in request body' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+
+  const parseResult = RequestSchema.safeParse(body)
+  if (!parseResult.success) {
+    return new Response(
+      JSON.stringify({ error: 'Invalid request format', details: parseResult.error.flatten() }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+
+  const { messages } = parseResult.data
 
   const result = streamText({
     model: openai('gpt-4o-mini'),

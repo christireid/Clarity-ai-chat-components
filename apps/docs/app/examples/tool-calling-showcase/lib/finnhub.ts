@@ -5,8 +5,33 @@
  * Free tier: 60 API calls/minute, 1 year historical data
  */
 
-const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY || 'd185eppr01ql1b4ltnmgd185eppr01ql1b4ltnn0'
+const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY
 const BASE_URL = 'https://finnhub.io/api/v1'
+
+// Rate limiting: Finnhub free tier allows 60 calls/minute
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX_CALLS = 60
+let callTimestamps: number[] = []
+
+function checkRateLimit(): void {
+  const now = Date.now()
+  // Remove timestamps outside the window
+  callTimestamps = callTimestamps.filter(ts => now - ts < RATE_LIMIT_WINDOW_MS)
+
+  if (callTimestamps.length >= RATE_LIMIT_MAX_CALLS) {
+    const oldestCall = Math.min(...callTimestamps)
+    const waitTime = Math.ceil((RATE_LIMIT_WINDOW_MS - (now - oldestCall)) / 1000)
+    throw new Error(`Finnhub rate limit exceeded. Please wait ${waitTime} seconds.`)
+  }
+
+  callTimestamps.push(now)
+}
+
+function validateApiKey(): void {
+  if (!FINNHUB_API_KEY) {
+    throw new Error('FINNHUB_API_KEY environment variable is not configured. Please add it to your .env.local file.')
+  }
+}
 
 interface FinnhubQuote {
   c: number  // Current price
@@ -67,9 +92,15 @@ interface FinnhubBasicFinancials {
 }
 
 async function fetchFinnhub<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
+  // Validate API key is configured
+  validateApiKey()
+
+  // Check rate limiting before making request
+  checkRateLimit()
+
   const searchParams = new URLSearchParams({
     ...params,
-    token: FINNHUB_API_KEY,
+    token: FINNHUB_API_KEY!,
   })
 
   const response = await fetch(`${BASE_URL}${endpoint}?${searchParams}`, {
@@ -78,6 +109,12 @@ async function fetchFinnhub<T>(endpoint: string, params: Record<string, string> 
   })
 
   if (!response.ok) {
+    if (response.status === 429) {
+      throw new Error('Finnhub API rate limit exceeded. Please try again in a moment.')
+    }
+    if (response.status === 401) {
+      throw new Error('Invalid Finnhub API key. Please check your configuration.')
+    }
     throw new Error(`Finnhub API error: ${response.status} ${response.statusText}`)
   }
 
@@ -134,23 +171,6 @@ export async function getCandles(
     from: from.toString(),
     to: to.toString(),
   })
-}
-
-/**
- * Convert resolution to timeframe label
- */
-function resolutionToTimeframe(resolution: string): string {
-  const map: Record<string, string> = {
-    '1': '1D',
-    '5': '1D',
-    '15': '1D',
-    '30': '1D',
-    '60': '1W',
-    'D': '1M',
-    'W': '3M',
-    'M': '1Y',
-  }
-  return map[resolution] || '1M'
 }
 
 /**
