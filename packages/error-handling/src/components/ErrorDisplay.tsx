@@ -675,19 +675,19 @@ export function ErrorDisplay({
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
                     }}
-                    onMouseOver={(e) => {
+                    onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
                       e.currentTarget.style.background = 'rgba(0, 0, 0, 0.04)'
                       e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.15)'
                     }}
-                    onMouseOut={(e) => {
+                    onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
                       e.currentTarget.style.background = 'transparent'
                       e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)'
                     }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.outline = '2px solid #6b7280'
+                    onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
+                      e.currentTarget.style.outline = '2px solid var(--error-color-muted, #6b7280)'
                       e.currentTarget.style.outlineOffset = '2px'
                     }}
-                    onBlur={(e) => {
+                    onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
                       e.currentTarget.style.outline = 'none'
                     }}
                   >
@@ -722,19 +722,19 @@ export function ErrorDisplay({
                 color: 'var(--error-color-muted, #9ca3af)',
                 transition: 'all 0.2s ease',
               }}
-              onMouseOver={(e) => {
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.background = 'rgba(0, 0, 0, 0.08)'
-                e.currentTarget.style.color = '#6b7280'
+                e.currentTarget.style.color = 'var(--error-color-muted, #6b7280)'
               }}
-              onMouseOut={(e) => {
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.background = 'rgba(0, 0, 0, 0.04)'
-                e.currentTarget.style.color = '#9ca3af'
+                e.currentTarget.style.color = 'var(--error-color-muted, #9ca3af)'
               }}
-              onFocus={(e) => {
-                e.currentTarget.style.outline = '2px solid #9ca3af'
+              onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.outline = '2px solid var(--error-color-muted, #9ca3af)'
                 e.currentTarget.style.outlineOffset = '2px'
               }}
-              onBlur={(e) => {
+              onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.outline = 'none'
               }}
             >
