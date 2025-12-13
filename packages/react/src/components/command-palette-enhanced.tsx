@@ -178,26 +178,53 @@ function fuzzyMatch(
 }
 
 // ============================================================================
-// Recent Commands Hook
+// Recent Commands Hook (SSR-safe)
 // ============================================================================
+
+/**
+ * Check if localStorage is available (browser environment)
+ */
+function isLocalStorageAvailable(): boolean {
+  if (typeof window === 'undefined') return false
+
+  try {
+    const testKey = '__storage_test__'
+    window.localStorage.setItem(testKey, testKey)
+    window.localStorage.removeItem(testKey)
+    return true
+  } catch {
+    return false
+  }
+}
 
 function useRecentCommands(
   storageKey: string,
   maxRecents: number
 ): [string[], (id: string) => void] {
   const [recents, setRecents] = React.useState<string[]>([])
+  const [isClient, setIsClient] = React.useState(false)
 
-  // Load from localStorage
+  // Check if we're on the client after hydration
   React.useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Load from localStorage (only on client)
+  React.useEffect(() => {
+    if (!isClient || !isLocalStorageAvailable()) return
+
     try {
-      const stored = localStorage.getItem(storageKey)
+      const stored = window.localStorage.getItem(storageKey)
       if (stored) {
-        setRecents(JSON.parse(stored))
+        const parsed = JSON.parse(stored)
+        if (Array.isArray(parsed)) {
+          setRecents(parsed)
+        }
       }
     } catch {
-      // Ignore storage errors
+      // Ignore storage errors (quota exceeded, invalid JSON, etc.)
     }
-  }, [storageKey])
+  }, [storageKey, isClient])
 
   // Add to recents
   const addRecent = React.useCallback(
@@ -207,11 +234,16 @@ function useRecentCommands(
           0,
           maxRecents
         )
-        try {
-          localStorage.setItem(storageKey, JSON.stringify(newRecents))
-        } catch {
-          // Ignore storage errors
+
+        // Persist to localStorage (if available)
+        if (isLocalStorageAvailable()) {
+          try {
+            window.localStorage.setItem(storageKey, JSON.stringify(newRecents))
+          } catch {
+            // Ignore storage errors (quota exceeded, etc.)
+          }
         }
+
         return newRecents
       })
     },
@@ -667,6 +699,11 @@ export function CommandPaletteEnhanced({
                     role="combobox"
                     aria-expanded="true"
                     aria-controls="command-list"
+                    aria-activedescendant={
+                      flatItems[selectedIndex]
+                        ? `command-option-${flatItems[selectedIndex].id}`
+                        : undefined
+                    }
                   />
                   {search && (
                     <motion.button
@@ -754,6 +791,7 @@ export function CommandPaletteEnhanced({
                               return (
                                 <motion.button
                                   key={result.item.id}
+                                  id={`command-option-${result.item.id}`}
                                   data-selected={isSelected}
                                   onClick={() => handleSelect(result.item)}
                                   onMouseEnter={() => setSelectedIndex(globalIndex)}

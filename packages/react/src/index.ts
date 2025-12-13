@@ -815,6 +815,7 @@ export {
   useVimNavigation,
   useFocusScope,
   useKeyboardHintsOnModifier,
+  useIsMac,
   // Utilities
   formatShortcutDisplay,
   // Default Shortcuts

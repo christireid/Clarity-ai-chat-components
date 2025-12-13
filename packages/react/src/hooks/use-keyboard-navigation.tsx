@@ -75,12 +75,53 @@ type KeyboardNavigationAction =
   | { type: 'SET_HINTS'; show: boolean }
 
 // ============================================================================
-// Platform Detection
+// Platform Detection (SSR-safe)
 // ============================================================================
 
-const isMac =
-  typeof navigator !== 'undefined' &&
-  /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+/**
+ * Detect if the user is on a Mac/iOS device
+ * Uses userAgentData when available (modern API), falls back to userAgent
+ * Returns false during SSR for safe hydration
+ */
+function detectMacPlatform(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return false // SSR fallback
+  }
+
+  // Modern API (Chrome 90+, Edge 90+)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userAgentData = (navigator as any).userAgentData
+  if (userAgentData?.platform) {
+    return /macOS|iOS/i.test(userAgentData.platform)
+  }
+
+  // Fallback to userAgent (more reliable than deprecated navigator.platform)
+  return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
+
+// Memoize the result after first client-side check
+let cachedIsMac: boolean | null = null
+
+function getIsMac(): boolean {
+  if (cachedIsMac === null) {
+    cachedIsMac = detectMacPlatform()
+  }
+  return cachedIsMac
+}
+
+/**
+ * Hook for SSR-safe platform detection
+ * Returns stable value after hydration
+ */
+export function useIsMac(): boolean {
+  const [isMac, setIsMac] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsMac(detectMacPlatform())
+  }, [])
+
+  return isMac
+}
 
 // ============================================================================
 // Key Parsing and Matching
@@ -100,7 +141,7 @@ function parseKeyString(keyString: string): {
   // Normalize 'mod' to platform-specific key
   if (modifiers.has('mod')) {
     modifiers.delete('mod')
-    modifiers.add(isMac ? 'meta' : 'ctrl')
+    modifiers.add(getIsMac() ? 'meta' : 'ctrl')
   }
 
   return { modifiers, key }
@@ -175,8 +216,9 @@ function isInputElement(target: EventTarget | null): boolean {
  */
 export function formatShortcutDisplay(
   pattern: string,
-  platform: 'mac' | 'windows' = isMac ? 'mac' : 'windows'
+  platform?: 'mac' | 'windows'
 ): string {
+  const effectivePlatform = platform ?? (getIsMac() ? 'mac' : 'windows')
   const symbols: Record<string, { mac: string; windows: string }> = {
     mod: { mac: '⌘', windows: 'Ctrl' },
     ctrl: { mac: '⌃', windows: 'Ctrl' },
@@ -209,7 +251,7 @@ export function formatShortcutDisplay(
   if (pattern.includes(' ')) {
     return pattern
       .split(' ')
-      .map((p) => formatShortcutDisplay(p, platform))
+      .map((p) => formatShortcutDisplay(p, effectivePlatform))
       .join(' ')
   }
 
@@ -217,12 +259,12 @@ export function formatShortcutDisplay(
   const formatted = parts.map((part) => {
     const lower = part.toLowerCase()
     if (symbols[lower]) {
-      return symbols[lower][platform]
+      return symbols[lower][effectivePlatform]
     }
     return part.charAt(0).toUpperCase() + part.slice(1)
   })
 
-  return platform === 'mac' ? formatted.join('') : formatted.join('+')
+  return effectivePlatform === 'mac' ? formatted.join('') : formatted.join('+')
 }
 
 // ============================================================================
@@ -360,6 +402,7 @@ export function KeyboardNavigationProvider({
   // Screen reader live region ref
   const liveRegionRef = React.useRef<HTMLDivElement>(null)
   const sequenceTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const announceTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
 
   // Warn about conflicts in development
   React.useEffect(() => {
@@ -545,13 +588,19 @@ export function KeyboardNavigationProvider({
   const announceToScreenReader = React.useCallback(
     (message: string, assertive = false) => {
       if (liveRegionRef.current) {
+        // Clear any pending timeout to prevent race conditions
+        if (announceTimeoutRef.current) {
+          clearTimeout(announceTimeoutRef.current)
+        }
+
         liveRegionRef.current.setAttribute(
           'aria-live',
           assertive ? 'assertive' : 'polite'
         )
         liveRegionRef.current.textContent = message
+
         // Clear after a delay to allow re-announcement of same message
-        setTimeout(() => {
+        announceTimeoutRef.current = setTimeout(() => {
           if (liveRegionRef.current) {
             liveRegionRef.current.textContent = ''
           }
@@ -560,6 +609,15 @@ export function KeyboardNavigationProvider({
     },
     []
   )
+
+  // Cleanup announcement timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (announceTimeoutRef.current) {
+        clearTimeout(announceTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const value = React.useMemo(
     () => ({
@@ -647,16 +705,33 @@ export function useKeyboardShortcut(
     config.id || `shortcut-${Math.random().toString(36).substr(2, 9)}`
   )
 
+  // Use a ref to always have the latest handler - prevents stale closures
+  const handlerRef = React.useRef(config.handler)
+  React.useEffect(() => {
+    handlerRef.current = config.handler
+  }, [config.handler])
+
+  // Stable handler that always calls the latest handler ref
+  const stableHandler = React.useCallback((event: KeyboardEvent) => {
+    handlerRef.current(event)
+  }, [])
+
   React.useEffect(() => {
     return registerShortcut({
       ...config,
+      handler: stableHandler,
       id: idRef.current,
     })
   }, [
     config.keys,
-    config.handler,
     config.enabled,
     config.scope,
+    config.description,
+    config.category,
+    config.priority,
+    config.enableInInput,
+    config.preventDefault,
+    stableHandler,
     registerShortcut,
   ])
 }

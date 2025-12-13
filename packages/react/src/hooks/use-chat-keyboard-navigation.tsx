@@ -117,26 +117,80 @@ export function useChatKeyboardNavigation({
   // Track all shortcuts for help modal
   const [shortcuts, setShortcuts] = React.useState<KeyboardShortcutConfig[]>([])
 
+  // Use refs for callbacks to prevent unnecessary re-registrations
+  // This avoids the issue of large dependency arrays causing re-renders
+  const callbacksRef = React.useRef({
+    onScrollToMessage,
+    onCopyMessage,
+    onRegenerateMessage,
+    onDeleteMessage,
+    onEditMessage,
+    onFocusInput,
+    onSendMessage,
+    onNewChat,
+    onToggleSidebar,
+    onOpenSettings,
+    onOpenCommandPalette,
+    onShowShortcutsHelp,
+  })
+
+  // Update refs when callbacks change
+  React.useEffect(() => {
+    callbacksRef.current = {
+      onScrollToMessage,
+      onCopyMessage,
+      onRegenerateMessage,
+      onDeleteMessage,
+      onEditMessage,
+      onFocusInput,
+      onSendMessage,
+      onNewChat,
+      onToggleSidebar,
+      onOpenSettings,
+      onOpenCommandPalette,
+      onShowShortcutsHelp,
+    }
+  }, [
+    onScrollToMessage,
+    onCopyMessage,
+    onRegenerateMessage,
+    onDeleteMessage,
+    onEditMessage,
+    onFocusInput,
+    onSendMessage,
+    onNewChat,
+    onToggleSidebar,
+    onOpenSettings,
+    onOpenCommandPalette,
+    onShowShortcutsHelp,
+  ])
+
+  // Stable callbacks that use refs - prevents unnecessary re-renders in useVimNavigation
+  const handleMessageSelect = React.useCallback((message: Message) => {
+    callbacksRef.current.onCopyMessage?.(message)
+  }, [])
+
+  const handleMessageFocus = React.useCallback(
+    (message: Message, index: number) => {
+      callbacksRef.current.onScrollToMessage?.(message, index)
+      announceToScreenReader(
+        `Message ${index + 1} of ${messages.length} from ${message.role}`,
+        false
+      )
+    },
+    [announceToScreenReader, messages.length]
+  )
+
   // Use vim navigation for messages
   const {
     focusedIndex,
     setFocusedIndex,
     getItemProps,
     navigate,
-    itemRefs,
   } = useVimNavigation({
     items: messages,
-    onSelect: (message) => {
-      // Default action on Enter - copy the message
-      onCopyMessage?.(message)
-    },
-    onFocus: (message, index) => {
-      onScrollToMessage?.(message, index)
-      announceToScreenReader(
-        `Message ${index + 1} of ${messages.length} from ${message.role}`,
-        false
-      )
-    },
+    onSelect: handleMessageSelect,
+    onFocus: handleMessageFocus,
     enabled,
     scope: `${scope}-messages`,
   })
@@ -145,6 +199,7 @@ export function useChatKeyboardNavigation({
   const messagesContainerRef = useFocusScope(`${scope}-messages`)
 
   // Register chat-specific shortcuts
+  // Using refs for callbacks to prevent re-registrations when callbacks change
   React.useEffect(() => {
     if (!enabled) return
 
@@ -156,7 +211,7 @@ export function useChatKeyboardNavigation({
         description: 'Focus message input',
         category: 'Chat',
         handler: () => {
-          onFocusInput?.()
+          callbacksRef.current.onFocusInput?.()
           inputRef.current?.focus()
         },
         priority: 80,
@@ -166,7 +221,7 @@ export function useChatKeyboardNavigation({
         keys: 'mod+enter',
         description: 'Send message',
         category: 'Chat',
-        handler: () => onSendMessage?.(),
+        handler: () => callbacksRef.current.onSendMessage?.(),
         enableInInput: true,
         priority: 100,
       },
@@ -175,7 +230,7 @@ export function useChatKeyboardNavigation({
         keys: 'mod+n',
         description: 'New chat',
         category: 'Chat',
-        handler: () => onNewChat?.(),
+        handler: () => callbacksRef.current.onNewChat?.(),
         priority: 70,
       },
 
@@ -187,7 +242,7 @@ export function useChatKeyboardNavigation({
         category: 'Messages',
         handler: () => {
           if (focusedIndex >= 0 && messages[focusedIndex]) {
-            onCopyMessage?.(messages[focusedIndex])
+            callbacksRef.current.onCopyMessage?.(messages[focusedIndex])
             announceToScreenReader('Message copied to clipboard', true)
           }
         },
@@ -203,7 +258,7 @@ export function useChatKeyboardNavigation({
           if (focusedIndex >= 0 && messages[focusedIndex]) {
             const message = messages[focusedIndex]
             if (message.role === 'assistant') {
-              onRegenerateMessage?.(message)
+              callbacksRef.current.onRegenerateMessage?.(message)
               announceToScreenReader('Regenerating response', true)
             }
           }
@@ -218,7 +273,7 @@ export function useChatKeyboardNavigation({
         category: 'Messages',
         handler: () => {
           if (focusedIndex >= 0 && messages[focusedIndex]) {
-            onEditMessage?.(messages[focusedIndex])
+            callbacksRef.current.onEditMessage?.(messages[focusedIndex])
           }
         },
         scope: `${scope}-messages`,
@@ -231,7 +286,7 @@ export function useChatKeyboardNavigation({
         category: 'Messages',
         handler: () => {
           if (focusedIndex >= 0 && messages[focusedIndex]) {
-            onDeleteMessage?.(messages[focusedIndex])
+            callbacksRef.current.onDeleteMessage?.(messages[focusedIndex])
             announceToScreenReader('Message deleted', true)
           }
         },
@@ -245,7 +300,7 @@ export function useChatKeyboardNavigation({
         keys: 'mod+b',
         description: 'Toggle sidebar',
         category: 'Navigation',
-        handler: () => onToggleSidebar?.(),
+        handler: () => callbacksRef.current.onToggleSidebar?.(),
         priority: 50,
       },
       {
@@ -253,7 +308,7 @@ export function useChatKeyboardNavigation({
         keys: 'mod+,',
         description: 'Open settings',
         category: 'Navigation',
-        handler: () => onOpenSettings?.(),
+        handler: () => callbacksRef.current.onOpenSettings?.(),
         priority: 50,
       },
       {
@@ -261,7 +316,7 @@ export function useChatKeyboardNavigation({
         keys: 'mod+k',
         description: 'Open command palette',
         category: 'Navigation',
-        handler: () => onOpenCommandPalette?.(),
+        handler: () => callbacksRef.current.onOpenCommandPalette?.(),
         priority: 100,
       },
       {
@@ -269,7 +324,7 @@ export function useChatKeyboardNavigation({
         keys: ['?', 'shift+/'],
         description: 'Show keyboard shortcuts',
         category: 'Help',
-        handler: () => onShowShortcutsHelp?.(),
+        handler: () => callbacksRef.current.onShowShortcutsHelp?.(),
         priority: 100,
       },
 
@@ -312,7 +367,7 @@ export function useChatKeyboardNavigation({
             .reverse()
             .find((m) => m.role === 'assistant')
           if (lastAssistant) {
-            onCopyMessage?.(lastAssistant)
+            callbacksRef.current.onCopyMessage?.(lastAssistant)
             announceToScreenReader('Last response copied to clipboard', true)
           }
         },
@@ -347,6 +402,8 @@ export function useChatKeyboardNavigation({
     return () => {
       unsubscribers.forEach((u) => u())
     }
+    // Note: Callback props are accessed via callbacksRef.current to prevent
+    // unnecessary re-registrations when parent component re-renders
   }, [
     enabled,
     scope,
@@ -357,17 +414,6 @@ export function useChatKeyboardNavigation({
     setFocusedIndex,
     navigate,
     announceToScreenReader,
-    onCopyMessage,
-    onRegenerateMessage,
-    onDeleteMessage,
-    onEditMessage,
-    onFocusInput,
-    onSendMessage,
-    onNewChat,
-    onToggleSidebar,
-    onOpenSettings,
-    onOpenCommandPalette,
-    onShowShortcutsHelp,
   ])
 
   // Convert vim navigation props to message props
