@@ -154,6 +154,12 @@ export interface TokenStats {
   maxTokens: number
   /** Utilization percentage (0-100) */
   utilizationPercent: number
+  /** Estimated cost in USD for input tokens */
+  estimatedInputCost: number
+  /** Estimated cost in USD for output tokens (assumes max output) */
+  estimatedOutputCost: number
+  /** Total estimated cost */
+  estimatedTotalCost: number
 }
 
 // =============================================================================
@@ -374,10 +380,15 @@ export interface ModelConfig {
   maxOutputTokens: number
   /** Whether model supports structured output natively */
   supportsStructuredOutput: boolean
+  /** Cost per 1M input tokens in USD */
+  inputCostPer1M: number
+  /** Cost per 1M output tokens in USD */
+  outputCostPer1M: number
 }
 
 /**
- * Available model configurations
+ * Available model configurations with pricing (as of Dec 2024)
+ * Prices are per 1M tokens in USD
  */
 export const MODEL_CONFIGS: ModelConfig[] = [
   {
@@ -387,6 +398,8 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 128000,
     maxOutputTokens: 16384,
     supportsStructuredOutput: true,
+    inputCostPer1M: 2.5,
+    outputCostPer1M: 10,
   },
   {
     id: 'gpt-4o-mini',
@@ -395,6 +408,8 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 128000,
     maxOutputTokens: 16384,
     supportsStructuredOutput: true,
+    inputCostPer1M: 0.15,
+    outputCostPer1M: 0.6,
   },
   {
     id: 'gpt-4-turbo',
@@ -403,6 +418,8 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 128000,
     maxOutputTokens: 4096,
     supportsStructuredOutput: true,
+    inputCostPer1M: 10,
+    outputCostPer1M: 30,
   },
   {
     id: 'claude-3-5-sonnet',
@@ -411,6 +428,8 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 200000,
     maxOutputTokens: 8192,
     supportsStructuredOutput: false,
+    inputCostPer1M: 3,
+    outputCostPer1M: 15,
   },
   {
     id: 'claude-3-opus',
@@ -419,6 +438,8 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 200000,
     maxOutputTokens: 4096,
     supportsStructuredOutput: false,
+    inputCostPer1M: 15,
+    outputCostPer1M: 75,
   },
   {
     id: 'gemini-1.5-pro',
@@ -427,6 +448,8 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 1000000,
     maxOutputTokens: 8192,
     supportsStructuredOutput: true,
+    inputCostPer1M: 1.25,
+    outputCostPer1M: 5,
   },
   {
     id: 'gemini-1.5-flash',
@@ -435,6 +458,8 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 1000000,
     maxOutputTokens: 8192,
     supportsStructuredOutput: true,
+    inputCostPer1M: 0.075,
+    outputCostPer1M: 0.3,
   },
   {
     id: 'gemini-2.0-flash-exp',
@@ -443,6 +468,8 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 1000000,
     maxOutputTokens: 8192,
     supportsStructuredOutput: true,
+    inputCostPer1M: 0.075,
+    outputCostPer1M: 0.3,
   },
 ]
 
@@ -458,4 +485,44 @@ export function getModelConfig(modelId: string): ModelConfig | undefined {
  */
 export function getDefaultModelConfig(): ModelConfig {
   return MODEL_CONFIGS[0]
+}
+
+/**
+ * Calculate estimated cost for a given number of tokens
+ *
+ * @param inputTokens - Number of input tokens
+ * @param outputTokens - Estimated number of output tokens (default: model max / 4)
+ * @param modelId - Model identifier
+ * @returns Object with input, output, and total costs in USD
+ */
+export function estimateCost(
+  inputTokens: number,
+  outputTokens: number,
+  modelId: string
+): { inputCost: number; outputCost: number; totalCost: number } {
+  const model = getModelConfig(modelId)
+  if (!model) {
+    return { inputCost: 0, outputCost: 0, totalCost: 0 }
+  }
+
+  // Cost per token = cost per 1M / 1,000,000
+  const inputCost = (inputTokens * model.inputCostPer1M) / 1_000_000
+  const outputCost = (outputTokens * model.outputCostPer1M) / 1_000_000
+  const totalCost = inputCost + outputCost
+
+  return { inputCost, outputCost, totalCost }
+}
+
+/**
+ * Format cost as a display string
+ *
+ * @param cost - Cost in USD
+ * @returns Formatted string like "$0.0012" or "<$0.0001"
+ */
+export function formatCost(cost: number): string {
+  if (cost === 0) return '$0.00'
+  if (cost < 0.0001) return '<$0.0001'
+  if (cost < 0.01) return `$${cost.toFixed(4)}`
+  if (cost < 1) return `$${cost.toFixed(3)}`
+  return `$${cost.toFixed(2)}`
 }

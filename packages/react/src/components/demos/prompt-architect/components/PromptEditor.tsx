@@ -34,7 +34,7 @@ export interface PromptEditorProps {
 /**
  * Prompt editor with label and token count
  */
-export function PromptEditor({
+export const PromptEditor = React.memo(function PromptEditor({
   label,
   value,
   onChange,
@@ -94,6 +94,6 @@ export function PromptEditor({
       </p>
     </div>
   )
-}
+})
 
 export default PromptEditor

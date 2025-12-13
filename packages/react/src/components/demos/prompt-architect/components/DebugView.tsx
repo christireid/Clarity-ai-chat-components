@@ -46,14 +46,17 @@ const VIEW_MODES: { mode: DebugViewMode; label: string }[] = [
 /**
  * Render diff segments with highlighting
  */
-function DiffRenderer({
+const DiffRenderer = React.memo(function DiffRenderer({
   template,
   values,
 }: {
   template: string
   values: Record<string, string>
 }) {
-  const segments = generateDiff(template, values)
+  const segments = React.useMemo(
+    () => generateDiff(template, values),
+    [template, values]
+  )
 
   return (
     <div className="font-mono text-sm whitespace-pre-wrap break-words">
@@ -83,12 +86,12 @@ function DiffRenderer({
       })}
     </div>
   )
-}
+})
 
 /**
  * Debug view with mode switcher
  */
-export function DebugView({
+export const DebugView = React.memo(function DebugView({
   mode,
   onModeChange,
   systemPromptTemplate,
@@ -99,6 +102,12 @@ export function DebugView({
   messagesArray,
   className,
 }: DebugViewProps) {
+  // Memoize JSON string to avoid recalculation on every render
+  const messagesJson = React.useMemo(
+    () => JSON.stringify(messagesArray, null, 2),
+    [messagesArray]
+  )
+
   return (
     <div className={cn('space-y-4', className)}>
       {/* Mode switcher */}
@@ -207,14 +216,11 @@ export function DebugView({
               <h4 className="text-xs font-semibold text-muted-foreground uppercase">
                 API Messages Array
               </h4>
-              <CopyButton
-                text={JSON.stringify(messagesArray, null, 2)}
-                label="Copy JSON"
-              />
+              <CopyButton text={messagesJson} label="Copy JSON" />
             </div>
             <div className="p-3 rounded-lg bg-muted/50 border border-border overflow-auto">
               <pre className="font-mono text-xs text-foreground">
-                {JSON.stringify(messagesArray, null, 2)}
+                {messagesJson}
               </pre>
             </div>
           </div>
@@ -222,6 +228,6 @@ export function DebugView({
       </div>
     </div>
   )
-}
+})
 
 export default DebugView

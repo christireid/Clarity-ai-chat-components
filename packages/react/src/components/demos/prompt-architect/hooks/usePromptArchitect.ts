@@ -26,7 +26,7 @@ import type {
   DebugViewMode,
   ModelConfig,
 } from '../types'
-import { getModelConfig, getDefaultModelConfig } from '../types'
+import { getModelConfig, getDefaultModelConfig, estimateCost } from '../types'
 import { extractVariablesFromMultiple } from '../utils/variable-parser'
 import {
   compileTemplate,
@@ -40,6 +40,7 @@ import {
 
 const DEFAULT_STORAGE_KEY = 'prompt-architect-state'
 const DEFAULT_AUTO_SAVE_DELAY = 1000
+const MAX_VERSIONS = 20 // Limit to prevent unbounded localStorage growth
 
 const DEFAULT_SYSTEM_PROMPT = `You are a helpful AI assistant.
 
@@ -93,6 +94,9 @@ function createInitialState(
       totalTokens: 0,
       maxTokens: options?.maxTokens ?? defaultModel.maxTokens,
       utilizationPercent: 0,
+      estimatedInputCost: 0,
+      estimatedOutputCost: 0,
+      estimatedTotalCost: 0,
     },
 
     // Persistence
@@ -174,9 +178,17 @@ function promptArchitectReducer(
         createdAt: new Date(),
       }
 
+      // Add new version and enforce MAX_VERSIONS limit
+      let versions = [...state.versions, newVersion]
+
+      // Remove oldest versions if exceeding limit (keep newest)
+      if (versions.length > MAX_VERSIONS) {
+        versions = versions.slice(-MAX_VERSIONS)
+      }
+
       return {
         ...state,
-        versions: [...state.versions, newVersion],
+        versions,
         activeVersionId: newVersion.id,
         isDirty: false,
       }
@@ -304,15 +316,23 @@ function promptArchitectReducer(
         isDirty: true,
       }
 
-    case 'HYDRATE_FROM_STORAGE':
+    case 'HYDRATE_FROM_STORAGE': {
+      // Enforce MAX_VERSIONS limit on loaded data
+      let versions = action.payload.versions ?? state.versions
+      if (versions.length > MAX_VERSIONS) {
+        versions = versions.slice(-MAX_VERSIONS)
+      }
+
       return {
         ...state,
         ...action.payload,
+        versions,
         // Reset transient state
         isStreaming: false,
         streamingContent: '',
         lastError: null,
       }
+    }
 
     case 'RESET':
       return createInitialState()
@@ -425,10 +445,24 @@ export function usePromptArchitect(
       )
 
       const totalTokens = systemTokens + userTokens
-      const maxTokens = getModelConfig(state.selectedModel)?.maxTokens ?? 8192
+      const modelConfig = getModelConfig(state.selectedModel)
+      const maxTokens = modelConfig?.maxTokens ?? 8192
       const utilizationPercent = Math.min(
         100,
         Math.round((totalTokens / maxTokens) * 100)
+      )
+
+      // Estimate output tokens as 25% of max output (reasonable estimate)
+      const estimatedOutputTokens = Math.min(
+        (modelConfig?.maxOutputTokens ?? 2048) * 0.25,
+        2000
+      )
+
+      // Calculate cost estimates
+      const costs = estimateCost(
+        totalTokens,
+        estimatedOutputTokens,
+        state.selectedModel
       )
 
       dispatch({
@@ -440,6 +474,9 @@ export function usePromptArchitect(
           totalTokens,
           maxTokens,
           utilizationPercent,
+          estimatedInputCost: costs.inputCost,
+          estimatedOutputCost: costs.outputCost,
+          estimatedTotalCost: costs.totalCost,
         },
       })
     }, 150) // Debounce token calculation

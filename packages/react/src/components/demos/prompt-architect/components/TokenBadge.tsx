@@ -9,6 +9,7 @@
 import * as React from 'react'
 import { cn } from '../../../../utils/cn'
 import type { TokenStats } from '../types'
+import { formatCost } from '../types'
 
 export interface TokenBadgeProps {
   /** Token statistics */
@@ -69,7 +70,7 @@ function formatTokenCount(count: number): string {
 /**
  * Token count display with progress bar
  */
-export function TokenBadge({
+export const TokenBadge = React.memo(function TokenBadge({
   stats,
   showBreakdown = false,
   compact = false,
@@ -99,6 +100,12 @@ export function TokenBadge({
             style={{ width: `${Math.min(utilizationPercent, 100)}%` }}
           />
         </div>
+        <span
+          className="text-[10px] font-mono text-muted-foreground"
+          title={`Estimated cost: Input ${formatCost(stats.estimatedInputCost)} + Output ${formatCost(stats.estimatedOutputCost)}`}
+        >
+          ~{formatCost(stats.estimatedTotalCost)}
+        </span>
       </div>
     )
   }
@@ -129,6 +136,17 @@ export function TokenBadge({
         </span>
       </div>
 
+      {/* Cost estimate */}
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">Est. cost</span>
+        <span
+          className="font-mono text-green-600 dark:text-green-400"
+          title={`Input: ${formatCost(stats.estimatedInputCost)} | Output: ${formatCost(stats.estimatedOutputCost)}`}
+        >
+          ~{formatCost(stats.estimatedTotalCost)}
+        </span>
+      </div>
+
       {/* Breakdown */}
       {showBreakdown && (
         <div className="pt-2 border-t border-border space-y-1">
@@ -144,10 +162,22 @@ export function TokenBadge({
               {formatTokenCount(userPromptTokens)}
             </span>
           </div>
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Input cost</span>
+            <span className="font-mono">
+              {formatCost(stats.estimatedInputCost)}
+            </span>
+          </div>
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Output cost (est.)</span>
+            <span className="font-mono">
+              {formatCost(stats.estimatedOutputCost)}
+            </span>
+          </div>
         </div>
       )}
     </div>
   )
-}
+})
 
 export default TokenBadge

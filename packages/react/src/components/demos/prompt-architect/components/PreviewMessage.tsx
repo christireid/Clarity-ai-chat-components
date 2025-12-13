@@ -72,7 +72,7 @@ function StreamingCursor() {
 /**
  * Single message in the preview
  */
-export function PreviewMessage({
+export const PreviewMessage = React.memo(function PreviewMessage({
   message,
   isStreaming = false,
   streamingContent,
@@ -105,6 +105,6 @@ export function PreviewMessage({
       </div>
     </motion.div>
   )
-}
+})
 
 export default PreviewMessage

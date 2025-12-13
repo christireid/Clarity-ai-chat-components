@@ -42,7 +42,7 @@ function getPlaceholder(type: InferredFieldType, name: string): string {
 /**
  * Single variable input field
  */
-export function VariableField({
+export const VariableField = React.memo(function VariableField({
   variable,
   value,
   onChange,
@@ -149,6 +149,6 @@ export function VariableField({
       {renderInput()}
     </div>
   )
-}
+})
 
 export default VariableField
