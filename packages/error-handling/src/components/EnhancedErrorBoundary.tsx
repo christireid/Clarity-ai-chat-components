@@ -242,7 +242,7 @@ function DefaultFallback({ error, resetErrorBoundary }: FallbackProps) {
               margin: 0,
               fontSize: '1.375rem',
               fontWeight: 700,
-              color: '#1f2937',
+              color: 'var(--error-color-text, #1f2937)',
               letterSpacing: '-0.02em',
               lineHeight: 1.3,
             }}
@@ -291,7 +291,7 @@ function DefaultFallback({ error, resetErrorBoundary }: FallbackProps) {
             style={{
               margin: '1rem 0 0',
               fontSize: '0.9375rem',
-              color: '#6b7280',
+              color: 'var(--error-color-muted, #6b7280)',
               lineHeight: 1.65,
             }}
           >
@@ -492,7 +492,7 @@ function DefaultFallback({ error, resetErrorBoundary }: FallbackProps) {
                 style={{
                   cursor: 'pointer',
                   fontSize: '0.8125rem',
-                  color: '#9ca3af',
+                  color: 'var(--error-color-muted, #9ca3af)',
                   fontWeight: 500,
                   userSelect: 'none',
                   padding: '0.375rem 0',

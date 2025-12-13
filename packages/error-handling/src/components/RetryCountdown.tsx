@@ -278,7 +278,7 @@ export function RetryCountdown({
               {seconds}
             </div>
           </div>
-          <span style={{ fontSize: '0.8125rem', color: '#6b7280' }}>
+          <span style={{ fontSize: '0.8125rem', color: 'var(--error-color-muted, #6b7280)' }}>
             {displayMessage}
           </span>
           {showRetryButton && onRetryNow && seconds > 0 && (
@@ -296,11 +296,18 @@ export function RetryCountdown({
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
               }}
-              onMouseOver={(e) => {
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.background = colors.bg
               }}
-              onMouseOut={(e) => {
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.background = 'transparent'
+              }}
+              onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.outline = `2px solid ${colors.primary}`
+                e.currentTarget.style.outlineOffset = '2px'
+              }}
+              onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.outline = 'none'
               }}
             >
               Skip
@@ -339,7 +346,7 @@ export function RetryCountdown({
           >
             {seconds}
           </span>
-          <span style={{ fontSize: '0.8125rem', color: '#9ca3af' }}>
+          <span style={{ fontSize: '0.8125rem', color: 'var(--error-color-muted, #9ca3af)' }}>
             seconds
           </span>
         </div>
@@ -468,7 +475,7 @@ export function RetryCountdown({
                     style={{
                       fontSize: sizes.font,
                       fontWeight: 700,
-                      color: '#1f2937',
+                      color: 'var(--error-color-text, #1f2937)',
                       fontVariantNumeric: 'tabular-nums',
                       lineHeight: 1,
                       animation: !prefersReducedMotion && seconds <= 3
@@ -481,7 +488,7 @@ export function RetryCountdown({
                   <span
                     style={{
                       fontSize: size === 'sm' ? '0.625rem' : '0.75rem',
-                      color: '#9ca3af',
+                      color: 'var(--error-color-muted, #9ca3af)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
                       marginTop: '2px',
@@ -511,7 +518,7 @@ export function RetryCountdown({
             >
               {seconds}
             </span>
-            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--error-color-muted, #6b7280)' }}>
               seconds
             </span>
           </div>
@@ -522,7 +529,7 @@ export function RetryCountdown({
           style={{
             margin: 0,
             fontSize: '0.875rem',
-            color: '#6b7280',
+            color: 'var(--error-color-muted, #6b7280)',
             textAlign: 'center',
           }}
         >
@@ -547,21 +554,21 @@ export function RetryCountdown({
               cursor: 'pointer',
               transition: 'all 0.2s ease',
             }}
-            onMouseOver={(e) => {
+            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.background = colors.bg
               e.currentTarget.style.transform = 'translateY(-1px)'
               e.currentTarget.style.boxShadow = colors.shadow
             }}
-            onMouseOut={(e) => {
+            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.background = 'transparent'
               e.currentTarget.style.transform = 'translateY(0)'
               e.currentTarget.style.boxShadow = 'none'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
               e.currentTarget.style.outline = `2px solid ${colors.primary}`
               e.currentTarget.style.outlineOffset = '2px'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
               e.currentTarget.style.outline = 'none'
             }}
           >

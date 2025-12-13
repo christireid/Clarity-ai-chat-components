@@ -563,7 +563,7 @@ export function ErrorDisplay({
                   style={{
                     cursor: 'pointer',
                     fontSize: '0.75rem',
-                    color: '#6b7280',
+                    color: 'var(--error-color-muted, #6b7280)',
                     userSelect: 'none',
                     outline: 'none',
                     padding: '0.25rem 0',
@@ -668,7 +668,7 @@ export function ErrorDisplay({
                       padding: sizes.buttonPadding,
                       fontSize: sizes.buttonSize,
                       fontWeight: 500,
-                      color: '#6b7280',
+                      color: 'var(--error-color-muted, #6b7280)',
                       background: 'transparent',
                       border: '1px solid rgba(0, 0, 0, 0.1)',
                       borderRadius: '8px',
@@ -719,7 +719,7 @@ export function ErrorDisplay({
                 border: 'none',
                 borderRadius: '6px',
                 cursor: 'pointer',
-                color: '#9ca3af',
+                color: 'var(--error-color-muted, #9ca3af)',
                 transition: 'all 0.2s ease',
               }}
               onMouseOver={(e) => {

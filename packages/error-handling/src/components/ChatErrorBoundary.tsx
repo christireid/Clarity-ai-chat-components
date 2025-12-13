@@ -351,7 +351,7 @@ function ChatErrorFallback({
               margin: 0,
               fontSize: '1.125rem',
               fontWeight: 700,
-              color: '#1f2937',
+              color: 'var(--error-color-text, #1f2937)',
               textAlign: 'center',
               letterSpacing: '-0.01em',
             }}
@@ -364,7 +364,7 @@ function ChatErrorFallback({
             style={{
               margin: '0.625rem 0 0',
               fontSize: '0.875rem',
-              color: '#6b7280',
+              color: 'var(--error-color-muted, #6b7280)',
               textAlign: 'center',
               lineHeight: 1.6,
             }}

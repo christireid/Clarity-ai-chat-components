@@ -247,6 +247,15 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
   const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimeRef = React.useRef<number>(Date.now())
   const remainingTimeRef = React.useRef<number>(toast.duration ?? 5000)
+  const isMountedRef = React.useRef(true)
+
+  // Track mount state to prevent memory leaks
+  React.useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   const config = toastConfigs[toast.type]
   const showProgress = toast.progress !== false && (toast.duration ?? 5000) > 0
@@ -259,6 +268,17 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
     if (position.includes('center')) return 'toastSlideInCenter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
     return 'toastSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
   }
+
+  // Define handleDismiss before useEffects that use it
+  const handleDismiss = React.useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    setIsExiting(true)
+    setTimeout(() => {
+      if (isMountedRef.current) {
+        onRemove()
+      }
+    }, 300)
+  }, [onRemove])
 
   // Handle auto-dismiss timer with proper cleanup
   React.useEffect(() => {
@@ -286,8 +306,7 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
         timerRef.current = null
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast.duration]) // handleDismiss is stable
+  }, [toast.duration, handleDismiss])
 
   // Pause timer on hover
   React.useEffect(() => {
@@ -323,14 +342,7 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
         timerRef.current = null
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHovered, toast.duration]) // handleDismiss is stable
-
-  const handleDismiss = () => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    setIsExiting(true)
-    setTimeout(onRemove, 300)
-  }
+  }, [isHovered, toast.duration, handleDismiss])
 
   // Extract error details if present
   let errorCode: string | undefined
@@ -414,7 +426,7 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
                   margin: 0,
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#1f2937',
+                  color: 'var(--error-color-text, #1f2937)',
                   lineHeight: 1.3,
                 }}
               >
@@ -443,7 +455,7 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
             style={{
               margin: 0,
               fontSize: '0.8125rem',
-              color: '#6b7280',
+              color: 'var(--error-color-muted, #6b7280)',
               lineHeight: 1.5,
               wordBreak: 'break-word',
             }}
@@ -485,13 +497,20 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
               }}
-              onMouseOver={(e) => {
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.transform = 'translateY(-1px)'
                 e.currentTarget.style.boxShadow = `0 4px 12px ${config.shadowColor}`
               }}
-              onMouseOut={(e) => {
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.transform = 'translateY(0)'
                 e.currentTarget.style.boxShadow = 'none'
+              }}
+              onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.outline = '2px solid white'
+                e.currentTarget.style.outlineOffset = '2px'
+              }}
+              onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.outline = 'none'
               }}
             >
               {toast.action.label}
@@ -515,16 +534,23 @@ function ToastItem({ toast, onRemove, position, index }: ToastItemProps) {
               border: 'none',
               borderRadius: '6px',
               cursor: 'pointer',
-              color: '#9ca3af',
+              color: 'var(--error-color-muted, #9ca3af)',
               transition: 'all 0.2s ease',
             }}
-            onMouseOver={(e) => {
+            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.background = 'rgba(0, 0, 0, 0.08)'
-              e.currentTarget.style.color = '#6b7280'
+              e.currentTarget.style.color = 'var(--error-color-muted, #6b7280)'
             }}
-            onMouseOut={(e) => {
+            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.background = 'rgba(0, 0, 0, 0.04)'
-              e.currentTarget.style.color = '#9ca3af'
+              e.currentTarget.style.color = 'var(--error-color-muted, #9ca3af)'
+            }}
+            onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
+              e.currentTarget.style.outline = '2px solid var(--error-color-info, #3b82f6)'
+              e.currentTarget.style.outlineOffset = '2px'
+            }}
+            onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
+              e.currentTarget.style.outline = 'none'
             }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
