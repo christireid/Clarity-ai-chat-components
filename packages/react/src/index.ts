@@ -900,6 +900,7 @@ export {
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-auto-scroll'
+export * from './hooks/use-safe-timeout'
 export * from './hooks/use-clipboard'
 export * from './hooks/use-debounce'
 export * from './hooks/use-throttle'

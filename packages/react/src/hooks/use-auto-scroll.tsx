@@ -1,6 +1,15 @@
 'use client'
 
-import { useRef, useState, useCallback, useEffect, useLayoutEffect, type RefObject, type DependencyList } from 'react'
+import {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  type RefObject,
+  type DependencyList,
+} from 'react'
+import { useSafeAnimationFrame } from './use-safe-timeout'
 
 export interface UseAutoScrollOptions {
   /**
@@ -46,14 +55,14 @@ export interface UseAutoScrollReturn {
 /**
  * Auto-scroll to bottom of container when new content is added
  * Only scrolls if user is near bottom to avoid disrupting manual scrolling
- * 
+ *
  * @example
  * ```tsx
  * const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
  *   dependencies: [messages],
  *   threshold: 50
  * })
- * 
+ *
  * return (
  *   <div ref={scrollRef} className="overflow-y-auto">
  *     {messages.map(msg => <Message key={msg.id} {...msg} />)}
@@ -64,7 +73,9 @@ export interface UseAutoScrollReturn {
  * )
  * ```
  */
-export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScrollReturn {
+export function useAutoScroll(
+  options: UseAutoScrollOptions = {}
+): UseAutoScrollReturn {
   const {
     enabled: initialEnabled = true,
     behavior = 'smooth',
@@ -75,6 +86,7 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScroll
   const scrollRef = useRef<HTMLElement>(null)
   const [enabled, setEnabled] = useState(initialEnabled)
   const [isNearBottom, setIsNearBottom] = useState(true)
+  const { requestSafeAnimationFrame } = useSafeAnimationFrame()
 
   // Check if user is near bottom (store in ref to avoid dependency issues)
   const checkIfNearBottomRef = useRef(() => {
@@ -84,7 +96,7 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScroll
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight
     return distanceFromBottom <= threshold
   })
-  
+
   useLayoutEffect(() => {
     checkIfNearBottomRef.current = () => {
       const element = scrollRef.current
@@ -104,7 +116,7 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScroll
       behavior,
     })
   })
-  
+
   useLayoutEffect(() => {
     scrollToBottomRef.current = () => {
       const element = scrollRef.current
@@ -144,13 +156,13 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScroll
 
     const wasNearBottom = checkIfNearBottomRef.current()
     if (wasNearBottom) {
-      // Use requestAnimationFrame to ensure DOM has updated
-      requestAnimationFrame(() => {
+      // Use safe requestAnimationFrame to ensure DOM has updated and cleanup on unmount
+      requestSafeAnimationFrame(() => {
         scrollToBottomRef.current()
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, ...dependencies]) // Functions accessed via refs
+  }, [enabled, requestSafeAnimationFrame, ...dependencies]) // Functions accessed via refs
 
   return {
     scrollRef,
