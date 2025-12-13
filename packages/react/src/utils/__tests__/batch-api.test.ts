@@ -53,7 +53,7 @@ describe('BatchRequestManager', () => {
         priority: 'normal',
       }
 
-      manager.addRequest(request)
+      manager.enqueueRequest(request)
 
       expect(manager.getQueueSize()).toBe(1)
     })
@@ -106,7 +106,7 @@ describe('BatchRequestManager', () => {
     })
 
     it('should create job with correct properties', async () => {
-      manager.addRequest({
+      manager.enqueueRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
@@ -122,7 +122,7 @@ describe('BatchRequestManager', () => {
     })
 
     it('should call onStatusChange with job updates', async () => {
-      manager.addRequest({
+      manager.enqueueRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
@@ -139,7 +139,7 @@ describe('BatchRequestManager', () => {
 
     it('should call onProgress during processing', async () => {
       for (let i = 0; i < 3; i++) {
-        manager.addRequest({
+        manager.enqueueRequest({
           id: `req${i}`,
           model: 'gpt-4o-mini',
           messages: [{ role: 'user', content: 'Hello' }],
@@ -161,7 +161,7 @@ describe('BatchRequestManager', () => {
     })
 
     it('should return job status', async () => {
-      manager.addRequest({
+      manager.enqueueRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
@@ -221,7 +221,7 @@ describe('BatchRequestManager', () => {
     })
 
     it('should return results after completion', async () => {
-      manager.addRequest({
+      manager.enqueueRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
@@ -249,7 +249,7 @@ describe('BatchRequestManager', () => {
 
     it('should update stats after batch completion', async () => {
       for (let i = 0; i < 3; i++) {
-        manager.addRequest({
+        manager.enqueueRequest({
           id: `req${i}`,
           model: 'gpt-4o-mini',
           messages: [{ role: 'user', content: 'Hello' }],
@@ -268,7 +268,7 @@ describe('BatchRequestManager', () => {
 
   describe('flush', () => {
     it('should submit current queue immediately', async () => {
-      manager.addRequest({
+      manager.enqueueRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
@@ -300,7 +300,7 @@ describe('BatchRequestManager', () => {
 
   describe('destroy', () => {
     it('should clean up all resources', async () => {
-      manager.addRequest({
+      manager.enqueueRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
@@ -319,7 +319,7 @@ describe('BatchRequestManager', () => {
 
   describe('auto-submit timer', () => {
     it('should auto-submit after maxWaitTime', async () => {
-      manager.addRequest({
+      manager.enqueueRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],

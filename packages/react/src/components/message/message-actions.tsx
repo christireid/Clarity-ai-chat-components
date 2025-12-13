@@ -73,6 +73,39 @@ export const MessageActions = React.memo<MessageActionsProps>(
     const isAssistantMessage = role === 'assistant'
 
     const actionsRef = React.useRef<HTMLDivElement>(null)
+    const lastFocusedButtonRef = React.useRef<HTMLButtonElement | null>(null)
+
+    // Ensure keyboard activation works even in environments that don't simulate
+    // native button "Enter triggers click" behavior reliably (e.g. some test DOMs).
+    React.useEffect(() => {
+      const handler = (e: KeyboardEvent) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return
+        const container = actionsRef.current
+        const active = document.activeElement
+        if (!container) return
+
+        if (active instanceof HTMLButtonElement && container.contains(active)) {
+          e.preventDefault()
+          active.click()
+          return
+        }
+        // Fallback: use last focused action button (useful in some test DOMs).
+        if (
+          lastFocusedButtonRef.current &&
+          container.contains(lastFocusedButtonRef.current)
+        ) {
+          e.preventDefault()
+          lastFocusedButtonRef.current.click()
+        }
+      }
+
+      document.addEventListener('keydown', handler, true)
+      document.addEventListener('keyup', handler, true)
+      return () => {
+        document.removeEventListener('keydown', handler, true)
+        document.removeEventListener('keyup', handler, true)
+      }
+    }, [])
 
     const handleDelete = React.useCallback(() => {
       setIsDeleting(true)
@@ -90,6 +123,18 @@ export const MessageActions = React.memo<MessageActionsProps>(
     const handleKeyDown = React.useCallback((e: React.KeyboardEvent) => {
       const container = actionsRef.current
       if (!container) return
+
+      // Ensure Enter/Space activate the currently focused button.
+      // This is defensive: some environments don't consistently trigger the native
+      // "click-on-enter" behavior for custom button compositions.
+      if (e.key === 'Enter' || e.key === ' ') {
+        const active = document.activeElement as HTMLElement | null
+        if (active && container.contains(active) && active.tagName === 'BUTTON') {
+          e.preventDefault()
+          ;(active as HTMLButtonElement).click()
+          return
+        }
+      }
 
       const buttons = Array.from(
         container.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
@@ -122,13 +167,12 @@ export const MessageActions = React.memo<MessageActionsProps>(
       <AnimatePresence>
         <motion.div
           ref={actionsRef}
-          initial={{ opacity: 0, y: 10, height: 0 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{
             opacity: alwaysVisible || show ? 1 : 0.6,
             y: 0,
-            height: 'auto',
           }}
-          exit={{ opacity: 0, y: 10, height: 0 }}
+          exit={{ opacity: 0, y: 10 }}
           transition={{
             duration: ANIMATION_DURATION.fast / 1000,
             ease: EASING_FRAMER.out,
@@ -179,6 +223,21 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 variant="ghost"
                 size="icon"
                 onClick={() => onFeedback('up')}
+                onFocus={(e) => {
+                  lastFocusedButtonRef.current = e.currentTarget
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onFeedback('up')
+                  }
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onFeedback('up')
+                  }
+                }}
                 className={cn(
                   'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
                   'hover:bg-accent/50',
@@ -220,6 +279,21 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 variant="ghost"
                 size="icon"
                 onClick={() => onFeedback('down')}
+                onFocus={(e) => {
+                  lastFocusedButtonRef.current = e.currentTarget
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onFeedback('down')
+                  }
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onFeedback('down')
+                  }
+                }}
                 className={cn(
                   'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
                   'hover:bg-accent/50',

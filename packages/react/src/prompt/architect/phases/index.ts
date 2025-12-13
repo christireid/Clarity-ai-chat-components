@@ -32,7 +32,6 @@ export {
   formatStrategicPlanAsMarkdown,
   generatePlanningBlockTemplate,
   getPatternInfo,
-  getPatternsByCategory,
   suggestPatternsForUseCase,
 } from './phase2-planning'
 

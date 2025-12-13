@@ -11,7 +11,7 @@ import {
   SparklesIcon,
   CheckCircleIcon,
 } from './icons'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
+import { ANIMATION_DURATION, DURATION_SECONDS as durations, EASING_FRAMER } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 
 export interface ThinkingIndicatorProps {

@@ -349,7 +349,7 @@ describe('Theme Visual Regression', () => {
 
       // Border radius count
       const radiusKeys = Object.keys(defaultTheme.borders.radius)
-      expect(radiusKeys.length).toBe(6) // none, sm, md, lg, xl, full
+      expect(radiusKeys.length).toBe(8) // none, sm, md, lg, xl, 2xl, 3xl, full
 
       // Shadow count
       const shadowKeys = Object.keys(defaultTheme.shadows)

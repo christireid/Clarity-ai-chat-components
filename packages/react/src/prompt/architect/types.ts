@@ -346,7 +346,7 @@ export interface StyleGuideRules {
     variables: 'camelCase' | 'snake_case' | 'PascalCase' | 'SCREAMING_SNAKE_CASE'
     functions: 'camelCase' | 'snake_case' | 'PascalCase'
     classes: 'PascalCase' | 'snake_case'
-    constants: 'SCREAMING_SNAKE_CASE' | 'camelCase'
+    constants: 'SCREAMING_SNAKE_CASE' | 'camelCase' | 'PascalCase'
     files: 'kebab-case' | 'snake_case' | 'camelCase' | 'PascalCase'
   }
   /** Prefer immutability */

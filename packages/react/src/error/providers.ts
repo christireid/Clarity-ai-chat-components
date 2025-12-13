@@ -7,6 +7,29 @@
 
 import type { ErrorProvider, ErrorReport } from './types'
 
+function isDev(): boolean {
+  return typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production'
+}
+
+function safeDevLog(...args: unknown[]): void {
+  if (!isDev()) return
+  // Keep dev-only logs minimal and never include secrets.
+  console.log(...args)
+}
+
+function safeDevError(...args: unknown[]): void {
+  if (!isDev()) return
+  console.error(...args)
+}
+
+function hasLocalStorage(): boolean {
+  try {
+    return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+  } catch {
+    return false
+  }
+}
+
 /**
  * Sentry provider configuration
  */
@@ -15,6 +38,8 @@ interface SentryConfig {
   environment?: string
   release?: string
   tracesSampleRate?: number
+  /** Enable dev-only diagnostic logging (never logs secrets) */
+  debug?: boolean
 }
 
 /**
@@ -37,23 +62,23 @@ export function createSentryProvider(config: SentryConfig): ErrorProvider {
 
     initialize: async () => {
       // In real implementation, would import @sentry/react
-      // For now, we'll use a mock that logs to console
-      console.log('[Sentry] Initialized with DSN:', config.dsn)
+      // For now, we'll use a mock implementation.
+      if (config.debug) safeDevLog('[Sentry] Provider initialized')
       
       // Mock Sentry object
       Sentry = {
         init: () => {},
         captureException: (error: Error, context?: any) => {
-          console.log('[Sentry] Captured exception:', error, context)
+          if (config.debug) safeDevLog('[Sentry] Captured exception', { error, context })
         },
         setUser: (user: any) => {
-          console.log('[Sentry] Set user:', user)
+          if (config.debug) safeDevLog('[Sentry] Set user')
         },
         setContext: (name: string, context: any) => {
-          console.log('[Sentry] Set context:', name, context)
+          if (config.debug) safeDevLog('[Sentry] Set context', name)
         },
         addBreadcrumb: (breadcrumb: any) => {
-          console.log('[Sentry] Added breadcrumb:', breadcrumb)
+          if (config.debug) safeDevLog('[Sentry] Added breadcrumb')
         },
       }
 
@@ -119,6 +144,8 @@ interface RollbarConfig {
   accessToken: string
   environment?: string
   codeVersion?: string
+  /** Enable dev-only diagnostic logging (never logs secrets) */
+  debug?: boolean
 }
 
 /**
@@ -131,21 +158,21 @@ export function createRollbarProvider(config: RollbarConfig): ErrorProvider {
     name: 'rollbar',
 
     initialize: async () => {
-      console.log('[Rollbar] Initialized with token:', config.accessToken.substring(0, 8) + '...')
+      if (config.debug) safeDevLog('[Rollbar] Provider initialized')
       
       // Mock Rollbar object
       Rollbar = {
         error: (error: Error | string, custom?: any) => {
-          console.log('[Rollbar] Error:', error, custom)
+          if (config.debug) safeDevLog('[Rollbar] Error', { error, custom })
         },
         warning: (message: string, custom?: any) => {
-          console.log('[Rollbar] Warning:', message, custom)
+          if (config.debug) safeDevLog('[Rollbar] Warning', { message, custom })
         },
         info: (message: string, custom?: any) => {
-          console.log('[Rollbar] Info:', message, custom)
+          if (config.debug) safeDevLog('[Rollbar] Info', { message, custom })
         },
         configure: (config: any) => {
-          console.log('[Rollbar] Configured:', config)
+          if (config.debug) safeDevLog('[Rollbar] Configured')
         },
       }
 
@@ -202,6 +229,8 @@ interface BugsnagConfig {
   apiKey: string
   releaseStage?: string
   appVersion?: string
+  /** Enable dev-only diagnostic logging (never logs secrets) */
+  debug?: boolean
 }
 
 /**
@@ -214,23 +243,23 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
     name: 'bugsnag',
 
     initialize: async () => {
-      console.log('[Bugsnag] Initialized with API key:', config.apiKey.substring(0, 8) + '...')
+      if (config.debug) safeDevLog('[Bugsnag] Provider initialized')
       
       // Mock Bugsnag object
       Bugsnag = {
         start: () => {},
         notify: (error: Error, onError?: any) => {
-          console.log('[Bugsnag] Notified:', error)
+          if (config.debug) safeDevLog('[Bugsnag] Notified')
           if (onError) onError()
         },
         setUser: (id: string, email?: string, name?: string) => {
-          console.log('[Bugsnag] Set user:', { id, email, name })
+          if (config.debug) safeDevLog('[Bugsnag] Set user')
         },
         addMetadata: (section: string, data: any) => {
-          console.log('[Bugsnag] Added metadata:', section, data)
+          if (config.debug) safeDevLog('[Bugsnag] Added metadata', section)
         },
         leaveBreadcrumb: (message: string, metadata?: any) => {
-          console.log('[Bugsnag] Left breadcrumb:', message, metadata)
+          if (config.debug) safeDevLog('[Bugsnag] Left breadcrumb')
         },
       }
 
@@ -331,10 +360,10 @@ export function createCustomAPIProvider(config: CustomAPIConfig): ErrorProvider 
         })
 
         if (!response.ok) {
-          console.error('Failed to report error to custom API:', response.statusText)
+          safeDevError('Failed to report error to custom API:', response.statusText)
         }
       } catch (error) {
-        console.error('Error reporting to custom API:', error)
+        safeDevError('Error reporting to custom API:', error)
       }
     },
   }
@@ -422,6 +451,7 @@ export function createLocalStorageErrorProvider(maxErrors: number = 50): ErrorPr
 
     reportError: (report: ErrorReport) => {
       try {
+        if (!hasLocalStorage()) return
         const stored = localStorage.getItem(STORAGE_KEY)
         const errors: ErrorReport[] = stored ? JSON.parse(stored) : []
 
@@ -439,7 +469,7 @@ export function createLocalStorageErrorProvider(maxErrors: number = 50): ErrorPr
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(errors))
       } catch (error) {
-        console.error('Failed to store error in localStorage:', error)
+        safeDevError('Failed to store error in localStorage:', error)
       }
     },
   }
@@ -450,6 +480,7 @@ export function createLocalStorageErrorProvider(maxErrors: number = 50): ErrorPr
  */
 export function getStoredErrors(): ErrorReport[] {
   try {
+    if (!hasLocalStorage()) return []
     const stored = localStorage.getItem('error_reports')
     return stored ? JSON.parse(stored) : []
   } catch {
@@ -462,8 +493,9 @@ export function getStoredErrors(): ErrorReport[] {
  */
 export function clearStoredErrors(): void {
   try {
+    if (!hasLocalStorage()) return
     localStorage.removeItem('error_reports')
   } catch (error) {
-    console.error('Failed to clear stored errors:', error)
+    safeDevError('Failed to clear stored errors:', error)
   }
 }
