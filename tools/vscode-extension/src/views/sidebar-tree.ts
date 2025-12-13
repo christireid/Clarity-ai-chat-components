@@ -480,7 +480,7 @@ export class ClarityTreeDataProvider
     ClarityTreeNode | undefined | null | void
   > = this._onDidChangeTreeData.event
 
-  constructor(private context: vscode.ExtensionContext) {}
+  constructor(private _context: vscode.ExtensionContext) {}
 
   refresh(): void {
     this._onDidChangeTreeData.fire()

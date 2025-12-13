@@ -368,6 +368,9 @@ export async function addComponentCommand(context: vscode.ExtensionContext) {
     },
   ]
 
+  // Dispose picker when hidden to prevent memory leaks
+  picker.onDidHide(() => picker.dispose())
+
   picker.onDidTriggerButton((button) => {
     if (button.tooltip === 'Open Component Gallery') {
       vscode.commands.executeCommand('clarity-chat.showPreview')

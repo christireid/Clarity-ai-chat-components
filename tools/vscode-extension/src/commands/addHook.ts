@@ -439,6 +439,9 @@ export async function addHookCommand(context: vscode.ExtensionContext) {
     },
   ]
 
+  // Dispose picker when hidden to prevent memory leaks
+  picker.onDidHide(() => picker.dispose())
+
   picker.onDidTriggerButton((button) => {
     if (button.tooltip === 'Open Documentation') {
       vscode.commands.executeCommand('clarity-chat.openDocs')
