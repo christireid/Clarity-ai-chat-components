@@ -4,16 +4,16 @@ import { useTokenOptimizationEnhanced } from '../use-token-optimization-enhanced
 import type { CoreMessage } from '../use-chat-enhanced'
 
 // Mock dependencies
-vi.mock('../utils/tokenization/model-pricing', () => ({
+vi.mock('../../utils/tokenization/model-pricing', () => ({
   calculateCost: vi.fn(() => ({ inputCost: 0.01, outputCost: 0.02, totalCost: 0.03 }))
 }))
 
-vi.mock('../utils/tokenization', () => ({
+vi.mock('../../utils/tokenization', () => ({
   countTokens: vi.fn(async (text) => ({ total: text.length / 4, method: 'estimated' })),
   countConversationTokens: vi.fn(async () => ({ total: 100, method: 'estimated' }))
 }))
 
-vi.mock('../utils/prompt-compression', () => ({
+vi.mock('../../utils/prompt-compression', () => ({
   compressPrompt: vi.fn((text) => ({ 
     compressed: text.substring(0, text.length / 2),
     savingsPercent: 50,
@@ -21,7 +21,7 @@ vi.mock('../utils/prompt-compression', () => ({
   }))
 }))
 
-vi.mock('../utils/llmlingua-compressor', () => ({
+vi.mock('../../utils/llmlingua-compressor', () => ({
   intelligentCompress: vi.fn(async (text) => ({
     compressed: text.substring(0, text.length / 3),
     original: text,
@@ -32,7 +32,7 @@ vi.mock('../utils/llmlingua-compressor', () => ({
   }))
 }))
 
-vi.mock('../utils/semantic-cache-persistent', () => ({
+vi.mock('../../utils/semantic-cache-persistent', () => ({
   createPersistentSemanticCache: vi.fn(() => ({
     checkCache: vi.fn(),
     storeResponse: vi.fn(),
@@ -62,7 +62,9 @@ describe('useTokenOptimizationEnhanced', () => {
 
     expect(optimization.content).toBeDefined()
     expect(optimization.content.length).toBeLessThan(prompt.length)
-    expect(result.current.stats.compression.compressions).toBe(1)
+    await waitFor(() => {
+      expect(result.current.stats.compression.compressions).toBe(1)
+    })
   })
 
   it('should respect budget limits', () => {
@@ -90,7 +92,8 @@ describe('useTokenOptimizationEnhanced', () => {
 
   it('should redact PII when enabled', async () => {
     const { result } = renderHook(() => useTokenOptimizationEnhanced({
-      enablePIIRedaction: true
+      enablePIIRedaction: true,
+      enablePromptCompression: false
     }))
 
     const prompt = 'Contact me at test@example.com or 555-123-4567'

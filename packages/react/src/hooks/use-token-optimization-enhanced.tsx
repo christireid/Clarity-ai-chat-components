@@ -1014,6 +1014,11 @@ export function useTokenOptimizationEnhanced(
       }
 
       // Handle summarization strategy
+      if (historyLimiting.strategy === 'summarize' && !summarizeMessage) {
+        console.warn('Summarization strategy selected but no summarizeMessage callback provided. Falling back to default.')
+        return limitHistory(messages, { ...historyLimiting, strategy: 'sliding-window' })
+      }
+
       if (historyLimiting.strategy === 'summarize' && summarizeMessage) {
         const { maxMessages = 10, keepLast = 2 } = historyLimiting
         
@@ -1068,14 +1073,7 @@ export function useTokenOptimizationEnhanced(
             }
          }
 
-         return applySmartStrategy(
-           messages,
-           systemMessage,
-           otherMessages,
-           dynamicMaxTokens,
-           historyLimiting.keepLast ?? 2
-         )
-      }
+         const keepLast = historyLimiting.keepLast ?? 2
         const otherMessages = messages.filter(m => m.role !== 'system')
         
         // Always keep last N messages
@@ -1167,7 +1165,7 @@ export function useTokenOptimizationEnhanced(
           const keptTurns: typeof turns = []
           
           for (const scored of scoredTurns) {
-            if (currentTokens + scored.tokens <= maxTokens) {
+            if (currentTokens + scored.tokens <= dynamicMaxTokens) {
               keptTurns.push(scored.turn)
               currentTokens += scored.tokens
             }
