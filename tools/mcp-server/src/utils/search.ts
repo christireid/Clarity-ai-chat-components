@@ -44,26 +44,44 @@ export interface SearchMatch {
 }
 
 // =============================================================================
+// Search Configuration
+// =============================================================================
+
+const SEARCH_LIMITS = {
+  /** Maximum query length for search */
+  maxQueryLength: 500,
+  /** Maximum string length for Levenshtein comparison */
+  maxLevenshteinLength: 200,
+  /** Maximum items to search through */
+  maxSearchItems: 10000,
+}
+
+// =============================================================================
 // Fuzzy Matching Algorithm
 // =============================================================================
 
 /**
  * Calculate Levenshtein distance between two strings
+ * Includes length limits to prevent performance issues
  */
 function levenshteinDistance(a: string, b: string): number {
+  // Limit string lengths to prevent O(n*m) memory issues
+  const limitedA = a.slice(0, SEARCH_LIMITS.maxLevenshteinLength)
+  const limitedB = b.slice(0, SEARCH_LIMITS.maxLevenshteinLength)
+
   const matrix: number[][] = []
 
-  for (let i = 0; i <= b.length; i++) {
+  for (let i = 0; i <= limitedB.length; i++) {
     matrix[i] = [i]
   }
 
-  for (let j = 0; j <= a.length; j++) {
+  for (let j = 0; j <= limitedA.length; j++) {
     matrix[0][j] = j
   }
 
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+  for (let i = 1; i <= limitedB.length; i++) {
+    for (let j = 1; j <= limitedA.length; j++) {
+      if (limitedB.charAt(i - 1) === limitedA.charAt(j - 1)) {
         matrix[i][j] = matrix[i - 1][j - 1]
       } else {
         matrix[i][j] = Math.min(
@@ -75,7 +93,7 @@ function levenshteinDistance(a: string, b: string): number {
     }
   }
 
-  return matrix[b.length][a.length]
+  return matrix[limitedB.length][limitedA.length]
 }
 
 /**
@@ -234,15 +252,21 @@ export class SearchEngine<T> {
       }))
     }
 
+    // Limit query length to prevent performance issues
+    const limitedQuery = query.slice(0, SEARCH_LIMITS.maxQueryLength)
+
+    // Limit items to search through
+    const itemsToSearch = this.items.slice(0, SEARCH_LIMITS.maxSearchItems)
+
     const results: SearchResult<T>[] = []
 
-    for (const item of this.items) {
+    for (const item of itemsToSearch) {
       const searchableValues = this.getSearchableValues(item, fields)
       let bestScore = 0
       const allMatches: SearchMatch[] = []
 
       for (const { field, value } of searchableValues) {
-        const matchResult = this.matchValue(value, query, opts)
+        const matchResult = this.matchValue(value, limitedQuery, opts)
 
         if (matchResult.score > 0) {
           // Apply field boost if specified

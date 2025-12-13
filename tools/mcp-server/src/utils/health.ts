@@ -83,6 +83,19 @@ interface CacheStats {
 }
 
 // =============================================================================
+// Metrics Configuration
+// =============================================================================
+
+const METRICS_LIMITS = {
+  /** Maximum unique tools to track */
+  maxToolEntries: 500,
+  /** Maximum unique resources to track */
+  maxResourceEntries: 500,
+  /** Maximum unique prompts to track */
+  maxPromptEntries: 200,
+}
+
+// =============================================================================
 // Metrics Collector
 // =============================================================================
 
@@ -96,6 +109,22 @@ class MetricsCollector {
   private toolErrors = new Map<string, number>()
   private resourceReads = new Map<string, number>()
   private promptGets = new Map<string, number>()
+
+  /**
+   * Enforce map size limits by removing least-used entries
+   */
+  private enforceMapLimit<K, V extends number>(map: Map<K, V>, limit: number): void {
+    if (map.size <= limit) return
+
+    // Sort by count (ascending) and remove lowest entries
+    const entries = Array.from(map.entries())
+      .sort(([, a], [, b]) => a - b)
+
+    const toRemove = map.size - limit
+    for (let i = 0; i < toRemove; i++) {
+      map.delete(entries[i][0])
+    }
+  }
 
   /**
    * Record a request
@@ -114,8 +143,16 @@ class MetricsCollector {
    * Record a tool call
    */
   recordToolCall(name: string, success: boolean): void {
+    // Enforce limit before adding new entry
+    if (!this.toolCalls.has(name)) {
+      this.enforceMapLimit(this.toolCalls, METRICS_LIMITS.maxToolEntries - 1)
+    }
     this.toolCalls.set(name, (this.toolCalls.get(name) || 0) + 1)
+
     if (!success) {
+      if (!this.toolErrors.has(name)) {
+        this.enforceMapLimit(this.toolErrors, METRICS_LIMITS.maxToolEntries - 1)
+      }
       this.toolErrors.set(name, (this.toolErrors.get(name) || 0) + 1)
     }
   }
@@ -124,6 +161,9 @@ class MetricsCollector {
    * Record a resource read
    */
   recordResourceRead(uri: string): void {
+    if (!this.resourceReads.has(uri)) {
+      this.enforceMapLimit(this.resourceReads, METRICS_LIMITS.maxResourceEntries - 1)
+    }
     this.resourceReads.set(uri, (this.resourceReads.get(uri) || 0) + 1)
   }
 
@@ -131,6 +171,9 @@ class MetricsCollector {
    * Record a prompt get
    */
   recordPromptGet(name: string): void {
+    if (!this.promptGets.has(name)) {
+      this.enforceMapLimit(this.promptGets, METRICS_LIMITS.maxPromptEntries - 1)
+    }
     this.promptGets.set(name, (this.promptGets.get(name) || 0) + 1)
   }
 

@@ -25,6 +25,19 @@ import { getAllModels } from '../data/model-registry.js'
 import { z } from 'zod'
 
 // =============================================================================
+// Version and Counts Configuration
+// =============================================================================
+
+/** Server version - should match package.json and index.ts */
+const SERVER_VERSION = '2.0.0'
+
+/** Base resource count (without plugins) */
+const BASE_RESOURCE_COUNT = 6
+
+/** Base prompt count (without plugins) */
+const BASE_PROMPT_COUNT = 10
+
+// =============================================================================
 // Enhanced Tool Definitions
 // =============================================================================
 
@@ -446,11 +459,15 @@ async function handleHealth(args: Record<string, unknown>) {
   const verbose = args.verbose === true
   const pluginStats = pluginRegistry.getStats()
 
+  // Calculate dynamic counts including plugin contributions
+  const totalResources = BASE_RESOURCE_COUNT + pluginStats.resources
+  const totalPrompts = BASE_PROMPT_COUNT + pluginStats.prompts
+
   const health = await getServerHealth(
-    '1.0.0',
-    COMPONENTS.length,
-    6, // resources
-    10, // prompts
+    SERVER_VERSION,
+    COMPONENTS.length + pluginStats.tools,
+    totalResources,
+    totalPrompts,
     { total: pluginStats.total, enabled: pluginStats.enabled }
   )
 
@@ -497,10 +514,12 @@ async function handleHealth(args: Record<string, unknown>) {
 
 function handleMetrics() {
   const pluginStats = pluginRegistry.getStats()
+  const totalResources = BASE_RESOURCE_COUNT + pluginStats.resources
+  const totalPrompts = BASE_PROMPT_COUNT + pluginStats.prompts
   const serverMetrics = metrics.getMetrics(
-    COMPONENTS.length,
-    6,
-    10,
+    COMPONENTS.length + pluginStats.tools,
+    totalResources,
+    totalPrompts,
     pluginStats
   )
 

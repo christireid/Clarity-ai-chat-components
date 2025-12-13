@@ -176,6 +176,58 @@ const PluginMetadataSchema = z.object({
 })
 
 // =============================================================================
+// Plugin Registry Configuration
+// =============================================================================
+
+const PLUGIN_LIMITS = {
+  /** Maximum number of plugins that can be registered */
+  maxPlugins: 50,
+  /** Maximum number of tools per plugin */
+  maxToolsPerPlugin: 20,
+  /** Maximum number of resources per plugin */
+  maxResourcesPerPlugin: 20,
+  /** Maximum number of prompts per plugin */
+  maxPromptsPerPlugin: 20,
+  /** Maximum length for tool/resource/prompt names */
+  maxNameLength: 100,
+  /** Reserved name prefixes (cannot be used by plugins) */
+  reservedPrefixes: ['clarity_', 'mcp_', 'system_', 'internal_'],
+}
+
+/**
+ * Sanitize a string to prevent injection attacks
+ */
+function sanitizeName(name: string): string {
+  // Remove control characters and limit length
+  return name
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    .slice(0, PLUGIN_LIMITS.maxNameLength)
+    .trim()
+}
+
+/**
+ * Validate a tool/resource/prompt name
+ */
+function validateItemName(name: string, type: string): void {
+  const sanitized = sanitizeName(name)
+
+  if (!sanitized || sanitized.length === 0) {
+    throw new ValidationError(`${type} name cannot be empty`)
+  }
+
+  if (sanitized.length > PLUGIN_LIMITS.maxNameLength) {
+    throw new ValidationError(`${type} name exceeds maximum length of ${PLUGIN_LIMITS.maxNameLength}`)
+  }
+
+  // Check for reserved prefixes
+  for (const prefix of PLUGIN_LIMITS.reservedPrefixes) {
+    if (sanitized.toLowerCase().startsWith(prefix)) {
+      throw new ValidationError(`${type} name cannot start with reserved prefix "${prefix}"`)
+    }
+  }
+}
+
+// =============================================================================
 // Plugin Registry
 // =============================================================================
 
@@ -188,69 +240,124 @@ class PluginRegistry {
   private resourceHandlers = new Map<string, { pluginId: string; handler: ResourceHandler }>()
   private promptHandlers = new Map<string, { pluginId: string; handler: PromptHandler }>()
   private events = new EventEmitter()
+  private registrationLock = false
 
   /**
    * Register a new plugin
    */
   async register(plugin: Plugin, config?: Partial<PluginConfig>): Promise<void> {
-    // Validate metadata
-    const metadataResult = PluginMetadataSchema.safeParse(plugin.metadata)
-    if (!metadataResult.success) {
-      throw new ValidationError(
-        `Invalid plugin metadata: ${metadataResult.error.errors.map((e) => e.message).join(', ')}`,
-        { pluginId: plugin.metadata.id }
-      )
+    // Prevent concurrent registration
+    if (this.registrationLock) {
+      throw new ValidationError('Plugin registration in progress, please retry')
     }
 
-    const pluginId = plugin.metadata.id
+    this.registrationLock = true
 
-    // Check for duplicate registration
-    if (this.plugins.has(pluginId)) {
-      throw new ValidationError(`Plugin already registered: ${pluginId}`, {
-        pluginId,
-      })
-    }
-
-    // Merge configuration
-    const finalConfig: PluginConfig = {
-      enabled: true,
-      priority: 0,
-      ...plugin.defaultConfig,
-      ...config,
-    }
-
-    // Create registered plugin entry
-    const registered: RegisteredPlugin = {
-      plugin,
-      config: finalConfig,
-      state: 'registered',
-      registeredAt: new Date(),
-    }
-
-    // Store plugin
-    this.plugins.set(pluginId, registered)
-
-    // Call lifecycle hook
     try {
-      await plugin.lifecycle?.onRegister?.()
-    } catch (error) {
-      logger.error(
-        `Plugin onRegister hook failed: ${pluginId}`,
-        error instanceof Error ? error : undefined
-      )
+      // Check plugin limit
+      if (this.plugins.size >= PLUGIN_LIMITS.maxPlugins) {
+        throw new ValidationError(
+          `Maximum number of plugins (${PLUGIN_LIMITS.maxPlugins}) reached`,
+          { currentCount: this.plugins.size }
+        )
+      }
+
+      // Validate metadata
+      const metadataResult = PluginMetadataSchema.safeParse(plugin.metadata)
+      if (!metadataResult.success) {
+        throw new ValidationError(
+          `Invalid plugin metadata: ${metadataResult.error.errors.map((e) => e.message).join(', ')}`,
+          { pluginId: plugin.metadata.id }
+        )
+      }
+
+      const pluginId = sanitizeName(plugin.metadata.id)
+
+      // Check for duplicate registration
+      if (this.plugins.has(pluginId)) {
+        throw new ValidationError(`Plugin already registered: ${pluginId}`, {
+          pluginId,
+        })
+      }
+
+      // Validate tool/resource/prompt counts
+      if (plugin.tools && plugin.tools.length > PLUGIN_LIMITS.maxToolsPerPlugin) {
+        throw new ValidationError(
+          `Plugin exceeds maximum tools limit (${PLUGIN_LIMITS.maxToolsPerPlugin})`,
+          { toolCount: plugin.tools.length }
+        )
+      }
+      if (plugin.resources && plugin.resources.length > PLUGIN_LIMITS.maxResourcesPerPlugin) {
+        throw new ValidationError(
+          `Plugin exceeds maximum resources limit (${PLUGIN_LIMITS.maxResourcesPerPlugin})`,
+          { resourceCount: plugin.resources.length }
+        )
+      }
+      if (plugin.prompts && plugin.prompts.length > PLUGIN_LIMITS.maxPromptsPerPlugin) {
+        throw new ValidationError(
+          `Plugin exceeds maximum prompts limit (${PLUGIN_LIMITS.maxPromptsPerPlugin})`,
+          { promptCount: plugin.prompts.length }
+        )
+      }
+
+      // Validate all tool names
+      for (const tool of plugin.tools || []) {
+        validateItemName(tool.definition.name, 'Tool')
+      }
+
+      // Validate all resource URIs
+      for (const resource of plugin.resources || []) {
+        validateItemName(resource.definition.uri, 'Resource')
+      }
+
+      // Validate all prompt names
+      for (const prompt of plugin.prompts || []) {
+        validateItemName(prompt.definition.name, 'Prompt')
+      }
+
+      // Merge configuration
+      const finalConfig: PluginConfig = {
+        enabled: true,
+        priority: 0,
+        ...plugin.defaultConfig,
+        ...config,
+      }
+
+      // Create registered plugin entry
+      const registered: RegisteredPlugin = {
+        plugin,
+        config: finalConfig,
+        state: 'registered',
+        registeredAt: new Date(),
+      }
+
+      // Store plugin
+      this.plugins.set(pluginId, registered)
+
+      // Call lifecycle hook
+      try {
+        await plugin.lifecycle?.onRegister?.()
+      } catch (error) {
+        logger.error(
+          `Plugin onRegister hook failed: ${pluginId}`,
+          error instanceof Error ? error : undefined
+        )
+      }
+
+      // Auto-enable if configured
+      if (finalConfig.enabled) {
+        await this.enable(pluginId)
+      }
+
+      logger.info(`Plugin registered: ${plugin.metadata.name}`, {
+        pluginId,
+        version: plugin.metadata.version,
+      })
+
+      this.events.emit('plugin:registered', { pluginId, plugin })
+    } finally {
+      this.registrationLock = false
     }
-
-    // Auto-enable if configured
-    if (finalConfig.enabled) {
-      await this.enable(pluginId)
-    }
-
-    logger.info(`Plugin registered: ${plugin.metadata.name}`, {
-      pluginId,
-      version: plugin.metadata.version,
-    })
-
-    this.events.emit('plugin:registered', { pluginId, plugin })
   }
 
   /**

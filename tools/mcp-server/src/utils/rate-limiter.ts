@@ -29,6 +29,8 @@ export interface RateLimitConfig {
   skip?: (context: RequestContext) => boolean
   /** Custom response when rate limited */
   onRateLimited?: (context: RequestContext, retryAfter: number) => void
+  /** Maximum number of entries to track (prevents memory issues) */
+  maxEntries?: number
 }
 
 export interface RequestContext {
@@ -62,7 +64,7 @@ export interface RateLimitResult {
  */
 export class RateLimiter {
   private entries = new Map<string, RateLimitEntry>()
-  private config: Required<RateLimitConfig>
+  private config: Required<RateLimitConfig> & { maxEntries: number }
   private cleanupInterval: ReturnType<typeof setInterval>
 
   constructor(config: RateLimitConfig) {
@@ -81,6 +83,7 @@ export class RateLimiter {
             retryAfter,
           })
         }),
+      maxEntries: config.maxEntries ?? 10000, // Default max 10k entries
     }
 
     // Cleanup expired entries periodically
@@ -88,6 +91,11 @@ export class RateLimiter {
       () => this.cleanup(),
       Math.min(this.config.windowMs, 60000)
     )
+
+    // Allow process to exit even if interval is running
+    if (this.cleanupInterval.unref) {
+      this.cleanupInterval.unref()
+    }
   }
 
   /**
@@ -135,6 +143,11 @@ export class RateLimiter {
 
     // Initialize or reset entry if window expired
     if (!entry || now - entry.windowStart >= this.config.windowMs) {
+      // Enforce max entries limit before adding new entry
+      if (!entry && this.entries.size >= this.config.maxEntries) {
+        this.evictOldestEntries(Math.floor(this.config.maxEntries * 0.1)) // Remove 10%
+      }
+
       entry = {
         count: 0,
         windowStart: now,
@@ -328,6 +341,24 @@ export class RateLimiter {
    */
   resetAll(): void {
     this.entries.clear()
+  }
+
+  /**
+   * Evict oldest entries to make room for new ones
+   */
+  private evictOldestEntries(count: number): void {
+    if (count <= 0) return
+
+    // Sort entries by windowStart (oldest first)
+    const sorted = Array.from(this.entries.entries())
+      .sort(([, a], [, b]) => a.windowStart - b.windowStart)
+
+    // Delete the oldest entries
+    for (let i = 0; i < Math.min(count, sorted.length); i++) {
+      this.entries.delete(sorted[i][0])
+    }
+
+    logger.debug('Evicted rate limit entries', { evicted: count, remaining: this.entries.size })
   }
 
   /**

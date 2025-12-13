@@ -14,6 +14,7 @@ type EventHandler<T = unknown> = (data: T) => void | Promise<void>
 interface EventSubscription {
   handler: EventHandler
   once: boolean
+  id: number
 }
 
 /**
@@ -22,6 +23,20 @@ interface EventSubscription {
 export class EventEmitter<EventMap extends { [K: string]: unknown } = Record<string, unknown>> {
   private listeners = new Map<keyof EventMap, Set<EventSubscription>>()
   private maxListeners = 100
+  private maxTotalListeners = 1000
+  private subscriptionIdCounter = 0
+  private handlerToSubscription = new WeakMap<EventHandler, EventSubscription>()
+
+  /**
+   * Get total listener count across all events
+   */
+  private getTotalListenerCount(): number {
+    let total = 0
+    for (const set of this.listeners.values()) {
+      total += set.size
+    }
+    return total
+  }
 
   /**
    * Subscribe to an event
@@ -31,6 +46,15 @@ export class EventEmitter<EventMap extends { [K: string]: unknown } = Record<str
     event: K,
     handler: EventHandler<EventMap[K]>
   ): () => void {
+    // Check total listener limit
+    if (this.getTotalListenerCount() >= this.maxTotalListeners) {
+      logger.warn('Max total listeners exceeded, rejecting new listener', {
+        event: String(event),
+        max: this.maxTotalListeners,
+      })
+      return () => {} // Return no-op unsubscribe
+    }
+
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set())
     }
@@ -43,8 +67,13 @@ export class EventEmitter<EventMap extends { [K: string]: unknown } = Record<str
       })
     }
 
-    const subscription: EventSubscription = { handler: handler as EventHandler, once: false }
+    const subscription: EventSubscription = {
+      handler: handler as EventHandler,
+      once: false,
+      id: ++this.subscriptionIdCounter,
+    }
     eventListeners.add(subscription)
+    this.handlerToSubscription.set(handler as EventHandler, subscription)
 
     return () => {
       eventListeners.delete(subscription)
@@ -62,16 +91,64 @@ export class EventEmitter<EventMap extends { [K: string]: unknown } = Record<str
     event: K,
     handler: EventHandler<EventMap[K]>
   ): () => void {
+    // Check total listener limit
+    if (this.getTotalListenerCount() >= this.maxTotalListeners) {
+      logger.warn('Max total listeners exceeded, rejecting new listener', {
+        event: String(event),
+        max: this.maxTotalListeners,
+      })
+      return () => {}
+    }
+
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set())
     }
 
-    const subscription: EventSubscription = { handler: handler as EventHandler, once: true }
+    const subscription: EventSubscription = {
+      handler: handler as EventHandler,
+      once: true,
+      id: ++this.subscriptionIdCounter,
+    }
     this.listeners.get(event)!.add(subscription)
+    this.handlerToSubscription.set(handler as EventHandler, subscription)
 
     return () => {
       this.listeners.get(event)?.delete(subscription)
     }
+  }
+
+  /**
+   * Remove a specific handler from an event
+   */
+  offHandler<K extends keyof EventMap>(
+    event: K,
+    handler: EventHandler<EventMap[K]>
+  ): boolean {
+    const eventListeners = this.listeners.get(event)
+    if (!eventListeners) return false
+
+    // Find and remove the subscription with this handler
+    const subscription = this.handlerToSubscription.get(handler as EventHandler)
+    if (subscription) {
+      eventListeners.delete(subscription)
+      if (eventListeners.size === 0) {
+        this.listeners.delete(event)
+      }
+      return true
+    }
+
+    // Fallback: search through subscriptions
+    for (const sub of eventListeners) {
+      if (sub.handler === handler) {
+        eventListeners.delete(sub)
+        if (eventListeners.size === 0) {
+          this.listeners.delete(event)
+        }
+        return true
+      }
+    }
+
+    return false
   }
 
   /**
