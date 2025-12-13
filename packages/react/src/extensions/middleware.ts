@@ -182,8 +182,10 @@ export function createTimeoutMiddleware<T>(
     name,
     priority: 2,
     handler: async (input, context, next) => {
+      let timeoutId: ReturnType<typeof setTimeout> | undefined
+
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           reject(
             new Error(
               `Request ${context.requestId} timed out after ${timeoutMs}ms`
@@ -192,7 +194,15 @@ export function createTimeoutMiddleware<T>(
         }, timeoutMs)
       })
 
-      return Promise.race([next(), timeoutPromise])
+      try {
+        const result = await Promise.race([next(), timeoutPromise])
+        return result
+      } finally {
+        // Clean up timeout to prevent memory leaks
+        if (timeoutId !== undefined) {
+          clearTimeout(timeoutId)
+        }
+      }
     },
   }
 }
@@ -301,30 +311,50 @@ export function createCachingMiddleware<T>(
   const { getCacheKey, ttlMs = 60000, maxSize = 100 } = options
   const cache = new Map<string, { value: T; expires: number }>()
 
+  // Helper to clean up expired entries
+  const evictExpired = () => {
+    const now = Date.now()
+    for (const [k, v] of cache.entries()) {
+      if (v.expires <= now) {
+        cache.delete(k)
+      }
+    }
+  }
+
   return {
     name,
     priority: 10,
     handler: async (input, context, next) => {
       const key = getCacheKey(input)
       const cached = cache.get(key)
+      const now = Date.now()
 
-      if (cached && cached.expires > Date.now()) {
+      if (cached && cached.expires > now) {
         context.logger.debug(`Cache hit for ${key}`)
         return cached.value
+      }
+
+      // Remove expired entry if it exists
+      if (cached) {
+        cache.delete(key)
       }
 
       context.logger.debug(`Cache miss for ${key}`)
       const result = await next()
 
-      // Evict oldest entries if cache is full
+      // Evict expired entries first, then oldest if still over limit
       if (cache.size >= maxSize) {
-        const oldestKey = cache.keys().next().value
-        if (oldestKey) {
-          cache.delete(oldestKey)
+        evictExpired()
+        // If still at capacity after evicting expired, remove oldest
+        if (cache.size >= maxSize) {
+          const oldestKey = cache.keys().next().value
+          if (oldestKey) {
+            cache.delete(oldestKey)
+          }
         }
       }
 
-      cache.set(key, { value: result, expires: Date.now() + ttlMs })
+      cache.set(key, { value: result, expires: now + ttlMs })
       return result
     },
   }

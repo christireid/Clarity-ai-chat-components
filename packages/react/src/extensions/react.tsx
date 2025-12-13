@@ -364,20 +364,29 @@ export function useExtensionHealth(extensionId?: string): {
     Map<string, ExtensionHealthStatus>
   >(new Map())
   const [isChecking, setIsChecking] = React.useState(false)
+  const mountedRef = React.useRef(true)
 
   const checkHealth = React.useCallback(async () => {
     setIsChecking(true)
     try {
       const results = await registry.healthCheck()
-      setHealth(results)
+      if (mountedRef.current) {
+        setHealth(results)
+      }
     } finally {
-      setIsChecking(false)
+      if (mountedRef.current) {
+        setIsChecking(false)
+      }
     }
   }, [registry])
 
-  // Initial health check
+  // Track mounted state and run initial health check
   React.useEffect(() => {
+    mountedRef.current = true
     checkHealth()
+    return () => {
+      mountedRef.current = false
+    }
   }, [checkHealth])
 
   if (extensionId) {
