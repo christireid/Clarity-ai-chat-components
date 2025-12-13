@@ -23,7 +23,7 @@ import {
   Filter,
 } from 'lucide-react'
 import type { ConsoleLogEntry } from '../types'
-import { copyToClipboard } from '../utils'
+import { copyToClipboard, cn } from '../utils'
 
 interface ConsolePanelProps {
   entries: ConsoleLogEntry[]
@@ -87,25 +87,22 @@ function FilterButton({
   return (
     <button
       onClick={onClick}
-      className={`
-        flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium
-        transition-all duration-200
-        ${
-          isActive
-            ? config?.badgeColor ||
+      className={cn(
+        'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-200',
+        isActive
+          ? config?.badgeColor ||
               'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300'
-            : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-        }
-      `}
+          : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+      )}
       aria-pressed={isActive}
     >
       {level === 'all' ? 'All' : config?.label}
       {count > 0 && (
         <span
-          className={`
-            min-w-[18px] h-[18px] px-1 rounded-full text-[10px] flex items-center justify-center
-            ${isActive ? 'bg-white/30' : 'bg-gray-200 dark:bg-gray-600'}
-          `}
+          className={cn(
+            'min-w-[18px] h-[18px] px-1 rounded-full text-[10px] flex items-center justify-center',
+            isActive ? 'bg-white/30' : 'bg-gray-200 dark:bg-gray-600'
+          )}
         >
           {count > 99 ? '99+' : count}
         </span>
@@ -156,34 +153,30 @@ function ConsoleEntry({
 
   return (
     <div
-      className={`
-        group relative flex items-start gap-3 px-4 py-3
-        border-b border-gray-100 dark:border-gray-800 last:border-0
-        transition-colors duration-150 ${config.bgColor}
-      `}
+      className={cn(
+        'group relative flex items-start gap-3 px-4 py-3',
+        'border-b border-gray-100 dark:border-gray-800 last:border-0',
+        'transition-colors duration-150',
+        config.bgColor
+      )}
     >
       {/* Level Icon */}
       <Icon
-        className={`w-4 h-4 flex-shrink-0 mt-0.5 ${config.iconColor}`}
+        className={cn('w-4 h-4 flex-shrink-0 mt-0.5', config.iconColor)}
         aria-hidden="true"
       />
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <pre
-          className={`
-            text-sm font-mono whitespace-pre-wrap break-words
-            ${
-              entry.level === 'error'
-                ? 'text-rose-600 dark:text-rose-400'
-                : entry.level === 'warn'
-                  ? 'text-amber-600 dark:text-amber-400'
-                  : entry.level === 'info'
-                    ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-gray-700 dark:text-gray-300'
-            }
-            ${!isExpanded && hasLongContent ? 'line-clamp-3' : ''}
-          `}
+          className={cn(
+            'text-sm font-mono whitespace-pre-wrap break-words',
+            entry.level === 'error' && 'text-rose-600 dark:text-rose-400',
+            entry.level === 'warn' && 'text-amber-600 dark:text-amber-400',
+            entry.level === 'info' && 'text-blue-600 dark:text-blue-400',
+            entry.level === 'log' && 'text-gray-700 dark:text-gray-300',
+            !isExpanded && hasLongContent && 'line-clamp-3'
+          )}
         >
           {entry.message}
         </pre>
@@ -238,15 +231,12 @@ function ConsoleEntry({
         {/* Copy button - visible on hover */}
         <button
           onClick={handleCopy}
-          className={`
-            opacity-0 group-hover:opacity-100 p-1 rounded-md
-            transition-all duration-150
-            ${
-              copied
-                ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-            }
-          `}
+          className={cn(
+            'opacity-0 group-hover:opacity-100 p-1 rounded-md transition-all duration-150',
+            copied
+              ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+          )}
           title="Copy entry"
         >
           {copied ? (
@@ -323,7 +313,7 @@ export function ConsolePanel({
 
   return (
     <div
-      className={`panel overflow-hidden relative ${className}`}
+      className={cn('panel overflow-hidden relative', className)}
       role="region"
       aria-label="Console output"
     >
@@ -352,9 +342,10 @@ export function ConsolePanel({
 
           {/* Collapse indicator */}
           <span
-            className={`text-gray-400 transition-transform duration-200 ${
+            className={cn(
+              'text-gray-400 transition-transform duration-200',
               isCollapsed ? '-rotate-90' : 'rotate-0'
-            }`}
+            )}
           >
             <ChevronDown className="w-4 h-4" />
           </span>
@@ -365,14 +356,12 @@ export function ConsolePanel({
           {!isCollapsed && filteredEntries.length > 0 && (
             <button
               onClick={handleCopyAll}
-              className={`
-                p-1.5 rounded-lg transition-all duration-150
-                ${
-                  copiedAll
-                    ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
-                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }
-              `}
+              className={cn(
+                'p-1.5 rounded-lg transition-all duration-150',
+                copiedAll
+                  ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
+                  : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              )}
               title="Copy all logs"
               aria-label="Copy all logs"
             >

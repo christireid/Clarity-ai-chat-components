@@ -21,7 +21,7 @@ import {
   ChevronDown,
   ExternalLink,
 } from 'lucide-react'
-import { copyToClipboard } from '../utils'
+import { copyToClipboard, cn } from '../utils'
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -251,14 +251,12 @@ export class ErrorBoundary extends Component<
                 </button>
                 <button
                   onClick={this.handleCopyError}
-                  className={`
-                    flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-colors
-                    ${
-                      copied
-                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-                        : 'bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300'
-                    }
-                  `}
+                  className={cn(
+                    'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-colors',
+                    copied
+                      ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
+                      : 'bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300'
+                  )}
                 >
                   {copied ? (
                     <>
