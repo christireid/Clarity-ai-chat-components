@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo } from 'react'
-import { Send, Bot, User, Sparkles, Zap, Code, Palette, Wand2, RefreshCw, X } from 'lucide-react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { Send, Bot, User, Sparkles, Zap, Code, Palette, Wand2, RefreshCw, AlertCircle } from 'lucide-react'
 import { useAutoScroll, useStreaming, TypingIndicator } from '@clarity-chat/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CodeBlock } from '../MDX/CodeBlock'
@@ -12,6 +12,7 @@ interface Message {
   sender: 'user' | 'bot'
   timestamp: Date
   isStreaming?: boolean
+  isError?: boolean
 }
 
 // Generate unique message IDs (collision-safe)
@@ -34,18 +35,19 @@ const SUGGESTIONS = [
 ]
 
 /**
- * Simple Markdown renderer for the demo
- * Handles code blocks and basic formatting
+ * Enhanced Markdown renderer for the demo
+ * Handles code blocks, basic formatting, and lists
  */
 function MarkdownRenderer({ content }: { content: string }) {
-  // Split by code blocks
+  // Memoize parsing to avoid expensive regex on every render
   const parts = useMemo(() => {
-    const regex = /```(\w+)?\n([\s\S]*?)```/g
+    // Regex for code blocks: ```lang ... ```
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
     const result = []
     let lastIndex = 0
     let match
 
-    while ((match = regex.exec(content)) !== null) {
+    while ((match = codeBlockRegex.exec(content)) !== null) {
       // Add text before code block
       if (match.index > lastIndex) {
         result.push({
@@ -76,11 +78,11 @@ function MarkdownRenderer({ content }: { content: string }) {
   }, [content])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {parts.map((part, idx) => {
         if (part.type === 'code') {
           return (
-            <div key={idx} className="my-2 not-prose">
+            <div key={idx} className="my-3 not-prose w-full overflow-hidden rounded-md">
               <CodeBlock
                 code={part.content}
                 language={part.language}
@@ -90,30 +92,69 @@ function MarkdownRenderer({ content }: { content: string }) {
           )
         }
 
-        // Basic text formatting (bold, code spans)
-        return (
-          <p key={idx} className="leading-relaxed whitespace-pre-wrap">
-            {part.content.split(/(`[^`]+`|\*\*[^*]+\*\*)/g).map((segment, i) => {
-              if (segment.startsWith('`') && segment.endsWith('`')) {
-                return (
-                  <code key={i} className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono text-xs text-brand-600 dark:text-brand-400">
-                    {segment.slice(1, -1)}
-                  </code>
-                )
-              }
-              if (segment.startsWith('**') && segment.endsWith('**')) {
-                return (
-                  <strong key={i} className="font-semibold text-brand-700 dark:text-brand-300">
-                    {segment.slice(2, -2)}
-                  </strong>
-                )
-              }
-              return segment
-            })}
-          </p>
-        )
+        // Handle paragraphs and lists
+        const paragraphs = part.content.split('\n\n')
+        return paragraphs.map((paragraph, pIdx) => {
+          if (!paragraph.trim()) return null
+
+          // Check for unordered lists (simple implementation)
+          if (paragraph.match(/^(\s*[-*] .+(\n|$))+/)) {
+            const listItems = paragraph.split('\n').filter(line => line.trim().match(/^[-*] /))
+            return (
+              <ul key={`${idx}-${pIdx}`} className="list-disc pl-5 space-y-1 my-2">
+                {listItems.map((item, liIdx) => (
+                  <li key={liIdx} className="pl-1">
+                    <InlineText text={item.replace(/^[-*] /, '')} />
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+
+          return (
+            <p key={`${idx}-${pIdx}`} className="leading-relaxed whitespace-pre-wrap">
+              <InlineText text={paragraph} />
+            </p>
+          )
+        })
       })}
     </div>
+  )
+}
+
+/**
+ * Component to handle inline markdown formatting (bold, code)
+ */
+function InlineText({ text }: { text: string }) {
+  // Simple parser for **bold** and `code`
+  // We split by code first, then bold
+  const segments = text.split(/(`[^`]+`)/g)
+  
+  return (
+    <>
+      {segments.map((segment, i) => {
+        if (segment.startsWith('`') && segment.endsWith('`')) {
+          return (
+            <code key={i} className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono text-xs text-brand-600 dark:text-brand-400 break-words">
+              {segment.slice(1, -1)}
+            </code>
+          )
+        }
+        
+        // Split remaining text by bold
+        const subSegments = segment.split(/(\*\*[^*]+\*\*)/g)
+        return subSegments.map((sub, j) => {
+          if (sub.startsWith('**') && sub.endsWith('**')) {
+            return (
+              <strong key={`${i}-${j}`} className="font-semibold text-brand-700 dark:text-brand-300">
+                {sub.slice(2, -2)}
+              </strong>
+            )
+          }
+          return sub
+        })
+      })}
+    </>
   )
 }
 
@@ -122,9 +163,11 @@ export function LiveChatDemo() {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
+  const [isError, setIsError] = useState(false)
 
   // Use ref to avoid closure issues in callbacks
   const currentBotMessageIdRef = useRef<string | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Use the shared useAutoScroll hook from @clarity-chat/react
   const { scrollRef, scrollToBottom, setEnabled } = useAutoScroll({
@@ -133,16 +176,28 @@ export function LiveChatDemo() {
   })
 
   // Use the shared useStreaming hook from @clarity-chat/react
-  // The hook provides `content` which accumulates all streamed text
-  const { content, isStreaming, startStreaming, reset } = useStreaming({
+  const { content, isStreaming, startStreaming, reset: resetStreaming } = useStreaming({
     onError: (error) => {
       console.error('Streaming error:', error)
-      setMessages(prev => [...prev, {
-        id: generateId(),
-        text: "I'm having trouble connecting right now. Please try again in a moment!",
-        sender: 'bot',
-        timestamp: new Date(),
-      }])
+      setIsError(true)
+      setMessages(prev => {
+        const lastMsg = prev[prev.length - 1]
+        // If the last message was the one streaming, mark it as error
+        if (lastMsg && lastMsg.id === currentBotMessageIdRef.current) {
+           return prev.map(msg => 
+             msg.id === lastMsg.id 
+               ? { ...msg, isStreaming: false, isError: true, text: msg.text + "\n\n[Connection interrupted]" } 
+               : msg
+           )
+        }
+        return [...prev, {
+          id: generateId(),
+          text: "I'm having trouble connecting right now. Please try again in a moment!",
+          sender: 'bot',
+          timestamp: new Date(),
+          isError: true
+        }]
+      })
       currentBotMessageIdRef.current = null
     },
     onComplete: () => {
@@ -158,7 +213,6 @@ export function LiveChatDemo() {
   })
 
   // Sync streaming content to the current bot message
-  // This is more reliable than using onChunk with closures
   useEffect(() => {
     const msgId = currentBotMessageIdRef.current
     if (msgId && content) {
@@ -176,9 +230,24 @@ export function LiveChatDemo() {
     }
   }, [isStreaming, scrollToBottom])
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [])
+
   const handleSend = async (textInput?: string) => {
     const messageText = textInput || input
     if (!messageText.trim() || isTyping || isStreaming) return
+
+    // Cancel any previous pending request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+    abortControllerRef.current = new AbortController()
 
     const userMessage: Message = {
       id: generateId(),
@@ -191,6 +260,7 @@ export function LiveChatDemo() {
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setShowSuggestions(false)
+    setIsError(false)
     setEnabled(true) // Enable auto-scroll
     scrollToBottom() // Force scroll
     setIsTyping(true)
@@ -200,6 +270,7 @@ export function LiveChatDemo() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: currentInput }),
+        signal: abortControllerRef.current.signal
       })
 
       if (!response.ok || !response.body) {
@@ -222,26 +293,38 @@ export function LiveChatDemo() {
       // Use the streaming hook to handle the response
       await startStreaming(response.body)
 
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') return
+      
       console.error('Error getting response:', error)
+      setIsError(true)
+      setIsTyping(false)
       setMessages(prev => [...prev, {
         id: generateId(),
         text: "I'm having trouble connecting right now. Please try again in a moment!",
         sender: 'bot',
         timestamp: new Date(),
+        isError: true
       }])
-      setIsTyping(false)
-      reset()
+      resetStreaming()
+    } finally {
+      abortControllerRef.current = null
     }
   }
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
     setMessages(initialMessages)
     setInput('')
     setShowSuggestions(true)
     setIsTyping(false)
-    reset()
-  }
+    setIsError(false)
+    resetStreaming()
+    currentBotMessageIdRef.current = null
+  }, [resetStreaming])
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -290,8 +373,9 @@ export function LiveChatDemo() {
               onClick={handleReset}
               whileHover={{ rotate: 180, scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none"
               title="Reset Demo"
+              aria-label="Reset chat demo"
             >
               <RefreshCw className="w-4 h-4" />
             </motion.button>
@@ -302,6 +386,9 @@ export function LiveChatDemo() {
         <div
           ref={scrollRef as React.RefObject<HTMLDivElement>}
           className="h-[450px] overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-bg-secondary/50 to-bg-primary scroll-smooth"
+          role="log"
+          aria-live="polite"
+          aria-label="Chat messages"
         >
           <AnimatePresence initial={false} mode="popLayout">
             {messages.map((message) => (
@@ -318,11 +405,13 @@ export function LiveChatDemo() {
                 {/* Avatar */}
                 <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ring-1 ring-inset ${
                   message.sender === 'bot'
-                    ? 'bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 ring-brand-500/20'
+                    ? message.isError 
+                      ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 ring-red-500/20'
+                      : 'bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 ring-brand-500/20'
                     : 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 ring-indigo-500/20'
                 }`}>
                   {message.sender === 'bot' ? (
-                    <Bot className="w-5 h-5" />
+                    message.isError ? <AlertCircle className="w-5 h-5" /> : <Bot className="w-5 h-5" />
                   ) : (
                     <User className="w-5 h-5" />
                   )}
@@ -331,7 +420,9 @@ export function LiveChatDemo() {
                 {/* Message Bubble */}
                 <div className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
                   message.sender === 'bot'
-                    ? 'bg-white dark:bg-gray-800 text-text-primary rounded-tl-sm border border-border/50'
+                    ? message.isError
+                      ? 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 rounded-tl-sm'
+                      : 'bg-white dark:bg-gray-800 text-text-primary rounded-tl-sm border border-border/50'
                     : 'bg-brand-500 text-white rounded-tr-sm'
                 }`}>
                   <div className="text-sm">
@@ -379,7 +470,7 @@ export function LiveChatDemo() {
         <div className="border-t border-border p-4 bg-bg-primary relative z-20">
           {/* Gradient Mask for Suggestions */}
           <AnimatePresence>
-            {showSuggestions && !isTyping && !isStreaming && (
+            {showSuggestions && !isTyping && !isStreaming && !isError && (
               <motion.div 
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
@@ -393,7 +484,7 @@ export function LiveChatDemo() {
                       whileHover={{ scale: 1.05, backgroundColor: "var(--brand-50)" }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleSend(suggestion.text)}
-                      className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary border border-border rounded-full text-xs font-medium text-text-secondary hover:text-brand-600 hover:border-brand-200 transition-colors whitespace-nowrap shadow-sm"
+                      className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary border border-border rounded-full text-xs font-medium text-text-secondary hover:text-brand-600 hover:border-brand-200 transition-colors whitespace-nowrap shadow-sm focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:outline-none"
                     >
                       <suggestion.icon className="w-3 h-3" />
                       {suggestion.text}
@@ -418,9 +509,13 @@ export function LiveChatDemo() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about components, hooks, theming..."
+              placeholder={isError ? "Try asking again..." : "Ask about components, hooks, theming..."}
               disabled={isTyping || isStreaming}
-              className="flex-1 px-4 py-3 pl-4 pr-12 rounded-xl border border-border bg-bg-secondary text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all shadow-sm disabled:opacity-50"
+              className={`flex-1 px-4 py-3 pl-4 pr-12 rounded-xl border bg-bg-secondary text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 transition-all shadow-sm disabled:opacity-50 ${
+                isError 
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
+                  : 'border-border focus:border-brand-500 focus:ring-brand-500/50'
+              }`}
             />
             <AnimatePresence mode="wait">
               {input.trim() ? (
@@ -433,7 +528,8 @@ export function LiveChatDemo() {
                   disabled={isTyping || isStreaming}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="absolute right-2 top-1.5 bottom-1.5 aspect-square bg-brand-500 hover:bg-brand-600 text-white rounded-lg flex items-center justify-center transition-colors shadow-md"
+                  className="absolute right-2 top-1.5 bottom-1.5 aspect-square bg-brand-500 hover:bg-brand-600 text-white rounded-lg flex items-center justify-center transition-colors shadow-md focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  aria-label="Send message"
                 >
                   <Send className="w-4 h-4" />
                 </motion.button>
@@ -451,8 +547,8 @@ export function LiveChatDemo() {
             </AnimatePresence>
           </form>
           <div className="text-[10px] text-text-secondary mt-2 text-center opacity-70 flex items-center justify-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            Powered by Gemini • Reads entire documentation in real-time
+            <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isError ? 'bg-red-500' : 'bg-green-500'}`} />
+            {isError ? 'Connection interrupted' : 'Powered by Gemini • Reads entire documentation in real-time'}
           </div>
         </div>
       </motion.div>
