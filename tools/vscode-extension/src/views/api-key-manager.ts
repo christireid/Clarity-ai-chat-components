@@ -1,9 +1,53 @@
 /**
  * API Key Manager Webview
- * Secure API key management UI for VSCode
+ * A secure, beautifully designed UI for managing AI provider API keys
  */
 
 import * as vscode from 'vscode'
+
+interface ProviderInfo {
+  id: string
+  name: string
+  icon: string
+  color: string
+  description: string
+  keyFormat: string
+  docsUrl: string
+  dashboardUrl: string
+}
+
+const PROVIDERS: ProviderInfo[] = [
+  {
+    id: 'openai',
+    name: 'OpenAI',
+    icon: '🤖',
+    color: '#10a37f',
+    description: 'GPT-4, GPT-3.5 Turbo, and DALL-E models',
+    keyFormat: 'sk-...',
+    docsUrl: 'https://platform.openai.com/docs',
+    dashboardUrl: 'https://platform.openai.com/api-keys',
+  },
+  {
+    id: 'anthropic',
+    name: 'Anthropic',
+    icon: '🧠',
+    color: '#d97706',
+    description: 'Claude 3 Opus, Sonnet, and Haiku models',
+    keyFormat: 'sk-ant-...',
+    docsUrl: 'https://docs.anthropic.com',
+    dashboardUrl: 'https://console.anthropic.com/settings/keys',
+  },
+  {
+    id: 'google',
+    name: 'Google AI',
+    icon: '✨',
+    color: '#4285f4',
+    description: 'Gemini Pro and Gemini Pro Vision models',
+    keyFormat: 'AIza...',
+    docsUrl: 'https://ai.google.dev/docs',
+    dashboardUrl: 'https://makersuite.google.com/app/apikey',
+  },
+]
 
 export class ApiKeyManager {
   public static currentPanel: ApiKeyManager | undefined
@@ -26,7 +70,7 @@ export class ApiKeyManager {
           case 'saveKey':
             await this.saveApiKey(context, message.provider, message.key)
             vscode.window.showInformationMessage(
-              `API key for ${message.provider} saved securely`
+              `${this.getProviderName(message.provider)} API key saved securely`
             )
             this.update(context)
             break
@@ -34,19 +78,45 @@ export class ApiKeyManager {
           case 'deleteKey':
             await this.deleteApiKey(context, message.provider)
             vscode.window.showInformationMessage(
-              `API key for ${message.provider} removed`
+              `${this.getProviderName(message.provider)} API key removed`
             )
             this.update(context)
             break
 
           case 'validateKey':
-            await this.validateApiKey(message.provider, message.key)
+            const isValid = await this.validateApiKey(
+              message.provider,
+              message.key
+            )
+            this.panel.webview.postMessage({
+              command: 'validationResult',
+              provider: message.provider,
+              isValid,
+            })
+            break
+
+          case 'openDashboard':
+            const provider = PROVIDERS.find((p) => p.id === message.provider)
+            if (provider) {
+              vscode.env.openExternal(vscode.Uri.parse(provider.dashboardUrl))
+            }
+            break
+
+          case 'openDocs':
+            const providerDocs = PROVIDERS.find((p) => p.id === message.provider)
+            if (providerDocs) {
+              vscode.env.openExternal(vscode.Uri.parse(providerDocs.docsUrl))
+            }
             break
         }
       },
       null,
       this.disposables
     )
+  }
+
+  private getProviderName(id: string): string {
+    return PROVIDERS.find((p) => p.id === id)?.name || id
   }
 
   public static createOrShow(context: vscode.ExtensionContext) {
@@ -57,7 +127,7 @@ export class ApiKeyManager {
 
     const panel = vscode.window.createWebviewPanel(
       'clarityApiKeys',
-      'Clarity Chat API Keys',
+      'API Key Manager',
       vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -81,9 +151,8 @@ export class ApiKeyManager {
   }
 
   private async update(context: vscode.ExtensionContext) {
-    const webview = this.panel.webview
     this.panel.title = 'API Key Manager'
-    this.panel.webview.html = await this.getHtmlForWebview(webview, context)
+    this.panel.webview.html = await this.getHtmlForWebview(context)
   }
 
   private async saveApiKey(
@@ -101,30 +170,36 @@ export class ApiKeyManager {
     await context.secrets.delete(`clarity-chat.${provider}-key`)
   }
 
-  private async validateApiKey(provider: string, key: string) {
-    // Basic validation
-    const isValid = key && key.length > 10
+  private async validateApiKey(provider: string, key: string): Promise<boolean> {
+    if (!key || key.length < 10) {
+      return false
+    }
 
-    if (isValid) {
-      vscode.window.showInformationMessage(
-        `✓ ${provider} API key appears valid`
-      )
-    } else {
-      vscode.window.showErrorMessage(`✗ ${provider} API key appears invalid`)
+    // Basic format validation
+    switch (provider) {
+      case 'openai':
+        return key.startsWith('sk-') && key.length > 20
+      case 'anthropic':
+        return key.startsWith('sk-ant-') && key.length > 20
+      case 'google':
+        return key.startsWith('AIza') && key.length > 20
+      default:
+        return key.length > 10
     }
   }
 
   private async getHtmlForWebview(
-    webview: vscode.Webview,
     context: vscode.ExtensionContext
   ): Promise<string> {
-    const providers = ['openai', 'anthropic', 'google']
-    const keys = await Promise.all(
-      providers.map(async (p) => ({
-        provider: p,
-        hasKey: !!(await context.secrets.get(`clarity-chat.${p}-key`)),
+    const keyStatus = await Promise.all(
+      PROVIDERS.map(async (p) => ({
+        provider: p.id,
+        hasKey: !!(await context.secrets.get(`clarity-chat.${p.id}-key`)),
       }))
     )
+
+    const providersJson = JSON.stringify(PROVIDERS)
+    const keyStatusJson = JSON.stringify(keyStatus)
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -133,204 +208,664 @@ export class ApiKeyManager {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>API Key Manager</title>
   <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --gradient-start: #6366f1;
+      --gradient-end: #8b5cf6;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.1);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.1);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 20px;
       background: var(--vscode-editor-background);
       color: var(--vscode-editor-foreground);
+      line-height: 1.6;
+      min-height: 100vh;
     }
-    
-    .container {
-      max-width: 600px;
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+      padding: 32px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
       margin: 0 auto;
     }
-    
-    h1 {
-      font-size: 24px;
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
       margin-bottom: 8px;
-    }
-    
-    .subtitle {
-      color: var(--vscode-descriptionForeground);
-      margin-bottom: 24px;
-    }
-    
-    .provider-section {
-      margin-bottom: 24px;
-      padding: 16px;
-      border: 1px solid var(--vscode-panel-border);
-      border-radius: 6px;
-      background: var(--vscode-editor-background);
-    }
-    
-    .provider-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      gap: 12px;
     }
-    
+
+    .header p {
+      color: rgba(255,255,255,0.85);
+      font-size: 15px;
+    }
+
+    /* Security Banner */
+    .security-banner {
+      max-width: 700px;
+      margin: -20px auto 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .security-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .security-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .security-text h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--success);
+    }
+
+    .security-text p {
+      font-size: 13px;
+      color: var(--vscode-descriptionForeground);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Provider Card */
+    .provider-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .provider-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .provider-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .provider-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .provider-info {
+      flex: 1;
+    }
+
     .provider-name {
       font-size: 18px;
       font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    
-    .status {
+
+    .provider-desc {
       font-size: 13px;
-      padding: 4px 12px;
-      border-radius: 12px;
+      color: var(--vscode-descriptionForeground);
     }
-    
-    .status.configured {
-      background: rgba(46, 204, 113, 0.2);
-      color: #2ecc71;
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    
-    .status.not-configured {
-      background: rgba(231, 76, 60, 0.2);
-      color: #e74c3c;
+
+    .status-badge.configured {
+      background: var(--success-bg);
+      color: var(--success);
     }
-    
-    input[type="password"] {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid var(--vscode-input-border);
-      background: var(--vscode-input-background);
-      color: var(--vscode-input-foreground);
-      border-radius: 4px;
+
+    .status-badge.not-configured {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .provider-body {
+      padding: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .input-label span {
       font-size: 13px;
-      margin-bottom: 12px;
+      font-weight: 500;
     }
-    
-    .button-group {
+
+    .input-format {
+      font-size: 12px;
+      color: var(--vscode-descriptionForeground);
+      font-family: monospace;
+    }
+
+    .input-wrapper {
+      position: relative;
       display: flex;
       gap: 8px;
     }
-    
-    button {
-      padding: 6px 16px;
-      background: var(--vscode-button-background);
-      color: var(--vscode-button-foreground);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 13px;
+
+    .api-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--card-border);
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--vscode-input-foreground);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      transition: all 0.2s ease;
     }
-    
-    button:hover {
-      background: var(--vscode-button-hoverBackground);
+
+    .api-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     }
-    
-    button.secondary {
-      background: var(--vscode-button-secondaryBackground);
-      color: var(--vscode-button-secondaryForeground);
+
+    .api-input.valid {
+      border-color: var(--success);
     }
-    
-    button.secondary:hover {
-      background: var(--vscode-button-secondaryHoverBackground);
+
+    .api-input.invalid {
+      border-color: var(--danger);
     }
-    
-    .warning {
+
+    .toggle-visibility {
       padding: 12px;
-      background: rgba(255, 193, 7, 0.1);
-      border-left: 3px solid #ffc107;
-      border-radius: 4px;
-      margin-bottom: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-visibility:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .validation-message {
+      margin-top: 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .validation-message.success {
+      color: var(--success);
+    }
+
+    .validation-message.error {
+      color: var(--danger);
+    }
+
+    /* Button Group */
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
       font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--vscode-foreground);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-bg);
+    }
+
+    .btn-link {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      padding: 10px 16px;
+    }
+
+    .btn-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Provider Links */
+    .provider-links {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .provider-link {
+      font-size: 13px;
+      color: var(--vscode-textLink-foreground);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .provider-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    .footer {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 13px;
+      color: var(--vscode-descriptionForeground);
+      margin-bottom: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.3s ease;
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success {
+      border-color: var(--success);
+    }
+
+    .toast.error {
+      border-color: var(--danger);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🔑 API Key Manager</h1>
-    <p class="subtitle">Securely manage your AI provider API keys</p>
-
-    <div class="warning">
-      <strong>🔒 Security Note:</strong> API keys are stored securely in VSCode's secret storage.
-      They are never written to disk in plain text.
+  <div class="header">
+    <div class="header-content">
+      <h1>
+        <span>🔑</span>
+        <span>API Key Manager</span>
+      </h1>
+      <p>Securely manage your AI provider credentials</p>
     </div>
+  </div>
 
-    ${providers
-      .map((provider, index) => {
-        const info = keys[index]
-        return `
-      <div class="provider-section">
-        <div class="provider-header">
-          <div class="provider-name">${provider.toUpperCase()}</div>
-          <div class="status ${info.hasKey ? 'configured' : 'not-configured'}">
-            ${info.hasKey ? '✓ Configured' : '✗ Not Configured'}
-          </div>
-        </div>
-        
-        <input
-          type="password"
-          id="${provider}-key"
-          placeholder="Enter ${provider} API key..."
-          ${info.hasKey ? 'value="••••••••••••••••"' : ''}
-        />
-        
-        <div class="button-group">
-          <button onclick="saveKey('${provider}')">
-            ${info.hasKey ? 'Update' : 'Save'}
-          </button>
-          ${
-            info.hasKey
-              ? `<button class="secondary" onclick="deleteKey('${provider}')">Remove</button>`
-              : ''
-          }
-          <button class="secondary" onclick="validateKey('${provider}')">Validate</button>
-        </div>
+  <div class="security-banner">
+    <div class="security-card">
+      <div class="security-icon">🔒</div>
+      <div class="security-text">
+        <h3>Secure Storage</h3>
+        <p>Your API keys are encrypted and stored in VS Code's secure credential storage. They are never written to disk in plain text or shared with any external services.</p>
       </div>
-    `
-      })
-      .join('')}
+    </div>
+  </div>
+
+  <div class="container" id="providerList">
+    <!-- Provider cards will be rendered here -->
+  </div>
+
+  <div class="footer">
+    <p class="footer-text">Need help? Check out our documentation for setup guides.</p>
+    <div class="footer-links">
+      <a class="provider-link" onclick="openDocs('all')">
+        📖 Documentation
+      </a>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <span id="toastIcon"></span>
+    <span id="toastMessage"></span>
   </div>
 
   <script>
     const vscode = acquireVsCodeApi();
+    const providers = ${providersJson};
+    const keyStatus = ${keyStatusJson};
 
-    function saveKey(provider) {
-      const input = document.getElementById(provider + '-key');
-      const key = input.value;
-      
-      if (!key || key === '••••••••••••••••') {
-        vscode.postMessage({
-          command: 'alert',
-          text: 'Please enter a valid API key'
-        });
+    let visibleKeys = {};
+
+    function renderProviders() {
+      const container = document.getElementById('providerList');
+      container.innerHTML = providers.map(provider => {
+        const status = keyStatus.find(s => s.provider === provider.id);
+        const hasKey = status?.hasKey || false;
+
+        return \`
+          <div class="provider-card" id="card-\${provider.id}">
+            <div class="provider-header">
+              <div class="provider-icon" style="background: \${provider.color}20">
+                \${provider.icon}
+              </div>
+              <div class="provider-info">
+                <div class="provider-name">
+                  \${provider.name}
+                </div>
+                <div class="provider-desc">\${provider.description}</div>
+              </div>
+              <div class="status-badge \${hasKey ? 'configured' : 'not-configured'}">
+                \${hasKey ? '✓ Configured' : '○ Not Configured'}
+              </div>
+            </div>
+            <div class="provider-body">
+              <div class="input-group">
+                <div class="input-label">
+                  <span>API Key</span>
+                  <span class="input-format">Format: \${provider.keyFormat}</span>
+                </div>
+                <div class="input-wrapper">
+                  <input
+                    type="\${visibleKeys[provider.id] ? 'text' : 'password'}"
+                    class="api-input"
+                    id="input-\${provider.id}"
+                    placeholder="\${hasKey ? '••••••••••••••••••••••••' : 'Enter your API key...'}"
+                    oninput="onInputChange('\${provider.id}')"
+                  />
+                  <button class="toggle-visibility" onclick="toggleVisibility('\${provider.id}')">
+                    \${visibleKeys[provider.id] ? '🙈' : '👁️'}
+                  </button>
+                </div>
+                <div class="validation-message" id="validation-\${provider.id}"></div>
+              </div>
+              <div class="button-group">
+                <button class="btn btn-primary" onclick="saveKey('\${provider.id}')" id="save-\${provider.id}">
+                  \${hasKey ? 'Update Key' : 'Save Key'}
+                </button>
+                <button class="btn btn-secondary" onclick="validateKey('\${provider.id}')" id="validate-\${provider.id}">
+                  Validate
+                </button>
+                \${hasKey ? \`
+                  <button class="btn btn-danger" onclick="deleteKey('\${provider.id}')">
+                    Remove
+                  </button>
+                \` : ''}
+              </div>
+              <div class="provider-links">
+                <a class="provider-link" onclick="openDashboard('\${provider.id}')">
+                  🔗 Get API Key
+                </a>
+                <a class="provider-link" onclick="openDocs('\${provider.id}')">
+                  📖 Documentation
+                </a>
+              </div>
+            </div>
+          </div>
+        \`;
+      }).join('');
+    }
+
+    function toggleVisibility(providerId) {
+      visibleKeys[providerId] = !visibleKeys[providerId];
+      renderProviders();
+    }
+
+    function onInputChange(providerId) {
+      const input = document.getElementById('input-' + providerId);
+      const validation = document.getElementById('validation-' + providerId);
+
+      // Clear validation when typing
+      input.classList.remove('valid', 'invalid');
+      validation.innerHTML = '';
+    }
+
+    function saveKey(providerId) {
+      const input = document.getElementById('input-' + providerId);
+      const key = input.value.trim();
+
+      if (!key || key === '••••••••••••••••••••••••') {
+        showToast('Please enter a valid API key', 'error');
         return;
       }
 
       vscode.postMessage({
         command: 'saveKey',
-        provider: provider,
+        provider: providerId,
         key: key
       });
+
+      input.value = '';
+      showToast('API key saved securely', 'success');
     }
 
-    function deleteKey(provider) {
-      vscode.postMessage({
-        command: 'deleteKey',
-        provider: provider
-      });
-    }
+    function validateKey(providerId) {
+      const input = document.getElementById('input-' + providerId);
+      const key = input.value.trim();
+      const validation = document.getElementById('validation-' + providerId);
 
-    function validateKey(provider) {
-      const input = document.getElementById(provider + '-key');
-      const key = input.value;
-      
+      if (!key || key === '••••••••••••••••••••••••') {
+        validation.innerHTML = '<span class="error">⚠️ Please enter a key to validate</span>';
+        validation.className = 'validation-message error';
+        return;
+      }
+
       vscode.postMessage({
         command: 'validateKey',
-        provider: provider,
+        provider: providerId,
         key: key
       });
+
+      validation.innerHTML = '<span class="loading"></span> Validating...';
+      validation.className = 'validation-message';
     }
+
+    function deleteKey(providerId) {
+      vscode.postMessage({
+        command: 'deleteKey',
+        provider: providerId
+      });
+    }
+
+    function openDashboard(providerId) {
+      vscode.postMessage({
+        command: 'openDashboard',
+        provider: providerId
+      });
+    }
+
+    function openDocs(providerId) {
+      if (providerId === 'all') {
+        vscode.postMessage({ command: 'openDocs', provider: 'openai' });
+      } else {
+        vscode.postMessage({
+          command: 'openDocs',
+          provider: providerId
+        });
+      }
+    }
+
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      const msg = document.getElementById('toastMessage');
+
+      icon.textContent = type === 'success' ? '✓' : '⚠️';
+      msg.textContent = message;
+      toast.className = 'toast show ' + type;
+
+      setTimeout(() => {
+        toast.className = 'toast';
+      }, 3000);
+    }
+
+    // Handle messages from extension
+    window.addEventListener('message', event => {
+      const message = event.data;
+
+      if (message.command === 'validationResult') {
+        const input = document.getElementById('input-' + message.provider);
+        const validation = document.getElementById('validation-' + message.provider);
+
+        if (message.isValid) {
+          input.classList.remove('invalid');
+          input.classList.add('valid');
+          validation.innerHTML = '✓ Key format looks valid';
+          validation.className = 'validation-message success';
+        } else {
+          input.classList.remove('valid');
+          input.classList.add('invalid');
+          validation.innerHTML = '✗ Key format appears invalid';
+          validation.className = 'validation-message error';
+        }
+      }
+    });
+
+    // Initial render
+    renderProviders();
   </script>
 </body>
 </html>`
