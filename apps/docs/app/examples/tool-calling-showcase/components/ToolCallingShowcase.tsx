@@ -25,6 +25,8 @@ import {
   DollarSign,
   AlertTriangle,
   RotateCcw,
+  Cpu,
+  Play,
 } from 'lucide-react'
 
 import type {
@@ -37,7 +39,7 @@ import type {
   ExecuteTradeArgs,
 } from '../lib/types'
 
-import { useToolOrchestration } from '../hooks'
+import { useToolOrchestration, useAIToolOrchestration } from '../hooks'
 import {
   TickerSearchCard,
   StockAnalysisCard,
@@ -364,7 +366,14 @@ const EXAMPLE_PROMPTS = [
 // ============================================================================
 
 export function ToolCallingShowcase() {
-  // Use custom hook for tool orchestration
+  // Mode toggle - switch between mock demo and real AI
+  const [useAI, setUseAI] = useState(false)
+
+  // Call both hooks unconditionally (React rules) and select active one
+  const mockOrchestration = useToolOrchestration()
+  const aiOrchestration = useAIToolOrchestration()
+
+  // Select the active orchestration based on mode
   const {
     messages,
     isLoading,
@@ -376,7 +385,7 @@ export function ToolCallingShowcase() {
     handleReject,
     clearMessages,
     debugEvents,
-  } = useToolOrchestration()
+  } = useAI ? aiOrchestration : mockOrchestration
 
   // Local UI state
   const [input, setInput] = useState('')
@@ -493,6 +502,34 @@ export function ToolCallingShowcase() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* AI Mode Toggle */}
+          <button
+            onClick={() => {
+              setUseAI(!useAI)
+              clearMessages()
+            }}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+              useAI
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/25'
+                : 'bg-gray-100 dark:bg-gray-800 text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+            title={useAI ? 'Using Real AI + Live Data' : 'Using Mock Demo Mode'}
+            aria-label={useAI ? 'Switch to mock demo mode' : 'Switch to real AI mode'}
+            aria-pressed={useAI}
+          >
+            {useAI ? (
+              <>
+                <Cpu className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Live AI</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Demo</span>
+              </>
+            )}
+          </button>
+          {/* Status Indicator */}
           <div
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-xs"
             role="status"
@@ -543,11 +580,25 @@ export function ToolCallingShowcase() {
             >
               <Zap className="w-8 h-8" />
             </motion.div>
-            <h2 className="text-xl font-bold mb-2">Advanced Tool Calling Demo</h2>
-            <p className="text-sm text-muted-foreground mb-6 max-w-md">
-              Watch the AI orchestrate multiple tools, render interactive UI components, and request
-              approval for critical actions.
+            <h2 className="text-xl font-bold mb-2">
+              {useAI ? 'Live AI Stock Analyst' : 'Advanced Tool Calling Demo'}
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4 max-w-md">
+              {useAI ? (
+                <>
+                  <span className="text-green-600 dark:text-green-400 font-medium">Real AI + Live Market Data</span>
+                  {' '}— GPT-4o-mini with Finnhub integration. Ask about real stocks!
+                </>
+              ) : (
+                'Watch the AI orchestrate multiple tools, render interactive UI components, and request approval for critical actions.'
+              )}
             </p>
+            {!useAI && (
+              <p className="text-xs text-muted-foreground mb-6 max-w-md">
+                Toggle <span className="font-medium">"Live AI"</span> in the header for real market data.
+              </p>
+            )}
+            {useAI && <div className="mb-6" />}
             <div
               className="grid grid-cols-2 gap-3"
               role="group"
