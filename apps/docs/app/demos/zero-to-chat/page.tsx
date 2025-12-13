@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Zap,
@@ -18,6 +18,10 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { useAutoScroll, TypingIndicator } from '@clarity-chat/react'
+import { generateId, copyToClipboard, sleep } from '@/lib/demos/utils'
+import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
+import { trackDemoViewed, trackCodeCopied, trackMessageSent } from '@/lib/demos/analytics'
+import { CopyFullExampleButton } from '@/components/Demo/CopyFullExampleButton'
 
 const heroCode = `import { ClarityChat } from '@clarity-chat/react'
 
@@ -53,14 +57,6 @@ interface Message {
   isStreaming?: boolean
 }
 
-const generateId = () => {
-  // Fallback for non-secure contexts or older browsers
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
-  }
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
-}
-
 const demoResponses: Record<string, string> = {
   default: "I'm the Clarity Chat demo! This entire chat was built with just a few lines of code. Try asking about features, streaming, theming, or anything else!",
   streaming: "Streaming is built-in! Just set `api` to your streaming endpoint, and Clarity Chat handles everything: the typing indicator, character-by-character rendering, and smooth animations. No extra code needed.",
@@ -79,7 +75,6 @@ function getResponse(input: string): string {
 }
 
 export default function ZeroToChatDemo() {
-  const [copied, setCopied] = useState(false)
   const [showExpanded, setShowExpanded] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -91,14 +86,12 @@ export default function ZeroToChatDemo() {
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const isMountedRef = useRef(true)
+  const isMountedRef = useMountedRef()
+  const { copy, copied } = useCopyToClipboard()
 
-  // Cleanup on unmount to prevent state updates after unmount
+  // Track demo view on mount
   useEffect(() => {
-    isMountedRef.current = true
-    return () => {
-      isMountedRef.current = false
-    }
+    trackDemoViewed('zero-to-chat')
   }, [])
 
   const { scrollRef, scrollToBottom } = useAutoScroll({
@@ -107,20 +100,9 @@ export default function ZeroToChatDemo() {
   })
 
   const copyCode = async () => {
-    try {
-      await navigator.clipboard.writeText(showExpanded ? expandedCode : heroCode)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // Fallback: select text in a temporary textarea
-      const textarea = document.createElement('textarea')
-      textarea.value = showExpanded ? expandedCode : heroCode
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+    const success = await copy(showExpanded ? expandedCode : heroCode)
+    if (success) {
+      trackCodeCopied('zero-to-chat', showExpanded ? 'expanded' : 'minimal')
     }
   }
 
@@ -129,16 +111,16 @@ export default function ZeroToChatDemo() {
     let currentText = ''
 
     for (let i = 0; i < words.length; i++) {
-      if (!isMountedRef.current) return // Bail if unmounted
+      if (!isMountedRef.current) return
       currentText += (i > 0 ? ' ' : '') + words[i]
       setMessages(prev => prev.map(msg =>
         msg.id === messageId ? { ...msg, text: currentText } : msg
       ))
       scrollToBottom()
-      await new Promise(r => setTimeout(r, 30 + Math.random() * 30))
+      await sleep(30 + Math.random() * 30)
     }
 
-    if (!isMountedRef.current) return // Check again before final update
+    if (!isMountedRef.current) return
     setMessages(prev => prev.map(msg =>
       msg.id === messageId ? { ...msg, isStreaming: false } : msg
     ))
@@ -146,6 +128,8 @@ export default function ZeroToChatDemo() {
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return
+
+    trackMessageSent('zero-to-chat')
 
     const userMessage: Message = {
       id: generateId(),
@@ -160,7 +144,7 @@ export default function ZeroToChatDemo() {
     setIsTyping(true)
     scrollToBottom()
 
-    await new Promise(r => setTimeout(r, 800))
+    await sleep(800)
 
     const botMessageId = generateId()
     setMessages(prev => [...prev, {
@@ -229,6 +213,7 @@ export default function ZeroToChatDemo() {
                     <button
                       onClick={copyCode}
                       className="p-2 hover:bg-gray-700 rounded transition-colors"
+                      title="Copy snippet"
                     >
                       {copied ? (
                         <Check className="w-4 h-4 text-green-400" />
@@ -236,6 +221,7 @@ export default function ZeroToChatDemo() {
                         <Copy className="w-4 h-4 text-gray-400" />
                       )}
                     </button>
+                    <CopyFullExampleButton demoId="zero-to-chat" variant="compact" />
                   </div>
                 </div>
 
