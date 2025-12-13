@@ -17,6 +17,7 @@ import type {
   UsageLimit,
   UsageMetrics,
 } from '@clarity-chat/types'
+import { DURATION_SECONDS } from '../animations/constants'
 
 export interface UsageDashboardProps {
   balance: CreditBalance
@@ -184,13 +185,15 @@ export function UsageDashboard({
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 {(Object.keys(stats.metrics) as Array<keyof UsageMetrics>).map(
-                  (key) => {
+                  (key, index) => {
                     const value = stats.metrics[key]
                     const limit = limits.find((l) => l.metric === key)
                     const percentage = limit
                       ? (limit.current / limit.limit) * 100
                       : 0
                     const isNearLimit = percentage > 80
+                    // Use index directly instead of O(n) indexOf lookups
+                    const baseDelay = index * 0.05
 
                     return (
                       <motion.div
@@ -198,8 +201,8 @@ export function UsageDashboard({
                         initial={{ opacity: 0, scale: 0.95, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         transition={{
-                          delay: Object.keys(stats.metrics).indexOf(key) * 0.05,
-                          duration: 0.25,
+                          delay: baseDelay,
+                          duration: DURATION_SECONDS.normal,
                           ease: [0.25, 0.1, 0.25, 1],
                         }}
                         className={cn(
@@ -214,9 +217,7 @@ export function UsageDashboard({
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{
-                              delay:
-                                Object.keys(stats.metrics).indexOf(key) * 0.05 +
-                                0.1,
+                              delay: baseDelay + 0.1,
                               type: 'spring',
                               stiffness: 500,
                               damping: 30,
@@ -246,10 +247,7 @@ export function UsageDashboard({
                                   type: 'spring',
                                   damping: 30,
                                   stiffness: 220,
-                                  delay:
-                                    Object.keys(stats.metrics).indexOf(key) *
-                                      0.05 +
-                                    0.2,
+                                  delay: baseDelay + 0.2,
                                 }}
                                 className={cn(
                                   'h-full rounded-full',
@@ -284,7 +282,7 @@ export function UsageDashboard({
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     transition={{
                       delay: index * 0.05,
-                      duration: 0.25,
+                      duration: DURATION_SECONDS.normal,
                       ease: [0.25, 0.1, 0.25, 1],
                     }}
                     className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border/40 hover:bg-muted/50 transition-colors duration-200"
@@ -318,7 +316,10 @@ export function UsageDashboard({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                transition={{
+                  duration: DURATION_SECONDS.normal,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
                 className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-500/30 rounded-xl shadow-[0_2px_8px_rgba(245,158,11,0.1)]"
               >
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
