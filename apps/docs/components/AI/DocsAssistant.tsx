@@ -21,11 +21,8 @@
  * - useClipboard - Copy functionality
  * - useFocusTrap - Modal focus management (WCAG compliance)
  * - useFocusRestoration - Restore focus on close
- * - useLocalStorage - Session ID & conversation storage (replaces custom)
  * - useReducedMotion - Accessibility preferences
- * - useThrottledCallback - Throttled streaming updates (replaces custom)
  * - useToast - Toast notifications
- * - useTokenTracker - Track conversation token usage and costs
  *
  * Animation Utilities:
  * - createFadeVariant - Fade animation presets
@@ -40,7 +37,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertCircle, Search } from 'lucide-react'
+import { AlertCircle, Search, Terminal, History } from 'lucide-react'
 import {
   // Components
   ChatWindow,
@@ -52,46 +49,31 @@ import {
   NetworkStatus,
   TokenCounter,
   VoiceInput,
+  FollowUpSuggestions,
   // Hooks
   useToast,
   useKeyboardShortcuts,
   useClipboard,
-  useLocalStorage,
-  useThrottledCallback,
   useReducedMotion,
-  useTokenTracker,
   // Types
   type PromptSuggestion,
-  type Citation,
   // Accessibility hooks
   useFocusTrap,
   useFocusRestoration,
 } from '@clarity-chat/react'
-import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { CompactPromptSelector, useSelectedPrompt } from './PromptSelector'
+import { HistorySidebar } from './HistorySidebar'
 import { cn } from '@/lib/utils'
+import { durations } from '@/lib/animations'
 
-// Local imports from extracted modules
-import type {
-  DocsAssistantProps,
-  StreamingStatus,
-  SavedConversation,
-  Source,
-} from './types'
+// Local imports
+import type { DocsAssistantProps } from './types'
 import {
-  SESSION_ID_KEY,
-  MESSAGES_KEY,
-  CONVERSATION_TTL_MS,
-  STREAM_THROTTLE_MS,
   CLIPBOARD_TIMEOUT_MS,
   TOAST_DURATION_MS,
   FOCUS_DELAY_MS,
-  MAX_RETRY_ATTEMPTS,
-  INITIAL_RETRY_DELAY_MS,
-  MAX_RETRY_DELAY_MS,
-  RETRY_BACKOFF_MULTIPLIER,
   MODEL_MAX_TOKENS,
   TOKEN_COST_PER_TOKEN,
   TOKEN_WARNING_THRESHOLD,
@@ -100,18 +82,13 @@ import {
   DIALOG_VARIANTS_REDUCED,
   DIALOG_VARIANTS_NORMAL,
   DOCS_STARTER_PROMPTS,
-  generateSessionId,
 } from './constants'
 import {
   extractCodeBlocks,
   isPlaygroundCompatible,
   openInPlayground,
-  normalizeSourceUrl,
-  normalizeLinksInContent,
-  generateExportContent,
-  downloadExport,
 } from './utils'
-import { useOfflineQueue, createPendingMessage, useBranching } from './hooks'
+import { useBranching, useDocsChat } from './hooks'
 
 // ============================================================================
 // Inner Component (wrapped by ErrorBoundary)
@@ -120,20 +97,33 @@ import { useOfflineQueue, createPendingMessage, useBranching } from './hooks'
 function DocsAssistantInner({ className }: DocsAssistantProps) {
   // State
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [aiStatus, setAiStatus] = useState<AIStatus | undefined>(undefined)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [showExportDialog, setShowExportDialog] = useState(false)
-  const [streamingStatus, setStreamingStatus] =
-    useState<StreamingStatus>('idle')
-  const [retryCount, setRetryCount] = useState(0)
+  const [showHistory, setShowHistory] = useState(false)
 
   // Refs
   const dialogRef = useRef<HTMLDivElement>(null)
-  const abortControllerRef = useRef<AbortController | null>(null)
-  const partialContentRef = useRef<string>('')
+
+  // Chat Logic Hook
+  const {
+    messages,
+    setMessages,
+    isLoading,
+    aiStatus,
+    currentCitations,
+    sessionId,
+    tokenTracker,
+    isOnline,
+    messageQueue,
+    suggestedFollowUps,
+    handleSendMessage,
+    handleMessageRetry,
+    handleFeedback,
+    handleExportWithFormat,
+    handleClear,
+    handleNetworkStatusChange,
+  } = useDocsChat()
 
   // Library hooks
   const toast = useToast()
@@ -148,96 +138,30 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const focusTrapRef = useFocusTrap<HTMLDivElement>(isOpen)
   const { saveFocus, restoreFocus } = useFocusRestoration()
 
-  // Offline queue hook
-  const { isOnline, messageQueue, queueMessage, handleNetworkStatusChange } =
-    useOfflineQueue({
-      onQueueMessage: () =>
-        toast.info('Message queued. Will be sent when you reconnect.'),
-      onProcessQueue: (queue) =>
-        toast.info(
-          `You're back online! ${queue.length} message${queue.length > 1 ? 's' : ''} queued.`
-        ),
-      onStatusChange: (online) => {
-        if (!online) {
-          toast.warning(
-            'You are offline. Messages will be queued and sent when you reconnect.'
-          )
-        }
-      },
-    })
-
   // Branching hook
   const {
     branchState,
     currentBranch,
     switchBranch: switchBranchInternal,
+    createBranch,
     hasBranches,
   } = useBranching({
     onBranchSwitch: (branch) => {
       setMessages(branch.messages)
       toast.info(`Switched to: ${branch.name}`)
+      setShowHistory(false)
     },
-  })
-
-  // Token tracking using library hook
-  const {
-    tokens: totalTokens,
-    isNearLimit,
-    isCritical,
-    addMessage: trackMessage,
-    clear: clearTokens,
-  } = useTokenTracker({
-    modelName: 'claude-3-sonnet',
-    maxTokens: MODEL_MAX_TOKENS,
-    warningThreshold: TOKEN_WARNING_THRESHOLD,
-    criticalThreshold: TOKEN_CRITICAL_THRESHOLD,
-    onWarning: () => toast.warning('Approaching context limit'),
-    onCritical: () =>
-      toast.error('Near context limit - consider clearing conversation'),
+    onBranchCreate: (branch) => {
+      setMessages(branch.messages)
+      toast.success(`Created new chat: ${branch.name}`)
+      setShowHistory(false)
+    },
   })
 
   // Prompt/personality mode selector
   const [selectedPrompt, setSelectedPrompt] = useSelectedPrompt()
 
-  // State for citation display
-  const [currentCitations, setCurrentCitations] = useState<Citation[]>([])
-
-  // Session ID using library hook
-  const [sessionId] = useLocalStorage<string>(
-    SESSION_ID_KEY,
-    generateSessionId()
-  )
-
-  // Persistent conversation storage using library hook
-  const [savedConversation, setSavedConversation, clearSavedConversation] =
-    useLocalStorage<SavedConversation | null>(MESSAGES_KEY, null)
-
-  // Initialize messages from saved conversation
-  useEffect(() => {
-    if (savedConversation) {
-      const isValid =
-        savedConversation.timestamp &&
-        Date.now() - savedConversation.timestamp < CONVERSATION_TTL_MS
-
-      if (isValid && savedConversation.messages) {
-        setMessages(savedConversation.messages)
-      } else {
-        clearSavedConversation()
-      }
-    }
-  }, []) // Only run on mount
-
-  // Save messages when they change
-  useEffect(() => {
-    if (messages.length > 0) {
-      setSavedConversation({
-        messages,
-        timestamp: Date.now(),
-      })
-    }
-  }, [messages, setSavedConversation])
-
-  // Keyboard shortcuts using library hook
+  // Keyboard shortcuts
   useKeyboardShortcuts([
     {
       key: 'mod+.',
@@ -272,12 +196,14 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       callback: () => {
         if (showSearch) {
           setShowSearch(false)
+        } else if (showHistory) {
+          setShowHistory(false)
         } else if (isOpen) {
           setIsOpen(false)
           restoreFocus()
         }
       },
-      description: 'Close assistant or search',
+      description: 'Close assistant, history or search',
     },
     {
       key: 'mod+k',
@@ -301,13 +227,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     }
   }, [isOpen])
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      abortControllerRef.current?.abort()
-    }
-  }, [])
-
   // Switch branch wrapper
   const switchBranch = useCallback(
     (branchId: string) => {
@@ -318,6 +237,10 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     },
     [switchBranchInternal, messages, toast]
   )
+
+  const handleCreateBranch = useCallback(() => {
+    createBranch(`Chat ${branchState.branches.length + 1}`, [])
+  }, [createBranch, branchState.branches.length])
 
   // Open code in playground handler
   const handleOpenInPlayground = useCallback(
@@ -344,9 +267,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       if (result.success) {
         toast.success('Opening code in playground...')
       } else {
-        // Provide fallback with URL for manual opening
         toast.error(result.error || 'Failed to open playground')
-        // Copy URL to clipboard as fallback
         if (result.url) {
           navigator.clipboard?.writeText(result.url)
           toast.info('Playground URL copied to clipboard')
@@ -358,348 +279,19 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
   // Check if messages have playground-compatible code (memoized)
   const messagesWithPlaygroundCode = useMemo(() => {
-    const result = new Set<string>()
+    const result = new Map<string, string>() // messageId -> language
     for (const message of messages) {
       if (message.role !== 'assistant') continue
       const codeBlocks = extractCodeBlocks(message.content)
-      if (
-        codeBlocks.some((block) =>
-          isPlaygroundCompatible(block.language, block.code)
-        )
-      ) {
-        result.add(message.id)
+      const compatibleBlock = codeBlocks.find((block) =>
+        isPlaygroundCompatible(block.language, block.code)
+      )
+      if (compatibleBlock) {
+        result.set(message.id, compatibleBlock.language)
       }
     }
     return result
   }, [messages])
-
-  // Throttled message update for streaming
-  const updateStreamingMessage = useThrottledCallback(
-    (messageId: string, content: string) => {
-      setMessages((prev) =>
-        prev.map((m) => (m.id === messageId ? { ...m, content } : m))
-      )
-    },
-    STREAM_THROTTLE_MS
-  )
-
-  // Calculate exponential backoff delay for retries
-  const calculateRetryDelay = useCallback((attempt: number): number => {
-    const delay =
-      INITIAL_RETRY_DELAY_MS * Math.pow(RETRY_BACKOFF_MULTIPLIER, attempt)
-    return Math.min(delay, MAX_RETRY_DELAY_MS)
-  }, [])
-
-  // Check if an error is retryable
-  const isRetryableError = useCallback((error: Error): boolean => {
-    const errorMsg = error.message.toLowerCase()
-    return (
-      error.name === 'TypeError' ||
-      errorMsg.includes('network') ||
-      errorMsg.includes('fetch') ||
-      errorMsg.includes('429') ||
-      errorMsg.includes('500') ||
-      errorMsg.includes('502') ||
-      errorMsg.includes('503') ||
-      errorMsg.includes('504')
-    )
-  }, [])
-
-  // Internal send message handler with validation and automatic retry
-  const handleSendMessageInternal = useCallback(
-    async (content: string, currentRetry = 0) => {
-      const trimmedContent = content.trim()
-      if (!trimmedContent) {
-        toast.warning('Please enter a message')
-        return
-      }
-
-      // Only add user message on first attempt
-      if (currentRetry === 0) {
-        const userMessage: Message = {
-          id: `user-${Date.now()}`,
-          chatId: 'docs-assistant',
-          role: 'user',
-          content,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          status: 'sent',
-        }
-        setMessages((prev) => [...prev, userMessage])
-        trackMessage({ role: 'user', content })
-      }
-
-      setIsLoading(true)
-      setStreamingStatus('connecting')
-      setRetryCount(currentRetry)
-      setCurrentCitations([])
-      partialContentRef.current = ''
-      setAiStatus({
-        stage: 'researching',
-        topic:
-          currentRetry > 0
-            ? `Retrying (${currentRetry}/${MAX_RETRY_ATTEMPTS})...`
-            : 'Searching documentation',
-        startedAt: new Date(),
-      })
-
-      try {
-        abortControllerRef.current?.abort()
-        const abortController = new AbortController()
-        abortControllerRef.current = abortController
-
-        const response = await fetch('/api/docs-assistant', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: content,
-            sessionId,
-            currentPath:
-              typeof window !== 'undefined' ? window.location.pathname : '/',
-            messages: messages.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-          }),
-          signal: abortController.signal,
-        })
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`)
-        }
-
-        const reader = response.body?.getReader()
-        const decoder = new TextDecoder()
-
-        if (!reader) throw new Error('No response body')
-
-        const assistantMessage: Message = {
-          id: `assistant-${Date.now()}`,
-          chatId: 'docs-assistant',
-          role: 'assistant',
-          content: '',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          status: 'streaming',
-        }
-
-        setMessages((prev) => [...prev, assistantMessage])
-        setIsLoading(false)
-        setStreamingStatus('streaming')
-        setAiStatus({
-          stage: 'generating',
-          topic: 'Generating response',
-          startedAt: new Date(),
-        })
-
-        let accumulatedContent = ''
-        let sources: Source[] = []
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value)
-          const lines = chunk.split('\n')
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6))
-
-                if (data.type === 'text' && data.content) {
-                  accumulatedContent += data.content
-                  partialContentRef.current = accumulatedContent
-                  updateStreamingMessage(
-                    assistantMessage.id,
-                    accumulatedContent
-                  )
-                } else if (data.type === 'sources' && data.data?.sources) {
-                  sources = data.data.sources
-                  const citations: Citation[] = sources
-                    .filter((s) => s && (s.title || s.source || s.url))
-                    .map((source, index) => ({
-                      id: source.id || `citation-${index}-${Date.now()}`,
-                      source: (
-                        source.title ||
-                        source.source ||
-                        'Documentation'
-                      ).trim(),
-                      chunkText:
-                        source.chunkText ||
-                        source.title ||
-                        source.source ||
-                        'See documentation for more details',
-                      confidence:
-                        Number(source.score) || Number(source.confidence) || 0,
-                      url: normalizeSourceUrl(
-                        source.url || '',
-                        source.title || source.source || ''
-                      ),
-                    }))
-                  setCurrentCitations(citations)
-                } else if (data.type === 'error') {
-                  throw new Error(data.content || 'Stream error')
-                } else if (data.type === 'done') {
-                  const finalContent =
-                    normalizeLinksInContent(accumulatedContent)
-                  trackMessage({ role: 'assistant', content: finalContent })
-                  setMessages((prev) =>
-                    prev.map((m) =>
-                      m.id === assistantMessage.id
-                        ? {
-                            ...m,
-                            content: finalContent,
-                            status: 'sent' as const,
-                          }
-                        : m
-                    )
-                  )
-                  setAiStatus(undefined)
-                }
-              } catch (parseError) {
-                if (process.env.NODE_ENV === 'development') {
-                  console.debug('[DocsAssistant] JSON parse error:', parseError)
-                }
-              }
-            }
-          }
-        }
-
-        // Finalize any streaming message that didn't receive 'done'
-        if (accumulatedContent && accumulatedContent.length > 0) {
-          const finalContent = normalizeLinksInContent(accumulatedContent)
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantMessage.id && m.status === 'streaming'
-                ? { ...m, content: finalContent, status: 'sent' as const }
-                : m
-            )
-          )
-          trackMessage({ role: 'assistant', content: finalContent })
-        }
-
-        abortControllerRef.current = null
-        setIsLoading(false)
-        setStreamingStatus('idle')
-        setRetryCount(0)
-        setAiStatus(undefined)
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          if (partialContentRef.current) {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.status === 'streaming'
-                  ? {
-                      ...m,
-                      content:
-                        partialContentRef.current +
-                        '\n\n_(Response interrupted)_',
-                      status: 'sent' as const,
-                    }
-                  : m
-              )
-            )
-            toast.info('Response interrupted. Partial content preserved.')
-          }
-          setIsLoading(false)
-          setStreamingStatus('idle')
-          setAiStatus(undefined)
-          return
-        }
-
-        abortControllerRef.current = null
-        const err = error instanceof Error ? error : new Error('Unknown error')
-        const errorMsg = err.message
-
-        // Retry with exponential backoff
-        if (isRetryableError(err) && currentRetry < MAX_RETRY_ATTEMPTS) {
-          const retryDelay = calculateRetryDelay(currentRetry)
-          setStreamingStatus('retrying')
-          toast.warning(
-            `Connection issue. Retrying in ${Math.round(retryDelay / 1000)}s...`,
-            'Retry'
-          )
-          setTimeout(() => {
-            handleSendMessageInternal(content, currentRetry + 1)
-          }, retryDelay)
-          return
-        }
-
-        setStreamingStatus('error')
-
-        if (
-          partialContentRef.current &&
-          partialContentRef.current.length > 50
-        ) {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.status === 'streaming'
-                ? {
-                    ...m,
-                    content:
-                      partialContentRef.current +
-                      '\n\n_(Stream interrupted - click retry to continue)_',
-                    status: 'error' as const,
-                  }
-                : m
-            )
-          )
-          toast.warning(
-            'Response interrupted. Partial content preserved - use retry to continue.'
-          )
-        } else {
-          const retryInfo =
-            currentRetry > 0 ? ` (after ${currentRetry} retries)` : ''
-          toast.error(`${errorMsg}${retryInfo}`, 'Failed to get response')
-          const errorMessage: Message = {
-            id: `error-${Date.now()}`,
-            chatId: 'docs-assistant',
-            role: 'assistant',
-            content: `I encountered an error while processing your request. ${errorMsg}`,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            status: 'error',
-          }
-          setMessages((prev) => [...prev, errorMessage])
-        }
-
-        setIsLoading(false)
-        setRetryCount(0)
-        setAiStatus(undefined)
-      }
-    },
-    [
-      messages,
-      sessionId,
-      toast,
-      updateStreamingMessage,
-      trackMessage,
-      isRetryableError,
-      calculateRetryDelay,
-    ]
-  )
-
-  // Public send message handler that checks for offline status
-  const handleSendMessage = useCallback(
-    async (content: string) => {
-      const trimmedContent = content.trim()
-      if (!trimmedContent) {
-        toast.warning('Please enter a message')
-        return
-      }
-
-      if (!isOnline) {
-        const queued = queueMessage(trimmedContent)
-        const pendingMessage = createPendingMessage(queued)
-        setMessages((prev) => [...prev, pendingMessage])
-        return
-      }
-
-      await handleSendMessageInternal(trimmedContent, 0)
-    },
-    [isOnline, queueMessage, handleSendMessageInternal, toast]
-  )
 
   // Message copy handler
   const handleMessageCopy = useCallback(
@@ -707,22 +299,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       await copy(content)
     },
     [copy]
-  )
-
-  // Message retry handler
-  const handleMessageRetry = useCallback(
-    (messageId: string) => {
-      const messageIndex = messages.findIndex((m) => m.id === messageId)
-      if (messageIndex > 0) {
-        const previousMessage = messages[messageIndex - 1]
-        if (previousMessage.role === 'user') {
-          setMessages((prev) => prev.filter((m) => m.id !== messageId))
-          handleSendMessage(previousMessage.content)
-          toast.info('Retrying message...')
-        }
-      }
-    },
-    [messages, toast, handleSendMessage]
   )
 
   // Voice input handler
@@ -733,35 +309,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       }
     },
     [handleSendMessage]
-  )
-
-  // Export handler
-  const handleExportWithFormat = useCallback(
-    async (options: {
-      format: string
-      includeMetadata?: boolean
-      includeImages?: boolean
-    }) => {
-      try {
-        const exportResult = generateExportContent(messages, sessionId, {
-          ...options,
-          format: options.format as 'json' | 'html' | 'markdown',
-        })
-        const downloadResult = downloadExport(exportResult)
-        if (downloadResult.success) {
-          toast.success(
-            `Conversation exported as ${exportResult.extension.toUpperCase()}`
-          )
-        } else {
-          throw new Error(downloadResult.error || 'Download failed')
-        }
-      } catch (error) {
-        console.error('Failed to export conversation:', error)
-        toast.error('Failed to export conversation')
-        throw error
-      }
-    },
-    [messages, sessionId, toast]
   )
 
   const handleOpenExportDialog = useCallback(() => {
@@ -776,48 +323,14 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     [handleSendMessage]
   )
 
-  // Feedback handler
-  const handleFeedback = useCallback(
-    async (messageId: string, type: 'up' | 'down') => {
-      try {
-        const response = await fetch('/api/feedback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messageId,
-            feedbackType: type,
-            sessionId,
-            timestamp: new Date().toISOString(),
-          }),
-        })
-
-        if (!response.ok) {
-          throw new Error(`Feedback submission failed: ${response.status}`)
-        }
-
-        toast.success(
-          type === 'up'
-            ? 'Thanks for your feedback!'
-            : "Feedback received. We'll work on improving."
-        )
-      } catch (error) {
-        console.error('Failed to submit feedback:', error)
-        toast.error('Failed to submit feedback. Please try again.')
-      }
+  const handleSelectFollowUp = useCallback(
+    (text: string) => {
+      handleSendMessage(text)
     },
-    [sessionId, toast]
+    [handleSendMessage]
   )
 
-  const handleClear = useCallback(() => {
-    setMessages([])
-    clearSavedConversation()
-    clearTokens()
-    setCurrentCitations([])
-    setShowSearch(false)
-    toast.info('Conversation cleared')
-  }, [clearSavedConversation, clearTokens, toast])
-
-  // Animation variants - respect reduced motion preference
+  // Animation variants
   const dialogVariants = useMemo(
     () =>
       prefersReducedMotion ? DIALOG_VARIANTS_REDUCED : DIALOG_VARIANTS_NORMAL,
@@ -879,6 +392,16 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               Chat with the Clarity Chat documentation assistant.
             </span>
 
+            {/* History Sidebar */}
+            <HistorySidebar
+              isOpen={showHistory}
+              onClose={() => setShowHistory(false)}
+              branches={branchState.branches}
+              currentBranchId={branchState.currentBranchId}
+              onSwitchBranch={switchBranch}
+              onCreateBranch={handleCreateBranch}
+            />
+
             {/* Network Status Indicator */}
             <NetworkStatus
               className="absolute top-2 right-12 z-10"
@@ -909,49 +432,20 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               />
             </div>
 
-            {/* Branch Selector */}
-            {hasBranches && (
-              <div className="absolute top-2 left-4 z-10 flex items-center gap-2">
-                <svg
-                  className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                {branchState.branches.length > 1 ? (
-                  <>
-                    <label htmlFor="branch-selector" className="sr-only">
-                      Select conversation branch
-                    </label>
-                    <select
-                      id="branch-selector"
-                      value={branchState.currentBranchId}
-                      onChange={(e) => switchBranch(e.target.value)}
-                      className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                      aria-label="Switch conversation branch"
-                    >
-                      {branchState.branches.map((branch) => (
-                        <option key={branch.id} value={branch.id}>
-                          {branch.name}
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                ) : (
-                  <span className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md">
-                    {currentBranch.name}
-                  </span>
+            {/* Branch Selector Toggle */}
+            <div className="absolute top-2 left-4 z-10">
+              <button
+                onClick={() => setShowHistory((prev) => !prev)}
+                className={cn(
+                  'flex items-center gap-2 px-2 py-1 text-xs font-medium rounded-md transition-colors',
+                  'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
                 )}
-              </div>
-            )}
+                aria-label="Toggle chat history"
+              >
+                <History className="w-3.5 h-3.5" />
+                {currentBranch.name}
+              </button>
+            </div>
 
             {/* Search Toggle Button */}
             {messages.length > 0 && (
@@ -976,7 +470,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: durations.fast, ease: 'easeOut' }}
+                  transition={{ duration: durations.normal, ease: 'easeOut' }}
                   className="absolute top-14 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm rounded-lg border border-border/40 shadow-lg overflow-hidden"
                 >
                   <div className="p-3">
@@ -991,13 +485,15 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             </AnimatePresence>
 
             {/* Token Counter */}
-            {totalTokens > 0 && (
-              <div className="absolute top-2 left-4 z-10 max-w-[200px]">
+            {tokenTracker.tokens > 0 && (
+              <div className="absolute top-2 left-4 z-10 max-w-[200px] mt-8 lg:mt-0 lg:left-32">
                 <TokenCounter
-                  currentTokens={totalTokens}
+                  currentTokens={tokenTracker.tokens}
                   maxTokens={MODEL_MAX_TOKENS}
                   costPerToken={TOKEN_COST_PER_TOKEN}
-                  showWarning={isNearLimit || isCritical}
+                  showWarning={
+                    tokenTracker.isNearLimit || tokenTracker.isCritical
+                  }
                   warningThreshold={TOKEN_WARNING_THRESHOLD}
                   criticalThreshold={TOKEN_CRITICAL_THRESHOLD}
                   showCost
@@ -1051,21 +547,17 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                       title="Open code in playground"
                       aria-label="Open code in CodeSandbox playground"
                     >
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                        />
-                      </svg>
-                      Try Code
+                      <Terminal className="w-3.5 h-3.5" />
+                      Try{' '}
+                      {messagesWithPlaygroundCode.get(
+                        [...messages]
+                          .reverse()
+                          .find(
+                            (m) =>
+                              m.role === 'assistant' &&
+                              messagesWithPlaygroundCode.has(m.id)
+                          )?.id || ''
+                      ) || 'Code'}
                     </button>
                   )}
                 </div>
@@ -1078,7 +570,17 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 />
               }
               className="h-full flex flex-col"
-            />
+            >
+              {/* Follow-up Suggestions at bottom of chat */}
+              {suggestedFollowUps.length > 0 && !isLoading && (
+                <div className="px-4 pb-4">
+                  <FollowUpSuggestions
+                    suggestions={suggestedFollowUps}
+                    onSelect={handleSelectFollowUp}
+                  />
+                </div>
+              )}
+            </ChatWindow>
 
             {/* Citations Panel */}
             <AnimatePresence>
