@@ -25,6 +25,7 @@
 
 // Chat UI - Drop-in components
 export { ClarityChat } from './components/clarity-chat'
+export type { ClarityChatProps } from './components/clarity-chat'
 export { ClarityChatPresets } from './components/clarity-chat-presets'
 
 // Chat Recipes - Pre-built combinations for common patterns
