@@ -90,6 +90,19 @@ Key attributes:
 Each message needs proper attribution:
 
 ```tsx
+// Define message type
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+}
+
+// Helper to format time
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
 function ChatMessage({ message }: { message: Message }) {
   const sender = message.role === 'user' ? 'You' : 'AI Assistant'
   const time = formatTime(message.timestamp)

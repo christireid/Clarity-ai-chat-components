@@ -125,7 +125,64 @@ function useRealisticTyping(config: {
 Then use it in your chat component:
 
 ```tsx
+import { useState } from 'react'
+
+// Define your message type
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+}
+
+// Simple components (or import from your component library)
+function PulsingDots() {
+  return (
+    <span className="flex gap-1">
+      {[0, 1, 2].map(i => (
+        <span
+          key={i}
+          className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+          style={{ animationDelay: `${i * 150}ms` }}
+        />
+      ))}
+    </span>
+  )
+}
+
+function MessageList({ messages }: { messages: Message[] }) {
+  return (
+    <div className="flex flex-col gap-4">
+      {messages.map(msg => (
+        <div key={msg.id} className={msg.role === 'user' ? 'text-right' : 'text-left'}>
+          {msg.content}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ChatInput({ onSend }: { onSend: (message: string) => void }) {
+  const [input, setInput] = useState('')
+  return (
+    <form onSubmit={e => { e.preventDefault(); onSend(input); setInput('') }}>
+      <input value={input} onChange={e => setInput(e.target.value)} />
+      <button type="submit">Send</button>
+    </form>
+  )
+}
+
 function ChatInterface() {
+  const [messages, setMessages] = useState<Message[]>([])
+
+  // Helper to display the AI response
+  const displayResponse = (response: { message: string }) => {
+    setMessages(prev => [...prev, {
+      id: crypto.randomUUID(),
+      role: 'assistant',
+      content: response.message
+    }])
+  }
+
   const { isTyping, currentStage, startTyping, stopTyping } = useRealisticTyping({
     minDelay: 800,
     maxDelay: 2500,
@@ -183,6 +240,10 @@ The key elements:
 A proper thinking indicator isn't just three bouncing dots. The best ones communicate *effort*:
 
 ```tsx
+// Import from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import { Sparkles as SparklesIcon } from 'lucide-react'
+
 function ThinkingIndicator({ stage, progress }: {
   stage: string
   progress?: number

@@ -116,6 +116,10 @@ The psychology is powerful: "Connecting" → "Processing" → "Generating" feels
 Here's how to build a loading system that actually communicates:
 
 ```tsx
+// Import icons from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import { Wifi as WifiIcon, Cpu as CpuIcon, Pencil as PencilIcon } from 'lucide-react'
+
 type LoadingPhase = 'idle' | 'connecting' | 'processing' | 'generating' | 'complete'
 
 interface LoadingStateProps {
@@ -182,21 +186,61 @@ function LoadingState({ phase, tokens, estimatedTokens, onCancel }: LoadingState
 Now use it in your chat component:
 
 ```tsx
+import { useState, useRef } from 'react'
+
+// Simple token estimation: ~4 characters per token on average
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4)
+}
+
+// Simple message list component
+function MessageList({ messages }: { messages: string[] }) {
+  return (
+    <div className="flex flex-col gap-2">
+      {messages.map((msg, i) => <div key={i}>{msg}</div>)}
+    </div>
+  )
+}
+
+// Simple chat input component
+function ChatInput({ onSend }: { onSend: (content: string) => void }) {
+  const [input, setInput] = useState('')
+  return (
+    <form onSubmit={e => { e.preventDefault(); onSend(input); setInput('') }}>
+      <input value={input} onChange={e => setInput(e.target.value)} />
+      <button type="submit">Send</button>
+    </form>
+  )
+}
+
 function Chat() {
   const [phase, setPhase] = useState<LoadingPhase>('idle')
   const [tokens, setTokens] = useState(0)
+  const [messages, setMessages] = useState<string[]>([])
+  const [currentMessage, setCurrentMessage] = useState('')
+  const abortControllerRef = useRef<AbortController | null>(null)
+
+  // Helper to append text to the current streaming message
+  const appendToMessage = (chunk: string) => {
+    setCurrentMessage(prev => prev + chunk)
+  }
 
   const sendMessage = async (content: string) => {
     setPhase('connecting')
+    setCurrentMessage('')
+    abortControllerRef.current = new AbortController()
 
     const response = await fetch('/api/chat', {
       method: 'POST',
       body: JSON.stringify({ message: content }),
+      signal: abortControllerRef.current.signal,
     })
 
     setPhase('processing')
 
     const reader = response.body?.getReader()
+    if (!reader) return
+
     setPhase('generating')
 
     while (true) {
@@ -208,17 +252,19 @@ function Chat() {
       appendToMessage(chunk)
     }
 
+    // Finalize the message
+    setMessages(prev => [...prev, currentMessage])
     setPhase('complete')
   }
 
   return (
     <div>
-      <MessageList />
+      <MessageList messages={messages} />
       <LoadingState
         phase={phase}
         tokens={tokens}
         estimatedTokens={500}
-        onCancel={() => abortController.abort()}
+        onCancel={() => abortControllerRef.current?.abort()}
       />
       <ChatInput onSend={sendMessage} />
     </div>

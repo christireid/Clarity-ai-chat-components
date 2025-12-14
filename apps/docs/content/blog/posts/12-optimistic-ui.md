@@ -300,6 +300,10 @@ function OptimisticChat() {
 The UI needs to communicate status without being noisy:
 
 ```tsx
+// Import icons from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import { Clock as ClockIcon, Check as CheckIcon, XCircle as XCircleIcon } from 'lucide-react'
+
 // Utility for conditional class names
 function cn(...classes: (string | boolean | undefined)[]): string {
   return classes.filter(Boolean).join(' ')
@@ -386,6 +390,17 @@ const sortedMessages = useMemo(() => {
 What if a retry creates a duplicate message on the server?
 
 ```tsx
+// Simple hash function for creating unique keys
+function simpleHash(str: string): string {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(36)
+}
+
 // Use idempotency keys
 function generateIdempotencyKey(userId: string, content: string): string {
   const hash = simpleHash(content)

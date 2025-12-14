@@ -170,6 +170,21 @@ const tools = [
 A single function call is useful. The real power comes from the agent loop—multiple rounds of function calls to complete complex tasks:
 
 ```typescript
+import OpenAI from 'openai'
+
+// Initialize client
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+// Tool type definition
+interface Tool {
+  type: 'function'
+  function: {
+    name: string
+    description: string
+    parameters: Record<string, unknown>
+  }
+}
+
 interface Message {
   role: 'user' | 'assistant' | 'tool'
   content: string
@@ -489,6 +504,54 @@ The AI will see the error and can inform the user or try an alternative approach
 Transparency builds trust. Show users what the agent is doing:
 
 ```tsx
+import { useState } from 'react'
+// Import icons from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import {
+  Search as SearchIcon,
+  ShoppingCart as ShoppingCartIcon,
+  Package as PackageIcon,
+  Wrench as WrenchIcon,
+  Loader2
+} from 'lucide-react'
+
+// Spinner component
+function Spinner({ className }: { className?: string }) {
+  return <Loader2 className={`animate-spin ${className || ''}`} />
+}
+
+// Message type for chat
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+}
+
+// Message bubble component
+function MessageBubble({ message }: { message: Message }) {
+  return (
+    <div className={`p-3 rounded-lg ${message.role === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'} max-w-[80%]`}>
+      {message.content}
+    </div>
+  )
+}
+
+// Chat input component
+function ChatInput({ onSend }: { onSend: (content: string) => void }) {
+  const [input, setInput] = useState('')
+  return (
+    <form onSubmit={e => { e.preventDefault(); onSend(input); setInput('') }} className="flex gap-2 p-4">
+      <input
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        className="flex-1 p-2 border rounded"
+        placeholder="Type a message..."
+      />
+      <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Send</button>
+    </form>
+  )
+}
+
 interface ToolCallDisplay {
   id: string
   name: string

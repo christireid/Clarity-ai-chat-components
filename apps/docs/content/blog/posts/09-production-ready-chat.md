@@ -118,6 +118,27 @@ function useMessages() {
 Real streaming implementation with proper error handling:
 
 ```tsx
+import { useState, useRef, useCallback } from 'react'
+
+// Parse Server-Sent Events chunk format
+function parseSSEChunk(chunk: string): string {
+  const lines = chunk.split('\n')
+  let result = ''
+  for (const line of lines) {
+    if (line.startsWith('data: ')) {
+      const data = line.slice(6)
+      if (data === '[DONE]') continue
+      try {
+        const parsed = JSON.parse(data)
+        result += parsed.choices?.[0]?.delta?.content || ''
+      } catch {
+        result += data
+      }
+    }
+  }
+  return result
+}
+
 function useStreamingChat() {
   const { messages, addMessage, updateMessage } = useMessages()
   const [status, setStatus] = useState<'idle' | 'streaming' | 'error'>('idle')
@@ -215,6 +236,11 @@ function useStreamingChat() {
 Screen readers and keyboard navigation:
 
 ```tsx
+import { useState, useEffect, useRef } from 'react'
+// Import icons from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import { Check as CheckIcon, X as XIcon, Send as SendIcon, Loader2 } from 'lucide-react'
+
 // Utility for conditional class names
 function cn(...classes: (string | boolean | undefined)[]): string {
   return classes.filter(Boolean).join(' ')
@@ -222,6 +248,27 @@ function cn(...classes: (string | boolean | undefined)[]): string {
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+// Loading dots component
+function LoadingDots() {
+  return (
+    <span className="flex gap-1">
+      {[0, 1, 2].map(i => (
+        <span
+          key={i}
+          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+          style={{ animationDelay: `${i * 150}ms` }}
+        />
+      ))}
+    </span>
+  )
+}
+
+// Spinner component
+function Spinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+  const sizeClasses = { sm: 'w-3 h-3', md: 'w-5 h-5', lg: 'w-8 h-8' }
+  return <Loader2 className={`${sizeClasses[size]} animate-spin`} />
 }
 
 function MessageList({ messages, onRetry }: {

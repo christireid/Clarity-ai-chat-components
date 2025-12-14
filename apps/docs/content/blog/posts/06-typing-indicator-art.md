@@ -84,6 +84,11 @@ Same 6-second wait, very different perception. Each stage change signals progres
 Here's how to implement it:
 
 ```tsx
+import { useState, useCallback, useRef } from 'react'
+// Import icons from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import { Eye as EyeIcon, Sparkles as SparklesIcon, Pencil as PencilIcon } from 'lucide-react'
+
 type Stage = {
   id: string
   label: string
@@ -246,9 +251,36 @@ For these users, a static indicator with text ("Thinking...") works fine.
 The handoff from typing indicator to actual content should be seamless. No jarring pop, no flash, no jump.
 
 ```tsx
+import { useState, useEffect } from 'react'
+
 // Utility for conditional class names
 function cn(...classes: (string | boolean | undefined)[]): string {
   return classes.filter(Boolean).join(' ')
+}
+
+// Simple ThinkingIndicator for when no stage prop is provided
+function ThinkingIndicator({ stage }: { stage?: Stage | null } = {}) {
+  return (
+    <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+      <div className="flex gap-1">
+        {[0, 1, 2].map(i => (
+          <span
+            key={i}
+            className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"
+            style={{ animationDelay: `${i * 0.2}s` }}
+          />
+        ))}
+      </div>
+      {stage && <span className="text-sm text-gray-600">{stage.label}</span>}
+    </div>
+  )
+}
+
+// Blinking cursor component - defined before use
+function BlinkingCursor() {
+  return (
+    <span className="inline-block w-2 h-4 ml-0.5 bg-current animate-blink" />
+  )
 }
 
 function StreamingMessage({
@@ -290,12 +322,6 @@ function StreamingMessage({
         </div>
       </div>
     </div>
-  )
-}
-
-function BlinkingCursor() {
-  return (
-    <span className="inline-block w-2 h-4 ml-0.5 bg-current animate-blink" />
   )
 }
 ```

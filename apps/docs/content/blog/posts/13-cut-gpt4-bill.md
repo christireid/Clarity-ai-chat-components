@@ -45,6 +45,22 @@ The insight: not every message needs GPT-4. Simple questions, greetings, and con
 Here's the routing logic we implemented:
 
 ```typescript
+import OpenAI from 'openai'
+
+// Initialize the OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+// System prompt for your application
+const systemPrompt = `You are a helpful customer support assistant.
+Be concise and professional. Reference documentation when available.`
+
+interface Message {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
 interface ModelConfig {
   model: string
   maxTokens: number
@@ -331,6 +347,21 @@ Many queries are repeated. "What are your business hours?" gets asked 500 times 
 
 ```typescript
 import { createHash } from 'crypto'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+// Wrapper function for OpenAI chat completions
+async function callOpenAI(message: string, systemPrompt: string): Promise<string> {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: message },
+    ],
+  })
+  return response.choices[0].message.content || ''
+}
 
 interface CacheEntry {
   response: string

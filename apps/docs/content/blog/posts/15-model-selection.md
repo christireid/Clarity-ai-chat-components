@@ -137,6 +137,91 @@ Each model has distinct strengths. Use them strategically:
 Here's a complete implementation:
 
 ```typescript
+import OpenAI from 'openai'
+import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+
+// Initialize clients
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '')
+
+// Types
+interface Message {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
+interface Document {
+  content: string
+  tokenCount: number
+}
+
+interface ProviderResult {
+  response: string
+  inputTokens: number
+  outputTokens: number
+}
+
+// Provider wrapper functions
+async function callOpenAI(
+  message: string,
+  history: Message[],
+  config: ModelConfig
+): Promise<ProviderResult> {
+  const response = await openai.chat.completions.create({
+    model: config.model,
+    max_tokens: config.maxTokens,
+    messages: [...history, { role: 'user', content: message }],
+  })
+  return {
+    response: response.choices[0].message.content || '',
+    inputTokens: response.usage?.prompt_tokens || 0,
+    outputTokens: response.usage?.completion_tokens || 0,
+  }
+}
+
+async function callAnthropic(
+  message: string,
+  history: Message[],
+  config: ModelConfig
+): Promise<ProviderResult> {
+  const response = await anthropic.messages.create({
+    model: config.model,
+    max_tokens: config.maxTokens,
+    messages: history.filter(m => m.role !== 'system').map(m => ({
+      role: m.role as 'user' | 'assistant',
+      content: m.content,
+    })).concat([{ role: 'user', content: message }]),
+  })
+  return {
+    response: response.content[0].type === 'text' ? response.content[0].text : '',
+    inputTokens: response.usage.input_tokens,
+    outputTokens: response.usage.output_tokens,
+  }
+}
+
+async function callGemini(
+  message: string,
+  history: Message[],
+  config: ModelConfig
+): Promise<ProviderResult> {
+  const model = genAI.getGenerativeModel({ model: config.model })
+  const chat = model.startChat({
+    history: history.filter(m => m.role !== 'system').map(m => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.content }],
+    })),
+  })
+  const result = await chat.sendMessage(message)
+  const response = result.response
+  return {
+    response: response.text(),
+    inputTokens: 0, // Gemini usage metrics require additional API calls
+    outputTokens: 0,
+  }
+}
+
 type ModelTier = 'simple' | 'standard' | 'reasoning' | 'longContext'
 
 interface ModelConfig {
@@ -385,6 +470,31 @@ function routeWithOverrides(
 What if your primary model is rate-limited or down?
 
 ```typescript
+// Error classification helpers
+function isRateLimitError(error: unknown): boolean {
+  if (error instanceof Error) {
+    return error.message.includes('429') || error.message.includes('rate limit')
+  }
+  return false
+}
+
+function isServerError(error: unknown): boolean {
+  if (error instanceof Error) {
+    return error.message.includes('500') ||
+           error.message.includes('502') ||
+           error.message.includes('503') ||
+           error.message.includes('504')
+  }
+  return false
+}
+
+interface RouteResult {
+  response: string
+  model: string
+  cost: number
+  tier: ModelTier
+}
+
 const FALLBACK_CHAINS: Record<ModelTier, ModelTier[]> = {
   simple: ['simple', 'standard'], // Mini → 4o
   standard: ['standard', 'reasoning', 'simple'], // 4o → Sonnet → Mini

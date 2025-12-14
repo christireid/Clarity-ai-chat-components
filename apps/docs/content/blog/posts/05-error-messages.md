@@ -85,6 +85,16 @@ The worst fear is losing work. Reassure them immediately if their data is safe.
 Here's what a good error message looks like:
 
 ```tsx
+// Import icons from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import { AlertCircle as AlertCircleIcon } from 'lucide-react'
+
+// Error type definition
+interface ChatError {
+  type: 'rateLimit' | 'network' | 'server' | 'timeout' | 'auth'
+  message?: string
+}
+
 function ErrorBanner({ error }: { error: ChatError }) {
   const errorContent = {
     rateLimit: {
@@ -264,9 +274,23 @@ function useSafeMessageSend() {
 Failed messages stay visible with a retry button:
 
 ```tsx
+import { Check as CheckIcon } from 'lucide-react'
+
 // Utility for conditional class names
 function cn(...classes: (string | boolean | undefined)[]): string {
   return classes.filter(Boolean).join(' ')
+}
+
+// Hook for chat actions - this would be defined elsewhere in your app
+// or provided by a chat library like Clarity Chat
+function useChatActions() {
+  const retrySend = async (messageId: string) => {
+    // Re-fetch the message from state and re-send
+    console.log('Retrying message:', messageId)
+    // Implementation: get message content, call sendMessage again
+  }
+
+  return { retrySend }
 }
 
 function MessageWithStatus({ message }: { message: Message }) {

@@ -24,6 +24,11 @@ The memory your users expect doesn't exist. You have to build it.
 Each API call is completely independent:
 
 ```typescript
+import OpenAI from 'openai'
+
+// Initialize client
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
 // Call 1
 await openai.chat.completions.create({
   messages: [{ role: "user", content: "My name is Sarah" }]
@@ -87,6 +92,57 @@ async function sendMessage(content: string) {
 Persistent information about the user that survives across sessions.
 
 ```typescript
+// Database abstraction - implement with your preferred database
+// (Prisma, Drizzle, MongoDB, etc.)
+interface Database {
+  userFacts: {
+    get: (userId: string) => Promise<UserFact[]>
+    upsert: (data: { userId: string; facts: Partial<UserFact>[] }) => Promise<void>
+    insert: (fact: UserFact) => Promise<void>
+    delete: (factId: string) => Promise<void>
+    deleteAll: (userId: string) => Promise<void>
+  }
+  userPatterns: {
+    get: (userId: string) => Promise<UserPattern[]>
+    findOne: (query: { userId: string; behavior: string }) => Promise<UserPattern | null>
+    insert: (pattern: UserPattern) => Promise<void>
+    update: (pattern: Partial<UserPattern> & { userId: string; behavior: string }) => Promise<void>
+  }
+  exportUserData: (userId: string) => Promise<Record<string, unknown>>
+}
+
+// Example implementation using a simple in-memory store (use a real DB in production)
+const db: Database = {
+  userFacts: {
+    get: async (userId) => { /* query your database */ return [] },
+    upsert: async (data) => { /* upsert to your database */ },
+    insert: async (fact) => { /* insert into your database */ },
+    delete: async (factId) => { /* delete from your database */ },
+    deleteAll: async (userId) => { /* delete all user facts */ },
+  },
+  userPatterns: {
+    get: async (userId) => { /* query your database */ return [] },
+    findOne: async (query) => { /* find one pattern */ return null },
+    insert: async (pattern) => { /* insert pattern */ },
+    update: async (pattern) => { /* update pattern */ },
+  },
+  exportUserData: async (userId) => ({ /* export all user data */ }),
+}
+
+// Vector store abstraction for semantic search
+interface VectorStore {
+  upsert: (data: { id: string; embedding: number[]; metadata: Record<string, unknown> }) => Promise<void>
+  query: (params: { embedding: number[]; filter?: Record<string, unknown>; topK: number }) => Promise<Array<{ metadata: Record<string, unknown> }>>
+  deleteByUser: (userId: string) => Promise<void>
+}
+
+// Example: Use Pinecone, Weaviate, Qdrant, or pgvector
+const vectorStore: VectorStore = {
+  upsert: async (data) => { /* upsert to vector store */ },
+  query: async (params) => { /* query vector store */ return [] },
+  deleteByUser: async (userId) => { /* delete user vectors */ },
+}
+
 interface UserFact {
   id: string
   key: string
@@ -455,6 +511,27 @@ async function storeFact(fact: UserFact, config: MemoryConfig): Promise<boolean>
 Transparency builds trust:
 
 ```tsx
+import { useState, useEffect } from 'react'
+import { Loader2 } from 'lucide-react'
+
+// Spinner component
+function Spinner() {
+  return <Loader2 className="w-6 h-6 animate-spin" />
+}
+
+// Helper to download JSON data
+function downloadJson(data: unknown, filename: string) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 function MemoryInspector({ userId }: { userId: string }) {
   const [facts, setFacts] = useState<UserFact[]>([])
   const [loading, setLoading] = useState(true)
