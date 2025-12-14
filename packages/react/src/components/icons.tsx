@@ -328,6 +328,27 @@ export const PlayIcon: React.FC<IconProps> = (props) => (
   </svg>
 )
 
+export const StopIcon: React.FC<IconProps> = (props) => (
+  <svg {...getIconProps(props)} viewBox="0 0 24 24">
+    <rect
+      x="6"
+      y="6"
+      width="12"
+      height="12"
+      rx="2"
+      ry="2"
+      fill="currentColor"
+    />
+  </svg>
+)
+
+export const PauseIcon: React.FC<IconProps> = (props) => (
+  <svg {...getIconProps(props)} viewBox="0 0 24 24">
+    <rect x="6" y="4" width="4" height="16" rx="1" />
+    <rect x="14" y="4" width="4" height="16" rx="1" />
+  </svg>
+)
+
 export const CodeIcon: React.FC<IconProps> = (props) => (
   <svg {...getIconProps(props)} viewBox="0 0 24 24">
     <polyline points="16 18 22 12 16 6" />

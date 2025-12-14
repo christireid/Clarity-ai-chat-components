@@ -9,6 +9,7 @@ import {
   Badge,
   cn,
   formatRelativeTime,
+  useA11y,
 } from '@clarity-chat/primitives'
 import {
   ANIMATION_DURATION,
@@ -23,6 +24,7 @@ import {
   MarkdownCodeBlock,
   MessageActions,
   MessageMetadata,
+  EditableMessageContent,
 } from './message/index'
 import { ErrorMessage, type ErrorDetails } from './error-message'
 import { CopyButton } from './copy-button'
@@ -30,11 +32,19 @@ import { CopyButton } from './copy-button'
 export interface MessageProps {
   message: MessageType
   onCopy?: (content: string) => void
-  onFeedback?: (type: 'up' | 'down') => void
+  onFeedback?: (type: 'up' | 'down', comment?: string) => void
   onRetry?: () => void
   onEdit?: (messageId: string) => void
   onRegenerate?: (messageId: string) => void
   onDelete?: (messageId: string) => void
+  /** Callback to stop AI generation (shown during streaming) */
+  onStopGeneration?: () => void
+  /** Whether this message is currently being edited */
+  isEditing?: boolean
+  /** Callback when edit is saved - receives message ID and new content */
+  onSaveEdit?: (messageId: string, newContent: string) => void
+  /** Callback when edit is cancelled */
+  onCancelEdit?: (messageId: string) => void
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
@@ -126,6 +136,10 @@ export function Message({
   onEdit,
   onRegenerate,
   onDelete,
+  onStopGeneration,
+  isEditing = false,
+  onSaveEdit,
+  onCancelEdit,
   showAvatar = true,
   showTimestamp = true,
   className,
@@ -140,6 +154,7 @@ export function Message({
   const [feedbackGiven, setFeedbackGiven] = React.useState<
     'up' | 'down' | null
   >(message.feedback?.type || null)
+  const [wasEditing, setWasEditing] = React.useState(false)
 
   const isUser = message.role === 'user'
   const isAssistant = message.role === 'assistant'
@@ -147,10 +162,35 @@ export function Message({
 
   const [showConfetti, setShowConfetti] = React.useState(false)
 
+  // Accessibility announcements
+  const { announce } = useA11y()
+
+  // Ref for returning focus after edit
+  const editButtonRef = React.useRef<HTMLButtonElement>(null)
+
+  // Announce edit mode changes for screen readers
+  React.useEffect(() => {
+    if (isEditing && !wasEditing) {
+      announce(
+        'Editing message. Press Escape to cancel or use the save button.',
+        {
+          assertive: true,
+        }
+      )
+    } else if (!isEditing && wasEditing) {
+      announce('Edit mode closed', { assertive: false })
+      // Return focus to the edit button after save/cancel
+      setTimeout(() => {
+        editButtonRef.current?.focus()
+      }, 100)
+    }
+    setWasEditing(isEditing)
+  }, [isEditing, wasEditing, announce])
+
   // React 19: Compiler optimizes this - no useCallback needed
-  const handleFeedback = (type: 'up' | 'down') => {
+  const handleFeedback = (type: 'up' | 'down', comment?: string) => {
     setFeedbackGiven(type)
-    onFeedback?.(type)
+    onFeedback?.(type, comment)
 
     // Hooked principle: Variable reward
     if (type === 'up') {
@@ -159,6 +199,19 @@ export function Message({
       setTimeout(() => setShowConfetti(false), 1000)
     }
   }
+
+  // Handle saving edits
+  const handleSaveEdit = React.useCallback(
+    (newContent: string) => {
+      onSaveEdit?.(message.id, newContent)
+    },
+    [message.id, onSaveEdit]
+  )
+
+  // Handle canceling edits
+  const handleCancelEdit = React.useCallback(() => {
+    onCancelEdit?.(message.id)
+  }, [message.id, onCancelEdit])
 
   // Memoize markdown components to avoid recreation on every render.
   // react-markdown's `components` prop accepts Partial<Components>, allowing us to
@@ -204,7 +257,15 @@ export function Message({
         return (
           <div className="relative group/code my-4">
             <pre
-              className="relative overflow-x-auto bg-muted/50 border border-border rounded-lg p-4"
+              className={cn(
+                'relative overflow-x-auto p-4',
+                'bg-gradient-to-br from-muted/60 to-muted/40',
+                'border border-border/50',
+                'rounded-xl',
+                'shadow-sm',
+                'transition-shadow duration-200',
+                'group-hover/code:shadow-md'
+              )}
               {...props}
             >
               {children}
@@ -212,7 +273,7 @@ export function Message({
             {codeString && (
               <CopyButton
                 text={codeString}
-                className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
+                className="absolute top-2.5 right-2.5 opacity-0 group-hover/code:opacity-100 transition-all duration-200 translate-y-1 group-hover/code:translate-y-0"
               />
             )}
           </div>
@@ -341,11 +402,11 @@ export function Message({
       }}
       tabIndex={0}
       className={cn(
-        'group flex gap-3 rounded-xl transition-all duration-200 ease-out',
+        'group flex gap-3.5 rounded-2xl transition-all duration-200 ease-out',
         // Reduced padding for grouped messages
         isGrouped && !isGroupStart && !isGroupEnd ? 'px-4 py-1.5' : 'p-4',
         isUser && 'flex-row-reverse',
-        isHovered && 'bg-muted/40',
+        isHovered && 'bg-muted/30 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)]',
         className
       )}
     >
@@ -424,13 +485,28 @@ export function Message({
             // Apply streaming-specific optimizations
             !isUser && isStreaming && 'clarity-streaming-markdown',
             isUser &&
-              'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30'
+              !isEditing && [
+                'px-4 py-3 rounded-2xl inline-block',
+                'bg-gradient-to-br from-primary via-primary to-primary/90',
+                'text-primary-foreground',
+                'shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.35)]',
+                'ring-1 ring-primary/20',
+              ]
           )}
         >
           {isUser ? (
-            <p className="m-0 whitespace-pre-wrap text-primary-foreground">
-              {message.content}
-            </p>
+            isEditing ? (
+              <EditableMessageContent
+                content={message.content}
+                isEditing={isEditing}
+                onSave={handleSaveEdit}
+                onCancel={handleCancelEdit}
+              />
+            ) : (
+              <p className="m-0 whitespace-pre-wrap text-primary-foreground">
+                {message.content}
+              </p>
+            )
           ) : (
             <div className={cn(isStreaming && 'clarity-streaming-text')}>
               <ReactMarkdown
@@ -472,8 +548,8 @@ export function Message({
           </div>
         )}
 
-        {/* Actions - Show for both user and assistant messages */}
-        {(isUser || isAssistant) && (
+        {/* Actions - Show for both user and assistant messages (hide when editing) */}
+        {(isUser || isAssistant) && !isEditing && (
           <MessageActions
             messageContent={message.content}
             messageId={message.id}
@@ -481,12 +557,15 @@ export function Message({
             feedbackGiven={feedbackGiven}
             showConfetti={showConfetti}
             hasError={message.status === 'error'}
+            isStreaming={isStreaming}
             onFeedback={handleFeedback}
             onRetry={onRetry}
             onEdit={onEdit}
             onRegenerate={onRegenerate}
             onDelete={onDelete}
-            show={isHovered || isFocusWithin || !!feedbackGiven}
+            onStopGeneration={onStopGeneration}
+            show={isHovered || isFocusWithin || !!feedbackGiven || isStreaming}
+            editButtonRef={editButtonRef}
           />
         )}
 
