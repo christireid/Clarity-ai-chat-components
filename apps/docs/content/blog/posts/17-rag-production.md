@@ -44,6 +44,33 @@ That demo query "What is our refund policy?" worked perfectly because you hand-c
 
 ---
 
+## RAG Architecture Overview
+
+```mermaid
+flowchart TB
+    subgraph Ingestion
+        D[Documents] --> C[Chunking]
+        C --> E[Embedding]
+        E --> V[(Vector Store)]
+    end
+
+    subgraph Query
+        Q[User Query] --> QE[Query Embedding]
+        QE --> VS[Vector Search]
+        V --> VS
+        VS --> RR[Reranking]
+        RR --> CTX[Context Assembly]
+    end
+
+    subgraph Generation
+        CTX --> P[Prompt + Context]
+        P --> LLM[LLM]
+        LLM --> R[Response]
+    end
+```
+
+---
+
 ## Chunking That Actually Works
 
 The #1 RAG mistake: fixed-size chunking.

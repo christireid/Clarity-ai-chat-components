@@ -47,6 +47,35 @@ The key insight: the AI doesn't execute functions—it *requests* them. Your cod
 
 ---
 
+## The Agent Loop
+
+Every agent follows this pattern:
+
+```mermaid
+flowchart TD
+    A[User Message] --> B[LLM]
+    B --> C{Tool Call?}
+
+    C -->|No| D[Return Response]
+    C -->|Yes| E[Parse Tool Call]
+
+    E --> F{Requires Confirmation?}
+    F -->|Yes| G[Show Confirmation UI]
+    F -->|No| H[Execute Tool]
+
+    G --> I{User Confirms?}
+    I -->|Yes| H
+    I -->|No| J[Cancel & Respond]
+
+    H --> K[Tool Result]
+    K --> B
+
+    D --> L[End]
+    J --> L
+```
+
+---
+
 ## Defining Tools
 
 Tools are described as JSON schemas that tell the AI what functions exist and how to call them:

@@ -579,3 +579,355 @@ Here's [what/how/why] 🧵"
 - Friday afternoon
 - Weekends
 - Major holidays
+
+---
+
+## Post 8: Context Windows
+
+### Twitter/X Thread
+
+**Tweet 1 (Hook):**
+Gemini supports 1 million tokens.
+
+So why does your app break at 50,000?
+
+Marketing ≠ Reality. Here's what actually works 🧵
+
+**Tweet 2:**
+Token limits are marketing numbers. Real-world limits are much lower:
+
+- GPT-4o: 128k advertised, ~32k practical
+- Claude: 200k advertised, ~100k practical
+- Gemini: 1M advertised, varies wildly
+
+Performance degrades long before you hit the ceiling.
+
+**Tweet 3:**
+Four strategies that actually work:
+
+1. Sliding window - Keep last N messages
+2. Summarization - Compress old context
+3. RAG - Retrieve what's relevant
+4. Semantic pruning - Score & filter by relevance
+
+**Tweet 4:**
+The key insight: show users what's happening.
+
+Don't silently drop context. Display:
+- Current token usage
+- Warning at 80%
+- Option to prune manually
+
+Transparent degradation > silent failure
+
+**Tweet 5:**
+Full implementation with all four strategies + React token counter component:
+
+[LINK]
+
+### LinkedIn Post
+
+Context windows are marketing numbers, not engineering limits.
+
+Gemini 2.5 Pro supports 1 million tokens. In practice? Performance degrades significantly well before that limit.
+
+I've seen apps break at 50,000 tokens with no warning. The user's 45-message conversation just... ends.
+
+Here's what actually works:
+
+**Strategy 1: Sliding Window**
+Keep the last N messages. Simple, predictable, but loses context.
+
+**Strategy 2: Summarization**
+Compress old messages into summaries. Preserves meaning, reduces tokens.
+
+**Strategy 3: RAG (Retrieval)**
+Don't send history—retrieve relevant context on demand.
+
+**Strategy 4: Semantic Pruning**
+Score each message by relevance to the current query. Keep what matters.
+
+The critical UX element: show users their token usage. Transparent degradation beats silent failure every time.
+
+Full implementation guide: [LINK]
+
+#AI #LLM #TokenManagement #AIEngineering
+
+---
+
+## Post 11: Retry Pattern
+
+### Twitter/X Thread
+
+**Tweet 1 (Hook):**
+72% of AI chat apps have silent failures.
+
+User clicks send. Something breaks. Message vanishes.
+
+Never lose a user message again 🧵
+
+**Tweet 2:**
+Your AI chat WILL fail:
+- Rate limits (429)
+- Server errors (500)
+- Network hiccups
+- Timeouts
+
+The question isn't if—it's when. And what happens when it does?
+
+**Tweet 3:**
+Error classification matters:
+
+Retryable:
+- 429 Rate limit → backoff, retry
+- 500 Server error → retry
+- Network error → retry
+
+Not retryable:
+- 401 Auth error → re-authenticate
+- 400 Bad request → show error
+
+**Tweet 4:**
+Exponential backoff (the right way):
+
+```
+Attempt 1: Wait 1 second
+Attempt 2: Wait 2 seconds
+Attempt 3: Wait 4 seconds
++ Random jitter to prevent thundering herd
+```
+
+**Tweet 5:**
+The golden rule: NEVER lose user input.
+
+Before sending:
+`localStorage.setItem('draft', message)`
+
+After success:
+`localStorage.removeItem('draft')`
+
+User refreshes? Message is still there.
+
+**Tweet 6:**
+Full retry hook implementation with TypeScript:
+
+[LINK]
+
+### LinkedIn Post
+
+72% of AI chat applications have silent failures.
+
+The user types a thoughtful message, clicks send, and... nothing. No error. No feedback. The message is just gone.
+
+This is unacceptable UX.
+
+Your AI chat will fail. Rate limits, server errors, network issues—it's not if, it's when. The question is: what happens when it does?
+
+**Error Classification**
+Not all errors are equal. 429 rate limits? Retry with backoff. 500 server errors? Retry immediately. 401 auth errors? Don't retry—re-authenticate.
+
+**Exponential Backoff**
+Don't hammer a failing API. Wait 1s, then 2s, then 4s. Add random jitter to prevent thundering herd.
+
+**The Golden Rule**
+NEVER lose user input. Save to localStorage before sending. Clear only on success. If the user refreshes, their message is still there.
+
+Full implementation with TypeScript hooks: [LINK]
+
+#ErrorHandling #AI #UX #TypeScript
+
+---
+
+## Post 18: AI Agents
+
+### Twitter/X Thread
+
+**Tweet 1 (Hook):**
+ChatGPT tells you how to book a flight.
+
+An AI agent actually books it.
+
+The difference is action. Here's how to build agents that work 🧵
+
+**Tweet 2:**
+The agent loop is simple:
+
+1. User message → LLM
+2. LLM decides: respond OR call tool
+3. If tool → execute → return result
+4. Repeat until done
+
+But the devil is in the details.
+
+**Tweet 3:**
+Danger zone: Agents can take wrong actions.
+
+- Order 1000 items instead of 1
+- Delete production data
+- Send emails to wrong people
+
+Power requires responsibility.
+
+**Tweet 4:**
+Safety pattern 1: Confirmation for risky actions
+
+```typescript
+if (action.riskLevel === 'high') {
+  const confirmed = await showConfirmDialog(action)
+  if (!confirmed) return { cancelled: true }
+}
+```
+
+**Tweet 5:**
+Safety pattern 2: Permission scoping
+
+Define exactly what each tool can do:
+- read_only vs read_write
+- specific resources, not "all"
+- rate limits per tool
+
+No "admin" access ever.
+
+**Tweet 6:**
+Safety pattern 3: Audit everything
+
+Log:
+- Every tool call
+- Every argument
+- Every result
+- Every decision
+
+When something goes wrong (and it will), you need the trail.
+
+**Tweet 7:**
+Full agent implementation with tool definitions, Zod validation, and confirmation UI:
+
+[LINK]
+
+### LinkedIn Post
+
+ChatGPT can tell you how to book a flight. An AI agent can actually book it.
+
+The difference between a chatbot and an agent is action. Agents use tools—APIs, databases, file systems—to accomplish real tasks. Function calling is how you give AI the ability to do things, not just say things.
+
+But with power comes responsibility.
+
+**The Agent Loop**
+Every agent follows the same pattern: receive message, decide whether to respond or call a tool, execute tool if needed, feed result back to LLM, repeat until complete.
+
+**The Danger Zone**
+Agents that can take action can take wrong action:
+- Order 1000 items instead of 1
+- Delete production data
+- Send emails to wrong recipients
+
+**Safety Patterns That Work**
+
+1. **Confirmation for risky actions** — Show users what will happen before it happens
+
+2. **Permission scoping** — Define exactly what each tool can do. No "admin" access.
+
+3. **Rate limiting** — Prevent runaway loops from draining budgets
+
+4. **Audit logging** — Log every decision for debugging and compliance
+
+Full implementation with tool definitions, Zod validation, and confirmation UI: [LINK]
+
+#AIAgents #FunctionCalling #LLM #AI #BuildingAI
+
+---
+
+## Post 23: Production Checklist
+
+### Twitter/X Thread
+
+**Tweet 1 (Hook):**
+Your AI chat demo works.
+
+Can 10,000 users use it tomorrow?
+
+Here's the 50-item production checklist 🧵
+
+**Tweet 2:**
+Core functionality (must have):
+- ✅ Messages persist across refresh
+- ✅ Streaming works and can be cancelled
+- ✅ Errors show actionable messages
+- ✅ Retry logic for failures
+- ✅ Empty state for new conversations
+
+**Tweet 3:**
+Performance (must have):
+- ✅ Virtualized list for 200+ messages
+- ✅ Scroll to bottom on new message
+- ✅ Input doesn't lag during streaming
+- ✅ Token counting accurate (±5%)
+
+**Tweet 4:**
+Accessibility (must have):
+- ✅ Keyboard navigation
+- ✅ Screen reader announces messages
+- ✅ Color contrast meets WCAG AA
+- ✅ Reduced motion respected
+
+**Tweet 5:**
+Security (must have):
+- ✅ Input sanitized
+- ✅ Rate limiting per user
+- ✅ API keys not in client
+- ✅ Prompt injection defenses
+
+**Tweet 6:**
+Quick wins if you only have 1 day:
+
+1. Add retry button for failed messages
+2. Show loading during streaming
+3. Add Cmd+Enter keyboard shortcut
+4. Test with screen reader once
+5. Add basic rate limiting
+
+**Tweet 7:**
+Full 50-item checklist with priority rankings:
+
+[LINK]
+
+### LinkedIn Post
+
+Your demo works. Your stakeholders are impressed. But can 10,000 users use it tomorrow?
+
+The gap between "works on my machine" and "works for everyone, all the time, at scale" is where products die.
+
+Here's the production readiness checklist we use internally—50 items across 10 categories.
+
+**Core Functionality (Must Have)**
+✅ Messages persist across refresh
+✅ Streaming works and can be cancelled
+✅ Errors show actionable messages
+✅ Retry logic for failed messages
+
+**Performance (Must Have)**
+✅ Virtualized list for long conversations
+✅ Token counting accurate to ±5%
+✅ No memory leaks over time
+
+**Accessibility (Must Have)**
+✅ Keyboard navigation works
+✅ Screen reader announces new messages
+✅ Color contrast meets WCAG AA
+
+**Security (Must Have)**
+✅ Input sanitized before display
+✅ Rate limiting per user
+✅ API keys not exposed to client
+✅ Prompt injection defenses
+
+**Quick Wins (If You Only Have One Day)**
+1. Add retry button for failed messages
+2. Show loading indicator during streaming
+3. Add keyboard shortcut (Cmd+Enter)
+4. Test with screen reader once
+5. Add basic rate limiting
+
+Full 50-item checklist: [LINK]
+
+#ProductionReady #AI #ChatUI #QualityAssurance

@@ -77,6 +77,36 @@ This fails in multiple ways:
 4. **No limit** — Could retry forever
 5. **No classification** — Auth errors shouldn't be retried
 
+---
+
+## Exponential Backoff Visualized
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+
+    Client->>API: Request 1
+    API-->>Client: 429 Rate Limited
+
+    Note over Client: Wait 1s
+
+    Client->>API: Request 2
+    API-->>Client: 500 Server Error
+
+    Note over Client: Wait 2s
+
+    Client->>API: Request 3
+    API-->>Client: 500 Server Error
+
+    Note over Client: Wait 4s
+
+    Client->>API: Request 4
+    API-->>Client: 200 OK ✓
+```
+
+---
+
 Smart retry uses exponential backoff with error classification:
 
 ```typescript

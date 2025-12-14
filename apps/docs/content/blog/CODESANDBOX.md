@@ -2,6 +2,8 @@
 
 Interactive code examples for key blog post patterns.
 
+> **Note:** These sandboxes are specifications for demos to be created. The URLs are reserved naming conventions. To create a sandbox, follow the setup instructions below and publish to CodeSandbox with the specified name.
+
 ---
 
 ## Available Sandboxes
@@ -136,16 +138,34 @@ When updating blog posts with code changes:
 
 ## CodeSandbox Links by Post
 
-| Post | Sandbox | Status |
-|------|---------|--------|
-| 01 - Response Timing | [clarity-response-timing](https://codesandbox.io/s/clarity-response-timing) | 🟡 Pending |
-| 09 - Production Chat | [clarity-production-chat](https://codesandbox.io/s/clarity-production-chat) | 🟡 Pending |
-| 11 - Retry Pattern | [clarity-retry-pattern](https://codesandbox.io/s/clarity-retry-pattern) | 🟡 Pending |
-| 12 - Optimistic UI | [clarity-optimistic-ui](https://codesandbox.io/s/clarity-optimistic-ui) | 🟡 Pending |
-| 17 - RAG Pipeline | [clarity-rag-demo](https://codesandbox.io/s/clarity-rag-demo) | 🟡 Pending |
-| 18 - AI Agents | [clarity-agent-demo](https://codesandbox.io/s/clarity-agent-demo) | 🟡 Pending |
+| Post | Sandbox Name | Status | Priority |
+|------|--------------|--------|----------|
+| 01 - Response Timing | clarity-response-timing | 📋 To Create | High |
+| 09 - Production Chat | clarity-production-chat | 📋 To Create | High |
+| 11 - Retry Pattern | clarity-retry-pattern | 📋 To Create | Medium |
+| 12 - Optimistic UI | clarity-optimistic-ui | 📋 To Create | Medium |
+| 17 - RAG Pipeline | clarity-rag-demo | 📋 To Create | High |
+| 18 - AI Agents | clarity-agent-demo | 📋 To Create | High |
 
-**Legend:** 🟢 Live | 🟡 Pending | 🔴 Broken
+**Status Legend:**
+- 🟢 Live — Sandbox is published and working
+- 📋 To Create — Sandbox spec defined, needs to be built
+- 🔴 Broken — Sandbox exists but has issues
+
+**Priority Guide:**
+- **High** — Core patterns, create first
+- **Medium** — Useful but not critical
+- **Low** — Nice to have
+
+### How to Create a Sandbox
+
+1. Go to [codesandbox.io](https://codesandbox.io)
+2. Create new React + TypeScript sandbox
+3. Copy code from the corresponding blog post
+4. Add mock API from the template above
+5. Test all features work
+6. Fork to your account with the specified name
+7. Update status in this document to 🟢 Live
 
 ---
 

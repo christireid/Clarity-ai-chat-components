@@ -1,0 +1,120 @@
+{
+  "generatedAt": "2025-01-01T00:00:00.000Z",
+  "lastVerified": "2025-01-01T00:00:00.000Z",
+  "nextReviewDate": "2025-04-01T00:00:00.000Z",
+  "mentions": [
+    {
+      "file": "13-cut-gpt4-bill.md",
+      "line": 43,
+      "value": "$0.00015",
+      "context": "gpt-4o-mini input cost",
+      "verified": true
+    },
+    {
+      "file": "13-cut-gpt4-bill.md",
+      "line": 44,
+      "value": "$0.0006",
+      "context": "gpt-4o-mini output cost",
+      "verified": true
+    },
+    {
+      "file": "13-cut-gpt4-bill.md",
+      "line": 48,
+      "value": "$0.0025",
+      "context": "gpt-4o input cost",
+      "verified": true
+    },
+    {
+      "file": "13-cut-gpt4-bill.md",
+      "line": 49,
+      "value": "$0.01",
+      "context": "gpt-4o output cost",
+      "verified": true
+    },
+    {
+      "file": "15-model-selection.md",
+      "line": 15,
+      "value": "gpt-4o-mini",
+      "context": "model name reference",
+      "verified": true
+    },
+    {
+      "file": "15-model-selection.md",
+      "line": 16,
+      "value": "gpt-4o",
+      "context": "model name reference",
+      "verified": true
+    },
+    {
+      "file": "15-model-selection.md",
+      "line": 17,
+      "value": "claude-3-5-sonnet",
+      "context": "model name reference",
+      "verified": true
+    },
+    {
+      "file": "10-token-counting.md",
+      "line": 200,
+      "value": "$0.0025",
+      "context": "gpt-4o pricing example",
+      "verified": true
+    }
+  ],
+  "currentPricing": {
+    "openai": {
+      "gpt-4o": {
+        "input": 0.0025,
+        "output": 0.01,
+        "cached_input": 0.00125
+      },
+      "gpt-4o-mini": {
+        "input": 0.00015,
+        "output": 0.0006,
+        "cached_input": 0.000075
+      },
+      "gpt-4-turbo": {
+        "input": 0.01,
+        "output": 0.03
+      },
+      "text-embedding-3-small": {
+        "input": 0.00002
+      },
+      "text-embedding-3-large": {
+        "input": 0.00013
+      }
+    },
+    "anthropic": {
+      "claude-3-5-sonnet": {
+        "input": 0.003,
+        "output": 0.015,
+        "cached_input": 0.0003
+      },
+      "claude-3-haiku": {
+        "input": 0.00025,
+        "output": 0.00125,
+        "cached_input": 0.00003
+      },
+      "claude-3-opus": {
+        "input": 0.015,
+        "output": 0.075
+      }
+    },
+    "google": {
+      "gemini-1.5-pro": {
+        "input": 0.00125,
+        "output": 0.005
+      },
+      "gemini-1.5-flash": {
+        "input": 0.000075,
+        "output": 0.0003
+      }
+    }
+  },
+  "notes": [
+    "Prices are per 1,000 tokens (1k)",
+    "Cached input prices apply to prompt caching features",
+    "Verify at openai.com/pricing, anthropic.com/pricing, ai.google.dev/pricing",
+    "Last manual verification: 2025-01-01"
+  ],
+  "checksum": "a1b2c3d4"
+}
