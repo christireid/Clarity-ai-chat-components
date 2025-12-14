@@ -146,6 +146,60 @@ const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
 ActionButton.displayName = 'ActionButton'
 
 /**
+ * DeleteButton - Reusable delete button with animation
+ */
+interface DeleteButtonProps {
+  onClick: () => void
+  isDeleting: boolean
+  delay?: number
+}
+
+const DeleteButton: React.FC<DeleteButtonProps> = ({
+  onClick,
+  isDeleting,
+  delay = 0.1,
+}) => (
+  <Tooltip content="Delete message" side="top" delay={300}>
+    <motion.div
+      variants={buttonVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      whileHover={isDeleting ? undefined : 'hover'}
+      whileTap={isDeleting ? undefined : 'tap'}
+      transition={{ delay, duration: durations.fast }}
+    >
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClick}
+        disabled={isDeleting}
+        className={cn(
+          'h-8 w-8 rounded-lg text-muted-foreground/70',
+          'hover:text-destructive hover:bg-destructive/10 transition-all',
+          isDeleting && 'opacity-50 cursor-not-allowed'
+        )}
+        aria-label="Delete message"
+      >
+        <motion.div
+          animate={
+            isDeleting
+              ? {
+                  rotate: [0, 10, -10, 10, 0],
+                  scale: [1, 0.9, 0.9, 0.9, 0.8],
+                }
+              : {}
+          }
+          transition={{ duration: durations.moderate }}
+        >
+          <TrashIcon size={15} />
+        </motion.div>
+      </Button>
+    </motion.div>
+  </Tooltip>
+)
+
+/**
  * FeedbackDialog - Dialog for collecting feedback comment on thumbs down
  */
 interface FeedbackDialogProps {
@@ -163,6 +217,13 @@ const FeedbackDialog: React.FC<FeedbackDialogProps> = ({
 }) => {
   const [comment, setComment] = React.useState('')
 
+  // Reset comment when dialog closes (handles backdrop click, escape key, etc.)
+  React.useEffect(() => {
+    if (!open) {
+      setComment('')
+    }
+  }, [open])
+
   const handleSubmit = () => {
     onSubmit(comment)
     setComment('')
@@ -175,8 +236,17 @@ const FeedbackDialog: React.FC<FeedbackDialogProps> = ({
     onOpenChange(false)
   }
 
+  // Handle dialog close without submitting (backdrop click, escape)
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && open) {
+      // Dialog is being closed without explicit submit/skip - treat as skip
+      onSkip()
+    }
+    onOpenChange(newOpen)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent size="sm" animation="scale">
         <DialogHeader>
           <DialogTitle>What went wrong?</DialogTitle>
@@ -240,52 +310,35 @@ export const MessageActions = React.memo<MessageActionsProps>(
     const [isDeleting, setIsDeleting] = React.useState(false)
     const [feedbackDialogOpen, setFeedbackDialogOpen] = React.useState(false)
     const toast = useToast()
+    const deleteTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+      null
+    )
 
     const isUserMessage = role === 'user'
     const isAssistantMessage = role === 'assistant'
 
     const actionsRef = React.useRef<HTMLDivElement>(null)
-    const lastFocusedButtonRef = React.useRef<HTMLButtonElement | null>(null)
 
-    // Handle keyboard activation
+    // Cleanup delete timeout on unmount
     React.useEffect(() => {
-      const handler = (e: KeyboardEvent) => {
-        if (e.key !== 'Enter' && e.key !== ' ') return
-        const container = actionsRef.current
-        const active = document.activeElement
-        if (!container) return
-
-        if (active instanceof HTMLButtonElement && container.contains(active)) {
-          e.preventDefault()
-          active.click()
-          return
-        }
-        if (
-          lastFocusedButtonRef.current &&
-          container.contains(lastFocusedButtonRef.current)
-        ) {
-          e.preventDefault()
-          lastFocusedButtonRef.current.click()
-        }
-      }
-
-      document.addEventListener('keydown', handler, true)
-      document.addEventListener('keyup', handler, true)
       return () => {
-        document.removeEventListener('keydown', handler, true)
-        document.removeEventListener('keyup', handler, true)
+        if (deleteTimeoutRef.current) {
+          clearTimeout(deleteTimeoutRef.current)
+        }
       }
     }, [])
 
     const handleDelete = React.useCallback(() => {
+      if (isDeleting) return // Prevent double-clicks
       setIsDeleting(true)
       toast?.info('Message deleted')
 
-      // Delay actual delete to allow animation
-      setTimeout(() => {
+      // Delay actual delete to allow animation, with cleanup
+      deleteTimeoutRef.current = setTimeout(() => {
+        deleteTimeoutRef.current = null
         onDelete?.(messageId)
       }, 300)
-    }, [messageId, onDelete, toast])
+    }, [messageId, onDelete, toast, isDeleting])
 
     const handleThumbsDown = React.useCallback(() => {
       // Open feedback dialog for optional comment
@@ -451,44 +504,11 @@ export const MessageActions = React.memo<MessageActionsProps>(
 
                 {/* Delete button */}
                 {onDelete && (
-                  <Tooltip content="Delete message" side="top" delay={300}>
-                    <motion.div
-                      variants={buttonVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      whileHover={isDeleting ? undefined : 'hover'}
-                      whileTap={isDeleting ? undefined : 'tap'}
-                      transition={{ delay: 0.1, duration: durations.fast }}
-                    >
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleDelete}
-                        disabled={isDeleting}
-                        className={cn(
-                          'h-8 w-8 rounded-lg text-muted-foreground/70',
-                          'hover:text-destructive hover:bg-destructive/10 transition-all',
-                          isDeleting && 'opacity-50 cursor-not-allowed'
-                        )}
-                        aria-label="Delete message"
-                      >
-                        <motion.div
-                          animate={
-                            isDeleting
-                              ? {
-                                  rotate: [0, 10, -10, 10, 0],
-                                  scale: [1, 0.9, 0.9, 0.9, 0.8],
-                                }
-                              : {}
-                          }
-                          transition={{ duration: durations.moderate }}
-                        >
-                          <TrashIcon size={15} />
-                        </motion.div>
-                      </Button>
-                    </motion.div>
-                  </Tooltip>
+                  <DeleteButton
+                    onClick={handleDelete}
+                    isDeleting={isDeleting}
+                    delay={0.1}
+                  />
                 )}
               </>
             )}
@@ -651,44 +671,11 @@ export const MessageActions = React.memo<MessageActionsProps>(
 
                 {/* Delete button for assistant messages too */}
                 {onDelete && (
-                  <Tooltip content="Delete message" side="top" delay={300}>
-                    <motion.div
-                      variants={buttonVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      whileHover={isDeleting ? undefined : 'hover'}
-                      whileTap={isDeleting ? undefined : 'tap'}
-                      transition={{ delay: 0.18, duration: durations.fast }}
-                    >
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleDelete}
-                        disabled={isDeleting}
-                        className={cn(
-                          'h-8 w-8 rounded-lg text-muted-foreground/70',
-                          'hover:text-destructive hover:bg-destructive/10 transition-all',
-                          isDeleting && 'opacity-50 cursor-not-allowed'
-                        )}
-                        aria-label="Delete message"
-                      >
-                        <motion.div
-                          animate={
-                            isDeleting
-                              ? {
-                                  rotate: [0, 10, -10, 10, 0],
-                                  scale: [1, 0.9, 0.9, 0.9, 0.8],
-                                }
-                              : {}
-                          }
-                          transition={{ duration: durations.moderate }}
-                        >
-                          <TrashIcon size={15} />
-                        </motion.div>
-                      </Button>
-                    </motion.div>
-                  </Tooltip>
+                  <DeleteButton
+                    onClick={handleDelete}
+                    isDeleting={isDeleting}
+                    delay={0.18}
+                  />
                 )}
               </>
             )}

@@ -178,17 +178,29 @@ export function ClarityChat({
 
   const handleSendMessage = React.useCallback(
     async (content: string) => {
-      // Create new abort controller for this request
-      abortControllerRef.current = new AbortController()
-      await chat.append({ role: 'user', content })
+      try {
+        // Create new abort controller for this request
+        abortControllerRef.current = new AbortController()
+        await chat.append({ role: 'user', content })
+      } catch (error) {
+        // Only log if not aborted - aborts are intentional
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Failed to send message:', error)
+        }
+      }
     },
     [chat]
   )
 
   const handleStopGeneration = React.useCallback(() => {
+    // Abort current request if active
     abortControllerRef.current?.abort()
     abortControllerRef.current = null
-  }, [])
+    // Also use chat's stop method if available
+    if ('stop' in chat && typeof chat.stop === 'function') {
+      ;(chat as { stop: () => void }).stop()
+    }
+  }, [chat])
 
   const handleClear = React.useCallback(() => {
     chat.setMessages([])
@@ -197,36 +209,53 @@ export function ClarityChat({
 
   const handleDeleteMessage = React.useCallback(
     (messageId: string) => {
-      // Remove the message from the chat
-      chat.setMessages(chat.messages.filter((m) => m.id !== messageId))
+      // Use functional update to avoid stale closure
+      chat.setMessages((prevMessages: CoreMessage[]) =>
+        prevMessages.filter((m) => m.id !== messageId)
+      )
       onDeleteMessage?.(messageId)
     },
-    [chat, onDeleteMessage]
+    [chat.setMessages, onDeleteMessage]
   )
 
   const handleRegenerateMessage = React.useCallback(
     async (messageId: string) => {
-      // Find the message and regenerate from that point
-      const messageIndex = chat.messages.findIndex((m) => m.id === messageId)
-      if (messageIndex === -1) return
+      try {
+        // Find the message and regenerate from that point
+        const currentMessages = chat.messages
+        const messageIndex = currentMessages.findIndex(
+          (m) => m.id === messageId
+        )
+        if (messageIndex === -1) {
+          console.warn('Cannot regenerate: message not found')
+          return
+        }
 
-      // Get the preceding user message to resend
-      const userMessage = chat.messages
-        .slice(0, messageIndex)
-        .reverse()
-        .find((m) => m.role === 'user')
+        // Get the preceding user message to resend
+        const userMessage = currentMessages
+          .slice(0, messageIndex)
+          .reverse()
+          .find((m) => m.role === 'user')
 
-      if (userMessage) {
+        if (!userMessage) {
+          console.warn('Cannot regenerate: no preceding user message found')
+          return
+        }
+
         // Remove messages from the regenerate point
-        const newMessages = chat.messages.slice(0, messageIndex)
+        const newMessages = currentMessages.slice(0, messageIndex)
         chat.setMessages(newMessages)
 
         // Resend the user message
         abortControllerRef.current = new AbortController()
         await chat.append({ role: 'user', content: userMessage.content })
-      }
 
-      onRegenerateMessage?.(messageId)
+        onRegenerateMessage?.(messageId)
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Failed to regenerate message:', error)
+        }
+      }
     },
     [chat, onRegenerateMessage]
   )
