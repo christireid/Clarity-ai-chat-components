@@ -1339,8 +1339,16 @@ async function analyzeProject(projectPath: string) {
       throw new NotFoundError('Project directory', projectPath)
     }
 
-    // Count files
+    // Count files with limit to prevent DoS
+    const MAX_FILES_TO_ANALYZE = 100000
     const files = await fs.readdir(projectPath, { recursive: true })
+
+    if (files.length > MAX_FILES_TO_ANALYZE) {
+      throw new ValidationError(
+        `Project contains too many files (>${MAX_FILES_TO_ANALYZE}). This may not be a valid project directory.`,
+        { fileCount: files.length, maxAllowed: MAX_FILES_TO_ANALYZE }
+      )
+    }
     analysis.fileCount = files.length
 
     // Check for key files

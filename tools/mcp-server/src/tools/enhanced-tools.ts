@@ -1065,10 +1065,14 @@ function handleCompareComponents(args: Record<string, unknown>) {
     return component
   })
 
-  // Get all unique prop names
+  // Get all unique prop names with reasonable limit
+  const MAX_TOTAL_PROPS = 500
   const allProps = new Set<string>()
-  for (const c of components) {
+  outer: for (const c of components) {
     for (const p of c.props) {
+      if (allProps.size >= MAX_TOTAL_PROPS) {
+        break outer
+      }
       allProps.add(p.name)
     }
   }

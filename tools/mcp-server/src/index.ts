@@ -540,15 +540,15 @@ async function shutdown(signal: string) {
   }
 }
 
-// Register signal handlers
-process.on('SIGINT', () => shutdown('SIGINT'))
-process.on('SIGTERM', () => shutdown('SIGTERM'))
+// Register signal handlers - handle async shutdown with catch
+process.on('SIGINT', () => shutdown('SIGINT').catch(() => process.exit(1)))
+process.on('SIGTERM', () => shutdown('SIGTERM').catch(() => process.exit(1)))
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
   logger.error('Uncaught exception', error)
   serverEvents.emit('server:error', { error, fatal: true })
-  shutdown('uncaughtException')
+  shutdown('uncaughtException').catch(() => process.exit(1))
 })
 
 // Handle unhandled promise rejections
@@ -556,7 +556,7 @@ process.on('unhandledRejection', (reason) => {
   const error = reason instanceof Error ? reason : new Error(String(reason))
   logger.error('Unhandled rejection', error)
   serverEvents.emit('server:error', { error, fatal: true })
-  shutdown('unhandledRejection')
+  shutdown('unhandledRejection').catch(() => process.exit(1))
 })
 
 // =============================================================================
@@ -568,9 +568,10 @@ async function main() {
     // Emit starting event
     serverEvents.emit('server:starting', { version: SERVER_VERSION })
 
-    // Initialize transport
+    // Initialize transport with connection timeout
     const transport = new StdioServerTransport()
-    await server.connect(transport)
+    const CONNECTION_TIMEOUT_MS = parseInt(process.env.MCP_CONNECTION_TIMEOUT || '30000')
+    await withTimeout(server.connect(transport), CONNECTION_TIMEOUT_MS, 'server:connect')
 
     const allTools = getAllTools()
     const allResources = getAllResources()

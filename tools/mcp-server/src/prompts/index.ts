@@ -683,7 +683,14 @@ What would you like to explore first?`
  * Build Chatbot Prompt
  */
 function generateBuildChatbotPrompt(type: string, features?: string): string {
-  const featureList = features?.split(',').map((f) => f.trim()).slice(0, 20) || []
+  // Limit input length before splitting to prevent memory issues
+  const MAX_FEATURES_INPUT_LENGTH = 1000
+  const sanitizedFeatures = features?.slice(0, MAX_FEATURES_INPUT_LENGTH) || ''
+  const featureList = sanitizedFeatures
+    .split(',')
+    .map((f) => f.trim())
+    .filter((f) => f.length > 0)
+    .slice(0, 20)
   const hasStreaming = featureList.includes('streaming')
   const hasVoice = featureList.includes('voice')
   const hasFileUpload = featureList.includes('file-upload')
