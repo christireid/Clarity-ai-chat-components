@@ -211,22 +211,43 @@ export function ClarityChat({
 
   const handleDeleteMessage = React.useCallback(
     (messageId: string) => {
+      // Prevent deletion while a request is in progress to avoid race conditions
+      if (chat.isLoading || isRegenerating) {
+        toast?.info('Please wait for the current request to complete')
+        return
+      }
+      // Clear editing state if deleting the message being edited
+      if (editingMessageId === messageId) {
+        setEditingMessageId(null)
+      }
       // Use functional update to avoid stale closure
       chat.setMessages((prevMessages: CoreMessage[]) =>
         prevMessages.filter((m) => m.id !== messageId)
       )
       onDeleteMessage?.(messageId)
     },
-    [chat.setMessages, onDeleteMessage]
+    [
+      chat.isLoading,
+      chat.setMessages,
+      editingMessageId,
+      isRegenerating,
+      onDeleteMessage,
+      toast,
+    ]
   )
 
   // Handle starting edit mode
   const handleEditMessage = React.useCallback(
     (messageId: string) => {
+      // Prevent editing while a request is in progress to avoid race conditions
+      if (chat.isLoading || isRegenerating) {
+        toast?.info('Please wait for the current request to complete')
+        return
+      }
       setEditingMessageId(messageId)
       onEditMessage?.(messageId)
     },
-    [onEditMessage]
+    [chat.isLoading, isRegenerating, onEditMessage, toast]
   )
 
   // Handle saving edits
@@ -303,6 +324,12 @@ export function ClarityChat({
 
   const handleRegenerateMessage = React.useCallback(
     async (messageId: string) => {
+      // Prevent regeneration while a request is in progress to avoid race conditions
+      if (chat.isLoading || isRegenerating) {
+        toast?.info('Please wait for the current request to complete')
+        return
+      }
+
       // Capture current messages for potential rollback
       const originalMessages = chat.messages
 
@@ -362,7 +389,7 @@ export function ClarityChat({
         }
       }
     },
-    [chat, onRegenerateMessage, toast]
+    [chat, isRegenerating, onRegenerateMessage, toast]
   )
 
   return (
