@@ -42,6 +42,10 @@ export interface MessageActionsProps {
    * @default false
    */
   alwaysVisible?: boolean
+  /**
+   * Ref for the edit button - used to return focus after editing
+   */
+  editButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 // Animation variants for buttons
@@ -162,6 +166,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
     onStopGeneration,
     show,
     alwaysVisible = false,
+    editButtonRef,
   }) => {
     const [isDeleting, setIsDeleting] = React.useState(false)
     const [feedbackDialogOpen, setFeedbackDialogOpen] = React.useState(false)
@@ -195,14 +200,21 @@ export const MessageActions = React.memo<MessageActionsProps>(
     const handleDelete = React.useCallback(() => {
       if (isDeleting) return // Prevent double-clicks
       setIsDeleting(true)
-      toast?.info('Message deleted')
 
       // Delay actual delete to allow animation, with cleanup
       deleteTimeoutRef.current = setTimeout(() => {
         deleteTimeoutRef.current = null
         onDelete?.(messageId)
       }, 300)
-    }, [messageId, onDelete, toast, isDeleting])
+    }, [messageId, onDelete, isDeleting])
+
+    // Toast handler for DeleteButton
+    const handleDeleteToast = React.useCallback(
+      (message: string) => {
+        toast?.info(message)
+      },
+      [toast]
+    )
 
     const handleThumbsDown = React.useCallback(() => {
       setFeedbackDialogOpen(true)
@@ -388,6 +400,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
               <>
                 {onEdit && (
                   <ActionButton
+                    ref={editButtonRef}
                     onClick={() => onEdit(messageId)}
                     icon={<EditIcon size={15} />}
                     label="Edit message"
@@ -404,6 +417,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                     delay={0.1}
                     showConfirmation={true}
                     messageType="user"
+                    showToast={handleDeleteToast}
                   />
                 )}
               </>
@@ -573,6 +587,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                     delay={0.18}
                     showConfirmation={true}
                     messageType="assistant"
+                    showToast={handleDeleteToast}
                   />
                 )}
               </>

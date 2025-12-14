@@ -9,6 +9,7 @@ import {
   Badge,
   cn,
   formatRelativeTime,
+  useA11y,
 } from '@clarity-chat/primitives'
 import {
   ANIMATION_DURATION,
@@ -153,12 +154,38 @@ export function Message({
   const [feedbackGiven, setFeedbackGiven] = React.useState<
     'up' | 'down' | null
   >(message.feedback?.type || null)
+  const [wasEditing, setWasEditing] = React.useState(false)
 
   const isUser = message.role === 'user'
   const isAssistant = message.role === 'assistant'
   const isStreaming = message.status === 'streaming'
 
   const [showConfetti, setShowConfetti] = React.useState(false)
+
+  // Accessibility announcements
+  const { announce } = useA11y()
+
+  // Ref for returning focus after edit
+  const editButtonRef = React.useRef<HTMLButtonElement>(null)
+
+  // Announce edit mode changes for screen readers
+  React.useEffect(() => {
+    if (isEditing && !wasEditing) {
+      announce(
+        'Editing message. Press Escape to cancel or use the save button.',
+        {
+          assertive: true,
+        }
+      )
+    } else if (!isEditing && wasEditing) {
+      announce('Edit mode closed', { assertive: false })
+      // Return focus to the edit button after save/cancel
+      setTimeout(() => {
+        editButtonRef.current?.focus()
+      }, 100)
+    }
+    setWasEditing(isEditing)
+  }, [isEditing, wasEditing, announce])
 
   // React 19: Compiler optimizes this - no useCallback needed
   const handleFeedback = (type: 'up' | 'down', comment?: string) => {
@@ -538,6 +565,7 @@ export function Message({
             onDelete={onDelete}
             onStopGeneration={onStopGeneration}
             show={isHovered || isFocusWithin || !!feedbackGiven || isStreaming}
+            editButtonRef={editButtonRef}
           />
         )}
 

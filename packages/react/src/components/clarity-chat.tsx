@@ -175,6 +175,9 @@ export function ClarityChat({
     null
   )
 
+  // Track when we're regenerating after an edit
+  const [isRegenerating, setIsRegenerating] = React.useState(false)
+
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = React.useMemo(
     () => convertCoreMessagesToMessages(chat.messages),
@@ -230,38 +233,49 @@ export function ClarityChat({
   const handleSaveEdit = React.useCallback(
     async (messageId: string, newContent: string) => {
       try {
-        // Update the message content
-        chat.setMessages((prevMessages: CoreMessage[]) =>
-          prevMessages.map((m) =>
-            m.id === messageId ? { ...m, content: newContent } : m
-          )
-        )
-
-        // Clear editing state
+        // Clear editing state first
         setEditingMessageId(null)
 
-        // Find if there are assistant messages after this one
-        const currentMessages = chat.messages
-        const messageIndex = currentMessages.findIndex(
-          (m) => m.id === messageId
-        )
+        // Track if we need to regenerate (will be set inside setMessages)
+        let shouldRegenerate = false
 
-        if (messageIndex !== -1 && messageIndex < currentMessages.length - 1) {
-          // There are messages after this one - regenerate the response
-          // Remove all messages after the edited one
-          const newMessages = currentMessages.slice(0, messageIndex + 1)
-          newMessages[messageIndex] = {
-            ...newMessages[messageIndex]!,
-            content: newContent,
+        // Single atomic update to avoid race conditions
+        chat.setMessages((prevMessages: CoreMessage[]) => {
+          const messageIndex = prevMessages.findIndex((m) => m.id === messageId)
+          if (messageIndex === -1) return prevMessages
+
+          // Check if there are messages after this one
+          if (messageIndex < prevMessages.length - 1) {
+            // There are messages after - truncate and update
+            shouldRegenerate = true
+            const truncated = prevMessages.slice(0, messageIndex + 1)
+            truncated[messageIndex] = {
+              ...truncated[messageIndex]!,
+              content: newContent,
+            }
+            return truncated
+          } else {
+            // This is the last message - just update content
+            return prevMessages.map((m) =>
+              m.id === messageId ? { ...m, content: newContent } : m
+            )
           }
-          chat.setMessages(newMessages)
+        })
 
-          // Resend to get a new response
-          await chat.append({ role: 'user', content: newContent })
+        // If we truncated, regenerate the response
+        if (shouldRegenerate) {
+          setIsRegenerating(true)
+          toast?.info('Regenerating response...')
+          try {
+            await chat.append({ role: 'user', content: newContent })
+          } finally {
+            setIsRegenerating(false)
+          }
         }
 
         toast?.success('Message updated')
       } catch (error) {
+        setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Failed to update message:', error)
           toast?.error('Failed to update message. Please try again.')

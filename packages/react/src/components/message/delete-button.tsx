@@ -38,6 +38,8 @@ export interface DeleteButtonProps {
   showConfirmation?: boolean
   /** Message type for confirmation text */
   messageType?: 'user' | 'assistant'
+  /** Toast function to show confirmation message after delete */
+  showToast?: (message: string) => void
 }
 
 /**
@@ -54,6 +56,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
   delay = 0.1,
   showConfirmation = true,
   messageType = 'user',
+  showToast,
 }) => {
   const [showDialog, setShowDialog] = React.useState(false)
 
@@ -61,12 +64,16 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
     if (showConfirmation) {
       setShowDialog(true)
     } else {
+      // Show toast only when actually deleting (no confirmation)
+      showToast?.('Message deleted')
       onDelete()
     }
   }
 
   const handleConfirm = () => {
     setShowDialog(false)
+    // Show toast AFTER confirmation, not before
+    showToast?.('Message deleted')
     onDelete()
   }
 

@@ -33,6 +33,12 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
     const [editValue, setEditValue] = React.useState(content)
     const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
+    // Detect if user is on Mac for keyboard hint
+    const isMac = React.useMemo(() => {
+      if (typeof navigator === 'undefined') return false
+      return /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+    }, [])
+
     // Reset edit value when entering edit mode
     React.useEffect(() => {
       if (isEditing) {
@@ -89,7 +95,7 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
               onChange={(e) => setEditValue(e.target.value)}
               onKeyDown={handleKeyDown}
               className={cn(
-                'min-h-[100px] resize-none',
+                'min-h-[100px] max-h-64 overflow-y-auto resize-none',
                 'bg-background border-2 border-primary/50',
                 'focus:border-primary focus:ring-2 focus:ring-primary/20',
                 'rounded-xl p-3',
@@ -100,6 +106,11 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
               aria-label="Edit message"
             />
 
+            {/* Character count */}
+            <div className="text-xs text-muted-foreground text-right -mt-1">
+              {editValue.length.toLocaleString()} characters
+            </div>
+
             {/* Action buttons */}
             <motion.div
               initial={{ opacity: 0, y: -8 }}
@@ -107,14 +118,14 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
               transition={{ delay: 0.1, duration: durations.fast }}
               className="flex items-center justify-end gap-2"
             >
-              {/* Keyboard hint */}
+              {/* Keyboard hint - OS-appropriate modifier key */}
               <span className="text-xs text-muted-foreground mr-2 hidden sm:inline">
                 <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
                   Esc
                 </kbd>{' '}
                 cancel ·{' '}
                 <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">
-                  ⌘↵
+                  {isMac ? '⌘' : 'Ctrl'}+↵
                 </kbd>{' '}
                 save
               </span>
