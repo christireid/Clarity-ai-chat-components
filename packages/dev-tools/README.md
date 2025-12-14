@@ -32,7 +32,7 @@ yarn add @clarity-chat/dev-tools
 ## 🚀 Quick Start
 
 > 📖 **New to Clarity?** Check the
-> [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the
+> [Getting Started Guide](../../docs/getting-started.md) or browse the
 > [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
 
 ### TypeScript Utilities
@@ -756,7 +756,7 @@ import type {
 
 ## 📚 Documentation
 
-- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Getting Started Guide](../../docs/getting-started.md)
 - [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
 - [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
 - [Quick Start](./QUICK_START.md) - 5-minute quick start guide

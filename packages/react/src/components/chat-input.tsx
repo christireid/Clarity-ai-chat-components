@@ -311,7 +311,11 @@ export function ChatInput({
   return (
     <motion.div
       className={cn(
-        'relative flex flex-col gap-3 px-5 py-4 border-t border-border/80 bg-background/95 backdrop-blur-md shadow-sm',
+        'relative flex flex-col gap-3 px-5 py-4',
+        'border-t border-border/60',
+        'bg-gradient-to-t from-background via-background to-background/95',
+        'backdrop-blur-lg',
+        'shadow-[0_-4px_20px_-8px_rgba(0,0,0,0.05)]',
         className
       )}
       initial="idle"
@@ -402,17 +406,25 @@ export function ChatInput({
           )}
         </motion.div>
 
-        {/* Send Button with state transitions */}
+        {/* Send Button with state transitions - Enhanced with gradient and glow */}
         <Button
           onClick={handleSubmit}
           disabled={disabled || !hasContent || isOverLimit || isSubmitPending}
           state={buttonState}
           size="icon"
           className={cn(
-            'transition-all duration-200 ease-out shrink-0 h-11 w-11 rounded-xl shadow-sm',
+            'transition-all duration-200 ease-out shrink-0 h-11 w-11 rounded-xl',
             hasContent && !isOverLimit
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]'
-              : 'bg-muted/60 text-muted-foreground border border-border/40'
+              ? [
+                  'bg-gradient-to-br from-primary via-primary to-primary/85',
+                  'text-primary-foreground',
+                  'shadow-[0_4px_14px_-3px_hsl(var(--primary)/0.4)]',
+                  'hover:shadow-[0_6px_20px_-3px_hsl(var(--primary)/0.5)]',
+                  'hover:scale-[1.03] hover:-translate-y-0.5',
+                  'active:scale-[0.97] active:translate-y-0',
+                  'active:shadow-[0_2px_8px_-2px_hsl(var(--primary)/0.4)]',
+                ]
+              : 'bg-muted/50 text-muted-foreground border border-border/30 shadow-sm'
           )}
           aria-label={
             buttonState === 'loading'

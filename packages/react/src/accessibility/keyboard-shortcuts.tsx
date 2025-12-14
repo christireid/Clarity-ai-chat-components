@@ -8,6 +8,19 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 
+// SSR-safe platform detection
+function detectIsMac(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return false
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userAgentData = (navigator as any).userAgentData
+  if (userAgentData?.platform) {
+    return /macOS|iOS/i.test(userAgentData.platform)
+  }
+  return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
+
 export interface KeyboardShortcut {
   id: string
   keys: string[]
@@ -200,12 +213,9 @@ function KeyboardShortcutsHelp({ shortcuts, onClose }: KeyboardShortcutsHelpProp
   const [isMac, setIsMac] = React.useState(false)
   const searchInputRef = React.useRef<HTMLInputElement>(null)
 
-  // Detect platform
+  // Detect platform (SSR-safe)
   React.useEffect(() => {
-    setIsMac(
-      typeof window !== 'undefined' &&
-        window.navigator.platform.toLowerCase().includes('mac')
-    )
+    setIsMac(detectIsMac())
   }, [])
 
   // Auto-focus search on open

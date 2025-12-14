@@ -24,7 +24,7 @@ yarn add @clarity-chat/types
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
 
 ### Basic Usage
 
@@ -172,7 +172,7 @@ This package exports **89 types** including:
 
 ## 📚 Documentation
 
-- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Getting Started Guide](../../docs/getting-started.md)
 - [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
 - [API Reference](../../docs/api-reference.md) - Complete API documentation
 - [Type Examples](./examples/) - Usage examples

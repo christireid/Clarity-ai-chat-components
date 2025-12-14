@@ -1,8 +1,10 @@
 <div align="center">
 
-# ✨ Clarity Chat
+# Clarity Chat
 
-### **The Most Complete AI Chat Component Library for React**
+### **Build Beautiful AI Chat Interfaces in Minutes, Not Months**
+
+*The most complete, production-ready AI chat component library for React*
 
 <p align="center">
   <a href="https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/ci.yml">
@@ -34,18 +36,31 @@
   </a>
 </p>
 
+<br />
+
+```tsx
+// Production-ready AI chat in 4 lines
+'use client'
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default () => <ClarityChat api="/api/chat" />
+```
+
+<br />
+
 <p align="center">
-  <strong>70+ Production-Ready Components</strong> • 
-  <strong>35+ Custom Hooks</strong> • 
-  <strong>11 Theme Presets</strong> • 
-  <strong>Enterprise AI Infrastructure</strong>
+  <strong>70+ Components</strong> &nbsp;|&nbsp;
+  <strong>35+ Hooks</strong> &nbsp;|&nbsp;
+  <strong>11 Themes</strong> &nbsp;|&nbsp;
+  <strong>Enterprise-Ready</strong>
 </p>
 
 <p align="center">
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-documentation">Documentation</a> •
-  <a href="#-examples">Examples</a> •
-  <a href="https://discord.gg/clarity-chat">Discord</a>
+  <a href="#-quick-start"><strong>Quick Start</strong></a> &nbsp;&nbsp;
+  <a href="#-documentation"><strong>Docs</strong></a> &nbsp;&nbsp;
+  <a href="./apps/examples"><strong>Examples</strong></a> &nbsp;&nbsp;
+  <a href="https://discord.gg/clarity-chat"><strong>Discord</strong></a>
 </p>
 
 </div>
@@ -103,13 +118,29 @@
 
 ---
 
-## 🚀 Why Clarity Chat?
+## Why Clarity Chat?
 
-Building an AI chat interface from scratch is **hard**. You need streaming, error handling, token
-management, accessibility, performance optimization, and so much more. Clarity Chat gives you
-**everything** you need in one beautifully designed package.
+Building an AI chat interface from scratch is **hard**. You need:
 
-**Stop building. Start shipping.** 🎯
+- Streaming with reconnection logic
+- Error handling with retry strategies
+- Token management and cost optimization
+- WCAG accessibility compliance
+- Performance optimization for 1000+ messages
+- Security (prompt injection, PII detection)
+- And dozens of other details...
+
+**Clarity Chat gives you all of this out of the box.**
+
+| Without Clarity Chat | With Clarity Chat |
+|---------------------|-------------------|
+| Weeks of development | Minutes to production |
+| 10+ dependencies to manage | 1 package, tree-shakeable |
+| DIY accessibility | WCAG AAA built-in |
+| Custom error handling | Battle-tested recovery |
+| Manual token counting | Automatic optimization |
+
+**Stop building infrastructure. Start shipping features.**
 
 ---
 
@@ -356,96 +387,115 @@ bun add @clarity-chat/react
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
-> 📖 **Architecture**: Clarity Chat follows a **layered architecture** with **7 core domains**.
->
-> - **Top-Level APIs**: Drop-in ready (`ClarityChat`, `useClarityChat`)
-> - **Mid-Level APIs**: Composable (`ChatWindow`, `useChatEnhanced`)
-> - **Low-Level Primitives**: Utilities (`normalizeMessages`, `createStreamReader`)
->
-> See [DESIGN.md](./DESIGN.md) for architecture details and
-> [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for patterns.
+### 1. Install
 
-Get a production-ready AI chat interface in **3 lines of code**:
+```bash
+npm install @clarity-chat/react
+```
+
+### 2. Use
 
 ```tsx
 import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
-function App() {
+export default function App() {
   return <ClarityChat api="/api/chat" />
 }
 ```
 
-**That's it!** ✨ You now have a production-ready AI chat interface with:
+### 3. Done!
+
+You now have a production-ready chat with:
+- Streaming responses with auto-reconnection
+- Beautiful animations and transitions
+- Full keyboard navigation (Shift+? for shortcuts)
+- Mobile responsive design
+- WCAG AAA accessibility
+- Error recovery with retry
+
+---
 
 ### Need More Control?
 
-Use the hook with pre-configured handlers - less boilerplate:
+Use the `useClarityChat` hook for full customization:
 
 ```tsx
-import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
-import '@clarity-chat/react/styles.css'
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function App() {
-  const chat = useClarityChat({
+  const { messages, append, isLoading, error, retry } = useClarityChat({
     api: '/api/chat',
+    stream: true,           // Enable streaming
+    onError: (e) => console.error(e),
   })
-
-  // Pre-configured handlers - no boilerplate! ✨
-  const handlers = useChatHandlers({ chat })
 
   return (
     <ChatWindow
-      messages={chat.messages} // Accepts CoreMessage[] directly! ✨
-      isLoading={chat.isLoading}
-      onSendMessage={handlers.onSendMessage}
-      onClear={handlers.onClear}
+      messages={messages}
+      isLoading={isLoading}
+      error={error}
+      onRetry={retry}
+      onSendMessage={(content) => append({ role: 'user', content })}
     />
   )
 }
 ```
 
-### Using Presets
+### Common Patterns
 
-For common use cases, use pre-configured presets:
+<details>
+<summary><strong>Chat with Memory</strong></summary>
 
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'
-import '@clarity-chat/react/styles.css'
 
-// Simple chat
-function SimpleChat() {
-  return <ClarityChatPresets.Simple api="/api/chat" />
-}
-
-// Chat with memory
-function MemoryChat() {
-  return <ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" />
-}
-
-// Enterprise chat with all features
-function EnterpriseChat() {
-  return <ClarityChatPresets.Enterprise api="/api/chat" />
-}
+// Automatic context management
+<ClarityChatPresets.WithMemory
+  api="/api/chat"
+  memoryStrategy="sliding-window"
+  maxTokens={4000}
+/>
 ```
 
-**What's New:**
+</details>
 
-- ✅ **No more conversion** - `ChatWindow` accepts `CoreMessage[]` directly
-- ✅ **One-line setup** - `ClarityChat` component handles everything
-- ✅ **Same powerful features** - streaming, memory, error handling, all included
+<details>
+<summary><strong>Enterprise Chat</strong></summary>
 
-- ✨ Beautiful animations and transitions
-- ⌨️ Full keyboard navigation
-- 📱 Mobile responsive design
-- ⚡ Optimized performance
-- ♿ WCAG AAA accessibility
-- 🔒 Production-ready security
+```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
 
-**[📖 View Full Quick Start Guide](./apps/docs-site/app/learn/quick-start)** •
-**[📚 Browse Examples](./apps/examples/README.md)**
+// All features enabled
+<ClarityChatPresets.Enterprise
+  api="/api/chat"
+  enableRAG
+  enableSafety
+  enableAnalytics
+/>
+```
+
+</details>
+
+<details>
+<summary><strong>Custom Theme</strong></summary>
+
+```tsx
+import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
+
+<ThemeProvider theme="glassmorphism">
+  <ClarityChat api="/api/chat" />
+</ThemeProvider>
+
+// Or use: dark, ocean, sunset, forest, neon, minimal, warm, cool, corporate
+```
+
+</details>
+
+**[View Full Quick Start Guide](./docs/getting-started.md)** |
+**[Browse 30+ Examples](./apps/examples)**
 
 ---
 
@@ -1471,8 +1521,7 @@ Pre-built prompt templates for common tasks:
 
 ### Quick Start & Migration
 
-- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ - Quick start
-  guide
+- **[Getting Started with Clarity Chat](./docs/getting-started.md)** - Quick start guide
 - **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
 - **[Migrating from Vercel](./docs/migrating-from-vercel.md)** - Migration guide
 
@@ -1485,11 +1534,12 @@ Pre-built prompt templates for common tasks:
 ### Guides
 
 - [Theming System](./apps/docs/guide/theming.md)
-- [Token Optimization](./apps/docs/guide/token-optimization.md) 🆕
+- [Token Optimization](./apps/docs/guide/token-optimization.md)
 - [Streaming Messages](./apps/docs/guide/streaming.md)
 - [Error Handling](./apps/docs/guide/error-handling.md)
 - [Accessibility](./apps/docs/guide/accessibility.md)
 - [Performance Guide](./PERFORMANCE_GUIDE.md)
+- [Troubleshooting](./docs/TROUBLESHOOTING.md) - Common issues and solutions
 
 ### API Reference
 
@@ -1896,17 +1946,20 @@ Built with amazing open-source tools:
 
 <div align="center">
 
-## 🌟 Built with ❤️ by [Code & Clarity](https://codeclarity.ai)
+## Built with care by [Code & Clarity](https://codeclarity.ai)
 
 <p align="center">
-  <a href="https://github.com/christireid/Clarity-ai-chat-components">⭐ Star on GitHub</a> •
-  <a href="https://docs.clarity-chat.dev">📖 Read the Docs</a> •
-  <a href="./apps/examples/README.md">🚀 Try Examples</a> •
-  <a href="https://discord.gg/clarity-chat">💬 Join Discord</a>
+  <a href="https://github.com/christireid/Clarity-ai-chat-components"><strong>Star on GitHub</strong></a> &nbsp;&nbsp;
+  <a href="./docs/getting-started.md"><strong>Get Started</strong></a> &nbsp;&nbsp;
+  <a href="./apps/examples"><strong>Examples</strong></a> &nbsp;&nbsp;
+  <a href="./docs/TROUBLESHOOTING.md"><strong>Troubleshooting</strong></a> &nbsp;&nbsp;
+  <a href="https://discord.gg/clarity-chat"><strong>Discord</strong></a>
 </p>
 
+<br />
+
 <p align="center">
-  <sub>If Clarity Chat helps you build something amazing, we'd love to see it!</sub>
+  <sub>Building something cool with Clarity Chat? We'd love to see it! Tag us on Twitter or share in Discord.</sub>
 </p>
 
 </div>
