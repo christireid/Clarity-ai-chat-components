@@ -131,6 +131,25 @@ The component doesn't know or care what theme is active. It just uses semantic t
 Users already told their operating system which theme they prefer. Respect that.
 
 ```tsx
+import { useState, useEffect, createContext, useContext } from 'react'
+
+// Create theme context
+interface ThemeContextValue {
+  theme: 'light' | 'dark'
+  setTheme: (theme: 'light' | 'dark') => void
+}
+
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
+
+// Custom hook to use the theme
+export function useTheme() {
+  const context = useContext(ThemeContext)
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider')
+  }
+  return context
+}
+
 function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
 

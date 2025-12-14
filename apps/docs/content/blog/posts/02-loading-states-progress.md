@@ -281,6 +281,8 @@ Sometimes AI takes longer than expected. Your loading states need to adapt.
 Implement timeout escalation—if a phase takes longer than expected, update the message:
 
 ```tsx
+import { useState, useEffect } from 'react'
+
 function useTimeoutMessage(initialMessage: string, timeout: number, fallbackMessage: string) {
   const [message, setMessage] = useState(initialMessage)
 

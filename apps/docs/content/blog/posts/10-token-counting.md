@@ -11,6 +11,8 @@ relatedPosts: ["08-context-windows", "13-cut-gpt4-bill", "15-model-selection"]
 
 # Token Counting That Actually Works: A Deep Dive
 
+> **Pricing Note:** Token costs vary by model and change frequently. The pricing examples in this article reflect 2025 rates—verify current pricing on provider websites before implementation.
+
 JavaScript's `string.length` has nothing to do with tokens. That's why your cost estimates are wrong.
 
 You estimated 1,000 tokens. The API charged you for 2,300. What happened?

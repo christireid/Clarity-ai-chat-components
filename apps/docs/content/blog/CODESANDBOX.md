@@ -2,7 +2,9 @@
 
 Interactive code examples for key blog post patterns.
 
-> **Note:** These sandboxes are specifications for demos to be created. The URLs are reserved naming conventions. To create a sandbox, follow the setup instructions below and publish to CodeSandbox with the specified name.
+> ⚠️ **IMPORTANT: These sandboxes do not exist yet.**
+>
+> This document contains **specifications** for sandboxes to be created. The URLs shown are the naming conventions to use when creating them. See the "How to Create a Sandbox" section below for step-by-step instructions.
 
 ---
 

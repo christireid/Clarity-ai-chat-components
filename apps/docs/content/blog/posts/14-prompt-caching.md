@@ -11,6 +11,8 @@ relatedPosts: ["13-cut-gpt4-bill", "10-token-counting", "08-context-windows"]
 
 # Prompt Caching: The Feature Most Developers Ignore
 
+> **Pricing Note:** Caching discounts and requirements vary by provider and may change. Verify current caching policies on OpenAI, Anthropic, and Google's documentation before implementation.
+
 You're paying full price for the same system prompt 50,000 times a day.
 
 OpenAI, Anthropic, and Google all offer prompt caching—automatic discounts when your prompts share prefixes. Most developers don't know it exists. Those who do often structure their prompts wrong and miss the savings entirely.
