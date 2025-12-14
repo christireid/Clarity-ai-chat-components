@@ -8,20 +8,32 @@
  *
  * ## Hook Categories
  *
- * - **Chat Hooks**: Core chat and AI interaction hooks
- * - **Streaming Hooks**: Real-time streaming response hooks
- * - **Memory Hooks**: Conversation persistence hooks
- * - **Token Hooks**: Token counting and optimization hooks
- * - **Resilience Hooks**: Error handling and retry hooks
- * - **UI Hooks**: General UI utility hooks
- * - **Keyboard Hooks**: Keyboard navigation and shortcuts
- * - **Storage Hooks**: Data persistence (localStorage, IndexedDB)
- * - **Performance Hooks**: Performance optimization hooks
- * - **Theme Hooks**: Theme management hooks
- * - **Dashboard Hooks**: Analytics dashboard hooks
- * - **Security Hooks**: Security and validation hooks
+ * | Category | Description | Key Hooks |
+ * |----------|-------------|-----------|
+ * | **Chat** | Core chat and AI interaction | `useClarityChat`, `useChat`, `useAgent` |
+ * | **Streaming** | Real-time streaming responses | `useStreamingSSE`, `useStreamingWebSocket` |
+ * | **Memory** | Conversation persistence | `useMemoryStore`, `useMemoryContext` |
+ * | **Token** | Token counting and optimization | `useTokenBudgetMonitor`, `useTokenTracker` |
+ * | **Resilience** | Error handling and retry | `useCircuitBreaker`, `useRetryWithBackoff` |
+ * | **UI** | General UI utilities | `useReducedMotion`, `useClipboard` |
+ * | **Keyboard** | Keyboard navigation | `useKeyboardShortcuts`, `useKeyboardNavigation` |
+ * | **Storage** | Data persistence | `useLocalStorage`, `useIndexedDB` |
+ * | **Performance** | Performance optimization | `useRenderPerformance`, `useDeferredSearch` |
+ * | **Theme** | Theme management | `useThemeColors`, `useThemeAnalytics` |
  *
- * @example
+ * @example Basic usage
+ * ```tsx
+ * import { useClarityChat } from '@clarity-chat/react/hooks'
+ *
+ * function ChatComponent() {
+ *   const { messages, sendMessage, isLoading } = useClarityChat({
+ *     api: '/api/chat'
+ *   })
+ *   // ...
+ * }
+ * ```
+ *
+ * @example Multiple hooks
  * ```tsx
  * import {
  *   useClarityChat,
@@ -35,11 +47,15 @@
  */
 
 // =============================================================================
-// CHAT HOOKS (Primary)
+// PRIMARY CHAT HOOKS
+// These are the most commonly used hooks - explicitly exported for documentation
 // =============================================================================
 
 /**
- * Primary chat state management hook
+ * Primary chat state management hook.
+ * This is the main hook for building chat interfaces.
+ *
+ * @see {@link https://docs.clarity-chat.com/hooks/use-clarity-chat | Documentation}
  */
 export {
   useClarityChat,
@@ -54,7 +70,8 @@ export {
 } from './hooks/chat/use-clarity-chat'
 
 /**
- * Unified chat hook
+ * Unified chat hook with enhanced features.
+ * Use this for more control over chat behavior.
  */
 export {
   useChat,
@@ -63,7 +80,8 @@ export {
 } from './hooks/chat/use-chat-unified'
 
 /**
- * Structured output hook
+ * Hook for generating structured JSON objects with AI.
+ * Returns typed, validated objects instead of plain text.
  */
 export {
   useClarityObject,
@@ -72,36 +90,7 @@ export {
 } from './hooks/chat/use-clarity-object'
 
 /**
- * Enhanced chat hook with more features
- */
-export {
-  useChat as useChatEnhanced,
-  type UseChatOptions as UseChatEnhancedOptions,
-  type UseChatReturn as UseChatEnhancedReturn,
-  type CoreMessage,
-} from './hooks/chat/use-chat-enhanced'
-
-/**
- * Chat handlers hook
- */
-export {
-  useChatHandlers,
-  type UseChatHandlersOptions,
-  type ChatHandlers,
-} from './hooks/chat/use-chat-handlers'
-
-/**
- * Chat with tools hook
- */
-export {
-  useClarityChatWithTools,
-  type UseClarityChatWithToolsOptions,
-  type UseClarityChatWithToolsReturn,
-  type ExtractedToolResult,
-} from './hooks/chat/use-clarity-chat-with-tools'
-
-/**
- * Agent hook
+ * Hook for AI agent interactions with tool calling.
  */
 export {
   useAgent,
@@ -110,7 +99,8 @@ export {
 } from './hooks/chat/use-agent'
 
 /**
- * RAG pipeline hook
+ * Hook for RAG (Retrieval Augmented Generation) pipelines.
+ * Combines vector search with AI generation.
  */
 export {
   useRAGPipeline,
@@ -119,7 +109,7 @@ export {
 } from './hooks/chat/use-rag-pipeline'
 
 /**
- * Memory store hook
+ * Hook for persistent conversation memory.
  */
 export {
   useMemoryStore,
@@ -128,7 +118,7 @@ export {
 } from './hooks/storage/use-memory-store'
 
 /**
- * Chat history hook with undo/redo
+ * Hook for chat history with undo/redo support.
  */
 export {
   useChatHistory,
@@ -138,113 +128,59 @@ export {
 } from './hooks/chat/use-chat-history'
 
 /**
- * Legacy chat hook (deprecated)
- * @deprecated Use `useChat` instead
+ * Memory context hook for accessing the MemoryProvider.
  */
-export {
-  useChat as useChatLegacy,
-  type UseChatOptions as UseChatOptionsLegacy,
-  type UseChatReturn as UseChatReturnLegacy,
-} from './hooks/chat/use-chat'
-
-// Additional chat hooks from subdirectory
-export * from './hooks/chat/use-clarity-chat-helpers'
-export * from './hooks/chat/use-chat-core'
-export * from './hooks/chat/use-chat-simple'
-export * from './hooks/chat/use-chat-composable'
-export * from './hooks/chat/use-chat-with-operations'
-export * from './hooks/chat/use-completion'
-export * from './hooks/chat/use-assistant'
-
-// =============================================================================
-// STREAMING HOOKS
-// =============================================================================
-
-export * from './hooks/streaming'
-
-// =============================================================================
-// MEMORY HOOKS
-// =============================================================================
-
 export {
   useMemoryContext,
   type UseMemoryContextReturn,
 } from './memory/memory-provider'
 
 // =============================================================================
-// RESILIENCE HOOKS (AI-OPS)
+// ALL HOOKS BY DOMAIN
+// Re-exported from organized subdirectories
 // =============================================================================
 
+/** Chat hooks - core chat functionality */
+export * from './hooks/chat'
+
+/** Streaming hooks - SSE, WebSocket, and streaming utilities */
+export * from './hooks/streaming'
+
+/** Resilience hooks - circuit breaker, retry, deduplication */
 export * from './hooks/resilience'
 
-// =============================================================================
-// TOKEN HOOKS
-// =============================================================================
-
+/** Token hooks - budget monitoring, tracking, optimization */
 export * from './hooks/token'
 
-// =============================================================================
-// UI UTILITY HOOKS
-// =============================================================================
-
+/** UI hooks - clipboard, scroll, animations, etc. */
 export * from './hooks/ui'
 
-// =============================================================================
-// KEYBOARD HOOKS
-// =============================================================================
-
+/** Keyboard hooks - shortcuts and navigation */
 export * from './hooks/keyboard'
 
-// =============================================================================
-// STORAGE HOOKS
-// =============================================================================
-
+/** Storage hooks - localStorage, IndexedDB */
 export * from './hooks/storage'
 
-// =============================================================================
-// PERFORMANCE HOOKS
-// =============================================================================
-
+/** Performance hooks - render tracking, deferred operations */
 export * from './hooks/performance'
 
-// =============================================================================
-// THEME HOOKS
-// =============================================================================
-
+/** Theme hooks - colors, analytics, shortcuts */
 export * from './hooks/theme'
 
-// =============================================================================
-// DASHBOARD HOOKS
-// =============================================================================
-
+/** Dashboard hooks - analytics data */
 export * from './hooks/dashboard'
 
-// =============================================================================
-// INPUT HOOKS
-// =============================================================================
-
+/** Input hooks - voice, mobile keyboard */
 export * from './hooks/input'
 
-// =============================================================================
-// CONTEXT HOOKS
-// =============================================================================
-
+/** Context hooks - monitoring, management */
 export * from './hooks/context'
 
-// =============================================================================
-// MODEL HOOKS
-// =============================================================================
-
+/** Model hooks - routing, selection */
 export * from './hooks/model'
 
-// =============================================================================
-// MESSAGE HOOKS
-// =============================================================================
-
+/** Message hooks - history, operations */
 export * from './hooks/message'
 
-// =============================================================================
-// SECURITY HOOKS
-// =============================================================================
-
+/** Security hooks - validation, sanitization */
 export * from './hooks/security'

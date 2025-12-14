@@ -131,7 +131,8 @@
     "test:ui": "NODE_OPTIONS='--max-old-space-size=4096' vitest --ui",
     "test:coverage": "NODE_OPTIONS='--max-old-space-size=4096' vitest run --coverage",
     "size": "size-limit",
-    "size:why": "size-limit --why"
+    "size:why": "size-limit --why",
+    "verify-exports": "tsx scripts/verify-exports.ts"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

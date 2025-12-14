@@ -94,7 +94,7 @@ export type {
 export type {
   UseMemoryStoreOptions,
   UseMemoryStoreReturn,
-} from './hooks/chat/use-memory-store'
+} from './hooks/storage/use-memory-store'
 
 export type {
   ChatHistoryOptions,
