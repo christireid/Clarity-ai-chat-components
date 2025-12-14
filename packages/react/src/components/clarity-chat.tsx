@@ -40,6 +40,7 @@ import {
 import { ChatWindow } from './chat-window'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import { useToast } from './toast'
 
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** API endpoint URL - the only required prop */
@@ -162,8 +163,7 @@ export function ClarityChat({
     )
   }
 
-  // Create abort controller ref for stop generation
-  const abortControllerRef = React.useRef<AbortController | null>(null)
+  const toast = useToast()
 
   const chat = useClarityChat({
     api,
@@ -179,27 +179,21 @@ export function ClarityChat({
   const handleSendMessage = React.useCallback(
     async (content: string) => {
       try {
-        // Create new abort controller for this request
-        abortControllerRef.current = new AbortController()
         await chat.append({ role: 'user', content })
       } catch (error) {
-        // Only log if not aborted - aborts are intentional
+        // Only show error if not aborted - aborts are intentional
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Failed to send message:', error)
+          toast?.error('Failed to send message. Please try again.')
         }
       }
     },
-    [chat]
+    [chat, toast]
   )
 
   const handleStopGeneration = React.useCallback(() => {
-    // Abort current request if active
-    abortControllerRef.current?.abort()
-    abortControllerRef.current = null
-    // Also use chat's stop method if available
-    if ('stop' in chat && typeof chat.stop === 'function') {
-      ;(chat as { stop: () => void }).stop()
-    }
+    // Use the chat's built-in stop method to cancel streaming
+    chat.stop()
   }, [chat])
 
   const handleClear = React.useCallback(() => {
@@ -228,6 +222,7 @@ export function ClarityChat({
         )
         if (messageIndex === -1) {
           console.warn('Cannot regenerate: message not found')
+          toast?.error('Cannot regenerate: message not found')
           return
         }
 
@@ -239,6 +234,7 @@ export function ClarityChat({
 
         if (!userMessage) {
           console.warn('Cannot regenerate: no preceding user message found')
+          toast?.error('Cannot regenerate: no previous message to resend')
           return
         }
 
@@ -247,17 +243,17 @@ export function ClarityChat({
         chat.setMessages(newMessages)
 
         // Resend the user message
-        abortControllerRef.current = new AbortController()
         await chat.append({ role: 'user', content: userMessage.content })
 
         onRegenerateMessage?.(messageId)
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Failed to regenerate message:', error)
+          toast?.error('Failed to regenerate response. Please try again.')
         }
       }
     },
-    [chat, onRegenerateMessage]
+    [chat, onRegenerateMessage, toast]
   )
 
   return (

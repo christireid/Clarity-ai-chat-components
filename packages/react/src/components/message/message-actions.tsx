@@ -318,6 +318,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
     const isAssistantMessage = role === 'assistant'
 
     const actionsRef = React.useRef<HTMLDivElement>(null)
+    const [focusedIndex, setFocusedIndex] = React.useState(-1)
 
     // Cleanup delete timeout on unmount
     React.useEffect(() => {
@@ -327,6 +328,13 @@ export const MessageActions = React.memo<MessageActionsProps>(
         }
       }
     }, [])
+
+    // Reset focused index when visibility changes
+    React.useEffect(() => {
+      if (!show && !alwaysVisible) {
+        setFocusedIndex(-1)
+      }
+    }, [show, alwaysVisible])
 
     const handleDelete = React.useCallback(() => {
       if (isDeleting) return // Prevent double-clicks
@@ -371,46 +379,86 @@ export const MessageActions = React.memo<MessageActionsProps>(
       toast?.info('Generation stopped')
     }, [onStopGeneration, toast])
 
-    // Keyboard navigation handler for arrow keys within the actions toolbar
-    const handleKeyDown = React.useCallback((e: React.KeyboardEvent) => {
+    // Get all focusable buttons in the toolbar
+    const getButtons = React.useCallback(() => {
       const container = actionsRef.current
-      if (!container) return
-
-      if (e.key === 'Enter' || e.key === ' ') {
-        const active = document.activeElement as HTMLElement | null
-        if (
-          active &&
-          container.contains(active) &&
-          active.tagName === 'BUTTON'
-        ) {
-          e.preventDefault()
-          ;(active as HTMLButtonElement).click()
-          return
-        }
-      }
-
-      const buttons = Array.from(
+      if (!container) return []
+      return Array.from(
         container.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
       )
-      const currentIndex = buttons.indexOf(
-        document.activeElement as HTMLButtonElement
-      )
+    }, [])
 
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault()
-        const nextIndex = (currentIndex + 1) % buttons.length
-        buttons[nextIndex]?.focus()
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault()
-        const prevIndex = (currentIndex - 1 + buttons.length) % buttons.length
-        buttons[prevIndex]?.focus()
-      } else if (e.key === 'Home') {
-        e.preventDefault()
-        buttons[0]?.focus()
-      } else if (e.key === 'End') {
-        e.preventDefault()
-        buttons[buttons.length - 1]?.focus()
-      }
+    // Keyboard navigation handler for arrow keys within the actions toolbar
+    // Implements roving tabindex pattern for proper accessibility
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent) => {
+        const buttons = getButtons()
+        if (buttons.length === 0) return
+
+        const currentIndex = buttons.indexOf(
+          document.activeElement as HTMLButtonElement
+        )
+
+        let newIndex = currentIndex
+
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'ArrowDown':
+            e.preventDefault()
+            newIndex =
+              currentIndex === -1 ? 0 : (currentIndex + 1) % buttons.length
+            break
+          case 'ArrowLeft':
+          case 'ArrowUp':
+            e.preventDefault()
+            newIndex =
+              currentIndex === -1
+                ? buttons.length - 1
+                : (currentIndex - 1 + buttons.length) % buttons.length
+            break
+          case 'Home':
+            e.preventDefault()
+            newIndex = 0
+            break
+          case 'End':
+            e.preventDefault()
+            newIndex = buttons.length - 1
+            break
+          case 'Enter':
+          case ' ':
+            // Let the button's own click handler work
+            return
+          default:
+            return
+        }
+
+        if (newIndex !== currentIndex && buttons[newIndex]) {
+          buttons[newIndex].focus()
+          setFocusedIndex(newIndex)
+        }
+      },
+      [getButtons]
+    )
+
+    // Handle focus entering the toolbar - focus first button
+    const handleFocus = React.useCallback(
+      (e: React.FocusEvent) => {
+        // Only handle if focus is entering the toolbar (not moving within it)
+        if (e.target === actionsRef.current) {
+          const buttons = getButtons()
+          if (buttons.length > 0) {
+            const indexToFocus = focusedIndex >= 0 ? focusedIndex : 0
+            buttons[indexToFocus]?.focus()
+            setFocusedIndex(indexToFocus)
+          }
+        }
+      },
+      [getButtons, focusedIndex]
+    )
+
+    // Track which button is focused
+    const handleButtonFocus = React.useCallback((index: number) => {
+      setFocusedIndex(index)
     }, [])
 
     // Don't render if not shown and not always visible
@@ -434,8 +482,10 @@ export const MessageActions = React.memo<MessageActionsProps>(
             }}
             role="toolbar"
             aria-label="Message actions"
+            tabIndex={0}
             onKeyDown={handleKeyDown}
-            className="flex items-center gap-1 overflow-hidden mt-3"
+            onFocus={handleFocus}
+            className="flex items-center gap-1 overflow-hidden mt-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
           >
             {/* Stop button - shown during streaming for assistant messages */}
             {isStreaming && isAssistantMessage && onStopGeneration && (
