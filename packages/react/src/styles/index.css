@@ -1006,6 +1006,23 @@ body {
   .motion-safe\:animate-fade-in {
     opacity: 1;
   }
+
+  /* Disable new enhanced animations for reduced motion */
+  .clarity-empty-state-icon,
+  .clarity-thinking-dot,
+  .clarity-shine::before {
+    animation: none !important;
+  }
+
+  /* Remove transform-based hover effects */
+  .clarity-message-bubble:hover,
+  .clarity-starter-prompt:hover,
+  .clarity-suggestion-chip:hover,
+  .clarity-card-hover:hover,
+  .clarity-scroll-button:hover,
+  .clarity-send-button:hover:not(:disabled) {
+    transform: none !important;
+  }
 }
 
 /* Motion-safe utility: Only animate when motion is preferred */

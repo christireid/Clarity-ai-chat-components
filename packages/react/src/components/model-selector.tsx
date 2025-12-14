@@ -150,10 +150,10 @@ export function ModelSelector({
                 aria-selected={model.id === value}
                 onClick={() => handleSelect(model)}
                 className={cn(
-                  'w-full px-4 py-3 text-left transition-colors duration-150 ease-out first:rounded-t-2xl last:rounded-b-2xl',
+                  'w-full px-4 py-3.5 text-left transition-all duration-150 ease-out first:rounded-t-2xl last:rounded-b-2xl',
                   model.id === value
-                    ? 'bg-muted/60 text-foreground'
-                    : 'text-muted-foreground/90 hover:bg-muted/40 hover:text-foreground'
+                    ? 'bg-gradient-to-r from-primary/10 to-primary/5 text-foreground border-l-2 border-primary'
+                    : 'text-muted-foreground/90 hover:bg-muted/30 hover:text-foreground hover:pl-5'
                 )}
               >
                 <div className="flex flex-col gap-2">

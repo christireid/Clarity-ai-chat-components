@@ -156,8 +156,17 @@ export function FileUpload({
         className={cn(
           'relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ease-out cursor-pointer',
           isDragging
-            ? 'border-primary bg-primary/10 shadow-lg scale-[1.02]'
-            : 'border-border/40 hover:border-primary/50 hover:bg-accent/50 hover:shadow-md'
+            ? [
+                'border-primary bg-gradient-to-br from-primary/10 to-primary/5',
+                'shadow-[0_8px_30px_-8px_hsl(var(--primary)/0.25)]',
+                'scale-[1.01]',
+              ]
+            : [
+                'border-border/40',
+                'bg-gradient-to-br from-card/50 to-muted/30',
+                'hover:border-primary/40 hover:bg-gradient-to-br hover:from-primary/5 hover:to-transparent',
+                'hover:shadow-md',
+              ]
         )}
         onClick={() => fileInputRef.current?.click()}
       >

@@ -229,7 +229,16 @@ export function VoiceInput({
           variant={variant === 'primary' ? 'default' : variant === 'secondary' ? 'secondary' : 'ghost'}
           onClick={handleToggle}
           disabled={disabled}
-          className={cn('rounded-full', className)}
+          className={cn(
+            'rounded-full transition-all duration-200',
+            voice.isListening && [
+              'bg-destructive text-destructive-foreground',
+              'shadow-[0_0_20px_-4px_hsl(var(--destructive)/0.5)]',
+              'scale-105',
+            ],
+            !voice.isListening && 'hover:scale-105',
+            className
+          )}
           aria-label={voice.isListening ? 'Stop recording' : tooltipText || 'Start voice input'}
           title={voice.isListening ? 'Stop recording' : tooltipText}
         >
