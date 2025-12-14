@@ -4,7 +4,7 @@
 
 ### **Build Beautiful AI Chat Interfaces in Minutes, Not Months**
 
-*The most complete, production-ready AI chat component library for React*
+_The most complete, production-ready AI chat component library for React_
 
 <p align="center">
   <a href="https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/ci.yml">
@@ -132,13 +132,13 @@ Building an AI chat interface from scratch is **hard**. You need:
 
 **Clarity Chat gives you all of this out of the box.**
 
-| Without Clarity Chat | With Clarity Chat |
-|---------------------|-------------------|
-| Weeks of development | Minutes to production |
+| Without Clarity Chat       | With Clarity Chat         |
+| -------------------------- | ------------------------- |
+| Weeks of development       | Minutes to production     |
 | 10+ dependencies to manage | 1 package, tree-shakeable |
-| DIY accessibility | WCAG AAA built-in |
-| Custom error handling | Battle-tested recovery |
-| Manual token counting | Automatic optimization |
+| DIY accessibility          | WCAG AAA built-in         |
+| Custom error handling      | Battle-tested recovery    |
+| Manual token counting      | Automatic optimization    |
 
 **Stop building infrastructure. Start shipping features.**
 
@@ -171,7 +171,7 @@ const optimized = await optimizeData(largeObject)
 // Result: 60% fewer tokens, $0.05 instead of $0.12
 ```
 
-📖 **[Token Optimization Guide](./TOKEN_OPTIMIZATION_SUMMARY.md)**
+📖 **[Token Optimization Guide](./docs/cookbook.md#token-optimization)**
 
 ### 2. 🛡️ Enterprise Security (OWASP LLM Top 10 2025)
 
@@ -197,7 +197,7 @@ const { messages, sendMessage } = useSecureChat({
 // Your chat is now protected against OWASP LLM Top 10 threats
 ```
 
-📖 **[Security Guide](./SECURITY_GUIDE.md)** • 🎮
+📖 **[Security Guide](./SECURITY.md)** • 🎮
 **[Try Security Playground](apps/docs/app/playground/security/)**
 
 ### 3. 🔐 Enhanced Enterprise Features
@@ -225,7 +225,7 @@ webhooks.register({
 })
 ```
 
-📖 **[Enterprise Features Guide](./ENTERPRISE_FEATURES_SUMMARY.md)**
+📖 **[Enterprise Features Guide](./docs/best-practices.md)**
 
 ---
 
@@ -368,7 +368,7 @@ import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
 **Total:** ~13.5 KB gzipped • **All features tree-shakeable**
 
-📖 **[Quick Wins Documentation](./ADVANCED_FEATURES_QUICK_WINS.md)** • 💡
+📖 **[Quick Wins Documentation](./docs/getting-started.md)** • 💡
 **[Examples](./examples/advanced-features/)**
 
 ---
@@ -409,6 +409,7 @@ export default function App() {
 ### 3. Done!
 
 You now have a production-ready chat with:
+
 - Streaming responses with auto-reconnection
 - Beautiful animations and transitions
 - Full keyboard navigation (Shift+? for shortcuts)
@@ -428,7 +429,7 @@ import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 function App() {
   const { messages, append, isLoading, error, retry } = useClarityChat({
     api: '/api/chat',
-    stream: true,           // Enable streaming
+    stream: true, // Enable streaming
     onError: (e) => console.error(e),
   })
 
@@ -453,11 +454,7 @@ function App() {
 import { ClarityChatPresets } from '@clarity-chat/react'
 
 // Automatic context management
-<ClarityChatPresets.WithMemory
-  api="/api/chat"
-  memoryStrategy="sliding-window"
-  maxTokens={4000}
-/>
+;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
 ```
 
 </details>
@@ -469,12 +466,7 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 import { ClarityChatPresets } from '@clarity-chat/react'
 
 // All features enabled
-<ClarityChatPresets.Enterprise
-  api="/api/chat"
-  enableRAG
-  enableSafety
-  enableAnalytics
-/>
+;<ClarityChatPresets.Enterprise api="/api/chat" enableRAG enableSafety enableAnalytics />
 ```
 
 </details>
@@ -485,7 +477,7 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 ```tsx
 import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
 
-<ThemeProvider theme="glassmorphism">
+;<ThemeProvider theme="glassmorphism">
   <ClarityChat api="/api/chat" />
 </ThemeProvider>
 
@@ -837,7 +829,7 @@ import { ThemeProvider, themes } from '@clarity-chat/react'
 - ♿ **WCAG AAA Focus States**: Enhanced accessibility
 - 🌈 **Polished Color System**: Better contrast & hierarchy
 
-**[→ Design System Guide](./DESIGN_SYSTEM_GUIDE.md)**
+**[→ Design System Guide](./docs/architecture.md)**
 
 ---
 
@@ -1456,19 +1448,21 @@ Pre-built prompt templates for common tasks:
 
 ## 🎨 Theme System
 
-### Built-in Themes (11)
+### Built-in Themes (13)
 
-- **default** - Clean, professional
-- **dark** - Dark mode
+- **default** - Clean, professional (light/dark)
+- **neutral** - Balanced gray tones
+- **vibrant** - Bold, colorful design
+- **high-contrast** - Accessibility-focused
 - **ocean** - Blue ocean vibes 🌊
-- **glassmorphism** - Modern glass effect ✨
 - **sunset** - Warm sunset colors 🌅
 - **forest** - Green nature theme 🌲
-- **corporate** - Professional business 💼
-- **neon** - Cyberpunk neon 💜
-- **minimal** - Ultra minimal
-- **warm** - Cozy warm tones 🔥
-- **cool** - Cool blue/gray ❄️
+- **midnight** - Deep dark theme 🌙
+- **amber** - Warm amber tones 🔥
+- **emerald** - Fresh green design 💚
+- **rose** - Soft pink tones 🌸
+- **slate** - Professional gray/blue
+- **base** - Minimal foundation theme
 
 ### Theme Features
 
@@ -1538,7 +1532,7 @@ Pre-built prompt templates for common tasks:
 - [Streaming Messages](./apps/docs/guide/streaming.md)
 - [Error Handling](./apps/docs/guide/error-handling.md)
 - [Accessibility](./apps/docs/guide/accessibility.md)
-- [Performance Guide](./PERFORMANCE_GUIDE.md)
+- [Performance Guide](./docs/best-practices.md#performance)
 - [Troubleshooting](./docs/TROUBLESHOOTING.md) - Common issues and solutions
 
 ### API Reference
@@ -1855,7 +1849,9 @@ We welcome contributions! See our [Contributing Guide](./CONTRIBUTING.md) for de
 
 ### 📝 Documentation Hygiene
 
-**Important**: Please review our [Documentation Policy](./.github/DOCUMENTATION_POLICY.md) before adding documentation files. We maintain a clean repository structure by:
+**Important**: Please review our [Documentation Policy](./.github/DOCUMENTATION_POLICY.md) before
+adding documentation files. We maintain a clean repository structure by:
+
 - ✅ Keeping only essential documentation in the repository
 - 📦 Archiving completed work to `.archive/`
 - ❌ Not committing status reports, phase summaries, or temporary notes
