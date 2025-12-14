@@ -103,6 +103,12 @@ apps/storybook/stories/**/*.js.map
 apps/storybook/stories/**/*.d.ts
 apps/storybook/stories/**/*.d.ts.map
 
+# Package story build artifacts
+packages/*/stories/**/*.js
+packages/*/stories/**/*.d.ts
+packages/*/stories/**/*.js.map
+packages/*/stories/**/*.d.ts.map
+
 # Playwright visual diffs (generated)
 tests/visual/__diff_output__/
 

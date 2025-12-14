@@ -68,9 +68,34 @@ export async function POST(request: NextRequest) {
     // Parse request body
     const body = (await request.json()) as RequestBody
 
+    // Input validation
+    const MAX_MESSAGE_LENGTH = 10000 // 10KB max message length
+    const MAX_MESSAGES_COUNT = 50 // Max conversation history
+
     if (!body.message) {
       return NextResponse.json(
         { error: 'Message is required' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      typeof body.message !== 'string' ||
+      body.message.length > MAX_MESSAGE_LENGTH
+    ) {
+      return NextResponse.json(
+        {
+          error: `Message must be a string under ${MAX_MESSAGE_LENGTH} characters`,
+        },
+        { status: 400 }
+      )
+    }
+
+    if (body.messages && body.messages.length > MAX_MESSAGES_COUNT) {
+      return NextResponse.json(
+        {
+          error: `Conversation history limited to ${MAX_MESSAGES_COUNT} messages`,
+        },
         { status: 400 }
       )
     }
