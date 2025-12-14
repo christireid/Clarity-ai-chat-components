@@ -96,4 +96,32 @@ export default defineConfig([
     ...commonConfig,
     clean: false,
   },
+  // Hooks entry
+  {
+    entry: { hooks: 'src/hooks.ts' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
+  // Types entry
+  {
+    entry: { types: 'src/types.ts' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
+  // Components entry
+  {
+    entry: { 'components/index': 'src/components/index.ts' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
+  // Exports entry (structured API reference)
+  {
+    entry: { exports: 'src/exports.ts' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
 ])

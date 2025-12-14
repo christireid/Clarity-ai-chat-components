@@ -14,7 +14,7 @@
  */
 
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import { estimateTokens as centralEstimateTokens } from './tokenization/estimator'
+import { estimateTokens as centralEstimateTokens } from '../tokenization/estimator'
 
 // ============================================================================
 // Types
@@ -300,7 +300,7 @@ export function shortenPrompt(
 
 /**
  * Estimate token count using centralized estimator
- * @deprecated Import { estimateTokens } from './tokenization/estimator' directly for model-specific estimation
+ * @deprecated Import { estimateTokens } from '../tokenization/estimator' directly for model-specific estimation
  */
 export function estimateTokens(text: string): number {
   return centralEstimateTokens(text)

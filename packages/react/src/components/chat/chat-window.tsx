@@ -4,14 +4,17 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
-import { duration } from '../animations/constants'
-import { MessageList } from './message-list'
+import { duration } from '../../animations/constants'
+import MessageList from './virtualized-message-list'
 import { ChatInput } from './chat-input'
-import { ThinkingIndicator } from './thinking-indicator'
-import { BotIcon, SparklesIcon } from './icons'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
-import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
+import { ThinkingIndicator } from '../message/thinking-indicator'
+import { BotIcon, SparklesIcon } from '../ui/icons'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import { convertCoreMessagesToMessages } from '../../utils/message'
+import {
+  PromptSuggestions,
+  type PromptSuggestion,
+} from '../prompt/prompt-suggestions'
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */

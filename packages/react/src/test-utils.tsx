@@ -11,7 +11,7 @@ import {
   type RenderOptions,
   type RenderResult,
 } from '@testing-library/react'
-import { ToastProvider } from './components/toast'
+import { ToastProvider } from './components/ui/toast'
 
 /**
  * Props for the AllProviders wrapper component

@@ -44,6 +44,26 @@
       "import": "./dist/core.mjs",
       "require": "./dist/core.js"
     },
+    "./hooks": {
+      "types": "./dist/hooks.d.ts",
+      "import": "./dist/hooks.mjs",
+      "require": "./dist/hooks.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.mjs",
+      "require": "./dist/types.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.mjs",
+      "require": "./dist/components/index.js"
+    },
+    "./exports": {
+      "types": "./dist/exports.d.ts",
+      "import": "./dist/exports.mjs",
+      "require": "./dist/exports.js"
+    },
     "./animations": {
       "types": "./dist/animations/index.d.ts",
       "import": "./dist/animations/index.mjs",

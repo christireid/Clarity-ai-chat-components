@@ -40,7 +40,7 @@ import * as React from 'react'
 import {
   useChat as useChatEnhanced,
   type CoreMessage,
-} from '../use-chat-enhanced'
+} from '../chat/use-chat-enhanced'
 
 // Prompt optimization imports
 import { buildModelPrompt } from '../../prompt/core/builder'

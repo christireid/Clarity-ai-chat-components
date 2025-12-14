@@ -10,7 +10,7 @@ import {
   FileIcon,
   SparklesIcon,
   CheckCircleIcon,
-} from './icons'
+} from '../ui/icons'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,

@@ -17,7 +17,10 @@
  * ```
  */
 
-import { calculateRetryDelay, type RateLimitInfo } from './rate-limit-headers'
+import {
+  calculateRetryDelay,
+  type RateLimitInfo,
+} from '../api/rate-limit-headers'
 
 export interface RetryOptions {
   /** Maximum number of retry attempts (default: 3) */

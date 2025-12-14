@@ -20,7 +20,7 @@ import rehypeKatex from 'rehype-katex'
 import rehypeRaw from 'rehype-raw'
 import { cn } from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
-import { DownloadIcon, WrapTextIcon } from './icons'
+import { DownloadIcon, WrapTextIcon } from '../ui/icons'
 import { CodeWindowHeader } from './code/CodeWindowHeader'
 import { MarkdownCodeBlock } from './message/markdown-code-block'
 

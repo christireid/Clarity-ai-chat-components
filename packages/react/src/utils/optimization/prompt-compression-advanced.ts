@@ -14,7 +14,7 @@
  * @module utils/prompt-compression-advanced
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface SemanticCompressionOptions {
   /** Target compression ratio (0.1-0.9, default 0.5 = 50% of original) */
@@ -67,20 +67,133 @@ export interface SemanticCompressionResult {
  * Common English stop words (low importance)
  */
 const STOP_WORDS = new Set([
-  'a', 'an', 'the', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 'be',
-  'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
-  'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'dare',
-  'ought', 'used', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from',
-  'up', 'about', 'into', 'through', 'during', 'before', 'after', 'above',
-  'below', 'between', 'under', 'again', 'further', 'then', 'once', 'here',
-  'there', 'when', 'where', 'why', 'how', 'all', 'each', 'few', 'more',
-  'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own',
-  'same', 'so', 'than', 'too', 'very', 'just', 'also', 'now', 'this',
-  'that', 'these', 'those', 'i', 'me', 'my', 'myself', 'we', 'our', 'ours',
-  'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him',
-  'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-  'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who',
-  'whom', 'as', 'if', 'because', 'while', 'although', 'however', 'therefore',
+  'a',
+  'an',
+  'the',
+  'and',
+  'or',
+  'but',
+  'is',
+  'are',
+  'was',
+  'were',
+  'be',
+  'been',
+  'being',
+  'have',
+  'has',
+  'had',
+  'do',
+  'does',
+  'did',
+  'will',
+  'would',
+  'could',
+  'should',
+  'may',
+  'might',
+  'must',
+  'shall',
+  'can',
+  'need',
+  'dare',
+  'ought',
+  'used',
+  'to',
+  'of',
+  'in',
+  'for',
+  'on',
+  'with',
+  'at',
+  'by',
+  'from',
+  'up',
+  'about',
+  'into',
+  'through',
+  'during',
+  'before',
+  'after',
+  'above',
+  'below',
+  'between',
+  'under',
+  'again',
+  'further',
+  'then',
+  'once',
+  'here',
+  'there',
+  'when',
+  'where',
+  'why',
+  'how',
+  'all',
+  'each',
+  'few',
+  'more',
+  'most',
+  'other',
+  'some',
+  'such',
+  'no',
+  'nor',
+  'not',
+  'only',
+  'own',
+  'same',
+  'so',
+  'than',
+  'too',
+  'very',
+  'just',
+  'also',
+  'now',
+  'this',
+  'that',
+  'these',
+  'those',
+  'i',
+  'me',
+  'my',
+  'myself',
+  'we',
+  'our',
+  'ours',
+  'ourselves',
+  'you',
+  'your',
+  'yours',
+  'yourself',
+  'yourselves',
+  'he',
+  'him',
+  'his',
+  'himself',
+  'she',
+  'her',
+  'hers',
+  'herself',
+  'it',
+  'its',
+  'itself',
+  'they',
+  'them',
+  'their',
+  'theirs',
+  'themselves',
+  'what',
+  'which',
+  'who',
+  'whom',
+  'as',
+  'if',
+  'because',
+  'while',
+  'although',
+  'however',
+  'therefore',
 ])
 
 /**
@@ -90,11 +203,56 @@ const BOOST_WORDS = {
   // Question words (high importance)
   question: ['what', 'who', 'where', 'when', 'why', 'how', 'which', 'whose'],
   // Action words (medium importance)
-  action: ['create', 'build', 'make', 'generate', 'write', 'implement', 'define', 'explain', 'describe', 'analyze', 'list', 'find', 'get', 'set', 'add', 'remove', 'update', 'delete'],
+  action: [
+    'create',
+    'build',
+    'make',
+    'generate',
+    'write',
+    'implement',
+    'define',
+    'explain',
+    'describe',
+    'analyze',
+    'list',
+    'find',
+    'get',
+    'set',
+    'add',
+    'remove',
+    'update',
+    'delete',
+  ],
   // Constraint words (high importance)
-  constraint: ['must', 'should', 'required', 'important', 'critical', 'essential', 'necessary', 'only', 'never', 'always', 'exactly'],
+  constraint: [
+    'must',
+    'should',
+    'required',
+    'important',
+    'critical',
+    'essential',
+    'necessary',
+    'only',
+    'never',
+    'always',
+    'exactly',
+  ],
   // Code keywords (medium importance)
-  code: ['function', 'class', 'const', 'let', 'var', 'return', 'import', 'export', 'async', 'await', 'interface', 'type', 'enum'],
+  code: [
+    'function',
+    'class',
+    'const',
+    'let',
+    'var',
+    'return',
+    'import',
+    'export',
+    'async',
+    'await',
+    'interface',
+    'type',
+    'enum',
+  ],
 }
 
 /**
@@ -105,14 +263,14 @@ function tokenize(text: string): string[] {
     .toLowerCase()
     .replace(/[^\w\s]/g, ' ')
     .split(/\s+/)
-    .filter(t => t.length > 0)
+    .filter((t) => t.length > 0)
 }
 
 /**
  * Calculate term frequency (TF) for a term in a document
  */
 function calculateTF(term: string, document: string[]): number {
-  const termCount = document.filter(t => t === term).length
+  const termCount = document.filter((t) => t === term).length
   return termCount / document.length
 }
 
@@ -199,7 +357,7 @@ export function calculateTokenImportance(
   tokens: string[],
   context?: string
 ): TokenImportance[] {
-  const document = tokens.map(t => t.toLowerCase())
+  const document = tokens.map((t) => t.toLowerCase())
   const importanceScores: TokenImportance[] = []
 
   // Calculate TF-IDF for each token
@@ -222,7 +380,7 @@ export function calculateTokenImportance(
   }
 
   // Calculate raw importance (TF-IDF * boost)
-  const rawScores = importanceScores.map(s => s.tfidf * s.boost)
+  const rawScores = importanceScores.map((s) => s.tfidf * s.boost)
   const maxRaw = Math.max(...rawScores, 0.001)
 
   // Normalize to [0-1]
@@ -269,7 +427,7 @@ function extractPreservedBlocks(text: string): {
   while ((match = inlineCodeRegex.exec(text)) !== null) {
     // Skip if inside a code block
     const isInsideBlock = blocks.some(
-      b => match!.index >= b.startIndex && match!.index < b.endIndex
+      (b) => match!.index >= b.startIndex && match!.index < b.endIndex
     )
     if (!isInsideBlock) {
       blocks.push({
@@ -321,11 +479,36 @@ function restorePreservedBlocks(
 function splitIntoSentences(text: string): string[] {
   // Protect common abbreviations by replacing with placeholders
   const abbreviations = [
-    'Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.', 'Jr.', 'Sr.',
-    'Inc.', 'Ltd.', 'Corp.', 'Co.',
-    'U.S.', 'U.K.', 'E.U.',
-    'e.g.', 'i.e.', 'vs.', 'etc.', 'viz.',
-    'Jan.', 'Feb.', 'Mar.', 'Apr.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.',
+    'Mr.',
+    'Mrs.',
+    'Ms.',
+    'Dr.',
+    'Prof.',
+    'Jr.',
+    'Sr.',
+    'Inc.',
+    'Ltd.',
+    'Corp.',
+    'Co.',
+    'U.S.',
+    'U.K.',
+    'E.U.',
+    'e.g.',
+    'i.e.',
+    'vs.',
+    'etc.',
+    'viz.',
+    'Jan.',
+    'Feb.',
+    'Mar.',
+    'Apr.',
+    'Jun.',
+    'Jul.',
+    'Aug.',
+    'Sep.',
+    'Oct.',
+    'Nov.',
+    'Dec.',
   ]
 
   let protectedText = text
@@ -346,13 +529,15 @@ function splitIntoSentences(text: string): string[] {
   const sentences = protectedText.match(/[^.!?]+[.!?]+\s*/g) || [protectedText]
 
   // Restore abbreviations and decimals
-  return sentences.map(sentence => {
-    let restored = sentence
-    for (const [placeholder, abbr] of placeholders) {
-      restored = restored.split(placeholder).join(abbr)
-    }
-    return restored.replace(/__DECIMAL__/g, '.')
-  }).filter(s => s.trim().length > 0)
+  return sentences
+    .map((sentence) => {
+      let restored = sentence
+      for (const [placeholder, abbr] of placeholders) {
+        restored = restored.split(placeholder).join(abbr)
+      }
+      return restored.replace(/__DECIMAL__/g, '.')
+    })
+    .filter((s) => s.trim().length > 0)
 }
 
 /**
@@ -398,10 +583,13 @@ function compressWithImportance(
   // Score each sentence by average token importance
   const sentenceScores = sentences.map((sentence, idx) => {
     const sentenceTokens = tokenize(sentence)
-    const sentenceImportance = sentenceTokens.reduce((sum, token) => {
-      const score = importanceScores.find(s => s.token.toLowerCase() === token.toLowerCase())
-      return sum + (score?.importance ?? 0.5)
-    }, 0) / sentenceTokens.length
+    const sentenceImportance =
+      sentenceTokens.reduce((sum, token) => {
+        const score = importanceScores.find(
+          (s) => s.token.toLowerCase() === token.toLowerCase()
+        )
+        return sum + (score?.importance ?? 0.5)
+      }, 0) / sentenceTokens.length
 
     return {
       sentence,
@@ -429,16 +617,16 @@ function compressWithImportance(
   keptSentences.sort((a, b) => a.index - b.index)
 
   // Build compressed text
-  const compressed = keptSentences.map(s => s.sentence.trim()).join(' ')
+  const compressed = keptSentences.map((s) => s.sentence.trim()).join(' ')
 
   // Track kept/removed tokens
   const keptTokenSet = new Set(tokenize(compressed))
-  const keptTokens = importanceScores.filter(s =>
+  const keptTokens = importanceScores.filter((s) =>
     keptTokenSet.has(s.token.toLowerCase())
   )
   const removedTokens = importanceScores
-    .filter(s => !keptTokenSet.has(s.token.toLowerCase()))
-    .map(s => s.token)
+    .filter((s) => !keptTokenSet.has(s.token.toLowerCase()))
+    .map((s) => s.token)
 
   return {
     compressed,
@@ -446,7 +634,8 @@ function compressWithImportance(
     compressedTokens: estimateTokens(compressed),
     compressionRatio: estimateTokens(compressed) / originalTokens,
     tokensSaved: originalTokens - estimateTokens(compressed),
-    savingsPercent: ((originalTokens - estimateTokens(compressed)) / originalTokens) * 100,
+    savingsPercent:
+      ((originalTokens - estimateTokens(compressed)) / originalTokens) * 100,
     keptTokens,
     removedTokens,
   }
@@ -508,7 +697,10 @@ export function compressPromptSemantic(
 
   // Restore preserved blocks
   if (preserveStructure && preservedBlocks.length > 0) {
-    result.compressed = restorePreservedBlocks(result.compressed, preservedBlocks)
+    result.compressed = restorePreservedBlocks(
+      result.compressed,
+      preservedBlocks
+    )
     result.compressedTokens = estimateTokens(result.compressed)
     result.compressionRatio = result.compressedTokens / originalTokens
     result.tokensSaved = originalTokens - result.compressedTokens
@@ -520,7 +712,10 @@ export function compressPromptSemantic(
   if (result.compressedTokens < minTokens) {
     // Return more of the original if we compressed too much
     const safeRatio = minTokens / originalTokens
-    return compressPromptSemantic(prompt, { ...options, targetRatio: safeRatio })
+    return compressPromptSemantic(prompt, {
+      ...options,
+      targetRatio: safeRatio,
+    })
   }
 
   return result
@@ -607,11 +802,11 @@ export function estimateCompressibility(prompt: string): {
   reason: string
 } {
   const tokens = tokenize(prompt)
-  const stopWordCount = tokens.filter(t => STOP_WORDS.has(t)).length
+  const stopWordCount = tokens.filter((t) => STOP_WORDS.has(t)).length
   const stopWordRatio = stopWordCount / tokens.length
 
   // High stop word ratio = more compressible
-  const estimatedRatio = 1 - (stopWordRatio * 0.6)
+  const estimatedRatio = 1 - stopWordRatio * 0.6
 
   const isCompressible = tokens.length >= 100 && stopWordRatio > 0.3
 

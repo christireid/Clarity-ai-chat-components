@@ -8,7 +8,7 @@ import { TimeSeparator } from './time-separator'
 import { ScrollArea, Button, cn, useA11y } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { ArrowDownIcon } from './icons'
+import { ArrowDownIcon } from '../ui/icons'
 import { SkeletonMessage } from './skeleton'
 import {
   createStaggerContainerVariant,

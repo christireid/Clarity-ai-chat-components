@@ -25,11 +25,11 @@
 
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { useMessageOperations } from './use-message-operations'
+import { useMessageOperations } from '../message/use-message-operations'
 import {
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
-} from '../utils/message-conversion'
+} from '../../utils/message'
 import type { Message } from '@clarity-chat/types'
 
 /**
