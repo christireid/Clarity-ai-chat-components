@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useMobileKeyboard - Clarity Chat Components',
-  description: 'Detect mobile keyboard visibility and height for improved mobile UX.',
+  description:
+    'Detect mobile keyboard visibility and height for improved mobile UX.',
 }
 
 const optionsProps: Prop[] = [
@@ -47,7 +46,8 @@ export default function UseMobileKeyboardPage() {
         <span className="docs-badge">Hook</span>
         <h1>useMobileKeyboard</h1>
         <p className="docs-lead">
-          Detect mobile keyboard visibility and height for improved mobile UX with auto-scroll and viewport handling.
+          Detect mobile keyboard visibility and height for improved mobile UX
+          with auto-scroll and viewport handling.
         </p>
       </div>
 
@@ -63,9 +63,7 @@ export default function UseMobileKeyboardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Detect keyboard visibility and adjust UI:
-        </p>
+        <p>Detect keyboard visibility and adjust UI:</p>
         <CodePlayground
           initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
@@ -86,9 +84,7 @@ function MobileChatInput() {
 
       <section className="docs-section">
         <h2>Auto-Scroll</h2>
-        <p>
-          Automatically scroll focused input into view:
-        </p>
+        <p>Automatically scroll focused input into view:</p>
         <CodePlayground
           initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
@@ -109,9 +105,7 @@ function AutoScrollInput() {
 
       <section className="docs-section">
         <h2>Keyboard Events</h2>
-        <p>
-          Handle keyboard show/hide events:
-        </p>
+        <p>Handle keyboard show/hide events:</p>
         <CodePlayground
           initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
@@ -142,9 +136,7 @@ function WithEvents() {
 
       <section className="docs-section">
         <h2>Conditional Rendering</h2>
-        <p>
-          Conditionally render based on keyboard state:
-        </p>
+        <p>Conditionally render based on keyboard state:</p>
         <CodePlayground
           initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
@@ -166,9 +158,7 @@ function ConditionalUI() {
 
       <section className="docs-section">
         <h2>Chat Input Adjustment</h2>
-        <p>
-          Adjust chat input position when keyboard appears:
-        </p>
+        <p>Adjust chat input position when keyboard appears:</p>
         <CodePlayground
           initialCode={`import { useMobileKeyboard } from '@clarity-chat/react'
 
@@ -202,38 +192,72 @@ function ChatInput() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>isKeyboardVisible</code>: Whether keyboard is currently visible</li>
-          <li><code>keyboardHeight</code>: Estimated keyboard height in pixels</li>
-          <li><code>isMobile</code>: Whether device is mobile</li>
-          <li><code>originalViewportHeight</code>: Original viewport height before keyboard</li>
+          <li>
+            <code>isKeyboardVisible</code>: Whether keyboard is currently
+            visible
+          </li>
+          <li>
+            <code>keyboardHeight</code>: Estimated keyboard height in pixels
+          </li>
+          <li>
+            <code>isMobile</code>: Whether device is mobile
+          </li>
+          <li>
+            <code>originalViewportHeight</code>: Original viewport height before
+            keyboard
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Platform Support</h2>
         <ul>
-          <li><strong>iOS</strong>: Uses visualViewport API and focusin/focusout events</li>
-          <li><strong>Android</strong>: Uses window resize detection</li>
-          <li><strong>Desktop</strong>: Falls back gracefully, returns false for keyboard visibility</li>
+          <li>
+            <strong>iOS</strong>: Uses visualViewport API and focusin/focusout
+            events
+          </li>
+          <li>
+            <strong>Android</strong>: Uses window resize detection
+          </li>
+          <li>
+            <strong>Desktop</strong>: Falls back gracefully, returns false for
+            keyboard visibility
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Enable <code>autoScroll</code> to improve UX on mobile</li>
-          <li>Use <code>scrollOffset</code> to add spacing above keyboard</li>
-          <li>Handle <code>onKeyboardShow</code> to adjust UI layout</li>
-          <li>Check <code>isMobile</code> before applying mobile-specific logic</li>
-          <li>Use <code>keyboardHeight</code> to adjust fixed position elements</li>
+          <li>
+            Enable <code>autoScroll</code> to improve UX on mobile
+          </li>
+          <li>
+            Use <code>scrollOffset</code> to add spacing above keyboard
+          </li>
+          <li>
+            Handle <code>onKeyboardShow</code> to adjust UI layout
+          </li>
+          <li>
+            Check <code>isMobile</code> before applying mobile-specific logic
+          </li>
+          <li>
+            Use <code>keyboardHeight</code> to adjust fixed position elements
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/mobile-optimization">Mobile Optimization Guide</a> - Mobile best practices</li>
-          <li><a href="/reference/components/chat-input">ChatInput</a> - Chat input component</li>
+          <li>
+            <a href="/guides/mobile-optimization">Mobile Optimization Guide</a>{' '}
+            - Mobile best practices
+          </li>
+          <li>
+            <a href="/reference/components/chat-input">ChatInput</a> - Chat
+            input component
+          </li>
         </ul>
       </section>
     </div>

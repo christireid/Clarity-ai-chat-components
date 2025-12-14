@@ -3,11 +3,11 @@ import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'RAG Document Chat - Cookbook - Clarity Chat',
-  description: 'Build a chat app that can answer questions about your documents using RAG and vector search.',
+  description:
+    'Build a chat app that can answer questions about your documents using RAG and vector search.',
 }
 
 export default function RAGDocumentChatPage() {
@@ -17,7 +17,9 @@ export default function RAGDocumentChatPage() {
         <span className="docs-badge">Cookbook</span>
         <h1>RAG Document Chat</h1>
         <p className="docs-lead">
-          Let users chat with their documents. Upload a PDF, ask questions about it, get answers with citations. Like having a research assistant who read all your docs.
+          Let users chat with their documents. Upload a PDF, ask questions about
+          it, get answers with citations. Like having a research assistant who
+          read all your docs.
         </p>
       </div>
 
@@ -383,4 +385,3 @@ const combined = mergeResults(vectorResults, keywordResults)`}
     </div>
   )
 }
-

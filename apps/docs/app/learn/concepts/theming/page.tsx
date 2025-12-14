@@ -3,8 +3,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Theming Basics - Learn Clarity Chat',
   description:
@@ -70,8 +68,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 `}
         />
         <Callout type="tip">
-          Themes are serialisable JSON objects. Store them in your CMS or database
-          to deliver enterprise-specific branding on the fly.
+          Themes are serialisable JSON objects. Store them in your CMS or
+          database to deliver enterprise-specific branding on the fly.
         </Callout>
       </section>
 
@@ -80,8 +78,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <p>
           All components reference CSS variables such as{' '}
           <code>--chat-background</code>, <code>--chat-border</code>,{' '}
-          <code>--chat-font-body</code>. Inspect them via browser devtools or the
-          Theme Panel inside the docs site.
+          <code>--chat-font-body</code>. Inspect them via browser devtools or
+          the Theme Panel inside the docs site.
         </p>
         <CodeBlock
           language="css"
@@ -137,8 +135,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <section className="docs-section">
         <h2>Dark Mode &amp; System Preference</h2>
         <p>
-          <code>ThemeProvider</code> watches <code>prefers-color-scheme</code> and
-          stores user overrides in localStorage. Expose a toggle via{' '}
+          <code>ThemeProvider</code> watches <code>prefers-color-scheme</code>{' '}
+          and stores user overrides in localStorage. Expose a toggle via{' '}
           <code>ThemeSwitcher</code> or roll your own using the{' '}
           <code>useTheme</code> hook.
         </p>
@@ -189,13 +187,22 @@ function ThemeToggle() {
       <section className="docs-section">
         <h2>Key Takeaways</h2>
         <ul>
-          <li>Use <code>ThemeProvider</code> with presets or custom tokens.</li>
-          <li>Override specific components using CSS variables for consistent results.</li>
-          <li>Provide light/dark or tenant-specific themes via the built-in switcher.</li>
-          <li>Keep accessibility in mind—test contrast and motion preferences.</li>
+          <li>
+            Use <code>ThemeProvider</code> with presets or custom tokens.
+          </li>
+          <li>
+            Override specific components using CSS variables for consistent
+            results.
+          </li>
+          <li>
+            Provide light/dark or tenant-specific themes via the built-in
+            switcher.
+          </li>
+          <li>
+            Keep accessibility in mind—test contrast and motion preferences.
+          </li>
         </ul>
       </section>
     </div>
   )
 }
-

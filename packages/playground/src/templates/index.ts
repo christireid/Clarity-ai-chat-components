@@ -925,6 +925,789 @@ function Component() {
 export default Component`,
 }
 
+// Patterns Templates
+const typingIndicator: PlaygroundTemplate = {
+  id: 'typing-indicator',
+  name: 'Typing Indicator',
+  description: 'Animated typing indicator with three bouncing dots',
+  category: 'patterns',
+  tags: ['typing', 'animation', 'loading', 'indicator'],
+  code: `import React, { useState } from 'react'
+
+function Component() {
+  const [isTyping, setIsTyping] = useState(true)
+
+  const dotStyle = {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    backgroundColor: '#6366f1',
+    display: 'inline-block',
+    animation: 'bounce 1.4s ease-in-out infinite',
+  }
+
+  return (
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+      <h2>Typing Indicator</h2>
+
+      <div style={{
+        marginTop: '20px',
+        padding: '16px',
+        background: '#f8fafc',
+        borderRadius: '12px',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        {isTyping && (
+          <>
+            <div style={{ ...dotStyle, animationDelay: '0s' }} />
+            <div style={{ ...dotStyle, animationDelay: '0.2s' }} />
+            <div style={{ ...dotStyle, animationDelay: '0.4s' }} />
+          </>
+        )}
+      </div>
+
+      <div style={{ marginTop: '24px' }}>
+        <button
+          onClick={() => setIsTyping(!isTyping)}
+          style={{
+            padding: '10px 20px',
+            background: isTyping ? '#ef4444' : '#10b981',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          {isTyping ? 'Stop' : 'Start'} Typing
+        </button>
+      </div>
+
+      <style>
+        {\`
+          @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+          }
+        \`}
+      </style>
+    </div>
+  )
+}
+
+export default Component`,
+}
+
+const loadingStates: PlaygroundTemplate = {
+  id: 'loading-states',
+  name: 'Loading States',
+  description: 'Various loading states and skeleton screens',
+  category: 'patterns',
+  tags: ['loading', 'skeleton', 'states', 'ux'],
+  code: `import React, { useState } from 'react'
+
+function Component() {
+  const [loadingType, setLoadingType] = useState('spinner')
+
+  const LoadingSpinner = () => (
+    <div style={{
+      width: '40px',
+      height: '40px',
+      border: '4px solid #e5e7eb',
+      borderTop: '4px solid #6366f1',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite'
+    }} />
+  )
+
+  const LoadingDots = () => (
+    <div style={{ display: 'flex', gap: '8px' }}>
+      {[0, 1, 2].map(i => (
+        <div
+          key={i}
+          style={{
+            width: '12px',
+            height: '12px',
+            borderRadius: '50%',
+            background: '#6366f1',
+            animation: \`pulse 1.4s ease-in-out \${i * 0.2}s infinite\`
+          }}
+        />
+      ))}
+    </div>
+  )
+
+  const LoadingSkeleton = () => (
+    <div style={{ width: '100%' }}>
+      <div style={{
+        width: '60%',
+        height: '20px',
+        background: 'linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%)',
+        backgroundSize: '200% 100%',
+        borderRadius: '4px',
+        animation: 'shimmer 1.5s infinite',
+        marginBottom: '12px'
+      }} />
+      <div style={{
+        width: '100%',
+        height: '16px',
+        background: 'linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%)',
+        backgroundSize: '200% 100%',
+        borderRadius: '4px',
+        animation: 'shimmer 1.5s infinite',
+        marginBottom: '8px'
+      }} />
+      <div style={{
+        width: '80%',
+        height: '16px',
+        background: 'linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%)',
+        backgroundSize: '200% 100%',
+        borderRadius: '4px',
+        animation: 'shimmer 1.5s infinite'
+      }} />
+    </div>
+  )
+
+  const LoadingProgress = () => (
+    <div style={{
+      width: '100%',
+      height: '6px',
+      background: '#e5e7eb',
+      borderRadius: '3px',
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        width: '30%',
+        height: '100%',
+        background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+        borderRadius: '3px',
+        animation: 'progress 2s ease-in-out infinite'
+      }} />
+    </div>
+  )
+
+  return (
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+      <h2>Loading States</h2>
+
+      <div style={{ display: 'flex', gap: '8px', marginTop: '20px', marginBottom: '24px' }}>
+        {['spinner', 'dots', 'skeleton', 'progress'].map(type => (
+          <button
+            key={type}
+            onClick={() => setLoadingType(type)}
+            style={{
+              padding: '8px 16px',
+              background: loadingType === type ? '#6366f1' : '#e5e7eb',
+              color: loadingType === type ? 'white' : '#374151',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              textTransform: 'capitalize'
+            }}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
+
+      <div style={{
+        padding: '40px',
+        background: '#f8fafc',
+        borderRadius: '12px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '150px'
+      }}>
+        {loadingType === 'spinner' && <LoadingSpinner />}
+        {loadingType === 'dots' && <LoadingDots />}
+        {loadingType === 'skeleton' && <LoadingSkeleton />}
+        {loadingType === 'progress' && <LoadingProgress />}
+      </div>
+
+      <style>
+        {\`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.5); opacity: 0.5; }
+          }
+          @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+          }
+          @keyframes progress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+          }
+        \`}
+      </style>
+    </div>
+  )
+}
+
+export default Component`,
+}
+
+const errorHandling: PlaygroundTemplate = {
+  id: 'error-handling',
+  name: 'Error Handling',
+  description: 'Error states, retry logic, and error messages',
+  category: 'patterns',
+  tags: ['error', 'handling', 'retry', 'ux'],
+  code: `import React, { useState } from 'react'
+
+function Component() {
+  const [status, setStatus] = useState('idle')
+  const [retryCount, setRetryCount] = useState(0)
+
+  const simulateRequest = async () => {
+    setStatus('loading')
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // 50% chance of error for demo
+    if (Math.random() > 0.5) {
+      setStatus('error')
+      setRetryCount(prev => prev + 1)
+    } else {
+      setStatus('success')
+      setRetryCount(0)
+    }
+  }
+
+  return (
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+      <h2>Error Handling Patterns</h2>
+
+      <div style={{
+        marginTop: '20px',
+        padding: '24px',
+        borderRadius: '12px',
+        background: status === 'error' ? '#fef2f2' :
+                   status === 'success' ? '#f0fdf4' : '#f8fafc',
+        border: status === 'error' ? '1px solid #fecaca' :
+               status === 'success' ? '1px solid #bbf7d0' : '1px solid #e5e7eb',
+        transition: 'all 0.3s ease'
+      }}>
+        {status === 'idle' && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>🚀</div>
+            <p style={{ color: '#6b7280', margin: 0 }}>Click the button to simulate a request</p>
+          </div>
+        )}
+
+        {status === 'loading' && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              margin: '0 auto 12px',
+              border: '4px solid #e5e7eb',
+              borderTop: '4px solid #6366f1',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }} />
+            <p style={{ color: '#6b7280', margin: 0 }}>Processing request...</p>
+          </div>
+        )}
+
+        {status === 'error' && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                background: '#fee2e2',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px'
+              }}>
+                ❌
+              </div>
+              <div>
+                <h4 style={{ margin: 0, color: '#dc2626' }}>Request Failed</h4>
+                <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#9ca3af' }}>
+                  Attempt {retryCount} of 3
+                </p>
+              </div>
+            </div>
+            <p style={{ color: '#b91c1c', fontSize: '14px', margin: '0 0 16px' }}>
+              Unable to complete request. Please try again.
+            </p>
+            <button
+              onClick={simulateRequest}
+              disabled={retryCount >= 3}
+              style={{
+                padding: '10px 20px',
+                background: retryCount >= 3 ? '#d1d5db' : '#dc2626',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: retryCount >= 3 ? 'not-allowed' : 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              {retryCount >= 3 ? 'Max retries reached' : 'Retry'}
+            </button>
+          </div>
+        )}
+
+        {status === 'success' && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              width: '50px',
+              height: '50px',
+              margin: '0 auto 12px',
+              background: '#10b981',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '24px'
+            }}>
+              ✓
+            </div>
+            <h4 style={{ margin: 0, color: '#059669' }}>Success!</h4>
+            <p style={{ color: '#6b7280', fontSize: '14px', margin: '8px 0 0' }}>
+              Request completed successfully
+            </p>
+          </div>
+        )}
+      </div>
+
+      {status !== 'loading' && (
+        <button
+          onClick={() => { setStatus('idle'); simulateRequest(); }}
+          style={{
+            marginTop: '16px',
+            padding: '12px 24px',
+            background: '#6366f1',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            width: '100%'
+          }}
+        >
+          {status === 'idle' ? 'Make Request' : 'Try Again'}
+        </button>
+      )}
+
+      <style>
+        {\`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        \`}
+      </style>
+    </div>
+  )
+}
+
+export default Component`,
+}
+
+const voiceInput: PlaygroundTemplate = {
+  id: 'voice-input',
+  name: 'Voice Input',
+  description: 'Voice-to-text input simulation with waveform',
+  category: 'patterns',
+  tags: ['voice', 'audio', 'input', 'speech'],
+  code: `import React, { useState, useEffect } from 'react'
+
+function Component() {
+  const [isRecording, setIsRecording] = useState(false)
+  const [transcript, setTranscript] = useState('')
+  const [waveHeights, setWaveHeights] = useState(Array(20).fill(10))
+
+  useEffect(() => {
+    if (!isRecording) return
+
+    const interval = setInterval(() => {
+      setWaveHeights(prev => prev.map(() => Math.random() * 30 + 5))
+    }, 100)
+
+    // Simulate speech recognition
+    const words = ['Hello,', 'this', 'is', 'a', 'voice', 'message', 'simulation.']
+    let wordIndex = 0
+
+    const transcriptInterval = setInterval(() => {
+      if (wordIndex < words.length) {
+        setTranscript(prev => prev + (prev ? ' ' : '') + words[wordIndex])
+        wordIndex++
+      }
+    }, 400)
+
+    return () => {
+      clearInterval(interval)
+      clearInterval(transcriptInterval)
+    }
+  }, [isRecording])
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      setIsRecording(false)
+    } else {
+      setTranscript('')
+      setIsRecording(true)
+    }
+  }
+
+  return (
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+      <h2>Voice Input</h2>
+
+      <div style={{
+        marginTop: '20px',
+        padding: '24px',
+        background: '#f8fafc',
+        borderRadius: '16px',
+        textAlign: 'center'
+      }}>
+        {/* Waveform */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '4px',
+          height: '60px',
+          marginBottom: '20px'
+        }}>
+          {waveHeights.map((height, i) => (
+            <div
+              key={i}
+              style={{
+                width: '4px',
+                height: isRecording ? \`\${height}px\` : '10px',
+                background: isRecording
+                  ? \`linear-gradient(180deg, #6366f1, #8b5cf6)\`
+                  : '#d1d5db',
+                borderRadius: '2px',
+                transition: 'height 0.1s ease'
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Record Button */}
+        <button
+          onClick={toggleRecording}
+          style={{
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            border: 'none',
+            background: isRecording
+              ? 'linear-gradient(135deg, #ef4444, #f87171)'
+              : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            color: 'white',
+            cursor: 'pointer',
+            fontSize: '32px',
+            boxShadow: isRecording
+              ? '0 0 0 8px rgba(239, 68, 68, 0.2)'
+              : '0 4px 20px rgba(99, 102, 241, 0.3)',
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          {isRecording ? '⬛' : '🎤'}
+        </button>
+
+        <p style={{
+          marginTop: '16px',
+          color: isRecording ? '#ef4444' : '#6b7280',
+          fontWeight: '500'
+        }}>
+          {isRecording ? 'Recording...' : 'Tap to speak'}
+        </p>
+      </div>
+
+      {/* Transcript */}
+      <div style={{
+        marginTop: '20px',
+        padding: '16px',
+        background: 'white',
+        border: '1px solid #e5e7eb',
+        borderRadius: '12px',
+        minHeight: '100px'
+      }}>
+        <div style={{
+          fontSize: '12px',
+          color: '#9ca3af',
+          marginBottom: '8px',
+          fontWeight: '500'
+        }}>
+          TRANSCRIPT
+        </div>
+        <p style={{
+          margin: 0,
+          fontSize: '16px',
+          color: transcript ? '#1f2937' : '#9ca3af',
+          lineHeight: 1.6
+        }}>
+          {transcript || 'Your speech will appear here...'}
+          {isRecording && <span style={{ animation: 'blink 1s infinite' }}>|</span>}
+        </p>
+      </div>
+
+      <style>
+        {\`
+          @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+          }
+        \`}
+      </style>
+    </div>
+  )
+}
+
+export default Component`,
+}
+
+const multiModal: PlaygroundTemplate = {
+  id: 'multi-modal',
+  name: 'Multi-Modal Chat',
+  description: 'Chat interface supporting text, images, and files',
+  category: 'advanced',
+  tags: ['multi-modal', 'images', 'files', 'upload'],
+  code: `import React, { useState, useRef, useEffect } from 'react'
+
+function Component() {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      role: 'assistant',
+      type: 'text',
+      content: 'Hi! I can understand text, images, and files. Try uploading something!'
+    }
+  ])
+  const [input, setInput] = useState('')
+  const fileInputRef = useRef(null)
+
+  // Cleanup object URLs to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      messages.forEach(msg => {
+        if (msg.preview) {
+          URL.revokeObjectURL(msg.preview)
+        }
+      })
+    }
+  }, [])
+
+  const handleSend = () => {
+    if (!input.trim()) return
+
+    setMessages(prev => [...prev, {
+      id: Date.now(),
+      role: 'user',
+      type: 'text',
+      content: input
+    }])
+    setInput('')
+
+    // Simulate response
+    setTimeout(() => {
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        role: 'assistant',
+        type: 'text',
+        content: 'Thanks for your message! I can process both text and visual content.'
+      }])
+    }, 500)
+  }
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const isImage = file.type.startsWith('image/')
+    const preview = isImage ? URL.createObjectURL(file) : null
+
+    setMessages(prev => [...prev, {
+      id: Date.now(),
+      role: 'user',
+      type: isImage ? 'image' : 'file',
+      content: file.name,
+      preview
+    }])
+
+    // Simulate response
+    setTimeout(() => {
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        role: 'assistant',
+        type: 'text',
+        content: isImage
+          ? 'I can see the image you uploaded! In a real app, I would analyze its contents.'
+          : \`I received your file: \${file.name}. I can process documents and extract information.\`
+      }])
+    }, 500)
+
+    e.target.value = ''
+  }
+
+  return (
+    <div style={{
+      maxWidth: '700px',
+      margin: '0 auto',
+      height: '600px',
+      display: 'flex',
+      flexDirection: 'column',
+      border: '1px solid #e5e7eb',
+      borderRadius: '16px',
+      overflow: 'hidden'
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '16px',
+        background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+        color: 'white'
+      }}>
+        <h3 style={{ margin: 0, fontWeight: '600' }}>Multi-Modal Chat</h3>
+        <p style={{ margin: '4px 0 0', fontSize: '14px', opacity: 0.9 }}>
+          Text • Images • Files
+        </p>
+      </div>
+
+      {/* Messages */}
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        padding: '16px',
+        background: '#f9fafb'
+      }}>
+        {messages.map(msg => (
+          <div
+            key={msg.id}
+            style={{
+              marginBottom: '16px',
+              display: 'flex',
+              justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start'
+            }}
+          >
+            <div style={{
+              maxWidth: '75%',
+              padding: msg.type === 'image' ? '8px' : '12px 16px',
+              borderRadius: '16px',
+              background: msg.role === 'user' ? '#6366f1' : 'white',
+              color: msg.role === 'user' ? 'white' : '#1f2937',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+            }}>
+              {msg.type === 'image' ? (
+                <div>
+                  <img
+                    src={msg.preview}
+                    alt="Uploaded"
+                    style={{
+                      maxWidth: '200px',
+                      borderRadius: '12px',
+                      display: 'block'
+                    }}
+                  />
+                  <div style={{
+                    padding: '8px 0 4px',
+                    fontSize: '12px',
+                    opacity: 0.8
+                  }}>
+                    📷 {msg.content}
+                  </div>
+                </div>
+              ) : msg.type === 'file' ? (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span style={{ fontSize: '24px' }}>📄</span>
+                  <span>{msg.content}</span>
+                </div>
+              ) : (
+                msg.content
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Input */}
+      <div style={{
+        padding: '16px',
+        borderTop: '1px solid #e5e7eb',
+        background: 'white'
+      }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            style={{ display: 'none' }}
+            accept="image/*,.pdf,.doc,.docx,.txt"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              padding: '12px',
+              background: '#f3f4f6',
+              border: 'none',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontSize: '20px'
+            }}
+          >
+            📎
+          </button>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="Type a message..."
+            style={{
+              flex: 1,
+              padding: '12px 16px',
+              border: '1px solid #e5e7eb',
+              borderRadius: '12px',
+              fontSize: '14px'
+            }}
+          />
+          <button
+            onClick={handleSend}
+            style={{
+              padding: '12px 24px',
+              background: '#6366f1',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Component`,
+}
+
 // Memory Templates
 const conversationMemory: PlaygroundTemplate = {
   id: 'memory-conversation',
@@ -1033,8 +1816,14 @@ export const templates: PlaygroundTemplate[] = [
   // Advanced
   functionCalling,
   ragPattern,
+  multiModal,
   // Memory
   conversationMemory,
+  // Patterns
+  typingIndicator,
+  loadingStates,
+  errorHandling,
+  voiceInput,
 ]
 
 // Template categories for UI grouping

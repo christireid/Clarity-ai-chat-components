@@ -6,11 +6,10 @@ import { Callout } from '@/components/MDX/Callout'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: '3-Line Quick Start | Clarity Chat Cookbook',
-  description: 'Get a production-ready AI chat interface in just 3 lines of code.',
+  description:
+    'Get a production-ready AI chat interface in just 3 lines of code.',
 }
 
 export default function QuickStart3LinesPage() {
@@ -21,14 +20,15 @@ export default function QuickStart3LinesPage() {
       <h1>3-Line Quick Start</h1>
 
       <p className="lead">
-        Get a production-ready AI chat interface in <strong>just 3 lines of code</strong>
+        Get a production-ready AI chat interface in{' '}
+        <strong>just 3 lines of code</strong>
         (plus imports). No configuration needed.
       </p>
 
       <Callout type="success" title="Fastest Way to Get Started">
         <p>
-          This is the absolute fastest way to add AI chat to your app. Perfect for
-          prototyping, MVPs, and simple use cases.
+          This is the absolute fastest way to add AI chat to your app. Perfect
+          for prototyping, MVPs, and simple use cases.
         </p>
       </Callout>
 
@@ -57,9 +57,7 @@ function App() {
         />
 
         <Callout type="info" title="That's it!">
-          <p>
-            You now have a fully functional AI chat interface with:
-          </p>
+          <p>You now have a fully functional AI chat interface with:</p>
           <ul className="list-disc list-inside mt-2 space-y-1">
             <li>✨ Beautiful UI with animations</li>
             <li>⌨️ Full keyboard navigation</li>
@@ -74,7 +72,8 @@ function App() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">API Endpoint Setup</h2>
         <p className="mb-4 text-gray-600 dark:text-gray-400">
-          You need to create an API endpoint that handles chat requests. Here are examples for different frameworks:
+          You need to create an API endpoint that handles chat requests. Here
+          are examples for different frameworks:
         </p>
 
         <h3 className="text-xl font-semibold mt-6 mb-4">Next.js App Router</h3>
@@ -145,7 +144,9 @@ export async function POST(req: NextRequest) {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">Next.js Pages Router</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          Next.js Pages Router
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`// pages/api/chat.ts
@@ -271,11 +272,23 @@ app.listen(3000, () => {
           Once you have the basic setup working, you can enhance it:
         </p>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><a href="/reference/components/clarity-chat">Customize ClarityChat props</a></li>
-          <li><a href="/guides/memory">Add memory support</a></li>
-          <li><a href="/guides/theming">Customize the theme</a></li>
-          <li><a href="/cookbook/nextjs-integration">Deep Next.js integration</a></li>
-          <li><a href="/guides/error-handling">Add error handling</a></li>
+          <li>
+            <a href="/reference/components/clarity-chat">
+              Customize ClarityChat props
+            </a>
+          </li>
+          <li>
+            <a href="/guides/memory">Add memory support</a>
+          </li>
+          <li>
+            <a href="/guides/theming">Customize the theme</a>
+          </li>
+          <li>
+            <a href="/cookbook/nextjs-integration">Deep Next.js integration</a>
+          </li>
+          <li>
+            <a href="/guides/error-handling">Add error handling</a>
+          </li>
         </ul>
       </section>
 
@@ -303,7 +316,10 @@ app.listen(3000, () => {
 
       <Pagination
         prev={{ title: 'Cookbook Overview', href: '/cookbook' }}
-        next={{ title: 'OpenAI Streaming Chat', href: '/cookbook/openai-streaming-chat' }}
+        next={{
+          title: 'OpenAI Streaming Chat',
+          href: '/cookbook/openai-streaming-chat',
+        }}
       />
     </>
   )

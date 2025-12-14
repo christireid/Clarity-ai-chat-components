@@ -1,7 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'ProjectSidebar - Clarity Chat Components',
@@ -15,7 +14,8 @@ export default function ProjectSidebarPage() {
         <span className="docs-badge">Component</span>
         <h1>ProjectSidebar</h1>
         <p className="docs-lead">
-          A structured sidebar for AI projects showing threads, files, and quick actions.
+          A structured sidebar for AI projects showing threads, files, and quick
+          actions.
         </p>
       </div>
 

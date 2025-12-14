@@ -4,11 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Conversation Timeline - Clarity Chat Components',
-  description: 'Visual timeline showing conversation flow with user messages, AI responses, tool calls, and system events.',
+  description:
+    'Visual timeline showing conversation flow with user messages, AI responses, tool calls, and system events.',
 }
 
 export default function ConversationTimelinePage() {
@@ -18,19 +17,25 @@ export default function ConversationTimelinePage() {
         <span className="docs-badge">Component</span>
         <h1>Conversation Timeline</h1>
         <p className="docs-lead">
-          A visual timeline that shows how your conversation evolved - user messages, AI responses, tool calls, and system events all in chronological order.
+          A visual timeline that shows how your conversation evolved - user
+          messages, AI responses, tool calls, and system events all in
+          chronological order.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Think of this like a "behind the scenes" view of your AI chat. Instead of just seeing the chat bubbles, you see EVERYTHING that happened: when you asked a question, when the AI thought about it, when it called external tools, and when it responded.
+          Think of this like a "behind the scenes" view of your AI chat. Instead
+          of just seeing the chat bubbles, you see EVERYTHING that happened:
+          when you asked a question, when the AI thought about it, when it
+          called external tools, and when it responded.
         </p>
-        
+
         <Callout type="info" title="Why Use This?">
-          Perfect for debugging, understanding AI behavior, showing transparency to users,
-          or building admin dashboards that need to audit conversations.
+          Perfect for debugging, understanding AI behavior, showing transparency
+          to users, or building admin dashboards that need to audit
+          conversations.
         </Callout>
       </section>
 
@@ -79,7 +84,8 @@ render(<SimpleTimeline />)`}
       <section className="docs-section">
         <h2>Event Types</h2>
         <p>
-          Different event types are color-coded to make it easy to scan the timeline.
+          Different event types are color-coded to make it easy to scan the
+          timeline.
         </p>
         <CodePlayground
           initialCode={`function EventTypes() {
@@ -190,7 +196,8 @@ render(<MetadataTimeline />)`}
       <section className="docs-section">
         <h2>Interactive Timeline</h2>
         <p>
-          Click events to jump to that point in the conversation, or retry failed steps.
+          Click events to jump to that point in the conversation, or retry
+          failed steps.
         </p>
         <CodePlayground
           initialCode={`import { useState } from 'react'
@@ -383,27 +390,34 @@ render(<AgentDebugDashboard />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="ConversationTimeline Props"
-          data={timelineProps}
-        />
+        <ApiTable title="ConversationTimeline Props" data={timelineProps} />
       </section>
 
       <section className="docs-section">
         <h2>Event Types</h2>
         <p>Each event type has its own visual style:</p>
         <ul>
-          <li><strong>user</strong> 👤 - User messages (blue)</li>
-          <li><strong>assistant</strong> 🤖 - AI responses (sky blue)</li>
-          <li><strong>tool</strong> ✨ - Tool/function calls (amber)</li>
-          <li><strong>system</strong> 🔍 - System events (emerald)</li>
-          <li><strong>note</strong> 📄 - Developer notes (purple)</li>
+          <li>
+            <strong>user</strong> 👤 - User messages (blue)
+          </li>
+          <li>
+            <strong>assistant</strong> 🤖 - AI responses (sky blue)
+          </li>
+          <li>
+            <strong>tool</strong> ✨ - Tool/function calls (amber)
+          </li>
+          <li>
+            <strong>system</strong> 🔍 - System events (emerald)
+          </li>
+          <li>
+            <strong>note</strong> 📄 - Developer notes (purple)
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
-        
+
         <h3>When to Use</h3>
         <ul>
           <li>✅ Debugging AI agent behavior</li>
@@ -429,7 +443,8 @@ render(<AgentDebugDashboard />)`}
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { 
+        <pre>
+          <code>{`import { 
   ConversationTimeline, 
   type ConversationTimelineProps,
   type ConversationTimelineEvent 
@@ -459,7 +474,8 @@ const events: ConversationTimelineEvent[] = [
     durationMs: 1200,
     status: 'complete'
   }
-]`}</code></pre>
+]`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -473,7 +489,10 @@ const events: ConversationTimelineEvent[] = [
             <h3>Agent Run Feed</h3>
             <p>Agent execution steps</p>
           </a>
-          <a href="/reference/components/tool-invocation-card" className="docs-card">
+          <a
+            href="/reference/components/tool-invocation-card"
+            className="docs-card"
+          >
             <h3>Tool Invocation Card</h3>
             <p>Individual tool call details</p>
           </a>
@@ -492,39 +511,38 @@ const timelineProps = [
     name: 'events',
     type: 'ConversationTimelineEvent[]',
     required: true,
-    description: 'Array of timeline events in chronological order'
+    description: 'Array of timeline events in chronological order',
   },
   {
     name: 'onJumpToEvent',
     type: '(event: ConversationTimelineEvent) => void',
     required: false,
-    description: 'Callback when user clicks an event to jump to it'
+    description: 'Callback when user clicks an event to jump to it',
   },
   {
     name: 'showStatusIndicators',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Show status badges for each event'
+    description: 'Show status badges for each event',
   },
   {
     name: 'title',
     type: 'string',
     required: false,
     default: "'Conversation timeline'",
-    description: 'Timeline header title'
+    description: 'Timeline header title',
   },
   {
     name: 'subtitle',
     type: 'string',
     required: false,
-    description: 'Timeline header subtitle/description'
+    description: 'Timeline header subtitle/description',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

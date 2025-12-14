@@ -1,7 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'RetryButton - Clarity Chat Components',
@@ -14,7 +13,9 @@ export default function RetryButtonPage() {
       <div className="docs-header">
         <span className="docs-badge">Component</span>
         <h1>RetryButton</h1>
-        <p className="docs-lead">Provides retry semantics and feedback for transient failures.</p>
+        <p className="docs-lead">
+          Provides retry semantics and feedback for transient failures.
+        </p>
       </div>
 
       <section className="docs-section">

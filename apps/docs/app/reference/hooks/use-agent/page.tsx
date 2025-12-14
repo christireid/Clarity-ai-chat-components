@@ -8,8 +8,6 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useAgent Hook | Clarity Chat',
   description: 'Top-level hook for AI agent orchestration with tool calling.',
@@ -70,14 +68,16 @@ export default function UseAgentPage() {
       <h1>useAgent</h1>
 
       <p className="lead">
-        Top-level hook for AI agent orchestration with automatic tool management and error handling.
-        Perfect for building AI agents that can use tools, make decisions, and complete multi-step tasks.
+        Top-level hook for AI agent orchestration with automatic tool management
+        and error handling. Perfect for building AI agents that can use tools,
+        make decisions, and complete multi-step tasks.
       </p>
 
       <Callout type="info" title="AI Agents">
         <p>
-          AI agents can autonomously use tools, make decisions, and complete complex tasks
-          through multiple steps. This hook handles the orchestration automatically.
+          AI agents can autonomously use tools, make decisions, and complete
+          complex tasks through multiple steps. This hook handles the
+          orchestration automatically.
         </p>
       </Callout>
 
@@ -86,7 +86,7 @@ export default function UseAgentPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the hook:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useAgent } from '@clarity-chat/react'
@@ -290,7 +290,9 @@ function RobustAgent() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Custom API Endpoint</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Custom API Endpoint
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useAgent } from '@clarity-chat/react'
@@ -370,12 +372,30 @@ function ContextualAgent() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">How It Works</h2>
         <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Query Processing</strong> - Agent receives query and analyzes what needs to be done</li>
-          <li><strong>Tool Selection</strong> - Agent decides which tools to use based on the query</li>
-          <li><strong>Tool Execution</strong> - Tools are executed with appropriate parameters</li>
-          <li><strong>Result Processing</strong> - Agent processes tool results and decides next steps</li>
-          <li><strong>Iteration</strong> - Process repeats until task is complete or max iterations reached</li>
-          <li><strong>Final Answer</strong> - Agent returns the final answer based on all tool results</li>
+          <li>
+            <strong>Query Processing</strong> - Agent receives query and
+            analyzes what needs to be done
+          </li>
+          <li>
+            <strong>Tool Selection</strong> - Agent decides which tools to use
+            based on the query
+          </li>
+          <li>
+            <strong>Tool Execution</strong> - Tools are executed with
+            appropriate parameters
+          </li>
+          <li>
+            <strong>Result Processing</strong> - Agent processes tool results
+            and decides next steps
+          </li>
+          <li>
+            <strong>Iteration</strong> - Process repeats until task is complete
+            or max iterations reached
+          </li>
+          <li>
+            <strong>Final Answer</strong> - Agent returns the final answer based
+            on all tool results
+          </li>
         </ol>
       </section>
 
@@ -414,13 +434,34 @@ function ContextualAgent() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Limit iterations</strong> - Set maxIterations to prevent infinite loops</li>
-          <li><strong>Handle errors</strong> - Tools should handle errors gracefully</li>
-          <li><strong>Provide clear descriptions</strong> - Tool descriptions help agents choose correctly</li>
-          <li><strong>Validate inputs</strong> - Validate tool parameters before execution</li>
-          <li><strong>Monitor state</strong> - Use state.currentStep to show progress</li>
-          <li><strong>Track tool calls</strong> - Use state.toolCalls to debug agent behavior</li>
-          <li><strong>Use context</strong> - Pass relevant context to help agents make better decisions</li>
+          <li>
+            <strong>Limit iterations</strong> - Set maxIterations to prevent
+            infinite loops
+          </li>
+          <li>
+            <strong>Handle errors</strong> - Tools should handle errors
+            gracefully
+          </li>
+          <li>
+            <strong>Provide clear descriptions</strong> - Tool descriptions help
+            agents choose correctly
+          </li>
+          <li>
+            <strong>Validate inputs</strong> - Validate tool parameters before
+            execution
+          </li>
+          <li>
+            <strong>Monitor state</strong> - Use state.currentStep to show
+            progress
+          </li>
+          <li>
+            <strong>Track tool calls</strong> - Use state.toolCalls to debug
+            agent behavior
+          </li>
+          <li>
+            <strong>Use context</strong> - Pass relevant context to help agents
+            make better decisions
+          </li>
         </ul>
       </section>
 
@@ -447,8 +488,14 @@ function ContextualAgent() {
       </section>
 
       <Pagination
-        prev={{ title: 'useRAGPipeline', href: '/reference/hooks/use-rag-pipeline' }}
-        next={{ title: 'useVectorStore', href: '/reference/hooks/use-vector-store' }}
+        prev={{
+          title: 'useRAGPipeline',
+          href: '/reference/hooks/use-rag-pipeline',
+        }}
+        next={{
+          title: 'useVectorStore',
+          href: '/reference/hooks/use-vector-store',
+        }}
       />
     </>
   )

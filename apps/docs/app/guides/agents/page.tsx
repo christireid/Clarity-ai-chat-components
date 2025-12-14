@@ -6,8 +6,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { Pagination } from '@/components/Navigation/Pagination'
 
-export const dynamic = 'force-dynamic'
-
 export default function AgentsGuidePage() {
   return (
     <>
@@ -17,16 +15,19 @@ export default function AgentsGuidePage() {
         <header>
           <h1 className="text-4xl font-bold mb-3">Agent System Guide</h1>
           <p className="text-lg text-muted-foreground">
-            Comprehensive guide to building AI agents that can use tools, make decisions, and complete multi-step tasks
-            using the ReAct (Reasoning + Acting) pattern.
+            Comprehensive guide to building AI agents that can use tools, make
+            decisions, and complete multi-step tasks using the ReAct (Reasoning
+            + Acting) pattern.
           </p>
         </header>
 
         <section>
           <h2 className="text-3xl font-semibold mb-4">Overview</h2>
           <p className="mb-4">
-            AI agents extend chatbots by giving them the ability to take actions, not just respond with text.
-            Agents can call APIs, search databases, perform calculations, and execute complex multi-step workflows.
+            AI agents extend chatbots by giving them the ability to take
+            actions, not just respond with text. Agents can call APIs, search
+            databases, perform calculations, and execute complex multi-step
+            workflows.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
@@ -42,7 +43,9 @@ export default function AgentsGuidePage() {
             </div>
 
             <div className="p-4 border-2 border-primary/20 bg-primary/5 rounded-xl">
-              <div className="font-semibold mb-2 text-primary">🤖 Agent (Powerful)</div>
+              <div className="font-semibold mb-2 text-primary">
+                🤖 Agent (Powerful)
+              </div>
               <div className="text-sm space-y-2 text-muted-foreground">
                 <div>User: "What's the weather?"</div>
                 <div className="italic">*calls weather API*</div>
@@ -58,7 +61,8 @@ export default function AgentsGuidePage() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">The ReAct Pattern</h2>
           <p className="mb-4">
-            Clarity Chat agents use the ReAct (Reasoning + Acting) pattern, which follows a simple loop:
+            Clarity Chat agents use the ReAct (Reasoning + Acting) pattern,
+            which follows a simple loop:
           </p>
 
           <EnhancedCodeBlock
@@ -72,14 +76,17 @@ export default function AgentsGuidePage() {
           />
 
           <p className="mt-4 mb-4">
-            This loop can repeat multiple times for complex tasks, allowing agents to break down problems
-            into smaller steps and use tools as needed.
+            This loop can repeat multiple times for complex tasks, allowing
+            agents to break down problems into smaller steps and use tools as
+            needed.
           </p>
 
           <Callout type="info">
             <p>
-              <strong>ReAct Pattern:</strong> The agent alternates between reasoning (thinking about what to do)
-              and acting (using tools), observing results, and repeating until it has enough information to answer.
+              <strong>ReAct Pattern:</strong> The agent alternates between
+              reasoning (thinking about what to do) and acting (using tools),
+              observing results, and repeating until it has enough information
+              to answer.
             </p>
           </Callout>
         </section>
@@ -87,7 +94,8 @@ export default function AgentsGuidePage() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Creating an Agent</h2>
           <p className="mb-4">
-            Use <code>createAgent</code> to create an agent with tools and configuration:
+            Use <code>createAgent</code> to create an agent with tools and
+            configuration:
           </p>
 
           <EnhancedCodeBlock
@@ -225,7 +233,8 @@ function AgentExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Agent Run Feed</h2>
           <p className="mb-4">
-            The <code>AgentRunFeed</code> component displays agent execution steps in real-time:
+            The <code>AgentRunFeed</code> component displays agent execution
+            steps in real-time:
           </p>
 
           <EnhancedCodeBlock
@@ -293,7 +302,8 @@ function AgentRunFeedExample() {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Agent Execution Steps</h2>
           <p className="mb-4">
-            Agent executions consist of multiple steps, each with a specific type:
+            Agent executions consist of multiple steps, each with a specific
+            type:
           </p>
 
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
@@ -301,7 +311,8 @@ function AgentRunFeedExample() {
               <strong>thought:</strong> Agent reasoning about what to do next
             </li>
             <li>
-              <strong>action:</strong> Agent calling a tool with specific arguments
+              <strong>action:</strong> Agent calling a tool with specific
+              arguments
             </li>
             <li>
               <strong>observation:</strong> Result from tool execution
@@ -357,7 +368,8 @@ interface AgentExecution {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Tool Approval</h2>
           <p className="mb-4">
-            For sensitive operations, require user approval before executing tools:
+            For sensitive operations, require user approval before executing
+            tools:
           </p>
 
           <EnhancedCodeBlock
@@ -409,9 +421,12 @@ const sendEmailTool: Tool = {
         <section>
           <h2 className="text-3xl font-semibold mb-4">Safety & Guardrails</h2>
 
-          <h3 className="text-2xl font-semibold mb-3">1. Validate Tool Arguments</h3>
+          <h3 className="text-2xl font-semibold mb-3">
+            1. Validate Tool Arguments
+          </h3>
           <p className="mb-4">
-            Always validate tool arguments before execution to prevent errors and security issues:
+            Always validate tool arguments before execution to prevent errors
+            and security issues:
           </p>
 
           <EnhancedCodeBlock
@@ -442,7 +457,9 @@ const sendEmailTool: Tool = {
             showLineNumbers
           />
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">2. Set Iteration Limits</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            2. Set Iteration Limits
+          </h3>
           <p className="mb-4">
             Prevent infinite loops by setting maximum iterations:
           </p>
@@ -458,7 +475,9 @@ const sendEmailTool: Tool = {
             showLineNumbers
           />
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">3. Require Approval for Dangerous Actions</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            3. Require Approval for Dangerous Actions
+          </h3>
           <EnhancedCodeBlock
             code={`const dangerousTools = ['delete_user', 'send_email', 'charge_card', 'update_database']
 
@@ -507,7 +526,8 @@ const execution = await Promise.race([
         <section>
           <h2 className="text-3xl font-semibold mb-4">Complete Example</h2>
           <p className="mb-4">
-            Here's a complete example of an agent with tool approval, error handling, and UI:
+            Here's a complete example of an agent with tool approval, error
+            handling, and UI:
           </p>
 
           <EnhancedCodeBlock
@@ -685,7 +705,9 @@ function CompleteAgentExample() {
             <li>Test each tool independently before giving to agent</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">2. Write Clear Tool Descriptions</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            2. Write Clear Tool Descriptions
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Be specific about when to use the tool</li>
             <li>Include examples in descriptions when helpful</li>
@@ -693,15 +715,21 @@ function CompleteAgentExample() {
             <li>Mark required parameters explicitly</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">3. Show Agent Work</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            3. Show Agent Work
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Use <code>AgentRunFeed</code> to show execution steps</li>
+            <li>
+              Use <code>AgentRunFeed</code> to show execution steps
+            </li>
             <li>Display tool calls and results transparently</li>
             <li>Show progress for long-running tasks</li>
             <li>Provide retry options for failed steps</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">4. Handle Errors Gracefully</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            4. Handle Errors Gracefully
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Validate all tool arguments</li>
             <li>Provide clear error messages</li>
@@ -709,15 +737,21 @@ function CompleteAgentExample() {
             <li>Log errors for debugging</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">5. Set Appropriate Limits</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            5. Set Appropriate Limits
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-            <li>Set <code>maxIterations</code> to prevent infinite loops</li>
+            <li>
+              Set <code>maxIterations</code> to prevent infinite loops
+            </li>
             <li>Set timeouts for tool execution</li>
             <li>Limit tool execution time</li>
             <li>Monitor token usage</li>
           </ul>
 
-          <h3 className="text-2xl font-semibold mb-3 mt-8">6. Security Considerations</h3>
+          <h3 className="text-2xl font-semibold mb-3 mt-8">
+            6. Security Considerations
+          </h3>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
             <li>Require approval for dangerous operations</li>
             <li>Validate and sanitize all inputs</li>
@@ -731,24 +765,40 @@ function CompleteAgentExample() {
           <h2 className="text-3xl font-semibold mb-4">Related</h2>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground">
             <li>
-              <a href="/reference/components/agent-run-feed" className="text-primary underline">
+              <a
+                href="/reference/components/agent-run-feed"
+                className="text-primary underline"
+              >
                 AgentRunFeed Component
-              </a> – Display agent execution steps
+              </a>{' '}
+              – Display agent execution steps
             </li>
             <li>
-              <a href="/reference/components/tool-invocation-card" className="text-primary underline">
+              <a
+                href="/reference/components/tool-invocation-card"
+                className="text-primary underline"
+              >
                 ToolInvocationCard Component
-              </a> – Tool approval UI
+              </a>{' '}
+              – Tool approval UI
             </li>
             <li>
-              <a href="/guides/tool-integration" className="text-primary underline">
+              <a
+                href="/guides/tool-integration"
+                className="text-primary underline"
+              >
                 Tool Integration Guide
-              </a> – Comprehensive tool integration guide
+              </a>{' '}
+              – Comprehensive tool integration guide
             </li>
             <li>
-              <a href="/reference/hooks/use-clarity-chat-with-tools" className="text-primary underline">
+              <a
+                href="/reference/hooks/use-clarity-chat-with-tools"
+                className="text-primary underline"
+              >
                 useClarityChatWithTools Hook
-              </a> – Chat hook with tool support
+              </a>{' '}
+              – Chat hook with tool support
             </li>
           </ul>
         </section>

@@ -83,11 +83,23 @@ export interface UseDashboardComposerOptions<
   onError?: (key: string, error: Error) => void
   /** Enable debug logging */
   debug?: boolean
+
+  /**
+   * Optional clock/scheduler injection (useful for deterministic tests).
+   */
+  clock?: {
+    now: () => number
+    setTimeout: (
+      handler: (...args: any[]) => void,
+      timeout?: number
+    ) => ReturnType<typeof setTimeout>
+    clearTimeout: (handle: ReturnType<typeof setTimeout>) => void
+  }
 }
 
 type SourceAction<T> =
   | { type: 'FETCH_START'; key: string }
-  | { type: 'FETCH_SUCCESS'; key: string; payload: T }
+  | { type: 'FETCH_SUCCESS'; key: string; payload: T; fetchedAt: number }
   | { type: 'FETCH_ERROR'; key: string; error: Error }
   | { type: 'SET_STALE'; key: string }
   | { type: 'SET_ALL_STALE' }
@@ -133,7 +145,7 @@ function createSourcesReducer<T extends Record<string, unknown>>(
             isLoading: false,
             error: null,
             isStale: false,
-            lastFetchedAt: Date.now(),
+            lastFetchedAt: action.fetchedAt,
           },
         }
       case 'FETCH_ERROR':
@@ -229,6 +241,11 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
     onAllSuccess,
     onError,
     debug = false,
+    clock = {
+      now: () => Date.now(),
+      setTimeout: (handler, timeout) => setTimeout(handler, timeout),
+      clearTimeout: (handle) => clearTimeout(handle),
+    },
   } = options
 
   const sourceKeys = React.useMemo(
@@ -282,32 +299,19 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
     [sourceConfigs]
   )
 
-  const clearStaleTimeout = React.useCallback((key: string) => {
-    const timeout = staleTimeoutsRef.current.get(key)
-    if (timeout) {
-      clearTimeout(timeout)
-      staleTimeoutsRef.current.delete(key)
-    }
-  }, [])
-
-  const scheduleStaleCheck = React.useCallback(
+  const clearStaleTimeout = React.useCallback(
     (key: string) => {
-      const config = sourceConfigsMap.get(key)
-      const staleTime = config?.staleTime ?? 5 * 60 * 1000
-
-      if (staleTime > 0) {
-        clearStaleTimeout(key)
-        const timeout = setTimeout(() => {
-          if (isMountedRef.current) {
-            log(`Source ${key} marked as stale`)
-            dispatch({ type: 'SET_STALE', key })
-          }
-        }, staleTime)
-        staleTimeoutsRef.current.set(key, timeout)
+      const timeout = staleTimeoutsRef.current.get(key)
+      if (timeout) {
+        clock.clearTimeout(timeout)
+        staleTimeoutsRef.current.delete(key)
       }
     },
-    [sourceConfigsMap, clearStaleTimeout, log]
+    [clock]
   )
+
+  // Track lastFetchedAt to schedule staleness timers after commit (not during fetch)
+  const lastFetchedAtRef = React.useRef<Map<string, number | null>>(new Map())
 
   const fetchSource = React.useCallback(
     async (key: string): Promise<void> => {
@@ -330,8 +334,12 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
           if (!isMountedRef.current) return
 
           log(`Source ${key} fetched successfully`)
-          dispatch({ type: 'FETCH_SUCCESS', key, payload: data })
-          scheduleStaleCheck(key)
+          dispatch({
+            type: 'FETCH_SUCCESS',
+            key,
+            payload: data,
+            fetchedAt: clock.now(),
+          })
           return
         } catch (err) {
           if (!isMountedRef.current) return
@@ -344,7 +352,9 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
             log(
               `Source ${key} failed, retrying in ${backoff}ms (${retries}/${maxRetries})`
             )
-            await new Promise((resolve) => setTimeout(resolve, backoff))
+            await new Promise<void>((resolve) => {
+              clock.setTimeout(() => resolve(), backoff)
+            })
           } else {
             log(`Source ${key} failed after ${maxRetries} retries`, error)
             dispatch({ type: 'FETCH_ERROR', key, error })
@@ -354,7 +364,7 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
         }
       }
     },
-    [sourceConfigsMap, scheduleStaleCheck, onError, log]
+    [sourceConfigsMap, onError, log, clock]
   )
 
   const refetchAll = React.useCallback(async () => {
@@ -387,11 +397,11 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
   const reset = React.useCallback(() => {
     // Clear all stale timeouts
     for (const timeout of staleTimeoutsRef.current.values()) {
-      clearTimeout(timeout)
+      clock.clearTimeout(timeout)
     }
     staleTimeoutsRef.current.clear()
     dispatch({ type: 'RESET' })
-  }, [])
+  }, [clock])
 
   // Initial fetch
   React.useEffect(() => {
@@ -405,7 +415,7 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       isMountedRef.current = false
       // Clear all stale timeouts
       for (const timeout of staleTimeoutsRef.current.values()) {
-        clearTimeout(timeout)
+        clock.clearTimeout(timeout)
       }
       staleTimeoutsRef.current.clear()
     }
@@ -429,6 +439,56 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
       onAllSuccess(data)
     }
   }, [sourcesState, sourceKeys, onAllSuccess])
+
+  // Schedule staleness timers AFTER state updates commit.
+  // This is intentionally done in an effect (not inside fetchSource) so test helpers like
+  // `vi.runAllTimersAsync()` can flush fetch-related timers without also fast-forwarding
+  // long-lived stale timers.
+  React.useEffect(() => {
+    for (const key of sourceKeys) {
+      const state = sourcesState[key]
+      const config = sourceConfigsMap.get(key)
+      const staleTime = config?.staleTime
+
+      // Only enable staleness when explicitly configured.
+      if (!state || staleTime === undefined || staleTime <= 0) {
+        clearStaleTimeout(key)
+        continue
+      }
+
+      // If already stale (manual invalidation), don't schedule.
+      if (state.isStale) {
+        clearStaleTimeout(key)
+        continue
+      }
+
+      const prevLastFetchedAt = lastFetchedAtRef.current.get(key)
+      if (prevLastFetchedAt === state.lastFetchedAt) {
+        // No new fetch; keep existing timer.
+        continue
+      }
+
+      lastFetchedAtRef.current.set(key, state.lastFetchedAt)
+      clearStaleTimeout(key)
+
+      if (state.lastFetchedAt === null) continue
+
+      const timeout = clock.setTimeout(() => {
+        if (!isMountedRef.current) return
+        log(`Source ${key} marked as stale`)
+        dispatch({ type: 'SET_STALE', key })
+      }, staleTime)
+
+      staleTimeoutsRef.current.set(key, timeout)
+    }
+  }, [
+    sourceKeys,
+    sourcesState,
+    sourceConfigsMap,
+    clearStaleTimeout,
+    log,
+    clock,
+  ])
 
   // Compute derived state
   const isLoading = requiredKeys.some((key) => sourcesState[key]?.isLoading)
