@@ -25,6 +25,8 @@
 @import './_code-blocks.css';
 @import './_error-boundary.css';
 @import './_virtual-list.css';
+@import './_loading.css';
+@import './_confirmation-dialog.css';
 
 /* Utilities and Responsive */
 @import './_utilities.css';
