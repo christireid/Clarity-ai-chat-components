@@ -439,6 +439,10 @@ export * from './reranking'
 // Plugin Architecture
 export * from './plugins'
 
+// ✨ ENHANCED (2025): World-Class Extension System
+// Comprehensive extension framework for building custom integrations
+export * from './extensions'
+
 // Theme System
 export * from './theme'
 
