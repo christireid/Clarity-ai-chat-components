@@ -6,6 +6,9 @@ import { Button, cn, Textarea } from '@clarity-chat/primitives'
 import { CheckIcon, CloseIcon } from '../icons'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 
+/** Maximum recommended content length before warning */
+const MAX_CONTENT_LENGTH = 10000
+
 export interface EditableMessageContentProps {
   /** Original content */
   content: string
@@ -17,6 +20,8 @@ export interface EditableMessageContentProps {
   onCancel: () => void
   /** Additional class names */
   className?: string
+  /** Maximum content length before showing warning (default: 10000) */
+  maxLength?: number
 }
 
 /**
@@ -29,7 +34,14 @@ export interface EditableMessageContentProps {
  * - Animated transitions
  */
 export const EditableMessageContent = React.memo<EditableMessageContentProps>(
-  ({ content, isEditing, onSave, onCancel, className }) => {
+  ({
+    content,
+    isEditing,
+    onSave,
+    onCancel,
+    className,
+    maxLength = MAX_CONTENT_LENGTH,
+  }) => {
     const [editValue, setEditValue] = React.useState(content)
     const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
@@ -86,6 +98,7 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
 
     const hasChanges = editValue.trim() !== content
     const isEmpty = !editValue.trim()
+    const isOverLimit = editValue.length > maxLength
 
     return (
       <AnimatePresence mode="wait">
@@ -106,22 +119,45 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
               onKeyDown={handleKeyDown}
               className={cn(
                 'min-h-[100px] max-h-64 overflow-y-auto resize-none',
-                'bg-background border-2 border-primary/50',
-                'focus:border-primary focus:ring-2 focus:ring-primary/20',
+                'bg-background border-2',
+                isOverLimit
+                  ? 'border-amber-500/70 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20'
+                  : 'border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20',
                 'rounded-xl p-3',
                 'text-foreground',
                 'transition-all duration-200'
               )}
               placeholder="Edit your message..."
               aria-label="Edit message"
+              aria-describedby={isOverLimit ? 'edit-length-warning' : undefined}
             />
 
-            {/* Character count - hidden from screen readers to avoid spam on every keystroke */}
-            <div
-              className="text-xs text-muted-foreground text-right -mt-1"
-              aria-hidden="true"
-            >
-              {editValue.length.toLocaleString()} characters
+            {/* Character count and length warning */}
+            <div className="flex items-center justify-between -mt-1">
+              {/* Warning message - only announced to screen readers when over limit */}
+              {isOverLimit ? (
+                <span
+                  id="edit-length-warning"
+                  className="text-xs text-amber-600 dark:text-amber-400"
+                  role="alert"
+                >
+                  Message is very long and may affect performance
+                </span>
+              ) : (
+                <span />
+              )}
+              {/* Character count - decorative, hidden from screen readers */}
+              <span
+                className={cn(
+                  'text-xs text-right',
+                  isOverLimit
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-muted-foreground'
+                )}
+                aria-hidden="true"
+              >
+                {editValue.length.toLocaleString()} characters
+              </span>
             </div>
 
             {/* Action buttons */}

@@ -344,7 +344,7 @@ export function ClarityChat({
   return (
     <ChatWindow
       messages={messages}
-      isLoading={chat.isLoading}
+      isLoading={chat.isLoading || isRegenerating}
       onSendMessage={handleSendMessage}
       onStopGeneration={handleStopGeneration}
       onMessageCopy={onMessageCopy}
