@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Loading State Styles
+   ========================================================================== */
+
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.loading-spinner-md {
+  width: 24px;
+  height: 24px;
+}
+
+.loading-spinner-lg {
+  width: 32px;
+  height: 32px;
+}
+
+.loading-spinner-progress {
+  transform-origin: center;
+  animation: spinner-dash 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-dash {
+  0% {
+    stroke-dashoffset: 31.42;
+  }
+  50% {
+    stroke-dashoffset: 10;
+  }
+  100% {
+    stroke-dashoffset: 31.42;
+  }
+}
+
+/* Loading Overlay */
+.loading-overlay-container {
+  position: relative;
+}
+
+.loading-overlay-content {
+  transition: filter var(--dt-transition-base);
+}
+
+.loading-overlay-content.loading-blurred {
+  filter: blur(2px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: var(--dt-z-overlay);
+  animation: fadeIn var(--dt-transition-fast);
+}
+
+.loading-overlay-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--dt-space-3);
+}
+
+.loading-overlay-message {
+  color: var(--dt-text-secondary);
+  font-size: var(--dt-text-sm);
+  font-weight: var(--dt-font-weight-medium);
+  margin: 0;
+}
+
+/* Loading Skeleton */
+.loading-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--dt-bg-tertiary) 25%,
+    var(--dt-bg-secondary) 50%,
+    var(--dt-bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.loading-skeleton-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dt-space-2);
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Loading Button */
+.dt-btn[aria-busy='true'] {
+  position: relative;
+  cursor: wait;
+}
+
+.dt-btn[aria-busy='true'] .loading-spinner {
+  margin-right: var(--dt-space-2);
+}
+
+/* Dark Mode */
+.dev-tools-dark .loading-overlay {
+  background: rgba(15, 23, 42, 0.85);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
