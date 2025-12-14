@@ -4,6 +4,18 @@
 
 import * as vscode from 'vscode'
 
+/**
+ * Escapes HTML special characters to prevent XSS
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 export async function validateConfigCommand() {
   await vscode.window.withProgress({
     location: vscode.ProgressLocation.Notification,
@@ -111,8 +123,8 @@ async function checkCodePatterns(issues: string[], warnings: string[]) {
     const document = await vscode.workspace.openTextDocument(file)
     const text = document.getText()
 
-    // Check for hardcoded API keys
-    if (/['"]sk-[a-zA-Z0-9]{48,}['"]/.test(text)) {
+    // Check for hardcoded API keys (OpenAI sk-*, Anthropic sk-ant-*, Google AIza*)
+    if (/['"](?:sk-[a-zA-Z0-9_-]{20,}|sk-ant-[a-zA-Z0-9_-]{20,}|AIza[a-zA-Z0-9_-]{30,})['"]/.test(text)) {
       issues.push(`Possible hardcoded API key in ${file.path}`)
     }
 
@@ -140,6 +152,8 @@ function showValidationResults(issues: string[], warnings: string[]) {
     <!DOCTYPE html>
     <html>
     <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
       <style>
         body {
           font-family: var(--vscode-font-family);
@@ -183,12 +197,12 @@ function showValidationResults(issues: string[], warnings: string[]) {
 
       ${issues.length > 0 ? `
         <h2>❌ Issues (${issues.length})</h2>
-        ${issues.map(issue => `<div class="issue"><span class="icon">❌</span>${issue}</div>`).join('')}
+        ${issues.map(issue => `<div class="issue"><span class="icon">❌</span>${escapeHtml(issue)}</div>`).join('')}
       ` : ''}
 
       ${warnings.length > 0 ? `
         <h2>⚠️ Warnings (${warnings.length})</h2>
-        ${warnings.map(warning => `<div class="warning"><span class="icon">⚠️</span>${warning}</div>`).join('')}
+        ${warnings.map(warning => `<div class="warning"><span class="icon">⚠️</span>${escapeHtml(warning)}</div>`).join('')}
       ` : ''}
     </body>
     </html>
