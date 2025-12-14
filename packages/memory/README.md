@@ -26,7 +26,7 @@ yarn add @clarity-chat/memory
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity Memory?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+> 📖 **New to Clarity Memory?** Check the [Getting Started Guide](../../docs/getting-started.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
 
 ### Zero-Config (In-Memory)
 
@@ -391,7 +391,7 @@ async function chat(message: string) {
 
 ## 📖 Documentation
 
-- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Getting Started Guide](../../docs/getting-started.md)
 - [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
 - [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
 - [API Reference](./API.md) - Complete API documentation

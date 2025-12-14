@@ -38,7 +38,7 @@ for getting started, building production applications, and understanding the sys
   - Hook relationships
   - Extension points
 
-- **[Troubleshooting](./troubleshooting.md)** 🔧 Common issues and solutions
+- **[Troubleshooting](./TROUBLESHOOTING.md)** 🔧 Common issues and solutions
   - Quick diagnosis
   - Common errors
   - Performance issues
@@ -84,7 +84,7 @@ docs/
 ├── best-practices.md                  # Production patterns
 ├── cookbook.md                        # Common patterns & recipes
 ├── architecture.md                    # System architecture
-├── troubleshooting.md                 # Common issues
+├── TROUBLESHOOTING.md                 # Common issues
 ├── migration/
 │   ├── v1-to-v2.md                   # Version migration
 │   └── use-chat-deprecation.md       # useChat → useClarityChat 🆕

@@ -267,9 +267,9 @@ This demo includes a mock API route. For production use:
 ## 📚 Documentation
 
 - [Clarity Chat Docs](https://docs.clarity-chat.dev)
-- [Agent System Guide](../../apps/docs/guide/agents.md)
-- [RAG Pipeline Guide](../../apps/docs/guide/rag.md)
-- [Token Optimization Guide](../../apps/docs/guide/token-optimization.md)
+- [Agent System Guide](../../docs/cookbook/agents.md)
+- [RAG Pipeline Guide](../../docs/cookbook/rag-chat.md)
+- [Best Practices](../../docs/best-practices.md)
 
 ## 🤝 Contributing
 

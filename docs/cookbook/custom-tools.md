@@ -213,6 +213,6 @@ function InteractiveToolResult({ data }: { data: any }) {
 
 ## Related
 
-- [Tool UI Registry Guide](../../docs/guides/tool-ui.md)
-- [Agent Orchestration](./agents.md)
-- [Component Library](../../packages/react/README.md#components)
+- [Tool UI Registry](../../packages/react/README.md#tool-ui-registry) - Tool result rendering patterns
+- [Agent Orchestration](./agents.md) - Agent-powered chat patterns
+- [Component Library](../../packages/react/README.md#components) - Available components

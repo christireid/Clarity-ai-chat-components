@@ -2,7 +2,7 @@
 
 > **Complete API documentation** - Comprehensive reference for all Clarity Chat APIs
 
-This document provides a complete reference for all public APIs in Clarity Chat. For getting started guides and examples, see the [Getting Started Guide](./getting-started-clarity-chat.md) and [Cookbook](./cookbook/).
+This document provides a complete reference for all public APIs in Clarity Chat. For getting started guides and examples, see the [Getting Started Guide](./getting-started.md) and [Cookbook](./cookbook/).
 
 ---
 
@@ -420,9 +420,9 @@ import { ErrorBoundary } from '@clarity-chat/react'
 
 ## Related Documentation
 
-- [Getting Started Guide](./getting-started-clarity-chat.md) - Step-by-step setup
+- [Getting Started Guide](./getting-started.md) - Step-by-step setup
 - [Cookbook](./cookbook/) - Copy-paste ready patterns
-- [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+- [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
 - [Storybook](http://localhost:6006) - Interactive examples
 
 ---

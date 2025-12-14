@@ -81,50 +81,82 @@ import { StreamingTextResponse } from 'ai'
 import { MemoryService } from '@clarity-chat/react/server'
 
 export async function POST(req: Request) {
-  const { messages, userId } = await req.json()
-  
-  // Retrieve relevant memories
-  const memory = new MemoryService({
-    vectorStore: 'pinecone',
-    apiKey: process.env.PINECONE_API_KEY
-  })
-  
-  const context = await memory.retrieveContext({
-    query: messages[messages.length - 1].content,
-    userId,
-    k: 5
-  })
-  
-  // Combine messages with memory context
-  const prompt = [
-    { role: 'system', content: 'You are a helpful assistant with memory.' },
-    ...context.map(c => ({ role: 'assistant', content: c })),
-    ...messages
-  ]
-  
-  // Stream response
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages: prompt,
-      stream: true
+  try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    const { messages, userId } = await req.json()
+
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Retrieve relevant memories
+    const memory = new MemoryService({
+      vectorStore: 'pinecone',
+      apiKey: process.env.PINECONE_API_KEY
     })
-  })
-  
-  // Store new message in memory
-  const lastMessage = messages[messages.length - 1]
-  await memory.store({
-    content: lastMessage.content,
-    userId,
-    metadata: { timestamp: Date.now() }
-  })
-  
-  return new StreamingTextResponse(response.body)
+
+    const context = await memory.retrieveContext({
+      query: messages[messages.length - 1].content,
+      userId,
+      k: 5
+    })
+
+    // Combine messages with memory context
+    const prompt = [
+      { role: 'system', content: 'You are a helpful assistant with memory.' },
+      ...context.map(c => ({ role: 'assistant', content: c })),
+      ...messages
+    ]
+
+    // Stream response
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': \`Bearer \${apiKey}\`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: prompt,
+        stream: true
+      })
+    })
+
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: 'AI provider error' }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Store new message in memory
+    const lastMessage = messages[messages.length - 1]
+    await memory.store({
+      content: lastMessage.content,
+      userId,
+      metadata: { timestamp: Date.now() }
+    })
+
+    return new StreamingTextResponse(response.body)
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
 }`}</code>
         </pre>
       </section>

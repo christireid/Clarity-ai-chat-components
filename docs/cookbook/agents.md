@@ -248,6 +248,6 @@ const analysis = await agents.analysis.run({ data: result })
 
 ## Related
 
-- [Agent Orchestration Guide](../../docs/guides/agents.md)
-- [Tool UI Registry](../../docs/guides/tool-ui.md)
-- [Example: AI Agents Workflow](../../apps/examples/ai-agents-workflow)
+- [Custom Tools](./custom-tools.md) - Custom tool result rendering
+- [Tool UI Registry](../../packages/react/README.md#tool-ui-registry) - Tool result patterns
+- [Examples](../../apps/examples/README.md) - Production examples

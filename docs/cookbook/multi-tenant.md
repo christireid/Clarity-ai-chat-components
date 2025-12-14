@@ -197,6 +197,6 @@ function AdminDashboard({ tenantId }: { tenantId: string }) {
 
 ## Related
 
-- [Multi-Tenancy Guide](../../docs/guides/multi-tenancy.md)
-- [RBAC Guide](../../docs/guides/rbac.md)
-- [Enterprise Features](../../packages/react/README.md#enterprise-features)
+- [Best Practices](../best-practices.md) - Production patterns
+- [Enterprise Features](../../packages/react/README.md#enterprise-features) - RBAC, multi-tenancy
+- [Architecture Overview](../architecture.md) - System design
