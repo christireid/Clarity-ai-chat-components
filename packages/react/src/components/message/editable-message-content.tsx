@@ -82,19 +82,23 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
           onCancel()
         } else if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
           e.preventDefault()
-          if (editValue.trim()) {
-            onSave(editValue.trim())
+          const trimmed = editValue.trim()
+          // Only save if content is non-empty AND has changes
+          if (trimmed && trimmed !== content) {
+            onSave(trimmed)
           }
         }
       },
-      [editValue, onSave, onCancel]
+      [editValue, content, onSave, onCancel]
     )
 
     const handleSave = React.useCallback(() => {
-      if (editValue.trim()) {
-        onSave(editValue.trim())
+      const trimmed = editValue.trim()
+      // Only save if content is non-empty AND has changes (defense in depth)
+      if (trimmed && trimmed !== content) {
+        onSave(trimmed)
       }
-    }, [editValue, onSave])
+    }, [editValue, content, onSave])
 
     const hasChanges = editValue.trim() !== content
     const isEmpty = !editValue.trim()
