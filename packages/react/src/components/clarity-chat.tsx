@@ -1,29 +1,29 @@
 /**
  * ClarityChat - Top-Level Drop-in Component
- * 
+ *
  * The simplest way to add AI chat to your app. Just provide an API endpoint
  * and you're done. All the complexity is handled internally.
- * 
+ *
  * **Architecture Layer**: Top-Level (Drop-in Ready)
  * **Domain**: Chat UI
- * 
+ *
  * This is the recommended entry point for most use cases. For more control,
  * use mid-level APIs like `ChatWindow` + `useClarityChat` + `useChatHandlers`.
- * 
+ *
  * @example
  * ```tsx
  * import { ClarityChat } from '@clarity-chat/react'
  * import '@clarity-chat/react/styles.css'
- * 
+ *
  * function App() {
  *   return <ClarityChat api="/api/chat" />
  * }
  * ```
- * 
+ *
  * @example
  * ```tsx
  * // With memory enabled
- * <ClarityChat 
+ * <ClarityChat
  *   api="/api/chat"
  *   memory={{ enabled: true, strategy: 'vector-store' }}
  * />
@@ -33,7 +33,10 @@
 'use client'
 
 import * as React from 'react'
-import { useClarityChat, type UseClarityChatOptions } from '../hooks/use-clarity-chat'
+import {
+  useClarityChat,
+  type UseClarityChatOptions,
+} from '../hooks/use-clarity-chat'
 import { ChatWindow } from './chat-window'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
@@ -41,8 +44,6 @@ import type { CoreMessage } from '../hooks/use-chat-enhanced'
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** API endpoint URL - the only required prop */
   api: string
-  /** Optional chat ID for persistence */
-  chatId?: string
   /** Optional className for the chat container */
   className?: string
   /** Custom empty state */
@@ -61,32 +62,60 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   onExport?: () => void
   /** Enable clear chat functionality */
   onClear?: () => void
-  /** Auto-scroll to bottom on new messages */
-  autoScroll?: boolean
   /** Callback when a message is copied */
-  onMessageCopy?: (id: string, content: string) => void
+  onMessageCopy?: (messageId: string, content: string) => void
   /** Callback when message feedback is provided */
-  onMessageFeedback?: (messageId: string, feedbackType: 'positive' | 'negative') => void
-  /** Theme for the chat interface */
-  theme?: string
-  /** Show token counter in input */
-  showTokenCounter?: boolean
-  /** Show network status indicator */
-  showNetworkStatus?: boolean
-  /** Enable message operations (edit, delete, branch) */
-  enableMessageOperations?: boolean
-  /** Memory strategy for conversation context */
-  memoryStrategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
-  /** Error handler with error info */
-  onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
+  onMessageFeedback?: (messageId: string, feedbackType: 'up' | 'down') => void
+  /** Callback when retry is requested */
+  onMessageRetry?: (messageId: string) => void
+  /** Callback when message is edited */
+  onEditMessage?: (messageId: string) => void
+  /** Callback when message is regenerated */
+  onRegenerateMessage?: (messageId: string) => void
+  /** Callback when message is deleted */
+  onDeleteMessage?: (messageId: string) => void
+  /**
+   * Error message to display (e.g., network errors).
+   * Shows a banner above the chat when set.
+   */
+  error?: string | null
+  /**
+   * Callback to retry after an error.
+   * When provided along with `error`, shows a "Retry" button.
+   */
+  onRetry?: () => void
+  /**
+   * Callback to dismiss the error banner.
+   */
+  onDismissError?: () => void
+  /** AI processing status for thinking indicator */
+  aiStatus?: import('@clarity-chat/types').AIStatus
+  /**
+   * Starter prompts to show in empty state.
+   * Helps users discover what the chat can do.
+   */
+  starterPrompts?: import('./prompt-suggestions').PromptSuggestion[]
+  /**
+   * Suggested follow-up prompts shown after assistant messages.
+   */
+  followUpSuggestions?: import('./prompt-suggestions').PromptSuggestion[]
+  /** Whether to show starter prompts in empty state (default: true) */
+  showStarterPrompts?: boolean
+  /** Whether to show follow-up suggestions (default: true) */
+  showFollowUpSuggestions?: boolean
+  /**
+   * Callback to stop/cancel the current AI generation.
+   * When provided, shows a "Stop" button during loading state.
+   */
+  onStopGeneration?: () => void
 }
 
 /**
  * ClarityChat - All-in-one chat component
- * 
+ *
  * This is the recommended way to use Clarity Chat. It combines the hook
  * and component into a single, easy-to-use interface.
- * 
+ *
  * Features:
  * - Automatic message format conversion
  * - Built-in loading states
@@ -94,23 +123,23 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
  * - Memory support (when configured)
  * - Streaming support
  * - All ChatWindow features
- * 
+ *
  * @example Basic usage
  * ```tsx
  * <ClarityChat api="/api/chat" />
  * ```
- * 
+ *
  * @example With memory
  * ```tsx
- * <ClarityChat 
+ * <ClarityChat
  *   api="/api/chat"
  *   memory={{ enabled: true, strategy: 'sliding-window' }}
  * />
  * ```
- * 
+ *
  * @example With custom styling
  * ```tsx
- * <ClarityChat 
+ * <ClarityChat
  *   api="/api/chat"
  *   className="h-screen"
  *   showHeader
@@ -129,18 +158,33 @@ export function ClarityChat({
   showMessageCount,
   onExport,
   onClear,
+  onMessageCopy,
+  onMessageFeedback,
+  onMessageRetry,
+  onEditMessage,
+  onRegenerateMessage,
+  onDeleteMessage,
+  error,
+  onRetry,
+  onDismissError,
+  aiStatus,
+  starterPrompts,
+  followUpSuggestions,
+  showStarterPrompts,
+  showFollowUpSuggestions,
+  onStopGeneration,
   ...hookOptions
 }: ClarityChatProps) {
   // Validate required prop with helpful error message
   if (!api || typeof api !== 'string' || api.trim().length === 0) {
     throw new Error(
       'ClarityChat: "api" prop is required.\n' +
-      'Please provide your API endpoint URL.\n\n' +
-      'Example:\n' +
-      '  <ClarityChat api="/api/chat" />\n\n' +
-      'Or use environment variable:\n' +
-      '  CLARITY_CHAT_API=/api/chat\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/getting-started'
+        'Please provide your API endpoint URL.\n\n' +
+        'Example:\n' +
+        '  <ClarityChat api="/api/chat" />\n\n' +
+        'Or use environment variable:\n' +
+        '  CLARITY_CHAT_API=/api/chat\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/getting-started'
     )
   }
 
@@ -181,6 +225,21 @@ export function ClarityChat({
       showMessageCount={showMessageCount}
       onExport={onExport}
       onClear={onClear ? handleClear : undefined}
+      onMessageCopy={onMessageCopy}
+      onMessageFeedback={onMessageFeedback}
+      onMessageRetry={onMessageRetry}
+      onEditMessage={onEditMessage}
+      onRegenerateMessage={onRegenerateMessage}
+      onDeleteMessage={onDeleteMessage}
+      error={error}
+      onRetry={onRetry}
+      onDismissError={onDismissError}
+      aiStatus={aiStatus}
+      starterPrompts={starterPrompts}
+      followUpSuggestions={followUpSuggestions}
+      showStarterPrompts={showStarterPrompts}
+      showFollowUpSuggestions={showFollowUpSuggestions}
+      onStopGeneration={onStopGeneration}
     />
   )
 }

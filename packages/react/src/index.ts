@@ -71,10 +71,15 @@ export {
 
 // Chat UI Components
 export { ChatWindow } from './components/chat-window'
+export type { ChatWindowProps } from './components/chat-window'
 export { ChatInput } from './components/chat-input'
+export type { ChatInputProps } from './components/chat-input'
 export { AdvancedChatInput } from './components/advanced-chat-input'
+/**
+ * MessageList - Virtualized message list component for performance with large conversations.
+ * Alias for VirtualizedMessageList for semantic clarity.
+ */
 export { default as MessageList } from './components/virtualized-message-list'
-export { default as VirtualizedMessageList } from './components/virtualized-message-list'
 export { StreamingMessage } from './components/streaming-message'
 export { ThinkingIndicator } from './components/thinking-indicator'
 export {
@@ -83,6 +88,16 @@ export {
 } from './components/typing-indicator'
 
 // Chat State Hooks
+/**
+ * useChatEnhanced - Mid-level hook compatible with Vercel AI SDK patterns.
+ *
+ * Use this when:
+ * - You need Vercel AI SDK compatibility
+ * - You want fine-grained control over streaming
+ * - You're building custom chat implementations
+ *
+ * For simpler usage, prefer `useClarityChat` (top-level) or `useChat` (unified).
+ */
 export {
   useChat as useChatEnhanced,
   type UseChatOptions as UseChatEnhancedOptions,
@@ -156,15 +171,20 @@ export {
   convertMessagesToCoreMessages,
 } from './utils/message-conversion'
 
-// Unified Chat Hook - Simplified API with sensible defaults
 /**
- * useChat - Simplified chat hook with sensible defaults
+ * useChat - Unified chat hook with sensible defaults (RECOMMENDED)
  *
  * This is the recommended hook for most use cases. It provides:
- * - Automatic message conversion
+ * - Automatic message conversion to ChatWindow-compatible format
  * - Optional persistence to localStorage
  * - Auto-scroll support
+ * - Simplified API with `sendMessage` instead of `append`
  * - Full access to underlying useClarityChat via `chat` property
+ *
+ * Hook Selection Guide:
+ * - `useChat` - Best for most use cases, simplest API
+ * - `useClarityChat` - When you need memory, token optimization, or advanced features
+ * - `useChatEnhanced` - When you need Vercel AI SDK compatibility
  *
  * @example
  * ```tsx
@@ -180,10 +200,10 @@ export {
   type UseChatReturn,
 } from './hooks/use-chat-unified'
 
-// Legacy Chat Hook (Deprecated - use useChat or useClarityChat instead)
 /**
  * @deprecated Use `useChat` or `useClarityChat` instead.
  * This hook is maintained for backward compatibility only and will be removed in v3.0.
+ * Migration: Replace `useChatLegacy` with `useChat` from '@clarity-chat/react'.
  */
 export {
   useChat as useChatLegacy,

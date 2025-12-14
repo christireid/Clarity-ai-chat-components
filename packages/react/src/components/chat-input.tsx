@@ -31,6 +31,10 @@ export interface ChatInputProps {
   animateHeight?: boolean
   /** Enable focus ring glow animation */
   glowOnFocus?: boolean
+  /** Auto-focus the input on mount */
+  autoFocus?: boolean
+  /** Accessible label for the input (default: 'Message') */
+  'aria-label'?: string
   className?: string
 }
 
@@ -145,6 +149,8 @@ export function ChatInput({
   warningThreshold = 0.8,
   animateHeight = true,
   glowOnFocus = true,
+  autoFocus = false,
+  'aria-label': ariaLabel = 'Message',
   className,
 }: ChatInputProps) {
   // Development-only runtime validation (removed from production for performance)
@@ -329,7 +335,8 @@ export function ChatInput({
             placeholder={placeholder}
             disabled={disabled}
             maxLength={validMaxLength}
-            aria-label="Message"
+            autoFocus={autoFocus}
+            aria-label={ariaLabel}
             aria-disabled={disabled}
             aria-invalid={isOverLimit}
             aria-errormessage={isOverLimit ? 'char-limit-error' : undefined}
