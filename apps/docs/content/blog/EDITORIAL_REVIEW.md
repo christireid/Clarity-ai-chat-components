@@ -198,19 +198,20 @@ Standard documentation paths used:
 **Risk:** Code examples referenced undefined functions, making them non-copy-paste ready.
 
 **Resolution:**
-- **Post 8** (Context Windows): Added `embed()` function definition for semantic retrieval
+- **Post 8** (Context Windows): Added `embed()` function, plus `confirmPrune()`, `pruneOldMessages()`, `actualSend()` helpers
 - **Post 13** (Cost Optimization): Added `embed()` and `cosineSimilarity()` helper functions for semantic pruning
 - **Post 15** (Model Selection): Added `extractKeywords()` function and API wrapper comments
-- **Post 17** (RAG Production): Added `countTokens()`, `tokenize()`, `embed()`, `summarize()`, `splitBySections()`, `splitByParagraphs()`, and `cosineSimilarity()` functions
+- **Post 17** (RAG Production): Added `countTokens()`, `tokenize()`, `embed()`, `summarize()`, `splitBySections()`, `splitByParagraphs()`, `cosineSimilarity()`, `generateAnswer()`, and `formatContext()` functions
+- **Post 18** (AI Agents): Added `PendingAction` interface, `showConfirmDialog()`, `describeAction()`, `formatToolResult()` helpers
 - **Post 19** (Security): Added complete implementations for `hasPermission()`, `isRateLimited()`, `requestUserConfirmation()`, `executeActualTool()`, `alertSecurityTeam()`, `getRecentEvents()`, and security logging infrastructure
-- **Post 20** (AI Memory): Added `embed()`, `summarize()`, and `extractTopic()` helper functions
+- **Post 20** (AI Memory): Added `embed()`, `summarize()`, `extractTopic()`, `incrementPattern()`, and `hasPattern()` helper functions
 
 ### 2. Type Safety Issues
 **Risk:** Use of `any` type casts reduced TypeScript safety.
 
 **Resolution:**
 - **Post 10** (Token Counting): Replaced `any` casts with proper TypeScript types using `Parameters<typeof encodingForModel>[0]` and `ReturnType<typeof encodingForModel>`
-- **Post 18** (AI Agents): Added generic `ToolHandler` type and replaced `any` with `unknown` where appropriate
+- **Post 18** (AI Agents): Added generic `ToolHandler` type, replaced `any` with `unknown` in `ToolCallDisplay` interface and `formatToolArguments` function
 
 ### 3. Missing Imports and Dependencies
 **Risk:** Missing import statements would cause runtime errors.

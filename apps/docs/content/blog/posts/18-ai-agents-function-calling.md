@@ -325,6 +325,30 @@ interface AgentConfig {
   timeout: number
 }
 
+interface PendingAction {
+  function: string
+  arguments: Record<string, unknown>
+  description: string
+}
+
+// UI helper - implement based on your UI framework
+async function showConfirmDialog(message: string): Promise<boolean> {
+  // For React: use a modal state + promise
+  // For simple cases: return window.confirm(message)
+  return window.confirm(message)
+}
+
+// Human-readable action description
+function describeAction(functionName: string, args: string): string {
+  const parsed = JSON.parse(args)
+  const descriptions: Record<string, (args: Record<string, unknown>) => string> = {
+    add_to_cart: (a) => `add ${a.quantity || 1} of product ${a.productId} to your cart`,
+    submit_order: () => 'submit your order',
+    delete_item: (a) => `delete item ${a.itemId}`,
+  }
+  return descriptions[functionName]?.(parsed) || `perform ${functionName}`
+}
+
 async function runAgentWithConfirmation(
   userMessage: string,
   config: AgentConfig,
@@ -427,9 +451,9 @@ Transparency builds trust. Show users what the agent is doing:
 interface ToolCallDisplay {
   id: string
   name: string
-  arguments: Record<string, any>
+  arguments: Record<string, unknown>
   status: 'pending' | 'running' | 'success' | 'error'
-  result?: any
+  result?: unknown
   error?: string
 }
 
@@ -510,7 +534,7 @@ function formatToolName(name: string): string {
   return names[name] || name
 }
 
-function formatToolArguments(name: string, args: Record<string, any>): string {
+function formatToolArguments(name: string, args: Record<string, unknown>): string {
   switch (name) {
     case 'search_products':
       return `"${args.query}"${args.category ? ` in ${args.category}` : ''}${args.maxPrice ? ` under $${args.maxPrice}` : ''}`
@@ -520,6 +544,21 @@ function formatToolArguments(name: string, args: Record<string, any>): string {
       return `Order #${args.orderId}`
     default:
       return JSON.stringify(args)
+  }
+}
+
+function formatToolResult(name: string, result: unknown): string {
+  if (!result) return ''
+  const r = result as Record<string, unknown>
+  switch (name) {
+    case 'search_products':
+      return `Found ${Array.isArray(r.products) ? r.products.length : 0} products`
+    case 'add_to_cart':
+      return `Added to cart (${r.itemCount} items, $${r.cartTotal})`
+    case 'get_order_status':
+      return `Status: ${r.status}${r.estimatedDelivery ? ` - arrives ${r.estimatedDelivery}` : ''}`
+    default:
+      return JSON.stringify(result).slice(0, 100)
   }
 }
 ```

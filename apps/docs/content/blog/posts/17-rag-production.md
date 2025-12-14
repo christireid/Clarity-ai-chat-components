@@ -345,6 +345,32 @@ async function rerank(
 The most important RAG feature: admitting ignorance.
 
 ```typescript
+// Generate answer using retrieved context
+async function generateAnswer(query: string, context: string): Promise<string> {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      {
+        role: 'system',
+        content: `Answer the question based only on the provided context. If the context doesn't contain enough information, say so.
+
+Context:
+${context}`
+      },
+      { role: 'user', content: query }
+    ],
+    max_tokens: 500,
+  })
+  return response.choices[0].message.content || ''
+}
+
+// Format retrieved chunks for LLM context
+function formatContext(results: RetrievalResult[]): string {
+  return results
+    .map((r, i) => `[Source ${i + 1}] (relevance: ${r.score.toFixed(2)})\n${r.chunk.content}`)
+    .join('\n\n---\n\n')
+}
+
 async function queryWithConfidence(
   query: string
 ): Promise<{ answer: string; confidence: 'high' | 'medium' | 'low' | 'none' }> {

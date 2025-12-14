@@ -209,6 +209,31 @@ interface UserPattern {
   examples: number
 }
 
+// Pattern storage helpers
+async function incrementPattern(userId: string, behavior: string): Promise<void> {
+  const existing = await db.userPatterns.findOne({ userId, behavior })
+  if (existing) {
+    await db.userPatterns.update({
+      userId,
+      behavior,
+      examples: existing.examples + 1,
+      confidence: Math.min(0.95, existing.confidence + 0.05),
+    })
+  } else {
+    await db.userPatterns.insert({
+      userId,
+      behavior,
+      examples: 1,
+      confidence: 0.5,
+    })
+  }
+}
+
+function hasPattern(patterns: UserPattern[], behavior: string, minConfidence: number): boolean {
+  const pattern = patterns.find(p => p.behavior === behavior)
+  return pattern ? pattern.confidence >= minConfidence : false
+}
+
 // Track patterns over time
 async function updatePatterns(
   userId: string,

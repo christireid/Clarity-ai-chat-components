@@ -349,6 +349,21 @@ function useTokenWarnings(maxTokens: number) {
 "Maximum context length exceeded" should never surprise users. Before sending any request, validate:
 
 ```tsx
+// Helper functions for context management
+async function confirmPrune(options: { message: string }): Promise<boolean> {
+  // Show a confirmation dialog to the user
+  return window.confirm(options.message)
+}
+
+async function pruneOldMessages(): Promise<void> {
+  // Remove oldest messages while keeping recent context
+  // Implementation depends on your state management
+}
+
+async function actualSend(content: string): Promise<void> {
+  // Your actual API call to send the message
+}
+
 async function sendMessage(content: string) {
   const totalTokens = estimateTotalTokens([
     ...contextMessages,
