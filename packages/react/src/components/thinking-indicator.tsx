@@ -123,7 +123,12 @@ export function ThinkingIndicator({
         ease: EASING_FRAMER.out,
       }}
       className={cn(
-        'flex items-center gap-3 rounded-lg border border-border/40 bg-muted/40 px-4 py-3 shadow-md',
+        'flex items-center gap-3.5 rounded-2xl',
+        'border border-border/30',
+        'bg-gradient-to-r from-card/95 via-card to-surface-muted/50',
+        'backdrop-blur-sm',
+        'px-4 py-3.5',
+        'shadow-[0_4px_20px_-6px_rgba(0,0,0,0.1)]',
         className
       )}
     >
@@ -171,7 +176,7 @@ export function ThinkingIndicator({
                   ease: EASING_FRAMER.inOut,
                 }
           }
-          className="relative z-10 flex items-center justify-center w-[32px] h-[32px] rounded-full bg-primary/10 text-primary"
+          className="relative z-10 flex items-center justify-center w-[32px] h-[32px] rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary shadow-sm"
         >
           {stageIcon}
         </motion.div>
@@ -226,7 +231,7 @@ export function ThinkingIndicator({
 
         {/* Progress Bar */}
         {status?.progress !== undefined && (
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-muted/60 shadow-inner">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}
@@ -236,7 +241,7 @@ export function ThinkingIndicator({
                   : ANIMATION_DURATION.slow / 1000,
                 ease: EASING_FRAMER.out,
               }}
-              className="h-full bg-primary rounded-full"
+              className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full shadow-sm"
             />
           </div>
         )}
