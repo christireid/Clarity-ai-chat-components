@@ -30,6 +30,7 @@
 
 /* Utilities and Responsive */
 @import './_utilities.css';
+@import './_accessibility.css';
 
 /* Demo Page */
 @import './_demo.css';
