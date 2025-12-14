@@ -1,3 +1,15 @@
+---
+title: "AI Agents with Function Calling: From Concept to Code"
+description: "Build AI agents that take action. Tool definitions, agent loops, confirmation flows, and safe execution patterns."
+keywords: ["AI agents", "function calling", "tool use", "agent loop", "LLM tools"]
+author: "Clarity Chat Team"
+publishDate: 2025-03-06
+readingTime: 14
+category: "Advanced Patterns"
+featured: true
+relatedPosts: ["17-rag-production", "19-prompt-injection-security", "20-ai-memory"]
+---
+
 # AI Agents with Function Calling: From Concept to Code
 
 ChatGPT can tell you how to book a flight. An AI agent can actually book it.

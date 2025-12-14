@@ -1,3 +1,15 @@
+---
+title: "Context Windows Are Lying to You: Managing 1M Tokens in Practice"
+description: "Four proven strategies for managing context windows: sliding window, summarization, RAG, and semantic pruning. With TypeScript implementations."
+keywords: ["context window", "token management", "LLM context", "conversation history", "token limits"]
+author: "Clarity Chat Team"
+publishDate: 2025-01-30
+readingTime: 12
+category: "Streaming & Real-Time"
+featured: true
+relatedPosts: ["10-token-counting", "17-rag-production", "13-cut-gpt4-bill"]
+---
+
 # Context Windows Are Lying to You: Managing 1M Tokens in Practice
 
 Gemini 2.5 Pro supports 1 million tokens. So why does your app break at 50,000?

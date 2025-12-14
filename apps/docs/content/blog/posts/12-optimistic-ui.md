@@ -1,3 +1,14 @@
+---
+title: "Optimistic UI in AI Chat: The Pattern That Changes Everything"
+description: "Make chat feel instant with optimistic updates. Implement temporary IDs, status transitions, and rollback patterns."
+keywords: ["optimistic UI", "instant feedback", "chat UX", "state management", "React patterns"]
+author: "Clarity Chat Team"
+publishDate: 2025-02-13
+readingTime: 7
+category: "Streaming & Real-Time"
+relatedPosts: ["02-loading-states-progress", "06-typing-indicator-art", "11-retry-pattern"]
+---
+
 # Optimistic UI in AI Chat: The Pattern That Changes Everything
 
 Messages should appear before they're sent.

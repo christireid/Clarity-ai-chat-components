@@ -1,3 +1,14 @@
+---
+title: "Prompt Caching: The Feature Most Developers Ignore"
+description: "Leverage OpenAI and Anthropic prompt caching for automatic discounts. Structure prompts correctly to maximize cache hits."
+keywords: ["prompt caching", "OpenAI caching", "Anthropic caching", "API optimization", "cost savings"]
+author: "Clarity Chat Team"
+publishDate: 2025-02-20
+readingTime: 9
+category: "Cost & Performance"
+relatedPosts: ["13-cut-gpt4-bill", "10-token-counting", "08-context-windows"]
+---
+
 # Prompt Caching: The Feature Most Developers Ignore
 
 You're paying full price for the same system prompt 50,000 times a day.

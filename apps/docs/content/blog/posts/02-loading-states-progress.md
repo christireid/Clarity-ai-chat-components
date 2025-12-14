@@ -1,3 +1,14 @@
+---
+title: "The Loading State Nobody Talks About: Making Users Feel Progress"
+description: "Three proven patterns for streaming progress feedback in AI chat interfaces. Stop making users stare at spinners."
+keywords: ["loading states", "progress indicators", "streaming UI", "AI chat UX", "React patterns"]
+author: "Clarity Chat Team"
+publishDate: 2025-01-09
+readingTime: 7
+category: "UX & Psychology"
+relatedPosts: ["01-psychology-of-response-timing", "06-typing-indicator-art", "12-optimistic-ui"]
+---
+
 # The Loading State Nobody Talks About: Making Users Feel Progress
 
 Loading...

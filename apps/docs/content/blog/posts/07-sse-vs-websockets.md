@@ -1,3 +1,15 @@
+---
+title: "SSE vs WebSockets for AI Streaming: The Definitive Guide"
+description: "Choose the right streaming protocol for AI chat. Real benchmarks, reconnection handling, and implementation code for both."
+keywords: ["SSE", "WebSockets", "streaming", "real-time", "AI chat", "server-sent events"]
+author: "Clarity Chat Team"
+publishDate: 2025-01-28
+readingTime: 9
+category: "Streaming & Real-Time"
+featured: true
+relatedPosts: ["08-context-windows", "11-retry-pattern", "09-production-ready-chat"]
+---
+
 # SSE vs WebSockets for AI Streaming: The Definitive Guide
 
 You're probably using WebSockets when you should be using SSE.

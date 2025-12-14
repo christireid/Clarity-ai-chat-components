@@ -1,3 +1,14 @@
+---
+title: "Accessibility in AI Chat: What Screen Reader Users Actually Need"
+description: "WCAG 2.1 compliance for chat interfaces. Implement proper ARIA roles, keyboard navigation, and screen reader support."
+keywords: ["accessibility", "WCAG", "screen readers", "ARIA", "keyboard navigation", "a11y"]
+author: "Clarity Chat Team"
+publishDate: 2025-01-16
+readingTime: 10
+category: "UX & Psychology"
+relatedPosts: ["03-dark-mode-theming", "05-error-messages", "09-production-ready-chat"]
+---
+
 # Accessibility in AI Chat: What Screen Reader Users Actually Need
 
 Your beautifully designed chat interface is completely invisible to 15% of your users.

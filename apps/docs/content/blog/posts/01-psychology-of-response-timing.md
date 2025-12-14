@@ -1,3 +1,15 @@
+---
+title: "Why Your AI Chatbot Feels 'Off' — The Psychology of Response Timing"
+description: "Discover why faster AI responses decrease user trust, and learn to implement natural timing patterns that improve satisfaction by 39%."
+keywords: ["AI UX", "chatbot psychology", "response timing", "user trust", "typing indicators"]
+author: "Clarity Chat Team"
+publishDate: 2025-01-07
+readingTime: 8
+category: "UX & Psychology"
+featured: true
+relatedPosts: ["02-loading-states-progress", "06-typing-indicator-art", "09-production-ready-chat"]
+---
+
 # Why Your AI Chatbot Feels "Off" — The Psychology of Response Timing
 
 Your AI responds in 847 milliseconds. Your users hate it.

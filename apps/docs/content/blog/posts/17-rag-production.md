@@ -1,3 +1,15 @@
+---
+title: "RAG in Production: What the Tutorials Don't Tell You"
+description: "Production RAG beyond demos. Semantic chunking, hybrid search, reranking, confidence scoring, and debugging observability."
+keywords: ["RAG", "retrieval augmented generation", "vector search", "embeddings", "hybrid search"]
+author: "Clarity Chat Team"
+publishDate: 2025-03-04
+readingTime: 15
+category: "Advanced Patterns"
+featured: true
+relatedPosts: ["08-context-windows", "20-ai-memory", "18-ai-agents-function-calling"]
+---
+
 # RAG in Production: What the Tutorials Don't Tell You
 
 Your RAG demo works beautifully. Your production RAG returns garbage.

@@ -1,3 +1,14 @@
+---
+title: "The Retry Pattern: How to Handle AI API Failures Gracefully"
+description: "Implement exponential backoff, error classification, and user-friendly retry UX for AI chat. Never lose a user message again."
+keywords: ["retry pattern", "exponential backoff", "error handling", "API errors", "resilience"]
+author: "Clarity Chat Team"
+publishDate: 2025-02-11
+readingTime: 8
+category: "Streaming & Real-Time"
+relatedPosts: ["05-error-messages", "09-production-ready-chat", "12-optimistic-ui"]
+---
+
 # The Retry Pattern: How to Handle AI API Failures Gracefully
 
 72% of AI chat applications have silent failures. Users click send, something breaks, nothing happens. The message vanishes into the void.

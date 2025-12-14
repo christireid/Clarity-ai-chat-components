@@ -1,3 +1,14 @@
+---
+title: "AI Chat Analytics: The Metrics That Actually Matter"
+description: "AI-specific metrics beyond page views. Task completion, response quality, cost per session, and conversation analytics."
+keywords: ["AI analytics", "chat metrics", "KPIs", "conversation analytics", "user engagement"]
+author: "Clarity Chat Team"
+publishDate: 2025-03-27
+readingTime: 11
+category: "Strategy & Architecture"
+relatedPosts: ["23-production-readiness-checklist", "10-token-counting", "13-cut-gpt4-bill"]
+---
+
 # AI Chat Analytics: The Metrics That Actually Matter
 
 You're tracking page views. Your AI chat is generating 10,000 conversations a day. You have no idea if it's working.

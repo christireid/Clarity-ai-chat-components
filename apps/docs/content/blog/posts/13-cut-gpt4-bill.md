@@ -1,3 +1,15 @@
+---
+title: "I Cut My GPT-4 Bill by 60% (Real Strategies, Real Numbers)"
+description: "Real cost optimization from $8,400 to $3,200/month. Model routing, semantic caching, and context pruning with production code."
+keywords: ["GPT-4 costs", "API optimization", "cost reduction", "model routing", "semantic caching"]
+author: "Clarity Chat Team"
+publishDate: 2025-02-18
+readingTime: 12
+category: "Cost & Performance"
+featured: true
+relatedPosts: ["10-token-counting", "14-prompt-caching", "15-model-selection"]
+---
+
 # I Cut My GPT-4 Bill by 60% (Real Strategies, Real Numbers)
 
 > **Pricing Note:** API pricing changes frequently. The costs in this article reflect 2025 rates—verify current pricing on the provider's website before implementation.

@@ -1,3 +1,14 @@
+---
+title: "Token Counting That Actually Works: A Deep Dive"
+description: "Accurate token counting with tiktoken, model-specific tokenizers, and cost estimation. Stop guessing your API costs."
+keywords: ["token counting", "tiktoken", "API costs", "tokenizer", "LLM pricing"]
+author: "Clarity Chat Team"
+publishDate: 2025-02-06
+readingTime: 8
+category: "Cost & Performance"
+relatedPosts: ["08-context-windows", "13-cut-gpt4-bill", "15-model-selection"]
+---
+
 # Token Counting That Actually Works: A Deep Dive
 
 JavaScript's `string.length` has nothing to do with tokens. That's why your cost estimates are wrong.

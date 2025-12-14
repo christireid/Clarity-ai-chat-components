@@ -1,3 +1,14 @@
+---
+title: "Dark Mode Isn't Optional Anymore: Theming Your AI Chat in 2025"
+description: "Build system-aware themes with CSS custom properties. Implement dark mode that respects user preferences and transitions smoothly."
+keywords: ["dark mode", "theming", "CSS variables", "system preferences", "AI chat styling"]
+author: "Clarity Chat Team"
+publishDate: 2025-01-14
+readingTime: 6
+category: "UX & Psychology"
+relatedPosts: ["04-accessibility-screen-readers", "09-production-ready-chat", "22-component-library-manifesto"]
+---
+
 # Dark Mode Isn't Optional Anymore: Theming Your AI Chat in 2025
 
 82% of mobile users prefer dark mode interfaces.

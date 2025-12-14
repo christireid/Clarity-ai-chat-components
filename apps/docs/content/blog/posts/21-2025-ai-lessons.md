@@ -1,3 +1,14 @@
+---
+title: "What 2025 Taught Us About Building AI Products"
+description: "Industry retrospective on AI production lessons. What worked, what didn't, and what we'd do differently."
+keywords: ["AI lessons", "2025 retrospective", "AI production", "lessons learned", "best practices"]
+author: "Clarity Chat Team"
+publishDate: 2025-03-18
+readingTime: 10
+category: "Strategy & Architecture"
+relatedPosts: ["22-component-library-manifesto", "23-production-readiness-checklist", "16-hidden-costs"]
+---
+
 # What 2025 Taught Us About Building AI Products
 
 > **Historical Note:** This is a 2025 retrospective piece. While the lessons remain relevant, specific predictions and references may become dated. For the latest guidance, see our current documentation.

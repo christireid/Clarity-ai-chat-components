@@ -1,3 +1,14 @@
+---
+title: "The Art of the Typing Indicator: Why ChatGPT Got It Right"
+description: "Build typing indicators that feel organic. CSS animations, timing patterns, and accessibility considerations for thinking states."
+keywords: ["typing indicator", "CSS animation", "AI UX", "loading animation", "ChatGPT"]
+author: "Clarity Chat Team"
+publishDate: 2025-01-23
+readingTime: 5
+category: "UX & Psychology"
+relatedPosts: ["01-psychology-of-response-timing", "02-loading-states-progress", "12-optimistic-ui"]
+---
+
 # The Art of the Typing Indicator: Why ChatGPT Got It Right
 
 Three bouncing dots. That's all it takes to make AI feel human.

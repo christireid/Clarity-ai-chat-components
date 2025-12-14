@@ -1,3 +1,14 @@
+---
+title: "Building AI Memory That Actually Remembers"
+description: "Implement persistent AI memory. Short-term, long-term, and working memory patterns with privacy considerations."
+keywords: ["AI memory", "persistent context", "conversation memory", "user preferences", "LLM memory"]
+author: "Clarity Chat Team"
+publishDate: 2025-03-13
+readingTime: 11
+category: "Advanced Patterns"
+relatedPosts: ["17-rag-production", "08-context-windows", "18-ai-agents-function-calling"]
+---
+
 # Building AI Memory That Actually Remembers
 
 LLMs are stateless. Every message is like meeting them for the first time.

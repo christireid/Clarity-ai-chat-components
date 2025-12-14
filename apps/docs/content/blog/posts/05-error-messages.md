@@ -1,3 +1,14 @@
+---
+title: "Error Messages That Don't Make Users Rage-Quit"
+description: "Build user-friendly error handling for AI chat. Classification, recovery options, and messaging that helps instead of frustrates."
+keywords: ["error handling", "UX", "error messages", "user experience", "chat errors"]
+author: "Clarity Chat Team"
+publishDate: 2025-01-21
+readingTime: 7
+category: "UX & Psychology"
+relatedPosts: ["11-retry-pattern", "09-production-ready-chat", "04-accessibility-screen-readers"]
+---
+
 # Error Messages That Don't Make Users Rage-Quit
 
 "Error: Something went wrong."

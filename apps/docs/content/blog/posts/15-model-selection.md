@@ -1,3 +1,14 @@
+---
+title: "When to Use GPT-4o Mini vs GPT-4o vs Claude 3.5"
+description: "Decision framework for model selection. Route queries to optimal models based on complexity, cost, and capability requirements."
+keywords: ["model selection", "GPT-4o", "Claude", "model routing", "LLM comparison"]
+author: "Clarity Chat Team"
+publishDate: 2025-02-25
+readingTime: 11
+category: "Cost & Performance"
+relatedPosts: ["13-cut-gpt4-bill", "10-token-counting", "16-hidden-costs"]
+---
+
 # When to Use GPT-4o Mini vs GPT-4o vs Claude 3.5
 
 > **Pricing Note:** Model pricing changes frequently. Verify current rates on OpenAI, Anthropic, and Google's pricing pages before implementation.

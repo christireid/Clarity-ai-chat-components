@@ -1,3 +1,14 @@
+---
+title: "The Component Library Manifesto: Stop Rebuilding Chat UIs"
+description: "Build vs buy analysis for AI chat. What should be custom, what should be library, and how to decide."
+keywords: ["component library", "build vs buy", "chat UI", "React components", "software architecture"]
+author: "Clarity Chat Team"
+publishDate: 2025-03-20
+readingTime: 9
+category: "Strategy & Architecture"
+relatedPosts: ["16-hidden-costs", "21-2025-ai-lessons", "23-production-readiness-checklist"]
+---
+
 # The Component Library Manifesto: Stop Rebuilding Chat UIs
 
 Every company building AI chat is solving the same problems. Most are solving them badly.

@@ -1,3 +1,15 @@
+---
+title: "Prompt Injection is Your #1 Security Risk (OWASP Says So)"
+description: "OWASP's #1 LLM security risk explained. Input validation, privilege separation, output filtering, and defense in depth patterns."
+keywords: ["prompt injection", "LLM security", "OWASP", "AI security", "defense in depth"]
+author: "Clarity Chat Team"
+publishDate: 2025-03-11
+readingTime: 12
+category: "Advanced Patterns"
+featured: true
+relatedPosts: ["18-ai-agents-function-calling", "04-accessibility-screen-readers", "23-production-readiness-checklist"]
+---
+
 # Prompt Injection is Your #1 Security Risk (OWASP Says So)
 
 > **Security Note:** This article references the OWASP Top 10 for LLM Applications. Security guidance evolves—check the [OWASP LLM Top 10](https://owasp.org/www-project-top-10-for-large-language-model-applications/) for the latest recommendations.

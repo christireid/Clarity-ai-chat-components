@@ -1,3 +1,14 @@
+---
+title: "From MVP to Production: The AI Chat Readiness Checklist"
+description: "50-item production readiness checklist across 10 categories. Verify your AI chat is ready for real users."
+keywords: ["production readiness", "checklist", "AI chat launch", "deployment", "quality assurance"]
+author: "Clarity Chat Team"
+publishDate: 2025-03-25
+readingTime: 10
+category: "Strategy & Architecture"
+relatedPosts: ["09-production-ready-chat", "19-prompt-injection-security", "24-ai-chat-analytics"]
+---
+
 # From MVP to Production: The AI Chat Readiness Checklist
 
 Your demo works. Your stakeholders are impressed. But can 10,000 users use it tomorrow?

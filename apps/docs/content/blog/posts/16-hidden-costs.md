@@ -1,3 +1,14 @@
+---
+title: "The Hidden Costs of AI Chat Apps (And How to Avoid Them)"
+description: "API costs are just 20% of real spend. Engineering time, support tickets, security audits, and technical debt add up."
+keywords: ["AI costs", "total cost of ownership", "hidden costs", "build vs buy", "technical debt"]
+author: "Clarity Chat Team"
+publishDate: 2025-02-27
+readingTime: 8
+category: "Cost & Performance"
+relatedPosts: ["13-cut-gpt4-bill", "15-model-selection", "22-component-library-manifesto"]
+---
+
 # The Hidden Costs of AI Chat Apps (And How to Avoid Them)
 
 Your API bill is 20% of what AI chat actually costs you.

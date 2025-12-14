@@ -1,3 +1,15 @@
+---
+title: "Build a Production-Ready Chat Interface in React (Not Another Tutorial)"
+description: "Complete production chat implementation with streaming, error recovery, accessibility, and mobile optimization. Real code, not tutorial toy examples."
+keywords: ["React chat", "production chat", "TypeScript", "streaming", "accessibility", "chat UI"]
+author: "Clarity Chat Team"
+publishDate: 2025-02-04
+readingTime: 15
+category: "Strategy & Architecture"
+featured: true
+relatedPosts: ["07-sse-vs-websockets", "11-retry-pattern", "23-production-readiness-checklist"]
+---
+
 # Build a Production-Ready Chat Interface in React (Not Another Tutorial)
 
 Most React chat tutorials stop at "display messages in a list." Here's an array, here's a map, here's an input—done.
