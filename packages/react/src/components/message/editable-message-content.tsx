@@ -34,9 +34,19 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
     const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
     // Detect if user is on Mac for keyboard hint
+    // Note: navigator.platform is deprecated but navigator.userAgentData is not
+    // widely supported yet. Use userAgent as fallback.
     const isMac = React.useMemo(() => {
       if (typeof navigator === 'undefined') return false
-      return /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+      // Try modern API first (Chrome 90+)
+      const platform = (
+        navigator as Navigator & { userAgentData?: { platform: string } }
+      ).userAgentData?.platform
+      if (platform) {
+        return /mac/i.test(platform)
+      }
+      // Fallback to userAgent (more reliable than deprecated platform)
+      return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent)
     }, [])
 
     // Reset edit value when entering edit mode
@@ -106,8 +116,11 @@ export const EditableMessageContent = React.memo<EditableMessageContentProps>(
               aria-label="Edit message"
             />
 
-            {/* Character count */}
-            <div className="text-xs text-muted-foreground text-right -mt-1">
+            {/* Character count - hidden from screen readers to avoid spam on every keystroke */}
+            <div
+              className="text-xs text-muted-foreground text-right -mt-1"
+              aria-hidden="true"
+            >
               {editValue.length.toLocaleString()} characters
             </div>
 

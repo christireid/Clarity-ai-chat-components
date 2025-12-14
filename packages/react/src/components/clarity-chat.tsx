@@ -236,44 +236,51 @@ export function ClarityChat({
         // Clear editing state first
         setEditingMessageId(null)
 
-        // Track if we need to regenerate (will be set inside setMessages)
-        let shouldRegenerate = false
+        // Capture current messages for potential rollback
+        const originalMessages = chat.messages
 
-        // Single atomic update to avoid race conditions
-        chat.setMessages((prevMessages: CoreMessage[]) => {
-          const messageIndex = prevMessages.findIndex((m) => m.id === messageId)
-          if (messageIndex === -1) return prevMessages
+        // Find the message and determine if we need to regenerate
+        const messageIndex = originalMessages.findIndex(
+          (m) => m.id === messageId
+        )
+        if (messageIndex === -1) {
+          toast?.error('Message not found')
+          return
+        }
 
-          // Check if there are messages after this one
-          if (messageIndex < prevMessages.length - 1) {
-            // There are messages after - truncate and update
-            shouldRegenerate = true
-            const truncated = prevMessages.slice(0, messageIndex + 1)
-            truncated[messageIndex] = {
-              ...truncated[messageIndex]!,
-              content: newContent,
-            }
-            return truncated
-          } else {
-            // This is the last message - just update content
-            return prevMessages.map((m) =>
-              m.id === messageId ? { ...m, content: newContent } : m
-            )
+        const needsRegeneration = messageIndex < originalMessages.length - 1
+
+        if (needsRegeneration) {
+          // Truncate and update for regeneration
+          const truncated = originalMessages.slice(0, messageIndex + 1)
+          truncated[messageIndex] = {
+            ...truncated[messageIndex]!,
+            content: newContent,
           }
-        })
+          chat.setMessages(truncated)
 
-        // If we truncated, regenerate the response
-        if (shouldRegenerate) {
+          // Regenerate response
           setIsRegenerating(true)
           toast?.info('Regenerating response...')
           try {
             await chat.append({ role: 'user', content: newContent })
+            toast?.success('Response regenerated')
+          } catch (error) {
+            // CRITICAL: Restore original messages on failure to prevent data loss
+            chat.setMessages(originalMessages)
+            throw error // Re-throw to be caught by outer catch
           } finally {
             setIsRegenerating(false)
           }
+        } else {
+          // Just update the content (no regeneration needed)
+          chat.setMessages((prevMessages: CoreMessage[]) =>
+            prevMessages.map((m) =>
+              m.id === messageId ? { ...m, content: newContent } : m
+            )
+          )
+          toast?.success('Message updated')
         }
-
-        toast?.success('Message updated')
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
