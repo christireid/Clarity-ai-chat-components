@@ -215,6 +215,35 @@ export function ClarityChat({
   enableMessageOperations: _enableMessageOperations,
   ...hookOptions
 }: ClarityChatProps) {
+  // Runtime validation: warn about props that are accepted but not yet fully implemented
+  if (process.env.NODE_ENV === 'development') {
+    if (_autoScroll !== undefined) {
+      console.warn(
+        '[ClarityChat] autoScroll prop is accepted for API compatibility but scroll behavior is managed internally by ChatWindow.'
+      )
+    }
+    if (_theme !== undefined) {
+      console.warn(
+        '[ClarityChat] theme prop is accepted but not yet passed to ChatWindow. Use ThemeProvider to wrap your app instead.'
+      )
+    }
+    if (_showTokenCounter !== undefined) {
+      console.warn(
+        '[ClarityChat] showTokenCounter prop is not yet implemented. Token counting requires additional setup.'
+      )
+    }
+    if (_showNetworkStatus !== undefined) {
+      console.warn(
+        '[ClarityChat] showNetworkStatus prop is not yet implemented.'
+      )
+    }
+    if (_enableMessageOperations !== undefined) {
+      console.warn(
+        '[ClarityChat] enableMessageOperations prop is not yet implemented. Message operations are always enabled.'
+      )
+    }
+  }
+
   // Validate required prop with helpful error message
   if (!api || typeof api !== 'string' || api.trim().length === 0) {
     throw new Error(

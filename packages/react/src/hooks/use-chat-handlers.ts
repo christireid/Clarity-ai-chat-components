@@ -142,7 +142,8 @@ export function useChatHandlers({
         // Find the message and resend
         const message = chat.messages.find((m) => m.id === messageId)
         if (message && message.role === 'user') {
-          await chat.append({ role: 'user', content: String(message.content) })
+          // Pass content directly - it may be string or multi-part array (CoreMessageContent)
+          await chat.append({ role: 'user', content: message.content })
         }
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error))
@@ -189,9 +190,10 @@ export function useChatHandlers({
             // Remove the assistant message and resend the user message
             const newMessages = chat.messages.slice(0, messageIndex)
             chat.setMessages(newMessages)
+            // Pass content directly - it may be string or multi-part array (CoreMessageContent)
             await chat.append({
               role: 'user',
-              content: String(userMessage.content),
+              content: userMessage.content,
             })
           }
         }

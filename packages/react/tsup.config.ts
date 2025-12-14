@@ -96,4 +96,18 @@ export default defineConfig([
     ...commonConfig,
     clean: false,
   },
+  // Slim entry (minimal bundle ~200KB)
+  {
+    entry: { slim: 'src/slim.ts' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
+  // Namespaced entry (Clarity.Chat pattern)
+  {
+    entry: { namespaced: 'src/namespaced.ts' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
 ])

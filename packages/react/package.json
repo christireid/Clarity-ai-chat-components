@@ -79,6 +79,16 @@
       "import": "./dist/test-utils.mjs",
       "require": "./dist/test-utils.js"
     },
+    "./slim": {
+      "types": "./dist/slim.d.ts",
+      "import": "./dist/slim.mjs",
+      "require": "./dist/slim.js"
+    },
+    "./namespaced": {
+      "types": "./dist/namespaced.d.ts",
+      "import": "./dist/namespaced.mjs",
+      "require": "./dist/namespaced.js"
+    },
     "./styles.css": "./dist/styles/index.css",
     "./dist/styles/index.css": "./dist/styles/index.css"
   },

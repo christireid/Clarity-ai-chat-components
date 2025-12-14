@@ -122,7 +122,9 @@ describe('ClarityChat', () => {
     it('should pass initialMessages to hook', () => {
       const initialMessages = [{ role: 'user' as const, content: 'Hello' }]
 
-      renderWithProviders(<ClarityChat api="/api/chat" initialMessages={initialMessages} />)
+      renderWithProviders(
+        <ClarityChat api="/api/chat" initialMessages={initialMessages} />
+      )
 
       expect(mockUseClarityChat).toHaveBeenCalledWith(
         expect.objectContaining({ initialMessages })
@@ -207,7 +209,9 @@ describe('ClarityChat', () => {
     })
 
     it('should pass sessionTitle to ChatWindow', () => {
-      renderWithProviders(<ClarityChat api="/api/chat" showHeader sessionTitle="My Chat" />)
+      renderWithProviders(
+        <ClarityChat api="/api/chat" showHeader sessionTitle="My Chat" />
+      )
 
       // When showHeader is true, the title should be displayed
       expect(screen.getByText('My Chat')).toBeInTheDocument()
@@ -270,6 +274,69 @@ describe('ClarityChat', () => {
   describe('displayName', () => {
     it('should have correct displayName', () => {
       expect(ClarityChat.displayName).toBe('ClarityChat')
+    })
+  })
+
+  /**
+   * Zero-Config Integration Tests
+   *
+   * These tests verify the "golden path" - the simplest possible usage
+   * that must never break. If these fail, we've broken the core promise.
+   */
+  describe('Zero-Config Integration (Golden Path)', () => {
+    it('renders with only api prop - the simplest possible usage', () => {
+      // This is the zero-config promise: just provide an API endpoint
+      renderWithProviders(<ClarityChat api="/api/chat" />)
+
+      // Must render the input area
+      expect(screen.getByRole('textbox')).toBeInTheDocument()
+
+      // Must not throw any errors (implicitly tested by reaching here)
+    })
+
+    it('renders input that is interactive and enabled by default', () => {
+      renderWithProviders(<ClarityChat api="/api/chat" />)
+
+      const input = screen.getByRole('textbox')
+
+      // Input must be enabled and ready to type
+      expect(input).toBeEnabled()
+      expect(input).not.toHaveAttribute('readonly')
+    })
+
+    it('initializes hook with correct API endpoint', () => {
+      renderWithProviders(<ClarityChat api="/api/chat" />)
+
+      // Verify the hook was called with the API
+      expect(mockUseClarityChat).toHaveBeenCalledWith(
+        expect.objectContaining({ api: '/api/chat' })
+      )
+    })
+
+    it('does not log console errors in zero-config mode', () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      renderWithProviders(<ClarityChat api="/api/chat" />)
+
+      // Should not produce any console errors
+      expect(consoleSpy).not.toHaveBeenCalled()
+
+      consoleSpy.mockRestore()
+    })
+
+    it('handles various valid API endpoint formats', () => {
+      const validEndpoints = [
+        '/api/chat',
+        '/api/v1/chat',
+        'https://api.example.com/chat',
+        '/chat',
+      ]
+
+      validEndpoints.forEach((api) => {
+        expect(() => {
+          renderWithProviders(<ClarityChat api={api} />)
+        }).not.toThrow()
+      })
     })
   })
 })
