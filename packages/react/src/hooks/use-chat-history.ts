@@ -28,6 +28,19 @@
 
 import * as React from 'react'
 
+// SSR-safe platform detection
+function getIsMac(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return false
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userAgentData = (navigator as any).userAgentData
+  if (userAgentData?.platform) {
+    return /macOS|iOS/i.test(userAgentData.platform)
+  }
+  return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
+
 // ============================================
 // Types
 // ============================================
@@ -311,8 +324,7 @@ export function useChatHistory(
     if (!enableKeyboardShortcuts) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
-      const modifier = isMac ? e.metaKey : e.ctrlKey
+      const modifier = getIsMac() ? e.metaKey : e.ctrlKey
 
       if (modifier && e.key === 'z') {
         if (e.shiftKey) {

@@ -14,6 +14,7 @@ import {
   KeyboardNavigationProvider,
   useKeyboardNavigation,
   useVimNavigation,
+  useIsMac,
   defaultChatShortcuts,
 } from '../hooks/use-keyboard-navigation'
 import { SkipLinks, Landmark } from './skip-links'
@@ -203,6 +204,7 @@ function KeyboardNavigationDemoInner() {
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   const { registerShortcut, state, announceToScreenReader } = useKeyboardNavigation()
+  const isMac = useIsMac()
 
   // Vim navigation for messages
   const { focusedIndex, getItemProps, navigate } = useVimNavigation({
@@ -317,7 +319,7 @@ function KeyboardNavigationDemoInner() {
                   </svg>
                   <span className="hidden sm:inline">Search</span>
                   <kbd className="hidden sm:inline px-1.5 py-0.5 text-xs bg-background rounded border">
-                    {typeof navigator !== 'undefined' && /Mac/.test(navigator.platform) ? '⌘K' : 'Ctrl+K'}
+                    {isMac ? '⌘K' : 'Ctrl+K'}
                   </kbd>
                 </button>
               </WithShortcut>
