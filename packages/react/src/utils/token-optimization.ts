@@ -192,13 +192,33 @@ function removeDuplicateSentences(text: string): string {
 function removeFillers(text: string, preserveKeywords: string[] = []): string {
   const preserveSet = new Set(preserveKeywords.map((k) => k.toLowerCase()))
 
-  return text
-    .split(/\s+/)
-    .filter((word) => {
-      const lower = word.toLowerCase().replace(/[.,!?;:]$/, '')
-      return !FILLER_WORDS.has(lower) || preserveSet.has(lower)
-    })
-    .join(' ')
+  // Support multi-word fillers like "you know", "kind of", etc.
+  const fillers = Array.from(FILLER_WORDS).sort((a, b) => b.length - a.length)
+
+  let result = text
+  for (const filler of fillers) {
+    if (preserveSet.has(filler)) continue
+    const escaped = filler.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    // Remove the filler phrase while keeping surrounding punctuation stable.
+    result = result.replace(new RegExp(`\\b${escaped}\\b`, 'gi'), '')
+  }
+
+  // Cleanup leftover punctuation/whitespace from removals.
+  return (
+    result
+      // collapse duplicated commas created by removals like ", ,"
+      .replace(/,\s*,+/g, ', ')
+      // remove spaces before punctuation
+      .replace(/\s+([,.;:!?])/g, '$1')
+      // normalize comma spacing
+      .replace(/,\s*/g, ', ')
+      // collapse multi-spaces
+      .replace(/\s{2,}/g, ' ')
+      // trim and remove leading/trailing commas
+      .trim()
+      .replace(/^[, ]+|[, ]+$/g, '')
+      .trim()
+  )
 }
 
 /**
@@ -812,8 +832,9 @@ export function enforceOutputLimit(
   if (maxTokens) {
     const tokens = estimateTokens(output)
     if (tokens > maxTokens) {
-      // Rough approximation: tokens * 4 = characters (using standard ratio)
-      const maxChars = Math.floor(maxTokens * 4)
+      // Approximate chars-per-token for truncation. We intentionally use a slightly
+      // conservative ratio (3.5 chars/token) to avoid exceeding the token budget.
+      const maxChars = Math.max(1, Math.floor(maxTokens * 3.5))
       return enforceOutputLimit(output, {
         maxCharacters: maxChars,
         truncationStrategy,
@@ -929,8 +950,52 @@ export function createBatcher(options: BatchingOptions = {}): RequestBatcher {
  * Calculate simple similarity between two strings (Jaccard similarity)
  */
 export function calculateSimilarity(str1: string, str2: string): number {
-  const words1 = new Set(str1.toLowerCase().split(/\s+/))
-  const words2 = new Set(str2.toLowerCase().split(/\s+/))
+  const STOPWORDS = new Set([
+    'the',
+    'a',
+    'an',
+    'is',
+    'are',
+    'was',
+    'were',
+    'be',
+    'been',
+    'being',
+    'to',
+    'of',
+    'and',
+    'or',
+    'in',
+    'on',
+    'for',
+    'with',
+    'at',
+    'by',
+    'from',
+    'as',
+    'it',
+    'this',
+    'that',
+    'these',
+    'those',
+    // Contraction fragments
+    's',
+    're',
+    've',
+    'll',
+    'd',
+    't',
+    // Often non-informational in short queries
+    'like',
+  ])
+
+  const tokenize = (input: string): Set<string> => {
+    const tokens = input.toLowerCase().match(/[a-z0-9]+/g) ?? []
+    return new Set(tokens.filter((t) => t.length > 0 && !STOPWORDS.has(t)))
+  }
+
+  const words1 = tokenize(str1)
+  const words2 = tokenize(str2)
 
   const intersection = new Set([...words1].filter((x) => words2.has(x)))
   const union = new Set([...words1, ...words2])

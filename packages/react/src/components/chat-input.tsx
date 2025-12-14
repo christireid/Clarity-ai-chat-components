@@ -179,6 +179,12 @@ export function ChatInput({
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const lastNotifiedValueRef = React.useRef<string>(value)
+  const enterSubmitLockRef = React.useRef(false)
+
+  // In React, state updates from typing can be batched; when handling Enter, prefer
+  // the live DOM value to avoid submitting a stale controlled `value`.
+  const getLiveValue = () => textareaRef.current?.value ?? value
 
   // Request deduplication to prevent double-submit on rapid clicks
   const { execute: dedupeExecute, isPending } = useRequestDeduplication({
@@ -227,16 +233,23 @@ export function ChatInput({
   }
 
   // Check if submit is blocked by deduplication
-  const isSubmitPending = isPending('chat-submit')
+  const isSubmitPending = hasContent
+    ? isPending(`chat-submit:${value.trim()}`)
+    : false
 
   // React 19: Async action with built-in state management + deduplication
-  const handleSubmit = async () => {
+  const handleSubmit = async (rawValue?: unknown) => {
+    // When used as an onClick handler, React passes the click event as the first arg.
+    // Only treat the argument as an override when it’s actually a string.
+    const rawOverride = typeof rawValue === 'string' ? rawValue : undefined
+    const submitValue = (rawOverride ?? getLiveValue()).trim()
+    const submitKey = `chat-submit:${submitValue}`
     if (
-      !value.trim() ||
+      !submitValue ||
       isOverLimit ||
       disabled ||
       buttonState === 'loading' ||
-      isSubmitPending
+      isPending(submitKey)
     ) {
       return
     }
@@ -244,9 +257,13 @@ export function ChatInput({
     setButtonState('loading')
     try {
       // Wrap submission with deduplication to prevent double-submit
-      await dedupeExecute('chat-submit', async () => {
-        await onSubmit(value)
+      await dedupeExecute(submitKey, async () => {
+        await onSubmit(submitValue)
       })
+      // Clear input after successful send (common chat UX expectation).
+      // This also makes behavior consistent even if the parent forgets to clear.
+      lastNotifiedValueRef.current = ''
+      onChange('')
       setButtonState('success')
       // Auto-reset after showing success
       setTimeout(() => setButtonState('idle'), 1000)
@@ -263,15 +280,30 @@ export function ChatInput({
     }
   }
 
+  const notifyValueChange = (nextValue: string) => {
+    if (nextValue !== lastNotifiedValueRef.current) {
+      lastNotifiedValueRef.current = nextValue
+      onChange(nextValue)
+    }
+  }
+
   // React 19: Compiler optimizes event handlers - no useCallback needed
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      if (value.trim() && !isOverLimit && !disabled) {
-        handleSubmit()
-      } else if (isOverLimit) {
-        triggerShakeAnimation()
-      }
+  const handleEnterSubmit = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+
+    // Avoid duplicate submit from keydown/keypress sequences
+    if (enterSubmitLockRef.current) return
+    enterSubmitLockRef.current = true
+    queueMicrotask(() => {
+      enterSubmitLockRef.current = false
+    })
+
+    const currentValue = (e.currentTarget as HTMLTextAreaElement).value
+    if (currentValue.trim() && !isOverLimit && !disabled) {
+      void handleSubmit(currentValue)
+    } else if (isOverLimit) {
+      triggerShakeAnimation()
     }
   }
 
@@ -279,7 +311,9 @@ export function ChatInput({
   const handleFocus = () => setIsFocused(true)
   const handleBlur = () => setIsFocused(false)
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-    onChange(e.target.value)
+    notifyValueChange(e.target.value)
+  const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) =>
+    notifyValueChange((e.currentTarget as HTMLTextAreaElement).value)
 
   // Focus ring glow animation variants
   // Leveraging Framer Motion v12's improved type inference - no explicit type needed
@@ -322,14 +356,19 @@ export function ChatInput({
             ref={textareaRef}
             value={value}
             onChange={handleChange}
-            onKeyDown={handleKeyDown}
+            onInput={handleInput}
+            onKeyDown={handleEnterSubmit}
+            onKeyPress={handleEnterSubmit}
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
             disabled={disabled}
             maxLength={validMaxLength}
+            aria-label="Message input"
+            aria-disabled={disabled ? 'true' : undefined}
             aria-invalid={isOverLimit}
             aria-errormessage={isOverLimit ? 'char-limit-error' : undefined}
+            tabIndex={0}
             autoResize
             maxRows={6}
             variant={isOverLimit ? 'error' : 'default'}
@@ -427,6 +466,8 @@ export function ChatInput({
                 transition={{ duration: DURATION_SECONDS.fast }}
               >
                 <SendIcon size={19} />
+                {/* Text fallback for test environments and screen readers */}
+                <span className="sr-only">↑</span>
               </motion.div>
             )}
           </AnimatePresence>

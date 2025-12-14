@@ -256,6 +256,15 @@ export class BatchRequestManager {
     }
   }
 
+  private rejectPending(requestId: string, error: Error): void {
+    const pending = this.pendingPromises.get(requestId)
+    if (!pending) return
+    this.pendingPromises.delete(requestId)
+    // Defer rejection to avoid PromiseRejectionHandledWarning in tests that attach
+    // rejection handlers immediately after triggering cancellation/clear.
+    queueMicrotask(() => pending.reject(error))
+  }
+
   /**
    * Add a request to the batch queue
    *
@@ -348,11 +357,10 @@ export class BatchRequestManager {
 
         // Reject all pending promises for this batch
         for (const requestId of job.requestIds) {
-          const pending = this.pendingPromises.get(requestId)
-          if (pending) {
-            pending.reject(error instanceof Error ? error : new Error(String(error)))
-            this.pendingPromises.delete(requestId)
-          }
+          this.rejectPending(
+            requestId,
+            error instanceof Error ? error : new Error(String(error))
+          )
         }
       }).finally(() => {
         this.processingTimers.delete(job.id)
@@ -391,11 +399,7 @@ export class BatchRequestManager {
 
     // Reject pending promises
     for (const requestId of job.requestIds) {
-      const pending = this.pendingPromises.get(requestId)
-      if (pending) {
-        pending.reject(new Error('Batch cancelled'))
-        this.pendingPromises.delete(requestId)
-      }
+      this.rejectPending(requestId, new Error('Batch cancelled'))
     }
 
     return true
@@ -434,11 +438,7 @@ export class BatchRequestManager {
    */
   clearQueue(): void {
     for (const [requestId] of this.queue) {
-      const pending = this.pendingPromises.get(requestId)
-      if (pending) {
-        pending.reject(new Error('Queue cleared'))
-        this.pendingPromises.delete(requestId)
-      }
+      this.rejectPending(requestId, new Error('Queue cleared'))
     }
     this.queue.clear()
 

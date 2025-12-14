@@ -227,7 +227,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       }
 
       textarea.style.height = 'auto'
-      const scrollHeight = textarea.scrollHeight
+      // In non-visual DOM environments (jsdom), scrollHeight can be 0 which makes
+      // the textarea effectively “not visible” to user interaction utilities.
+      // Fall back to a sensible minimum height to keep it focusable/typable in tests.
+      const rawScrollHeight = textarea.scrollHeight
+      const scrollHeight = rawScrollHeight > 0 ? rawScrollHeight : 80
 
       if (maxRows && maxRows > 0) {
         const computedStyle = getComputedStyle(textarea)

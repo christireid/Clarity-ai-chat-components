@@ -15,7 +15,7 @@ import {
   INTERACTION_VARIANTS,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
-import { useToast } from '../toast'
+import { useToastOptional } from '../toast'
 
 export interface MessageActionsProps {
   messageContent: string
@@ -67,7 +67,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
     alwaysVisible = false,
   }) => {
     const [isDeleting, setIsDeleting] = React.useState(false)
-    const toast = useToast()
+    const toast = useToastOptional()
 
     const isUserMessage = role === 'user'
     const isAssistantMessage = role === 'assistant'

@@ -17,6 +17,12 @@ export default defineConfig({
     globals: true,
     // Use jsdom for best compatibility with @testing-library/user-event keyboard interactions.
     environment: 'jsdom',
+    environmentOptions: {
+      jsdom: {
+        // Enables focus/selection APIs that user-event relies on for typing/tabbing.
+        pretendToBeVisual: true,
+      },
+    },
     setupFiles: ['./vitest.setup.ts'],
     // Memory-optimized configuration for large test suites
     // Using vmThreads with singleThread for optimal memory usage

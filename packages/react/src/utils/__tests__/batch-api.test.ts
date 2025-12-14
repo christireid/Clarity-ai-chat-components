@@ -53,7 +53,8 @@ describe('BatchRequestManager', () => {
         priority: 'normal',
       }
 
-      manager.addRequest(request)
+      // Handle the returned promise so destroy() doesn't cause unhandled rejections.
+      void manager.addRequest(request).catch(() => {})
 
       expect(manager.getQueueSize()).toBe(1)
     })
@@ -79,6 +80,7 @@ describe('BatchRequestManager', () => {
 
       // Wait for batch processing
       await vi.runAllTimersAsync()
+      await Promise.allSettled(promises)
     })
 
     it('should resolve promise when batch completes', async () => {
@@ -106,12 +108,12 @@ describe('BatchRequestManager', () => {
     })
 
     it('should create job with correct properties', async () => {
-      manager.addRequest({
+      void manager.addRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
         priority: 'normal',
-      })
+      }).catch(() => {})
 
       const job = await manager.submitBatch()
 
@@ -122,12 +124,12 @@ describe('BatchRequestManager', () => {
     })
 
     it('should call onStatusChange with job updates', async () => {
-      manager.addRequest({
+      void manager.addRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
         priority: 'normal',
-      })
+      }).catch(() => {})
 
       await manager.submitBatch()
       await vi.runAllTimersAsync()
@@ -139,12 +141,12 @@ describe('BatchRequestManager', () => {
 
     it('should call onProgress during processing', async () => {
       for (let i = 0; i < 3; i++) {
-        manager.addRequest({
+        void manager.addRequest({
           id: `req${i}`,
           model: 'gpt-4o-mini',
           messages: [{ role: 'user', content: 'Hello' }],
           priority: 'normal',
-        })
+        }).catch(() => {})
       }
 
       await manager.submitBatch()
@@ -161,12 +163,12 @@ describe('BatchRequestManager', () => {
     })
 
     it('should return job status', async () => {
-      manager.addRequest({
+      void manager.addRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
         priority: 'normal',
-      })
+      }).catch(() => {})
 
       const job = await manager.submitBatch()
       await vi.runAllTimersAsync()
@@ -184,12 +186,12 @@ describe('BatchRequestManager', () => {
     })
 
     it('should cancel pending job', async () => {
-      manager.addRequest({
+      void manager.addRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
         priority: 'normal',
-      })
+      }).catch(() => {})
 
       const job = await manager.submitBatch()
 
@@ -221,12 +223,12 @@ describe('BatchRequestManager', () => {
     })
 
     it('should return results after completion', async () => {
-      manager.addRequest({
+      void manager.addRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
         priority: 'normal',
-      })
+      }).catch(() => {})
 
       const job = await manager.submitBatch()
       await vi.runAllTimersAsync()
@@ -249,12 +251,12 @@ describe('BatchRequestManager', () => {
 
     it('should update stats after batch completion', async () => {
       for (let i = 0; i < 3; i++) {
-        manager.addRequest({
+        void manager.addRequest({
           id: `req${i}`,
           model: 'gpt-4o-mini',
           messages: [{ role: 'user', content: 'Hello' }],
           priority: 'normal',
-        })
+        }).catch(() => {})
       }
 
       await manager.submitBatch()
@@ -268,12 +270,12 @@ describe('BatchRequestManager', () => {
 
   describe('flush', () => {
     it('should submit current queue immediately', async () => {
-      manager.addRequest({
+      void manager.addRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
         priority: 'normal',
-      })
+      }).catch(() => {})
 
       const job = await manager.flush()
 
@@ -300,12 +302,12 @@ describe('BatchRequestManager', () => {
 
   describe('destroy', () => {
     it('should clean up all resources', async () => {
-      manager.addRequest({
+      void manager.addRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
         priority: 'normal',
-      })
+      }).catch(() => {})
 
       const job = await manager.submitBatch()
       await vi.runAllTimersAsync()
@@ -319,12 +321,12 @@ describe('BatchRequestManager', () => {
 
   describe('auto-submit timer', () => {
     it('should auto-submit after maxWaitTime', async () => {
-      manager.addRequest({
+      void manager.addRequest({
         id: 'req1',
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: 'Hello' }],
         priority: 'normal',
-      })
+      }).catch(() => {})
 
       expect(manager.getQueueSize()).toBe(1)
 

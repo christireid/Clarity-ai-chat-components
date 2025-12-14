@@ -301,12 +301,13 @@ export function KeyboardShortcutsHelp({
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm ${className || ''}`}
       onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="keyboard-shortcuts-title"
+      role="presentation"
     >
       <div
         ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="keyboard-shortcuts-title"
         className="bg-card border border-border rounded-lg shadow-lg max-w-md w-full mx-4 max-h-[80vh] overflow-auto animate-in fade-in-0 zoom-in-95 duration-200"
       >
         <div className="flex items-center justify-between p-4 border-b border-border">

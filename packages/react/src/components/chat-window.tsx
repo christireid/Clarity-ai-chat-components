@@ -11,6 +11,7 @@ import { BotIcon, SparklesIcon } from './icons'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
+import { duration as motionDuration } from '../animations/constants'
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */
@@ -121,7 +122,10 @@ const DefaultEmptyState = ({
     className="text-center space-y-8 px-4"
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: durations.slow, ease: [0.25, 0.1, 0.25, 1] }}
+    transition={{
+      duration: motionDuration('slow'),
+      ease: [0.25, 0.1, 0.25, 1],
+    }}
   >
     <motion.div
       className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg ring-1 ring-primary/30"
@@ -130,7 +134,7 @@ const DefaultEmptyState = ({
         rotate: [0, 1, -1, 0],
       }}
       transition={{
-        duration: durations.slower,
+        duration: motionDuration('slower'),
         repeat: Infinity,
         ease: 'easeInOut',
       }}
@@ -158,7 +162,7 @@ const DefaultEmptyState = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{
             delay: 0.2,
-            duration: durations.slow,
+            duration: motionDuration('slow'),
             ease: [0.25, 0.1, 0.25, 1],
           }}
         >
@@ -436,7 +440,7 @@ export function ChatWindow({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: durations.moderate,
+            duration: motionDuration('normal'),
             ease: [0.25, 0.1, 0.25, 1],
           }}
         >
@@ -530,7 +534,7 @@ export function ChatWindow({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{
-              duration: durations.normal,
+              duration: motionDuration('normal'),
               ease: [0.25, 0.1, 0.25, 1],
             }}
             className="border-b border-destructive/30 bg-destructive/5"
@@ -603,7 +607,7 @@ export function ChatWindow({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{
-              duration: durations.normal,
+              duration: motionDuration('normal'),
               ease: [0.25, 0.1, 0.25, 1],
             }}
             className="border-b border-amber-300/50 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/50"
@@ -613,7 +617,7 @@ export function ChatWindow({
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{
-                    duration: durations.slower,
+                    duration: motionDuration('slower'),
                     repeat: Infinity,
                     ease: 'linear',
                   }}
@@ -658,7 +662,7 @@ export function ChatWindow({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{
-                duration: durations.normal,
+                duration: motionDuration('normal'),
                 ease: [0.25, 0.1, 0.25, 1],
               }}
               className="px-5 pb-3"
@@ -682,7 +686,7 @@ export function ChatWindow({
 
         {/* Thinking Indicator - positioned above input */}
         <AnimatePresence>
-          {isLoading && aiStatus && (
+          {isLoading && (
             <div className="px-5 pb-3">
               <ThinkingIndicator status={aiStatus} />
             </div>

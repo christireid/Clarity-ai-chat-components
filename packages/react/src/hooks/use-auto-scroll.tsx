@@ -107,24 +107,34 @@ export function useAutoScroll(
     }
   }, [threshold])
 
+  const scrollElementTo = useRef(
+    (element: HTMLElement, top: number, scrollBehavior: ScrollBehavior) => {
+      // jsdom (and some custom scroll containers) may not implement Element.scrollTo.
+      // Fall back to setting scrollTop directly in those environments.
+      const maybeScrollTo = (element as unknown as { scrollTo?: unknown }).scrollTo
+      if (typeof maybeScrollTo === 'function') {
+        ;(maybeScrollTo as (options: ScrollToOptions) => void).call(element, {
+          top,
+          behavior: scrollBehavior,
+        })
+        return
+      }
+      element.scrollTop = top
+    }
+  )
+
   // Scroll to bottom (store in ref to avoid dependency issues)
   const scrollToBottomRef = useRef(() => {
     const element = scrollRef.current
     if (!element) return
-    element.scrollTo({
-      top: element.scrollHeight,
-      behavior,
-    })
+    scrollElementTo.current(element, element.scrollHeight, behavior)
   })
 
   useLayoutEffect(() => {
     scrollToBottomRef.current = () => {
       const element = scrollRef.current
       if (!element) return
-      element.scrollTo({
-        top: element.scrollHeight,
-        behavior,
-      })
+      scrollElementTo.current(element, element.scrollHeight, behavior)
     }
   }, [behavior])
 

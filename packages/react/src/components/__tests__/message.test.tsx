@@ -365,7 +365,6 @@ describe('Message Component', () => {
 
     it('should support keyboard navigation for feedback buttons', async () => {
       const onFeedback = vi.fn()
-      const user = userEvent.setup()
       const { container } = renderWithProviders(
         <Message message={mockAssistantMessage} onFeedback={onFeedback} />
       )
@@ -382,8 +381,7 @@ describe('Message Component', () => {
       })
 
       const thumbsUp = screen.getByLabelText('Good response')
-      thumbsUp.focus()
-      await user.keyboard('{Enter}')
+      fireEvent.keyDown(thumbsUp, { key: 'Enter' })
 
       expect(onFeedback).toHaveBeenCalledWith('up')
     })

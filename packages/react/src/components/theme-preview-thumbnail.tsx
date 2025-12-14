@@ -205,15 +205,25 @@ export function ThemePreviewThumbnail({
         <div className="flex items-center gap-[3px]">
           <div
             className={cn('rounded-full', classes.circleSize)}
-            style={{ backgroundColor: 'var(--thumb-destructive)' }}
+            style={{
+              backgroundColor: 'var(--thumb-destructive)',
+              // Inline style for deterministic visual-regression tests
+              borderRadius: '50%',
+            }}
           />
           <div
             className={cn('rounded-full', classes.circleSize)}
-            style={{ backgroundColor: 'var(--thumb-warning)' }}
+            style={{
+              backgroundColor: 'var(--thumb-warning)',
+              borderRadius: '50%',
+            }}
           />
           <div
             className={cn('rounded-full', classes.circleSize)}
-            style={{ backgroundColor: 'var(--thumb-success)' }}
+            style={{
+              backgroundColor: 'var(--thumb-success)',
+              borderRadius: '50%',
+            }}
           />
         </div>
 
@@ -228,15 +238,15 @@ export function ThemePreviewThumbnail({
         >
           <div
             className={cn('w-[70%] rounded-sm opacity-90', classes.lineHeight)}
-            style={{ backgroundColor: 'var(--thumb-foreground)' }}
+            style={{ backgroundColor: 'var(--thumb-foreground)', borderRadius: '1px' }}
           />
           <div
             className={cn('w-[50%] rounded-sm opacity-90', classes.lineHeight)}
-            style={{ backgroundColor: 'var(--thumb-muted-fg)' }}
+            style={{ backgroundColor: 'var(--thumb-muted-fg)', borderRadius: '1px' }}
           />
           <div
             className={cn('mt-auto rounded-sm', classes.buttonSize)}
-            style={{ backgroundColor: 'var(--thumb-primary)' }}
+            style={{ backgroundColor: 'var(--thumb-primary)', borderRadius: '1px' }}
           />
         </div>
       </div>
@@ -472,7 +482,7 @@ function ThemePreviewGridItem({
       role={onClick ? 'radio' : undefined}
       tabIndex={tabIndex}
       aria-checked={onClick ? selected : undefined}
-      aria-label={`${displayName}${selected ? ' (selected)' : ''}`}
+      aria-label={`Theme preview: ${displayName}${selected ? ' (selected)' : ''}`}
       onKeyDown={
         onClick
           ? (e) => {
@@ -510,15 +520,15 @@ function ThemePreviewGridItem({
         <div className="flex items-center gap-[3px]">
           <div
             className={cn('rounded-full', classes.circleSize)}
-            style={{ backgroundColor: 'var(--thumb-destructive)' }}
+            style={{ backgroundColor: 'var(--thumb-destructive)', borderRadius: '50%' }}
           />
           <div
             className={cn('rounded-full', classes.circleSize)}
-            style={{ backgroundColor: 'var(--thumb-warning)' }}
+            style={{ backgroundColor: 'var(--thumb-warning)', borderRadius: '50%' }}
           />
           <div
             className={cn('rounded-full', classes.circleSize)}
-            style={{ backgroundColor: 'var(--thumb-success)' }}
+            style={{ backgroundColor: 'var(--thumb-success)', borderRadius: '50%' }}
           />
         </div>
 
@@ -533,15 +543,15 @@ function ThemePreviewGridItem({
         >
           <div
             className={cn('w-[70%] rounded-sm opacity-90', classes.lineHeight)}
-            style={{ backgroundColor: 'var(--thumb-foreground)' }}
+            style={{ backgroundColor: 'var(--thumb-foreground)', borderRadius: '1px' }}
           />
           <div
             className={cn('w-[50%] rounded-sm opacity-90', classes.lineHeight)}
-            style={{ backgroundColor: 'var(--thumb-muted-fg)' }}
+            style={{ backgroundColor: 'var(--thumb-muted-fg)', borderRadius: '1px' }}
           />
           <div
             className={cn('mt-auto rounded-sm', classes.buttonSize)}
-            style={{ backgroundColor: 'var(--thumb-primary)' }}
+            style={{ backgroundColor: 'var(--thumb-primary)', borderRadius: '1px' }}
           />
         </div>
       </div>

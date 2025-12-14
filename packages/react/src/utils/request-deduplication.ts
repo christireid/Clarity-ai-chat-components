@@ -75,7 +75,7 @@ export class RequestDeduplicator {
    * @param fn - Function that returns a promise
    * @returns The promise result (may be shared with other deduplicated calls)
    */
-  async execute<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  execute<T>(key: string, fn: () => Promise<T>): Promise<T> {
     this.totalRequests++
     const cacheKey = this.generateKey(key)
 
@@ -85,7 +85,7 @@ export class RequestDeduplicator {
       if (pending) {
         this.deduplicatedRequests++
         this.onDedupe?.(cacheKey)
-        return pending.promise
+        return pending.promise as Promise<T>
       }
     }
 
@@ -104,8 +104,13 @@ export class RequestDeduplicator {
       this.lastRequestTime.set(cacheKey, now)
     }
 
-    // Execute the request
-    const promise = fn()
+    // Execute the request (capture sync throws as rejections)
+    let promise: Promise<T>
+    try {
+      promise = fn()
+    } catch (error) {
+      return Promise.reject(error)
+    }
 
     // Track pending request
     this.pendingRequests.set(cacheKey, {
@@ -113,12 +118,12 @@ export class RequestDeduplicator {
       timestamp: Date.now(),
     })
 
-    try {
-      const result = await promise
-      return result
-    } finally {
+    // Ensure pending entry is cleared once the request settles.
+    promise.finally(() => {
       this.pendingRequests.delete(cacheKey)
-    }
+    })
+
+    return promise
   }
 
   /**

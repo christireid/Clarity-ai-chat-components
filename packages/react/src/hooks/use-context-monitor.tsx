@@ -397,7 +397,10 @@ function generateRecommendations(
   // High utilization - suggest summarization
   if (utilization.utilizationPercent > 70) {
     const potentialSavings = Math.floor(utilization.breakdown.conversationHistory * 0.7)
-    if (potentialSavings > 500) {
+    // For small contexts, 500 tokens is unrealistically high; scale by context size.
+    // Ensure we still recommend summarization when we’re near capacity.
+    const minSavingsToRecommend = Math.max(100, Math.floor(utilization.maxTokens * 0.05))
+    if (potentialSavings > minSavingsToRecommend) {
       recommendations.push({
         id: 'summarize-history',
         priority: 1,
@@ -606,17 +609,46 @@ export function useContextMonitor(
     ? utilization.utilizationPercent >= resolvedOptions.criticalThreshold * 100
     : false
 
-  return {
-    utilization,
-    warnings,
-    recommendations,
-    history,
-    analyzeMessages,
-    getUtilization,
-    clearHistory,
-    isWarning,
-    isCritical,
+  // Return a stable object reference so integrations can hold onto it and still
+  // observe updated values after state changes (useful for adapters/helpers).
+  type ContextMonitorApi = {
+    utilization: ContextUtilization | null
+    warnings: ContextWarning[]
+    recommendations: OptimizationRecommendation[]
+    history: ContextUtilization[]
+    analyzeMessages: (messages: ContextMessage[]) => ContextUtilization
+    getUtilization: (messages: ContextMessage[]) => ContextUtilization
+    clearHistory: () => void
+    isWarning: boolean
+    isCritical: boolean
   }
+
+  const apiRef = React.useRef<ContextMonitorApi | null>(null)
+  if (!apiRef.current) {
+    apiRef.current = {
+      utilization: null,
+      warnings: [],
+      recommendations: [],
+      history: [],
+      analyzeMessages,
+      getUtilization,
+      clearHistory,
+      isWarning: false,
+      isCritical: false,
+    }
+  }
+
+  apiRef.current.utilization = utilization
+  apiRef.current.warnings = warnings
+  apiRef.current.recommendations = recommendations
+  apiRef.current.history = history
+  apiRef.current.analyzeMessages = analyzeMessages
+  apiRef.current.getUtilization = getUtilization
+  apiRef.current.clearHistory = clearHistory
+  apiRef.current.isWarning = isWarning
+  apiRef.current.isCritical = isCritical
+
+  return apiRef.current
 }
 
 /**

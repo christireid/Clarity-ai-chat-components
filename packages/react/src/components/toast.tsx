@@ -406,6 +406,14 @@ export function useToast(): ToastContextValue {
 }
 
 /**
+ * Optional variant of `useToast` for library components that should not hard-require
+ * a ToastProvider (e.g. when used in isolation or embedded contexts).
+ */
+export function useToastOptional(): ToastContextValue | null {
+  return useContext(ToastContext) ?? null
+}
+
+/**
  * Standalone toast function (without provider)
  * Useful for one-off toasts without setting up provider
  */
