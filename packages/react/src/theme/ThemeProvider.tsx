@@ -16,7 +16,7 @@ import {
 } from './create-theme'
 import type { CompleteThemeConfig, PartialThemeConfig } from './theme-config'
 import type { ThemeContextValue } from './theme-types'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { useReducedMotion } from '../hooks/ui/use-reduced-motion'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,

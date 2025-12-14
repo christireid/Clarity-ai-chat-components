@@ -1,6 +1,6 @@
 /**
  * AI Infrastructure Domain Exports
- * 
+ *
  * Top-level: High-level AI operations
  * Mid-level: Composable AI primitives
  * Low-level: Internal utilities
@@ -30,7 +30,7 @@ export { AgentUtils } from '../agents'
 // Streaming transports
 export { useStreamingSSE } from '../hooks/use-streaming-sse'
 export { useStreamingWebSocket } from '../hooks/use-streaming-websocket'
-export { useStreamableUI } from '../hooks/use-streamable-ui'
+export { useStreamableUI } from '../hooks/streaming/use-streamable-ui'
 
 // Model adapters
 export * from '../adapters'

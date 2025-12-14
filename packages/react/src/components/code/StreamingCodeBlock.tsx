@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { cn } from '../../utils/cn'
 import { normalizeLanguage, escapeHtml } from './utils'
-import { sanitizeCodeHtml } from '../../utils/sanitize-html'
+import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
 import { CODE_THEMES, type CodeThemeName, DEFAULT_DARK_THEME } from './themes'
 import { CodeBlockHeader } from './CodeBlockHeader'
 import { CodeBlockCopyButton } from './CodeBlockCopyButton'

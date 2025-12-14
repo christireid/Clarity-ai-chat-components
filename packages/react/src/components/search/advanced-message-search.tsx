@@ -68,7 +68,7 @@ const CheckIcon = Check as React.ComponentType<{ className?: string }>
 const CopyIcon = Copy as React.ComponentType<{ className?: string }>
 const SortIcon = ArrowUpDown as React.ComponentType<{ className?: string }>
 
-import { useDeferredSearch } from '../hooks/use-deferred-search'
+import { useDeferredSearch } from '../../hooks/performance/use-deferred-search'
 
 /**
  * Filter criteria for advanced search

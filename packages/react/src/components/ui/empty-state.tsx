@@ -25,10 +25,16 @@ import {
   LightbulbIcon,
 } from './icons'
 import { InteractiveButton } from './interactive-card'
-import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
-import { getSpring } from '../animations/spring-presets'
+import {
+  PromptSuggestions,
+  type PromptSuggestion,
+} from '../prompt/prompt-suggestions'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import {
+  getMotionSafeDuration,
+  getMotionSafeValue,
+} from '../../animations/motion-safe'
+import { getSpring } from '../../animations/spring-presets'
 
 export interface EmptyStateProps {
   /** Icon to display */
@@ -54,7 +60,7 @@ export interface EmptyStateProps {
 
 /**
  * Base Empty State Component
- * 
+ *
  * @enhanced Framer Motion 12: Spring physics for organic entrance
  * - Smooth spring for container
  * - Smooth spring with rotation for icon
@@ -100,7 +106,9 @@ export function EmptyState({
         transition={getSpring('gentle', prefersReducedMotion, { delay: 0.25 })}
         className="space-y-3.5 max-w-lg"
       >
-        <h3 className="text-2xl font-bold text-foreground leading-tight">{title}</h3>
+        <h3 className="text-2xl font-bold text-foreground leading-tight">
+          {title}
+        </h3>
         {description && (
           <p className="text-sm text-muted-foreground/90 leading-relaxed">
             {description}
@@ -211,7 +219,7 @@ export function EmptyChatState({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
         duration: getMotionSafeDuration(prefersReducedMotion, 0.5),
-        ease: [0.25, 0.1, 0.25, 1]
+        ease: [0.25, 0.1, 0.25, 1],
       }}
       className={cn(
         'flex flex-col items-center justify-center text-center px-6 py-12 space-y-8 max-w-3xl mx-auto',
@@ -223,7 +231,7 @@ export function EmptyChatState({
         initial={{ scale: 0, rotate: -90 }}
         animate={{
           scale: 1,
-          rotate: 0
+          rotate: 0,
         }}
         transition={{
           duration: getMotionSafeDuration(prefersReducedMotion, 0.6),
@@ -231,7 +239,7 @@ export function EmptyChatState({
           delay: getMotionSafeDuration(prefersReducedMotion, 0.1),
           type: 'spring',
           stiffness: 280,
-          damping: 22
+          damping: 22,
         }}
         className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/15 to-primary/5 shadow-lg ring-1 ring-primary/25"
       >
@@ -240,12 +248,15 @@ export function EmptyChatState({
 
       {/* Content */}
       <motion.div
-        initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
+        initial={{
+          opacity: 0,
+          y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+        }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
           duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
           ease: [0.25, 0.1, 0.25, 1],
-          delay: getMotionSafeDuration(prefersReducedMotion, 0.25)
+          delay: getMotionSafeDuration(prefersReducedMotion, 0.25),
         }}
         className="space-y-3.5"
       >
@@ -255,20 +266,22 @@ export function EmptyChatState({
         <p className="text-sm text-muted-foreground/90 leading-relaxed max-w-md">
           {showSuggestions
             ? 'Choose a suggestion below or type your own message to begin chatting with the AI assistant.'
-            : 'Send a message to begin chatting with the AI assistant. I\'m here to help with your questions and tasks.'
-          }
+            : "Send a message to begin chatting with the AI assistant. I'm here to help with your questions and tasks."}
         </p>
       </motion.div>
 
       {/* Suggested Prompts */}
       {showSuggestions && suggestions.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
+          initial={{
+            opacity: 0,
+            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+          }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
             duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
             ease: [0.25, 0.1, 0.25, 1],
-            delay: getMotionSafeDuration(prefersReducedMotion, 0.35)
+            delay: getMotionSafeDuration(prefersReducedMotion, 0.35),
           }}
           className="w-full"
         >
@@ -285,18 +298,18 @@ export function EmptyChatState({
       {/* Optional "Start Chat" button */}
       {onStartChat && !showSuggestions && (
         <motion.div
-          initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
+          initial={{
+            opacity: 0,
+            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+          }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
             duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
             ease: [0.25, 0.1, 0.25, 1],
-            delay: getMotionSafeDuration(prefersReducedMotion, 0.35)
+            delay: getMotionSafeDuration(prefersReducedMotion, 0.35),
           }}
         >
-          <InteractiveButton
-            variant="primary"
-            onClick={onStartChat}
-          >
+          <InteractiveButton variant="primary" onClick={onStartChat}>
             Start Chat
           </InteractiveButton>
         </motion.div>
@@ -517,7 +530,7 @@ InfoState.displayName = 'InfoState'
 
 /**
  * Loading State (with animated icon)
- * 
+ *
  * @enhanced Framer Motion 12: Spring entrance with continuous rotation
  */
 export function LoadingState({
@@ -544,10 +557,10 @@ export function LoadingState({
       {/* Animated Spinner */}
       <motion.div
         animate={{ rotate: prefersReducedMotion ? 0 : 360 }}
-        transition={{ 
-          duration: 1, 
-          repeat: prefersReducedMotion ? 0 : Infinity, 
-          ease: 'linear' 
+        transition={{
+          duration: durations.slower,
+          repeat: prefersReducedMotion ? 0 : Infinity,
+          ease: 'linear',
         }}
         className="w-12 h-12 border-4 border-primary/60 border-t-primary rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
       />
@@ -561,7 +574,9 @@ export function LoadingState({
       >
         <h3 className="text-lg font-semibold text-foreground">{title}</h3>
         {description && (
-          <p className="text-sm text-muted-foreground/80 leading-relaxed">{description}</p>
+          <p className="text-sm text-muted-foreground/80 leading-relaxed">
+            {description}
+          </p>
         )}
       </motion.div>
     </motion.div>

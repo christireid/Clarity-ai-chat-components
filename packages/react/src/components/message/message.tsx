@@ -15,7 +15,7 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   duration,
-} from '../animations/constants'
+} from '../../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -25,8 +25,8 @@ import {
   MessageActions,
   MessageMetadata,
   EditableMessageContent,
-} from './message/index'
-import { ErrorMessage, type ErrorDetails } from './error-message'
+} from './index'
+import { ErrorMessage, type ErrorDetails } from '../feedback/error-message'
 import { CopyButton } from './copy-button'
 
 export interface MessageProps {

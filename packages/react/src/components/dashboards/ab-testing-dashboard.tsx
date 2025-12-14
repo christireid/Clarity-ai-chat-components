@@ -17,9 +17,9 @@ import {
   useShortcutDisplay,
   KeyboardShortcutsHelp,
   type KeyboardShortcut,
-} from '../hooks/use-keyboard-shortcuts'
-import { DashboardProgress } from './dashboard-progress'
-import { KeyboardShortcutHint } from './keyboard-shortcut-hint'
+} from '../../hooks/keyboard/use-keyboard-shortcuts'
+import { DashboardProgress } from '../ui/dashboard-progress'
+import { KeyboardShortcutHint } from '../navigation/keyboard-shortcut-hint'
 
 /**
  * Experiment variant

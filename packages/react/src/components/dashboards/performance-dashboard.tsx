@@ -7,7 +7,7 @@
 'use client'
 
 import * as React from 'react'
-import { useRenderPerformance } from '../hooks/use-performance'
+import { useRenderPerformance } from '../../hooks/performance/use-performance'
 
 // Stub hook for memory usage (not available in all browsers)
 function useMemoryUsage() {

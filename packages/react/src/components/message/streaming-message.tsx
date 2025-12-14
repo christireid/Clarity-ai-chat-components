@@ -21,7 +21,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import type { ToolCall, Citation } from '../adapters/types'
-import { DURATION_SECONDS } from '../animations/constants'
+import { DURATION_SECONDS } from '../../animations/constants'
 
 export interface StreamingMessageProps {
   /** Accumulated message content */

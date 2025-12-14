@@ -18,8 +18,8 @@
 'use client'
 
 import * as React from 'react'
-import { estimateTokens } from '../utils/tokenization/estimator'
-import { calculateCost } from '../utils/tokenization/model-pricing'
+import { estimateTokens } from '../../utils/tokenization/estimator'
+import { calculateCost } from '../../utils/tokenization/model-pricing'
 import type { ModelName } from '../utils/tokenization/accurate-counter'
 
 // =============================================================================

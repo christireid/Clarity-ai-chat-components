@@ -10,7 +10,7 @@ import {
   CheckIcon,
   CloseIcon,
 } from '../ui/icons'
-import { useIsMounted } from '../hooks/use-is-mounted'
+import { useIsMounted } from '../../hooks/ui/use-is-mounted'
 
 /**
  * Supported document platforms

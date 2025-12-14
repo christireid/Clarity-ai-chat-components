@@ -11,7 +11,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { EASING_FRAMER } from '../animations/constants'
+import { EASING_FRAMER } from '../../animations/constants'
 
 interface RippleType {
   id: number

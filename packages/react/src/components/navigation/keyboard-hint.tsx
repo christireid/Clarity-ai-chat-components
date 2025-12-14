@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations/constants'
 
 export interface KeyboardHintShortcut {
   keys: string[]

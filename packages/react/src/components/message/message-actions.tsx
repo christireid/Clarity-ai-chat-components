@@ -3,14 +3,14 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, cn, Tooltip } from '@clarity-chat/primitives'
-import { CopyButton } from '../copy-button'
+import { CopyButton } from './copy-button'
 import {
   ThumbsUpIcon,
   ThumbsDownIcon,
   RefreshIcon,
   EditIcon,
   StopIcon,
-} from '../icons'
+} from '../ui/icons'
 import {
   ANIMATION_DURATION,
   DURATION_SECONDS as durations,
@@ -19,7 +19,7 @@ import {
 import { ConfettiAnimation } from './confetti-animation'
 import { FeedbackDialog } from './feedback-dialog'
 import { DeleteButton } from './delete-button'
-import { useToast } from '../toast'
+import { useToast } from '../ui/toast'
 
 export interface MessageActionsProps {
   messageContent: string

@@ -17,12 +17,15 @@
 'use client'
 
 import * as React from 'react'
-import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
+import {
+  useClarityChat,
+  type UseClarityChatOptions,
+} from '../chat/use-clarity-chat'
 import { convertCoreMessagesToMessages } from '../../utils/message'
 import {
   validateApiEndpoint,
   validateStreamingProtocol,
-} from '../utils/runtime-validation'
+} from '../../utils/config/runtime-validation'
 import type { Message } from '@clarity-chat/types'
 
 /**

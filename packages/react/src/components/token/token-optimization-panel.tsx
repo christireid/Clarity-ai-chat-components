@@ -1,30 +1,33 @@
 /**
  * Token Optimization Panel Component
- * 
+ *
  * Displays real-time token optimization statistics and controls.
  * Shows savings, cache performance, and optimization metrics.
  */
 
 import * as React from 'react'
-import { useTokenOptimization, type TokenOptimizationStats } from '../hooks/use-token-optimization'
+import {
+  useTokenOptimization,
+  type TokenOptimizationStats,
+} from '../../hooks/token/use-token-optimization'
 import { cn } from '@clarity-chat/primitives'
 
 export interface TokenOptimizationPanelProps {
   /** Statistics to display */
   stats: TokenOptimizationStats
-  
+
   /** Show detailed breakdown */
   showDetails?: boolean
-  
+
   /** Show cache performance */
   showCacheStats?: boolean
-  
+
   /** Show routing stats */
   showRoutingStats?: boolean
-  
+
   /** Custom className */
   className?: string
-  
+
   /** Size variant */
   size?: 'sm' | 'md' | 'lg'
 }
@@ -48,11 +51,11 @@ function formatCost(cost: number): string {
 
 /**
  * Token Optimization Panel component
- * 
+ *
  * @example
  * ```tsx
  * const { stats } = useTokenOptimization({ enableCaching: true })
- * 
+ *
  * <TokenOptimizationPanel
  *   stats={stats}
  *   showDetails={true}
@@ -68,9 +71,10 @@ export function TokenOptimizationPanel({
   className,
   size = 'md',
 }: TokenOptimizationPanelProps) {
-  const cacheHitRate = stats.cacheHits + stats.cacheMisses > 0
-    ? (stats.cacheHits / (stats.cacheHits + stats.cacheMisses)) * 100
-    : 0
+  const cacheHitRate =
+    stats.cacheHits + stats.cacheMisses > 0
+      ? (stats.cacheHits / (stats.cacheHits + stats.cacheMisses)) * 100
+      : 0
 
   const sizeClasses = {
     sm: 'text-xs',
@@ -147,14 +151,16 @@ export function TokenOptimizationPanel({
           )}
 
           {/* Model routing */}
-          {showRoutingStats && (stats.simpleModelRoutes + stats.complexModelRoutes > 0) && (
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Model Routing</span>
-              <span className="font-medium">
-                {stats.simpleModelRoutes} simple / {stats.complexModelRoutes} complex
-              </span>
-            </div>
-          )}
+          {showRoutingStats &&
+            stats.simpleModelRoutes + stats.complexModelRoutes > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Model Routing</span>
+                <span className="font-medium">
+                  {stats.simpleModelRoutes} simple / {stats.complexModelRoutes}{' '}
+                  complex
+                </span>
+              </div>
+            )}
 
           {/* Cost savings */}
           {stats.costSavings > 0 && (

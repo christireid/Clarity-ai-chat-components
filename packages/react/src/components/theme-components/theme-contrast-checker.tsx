@@ -6,12 +6,12 @@
  */
 
 import * as React from 'react'
-import { useTheme } from '../theme/ThemeProvider'
+import { useTheme } from '../../theme/ThemeProvider'
 import {
   getContrastRatio,
   meetsContrastRequirement,
   hslStringToHex,
-} from '../theme/color-utils'
+} from '../../theme/color-utils'
 import type { CompleteThemeConfig } from '../theme/theme-config'
 
 /**

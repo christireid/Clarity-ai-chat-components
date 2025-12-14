@@ -10,11 +10,11 @@ import {
   InfoIcon,
 } from '../ui/icons'
 import { RetryButton, type RetryErrorType } from './retry-button'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
-} from '../animations/motion-safe'
+} from '../../animations/motion-safe'
 
 /**
  * Error severity levels

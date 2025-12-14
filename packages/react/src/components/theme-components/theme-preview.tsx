@@ -7,13 +7,13 @@
 'use client'
 
 import * as React from 'react'
-import { useTheme, type ThemePresetName } from '../theme/ThemeProvider'
+import { useTheme, type ThemePresetName } from '../../theme/ThemeProvider'
 import {
   getAllThemes,
   hexToHsl,
   hslToHex,
   validateTheme,
-} from '../theme/theme-builder'
+} from '../../theme/theme-builder'
 import type { CompleteThemeConfig } from '../theme/theme-config'
 
 export interface ThemePreviewProps {

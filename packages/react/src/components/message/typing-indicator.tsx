@@ -4,12 +4,12 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { Avatar } from '@clarity-chat/primitives'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { getMotionSafeDuration } from '../animations/motion-safe'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { getMotionSafeDuration } from '../../animations/motion-safe'
 
 /**
  * Typing indicator variant styles
- * 
+ *
  * @enhanced Framer Motion 12: Now using spring physics for smoother animations
  * - Enhanced spring damping for natural motion
  * - Improved bounce physics for dots animation
@@ -133,9 +133,15 @@ export function TypingIndicator({
           'min-w-[70px]'
         )}
       >
-        {variant === 'dots' && <DotsAnimation prefersReducedMotion={prefersReducedMotion} />}
-        {variant === 'pulse' && <PulseAnimation prefersReducedMotion={prefersReducedMotion} />}
-        {variant === 'wave' && <WaveAnimation prefersReducedMotion={prefersReducedMotion} />}
+        {variant === 'dots' && (
+          <DotsAnimation prefersReducedMotion={prefersReducedMotion} />
+        )}
+        {variant === 'pulse' && (
+          <PulseAnimation prefersReducedMotion={prefersReducedMotion} />
+        )}
+        {variant === 'wave' && (
+          <WaveAnimation prefersReducedMotion={prefersReducedMotion} />
+        )}
       </motion.div>
     </motion.div>
   )
@@ -146,7 +152,11 @@ TypingIndicator.displayName = 'TypingIndicator'
 /**
  * Classic bouncing dots animation
  */
-function DotsAnimation({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+function DotsAnimation({
+  prefersReducedMotion,
+}: {
+  prefersReducedMotion: boolean
+}) {
   if (prefersReducedMotion) {
     return (
       <div className="flex gap-1.5">
@@ -187,7 +197,11 @@ function DotsAnimation({ prefersReducedMotion }: { prefersReducedMotion: boolean
 /**
  * Pulse animation (expanding circles)
  */
-function PulseAnimation({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+function PulseAnimation({
+  prefersReducedMotion,
+}: {
+  prefersReducedMotion: boolean
+}) {
   if (prefersReducedMotion) {
     return (
       <div className="flex gap-1.5">
@@ -211,7 +225,7 @@ function PulseAnimation({ prefersReducedMotion }: { prefersReducedMotion: boolea
             opacity: [0.5, 1, 0.5],
           }}
           transition={{
-            duration: 1,
+            duration: durations.slower,
             repeat: Infinity,
             delay: i * 0.2,
             ease: 'easeInOut',
@@ -226,7 +240,11 @@ function PulseAnimation({ prefersReducedMotion }: { prefersReducedMotion: boolea
 /**
  * Wave animation (sequential fade)
  */
-function WaveAnimation({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+function WaveAnimation({
+  prefersReducedMotion,
+}: {
+  prefersReducedMotion: boolean
+}) {
   if (prefersReducedMotion) {
     return (
       <div className="flex gap-1.5">
@@ -250,7 +268,7 @@ function WaveAnimation({ prefersReducedMotion }: { prefersReducedMotion: boolean
             scale: [0.9, 1.1, 0.9],
           }}
           transition={{
-            duration: 1.2,
+            duration: durations.slower,
             repeat: Infinity,
             delay: i * 0.25,
             ease: 'linear',

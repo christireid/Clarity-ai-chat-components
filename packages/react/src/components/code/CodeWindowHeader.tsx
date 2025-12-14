@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { Button, cn } from '@clarity-chat/primitives'
-import { CopyButton } from '../copy-button'
+import { CopyButton } from '../message/copy-button'
 import {
   ChevronDownIcon,
   ChevronUpIcon,
   DownloadIcon,
   WrapTextIcon,
-} from '../icons'
+} from '../ui/icons'
 
 export interface CodeWindowHeaderProps {
   /** Detected or provided language */

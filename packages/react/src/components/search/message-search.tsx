@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message } from '@clarity-chat/types'
 import { Input, Badge, Button, cn } from '@clarity-chat/primitives'
-import { useDeferredSearch } from '../hooks/use-deferred-search'
+import { useDeferredSearch } from '../../hooks/performance/use-deferred-search'
 import { SearchIcon } from '../ui/icons'
 import { X, Command, ArrowUp, ArrowDown, CornerDownLeft } from 'lucide-react'
 

@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { estimateTokens } from '../utils/tokenization/estimator'
-import { MODEL_REGISTRY } from '../utils/tokenization/model-registry'
+import { estimateTokens } from '../../utils/tokenization/estimator'
+import { MODEL_REGISTRY } from '../../utils/tokenization/model-registry'
 
 // =============================================================================
 // Lazy-initialized pricing and limits for performance
@@ -95,7 +95,7 @@ export const MODEL_PRICING: Record<string, { input: number; output: number }> =
  * @see {@link MODEL_REGISTRY} for the complete model configuration
  * @example
  * ```ts
- * import { MODEL_REGISTRY } from '../utils/tokenization/model-registry'
+ * import { MODEL_REGISTRY } from '../../utils/tokenization/model-registry'
  * const gpt4Limit = MODEL_REGISTRY['gpt-4'].contextWindow // 8192
  * ```
  */

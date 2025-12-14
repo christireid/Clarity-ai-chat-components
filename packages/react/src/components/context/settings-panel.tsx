@@ -23,7 +23,7 @@ import type {
   FontSize,
   MessageLayout,
 } from '@clarity-chat/types'
-import type { ThemeMode } from '../theme/ThemeProvider'
+import type { ThemeMode } from '../../theme/ThemeProvider'
 
 export interface SettingsPanelProps {
   settings: UserSettings
@@ -116,7 +116,7 @@ export function SettingsPanel({
             key={activeTab}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ 
+            transition={{
               // Framer Motion 12: Spring tab transition
               type: 'spring',
               damping: 25,

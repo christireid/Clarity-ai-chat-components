@@ -10,7 +10,7 @@ import {
   type BudgetMonitorModel,
   createModelBudgetMonitor,
   isValidBudgetMonitorModel,
-} from '../hooks/use-token-budget-monitor'
+} from '../hooks/token/use-token-budget-monitor'
 
 /**
  * Context value for the TokenBudget provider

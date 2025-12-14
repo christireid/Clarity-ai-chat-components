@@ -5,7 +5,7 @@ import { cn } from '@clarity-chat/primitives'
 import {
   modernThemes,
   type ModernThemePresetName,
-} from '../theme/modern-presets'
+} from '../../theme/modern-presets'
 import type { CompleteThemeConfig } from '../theme/theme-config'
 
 /**

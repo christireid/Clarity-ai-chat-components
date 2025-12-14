@@ -36,7 +36,7 @@ import {
   type CircuitBreakerOptions,
   type CircuitBreakerStats,
   type CircuitState,
-} from '../utils/circuit-breaker'
+} from '../../utils/resilience/circuit-breaker'
 
 export interface UseCircuitBreakerOptions extends Omit<
   CircuitBreakerOptions,

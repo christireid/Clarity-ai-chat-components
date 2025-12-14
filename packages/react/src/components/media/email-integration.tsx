@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
 import { RefreshIcon, CloseIcon } from '../ui/icons'
-import { useIsMounted } from '../hooks/use-is-mounted'
+import { useIsMounted } from '../../hooks/ui/use-is-mounted'
 
 /**
  * Email provider types

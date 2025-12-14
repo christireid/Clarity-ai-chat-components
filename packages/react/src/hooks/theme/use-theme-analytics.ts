@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import type { ThemeMode } from '../theme/ThemeProvider'
-import type { ModernThemePresetName } from '../theme/modern-presets'
+import type { ThemeMode } from '../../theme/ThemeProvider'
+import type { ModernThemePresetName } from '../../theme/modern-presets'
 
 /**
  * Theme analytics event types

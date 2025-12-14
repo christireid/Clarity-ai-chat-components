@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
-import { useVoiceInput } from '../hooks/use-voice-input'
+import { useVoiceInput } from '../../hooks/input/use-voice-input'
 import type { ReactNode } from 'react'
 
 /**
@@ -226,7 +226,13 @@ export function VoiceInput({
       <div className="relative">
         <Button
           size={size === 'sm' ? 'icon' : size === 'lg' ? 'lg' : 'icon'}
-          variant={variant === 'primary' ? 'default' : variant === 'secondary' ? 'secondary' : 'ghost'}
+          variant={
+            variant === 'primary'
+              ? 'default'
+              : variant === 'secondary'
+                ? 'secondary'
+                : 'ghost'
+          }
           onClick={handleToggle}
           disabled={disabled}
           className={cn(
@@ -239,7 +245,11 @@ export function VoiceInput({
             !voice.isListening && 'hover:scale-105',
             className
           )}
-          aria-label={voice.isListening ? 'Stop recording' : tooltipText || 'Start voice input'}
+          aria-label={
+            voice.isListening
+              ? 'Stop recording'
+              : tooltipText || 'Start voice input'
+          }
           title={voice.isListening ? 'Stop recording' : tooltipText}
         >
           {/* Enhanced pulse animation when listening */}
@@ -250,7 +260,7 @@ export function VoiceInput({
                 initial={{ scale: 1, opacity: 0.5 }}
                 animate={{ scale: 1.8, opacity: 0 }}
                 transition={{
-                  duration: 2,
+                  duration: durations.slower,
                   repeat: Infinity,
                   ease: [0.25, 0.1, 0.25, 1],
                 }}
@@ -260,7 +270,7 @@ export function VoiceInput({
                 initial={{ scale: 1, opacity: 0.3 }}
                 animate={{ scale: 1.5, opacity: 0 }}
                 transition={{
-                  duration: 2,
+                  duration: durations.slower,
                   repeat: Infinity,
                   ease: [0.25, 0.1, 0.25, 1],
                   delay: 0.5,
@@ -303,7 +313,7 @@ export function VoiceInput({
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.96 }}
-            transition={{ 
+            transition={{
               // Framer Motion 12: Spring entrance for voice panel
               type: 'spring',
               damping: 20,
@@ -367,7 +377,7 @@ export function VoiceInput({
                       height: ['12px', '32px', '12px'],
                     }}
                     transition={{
-                      duration: 0.8,
+                      duration: durations.slower,
                       repeat: Infinity,
                       ease: [0.25, 0.1, 0.25, 1],
                       delay: i * 0.1,
@@ -403,7 +413,8 @@ export function VoiceInput({
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-3 p-3 bg-destructive/10 border border-destructive/30 rounded-xl">
+                className="mb-3 p-3 bg-destructive/10 border border-destructive/30 rounded-xl"
+              >
                 <div className="flex items-start gap-2">
                   <svg
                     className="h-4 w-4 text-destructive shrink-0 mt-0.5"
@@ -459,7 +470,7 @@ export function VoiceInput({
                     className="h-full bg-gradient-to-r from-green-500/80 to-green-500 rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${voice.confidence * 100}%` }}
-                    transition={{ 
+                    transition={{
                       // Framer Motion 12: Spring confidence bar
                       type: 'spring',
                       damping: 28,

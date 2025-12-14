@@ -17,7 +17,7 @@ import type {
   UsageLimit,
   UsageMetrics,
 } from '@clarity-chat/types'
-import { DURATION_SECONDS } from '../animations/constants'
+import { DURATION_SECONDS } from '../../animations/constants'
 
 export interface UsageDashboardProps {
   balance: CreditBalance

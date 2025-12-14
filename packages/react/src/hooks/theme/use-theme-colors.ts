@@ -22,8 +22,8 @@
  */
 
 import * as React from 'react'
-import { useTheme } from '../theme/ThemeProvider'
-import { hslStringToHex } from '../theme/color-utils'
+import { useTheme } from '../../theme/ThemeProvider'
+import { hslStringToHex } from '../../theme/color-utils'
 import type { ColorConfig } from '../theme/theme-config'
 
 /**
