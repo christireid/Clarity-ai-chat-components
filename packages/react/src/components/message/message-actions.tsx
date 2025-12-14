@@ -1,21 +1,24 @@
+'use client'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, cn } from '@clarity-chat/primitives'
+import { Button, cn, Tooltip } from '@clarity-chat/primitives'
 import { CopyButton } from '../copy-button'
 import {
   ThumbsUpIcon,
   ThumbsDownIcon,
   RefreshIcon,
   EditIcon,
-  TrashIcon,
+  StopIcon,
 } from '../icons'
 import {
   ANIMATION_DURATION,
   DURATION_SECONDS as durations,
   EASING_FRAMER,
-  INTERACTION_VARIANTS,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
+import { FeedbackDialog } from './feedback-dialog'
+import { DeleteButton } from './delete-button'
 import { useToast } from '../toast'
 
 export interface MessageActionsProps {
@@ -25,11 +28,13 @@ export interface MessageActionsProps {
   feedbackGiven: 'up' | 'down' | null
   showConfetti: boolean
   hasError: boolean
-  onFeedback: (type: 'up' | 'down') => void
+  isStreaming?: boolean
+  onFeedback: (type: 'up' | 'down', comment?: string) => void
   onRetry?: () => void
   onEdit?: (messageId: string) => void
   onRegenerate?: (messageId: string) => void
   onDelete?: (messageId: string) => void
+  onStopGeneration?: () => void
   show: boolean
   /**
    * Always show actions regardless of hover state
@@ -37,17 +42,110 @@ export interface MessageActionsProps {
    * @default false
    */
   alwaysVisible?: boolean
+  /**
+   * Ref for the edit button - used to return focus after editing
+   */
+  editButtonRef?: React.RefObject<HTMLButtonElement | null>
+}
+
+// Animation variants for buttons
+const buttonVariants = {
+  initial: { opacity: 0, scale: 0.8, y: 4 },
+  animate: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.8, y: 4 },
+  hover: { scale: 1.1 },
+  tap: { scale: 0.9 },
+}
+
+// Stagger configuration for entrance animation
+const containerVariants = {
+  animate: {
+    transition: {
+      staggerChildren: 0.04,
+      delayChildren: 0.02,
+    },
+  },
 }
 
 /**
- * Message actions component (copy, feedback, retry)
- * Extracted from Message component for better organization
+ * ActionButton - Reusable action button with tooltip and animations
+ */
+interface ActionButtonProps {
+  onClick: () => void
+  icon: React.ReactNode
+  label: string
+  tooltipContent: string
+  isActive?: boolean
+  activeClassName?: string
+  hoverClassName?: string
+  disabled?: boolean
+  delay?: number
+  'aria-pressed'?: boolean
+}
+
+const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
+  (
+    {
+      onClick,
+      icon,
+      label,
+      tooltipContent,
+      isActive = false,
+      activeClassName = '',
+      hoverClassName = 'hover:text-gray-600 hover:bg-accent/50',
+      disabled = false,
+      delay = 0,
+      'aria-pressed': ariaPressed,
+    },
+    ref
+  ) => {
+    return (
+      <Tooltip content={tooltipContent} side="top" delay={300}>
+        <motion.div
+          variants={buttonVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          whileHover={disabled ? undefined : 'hover'}
+          whileTap={disabled ? undefined : 'tap'}
+          transition={{ delay, duration: durations.fast }}
+        >
+          <Button
+            ref={ref}
+            variant="ghost"
+            size="icon"
+            onClick={onClick}
+            disabled={disabled}
+            className={cn(
+              'h-8 w-8 rounded-lg transition-all duration-200 text-muted-foreground/70',
+              hoverClassName,
+              isActive && activeClassName,
+              disabled && 'opacity-50 cursor-not-allowed'
+            )}
+            aria-label={label}
+            aria-pressed={ariaPressed}
+          >
+            {icon}
+          </Button>
+        </motion.div>
+      </Tooltip>
+    )
+  }
+)
+
+ActionButton.displayName = 'ActionButton'
+
+/**
+ * Message actions component with delightful UX
  *
  * Enhanced with:
+ * - Tooltips on all actions for discoverability
+ * - Feedback dialog for thumbs down with optional comment
+ * - Delete confirmation dialog to prevent accidents
+ * - Stop button for streaming messages
+ * - Role-specific actions (user: edit/delete/copy, assistant: regenerate/copy/feedback/stop)
  * - Staggered entrance animations
- * - Icon-only buttons (cleaner, more minimal)
- * - Delete feedback with animation
- * - Improved hover/tap interactions
+ * - Improved hover/tap interactions with spring physics
  * - Keyboard navigation (arrow keys, Tab)
  * - Focus-visible accessibility
  */
@@ -59,360 +157,453 @@ export const MessageActions = React.memo<MessageActionsProps>(
     feedbackGiven,
     showConfetti,
     hasError,
+    isStreaming = false,
     onFeedback,
     onRetry,
     onEdit,
     onRegenerate,
     onDelete,
+    onStopGeneration,
     show,
     alwaysVisible = false,
+    editButtonRef,
   }) => {
     const [isDeleting, setIsDeleting] = React.useState(false)
+    const [feedbackDialogOpen, setFeedbackDialogOpen] = React.useState(false)
     const toast = useToast()
+    const deleteTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+      null
+    )
 
     const isUserMessage = role === 'user'
     const isAssistantMessage = role === 'assistant'
 
     const actionsRef = React.useRef<HTMLDivElement>(null)
-    const lastFocusedButtonRef = React.useRef<HTMLButtonElement | null>(null)
+    const [focusedIndex, setFocusedIndex] = React.useState(-1)
 
-    // Ensure keyboard activation works even in environments that don't simulate
-    // native button "Enter triggers click" behavior reliably (e.g. some test DOMs).
+    // Cleanup delete timeout on unmount
     React.useEffect(() => {
-      const handler = (e: KeyboardEvent) => {
-        if (e.key !== 'Enter' && e.key !== ' ') return
-        const container = actionsRef.current
-        const active = document.activeElement
-        if (!container) return
-
-        if (active instanceof HTMLButtonElement && container.contains(active)) {
-          e.preventDefault()
-          active.click()
-          return
-        }
-        // Fallback: use last focused action button (useful in some test DOMs).
-        if (
-          lastFocusedButtonRef.current &&
-          container.contains(lastFocusedButtonRef.current)
-        ) {
-          e.preventDefault()
-          lastFocusedButtonRef.current.click()
-        }
-      }
-
-      document.addEventListener('keydown', handler, true)
-      document.addEventListener('keyup', handler, true)
       return () => {
-        document.removeEventListener('keydown', handler, true)
-        document.removeEventListener('keyup', handler, true)
+        if (deleteTimeoutRef.current) {
+          clearTimeout(deleteTimeoutRef.current)
+        }
       }
     }, [])
+
+    // Reset focused index when visibility changes
+    React.useEffect(() => {
+      if (!show && !alwaysVisible) {
+        setFocusedIndex(-1)
+      }
+    }, [show, alwaysVisible])
 
     const handleDelete = React.useCallback(() => {
+      if (isDeleting) return // Prevent double-clicks
       setIsDeleting(true)
 
-      // Show feedback toast
-      toast?.info('Message deleted')
-
-      // Delay actual delete to allow animation
-      setTimeout(() => {
+      // Delay actual delete to allow animation, with cleanup
+      deleteTimeoutRef.current = setTimeout(() => {
+        deleteTimeoutRef.current = null
         onDelete?.(messageId)
       }, 300)
-    }, [messageId, onDelete, toast])
+    }, [messageId, onDelete, isDeleting])
 
-    // Keyboard navigation handler for arrow keys within the actions toolbar
-    const handleKeyDown = React.useCallback((e: React.KeyboardEvent) => {
-      const container = actionsRef.current
-      if (!container) return
+    // Toast handler for DeleteButton
+    const handleDeleteToast = React.useCallback(
+      (message: string) => {
+        toast?.info(message)
+      },
+      [toast]
+    )
 
-      // Ensure Enter/Space activate the currently focused button.
-      // This is defensive: some environments don't consistently trigger the native
-      // "click-on-enter" behavior for custom button compositions.
-      if (e.key === 'Enter' || e.key === ' ') {
-        const active = document.activeElement as HTMLElement | null
-        if (
-          active &&
-          container.contains(active) &&
-          active.tagName === 'BUTTON'
-        ) {
-          e.preventDefault()
-          ;(active as HTMLButtonElement).click()
-          return
-        }
-      }
-
-      const buttons = Array.from(
-        container.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
-      )
-      const currentIndex = buttons.indexOf(
-        document.activeElement as HTMLButtonElement
-      )
-
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault()
-        const nextIndex = (currentIndex + 1) % buttons.length
-        buttons[nextIndex]?.focus()
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault()
-        const prevIndex = (currentIndex - 1 + buttons.length) % buttons.length
-        buttons[prevIndex]?.focus()
-      } else if (e.key === 'Home') {
-        e.preventDefault()
-        buttons[0]?.focus()
-      } else if (e.key === 'End') {
-        e.preventDefault()
-        buttons[buttons.length - 1]?.focus()
-      }
+    const handleThumbsDown = React.useCallback(() => {
+      setFeedbackDialogOpen(true)
     }, [])
 
-    // Don't render if not shown and not always visible
+    const handleFeedbackSubmit = React.useCallback(
+      (comment: string) => {
+        onFeedback('down', comment)
+        toast?.info('Thanks for your feedback!')
+      },
+      [onFeedback, toast]
+    )
+
+    const handleFeedbackSkip = React.useCallback(() => {
+      onFeedback('down')
+    }, [onFeedback])
+
+    const handleThumbsUp = React.useCallback(() => {
+      onFeedback('up')
+    }, [onFeedback])
+
+    const handleRegenerate = React.useCallback(() => {
+      onRegenerate?.(messageId)
+      // Note: Toast is handled by parent component (clarity-chat.tsx) to avoid
+      // double toasts when loading guard blocks the action
+    }, [messageId, onRegenerate])
+
+    const handleStopGeneration = React.useCallback(() => {
+      onStopGeneration?.()
+      toast?.info('Generation stopped')
+    }, [onStopGeneration, toast])
+
+    // Get all focusable buttons in the toolbar
+    const getButtons = React.useCallback(() => {
+      const container = actionsRef.current
+      if (!container) return []
+      return Array.from(
+        container.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
+      )
+    }, [])
+
+    // Keyboard navigation handler for arrow keys within the actions toolbar
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent) => {
+        const buttons = getButtons()
+        if (buttons.length === 0) return
+
+        const currentIndex = buttons.indexOf(
+          document.activeElement as HTMLButtonElement
+        )
+
+        let newIndex = currentIndex
+
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'ArrowDown':
+            e.preventDefault()
+            newIndex =
+              currentIndex === -1 ? 0 : (currentIndex + 1) % buttons.length
+            break
+          case 'ArrowLeft':
+          case 'ArrowUp':
+            e.preventDefault()
+            newIndex =
+              currentIndex === -1
+                ? buttons.length - 1
+                : (currentIndex - 1 + buttons.length) % buttons.length
+            break
+          case 'Home':
+            e.preventDefault()
+            newIndex = 0
+            break
+          case 'End':
+            e.preventDefault()
+            newIndex = buttons.length - 1
+            break
+          case 'Enter':
+          case ' ':
+            return
+          default:
+            return
+        }
+
+        if (newIndex !== currentIndex && buttons[newIndex]) {
+          buttons[newIndex].focus()
+          setFocusedIndex(newIndex)
+        }
+      },
+      [getButtons]
+    )
+
+    // Handle focus entering the toolbar
+    const handleFocus = React.useCallback(
+      (e: React.FocusEvent) => {
+        if (e.target === actionsRef.current) {
+          const buttons = getButtons()
+          if (buttons.length > 0) {
+            const indexToFocus = focusedIndex >= 0 ? focusedIndex : 0
+            buttons[indexToFocus]?.focus()
+            setFocusedIndex(indexToFocus)
+          }
+        }
+      },
+      [getButtons, focusedIndex]
+    )
+
     if (!show && !alwaysVisible) return null
 
     return (
-      <AnimatePresence>
-        <motion.div
-          ref={actionsRef}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{
-            opacity: alwaysVisible || show ? 1 : 0.6,
-            y: 0,
-          }}
-          exit={{ opacity: 0, y: 10 }}
-          transition={{
-            duration: ANIMATION_DURATION.fast / 1000,
-            ease: EASING_FRAMER.out,
-          }}
-          role="toolbar"
-          aria-label="Message actions"
-          onKeyDown={handleKeyDown}
-          className="flex items-center gap-1.5 overflow-hidden mt-3"
-        >
-          {/* Copy button - icon only, staggered animation */}
+      <>
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.05, duration: durations.normal }}
-          >
-            <CopyButton
-              text={messageContent}
-              size="icon"
-              iconOnly
-              className="h-7 w-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-accent/50 transition-colors"
-            />
-          </motion.div>
-
-          {/* Thumbs Up with Confetti - cleaner, smaller */}
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1, duration: durations.normal }}
-          >
-            <motion.div
-              whileHover={{
-                scale: 1.15,
-                rotate: feedbackGiven === 'up' ? 0 : -12,
-              }}
-              whileTap={{ scale: 0.85 }}
-              animate={
-                feedbackGiven === 'up'
-                  ? {
-                      scale: [1, 1.2, 1],
-                      rotate: [0, -15, 15, -15, 0],
-                    }
-                  : {}
-              }
-              transition={{ duration: durations.slow }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onFeedback('up')}
-                onFocus={(e) => {
-                  lastFocusedButtonRef.current = e.currentTarget
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    onFeedback('up')
-                  }
-                }}
-                onKeyUp={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    onFeedback('up')
-                  }
-                }}
-                className={cn(
-                  'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
-                  'hover:bg-accent/50',
-                  feedbackGiven === 'up' &&
-                    'text-success bg-success/10 hover:bg-success/15'
-                )}
-                aria-label="Good response"
-              >
-                <ThumbsUpIcon size={14} />
-              </Button>
-            </motion.div>
-
-            <ConfettiAnimation show={showConfetti} />
-          </motion.div>
-
-          {/* Thumbs Down - cleaner, smaller */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15, duration: durations.normal }}
-            whileHover={{
-              scale: 1.15,
-              rotate: feedbackGiven === 'down' ? 0 : 12,
+            ref={actionsRef}
+            variants={containerVariants}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{
+              opacity: alwaysVisible || show ? 1 : 0.6,
+              y: 0,
             }}
-            whileTap={{ scale: 0.85 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{
+              duration: ANIMATION_DURATION.fast / 1000,
+              ease: EASING_FRAMER.out,
+            }}
+            role="toolbar"
+            aria-label="Message actions"
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
+            className="flex items-center gap-1 overflow-hidden mt-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
           >
-            <motion.div
-              animate={
-                feedbackGiven === 'down'
-                  ? {
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 15, -15, 15, 0],
-                    }
-                  : {}
-              }
-              transition={{ duration: durations.slow }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onFeedback('down')}
-                onFocus={(e) => {
-                  lastFocusedButtonRef.current = e.currentTarget
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    onFeedback('down')
-                  }
-                }}
-                onKeyUp={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    onFeedback('down')
-                  }
-                }}
-                className={cn(
-                  'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
-                  'hover:bg-accent/50',
-                  feedbackGiven === 'down' &&
-                    'text-destructive bg-destructive/10 hover:bg-destructive/15'
-                )}
-                aria-label="Poor response"
-              >
-                <ThumbsDownIcon size={14} />
-              </Button>
-            </motion.div>
-          </motion.div>
-
-          {hasError && onRetry && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: durations.normal }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onRetry}
-                className="h-7 w-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-accent/50 transition-colors"
-                aria-label="Retry"
-              >
-                <RefreshIcon size={14} />
-              </Button>
-            </motion.div>
-          )}
-
-          {/* Edit button for user messages - icon only */}
-          {isUserMessage && onEdit && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: durations.normal }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onEdit(messageId)}
-                className="h-7 w-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-accent/50 transition-colors"
-                aria-label="Edit message"
-              >
-                <EditIcon size={14} />
-              </Button>
-            </motion.div>
-          )}
-
-          {/* Regenerate button for assistant messages - icon only */}
-          {isAssistantMessage && onRegenerate && !hasError && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.25, duration: durations.normal }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onRegenerate(messageId)}
-                className="h-7 w-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-accent/50 transition-colors"
-                aria-label="Regenerate response"
-              >
-                <RefreshIcon size={14} />
-              </Button>
-            </motion.div>
-          )}
-
-          {/* Delete button - icon only with delete animation */}
-          {onDelete && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ delay: 0.3, duration: durations.normal }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className={cn(
-                  'h-7 w-7 rounded-lg text-gray-400 hover:text-destructive hover:bg-destructive/10 transition-colors',
-                  isDeleting && 'opacity-50 cursor-not-allowed'
-                )}
-                aria-label="Delete message"
-              >
+            {/* Stop button - shown during streaming for assistant messages */}
+            {isStreaming && isAssistantMessage && onStopGeneration && (
+              <Tooltip content="Stop generating" side="top" delay={100}>
                 <motion.div
-                  animate={
-                    isDeleting
-                      ? {
-                          rotate: [0, 10, -10, 10, 0],
-                          scale: [1, 0.9, 0.9, 0.9, 0.8],
-                        }
-                      : {}
-                  }
-                  transition={{ duration: durations.moderate }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: durations.fast }}
                 >
-                  <TrashIcon size={14} />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleStopGeneration}
+                    className="h-8 px-3 gap-1.5 rounded-lg font-medium"
+                    aria-label="Stop generating"
+                  >
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{
+                        duration: durations.slower,
+                        repeat: Infinity,
+                      }}
+                    >
+                      <StopIcon size={14} />
+                    </motion.div>
+                    <span>Stop</span>
+                  </Button>
                 </motion.div>
-              </Button>
-            </motion.div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+              </Tooltip>
+            )}
+
+            {/* Copy button - always shown when not streaming */}
+            {!isStreaming && (
+              <motion.div
+                variants={buttonVariants}
+                initial="initial"
+                animate="animate"
+                transition={{ delay: 0.02, duration: durations.fast }}
+              >
+                <CopyButton
+                  text={messageContent}
+                  size="icon"
+                  iconOnly
+                  showTooltip
+                  tooltipText="Copy message"
+                  className="h-8 w-8 rounded-lg text-muted-foreground/70 hover:text-gray-600 hover:bg-accent/50 transition-all"
+                />
+              </motion.div>
+            )}
+
+            {/* User message actions: Edit, Delete */}
+            {isUserMessage && !isStreaming && (
+              <>
+                {onEdit && (
+                  <ActionButton
+                    ref={editButtonRef}
+                    onClick={() => onEdit(messageId)}
+                    icon={<EditIcon size={15} />}
+                    label="Edit message"
+                    tooltipContent="Edit message"
+                    hoverClassName="hover:text-primary hover:bg-primary/10"
+                    delay={0.06}
+                  />
+                )}
+
+                {onDelete && (
+                  <DeleteButton
+                    onDelete={handleDelete}
+                    isDeleting={isDeleting}
+                    delay={0.1}
+                    showConfirmation={true}
+                    messageType="user"
+                    showToast={handleDeleteToast}
+                  />
+                )}
+              </>
+            )}
+
+            {/* Assistant message actions: Feedback, Regenerate, Delete */}
+            {isAssistantMessage && !isStreaming && (
+              <>
+                {/* Thumbs Up with Confetti */}
+                <div className="relative">
+                  <Tooltip
+                    content={
+                      feedbackGiven === 'up'
+                        ? 'You liked this'
+                        : 'Good response'
+                    }
+                    side="top"
+                    delay={300}
+                  >
+                    <motion.div
+                      variants={buttonVariants}
+                      initial="initial"
+                      animate="animate"
+                      whileHover={{
+                        scale: 1.1,
+                        rotate: feedbackGiven === 'up' ? 0 : -8,
+                      }}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{ delay: 0.06, duration: durations.fast }}
+                    >
+                      <motion.div
+                        animate={
+                          feedbackGiven === 'up'
+                            ? {
+                                scale: [1, 1.25, 1],
+                                rotate: [0, -12, 12, -8, 0],
+                              }
+                            : {}
+                        }
+                        transition={{ duration: durations.slow }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleThumbsUp}
+                          className={cn(
+                            'h-8 w-8 rounded-lg transition-all text-muted-foreground/70',
+                            'hover:text-success hover:bg-success/10',
+                            feedbackGiven === 'up' &&
+                              'text-success bg-success/15 hover:bg-success/20'
+                          )}
+                          aria-label="Good response"
+                          aria-pressed={feedbackGiven === 'up'}
+                        >
+                          <ThumbsUpIcon size={15} />
+                        </Button>
+                      </motion.div>
+                    </motion.div>
+                  </Tooltip>
+                  <ConfettiAnimation show={showConfetti} />
+                </div>
+
+                {/* Thumbs Down */}
+                <Tooltip
+                  content={
+                    feedbackGiven === 'down'
+                      ? 'You disliked this'
+                      : 'Poor response'
+                  }
+                  side="top"
+                  delay={300}
+                >
+                  <motion.div
+                    variants={buttonVariants}
+                    initial="initial"
+                    animate="animate"
+                    whileHover={{
+                      scale: 1.1,
+                      rotate: feedbackGiven === 'down' ? 0 : 8,
+                    }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ delay: 0.1, duration: durations.fast }}
+                  >
+                    <motion.div
+                      animate={
+                        feedbackGiven === 'down'
+                          ? {
+                              scale: [1, 1.15, 1],
+                              rotate: [0, 12, -12, 8, 0],
+                            }
+                          : {}
+                      }
+                      transition={{ duration: durations.slow }}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleThumbsDown}
+                        className={cn(
+                          'h-8 w-8 rounded-lg transition-all text-muted-foreground/70',
+                          'hover:text-destructive hover:bg-destructive/10',
+                          feedbackGiven === 'down' &&
+                            'text-destructive bg-destructive/15 hover:bg-destructive/20'
+                        )}
+                        aria-label="Poor response"
+                        aria-pressed={feedbackGiven === 'down'}
+                      >
+                        <ThumbsDownIcon size={15} />
+                      </Button>
+                    </motion.div>
+                  </motion.div>
+                </Tooltip>
+
+                {/* Regenerate button */}
+                {onRegenerate && !hasError && (
+                  <Tooltip content="Regenerate response" side="top" delay={300}>
+                    <motion.div
+                      variants={buttonVariants}
+                      initial="initial"
+                      animate="animate"
+                      whileHover={{ scale: 1.1, rotate: -15 }}
+                      whileTap={{ scale: 0.9, rotate: -30 }}
+                      transition={{ delay: 0.14, duration: durations.fast }}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleRegenerate}
+                        className="h-8 w-8 rounded-lg text-muted-foreground/70 hover:text-primary hover:bg-primary/10 transition-all"
+                        aria-label="Regenerate response"
+                      >
+                        <RefreshIcon size={15} />
+                      </Button>
+                    </motion.div>
+                  </Tooltip>
+                )}
+
+                {/* Retry button - shown on error */}
+                {hasError && onRetry && (
+                  <Tooltip content="Retry" side="top" delay={300}>
+                    <motion.div
+                      variants={buttonVariants}
+                      initial="initial"
+                      animate="animate"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{ delay: 0.14, duration: durations.fast }}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={onRetry}
+                        className="h-8 w-8 rounded-lg text-muted-foreground/70 hover:text-warning hover:bg-warning/10 transition-all"
+                        aria-label="Retry"
+                      >
+                        <RefreshIcon size={15} />
+                      </Button>
+                    </motion.div>
+                  </Tooltip>
+                )}
+
+                {/* Delete button */}
+                {onDelete && (
+                  <DeleteButton
+                    onDelete={handleDelete}
+                    isDeleting={isDeleting}
+                    delay={0.18}
+                    showConfirmation={true}
+                    messageType="assistant"
+                    showToast={handleDeleteToast}
+                  />
+                )}
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Feedback Dialog */}
+        <FeedbackDialog
+          open={feedbackDialogOpen}
+          onOpenChange={setFeedbackDialogOpen}
+          onSubmit={handleFeedbackSubmit}
+          onSkip={handleFeedbackSkip}
+        />
+      </>
     )
   }
 )
