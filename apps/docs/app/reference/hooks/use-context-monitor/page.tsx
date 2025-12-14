@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useContextMonitor - Clarity Chat Components',
-  description: 'Monitor context utilization, efficiency, and get optimization recommendations.',
+  description:
+    'Monitor context utilization, efficiency, and get optimization recommendations.',
 }
 
 const configProps: Prop[] = [
@@ -53,7 +52,8 @@ export default function UseContextMonitorPage() {
         <span className="docs-badge">Hook</span>
         <h1>useContextMonitor</h1>
         <p className="docs-lead">
-          Monitor context utilization, efficiency metrics, and get intelligent optimization recommendations.
+          Monitor context utilization, efficiency metrics, and get intelligent
+          optimization recommendations.
         </p>
       </div>
 
@@ -69,9 +69,7 @@ export default function UseContextMonitorPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Monitor context utilization:
-        </p>
+        <p>Monitor context utilization:</p>
         <CodePlayground
           initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -101,9 +99,7 @@ function ContextMonitor({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Efficiency Metrics</h2>
-        <p>
-          Track information density, recency, and relevance:
-        </p>
+        <p>Track information density, recency, and relevance:</p>
         <CodePlayground
           initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
@@ -128,9 +124,7 @@ function EfficiencyMetrics({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Optimization Recommendations</h2>
-        <p>
-          Get intelligent recommendations for context optimization:
-        </p>
+        <p>Get intelligent recommendations for context optimization:</p>
         <CodePlayground
           initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
@@ -162,9 +156,7 @@ function WithRecommendations({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Context Warnings</h2>
-        <p>
-          Handle context warnings with callbacks:
-        </p>
+        <p>Handle context warnings with callbacks:</p>
         <CodePlayground
           initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
@@ -199,9 +191,7 @@ function WithWarnings({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Context Breakdown</h2>
-        <p>
-          Analyze token usage by category:
-        </p>
+        <p>Analyze token usage by category:</p>
         <CodePlayground
           initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
@@ -234,38 +224,70 @@ function Breakdown({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>utilization</code>: Full context utilization metrics with breakdown and efficiency</li>
-          <li><code>warnings</code>: Array of context warnings with recommendations</li>
-          <li><code>recommendations</code>: Array of optimization recommendations</li>
+          <li>
+            <code>utilization</code>: Full context utilization metrics with
+            breakdown and efficiency
+          </li>
+          <li>
+            <code>warnings</code>: Array of context warnings with
+            recommendations
+          </li>
+          <li>
+            <code>recommendations</code>: Array of optimization recommendations
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Warning Types</h2>
         <ul>
-          <li><strong>utilization</strong>: Context window utilization too high</li>
-          <li><strong>efficiency</strong>: Low information density or relevance</li>
-          <li><strong>staleness</strong>: Context is outdated</li>
-          <li><strong>density</strong>: Too much filler content</li>
+          <li>
+            <strong>utilization</strong>: Context window utilization too high
+          </li>
+          <li>
+            <strong>efficiency</strong>: Low information density or relevance
+          </li>
+          <li>
+            <strong>staleness</strong>: Context is outdated
+          </li>
+          <li>
+            <strong>density</strong>: Too much filler content
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Recommendation Actions</h2>
         <ul>
-          <li><strong>compress</strong>: Compress existing context</li>
-          <li><strong>summarize</strong>: Summarize old messages</li>
-          <li><strong>archive</strong>: Archive old conversation</li>
-          <li><strong>prune</strong>: Remove low-priority content</li>
-          <li><strong>switch-model</strong>: Use a model with larger context window</li>
+          <li>
+            <strong>compress</strong>: Compress existing context
+          </li>
+          <li>
+            <strong>summarize</strong>: Summarize old messages
+          </li>
+          <li>
+            <strong>archive</strong>: Archive old conversation
+          </li>
+          <li>
+            <strong>prune</strong>: Remove low-priority content
+          </li>
+          <li>
+            <strong>switch-model</strong>: Use a model with larger context
+            window
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Enable <code>enableEfficiencyMetrics</code> to track context quality</li>
-          <li>Use <code>enableRecommendations</code> for actionable optimization suggestions</li>
+          <li>
+            Enable <code>enableEfficiencyMetrics</code> to track context quality
+          </li>
+          <li>
+            Use <code>enableRecommendations</code> for actionable optimization
+            suggestions
+          </li>
           <li>Handle warnings with user-friendly notifications</li>
           <li>Monitor breakdown to identify token-heavy categories</li>
           <li>Use recommendations to optimize context before hitting limits</li>
@@ -275,9 +297,22 @@ function Breakdown({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-token-budget-monitor">useTokenBudgetMonitor</a> - Budget monitoring</li>
-          <li><a href="/reference/hooks/use-token-optimization-enhanced">useTokenOptimizationEnhanced</a> - Token optimization</li>
-          <li><a href="/reference/components/token-counter">TokenCounter</a> - Token usage display</li>
+          <li>
+            <a href="/reference/hooks/use-token-budget-monitor">
+              useTokenBudgetMonitor
+            </a>{' '}
+            - Budget monitoring
+          </li>
+          <li>
+            <a href="/reference/hooks/use-token-optimization-enhanced">
+              useTokenOptimizationEnhanced
+            </a>{' '}
+            - Token optimization
+          </li>
+          <li>
+            <a href="/reference/components/token-counter">TokenCounter</a> -
+            Token usage display
+          </li>
         </ul>
       </section>
     </div>

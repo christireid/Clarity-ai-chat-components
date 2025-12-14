@@ -1,32 +1,34 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
-import { fileURLToPath } from "node:url";
+import { fileURLToPath } from 'node:url'
 import type { StorybookConfig } from '@storybook/react-vite'
-import path, { dirname } from 'path';
+import path, { dirname } from 'path'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const config: StorybookConfig = {
   stories: [
-    '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-    '../stories/**/!(GettingStarted|Introduction).mdx',
-    // TODO: Re-enable package stories once duplicates are resolved
-    // Temporarily disabled to fix duplicate story IDs error
-    // '../../../packages/error-handling/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-    // '../../../packages/react/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    // IMPORTANT:
+    // - Story sources in this repo are TypeScript.
+    // - The `stories/` directory also contains compiled `.js` artifacts (and maps/types) which
+    //   MUST NOT be loaded by Storybook or you'll get duplicate story IDs (TSX + JS).
+    '../stories/**/*.stories.@(ts|tsx)',
+
+    // Docs pages (MDX)
+    '../stories/**/*.mdx',
   ],
 
   staticDirs: ['../public'],
 
   addons: [
-    getAbsolutePath("@storybook/addon-links"),
-    getAbsolutePath("@storybook/addon-a11y"),
+    getAbsolutePath('@storybook/addon-links'),
+    getAbsolutePath('@storybook/addon-a11y'),
     // getAbsolutePath("storybook-dark-mode"),
-    getAbsolutePath("@storybook/addon-docs")
+    getAbsolutePath('@storybook/addon-docs'),
   ],
 
   framework: {
-    name: getAbsolutePath("@storybook/react-vite"),
+    name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
 
@@ -40,8 +42,10 @@ const config: StorybookConfig = {
       propFilter: (prop) => {
         // Filter out props from node_modules except our packages
         if (prop.parent) {
-          return !prop.parent.fileName.includes('node_modules') ||
+          return (
+            !prop.parent.fileName.includes('node_modules') ||
             prop.parent.fileName.includes('@clarity-chat')
+          )
         }
         return true
       },
@@ -61,27 +65,108 @@ const config: StorybookConfig = {
     config.resolve = config.resolve || {}
     const existingAlias = Array.isArray(config.resolve.alias)
       ? config.resolve.alias
-      : Object.entries(config.resolve.alias || {}).map(([find, replacement]) => ({
-          find,
-          replacement,
-        }))
+      : Object.entries(config.resolve.alias || {}).map(
+          ([find, replacement]) => ({
+            find,
+            replacement,
+          })
+        )
 
     config.resolve.alias = [
-      { find: /^@clarity-chat\/react\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/react/src/$1') },
-      { find: '@clarity-chat/react', replacement: path.resolve(__dirname, '../../../packages/react/src/index.ts') },
-      { find: /^@clarity-chat\/primitives\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/primitives/src/$1') },
-      { find: '@clarity-chat/primitives', replacement: path.resolve(__dirname, '../../../packages/primitives/src/index.ts') },
-      { find: /^@clarity-chat\/types\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/types/src/$1') },
-      { find: '@clarity-chat/types', replacement: path.resolve(__dirname, '../../../packages/types/src/index.ts') },
-      { find: /^@clarity-chat\/error-handling\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/error-handling/src/$1') },
-      { find: '@clarity-chat/error-handling', replacement: path.resolve(__dirname, '../../../packages/error-handling/src/index.ts') },
+      {
+        find: /^@clarity-chat\/react\/(.+)$/,
+        replacement: path.resolve(__dirname, '../../../packages/react/src/$1'),
+      },
+      {
+        find: '@clarity-chat/react',
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/react/src/index.ts'
+        ),
+      },
+      {
+        find: /^@clarity-chat\/primitives\/(.+)$/,
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/primitives/src/$1'
+        ),
+      },
+      {
+        find: '@clarity-chat/primitives',
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/primitives/src/index.ts'
+        ),
+      },
+      {
+        find: /^@clarity-chat\/types\/(.+)$/,
+        replacement: path.resolve(__dirname, '../../../packages/types/src/$1'),
+      },
+      {
+        find: '@clarity-chat/types',
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/types/src/index.ts'
+        ),
+      },
+      {
+        find: /^@clarity-chat\/license\/(.+)$/,
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/license/src/$1'
+        ),
+      },
+      {
+        find: '@clarity-chat/license',
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/license/src/index.ts'
+        ),
+      },
+      {
+        find: /^@clarity-chat\/memory\/(.+)$/,
+        replacement: path.resolve(__dirname, '../../../packages/memory/src/$1'),
+      },
+      {
+        find: '@clarity-chat/memory',
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/memory/src/index.ts'
+        ),
+      },
+      {
+        find: /^@clarity-chat\/utils\/(.+)$/,
+        replacement: path.resolve(__dirname, '../../../packages/utils/src/$1'),
+      },
+      {
+        find: '@clarity-chat/utils',
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/utils/src/index.ts'
+        ),
+      },
+      {
+        find: /^@clarity-chat\/error-handling\/(.+)$/,
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/error-handling/src/$1'
+        ),
+      },
+      {
+        find: '@clarity-chat/error-handling',
+        replacement: path.resolve(
+          __dirname,
+          '../../../packages/error-handling/src/index.ts'
+        ),
+      },
       ...existingAlias,
     ]
-    
+
     // Configure build options for CSS imports and externals
     config.build = config.build || {}
     config.build.rollupOptions = config.build.rollupOptions || {}
-    config.build.rollupOptions.external = config.build.rollupOptions.external || []
+    config.build.rollupOptions.external =
+      config.build.rollupOptions.external || []
 
     // Vite 7: Need to externalize dependencies properly
     if (Array.isArray(config.build.rollupOptions.external)) {
@@ -98,11 +183,11 @@ const config: StorybookConfig = {
     config.define['process.env'] = JSON.stringify({})
 
     return config
-  }
+  },
 }
 
 export default config
 
 function getAbsolutePath(value: string): any {
-  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)));
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)))
 }

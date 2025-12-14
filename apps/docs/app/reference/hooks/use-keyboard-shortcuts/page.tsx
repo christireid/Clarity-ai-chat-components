@@ -4,11 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useKeyboardShortcuts - Clarity Chat Components',
-  description: 'Hook for managing keyboard shortcuts in your chat application with support for combinations, sequences, and scopes.',
+  description:
+    'Hook for managing keyboard shortcuts in your chat application with support for combinations, sequences, and scopes.',
 }
 
 export default function UseKeyboardShortcutsPage() {
@@ -18,16 +17,18 @@ export default function UseKeyboardShortcutsPage() {
         <span className="docs-badge">Hook</span>
         <h1>useKeyboardShortcuts</h1>
         <p className="docs-lead">
-          Manage keyboard shortcuts with support for key combinations, sequences, and scoped contexts.
+          Manage keyboard shortcuts with support for key combinations,
+          sequences, and scoped contexts.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>useKeyboardShortcuts</code> hook provides a declarative way to handle keyboard shortcuts
-          in your chat application. It supports single keys, key combinations (like Cmd+K), key sequences
-          (like g then i), and scoped contexts to prevent conflicts.
+          The <code>useKeyboardShortcuts</code> hook provides a declarative way
+          to handle keyboard shortcuts in your chat application. It supports
+          single keys, key combinations (like Cmd+K), key sequences (like g then
+          i), and scoped contexts to prevent conflicts.
         </p>
       </section>
 
@@ -75,24 +76,19 @@ render(<ChatWithShortcuts />)`}
 
       <section className="docs-section">
         <h2>Parameters</h2>
-        <ApiTable
-          title="useKeyboardShortcuts(config)"
-          data={shortcutConfig}
-        />
+        <ApiTable title="useKeyboardShortcuts(config)" data={shortcutConfig} />
       </section>
 
       <section className="docs-section">
         <h2>Return Value</h2>
-        <ApiTable
-          title="Return Value"
-          data={returnValue}
-        />
+        <ApiTable title="Return Value" data={returnValue} />
       </section>
 
       <section className="docs-section">
         <h2>Key Sequences</h2>
         <p>
-          Support for multi-key sequences like Vim or Gmail shortcuts. Define sequences with the <code>then</code> keyword.
+          Support for multi-key sequences like Vim or Gmail shortcuts. Define
+          sequences with the <code>then</code> keyword.
         </p>
         <CodePlayground
           initialCode={`function ChatWithSequences() {
@@ -138,8 +134,9 @@ render(<ChatWithSequences />)`}
       <section className="docs-section">
         <h2>Scoped Shortcuts</h2>
         <p>
-          Use scopes to enable/disable shortcuts based on context. This prevents conflicts when the same
-          key has different meanings in different parts of your app.
+          Use scopes to enable/disable shortcuts based on context. This prevents
+          conflicts when the same key has different meanings in different parts
+          of your app.
         </p>
         <CodePlayground
           initialCode={`function ChatWithScopes() {
@@ -239,7 +236,8 @@ render(<ChatWithScopes />)`}
       <section className="docs-section">
         <h2>Preventing Default Behavior</h2>
         <p>
-          Control whether the browser's default behavior should be prevented for each shortcut.
+          Control whether the browser's default behavior should be prevented for
+          each shortcut.
         </p>
         <CodePlayground
           initialCode={`function ChatWithPreventDefault() {
@@ -386,7 +384,8 @@ render(<ChatWithDynamicShortcuts />)`}
       <section className="docs-section">
         <h2>Input Field Handling</h2>
         <p>
-          By default, shortcuts are disabled when typing in input fields. You can customize this behavior.
+          By default, shortcuts are disabled when typing in input fields. You
+          can customize this behavior.
         </p>
         <CodePlayground
           initialCode={`function ChatWithInputHandling() {
@@ -577,12 +576,11 @@ render(<ChatWithHelpPanel />)`}
 
       <section className="docs-section">
         <h2>Advanced Patterns</h2>
-        
+
         <h3>Chord Progressions</h3>
-        <p>
-          Chain multiple shortcuts together to create complex interactions.
-        </p>
-        <pre><code>{`// Emacs-style chord progressions
+        <p>Chain multiple shortcuts together to create complex interactions.</p>
+        <pre>
+          <code>{`// Emacs-style chord progressions
 useKeyboardShortcuts({
   'ctrl+x then ctrl+c': () => quit(),
   'ctrl+x then ctrl+s': () => save(),
@@ -596,13 +594,13 @@ useKeyboardShortcuts({
   'g then s': () => goToSent(),
   'g then t': () => goToStarred(),
   'g then d': () => goToDrafts(),
-})`}</code></pre>
+})`}</code>
+        </pre>
 
         <h3>Conditional Shortcuts</h3>
-        <p>
-          Enable shortcuts only when specific conditions are met.
-        </p>
-        <pre><code>{`function ChatWithConditionalShortcuts() {
+        <p>Enable shortcuts only when specific conditions are met.</p>
+        <pre>
+          <code>{`function ChatWithConditionalShortcuts() {
   const [hasSelection, setHasSelection] = useState(false)
   const [isOnline, setIsOnline] = useState(true)
 
@@ -624,13 +622,15 @@ useKeyboardShortcuts({
   })
 
   return <Chat />
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Priority and Conflicts</h3>
         <p>
           Handle conflicts when multiple components register the same shortcut.
         </p>
-        <pre><code>{`// Lower priority (runs first)
+        <pre>
+          <code>{`// Lower priority (runs first)
 useKeyboardShortcuts({
   'cmd+k': () => globalSearch()
 }, {
@@ -648,27 +648,29 @@ useKeyboardShortcuts({
   }
 }, {
   priority: 10
-})`}</code></pre>
+})`}</code>
+        </pre>
 
         <h3>Platform-Specific Shortcuts</h3>
-        <p>
-          Automatically adapt shortcuts for different operating systems.
-        </p>
-        <pre><code>{`useKeyboardShortcuts({
+        <p>Automatically adapt shortcuts for different operating systems.</p>
+        <pre>
+          <code>{`useKeyboardShortcuts({
   'mod+k': () => search(), // Cmd on Mac, Ctrl on Windows/Linux
   'mod+shift+p': () => commandPalette(),
   'alt+left': () => goBack(),
   'alt+right': () => goForward()
 }, {
   autoConvertMod: true // converts 'mod' based on platform
-})`}</code></pre>
+})`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Integration Examples</h2>
 
         <h3>With Command Palette</h3>
-        <pre><code>{`import { useKeyboardShortcuts } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { useKeyboardShortcuts } from '@clarity-chat/react'
 import { CommandPalette } from '@clarity-chat/react'
 
 function ChatWithCommandPalette() {
@@ -689,10 +691,12 @@ function ChatWithCommandPalette() {
       />
     </>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>With Modal Dialogs</h3>
-        <pre><code>{`function ChatWithModals() {
+        <pre>
+          <code>{`function ChatWithModals() {
   const [modalStack, setModalStack] = useState([])
 
   // Global shortcuts (always active)
@@ -710,10 +714,12 @@ function ChatWithCommandPalette() {
   })
 
   return <Chat />
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>With Undo/Redo</h3>
-        <pre><code>{`import { useKeyboardShortcuts } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { useKeyboardShortcuts } from '@clarity-chat/react'
 import { useUndoRedo } from '@clarity-chat/react'
 
 function ChatWithUndoRedo() {
@@ -728,84 +734,121 @@ function ChatWithUndoRedo() {
   })
 
   return <Chat />
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
-        
+
         <Callout type="tip" title="Discoverability">
-          Always provide a way for users to discover available shortcuts. Consider adding:
+          Always provide a way for users to discover available shortcuts.
+          Consider adding:
           <ul>
-            <li>A help panel (press <kbd>?</kbd> to show)</li>
+            <li>
+              A help panel (press <kbd>?</kbd> to show)
+            </li>
             <li>Tooltips with keyboard hints</li>
             <li>Visual keyboard shortcut indicators next to actions</li>
           </ul>
         </Callout>
 
         <Callout type="warning" title="Avoid Conflicts">
-          Be careful not to override browser or system shortcuts. Common conflicts:
+          Be careful not to override browser or system shortcuts. Common
+          conflicts:
           <ul>
-            <li><kbd>Cmd+W</kbd> - Close tab (don't override)</li>
-            <li><kbd>Cmd+T</kbd> - New tab (don't override)</li>
-            <li><kbd>Cmd+R</kbd> - Refresh (use with caution)</li>
-            <li><kbd>Cmd+Q</kbd> - Quit app (don't override)</li>
+            <li>
+              <kbd>Cmd+W</kbd> - Close tab (don't override)
+            </li>
+            <li>
+              <kbd>Cmd+T</kbd> - New tab (don't override)
+            </li>
+            <li>
+              <kbd>Cmd+R</kbd> - Refresh (use with caution)
+            </li>
+            <li>
+              <kbd>Cmd+Q</kbd> - Quit app (don't override)
+            </li>
           </ul>
         </Callout>
 
         <Callout type="info" title="Platform Consistency">
           Follow platform conventions:
           <ul>
-            <li><strong>macOS:</strong> Use Cmd for primary actions</li>
-            <li><strong>Windows/Linux:</strong> Use Ctrl for primary actions</li>
-            <li><strong>Cross-platform:</strong> Use <code>mod</code> to automatically adapt</li>
+            <li>
+              <strong>macOS:</strong> Use Cmd for primary actions
+            </li>
+            <li>
+              <strong>Windows/Linux:</strong> Use Ctrl for primary actions
+            </li>
+            <li>
+              <strong>Cross-platform:</strong> Use <code>mod</code> to
+              automatically adapt
+            </li>
           </ul>
         </Callout>
 
         <h3>Naming Conventions</h3>
         <ul>
-          <li><strong>Lowercase modifiers:</strong> <code>cmd</code>, <code>ctrl</code>, <code>shift</code>, <code>alt</code></li>
-          <li><strong>Use + for combinations:</strong> <code>cmd+k</code>, <code>ctrl+shift+d</code></li>
-          <li><strong>Use "then" for sequences:</strong> <code>g then i</code>, <code>ctrl+x then ctrl+c</code></li>
-          <li><strong>Special keys:</strong> <code>esc</code>, <code>enter</code>, <code>space</code>, <code>tab</code></li>
+          <li>
+            <strong>Lowercase modifiers:</strong> <code>cmd</code>,{' '}
+            <code>ctrl</code>, <code>shift</code>, <code>alt</code>
+          </li>
+          <li>
+            <strong>Use + for combinations:</strong> <code>cmd+k</code>,{' '}
+            <code>ctrl+shift+d</code>
+          </li>
+          <li>
+            <strong>Use "then" for sequences:</strong> <code>g then i</code>,{' '}
+            <code>ctrl+x then ctrl+c</code>
+          </li>
+          <li>
+            <strong>Special keys:</strong> <code>esc</code>, <code>enter</code>,{' '}
+            <code>space</code>, <code>tab</code>
+          </li>
         </ul>
 
         <h3>Performance Tips</h3>
         <ul>
-          <li>Shortcuts are automatically cleaned up when components unmount</li>
+          <li>
+            Shortcuts are automatically cleaned up when components unmount
+          </li>
           <li>Use scoped shortcuts to reduce the number of active listeners</li>
-          <li>Enable/disable shortcuts based on context to improve performance</li>
+          <li>
+            Enable/disable shortcuts based on context to improve performance
+          </li>
           <li>Avoid registering hundreds of shortcuts simultaneously</li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Accessibility</h2>
-        
+
         <h3>Screen Reader Support</h3>
-        <p>
-          Ensure keyboard shortcuts are announced to screen reader users:
-        </p>
-        <pre><code>{`<button aria-keyshortcuts="Control+K">
+        <p>Ensure keyboard shortcuts are announced to screen reader users:</p>
+        <pre>
+          <code>{`<button aria-keyshortcuts="Control+K">
   Search
   <span className="kbd">Ctrl+K</span>
-</button>`}</code></pre>
+</button>`}</code>
+        </pre>
 
         <h3>Focus Management</h3>
         <p>
-          Shortcuts should respect focus states and not interfere with screen reader navigation:
+          Shortcuts should respect focus states and not interfere with screen
+          reader navigation:
         </p>
-        <pre><code>{`useKeyboardShortcuts({
+        <pre>
+          <code>{`useKeyboardShortcuts({
   'cmd+k': () => search()
 }, {
   enableInInput: false, // Don't interfere with form inputs
   respectFocusTraps: true // Don't work in modal focus traps
-})`}</code></pre>
+})`}</code>
+        </pre>
 
         <h3>Alternative Actions</h3>
-        <p>
-          Always provide mouse/touch alternatives to keyboard shortcuts:
-        </p>
+        <p>Always provide mouse/touch alternatives to keyboard shortcuts:</p>
         <ul>
           <li>Buttons for critical actions</li>
           <li>Menu items with shortcuts shown</li>
@@ -815,7 +858,8 @@ function ChatWithUndoRedo() {
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { useKeyboardShortcuts, KeyboardShortcutConfig } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { useKeyboardShortcuts, KeyboardShortcutConfig } from '@clarity-chat/react'
 
 interface ShortcutMap {
   [key: string]: (event: KeyboardEvent) => boolean | void
@@ -841,7 +885,8 @@ function useKeyboardShortcuts(
   disable: () => void
   enable: () => void
   isEnabled: boolean
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -874,96 +919,103 @@ const shortcutConfig = [
     name: 'shortcuts',
     type: 'ShortcutMap',
     required: true,
-    description: 'Object mapping keyboard shortcuts to handler functions. Keys are shortcut strings (e.g., "cmd+k"), values are handler functions that receive the keyboard event.'
+    description:
+      'Object mapping keyboard shortcuts to handler functions. Keys are shortcut strings (e.g., "cmd+k"), values are handler functions that receive the keyboard event.',
   },
   {
     name: 'options',
     type: 'ShortcutOptions',
     required: false,
-    description: 'Configuration options for shortcut behavior'
+    description: 'Configuration options for shortcut behavior',
   },
   {
     name: 'options.enabled',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'Whether shortcuts are enabled. Use for conditional shortcuts.'
+    description:
+      'Whether shortcuts are enabled. Use for conditional shortcuts.',
   },
   {
     name: 'options.scoped',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'If true, shortcuts only work when this specific component tree is active.'
+    description:
+      'If true, shortcuts only work when this specific component tree is active.',
   },
   {
     name: 'options.enableInInput',
     type: 'boolean | "modifiers-only"',
     required: false,
     default: 'false',
-    description: 'Whether shortcuts work when typing in input fields. "modifiers-only" allows shortcuts with Cmd/Ctrl but not single keys.'
+    description:
+      'Whether shortcuts work when typing in input fields. "modifiers-only" allows shortcuts with Cmd/Ctrl but not single keys.',
   },
   {
     name: 'options.preventDefault',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'Whether to prevent default browser behavior for shortcuts.'
+    description: 'Whether to prevent default browser behavior for shortcuts.',
   },
   {
     name: 'options.sequenceTimeout',
     type: 'number',
     required: false,
     default: '800',
-    description: 'Milliseconds to wait between keys in a sequence (e.g., "g then i").'
+    description:
+      'Milliseconds to wait between keys in a sequence (e.g., "g then i").',
   },
   {
     name: 'options.priority',
     type: 'number',
     required: false,
     default: '0',
-    description: 'Priority level for handling conflicts. Higher priority shortcuts run first.'
+    description:
+      'Priority level for handling conflicts. Higher priority shortcuts run first.',
   },
   {
     name: 'options.autoConvertMod',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'If true, "mod" automatically converts to Cmd on Mac, Ctrl on Windows/Linux.'
+    description:
+      'If true, "mod" automatically converts to Cmd on Mac, Ctrl on Windows/Linux.',
   },
   {
     name: 'options.respectFocusTraps',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'If true, shortcuts are disabled inside modal focus traps.'
-  }
+    description: 'If true, shortcuts are disabled inside modal focus traps.',
+  },
 ]
 
 const returnValue = [
   {
     name: 'register',
     type: '(key: string, handler: Function) => void',
-    description: 'Dynamically register a new shortcut'
+    description: 'Dynamically register a new shortcut',
   },
   {
     name: 'unregister',
     type: '(key: string) => void',
-    description: 'Remove a registered shortcut'
+    description: 'Remove a registered shortcut',
   },
   {
     name: 'disable',
     type: '() => void',
-    description: 'Temporarily disable all shortcuts'
+    description: 'Temporarily disable all shortcuts',
   },
   {
     name: 'enable',
     type: '() => void',
-    description: 'Re-enable previously disabled shortcuts'
+    description: 'Re-enable previously disabled shortcuts',
   },
   {
     name: 'isEnabled',
     type: 'boolean',
-    description: 'Current enabled state of shortcuts'
-  }
+    description: 'Current enabled state of shortcuts',
+  },
 ]

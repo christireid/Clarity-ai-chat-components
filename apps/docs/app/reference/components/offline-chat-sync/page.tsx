@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'OfflineChatSync - Clarity Chat Components',
-  description: 'Offline-first chat with IndexedDB storage, automatic sync, and pending operation queue.',
+  description:
+    'Offline-first chat with IndexedDB storage, automatic sync, and pending operation queue.',
 }
 
 const props: Prop[] = [
@@ -53,7 +52,8 @@ export default function OfflineChatSyncPage() {
         <span className="docs-badge">Component</span>
         <h1>OfflineChatSync</h1>
         <p className="docs-lead">
-          Offline-first chat with IndexedDB storage, automatic sync when online, pending operation queue, and conflict resolution.
+          Offline-first chat with IndexedDB storage, automatic sync when online,
+          pending operation queue, and conflict resolution.
         </p>
       </div>
 
@@ -69,15 +69,14 @@ export default function OfflineChatSyncPage() {
 
       <Callout type="info">
         <p>
-          <strong>Offline-First:</strong> This component uses IndexedDB to store messages locally and automatically syncs when connection is restored.
+          <strong>Offline-First:</strong> This component uses IndexedDB to store
+          messages locally and automatically syncs when connection is restored.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Enable offline chat with default configuration:
-        </p>
+        <p>Enable offline chat with default configuration:</p>
         <CodePlayground
           initialCode={`import { OfflineChatSync } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -103,9 +102,7 @@ function OfflineChat({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Custom Configuration</h2>
-        <p>
-          Configure storage and sync behavior:
-        </p>
+        <p>Configure storage and sync behavior:</p>
         <CodePlayground
           initialCode={`import { OfflineChatSync } from '@clarity-chat/react'
 
@@ -129,9 +126,7 @@ function ConfiguredOfflineChat({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Sync Status Monitoring</h2>
-        <p>
-          Monitor sync status and show UI feedback:
-        </p>
+        <p>Monitor sync status and show UI feedback:</p>
         <CodePlayground
           initialCode={`import { OfflineChatSync } from '@clarity-chat/react'
 
@@ -167,9 +162,7 @@ function WithStatusIndicator({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Pending Operations</h2>
-        <p>
-          Track and display pending operations:
-        </p>
+        <p>Track and display pending operations:</p>
         <CodePlayground
           initialCode={`import { OfflineChatSync, useOfflineChat } from '@clarity-chat/react'
 
@@ -203,41 +196,80 @@ function WithPendingOps({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Sync Status</h2>
         <ul>
-          <li><strong>online</strong>: Connected and syncing normally</li>
-          <li><strong>offline</strong>: No connection, storing locally</li>
-          <li><strong>syncing</strong>: Currently syncing pending operations</li>
-          <li><strong>error</strong>: Sync error occurred, will retry</li>
+          <li>
+            <strong>online</strong>: Connected and syncing normally
+          </li>
+          <li>
+            <strong>offline</strong>: No connection, storing locally
+          </li>
+          <li>
+            <strong>syncing</strong>: Currently syncing pending operations
+          </li>
+          <li>
+            <strong>error</strong>: Sync error occurred, will retry
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Configuration Options</h2>
         <ul>
-          <li><code>dbName</code>: IndexedDB database name (default: 'clarity-chat-offline')</li>
-          <li><code>storeName</code>: Object store name (default: 'messages')</li>
-          <li><code>maxMessages</code>: Maximum messages to store (default: 1000)</li>
-          <li><code>maxPending</code>: Maximum pending operations (default: 100)</li>
-          <li><code>maxRetries</code>: Maximum retry attempts (default: 3)</li>
-          <li><code>syncInterval</code>: Sync interval in milliseconds (default: 30000)</li>
+          <li>
+            <code>dbName</code>: IndexedDB database name (default:
+            'clarity-chat-offline')
+          </li>
+          <li>
+            <code>storeName</code>: Object store name (default: 'messages')
+          </li>
+          <li>
+            <code>maxMessages</code>: Maximum messages to store (default: 1000)
+          </li>
+          <li>
+            <code>maxPending</code>: Maximum pending operations (default: 100)
+          </li>
+          <li>
+            <code>maxRetries</code>: Maximum retry attempts (default: 3)
+          </li>
+          <li>
+            <code>syncInterval</code>: Sync interval in milliseconds (default:
+            30000)
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Set appropriate <code>maxMessages</code> based on storage limits</li>
-          <li>Monitor <code>onStatusChange</code> to show offline indicators</li>
-          <li>Handle <code>onSyncError</code> to show error messages</li>
-          <li>Use <code>onSyncComplete</code> to update UI after sync</li>
-          <li>Set reasonable <code>syncInterval</code> to balance performance and freshness</li>
+          <li>
+            Set appropriate <code>maxMessages</code> based on storage limits
+          </li>
+          <li>
+            Monitor <code>onStatusChange</code> to show offline indicators
+          </li>
+          <li>
+            Handle <code>onSyncError</code> to show error messages
+          </li>
+          <li>
+            Use <code>onSyncComplete</code> to update UI after sync
+          </li>
+          <li>
+            Set reasonable <code>syncInterval</code> to balance performance and
+            freshness
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-offline-chat">useOfflineChat</a> - Offline chat hook</li>
-          <li><a href="/cookbook/offline-first-chat">Offline-First Chat Recipe</a> - Complete offline implementation</li>
+          <li>
+            <a href="/reference/hooks/use-offline-chat">useOfflineChat</a> -
+            Offline chat hook
+          </li>
+          <li>
+            <a href="/cookbook/offline-first-chat">Offline-First Chat Recipe</a>{' '}
+            - Complete offline implementation
+          </li>
         </ul>
       </section>
     </div>

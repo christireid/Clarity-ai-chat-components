@@ -2,8 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useDesignTokens Hook | Clarity Chat',
   description:
@@ -19,7 +17,8 @@ export default function UseDesignTokensPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useDesignTokens</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          Provides access to design tokens and helper functions for consistent styling across components.
+          Provides access to design tokens and helper functions for consistent
+          styling across components.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Low-Level (Utilities) •{' '}
@@ -30,16 +29,25 @@ export default function UseDesignTokensPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
-          <li>Building custom components that need consistent styling with Clarity Chat</li>
+          <li>
+            Building custom components that need consistent styling with Clarity
+            Chat
+          </li>
           <li>Creating themed UI elements that respond to dark/light mode</li>
-          <li>When you need programmatic access to shadows, border-radius, or ring styles</li>
+          <li>
+            When you need programmatic access to shadows, border-radius, or ring
+            styles
+          </li>
           <li>Implementing animations with consistent timing and easing</li>
         </ul>
 
         <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
           <li>For simple styling - use Tailwind CSS classes directly</li>
-          <li>For theme switching - use <code className="bg-muted px-2 py-1 rounded">useTheme</code> instead</li>
+          <li>
+            For theme switching - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">useTheme</code> instead
+          </li>
           <li>When tokens are already applied via component props</li>
         </ul>
       </section>
@@ -71,7 +79,9 @@ function StyledCard() {
 
         <div className="space-y-8">
           <div>
-            <h3 className="text-2xl font-semibold mb-3">Return Value (DesignTokens)</h3>
+            <h3 className="text-2xl font-semibold mb-3">
+              Return Value (DesignTokens)
+            </h3>
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-muted">
@@ -84,35 +94,45 @@ function StyledCard() {
                 <tbody className="divide-y">
                   <tr>
                     <td className="p-3 font-mono text-sm">shadows</td>
-                    <td className="p-3 font-mono text-sm">{'{ xs, sm, md, lg, xl, 2xl }'}</td>
+                    <td className="p-3 font-mono text-sm">
+                      {'{ xs, sm, md, lg, xl, 2xl }'}
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Shadow scale classes (e.g., 'shadow-lg').
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">radius</td>
-                    <td className="p-3 font-mono text-sm">{'{ sm, md, lg, xl, full }'}</td>
+                    <td className="p-3 font-mono text-sm">
+                      {'{ sm, md, lg, xl, full }'}
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Border radius classes (e.g., 'rounded-lg').
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">rings</td>
-                    <td className="p-3 font-mono text-sm">{'{ default, focus, selected }'}</td>
+                    <td className="p-3 font-mono text-sm">
+                      {'{ default, focus, selected }'}
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Ring/border classes for focus and selection states.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">opacity</td>
-                    <td className="p-3 font-mono text-sm">{'{ subtle, medium, strong }'}</td>
+                    <td className="p-3 font-mono text-sm">
+                      {'{ subtle, medium, strong }'}
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Opacity modifiers (e.g., '/10', '/30', '/50').
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">duration</td>
-                    <td className="p-3 font-mono text-sm">{'{ instant, fast, normal, slow }'}</td>
+                    <td className="p-3 font-mono text-sm">
+                      {'{ instant, fast, normal, slow }'}
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Animation duration classes.
                     </td>

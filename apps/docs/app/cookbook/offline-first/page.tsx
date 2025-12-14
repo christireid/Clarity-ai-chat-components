@@ -6,11 +6,10 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Offline-First Recipe | Clarity Chat Cookbook',
-  description: 'Learn how to build chat applications that work offline with message queuing and automatic sync.',
+  description:
+    'Learn how to build chat applications that work offline with message queuing and automatic sync.',
 }
 
 export default function OfflineFirstPage() {
@@ -21,14 +20,16 @@ export default function OfflineFirstPage() {
       <h1>Offline-First Recipe</h1>
 
       <p className="lead">
-        Build chat applications that work offline with message queuing, automatic
-        sync, and conflict resolution. Perfect for mobile apps and unreliable networks.
+        Build chat applications that work offline with message queuing,
+        automatic sync, and conflict resolution. Perfect for mobile apps and
+        unreliable networks.
       </p>
 
       <Callout type="info" title="Offline-First Benefits">
         <p>
-          Offline-first apps work even when the network is unavailable. Messages are
-          queued locally and automatically synced when connectivity is restored.
+          Offline-first apps work even when the network is unavailable. Messages
+          are queued locally and automatically synced when connectivity is
+          restored.
         </p>
       </Callout>
 
@@ -37,7 +38,7 @@ export default function OfflineFirstPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Use OfflineChatSync component for automatic offline support:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { OfflineChatSync, ClarityChat } from '@clarity-chat/react'
@@ -61,7 +62,7 @@ function OfflineChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Implement offline support manually:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat } from '@clarity-chat/react'
@@ -164,7 +165,7 @@ function OfflineChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Use IndexedDB for larger storage capacity:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useIndexedDB } from '@clarity-chat/react'
@@ -202,7 +203,7 @@ function OfflineChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Implement a robust message queue:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`interface QueuedMessage {
@@ -271,7 +272,7 @@ function useMessageQueue() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Handle conflicts when syncing:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`function resolveConflicts(
@@ -309,7 +310,7 @@ chat.setMessages(resolved)`}
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Show network status to users:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { NetworkStatus } from '@clarity-chat/react'
@@ -331,20 +332,42 @@ function Chat() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Show optimistic updates</strong> - Display messages immediately, even offline</li>
-          <li><strong>Queue failed messages</strong> - Retry when connection is restored</li>
-          <li><strong>Use IndexedDB for large data</strong> - More storage than localStorage</li>
-          <li><strong>Resolve conflicts intelligently</strong> - Merge local and server messages</li>
-          <li><strong>Show network status</strong> - Let users know when they're offline</li>
-          <li><strong>Limit queue size</strong> - Prevent storage overflow</li>
-          <li><strong>Sync in background</strong> - Don't block UI during sync</li>
+          <li>
+            <strong>Show optimistic updates</strong> - Display messages
+            immediately, even offline
+          </li>
+          <li>
+            <strong>Queue failed messages</strong> - Retry when connection is
+            restored
+          </li>
+          <li>
+            <strong>Use IndexedDB for large data</strong> - More storage than
+            localStorage
+          </li>
+          <li>
+            <strong>Resolve conflicts intelligently</strong> - Merge local and
+            server messages
+          </li>
+          <li>
+            <strong>Show network status</strong> - Let users know when they're
+            offline
+          </li>
+          <li>
+            <strong>Limit queue size</strong> - Prevent storage overflow
+          </li>
+          <li>
+            <strong>Sync in background</strong> - Don't block UI during sync
+          </li>
         </ul>
       </section>
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/components/offline-chat-sync" className="docs-card">
+          <a
+            href="/reference/components/offline-chat-sync"
+            className="docs-card"
+          >
             <h3>OfflineChatSync Component</h3>
             <p>Component for offline support</p>
           </a>
@@ -364,8 +387,14 @@ function Chat() {
       </section>
 
       <Pagination
-        prev={{ title: 'Custom Tool Integration', href: '/cookbook/custom-tool-integration' }}
-        next={{ title: 'Real-Time Collaboration', href: '/cookbook/real-time-collaboration' }}
+        prev={{
+          title: 'Custom Tool Integration',
+          href: '/cookbook/custom-tool-integration',
+        }}
+        next={{
+          title: 'Real-Time Collaboration',
+          href: '/cookbook/real-time-collaboration',
+        }}
       />
     </>
   )

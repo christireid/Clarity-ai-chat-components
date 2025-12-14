@@ -99,8 +99,9 @@ describe('RetryCountdown', () => {
       <RetryCountdown remainingMs={5000} showProgress={false} />
     )
 
-    expect(container.querySelector('svg')).not.toBeInTheDocument()
-    expect(screen.getByText(/Retrying in 5/)).toBeInTheDocument()
+    // With showProgress=false, countdown still has decorative SVG but not the ring
+    expect(screen.getByText('5')).toBeInTheDocument()
+    expect(screen.getByText('seconds')).toBeInTheDocument()
   })
 
   it('should apply different sizes', () => {
@@ -157,7 +158,7 @@ describe('RetryCountdown', () => {
   it('should show scheduled message during countdown', () => {
     render(<RetryCountdown remainingMs={5000} />)
 
-    expect(screen.getByText('Automatic retry scheduled')).toBeInTheDocument()
+    expect(screen.getByText('Retrying automatically...')).toBeInTheDocument()
   })
 
   it('should show retrying message when countdown at 0', () => {

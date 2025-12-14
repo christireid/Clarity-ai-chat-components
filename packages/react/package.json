@@ -104,7 +104,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "pnpm -C ../license run build && pnpm -C ../memory run build && pnpm -C ../types run build && pnpm -C ../utils run build && pnpm -C ../primitives run build && tsc --noEmit",
     "lint": "eslint src --ext ts,tsx",
     "test": "NODE_OPTIONS='--max-old-space-size=4096' vitest run",
     "test:watch": "NODE_OPTIONS='--max-old-space-size=4096' vitest",

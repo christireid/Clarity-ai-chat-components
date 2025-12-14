@@ -8,11 +8,10 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useMessageOperations | Clarity Chat',
-  description: 'CRUD operations for messages with undo/redo, branching, and versioning.',
+  description:
+    'CRUD operations for messages with undo/redo, branching, and versioning.',
 }
 
 const useMessageOperationsOptions: Prop[] = [
@@ -88,7 +87,8 @@ const useMessageOperationsReturn: Prop[] = [
   {
     name: 'branchConversation',
     type: '(messageId: string) => string',
-    description: 'Create a new conversation branch from a message. Returns branch ID.',
+    description:
+      'Create a new conversation branch from a message. Returns branch ID.',
   },
   {
     name: 'getMessagesUpTo',
@@ -135,16 +135,16 @@ export default function UseMessageOperationsPage() {
       <h1>useMessageOperations</h1>
 
       <p className="lead">
-        Complete message management with CRUD operations, undo/redo, conversation branching,
-        and edit history. Perfect for building advanced chat interfaces with message editing
-        and conversation exploration.
+        Complete message management with CRUD operations, undo/redo,
+        conversation branching, and edit history. Perfect for building advanced
+        chat interfaces with message editing and conversation exploration.
       </p>
 
       <Callout type="info" title="Message Management">
         <p>
-          This hook provides a complete solution for managing messages with undo/redo,
-          branching, and version tracking. Ideal for chat applications that need
-          advanced message manipulation features.
+          This hook provides a complete solution for managing messages with
+          undo/redo, branching, and version tracking. Ideal for chat
+          applications that need advanced message manipulation features.
         </p>
       </Callout>
 
@@ -153,7 +153,7 @@ export default function UseMessageOperationsPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the hook:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useMessageOperations } from '@clarity-chat/react'
@@ -283,7 +283,9 @@ function EditableChat() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">Conversation Branching</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          Conversation Branching
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useMessageOperations } from '@clarity-chat/react'
@@ -361,7 +363,9 @@ function UndoableChat() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">Message Regeneration</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          Message Regeneration
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useMessageOperations } from '@clarity-chat/react'
@@ -414,25 +418,63 @@ function RegeneratableChat() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Features</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>CRUD Operations</strong> - Add, edit, delete messages with full state management</li>
-          <li><strong>Undo/Redo</strong> - Complete operation history with undo/redo support</li>
-          <li><strong>Conversation Branching</strong> - Create multiple conversation paths from any message</li>
-          <li><strong>Message Versioning</strong> - Track edit history and versions</li>
-          <li><strong>Editing Mode</strong> - Track which messages are currently being edited</li>
-          <li><strong>Regeneration</strong> - Regenerate AI responses with callback support</li>
-          <li><strong>Branch Management</strong> - Switch between conversation branches</li>
+          <li>
+            <strong>CRUD Operations</strong> - Add, edit, delete messages with
+            full state management
+          </li>
+          <li>
+            <strong>Undo/Redo</strong> - Complete operation history with
+            undo/redo support
+          </li>
+          <li>
+            <strong>Conversation Branching</strong> - Create multiple
+            conversation paths from any message
+          </li>
+          <li>
+            <strong>Message Versioning</strong> - Track edit history and
+            versions
+          </li>
+          <li>
+            <strong>Editing Mode</strong> - Track which messages are currently
+            being edited
+          </li>
+          <li>
+            <strong>Regeneration</strong> - Regenerate AI responses with
+            callback support
+          </li>
+          <li>
+            <strong>Branch Management</strong> - Switch between conversation
+            branches
+          </li>
         </ul>
       </section>
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Use callbacks</strong> - Implement onEdit, onRegenerate to sync with backend</li>
-          <li><strong>Limit history size</strong> - Set maxHistorySize to prevent memory issues</li>
-          <li><strong>Track editing state</strong> - Use isEditing to show edit UI</li>
-          <li><strong>Persist branches</strong> - Save branches to backend for multi-session support</li>
-          <li><strong>Version tracking</strong> - Use version field to show edit history</li>
-          <li><strong>Optimistic updates</strong> - Update UI immediately, sync with backend asynchronously</li>
+          <li>
+            <strong>Use callbacks</strong> - Implement onEdit, onRegenerate to
+            sync with backend
+          </li>
+          <li>
+            <strong>Limit history size</strong> - Set maxHistorySize to prevent
+            memory issues
+          </li>
+          <li>
+            <strong>Track editing state</strong> - Use isEditing to show edit UI
+          </li>
+          <li>
+            <strong>Persist branches</strong> - Save branches to backend for
+            multi-session support
+          </li>
+          <li>
+            <strong>Version tracking</strong> - Use version field to show edit
+            history
+          </li>
+          <li>
+            <strong>Optimistic updates</strong> - Update UI immediately, sync
+            with backend asynchronously
+          </li>
         </ul>
       </section>
 
@@ -459,7 +501,10 @@ function RegeneratableChat() {
       </section>
 
       <Pagination
-        prev={{ title: 'useSmartCache', href: '/reference/hooks/use-smart-cache' }}
+        prev={{
+          title: 'useSmartCache',
+          href: '/reference/hooks/use-smart-cache',
+        }}
         next={{ title: 'useAssistant', href: '/reference/hooks/use-assistant' }}
       />
     </>

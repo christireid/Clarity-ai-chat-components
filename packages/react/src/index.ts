@@ -801,6 +801,94 @@ export {
   type InlineShortcutHintProps,
 } from './components/keyboard-shortcut-hint'
 
+// ============================================================================
+// ENHANCED KEYBOARD NAVIGATION (2025)
+// ============================================================================
+
+// Enhanced Keyboard Navigation System
+export {
+  // Provider
+  KeyboardNavigationProvider,
+  // Core Hooks
+  useKeyboardNavigation,
+  useKeyboardShortcut,
+  useVimNavigation,
+  useFocusScope,
+  useKeyboardHintsOnModifier,
+  useIsMac,
+  // Utilities
+  formatShortcutDisplay,
+  // Default Shortcuts
+  defaultChatShortcuts,
+  // Types
+  type KeyboardShortcutConfig,
+  type ShortcutConflict,
+  type KeyboardNavigationState,
+  type KeyboardNavigationProviderProps,
+  type UseVimNavigationOptions,
+} from './hooks/use-keyboard-navigation'
+
+// Chat-Specific Keyboard Navigation
+export {
+  useChatKeyboardNavigation,
+  useFocusInputShortcut,
+  useEscapeToClose,
+  useQuickActions,
+  type ChatKeyboardNavigationOptions,
+  type ChatKeyboardNavigationReturn,
+  type QuickAction,
+} from './hooks/use-chat-keyboard-navigation'
+
+// Skip Links & Landmarks
+export {
+  SkipLinks,
+  Landmark,
+  useSkipLinkTarget,
+  type SkipLink,
+  type SkipLinksProps,
+  type LandmarkProps,
+} from './components/skip-links'
+
+// Focus Indicator
+export {
+  FocusIndicator,
+  FocusRing,
+  FocusVisible,
+  useKeyboardNavigating,
+  type FocusIndicatorProps,
+  type FocusRingProps,
+  type FocusVisibleProps,
+} from './components/focus-indicator'
+
+// Keyboard Shortcuts Modal
+export {
+  KeyboardShortcutsModal,
+  type ShortcutItem,
+  type KeyboardShortcutsModalProps,
+} from './components/keyboard-shortcuts-modal'
+
+// Keyboard Hints Overlay
+export {
+  KeyboardHintsOverlay,
+  ContextualKeyboardHints,
+  WithShortcut,
+  useKeyboardHintsOverlay,
+  type KeyboardHint,
+  type KeyboardHintsOverlayProps,
+  type ContextualKeyboardHintsProps,
+  type WithShortcutProps,
+} from './components/keyboard-hints-overlay'
+
+// Enhanced Command Palette
+export {
+  CommandPaletteEnhanced,
+  type CommandAction,
+  type CommandPaletteEnhancedProps,
+} from './components/command-palette-enhanced'
+
+// Keyboard Navigation Demo
+export { KeyboardNavigationDemo } from './components/keyboard-navigation-demo'
+
 // Animated Values (Real-time Update Animations)
 export {
   useAnimatedValue,
@@ -892,6 +980,10 @@ export {
   type ThemePreviewThumbnailProps,
   type ThemePreviewGridProps,
 } from './components/theme-preview-thumbnail'
+export {
+  ThemeCustomizer,
+  type ThemeCustomizerProps,
+} from './components/ThemeCustomizer'
 
 // ============================================================================
 // ADDITIONAL HOOKS (Utility & Feature Hooks)

@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Component Hierarchy Guide - Clarity Chat Components',
-  description: 'Understand the component hierarchy, composition patterns, and how components relate to each other.',
+  description:
+    'Understand the component hierarchy, composition patterns, and how components relate to each other.',
 }
 
 export default function ComponentHierarchyPage() {
@@ -18,7 +17,8 @@ export default function ComponentHierarchyPage() {
         <span className="docs-badge">Guide</span>
         <h1>Component Hierarchy</h1>
         <p className="docs-lead">
-          Understand the component hierarchy, composition patterns, and how components relate to each other in Clarity Chat Components.
+          Understand the component hierarchy, composition patterns, and how
+          components relate to each other in Clarity Chat Components.
         </p>
       </div>
 
@@ -34,14 +34,10 @@ export default function ComponentHierarchyPage() {
 
       <section className="docs-section">
         <h2>Component Layers</h2>
-        <p>
-          Clarity Chat Components are organized into three main layers:
-        </p>
+        <p>Clarity Chat Components are organized into three main layers:</p>
 
         <h3>Top-Level APIs (Drop-in Ready)</h3>
-        <p>
-          Complete, ready-to-use components:
-        </p>
+        <p>Complete, ready-to-use components:</p>
         <CodePlayground
           initialCode={`// Top-level: Complete solution
 import { ClarityChat } from '@clarity-chat/react'
@@ -58,9 +54,7 @@ import { ClarityChat } from '@clarity-chat/react'
         />
 
         <h3>Mid-Level APIs (Composable)</h3>
-        <p>
-          Building blocks for custom interfaces:
-        </p>
+        <p>Building blocks for custom interfaces:</p>
         <CodePlayground
           initialCode={`// Mid-level: Composable components
 import { ChatWindow, ChatInput, MessageList } from '@clarity-chat/react'
@@ -76,9 +70,7 @@ function CustomChat() {
         />
 
         <h3>Low-Level Primitives (Utilities)</h3>
-        <p>
-          Utilities and internal APIs:
-        </p>
+        <p>Utilities and internal APIs:</p>
         <CodePlayground
           initialCode={`// Low-level: Utilities
 import { 
@@ -94,9 +86,7 @@ const tokens = estimateTokens(normalized)`}
 
       <section className="docs-section">
         <h2>Component Relationships</h2>
-        <p>
-          How components relate to each other:
-        </p>
+        <p>How components relate to each other:</p>
         <CodePlayground
           initialCode={`// ClarityChat (Top-level)
 ClarityChat
@@ -124,9 +114,7 @@ function CustomChat() {
 
       <section className="docs-section">
         <h2>Composition Patterns</h2>
-        <p>
-          Common composition patterns:
-        </p>
+        <p>Common composition patterns:</p>
         <CodePlayground
           initialCode={`// Pattern 1: Feature Components
 function ChatWithFeatures() {
@@ -172,9 +160,7 @@ function ChatWithHooks() {
 
       <section className="docs-section">
         <h2>Data Flow</h2>
-        <p>
-          Understanding data flow through components:
-        </p>
+        <p>Understanding data flow through components:</p>
         <CodePlayground
           initialCode={`// Data flow example
 User Input
@@ -203,9 +189,7 @@ const chat = useClarityChat({ api: '/api/chat' })
 
       <section className="docs-section">
         <h2>Custom Chat Interface</h2>
-        <p>
-          Build custom chat using mid-level components:
-        </p>
+        <p>Build custom chat using mid-level components:</p>
         <CodePlayground
           initialCode={`import {
   ChatWindow,
@@ -259,9 +243,20 @@ function CustomChatInterface() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/clarity-chat">ClarityChat</a> - Top-level component</li>
-          <li><a href="/reference/components/chat-window">ChatWindow</a> - Mid-level component</li>
-          <li><a href="/guides/composition-patterns">Composition Patterns Guide</a> - Composition guide</li>
+          <li>
+            <a href="/reference/components/clarity-chat">ClarityChat</a> -
+            Top-level component
+          </li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> -
+            Mid-level component
+          </li>
+          <li>
+            <a href="/guides/composition-patterns">
+              Composition Patterns Guide
+            </a>{' '}
+            - Composition guide
+          </li>
         </ul>
       </section>
     </div>

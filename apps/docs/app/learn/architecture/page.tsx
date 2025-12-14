@@ -3,11 +3,11 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Architecture & Design Patterns - Clarity Chat',
-  description: 'System architecture, design patterns, and best practices for Clarity Chat applications.',
+  description:
+    'System architecture, design patterns, and best practices for Clarity Chat applications.',
 }
 
 export default function ArchitecturePage() {
@@ -17,13 +17,15 @@ export default function ArchitecturePage() {
         <span className="docs-badge">Guide</span>
         <h1>Architecture & Design Patterns</h1>
         <p className="docs-lead">
-          Learn the architectural principles and design patterns behind production-ready AI chat applications.
+          Learn the architectural principles and design patterns behind
+          production-ready AI chat applications.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>System Architecture</h2>
-        <pre><code>{`┌──────────────────────────────────────────────────────┐
+        <pre>
+          <code>{`┌──────────────────────────────────────────────────────┐
 │                                                      │
 │                     Frontend                         │
 │                                                      │
@@ -89,7 +91,8 @@ export default function ArchitecturePage() {
 │  │   └──────────┘    └───────────┘    └─────┘ │  │
 │  │                                               │  │
 │  └───────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────┘`}</code></pre>
+└──────────────────────────────────────────────────────┘`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -97,9 +100,11 @@ export default function ArchitecturePage() {
 
         <h3>Architecture Layers</h3>
         <p className="mb-4">
-          Clarity Chat follows a <strong>layered architecture</strong> with three main API levels:
+          Clarity Chat follows a <strong>layered architecture</strong> with
+          three main API levels:
         </p>
-        <pre><code>{`┌─────────────────────────────────────────────────────┐
+        <pre>
+          <code>{`┌─────────────────────────────────────────────────────┐
 │         TOP-LEVEL APIs (Drop-in Ready)                  │
 │  ┌──────────────────────────────────────────────────┐  │
 │  │ ClarityChat Component                            │  │
@@ -135,19 +140,33 @@ export default function ArchitecturePage() {
 │  │  │ • Streaming primitives                   │  │  │
 │  │  └──────────────────────────────────────────┘  │  │
 │  └──────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────┘`}</code></pre>
+└─────────────────────────────────────────────────────┘`}</code>
+        </pre>
 
         <Callout type="info" title="Which API Should I Use?">
           <ul className="list-disc list-inside space-y-1">
-            <li><strong>ClarityChat</strong> - Start here for most use cases. Zero configuration.</li>
-            <li><strong>ChatWindow + useClarityChat</strong> - When you need custom UI but want easy state management.</li>
-            <li><strong>ChatWindow + useChatEnhanced</strong> - When migrating from Vercel AI SDK.</li>
-            <li><strong>Low-level APIs</strong> - When building completely custom implementations.</li>
+            <li>
+              <strong>ClarityChat</strong> - Start here for most use cases. Zero
+              configuration.
+            </li>
+            <li>
+              <strong>ChatWindow + useClarityChat</strong> - When you need
+              custom UI but want easy state management.
+            </li>
+            <li>
+              <strong>ChatWindow + useChatEnhanced</strong> - When migrating
+              from Vercel AI SDK.
+            </li>
+            <li>
+              <strong>Low-level APIs</strong> - When building completely custom
+              implementations.
+            </li>
           </ul>
         </Callout>
 
         <h3>Atomic Design Principles</h3>
-        <pre><code>{`Atoms (Basic building blocks)
+        <pre>
+          <code>{`Atoms (Basic building blocks)
 ├── Button
 ├── Input
 ├── Avatar
@@ -170,14 +189,17 @@ Templates (Page layouts)
 └── ChatLayout (Sidebar + ChatWindow + RightPanel)
 
 Pages (Specific instances)
-└── HomePage, ChatPage, SettingsPage`}</code></pre>
+└── HomePage, ChatPage, SettingsPage`}</code>
+        </pre>
 
         <h3>Component Responsibilities</h3>
         <Callout type="info" title="Single Responsibility">
-          Each component should have one clear responsibility and be independently testable.
+          Each component should have one clear responsibility and be
+          independently testable.
         </Callout>
 
-        <pre><code>{`// Good: Focused component
+        <pre>
+          <code>{`// Good: Focused component
 function Message({ content, role, timestamp }) {
   return (
     <div className="message">
@@ -194,7 +216,8 @@ function MessageWithEverything({ message, onEdit, onDelete, onReact, onShare }) 
   const [reactions, setReactions] = useState([])
   // ... 100 lines of logic
   return <div>...</div>
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -202,7 +225,8 @@ function MessageWithEverything({ message, onEdit, onDelete, onReact, onShare }) 
 
         <h3>Local State (useState)</h3>
         <p>Use for component-specific, non-shared state:</p>
-        <pre><code>{`function ChatInput() {
+        <pre>
+          <code>{`function ChatInput() {
   const [value, setValue] = useState('')
   const [isExpanded, setIsExpanded] = useState(false)
   
@@ -213,11 +237,13 @@ function MessageWithEverything({ message, onEdit, onDelete, onReact, onShare }) 
       rows={isExpanded ? 5 : 1}
     />
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Context (useContext)</h3>
         <p>Use for cross-cutting concerns (theme, auth, config):</p>
-        <pre><code>{`// ThemeContext
+        <pre>
+          <code>{`// ThemeContext
 const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
@@ -234,11 +260,13 @@ export function ThemeProvider({ children }) {
 function ChatWindow() {
   const { theme } = useTheme()
   return <div className={\`theme-\${theme}\`}>...</div>
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>External State (Zustand/Jotai)</h3>
         <p>Use for complex, global state:</p>
-        <pre><code>{`import { create } from 'zustand'
+        <pre>
+          <code>{`import { create } from 'zustand'
 
 const useChatStore = create((set) => ({
   messages: [],
@@ -252,11 +280,13 @@ const useChatStore = create((set) => ({
 function Chat() {
   const { messages, addMessage } = useChatStore()
   // ...
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Server State (React Query)</h3>
         <p>Use for remote data:</p>
-        <pre><code>{`import { useQuery, useMutation } from '@tanstack/react-query'
+        <pre>
+          <code>{`import { useQuery, useMutation } from '@tanstack/react-query'
 
 function ChatHistory() {
   const { data: conversations } = useQuery({
@@ -272,14 +302,16 @@ function ChatHistory() {
   })
   
   return <ConversationList items={conversations} onDelete={deleteConversation} />
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Data Flow Patterns</h2>
 
         <h3>Unidirectional Data Flow</h3>
-        <pre><code>{`┌──────────────────────────────────────┐
+        <pre>
+          <code>{`┌──────────────────────────────────────┐
 │                                      │
 │   User Action (send message)         │
 │            │                          │
@@ -301,10 +333,12 @@ function ChatHistory() {
 │            ▼                          │
 │   Re-render UI                        │
 │                                      │
-└──────────────────────────────────────┘`}</code></pre>
+└──────────────────────────────────────┘`}</code>
+        </pre>
 
         <h3>Optimistic Updates</h3>
-        <pre><code>{`function useOptimisticChat() {
+        <pre>
+          <code>{`function useOptimisticChat() {
   const [messages, setMessages] = useState([])
 
   const sendMessage = async (content) => {
@@ -343,14 +377,16 @@ function ChatHistory() {
   }
 
   return { messages, sendMessage }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Performance Patterns</h2>
 
         <h3>Virtualization for Long Lists</h3>
-        <pre><code>{`import { VirtualizedMessageList } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { VirtualizedMessageList } from '@clarity-chat/react'
 
 function Chat() {
   return (
@@ -364,10 +400,12 @@ function Chat() {
 }
 
 // Renders only visible items + overscan
-// Instead of rendering 10,000 messages, renders ~15`}</code></pre>
+// Instead of rendering 10,000 messages, renders ~15`}</code>
+        </pre>
 
         <h3>Memoization</h3>
-        <pre><code>{`import { memo, useMemo, useCallback } from 'react'
+        <pre>
+          <code>{`import { memo, useMemo, useCallback } from 'react'
 
 // Memoize expensive computations
 const MessageContent = memo(({ content }) => {
@@ -386,10 +424,12 @@ function Chat() {
   }, [sendMessage])
 
   return <ChatInput onSend={handleSend} />
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Code Splitting</h3>
-        <pre><code>{`import dynamic from 'next/dynamic'
+        <pre>
+          <code>{`import dynamic from 'next/dynamic'
 
 // Lazy load heavy components
 const AdvancedEditor = dynamic(
@@ -399,10 +439,12 @@ const AdvancedEditor = dynamic(
 
 // Split by route
 const ChatPage = dynamic(() => import('@/pages/chat'))
-const SettingsPage = dynamic(() => import('@/pages/settings'))`}</code></pre>
+const SettingsPage = dynamic(() => import('@/pages/settings'))`}</code>
+        </pre>
 
         <h3>Streaming Architecture</h3>
-        <pre><code>{`// Server-side streaming
+        <pre>
+          <code>{`// Server-side streaming
 async function* streamResponse(messages) {
   const stream = await openai.chat.completions.create({
     model: 'gpt-4',
@@ -430,14 +472,16 @@ async function handleStream(response) {
     const text = decoder.decode(value)
     setContent(prev => prev + text)
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Error Handling Patterns</h2>
 
         <h3>Error Boundaries</h3>
-        <pre><code>{`class ErrorBoundary extends React.Component {
+        <pre>
+          <code>{`class ErrorBoundary extends React.Component {
   state = { hasError: false, error: null }
 
   static getDerivedStateFromError(error) {
@@ -459,10 +503,12 @@ async function handleStream(response) {
 // Usage
 <ErrorBoundary>
   <ChatWindow />
-</ErrorBoundary>`}</code></pre>
+</ErrorBoundary>`}</code>
+        </pre>
 
         <h3>Graceful Degradation</h3>
-        <pre><code>{`function ChatWithFallbacks() {
+        <pre>
+          <code>{`function ChatWithFallbacks() {
   const { data, error } = useChat({
     onError: async (error) => {
       // Try fallback models
@@ -485,10 +531,12 @@ async function handleStream(response) {
   }
 
   return <ChatWindow data={data} />
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Retry with Exponential Backoff</h3>
-        <pre><code>{`async function retryWithBackoff(fn, maxRetries = 3) {
+        <pre>
+          <code>{`async function retryWithBackoff(fn, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn()
@@ -499,14 +547,16 @@ async function handleStream(response) {
       await sleep(delay)
     }
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Security Patterns</h2>
 
         <h3>Input Validation</h3>
-        <pre><code>{`// Server-side validation
+        <pre>
+          <code>{`// Server-side validation
 import { z } from 'zod'
 
 const messageSchema = z.object({
@@ -523,10 +573,12 @@ export async function POST(req: Request) {
   } catch (error) {
     return Response.json({ error: 'Invalid input' }, { status: 400 })
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Rate Limiting</h3>
-        <pre><code>{`import { Ratelimit } from '@upstash/ratelimit'
+        <pre>
+          <code>{`import { Ratelimit } from '@upstash/ratelimit'
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -542,10 +594,12 @@ export async function POST(req: Request) {
   }
 
   // Process request
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Content Sanitization</h3>
-        <pre><code>{`import DOMPurify from 'isomorphic-dompurify'
+        <pre>
+          <code>{`import DOMPurify from 'isomorphic-dompurify'
 
 function SafeMessageContent({ content }) {
   const sanitized = useMemo(() => 
@@ -557,14 +611,16 @@ function SafeMessageContent({ content }) {
   )
 
   return <div dangerouslySetInnerHTML={{ __html: sanitized }} />
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Testing Architecture</h2>
 
         <h3>Testing Pyramid</h3>
-        <pre><code>{`        /\\
+        <pre>
+          <code>{`        /\\
        /  \\      E2E Tests (5%)
       /    \\     - User flows
      /──────\\    - Critical paths
@@ -576,10 +632,12 @@ function SafeMessageContent({ content }) {
    Unit Tests    Unit Tests (75%)
     (75%)        - Components
                  - Hooks
-                 - Utilities`}</code></pre>
+                 - Utilities`}</code>
+        </pre>
 
         <h3>Test Patterns</h3>
-        <pre><code>{`// Unit test: Component
+        <pre>
+          <code>{`// Unit test: Component
 describe('Message', () => {
   it('renders user message', () => {
     render(<Message role="user" content="Hello" />)
@@ -608,23 +666,32 @@ test('user can have conversation', async ({ page }) => {
   await page.fill('[data-testid="chat-input"]', 'Hello')
   await page.click('[data-testid="send-button"]')
   await page.waitForSelector('[data-testid="assistant-message"]')
-})`}</code></pre>
+})`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices Summary</h2>
 
         <Callout type="success" title="Architecture Checklist">
-          ✅ Single responsibility per component<br/>
-          ✅ Unidirectional data flow<br/>
-          ✅ Optimistic UI updates<br/>
-          ✅ Error boundaries and fallbacks<br/>
-          ✅ Performance optimization (memoization, virtualization)<br/>
-          ✅ Secure by default (validation, sanitization, rate limiting)<br/>
-          ✅ Comprehensive testing strategy<br/>
-          ✅ Scalable state management<br/>
-          ✅ Monitoring and observability<br/>
-          ✅ Documentation and type safety
+          ✅ Single responsibility per component
+          <br />
+          ✅ Unidirectional data flow
+          <br />
+          ✅ Optimistic UI updates
+          <br />
+          ✅ Error boundaries and fallbacks
+          <br />
+          ✅ Performance optimization (memoization, virtualization)
+          <br />
+          ✅ Secure by default (validation, sanitization, rate limiting)
+          <br />
+          ✅ Comprehensive testing strategy
+          <br />
+          ✅ Scalable state management
+          <br />
+          ✅ Monitoring and observability
+          <br />✅ Documentation and type safety
         </Callout>
       </section>
 

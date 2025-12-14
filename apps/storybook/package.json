@@ -16,6 +16,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "10.1.4",
     "@storybook/addon-docs": "^10.1.4",
     "@storybook/addon-links": "^10.1.4",
     "@storybook/react": "^10.1.4",

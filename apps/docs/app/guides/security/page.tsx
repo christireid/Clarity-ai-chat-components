@@ -3,8 +3,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Security Guide - Clarity Chat',
   description:
@@ -27,15 +25,21 @@ export default function SecurityGuidePage() {
       <section className="docs-section">
         <h2>Enterprise-Grade Controls</h2>
         <p>
-          Clarity Chat includes everything you need to meet SOC2, HIPAA, and GDPR
-          requirements out of the box:
+          Clarity Chat includes everything you need to meet SOC2, HIPAA, and
+          GDPR requirements out of the box:
         </p>
         <ul>
-          <li>🛡️ Safety engine with PII detection, content filtering, prompt injection guards</li>
+          <li>
+            🛡️ Safety engine with PII detection, content filtering, prompt
+            injection guards
+          </li>
           <li>🪪 RBAC + multi-tenancy utilities to isolate customer data</li>
           <li>🧾 Audit logging with retention policies and redaction</li>
           <li>📊 Usage quotas, cost tracking, and rate limiting</li>
-          <li>📬 Webhook framework for moderation alerts and downstream integrations</li>
+          <li>
+            📬 Webhook framework for moderation alerts and downstream
+            integrations
+          </li>
           <li>🔍 Observability + tracing for incident response</li>
         </ul>
         <Callout type="info">
@@ -79,9 +83,9 @@ export async function secureCompletion(messages: Message[]) {
 }`}
         />
         <p>
-          Safety results are compatible with the <code>SafetyStatusCard</code> UI
-          component and will automatically integrate with the audit logger when
-          you pass the same guardrail instance.
+          Safety results are compatible with the <code>SafetyStatusCard</code>{' '}
+          UI component and will automatically integrate with the audit logger
+          when you pass the same guardrail instance.
         </p>
       </section>
 
@@ -122,9 +126,9 @@ export async function logMessageSend({
 `}
         />
         <p>
-          Swap <code>MemoryAuditStorage</code> for a Postgres, DynamoDB, or BigQuery
-          storage adapter. The logger supports append-only tables, geo tags, and
-          retention policies.
+          Swap <code>MemoryAuditStorage</code> for a Postgres, DynamoDB, or
+          BigQuery storage adapter. The logger supports append-only tables, geo
+          tags, and retention policies.
         </p>
       </section>
 
@@ -222,8 +226,8 @@ export async function guardProviderCall(
         />
         <Callout type="tip">
           The quota system integrates with the <code>UsageDashboard</code> and
-          <code>TokenCounter</code> components. Expose current usage to customers
-          in real time, not just in billing emails.
+          <code>TokenCounter</code> components. Expose current usage to
+          customers in real time, not just in billing emails.
         </Callout>
       </section>
 
@@ -265,14 +269,33 @@ export async function notify(event: typeof WebhookEvents[keyof typeof WebhookEve
       <section className="docs-section">
         <h2>Security Checklist</h2>
         <ul>
-          <li>✅ Wrap every user input with <code>SafetyChecker</code></li>
-          <li>✅ Log every model invocation via <code>AuditLogger</code></li>
-          <li>✅ Apply <code>TenantManager</code> + <code>RBACManager</code> before generating responses</li>
-          <li>✅ Enforce usage budgets with <code>QuotaManager</code></li>
-          <li>✅ Stream alerts to <code>WebhookManager</code> for review queues</li>
-          <li>✅ Trace requests with <code>getTracer()</code> for forensics</li>
-          <li>✅ Store secrets in server environment variables—never ship them to the client</li>
-          <li>✅ Rotate API keys regularly; use the CLI <code>clarity-chat keys rotate</code></li>
+          <li>
+            ✅ Wrap every user input with <code>SafetyChecker</code>
+          </li>
+          <li>
+            ✅ Log every model invocation via <code>AuditLogger</code>
+          </li>
+          <li>
+            ✅ Apply <code>TenantManager</code> + <code>RBACManager</code>{' '}
+            before generating responses
+          </li>
+          <li>
+            ✅ Enforce usage budgets with <code>QuotaManager</code>
+          </li>
+          <li>
+            ✅ Stream alerts to <code>WebhookManager</code> for review queues
+          </li>
+          <li>
+            ✅ Trace requests with <code>getTracer()</code> for forensics
+          </li>
+          <li>
+            ✅ Store secrets in server environment variables—never ship them to
+            the client
+          </li>
+          <li>
+            ✅ Rotate API keys regularly; use the CLI{' '}
+            <code>clarity-chat keys rotate</code>
+          </li>
         </ul>
         <Callout type="success">
           Need to evidence compliance? Export the audit logs, quota history, and
@@ -283,4 +306,3 @@ export async function notify(event: typeof WebhookEvents[keyof typeof WebhookEve
     </div>
   )
 }
-

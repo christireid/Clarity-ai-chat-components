@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Multi-Tenant Chat Recipe - Clarity Chat Components',
-  description: 'Build a multi-tenant chat application with tenant isolation, seat management, and SSO integration.',
+  description:
+    'Build a multi-tenant chat application with tenant isolation, seat management, and SSO integration.',
 }
 
 export default function MultiTenantChatRecipePage() {
@@ -18,7 +17,8 @@ export default function MultiTenantChatRecipePage() {
         <span className="docs-badge">Recipe</span>
         <h1>Multi-Tenant Chat</h1>
         <p className="docs-lead">
-          Build a multi-tenant chat application with tenant isolation, seat management, SSO integration, and enterprise features.
+          Build a multi-tenant chat application with tenant isolation, seat
+          management, SSO integration, and enterprise features.
         </p>
       </div>
 
@@ -35,16 +35,15 @@ export default function MultiTenantChatRecipePage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This recipe shows how to build a multi-tenant chat application where each organization (tenant) has isolated data,
-          user management, and configurations.
+          This recipe shows how to build a multi-tenant chat application where
+          each organization (tenant) has isolated data, user management, and
+          configurations.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Tenant Context Setup</h2>
-        <p>
-          Set up tenant context for isolation:
-        </p>
+        <p>Set up tenant context for isolation:</p>
         <CodePlayground
           initialCode={`import { createContext, useContext } from 'react'
 
@@ -85,9 +84,7 @@ export function useTenant() {
 
       <section className="docs-section">
         <h2>Tenant-Isolated Chat</h2>
-        <p>
-          Create tenant-isolated chat instances:
-        </p>
+        <p>Create tenant-isolated chat instances:</p>
         <CodePlayground
           initialCode={`import { ClarityChat } from '@clarity-chat/react'
 import { useTenant } from './tenant-context'
@@ -113,9 +110,7 @@ function TenantChat() {
 
       <section className="docs-section">
         <h2>Seat Management</h2>
-        <p>
-          Manage seats for each tenant:
-        </p>
+        <p>Manage seats for each tenant:</p>
         <CodePlayground
           initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 import { useTenant } from './tenant-context'
@@ -146,9 +141,7 @@ function SeatManagement() {
 
       <section className="docs-section">
         <h2>SSO Integration</h2>
-        <p>
-          Integrate SSO for tenant authentication:
-        </p>
+        <p>Integrate SSO for tenant authentication:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 import { useTenant } from './tenant-context'
@@ -174,9 +167,7 @@ function SSOIntegration() {
 
       <section className="docs-section">
         <h2>API Token Management</h2>
-        <p>
-          Manage API tokens per tenant:
-        </p>
+        <p>Manage API tokens per tenant:</p>
         <CodePlayground
           initialCode={`import { ApiTokenManager } from '@clarity-chat/react'
 import { useTenant } from './tenant-context'
@@ -203,9 +194,7 @@ function TokenManagement() {
 
       <section className="docs-section">
         <h2>Complete Example</h2>
-        <p>
-          Complete multi-tenant chat application:
-        </p>
+        <p>Complete multi-tenant chat application:</p>
         <CodePlayground
           initialCode={`import { TenantProvider, useTenant } from './tenant-context'
 import { ClarityChat, SeatInviteDialog, ApiTokenManager } from '@clarity-chat/react'
@@ -256,9 +245,24 @@ function TenantDashboard() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/seat-invite-dialog">SeatInviteDialog</a> - Seat invitation component</li>
-          <li><a href="/reference/components/api-token-manager">ApiTokenManager</a> - API token management</li>
-          <li><a href="/reference/components/sso-config-wizard">SSOConfigWizard</a> - SSO configuration</li>
+          <li>
+            <a href="/reference/components/seat-invite-dialog">
+              SeatInviteDialog
+            </a>{' '}
+            - Seat invitation component
+          </li>
+          <li>
+            <a href="/reference/components/api-token-manager">
+              ApiTokenManager
+            </a>{' '}
+            - API token management
+          </li>
+          <li>
+            <a href="/reference/components/sso-config-wizard">
+              SSOConfigWizard
+            </a>{' '}
+            - SSO configuration
+          </li>
         </ul>
       </section>
     </div>

@@ -36,7 +36,10 @@ function BasicMessageListDemo() {
   ])
 
   return (
-    <div className="w-full max-w-2xl border border-border rounded-lg" style={{ height: '400px' }}>
+    <div
+      className="w-full max-w-2xl border border-border rounded-lg"
+      style={{ height: '400px' }}
+    >
       <MessageList messages={messages} />
     </div>
   )
@@ -48,7 +51,10 @@ function MessageListWithLoadingDemo() {
   const [isLoading] = useState(true)
 
   return (
-    <div className="w-full max-w-2xl border border-border rounded-lg" style={{ height: '400px' }}>
+    <div
+      className="w-full max-w-2xl border border-border rounded-lg"
+      style={{ height: '400px' }}
+    >
       <MessageList messages={messages} isLoading={isLoading} loadingCount={3} />
     </div>
   )
@@ -59,12 +65,14 @@ const messageListProps: Prop[] = [
     name: 'messages',
     type: 'Message[]',
     required: true,
-    description: 'Array of message objects to display. Each message must be a valid Message from @clarity-chat/types.',
+    description:
+      'Array of message objects to display. Each message must be a valid Message from @clarity-chat/types.',
   },
   {
     name: 'onMessageCopy',
     type: '(messageId: string, content: string) => void',
-    description: 'Callback when a message is copied. Receives message ID and content.',
+    description:
+      'Callback when a message is copied. Receives message ID and content.',
   },
   {
     name: 'onMessageFeedback',
@@ -106,13 +114,15 @@ const messageListProps: Prop[] = [
   {
     name: 'emptyState',
     type: 'ReactNode',
-    description: 'Custom content to display when there are no messages. Defaults to a welcome message.',
+    description:
+      'Custom content to display when there are no messages. Defaults to a welcome message.',
   },
   {
     name: 'enableGrouping',
     type: 'boolean',
     default: 'true',
-    description: 'Enable message grouping for consecutive messages from the same sender.',
+    description:
+      'Enable message grouping for consecutive messages from the same sender.',
   },
   {
     name: 'showTimeSeparators',
@@ -127,8 +137,6 @@ const messageListProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
-
 export default function MessageListPage() {
   return (
     <ToastProvider>
@@ -138,15 +146,20 @@ export default function MessageListPage() {
         <h1>MessageList</h1>
 
         <p className="lead">
-          A composable message list component with auto-scrolling, animations, message grouping,
-          time separators, and loading states. Perfect for displaying chat conversations.
+          A composable message list component with auto-scrolling, animations,
+          message grouping, time separators, and loading states. Perfect for
+          displaying chat conversations.
         </p>
 
         <Callout type="info">
           <p>
-            For drop-in usage, use the <a href="/reference/components/clarity-chat">ClarityChat</a> component.
-            For very large message lists (1000+), use{' '}
-            <a href="/reference/components/virtualized-message-list">VirtualizedMessageList</a>.
+            For drop-in usage, use the{' '}
+            <a href="/reference/components/clarity-chat">ClarityChat</a>{' '}
+            component. For very large message lists (1000+), use{' '}
+            <a href="/reference/components/virtualized-message-list">
+              VirtualizedMessageList
+            </a>
+            .
           </p>
         </Callout>
 
@@ -155,7 +168,8 @@ export default function MessageListPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Experiment with the MessageList component! Try different configurations and see how messages are displayed.
+            Experiment with the MessageList component! Try different
+            configurations and see how messages are displayed.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -203,7 +217,8 @@ import '@clarity-chat/react/styles.css'`}
         <h2 id="basic-usage">Basic Usage</h2>
 
         <p>
-          MessageList accepts an array of messages and handles rendering, grouping, and scrolling:
+          MessageList accepts an array of messages and handles rendering,
+          grouping, and scrolling:
         </p>
 
         <ComponentPreview
@@ -246,9 +261,7 @@ function SimpleMessageList() {
 
         <h2 id="with-loading">Loading State</h2>
 
-        <p>
-          Show loading skeletons while messages are being fetched:
-        </p>
+        <p>Show loading skeletons while messages are being fetched:</p>
 
         <ComponentPreview
           title="With Loading State"
@@ -281,9 +294,7 @@ function MessageListWithLoading() {
 
         <h2 id="message-operations">Message Operations</h2>
 
-        <p>
-          Enable message operations by providing callback functions:
-        </p>
+        <p>Enable message operations by providing callback functions:</p>
 
         <EnhancedCodeBlock
           code={`import { MessageList } from '@clarity-chat/react'
@@ -333,7 +344,8 @@ function MessageListWithOperations() {
         <h2 id="message-grouping">Message Grouping</h2>
 
         <p>
-          MessageList automatically groups consecutive messages from the same sender for better visual organization:
+          MessageList automatically groups consecutive messages from the same
+          sender for better visual organization:
         </p>
 
         <EnhancedCodeBlock
@@ -383,16 +395,15 @@ function GroupedMessages() {
 
         <Callout type="tip">
           <p>
-            Message grouping improves visual clarity by reducing redundant avatars and timestamps
-            for consecutive messages from the same sender.
+            Message grouping improves visual clarity by reducing redundant
+            avatars and timestamps for consecutive messages from the same
+            sender.
           </p>
         </Callout>
 
         <h2 id="time-separators">Time Separators</h2>
 
-        <p>
-          Show time separators between messages from different days:
-        </p>
+        <p>Show time separators between messages from different days:</p>
 
         <EnhancedCodeBlock
           code={`import { MessageList } from '@clarity-chat/react'
@@ -432,9 +443,7 @@ function MessageListWithSeparators() {
 
         <h2 id="custom-empty-state">Custom Empty State</h2>
 
-        <p>
-          Provide a custom empty state when there are no messages:
-        </p>
+        <p>Provide a custom empty state when there are no messages:</p>
 
         <EnhancedCodeBlock
           code={`import { MessageList } from '@clarity-chat/react'
@@ -468,8 +477,8 @@ function MessageListWithCustomEmpty() {
         <h2 id="auto-scroll">Auto-Scroll</h2>
 
         <p>
-          MessageList automatically scrolls to the bottom when new messages arrive,
-          but only if the user is already near the bottom:
+          MessageList automatically scrolls to the bottom when new messages
+          arrive, but only if the user is already near the bottom:
         </p>
 
         <EnhancedCodeBlock
@@ -546,8 +555,8 @@ function CompleteMessageList() {
 
         <Callout type="warning">
           <p>
-            <strong>Note:</strong> The API endpoint <code>/api/chat</code> is a placeholder.
-            You'll need to implement your own backend API endpoint.
+            <strong>Note:</strong> The API endpoint <code>/api/chat</code> is a
+            placeholder. You'll need to implement your own backend API endpoint.
           </p>
         </Callout>
 
@@ -557,23 +566,29 @@ function CompleteMessageList() {
 
         <ul>
           <li>
-            <strong>React 19 optimizations:</strong> Automatic memoization and compiler optimizations
+            <strong>React 19 optimizations:</strong> Automatic memoization and
+            compiler optimizations
           </li>
           <li>
-            <strong>Efficient grouping:</strong> Message grouping is calculated efficiently
+            <strong>Efficient grouping:</strong> Message grouping is calculated
+            efficiently
           </li>
           <li>
-            <strong>Staggered animations:</strong> Messages animate in with staggered timing for smooth appearance
+            <strong>Staggered animations:</strong> Messages animate in with
+            staggered timing for smooth appearance
           </li>
           <li>
-            <strong>Reduced motion support:</strong> Respects <code>prefers-reduced-motion</code>
+            <strong>Reduced motion support:</strong> Respects{' '}
+            <code>prefers-reduced-motion</code>
           </li>
         </ul>
 
         <Callout type="tip">
           <p>
             For conversations with 1000+ messages, use{' '}
-            <a href="/reference/components/virtualized-message-list">VirtualizedMessageList</a>{' '}
+            <a href="/reference/components/virtualized-message-list">
+              VirtualizedMessageList
+            </a>{' '}
             for better performance.
           </p>
         </Callout>
@@ -595,16 +610,22 @@ function CompleteMessageList() {
 
         <ul>
           <li>
-            <a href="/reference/components/message">Message</a> - Individual message component
+            <a href="/reference/components/message">Message</a> - Individual
+            message component
           </li>
           <li>
-            <a href="/reference/components/virtualized-message-list">VirtualizedMessageList</a> - For large message lists
+            <a href="/reference/components/virtualized-message-list">
+              VirtualizedMessageList
+            </a>{' '}
+            - For large message lists
           </li>
           <li>
-            <a href="/reference/components/chat-window">ChatWindow</a> - Complete chat interface
+            <a href="/reference/components/chat-window">ChatWindow</a> -
+            Complete chat interface
           </li>
           <li>
-            <a href="/reference/components/clarity-chat">ClarityChat</a> - Drop-in component
+            <a href="/reference/components/clarity-chat">ClarityChat</a> -
+            Drop-in component
           </li>
         </ul>
 

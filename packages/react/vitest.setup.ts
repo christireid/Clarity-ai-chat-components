@@ -11,15 +11,18 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock window.scrollTo
-Object.defineProperty(window, 'scrollTo', {
-  writable: true,
-  value: vi.fn(),
-})
+// Mock window.scrollTo (guarded for node-environment tests)
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'scrollTo', {
+    writable: true,
+    value: vi.fn(),
+  })
+}
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', async () => {
-  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion')
+  const actual =
+    await vi.importActual<typeof import('framer-motion')>('framer-motion')
   return {
     ...actual,
     motion: new Proxy(actual.motion, {
@@ -28,7 +31,15 @@ vi.mock('framer-motion', async () => {
         if (typeof prop === 'string') {
           return ({ children, ...props }: any) => {
             // Remove animation props
-            const { animate, initial, exit, transition, whileHover, whileTap, ...restProps } = props
+            const {
+              animate,
+              initial,
+              exit,
+              transition,
+              whileHover,
+              whileTap,
+              ...restProps
+            } = props
             return React.createElement(prop, restProps, children)
           }
         }
@@ -38,20 +49,22 @@ vi.mock('framer-motion', async () => {
   }
 })
 
-// Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-})
+// Mock window.matchMedia (guarded for node-environment tests)
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  })
+}
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
@@ -86,7 +99,6 @@ if (typeof window !== 'undefined') {
     addEventListener() {}
     removeEventListener() {}
   }
-
   ;(window as any).webkitSpeechRecognition = (window as any).SpeechRecognition
 }
 

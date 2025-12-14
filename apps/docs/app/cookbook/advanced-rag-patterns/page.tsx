@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Advanced RAG Patterns Recipe - Clarity Chat Components',
-  description: 'Implement advanced RAG (Retrieval-Augmented Generation) patterns with document integration, semantic search, and context management.',
+  description:
+    'Implement advanced RAG (Retrieval-Augmented Generation) patterns with document integration, semantic search, and context management.',
 }
 
 export default function AdvancedRAGPatternsRecipePage() {
@@ -18,7 +17,8 @@ export default function AdvancedRAGPatternsRecipePage() {
         <span className="docs-badge">Recipe</span>
         <h1>Advanced RAG Patterns</h1>
         <p className="docs-lead">
-          Implement advanced RAG patterns with document integration, semantic search, vector stores, and intelligent context retrieval.
+          Implement advanced RAG patterns with document integration, semantic
+          search, vector stores, and intelligent context retrieval.
         </p>
       </div>
 
@@ -35,15 +35,15 @@ export default function AdvancedRAGPatternsRecipePage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This recipe shows how to implement advanced RAG patterns using document integration, semantic search, and intelligent context retrieval.
+          This recipe shows how to implement advanced RAG patterns using
+          document integration, semantic search, and intelligent context
+          retrieval.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Document Integration for RAG</h2>
-        <p>
-          Extract and chunk documents for RAG:
-        </p>
+        <p>Extract and chunk documents for RAG:</p>
         <CodePlayground
           initialCode={`import { DocumentIntegration, useDocumentIntegration } from '@clarity-chat/react'
 
@@ -88,9 +88,7 @@ function RAGDocumentSetup() {
 
       <section className="docs-section">
         <h2>Semantic Search</h2>
-        <p>
-          Use semantic search to find relevant context:
-        </p>
+        <p>Use semantic search to find relevant context:</p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
 
@@ -136,9 +134,7 @@ function RAGSearch() {
 
       <section className="docs-section">
         <h2>RAG Context in Chat</h2>
-        <p>
-          Use retrieved context in chat:
-        </p>
+        <p>Use retrieved context in chat:</p>
         <CodePlayground
           initialCode={`import { ClarityChat } from '@clarity-chat/react'
 
@@ -180,9 +176,7 @@ function RAGChat() {
 
       <section className="docs-section">
         <h2>Hybrid Search</h2>
-        <p>
-          Combine semantic and keyword search:
-        </p>
+        <p>Combine semantic and keyword search:</p>
         <CodePlayground
           initialCode={`async function hybridSearch(query: string) {
   // Semantic search
@@ -202,9 +196,7 @@ function RAGChat() {
 
       <section className="docs-section">
         <h2>Context Management</h2>
-        <p>
-          Manage RAG context efficiently:
-        </p>
+        <p>Manage RAG context efficiently:</p>
         <CodePlayground
           initialCode={`import { useContextMonitor } from '@clarity-chat/react'
 
@@ -236,9 +228,7 @@ function RAGContextManager({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Complete RAG Implementation</h2>
-        <p>
-          Complete RAG implementation:
-        </p>
+        <p>Complete RAG implementation:</p>
         <CodePlayground
           initialCode={`import { DocumentIntegration, SemanticMessageSearch, ClarityChat } from '@clarity-chat/react'
 import { useDocumentIntegration } from '@clarity-chat/react'
@@ -296,9 +286,22 @@ function CompleteRAG() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/document-integration">DocumentIntegration</a> - Document integration component</li>
-          <li><a href="/reference/components/semantic-message-search">SemanticMessageSearch</a> - Semantic search component</li>
-          <li><a href="/reference/hooks/use-context-monitor">useContextMonitor</a> - Context monitoring hook</li>
+          <li>
+            <a href="/reference/components/document-integration">
+              DocumentIntegration
+            </a>{' '}
+            - Document integration component
+          </li>
+          <li>
+            <a href="/reference/components/semantic-message-search">
+              SemanticMessageSearch
+            </a>{' '}
+            - Semantic search component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-context-monitor">useContextMonitor</a>{' '}
+            - Context monitoring hook
+          </li>
         </ul>
       </section>
     </div>

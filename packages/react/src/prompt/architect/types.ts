@@ -69,10 +69,7 @@ export type DebtSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info'
 /**
  * Design pattern categories
  */
-export type DesignPatternCategory =
-  | 'creational'
-  | 'structural'
-  | 'behavioral'
+export type DesignPatternCategory = 'creational' | 'structural' | 'behavioral'
 
 /**
  * Common design patterns
@@ -326,7 +323,12 @@ export interface StrategicPlan {
   /** Overall approach summary */
   approachSummary: string
   /** Estimated total complexity */
-  totalComplexity: 'trivial' | 'simple' | 'moderate' | 'complex' | 'very_complex'
+  totalComplexity:
+    | 'trivial'
+    | 'simple'
+    | 'moderate'
+    | 'complex'
+    | 'very_complex'
 }
 
 // ============================================================================
@@ -343,10 +345,14 @@ export interface StyleGuideRules {
   styleGuide: StyleGuide
   /** Naming conventions */
   naming: {
-    variables: 'camelCase' | 'snake_case' | 'PascalCase' | 'SCREAMING_SNAKE_CASE'
+    variables:
+      | 'camelCase'
+      | 'snake_case'
+      | 'PascalCase'
+      | 'SCREAMING_SNAKE_CASE'
     functions: 'camelCase' | 'snake_case' | 'PascalCase'
     classes: 'PascalCase' | 'snake_case'
-    constants: 'SCREAMING_SNAKE_CASE' | 'camelCase'
+    constants: 'SCREAMING_SNAKE_CASE' | 'camelCase' | 'PascalCase'
     files: 'kebab-case' | 'snake_case' | 'camelCase' | 'PascalCase'
   }
   /** Prefer immutability */
