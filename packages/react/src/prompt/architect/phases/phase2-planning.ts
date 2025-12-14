@@ -51,8 +51,17 @@ export const DESIGN_PATTERN_CATALOG: Record<
       'Cache managers',
     ],
     tradeoffs: {
-      pros: ['Global access', 'Lazy initialization', 'Single instance guarantee'],
-      cons: ['Global state', 'Hard to test', 'Hidden dependencies', 'Thread safety concerns'],
+      pros: [
+        'Global access',
+        'Lazy initialization',
+        'Single instance guarantee',
+      ],
+      cons: [
+        'Global state',
+        'Hard to test',
+        'Hidden dependencies',
+        'Thread safety concerns',
+      ],
     },
     implementation: `class Singleton {
   private static instance: Singleton;
@@ -68,7 +77,8 @@ export const DESIGN_PATTERN_CATALOG: Record<
   FACTORY_METHOD: {
     name: 'Factory Method',
     category: 'creational',
-    intent: 'Define interface for creating objects, let subclasses decide which class to instantiate',
+    intent:
+      'Define interface for creating objects, let subclasses decide which class to instantiate',
     useCases: [
       'Framework extension points',
       'Plugin systems',
@@ -76,7 +86,11 @@ export const DESIGN_PATTERN_CATALOG: Record<
       'UI component creation',
     ],
     tradeoffs: {
-      pros: ['Loose coupling', 'Single Responsibility', 'Open/Closed principle'],
+      pros: [
+        'Loose coupling',
+        'Single Responsibility',
+        'Open/Closed principle',
+      ],
       cons: ['More classes', 'Requires subclassing'],
     },
     implementation: `interface Product { operation(): string; }
@@ -99,7 +113,11 @@ abstract class Creator {
       'Multi-brand products',
     ],
     tradeoffs: {
-      pros: ['Consistency among products', 'Isolates concrete classes', 'Easy product family switching'],
+      pros: [
+        'Consistency among products',
+        'Isolates concrete classes',
+        'Easy product family switching',
+      ],
       cons: ['Complexity', 'Hard to add new product types'],
     },
     implementation: `interface AbstractFactory {
@@ -110,7 +128,8 @@ abstract class Creator {
   BUILDER: {
     name: 'Builder',
     category: 'creational',
-    intent: 'Separate construction of complex objects from their representation',
+    intent:
+      'Separate construction of complex objects from their representation',
     useCases: [
       'Complex object construction',
       'SQL query builders',
@@ -118,7 +137,11 @@ abstract class Creator {
       'Configuration objects',
     ],
     tradeoffs: {
-      pros: ['Step-by-step construction', 'Reusable construction code', 'Single Responsibility'],
+      pros: [
+        'Step-by-step construction',
+        'Reusable construction code',
+        'Single Responsibility',
+      ],
       cons: ['More code', 'Requires mutable builder state'],
     },
     implementation: `class Builder {
@@ -157,7 +180,8 @@ class ConcretePrototype implements Prototype {
   ADAPTER: {
     name: 'Adapter',
     category: 'structural',
-    intent: 'Convert interface of a class into another interface clients expect',
+    intent:
+      'Convert interface of a class into another interface clients expect',
     useCases: [
       'Legacy system integration',
       'Third-party library wrapping',
@@ -206,7 +230,11 @@ class Abstraction {
       'Menu systems',
     ],
     tradeoffs: {
-      pros: ['Uniform treatment', 'Easy to add new components', 'Simplified client code'],
+      pros: [
+        'Uniform treatment',
+        'Easy to add new components',
+        'Simplified client code',
+      ],
       cons: ['Hard to restrict composition', 'Type safety challenges'],
     },
     implementation: `interface Component { operation(): string; }
@@ -228,8 +256,16 @@ class Composite implements Component {
       'Caching layers',
     ],
     tradeoffs: {
-      pros: ['Single Responsibility', 'Runtime flexibility', 'Composition over inheritance'],
-      cons: ['Many small objects', 'Decorator order matters', 'Hard to remove decorators'],
+      pros: [
+        'Single Responsibility',
+        'Runtime flexibility',
+        'Composition over inheritance',
+      ],
+      cons: [
+        'Many small objects',
+        'Decorator order matters',
+        'Hard to remove decorators',
+      ],
     },
     implementation: `interface Component { operation(): string; }
 class Decorator implements Component {
@@ -251,7 +287,11 @@ class ConcreteDecorator extends Decorator {
       'Legacy system modernization',
     ],
     tradeoffs: {
-      pros: ['Simplifies client code', 'Decouples from subsystem', 'Single entry point'],
+      pros: [
+        'Simplifies client code',
+        'Decouples from subsystem',
+        'Single entry point',
+      ],
       cons: ['Can become God object', 'May hide needed functionality'],
     },
     implementation: `class Facade {
@@ -304,7 +344,11 @@ class FlyweightFactory {
       'Remote object access',
     ],
     tradeoffs: {
-      pros: ['Control without client knowing', 'Lifecycle management', 'Works with closed classes'],
+      pros: [
+        'Control without client knowing',
+        'Lifecycle management',
+        'Works with closed classes',
+      ],
       cons: ['Response delay', 'Complexity'],
     },
     implementation: `interface Subject { request(): void; }
@@ -330,7 +374,11 @@ class Proxy implements Subject {
       'Authentication chains',
     ],
     tradeoffs: {
-      pros: ['Decouples sender/receiver', 'Single Responsibility', 'Dynamic chains'],
+      pros: [
+        'Decouples sender/receiver',
+        'Single Responsibility',
+        'Dynamic chains',
+      ],
       cons: ['Request may go unhandled', 'Hard to debug'],
     },
     implementation: `interface Handler {
@@ -349,7 +397,8 @@ abstract class AbstractHandler implements Handler {
   COMMAND: {
     name: 'Command',
     category: 'behavioral',
-    intent: 'Encapsulate request as object, allowing parameterization and queuing',
+    intent:
+      'Encapsulate request as object, allowing parameterization and queuing',
     useCases: [
       'Undo/redo functionality',
       'Transaction systems',
@@ -357,7 +406,12 @@ abstract class AbstractHandler implements Handler {
       'Remote execution',
     ],
     tradeoffs: {
-      pros: ['Single Responsibility', 'Open/Closed', 'Undo support', 'Deferred execution'],
+      pros: [
+        'Single Responsibility',
+        'Open/Closed',
+        'Undo support',
+        'Deferred execution',
+      ],
       cons: ['More classes', 'Complexity for simple operations'],
     },
     implementation: `interface Command { execute(): void; }
@@ -400,7 +454,8 @@ class AddExpression implements Expression {
   ITERATOR: {
     name: 'Iterator',
     category: 'behavioral',
-    intent: 'Provide way to access elements sequentially without exposing structure',
+    intent:
+      'Provide way to access elements sequentially without exposing structure',
     useCases: [
       'Collection traversal',
       'Database cursors',
@@ -409,7 +464,10 @@ class AddExpression implements Expression {
     ],
     tradeoffs: {
       pros: ['Single Responsibility', 'Open/Closed', 'Parallel iteration'],
-      cons: ['Overkill for simple collections', 'Less efficient than direct access'],
+      cons: [
+        'Overkill for simple collections',
+        'Less efficient than direct access',
+      ],
     },
     implementation: `interface Iterator<T> {
   current(): T;
@@ -431,7 +489,11 @@ interface Iterable<T> {
       'Event buses',
     ],
     tradeoffs: {
-      pros: ['Reduces coupling', 'Centralizes control', 'Simplifies object protocols'],
+      pros: [
+        'Reduces coupling',
+        'Centralizes control',
+        'Simplifies object protocols',
+      ],
       cons: ['Mediator can become God object'],
     },
     implementation: `interface Mediator { notify(sender: object, event: string): void; }
@@ -449,7 +511,8 @@ class ConcreteMediator implements Mediator {
   MEMENTO: {
     name: 'Memento',
     category: 'behavioral',
-    intent: 'Capture and restore object internal state without violating encapsulation',
+    intent:
+      'Capture and restore object internal state without violating encapsulation',
     useCases: [
       'Undo mechanisms',
       'Snapshots',
@@ -474,7 +537,8 @@ class Originator {
   OBSERVER: {
     name: 'Observer',
     category: 'behavioral',
-    intent: 'Define subscription mechanism to notify multiple objects of state changes',
+    intent:
+      'Define subscription mechanism to notify multiple objects of state changes',
     useCases: [
       'Event systems',
       'MVC architectures',
@@ -483,7 +547,10 @@ class Originator {
     ],
     tradeoffs: {
       pros: ['Open/Closed', 'Runtime subscriptions', 'Loose coupling'],
-      cons: ['Notification order undefined', 'Memory leaks if not unsubscribed'],
+      cons: [
+        'Notification order undefined',
+        'Memory leaks if not unsubscribed',
+      ],
     },
     implementation: `interface Observer { update(subject: Subject): void; }
 class Subject {
@@ -521,7 +588,8 @@ class Context {
   STRATEGY: {
     name: 'Strategy',
     category: 'behavioral',
-    intent: 'Define family of algorithms, encapsulate each, make them interchangeable',
+    intent:
+      'Define family of algorithms, encapsulate each, make them interchangeable',
     useCases: [
       'Sorting algorithms',
       'Payment processing',
@@ -529,7 +597,11 @@ class Context {
       'Routing strategies',
     ],
     tradeoffs: {
-      pros: ['Open/Closed', 'Composition over inheritance', 'Runtime algorithm switching'],
+      pros: [
+        'Open/Closed',
+        'Composition over inheritance',
+        'Runtime algorithm switching',
+      ],
       cons: ['Client must know strategies', 'More objects'],
     },
     implementation: `interface Strategy { execute(data: string[]): string[]; }
@@ -567,7 +639,8 @@ class Context {
   VISITOR: {
     name: 'Visitor',
     category: 'behavioral',
-    intent: 'Define new operation without changing classes of elements operated on',
+    intent:
+      'Define new operation without changing classes of elements operated on',
     useCases: [
       'AST traversal',
       'Document exporters',
@@ -575,7 +648,11 @@ class Context {
       'Object structure operations',
     ],
     tradeoffs: {
-      pros: ['Single Responsibility', 'Open/Closed for operations', 'Accumulates state'],
+      pros: [
+        'Single Responsibility',
+        'Open/Closed for operations',
+        'Accumulates state',
+      ],
       cons: ['Must update when adding element types', 'Breaks encapsulation'],
     },
     implementation: `interface Visitor {
@@ -723,7 +800,8 @@ export function createStrategicPlan(params: {
     rejectedAlternatives: params.rejectedAlternatives ?? [],
     testPlan: params.testPlan ?? [],
     approachSummary:
-      params.approachSummary ?? `${steps.length}-step implementation plan with ${totalComplexity} overall complexity`,
+      params.approachSummary ??
+      `${steps.length}-step implementation plan with ${totalComplexity} overall complexity`,
     totalComplexity,
   }
 }
@@ -749,7 +827,9 @@ export function formatStrategicPlanAsMarkdown(plan: StrategicPlan): string {
   for (const step of plan.steps) {
     lines.push(`### Step ${step.stepNumber}: ${step.title}`)
     lines.push('')
-    lines.push(`**Complexity:** ${step.complexity} | **Risk:** ${step.riskLevel}`)
+    lines.push(
+      `**Complexity:** ${step.complexity} | **Risk:** ${step.riskLevel}`
+    )
     if (step.dependencies.length > 0) {
       lines.push(`**Dependencies:** Steps ${step.dependencies.join(', ')}`)
     }
@@ -858,7 +938,7 @@ export function getPatternInfo(
 /**
  * Get all patterns in a category
  */
-export function getPatternsByCategory(
+export function getPatternIdsByCategory(
   category: DesignPatternCategory
 ): DesignPattern[] {
   return (Object.keys(DESIGN_PATTERN_CATALOG) as DesignPattern[]).filter(
@@ -873,20 +953,54 @@ export function suggestPatternsForUseCase(useCase: string): DesignPattern[] {
   const normalizedUseCase = useCase.toLowerCase()
   const matches: Array<{ pattern: DesignPattern; score: number }> = []
 
+  const tokenize = (text: string): string[] => {
+    return text
+      .toLowerCase()
+      .split(/[^a-z0-9]+/g)
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .map((t) => (t.length > 3 && t.endsWith('s') ? t.slice(0, -1) : t))
+  }
+
+  const useCaseTokens = new Set(tokenize(useCase))
+
   for (const [pattern, info] of Object.entries(DESIGN_PATTERN_CATALOG)) {
     let score = 0
+    const intentTokens = tokenize(info.intent)
     for (const uc of info.useCases) {
-      if (normalizedUseCase.includes(uc.toLowerCase())) {
-        score += 2
+      const ucNormalized = uc.toLowerCase()
+      const ucTokens = tokenize(uc)
+
+      // Strong match if a whole phrase appears.
+      if (
+        normalizedUseCase.includes(ucNormalized) ||
+        ucNormalized.includes(normalizedUseCase)
+      ) {
+        score += 6
       }
-      // Check for keyword overlap
-      const ucWords = uc.toLowerCase().split(/\s+/)
-      for (const word of ucWords) {
-        if (word.length > 3 && normalizedUseCase.includes(word)) {
-          score += 1
-        }
+
+      // Token overlap (handles pluralization and word order changes).
+      for (const token of ucTokens) {
+        if (useCaseTokens.has(token)) score += 2
       }
     }
+
+    // Intent overlap (helps when use case phrasing differs).
+    for (const token of intentTokens) {
+      if (useCaseTokens.has(token)) score += 1
+    }
+
+    // Lightweight domain heuristics to improve suggestions.
+    if (pattern === 'OBSERVER') {
+      if (
+        useCaseTokens.has('event') ||
+        useCaseTokens.has('notify') ||
+        useCaseTokens.has('notification')
+      ) {
+        score += 8
+      }
+    }
+
     if (score > 0) {
       matches.push({ pattern: pattern as DesignPattern, score })
     }

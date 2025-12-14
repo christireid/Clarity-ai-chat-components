@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'SemanticMessageSearch - Clarity Chat Components',
-  description: 'Semantic search for messages using vector embeddings and similarity matching.',
+  description:
+    'Semantic search for messages using vector embeddings and similarity matching.',
 }
 
 const props: Prop[] = [
@@ -63,7 +62,8 @@ export default function SemanticMessageSearchPage() {
         <span className="docs-badge">Component</span>
         <h1>SemanticMessageSearch</h1>
         <p className="docs-lead">
-          Semantic search for messages using vector embeddings and similarity matching for more accurate results.
+          Semantic search for messages using vector embeddings and similarity
+          matching for more accurate results.
         </p>
       </div>
 
@@ -79,16 +79,15 @@ export default function SemanticMessageSearchPage() {
 
       <Callout type="info" className="my-6">
         <p>
-          <strong>New in 2025:</strong> This component provides semantic search capabilities using vector
-          embeddings, enabling more accurate and context-aware message search compared to keyword-based search.
+          <strong>New in 2025:</strong> This component provides semantic search
+          capabilities using vector embeddings, enabling more accurate and
+          context-aware message search compared to keyword-based search.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Search messages semantically with default configuration:
-        </p>
+        <p>Search messages semantically with default configuration:</p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -121,9 +120,7 @@ function ChatWithSemanticSearch({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Embedding Providers</h2>
-        <p>
-          Configure different embedding providers:
-        </p>
+        <p>Configure different embedding providers:</p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -162,9 +159,7 @@ function WithCohere({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Similarity Threshold</h2>
-        <p>
-          Configure similarity threshold for results:
-        </p>
+        <p>Configure similarity threshold for results:</p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
 
@@ -187,9 +182,7 @@ function ThresholdSearch() {
 
       <section className="docs-section">
         <h2>Caching</h2>
-        <p>
-          Enable caching for better performance:
-        </p>
+        <p>Enable caching for better performance:</p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -215,9 +208,7 @@ function CachedSearch({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Custom Embeddings</h2>
-        <p>
-          Provide custom embeddings function:
-        </p>
+        <p>Provide custom embeddings function:</p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -257,23 +248,51 @@ function CustomEmbeddings({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Configuration Options</h2>
         <ul>
-          <li><strong>embeddings</strong>: <code>{'{ type, model, apiKey?, endpoint? }'}</code> - Embedding provider configuration</li>
-          <li><strong>hybrid</strong>: <code>{'{ enabled, semanticWeight }'}</code> - Hybrid search configuration (semantic + keyword)</li>
-          <li><strong>reranking</strong>: <code>{'{ enabled, provider, apiKey?, endpoint? }'}</code> - Optional reranking configuration</li>
-          <li><strong>similarityThreshold</strong>: <code>number</code> - Minimum similarity score (0-1)</li>
-          <li><strong>maxResults</strong>: <code>number</code> - Maximum number of results to return</li>
-          <li><strong>multiLanguage</strong>: <code>boolean</code> - Enable multi-language support</li>
-          <li><strong>queryExpansion</strong>: <code>boolean</code> - Enable query expansion with synonyms</li>
+          <li>
+            <strong>embeddings</strong>:{' '}
+            <code>{'{ type, model, apiKey?, endpoint? }'}</code> - Embedding
+            provider configuration
+          </li>
+          <li>
+            <strong>hybrid</strong>:{' '}
+            <code>{'{ enabled, semanticWeight }'}</code> - Hybrid search
+            configuration (semantic + keyword)
+          </li>
+          <li>
+            <strong>reranking</strong>:{' '}
+            <code>{'{ enabled, provider, apiKey?, endpoint? }'}</code> -
+            Optional reranking configuration
+          </li>
+          <li>
+            <strong>similarityThreshold</strong>: <code>number</code> - Minimum
+            similarity score (0-1)
+          </li>
+          <li>
+            <strong>maxResults</strong>: <code>number</code> - Maximum number of
+            results to return
+          </li>
+          <li>
+            <strong>multiLanguage</strong>: <code>boolean</code> - Enable
+            multi-language support
+          </li>
+          <li>
+            <strong>queryExpansion</strong>: <code>boolean</code> - Enable query
+            expansion with synonyms
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use <code>similarityThreshold</code> of 0.7-0.8 for balanced results</li>
+          <li>
+            Use <code>similarityThreshold</code> of 0.7-0.8 for balanced results
+          </li>
           <li>Enable caching for frequently searched messages</li>
           <li>Use appropriate embedding models for your use case</li>
-          <li>Limit <code>maxResults</code> for better performance</li>
+          <li>
+            Limit <code>maxResults</code> for better performance
+          </li>
           <li>Consider using semantic search for long conversations</li>
         </ul>
       </section>
@@ -281,10 +300,23 @@ function CustomEmbeddings({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/message-search">MessageSearch</a> - Basic keyword search</li>
-          <li><a href="/reference/components/advanced-message-search">AdvancedMessageSearch</a> - Advanced search features</li>
-          <li><a href="/guides/rag">RAG Guide</a> - Retrieval-augmented generation</li>
-          <li><a href="/reference/utilities/embeddings">Embeddings Utilities</a> - Embedding utilities</li>
+          <li>
+            <a href="/reference/components/message-search">MessageSearch</a> -
+            Basic keyword search
+          </li>
+          <li>
+            <a href="/reference/components/advanced-message-search">
+              AdvancedMessageSearch
+            </a>{' '}
+            - Advanced search features
+          </li>
+          <li>
+            <a href="/guides/rag">RAG Guide</a> - Retrieval-augmented generation
+          </li>
+          <li>
+            <a href="/reference/utilities/embeddings">Embeddings Utilities</a> -
+            Embedding utilities
+          </li>
         </ul>
       </section>
     </div>

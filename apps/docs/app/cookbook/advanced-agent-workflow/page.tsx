@@ -3,11 +3,11 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Advanced Agent Workflow - Cookbook',
-  description: 'Build multi-step agent workflows with tool calling and decision trees.',
+  description:
+    'Build multi-step agent workflows with tool calling and decision trees.',
 }
 
 export default function AdvancedAgentWorkflowCookbook() {
@@ -17,15 +17,16 @@ export default function AdvancedAgentWorkflowCookbook() {
         <span className="docs-badge">Cookbook</span>
         <h1>Advanced Agent Workflow</h1>
         <p className="docs-lead">
-          Create sophisticated AI agents with tool calling, parallel execution, and error recovery.
+          Create sophisticated AI agents with tool calling, parallel execution,
+          and error recovery.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Build agents that can use multiple tools, reason about their actions, and
-          execute complex multi-step workflows with proper error handling.
+          Build agents that can use multiple tools, reason about their actions,
+          and execute complex multi-step workflows with proper error handling.
         </p>
       </section>
 
@@ -91,7 +92,8 @@ render(<ResearchAgent />)`}
 
       <section className="docs-section">
         <h2>Agent API Implementation</h2>
-        <pre><code>{`// app/api/agent/route.ts
+        <pre>
+          <code>{`// app/api/agent/route.ts
 import { ReactAgent } from '@clarity-chat/react/agents'
 import { tools } from './tools'
 
@@ -123,12 +125,14 @@ Think step by step and use tools when needed.\`
       { status: 500 }
     )
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Tool Definitions</h2>
-        <pre><code>{`// app/api/agent/tools.ts
+        <pre>
+          <code>{`// app/api/agent/tools.ts
 export const tools = {
   web_search: async ({ query }: { query: string }) => {
     const response = await fetch(
@@ -162,7 +166,8 @@ export const tools = {
     )
     return await response.json()
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -170,7 +175,8 @@ export const tools = {
         <Callout type="tip" title="Performance">
           Execute independent tool calls in parallel to reduce total latency.
         </Callout>
-        <pre><code>{`const agent = new ReactAgent({
+        <pre>
+          <code>{`const agent = new ReactAgent({
   model: 'gpt-4',
   tools,
   parallelExecution: true, // Enable parallel tool calls
@@ -181,12 +187,14 @@ export const tools = {
 const result = await agent.run({
   input: 'Get weather for SF, NYC, and Boston'
 })
-// All 3 weather calls execute in parallel`}</code></pre>
+// All 3 weather calls execute in parallel`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Error Recovery</h2>
-        <pre><code>{`const agent = new ReactAgent({
+        <pre>
+          <code>{`const agent = new ReactAgent({
   model: 'gpt-4',
   tools,
   errorRecovery: {
@@ -197,14 +205,19 @@ const result = await agent.run({
   onError: (error, toolName, attempt) => {
     console.error(\`Tool \${toolName} failed (attempt \${attempt}):\`, error)
   }
-})`}</code></pre>
+})`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Provide clear, specific tool descriptions for better agent reasoning</li>
-          <li>Set <code>maxIterations</code> to prevent infinite loops</li>
+          <li>
+            Provide clear, specific tool descriptions for better agent reasoning
+          </li>
+          <li>
+            Set <code>maxIterations</code> to prevent infinite loops
+          </li>
           <li>Implement timeout and rate limiting for tool calls</li>
           <li>Log all tool executions for debugging and audit trails</li>
           <li>Use parallel execution for independent tools</li>

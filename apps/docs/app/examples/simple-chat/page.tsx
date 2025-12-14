@@ -4,7 +4,6 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Simple Chat Example',
@@ -84,34 +83,38 @@ export default function SimpleChatExample() {
   return (
     <>
       <Breadcrumbs />
-      
+
       <h1>Simple Chat Example</h1>
-      
+
       <p className="lead">
-        A minimal chat interface that demonstrates the core functionality of Clarity Chat UI.
-        This example includes message display, user input, and a simulated bot response.
+        A minimal chat interface that demonstrates the core functionality of
+        Clarity Chat UI. This example includes message display, user input, and
+        a simulated bot response.
       </p>
 
       <Callout type="info">
         <p>
-          <strong>What you'll learn:</strong> Basic ChatWindow usage, message state management,
-          and handling user input.
+          <strong>What you'll learn:</strong> Basic ChatWindow usage, message
+          state management, and handling user input.
         </p>
       </Callout>
 
       <h2 id="live-demo">Live Demo</h2>
 
-      <p>Try out the chat interface below. Type a message and see it appear instantly!</p>
+      <p>
+        Try out the chat interface below. Type a message and see it appear
+        instantly!
+      </p>
 
-      <CodePlayground
-        initialCode={simpleChatCode}
-      />
+      <CodePlayground initialCode={simpleChatCode} />
 
       <h2 id="how-it-works">How It Works</h2>
 
       <h3>1. State Management</h3>
 
-      <p>We use React's <code>useState</code> to manage the messages array:</p>
+      <p>
+        We use React's <code>useState</code> to manage the messages array:
+      </p>
 
       <CodeBlock
         code={`const [messages, setMessages] = useState<Message[]>([
@@ -128,7 +131,10 @@ export default function SimpleChatExample() {
 
       <h3>2. Handle User Input</h3>
 
-      <p>The <code>onSendMessage</code> callback receives the user's text and adds it to the messages:</p>
+      <p>
+        The <code>onSendMessage</code> callback receives the user's text and
+        adds it to the messages:
+      </p>
 
       <CodeBlock
         code={`const handleSendMessage = (text: string) => {
@@ -165,8 +171,8 @@ export default function SimpleChatExample() {
 
       <Callout type="tip">
         <p>
-          In a real application, you would replace this with an actual API call or
-          WebSocket connection to your backend.
+          In a real application, you would replace this with an actual API call
+          or WebSocket connection to your backend.
         </p>
       </Callout>
 
@@ -184,11 +190,28 @@ export default function SimpleChatExample() {
       <p>Now that you have a basic chat working, try these enhancements:</p>
 
       <ul>
-        <li>Add <a href="/examples/themed-chat">custom theming</a></li>
-        <li>Implement <a href="/reference/components/typing-indicator">typing indicators</a></li>
-        <li>Add <a href="/reference/components/message#reactions">message reactions</a></li>
-        <li>Enable <a href="/reference/components/message#attachments">file attachments</a></li>
-        <li>Connect to a <a href="/examples/realtime">real-time backend</a></li>
+        <li>
+          Add <a href="/examples/themed-chat">custom theming</a>
+        </li>
+        <li>
+          Implement{' '}
+          <a href="/reference/components/typing-indicator">typing indicators</a>
+        </li>
+        <li>
+          Add{' '}
+          <a href="/reference/components/message#reactions">
+            message reactions
+          </a>
+        </li>
+        <li>
+          Enable{' '}
+          <a href="/reference/components/message#attachments">
+            file attachments
+          </a>
+        </li>
+        <li>
+          Connect to a <a href="/examples/realtime">real-time backend</a>
+        </li>
       </ul>
 
       <h2 id="customization">Customization Ideas</h2>
@@ -229,8 +252,9 @@ export default function SimpleChatExample() {
 
       <Callout type="success">
         <p>
-          <strong>Congratulations!</strong> You've built your first chat interface with Clarity Chat UI.
-          Check out more <a href="/examples">examples</a> to learn advanced features.
+          <strong>Congratulations!</strong> You've built your first chat
+          interface with Clarity Chat UI. Check out more{' '}
+          <a href="/examples">examples</a> to learn advanced features.
         </p>
       </Callout>
 

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'PromptLibrary - Clarity Chat Components',
@@ -14,7 +13,9 @@ export default function PromptLibraryPage() {
       <div className="docs-header">
         <span className="docs-badge">Component</span>
         <h1>PromptLibrary</h1>
-        <p className="docs-lead">Organize and apply prompt templates with variables.</p>
+        <p className="docs-lead">
+          Organize and apply prompt templates with variables.
+        </p>
       </div>
 
       <section className="docs-section">

@@ -2,13 +2,20 @@
  * Clarity Chat - Theme System
  *
  * Modern, flexible theming for Clarity Chat components.
+ * World-class theming capabilities with 24 built-in presets,
+ * advanced color utilities, and comprehensive accessibility support.
  *
  * Features:
- * - 8 built-in theme presets (light/dark variants)
+ * - 24 built-in theme presets (12 light/dark pairs)
  * - Simple API for custom themes
  * - CSS custom properties for runtime customization
  * - Full TypeScript support
- * - WCAG accessibility compliance
+ * - WCAG accessibility compliance (AA/AAA)
+ * - Color blindness simulation
+ * - Harmonious palette generation
+ * - Theme composition with mixins
+ * - Interactive theme customizer component
+ * - Export to CSS/JSON/Tailwind
  *
  * @example
  * // Zero config - just works
@@ -16,8 +23,8 @@
  * <ClarityChat api="/api/chat" />
  *
  * @example
- * // Theme preset selection
- * <ThemeProvider defaultTheme={{ preset: 'neutral-dark' }}>
+ * // Theme preset selection (24 presets available)
+ * <ThemeProvider defaultTheme={{ preset: 'ocean-dark' }}>
  *   <ClarityChat api="/api/chat" />
  * </ThemeProvider>
  *
@@ -25,6 +32,16 @@
  * // Simple brand customization
  * import { createTheme } from '@clarity-chat/react'
  * const theme = createTheme({ brandColor: '#6366f1' })
+ *
+ * @example
+ * // Advanced theme composition
+ * import { ThemeBuilder, ColorMixins, BorderMixins } from '@clarity-chat/react'
+ * const theme = new ThemeBuilder()
+ *   .extend('neutral')
+ *   .mode('dark')
+ *   .colors(ColorMixins.brand('#6366f1'))
+ *   .borders(BorderMixins.extraRounded())
+ *   .build()
  *
  * @example
  * // Pure CSS override (simplest)
@@ -272,14 +289,122 @@ export {
   type ContrastReport,
 } from './color-contrast'
 
-// Color token migration utilities (codemod)
+// NOTE:
+// `migrate-colors` is a Node-only codemod (uses `fs`/`path`) and should not be
+// exported from the browser-facing theme entrypoint. Keeping it out of the main
+// bundle prevents Vite/Storybook from attempting to resolve Node built-ins.
+// ============================================================================
+// Advanced Color Utilities
+// ============================================================================
+
+// Advanced color manipulation
 export {
-  colorMigrationMap,
-  reviewPatterns,
-  migrateLine,
-  checkForReview,
-  migrateFile,
-  migrateDirectory,
-  generateReport,
-  type MigrationResult,
-} from './migrate-colors'
+  // OKLCH color space
+  rgbToOklch,
+  oklchToRgb,
+  hexToOklch,
+  oklchToHex,
+  type OKLCHColor,
+  // Color blindness simulation
+  simulateColorBlindness,
+  getAllColorBlindnessSimulations,
+  areColorsDistinguishable,
+  type ColorBlindnessType,
+  // Harmonious palettes
+  generateHarmoniousPalette,
+  generateColorScale,
+  generateSemanticColors,
+  type ColorHarmony,
+  // Gradients
+  generateGradient,
+  generateSmoothGradient,
+  generateMeshGradient,
+  type GradientDirection,
+  type GradientStop,
+  // Color mixing
+  mixColors,
+  blendColors,
+  type BlendMode,
+  // Auto-adjustment
+  autoAdjustForContrast,
+  getReadableTextColor,
+  analyzeColor,
+} from './color-advanced'
+
+// ============================================================================
+// Theme Composition
+// ============================================================================
+
+// Theme builder and mixins
+export {
+  // Theme builder class
+  ThemeBuilder,
+  type ThemeBuilderOptions,
+  // Color mixins
+  ColorMixins,
+  type ColorMixin,
+  // Typography mixins
+  TypographyMixins,
+  // Border mixins
+  BorderMixins,
+  // Shadow mixins
+  ShadowMixins,
+  // Theme composition utilities
+  composeThemes,
+  createVariant,
+  ThemeVariants,
+  // Quick theme creation
+  createBrandTheme,
+  createMultiColorTheme,
+  type ThemeMixin,
+  type ThemeVariantFn,
+} from './theme-composer'
+
+// ============================================================================
+// New Theme Presets
+// ============================================================================
+
+// Additional theme presets
+export {
+  // Ocean theme
+  oceanLightTheme,
+  oceanDarkTheme,
+  oceanThemeMetadata,
+  // Sunset theme
+  sunsetLightTheme,
+  sunsetDarkTheme,
+  sunsetThemeMetadata,
+  // Forest theme
+  forestLightTheme,
+  forestDarkTheme,
+  forestThemeMetadata,
+  // Rose theme
+  roseLightTheme,
+  roseDarkTheme,
+  roseThemeMetadata,
+  // Midnight theme
+  midnightLightTheme,
+  midnightDarkTheme,
+  midnightThemeMetadata,
+  // Slate theme
+  slateLightTheme,
+  slateDarkTheme,
+  slateThemeMetadata,
+  // Emerald theme
+  emeraldLightTheme,
+  emeraldDarkTheme,
+  emeraldThemeMetadata,
+  // Amber theme
+  amberLightTheme,
+  amberDarkTheme,
+  amberThemeMetadata,
+  // Category helpers
+  getThemesByCategory,
+  getLightThemes,
+  getDarkThemes,
+  // Industry-specific aliases
+  financeTheme,
+  healthcareTheme,
+  ecommerceTheme,
+  lifestyleTheme,
+} from './modern-presets'

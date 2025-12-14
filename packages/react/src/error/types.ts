@@ -77,7 +77,11 @@ export interface ErrorProvider {
   reportError: (report: ErrorReport) => void | Promise<void>
 
   /** Set user context */
-  setUser?: (userId: string, email?: string, userData?: Record<string, any>) => void
+  setUser?: (
+    userId: string,
+    email?: string,
+    userData?: Record<string, any>
+  ) => void
 
   /** Set global context/tags */
   setContext?: (context: Record<string, any>) => void
@@ -122,6 +126,19 @@ export interface ErrorReporterConfig {
 
   /** Global context to add to all reports */
   globalContext?: Record<string, any>
+
+  /**
+   * Redaction settings for sensitive fields in `context`, `tags`, and `environment`.
+   * This runs before `beforeSend`.
+   */
+  redact?: {
+    /** Case-insensitive keys to redact (e.g. "authorization", "token") */
+    keys?: string[]
+    /** Maximum depth for deep-redaction (default: 5) */
+    maxDepth?: number
+    /** Replacement value used for redacted fields (default: "[REDACTED]") */
+    replacement?: string
+  }
 }
 
 /**

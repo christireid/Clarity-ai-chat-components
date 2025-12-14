@@ -400,7 +400,39 @@ export function ToastProvider({
 export function useToast(): ToastContextValue {
   const context = useContext(ToastContext)
   if (!context) {
-    throw new Error('useToast must be used within ToastProvider')
+    // Graceful fallback: components should not hard-crash if a consumer forgets
+    // to add `ToastProvider` (especially in tests / embedded usage).
+    // Warn once in dev to avoid flooding test output.
+    if (process.env.NODE_ENV !== 'production') {
+      ;(globalThis as any).__clarityChatToastProviderWarned ??= false
+      if (!(globalThis as any).__clarityChatToastProviderWarned) {
+        ;(globalThis as any).__clarityChatToastProviderWarned = true
+        console.warn(
+          '[Clarity Chat] ToastProvider missing; falling back to no-op toasts.'
+        )
+      }
+    }
+    return {
+      toasts: [],
+      addToast: () => '',
+      removeToast: () => {},
+      success: (description: string, title?: string) => {
+        toast.success(description, title)
+        return ''
+      },
+      error: (description: string, title?: string) => {
+        toast.error(description, title)
+        return ''
+      },
+      info: (description: string, title?: string) => {
+        toast.info(description, title)
+        return ''
+      },
+      warning: (description: string, title?: string) => {
+        toast.warning(description, title)
+        return ''
+      },
+    }
   }
   return context
 }

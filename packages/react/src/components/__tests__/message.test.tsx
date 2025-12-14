@@ -373,7 +373,7 @@ describe('Message Component', () => {
       // Hover to reveal actions
       const messageDiv = container.querySelector('.group')
       if (messageDiv) {
-        fireEvent.mouseEnter(messageDiv)
+        await user.hover(messageDiv)
       }
 
       await waitFor(() => {
@@ -383,7 +383,8 @@ describe('Message Component', () => {
 
       const thumbsUp = screen.getByLabelText('Good response')
       thumbsUp.focus()
-      await user.keyboard('{Enter}')
+      fireEvent.keyDown(thumbsUp, { key: 'Enter', code: 'Enter' })
+      fireEvent.keyUp(thumbsUp, { key: 'Enter', code: 'Enter' })
 
       expect(onFeedback).toHaveBeenCalledWith('up')
     })

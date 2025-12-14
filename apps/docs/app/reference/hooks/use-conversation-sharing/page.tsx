@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useConversationSharing - Clarity Chat Components',
-  description: 'Hook for sharing conversations with configurable visibility, expiration, and analytics tracking.',
+  description:
+    'Hook for sharing conversations with configurable visibility, expiration, and analytics tracking.',
 }
 
 const optionsProps: Prop[] = [
@@ -32,7 +31,8 @@ export default function UseConversationSharingPage() {
         <span className="docs-badge">Hook</span>
         <h1>useConversationSharing</h1>
         <p className="docs-lead">
-          Hook for sharing conversations with configurable visibility, expiration, password protection, and analytics tracking.
+          Hook for sharing conversations with configurable visibility,
+          expiration, password protection, and analytics tracking.
         </p>
       </div>
 
@@ -48,9 +48,7 @@ export default function UseConversationSharingPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Share conversations:
-        </p>
+        <p>Share conversations:</p>
         <CodePlayground
           initialCode={`import { useConversationSharing } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -91,9 +89,7 @@ function ShareConversation({ messages, conversationId }: { messages: Message[], 
 
       <section className="docs-section">
         <h2>Password Protection</h2>
-        <p>
-          Create password-protected shares:
-        </p>
+        <p>Create password-protected shares:</p>
         <CodePlayground
           initialCode={`import { useConversationSharing } from '@clarity-chat/react'
 
@@ -117,9 +113,7 @@ function PasswordProtectedShare() {
 
       <section className="docs-section">
         <h2>Share Analytics</h2>
-        <p>
-          Track share analytics:
-        </p>
+        <p>Track share analytics:</p>
         <CodePlayground
           initialCode={`import { useConversationSharing } from '@clarity-chat/react'
 
@@ -144,9 +138,7 @@ function ShareAnalytics({ shareId }: { shareId: string }) {
 
       <section className="docs-section">
         <h2>Revoke Shares</h2>
-        <p>
-          Revoke share links:
-        </p>
+        <p>Revoke share links:</p>
         <CodePlayground
           initialCode={`import { useConversationSharing } from '@clarity-chat/react'
 
@@ -175,22 +167,42 @@ function ShareManager() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>shareLinks</code>: Array of share link configurations</li>
-          <li><code>analytics</code>: Map of share analytics by share ID</li>
-          <li><code>createShareLink</code>: Function to create share link</li>
-          <li><code>revokeShare</code>: Function to revoke share link</li>
-          <li><code>getAnalytics</code>: Function to get analytics for share</li>
-          <li><code>generateQRCode</code>: Function to generate QR code for share</li>
+          <li>
+            <code>shareLinks</code>: Array of share link configurations
+          </li>
+          <li>
+            <code>analytics</code>: Map of share analytics by share ID
+          </li>
+          <li>
+            <code>createShareLink</code>: Function to create share link
+          </li>
+          <li>
+            <code>revokeShare</code>: Function to revoke share link
+          </li>
+          <li>
+            <code>getAnalytics</code>: Function to get analytics for share
+          </li>
+          <li>
+            <code>generateQRCode</code>: Function to generate QR code for share
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Share Visibility</h2>
         <ul>
-          <li><strong>public</strong>: Anyone with link can view</li>
-          <li><strong>private</strong>: Only specific users can view</li>
-          <li><strong>password-protected</strong>: Requires password to view</li>
-          <li><strong>team-only</strong>: Only team members can view</li>
+          <li>
+            <strong>public</strong>: Anyone with link can view
+          </li>
+          <li>
+            <strong>private</strong>: Only specific users can view
+          </li>
+          <li>
+            <strong>password-protected</strong>: Requires password to view
+          </li>
+          <li>
+            <strong>team-only</strong>: Only team members can view
+          </li>
         </ul>
       </section>
 
@@ -208,8 +220,18 @@ function ShareManager() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/conversation-sharing">ConversationSharing</a> - Conversation sharing component</li>
-          <li><a href="/reference/components/user-interaction-analytics">UserInteractionAnalytics</a> - Analytics component</li>
+          <li>
+            <a href="/reference/components/conversation-sharing">
+              ConversationSharing
+            </a>{' '}
+            - Conversation sharing component
+          </li>
+          <li>
+            <a href="/reference/components/user-interaction-analytics">
+              UserInteractionAnalytics
+            </a>{' '}
+            - Analytics component
+          </li>
         </ul>
       </section>
     </div>

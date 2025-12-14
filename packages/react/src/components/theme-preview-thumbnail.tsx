@@ -472,7 +472,7 @@ function ThemePreviewGridItem({
       role={onClick ? 'radio' : undefined}
       tabIndex={tabIndex}
       aria-checked={onClick ? selected : undefined}
-      aria-label={`${displayName}${selected ? ' (selected)' : ''}`}
+      aria-label={`Theme preview: ${displayName}${selected ? ' (selected)' : ''}`}
       onKeyDown={
         onClick
           ? (e) => {

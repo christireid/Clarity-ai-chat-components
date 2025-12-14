@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'SafetyReviewConsole - Clarity Chat Components',
-  description: 'Safety review console for reviewing and redacting sensitive content in AI responses.',
+  description:
+    'Safety review console for reviewing and redacting sensitive content in AI responses.',
 }
 
 const props: Prop[] = [
@@ -54,7 +53,8 @@ export default function SafetyReviewConsolePage() {
         <span className="docs-badge">Component</span>
         <h1>SafetyReviewConsole</h1>
         <p className="docs-lead">
-          Safety review console for reviewing and redacting sensitive content in AI responses with highlighted safety issues.
+          Safety review console for reviewing and redacting sensitive content in
+          AI responses with highlighted safety issues.
         </p>
       </div>
 
@@ -70,15 +70,15 @@ export default function SafetyReviewConsolePage() {
 
       <Callout type="warning">
         <p>
-          <strong>Safety Review:</strong> This component helps identify and redact sensitive content. Always review flagged content before approval.
+          <strong>Safety Review:</strong> This component helps identify and
+          redact sensitive content. Always review flagged content before
+          approval.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Review content for safety issues:
-        </p>
+        <p>Review content for safety issues:</p>
         <CodePlayground
           initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
@@ -123,9 +123,7 @@ function SafetyReview({ content }: { content: string }) {
 
       <section className="docs-section">
         <h2>Severity Levels</h2>
-        <p>
-          Handle different severity levels:
-        </p>
+        <p>Handle different severity levels:</p>
         <CodePlayground
           initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
@@ -172,9 +170,7 @@ function WithSeverity({ content }: { content: string }) {
 
       <section className="docs-section">
         <h2>Interactive Redaction</h2>
-        <p>
-          Allow users to redact highlighted content:
-        </p>
+        <p>Allow users to redact highlighted content:</p>
         <CodePlayground
           initialCode={`import { SafetyReviewConsole } from '@clarity-chat/react'
 
@@ -207,12 +203,24 @@ function InteractiveReview({ content }: { content: string }) {
       <section className="docs-section">
         <h2>Safety Highlight Properties</h2>
         <ul>
-          <li><code>id</code>: Unique identifier</li>
-          <li><code>start</code>: Start character position</li>
-          <li><code>end</code>: End character position</li>
-          <li><code>category</code>: Safety category (PII, Sensitive Data, etc.)</li>
-          <li><code>severity</code>: Severity level ('low' | 'medium' | 'high')</li>
-          <li><code>suggestion</code>: Optional suggestion for handling</li>
+          <li>
+            <code>id</code>: Unique identifier
+          </li>
+          <li>
+            <code>start</code>: Start character position
+          </li>
+          <li>
+            <code>end</code>: End character position
+          </li>
+          <li>
+            <code>category</code>: Safety category (PII, Sensitive Data, etc.)
+          </li>
+          <li>
+            <code>severity</code>: Severity level ('low' | 'medium' | 'high')
+          </li>
+          <li>
+            <code>suggestion</code>: Optional suggestion for handling
+          </li>
         </ul>
       </section>
 
@@ -230,8 +238,18 @@ function InteractiveReview({ content }: { content: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/message-actions-secure">MessageActionsSecure</a> - Secure message actions</li>
-          <li><a href="/reference/components/evaluation-dashboard">EvaluationDashboard</a> - Evaluation metrics</li>
+          <li>
+            <a href="/reference/components/message-actions-secure">
+              MessageActionsSecure
+            </a>{' '}
+            - Secure message actions
+          </li>
+          <li>
+            <a href="/reference/components/evaluation-dashboard">
+              EvaluationDashboard
+            </a>{' '}
+            - Evaluation metrics
+          </li>
         </ul>
       </section>
     </div>

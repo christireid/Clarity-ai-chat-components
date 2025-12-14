@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'PerformanceAnalyticsDashboard - Clarity Chat Components',
-  description: 'Real-time performance monitoring dashboard with Web Vitals, component metrics, and network tracking.',
+  description:
+    'Real-time performance monitoring dashboard with Web Vitals, component metrics, and network tracking.',
 }
 
 const props: Prop[] = [
@@ -72,7 +71,8 @@ export default function PerformanceAnalyticsDashboardPage() {
         <span className="docs-badge">Component</span>
         <h1>PerformanceAnalyticsDashboard</h1>
         <p className="docs-lead">
-          Real-time performance monitoring dashboard with Core Web Vitals, component metrics, network tracking, and memory usage.
+          Real-time performance monitoring dashboard with Core Web Vitals,
+          component metrics, network tracking, and memory usage.
         </p>
       </div>
 
@@ -88,16 +88,15 @@ export default function PerformanceAnalyticsDashboardPage() {
 
       <Callout type="info" className="my-6">
         <p>
-          <strong>New in 2025:</strong> This dashboard provides 50% faster issue detection with real-time
-          performance monitoring across all key metrics.
+          <strong>New in 2025:</strong> This dashboard provides 50% faster issue
+          detection with real-time performance monitoring across all key
+          metrics.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Display performance dashboard with default configuration:
-        </p>
+        <p>Display performance dashboard with default configuration:</p>
         <CodePlayground
           initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
@@ -124,9 +123,7 @@ render(<ChatWithPerformance />)`}
 
       <section className="docs-section">
         <h2>Web Vitals Monitoring</h2>
-        <p>
-          Monitor Core Web Vitals (LCP, FID, FCP, CLS, TTFB, INP):
-        </p>
+        <p>Monitor Core Web Vitals (LCP, FID, FCP, CLS, TTFB, INP):</p>
         <CodePlayground
           initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
@@ -148,9 +145,7 @@ function WebVitalsDashboard() {
 
       <section className="docs-section">
         <h2>Component Metrics</h2>
-        <p>
-          Track component render performance:
-        </p>
+        <p>Track component render performance:</p>
         <CodePlayground
           initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
@@ -172,9 +167,7 @@ function ComponentMetricsDashboard() {
 
       <section className="docs-section">
         <h2>Network Monitoring</h2>
-        <p>
-          Monitor network request performance:
-        </p>
+        <p>Monitor network request performance:</p>
         <CodePlayground
           initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
@@ -196,9 +189,7 @@ function NetworkDashboard() {
 
       <section className="docs-section">
         <h2>Memory and FPS Tracking</h2>
-        <p>
-          Track memory usage and frame rate:
-        </p>
+        <p>Track memory usage and frame rate:</p>
         <CodePlayground
           initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
@@ -224,9 +215,7 @@ function MemoryFPSDashboard() {
 
       <section className="docs-section">
         <h2>Custom Data</h2>
-        <p>
-          Provide custom performance data:
-        </p>
+        <p>Provide custom performance data:</p>
         <CodePlayground
           initialCode={`import { PerformanceAnalyticsDashboard, type PerformanceAnalytics } from '@clarity-chat/react'
 
@@ -271,9 +260,7 @@ function CustomDataDashboard() {
 
       <section className="docs-section">
         <h2>Compact Mode</h2>
-        <p>
-          Use compact mode for minimal UI footprint:
-        </p>
+        <p>Use compact mode for minimal UI footprint:</p>
         <CodePlayground
           initialCode={`import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
@@ -299,12 +286,29 @@ function CompactDashboard() {
         <h2>Performance Metrics</h2>
         <h3>Web Vitals</h3>
         <ul>
-          <li><strong>LCP</strong> (Largest Contentful Paint): Measures loading performance</li>
-          <li><strong>FID</strong> (First Input Delay): Measures interactivity</li>
-          <li><strong>FCP</strong> (First Contentful Paint): Measures initial render</li>
-          <li><strong>CLS</strong> (Cumulative Layout Shift): Measures visual stability</li>
-          <li><strong>TTFB</strong> (Time to First Byte): Measures server response time</li>
-          <li><strong>INP</strong> (Interaction to Next Paint): Measures responsiveness</li>
+          <li>
+            <strong>LCP</strong> (Largest Contentful Paint): Measures loading
+            performance
+          </li>
+          <li>
+            <strong>FID</strong> (First Input Delay): Measures interactivity
+          </li>
+          <li>
+            <strong>FCP</strong> (First Contentful Paint): Measures initial
+            render
+          </li>
+          <li>
+            <strong>CLS</strong> (Cumulative Layout Shift): Measures visual
+            stability
+          </li>
+          <li>
+            <strong>TTFB</strong> (Time to First Byte): Measures server response
+            time
+          </li>
+          <li>
+            <strong>INP</strong> (Interaction to Next Paint): Measures
+            responsiveness
+          </li>
         </ul>
 
         <h3>Component Metrics</h3>
@@ -325,9 +329,13 @@ function CompactDashboard() {
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Use <code>updateInterval</code> of 1000ms for real-time monitoring</li>
+          <li>
+            Use <code>updateInterval</code> of 1000ms for real-time monitoring
+          </li>
           <li>Enable only the metrics you need to reduce overhead</li>
-          <li>Use <code>compact</code> mode in production</li>
+          <li>
+            Use <code>compact</code> mode in production
+          </li>
           <li>Monitor Web Vitals for SEO and user experience</li>
           <li>Track component metrics during development</li>
           <li>Use network metrics to identify slow API calls</li>
@@ -337,9 +345,20 @@ function CompactDashboard() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/performance-dashboard">PerformanceDashboard</a> - Basic performance dashboard</li>
-          <li><a href="/reference/hooks/use-performance">usePerformance</a> - Performance monitoring hook</li>
-          <li><a href="/guides/performance">Performance Guide</a> - Performance optimization strategies</li>
+          <li>
+            <a href="/reference/components/performance-dashboard">
+              PerformanceDashboard
+            </a>{' '}
+            - Basic performance dashboard
+          </li>
+          <li>
+            <a href="/reference/hooks/use-performance">usePerformance</a> -
+            Performance monitoring hook
+          </li>
+          <li>
+            <a href="/guides/performance">Performance Guide</a> - Performance
+            optimization strategies
+          </li>
         </ul>
       </section>
     </div>

@@ -2,8 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'MemoryProvider Component | Clarity Chat',
   description:
@@ -19,8 +17,9 @@ export default function MemoryProviderPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">MemoryProvider</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          React context provider that enables AI memory integration throughout your application.
-          Wraps components that need access to memory features.
+          React context provider that enables AI memory integration throughout
+          your application. Wraps components that need access to memory
+          features.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready) •{' '}
@@ -31,7 +30,9 @@ export default function MemoryProviderPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
-          <li>Applications requiring AI memory that persists across sessions</li>
+          <li>
+            Applications requiring AI memory that persists across sessions
+          </li>
           <li>Chat apps that need to remember user preferences and context</li>
           <li>When multiple components need access to shared memory state</li>
           <li>Building personalized AI experiences with long-term memory</li>
@@ -39,8 +40,17 @@ export default function MemoryProviderPage() {
 
         <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>For simple chat without memory - use <code className="bg-muted px-2 py-1 rounded">ClarityChat</code> or <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> directly</li>
-          <li>For session-only context - use <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> with sliding-window memory</li>
+          <li>
+            For simple chat without memory - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">ClarityChat</code> or{' '}
+            <code className="bg-muted px-2 py-1 rounded">useClarityChat</code>{' '}
+            directly
+          </li>
+          <li>
+            For session-only context - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">useClarityChat</code>{' '}
+            with sliding-window memory
+          </li>
           <li>When memory is handled entirely on the server side</li>
         </ul>
       </section>
@@ -130,9 +140,12 @@ function App() {
                 <tbody className="divide-y">
                   <tr>
                     <td className="p-3 font-mono text-sm">config</td>
-                    <td className="p-3 font-mono text-sm">MemoryServiceConfig</td>
+                    <td className="p-3 font-mono text-sm">
+                      MemoryServiceConfig
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      <strong>Required.</strong> Memory service configuration including maxTokens.
+                      <strong>Required.</strong> Memory service configuration
+                      including maxTokens.
                     </td>
                   </tr>
                   <tr>
@@ -180,8 +193,9 @@ function App() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Context Value</h2>
         <p className="text-muted-foreground mb-4">
-          Use the <code className="bg-muted px-2 py-1 rounded">useMemoryContext</code> hook to access
-          the memory context provided by MemoryProvider.
+          Use the{' '}
+          <code className="bg-muted px-2 py-1 rounded">useMemoryContext</code>{' '}
+          hook to access the memory context provided by MemoryProvider.
         </p>
         <div className="border rounded-lg p-4">
           <pre className="text-sm">

@@ -6,11 +6,10 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Multi-Modal Chat Recipe | Clarity Chat Cookbook',
-  description: 'Learn how to build chat interfaces that support text, images, files, and other media types.',
+  description:
+    'Learn how to build chat interfaces that support text, images, files, and other media types.',
 }
 
 export default function MultiModalChatPage() {
@@ -21,15 +20,16 @@ export default function MultiModalChatPage() {
       <h1>Multi-Modal Chat Recipe</h1>
 
       <p className="lead">
-        Build chat interfaces that support text, images, files, and other media types.
-        Perfect for applications that need to process visual content alongside text.
+        Build chat interfaces that support text, images, files, and other media
+        types. Perfect for applications that need to process visual content
+        alongside text.
       </p>
 
       <Callout type="info" title="What is Multi-Modal?">
         <p>
-          Multi-modal chat allows users to send and receive different types of content:
-          text, images, files, audio, video, and more. The AI can understand and respond
-          to all these formats.
+          Multi-modal chat allows users to send and receive different types of
+          content: text, images, files, audio, video, and more. The AI can
+          understand and respond to all these formats.
         </p>
       </Callout>
 
@@ -38,7 +38,7 @@ export default function MultiModalChatPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Enable multi-modal with file upload support:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { ClarityChat, FileUpload } from '@clarity-chat/react'
@@ -74,7 +74,7 @@ function MultiModalChat() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           For custom UIs, handle multi-modal messages:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat, ChatWindow, FileUpload } from '@clarity-chat/react'
@@ -147,7 +147,9 @@ function MultiModalChat() {
           Send images with text messages:
         </p>
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With AdvancedChatInput</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With AdvancedChatInput
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { AdvancedChatInput } from '@clarity-chat/react'
@@ -329,11 +331,13 @@ const handleAudioUpload = async (file: File) => {
       </section>
 
       <section className="my-12">
-        <h2 className="text-2xl font-bold mb-4">Displaying Multi-Modal Messages</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          Displaying Multi-Modal Messages
+        </h2>
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           Render different content types in messages:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`function MultiModalMessage({ message }) {
@@ -362,12 +366,29 @@ const handleAudioUpload = async (file: File) => {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Validate file types</strong> - Only accept supported formats</li>
-          <li><strong>Limit file sizes</strong> - Prevent large uploads from slowing down the app</li>
-          <li><strong>Show upload progress</strong> - Give users feedback during uploads</li>
-          <li><strong>Handle errors gracefully</strong> - Show clear error messages for unsupported files</li>
-          <li><strong>Optimize images</strong> - Compress images before sending to reduce token usage</li>
-          <li><strong>Use appropriate models</strong> - Use vision models (gpt-4-vision) for images</li>
+          <li>
+            <strong>Validate file types</strong> - Only accept supported formats
+          </li>
+          <li>
+            <strong>Limit file sizes</strong> - Prevent large uploads from
+            slowing down the app
+          </li>
+          <li>
+            <strong>Show upload progress</strong> - Give users feedback during
+            uploads
+          </li>
+          <li>
+            <strong>Handle errors gracefully</strong> - Show clear error
+            messages for unsupported files
+          </li>
+          <li>
+            <strong>Optimize images</strong> - Compress images before sending to
+            reduce token usage
+          </li>
+          <li>
+            <strong>Use appropriate models</strong> - Use vision models
+            (gpt-4-vision) for images
+          </li>
         </ul>
       </section>
 
@@ -378,7 +399,10 @@ const handleAudioUpload = async (file: File) => {
             <h3>FileUpload Component</h3>
             <p>File upload component</p>
           </a>
-          <a href="/reference/components/advanced-chat-input" className="docs-card">
+          <a
+            href="/reference/components/advanced-chat-input"
+            className="docs-card"
+          >
             <h3>AdvancedChatInput Component</h3>
             <p>Input with file support</p>
           </a>

@@ -4,11 +4,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'User Authentication - Cookbook - Clarity Chat',
-  description: 'Secure your chat app with user authentication using NextAuth.js.',
+  description:
+    'Secure your chat app with user authentication using NextAuth.js.',
 }
 
 export default function AuthenticationPage() {
@@ -18,7 +17,8 @@ export default function AuthenticationPage() {
         <span className="docs-badge">Cookbook</span>
         <h1>User Authentication</h1>
         <p className="docs-lead">
-          Secure your chat with user accounts. Users log in, get their own conversations, and you know who's using your app.
+          Secure your chat with user accounts. Users log in, get their own
+          conversations, and you know who's using your app.
         </p>
       </div>
 
@@ -235,4 +235,3 @@ const conversations = await prisma.conversation.findMany({
     </div>
   )
 }
-

@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useOfflineChat - Clarity Chat Components',
-  description: 'Hook for offline-first chat with IndexedDB storage and automatic sync.',
+  description:
+    'Hook for offline-first chat with IndexedDB storage and automatic sync.',
 }
 
 const optionsProps: Prop[] = [
@@ -37,7 +36,8 @@ export default function UseOfflineChatPage() {
         <span className="docs-badge">Hook</span>
         <h1>useOfflineChat</h1>
         <p className="docs-lead">
-          Hook for offline-first chat with IndexedDB storage, automatic sync, and pending operation management.
+          Hook for offline-first chat with IndexedDB storage, automatic sync,
+          and pending operation management.
         </p>
       </div>
 
@@ -53,9 +53,7 @@ export default function UseOfflineChatPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Enable offline chat functionality:
-        </p>
+        <p>Enable offline chat functionality:</p>
         <CodePlayground
           initialCode={`import { useOfflineChat } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -91,9 +89,7 @@ function OfflineChatApp({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Manual Sync</h2>
-        <p>
-          Manually trigger sync:
-        </p>
+        <p>Manually trigger sync:</p>
         <CodePlayground
           initialCode={`import { useOfflineChat } from '@clarity-chat/react'
 
@@ -116,9 +112,7 @@ function ManualSync() {
 
       <section className="docs-section">
         <h2>Pending Operations</h2>
-        <p>
-          Track and manage pending operations:
-        </p>
+        <p>Track and manage pending operations:</p>
         <CodePlayground
           initialCode={`import { useOfflineChat } from '@clarity-chat/react'
 
@@ -146,9 +140,7 @@ function PendingOps() {
 
       <section className="docs-section">
         <h2>Stored Messages</h2>
-        <p>
-          Access messages stored in IndexedDB:
-        </p>
+        <p>Access messages stored in IndexedDB:</p>
         <CodePlayground
           initialCode={`import { useOfflineChat } from '@clarity-chat/react'
 
@@ -173,9 +165,7 @@ function StoredMessages() {
 
       <section className="docs-section">
         <h2>Configuration</h2>
-        <p>
-          Configure offline storage:
-        </p>
+        <p>Configure offline storage:</p>
         <CodePlayground
           initialCode={`import { useOfflineChat } from '@clarity-chat/react'
 
@@ -203,27 +193,58 @@ function ConfiguredOffline() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>isOnline</code>: Whether device is online</li>
-          <li><code>syncStatus</code>: Current sync status ('online' | 'offline' | 'syncing' | 'error')</li>
-          <li><code>pendingOperations</code>: Array of pending operations</li>
-          <li><code>storedMessages</code>: Messages stored in IndexedDB</li>
-          <li><code>sync</code>: Function to manually trigger sync</li>
-          <li><code>clearStorage</code>: Function to clear IndexedDB storage</li>
-          <li><code>loadStoredMessages</code>: Function to load stored messages</li>
-          <li><code>retryOperation</code>: Function to retry a pending operation</li>
-          <li><code>clearPending</code>: Function to clear all pending operations</li>
-          <li><code>isSyncing</code>: Whether sync is in progress</li>
-          <li><code>lastSyncTime</code>: Timestamp of last successful sync</li>
+          <li>
+            <code>isOnline</code>: Whether device is online
+          </li>
+          <li>
+            <code>syncStatus</code>: Current sync status ('online' | 'offline' |
+            'syncing' | 'error')
+          </li>
+          <li>
+            <code>pendingOperations</code>: Array of pending operations
+          </li>
+          <li>
+            <code>storedMessages</code>: Messages stored in IndexedDB
+          </li>
+          <li>
+            <code>sync</code>: Function to manually trigger sync
+          </li>
+          <li>
+            <code>clearStorage</code>: Function to clear IndexedDB storage
+          </li>
+          <li>
+            <code>loadStoredMessages</code>: Function to load stored messages
+          </li>
+          <li>
+            <code>retryOperation</code>: Function to retry a pending operation
+          </li>
+          <li>
+            <code>clearPending</code>: Function to clear all pending operations
+          </li>
+          <li>
+            <code>isSyncing</code>: Whether sync is in progress
+          </li>
+          <li>
+            <code>lastSyncTime</code>: Timestamp of last successful sync
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Enable <code>autoSync</code> for automatic synchronization</li>
-          <li>Monitor <code>syncStatus</code> to show user feedback</li>
-          <li>Handle <code>pendingOperations</code> to show what's queued</li>
-          <li>Use <code>storedMessages</code> to display offline content</li>
+          <li>
+            Enable <code>autoSync</code> for automatic synchronization
+          </li>
+          <li>
+            Monitor <code>syncStatus</code> to show user feedback
+          </li>
+          <li>
+            Handle <code>pendingOperations</code> to show what's queued
+          </li>
+          <li>
+            Use <code>storedMessages</code> to display offline content
+          </li>
           <li>Set appropriate storage limits in config</li>
         </ul>
       </section>
@@ -231,8 +252,16 @@ function ConfiguredOffline() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/offline-chat-sync">OfflineChatSync</a> - Offline sync component</li>
-          <li><a href="/cookbook/offline-first-chat">Offline-First Chat Recipe</a> - Complete offline implementation</li>
+          <li>
+            <a href="/reference/components/offline-chat-sync">
+              OfflineChatSync
+            </a>{' '}
+            - Offline sync component
+          </li>
+          <li>
+            <a href="/cookbook/offline-first-chat">Offline-First Chat Recipe</a>{' '}
+            - Complete offline implementation
+          </li>
         </ul>
       </section>
     </div>

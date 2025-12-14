@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'EmailIntegration - Clarity Chat Components',
-  description: 'Integrate with email providers (Gmail, Outlook) to read, send, and manage emails within chat.',
+  description:
+    'Integrate with email providers (Gmail, Outlook) to read, send, and manage emails within chat.',
 }
 
 const props: Prop[] = [
@@ -67,7 +66,8 @@ export default function EmailIntegrationPage() {
         <span className="docs-badge">Component</span>
         <h1>EmailIntegration</h1>
         <p className="docs-lead">
-          Integrate with email providers (Gmail, Outlook, Yahoo, IMAP, Exchange) to read, send, and manage emails within chat.
+          Integrate with email providers (Gmail, Outlook, Yahoo, IMAP, Exchange)
+          to read, send, and manage emails within chat.
         </p>
       </div>
 
@@ -83,9 +83,7 @@ export default function EmailIntegrationPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Integrate with email providers:
-        </p>
+        <p>Integrate with email providers:</p>
         <CodePlayground
           initialCode={`import { EmailIntegration } from '@clarity-chat/react'
 
@@ -114,9 +112,7 @@ function EmailView() {
 
       <section className="docs-section">
         <h2>Email Composer</h2>
-        <p>
-          Send emails from chat:
-        </p>
+        <p>Send emails from chat:</p>
         <CodePlayground
           initialCode={`import { EmailIntegration } from '@clarity-chat/react'
 
@@ -141,9 +137,7 @@ function WithComposer() {
 
       <section className="docs-section">
         <h2>Email Notifications</h2>
-        <p>
-          Show email notifications:
-        </p>
+        <p>Show email notifications:</p>
         <CodePlayground
           initialCode={`import { EmailIntegration } from '@clarity-chat/react'
 
@@ -169,9 +163,7 @@ function WithNotifications() {
 
       <section className="docs-section">
         <h2>Email Search</h2>
-        <p>
-          Search email threads:
-        </p>
+        <p>Search email threads:</p>
         <CodePlayground
           initialCode={`import { EmailIntegration, useEmailIntegration } from '@clarity-chat/react'
 
@@ -200,11 +192,21 @@ function EmailSearch() {
       <section className="docs-section">
         <h2>Supported Providers</h2>
         <ul>
-          <li><strong>gmail</strong>: Gmail</li>
-          <li><strong>outlook</strong>: Outlook/Office 365</li>
-          <li><strong>yahoo</strong>: Yahoo Mail</li>
-          <li><strong>imap</strong>: IMAP servers</li>
-          <li><strong>exchange</strong>: Exchange servers</li>
+          <li>
+            <strong>gmail</strong>: Gmail
+          </li>
+          <li>
+            <strong>outlook</strong>: Outlook/Office 365
+          </li>
+          <li>
+            <strong>yahoo</strong>: Yahoo Mail
+          </li>
+          <li>
+            <strong>imap</strong>: IMAP servers
+          </li>
+          <li>
+            <strong>exchange</strong>: Exchange servers
+          </li>
         </ul>
       </section>
 
@@ -222,8 +224,16 @@ function EmailSearch() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/hooks/use-email-integration">useEmailIntegration</a> - Email integration hook</li>
-          <li><a href="/reference/components/chat-window">ChatWindow</a> - Main chat interface</li>
+          <li>
+            <a href="/reference/hooks/use-email-integration">
+              useEmailIntegration
+            </a>{' '}
+            - Email integration hook
+          </li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> - Main
+            chat interface
+          </li>
         </ul>
       </section>
     </div>

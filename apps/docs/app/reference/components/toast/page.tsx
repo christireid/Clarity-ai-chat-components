@@ -1,15 +1,14 @@
-import React from 'react';
-import { Metadata } from 'next';
-import { ApiTable } from '@/components/Demo/ApiTable';
-import { Callout } from '@/components/MDX/Callout';
-import { CodePlayground } from '@/components/Playground/CodePlayground';
-
-export const dynamic = 'force-dynamic'
+import React from 'react'
+import { Metadata } from 'next'
+import { ApiTable } from '@/components/Demo/ApiTable'
+import { Callout } from '@/components/MDX/Callout'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export const metadata: Metadata = {
   title: 'Toast Component - Clarity Chat Components',
-  description: 'A temporary notification component that displays brief messages about app processes without interrupting the user experience.',
-};
+  description:
+    'A temporary notification component that displays brief messages about app processes without interrupting the user experience.',
+}
 
 export default function ToastPage() {
   return (
@@ -17,13 +16,20 @@ export default function ToastPage() {
       <header className="docs-header">
         <div>
           <div className="flex gap-2 mb-3">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Component</span>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Stable</span>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">In Use</span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              Component
+            </span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              Stable
+            </span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              In Use
+            </span>
           </div>
           <h1>Toast</h1>
           <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
-            A temporary notification component that displays brief messages about app processes without interrupting the user experience.
+            A temporary notification component that displays brief messages
+            about app processes without interrupting the user experience.
           </p>
         </div>
       </header>
@@ -31,14 +37,16 @@ export default function ToastPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Toast notifications provide lightweight feedback about operations. They appear temporarily at the edge
-          of the screen, auto-dismiss after a few seconds, and don't block interaction with the rest of the app.
-          Perfect for success messages, quick updates, and non-critical information.
+          Toast notifications provide lightweight feedback about operations.
+          They appear temporarily at the edge of the screen, auto-dismiss after
+          a few seconds, and don't block interaction with the rest of the app.
+          Perfect for success messages, quick updates, and non-critical
+          information.
         </p>
 
         <Callout type="info" title="Toast vs Alert">
-          Use Toast for temporary, auto-dismissing notifications.
-          Use Alert for persistent messages that require user attention.
+          Use Toast for temporary, auto-dismissing notifications. Use Alert for
+          persistent messages that require user attention.
         </Callout>
       </section>
 
@@ -71,56 +79,57 @@ render(<BasicToast />)`}
               name: 'message',
               type: 'string | ReactNode',
               default: 'undefined',
-              description: 'Toast content message'
+              description: 'Toast content message',
             },
             {
               name: 'variant',
               type: "'info' | 'success' | 'warning' | 'error'",
               default: "'info'",
-              description: 'Visual style and semantic meaning'
+              description: 'Visual style and semantic meaning',
             },
             {
               name: 'title',
               type: 'string',
               default: 'undefined',
-              description: 'Optional toast title'
+              description: 'Optional toast title',
             },
             {
               name: 'duration',
               type: 'number',
               default: '3000',
-              description: 'Auto-dismiss duration in milliseconds (0 for persistent)'
+              description:
+                'Auto-dismiss duration in milliseconds (0 for persistent)',
             },
             {
               name: 'position',
               type: "'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'",
               default: "'top-right'",
-              description: 'Toast position on screen'
+              description: 'Toast position on screen',
             },
             {
               name: 'dismissible',
               type: 'boolean',
               default: 'true',
-              description: 'Whether toast can be manually dismissed'
+              description: 'Whether toast can be manually dismissed',
             },
             {
               name: 'action',
               type: '{ label: string; onClick: () => void }',
               default: 'undefined',
-              description: 'Action button configuration'
+              description: 'Action button configuration',
             },
             {
               name: 'icon',
               type: 'ReactNode | false',
               default: 'undefined',
-              description: 'Custom icon or false to hide default icon'
+              description: 'Custom icon or false to hide default icon',
             },
             {
               name: 'onDismiss',
               type: '() => void',
               default: 'undefined',
-              description: 'Callback fired when toast is dismissed'
-            }
+              description: 'Callback fired when toast is dismissed',
+            },
           ]}
         />
       </section>
@@ -190,9 +199,7 @@ render(<ToastVariants />)`}
 
       <section className="docs-section">
         <h2>With Title</h2>
-        <p>
-          Add a title for more structured notifications.
-        </p>
+        <p>Add a title for more structured notifications.</p>
         <CodePlayground
           initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
@@ -245,9 +252,7 @@ render(<ToastWithTitle />)`}
 
       <section className="docs-section">
         <h2>Positions</h2>
-        <p>
-          Display toasts at different screen positions.
-        </p>
+        <p>Display toasts at different screen positions.</p>
         <CodePlayground
           initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
@@ -288,9 +293,7 @@ render(<ToastPositions />)`}
 
       <section className="docs-section">
         <h2>Custom Duration</h2>
-        <p>
-          Control how long toasts remain visible before auto-dismissing.
-        </p>
+        <p>Control how long toasts remain visible before auto-dismissing.</p>
         <CodePlayground
           initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
@@ -349,9 +352,7 @@ render(<ToastDuration />)`}
 
       <section className="docs-section">
         <h2>With Actions</h2>
-        <p>
-          Include action buttons for users to respond to toasts.
-        </p>
+        <p>Include action buttons for users to respond to toasts.</p>
         <CodePlayground
           initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
@@ -445,9 +446,7 @@ render(<ToastQueue />)`}
 
       <section className="docs-section">
         <h2>Custom Icons</h2>
-        <p>
-          Customize or remove icons to match your needs.
-        </p>
+        <p>Customize or remove icons to match your needs.</p>
         <CodePlayground
           initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
@@ -498,9 +497,7 @@ render(<CustomIconToast />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Progress Toast</h3>
-        <p>
-          Show progress within a toast notification.
-        </p>
+        <p>Show progress within a toast notification.</p>
         <CodePlayground
           initialCode={`import { useState, useEffect } from 'react';
 import { Button, useToast, Progress } from '@clarity/chat-components';
@@ -553,9 +550,7 @@ render(<ProgressToast />)`}
         />
 
         <h3>Rich Content Toast</h3>
-        <p>
-          Display complex content in toast notifications.
-        </p>
+        <p>Display complex content in toast notifications.</p>
         <CodePlayground
           initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
@@ -635,17 +630,30 @@ render(<PromiseToast />)`}
 
         <h3>ARIA Attributes</h3>
         <ul>
-          <li><code>role="status"</code> - For non-urgent notifications</li>
-          <li><code>role="alert"</code> - For urgent, important messages</li>
-          <li><code>aria-live="polite"</code> - Announces changes without interrupting</li>
-          <li><code>aria-atomic="true"</code> - Announces entire content</li>
+          <li>
+            <code>role="status"</code> - For non-urgent notifications
+          </li>
+          <li>
+            <code>role="alert"</code> - For urgent, important messages
+          </li>
+          <li>
+            <code>aria-live="polite"</code> - Announces changes without
+            interrupting
+          </li>
+          <li>
+            <code>aria-atomic="true"</code> - Announces entire content
+          </li>
         </ul>
 
         <h3>Keyboard Navigation</h3>
         <ul>
           <li>Action buttons are keyboard focusable</li>
-          <li><kbd>Enter</kbd> / <kbd>Space</kbd> - Activate action or dismiss</li>
-          <li><kbd>Esc</kbd> - Dismiss toast</li>
+          <li>
+            <kbd>Enter</kbd> / <kbd>Space</kbd> - Activate action or dismiss
+          </li>
+          <li>
+            <kbd>Esc</kbd> - Dismiss toast
+          </li>
           <li>Focus management when toasts appear/disappear</li>
         </ul>
 
@@ -705,24 +713,32 @@ render(<PromiseToast />)`}
 
         <h3>Duration Guidelines</h3>
         <ul>
-          <li><strong>1-2 seconds:</strong> Simple confirmations ("Saved")</li>
-          <li><strong>3-5 seconds:</strong> Standard notifications with text</li>
-          <li><strong>7+ seconds:</strong> Messages with actions or longer text</li>
-          <li><strong>Persistent:</strong> Only for toasts requiring user action</li>
+          <li>
+            <strong>1-2 seconds:</strong> Simple confirmations ("Saved")
+          </li>
+          <li>
+            <strong>3-5 seconds:</strong> Standard notifications with text
+          </li>
+          <li>
+            <strong>7+ seconds:</strong> Messages with actions or longer text
+          </li>
+          <li>
+            <strong>Persistent:</strong> Only for toasts requiring user action
+          </li>
         </ul>
 
         <Callout type="info" title="Mobile Considerations">
-          On mobile devices, position toasts at the bottom for better thumb reachability.
-          Increase touch target size for dismiss and action buttons (44x44px minimum).
+          On mobile devices, position toasts at the bottom for better thumb
+          reachability. Increase touch target size for dismiss and action
+          buttons (44x44px minimum).
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <p>
-          The Toast system is fully typed with TypeScript:
-        </p>
-        <pre><code>{`type ToastVariant = 'info' | 'success' | 'warning' | 'error';
+        <p>The Toast system is fully typed with TypeScript:</p>
+        <pre>
+          <code>{`type ToastVariant = 'info' | 'success' | 'warning' | 'error';
 type ToastPosition = 
   | 'top-left' | 'top-center' | 'top-right'
   | 'bottom-left' | 'bottom-center' | 'bottom-right';
@@ -775,17 +791,27 @@ interface ToastProviderProps {
   defaultDuration?: number;
 }
 
-export function ToastProvider(props: ToastProviderProps): JSX.Element;`}</code></pre>
+export function ToastProvider(props: ToastProviderProps): JSX.Element;`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Related Components</h2>
         <ul>
-          <li><a href="/reference/components/alert">Alert</a> - Persistent notifications</li>
-          <li><a href="/reference/components/snackbar">Snackbar</a> - Mobile-style notifications</li>
-          <li><a href="/reference/hooks/use-notification">useNotification</a> - Notification system hook</li>
+          <li>
+            <a href="/reference/components/alert">Alert</a> - Persistent
+            notifications
+          </li>
+          <li>
+            <a href="/reference/components/snackbar">Snackbar</a> - Mobile-style
+            notifications
+          </li>
+          <li>
+            <a href="/reference/hooks/use-notification">useNotification</a> -
+            Notification system hook
+          </li>
         </ul>
       </section>
     </div>
-  );
+  )
 }

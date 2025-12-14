@@ -33,7 +33,7 @@ export {
   useMarkdownComponents,
   useMarkdownPlugins,
   type MessageMarkdownRendererProps,
-} from './components/message'
+} from './components/message/index'
 export { StreamBlock } from './components/stream-block'
 export { ToolInvocationCard } from './components/tool-invocation-card'
 export { ClarityToolResult } from './components/clarity-tool-result'
