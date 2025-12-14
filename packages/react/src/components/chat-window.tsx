@@ -119,30 +119,73 @@ const DefaultEmptyState = ({
   showStarterPrompts = true,
 }: DefaultEmptyStateProps) => (
   <motion.div
-    className="text-center space-y-8 px-4"
+    className="text-center space-y-8 px-4 py-8"
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
   >
-    <motion.div
-      className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg ring-1 ring-primary/30"
-      animate={{
-        scale: [1, 1.02, 1],
-        rotate: [0, 1, -1, 0],
-      }}
-      transition={{
-        duration: duration('slower'),
-        repeat: Infinity,
-        ease: 'easeInOut',
-      }}
-    >
-      <BotIcon size={40} className="text-primary" />
-    </motion.div>
+    {/* Animated icon with decorative rings */}
+    <div className="relative inline-flex items-center justify-center">
+      {/* Outer decorative ring */}
+      <motion.div
+        className="absolute w-32 h-32 rounded-full border border-primary/10"
+        animate={{
+          scale: [1, 1.05, 1],
+          opacity: [0.5, 0.8, 0.5],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      {/* Middle decorative ring */}
+      <motion.div
+        className="absolute w-28 h-28 rounded-full border border-primary/20"
+        animate={{
+          scale: [1, 1.03, 1],
+          opacity: [0.6, 1, 0.6],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 0.5,
+        }}
+      />
+      {/* Main icon container */}
+      <motion.div
+        className="relative z-10 inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/15 to-primary/5 shadow-[0_8px_32px_-8px_hsl(var(--primary)/0.3)] ring-1 ring-primary/20"
+        animate={{
+          scale: [1, 1.02, 1],
+          rotate: [0, 1, -1, 0],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      >
+        <motion.div
+          animate={{
+            y: [0, -2, 0],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        >
+          <BotIcon size={40} className="text-primary" />
+        </motion.div>
+      </motion.div>
+    </div>
+
     <div className="space-y-3">
-      <h3 className="text-2xl font-bold text-foreground">
+      <h3 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
         Start a conversation
       </h3>
-      <p className="text-sm text-muted-foreground/90 max-w-sm mx-auto leading-relaxed">
+      <p className="text-sm text-muted-foreground/80 max-w-md mx-auto leading-relaxed">
         Send a message to begin chatting with the AI assistant. I'm here to help
         with your questions and tasks.
       </p>
@@ -154,7 +197,7 @@ const DefaultEmptyState = ({
       starterPrompts.length > 0 &&
       onSelectPrompt && (
         <motion.div
-          className="pt-4"
+          className="pt-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -163,9 +206,14 @@ const DefaultEmptyState = ({
             ease: [0.25, 0.1, 0.25, 1],
           }}
         >
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <SparklesIcon size={14} className="text-primary" />
-            <span className="text-xs font-medium text-muted-foreground/80 uppercase tracking-wider">
+          <div className="flex items-center justify-center gap-2 mb-5">
+            <motion.div
+              animate={{ rotate: [0, 15, -15, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <SparklesIcon size={14} className="text-primary" />
+            </motion.div>
+            <span className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
               Try asking
             </span>
           </div>
@@ -412,7 +460,11 @@ export function ChatWindow({
   return (
     <Card
       className={cn(
-        'flex h-full flex-col overflow-hidden shadow-xl border-border/40',
+        'flex h-full flex-col overflow-hidden',
+        'bg-gradient-to-b from-card via-card to-background/50',
+        'border-border/30',
+        'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)]',
+        'backdrop-blur-sm',
         className
       )}
     >
