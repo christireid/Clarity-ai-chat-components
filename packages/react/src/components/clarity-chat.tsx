@@ -232,6 +232,13 @@ export function ClarityChat({
   // Handle saving edits
   const handleSaveEdit = React.useCallback(
     async (messageId: string, newContent: string) => {
+      // Validate content - reject empty or whitespace-only
+      const trimmedContent = newContent.trim()
+      if (!trimmedContent) {
+        toast?.error('Message cannot be empty')
+        return
+      }
+
       try {
         // Clear editing state first
         setEditingMessageId(null)
@@ -260,7 +267,7 @@ export function ClarityChat({
           setIsRegenerating(true)
           toast?.info('Regenerating response...')
           try {
-            await chat.append({ role: 'user', content: newContent })
+            await chat.append({ role: 'user', content: trimmedContent })
             toast?.success('Response regenerated')
           } catch (error) {
             // CRITICAL: Restore original messages on failure to prevent data loss
@@ -273,7 +280,7 @@ export function ClarityChat({
           // Just update the content (no regeneration needed)
           chat.setMessages((prevMessages: CoreMessage[]) =>
             prevMessages.map((m) =>
-              m.id === messageId ? { ...m, content: newContent } : m
+              m.id === messageId ? { ...m, content: trimmedContent } : m
             )
           )
           toast?.success('Message updated')
@@ -296,10 +303,12 @@ export function ClarityChat({
 
   const handleRegenerateMessage = React.useCallback(
     async (messageId: string) => {
+      // Capture current messages for potential rollback
+      const originalMessages = chat.messages
+
       try {
         // Find the message and regenerate from that point
-        const currentMessages = chat.messages
-        const messageIndex = currentMessages.findIndex(
+        const messageIndex = originalMessages.findIndex(
           (m) => m.id === messageId
         )
         if (messageIndex === -1) {
@@ -312,7 +321,7 @@ export function ClarityChat({
         // We need the index to truncate properly and avoid duplicate messages
         let userMessageIndex = -1
         for (let i = messageIndex - 1; i >= 0; i--) {
-          if (currentMessages[i]?.role === 'user') {
+          if (originalMessages[i]?.role === 'user') {
             userMessageIndex = i
             break
           }
@@ -324,18 +333,29 @@ export function ClarityChat({
           return
         }
 
-        const userMessage = currentMessages[userMessageIndex]!
+        const userMessage = originalMessages[userMessageIndex]!
 
         // Truncate to BEFORE the user message - append will add it back
         // This avoids duplicate user messages
-        const newMessages = currentMessages.slice(0, userMessageIndex)
+        const newMessages = originalMessages.slice(0, userMessageIndex)
         chat.setMessages(newMessages)
 
-        // Resend the user message - append adds it and triggers AI response
-        await chat.append({ role: 'user', content: userMessage.content })
+        // Set loading state for UI feedback
+        setIsRegenerating(true)
 
-        onRegenerateMessage?.(messageId)
+        try {
+          // Resend the user message - append adds it and triggers AI response
+          await chat.append({ role: 'user', content: userMessage.content })
+          onRegenerateMessage?.(messageId)
+        } catch (error) {
+          // CRITICAL: Restore original messages on failure to prevent data loss
+          chat.setMessages(originalMessages)
+          throw error // Re-throw to be caught by outer catch
+        } finally {
+          setIsRegenerating(false)
+        }
       } catch (error) {
+        setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Failed to regenerate message:', error)
           toast?.error('Failed to regenerate response. Please try again.')
