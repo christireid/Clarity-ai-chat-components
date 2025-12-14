@@ -1,6 +1,6 @@
 # The AI Chat Production Checklist
 
-*Newsletter version of: From MVP to Production*
+_Newsletter version of: From MVP to Production_
 
 ---
 
@@ -61,6 +61,7 @@ Here's the 50-item checklist we use internally.
 ## Quick Wins Checklist
 
 If you only have one day:
+
 1. ✅ Add retry button for failed messages
 2. ✅ Show loading indicator during streaming
 3. ✅ Add keyboard shortcut (Cmd+Enter)

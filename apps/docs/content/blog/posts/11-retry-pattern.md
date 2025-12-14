@@ -1,19 +1,24 @@
 ---
-title: "The Retry Pattern: How to Handle AI API Failures Gracefully"
-description: "Implement exponential backoff, error classification, and user-friendly retry UX for AI chat. Never lose a user message again."
-keywords: ["retry pattern", "exponential backoff", "error handling", "API errors", "resilience"]
-author: "Clarity Chat Team"
+title: 'The Retry Pattern: How to Handle AI API Failures Gracefully'
+description:
+  'Implement exponential backoff, error classification, and user-friendly retry UX for AI chat.
+  Never lose a user message again.'
+keywords: ['retry pattern', 'exponential backoff', 'error handling', 'API errors', 'resilience']
+author: 'Clarity Chat Team'
 publishDate: 2025-02-11
 readingTime: 8
-category: "Streaming & Real-Time"
-relatedPosts: ["05-error-messages", "09-production-ready-chat", "12-optimistic-ui"]
+category: 'Streaming & Real-Time'
+relatedPosts: ['05-error-messages', '09-production-ready-chat', '12-optimistic-ui']
 ---
 
 # The Retry Pattern: How to Handle AI API Failures Gracefully
 
-72% of AI chat applications have silent failures. Users click send, something breaks, nothing happens. The message vanishes into the void.
+72% of AI chat applications have silent failures. Users click send, something breaks, nothing
+happens. The message vanishes into the void.
 
-Your AI chat WILL fail. Rate limits, network hiccups, API timeouts, server errors—the question isn't if, it's when. And when it fails, do you lose the user's message? Do they know what happened? Can they retry?
+Your AI chat WILL fail. Rate limits, network hiccups, API timeouts, server errors—the question isn't
+if, it's when. And when it fails, do you lose the user's message? Do they know what happened? Can
+they retry?
 
 Let's build bulletproof error recovery.
 
@@ -23,27 +28,34 @@ Let's build bulletproof error recovery.
 
 If you've run an AI application in production, you've seen these:
 
-**Rate limits (HTTP 429)** — Too many requests. OpenAI, Anthropic, and Google all have aggressive rate limiting, especially on lower tiers. Send a burst of messages and you'll hit this within seconds.
+**Rate limits (HTTP 429)** — Too many requests. OpenAI, Anthropic, and Google all have aggressive
+rate limiting, especially on lower tiers. Send a burst of messages and you'll hit this within
+seconds.
 
-**Timeouts** — Long responses from the AI take time to generate. A complex coding question might take 30+ seconds. Most HTTP clients timeout at 30 seconds by default.
+**Timeouts** — Long responses from the AI take time to generate. A complex coding question might
+take 30+ seconds. Most HTTP clients timeout at 30 seconds by default.
 
-**Network errors** — Connection dropped, DNS failed, SSL handshake issues. Mobile users switching between WiFi and cellular hit these constantly.
+**Network errors** — Connection dropped, DNS failed, SSL handshake issues. Mobile users switching
+between WiFi and cellular hit these constantly.
 
-**Server errors (500/503)** — The AI provider is down or overloaded. Happens more than you'd expect, especially during high-traffic periods.
+**Server errors (500/503)** — The AI provider is down or overloaded. Happens more than you'd expect,
+especially during high-traffic periods.
 
-**Authentication (401/403)** — Token expired, quota exhausted, account issue. Usually requires user action.
+**Authentication (401/403)** — Token expired, quota exhausted, account issue. Usually requires user
+action.
 
 In production, typical failure rates look like this:
 
-| Error Type | Frequency |
-|------------|-----------|
-| Rate limits | 2-5% |
-| Timeouts | 1-2% |
-| Network | 1-2% |
-| Server errors | 0.1-0.5% |
-| Auth issues | <0.1% |
+| Error Type    | Frequency |
+| ------------- | --------- |
+| Rate limits   | 2-5%      |
+| Timeouts      | 1-2%      |
+| Network       | 1-2%      |
+| Server errors | 0.1-0.5%  |
+| Auth issues   | <0.1%     |
 
-That adds up to 3-8% of requests failing. For an app with 1,000 daily active users sending 10 messages each, that's 300-800 failures per day.
+That adds up to 3-8% of requests failing. For an app with 1,000 daily active users sending 10
+messages each, that's 300-800 failures per day.
 
 ---
 
@@ -175,7 +187,7 @@ function isRetryable(error: unknown): boolean {
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 ```
 
@@ -287,7 +299,7 @@ function useErrorRecovery(config: ErrorRecoveryConfig = {}) {
 
     while (true) {
       try {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isRetrying: attempt > 0,
           attemptNumber: attempt,
@@ -311,7 +323,6 @@ function useErrorRecovery(config: ErrorRecoveryConfig = {}) {
         }
 
         return result
-
       } catch (error) {
         const errorType = classifyError(error)
 
@@ -352,7 +363,7 @@ function useErrorRecovery(config: ErrorRecoveryConfig = {}) {
         let remaining = delay
         const countdownInterval = setInterval(() => {
           remaining -= 1000
-          setState(prev => ({ ...prev, retryIn: Math.max(0, remaining) }))
+          setState((prev) => ({ ...prev, retryIn: Math.max(0, remaining) }))
         }, 1000)
 
         // Wait
@@ -395,47 +406,50 @@ function useErrorRecovery(config: ErrorRecoveryConfig = {}) {
 Different errors deserve different treatment:
 
 ```typescript
-const ERROR_CONFIG: Record<ErrorType, {
-  retryDelay: number | 'exponential'
-  maxRetries: number
-  userMessage: string
-  action: string
-}> = {
+const ERROR_CONFIG: Record<
+  ErrorType,
+  {
+    retryDelay: number | 'exponential'
+    maxRetries: number
+    userMessage: string
+    action: string
+  }
+> = {
   rateLimit: {
     retryDelay: 30000, // Or use Retry-After header
     maxRetries: 2,
-    userMessage: "Slow down a bit",
+    userMessage: 'Slow down a bit',
     action: "We're waiting for the rate limit to reset.",
   },
   timeout: {
     retryDelay: 2000,
     maxRetries: 2,
-    userMessage: "Response taking too long",
-    action: "Trying again with more patience...",
+    userMessage: 'Response taking too long',
+    action: 'Trying again with more patience...',
   },
   network: {
     retryDelay: 1000,
     maxRetries: 3,
-    userMessage: "Connection lost",
-    action: "Reconnecting...",
+    userMessage: 'Connection lost',
+    action: 'Reconnecting...',
   },
   server: {
     retryDelay: 'exponential',
     maxRetries: 3,
-    userMessage: "Service temporarily busy",
+    userMessage: 'Service temporarily busy',
     action: "We'll keep trying.",
   },
   auth: {
     retryDelay: 0, // Don't retry
     maxRetries: 0,
-    userMessage: "Session expired",
-    action: "Please log in again.",
+    userMessage: 'Session expired',
+    action: 'Please log in again.',
   },
   unknown: {
     retryDelay: 'exponential',
     maxRetries: 2,
-    userMessage: "Something went wrong",
-    action: "Trying again...",
+    userMessage: 'Something went wrong',
+    action: 'Trying again...',
   },
 }
 
@@ -504,14 +518,11 @@ function RetryBanner({
 
           {retryIn !== null && retryIn > 0 && (
             <p className="text-sm text-amber-600 mt-2">
-              Retrying in {Math.ceil(retryIn / 1000)}s...
-              ({attemptNumber + 1} of {maxAttempts})
+              Retrying in {Math.ceil(retryIn / 1000)}s... ({attemptNumber + 1} of {maxAttempts})
             </p>
           )}
 
-          <p className="text-xs text-amber-500 mt-2 italic">
-            Your message is saved.
-          </p>
+          <p className="text-xs text-amber-500 mt-2 italic">Your message is saved.</p>
         </div>
 
         <div className="flex gap-2">
@@ -543,35 +554,31 @@ function ResilientChat() {
   const [messages, setMessages] = useState<Message[]>([])
   const [pendingMessage, setPendingMessage] = useState<string | null>(null)
 
-  const {
-    error,
-    errorType,
-    attemptNumber,
-    maxAttempts,
-    retryIn,
-    execute,
-    reset,
-  } = useErrorRecovery({
-    maxRetries: 3,
-    onSuccess: (attempt) => {
-      if (attempt > 0) {
-        console.log(`Succeeded after ${attempt + 1} attempts`)
-      }
-    },
-    onMaxRetriesReached: () => {
-      // Keep the failed message visible for manual retry
-    },
-  })
+  const { error, errorType, attemptNumber, maxAttempts, retryIn, execute, reset } =
+    useErrorRecovery({
+      maxRetries: 3,
+      onSuccess: (attempt) => {
+        if (attempt > 0) {
+          console.log(`Succeeded after ${attempt + 1} attempts`)
+        }
+      },
+      onMaxRetriesReached: () => {
+        // Keep the failed message visible for manual retry
+      },
+    })
 
   const sendMessage = async (content: string) => {
     // Save message immediately (optimistic UI)
     setPendingMessage(content)
-    setMessages(prev => [...prev, {
-      id: `temp-${Date.now()}`,
-      role: 'user',
-      content,
-      status: 'sending',
-    }])
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `temp-${Date.now()}`,
+        role: 'user',
+        content,
+        status: 'sending',
+      },
+    ])
 
     try {
       await execute(async () => {
@@ -589,20 +596,19 @@ function ResilientChat() {
       })
 
       // Update message status to sent
-      setMessages(prev => prev.map(m =>
-        m.content === content && m.status === 'sending'
-          ? { ...m, status: 'sent' }
-          : m
-      ))
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.content === content && m.status === 'sending' ? { ...m, status: 'sent' } : m
+        )
+      )
       setPendingMessage(null)
-
     } catch (err) {
       // Update message status to failed
-      setMessages(prev => prev.map(m =>
-        m.content === content && m.status === 'sending'
-          ? { ...m, status: 'failed' }
-          : m
-      ))
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.content === content && m.status === 'sending' ? { ...m, status: 'failed' } : m
+        )
+      )
     }
   }
 
@@ -628,10 +634,7 @@ function ResilientChat() {
         />
       )}
 
-      <ChatInput
-        onSend={sendMessage}
-        disabled={retryIn !== null}
-      />
+      <ChatInput onSend={sendMessage} disabled={retryIn !== null} />
     </div>
   )
 }
@@ -641,7 +644,8 @@ function ResilientChat() {
 
 ## The Takeaway
 
-AI APIs fail 3-8% of the time. Your retry strategy determines whether that's a minor hiccup or a lost user.
+AI APIs fail 3-8% of the time. Your retry strategy determines whether that's a minor hiccup or a
+lost user.
 
 The essentials:
 
@@ -656,4 +660,6 @@ Build this once, and your chat becomes resilient to the chaos of real-world netw
 
 ---
 
-*Clarity Chat's `useErrorRecovery` hook handles exponential backoff, error classification, user-facing retries, and data preservation automatically. Build resilient chat without reinventing error handling. [See the error recovery docs →](/docs/hooks/use-error-recovery)*
+_Clarity Chat's `useErrorRecovery` hook handles exponential backoff, error classification,
+user-facing retries, and data preservation automatically. Build resilient chat without reinventing
+error handling. [See the error recovery docs →](/docs/hooks/use-error-recovery)_

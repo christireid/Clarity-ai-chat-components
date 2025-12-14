@@ -1,21 +1,27 @@
 ---
-title: "The Art of the Typing Indicator: Why ChatGPT Got It Right"
-description: "Build typing indicators that feel organic. CSS animations, timing patterns, and accessibility considerations for thinking states."
-keywords: ["typing indicator", "CSS animation", "AI UX", "loading animation", "ChatGPT"]
-author: "Clarity Chat Team"
+title: 'The Art of the Typing Indicator: Why ChatGPT Got It Right'
+description:
+  'Build typing indicators that feel organic. CSS animations, timing patterns, and accessibility
+  considerations for thinking states.'
+keywords: ['typing indicator', 'CSS animation', 'AI UX', 'loading animation', 'ChatGPT']
+author: 'Clarity Chat Team'
 publishDate: 2025-01-23
 readingTime: 5
-category: "UX & Psychology"
-relatedPosts: ["01-psychology-of-response-timing", "02-loading-states-progress", "12-optimistic-ui"]
+category: 'UX & Psychology'
+relatedPosts: ['01-psychology-of-response-timing', '02-loading-states-progress', '12-optimistic-ui']
 ---
 
 # The Art of the Typing Indicator: Why ChatGPT Got It Right
 
 Three bouncing dots. That's all it takes to make AI feel human.
 
-The typing indicator is the most underrated UX element in AI chat. It's easy to dismiss as decorative—just some animation while users wait. But get it wrong, and your AI feels cold, robotic, broken. Get it right, and suddenly users describe your AI as "thoughtful" and "like talking to an expert."
+The typing indicator is the most underrated UX element in AI chat. It's easy to dismiss as
+decorative—just some animation while users wait. But get it wrong, and your AI feels cold, robotic,
+broken. Get it right, and suddenly users describe your AI as "thoughtful" and "like talking to an
+expert."
 
-ChatGPT, Claude, Gemini—every major AI chat nails this. Most custom implementations don't even try. Let's break down what makes a great typing indicator and how to build one.
+ChatGPT, Claude, Gemini—every major AI chat nails this. Most custom implementations don't even try.
+Let's break down what makes a great typing indicator and how to build one.
 
 ---
 
@@ -38,9 +44,11 @@ With a good typing indicator:
 4. Indicator transitions smoothly to response
 5. User reads response
 
-The indicator isn't about filling time—it's about communication. It says: "I heard you. I'm thinking. Response coming."
+The indicator isn't about filling time—it's about communication. It says: "I heard you. I'm
+thinking. Response coming."
 
-In user testing, we found that the same 3-second response felt "fast" with a typing indicator and "slow" without one. Perception beats reality.
+In user testing, we found that the same 3-second response felt "fast" with a typing indicator and
+"slow" without one. Perception beats reality.
 
 ---
 
@@ -48,32 +56,36 @@ In user testing, we found that the same 3-second response felt "fast" with a typ
 
 OpenAI clearly spent time on their typing indicator. Let's analyze it:
 
-**The dots:**
-Three circles that pulse in a wave pattern. Not bouncing (too playful), not static (boring). A subtle, organic wave that feels like breathing.
+**The dots:** Three circles that pulse in a wave pattern. Not bouncing (too playful), not static
+(boring). A subtle, organic wave that feels like breathing.
 
-**The timing:**
-The animation is smooth, unhurried. About 1.4 seconds per cycle. Fast enough to feel active, slow enough to feel calm.
+**The timing:** The animation is smooth, unhurried. About 1.4 seconds per cycle. Fast enough to feel
+active, slow enough to feel calm.
 
-**The transition:**
-When streaming begins, the dots don't just vanish. They fade out as the first words appear. The handoff is seamless—you don't even notice it happening.
+**The transition:** When streaming begins, the dots don't just vanish. They fade out as the first
+words appear. The handoff is seamless—you don't even notice it happening.
 
-**The context:**
-"GPT-4" label nearby reminds you which model is thinking. It's not just "loading"—it's specifically GPT-4 processing your request.
+**The context:** "GPT-4" label nearby reminds you which model is thinking. It's not just
+"loading"—it's specifically GPT-4 processing your request.
 
-Every one of these details is intentional. And they compound into an experience that feels responsive and professional.
+Every one of these details is intentional. And they compound into an experience that feels
+responsive and professional.
 
 ---
 
 ## Multi-Stage Indicators
 
-Basic typing indicators show one state: "thinking." But AI processing often has multiple phases, and showing them resets user patience at each transition.
+Basic typing indicators show one state: "thinking." But AI processing often has multiple phases, and
+showing them resets user patience at each transition.
 
 **Single stage:**
+
 - "Thinking..." (0s)
 - ...still "Thinking..." (5s)
 - ...still "Thinking..." (10s) — user gets frustrated
 
 **Multiple stages:**
+
 - "Reading your message..." (0s)
 - "Thinking..." (2s) — patience reset
 - "Writing response..." (4s) — patience reset
@@ -170,13 +182,11 @@ function ThinkingIndicator({ stage }: { stage: Stage | null }) {
       </div>
 
       {/* Stage label */}
-      <span className="text-sm text-gray-600 font-medium">
-        {stage.label}
-      </span>
+      <span className="text-sm text-gray-600 font-medium">{stage.label}</span>
 
       {/* Pulsing dots */}
       <div className="flex gap-1">
-        {[0, 1, 2].map(i => (
+        {[0, 1, 2].map((i) => (
           <span
             key={i}
             className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-pulse"
@@ -201,7 +211,8 @@ Linear animation feels robotic. Use ease-in-out for organic feel:
 
 ```css
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.5;
   }
@@ -216,14 +227,21 @@ Linear animation feels robotic. Use ease-in-out for organic feel:
 }
 
 /* Stagger the dots */
-.dot:nth-child(1) { animation-delay: 0s; }
-.dot:nth-child(2) { animation-delay: 0.2s; }
-.dot:nth-child(3) { animation-delay: 0.4s; }
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
 ```
 
 ### Keep it subtle
 
 The indicator supports the experience—it shouldn't distract from it. Avoid:
+
 - Bright, flashy colors
 - Fast or frantic motion
 - Large elements that dominate the UI
@@ -248,7 +266,8 @@ For these users, a static indicator with text ("Thinking...") works fine.
 
 ## The Transition to Content
 
-The handoff from typing indicator to actual content should be seamless. No jarring pop, no flash, no jump.
+The handoff from typing indicator to actual content should be seamless. No jarring pop, no flash, no
+jump.
 
 ```tsx
 import { useState, useEffect } from 'react'
@@ -263,7 +282,7 @@ function ThinkingIndicator({ stage }: { stage?: Stage | null } = {}) {
   return (
     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
       <div className="flex gap-1">
-        {[0, 1, 2].map(i => (
+        {[0, 1, 2].map((i) => (
           <span
             key={i}
             className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"
@@ -278,18 +297,10 @@ function ThinkingIndicator({ stage }: { stage?: Stage | null } = {}) {
 
 // Blinking cursor component - defined before use
 function BlinkingCursor() {
-  return (
-    <span className="inline-block w-2 h-4 ml-0.5 bg-current animate-blink" />
-  )
+  return <span className="inline-block w-2 h-4 ml-0.5 bg-current animate-blink" />
 }
 
-function StreamingMessage({
-  content,
-  isStreaming,
-}: {
-  content: string
-  isStreaming: boolean
-}) {
+function StreamingMessage({ content, isStreaming }: { content: string; isStreaming: boolean }) {
   const [showIndicator, setShowIndicator] = useState(true)
 
   // Hide indicator once content starts
@@ -303,19 +314,23 @@ function StreamingMessage({
     <div className="relative">
       {/* Indicator fades out */}
       {showIndicator && (
-        <div className={cn(
-          "transition-opacity duration-200",
-          content.length > 0 ? "opacity-0" : "opacity-100"
-        )}>
+        <div
+          className={cn(
+            'transition-opacity duration-200',
+            content.length > 0 ? 'opacity-0' : 'opacity-100'
+          )}
+        >
           <ThinkingIndicator />
         </div>
       )}
 
       {/* Content fades in */}
-      <div className={cn(
-        "transition-opacity duration-200",
-        content.length > 0 ? "opacity-100" : "opacity-0"
-      )}>
+      <div
+        className={cn(
+          'transition-opacity duration-200',
+          content.length > 0 ? 'opacity-100' : 'opacity-0'
+        )}
+      >
         <div className="prose">
           {content}
           {isStreaming && <BlinkingCursor />}
@@ -330,8 +345,13 @@ The CSS:
 
 ```css
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .animate-blink {
@@ -339,52 +359,59 @@ The CSS:
 }
 ```
 
-The cursor continues the "typing" metaphor into the streaming phase. It blinks at the end of the content, showing where new text will appear.
+The cursor continues the "typing" metaphor into the streaming phase. It blinks at the end of the
+content, showing where new text will appear.
 
 ---
 
 ## Adaptive Timing
 
-Not all queries deserve the same thinking time. A simple "hello" shouldn't show 3 seconds of "analyzing your complex question."
+Not all queries deserve the same thinking time. A simple "hello" shouldn't show 3 seconds of
+"analyzing your complex question."
 
 ```tsx
 function useAdaptiveTyping() {
   const { start, stop, currentStage } = useMultiStageTyping()
 
-  const startTyping = useCallback((userMessage: string) => {
-    // Quick responses for short messages
-    if (userMessage.length < 20) {
-      // Skip straight to "Writing response..."
-      setTimeout(() => start(), 500)
-      return
-    }
+  const startTyping = useCallback(
+    (userMessage: string) => {
+      // Quick responses for short messages
+      if (userMessage.length < 20) {
+        // Skip straight to "Writing response..."
+        setTimeout(() => start(), 500)
+        return
+      }
 
-    // Longer analysis for complex queries
-    if (
-      userMessage.includes('analyze') ||
-      userMessage.includes('explain') ||
-      userMessage.includes('compare')
-    ) {
-      // Show all stages
+      // Longer analysis for complex queries
+      if (
+        userMessage.includes('analyze') ||
+        userMessage.includes('explain') ||
+        userMessage.includes('compare')
+      ) {
+        // Show all stages
+        start()
+        return
+      }
+
+      // Default behavior
       start()
-      return
-    }
-
-    // Default behavior
-    start()
-  }, [start])
+    },
+    [start]
+  )
 
   return { startTyping, stop, currentStage }
 }
 ```
 
-Match the indicator duration to the expected response complexity. Users develop intuitions about how long things "should" take.
+Match the indicator duration to the expected response complexity. Users develop intuitions about how
+long things "should" take.
 
 ---
 
 ## Performance Considerations
 
-Animations consume CPU/GPU resources. On lower-end devices or when the tab is backgrounded, pause or simplify:
+Animations consume CPU/GPU resources. On lower-end devices or when the tab is backgrounded, pause or
+simplify:
 
 ```tsx
 function usePerformantAnimation() {
@@ -420,17 +447,11 @@ When `shouldAnimate` is false, show a static indicator instead.
 Putting it all together:
 
 ```tsx
-function ChatMessage({ message, isLatest }: {
-  message: Message
-  isLatest: boolean
-}) {
+function ChatMessage({ message, isLatest }: { message: Message; isLatest: boolean }) {
   if (message.role === 'assistant' && message.isStreaming) {
     return (
       <div className="p-4">
-        <StreamingMessage
-          content={message.content}
-          isStreaming={message.isStreaming}
-        />
+        <StreamingMessage content={message.content} isStreaming={message.isStreaming} />
       </div>
     )
   }
@@ -455,9 +476,11 @@ function ChatMessage({ message, isLatest }: {
 
 ## The Takeaway
 
-The typing indicator is small but mighty. It's the difference between "is this thing working?" and "I can see it's thinking."
+The typing indicator is small but mighty. It's the difference between "is this thing working?" and
+"I can see it's thinking."
 
 The essentials:
+
 1. **Show activity, not just waiting** — Pulsing dots beat static spinners
 2. **Use multiple stages** — Each change resets patience
 3. **Animate organically** — Easing, not linear. Subtle, not flashy
@@ -469,4 +492,6 @@ Three bouncing dots. When done right, they make your AI feel alive.
 
 ---
 
-*Want typing indicators without the implementation work? Clarity Chat's `ThinkingIndicator` component supports multi-stage progress, adaptive timing, smooth transitions, and accessibility—all configurable. [Check out the docs →](/docs/components/thinking-indicator)*
+_Want typing indicators without the implementation work? Clarity Chat's `ThinkingIndicator`
+component supports multi-stage progress, adaptive timing, smooth transitions, and accessibility—all
+configurable. [Check out the docs →](/docs/components/thinking-indicator)_

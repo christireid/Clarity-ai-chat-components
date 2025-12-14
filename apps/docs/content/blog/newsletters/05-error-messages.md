@@ -1,6 +1,6 @@
 # Error Messages That Don't Make Users Rage-Quit
 
-*Newsletter version of: User-Friendly Error UX*
+_Newsletter version of: User-Friendly Error UX_
 
 ---
 
@@ -17,14 +17,17 @@ A single useless error message can undo an entire positive experience.
 Different errors need different handling:
 
 **Recoverable (User Can Fix)**
+
 - Network offline → "Check your connection and try again"
 - Rate limited → "Too many messages. Wait 30 seconds."
 
 **Non-Recoverable (You Need to Fix)**
+
 - Server error → "Our systems are having trouble. We're on it."
 - Auth expired → "Please refresh the page to continue"
 
 **User Error**
+
 - Empty message → "Please enter a message"
 - Too long → "Message too long (max 4000 characters)"
 
@@ -38,7 +41,7 @@ Every error should have:
 
 ```typescript
 // Bad
-"Error 429"
+'Error 429'
 
 // Good
 "You're sending messages too quickly. Wait 30 seconds, then try again."

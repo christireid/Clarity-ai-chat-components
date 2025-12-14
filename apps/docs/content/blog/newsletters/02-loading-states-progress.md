@@ -6,9 +6,11 @@
 
 That spinning circle isn't doing you any favors.
 
-Users don't want to know something is "loading." They want to know *what's happening* and *how long they'll wait.*
+Users don't want to know something is "loading." They want to know _what's happening_ and _how long
+they'll wait._
 
-The difference between a frustrating AI chat and a delightful one often comes down to those few seconds of loading. Here's the insight that changed how we build loading states.
+The difference between a frustrating AI chat and a delightful one often comes down to those few
+seconds of loading. Here's the insight that changed how we build loading states.
 
 ## The Key Insight
 
@@ -40,12 +42,14 @@ function AILoadingState({ phase }: { phase: LoadingPhase }) {
 }
 ```
 
-Three phases. Three states of mind for your user. Each one tells them "we're working on it" without the anxiety of not knowing.
+Three phases. Three states of mind for your user. Each one tells them "we're working on it" without
+the anxiety of not knowing.
 
-**The result?** Users rate wait times 35% shorter when they see meaningful progress, even when the actual duration is identical.
+**The result?** Users rate wait times 35% shorter when they see meaningful progress, even when the
+actual duration is identical.
 
 ---
 
 [Read the full article →](/blog/loading-states-progress)
 
-*Building AI chat that doesn't make users anxious? That's what Clarity Chat is for.*
+_Building AI chat that doesn't make users anxious? That's what Clarity Chat is for._

@@ -126,12 +126,14 @@ function scanAllPosts(): PricingMention[] {
 }
 
 function generateChecksum(mentions: PricingMention[]): string {
-  const content = JSON.stringify(mentions.map(m => `${m.file}:${m.line}:${m.value}`))
+  const content = JSON.stringify(
+    mentions.map((m) => `${m.file}:${m.line}:${m.value}`)
+  )
   // Simple hash for change detection
   let hash = 0
   for (let i = 0; i < content.length; i++) {
     const char = content.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
+    hash = (hash << 5) - hash + char
     hash = hash & hash
   }
   return hash.toString(16)
@@ -180,12 +182,12 @@ function compareMentions(
   const baselineMap = new Map<string, PricingMention>()
   const currentMap = new Map<string, PricingMention>()
 
-  baseline.forEach(m => {
+  baseline.forEach((m) => {
     const key = `${m.file}:${m.line}`
     baselineMap.set(key, m)
   })
 
-  current.forEach(m => {
+  current.forEach((m) => {
     const key = `${m.file}:${m.line}`
     currentMap.set(key, m)
   })
@@ -225,7 +227,11 @@ function compareMentions(
   }
 
   // Check baseline age
-  const baselineAge = Date.now() - new Date(baseline[0]?.file ? loadBaseline()?.generatedAt || Date.now() : Date.now()).getTime()
+  const baselineAge =
+    Date.now() -
+    new Date(
+      baseline[0]?.file ? loadBaseline()?.generatedAt || Date.now() : Date.now()
+    ).getTime()
   const daysOld = Math.floor(baselineAge / (1000 * 60 * 60 * 24))
 
   if (daysOld > 90) {
@@ -235,7 +241,7 @@ function compareMentions(
   }
 
   // Check for specific high-risk patterns
-  const modelMentions = current.filter(m =>
+  const modelMentions = current.filter((m) =>
     /gpt-4|claude|embedding/i.test(m.value)
   )
 
@@ -259,7 +265,7 @@ function printReport(report: FreshnessReport): void {
 
   if (report.newMentions.length > 0) {
     console.log('NEW MENTIONS:')
-    report.newMentions.forEach(m => {
+    report.newMentions.forEach((m) => {
       console.log(`  [${m.file}:${m.line}] ${m.value}`)
       console.log(`    "${m.text}"`)
     })
@@ -278,7 +284,7 @@ function printReport(report: FreshnessReport): void {
 
   if (report.removedMentions.length > 0) {
     console.log('REMOVED MENTIONS:')
-    report.removedMentions.forEach(m => {
+    report.removedMentions.forEach((m) => {
       console.log(`  [${m.file}:${m.line}] ${m.value}`)
     })
     console.log('')
@@ -292,9 +298,10 @@ function printReport(report: FreshnessReport): void {
     console.log('')
   }
 
-  const hasIssues = report.newMentions.length > 0 ||
-                    report.changedMentions.length > 0 ||
-                    report.recommendations.length > 0
+  const hasIssues =
+    report.newMentions.length > 0 ||
+    report.changedMentions.length > 0 ||
+    report.recommendations.length > 0
 
   if (!hasIssues) {
     console.log('✅ No pricing freshness issues detected')
@@ -357,7 +364,9 @@ function printPricingReference(): void {
   console.log(`Last updated: ${CURRENT_PRICING_REFERENCE.lastUpdated}`)
   console.log('='.repeat(60))
 
-  for (const [model, pricing] of Object.entries(CURRENT_PRICING_REFERENCE.models)) {
+  for (const [model, pricing] of Object.entries(
+    CURRENT_PRICING_REFERENCE.models
+  )) {
     console.log(`${model}:`)
     console.log(`  Input:  $${pricing.input} ${pricing.unit}`)
     if (pricing.output > 0) {
@@ -392,7 +401,9 @@ function main(): void {
 
   if (updateBaseline) {
     saveBaseline(currentMentions)
-    console.log('\nBaseline updated. Run without --update-baseline to check freshness.')
+    console.log(
+      '\nBaseline updated. Run without --update-baseline to check freshness.'
+    )
     return
   }
 

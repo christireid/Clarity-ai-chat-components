@@ -1,6 +1,7 @@
 # Blog Post 10: Token Counting That Actually Works: A Deep Dive
 
 ## Meta Information
+
 - **Reading Time:** 6 minutes (~1,500 words)
 - **Category:** Technical Implementation
 - **Primary Keyword:** LLM token counting
@@ -10,11 +11,14 @@
 
 ## Hook / Opening (100 words)
 
-**Opening line:** "JavaScript's string.length has nothing to do with tokens. That's why your cost estimates are wrong."
+**Opening line:** "JavaScript's string.length has nothing to do with tokens. That's why your cost
+estimates are wrong."
 
 You estimated 1,000 tokens. The API charged you for 2,300. What happened?
 
-Token counting is deceptively complex. Different models use different tokenizers. Unicode characters can be 1 token or 4. Code and natural language tokenize differently. Let's fix your token counting once and for all.
+Token counting is deceptively complex. Different models use different tokenizers. Unicode characters
+can be 1 token or 4. Code and natural language tokenize differently. Let's fix your token counting
+once and for all.
 
 ---
 
@@ -22,10 +26,10 @@ Token counting is deceptively complex. Different models use different tokenizers
 
 ### Content:
 
-**The misconception:**
-"1 token ≈ 4 characters" is a rough average, not a rule.
+**The misconception:** "1 token ≈ 4 characters" is a rough average, not a rule.
 
 **Reality examples:**
+
 - "hello" = 1 token
 - "Hello" = 1 token
 - "HELLO" = 1 token
@@ -36,6 +40,7 @@ Token counting is deceptively complex. Different models use different tokenizers
 - "XMLHttpRequest" = 4 tokens (camelCase split)
 
 ### Visual:
+
 ```
 [VISUAL 1: Token breakdown examples]
 "Hello, how are you today?"
@@ -58,33 +63,35 @@ Tokens: 4 (one per character)
 ### Content:
 
 **Different models, different tokenizers:**
+
 - GPT-3.5/4: cl100k_base (tiktoken)
 - Claude: Custom tokenizer
 - Gemini: SentencePiece variant
 - Llama: BPE-based
 
-**Why it matters:**
-The same text can be 1,000 tokens in GPT-4 and 1,200 in Claude.
+**Why it matters:** The same text can be 1,000 tokens in GPT-4 and 1,200 in Claude.
 
 ### Code Example:
+
 ```tsx
 import { getEncoding, encodingForModel } from 'js-tiktoken'
 
 // GPT-4 tokenizer
 const enc = encodingForModel('gpt-4')
-const tokens = enc.encode("Hello, world!")
+const tokens = enc.encode('Hello, world!')
 console.log(tokens.length) // 4
 
 // Model-specific in Clarity Chat
 import { useTokenTracker } from '@clarity-chat/react'
 
 const { tokens } = useTokenTracker({
-  model: 'gpt-4o',  // Auto-selects correct tokenizer
+  model: 'gpt-4o', // Auto-selects correct tokenizer
   text: userMessage,
 })
 ```
 
 ### Visual:
+
 ```
 [VISUAL 2: Tokenizer comparison table]
 "Build a React component"
@@ -102,6 +109,7 @@ const { tokens } = useTokenTracker({
 ### Content:
 
 **It's not just the message:**
+
 ```json
 {
   "model": "gpt-4",
@@ -115,24 +123,22 @@ const { tokens } = useTokenTracker({
 ```
 
 **Token composition:**
+
 - Each message has overhead (~4 tokens for role markers)
 - System prompt is included every time
 - Previous messages add up cumulatively
 
 ### Code Example:
+
 ```tsx
 import { useTokenTracker } from '@clarity-chat/react'
 
 function ChatWithTokens() {
-  const {
-    tokens,
-    breakdown,
-    estimatedCost,
-  } = useTokenTracker({
+  const { tokens, breakdown, estimatedCost } = useTokenTracker({
     model: 'gpt-4o',
     messages,
     includeSystemPrompt: true,
-    systemPrompt: "You are a helpful assistant.",
+    systemPrompt: 'You are a helpful assistant.',
   })
 
   // breakdown example:
@@ -144,16 +150,12 @@ function ChatWithTokens() {
   //   total: 1710
   // }
 
-  return (
-    <TokenBreakdown
-      breakdown={breakdown}
-      showPerMessage
-    />
-  )
+  return <TokenBreakdown breakdown={breakdown} showPerMessage />
 }
 ```
 
 ### Visual:
+
 ```
 [VISUAL 3: Token breakdown visualization]
 Stacked bar chart:
@@ -172,11 +174,13 @@ Total: 1,710 tokens • $0.03
 ### Content:
 
 **Why show tokens to users:**
+
 - Cost awareness
 - Context limit warnings
 - Informed pruning decisions
 
 ### Code Example:
+
 ```tsx
 import { TokenCounter, useTokenTracker } from '@clarity-chat/react'
 
@@ -202,8 +206,8 @@ function TokenAwareInput() {
         cost={estimatedCost}
         variant="inline"
         format={{
-          tokens: 'compact',  // "1.2k" vs "1,234"
-          cost: 'cents',      // "3¢" vs "$0.03"
+          tokens: 'compact', // "1.2k" vs "1,234"
+          cost: 'cents', // "3¢" vs "$0.03"
         }}
       />
     </div>
@@ -212,6 +216,7 @@ function TokenAwareInput() {
 ```
 
 ### Visual:
+
 ```
 [VISUAL 4: Input with token counter]
 ┌─────────────────────────────────────┐
@@ -229,23 +234,21 @@ function TokenAwareInput() {
 
 ### Content:
 
-**Current pricing (2025):**
-| Model | Input | Output |
-|-------|-------|--------|
-| GPT-4o | $2.50/1M | $10.00/1M |
-| GPT-4o-mini | $0.15/1M | $0.60/1M |
-| Claude 3.5 Sonnet | $3.00/1M | $15.00/1M |
+**Current pricing (2025):** | Model | Input | Output | |-------|-------|--------| | GPT-4o |
+$2.50/1M | $10.00/1M | | GPT-4o-mini | $0.15/1M | $0.60/1M | | Claude 3.5 Sonnet | $3.00/1M |
+$15.00/1M |
 
 ### Code Example:
+
 ```tsx
 const { estimatedCost, breakdown } = useTokenTracker({
   model: 'gpt-4o',
   messages,
   pricing: {
     // Custom pricing if needed
-    input: 2.50 / 1_000_000,
-    output: 10.00 / 1_000_000,
-  }
+    input: 2.5 / 1_000_000,
+    output: 10.0 / 1_000_000,
+  },
 })
 
 // breakdown.cost = {
@@ -260,13 +263,16 @@ const { estimatedCost, breakdown } = useTokenTracker({
 ## Conclusion (80 words)
 
 ### Key takeaways:
+
 1. String length ≠ token count
 2. Each model has different tokenizers
 3. Count full conversation, not just last message
 4. Show users their token usage
 
 ### Subtle CTA:
-"Clarity Chat's useTokenTracker hook handles model-specific tokenization, conversation counting, cost estimation, and real-time display. Stop guessing your API costs."
+
+"Clarity Chat's useTokenTracker hook handles model-specific tokenization, conversation counting,
+cost estimation, and real-time display. Stop guessing your API costs."
 
 ---
 

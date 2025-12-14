@@ -1,23 +1,29 @@
 ---
-title: "Token Counting That Actually Works: A Deep Dive"
-description: "Accurate token counting with tiktoken, model-specific tokenizers, and cost estimation. Stop guessing your API costs."
-keywords: ["token counting", "tiktoken", "API costs", "tokenizer", "LLM pricing"]
-author: "Clarity Chat Team"
+title: 'Token Counting That Actually Works: A Deep Dive'
+description:
+  'Accurate token counting with tiktoken, model-specific tokenizers, and cost estimation. Stop
+  guessing your API costs.'
+keywords: ['token counting', 'tiktoken', 'API costs', 'tokenizer', 'LLM pricing']
+author: 'Clarity Chat Team'
 publishDate: 2025-02-06
 readingTime: 8
-category: "Cost & Performance"
-relatedPosts: ["08-context-windows", "13-cut-gpt4-bill", "15-model-selection"]
+category: 'Cost & Performance'
+relatedPosts: ['08-context-windows', '13-cut-gpt4-bill', '15-model-selection']
 ---
 
 # Token Counting That Actually Works: A Deep Dive
 
-> **Pricing Note:** Token costs vary by model and change frequently. The pricing examples in this article reflect 2025 rates—verify current pricing on provider websites before implementation.
+> **Pricing Note:** Token costs vary by model and change frequently. The pricing examples in this
+> article reflect 2025 rates—verify current pricing on provider websites before implementation.
 
-JavaScript's `string.length` has nothing to do with tokens. That's why your cost estimates are wrong.
+JavaScript's `string.length` has nothing to do with tokens. That's why your cost estimates are
+wrong.
 
 You estimated 1,000 tokens. The API charged you for 2,300. What happened?
 
-Token counting is deceptively complex. Different models use different tokenizers. Unicode characters can be 1 token or 4. Code and natural language tokenize differently. And the way conversations accumulate tokens surprises most developers.
+Token counting is deceptively complex. Different models use different tokenizers. Unicode characters
+can be 1 token or 4. Code and natural language tokenize differently. And the way conversations
+accumulate tokens surprises most developers.
 
 Let's fix your token counting once and for all.
 
@@ -27,23 +33,26 @@ Let's fix your token counting once and for all.
 
 The most common misconception: "1 token ≈ 4 characters."
 
-That's a rough average from the early GPT days. It's not a rule, and it's increasingly inaccurate with modern models and international text.
+That's a rough average from the early GPT days. It's not a rule, and it's increasingly inaccurate
+with modern models and international text.
 
 Here's reality:
 
-| Text | Characters | Tokens (GPT-4) |
-|------|------------|----------------|
-| "hello" | 5 | 1 |
-| "Hello" | 5 | 1 |
-| "HELLO" | 5 | 1 |
-| "héllo" | 5 | 2 |
-| "你好" | 2 | 2 |
-| "🎉" | 1 | 1 |
-| "const" | 5 | 1 |
-| "XMLHttpRequest" | 14 | 4 |
-| "backgroundColor" | 15 | 3 |
+| Text              | Characters | Tokens (GPT-4) |
+| ----------------- | ---------- | -------------- |
+| "hello"           | 5          | 1              |
+| "Hello"           | 5          | 1              |
+| "HELLO"           | 5          | 1              |
+| "héllo"           | 5          | 2              |
+| "你好"            | 2          | 2              |
+| "🎉"              | 1          | 1              |
+| "const"           | 5          | 1              |
+| "XMLHttpRequest"  | 14         | 4              |
+| "backgroundColor" | 15         | 3              |
 
-The pattern? Common English words are often single tokens. CamelCase splits into multiple tokens. Diacritical marks and non-ASCII characters cost more. Emojis vary wildly—some are 1 token, others are 5+.
+The pattern? Common English words are often single tokens. CamelCase splits into multiple tokens.
+Diacritical marks and non-ASCII characters cost more. Emojis vary wildly—some are 1 token, others
+are 5+.
 
 Here's a function to see how your text actually tokenizes:
 
@@ -55,7 +64,7 @@ function analyzeTokens(text: string, model = 'gpt-4') {
   const tokens = encoder.encode(text)
 
   // Decode each token to see the breakdown
-  const breakdown = tokens.map(token => {
+  const breakdown = tokens.map((token) => {
     const decoded = encoder.decode([token])
     return { token, text: decoded }
   })
@@ -70,7 +79,7 @@ function analyzeTokens(text: string, model = 'gpt-4') {
 }
 
 // Example usage
-console.log(analyzeTokens("XMLHttpRequest.send()"))
+console.log(analyzeTokens('XMLHttpRequest.send()'))
 // {
 //   text: "XMLHttpRequest.send()",
 //   characterCount: 21,
@@ -88,19 +97,21 @@ console.log(analyzeTokens("XMLHttpRequest.send()"))
 // }
 ```
 
-That ratio of 0.33 tokens per character is way off from the "0.25 tokens per character" rule of thumb. For code, your estimates will consistently be wrong.
+That ratio of 0.33 tokens per character is way off from the "0.25 tokens per character" rule of
+thumb. For code, your estimates will consistently be wrong.
 
 ---
 
 ## Model-Specific Tokenizers
 
-Different AI providers use different tokenizers. The same text can have different token counts across models:
+Different AI providers use different tokenizers. The same text can have different token counts
+across models:
 
-| Text | GPT-4 (cl100k) | Claude | Gemini |
-|------|----------------|--------|--------|
-| "Build a React component" | 4 | 5 | 5 |
-| "Hello, how are you?" | 5 | 5 | 6 |
-| "console.log('test')" | 6 | 5 | 7 |
+| Text                      | GPT-4 (cl100k) | Claude | Gemini |
+| ------------------------- | -------------- | ------ | ------ |
+| "Build a React component" | 4              | 5      | 5      |
+| "Hello, how are you?"     | 5              | 5      | 6      |
+| "console.log('test')"     | 6              | 5      | 7      |
 
 This matters for cost estimation and context window planning.
 
@@ -116,11 +127,7 @@ interface TokenResult {
   estimatedCost: number
 }
 
-function countTokens(
-  text: string,
-  model: string,
-  provider: ModelProvider
-): TokenResult {
+function countTokens(text: string, model: string, provider: ModelProvider): TokenResult {
   // OpenAI: Use tiktoken directly
   if (provider === 'openai') {
     // Note: tiktoken types may require casting for dynamic model names
@@ -163,10 +170,10 @@ function countTokens(
 
 // Current pricing as of 2025 (per 1M tokens)
 const PRICING = {
-  'gpt-4o': { input: 2.50, output: 10.00 },
-  'gpt-4o-mini': { input: 0.15, output: 0.60 },
-  'claude-3-5-sonnet': { input: 3.00, output: 15.00 },
-  'gemini-1.5-pro': { input: 1.25, output: 5.00 },
+  'gpt-4o': { input: 2.5, output: 10.0 },
+  'gpt-4o-mini': { input: 0.15, output: 0.6 },
+  'claude-3-5-sonnet': { input: 3.0, output: 15.0 },
+  'gemini-1.5-pro': { input: 1.25, output: 5.0 },
 }
 
 function calculateCost(tokens: number, model: string): number {
@@ -181,7 +188,8 @@ function calculateCost(tokens: number, model: string): number {
 }
 ```
 
-For production applications, you might want to call each provider's actual tokenization API for exact counts, but these approximations are close enough for UI display and budget alerts.
+For production applications, you might want to call each provider's actual tokenization API for
+exact counts, but these approximations are close enough for UI display and budget alerts.
 
 ---
 
@@ -189,7 +197,9 @@ For production applications, you might want to call each provider's actual token
 
 Here's where most token counting goes wrong: they count the last message, not the full conversation.
 
-Every API call sends the entire conversation history. A 10-message conversation might look like 500 tokens in the latest message, but you're actually sending 4,000 tokens including all previous context.
+Every API call sends the entire conversation history. A 10-message conversation might look like 500
+tokens in the latest message, but you're actually sending 4,000 tokens including all previous
+context.
 
 ```typescript
 interface Message {
@@ -249,8 +259,8 @@ function countConversationTokens(
 // Usage
 const breakdown = countConversationTokens(
   messages,
-  "You are a helpful assistant that writes code.",
-  "gpt-4o"
+  'You are a helpful assistant that writes code.',
+  'gpt-4o'
 )
 
 console.log(breakdown)
@@ -270,7 +280,8 @@ That overhead adds up. A 50-message conversation has 200+ tokens just in role ma
 
 ## Real-Time Token Display
 
-Showing users their token count serves multiple purposes: cost awareness, context limit warnings, and informed decisions about when to start a new conversation.
+Showing users their token count serves multiple purposes: cost awareness, context limit warnings,
+and informed decisions about when to start a new conversation.
 
 Here's a React component for real-time token tracking:
 
@@ -292,7 +303,7 @@ function TokenCounter({
   text,
   model = 'gpt-4o',
   maxTokens = 128000,
-  showCost = true
+  showCost = true,
 }: TokenCounterProps) {
   const [encoder, setEncoder] = useState<TiktokenEncoder | null>(null)
 
@@ -306,9 +317,7 @@ function TokenCounter({
 
     const tokenCount = encoder.encode(text).length
     const pricing = PRICING[model as keyof typeof PRICING]
-    const inputCost = pricing
-      ? (tokenCount * pricing.input) / 1_000_000
-      : 0
+    const inputCost = pricing ? (tokenCount * pricing.input) / 1_000_000 : 0
 
     return {
       tokens: tokenCount,
@@ -333,27 +342,15 @@ function TokenCounter({
 
   return (
     <div className="flex items-center gap-3 text-sm text-gray-500">
-      <span className="font-mono">
-        {formatTokens(tokens)} tokens
-      </span>
+      <span className="font-mono">{formatTokens(tokens)} tokens</span>
 
-      {showCost && cost > 0 && (
-        <span className="text-gray-400">
-          ~{formatCost(cost)}
-        </span>
-      )}
+      {showCost && cost > 0 && <span className="text-gray-400">~{formatCost(cost)}</span>}
 
       {percentage > 80 && (
-        <span className="text-amber-600">
-          {percentage.toFixed(0)}% of context
-        </span>
+        <span className="text-amber-600">{percentage.toFixed(0)}% of context</span>
       )}
 
-      {percentage > 95 && (
-        <span className="text-red-600 font-medium">
-          Context nearly full
-        </span>
-      )}
+      {percentage > 95 && <span className="text-red-600 font-medium">Context nearly full</span>}
     </div>
   )
 }
@@ -398,7 +395,8 @@ function ChatInput({ onSend }: { onSend: (msg: string) => void }) {
 
 ## Cost Calculation That Actually Helps
 
-Raw token counts aren't useful to most users. "2,340 tokens" means nothing. "$0.05" means everything.
+Raw token counts aren't useful to most users. "2,340 tokens" means nothing. "$0.05" means
+everything.
 
 Here's a more complete cost tracking implementation:
 
@@ -422,34 +420,37 @@ function useCostTracker(model: string) {
 
   const pricing = PRICING[model as keyof typeof PRICING]
 
-  const trackMessage = useCallback((
-    inputTokens: number,
-    outputTokens: number
-  ) => {
-    setState(prev => {
-      const newInputTotal = prev.totalInputTokens + inputTokens
-      const newOutputTotal = prev.totalOutputTokens + outputTokens
-      const newMessageCount = prev.sessionMessages + 1
+  const trackMessage = useCallback(
+    (inputTokens: number, outputTokens: number) => {
+      setState((prev) => {
+        const newInputTotal = prev.totalInputTokens + inputTokens
+        const newOutputTotal = prev.totalOutputTokens + outputTokens
+        const newMessageCount = prev.sessionMessages + 1
 
-      const inputCost = (inputTokens * pricing.input) / 1_000_000
-      const outputCost = (outputTokens * pricing.output) / 1_000_000
+        const inputCost = (inputTokens * pricing.input) / 1_000_000
+        const outputCost = (outputTokens * pricing.output) / 1_000_000
 
-      return {
-        totalInputTokens: newInputTotal,
-        totalOutputTokens: newOutputTotal,
-        totalCost: prev.totalCost + inputCost + outputCost,
-        sessionMessages: newMessageCount,
-        averageTokensPerMessage: (newInputTotal + newOutputTotal) / newMessageCount,
-      }
-    })
-  }, [pricing])
+        return {
+          totalInputTokens: newInputTotal,
+          totalOutputTokens: newOutputTotal,
+          totalCost: prev.totalCost + inputCost + outputCost,
+          sessionMessages: newMessageCount,
+          averageTokensPerMessage: (newInputTotal + newOutputTotal) / newMessageCount,
+        }
+      })
+    },
+    [pricing]
+  )
 
-  const estimateRemainingBudget = useCallback((budget: number) => {
-    if (state.sessionMessages === 0) return Infinity
+  const estimateRemainingBudget = useCallback(
+    (budget: number) => {
+      if (state.sessionMessages === 0) return Infinity
 
-    const costPerMessage = state.totalCost / state.sessionMessages
-    return Math.floor((budget - state.totalCost) / costPerMessage)
-  }, [state])
+      const costPerMessage = state.totalCost / state.sessionMessages
+      return Math.floor((budget - state.totalCost) / costPerMessage)
+    },
+    [state]
+  )
 
   return {
     ...state,
@@ -471,8 +472,12 @@ Token counting is not `string.length / 4`. It's:
 3. **Overhead-inclusive** — Message structure costs tokens too
 4. **Useful for UX** — Show costs, not abstract numbers
 
-Get your token counting right, and you'll finally understand why your AI bills look the way they do. More importantly, you can pass that visibility to your users and help them make informed decisions about their usage.
+Get your token counting right, and you'll finally understand why your AI bills look the way they do.
+More importantly, you can pass that visibility to your users and help them make informed decisions
+about their usage.
 
 ---
 
-*Clarity Chat's `useTokenTracker` hook handles model-specific tokenization, conversation counting, cost estimation, and real-time display. Stop guessing your API costs. [See the token tracking docs →](/docs/hooks/use-token-tracker)*
+_Clarity Chat's `useTokenTracker` hook handles model-specific tokenization, conversation counting,
+cost estimation, and real-time display. Stop guessing your API costs.
+[See the token tracking docs →](/docs/hooks/use-token-tracker)_

@@ -15,7 +15,12 @@
 /**
  * Message status for tracking send/receive lifecycle
  */
-export type MessageStatus = 'pending' | 'sending' | 'sent' | 'streaming' | 'failed'
+export type MessageStatus =
+  | 'pending'
+  | 'sending'
+  | 'sent'
+  | 'streaming'
+  | 'failed'
 
 /**
  * Core message interface for chat applications
@@ -286,11 +291,14 @@ export interface ToolDefinition {
   description: string
   parameters: {
     type: 'object'
-    properties: Record<string, {
-      type: string
-      description: string
-      enum?: string[]
-    }>
+    properties: Record<
+      string,
+      {
+        type: string
+        description: string
+        enum?: string[]
+      }
+    >
     required: string[]
   }
 }
@@ -388,7 +396,11 @@ export interface ConversationSummary {
 export interface SecurityEvent {
   id: string
   timestamp: Date
-  type: 'injection_attempt' | 'rate_limit' | 'permission_denied' | 'suspicious_output'
+  type:
+    | 'injection_attempt'
+    | 'rate_limit'
+    | 'permission_denied'
+    | 'suspicious_output'
   severity: 'low' | 'medium' | 'high' | 'critical'
   userId?: string
   input?: string

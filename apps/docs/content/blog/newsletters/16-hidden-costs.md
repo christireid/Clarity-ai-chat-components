@@ -4,7 +4,8 @@
 
 ---
 
-Token costs are obvious. But there are hidden costs eating your budget that don't appear on the OpenAI invoice.
+Token costs are obvious. But there are hidden costs eating your budget that don't appear on the
+OpenAI invoice.
 
 ## The Key Insight
 
@@ -15,7 +16,7 @@ Token costs are obvious. But there are hidden costs eating your budget that don'
    - Message 10: You're sending 2,000+ tokens
    - Message 30: 8,000+ tokens per request
 
-   Every message sends the *entire* history.
+   Every message sends the _entire_ history.
 
 2. **Retry costs**
    - Rate limit retry? Double the tokens.
@@ -46,6 +47,7 @@ const trackRequest = (tokens: number, status: 'success' | 'retry' | 'failed') =>
 ```
 
 **Quick wins:**
+
 - Context compression at 10+ messages
 - Exponential backoff (don't retry immediately)
 - Use GPT-4o-mini for development
@@ -55,4 +57,4 @@ const trackRequest = (tokens: number, status: 'success' | 'retry' | 'failed') =>
 
 [Read the full article →](/blog/hidden-costs)
 
-*Know what you're actually spending. Then optimize.*
+_Know what you're actually spending. Then optimize._

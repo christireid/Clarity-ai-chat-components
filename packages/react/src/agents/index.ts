@@ -1,9 +1,9 @@
 /**
  * Agent Orchestration System
- * 
+ *
  * Framework for building agentic AI applications with tool calling,
  * planning, and multi-step execution.
- * 
+ *
  * @example
  * ```tsx
  * // Create an agent with tools
@@ -13,16 +13,16 @@
  *   tools: [webSearchTool, calculatorTool],
  *   maxIterations: 10,
  * })
- * 
+ *
  * // Execute a query
  * const execution = await agent.execute(
  *   'What is the population of Tokyo and how does it compare to New York?'
  * )
- * 
+ *
  * console.log(execution.answer)
  * console.log(execution.steps) // See the agent's reasoning process
  * ```
- * 
+ *
  * @example
  * ```tsx
  * // Create a custom tool
@@ -43,7 +43,7 @@
  *     return await response.json()
  *   },
  * }
- * 
+ *
  * agent.addTool(weatherTool)
  * ```
  */
@@ -53,7 +53,15 @@ export * from './react-agent'
 export * from './tools'
 export * from './tool-ui-registry'
 
-import type { Agent, AgentConfig, AgentCallbacks, Tool, ToolArguments, ToolParameters, ToolParameterProperty } from './types'
+import type {
+  Agent,
+  AgentConfig,
+  AgentCallbacks,
+  Tool,
+  ToolArguments,
+  ToolParameters,
+  ToolParameterProperty,
+} from './types'
 import { ReactAgent } from './react-agent'
 
 /** OpenAI-format function tool for LLM */
@@ -74,16 +82,16 @@ export interface ParsedToolCall {
 
 /**
  * createAgent - Top-Level Agent Factory
- * 
+ *
  * **Architecture Layer**: Top-Level (Drop-in Ready)
  * **Domain**: Tools & Agents
- * 
+ *
  * Factory function that creates an agent with the specified configuration.
  * Currently supports ReAct agent type. Future versions may support additional
  * agent types (plan-and-execute, tree-of-thought, etc.).
- * 
+ *
  * For tool integration with chat, use mid-level `useClarityChatWithTools` instead.
- * 
+ *
  * @param config - Agent configuration
  * @param config.name - Agent name
  * @param config.description - Agent description
@@ -91,7 +99,7 @@ export interface ParsedToolCall {
  * @param config.maxIterations - Maximum iterations (default: 10)
  * @param callbacks - Optional callbacks for agent events
  * @returns Configured agent instance
- * 
+ *
  * @example
  * ```tsx
  * const agent = createAgent({
@@ -100,11 +108,11 @@ export interface ParsedToolCall {
  *   tools: [webSearchTool, calculatorTool],
  *   maxIterations: 10,
  * })
- * 
+ *
  * const execution = await agent.execute('What is the population of Tokyo?')
  * console.log(execution.answer)
  * ```
- * 
+ *
  * @throws {Error} If agent configuration is invalid
  */
 export function createAgent(
@@ -112,21 +120,29 @@ export function createAgent(
   callbacks?: AgentCallbacks
 ): Agent {
   // Validate required config
-  if (!config.name || typeof config.name !== 'string' || config.name.trim().length === 0) {
+  if (
+    !config.name ||
+    typeof config.name !== 'string' ||
+    config.name.trim().length === 0
+  ) {
     throw new Error(
       'createAgent: "name" is required in agent configuration.\n\n' +
-      'Example:\n' +
-      '  const agent = createAgent({ name: "MyAgent", description: "...", tools: [...] })\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/agents'
+        'Example:\n' +
+        '  const agent = createAgent({ name: "MyAgent", description: "...", tools: [...] })\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/agents'
     )
   }
 
-  if (!config.description || typeof config.description !== 'string' || config.description.trim().length === 0) {
+  if (
+    !config.description ||
+    typeof config.description !== 'string' ||
+    config.description.trim().length === 0
+  ) {
     throw new Error(
       'createAgent: "description" is required in agent configuration.\n\n' +
-      'Example:\n' +
-      '  const agent = createAgent({ name: "MyAgent", description: "Agent description", tools: [...] })\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/agents'
+        'Example:\n' +
+        '  const agent = createAgent({ name: "MyAgent", description: "Agent description", tools: [...] })\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/agents'
     )
   }
 
@@ -163,25 +179,37 @@ export const AgentUtils = {
    * Format tools array for LLM
    */
   formatToolsForLLM(tools: Tool[]): LLMFunctionTool[] {
-    return tools.map(t => this.formatToolForLLM(t))
+    return tools.map((t) => this.formatToolForLLM(t))
   },
 
   /**
    * Parse tool call response from LLM
    */
   parseToolCall(functionCall: RawFunctionCall): ParsedToolCall {
+    let parsedArgs: ToolArguments
+    if (typeof functionCall.arguments === 'string') {
+      try {
+        parsedArgs = JSON.parse(functionCall.arguments) as ToolArguments
+      } catch {
+        // Return empty args if JSON parsing fails
+        parsedArgs = {}
+      }
+    } else {
+      parsedArgs = functionCall.arguments
+    }
     return {
       name: functionCall.name,
-      arguments: typeof functionCall.arguments === 'string'
-        ? JSON.parse(functionCall.arguments) as ToolArguments
-        : functionCall.arguments,
+      arguments: parsedArgs,
     }
   },
 
   /**
    * Validate tool arguments against schema
    */
-  validateArguments(tool: Tool, args: ToolArguments): { valid: boolean; errors?: string[] } {
+  validateArguments(
+    tool: Tool,
+    args: ToolArguments
+  ): { valid: boolean; errors?: string[] } {
     const errors: string[] = []
 
     // Check required fields
@@ -205,19 +233,32 @@ export const AgentUtils = {
       const expectedType = schema.type
 
       if (expectedType === 'number' && actualType !== 'number') {
-        errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
+        errors.push(
+          `Parameter ${key} should be ${expectedType}, got ${actualType}`
+        )
       }
-      if (expectedType === 'integer' && (actualType !== 'number' || !Number.isInteger(value))) {
-        errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
+      if (
+        expectedType === 'integer' &&
+        (actualType !== 'number' || !Number.isInteger(value))
+      ) {
+        errors.push(
+          `Parameter ${key} should be ${expectedType}, got ${actualType}`
+        )
       }
       if (expectedType === 'string' && actualType !== 'string') {
-        errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
+        errors.push(
+          `Parameter ${key} should be ${expectedType}, got ${actualType}`
+        )
       }
       if (expectedType === 'boolean' && actualType !== 'boolean') {
-        errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
+        errors.push(
+          `Parameter ${key} should be ${expectedType}, got ${actualType}`
+        )
       }
       if (expectedType === 'array' && !Array.isArray(value)) {
-        errors.push(`Parameter ${key} should be ${expectedType}, got ${actualType}`)
+        errors.push(
+          `Parameter ${key} should be ${expectedType}, got ${actualType}`
+        )
       }
     }
 
@@ -227,4 +268,3 @@ export const AgentUtils = {
     }
   },
 }
-

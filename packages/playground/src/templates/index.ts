@@ -655,7 +655,13 @@ function Component() {
     getWeather: (location) => \`The weather in \${location} is sunny, 72°F\`,
     calculate: (expression) => {
       try {
-        return \`Result: \${eval(expression)}\`
+        // Safe math evaluation - only allows numbers and basic operators
+        const sanitized = expression.replace(/[^0-9+\\-*/().\\s]/g, '')
+        if (sanitized !== expression) return 'Invalid expression: only numbers and +, -, *, / allowed'
+        // Use Function constructor with restricted scope (safer than eval)
+        const result = new Function(\`"use strict"; return (\${sanitized})\`)()
+        if (typeof result !== 'number' || !isFinite(result)) return 'Invalid result'
+        return \`Result: \${result}\`
       } catch {
         return 'Invalid expression'
       }

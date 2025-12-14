@@ -1,19 +1,24 @@
 ---
-title: "AI Chat Analytics: The Metrics That Actually Matter"
-description: "AI-specific metrics beyond page views. Task completion, response quality, cost per session, and conversation analytics."
-keywords: ["AI analytics", "chat metrics", "KPIs", "conversation analytics", "user engagement"]
-author: "Clarity Chat Team"
+title: 'AI Chat Analytics: The Metrics That Actually Matter'
+description:
+  'AI-specific metrics beyond page views. Task completion, response quality, cost per session, and
+  conversation analytics.'
+keywords: ['AI analytics', 'chat metrics', 'KPIs', 'conversation analytics', 'user engagement']
+author: 'Clarity Chat Team'
 publishDate: 2025-03-27
 readingTime: 11
-category: "Strategy & Architecture"
-relatedPosts: ["23-production-readiness-checklist", "10-token-counting", "13-cut-gpt4-bill"]
+category: 'Strategy & Architecture'
+relatedPosts: ['23-production-readiness-checklist', '10-token-counting', '13-cut-gpt4-bill']
 ---
 
 # AI Chat Analytics: The Metrics That Actually Matter
 
-You're tracking page views. Your AI chat is generating 10,000 conversations a day. You have no idea if it's working.
+You're tracking page views. Your AI chat is generating 10,000 conversations a day. You have no idea
+if it's working.
 
-Traditional web analytics don't map to conversational AI. "Sessions" and "bounce rate" mean nothing when users have 5-minute conversations. "Time on page" doesn't tell you if they got what they needed.
+Traditional web analytics don't map to conversational AI. "Sessions" and "bounce rate" mean nothing
+when users have 5-minute conversations. "Time on page" doesn't tell you if they got what they
+needed.
 
 You need AI-specific metrics—and most teams aren't tracking them.
 
@@ -23,22 +28,24 @@ You need AI-specific metrics—and most teams aren't tracking them.
 
 Stop importing your web analytics playbook. These metrics mislead more than they help:
 
-**Page views**
-What does a "page view" even mean in a chat context? The chat is one page. Users interact with it for varying durations. This metric tells you nothing.
+**Page views** What does a "page view" even mean in a chat context? The chat is one page. Users
+interact with it for varying durations. This metric tells you nothing.
 
-**Bounce rate**
-In web analytics, bouncing is bad—user landed and left without engaging. In chat, a user might ask one perfect question, get one perfect answer, and leave satisfied. That's a 100% bounce rate and a 100% success rate.
+**Bounce rate** In web analytics, bouncing is bad—user landed and left without engaging. In chat, a
+user might ask one perfect question, get one perfect answer, and leave satisfied. That's a 100%
+bounce rate and a 100% success rate.
 
-**Time on page**
-Longer isn't necessarily better. A user who gets their answer in 30 seconds had a better experience than one who struggled for 10 minutes. Time on page could indicate confusion as easily as engagement.
+**Time on page** Longer isn't necessarily better. A user who gets their answer in 30 seconds had a
+better experience than one who struggled for 10 minutes. Time on page could indicate confusion as
+easily as engagement.
 
-**Click-through rate**
-There are no links to click. CTR is meaningless.
+**Click-through rate** There are no links to click. CTR is meaningless.
 
-**The problem:**
-Traditional metrics optimize for engagement. AI chat should optimize for resolution—did the user get what they needed?
+**The problem:** Traditional metrics optimize for engagement. AI chat should optimize for
+resolution—did the user get what they needed?
 
-A user who asks one question, gets a perfect answer, and leaves immediately is a success story, not a failure. Your metrics should reflect that.
+A user who asks one question, gets a perfect answer, and leaves immediately is a success story, not
+a failure. Your metrics should reflect that.
 
 ---
 
@@ -74,30 +81,31 @@ function detectResolutionMethod(conversation: Conversation): string {
 }
 ```
 
-**Target:** 70%+ resolution rate
-**Action if low:** Analyze unresolved conversations to find patterns
+**Target:** 70%+ resolution rate **Action if low:** Analyze unresolved conversations to find
+patterns
 
 ### 2. Messages Per Conversation
 
 How many turns does it take to resolve queries?
 
-| Count | Interpretation |
-|-------|----------------|
-| 1-2 | Either instant resolution or user giving up |
-| 3-6 | Sweet spot—productive conversation |
-| 7-10 | Might indicate confusion or complexity |
-| 10+ | Likely frustration or AI not understanding |
+| Count | Interpretation                              |
+| ----- | ------------------------------------------- |
+| 1-2   | Either instant resolution or user giving up |
+| 3-6   | Sweet spot—productive conversation          |
+| 7-10  | Might indicate confusion or complexity      |
+| 10+   | Likely frustration or AI not understanding  |
 
 ```typescript
 analytics.track('conversation_stats', {
   messageCount: conversation.messages.length,
-  userMessages: conversation.messages.filter(m => m.role === 'user').length,
-  assistantMessages: conversation.messages.filter(m => m.role === 'assistant').length,
+  userMessages: conversation.messages.filter((m) => m.role === 'user').length,
+  assistantMessages: conversation.messages.filter((m) => m.role === 'assistant').length,
   averageResponseLength: calculateAverageResponseLength(conversation),
 })
 ```
 
-Track distribution over time. If average messages per conversation is increasing, your AI might be getting worse at understanding users.
+Track distribution over time. If average messages per conversation is increasing, your AI might be
+getting worse at understanding users.
 
 ### 3. Response Quality Score
 
@@ -113,7 +121,7 @@ const analytics = {
   track: (event: string, properties: Record<string, unknown>) => {
     console.log('[Analytics]', event, properties)
     // Send to your analytics provider (Mixpanel, Amplitude, Segment, etc.)
-  }
+  },
 }
 
 function FeedbackButtons({ messageId }: { messageId: string }) {
@@ -138,8 +146,8 @@ function FeedbackButtons({ messageId }: { messageId: string }) {
 }
 ```
 
-**Target:** 4.0+ out of 5 (or 80%+ positive with thumbs up/down)
-**Action if low:** Review negative feedback patterns
+**Target:** 4.0+ out of 5 (or 80%+ positive with thumbs up/down) **Action if low:** Review negative
+feedback patterns
 
 ### 4. Escalation Rate
 
@@ -154,8 +162,7 @@ analytics.track('escalation', {
 })
 ```
 
-**Target:** <15% escalation rate
-**Trend:** Should decrease over time as AI improves
+**Target:** <15% escalation rate **Trend:** Should decrease over time as AI improves
 
 ---
 
@@ -170,7 +177,9 @@ How long until the AI starts responding?
 ```typescript
 const startTime = Date.now()
 
-const response = await fetch('/api/chat', { /* ... */ })
+const response = await fetch('/api/chat', {
+  /* ... */
+})
 const reader = response.body?.getReader()
 
 let firstTokenTime: number | null = null
@@ -191,8 +200,7 @@ while (true) {
 }
 ```
 
-**Target:** <500ms p95
-**Impact:** TTFT dramatically affects perceived speed
+**Target:** <500ms p95 **Impact:** TTFT dramatically affects perceived speed
 
 ### 2. Tokens Per Second
 
@@ -206,18 +214,17 @@ analytics.track('performance_streaming', {
 })
 ```
 
-**Target:** 30-50 tokens/second
-**Below 20:** Noticeably slow, feels sluggish
+**Target:** 30-50 tokens/second **Below 20:** Noticeably slow, feels sluggish
 
 ### 3. End-to-End Latency
 
 Total time from send to complete response:
 
 | Query Type | Target | Acceptable | Poor |
-|------------|--------|------------|------|
-| Simple | <2s | <3s | >5s |
-| Medium | <5s | <8s | >15s |
-| Complex | <10s | <20s | >30s |
+| ---------- | ------ | ---------- | ---- |
+| Simple     | <2s    | <3s        | >5s  |
+| Medium     | <5s    | <8s        | >15s |
+| Complex    | <10s   | <20s       | >30s |
 
 ### 4. Error Rate
 
@@ -247,12 +254,8 @@ Know what you're spending and why.
 
 ```typescript
 function trackConversationCost(conversation: Conversation) {
-  const totalInputTokens = conversation.messages.reduce(
-    (sum, m) => sum + m.inputTokens, 0
-  )
-  const totalOutputTokens = conversation.messages.reduce(
-    (sum, m) => sum + m.outputTokens, 0
-  )
+  const totalInputTokens = conversation.messages.reduce((sum, m) => sum + m.inputTokens, 0)
+  const totalOutputTokens = conversation.messages.reduce((sum, m) => sum + m.outputTokens, 0)
 
   const cost = calculateCost(totalInputTokens, totalOutputTokens, conversation.model)
 
@@ -329,6 +332,7 @@ analytics.track('feature_used', {
 ```
 
 **Insights:**
+
 - High copy usage = code blocks are valuable
 - High regenerate usage = response quality issues
 - Low edit usage = users accept first message (good UX)
@@ -348,6 +352,7 @@ analytics.track('conversation_abandoned', {
 ```
 
 **Common abandonment patterns:**
+
 - After error messages (improve error UX)
 - During long responses (show progress)
 - After unhelpful response (improve AI quality)
@@ -406,23 +411,27 @@ function useAnalytics(config: AnalyticsConfig) {
 What to show on your AI chat dashboard:
 
 **Overview (real-time):**
+
 - Active conversations right now
 - Messages in last hour
 - Error rate (with alert threshold)
 - Costs today vs budget
 
 **Quality (daily/weekly):**
+
 - Resolution rate trend
 - Average messages per conversation
 - Response quality score
 - Escalation rate
 
 **Performance (hourly):**
+
 - TTFT p50, p95
 - Error rate by type
 - Latency distribution
 
 **Cost (daily):**
+
 - Total spend
 - Cost per conversation
 - Cost per resolution
@@ -444,4 +453,5 @@ Stop tracking page views. Start tracking whether your AI is actually helping peo
 
 ---
 
-*Clarity Chat includes analytics integration with 7 providers and 35+ pre-defined events. Stop guessing if your AI chat is working—know. [See the analytics docs →](/docs/analytics)*
+_Clarity Chat includes analytics integration with 7 providers and 35+ pre-defined events. Stop
+guessing if your AI chat is working—know. [See the analytics docs →](/docs/analytics)_

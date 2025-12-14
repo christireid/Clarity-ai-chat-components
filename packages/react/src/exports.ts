@@ -152,6 +152,13 @@ export {
   type UseClarityObjectReturn,
 } from './hooks/use-clarity-object'
 
+// Top-Level: Drop-in ready agent hook
+export {
+  useAgent,
+  type UseAgentOptions,
+  type UseAgentReturn,
+} from './hooks/use-agent'
+
 // Mid-Level: Tool integration
 export * from './agents/tool-ui-registry'
 export {
@@ -308,9 +315,24 @@ export { KnowledgeBaseViewer } from './components/knowledge-base-viewer'
 export { ExportDialog } from './components/export-dialog'
 export { BatchExportDialog } from './components/batch-export-dialog'
 export { StreamCancellation } from './components/stream-cancellation'
-export { MessageSearch, MessageSearchWithSuspense, highlightSearchMatch } from './components/message-search'
-export { AdvancedMessageSearch, type SearchFilters, type SavedSearch, type SortOption, type FilterPreset } from './components/advanced-message-search'
-export { SemanticMessageSearch, type SemanticSearchConfig, type SemanticSearchResult, type EmbeddingProvider } from './components/advanced-message-search-semantic'
+export {
+  MessageSearch,
+  MessageSearchWithSuspense,
+  highlightSearchMatch,
+} from './components/message-search'
+export {
+  AdvancedMessageSearch,
+  type SearchFilters,
+  type SavedSearch,
+  type SortOption,
+  type FilterPreset,
+} from './components/advanced-message-search'
+export {
+  SemanticMessageSearch,
+  type SemanticSearchConfig,
+  type SemanticSearchResult,
+  type EmbeddingProvider,
+} from './components/advanced-message-search-semantic'
 export { FollowUpSuggestions } from './components/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt-suggestions'
 export { EnhancedMarkdownRenderer } from './components/enhanced-markdown-renderer'

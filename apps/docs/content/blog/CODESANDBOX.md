@@ -4,16 +4,21 @@ Interactive code examples for key blog post patterns.
 
 > ⚠️ **IMPORTANT: These sandboxes do not exist yet.**
 >
-> This document contains **specifications** for sandboxes to be created. The URLs shown are the naming conventions to use when creating them. See the "How to Create a Sandbox" section below for step-by-step instructions.
+> This document contains **specifications** for sandboxes to be created. The URLs shown are the
+> naming conventions to use when creating them. See the "How to Create a Sandbox" section below for
+> step-by-step instructions.
 
 ---
 
 ## Available Sandboxes
 
 ### Production Chat (Post 9)
-**Live demo:** [codesandbox.io/s/clarity-production-chat](https://codesandbox.io/s/clarity-production-chat)
+
+**Live demo:**
+[codesandbox.io/s/clarity-production-chat](https://codesandbox.io/s/clarity-production-chat)
 
 Features demonstrated:
+
 - Type-safe message state
 - Streaming with error recovery
 - Accessible message list
@@ -21,36 +26,46 @@ Features demonstrated:
 - Keyboard navigation
 
 ### Retry Pattern (Post 11)
-**Live demo:** [codesandbox.io/s/clarity-retry-pattern](https://codesandbox.io/s/clarity-retry-pattern)
+
+**Live demo:**
+[codesandbox.io/s/clarity-retry-pattern](https://codesandbox.io/s/clarity-retry-pattern)
 
 Features demonstrated:
+
 - Exponential backoff
 - Error classification
 - Retry with jitter
 - Max attempts handling
 
 ### Optimistic UI (Post 12)
-**Live demo:** [codesandbox.io/s/clarity-optimistic-ui](https://codesandbox.io/s/clarity-optimistic-ui)
+
+**Live demo:**
+[codesandbox.io/s/clarity-optimistic-ui](https://codesandbox.io/s/clarity-optimistic-ui)
 
 Features demonstrated:
+
 - Immediate feedback
 - Rollback on failure
 - Status indicators
 - Pending state management
 
 ### RAG Pipeline (Post 17)
+
 **Live demo:** [codesandbox.io/s/clarity-rag-demo](https://codesandbox.io/s/clarity-rag-demo)
 
 Features demonstrated:
+
 - Semantic chunking
 - Hybrid search simulation
 - Relevance scoring
 - Debug panel
 
 ### Agent Loop (Post 18)
+
 **Live demo:** [codesandbox.io/s/clarity-agent-demo](https://codesandbox.io/s/clarity-agent-demo)
 
 Features demonstrated:
+
 - Tool definition
 - Confirmation flow
 - Result handling
@@ -92,7 +107,7 @@ For demos that require API calls:
 // mock-api.ts
 export async function mockChatAPI(message: string): Promise<string> {
   // Simulate network delay
-  await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000))
+  await new Promise((r) => setTimeout(r, 1000 + Math.random() * 1000))
 
   // Simulate occasional errors (10%)
   if (Math.random() < 0.1) {
@@ -110,7 +125,7 @@ export async function mockStreamingAPI(
   const words = response.split(' ')
 
   for (const word of words) {
-    await new Promise(r => setTimeout(r, 100))
+    await new Promise((r) => setTimeout(r, 100))
     onChunk(word + ' ')
   }
 }
@@ -140,21 +155,23 @@ When updating blog posts with code changes:
 
 ## CodeSandbox Links by Post
 
-| Post | Sandbox Name | Status | Priority |
-|------|--------------|--------|----------|
-| 01 - Response Timing | clarity-response-timing | 📋 To Create | High |
-| 09 - Production Chat | clarity-production-chat | 📋 To Create | High |
-| 11 - Retry Pattern | clarity-retry-pattern | 📋 To Create | Medium |
-| 12 - Optimistic UI | clarity-optimistic-ui | 📋 To Create | Medium |
-| 17 - RAG Pipeline | clarity-rag-demo | 📋 To Create | High |
-| 18 - AI Agents | clarity-agent-demo | 📋 To Create | High |
+| Post                 | Sandbox Name            | Status       | Priority |
+| -------------------- | ----------------------- | ------------ | -------- |
+| 01 - Response Timing | clarity-response-timing | 📋 To Create | High     |
+| 09 - Production Chat | clarity-production-chat | 📋 To Create | High     |
+| 11 - Retry Pattern   | clarity-retry-pattern   | 📋 To Create | Medium   |
+| 12 - Optimistic UI   | clarity-optimistic-ui   | 📋 To Create | Medium   |
+| 17 - RAG Pipeline    | clarity-rag-demo        | 📋 To Create | High     |
+| 18 - AI Agents       | clarity-agent-demo      | 📋 To Create | High     |
 
 **Status Legend:**
+
 - 🟢 Live — Sandbox is published and working
 - 📋 To Create — Sandbox spec defined, needs to be built
 - 🔴 Broken — Sandbox exists but has issues
 
 **Priority Guide:**
+
 - **High** — Core patterns, create first
 - **Medium** — Useful but not critical
 - **Low** — Nice to have
@@ -180,6 +197,7 @@ For examples requiring Node.js backend:
 ```
 
 StackBlitz supports:
+
 - Full Node.js environment
 - API routes
 - Environment variables (for demo API keys)

@@ -1,21 +1,26 @@
 ---
-title: "When to Use GPT-4o Mini vs GPT-4o vs Claude 3.5"
-description: "Decision framework for model selection. Route queries to optimal models based on complexity, cost, and capability requirements."
-keywords: ["model selection", "GPT-4o", "Claude", "model routing", "LLM comparison"]
-author: "Clarity Chat Team"
+title: 'When to Use GPT-4o Mini vs GPT-4o vs Claude 3.5'
+description:
+  'Decision framework for model selection. Route queries to optimal models based on complexity,
+  cost, and capability requirements.'
+keywords: ['model selection', 'GPT-4o', 'Claude', 'model routing', 'LLM comparison']
+author: 'Clarity Chat Team'
 publishDate: 2025-02-25
 readingTime: 11
-category: "Cost & Performance"
-relatedPosts: ["13-cut-gpt4-bill", "10-token-counting", "16-hidden-costs"]
+category: 'Cost & Performance'
+relatedPosts: ['13-cut-gpt4-bill', '10-token-counting', '16-hidden-costs']
 ---
 
 # When to Use GPT-4o Mini vs GPT-4o vs Claude 3.5
 
-> **Pricing Note:** Model pricing changes frequently. Verify current rates on OpenAI, Anthropic, and Google's pricing pages before implementation.
+> **Pricing Note:** Model pricing changes frequently. Verify current rates on OpenAI, Anthropic, and
+> Google's pricing pages before implementation.
 
 You're overpaying for simple tasks and underpaying for complex ones.
 
-Using GPT-4 for "What's 2+2?" is like hiring a PhD to answer the phone. Using GPT-3.5 for legal analysis is like asking an intern to review contracts. Model selection isn't about finding the "best" model—it's about finding the best model *for this specific task*.
+Using GPT-4 for "What's 2+2?" is like hiring a PhD to answer the phone. Using GPT-3.5 for legal
+analysis is like asking an intern to review contracts. Model selection isn't about finding the
+"best" model—it's about finding the best model _for this specific task_.
 
 Let me give you a decision framework.
 
@@ -25,18 +30,17 @@ Let me give you a decision framework.
 
 As of 2025, here's what the major models cost (per 1M tokens):
 
-| Model | Input | Output | Context Window |
-|-------|-------|--------|----------------|
-| GPT-4o | $2.50 | $10.00 | 128K |
-| GPT-4o-mini | $0.15 | $0.60 | 128K |
-| Claude 3.5 Sonnet | $3.00 | $15.00 | 200K |
-| Claude 3.5 Haiku | $0.25 | $1.25 | 200K |
-| Gemini 2.0 Flash | $0.075 | $0.30 | 1M |
+| Model             | Input  | Output | Context Window |
+| ----------------- | ------ | ------ | -------------- |
+| GPT-4o            | $2.50  | $10.00 | 128K           |
+| GPT-4o-mini       | $0.15  | $0.60  | 128K           |
+| Claude 3.5 Sonnet | $3.00  | $15.00 | 200K           |
+| Claude 3.5 Haiku  | $0.25  | $1.25  | 200K           |
+| Gemini 2.0 Flash  | $0.075 | $0.30  | 1M             |
 
 The gap is striking: GPT-4o costs **16x more** than GPT-4o-mini. Is it 16x better?
 
-For complex reasoning: yes, often.
-For "What time is it in Tokyo?": absolutely not.
+For complex reasoning: yes, often. For "What time is it in Tokyo?": absolutely not.
 
 The opportunity is routing queries to the cheapest model that can handle them well.
 
@@ -189,10 +193,13 @@ async function callAnthropic(
   const response = await anthropic.messages.create({
     model: config.model,
     max_tokens: config.maxTokens,
-    messages: history.filter(m => m.role !== 'system').map(m => ({
-      role: m.role as 'user' | 'assistant',
-      content: m.content,
-    })).concat([{ role: 'user', content: message }]),
+    messages: history
+      .filter((m) => m.role !== 'system')
+      .map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      }))
+      .concat([{ role: 'user', content: message }]),
   })
   return {
     response: response.content[0].type === 'text' ? response.content[0].text : '',
@@ -208,10 +215,12 @@ async function callGemini(
 ): Promise<ProviderResult> {
   const model = genAI.getGenerativeModel({ model: config.model })
   const chat = model.startChat({
-    history: history.filter(m => m.role !== 'system').map(m => ({
-      role: m.role === 'user' ? 'user' : 'model',
-      parts: [{ text: m.content }],
-    })),
+    history: history
+      .filter((m) => m.role !== 'system')
+      .map((m) => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: m.content }],
+      })),
   })
   const result = await chat.sendMessage(message)
   const response = result.response
@@ -271,10 +280,7 @@ interface ClassificationContext {
   keywords: string[]
 }
 
-function classifyMessage(
-  message: string,
-  context: ClassificationContext
-): ModelTier {
+function classifyMessage(message: string, context: ClassificationContext): ModelTier {
   // Rule-based classification (no API call)
 
   // Long documents → Gemini
@@ -301,7 +307,7 @@ function classifyMessage(
     /legal|contract|compliance/i,
   ]
 
-  if (reasoningPatterns.some(p => p.test(message))) {
+  if (reasoningPatterns.some((p) => p.test(message))) {
     return 'reasoning'
   }
 
@@ -313,7 +319,7 @@ function classifyMessage(
     /^(do you|can you|will you) (accept|have|offer)/i,
   ]
 
-  if (simplePatterns.some(p => p.test(message))) {
+  if (simplePatterns.some((p) => p.test(message))) {
     return 'simple'
   }
 
@@ -324,9 +330,10 @@ function classifyMessage(
 // Simple keyword extraction for classification
 function extractKeywords(text: string): string[] {
   const stopWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being'])
-  return text.toLowerCase()
+  return text
+    .toLowerCase()
     .split(/\W+/)
-    .filter(word => word.length > 2 && !stopWords.has(word))
+    .filter((word) => word.length > 2 && !stopWords.has(word))
 }
 
 async function routeAndSend(
@@ -380,8 +387,8 @@ async function routeAndSend(
       break
   }
 
-  const cost = (inputTokens * config.costPer1kInput / 1000) +
-               (outputTokens * config.costPer1kOutput / 1000)
+  const cost =
+    (inputTokens * config.costPer1kInput) / 1000 + (outputTokens * config.costPer1kOutput) / 1000
 
   return {
     response,
@@ -399,19 +406,17 @@ async function routeAndSend(
 Here's data from a production application handling 10,000 messages per day:
 
 **Before (all GPT-4o):**
+
 - Daily cost: $500
 
-**After (routed):**
-| Tier | Percentage | Model | Daily Cost |
-|------|------------|-------|------------|
-| Simple | 65% | GPT-4o-mini | $5 |
-| Standard | 25% | GPT-4o | $125 |
-| Complex | 10% | Claude Sonnet | $80 |
-| **Total** | 100% | | **$210** |
+**After (routed):** | Tier | Percentage | Model | Daily Cost |
+|------|------------|-------|------------| | Simple | 65% | GPT-4o-mini | $5 | | Standard | 25% |
+GPT-4o | $125 | | Complex | 10% | Claude Sonnet | $80 | | **Total** | 100% | | **$210** |
 
 **Savings: 58% ($290/day, $8,700/month)**
 
-The key insight: most queries are simple. In our data, 65% of messages were greetings, simple questions, or confirmations. Paying premium prices for "hello" and "thanks" was burning money.
+The key insight: most queries are simple. In our data, 65% of messages were greetings, simple
+questions, or confirmations. Paying premium prices for "hello" and "thanks" was burning money.
 
 ---
 
@@ -480,10 +485,12 @@ function isRateLimitError(error: unknown): boolean {
 
 function isServerError(error: unknown): boolean {
   if (error instanceof Error) {
-    return error.message.includes('500') ||
-           error.message.includes('502') ||
-           error.message.includes('503') ||
-           error.message.includes('504')
+    return (
+      error.message.includes('500') ||
+      error.message.includes('502') ||
+      error.message.includes('503') ||
+      error.message.includes('504')
+    )
   }
   return false
 }
@@ -529,16 +536,21 @@ async function routeWithFallback(
 
 ## The Takeaway
 
-Model selection is about matching capability to task complexity. The "best" model is the cheapest one that handles your specific task well.
+Model selection is about matching capability to task complexity. The "best" model is the cheapest
+one that handles your specific task well.
 
 The framework:
+
 1. **Simple tasks (65% of queries)**: GPT-4o-mini or Haiku
 2. **Standard tasks (25%)**: GPT-4o
 3. **Complex reasoning (8%)**: Claude Sonnet
 4. **Long documents (2%)**: Gemini Flash
 
-Implement routing, track the distribution, and adjust thresholds based on your specific traffic patterns. Most applications can cut AI costs by 50-60% with proper routing.
+Implement routing, track the distribution, and adjust thresholds based on your specific traffic
+patterns. Most applications can cut AI costs by 50-60% with proper routing.
 
 ---
 
-*Clarity Chat's `useModelRouter` handles model selection, fallback chains, and cost tracking automatically. Route to the right model without building the infrastructure yourself. [See the model routing docs →](/docs/hooks/use-model-router)*
+_Clarity Chat's `useModelRouter` handles model selection, fallback chains, and cost tracking
+automatically. Route to the right model without building the infrastructure yourself.
+[See the model routing docs →](/docs/hooks/use-model-router)_

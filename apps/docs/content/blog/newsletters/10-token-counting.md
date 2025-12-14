@@ -1,6 +1,6 @@
 # Token Counting That Actually Works
 
-*Newsletter version of: Accurate Cost Prediction*
+_Newsletter version of: Accurate Cost Prediction_
 
 ---
 
@@ -14,14 +14,15 @@ You estimated 1,000 tokens. The API charged you for 2,300. What happened?
 
 ```typescript
 // Looks like ~50 characters
-"Hello, how are you today?"
+'Hello, how are you today?'
 
 // GPT-4 tokenizes this as 7 tokens
 // But "こんにちは" (5 chars) = 3-5 tokens
 // And "🎉🎊🎁" (3 chars) = 6+ tokens
 ```
 
-Different models use different tokenizers. Unicode is unpredictable. Code tokenizes differently than prose.
+Different models use different tokenizers. Unicode is unpredictable. Code tokenizes differently than
+prose.
 
 ## The Right Way
 
@@ -44,10 +45,10 @@ Track tokens across your conversation:
 
 ```typescript
 interface TokenBudget {
-  systemPrompt: number    // Fixed cost
-  history: number         // Grows over time
-  userMessage: number     // Current input
-  responseBuffer: number  // Reserve for output
+  systemPrompt: number // Fixed cost
+  history: number // Grows over time
+  userMessage: number // Current input
+  responseBuffer: number // Reserve for output
   total: number
   limit: number
 }

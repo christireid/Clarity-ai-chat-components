@@ -71,7 +71,7 @@ export default function App() {
       />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'chat-with-avatars',
@@ -119,7 +119,7 @@ export default function App() {
       />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'themed-chat',
@@ -157,7 +157,7 @@ export default function App() {
       </div>
     </ThemeProvider>
   )
-}`
+}`,
   },
   {
     id: 'file-upload',
@@ -209,7 +209,7 @@ export default function App() {
       )}
     </div>
   )
-}`
+}`,
   },
   {
     id: 'markdown-support',
@@ -257,7 +257,7 @@ And inline code: \\\`const x = 42\\\`
       />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'token-tracking',
@@ -305,7 +305,7 @@ export default function App() {
       </div>
     </div>
   )
-}`
+}`,
   },
   {
     id: 'multi-modal',
@@ -357,7 +357,7 @@ export default function App() {
       />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'agent-with-tools',
@@ -379,7 +379,11 @@ export default function App() {
     },
     calculate: (expression: string) => {
       try {
-        return \`Result: \${eval(expression)}\`
+        // Safe math evaluation - only allows numbers and basic operators
+        const sanitized = expression.replace(/[^0-9+\\-*/().\\s]/g, '')
+        if (sanitized !== expression) return 'Invalid expression'
+        const result = new Function(\`"use strict"; return (\${sanitized})\`)()
+        return typeof result === 'number' && isFinite(result) ? \`Result: \${result}\` : 'Invalid result'
       } catch {
         return 'Invalid expression'
       }
@@ -413,7 +417,7 @@ export default function App() {
       ))}
     </div>
   )
-}`
+}`,
   },
   {
     id: 'performance-dashboard',
@@ -444,7 +448,7 @@ export default function App() {
       </div>
     </div>
   )
-}`
+}`,
   },
   {
     id: 'enterprise-sso',
@@ -489,7 +493,7 @@ export default function App() {
       />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'rag-chat',
@@ -548,7 +552,7 @@ export default function App() {
       </div>
     </div>
   )
-}`
+}`,
   },
   {
     id: 'command-palette',
@@ -622,7 +626,7 @@ export default function App() {
       />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'memory-inspector',
@@ -668,7 +672,7 @@ export default function App() {
       </div>
     </div>
   )
-}`
+}`,
   },
   {
     id: 'conversation-timeline',
@@ -712,7 +716,7 @@ export default function App() {
       <ConversationTimeline events={events} />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'follow-up-suggestions',
@@ -757,7 +761,7 @@ export default function App() {
       />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'context-visualizer',
@@ -800,7 +804,7 @@ export default function App() {
       </div>
     </div>
   )
-}`
+}`,
   },
   {
     id: 'error-handling',
@@ -875,7 +879,7 @@ export default function App() {
       </div>
     </ErrorBoundary>
   )
-}`
+}`,
   },
   {
     id: 'thinking-indicator',
@@ -924,7 +928,7 @@ export default function App() {
       />
     </div>
   )
-}`
+}`,
   },
   {
     id: 'keyboard-shortcuts',
@@ -975,7 +979,7 @@ export default function App() {
       </div>
     </div>
   )
-}`
+}`,
   },
   {
     id: 'streaming-progress',
@@ -1047,6 +1051,6 @@ export default function App() {
       </div>
     </div>
   )
-}`
-  }
+}`,
+  },
 ]

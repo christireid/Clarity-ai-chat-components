@@ -1,20 +1,25 @@
 ---
-title: "Build a Production-Ready Chat Interface in React (Not Another Tutorial)"
-description: "Complete production chat implementation with streaming, error recovery, accessibility, and mobile optimization. Real code, not tutorial toy examples."
-keywords: ["React chat", "production chat", "TypeScript", "streaming", "accessibility", "chat UI"]
-author: "Clarity Chat Team"
+title: 'Build a Production-Ready Chat Interface in React (Not Another Tutorial)'
+description:
+  'Complete production chat implementation with streaming, error recovery, accessibility, and mobile
+  optimization. Real code, not tutorial toy examples.'
+keywords: ['React chat', 'production chat', 'TypeScript', 'streaming', 'accessibility', 'chat UI']
+author: 'Clarity Chat Team'
 publishDate: 2025-02-04
 readingTime: 15
-category: "Strategy & Architecture"
+category: 'Strategy & Architecture'
 featured: true
-relatedPosts: ["07-sse-vs-websockets", "11-retry-pattern", "23-production-readiness-checklist"]
+relatedPosts: ['07-sse-vs-websockets', '11-retry-pattern', '23-production-readiness-checklist']
 ---
 
 # Build a Production-Ready Chat Interface in React (Not Another Tutorial)
 
-Most React chat tutorials stop at "display messages in a list." Here's an array, here's a map, here's an input—done.
+Most React chat tutorials stop at "display messages in a list." Here's an array, here's a map,
+here's an input—done.
 
-Then you ship to production and discover you need error handling, retry logic, streaming, accessibility, mobile optimization, keyboard shortcuts, loading states, token tracking, optimistic updates, scroll management, theming...
+Then you ship to production and discover you need error handling, retry logic, streaming,
+accessibility, mobile optimization, keyboard shortcuts, loading states, token tracking, optimistic
+updates, scroll management, theming...
 
 This isn't another basic tutorial. This is what production actually requires.
 
@@ -26,24 +31,26 @@ Here's the tutorial version:
 
 ```tsx
 function BasicChat() {
-  const [messages, setMessages] = useState<{text: string}[]>([])
+  const [messages, setMessages] = useState<{ text: string }[]>([])
   const [input, setInput] = useState('')
 
   const sendMessage = async () => {
     setMessages([...messages, { text: input }])
     const response = await fetch('/api/chat', {
       method: 'POST',
-      body: JSON.stringify({ message: input })
+      body: JSON.stringify({ message: input }),
     })
     const data = await response.json()
-    setMessages(prev => [...prev, { text: data.response }])
+    setMessages((prev) => [...prev, { text: data.response }])
     setInput('')
   }
 
   return (
     <div>
-      {messages.map((m, i) => <div key={i}>{m.text}</div>)}
-      <input value={input} onChange={e => setInput(e.target.value)} />
+      {messages.map((m, i) => (
+        <div key={i}>{m.text}</div>
+      ))}
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
       <button onClick={sendMessage}>Send</button>
     </div>
   )
@@ -53,6 +60,7 @@ function BasicChat() {
 20 lines. It "works." Ship it!
 
 Here's what's missing:
+
 - ❌ No error handling (API fails = app breaks)
 - ❌ No retry logic (network hiccup = message lost)
 - ❌ No streaming (users stare at blank screen for 10 seconds)
@@ -95,18 +103,16 @@ function useMessages() {
       id: crypto.randomUUID(),
       timestamp: new Date(),
     }
-    setMessages(prev => [...prev, newMessage])
+    setMessages((prev) => [...prev, newMessage])
     return newMessage.id
   }, [])
 
   const updateMessage = useCallback((id: string, updates: Partial<Message>) => {
-    setMessages(prev =>
-      prev.map(m => m.id === id ? { ...m, ...updates } : m)
-    )
+    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...updates } : m)))
   }, [])
 
   const removeMessage = useCallback((id: string) => {
-    setMessages(prev => prev.filter(m => m.id !== id))
+    setMessages((prev) => prev.filter((m) => m.id !== id))
   }, [])
 
   return { messages, addMessage, updateMessage, removeMessage }
@@ -144,90 +150,95 @@ function useStreamingChat() {
   const [status, setStatus] = useState<'idle' | 'streaming' | 'error'>('idle')
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  const sendMessage = useCallback(async (content: string) => {
-    // Add user message immediately (optimistic)
-    const userMsgId = addMessage({
-      role: 'user',
-      content,
-      status: 'sending',
-    })
-
-    // Add placeholder for AI response
-    const aiMsgId = addMessage({
-      role: 'assistant',
-      content: '',
-      status: 'pending',
-    })
-
-    abortControllerRef.current = new AbortController()
-    setStatus('streaming')
-
-    // Declare accumulated outside try block so it's accessible in catch
-    let accumulated = ''
-
-    try {
-      const response = await fetch('/api/chat/stream', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: content,
-          history: messages.filter(m => m.status === 'sent'),
-        }),
-        signal: abortControllerRef.current.signal,
+  const sendMessage = useCallback(
+    async (content: string) => {
+      // Add user message immediately (optimistic)
+      const userMsgId = addMessage({
+        role: 'user',
+        content,
+        status: 'sending',
       })
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
+      // Add placeholder for AI response
+      const aiMsgId = addMessage({
+        role: 'assistant',
+        content: '',
+        status: 'pending',
+      })
+
+      abortControllerRef.current = new AbortController()
+      setStatus('streaming')
+
+      // Declare accumulated outside try block so it's accessible in catch
+      let accumulated = ''
+
+      try {
+        const response = await fetch('/api/chat/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: content,
+            history: messages.filter((m) => m.status === 'sent'),
+          }),
+          signal: abortControllerRef.current.signal,
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
+
+        // Mark user message as sent
+        updateMessage(userMsgId, { status: 'sent' })
+        updateMessage(aiMsgId, { status: 'sending' })
+
+        // Stream the response
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
+
+        while (reader) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value, { stream: true })
+          accumulated += parseSSEChunk(chunk)
+
+          updateMessage(aiMsgId, { content: accumulated })
+        }
+
+        updateMessage(aiMsgId, { status: 'sent' })
+        setStatus('idle')
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          updateMessage(aiMsgId, { status: 'sent', content: accumulated + ' [cancelled]' })
+        } else {
+          updateMessage(userMsgId, { status: 'failed', error: error.message })
+          updateMessage(aiMsgId, { status: 'failed', error: error.message })
+          setStatus('error')
+        }
       }
-
-      // Mark user message as sent
-      updateMessage(userMsgId, { status: 'sent' })
-      updateMessage(aiMsgId, { status: 'sending' })
-
-      // Stream the response
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
-
-      while (reader) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value, { stream: true })
-        accumulated += parseSSEChunk(chunk)
-
-        updateMessage(aiMsgId, { content: accumulated })
-      }
-
-      updateMessage(aiMsgId, { status: 'sent' })
-      setStatus('idle')
-
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        updateMessage(aiMsgId, { status: 'sent', content: accumulated + ' [cancelled]' })
-      } else {
-        updateMessage(userMsgId, { status: 'failed', error: error.message })
-        updateMessage(aiMsgId, { status: 'failed', error: error.message })
-        setStatus('error')
-      }
-    }
-  }, [messages, addMessage, updateMessage])
+    },
+    [messages, addMessage, updateMessage]
+  )
 
   const cancel = useCallback(() => {
     abortControllerRef.current?.abort()
   }, [])
 
-  const retry = useCallback((messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (message?.status === 'failed' && message.role === 'user') {
-      removeMessage(messageId)
-      // Also remove the failed AI response
-      const aiMsgIndex = messages.findIndex(m => m.id === messageId) + 1
-      if (messages[aiMsgIndex]?.status === 'failed') {
-        removeMessage(messages[aiMsgIndex].id)
+  const retry = useCallback(
+    (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (message?.status === 'failed' && message.role === 'user') {
+        removeMessage(messageId)
+        // Also remove the failed AI response
+        const aiMsgIndex = messages.findIndex((m) => m.id === messageId) + 1
+        if (messages[aiMsgIndex]?.status === 'failed') {
+          removeMessage(messages[aiMsgIndex].id)
+        }
+        sendMessage(message.content)
       }
-      sendMessage(message.content)
-    }
-  }, [messages, sendMessage, removeMessage])
+    },
+    [messages, sendMessage, removeMessage]
+  )
 
   return { messages, status, sendMessage, cancel, retry }
 }
@@ -256,7 +267,7 @@ function formatTime(date: Date): string {
 function LoadingDots() {
   return (
     <span className="flex gap-1">
-      {[0, 1, 2].map(i => (
+      {[0, 1, 2].map((i) => (
         <span
           key={i}
           className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
@@ -273,7 +284,10 @@ function Spinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   return <Loader2 className={`${sizeClasses[size]} animate-spin`} />
 }
 
-function MessageList({ messages, onRetry }: {
+function MessageList({
+  messages,
+  onRetry,
+}: {
   messages: Message[]
   onRetry: (id: string) => void
 }) {
@@ -291,11 +305,11 @@ function MessageList({ messages, onRetry }: {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowUp' && focusedIndex > 0) {
       e.preventDefault()
-      setFocusedIndex(prev => prev - 1)
+      setFocusedIndex((prev) => prev - 1)
     }
     if (e.key === 'ArrowDown' && focusedIndex < messages.length - 1) {
       e.preventDefault()
-      setFocusedIndex(prev => prev + 1)
+      setFocusedIndex((prev) => prev + 1)
     }
   }
 
@@ -321,7 +335,11 @@ function MessageList({ messages, onRetry }: {
   )
 }
 
-function MessageBubble({ message, isFocused, onRetry }: {
+function MessageBubble({
+  message,
+  isFocused,
+  onRetry,
+}: {
   message: Message
   isFocused: boolean
   onRetry: () => void
@@ -338,9 +356,7 @@ function MessageBubble({ message, isFocused, onRetry }: {
       )}
       aria-label={`${isUser ? 'You' : 'AI'}, ${formatTime(message.timestamp)}`}
     >
-      <div className="prose prose-sm">
-        {message.content || <LoadingDots />}
-      </div>
+      <div className="prose prose-sm">{message.content || <LoadingDots />}</div>
 
       {/* Status indicators */}
       <div className="flex items-center gap-2 mt-2 text-xs opacity-70">
@@ -349,10 +365,7 @@ function MessageBubble({ message, isFocused, onRetry }: {
         {message.status === 'failed' && (
           <>
             <XIcon className="w-3 h-3 text-red-500" />
-            <button
-              onClick={onRetry}
-              className="text-blue-500 hover:underline"
-            >
+            <button onClick={onRetry} className="text-blue-500 hover:underline">
               Retry
             </button>
           </>
@@ -368,10 +381,7 @@ function MessageBubble({ message, isFocused, onRetry }: {
 Mobile-aware input with keyboard shortcuts:
 
 ```tsx
-function ChatInput({ onSend, disabled }: {
-  onSend: (content: string) => void
-  disabled: boolean
-}) {
+function ChatInput({ onSend, disabled }: { onSend: (content: string) => void; disabled: boolean }) {
   const [value, setValue] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -412,7 +422,7 @@ function ChatInput({ onSend, disabled }: {
         <textarea
           ref={textareaRef}
           value={value}
-          onChange={e => setValue(e.target.value)}
+          onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
           disabled={disabled}
@@ -429,9 +439,7 @@ function ChatInput({ onSend, disabled }: {
           <SendIcon className="w-5 h-5" />
         </button>
       </div>
-      <p className="text-xs text-gray-400 mt-1">
-        Press Enter to send, Shift+Enter for new line
-      </p>
+      <p className="text-xs text-gray-400 mt-1">Press Enter to send, Shift+Enter for new line</p>
     </div>
   )
 }
@@ -458,19 +466,13 @@ function ProductionChat() {
       {status === 'streaming' && (
         <div className="px-4 py-2 flex items-center justify-between bg-blue-50">
           <span className="text-sm text-blue-600">AI is responding...</span>
-          <button
-            onClick={cancel}
-            className="text-sm text-blue-600 hover:underline"
-          >
+          <button onClick={cancel} className="text-sm text-blue-600 hover:underline">
             Stop
           </button>
         </div>
       )}
 
-      <ChatInput
-        onSend={sendMessage}
-        disabled={status === 'streaming'}
-      />
+      <ChatInput onSend={sendMessage} disabled={status === 'streaming'} />
     </div>
   )
 }
@@ -518,7 +520,7 @@ const handleFocus = () => {
   setTimeout(() => {
     textareaRef.current?.scrollIntoView({
       behavior: 'smooth',
-      block: 'center'
+      block: 'center',
     })
   }, 300) // Wait for keyboard animation
 }
@@ -540,13 +542,7 @@ function VirtualizedMessageList({ messages }) {
   }, [messages.length])
 
   return (
-    <List
-      ref={listRef}
-      height={600}
-      itemCount={messages.length}
-      itemSize={80}
-      width="100%"
-    >
+    <List ref={listRef} height={600} itemCount={messages.length} itemSize={80} width="100%">
       {({ index, style }) => (
         <div style={style}>
           <MessageBubble message={messages[index]} />
@@ -561,19 +557,19 @@ function VirtualizedMessageList({ messages }) {
 
 ## What You Actually Need vs. What You Build
 
-| Feature | Lines of Code | Time to Build |
-|---------|---------------|---------------|
-| Basic messaging | 50 | 1 day |
-| Streaming | 150 | 2 days |
-| Error handling | 100 | 1 day |
-| Retry logic | 80 | 1 day |
-| Accessibility | 200 | 2 days |
-| Mobile optimization | 100 | 1 day |
-| Theming | 150 | 1 day |
-| Virtualization | 100 | 1 day |
-| Loading states | 80 | 0.5 days |
-| Testing | 500+ | 3 days |
-| **Total** | **~1,500** | **~13 days** |
+| Feature             | Lines of Code | Time to Build |
+| ------------------- | ------------- | ------------- |
+| Basic messaging     | 50            | 1 day         |
+| Streaming           | 150           | 2 days        |
+| Error handling      | 100           | 1 day         |
+| Retry logic         | 80            | 1 day         |
+| Accessibility       | 200           | 2 days        |
+| Mobile optimization | 100           | 1 day         |
+| Theming             | 150           | 1 day         |
+| Virtualization      | 100           | 1 day         |
+| Loading states      | 80            | 0.5 days      |
+| Testing             | 500+          | 3 days        |
+| **Total**           | **~1,500**    | **~13 days**  |
 
 That's 3 weeks for a production-ready chat. Longer if you count debugging and iteration.
 
@@ -590,8 +586,10 @@ Tutorial chat is not production chat. The gap is massive:
 5. **Performance at scale** — Virtualization for long histories
 6. **Edge cases multiply** — Race conditions, network issues, browser quirks
 
-You can spend 3+ weeks building this yourself, or use something that's already solved these problems.
+You can spend 3+ weeks building this yourself, or use something that's already solved these
+problems.
 
 ---
 
-*Clarity Chat provides all of this out of the box: streaming, error recovery, accessibility, mobile optimization, virtualization, theming, and more. [See the quick start →](/docs/getting-started)*
+_Clarity Chat provides all of this out of the box: streaming, error recovery, accessibility, mobile
+optimization, virtualization, theming, and more. [See the quick start →](/docs/getting-started)_

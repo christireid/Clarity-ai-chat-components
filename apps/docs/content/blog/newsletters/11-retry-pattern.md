@@ -1,6 +1,6 @@
 # The Retry Pattern: Never Lose a Message
 
-*Newsletter version of: Handle AI API Failures Gracefully*
+_Newsletter version of: Handle AI API Failures Gracefully_
 
 ---
 
@@ -14,23 +14,20 @@ Your AI chat WILL fail. Rate limits, network hiccups, API timeouts. The question
 
 Not all errors are equal:
 
-| Type | Retryable? | Action |
-|------|-----------|--------|
-| 429 Rate Limit | Yes | Wait, retry with backoff |
-| 500 Server Error | Yes | Retry immediately |
-| Network Error | Yes | Retry with backoff |
-| 401 Auth Error | No | Refresh token or re-auth |
-| 400 Bad Request | No | Show error, don't retry |
+| Type             | Retryable? | Action                   |
+| ---------------- | ---------- | ------------------------ |
+| 429 Rate Limit   | Yes        | Wait, retry with backoff |
+| 500 Server Error | Yes        | Retry immediately        |
+| Network Error    | Yes        | Retry with backoff       |
+| 401 Auth Error   | No         | Refresh token or re-auth |
+| 400 Bad Request  | No         | Show error, don't retry  |
 
 ## Exponential Backoff
 
 Don't hammer a failing API:
 
 ```typescript
-async function retryWithBackoff<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3
-): Promise<T> {
+async function retryWithBackoff<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await fn()

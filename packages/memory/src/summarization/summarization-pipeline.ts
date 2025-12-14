@@ -99,8 +99,9 @@ export class SummarizationPipeline {
           model: this.config.model,
         })
       case 'local':
-        // TODO: Implement local summarizer
-        throw new Error('Local summarizer not yet implemented')
+        throw new Error(
+          'Local summarizer is not supported. Please use "openai" or "anthropic" as the provider.'
+        )
       default:
         throw new Error(`Unknown summarizer provider: ${this.config.provider}`)
     }

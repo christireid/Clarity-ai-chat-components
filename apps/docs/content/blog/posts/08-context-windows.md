@@ -1,22 +1,28 @@
 ---
-title: "Context Windows Are Lying to You: Managing 1M Tokens in Practice"
-description: "Four proven strategies for managing context windows: sliding window, summarization, RAG, and semantic pruning. With TypeScript implementations."
-keywords: ["context window", "token management", "LLM context", "conversation history", "token limits"]
-author: "Clarity Chat Team"
+title: 'Context Windows Are Lying to You: Managing 1M Tokens in Practice'
+description:
+  'Four proven strategies for managing context windows: sliding window, summarization, RAG, and
+  semantic pruning. With TypeScript implementations.'
+keywords:
+  ['context window', 'token management', 'LLM context', 'conversation history', 'token limits']
+author: 'Clarity Chat Team'
 publishDate: 2025-01-30
 readingTime: 12
-category: "Streaming & Real-Time"
+category: 'Streaming & Real-Time'
 featured: true
-relatedPosts: ["10-token-counting", "17-rag-production", "13-cut-gpt4-bill"]
+relatedPosts: ['10-token-counting', '17-rag-production', '13-cut-gpt4-bill']
 ---
 
 # Context Windows Are Lying to You: Managing 1M Tokens in Practice
 
 Gemini 2.5 Pro supports 1 million tokens. So why does your app break at 50,000?
 
-Marketing says "1M context window." Reality says performance degrades long before you hit that limit. The NoLiMa study found that for most popular LLMs, "performance degrades significantly as context length increases."
+Marketing says "1M context window." Reality says performance degrades long before you hit that
+limit. The NoLiMa study found that for most popular LLMs, "performance degrades significantly as
+context length increases."
 
-Your 45-message conversation shouldn't end with "Error: Maximum context length exceeded." But in 23% of AI chat apps I've tested, it does—without warning.
+Your 45-message conversation shouldn't end with "Error: Maximum context length exceeded." But in 23%
+of AI chat apps I've tested, it does—without warning.
 
 ---
 
@@ -24,21 +30,23 @@ Your 45-message conversation shouldn't end with "Error: Maximum context length e
 
 Here's what the vendors tell you:
 
-| Model | Stated Limit |
-|-------|--------------|
-| GPT-4o | 128K tokens |
-| Claude 3.5 Sonnet | 200K tokens |
-| Gemini 2.5 Pro | 1M tokens |
+| Model             | Stated Limit |
+| ----------------- | ------------ |
+| GPT-4o            | 128K tokens  |
+| Claude 3.5 Sonnet | 200K tokens  |
+| Gemini 2.5 Pro    | 1M tokens    |
 
 Here's what actually happens:
 
-| Model | Stated | Practical Limit |
-|-------|--------|-----------------|
-| GPT-4o | 128K | ~80K before quality drops |
-| Claude 3.5 | 200K | ~120K before issues |
-| Gemini 2.5 | 1M | ~500K usable |
+| Model      | Stated | Practical Limit           |
+| ---------- | ------ | ------------------------- |
+| GPT-4o     | 128K   | ~80K before quality drops |
+| Claude 3.5 | 200K   | ~120K before issues       |
+| Gemini 2.5 | 1M     | ~500K usable              |
 
-Performance degrades gradually. At 50% capacity, you might not notice. At 80%, responses get slower, less coherent, more likely to miss details from earlier context. At 95%, you're rolling dice on every request.
+Performance degrades gradually. At 50% capacity, you might not notice. At 80%, responses get slower,
+less coherent, more likely to miss details from earlier context. At 95%, you're rolling dice on
+every request.
 
 The marketing number is a ceiling, not a target.
 
@@ -48,7 +56,8 @@ The marketing number is a ceiling, not a target.
 
 Here's the uncomfortable truth: LLMs are stateless.
 
-Every message you send includes the *entire* conversation history. The model doesn't "remember" previous messages—you resend them every time.
+Every message you send includes the _entire_ conversation history. The model doesn't "remember"
+previous messages—you resend them every time.
 
 ```
 Message 1: "Hello"
@@ -70,9 +79,11 @@ Message 30: "Thanks"
 → Total tokens: ~15,000
 ```
 
-Your API cost isn't per-message—it's cumulative. And that cumulative context grows with every exchange.
+Your API cost isn't per-message—it's cumulative. And that cumulative context grows with every
+exchange.
 
-By message 50, you might be sending 50,000 tokens with each request. By message 100, you're at 100,000+. Eventually, you hit the wall.
+By message 50, you might be sending 50,000 tokens with each request. By message 100, you're at
+100,000+. Eventually, you hit the wall.
 
 ---
 
@@ -90,23 +101,21 @@ function useSlidingWindow(maxMessages: number = 20) {
 
   const contextMessages = useMemo(() => {
     // Always keep system prompt
-    const systemPrompt = allMessages.find(m => m.role === 'system')
-    const conversationMessages = allMessages.filter(m => m.role !== 'system')
+    const systemPrompt = allMessages.find((m) => m.role === 'system')
+    const conversationMessages = allMessages.filter((m) => m.role !== 'system')
 
     // Take last N messages
     const recentMessages = conversationMessages.slice(-maxMessages)
 
-    return systemPrompt
-      ? [systemPrompt, ...recentMessages]
-      : recentMessages
+    return systemPrompt ? [systemPrompt, ...recentMessages] : recentMessages
   }, [allMessages, maxMessages])
 
   return { allMessages, contextMessages, setAllMessages }
 }
 ```
 
-**Pros:** Simple, predictable memory usage
-**Cons:** Loses early context ("What was the first thing I asked?")
+**Pros:** Simple, predictable memory usage **Cons:** Loses early context ("What was the first thing
+I asked?")
 
 ### Strategy 2: Token Budget
 
@@ -144,8 +153,7 @@ function estimateTokens(text: string): number {
 }
 ```
 
-**Pros:** Maximizes context within budget
-**Cons:** Sudden cutoffs, loses earliest context
+**Pros:** Maximizes context within budget **Cons:** Sudden cutoffs, loses earliest context
 
 ### Strategy 3: Summarization
 
@@ -167,7 +175,7 @@ async function summarizeOldMessages(messages: Message[]): Promise<string> {
     }),
   })
 
-  return response.json().then(r => r.summary)
+  return response.json().then((r) => r.summary)
 }
 
 function useConversationWithSummary() {
@@ -193,16 +201,16 @@ function useConversationWithSummary() {
 
   const pruneAndSummarize = async () => {
     const newSummary = await summarizeOldMessages(messages)
-    setSummary(prev => prev + '\n\n' + newSummary)
-    setMessages(prev => prev.slice(-10))
+    setSummary((prev) => prev + '\n\n' + newSummary)
+    setMessages((prev) => prev.slice(-10))
   }
 
   return { messages, contextMessages, pruneAndSummarize }
 }
 ```
 
-**Pros:** Preserves key information, compact
-**Cons:** Loses nuance, adds latency, costs tokens to summarize
+**Pros:** Preserves key information, compact **Cons:** Loses nuance, adds latency, costs tokens to
+summarize
 
 ### Strategy 4: Semantic Retrieval (RAG)
 
@@ -231,7 +239,7 @@ function useSemanticContext(vectorStore: VectorStore) {
       filter: { conversationId: currentConversation },
     })
 
-    return similar.map(s => s.message)
+    return similar.map((s) => s.message)
   }
 
   const buildContext = async (query: string) => {
@@ -246,8 +254,8 @@ function useSemanticContext(vectorStore: VectorStore) {
 }
 ```
 
-**Pros:** Intelligent retrieval, handles long histories
-**Cons:** Complex infrastructure, embedding costs, potential relevance misses
+**Pros:** Intelligent retrieval, handles long histories **Cons:** Complex infrastructure, embedding
+costs, potential relevance misses
 
 ---
 
@@ -273,12 +281,7 @@ interface TokenCounterProps {
   onPrune?: () => void
 }
 
-function TokenCounter({
-  current,
-  max,
-  warningThreshold = 0.8,
-  onPrune,
-}: TokenCounterProps) {
+function TokenCounter({ current, max, warningThreshold = 0.8, onPrune }: TokenCounterProps) {
   const percentage = current / max
   const isWarning = percentage > warningThreshold
   const isCritical = percentage > 0.95
@@ -288,28 +291,23 @@ function TokenCounter({
       <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
         <div
           className={cn(
-            "h-full transition-all",
-            isCritical ? "bg-red-500" :
-            isWarning ? "bg-yellow-500" :
-            "bg-blue-500"
+            'h-full transition-all',
+            isCritical ? 'bg-red-500' : isWarning ? 'bg-yellow-500' : 'bg-blue-500'
           )}
           style={{ width: `${percentage * 100}%` }}
         />
       </div>
 
-      <span className={cn(
-        isCritical ? "text-red-600" :
-        isWarning ? "text-yellow-600" :
-        "text-gray-500"
-      )}>
+      <span
+        className={cn(
+          isCritical ? 'text-red-600' : isWarning ? 'text-yellow-600' : 'text-gray-500'
+        )}
+      >
         {formatNumber(current)} / {formatNumber(max)} tokens
       </span>
 
       {isCritical && onPrune && (
-        <button
-          onClick={onPrune}
-          className="text-xs text-blue-600 hover:underline"
-        >
+        <button onClick={onPrune} className="text-xs text-blue-600 hover:underline">
           Free up space
         </button>
       )}
@@ -357,9 +355,9 @@ function useTokenWarnings(maxTokens: number) {
 
     if (percentage > 0.9) {
       showWarning({
-        title: "Running low on context",
-        message: "Consider starting a new conversation or removing old messages.",
-        action: { label: "Clear old messages", onClick: pruneOldMessages }
+        title: 'Running low on context',
+        message: 'Consider starting a new conversation or removing old messages.',
+        action: { label: 'Clear old messages', onClick: pruneOldMessages },
       })
     }
   }, [tokenCount, maxTokens])
@@ -400,15 +398,12 @@ async function actualSend(content: string): Promise<void> {
 
 // Assumes contextMessages and maxTokens are in scope from component state
 async function sendMessage(content: string) {
-  const totalTokens = estimateTotalTokens([
-    ...contextMessages,
-    { role: 'user', content },
-  ])
+  const totalTokens = estimateTotalTokens([...contextMessages, { role: 'user', content }])
 
   if (totalTokens > maxTokens * 0.95) {
     // Don't send—prompt user first
     const shouldPrune = await confirmPrune({
-      message: "This message would exceed the context limit. Remove older messages to continue?",
+      message: 'This message would exceed the context limit. Remove older messages to continue?',
     })
 
     if (shouldPrune) {
@@ -436,8 +431,11 @@ Context windows are more nuanced than marketing suggests:
 4. **Show users their usage** — No surprise errors
 5. **Warn before limits** — Proactive beats reactive
 
-Your users' conversations shouldn't end with cryptic errors. Manage context intentionally, and long conversations become a feature, not a failure mode.
+Your users' conversations shouldn't end with cryptic errors. Manage context intentionally, and long
+conversations become a feature, not a failure mode.
 
 ---
 
-*Clarity Chat provides `useTokenTracker`, `useSlidingContextManager`, and `TokenCounter` components for automatic context management with user-facing visibility. [See context management docs →](/docs/hooks/context-management)*
+_Clarity Chat provides `useTokenTracker`, `useSlidingContextManager`, and `TokenCounter` components
+for automatic context management with user-facing visibility.
+[See context management docs →](/docs/hooks/context-management)_

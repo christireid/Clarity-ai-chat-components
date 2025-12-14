@@ -1,6 +1,7 @@
 # Blog Post 1: Why Your AI Chatbot Feels "Off" — The Psychology of Response Timing
 
 ## Meta Information
+
 - **Reading Time:** 6 minutes (~1,500 words)
 - **Category:** UX & Design
 - **Primary Keyword:** AI chatbot response timing
@@ -12,21 +13,27 @@
 
 **Opening line:** "Your AI responds in 847 milliseconds. Your users hate it."
 
-Set up the paradox: faster isn't always better. Reference the "uncanny valley" feeling users get when AI responds too quickly. Share a quick anecdote about testing two identical chatbots—one with instant responses, one with realistic timing—and the dramatically different user satisfaction scores.
+Set up the paradox: faster isn't always better. Reference the "uncanny valley" feeling users get
+when AI responds too quickly. Share a quick anecdote about testing two identical chatbots—one with
+instant responses, one with realistic timing—and the dramatically different user satisfaction
+scores.
 
-**Key stat to include:** Studies show users rate AI responses as 34% more trustworthy when they appear with natural timing delays.
+**Key stat to include:** Studies show users rate AI responses as 34% more trustworthy when they
+appear with natural timing delays.
 
 ---
 
 ## Section 1: The Uncanny Valley of Speed (300 words)
 
 ### Content:
+
 - Explain why instant responses feel wrong psychologically
 - Humans expect thinking time (even from other humans)
 - The brain perceives instant answers as "canned" or "not real"
 - Reference research on human response expectations in conversation
 
 ### Visual: Animated comparison diagram
+
 ```
 [VISUAL 1: Side-by-side animation]
 Left side: "Instant Response"
@@ -48,12 +55,14 @@ Right side: "Natural Timing"
 ## Section 2: What ChatGPT Gets Right (300 words)
 
 ### Content:
+
 - Analyze ChatGPT's typing indicator UX
 - Multiple stages: "Thinking" → streaming text
 - The cursor animation that makes it feel "alive"
 - Why even with fast API responses, they add perceived delay
 
 ### Visual: Screenshot comparison
+
 ```
 [VISUAL 2: Annotated screenshot]
 ChatGPT's thinking indicator with callouts:
@@ -69,12 +78,14 @@ ChatGPT's thinking indicator with callouts:
 ## Section 3: The Science Behind Response Timing (250 words)
 
 ### Content:
+
 - Reference psychology research on conversational pacing
 - Optimal delay ranges: 800ms - 2500ms depending on query complexity
 - Longer questions should have longer "thinking" time
 - The relationship between perceived effort and perceived value
 
 ### Visual: Chart/Graph
+
 ```
 [VISUAL 3: Line graph]
 X-axis: Response delay (0ms to 5000ms)
@@ -88,22 +99,19 @@ Annotations for "Too fast (robotic)" and "Too slow (frustrating)"
 ## Section 4: Implementing Natural Timing (400 words)
 
 ### Content:
+
 - Practical implementation guide
 - Multi-stage indicators: Reading → Processing → Generating
 - Adaptive delays based on message length
 - Progress indicators that feel meaningful
 
 ### Code Example (Real, copy-paste ready):
+
 ```tsx
 import { useRealisticTyping, ThinkingIndicator } from '@clarity-chat/react'
 
 function ChatWithNaturalTiming() {
-  const {
-    isTyping,
-    currentStage,
-    startTyping,
-    stopTyping
-  } = useRealisticTyping({
+  const { isTyping, currentStage, startTyping, stopTyping } = useRealisticTyping({
     // Base delay scales with message complexity
     minDelay: 800,
     maxDelay: 2500,
@@ -131,18 +139,14 @@ function ChatWithNaturalTiming() {
 
   return (
     <div className="chat-container">
-      {isTyping && (
-        <ThinkingIndicator
-          stage={currentStage?.label}
-          variant="pulse"
-        />
-      )}
+      {isTyping && <ThinkingIndicator stage={currentStage?.label} variant="pulse" />}
     </div>
   )
 }
 ```
 
 ### Visual: Code output demo
+
 ```
 [VISUAL 4: Animated GIF]
 Shows the ThinkingIndicator cycling through stages:
@@ -157,6 +161,7 @@ Shows the ThinkingIndicator cycling through stages:
 ## Section 5: Advanced Timing Patterns (200 words)
 
 ### Content:
+
 - Adjusting for different AI tasks
 - Quick factual queries: shorter delays
 - Complex reasoning: longer delays with stage updates
@@ -164,6 +169,7 @@ Shows the ThinkingIndicator cycling through stages:
 - Error states: immediate feedback (don't make users wait for bad news)
 
 ### Quick reference table:
+
 ```
 | Query Type        | Optimal Delay | Stages |
 |-------------------|---------------|--------|
@@ -178,13 +184,17 @@ Shows the ThinkingIndicator cycling through stages:
 ## Conclusion (100 words)
 
 ### Key takeaways:
+
 1. Instant responses erode trust
 2. Natural timing is a design choice, not a limitation
 3. Multi-stage indicators communicate "effort"
 4. Adapt delays to query complexity
 
 ### Subtle CTA:
-"Building a chat interface and don't want to implement all this from scratch? Clarity Chat's `useRealisticTyping` hook handles adaptive timing, multi-stage indicators, and natural pacing out of the box."
+
+"Building a chat interface and don't want to implement all this from scratch? Clarity Chat's
+`useRealisticTyping` hook handles adaptive timing, multi-stage indicators, and natural pacing out of
+the box."
 
 Link to documentation.
 
@@ -200,10 +210,12 @@ Link to documentation.
 ---
 
 ## Internal Links
+
 - Link to ThinkingIndicator component docs
 - Link to useRealisticTyping hook docs
 - Link to "The Art of the Typing Indicator" blog post (cross-promotion)
 
 ## External Links
+
 - Psychology research on conversational pacing
 - UX studies on AI perception

@@ -1,21 +1,28 @@
 ---
 title: "Dark Mode Isn't Optional Anymore: Theming Your AI Chat in 2025"
-description: "Build system-aware themes with CSS custom properties. Implement dark mode that respects user preferences and transitions smoothly."
-keywords: ["dark mode", "theming", "CSS variables", "system preferences", "AI chat styling"]
-author: "Clarity Chat Team"
+description:
+  'Build system-aware themes with CSS custom properties. Implement dark mode that respects user
+  preferences and transitions smoothly.'
+keywords: ['dark mode', 'theming', 'CSS variables', 'system preferences', 'AI chat styling']
+author: 'Clarity Chat Team'
 publishDate: 2025-01-14
 readingTime: 6
-category: "UX & Psychology"
-relatedPosts: ["04-accessibility-screen-readers", "09-production-ready-chat", "22-component-library-manifesto"]
+category: 'UX & Psychology'
+relatedPosts:
+  ['04-accessibility-screen-readers', '09-production-ready-chat', '22-component-library-manifesto']
 ---
 
 # Dark Mode Isn't Optional Anymore: Theming Your AI Chat in 2025
 
 82% of mobile users prefer dark mode interfaces.
 
-That's not a typo. If your AI chat is light-mode only, you're building for the minority. You're also burning your users' eyes at night, draining their batteries, and looking dated compared to every major AI chat app on the market.
+That's not a typo. If your AI chat is light-mode only, you're building for the minority. You're also
+burning your users' eyes at night, draining their batteries, and looking dated compared to every
+major AI chat app on the market.
 
-But here's the thing: most teams implement dark mode as an afterthought, and it shows. Jarring transitions, broken contrast, inconsistent colors—retrofitted dark mode often looks worse than no dark mode at all.
+But here's the thing: most teams implement dark mode as an afterthought, and it shows. Jarring
+transitions, broken contrast, inconsistent colors—retrofitted dark mode often looks worse than no
+dark mode at all.
 
 Let's do it right.
 
@@ -23,21 +30,26 @@ Let's do it right.
 
 ## Why Dark Mode Matters Now
 
-A few years ago, dark mode was a "nice-to-have." Developers added it for their own comfort. Users who wanted it sought out browser extensions.
+A few years ago, dark mode was a "nice-to-have." Developers added it for their own comfort. Users
+who wanted it sought out browser extensions.
 
 2025 is different.
 
-**User expectations have shifted.** Every major app offers dark mode. iOS and Android have system-wide dark mode settings. Users expect apps to respect their preference automatically.
+**User expectations have shifted.** Every major app offers dark mode. iOS and Android have
+system-wide dark mode settings. Users expect apps to respect their preference automatically.
 
 **The research is clear:**
+
 - 82% of mobile users prefer dark interfaces
 - OLED screens use 30% less battery in dark mode
 - Extended reading is easier on dark backgrounds (reduced eye strain)
 - Developer and power-user demographics skew even higher toward dark
 
-**AI chat sessions are long.** Unlike quick webpage visits, chat conversations often last 10-30 minutes. That's significant eye strain if you're forcing users to stare at a white screen.
+**AI chat sessions are long.** Unlike quick webpage visits, chat conversations often last 10-30
+minutes. That's significant eye strain if you're forcing users to stare at a white screen.
 
-If you're building for developers, the number is even more stark—over 90% use dark mode in their IDEs. A light-mode-only chat widget feels jarringly out of place.
+If you're building for developers, the number is even more stark—over 90% use dark mode in their
+IDEs. A light-mode-only chat widget feels jarringly out of place.
 
 ---
 
@@ -47,15 +59,18 @@ I've reviewed dozens of AI chat implementations. These mistakes appear in almost
 
 ### Mistake 1: Pure Black (#000000)
 
-Pure black looks harsh on screens, especially OLED displays where it creates a "smearing" effect when scrolling. The stark contrast between black and white causes eye fatigue.
+Pure black looks harsh on screens, especially OLED displays where it creates a "smearing" effect
+when scrolling. The stark contrast between black and white causes eye fatigue.
 
-**Instead:** Use rich grays. `#121212` or `#1E1E1E` provide the dark mode feel without the harshness.
+**Instead:** Use rich grays. `#121212` or `#1E1E1E` provide the dark mode feel without the
+harshness.
 
 ### Mistake 2: Inverting Colors
 
 The lazy approach: swap light background for dark, dark text for light. Done!
 
-Except this breaks everything. Your blue links might become unreadable. Your warning yellows might clash. Your shadows (which indicate elevation on light backgrounds) make no sense on dark ones.
+Except this breaks everything. Your blue links might become unreadable. Your warning yellows might
+clash. Your shadows (which indicate elevation on light backgrounds) make no sense on dark ones.
 
 **Instead:** Design a separate color palette for dark mode. Colors need adjustment, not inversion.
 
@@ -63,21 +78,27 @@ Except this breaks everything. Your blue links might become unreadable. Your war
 
 In light mode, you indicate depth with shadows—cards appear to "float" above the background.
 
-In dark mode, shadows on a dark surface are invisible. Elevation works differently: elevated surfaces should be *lighter*, not shadowed. A card on a `#121212` background might be `#1E1E1E`.
+In dark mode, shadows on a dark surface are invisible. Elevation works differently: elevated
+surfaces should be _lighter_, not shadowed. A card on a `#121212` background might be `#1E1E1E`.
 
 ### Mistake 4: Poor Contrast
 
-Just because you can read it doesn't mean everyone can. WCAG requires minimum 4.5:1 contrast for normal text.
+Just because you can read it doesn't mean everyone can. WCAG requires minimum 4.5:1 contrast for
+normal text.
 
-White text (#FFFFFF) on dark gray (#121212) works fine. But light gray (#9CA3AF) on dark gray often doesn't. Check your contrast ratios.
+White text (#FFFFFF) on dark gray (#121212) works fine. But light gray (#9CA3AF) on dark gray often
+doesn't. Check your contrast ratios.
 
-**The fix:** Use off-whites like `#E0E0E0` for primary text, not pure white. It's easier on the eyes and still meets accessibility standards.
+**The fix:** Use off-whites like `#E0E0E0` for primary text, not pure white. It's easier on the eyes
+and still meets accessibility standards.
 
 ---
 
 ## Building a Proper Theming System
 
-A good theming system uses semantic color tokens, not hardcoded values. Instead of writing `color: #3B82F6` throughout your CSS, you write `color: var(--color-primary)` and define that variable differently per theme.
+A good theming system uses semantic color tokens, not hardcoded values. Instead of writing
+`color: #3B82F6` throughout your CSS, you write `color: var(--color-primary)` and define that
+variable differently per theme.
 
 Here's the foundation:
 
@@ -93,7 +114,7 @@ Here's the foundation:
   --color-border: hsl(0, 0%, 90%);
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --color-background: hsl(220, 15%, 8%);
   --color-surface: hsl(220, 15%, 12%);
   --color-surface-hover: hsl(220, 15%, 16%);
@@ -181,15 +202,12 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
+  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
 }
 ```
 
 The priority order:
+
 1. User's explicit choice (stored in localStorage)
 2. System preference
 3. Your default (typically light)
@@ -202,30 +220,36 @@ Switching themes shouldn't flash the entire screen. Add a CSS transition:
 
 ```css
 :root {
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 * {
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 ```
 
-This creates a smooth fade between themes. But be careful—transitioning everything can cause performance issues. Target only the properties that need it.
+This creates a smooth fade between themes. But be careful—transitioning everything can cause
+performance issues. Target only the properties that need it.
 
-Even better: prevent flash on initial page load by setting the theme *before* React hydrates:
+Even better: prevent flash on initial page load by setting the theme _before_ React hydrates:
 
 ```html
 <script>
-  (function() {
-    const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-  })();
+  ;(function () {
+    const saved = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const theme = saved || (prefersDark ? 'dark' : 'light')
+    document.documentElement.setAttribute('data-theme', theme)
+  })()
 </script>
 ```
 
-Put this inline in your `<head>`. It runs synchronously before any content renders, preventing the dreaded "flash of wrong theme."
+Put this inline in your `<head>`. It runs synchronously before any content renders, preventing the
+dreaded "flash of wrong theme."
 
 ---
 
@@ -270,13 +294,13 @@ Some applications benefit from more options. We've seen success with themed chat
 The same token system supports multiple themes:
 
 ```css
-[data-theme="ocean"] {
+[data-theme='ocean'] {
   --color-background: hsl(200, 50%, 8%);
   --color-primary: hsl(180, 70%, 45%);
   /* ... */
 }
 
-[data-theme="sunset"] {
+[data-theme='sunset'] {
   --color-background: hsl(30, 50%, 10%);
   --color-primary: hsl(25, 80%, 55%);
   /* ... */
@@ -292,6 +316,7 @@ Users appreciate personalization. And for B2B products, custom brand theming is 
 Theming isn't just about aesthetics—it's about accessibility.
 
 **Respect reduced motion:**
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -301,11 +326,11 @@ Theming isn't just about aesthetics—it's about accessibility.
 }
 ```
 
-**Maintain contrast across themes:**
-Test every theme with a contrast checker. What works in light mode might fail in dark mode.
+**Maintain contrast across themes:** Test every theme with a contrast checker. What works in light
+mode might fail in dark mode.
 
-**Don't rely on color alone:**
-Status indicators should include icons or text, not just color changes. Red/green distinctions fail for color-blind users.
+**Don't rely on color alone:** Status indicators should include icons or text, not just color
+changes. Red/green distinctions fail for color-blind users.
 
 ---
 
@@ -318,15 +343,18 @@ When we added proper dark mode support to a production chat application:
 - **Battery impact:** 22% reduction in battery drain reported by mobile users
 - **Satisfaction:** "App feels more modern" was a recurring theme in feedback
 
-And the development effort? With a proper token system, about 3 days. Retrofitting would have taken 3 weeks.
+And the development effort? With a proper token system, about 3 days. Retrofitting would have taken
+3 weeks.
 
 ---
 
 ## The Takeaway
 
-Dark mode isn't a feature anymore—it's an expectation. Build it in from the start with semantic color tokens and system preference detection.
+Dark mode isn't a feature anymore—it's an expectation. Build it in from the start with semantic
+color tokens and system preference detection.
 
 The checklist:
+
 - [ ] Semantic color tokens, not hardcoded values
 - [ ] Detect system preference automatically
 - [ ] Persist user override in localStorage
@@ -339,4 +367,6 @@ Your users will spend hours in your chat interface. Make those hours comfortable
 
 ---
 
-*Don't want to build a theming system from scratch? Clarity Chat ships with 11 production-ready themes, system preference detection, smooth transitions, and full accessibility compliance. [Explore the themes →](/docs/theming)*
+_Don't want to build a theming system from scratch? Clarity Chat ships with 11 production-ready
+themes, system preference detection, smooth transitions, and full accessibility compliance.
+[Explore the themes →](/docs/theming)_

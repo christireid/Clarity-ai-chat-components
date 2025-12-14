@@ -1,6 +1,7 @@
 # Blog Post 14: Prompt Caching: The Feature Most Developers Ignore
 
 ## Meta Information
+
 - **Reading Time:** 5 minutes (~1,200 words)
 - **Category:** Cost & Optimization
 - **Primary Keyword:** prompt caching LLM
@@ -12,7 +13,9 @@
 
 **Opening line:** "You're paying full price for the same system prompt 50,000 times a day."
 
-OpenAI, Anthropic, and Google all offer prompt caching—automatic discounts when your prompts share prefixes. Most developers don't know it exists. Those who do often structure their prompts wrong and miss the savings.
+OpenAI, Anthropic, and Google all offer prompt caching—automatic discounts when your prompts share
+prefixes. Most developers don't know it exists. Those who do often structure their prompts wrong and
+miss the savings.
 
 Let's fix that.
 
@@ -22,23 +25,23 @@ Let's fix that.
 
 ### Content:
 
-**The concept:**
-When you send requests with identical prefixes (like system prompts), providers cache that prefix and charge less for subsequent requests.
+**The concept:** When you send requests with identical prefixes (like system prompts), providers
+cache that prefix and charge less for subsequent requests.
 
-**Provider support:**
-| Provider | Discount | Min Length | Cache TTL |
-|----------|----------|------------|-----------|
-| OpenAI | 50% off input | 1,024 tokens | 5-10 min |
-| Anthropic | 90% off cached | 1,024 tokens | 5 min |
-| Google | 75% off | 32,000 tokens | 1 hour |
+**Provider support:** | Provider | Discount | Min Length | Cache TTL |
+|----------|----------|------------|-----------| | OpenAI | 50% off input | 1,024 tokens | 5-10 min
+| | Anthropic | 90% off cached | 1,024 tokens | 5 min | | Google | 75% off | 32,000 tokens | 1 hour
+|
 
 **Example:**
+
 - System prompt: 1,500 tokens (cached)
 - User message: 100 tokens (not cached)
 - Total: 1,600 tokens
 - Cost: 100 tokens full price + 1,500 at 50% = 850 effective tokens
 
 ### Visual:
+
 ```
 [VISUAL 1: Caching flow diagram]
 Request 1: [System Prompt] + [User Message] → Full price
@@ -55,6 +58,7 @@ Request 3: [Same System Prompt] + [User Message] → 50% off prefix
 **Common mistakes:**
 
 **1. Dynamic content at the start:**
+
 ```tsx
 // BAD: Dynamic content breaks cache
 const prompt = `
@@ -72,18 +76,20 @@ User ${user.name} is asking about ${topic}.
 ```
 
 **2. Prompt too short:**
+
 ```tsx
 // BAD: Under 1,024 tokens won't cache
-const prompt = "You are a helpful assistant."  // ~10 tokens
+const prompt = 'You are a helpful assistant.' // ~10 tokens
 
 // GOOD: Expand with useful context
 const prompt = `
 You are a helpful assistant for TechCorp...
 [Detailed instructions, examples, formatting guidelines]
-`  // 1,500 tokens
+` // 1,500 tokens
 ```
 
 **3. Unnecessary variation:**
+
 ```tsx
 // BAD: Timestamp breaks cache
 const prompt = `
@@ -105,6 +111,7 @@ Current time: ${new Date().toISOString()}
 ## Section 3: Optimal Prompt Structure (300 words)
 
 ### Code Example:
+
 ```tsx
 // Structured for maximum cache hits
 
@@ -158,6 +165,7 @@ function buildPrompt(context: UserContext) {
 ```
 
 ### Visual:
+
 ```
 [VISUAL 2: Prompt structure diagram]
 ┌─────────────────────────────────┐
@@ -180,6 +188,7 @@ function buildPrompt(context: UserContext) {
 ### Content:
 
 **OpenAI returns cache info in response:**
+
 ```tsx
 const response = await openai.chat.completions.create({...})
 
@@ -194,6 +203,7 @@ console.log({
 ```
 
 **Track over time:**
+
 ```tsx
 import { useTokenTracker } from '@clarity-chat/react'
 
@@ -215,6 +225,7 @@ const { cacheStats } = useTokenTracker({
 ### Content:
 
 **Anthropic offers 90% savings on cached tokens:**
+
 ```tsx
 const response = await anthropic.messages.create({
   model: 'claude-3-5-sonnet-20241022',
@@ -223,10 +234,10 @@ const response = await anthropic.messages.create({
     {
       type: 'text',
       text: STATIC_PREFIX,
-      cache_control: { type: 'ephemeral' }  // Explicit cache hint
-    }
+      cache_control: { type: 'ephemeral' }, // Explicit cache hint
+    },
   ],
-  messages: [{ role: 'user', content: userMessage }]
+  messages: [{ role: 'user', content: userMessage }],
 })
 ```
 
@@ -237,10 +248,13 @@ const response = await anthropic.messages.create({
 ## Conclusion (80 words)
 
 ### Key takeaways:
+
 1. Prompt caching gives 50-90% savings automatically
 2. Structure matters: static first, dynamic last
 3. Minimum 1,024 tokens for cache eligibility
 4. Measure cache hit rates to optimize
 
 ### Subtle CTA:
-"Clarity Chat's token tracking includes cache hit monitoring, so you can see exactly how much you're saving—and optimize your prompt structure for maximum efficiency."
+
+"Clarity Chat's token tracking includes cache hit monitoring, so you can see exactly how much you're
+saving—and optimize your prompt structure for maximum efficiency."

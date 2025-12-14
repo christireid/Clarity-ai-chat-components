@@ -1,12 +1,13 @@
 # Building AI That Actually Remembers
 
-*Newsletter version of: AI Memory Systems*
+_Newsletter version of: AI Memory Systems_
 
 ---
 
 LLMs are stateless. Every message is meeting them for the first time.
 
 Your users expect AI to remember:
+
 - They prefer Python over JavaScript
 - They asked about refunds yesterday
 - Their name is Sarah
@@ -17,27 +18,24 @@ You have to build it.
 
 ## Three Types of Memory
 
-**Short-Term Memory**
-Current conversation context. Lives in the prompt.
+**Short-Term Memory** Current conversation context. Lives in the prompt.
 
 ```typescript
 const context = messages.slice(-20) // Last 20 messages
 ```
 
-**Long-Term Memory**
-User preferences and facts. Stored in database.
+**Long-Term Memory** User preferences and facts. Stored in database.
 
 ```typescript
 interface MemoryEntry {
   userId: string
   type: 'preference' | 'fact'
-  content: string  // "prefers Python"
+  content: string // "prefers Python"
   confidence: number
 }
 ```
 
-**Working Memory**
-Current task state. What the AI is actively working on.
+**Working Memory** Current task state. What the AI is actively working on.
 
 ## Memory Extraction
 

@@ -1,6 +1,7 @@
 # Blog Post 17: RAG in Production: What the Tutorials Don't Tell You
 
 ## Meta Information
+
 - **Reading Time:** 8 minutes (~2,000 words)
 - **Category:** Advanced AI Topics
 - **Primary Keyword:** RAG production implementation
@@ -12,7 +13,9 @@
 
 **Opening line:** "Your RAG demo works beautifully. Your production RAG returns garbage."
 
-I've seen this story a dozen times. Developer follows a tutorial, builds a RAG prototype that impresses stakeholders, ships to production, and... users get irrelevant results, hallucinated answers, or worse—confidently wrong information.
+I've seen this story a dozen times. Developer follows a tutorial, builds a RAG prototype that
+impresses stakeholders, ships to production, and... users get irrelevant results, hallucinated
+answers, or worse—confidently wrong information.
 
 The gap between RAG demo and RAG production is enormous. Let's bridge it.
 
@@ -23,6 +26,7 @@ The gap between RAG demo and RAG production is enormous. Let's bridge it.
 ### Content:
 
 **Demo conditions:**
+
 - Clean, curated documents
 - Known good queries
 - No edge cases
@@ -30,6 +34,7 @@ The gap between RAG demo and RAG production is enormous. Let's bridge it.
 - No latency requirements
 
 **Production reality:**
+
 - Messy, inconsistent documents
 - Unexpected queries
 - Users trying to break it
@@ -37,6 +42,7 @@ The gap between RAG demo and RAG production is enormous. Let's bridge it.
 - Sub-second latency needed
 
 **Common demo-to-production failures:**
+
 1. Retrieval returns irrelevant chunks
 2. Latency spikes under load
 3. Answers mix information from wrong documents
@@ -44,6 +50,7 @@ The gap between RAG demo and RAG production is enormous. Let's bridge it.
 5. Costs explode with scale
 
 ### Visual:
+
 ```
 [VISUAL 1: Demo vs Production comparison]
 Demo: "What is our refund policy?"
@@ -62,6 +69,7 @@ Production: "can i get my money back lol"
 ### Content:
 
 **The #1 mistake: Fixed-size chunking**
+
 ```tsx
 // BAD: Arbitrary 500 token chunks
 const chunks = splitByTokenCount(document, 500)
@@ -69,6 +77,7 @@ const chunks = splitByTokenCount(document, 500)
 ```
 
 **Better: Semantic chunking**
+
 ```tsx
 import { useRAGPipeline } from '@clarity-chat/react'
 
@@ -78,17 +87,18 @@ const pipeline = useRAGPipeline({
     // Split on natural boundaries
     splitOn: ['paragraph', 'section', 'heading'],
     // Keep context
-    overlap: 50,  // tokens
+    overlap: 50, // tokens
     // Size limits
     minChunkSize: 100,
     maxChunkSize: 800,
     // Preserve code blocks, tables
     preserveStructure: true,
-  }
+  },
 })
 ```
 
 **Even better: Hierarchical chunking**
+
 ```tsx
 // Create parent-child relationships
 const chunks = await pipeline.chunk(document, {
@@ -97,7 +107,7 @@ const chunks = await pipeline.chunk(document, {
     { type: 'document', embedSummary: true },
     { type: 'section', embedHeadings: true },
     { type: 'paragraph', embedFull: true },
-  ]
+  ],
 })
 
 // Retrieval can now return context
@@ -105,6 +115,7 @@ const chunks = await pipeline.chunk(document, {
 ```
 
 ### Visual:
+
 ```
 [VISUAL 2: Chunking comparison]
 Fixed-size:
@@ -128,10 +139,11 @@ Document
 
 ### Content:
 
-**Problem: Pure vector search fails**
-"What's the cancellation policy?" might not match "Refunds are available within 30 days" semantically.
+**Problem: Pure vector search fails** "What's the cancellation policy?" might not match "Refunds are
+available within 30 days" semantically.
 
 **Solution: Hybrid search**
+
 ```tsx
 const results = await pipeline.retrieve(query, {
   // Combine vector similarity with keyword matching
@@ -149,22 +161,23 @@ const results = await pipeline.retrieve(query, {
 })
 ```
 
-**The reranking secret:**
-Initial retrieval is cheap and fast but imprecise. Reranking is expensive but accurate. Do both.
+**The reranking secret:** Initial retrieval is cheap and fast but imprecise. Reranking is expensive
+but accurate. Do both.
 
 ```tsx
 // Two-stage retrieval
-const stage1 = await vectorSearch(query, { k: 50 })  // Fast, broad
-const stage2 = await rerank(query, stage1, { k: 5 })  // Slow, precise
+const stage1 = await vectorSearch(query, { k: 50 }) // Fast, broad
+const stage2 = await rerank(query, stage1, { k: 5 }) // Slow, precise
 // Result: Best of both worlds
 ```
 
 **Filtering for relevance:**
+
 ```tsx
 // Don't just return top K—filter by score
 const results = await pipeline.retrieve(query, {
   k: 10,
-  minScore: 0.7,  // Reject low-quality matches
+  minScore: 0.7, // Reject low-quality matches
   // If nothing passes threshold, return "I don't know"
 })
 
@@ -180,12 +193,14 @@ if (results.length === 0) {
 ### Content:
 
 **You need observability:**
+
 - What chunks were retrieved?
 - What were their scores?
 - What was sent to the LLM?
 - Why was this answer generated?
 
 ### Code Example:
+
 ```tsx
 import { VectorStoreViewer, useRAGPipeline } from '@clarity-chat/react'
 
@@ -203,7 +218,7 @@ function DebuggableRAG() {
         <VectorStoreViewer
           lastQuery={query}
           retrievedChunks={results}
-          scores={results.map(r => r.score)}
+          scores={results.map((r) => r.score)}
           sentToLLM={context}
           trace={trace}
         />
@@ -214,6 +229,7 @@ function DebuggableRAG() {
 ```
 
 ### Visual:
+
 ```
 [VISUAL 3: Debug panel mockup]
 Last Query: "refund policy"
@@ -232,15 +248,13 @@ Response time: 1.2s
 
 ### Content:
 
-**Vector database choices:**
-| Database | Best For | Latency | Cost |
-|----------|----------|---------|------|
-| Pinecone | Production, managed | <50ms | $$ |
-| Qdrant | Self-hosted, flexible | <20ms | $ |
-| Weaviate | Hybrid search native | <30ms | $$ |
-| Chroma | Development, simple | <10ms | Free |
+**Vector database choices:** | Database | Best For | Latency | Cost |
+|----------|----------|---------|------| | Pinecone | Production, managed | <50ms | $$ | | Qdrant |
+Self-hosted, flexible | <20ms | $ | | Weaviate | Hybrid search native | <30ms | $$ | | Chroma |
+Development, simple | <10ms | Free |
 
 **Production checklist:**
+
 - [ ] Index updates don't block queries
 - [ ] Graceful degradation if vector DB down
 - [ ] Caching for repeated queries
@@ -252,6 +266,7 @@ Response time: 1.2s
 ## Conclusion (100 words)
 
 ### Key takeaways:
+
 1. Demo conditions ≠ production conditions
 2. Semantic/hierarchical chunking beats fixed-size
 3. Hybrid search + reranking for quality
@@ -259,4 +274,6 @@ Response time: 1.2s
 5. Plan for scale from day 1
 
 ### Subtle CTA:
-"Clarity Chat's RAG pipeline includes intelligent chunking, hybrid search, reranking, and the VectorStoreViewer for debugging. Skip the months of production hardening—we've done it for you."
+
+"Clarity Chat's RAG pipeline includes intelligent chunking, hybrid search, reranking, and the
+VectorStoreViewer for debugging. Skip the months of production hardening—we've done it for you."

@@ -523,18 +523,39 @@ export async function POST(request: NextRequest) {
     model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp',
   } = body
 
+  // Input validation
+  const MAX_MESSAGE_LENGTH = 10000 // 10KB max per message
+  const MAX_MESSAGES_COUNT = 50 // Max conversation history
+
   if (!messages || messages.length === 0) {
     return Response.json({ error: 'Messages are required' }, { status: 400 })
   }
 
-  // Validate message length
-  const lastMessage = messages[messages.length - 1]
-  if (lastMessage.content.length > 4096) {
+  if (messages.length > MAX_MESSAGES_COUNT) {
     return Response.json(
-      { error: 'Message exceeds maximum length of 4096 characters' },
+      {
+        error: `Conversation history limited to ${MAX_MESSAGES_COUNT} messages`,
+      },
       { status: 400 }
     )
   }
+
+  // Validate each message
+  for (const msg of messages) {
+    if (
+      typeof msg.content !== 'string' ||
+      msg.content.length > MAX_MESSAGE_LENGTH
+    ) {
+      return Response.json(
+        {
+          error: `Each message must be under ${MAX_MESSAGE_LENGTH} characters`,
+        },
+        { status: 400 }
+      )
+    }
+  }
+
+  const lastMessage = messages[messages.length - 1]
 
   const encode = createSSEEncoder()
 

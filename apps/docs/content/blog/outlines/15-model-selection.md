@@ -1,6 +1,7 @@
 # Blog Post 15: When to Use GPT-4o Mini vs GPT-4o vs Claude 3.5
 
 ## Meta Information
+
 - **Reading Time:** 6 minutes (~1,500 words)
 - **Category:** Cost & Optimization
 - **Primary Keyword:** GPT-4o vs Claude comparison
@@ -12,7 +13,9 @@
 
 **Opening line:** "You're overpaying for simple tasks and underpaying for complex ones."
 
-Using GPT-4 for "What's 2+2?" is like hiring a PhD to answer the phone. Using GPT-3.5 for legal analysis is like asking an intern to review contracts. Model selection isn't about "best"—it's about "best for this task."
+Using GPT-4 for "What's 2+2?" is like hiring a PhD to answer the phone. Using GPT-3.5 for legal
+analysis is like asking an intern to review contracts. Model selection isn't about "best"—it's about
+"best for this task."
 
 Let me give you a decision framework.
 
@@ -22,19 +25,16 @@ Let me give you a decision framework.
 
 ### Content:
 
-**2025 Pricing (per 1M tokens):**
-| Model | Input | Output | Context |
-|-------|-------|--------|---------|
-| GPT-4o | $2.50 | $10.00 | 128K |
-| GPT-4o-mini | $0.15 | $0.60 | 128K |
-| Claude 3.5 Sonnet | $3.00 | $15.00 | 200K |
-| Claude 3.5 Haiku | $0.25 | $1.25 | 200K |
-| Gemini 2.0 Flash | $0.075 | $0.30 | 1M |
+**2025 Pricing (per 1M tokens):** | Model | Input | Output | Context |
+|-------|-------|--------|---------| | GPT-4o | $2.50 | $10.00 | 128K | | GPT-4o-mini | $0.15 |
+$0.60 | 128K | | Claude 3.5 Sonnet | $3.00 | $15.00 | 200K | | Claude 3.5 Haiku | $0.25 | $1.25 |
+200K | | Gemini 2.0 Flash | $0.075 | $0.30 | 1M |
 
-**The 16x gap:**
-GPT-4o costs 16x more than GPT-4o-mini. Is it 16x better? For some tasks. For others, they're nearly identical.
+**The 16x gap:** GPT-4o costs 16x more than GPT-4o-mini. Is it 16x better? For some tasks. For
+others, they're nearly identical.
 
 ### Visual:
+
 ```
 [VISUAL 1: Cost comparison bar chart]
 GPT-4o-mini: █ ($0.15)
@@ -51,6 +51,7 @@ Claude Sonnet: ██████████████████ ($3.00)
 ### Content:
 
 **Simple tasks → Cheap models:**
+
 - Greetings, confirmations
 - Simple Q&A from FAQ
 - Classification (intent, sentiment)
@@ -58,6 +59,7 @@ Claude Sonnet: ██████████████████ ($3.00)
 - **Use: GPT-4o-mini, Claude Haiku**
 
 **Standard tasks → Mid-tier:**
+
 - General conversation
 - Basic reasoning
 - Content summarization
@@ -65,6 +67,7 @@ Claude Sonnet: ██████████████████ ($3.00)
 - **Use: GPT-4o, Claude Sonnet**
 
 **Complex tasks → Premium:**
+
 - Multi-step reasoning
 - Code generation
 - Creative writing
@@ -72,6 +75,7 @@ Claude Sonnet: ██████████████████ ($3.00)
 - **Use: GPT-4o, Claude Sonnet (larger context)**
 
 ### Decision matrix:
+
 ```
 | Task | Complexity | Recommended | Cost/1K reqs |
 |------|------------|-------------|--------------|
@@ -83,6 +87,7 @@ Claude Sonnet: ██████████████████ ($3.00)
 ```
 
 ### Visual:
+
 ```
 [VISUAL 2: Decision flowchart]
 Start: What's the task?
@@ -99,18 +104,21 @@ Start: What's the task?
 ### Content:
 
 **GPT-4o:**
+
 - Fastest response times
 - Best tool/function calling
 - Reliable JSON output
 - Good balance of capability/cost
 
 **GPT-4o-mini:**
+
 - 95% as good for simple tasks
 - 16x cheaper
 - Same context length
 - Same tool calling support
 
 **Claude 3.5 Sonnet:**
+
 - Best at following complex instructions
 - Superior for creative writing
 - Excellent at code generation
@@ -118,11 +126,13 @@ Start: What's the task?
 - Tends to be more "thoughtful"
 
 **Claude 3.5 Haiku:**
+
 - Claude quality at GPT-4o-mini prices
 - Fast for Claude
 - Good for quick tasks
 
 **Gemini 2.0 Flash:**
+
 - Cheapest option
 - Massive 1M context
 - Good for RAG with many documents
@@ -133,6 +143,7 @@ Start: What's the task?
 ## Section 4: Implementing Model Routing (300 words)
 
 ### Code Example:
+
 ```tsx
 import { useModelRouter } from '@clarity-chat/react'
 
@@ -187,7 +198,7 @@ function SmartChat() {
     analytics.track('message_sent', {
       model,
       cost,
-      messageLength: message.length
+      messageLength: message.length,
     })
 
     return response
@@ -204,15 +215,18 @@ function SmartChat() {
 **Case study: 10,000 messages/day app**
 
 Before (all GPT-4o):
+
 - Cost: $500/day
 
 After (routed):
+
 - Simple (65%): GPT-4o-mini → $5/day
 - Standard (25%): GPT-4o → $125/day
 - Complex (10%): Claude Sonnet → $80/day
 - Total: $210/day (58% savings)
 
 ### Visual:
+
 ```
 [VISUAL 3: Before/after cost comparison]
 Before: All GPT-4o → $500/day
@@ -225,10 +239,13 @@ Savings: $290/day ($8,700/month)
 ## Conclusion (80 words)
 
 ### Key takeaways:
+
 1. Match model to task complexity
 2. GPT-4o-mini handles 60%+ of typical queries
 3. Use Claude for reasoning, long context
 4. Implement routing for automatic optimization
 
 ### Subtle CTA:
-"Clarity Chat's useModelRouter handles model selection, fallback chains, and cost tracking. Route to the right model automatically without building the infrastructure yourself."
+
+"Clarity Chat's useModelRouter handles model selection, fallback chains, and cost tracking. Route to
+the right model automatically without building the infrastructure yourself."

@@ -1,6 +1,7 @@
 # Blog Post 13: I Cut My GPT-4 Bill by 60% (Real Strategies, Real Numbers)
 
 ## Meta Information
+
 - **Reading Time:** 7 minutes (~1,700 words)
 - **Category:** Cost & Optimization
 - **Primary Keyword:** reduce GPT-4 costs
@@ -10,9 +11,11 @@
 
 ## Hook / Opening (120 words)
 
-**Opening line:** "My startup was spending $8,400/month on OpenAI. Now it's $3,200. Same features, same quality."
+**Opening line:** "My startup was spending $8,400/month on OpenAI. Now it's $3,200. Same features,
+same quality."
 
-This isn't theory—these are real numbers from a production AI chat application serving 15,000 daily active users. I'm going to share exactly what we changed, with code you can copy.
+This isn't theory—these are real numbers from a production AI chat application serving 15,000 daily
+active users. I'm going to share exactly what we changed, with code you can copy.
 
 No vendor lock-in pitches. No "just use our product." Just the actual techniques that work.
 
@@ -23,15 +26,17 @@ No vendor lock-in pitches. No "just use our product." Just the actual techniques
 ### Content:
 
 **Our before breakdown:**
+
 - Total: $8,400/month
 - GPT-4 (main chat): $6,200 (74%)
 - Embeddings: $1,400 (17%)
 - GPT-3.5 (fallback): $800 (9%)
 
-**The problem:**
-We were using GPT-4 for EVERYTHING. Every message, every query, every classification.
+**The problem:** We were using GPT-4 for EVERYTHING. Every message, every query, every
+classification.
 
 ### Visual:
+
 ```
 [VISUAL 1: Pie chart - "Where the money was going"]
 GPT-4 Main: 74% ($6,200)
@@ -47,10 +52,11 @@ Total: $8,400/month
 
 ### Content:
 
-**The insight:**
-Not every message needs GPT-4. Simple questions, greetings, and confirmations work fine with GPT-4o-mini.
+**The insight:** Not every message needs GPT-4. Simple questions, greetings, and confirmations work
+fine with GPT-4o-mini.
 
 **Implementation:**
+
 ```tsx
 import { useModelRouter } from '@clarity-chat/react'
 
@@ -68,18 +74,20 @@ const router = useModelRouter({
     // Use cheap model to classify complex queries
     const classification = await classifyQuery(message)
     return classification.complexity
-  }
+  },
 })
 
 const response = await router.route(userMessage)
 ```
 
 **Results:**
+
 - 62% of queries routed to GPT-4o-mini
 - Cost per request: $0.02 → $0.003 (for simple)
 - Savings: $2,800/month
 
 ### Visual:
+
 ```
 [VISUAL 2: Query distribution after routing]
 Simple (GPT-4o-mini): 62% - $0.003/request
@@ -93,15 +101,17 @@ Complex (GPT-4o): 8% - $0.04/request
 
 ### Content:
 
-**The insight:**
-System prompts are sent with EVERY request. For us: 1,200 tokens × 50,000 requests/day = 60M tokens/day on the same text.
+**The insight:** System prompts are sent with EVERY request. For us: 1,200 tokens × 50,000
+requests/day = 60M tokens/day on the same text.
 
 **OpenAI's Prompt Caching:**
+
 - Repeated prompt prefixes cost 50% less
 - Must be 1,024+ tokens
 - Same prefix = cached
 
 **Implementation:**
+
 ```tsx
 // Structure prompts for maximum cache hits
 const systemPrompt = `
@@ -123,6 +133,7 @@ Current user context:
 ```
 
 **Results:**
+
 - 85% cache hit rate
 - Input cost reduced by 42%
 - Savings: $1,100/month
@@ -133,45 +144,40 @@ Current user context:
 
 ### Content:
 
-**The insight:**
-Conversation history grows linearly. By message 20, you're sending 10,000+ tokens of history with each request.
+**The insight:** Conversation history grows linearly. By message 20, you're sending 10,000+ tokens
+of history with each request.
 
 **Techniques:**
 
-**1. Sliding window:**
-Keep only last N messages
+**1. Sliding window:** Keep only last N messages
+
 ```tsx
 const recentMessages = messages.slice(-10)
 ```
 
-**2. Summarization:**
-Compress old messages into summary
+**2. Summarization:** Compress old messages into summary
+
 ```tsx
 if (messages.length > 20) {
   const oldMessages = messages.slice(0, -10)
   const summary = await summarize(oldMessages)
-  return [
-    { role: 'system', content: `Previous context: ${summary}` },
-    ...messages.slice(-10)
-  ]
+  return [{ role: 'system', content: `Previous context: ${summary}` }, ...messages.slice(-10)]
 }
 ```
 
-**3. Semantic pruning:**
-Keep only messages relevant to current query
+**3. Semantic pruning:** Keep only messages relevant to current query
+
 ```tsx
-const relevantMessages = await retrieveRelevant(
-  currentQuery,
-  messages,
-  { topK: 5 }
-)
+const relevantMessages = await retrieveRelevant(currentQuery, messages, { topK: 5 })
 ```
 
 **Results:**
+
 - Average context: 8,000 → 2,400 tokens
 - Savings: $1,400/month
 
 ### Visual:
+
 ```
 [VISUAL 3: Context size over conversation]
 Without compression: Exponential growth →→→
@@ -185,15 +191,15 @@ With summarization: Sawtooth pattern /\/\
 
 ### Content:
 
-**The insight:**
-Many queries are repeated. "What are your hours?" gets asked 500 times/day.
+**The insight:** Many queries are repeated. "What are your hours?" gets asked 500 times/day.
 
 **Implementation:**
+
 ```tsx
 import { useSmartCache } from '@clarity-chat/react'
 
 const cache = useSmartCache({
-  ttl: 3600,  // 1 hour
+  ttl: 3600, // 1 hour
   maxSize: 1000,
   // Semantic similarity matching
   similarityThreshold: 0.92,
@@ -213,6 +219,7 @@ const getCachedResponse = async (query) => {
 ```
 
 **Results:**
+
 - 23% cache hit rate
 - Zero cost for cached responses
 - Savings: $900/month
@@ -224,15 +231,18 @@ const getCachedResponse = async (query) => {
 ### Content:
 
 **Before optimization:**
+
 - Monthly cost: $8,400
 - Cost per request: $0.028
 
 **After optimization:**
+
 - Monthly cost: $3,200
 - Cost per request: $0.011
 - **Total savings: 62%**
 
 ### Visual:
+
 ```
 [VISUAL 4: Savings breakdown waterfall chart]
 Starting: $8,400
@@ -260,10 +270,13 @@ Final: $3,200 (62% savings)
 ## Conclusion (80 words)
 
 ### Key takeaways:
+
 1. Route simple queries to cheaper models
 2. Structure prompts for cache hits
 3. Compress conversation context
 4. Cache repeated responses
 
 ### Subtle CTA:
-"Clarity Chat includes useModelRouter, useSmartCache, and context management hooks that implement these patterns. We went through this optimization pain so you don't have to."
+
+"Clarity Chat includes useModelRouter, useSmartCache, and context management hooks that implement
+these patterns. We went through this optimization pain so you don't have to."

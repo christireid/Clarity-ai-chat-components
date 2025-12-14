@@ -1,12 +1,14 @@
 ---
 title: "Error Messages That Don't Make Users Rage-Quit"
-description: "Build user-friendly error handling for AI chat. Classification, recovery options, and messaging that helps instead of frustrates."
-keywords: ["error handling", "UX", "error messages", "user experience", "chat errors"]
-author: "Clarity Chat Team"
+description:
+  'Build user-friendly error handling for AI chat. Classification, recovery options, and messaging
+  that helps instead of frustrates.'
+keywords: ['error handling', 'UX', 'error messages', 'user experience', 'chat errors']
+author: 'Clarity Chat Team'
 publishDate: 2025-01-21
 readingTime: 7
-category: "UX & Psychology"
-relatedPosts: ["11-retry-pattern", "09-production-ready-chat", "04-accessibility-screen-readers"]
+category: 'UX & Psychology'
+relatedPosts: ['11-retry-pattern', '09-production-ready-chat', '04-accessibility-screen-readers']
 ---
 
 # Error Messages That Don't Make Users Rage-Quit
@@ -15,9 +17,12 @@ relatedPosts: ["11-retry-pattern", "09-production-ready-chat", "04-accessibility
 
 Congratulations. You've just told your user absolutely nothing.
 
-What went wrong? Their network? Your server? The AI? Is their message lost forever? Can they retry? Should they refresh? Contact support?
+What went wrong? Their network? Your server? The AI? Is their message lost forever? Can they retry?
+Should they refresh? Contact support?
 
-A single, useless error message can undo an entire positive user experience. I've seen users abandon products after one bad error—not because the error happened, but because they had no idea what to do next.
+A single, useless error message can undo an entire positive user experience. I've seen users abandon
+products after one bad error—not because the error happened, but because they had no idea what to do
+next.
 
 Let's fix your error messages.
 
@@ -27,22 +32,20 @@ Let's fix your error messages.
 
 I've catalogued error messages from AI chat products I've tested. Here are the worst offenders:
 
-**"Error."**
-No explanation, no action, no hope.
+**"Error."** No explanation, no action, no hope.
 
-**"Request failed. Try again later."**
-When is "later"? One second? One hour? Next week?
+**"Request failed. Try again later."** When is "later"? One second? One hour? Next week?
 
-**"null"**
-Yes, literally the JavaScript value `null` displayed to users. Someone forgot to handle the error case.
+**"null"** Yes, literally the JavaScript value `null` displayed to users. Someone forgot to handle
+the error case.
 
-**"Error 500"**
-Technical jargon that means nothing to 99% of users.
+**"Error 500"** Technical jargon that means nothing to 99% of users.
 
-**[Nothing happens]**
-The silent failure. User clicks send, loading spinner appears, loading spinner disappears, message is gone. No indication anything went wrong.
+**[Nothing happens]** The silent failure. User clicks send, loading spinner appears, loading spinner
+disappears, message is gone. No indication anything went wrong.
 
-Each of these destroys trust. Users don't know if their message was received, if they can retry, or if the app is fundamentally broken.
+Each of these destroys trust. Users don't know if their message was received, if they can retry, or
+if the app is fundamentally broken.
 
 ---
 
@@ -52,29 +55,25 @@ Every error message should answer four questions:
 
 ### 1. What happened? (Clear, non-technical)
 
-**Bad:** "Error 429"
-**Good:** "You've sent too many messages"
+**Bad:** "Error 429" **Good:** "You've sent too many messages"
 
 Don't expose internal error codes or technical jargon. Translate the problem into human terms.
 
 ### 2. Why did it happen? (Context)
 
-**Bad:** (nothing)
-**Good:** "We limit requests to keep the service fast for everyone"
+**Bad:** (nothing) **Good:** "We limit requests to keep the service fast for everyone"
 
 Brief context helps users understand it's not their fault (or, if it is, what they did).
 
 ### 3. What should they do next? (Actionable)
 
-**Bad:** (nothing)
-**Good:** "Wait 30 seconds and try again, or reduce your message length"
+**Bad:** (nothing) **Good:** "Wait 30 seconds and try again, or reduce your message length"
 
 Give them a path forward. If there's nothing they can do, tell them that too.
 
 ### 4. Is their data safe? (Reassurance)
 
-**Bad:** (nothing)
-**Good:** "Your message has been saved and will send automatically when ready"
+**Bad:** (nothing) **Good:** "Your message has been saved and will send automatically when ready"
 
 The worst fear is losing work. Reassure them immediately if their data is safe.
 
@@ -98,34 +97,34 @@ interface ChatError {
 function ErrorBanner({ error }: { error: ChatError }) {
   const errorContent = {
     rateLimit: {
-      title: "Slow down a bit",
+      title: 'Slow down a bit',
       message: "You've hit our rate limit. This helps keep the service fast for everyone.",
-      action: "Wait 30 seconds, then try again.",
-      reassurance: "Your message is saved.",
+      action: 'Wait 30 seconds, then try again.',
+      reassurance: 'Your message is saved.',
     },
     network: {
-      title: "Connection lost",
+      title: 'Connection lost',
       message: "We can't reach our servers right now.",
       action: "Check your internet connection. We'll retry automatically.",
-      reassurance: "Your message is saved locally.",
+      reassurance: 'Your message is saved locally.',
     },
     server: {
       title: "Something's wrong on our end",
-      message: "Our AI service is temporarily unavailable.",
+      message: 'Our AI service is temporarily unavailable.',
       action: "We're working on it. Please try again in a few minutes.",
-      reassurance: "Your message is safe—nothing was lost.",
+      reassurance: 'Your message is safe—nothing was lost.',
     },
     timeout: {
-      title: "Response taking too long",
-      message: "The AI is taking longer than usual to respond.",
-      action: "You can wait, or cancel and try a simpler question.",
-      reassurance: "Your original message is still here.",
+      title: 'Response taking too long',
+      message: 'The AI is taking longer than usual to respond.',
+      action: 'You can wait, or cancel and try a simpler question.',
+      reassurance: 'Your original message is still here.',
     },
     auth: {
-      title: "Session expired",
+      title: 'Session expired',
       message: "You've been logged out for security.",
-      action: "Please log in again to continue.",
-      reassurance: "Your conversation history is saved.",
+      action: 'Please log in again to continue.',
+      reassurance: 'Your conversation history is saved.',
     },
   }[error.type]
 
@@ -134,18 +133,10 @@ function ErrorBanner({ error }: { error: ChatError }) {
       <div className="flex items-start gap-3">
         <AlertCircleIcon className="w-5 h-5 text-red-500 mt-0.5" />
         <div>
-          <h3 className="font-medium text-red-900">
-            {errorContent.title}
-          </h3>
-          <p className="text-sm text-red-700 mt-1">
-            {errorContent.message}
-          </p>
-          <p className="text-sm text-red-600 mt-2">
-            {errorContent.action}
-          </p>
-          <p className="text-sm text-red-500 mt-1 italic">
-            {errorContent.reassurance}
-          </p>
+          <h3 className="font-medium text-red-900">{errorContent.title}</h3>
+          <p className="text-sm text-red-700 mt-1">{errorContent.message}</p>
+          <p className="text-sm text-red-600 mt-2">{errorContent.action}</p>
+          <p className="text-sm text-red-500 mt-1 italic">{errorContent.reassurance}</p>
         </div>
       </div>
     </div>
@@ -183,20 +174,21 @@ function classifyError(error: unknown): ErrorType {
 
 Each type gets different treatment:
 
-| Type | Retry? | Delay | Tone |
-|------|--------|-------|------|
-| Network | Yes, auto | Immediate | Calm |
-| Rate limit | Yes | Wait for header or 30s | Informative |
-| Server | Yes | Exponential backoff | Apologetic |
-| Timeout | User choice | None | Neutral |
-| Auth | No, redirect | None | Urgent |
-| Validation | No | None | Helpful |
+| Type       | Retry?       | Delay                  | Tone        |
+| ---------- | ------------ | ---------------------- | ----------- |
+| Network    | Yes, auto    | Immediate              | Calm        |
+| Rate limit | Yes          | Wait for header or 30s | Informative |
+| Server     | Yes          | Exponential backoff    | Apologetic  |
+| Timeout    | User choice  | None                   | Neutral     |
+| Auth       | No, redirect | None                   | Urgent      |
+| Validation | No           | None                   | Helpful     |
 
 ---
 
 ## Never Lose User Data
 
-The absolute worst error experience: user types a long message, it fails to send, and the message is *gone*.
+The absolute worst error experience: user types a long message, it fails to send, and the message is
+_gone_.
 
 Never let this happen. Implement optimistic UI with persistent state:
 
@@ -215,7 +207,7 @@ function useSafeMessageSend() {
     }
 
     // 2. Add to state immediately
-    setMessages(prev => [...prev, newMessage])
+    setMessages((prev) => [...prev, newMessage])
 
     // 3. Persist to localStorage as backup
     localStorage.setItem(`pending-${tempId}`, JSON.stringify(newMessage))
@@ -234,22 +226,15 @@ function useSafeMessageSend() {
       const { id: serverId } = await response.json()
 
       // 5. Update with server ID, remove from localStorage
-      setMessages(prev =>
-        prev.map(m =>
-          m.id === tempId
-            ? { ...m, id: serverId, status: 'sent' }
-            : m
-        )
+      setMessages((prev) =>
+        prev.map((m) => (m.id === tempId ? { ...m, id: serverId, status: 'sent' } : m))
       )
       localStorage.removeItem(`pending-${tempId}`)
-
     } catch (error) {
       // 6. Mark as failed but keep visible
-      setMessages(prev =>
-        prev.map(m =>
-          m.id === tempId
-            ? { ...m, status: 'failed', error: classifyError(error) }
-            : m
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === tempId ? { ...m, status: 'failed', error: classifyError(error) } : m
         )
       )
       // Note: Don't remove from localStorage—it's our backup
@@ -259,11 +244,11 @@ function useSafeMessageSend() {
   // On mount, restore any pending messages
   useEffect(() => {
     const pending = Object.keys(localStorage)
-      .filter(key => key.startsWith('pending-'))
-      .map(key => JSON.parse(localStorage.getItem(key)!))
+      .filter((key) => key.startsWith('pending-'))
+      .map((key) => JSON.parse(localStorage.getItem(key)!))
 
     if (pending.length > 0) {
-      setMessages(prev => [...prev, ...pending])
+      setMessages((prev) => [...prev, ...pending])
     }
   }, [])
 
@@ -298,20 +283,15 @@ function MessageWithStatus({ message }: { message: Message }) {
 
   return (
     <div className="relative">
-      <div className={cn(
-        "p-4 rounded-lg",
-        message.status === 'failed' && "border-2 border-red-300"
-      )}>
+      <div
+        className={cn('p-4 rounded-lg', message.status === 'failed' && 'border-2 border-red-300')}
+      >
         {message.content}
       </div>
 
-      {message.status === 'sending' && (
-        <span className="text-xs text-gray-400">Sending...</span>
-      )}
+      {message.status === 'sending' && <span className="text-xs text-gray-400">Sending...</span>}
 
-      {message.status === 'sent' && (
-        <CheckIcon className="w-4 h-4 text-green-500" />
-      )}
+      {message.status === 'sent' && <CheckIcon className="w-4 h-4 text-green-500" />}
 
       {message.status === 'failed' && (
         <div className="flex items-center gap-2 mt-2">
@@ -341,7 +321,12 @@ A proper retry button isn't just a button that re-submits. It should:
 4. **Show countdown:** "Retry available in 5s..."
 
 ```tsx
-function RetryButton({ onRetry, attempt, maxAttempts, cooldown }: {
+function RetryButton({
+  onRetry,
+  attempt,
+  maxAttempts,
+  cooldown,
+}: {
   onRetry: () => void
   attempt: number
   maxAttempts: number
@@ -360,7 +345,7 @@ function RetryButton({ onRetry, attempt, maxAttempts, cooldown }: {
     setIsReady(false)
 
     const interval = setInterval(() => {
-      setSecondsRemaining(prev => {
+      setSecondsRemaining((prev) => {
         if (prev <= 1) {
           setIsReady(true)
           clearInterval(interval)
@@ -379,7 +364,8 @@ function RetryButton({ onRetry, attempt, maxAttempts, cooldown }: {
         Unable to send. Please try again later or{' '}
         <a href="/support" className="text-blue-500 hover:underline">
           contact support
-        </a>.
+        </a>
+        .
       </div>
     )
   }
@@ -389,14 +375,13 @@ function RetryButton({ onRetry, attempt, maxAttempts, cooldown }: {
       onClick={onRetry}
       disabled={!isReady}
       className={cn(
-        "text-sm font-medium",
-        isReady ? "text-blue-600 hover:text-blue-800" : "text-gray-400"
+        'text-sm font-medium',
+        isReady ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400'
       )}
     >
       {isReady
         ? `Try again (${attempt + 1} of ${maxAttempts})`
-        : `Retry in ${secondsRemaining}s...`
-      }
+        : `Retry in ${secondsRemaining}s...`}
     </button>
   )
 }
@@ -409,35 +394,42 @@ function RetryButton({ onRetry, attempt, maxAttempts, cooldown }: {
 The best error message is no error message. Prevent errors before they happen:
 
 **Disable send when input is empty:**
+
 ```tsx
 <button disabled={message.trim().length === 0}>Send</button>
 ```
 
 **Show character/token limits:**
+
 ```tsx
-{message.length > 10000 && (
-  <span className="text-yellow-600">
-    Message is quite long. Consider breaking it up.
-  </span>
-)}
+{
+  message.length > 10000 && (
+    <span className="text-yellow-600">Message is quite long. Consider breaking it up.</span>
+  )
+}
 ```
 
 **Warn before sending during known issues:**
+
 ```tsx
-{systemStatus === 'degraded' && (
-  <Banner type="warning">
-    Our AI service is experiencing delays. Messages may take longer than usual.
-  </Banner>
-)}
+{
+  systemStatus === 'degraded' && (
+    <Banner type="warning">
+      Our AI service is experiencing delays. Messages may take longer than usual.
+    </Banner>
+  )
+}
 ```
 
 ---
 
 ## The Takeaway
 
-Error messages are a core part of UX, not an afterthought. Every error is an opportunity to build or destroy trust.
+Error messages are a core part of UX, not an afterthought. Every error is an opportunity to build or
+destroy trust.
 
 The rules:
+
 1. **Never show technical jargon** — Translate for humans
 2. **Always provide next steps** — What should they do?
 3. **Never lose user data** — Persist messages locally
@@ -448,4 +440,6 @@ Your users will forgive errors. They won't forgive being left in the dark about 
 
 ---
 
-*Don't want to build error handling from scratch? Clarity Chat's error recovery system handles classification, retry logic, optimistic UI, and user-facing messaging automatically. [See the error handling docs →](/docs/error-handling)*
+_Don't want to build error handling from scratch? Clarity Chat's error recovery system handles
+classification, retry logic, optimistic UI, and user-facing messaging automatically.
+[See the error handling docs →](/docs/error-handling)_

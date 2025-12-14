@@ -6,13 +6,15 @@
 
 "Just invert the colors" is the most common dark mode implementation. It's also the worst.
 
-AI chat has unique theming challenges: code blocks, syntax highlighting, status indicators, and contrast ratios that standard dark mode toggles don't handle well.
+AI chat has unique theming challenges: code blocks, syntax highlighting, status indicators, and
+contrast ratios that standard dark mode toggles don't handle well.
 
 ## The Key Insight
 
 Theme tokens should be **semantic**, not **visual**.
 
-Instead of `--color-gray-800`, use `--color-surface-primary`. Instead of `--color-blue-500`, use `--color-action-primary`.
+Instead of `--color-gray-800`, use `--color-surface-primary`. Instead of `--color-blue-500`, use
+`--color-action-primary`.
 
 ```tsx
 const themeTokens = {
@@ -29,7 +31,8 @@ const themeTokens = {
 }
 ```
 
-The magic: **code blocks look the same in both modes.** Users spend most of their time reading code in AI chat—consistency matters.
+The magic: **code blocks look the same in both modes.** Users spend most of their time reading code
+in AI chat—consistency matters.
 
 **Bonus:** Add a `system` option that follows OS preference. It's what users expect in 2025.
 
@@ -37,4 +40,4 @@ The magic: **code blocks look the same in both modes.** Users spend most of thei
 
 [Read the full article →](/blog/dark-mode-theming)
 
-*Themes that just work, in light and dark. That's what Clarity Chat handles for you.*
+_Themes that just work, in light and dark. That's what Clarity Chat handles for you._

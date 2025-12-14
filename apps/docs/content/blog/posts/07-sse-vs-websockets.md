@@ -1,32 +1,42 @@
 ---
-title: "SSE vs WebSockets for AI Streaming: The Definitive Guide"
-description: "Choose the right streaming protocol for AI chat. Real benchmarks, reconnection handling, and implementation code for both."
-keywords: ["SSE", "WebSockets", "streaming", "real-time", "AI chat", "server-sent events"]
-author: "Clarity Chat Team"
+title: 'SSE vs WebSockets for AI Streaming: The Definitive Guide'
+description:
+  'Choose the right streaming protocol for AI chat. Real benchmarks, reconnection handling, and
+  implementation code for both.'
+keywords: ['SSE', 'WebSockets', 'streaming', 'real-time', 'AI chat', 'server-sent events']
+author: 'Clarity Chat Team'
 publishDate: 2025-01-28
 readingTime: 9
-category: "Streaming & Real-Time"
+category: 'Streaming & Real-Time'
 featured: true
-relatedPosts: ["08-context-windows", "11-retry-pattern", "09-production-ready-chat"]
+relatedPosts: ['08-context-windows', '11-retry-pattern', '09-production-ready-chat']
 ---
 
 # SSE vs WebSockets for AI Streaming: The Definitive Guide
 
 You're probably using WebSockets when you should be using SSE.
 
-I know—WebSockets sound more sophisticated. "Real-time bidirectional communication" has a certain ring to it. But for AI chat streaming, where the server sends tokens to the client and the client occasionally sends messages back, Server-Sent Events (SSE) are simpler, lighter, and usually better.
+I know—WebSockets sound more sophisticated. "Real-time bidirectional communication" has a certain
+ring to it. But for AI chat streaming, where the server sends tokens to the client and the client
+occasionally sends messages back, Server-Sent Events (SSE) are simpler, lighter, and usually better.
 
-Let's settle this debate with actual benchmarks, real code, and a decision framework you can use today.
+Let's settle this debate with actual benchmarks, real code, and a decision framework you can use
+today.
 
 ---
 
 ## Understanding the Difference
 
-**WebSockets** create a full-duplex connection—both client and server can send data at any time. Think of it as a phone call: either party can speak whenever they want.
+**WebSockets** create a full-duplex connection—both client and server can send data at any time.
+Think of it as a phone call: either party can speak whenever they want.
 
-**Server-Sent Events (SSE)** create a one-way stream from server to client. The client establishes a connection, and the server pushes events. It's more like a radio broadcast: the station transmits, you listen.
+**Server-Sent Events (SSE)** create a one-way stream from server to client. The client establishes a
+connection, and the server pushes events. It's more like a radio broadcast: the station transmits,
+you listen.
 
-Here's the key insight: **AI token streaming is fundamentally one-way.** The server generates tokens and sends them to the client. The client doesn't need to interrupt mid-stream. When the client wants to send a new message, it can use a regular HTTP POST.
+Here's the key insight: **AI token streaming is fundamentally one-way.** The server generates tokens
+and sends them to the client. The client doesn't need to interrupt mid-stream. When the client wants
+to send a new message, it can use a regular HTTP POST.
 
 This is SSE's sweet spot.
 
@@ -77,10 +87,7 @@ app.post('/api/chat/stream', async (req, res) => {
   try {
     const stream = await openai.chat.completions.create({
       model: 'gpt-4o',
-      messages: [
-        ...conversationHistory,
-        { role: 'user', content: message }
-      ],
+      messages: [...conversationHistory, { role: 'user', content: message }],
       stream: true,
     })
 
@@ -95,12 +102,13 @@ app.post('/api/chat/stream', async (req, res) => {
     // Signal completion
     res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`)
     res.end()
-
   } catch (error) {
-    res.write(`data: ${JSON.stringify({
-      type: 'error',
-      message: error.message
-    })}\n\n`)
+    res.write(
+      `data: ${JSON.stringify({
+        type: 'error',
+        message: error.message,
+      })}\n\n`
+    )
     res.end()
   }
 })
@@ -110,7 +118,9 @@ app.post('/api/chat/stream', async (req, res) => {
 
 ```tsx
 function useSSEStream() {
-  const [status, setStatus] = useState<'idle' | 'connecting' | 'streaming' | 'complete' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'connecting' | 'streaming' | 'complete' | 'error'>(
+    'idle'
+  )
   const [content, setContent] = useState('')
   const [error, setError] = useState<Error | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -159,7 +169,7 @@ function useSSEStream() {
             const data = JSON.parse(line.slice(6))
 
             if (data.type === 'token') {
-              setContent(prev => prev + data.content)
+              setContent((prev) => prev + data.content)
             } else if (data.type === 'done') {
               setStatus('complete')
             } else if (data.type === 'error') {
@@ -170,7 +180,6 @@ function useSSEStream() {
       }
 
       setStatus('complete')
-
     } catch (err) {
       if (err.name === 'AbortError') {
         setStatus('idle')
@@ -199,7 +208,7 @@ function Chat() {
   const sendMessage = async (text: string) => {
     // Add user message
     const userMessage = { role: 'user', content: text }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
 
     // Stream AI response
     await stream(text, messages)
@@ -208,10 +217,7 @@ function Chat() {
   // Add completed AI response to history
   useEffect(() => {
     if (status === 'complete' && content) {
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content }
-      ])
+      setMessages((prev) => [...prev, { role: 'assistant', content }])
     }
   }, [status, content])
 
@@ -229,9 +235,7 @@ function Chat() {
       )}
 
       {status === 'error' && (
-        <div className="p-4 bg-red-50 text-red-700 rounded-lg">
-          Error: {error?.message}
-        </div>
+        <div className="p-4 bg-red-50 text-red-700 rounded-lg">Error: {error?.message}</div>
       )}
 
       <ChatInput onSend={sendMessage} disabled={status === 'streaming'} />
@@ -268,13 +272,13 @@ function useMultiUserChat(roomId: string) {
 
       switch (data.type) {
         case 'message':
-          setMessages(prev => [...prev, data.message])
+          setMessages((prev) => [...prev, data.message])
           break
         case 'user_joined':
-          setUsers(prev => [...prev, data.user])
+          setUsers((prev) => [...prev, data.user])
           break
         case 'user_left':
-          setUsers(prev => prev.filter(u => u.id !== data.userId))
+          setUsers((prev) => prev.filter((u) => u.id !== data.userId))
           break
         case 'typing':
           // Handle typing indicator
@@ -288,10 +292,12 @@ function useMultiUserChat(roomId: string) {
   }, [roomId])
 
   const sendMessage = (content: string) => {
-    wsRef.current?.send(JSON.stringify({
-      type: 'message',
-      content,
-    }))
+    wsRef.current?.send(
+      JSON.stringify({
+        type: 'message',
+        content,
+      })
+    )
   }
 
   return { messages, users, sendMessage }
@@ -299,6 +305,7 @@ function useMultiUserChat(roomId: string) {
 ```
 
 Here, WebSockets shine because:
+
 - Multiple clients send messages frequently
 - Presence/typing indicators need real-time bidirectional updates
 - The server pushes events from other users
@@ -309,13 +316,13 @@ Here, WebSockets shine because:
 
 I ran benchmarks with 1,000 concurrent connections streaming AI responses:
 
-| Metric | SSE | WebSocket |
-|--------|-----|-----------|
-| Memory per connection | ~2KB | ~8KB |
-| Connection setup | 1 HTTP request | HTTP upgrade handshake |
-| Reconnection | Native browser support | Manual implementation |
-| Proxy compatibility | Excellent | Often problematic |
-| Server complexity | Low | Medium |
+| Metric                | SSE                    | WebSocket              |
+| --------------------- | ---------------------- | ---------------------- |
+| Memory per connection | ~2KB                   | ~8KB                   |
+| Connection setup      | 1 HTTP request         | HTTP upgrade handshake |
+| Reconnection          | Native browser support | Manual implementation  |
+| Proxy compatibility   | Excellent              | Often problematic      |
+| Server complexity     | Low                    | Medium                 |
 
 For single-user AI chat, SSE uses 4x less memory and has simpler infrastructure.
 
@@ -323,7 +330,9 @@ For single-user AI chat, SSE uses 4x less memory and has simpler infrastructure.
 
 ## Handling Reconnection
 
-SSE has native browser reconnection support via `EventSource`, but it doesn't work with POST requests. For POST-based streaming (which you need to send conversation history), handle reconnection manually:
+SSE has native browser reconnection support via `EventSource`, but it doesn't work with POST
+requests. For POST-based streaming (which you need to send conversation history), handle
+reconnection manually:
 
 ```tsx
 function useReconnectingStream() {
@@ -331,16 +340,12 @@ function useReconnectingStream() {
   const maxRetries = 3
   const retryDelay = 1000
 
-  const streamWithRetry = async (
-    message: string,
-    history: Message[],
-    attempt = 0
-  ) => {
+  const streamWithRetry = async (message: string, history: Message[], attempt = 0) => {
     try {
       await stream(message, history)
     } catch (err) {
       if (attempt < maxRetries && isRetryableError(err)) {
-        await new Promise(r => setTimeout(r, retryDelay * (attempt + 1)))
+        await new Promise((r) => setTimeout(r, retryDelay * (attempt + 1)))
         return streamWithRetry(message, history, attempt + 1)
       }
       throw err
@@ -423,6 +428,7 @@ function useReconnectingWebSocket(url: string) {
 ```
 
 Simple version:
+
 - **AI chat with one user** → SSE
 - **Chat rooms, collaboration** → WebSocket
 - **Unsure** → Start with SSE, migrate if needed
@@ -442,11 +448,13 @@ res.setHeader('Cache-Control', 'no-cache, no-transform')
 
 ### Connection limits
 
-Browsers limit concurrent connections per domain (6 in Chrome). For SSE, this is rarely an issue—you typically have one stream at a time. For WebSockets, consider connection pooling.
+Browsers limit concurrent connections per domain (6 in Chrome). For SSE, this is rarely an issue—you
+typically have one stream at a time. For WebSockets, consider connection pooling.
 
 ### CORS
 
-SSE respects CORS like any fetch request. WebSockets have their own handshake—make sure your server handles the `Origin` header.
+SSE respects CORS like any fetch request. WebSockets have their own handshake—make sure your server
+handles the `Origin` header.
 
 ---
 
@@ -460,10 +468,13 @@ WebSockets are powerful, but they're often overkill for AI chat. SSE provides:
 - Native reconnection (with EventSource)
 - Easier debugging (just HTTP)
 
-Use WebSockets when you truly need bidirectional, high-frequency communication. For streaming AI responses to a single user, SSE is the right tool.
+Use WebSockets when you truly need bidirectional, high-frequency communication. For streaming AI
+responses to a single user, SSE is the right tool.
 
 Don't choose technology based on what sounds more impressive. Choose what fits your actual use case.
 
 ---
 
-*Clarity Chat provides both `useStreamingSSE` and `useStreamingWebSocket` hooks with built-in reconnection, error handling, and progress tracking. Pick the right tool—we've implemented both correctly. [See the streaming docs →](/docs/hooks/streaming)*
+_Clarity Chat provides both `useStreamingSSE` and `useStreamingWebSocket` hooks with built-in
+reconnection, error handling, and progress tracking. Pick the right tool—we've implemented both
+correctly. [See the streaming docs →](/docs/hooks/streaming)_

@@ -23,7 +23,7 @@ function IntelligentTypingIndicator({ stage }: { stage: number }) {
   return (
     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
       <div className="flex gap-1">
-        {[0, 1, 2].map(i => (
+        {[0, 1, 2].map((i) => (
           <span
             key={i}
             className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"
@@ -31,20 +31,20 @@ function IntelligentTypingIndicator({ stage }: { stage: number }) {
           />
         ))}
       </div>
-      <span className="text-sm text-gray-600">
-        {typingStages[stage]?.label || 'Preparing...'}
-      </span>
+      <span className="text-sm text-gray-600">{typingStages[stage]?.label || 'Preparing...'}</span>
     </div>
   )
 }
 ```
 
-**Why this works:** It maps to how humans think. We read, we consider, we respond. Showing this progression makes the AI feel thoughtful, not mechanical.
+**Why this works:** It maps to how humans think. We read, we consider, we respond. Showing this
+progression makes the AI feel thoughtful, not mechanical.
 
-**Pro tip:** The "thinking" phase should feel slightly longer. It signals the AI is actually considering the question, not just pattern-matching.
+**Pro tip:** The "thinking" phase should feel slightly longer. It signals the AI is actually
+considering the question, not just pattern-matching.
 
 ---
 
 [Read the full article →](/blog/typing-indicator-art)
 
-*Intelligent typing indicators built into every Clarity Chat message component.*
+_Intelligent typing indicators built into every Clarity Chat message component._

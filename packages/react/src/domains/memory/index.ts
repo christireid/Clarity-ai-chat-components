@@ -1,6 +1,6 @@
 /**
  * Memory & Context Domain
- * 
+ *
  * APIs for conversation memory, context management, and RAG
  */
 
@@ -23,14 +23,11 @@ export {
   useMemoryStats,
   useConversationMemory,
 } from '../../memory/memory-provider'
-// TODO: Re-enable once useSlidingContextManager is implemented
-// export {
-//   useSlidingContextManager as useSlidingWindow,
-// } from '../../memory/use-sliding-context-manager'
+// Note: useSlidingWindow hook is not yet available.
+// For sliding context management, use SlidingContextManager class from utils/memory
 
 // Low-level: Primitives
-// TODO: Re-enable once utils/memory is implemented
-// export * from '../../utils/memory'
+export * from '../../utils/memory'
 
 // Re-export from memory package
 export * from '@clarity-chat/memory'

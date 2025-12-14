@@ -5,6 +5,7 @@
 ---
 
 Every AI chat we built, we rebuilt the same things:
+
 - Streaming message display
 - Token counting
 - Error handling with retry
@@ -17,7 +18,8 @@ Copy-paste from project to project. Slight variations. Bugs reintroduced.
 
 **1. Production-ready, not demo-ready**
 
-Most AI chat examples work for demos. They break under load, lack error handling, and ignore edge cases.
+Most AI chat examples work for demos. They break under load, lack error handling, and ignore edge
+cases.
 
 We wanted components that work in production from day one.
 
@@ -49,4 +51,4 @@ Not an afterthought. Built in from the start.
 
 [Read the full article →](/blog/component-library-manifesto)
 
-*This is what Clarity Chat is. The component library we wished existed.*
+_This is what Clarity Chat is. The component library we wished existed._

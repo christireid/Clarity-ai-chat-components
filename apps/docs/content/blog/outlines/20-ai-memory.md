@@ -1,6 +1,7 @@
 # Blog Post 20: Building AI Memory That Actually Remembers
 
 ## Meta Information
+
 - **Reading Time:** 7 minutes (~1,700 words)
 - **Category:** Advanced AI Topics
 - **Primary Keyword:** AI chatbot memory
@@ -12,7 +13,9 @@
 
 **Opening line:** "LLMs are stateless. Every message is like meeting them for the first time."
 
-Your users expect AI to remember that they prefer Python, that they asked about refunds yesterday, that their name is Sarah. But LLMs have amnesia by design—they don't remember anything between API calls.
+Your users expect AI to remember that they prefer Python, that they asked about refunds yesterday,
+that their name is Sarah. But LLMs have amnesia by design—they don't remember anything between API
+calls.
 
 Building memory that actually works requires understanding the different types and when to use each.
 
@@ -23,33 +26,31 @@ Building memory that actually works requires understanding the different types a
 ### Content:
 
 **The API reality:**
+
 ```tsx
 // Each call is independent
 await openai.chat.completions.create({
-  messages: [
-    { role: "user", content: "My name is Sarah" }
-  ]
+  messages: [{ role: 'user', content: 'My name is Sarah' }],
 })
 
 // New call - no memory of the above
 await openai.chat.completions.create({
-  messages: [
-    { role: "user", content: "What's my name?" }
-  ]
+  messages: [{ role: 'user', content: "What's my name?" }],
 })
 // AI: "I don't know your name"
 ```
 
 **Why it's designed this way:**
+
 - Stateless = scalable
 - No server-side storage per user
 - Privacy by default
 - Simpler infrastructure
 
-**The consequence:**
-You must manage memory in your application layer.
+**The consequence:** You must manage memory in your application layer.
 
 ### Visual:
+
 ```
 [VISUAL 1: Stateless reality]
 Call 1: "I'm Sarah" → "Nice to meet you, Sarah!"
@@ -64,30 +65,31 @@ Call 2: "What's my name?" → "I don't know your name"
 
 ### Content:
 
-**1. Session Memory (Short-term)**
-Current conversation history.
+**1. Session Memory (Short-term)** Current conversation history.
+
 ```tsx
 // Store in client state
 const [messages, setMessages] = useState([])
 
 // Send full history with each request
 await openai.chat.completions.create({
-  messages: [...messages, { role: "user", content: newMessage }]
+  messages: [...messages, { role: 'user', content: newMessage }],
 })
 ```
-*Use for: Current conversation context*
 
-**2. User Memory (Long-term)**
-Persistent facts about the user.
+_Use for: Current conversation context_
+
+**2. User Memory (Long-term)** Persistent facts about the user.
+
 ```tsx
 // Store in database
 await db.userMemory.upsert({
   userId: user.id,
   facts: [
-    { key: "name", value: "Sarah" },
-    { key: "preferredLanguage", value: "Python" },
-    { key: "timezone", value: "PST" },
-  ]
+    { key: 'name', value: 'Sarah' },
+    { key: 'preferredLanguage', value: 'Python' },
+    { key: 'timezone', value: 'PST' },
+  ],
 })
 
 // Include in system prompt
@@ -98,45 +100,49 @@ Known facts about this user:
 - Timezone: PST
 `
 ```
-*Use for: Preferences, facts, settings*
 
-**3. Semantic Memory (Knowledge)**
-Searchable knowledge from past interactions.
+_Use for: Preferences, facts, settings_
+
+**3. Semantic Memory (Knowledge)** Searchable knowledge from past interactions.
+
 ```tsx
 // Store embeddings of past conversations
 await vectorStore.upsert({
   id: conversationId,
   embedding: await embed(conversationSummary),
-  metadata: { userId, date, topic }
+  metadata: { userId, date, topic },
 })
 
 // Retrieve relevant past context
 const relevant = await vectorStore.query({
   embedding: await embed(currentQuery),
   filter: { userId },
-  topK: 3
+  topK: 3,
 })
 ```
-*Use for: "What did we discuss about X?"*
 
-**4. Behavioral Memory (Patterns)**
-Learned behaviors and preferences.
+_Use for: "What did we discuss about X?"_
+
+**4. Behavioral Memory (Patterns)** Learned behaviors and preferences.
+
 ```tsx
 // Track patterns
 analytics.track('user_preference', {
   userId,
   behavior: 'always_asks_for_code_examples',
-  confidence: 0.85
+  confidence: 0.85,
 })
 
 // Apply learned behavior
 if (user.patterns.includes('prefers_detailed_explanations')) {
-  systemPrompt += "\nProvide detailed explanations with examples."
+  systemPrompt += '\nProvide detailed explanations with examples.'
 }
 ```
-*Use for: Adapting response style*
+
+_Use for: Adapting response style_
 
 ### Visual:
+
 ```
 [VISUAL 2: Memory types pyramid]
         ╱╲ Behavioral
@@ -157,6 +163,7 @@ if (user.patterns.includes('prefers_detailed_explanations')) {
 ## Section 3: Implementing Multi-Layer Memory (300 words)
 
 ### Code Example:
+
 ```tsx
 import {
   useMemoryManager,
@@ -175,8 +182,8 @@ function MemoryEnabledChat() {
     // User memory (persistent facts)
     user: {
       storage: 'database',
-      extractFacts: true,  // Auto-extract "My name is X"
-      ttl: null,  // Never expires
+      extractFacts: true, // Auto-extract "My name is X"
+      ttl: null, // Never expires
     },
 
     // Semantic memory (searchable history)
@@ -221,6 +228,7 @@ function MemoryEnabledChat() {
 ### Content:
 
 **Extracting user facts from conversation:**
+
 ```tsx
 // User says: "I'm based in New York and I work with React"
 const facts = await memory.extractFacts(message)
@@ -234,11 +242,12 @@ await memory.user.update(facts)
 ```
 
 **Privacy considerations:**
+
 ```tsx
 const memory = useMemoryManager({
   user: {
     // Only store explicitly shared info
-    extractionConsent: 'explicit',  // or 'implicit'
+    extractionConsent: 'explicit', // or 'implicit'
 
     // Categories of facts to store
     allowedCategories: ['preferences', 'name', 'timezone'],
@@ -247,7 +256,7 @@ const memory = useMemoryManager({
     // User controls
     enableDeletion: true,
     enableExport: true,
-  }
+  },
 })
 ```
 
@@ -258,10 +267,11 @@ const memory = useMemoryManager({
 ### Content:
 
 **Let users see and manage their memory:**
+
 ```tsx
 import { MemoryInspector } from '@clarity-chat/react'
 
-<MemoryInspector
+;<MemoryInspector
   userFacts={memory.user.facts}
   recentTopics={memory.semantic.recentTopics}
   onDeleteFact={(id) => memory.user.delete(id)}
@@ -271,6 +281,7 @@ import { MemoryInspector } from '@clarity-chat/react'
 ```
 
 ### Visual:
+
 ```
 [VISUAL 3: Memory inspector UI mockup]
 ┌─────────────────────────────────────┐
@@ -293,6 +304,7 @@ import { MemoryInspector } from '@clarity-chat/react'
 ## Conclusion (100 words)
 
 ### Key takeaways:
+
 1. LLMs are stateless—you build the memory
 2. Four types: session, user, semantic, behavioral
 3. Layer memories for comprehensive context
@@ -300,4 +312,6 @@ import { MemoryInspector } from '@clarity-chat/react'
 5. Let users see and control their data
 
 ### Subtle CTA:
-"Clarity Chat's memory management hooks handle multi-layer memory, fact extraction, and the MemoryInspector UI. Build AI that actually remembers—without building the infrastructure yourself."
+
+"Clarity Chat's memory management hooks handle multi-layer memory, fact extraction, and the
+MemoryInspector UI. Build AI that actually remembers—without building the infrastructure yourself."

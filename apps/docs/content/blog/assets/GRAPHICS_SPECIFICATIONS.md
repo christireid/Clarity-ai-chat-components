@@ -1,12 +1,14 @@
 # Blog Graphics Specifications
 
-This document outlines the visual assets needed for each blog post. All graphics should follow Clarity Chat's brand guidelines and be optimized for both light and dark mode.
+This document outlines the visual assets needed for each blog post. All graphics should follow
+Clarity Chat's brand guidelines and be optimized for both light and dark mode.
 
 ---
 
 ## General Guidelines
 
 ### Style
+
 - Clean, minimal aesthetic
 - Use brand colors (primary blue: #3B82F6, secondary: system grays)
 - Sans-serif fonts (Inter or system fonts)
@@ -14,6 +16,7 @@ This document outlines the visual assets needed for each blog post. All graphics
 - Export at 2x for retina displays
 
 ### Formats
+
 - Hero images: 1200x630px (OG image compatible)
 - Inline graphics: 800px max width
 - Animations: GIF or Lottie (under 500KB)
@@ -27,7 +30,8 @@ This document outlines the visual assets needed for each blog post. All graphics
 
 1. **Hero: Response Timing Spectrum**
    - Horizontal timeline showing 0ms to 3000ms
-   - Color-coded zones: green (0-200ms "Instant"), yellow (200-1000ms "Acceptable"), red (1000ms+ "Frustrating")
+   - Color-coded zones: green (0-200ms "Instant"), yellow (200-1000ms "Acceptable"), red (1000ms+
+     "Frustrating")
    - Simple, clean design
 
 2. **Animation: Realistic vs Instant Typing**
@@ -456,18 +460,21 @@ This document outlines the visual assets needed for each blog post. All graphics
 ## Implementation Notes
 
 ### Priority Order
+
 1. Hero images for all posts (most visible)
 2. Key diagrams that explain concepts
 3. UI mockups for components
 4. Animations (last, most effort)
 
 ### Tools Recommended
+
 - Figma: Static graphics and mockups
 - After Effects/Lottie: Animations
 - D3.js: Interactive charts (if embedded)
 - SVG exports: Scalability and dark mode support
 
 ### Accessibility
+
 - All graphics need alt text
 - Diagrams should have text alternatives
 - Animations should respect prefers-reduced-motion

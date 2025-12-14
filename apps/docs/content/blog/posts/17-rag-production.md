@@ -1,20 +1,24 @@
 ---
 title: "RAG in Production: What the Tutorials Don't Tell You"
-description: "Production RAG beyond demos. Semantic chunking, hybrid search, reranking, confidence scoring, and debugging observability."
-keywords: ["RAG", "retrieval augmented generation", "vector search", "embeddings", "hybrid search"]
-author: "Clarity Chat Team"
+description:
+  'Production RAG beyond demos. Semantic chunking, hybrid search, reranking, confidence scoring, and
+  debugging observability.'
+keywords: ['RAG', 'retrieval augmented generation', 'vector search', 'embeddings', 'hybrid search']
+author: 'Clarity Chat Team'
 publishDate: 2025-03-04
 readingTime: 15
-category: "Advanced Patterns"
+category: 'Advanced Patterns'
 featured: true
-relatedPosts: ["08-context-windows", "20-ai-memory", "18-ai-agents-function-calling"]
+relatedPosts: ['08-context-windows', '20-ai-memory', '18-ai-agents-function-calling']
 ---
 
 # RAG in Production: What the Tutorials Don't Tell You
 
 Your RAG demo works beautifully. Your production RAG returns garbage.
 
-I've seen this story a dozen times. Developer follows a tutorial, builds a RAG prototype that impresses stakeholders, ships to production, and... users get irrelevant results, hallucinated answers, or worse—confidently wrong information.
+I've seen this story a dozen times. Developer follows a tutorial, builds a RAG prototype that
+impresses stakeholders, ships to production, and... users get irrelevant results, hallucinated
+answers, or worse—confidently wrong information.
 
 The gap between RAG demo and RAG production is enormous. Let's bridge it.
 
@@ -24,13 +28,13 @@ The gap between RAG demo and RAG production is enormous. Let's bridge it.
 
 Demo conditions are nothing like production:
 
-| Demo | Production |
-|------|------------|
-| Clean, curated documents | Messy, inconsistent documents |
-| Known good queries | Unexpected, misspelled queries |
-| No edge cases | Users actively trying to break it |
-| Single user, no scale | Thousands of concurrent users |
-| "It works!" latency | Sub-second latency required |
+| Demo                     | Production                        |
+| ------------------------ | --------------------------------- |
+| Clean, curated documents | Messy, inconsistent documents     |
+| Known good queries       | Unexpected, misspelled queries    |
+| No edge cases            | Users actively trying to break it |
+| Single user, no scale    | Thousands of concurrent users     |
+| "It works!" latency      | Sub-second latency required       |
 
 **Common demo-to-production failures:**
 
@@ -40,7 +44,9 @@ Demo conditions are nothing like production:
 4. No way to debug why answers are wrong
 5. Costs explode with scale
 
-That demo query "What is our refund policy?" worked perfectly because you hand-crafted a document with exactly that phrase. Production query "can i get my money back lol" returns three random chunks and a hallucinated answer.
+That demo query "What is our refund policy?" worked perfectly because you hand-crafted a document
+with exactly that phrase. Production query "can i get my money back lol" returns three random chunks
+and a hallucinated answer.
 
 ---
 
@@ -90,6 +96,7 @@ function badChunking(document: string): string[] {
 ```
 
 This creates chunks that:
+
 - Split mid-sentence
 - Separate questions from answers
 - Break code blocks
@@ -113,10 +120,10 @@ function tokenize(text: string): string[] {
 }
 
 interface ChunkConfig {
-  minSize: number       // Minimum tokens per chunk
-  maxSize: number       // Maximum tokens per chunk
-  overlap: number       // Token overlap between chunks
-  splitOn: string[]     // Boundaries to split on
+  minSize: number // Minimum tokens per chunk
+  maxSize: number // Maximum tokens per chunk
+  overlap: number // Token overlap between chunks
+  splitOn: string[] // Boundaries to split on
 }
 
 function semanticChunk(
@@ -191,7 +198,7 @@ async function summarize(text: string): Promise<string> {
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: 'Summarize the following text in 1-2 sentences.' },
-      { role: 'user', content: text }
+      { role: 'user', content: text },
     ],
     max_tokens: 100,
   })
@@ -217,14 +224,13 @@ function splitBySections(content: string): { index: number; heading: string; con
 }
 
 function splitByParagraphs(content: string): { index: number; content: string }[] {
-  return content.split(/\n\n+/)
-    .filter(p => p.trim().length > 0)
+  return content
+    .split(/\n\n+/)
+    .filter((p) => p.trim().length > 0)
     .map((content, index) => ({ index, content: content.trim() }))
 }
 
-async function hierarchicalChunk(
-  document: Document
-): Promise<HierarchicalChunk[]> {
+async function hierarchicalChunk(document: Document): Promise<HierarchicalChunk[]> {
   const chunks: HierarchicalChunk[] = []
 
   // Document level (store summary)
@@ -270,13 +276,15 @@ async function hierarchicalChunk(
 }
 ```
 
-Now retrieval can return context: "This paragraph is from Section 2.1 of Document X, which covers [section summary]."
+Now retrieval can return context: "This paragraph is from Section 2.1 of Document X, which covers
+[section summary]."
 
 ---
 
 ## Retrieval That Doesn't Suck
 
-Pure vector search fails more often than you'd expect. "What's the cancellation policy?" might not match "Refunds are available within 30 days" semantically—different words, same concept.
+Pure vector search fails more often than you'd expect. "What's the cancellation policy?" might not
+match "Refunds are available within 30 days" semantically—different words, same concept.
 
 ### Hybrid Search
 
@@ -326,9 +334,11 @@ const vectorStore = {
     // Returns array of { id, chunk, score }
     return []
   },
-  upsert: async (chunks: Array<{ id: string; embedding: number[]; metadata: Record<string, unknown> }>) => {
+  upsert: async (
+    chunks: Array<{ id: string; embedding: number[]; metadata: Record<string, unknown> }>
+  ) => {
     // Store chunks in vector database
-  }
+  },
 }
 
 // Keyword index abstraction - implement with Elasticsearch, Meilisearch, or in-memory BM25
@@ -340,7 +350,7 @@ const keywordIndex = {
   },
   index: async (chunks: Chunk[]) => {
     // Index chunks for keyword search
-  }
+  },
 }
 
 // Cosine similarity for vector comparison
@@ -352,11 +362,11 @@ function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 interface RetrievalConfig {
-  vectorWeight: number    // Weight for semantic similarity
-  keywordWeight: number   // Weight for BM25/keyword match
-  initialK: number        // How many to retrieve initially
-  finalK: number          // How many to return after reranking
-  minScore: number        // Minimum relevance score
+  vectorWeight: number // Weight for semantic similarity
+  keywordWeight: number // Weight for BM25/keyword match
+  initialK: number // How many to retrieve initially
+  finalK: number // How many to return after reranking
+  minScore: number // Minimum relevance score
 }
 
 async function hybridRetrieve(
@@ -404,12 +414,13 @@ async function hybridRetrieve(
     .slice(0, config.initialK)
 
   // Rerank for final selection
-  const reranked = await rerank(query, sorted.map(s => s.chunk))
+  const reranked = await rerank(
+    query,
+    sorted.map((s) => s.chunk)
+  )
 
   // Filter by minimum score
-  return reranked
-    .filter(r => r.score >= config.minScore)
-    .slice(0, config.finalK)
+  return reranked.filter((r) => r.score >= config.minScore).slice(0, config.finalK)
 }
 ```
 
@@ -438,17 +449,14 @@ interface RerankResult {
   score: number
 }
 
-async function rerank(
-  query: string,
-  chunks: Chunk[]
-): Promise<RerankResult[]> {
+async function rerank(query: string, chunks: Chunk[]): Promise<RerankResult[]> {
   // Use a cross-encoder model for precise ranking
   // Options: Cohere Rerank, BGE Reranker, custom model
 
   const response = await cohereClient.rerank({
     model: 'rerank-english-v3.0',
     query: query,
-    documents: chunks.map(c => c.content),
+    documents: chunks.map((c) => c.content),
     top_n: chunks.length,
   })
 
@@ -474,9 +482,9 @@ async function generateAnswer(query: string, context: string): Promise<string> {
         content: `Answer the question based only on the provided context. If the context doesn't contain enough information, say so.
 
 Context:
-${context}`
+${context}`,
       },
-      { role: 'user', content: query }
+      { role: 'user', content: query },
     ],
     max_tokens: 500,
   })
@@ -507,13 +515,14 @@ async function queryWithConfidence(
   const avgScore = results.reduce((sum, r) => sum + r.score, 0) / results.length
   if (avgScore < 0.5) {
     return {
-      answer: "I found some potentially relevant information, but I'm not confident it answers your question. Here's what I found: ...",
+      answer:
+        "I found some potentially relevant information, but I'm not confident it answers your question. Here's what I found: ...",
       confidence: 'low',
     }
   }
 
   // Good results - generate answer
-  const context = results.map(r => r.chunk.content).join('\n\n')
+  const context = results.map((r) => r.chunk.content).join('\n\n')
   const answer = await generateAnswer(query, context)
 
   return {
@@ -527,7 +536,7 @@ async function queryWithConfidence(
 
 ## Debugging RAG
 
-When users report "the chatbot gave me wrong information," you need to understand *why*.
+When users report "the chatbot gave me wrong information," you need to understand _why_.
 
 Essential observability:
 
@@ -565,7 +574,7 @@ async function queryWithTracing(query: string): Promise<{
   const results = await hybridRetrieve(query)
   trace.retrievalLatency = Date.now() - retrievalStart
   trace.queryEmbedding = queryEmbedding
-  trace.retrievedChunks = results.map(r => ({
+  trace.retrievedChunks = results.map((r) => ({
     id: r.chunk.id,
     content: r.chunk.content,
     score: r.score,
@@ -617,9 +626,8 @@ function RAGDebugPanel({ trace }: { trace: RAGTrace }) {
       <div>
         <h3 className="font-medium">Timing</h3>
         <p className="text-sm">
-          Retrieval: {trace.retrievalLatency}ms |
-          Generation: {trace.generationLatency}ms |
-          Total: {trace.totalLatency}ms
+          Retrieval: {trace.retrievalLatency}ms | Generation: {trace.generationLatency}ms | Total:{' '}
+          {trace.totalLatency}ms
         </p>
       </div>
     </div>
@@ -627,7 +635,8 @@ function RAGDebugPanel({ trace }: { trace: RAGTrace }) {
 }
 ```
 
-Now when a user reports a bad answer, you can trace exactly what happened: what was retrieved, what scores they had, what context was sent to the LLM, and where it went wrong.
+Now when a user reports a bad answer, you can trace exactly what happened: what was retrieved, what
+scores they had, what context was sent to the LLM, and where it went wrong.
 
 ---
 
@@ -637,13 +646,13 @@ RAG at scale brings new challenges:
 
 ### Vector Database Selection
 
-| Database | Best For | Latency | Cost |
-|----------|----------|---------|------|
-| Pinecone | Managed, production | <50ms | $$ |
-| Qdrant | Self-hosted, flexible | <20ms | $ |
-| Weaviate | Hybrid search native | <30ms | $$ |
-| Chroma | Development, prototyping | <10ms | Free |
-| pgvector | PostgreSQL native | <100ms | $ |
+| Database | Best For                 | Latency | Cost |
+| -------- | ------------------------ | ------- | ---- |
+| Pinecone | Managed, production      | <50ms   | $$   |
+| Qdrant   | Self-hosted, flexible    | <20ms   | $    |
+| Weaviate | Hybrid search native     | <30ms   | $$   |
+| Chroma   | Development, prototyping | <10ms   | Free |
+| pgvector | PostgreSQL native        | <100ms  | $    |
 
 ### Production Checklist
 
@@ -671,4 +680,6 @@ Don't ship a demo as production. The failure modes will embarrass you.
 
 ---
 
-*Clarity Chat's RAG components include intelligent chunking, hybrid search, reranking, confidence scoring, and the VectorStoreViewer for debugging. Skip the months of production hardening. [See the RAG docs →](/docs/rag)*
+_Clarity Chat's RAG components include intelligent chunking, hybrid search, reranking, confidence
+scoring, and the VectorStoreViewer for debugging. Skip the months of production hardening.
+[See the RAG docs →](/docs/rag)_

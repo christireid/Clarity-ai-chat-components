@@ -1,6 +1,7 @@
 # Blog Post Diagrams
 
-Mermaid diagrams for embedding in blog posts. Copy these into your markdown files or render them with a Mermaid-compatible viewer.
+Mermaid diagrams for embedding in blog posts. Copy these into your markdown files or render them
+with a Mermaid-compatible viewer.
 
 ---
 
@@ -506,15 +507,15 @@ flowchart LR
 
 These diagrams fulfill the specifications in `GRAPHICS_REQUIREMENTS.md`:
 
-| Requirement | Diagram | Location |
-|-------------|---------|----------|
-| Response timing flow | Response Timing Flow | Post 1 |
-| SSE vs WebSocket | Protocol Comparison | Post 7 |
-| Context window strategies | Four Strategies | Post 8 |
-| Retry pattern | Exponential Backoff | Post 11 |
-| Message state machine | Message State Machine | Post 12 |
-| RAG pipeline | Complete RAG Architecture | Post 17 |
-| Agent loop | Agent Loop | Post 18 |
-| Security layers | Defense Layers | Post 19 |
-| Memory architecture | Memory Types | Post 20 |
-| Analytics pipeline | Metrics Pipeline | Post 24 |
+| Requirement               | Diagram                   | Location |
+| ------------------------- | ------------------------- | -------- |
+| Response timing flow      | Response Timing Flow      | Post 1   |
+| SSE vs WebSocket          | Protocol Comparison       | Post 7   |
+| Context window strategies | Four Strategies           | Post 8   |
+| Retry pattern             | Exponential Backoff       | Post 11  |
+| Message state machine     | Message State Machine     | Post 12  |
+| RAG pipeline              | Complete RAG Architecture | Post 17  |
+| Agent loop                | Agent Loop                | Post 18  |
+| Security layers           | Defense Layers            | Post 19  |
+| Memory architecture       | Memory Types              | Post 20  |
+| Analytics pipeline        | Metrics Pipeline          | Post 24  |

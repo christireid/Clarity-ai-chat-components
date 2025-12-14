@@ -1,20 +1,24 @@
 ---
-title: "AI Agents with Function Calling: From Concept to Code"
-description: "Build AI agents that take action. Tool definitions, agent loops, confirmation flows, and safe execution patterns."
-keywords: ["AI agents", "function calling", "tool use", "agent loop", "LLM tools"]
-author: "Clarity Chat Team"
+title: 'AI Agents with Function Calling: From Concept to Code'
+description:
+  'Build AI agents that take action. Tool definitions, agent loops, confirmation flows, and safe
+  execution patterns.'
+keywords: ['AI agents', 'function calling', 'tool use', 'agent loop', 'LLM tools']
+author: 'Clarity Chat Team'
 publishDate: 2025-03-06
 readingTime: 14
-category: "Advanced Patterns"
+category: 'Advanced Patterns'
 featured: true
-relatedPosts: ["17-rag-production", "19-prompt-injection-security", "20-ai-memory"]
+relatedPosts: ['17-rag-production', '19-prompt-injection-security', '20-ai-memory']
 ---
 
 # AI Agents with Function Calling: From Concept to Code
 
 ChatGPT can tell you how to book a flight. An AI agent can actually book it.
 
-The difference between a chatbot and an agent is action. Agents use tools—APIs, databases, file systems—to accomplish real tasks. Function calling is how you give AI the ability to do things, not just say things.
+The difference between a chatbot and an agent is action. Agents use tools—APIs, databases, file
+systems—to accomplish real tasks. Function calling is how you give AI the ability to do things, not
+just say things.
 
 Let's build an agent that actually works.
 
@@ -25,6 +29,7 @@ Let's build an agent that actually works.
 Before function calling, developers relied on prompt engineering and prayer:
 
 **The old way (parsing and hoping):**
+
 ```
 User: "What's the weather in Tokyo?"
 AI: "Let me check... The weather in Tokyo is sunny, 72°F"
@@ -34,6 +39,7 @@ Developer: *AI just made that up*
 The AI had no way to actually check the weather. It hallucinated an answer.
 
 **The new way (function calling):**
+
 ```
 User: "What's the weather in Tokyo?"
 AI: { "function": "get_weather", "arguments": { "city": "Tokyo" } }
@@ -41,9 +47,11 @@ Developer: *calls actual weather API, gets real data*
 AI: "The weather in Tokyo is currently 68°F and cloudy."
 ```
 
-Function calling is the AI saying: "I need to use this tool with these parameters." Your code executes the tool and feeds the real results back to the AI.
+Function calling is the AI saying: "I need to use this tool with these parameters." Your code
+executes the tool and feeds the real results back to the AI.
 
-The key insight: the AI doesn't execute functions—it *requests* them. Your code handles execution, security, and validation.
+The key insight: the AI doesn't execute functions—it _requests_ them. Your code handles execution,
+security, and validation.
 
 ---
 
@@ -83,75 +91,77 @@ Tools are described as JSON schemas that tell the AI what functions exist and ho
 ```typescript
 const tools = [
   {
-    type: "function",
+    type: 'function',
     function: {
-      name: "search_products",
-      description: "Search the product catalog by name, category, or price range. Use this when users ask about products, inventory, or want to find items.",
+      name: 'search_products',
+      description:
+        'Search the product catalog by name, category, or price range. Use this when users ask about products, inventory, or want to find items.',
       parameters: {
-        type: "object",
+        type: 'object',
         properties: {
           query: {
-            type: "string",
-            description: "Search query for product name or description"
+            type: 'string',
+            description: 'Search query for product name or description',
           },
           category: {
-            type: "string",
-            enum: ["electronics", "clothing", "home", "sports", "books"],
-            description: "Product category to filter by"
+            type: 'string',
+            enum: ['electronics', 'clothing', 'home', 'sports', 'books'],
+            description: 'Product category to filter by',
           },
           maxPrice: {
-            type: "number",
-            description: "Maximum price in dollars"
+            type: 'number',
+            description: 'Maximum price in dollars',
           },
           inStock: {
-            type: "boolean",
-            description: "Only show in-stock items"
-          }
+            type: 'boolean',
+            description: 'Only show in-stock items',
+          },
         },
-        required: ["query"]
-      }
-    }
+        required: ['query'],
+      },
+    },
   },
   {
-    type: "function",
+    type: 'function',
     function: {
-      name: "add_to_cart",
-      description: "Add a product to the user's shopping cart. Always confirm with the user before calling this.",
+      name: 'add_to_cart',
+      description:
+        "Add a product to the user's shopping cart. Always confirm with the user before calling this.",
       parameters: {
-        type: "object",
+        type: 'object',
         properties: {
           productId: {
-            type: "string",
-            description: "The product ID to add"
+            type: 'string',
+            description: 'The product ID to add',
           },
           quantity: {
-            type: "integer",
+            type: 'integer',
             minimum: 1,
             maximum: 10,
-            description: "Quantity to add (1-10)"
-          }
+            description: 'Quantity to add (1-10)',
+          },
         },
-        required: ["productId"]
-      }
-    }
+        required: ['productId'],
+      },
+    },
   },
   {
-    type: "function",
+    type: 'function',
     function: {
-      name: "get_order_status",
-      description: "Check the status of an existing order by order ID",
+      name: 'get_order_status',
+      description: 'Check the status of an existing order by order ID',
       parameters: {
-        type: "object",
+        type: 'object',
         properties: {
           orderId: {
-            type: "string",
-            description: "The order ID to check"
-          }
+            type: 'string',
+            description: 'The order ID to check',
+          },
         },
-        required: ["orderId"]
-      }
-    }
-  }
+        required: ['orderId'],
+      },
+    },
+  },
 ]
 ```
 
@@ -167,7 +177,8 @@ const tools = [
 
 ## The Agent Loop
 
-A single function call is useful. The real power comes from the agent loop—multiple rounds of function calls to complete complex tasks:
+A single function call is useful. The real power comes from the agent loop—multiple rounds of
+function calls to complete complex tasks:
 
 ```typescript
 import OpenAI from 'openai'
@@ -213,12 +224,12 @@ async function runAgentLoop(
   const messages: Message[] = [
     {
       role: 'system',
-      content: `You are a helpful shopping assistant. Use the available tools to help users find and purchase products. Always confirm before making purchases.`
+      content: `You are a helpful shopping assistant. Use the available tools to help users find and purchase products. Always confirm before making purchases.`,
     },
     {
       role: 'user',
-      content: userMessage
-    }
+      content: userMessage,
+    },
   ]
 
   for (let i = 0; i < maxIterations; i++) {
@@ -313,7 +324,7 @@ const toolHandlers = {
 // 4. Check order status
 // All in a single conversation
 const response = await runAgentLoop(
-  "Find me running shoes under $100, then add the Nike ones to my cart",
+  'Find me running shoes under $100, then add the Nike ones to my cart',
   tools,
   toolHandlers
 )
@@ -376,7 +387,7 @@ Some actions shouldn't execute automatically:
 
 ```typescript
 interface AgentConfig {
-  requireConfirmation: string[]  // Functions that need user OK
+  requireConfirmation: string[] // Functions that need user OK
   maxIterations: number
   timeout: number
 }
@@ -447,9 +458,7 @@ const response = await runAgentWithConfirmation(
   },
   async (action) => {
     // Show confirmation UI to user
-    return await showConfirmDialog(
-      `The assistant wants to ${action.description}. Allow?`
-    )
+    return await showConfirmDialog(`The assistant wants to ${action.description}. Allow?`)
   }
 )
 ```
@@ -467,9 +476,7 @@ async function executeToolSafely(
     const args = JSON.parse(toolCall.function.arguments)
     const result = await Promise.race([
       handler(args),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Tool timeout')), 10000)
-      ),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Tool timeout')), 10000)),
     ])
     return { success: true, result }
   } catch (error) {
@@ -488,9 +495,7 @@ messages.push({
   role: 'tool',
   tool_call_id: toolCall.id,
   content: JSON.stringify(
-    toolResult.success
-      ? toolResult.result
-      : { error: `Tool failed: ${toolResult.error}` }
+    toolResult.success ? toolResult.result : { error: `Tool failed: ${toolResult.error}` }
   ),
 })
 ```
@@ -512,7 +517,7 @@ import {
   ShoppingCart as ShoppingCartIcon,
   Package as PackageIcon,
   Wrench as WrenchIcon,
-  Loader2
+  Loader2,
 } from 'lucide-react'
 
 // Spinner component
@@ -530,7 +535,9 @@ interface Message {
 // Message bubble component
 function MessageBubble({ message }: { message: Message }) {
   return (
-    <div className={`p-3 rounded-lg ${message.role === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'} max-w-[80%]`}>
+    <div
+      className={`p-3 rounded-lg ${message.role === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'} max-w-[80%]`}
+    >
       {message.content}
     </div>
   )
@@ -540,14 +547,23 @@ function MessageBubble({ message }: { message: Message }) {
 function ChatInput({ onSend }: { onSend: (content: string) => void }) {
   const [input, setInput] = useState('')
   return (
-    <form onSubmit={e => { e.preventDefault(); onSend(input); setInput('') }} className="flex gap-2 p-4">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        onSend(input)
+        setInput('')
+      }}
+      className="flex gap-2 p-4"
+    >
       <input
         value={input}
-        onChange={e => setInput(e.target.value)}
+        onChange={(e) => setInput(e.target.value)}
         className="flex-1 p-2 border rounded"
         placeholder="Type a message..."
       />
-      <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Send</button>
+      <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
+        Send
+      </button>
     </form>
   )
 }
@@ -570,14 +586,16 @@ function AgentChat() {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
-        {messages.map(msg => (
+        {messages.map((msg) => (
           <MessageBubble key={msg.id} message={msg} />
         ))}
 
         {/* Show active tool calls */}
-        {toolCalls.filter(tc => tc.status !== 'success').map(tc => (
-          <ToolCallCard key={tc.id} toolCall={tc} />
-        ))}
+        {toolCalls
+          .filter((tc) => tc.status !== 'success')
+          .map((tc) => (
+            <ToolCallCard key={tc.id} toolCall={tc} />
+          ))}
       </div>
 
       <ChatInput onSend={handleSend} />
@@ -605,9 +623,7 @@ function ToolCallCard({ toolCall }: { toolCall: ToolCallDisplay }) {
         {icons[toolCall.name] || <WrenchIcon className="w-4 h-4" />}
         <span className="font-medium">{formatToolName(toolCall.name)}</span>
 
-        {toolCall.status === 'running' && (
-          <Spinner className="w-4 h-4" />
-        )}
+        {toolCall.status === 'running' && <Spinner className="w-4 h-4" />}
       </div>
 
       <div className="text-sm text-gray-600 mt-1">
@@ -620,11 +636,7 @@ function ToolCallCard({ toolCall }: { toolCall: ToolCallDisplay }) {
         </div>
       )}
 
-      {toolCall.error && (
-        <div className="text-sm text-red-700 mt-2">
-          Error: {toolCall.error}
-        </div>
-      )}
+      {toolCall.error && <div className="text-sm text-red-700 mt-2">Error: {toolCall.error}</div>}
     </div>
   )
 }
@@ -674,7 +686,7 @@ function formatToolResult(name: string, result: unknown): string {
 Function calling transforms chatbots into agents. The difference:
 
 - **Chatbot**: "Here's how to check your order status..."
-- **Agent**: *checks order status* "Your order shipped yesterday, arriving Thursday."
+- **Agent**: _checks order status_ "Your order shipped yesterday, arriving Thursday."
 
 The essentials:
 
@@ -689,4 +701,6 @@ Build agents that do things—not just talk about things.
 
 ---
 
-*Clarity Chat's `useAgentOrchestration` hook handles the agent loop, tool execution, confirmation flows, error recovery, and progress display. Build AI agents without building agent infrastructure. [See the agent docs →](/docs/agents)*
+_Clarity Chat's `useAgentOrchestration` hook handles the agent loop, tool execution, confirmation
+flows, error recovery, and progress display. Build AI agents without building agent infrastructure.
+[See the agent docs →](/docs/agents)_

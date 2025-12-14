@@ -1,12 +1,14 @@
 ---
-title: "The Loading State Nobody Talks About: Making Users Feel Progress"
-description: "Three proven patterns for streaming progress feedback in AI chat interfaces. Stop making users stare at spinners."
-keywords: ["loading states", "progress indicators", "streaming UI", "AI chat UX", "React patterns"]
-author: "Clarity Chat Team"
+title: 'The Loading State Nobody Talks About: Making Users Feel Progress'
+description:
+  'Three proven patterns for streaming progress feedback in AI chat interfaces. Stop making users
+  stare at spinners.'
+keywords: ['loading states', 'progress indicators', 'streaming UI', 'AI chat UX', 'React patterns']
+author: 'Clarity Chat Team'
 publishDate: 2025-01-09
 readingTime: 7
-category: "UX & Psychology"
-relatedPosts: ["01-psychology-of-response-timing", "06-typing-indicator-art", "12-optimistic-ui"]
+category: 'UX & Psychology'
+relatedPosts: ['01-psychology-of-response-timing', '06-typing-indicator-art', '12-optimistic-ui']
 ---
 
 # The Loading State Nobody Talks About: Making Users Feel Progress
@@ -17,9 +19,11 @@ Loading...
 
 Loading...
 
-*Refreshes page in frustration*
+_Refreshes page in frustration_
 
-Sound familiar? It's the most common failure pattern in AI chat applications, and almost nobody talks about it. We obsess over model selection, prompt engineering, and response quality—then throw a generic spinner at users and wonder why they abandon sessions.
+Sound familiar? It's the most common failure pattern in AI chat applications, and almost nobody
+talks about it. We obsess over model selection, prompt engineering, and response quality—then throw
+a generic spinner at users and wonder why they abandon sessions.
 
 ---
 
@@ -35,11 +39,14 @@ Here's what happens in most AI chat apps:
 6. User has no idea if it's working or broken
 7. After 8 seconds, they refresh or leave
 
-The spinner tells them exactly nothing. Is it connecting? Processing? Streaming? Stuck? Crashed? There's no way to know.
+The spinner tells them exactly nothing. Is it connecting? Processing? Streaming? Stuck? Crashed?
+There's no way to know.
 
-AI responses are unpredictable. Sometimes they take 2 seconds, sometimes 20. Users need context—not a spinning circle that means "something is happening, maybe."
+AI responses are unpredictable. Sometimes they take 2 seconds, sometimes 20. Users need context—not
+a spinning circle that means "something is happening, maybe."
 
-In testing, I've seen apps where 47% fewer users abandoned mid-generation when we replaced spinners with contextual loading states. Same response times. Different perception.
+In testing, I've seen apps where 47% fewer users abandoned mid-generation when we replaced spinners
+with contextual loading states. Same response times. Different perception.
 
 ---
 
@@ -51,7 +58,8 @@ Not all loading is the same, and each type needs different treatment.
 
 Best for: Showing layout before content arrives, conversation history loading, initial page load.
 
-Skeleton screens show the structure of what's coming. Gray rectangles where messages will appear. Pulsing placeholders that indicate "content goes here soon."
+Skeleton screens show the structure of what's coming. Gray rectangles where messages will appear.
+Pulsing placeholders that indicate "content goes here soon."
 
 ```tsx
 function MessageSkeleton() {
@@ -67,19 +75,18 @@ function MessageSkeleton() {
 }
 ```
 
-Don't use skeleton screens for active AI generation—they imply passive loading, not active processing.
+Don't use skeleton screens for active AI generation—they imply passive loading, not active
+processing.
 
 ### 2. Progress Indicators
 
 Best for: Known-duration tasks, file uploads, streaming with token counts.
 
-When you know (or can estimate) how far along you are, show progress. A progress bar filling from 0-100% feels faster than a spinner, even at the same duration.
+When you know (or can estimate) how far along you are, show progress. A progress bar filling from
+0-100% feels faster than a spinner, even at the same duration.
 
 ```tsx
-function StreamingProgress({ tokens, estimated }: {
-  tokens: number
-  estimated: number
-}) {
+function StreamingProgress({ tokens, estimated }: { tokens: number; estimated: number }) {
   const progress = Math.min((tokens / estimated) * 100, 100)
 
   return (
@@ -99,15 +106,18 @@ function StreamingProgress({ tokens, estimated }: {
 }
 ```
 
-For AI streaming, token counts work well as progress. Most users don't know what tokens are, but they understand "234 / ~450" means "about halfway."
+For AI streaming, token counts work well as progress. Most users don't know what tokens are, but
+they understand "234 / ~450" means "about halfway."
 
 ### 3. Phase Indicators
 
 Best for: Multi-step AI processes, anything taking more than 3 seconds.
 
-Phase indicators show *what's happening right now*. Each phase change resets the user's patience clock. Instead of one 10-second wait, you create three 3-second waits.
+Phase indicators show _what's happening right now_. Each phase change resets the user's patience
+clock. Instead of one 10-second wait, you create three 3-second waits.
 
-The psychology is powerful: "Connecting" → "Processing" → "Generating" feels active and purposeful. A single spinner for 10 seconds feels like something might be stuck.
+The psychology is powerful: "Connecting" → "Processing" → "Generating" feels active and purposeful.
+A single spinner for 10 seconds feels like something might be stuck.
 
 ---
 
@@ -154,13 +164,9 @@ function LoadingState({ phase, tokens, estimatedTokens, onCancel }: LoadingState
   return (
     <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-100 rounded-full animate-pulse">
-          {config.icon}
-        </div>
+        <div className="p-2 bg-blue-100 rounded-full animate-pulse">{config.icon}</div>
         <div>
-          <p className="text-sm font-medium text-blue-900">
-            {config.message}
-          </p>
+          <p className="text-sm font-medium text-blue-900">{config.message}</p>
           {phase === 'generating' && tokens !== undefined && (
             <p className="text-xs text-blue-600">
               {tokens} tokens
@@ -171,10 +177,7 @@ function LoadingState({ phase, tokens, estimatedTokens, onCancel }: LoadingState
       </div>
 
       {config.showCancel && onCancel && (
-        <button
-          onClick={onCancel}
-          className="text-sm text-blue-600 hover:text-blue-800"
-        >
+        <button onClick={onCancel} className="text-sm text-blue-600 hover:text-blue-800">
           Cancel
         </button>
       )}
@@ -197,7 +200,9 @@ function estimateTokens(text: string): number {
 function MessageList({ messages }: { messages: string[] }) {
   return (
     <div className="flex flex-col gap-2">
-      {messages.map((msg, i) => <div key={i}>{msg}</div>)}
+      {messages.map((msg, i) => (
+        <div key={i}>{msg}</div>
+      ))}
     </div>
   )
 }
@@ -206,8 +211,14 @@ function MessageList({ messages }: { messages: string[] }) {
 function ChatInput({ onSend }: { onSend: (content: string) => void }) {
   const [input, setInput] = useState('')
   return (
-    <form onSubmit={e => { e.preventDefault(); onSend(input); setInput('') }}>
-      <input value={input} onChange={e => setInput(e.target.value)} />
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        onSend(input)
+        setInput('')
+      }}
+    >
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
       <button type="submit">Send</button>
     </form>
   )
@@ -222,7 +233,7 @@ function Chat() {
 
   // Helper to append text to the current streaming message
   const appendToMessage = (chunk: string) => {
-    setCurrentMessage(prev => prev + chunk)
+    setCurrentMessage((prev) => prev + chunk)
   }
 
   const sendMessage = async (content: string) => {
@@ -248,12 +259,12 @@ function Chat() {
       if (done) break
 
       const chunk = new TextDecoder().decode(value)
-      setTokens(prev => prev + estimateTokens(chunk))
+      setTokens((prev) => prev + estimateTokens(chunk))
       appendToMessage(chunk)
     }
 
     // Finalize the message
-    setMessages(prev => [...prev, currentMessage])
+    setMessages((prev) => [...prev, currentMessage])
     setPhase('complete')
   }
 
@@ -306,6 +317,7 @@ const message = useTimeoutMessage(
 ```
 
 The escalation pattern:
+
 - 0-5s: "Connecting to AI..."
 - 5-15s: "Still connecting... This is taking longer than usual."
 - 15-30s: "Connection slow. Still trying..."
@@ -317,9 +329,11 @@ Each update tells users you're aware of the delay. Silence at 15 seconds feels l
 
 ## The Cancel Button Is Not Optional
 
-If something can take more than 3 seconds, users need a way to stop it. An AI generating a 2,000-word response that the user didn't want? They should be able to cancel.
+If something can take more than 3 seconds, users need a way to stop it. An AI generating a
+2,000-word response that the user didn't want? They should be able to cancel.
 
-This isn't just UX—it saves API costs. A cancel button that actually works (by aborting the fetch or SSE connection) prevents wasted tokens.
+This isn't just UX—it saves API costs. A cancel button that actually works (by aborting the fetch or
+SSE connection) prevents wasted tokens.
 
 ```tsx
 function ChatWithCancel() {
@@ -347,15 +361,7 @@ function ChatWithCancel() {
     abortControllerRef.current?.abort()
   }
 
-  return (
-    <div>
-      {isLoading && (
-        <button onClick={handleCancel}>
-          Stop generating
-        </button>
-      )}
-    </div>
-  )
+  return <div>{isLoading && <button onClick={handleCancel}>Stop generating</button>}</div>
 }
 ```
 
@@ -365,13 +371,17 @@ function ChatWithCancel() {
 
 Why do these patterns work?
 
-1. **Specific messages feel faster.** "Analyzing your question" feels more active than "Loading." Active feels faster than passive.
+1. **Specific messages feel faster.** "Analyzing your question" feels more active than "Loading."
+   Active feels faster than passive.
 
-2. **Progress bars beat spinners.** Seeing a bar move from 20% to 40% gives a sense of momentum. Spinners provide no information.
+2. **Progress bars beat spinners.** Seeing a bar move from 20% to 40% gives a sense of momentum.
+   Spinners provide no information.
 
-3. **Phase changes reset patience.** Going from "Processing" to "Generating" feels like progress, even if total time is the same.
+3. **Phase changes reset patience.** Going from "Processing" to "Generating" feels like progress,
+   even if total time is the same.
 
-4. **ETAs reduce anxiety.** "About 5 seconds remaining" manages expectations. Unknown waits feel longer than known waits.
+4. **ETAs reduce anxiety.** "About 5 seconds remaining" manages expectations. Unknown waits feel
+   longer than known waits.
 
 5. **Cancel buttons build trust.** Users feel in control. Control reduces frustration.
 
@@ -392,9 +402,12 @@ The AI didn't get faster. Users just understood what was happening.
 
 ## The Takeaway
 
-Loading states aren't an afterthought—they're core UX. For AI applications where response times are variable and unpredictable, contextual loading is the difference between users who trust your app and users who assume it's broken.
+Loading states aren't an afterthought—they're core UX. For AI applications where response times are
+variable and unpredictable, contextual loading is the difference between users who trust your app
+and users who assume it's broken.
 
 Three rules:
+
 1. Never show a naked spinner for AI operations
 2. Update the message every few seconds on long waits
 3. Always provide a cancel option
@@ -403,4 +416,6 @@ Your users will thank you by not leaving.
 
 ---
 
-*Tired of building loading state logic from scratch? Clarity Chat's `LoadingStates` components handle phase transitions, timeouts, cancellation, and progress tracking out of the box. [See how it works →](/docs/components/loading-states)*
+_Tired of building loading state logic from scratch? Clarity Chat's `LoadingStates` components
+handle phase transitions, timeouts, cancellation, and progress tracking out of the box.
+[See how it works →](/docs/components/loading-states)_

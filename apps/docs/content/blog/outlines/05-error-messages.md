@@ -1,6 +1,7 @@
 # Blog Post 5: Error Messages That Don't Make Users Rage-Quit
 
 ## Meta Information
+
 - **Reading Time:** 4 minutes (~1,000 words)
 - **Category:** UX & Design
 - **Primary Keyword:** AI chatbot error handling
@@ -10,9 +11,11 @@
 
 ## Hook / Opening (100 words)
 
-**Opening line:** "'Error: Something went wrong.' Congratulations, you've just told your user absolutely nothing."
+**Opening line:** "'Error: Something went wrong.' Congratulations, you've just told your user
+absolutely nothing."
 
-The scenario: User types a thoughtful 200-word question. Clicks send. Waits. Gets "Error." Message is gone. This happens in 72% of AI chat apps I've tested.
+The scenario: User types a thoughtful 200-word question. Clicks send. Waits. Gets "Error." Message
+is gone. This happens in 72% of AI chat apps I've tested.
 
 Your error messages are either building trust or destroying it. There's no neutral ground.
 
@@ -23,6 +26,7 @@ Your error messages are either building trust or destroying it. There's no neutr
 ### Content:
 
 **Hall of Shame examples:**
+
 - "Error: Something went wrong"
 - "Request failed"
 - "Error 500"
@@ -30,12 +34,14 @@ Your error messages are either building trust or destroying it. There's no neutr
 - Just... nothing happens
 
 **Why these fail:**
+
 - No context (what failed?)
 - No solution (what now?)
 - No reassurance (is my data lost?)
 - Technical jargon (what's a 500?)
 
 ### Visual:
+
 ```
 [VISUAL 1: "Hall of Shame" mockups]
 4 example error states showing bad patterns:
@@ -70,6 +76,7 @@ Your error messages are either building trust or destroying it. There's no neutr
    - Good: "Your message has been saved"
 
 ### Visual:
+
 ```
 [VISUAL 2: Annotated error message]
 "Unable to send message"  ← What happened
@@ -86,15 +93,16 @@ Your error messages are either building trust or destroying it. There's no neutr
 
 Different errors need different handling:
 
-| Type | Example | Tone | Action |
-|------|---------|------|--------|
-| Network | No internet | Calm | Auto-retry |
-| Rate Limit | Too many requests | Informative | Countdown |
-| Server | AI down | Apologetic | Notify when back |
-| Auth | Session expired | Urgent | Re-login |
-| Validation | Empty message | Helpful | Focus input |
+| Type       | Example           | Tone        | Action           |
+| ---------- | ----------------- | ----------- | ---------------- |
+| Network    | No internet       | Calm        | Auto-retry       |
+| Rate Limit | Too many requests | Informative | Countdown        |
+| Server     | AI down           | Apologetic  | Notify when back |
+| Auth       | Session expired   | Urgent      | Re-login         |
+| Validation | Empty message     | Helpful     | Focus input      |
 
 ### Code Example:
+
 ```tsx
 import { useErrorRecovery, RetryButton } from '@clarity-chat/react'
 
@@ -113,12 +121,7 @@ function ChatWithErrors() {
         <p className="error-message">{getErrorMessage(errorType)}</p>
         <p className="error-hint">{getErrorHint(errorType)}</p>
       </div>
-      {canRetry && (
-        <RetryButton
-          countdown={retryIn}
-          onClick={handleRetry}
-        />
-      )}
+      {canRetry && <RetryButton countdown={retryIn} onClick={handleRetry} />}
     </div>
   )
 }
@@ -133,12 +136,14 @@ function ChatWithErrors() {
 **The cardinal sin:** Losing the user's message on error.
 
 **The solution:**
+
 1. Optimistic UI: Show message immediately
 2. Queue failed messages locally
 3. Auto-retry in background
 4. Show clear status: sending → failed → retry
 
 ### Code Example:
+
 ```tsx
 import { useOptimisticMessage } from '@clarity-chat/react'
 
@@ -149,7 +154,7 @@ function SafeChat() {
     // Message appears immediately
     const tempId = addOptimisticMessage({
       content,
-      status: 'sending'
+      status: 'sending',
     })
 
     try {
@@ -159,7 +164,7 @@ function SafeChat() {
       // Message stays visible with failed status
       updateMessage(tempId, {
         status: 'failed',
-        error: error.message
+        error: error.message,
       })
       // User can retry without retyping
     }
@@ -168,6 +173,7 @@ function SafeChat() {
 ```
 
 ### Visual:
+
 ```
 [VISUAL 3: Message status flow]
 Timeline showing:
@@ -183,12 +189,14 @@ Timeline showing:
 ### Content:
 
 **Retry button requirements:**
+
 - Show attempts remaining
 - Countdown to next retry
 - Different messaging per attempt
 - Know when to give up
 
 ### Code Example:
+
 ```tsx
 <RetryButton
   onRetry={handleRetry}
@@ -196,9 +204,9 @@ Timeline showing:
   maxAttempts={3}
   countdown={15}
   messages={{
-    1: "Try again",
-    2: "Still not working? Try once more",
-    3: "Last attempt"
+    1: 'Try again',
+    2: 'Still not working? Try once more',
+    3: 'Last attempt',
   }}
   onMaxAttemptsReached={() => {
     showContactSupport()
@@ -211,13 +219,17 @@ Timeline showing:
 ## Conclusion (80 words)
 
 ### Key takeaways:
+
 1. Generic errors destroy trust
 2. Include: what, why, action, reassurance
 3. Never lose user data
 4. Classify errors, handle differently
 
 ### Subtle CTA:
-"Clarity Chat's error handling system automatically classifies errors, preserves user data, implements exponential backoff, and shows contextual recovery options. Your users never see 'Something went wrong' again."
+
+"Clarity Chat's error handling system automatically classifies errors, preserves user data,
+implements exponential backoff, and shows contextual recovery options. Your users never see
+'Something went wrong' again."
 
 ---
 

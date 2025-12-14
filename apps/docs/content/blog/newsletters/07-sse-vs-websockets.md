@@ -10,14 +10,15 @@ But for AI chat streaming? You probably don't need them.
 
 ## The Key Insight
 
-AI streaming is **fundamentally one-way**: server to client. SSE (Server-Sent Events) was designed exactly for this.
+AI streaming is **fundamentally one-way**: server to client. SSE (Server-Sent Events) was designed
+exactly for this.
 
-| Feature | SSE | WebSocket |
-|---------|-----|-----------|
-| Memory per connection | ~2KB | ~8KB |
-| Reconnection | Automatic | Manual |
-| Proxy compatibility | Excellent | Often problematic |
-| Complexity | Low | Medium |
+| Feature               | SSE       | WebSocket         |
+| --------------------- | --------- | ----------------- |
+| Memory per connection | ~2KB      | ~8KB              |
+| Reconnection          | Automatic | Manual            |
+| Proxy compatibility   | Excellent | Often problematic |
+| Complexity            | Low       | Medium            |
 
 ```tsx
 // SSE streaming - simple and effective
@@ -45,6 +46,7 @@ async function streamChat(message: string) {
 ```
 
 **When WebSockets DO make sense:**
+
 - Multi-user chat rooms
 - Real-time collaborative editing
 - High-frequency bidirectional data
@@ -55,4 +57,5 @@ async function streamChat(message: string) {
 
 [Read the full article →](/blog/sse-vs-websockets)
 
-*Clarity Chat provides both `useSSEStream` and `useWebSocketStream` hooks—use the right tool for your use case.*
+_Clarity Chat provides both `useSSEStream` and `useWebSocketStream` hooks—use the right tool for
+your use case._

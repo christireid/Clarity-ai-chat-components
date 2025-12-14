@@ -1,21 +1,27 @@
 ---
-title: "Prompt Caching: The Feature Most Developers Ignore"
-description: "Leverage OpenAI and Anthropic prompt caching for automatic discounts. Structure prompts correctly to maximize cache hits."
-keywords: ["prompt caching", "OpenAI caching", "Anthropic caching", "API optimization", "cost savings"]
-author: "Clarity Chat Team"
+title: 'Prompt Caching: The Feature Most Developers Ignore'
+description:
+  'Leverage OpenAI and Anthropic prompt caching for automatic discounts. Structure prompts correctly
+  to maximize cache hits.'
+keywords:
+  ['prompt caching', 'OpenAI caching', 'Anthropic caching', 'API optimization', 'cost savings']
+author: 'Clarity Chat Team'
 publishDate: 2025-02-20
 readingTime: 9
-category: "Cost & Performance"
-relatedPosts: ["13-cut-gpt4-bill", "10-token-counting", "08-context-windows"]
+category: 'Cost & Performance'
+relatedPosts: ['13-cut-gpt4-bill', '10-token-counting', '08-context-windows']
 ---
 
 # Prompt Caching: The Feature Most Developers Ignore
 
-> **Pricing Note:** Caching discounts and requirements vary by provider and may change. Verify current caching policies on OpenAI, Anthropic, and Google's documentation before implementation.
+> **Pricing Note:** Caching discounts and requirements vary by provider and may change. Verify
+> current caching policies on OpenAI, Anthropic, and Google's documentation before implementation.
 
 You're paying full price for the same system prompt 50,000 times a day.
 
-OpenAI, Anthropic, and Google all offer prompt caching—automatic discounts when your prompts share prefixes. Most developers don't know it exists. Those who do often structure their prompts wrong and miss the savings entirely.
+OpenAI, Anthropic, and Google all offer prompt caching—automatic discounts when your prompts share
+prefixes. Most developers don't know it exists. Those who do often structure their prompts wrong and
+miss the savings entirely.
 
 Let's fix that.
 
@@ -23,15 +29,16 @@ Let's fix that.
 
 ## What Is Prompt Caching?
 
-When you send requests with identical prefixes (like system prompts), AI providers cache that prefix and charge less for subsequent requests.
+When you send requests with identical prefixes (like system prompts), AI providers cache that prefix
+and charge less for subsequent requests.
 
 **How it works:**
 
-| Provider | Discount | Min Length | Cache TTL |
-|----------|----------|------------|-----------|
-| OpenAI | 50% off input | 1,024 tokens | 5-10 min |
-| Anthropic | 90% off cached | 1,024 tokens | 5 min |
-| Google | 75% off | 32,000 tokens | 1 hour |
+| Provider  | Discount       | Min Length    | Cache TTL |
+| --------- | -------------- | ------------- | --------- |
+| OpenAI    | 50% off input  | 1,024 tokens  | 5-10 min  |
+| Anthropic | 90% off cached | 1,024 tokens  | 5 min     |
+| Google    | 75% off        | 32,000 tokens | 1 hour    |
 
 Let's do the math:
 
@@ -39,12 +46,13 @@ Let's do the math:
 - User message: 100 tokens
 - Total: 1,600 tokens
 
-Without caching: Pay full price for 1,600 tokens
-With caching: Pay full price for 100 tokens + 50% for 1,500 = 850 effective tokens
+Without caching: Pay full price for 1,600 tokens With caching: Pay full price for 100 tokens + 50%
+for 1,500 = 850 effective tokens
 
 That's a 47% reduction just from prompt structure.
 
-At scale—say, 50,000 requests per day—that's the difference between $75/day and $40/day. Over a year: $12,775 saved.
+At scale—say, 50,000 requests per day—that's the difference between $75/day and $40/day. Over a
+year: $12,775 saved.
 
 ---
 
@@ -65,7 +73,8 @@ You are a helpful assistant for TechCorp...
 `
 ```
 
-This prompt will *never* cache because every request has a different prefix. The user name and date change, so the prefix changes.
+This prompt will _never_ cache because every request has a different prefix. The user name and date
+change, so the prefix changes.
 
 ```typescript
 // GOOD: Static content first
@@ -86,7 +95,7 @@ Now the first 1,200+ tokens are identical across requests. Cache hit.
 
 ```typescript
 // BAD: Under 1,024 tokens won't cache
-const prompt = "You are a helpful assistant."  // ~10 tokens
+const prompt = 'You are a helpful assistant.' // ~10 tokens
 ```
 
 Prompt caching only kicks in at 1,024+ tokens. If your system prompt is shorter, you get no benefit.
@@ -120,10 +129,11 @@ Q: What payment methods do you accept?
 A: We accept all major credit cards, PayPal, and bank transfers for annual plans.
 
 [Continue with more examples, edge cases, formatting guidelines...]
-`  // ~1,500 tokens
+` // ~1,500 tokens
 ```
 
-The expanded prompt isn't padding—it's genuinely useful context that improves response quality AND enables caching.
+The expanded prompt isn't padding—it's genuinely useful context that improves response quality AND
+enables caching.
 
 ### Mistake 3: Unnecessary Variation
 
@@ -224,7 +234,8 @@ function buildPrompt(context: UserContext): string {
 
 The structure:
 
-1. **Static prefix (1,200+ tokens)**: Role, guidelines, examples, product info—anything that doesn't change between requests
+1. **Static prefix (1,200+ tokens)**: Role, guidelines, examples, product info—anything that doesn't
+   change between requests
 2. **Separator**: Clear divider between cached and dynamic content
 3. **Dynamic suffix**: User-specific context, timestamps, session data
 
@@ -278,7 +289,7 @@ function trackCacheStats(stats: CacheStats, response: ChatCompletion) {
   stats.uncachedTokens += uncached
 
   // Calculate savings (50% discount on cached tokens)
-  const savingsPerToken = 0.0025 / 1000 * 0.5 // GPT-4o input price * discount
+  const savingsPerToken = (0.0025 / 1000) * 0.5 // GPT-4o input price * discount
   stats.estimatedSavings += cached * savingsPerToken
 
   return stats
@@ -286,7 +297,7 @@ function trackCacheStats(stats: CacheStats, response: ChatCompletion) {
 
 // Report weekly
 console.log({
-  cacheHitRate: `${(stats.cachedTokens / (stats.cachedTokens + stats.uncachedTokens) * 100).toFixed(1)}%`,
+  cacheHitRate: `${((stats.cachedTokens / (stats.cachedTokens + stats.uncachedTokens)) * 100).toFixed(1)}%`,
   estimatedMonthlySavings: `$${(stats.estimatedSavings * 4).toFixed(2)}`,
 })
 ```
@@ -295,7 +306,8 @@ console.log({
 
 ## Anthropic's Even Better Caching
 
-Anthropic offers 90% savings on cached tokens—significantly better than OpenAI's 50%. You can also explicitly mark content for caching:
+Anthropic offers 90% savings on cached tokens—significantly better than OpenAI's 50%. You can also
+explicitly mark content for caching:
 
 ```typescript
 import Anthropic from '@anthropic-ai/sdk'
@@ -309,12 +321,10 @@ const response = await anthropic.messages.create({
     {
       type: 'text',
       text: STATIC_PREFIX,
-      cache_control: { type: 'ephemeral' }  // Explicit cache hint
-    }
+      cache_control: { type: 'ephemeral' }, // Explicit cache hint
+    },
   ],
-  messages: [
-    { role: 'user', content: userMessage }
-  ]
+  messages: [{ role: 'user', content: userMessage }],
 })
 
 // Check cache usage
@@ -325,18 +335,21 @@ console.log({
 })
 ```
 
-At 90% discount, Anthropic's caching is extremely cost-effective for applications with long system prompts.
+At 90% discount, Anthropic's caching is extremely cost-effective for applications with long system
+prompts.
 
 ---
 
 ## Cache TTL Considerations
 
 Caches expire:
+
 - **OpenAI**: 5-10 minutes
 - **Anthropic**: 5 minutes
 - **Google**: 1 hour
 
-For high-traffic applications, this is fine—you'll get cache hits continuously. For low-traffic applications, you might not benefit as much.
+For high-traffic applications, this is fine—you'll get cache hits continuously. For low-traffic
+applications, you might not benefit as much.
 
 Ways to maximize TTL benefits:
 
@@ -359,9 +372,11 @@ const SHARED_SYSTEM_PROMPT = buildSystemPrompt() // Same for all users
 
 ## The Takeaway
 
-Prompt caching is free money. You're already paying for system prompts on every request—structuring them correctly can cut those costs by 50-90%.
+Prompt caching is free money. You're already paying for system prompts on every request—structuring
+them correctly can cut those costs by 50-90%.
 
 The rules:
+
 1. **Static content first, dynamic content last** — Caches work on prefixes
 2. **Minimum 1,024 tokens** — Shorter prompts don't cache
 3. **Measure your cache hit rate** — Verify optimization is working
@@ -371,4 +386,6 @@ Most developers don't know this feature exists. Now you do. Go restructure your 
 
 ---
 
-*Clarity Chat's token tracking includes cache hit monitoring, showing you exactly how much you're saving and where to optimize further. [See the token tracking docs →](/docs/hooks/use-token-tracker)*
+_Clarity Chat's token tracking includes cache hit monitoring, showing you exactly how much you're
+saving and where to optimize further.
+[See the token tracking docs →](/docs/hooks/use-token-tracker)_

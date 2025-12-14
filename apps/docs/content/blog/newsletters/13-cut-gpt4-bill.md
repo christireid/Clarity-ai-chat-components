@@ -1,6 +1,6 @@
 # I Cut My GPT-4 Bill by 60%
 
-*Newsletter version of: Cost Optimization Strategies*
+_Newsletter version of: Cost Optimization Strategies_
 
 ---
 
@@ -10,7 +10,8 @@ Same features. Same quality. Here's exactly what we changed.
 
 ## The Problem
 
-We were using GPT-4 for *everything*. User says "hello"? GPT-4. Asks what time the store closes? GPT-4. Complex legal analysis? Also GPT-4.
+We were using GPT-4 for _everything_. User says "hello"? GPT-4. Asks what time the store closes?
+GPT-4. Complex legal analysis? Also GPT-4.
 
 Premium prices for tasks that didn't need premium models.
 
@@ -39,7 +40,8 @@ Route simple → mini, standard → GPT-4o, complex → GPT-4.
 
 Same questions get asked repeatedly. Cache the responses.
 
-Use embedding similarity—if a new question is >95% similar to a cached one, return the cached answer.
+Use embedding similarity—if a new question is >95% similar to a cached one, return the cached
+answer.
 
 **Hit rate:** 23% of queries served from cache.
 
@@ -52,20 +54,23 @@ Long conversations accumulate tokens. Instead of sending full history, summarize
 ## The Results
 
 After 3 months:
+
 - Before: $8,400/month
 - After: $3,200/month
 - **Savings: 62%**
 
 ## Key Takeaway
 
-Measure first, optimize second. Most AI apps are overspending on simple queries that don't need premium models.
+Measure first, optimize second. Most AI apps are overspending on simple queries that don't need
+premium models.
 
 ---
 
-**Read the full post** for complete implementation code including semantic caching, response streaming cutoffs, and detailed cost tracking.
+**Read the full post** for complete implementation code including semantic caching, response
+streaming cutoffs, and detailed cost tracking.
 
 [Read full post →]
 
 ---
 
-*Pricing note: API costs change frequently. Verify current rates at openai.com/pricing.*
+_Pricing note: API costs change frequently. Verify current rates at openai.com/pricing._

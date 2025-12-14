@@ -8,31 +8,31 @@ Reference for blog post CTAs and their corresponding documentation pages.
 
 All documentation links used across blog posts:
 
-| Blog Post | Link Path | Required Doc Page |
-|-----------|-----------|-------------------|
-| 01 | `/docs/hooks/use-realistic-typing` | Hook: useRealisticTyping |
-| 02 | `/docs/components/loading-states` | Component: LoadingStates |
-| 03 | `/docs/theming` | Theming guide |
-| 04 | `/docs/accessibility` | Accessibility features |
-| 05 | `/docs/error-handling` | Error handling guide |
-| 06 | `/docs/components/thinking-indicator` | Component: ThinkingIndicator |
-| 07 | `/docs/hooks/streaming` | Hooks: useStreamingSSE, useStreamingWebSocket |
-| 08 | `/docs/hooks/context-management` | Hooks: useTokenTracker, useSlidingContextManager |
-| 09 | `/docs/getting-started` | Quick start guide |
-| 10 | `/docs/hooks/use-token-tracker` | Hook: useTokenTracker |
-| 11 | `/docs/hooks/use-error-recovery` | Hook: useErrorRecovery |
-| 12 | `/docs/hooks/use-optimistic-message` | Hook: useOptimisticMessage |
-| 13 | `/docs/cost-optimization` | Cost optimization guide |
-| 14 | `/docs/hooks/use-token-tracker` | Hook: useTokenTracker (cache monitoring) |
-| 15 | `/docs/hooks/use-model-router` | Hook: useModelRouter |
-| 17 | `/docs/rag` | RAG integration guide |
-| 18 | `/docs/agents` | Agent orchestration guide |
-| 19 | `/docs/security` | Security guide |
-| 20 | `/docs/memory` | Memory management guide |
-| 21 | `/docs/getting-started` | Quick start guide |
-| 22 | `/docs/components` | Component library index |
-| 23 | `/docs/components` | Component library index |
-| 24 | `/docs/analytics` | Analytics integration guide |
+| Blog Post | Link Path                             | Required Doc Page                                |
+| --------- | ------------------------------------- | ------------------------------------------------ |
+| 01        | `/docs/hooks/use-realistic-typing`    | Hook: useRealisticTyping                         |
+| 02        | `/docs/components/loading-states`     | Component: LoadingStates                         |
+| 03        | `/docs/theming`                       | Theming guide                                    |
+| 04        | `/docs/accessibility`                 | Accessibility features                           |
+| 05        | `/docs/error-handling`                | Error handling guide                             |
+| 06        | `/docs/components/thinking-indicator` | Component: ThinkingIndicator                     |
+| 07        | `/docs/hooks/streaming`               | Hooks: useStreamingSSE, useStreamingWebSocket    |
+| 08        | `/docs/hooks/context-management`      | Hooks: useTokenTracker, useSlidingContextManager |
+| 09        | `/docs/getting-started`               | Quick start guide                                |
+| 10        | `/docs/hooks/use-token-tracker`       | Hook: useTokenTracker                            |
+| 11        | `/docs/hooks/use-error-recovery`      | Hook: useErrorRecovery                           |
+| 12        | `/docs/hooks/use-optimistic-message`  | Hook: useOptimisticMessage                       |
+| 13        | `/docs/cost-optimization`             | Cost optimization guide                          |
+| 14        | `/docs/hooks/use-token-tracker`       | Hook: useTokenTracker (cache monitoring)         |
+| 15        | `/docs/hooks/use-model-router`        | Hook: useModelRouter                             |
+| 17        | `/docs/rag`                           | RAG integration guide                            |
+| 18        | `/docs/agents`                        | Agent orchestration guide                        |
+| 19        | `/docs/security`                      | Security guide                                   |
+| 20        | `/docs/memory`                        | Memory management guide                          |
+| 21        | `/docs/getting-started`               | Quick start guide                                |
+| 22        | `/docs/components`                    | Component library index                          |
+| 23        | `/docs/components`                    | Component library index                          |
+| 24        | `/docs/analytics`                     | Analytics integration guide                      |
 
 ---
 

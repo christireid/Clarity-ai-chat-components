@@ -1,22 +1,26 @@
 ---
-title: "I Cut My GPT-4 Bill by 60% (Real Strategies, Real Numbers)"
-description: "Real cost optimization from $8,400 to $3,200/month. Model routing, semantic caching, and context pruning with production code."
-keywords: ["GPT-4 costs", "API optimization", "cost reduction", "model routing", "semantic caching"]
-author: "Clarity Chat Team"
+title: 'I Cut My GPT-4 Bill by 60% (Real Strategies, Real Numbers)'
+description:
+  'Real cost optimization from $8,400 to $3,200/month. Model routing, semantic caching, and context
+  pruning with production code.'
+keywords: ['GPT-4 costs', 'API optimization', 'cost reduction', 'model routing', 'semantic caching']
+author: 'Clarity Chat Team'
 publishDate: 2025-02-18
 readingTime: 12
-category: "Cost & Performance"
+category: 'Cost & Performance'
 featured: true
-relatedPosts: ["10-token-counting", "14-prompt-caching", "15-model-selection"]
+relatedPosts: ['10-token-counting', '14-prompt-caching', '15-model-selection']
 ---
 
 # I Cut My GPT-4 Bill by 60% (Real Strategies, Real Numbers)
 
-> **Pricing Note:** API pricing changes frequently. The costs in this article reflect 2025 rates—verify current pricing on the provider's website before implementation.
+> **Pricing Note:** API pricing changes frequently. The costs in this article reflect 2025
+> rates—verify current pricing on the provider's website before implementation.
 
 My startup was spending $8,400/month on OpenAI. Now it's $3,200. Same features, same quality.
 
-This isn't theory—these are real numbers from a production AI chat application serving 15,000 daily active users. I'm going to share exactly what we changed, with code you can copy.
+This isn't theory—these are real numbers from a production AI chat application serving 15,000 daily
+active users. I'm going to share exactly what we changed, with code you can copy.
 
 No vendor lock-in pitches. No "just use our product." Just the actual techniques that work.
 
@@ -27,12 +31,15 @@ No vendor lock-in pitches. No "just use our product." Just the actual techniques
 Before optimizing, we had no idea where our costs actually came from. So we instrumented everything:
 
 **Our breakdown:**
+
 - Total: $8,400/month
 - GPT-4 (main chat): $6,200 (74%)
 - Embeddings: $1,400 (17%)
 - GPT-3.5 (fallback): $800 (9%)
 
-The problem was obvious: we were using GPT-4 for *everything*. Every message, every query, every classification. User says "hello"? GPT-4. User asks what time it is? GPT-4. User asks a complex legal question? Also GPT-4.
+The problem was obvious: we were using GPT-4 for _everything_. Every message, every query, every
+classification. User says "hello"? GPT-4. User asks what time it is? GPT-4. User asks a complex
+legal question? Also GPT-4.
 
 We were paying premium prices for tasks that a cheaper model could handle just as well.
 
@@ -40,7 +47,8 @@ We were paying premium prices for tasks that a cheaper model could handle just a
 
 ## Strategy 1: Model Routing
 
-The insight: not every message needs GPT-4. Simple questions, greetings, and confirmations work fine with GPT-4o-mini at 1/16th the cost.
+The insight: not every message needs GPT-4. Simple questions, greetings, and confirmations work fine
+with GPT-4o-mini at 1/16th the cost.
 
 Here's the routing logic we implemented:
 
@@ -105,7 +113,7 @@ function classifyComplexity(message: string): 'simple' | 'standard' | 'complex' 
     /how (do|can) i (contact|reach|call)/i,
     /where (are|is) you located/i,
   ]
-  if (faqPatterns.some(p => p.test(message))) return 'simple'
+  if (faqPatterns.some((p) => p.test(message))) return 'simple'
 
   // Complex reasoning indicators
   const complexPatterns = [
@@ -114,7 +122,7 @@ function classifyComplexity(message: string): 'simple' | 'standard' | 'complex' 
     /write .*(code|function|class|component)/i,
     /review|audit|evaluate/i,
   ]
-  if (complexPatterns.some(p => p.test(message))) return 'complex'
+  if (complexPatterns.some((p) => p.test(message))) return 'complex'
 
   // Everything else
   return 'standard'
@@ -139,8 +147,8 @@ async function routeMessage(
 
   const inputTokens = response.usage?.prompt_tokens || 0
   const outputTokens = response.usage?.completion_tokens || 0
-  const cost = (inputTokens * config.costPer1kInput / 1000) +
-               (outputTokens * config.costPer1kOutput / 1000)
+  const cost =
+    (inputTokens * config.costPer1kInput) / 1000 + (outputTokens * config.costPer1kOutput) / 1000
 
   return {
     response: response.choices[0].message.content || '',
@@ -151,6 +159,7 @@ async function routeMessage(
 ```
 
 **Results:**
+
 - 62% of queries routed to GPT-4o-mini
 - Cost per request dropped from $0.028 to $0.003 for simple queries
 - Savings: **$2,800/month**
@@ -161,11 +170,14 @@ User experience? Identical. Nobody noticed the difference for simple queries.
 
 ## Strategy 2: Prompt Caching
 
-OpenAI, Anthropic, and Google all offer prompt caching—automatic discounts when your prompts share prefixes. We were leaving money on the table.
+OpenAI, Anthropic, and Google all offer prompt caching—automatic discounts when your prompts share
+prefixes. We were leaving money on the table.
 
-The math: Our system prompt was 1,200 tokens. With 50,000 requests/day, that's 60 million tokens per day on the same text.
+The math: Our system prompt was 1,200 tokens. With 50,000 requests/day, that's 60 million tokens per
+day on the same text.
 
-With prompt caching, identical prefixes cost 50% less after the first request. But there's a catch: only prompts over 1,024 tokens qualify, and the cached portion must be at the *start* of the prompt.
+With prompt caching, identical prefixes cost 50% less after the first request. But there's a catch:
+only prompts over 1,024 tokens qualify, and the cached portion must be at the _start_ of the prompt.
 
 We restructured:
 
@@ -201,7 +213,7 @@ You are a helpful customer support assistant for TechCorp.
 
 ## Common Scenarios
 [... extensive static examples and guidelines ...]
-`.trim()  // ~1,400 tokens of static content
+`.trim() // ~1,400 tokens of static content
 
 function buildPrompt(user: User, topic: string): string {
   return `${STATIC_PREFIX}
@@ -217,9 +229,11 @@ function buildPrompt(user: User, topic: string): string {
 }
 ```
 
-The key: static content *first*, dynamic content *last*. The cache works on prefixes, so everything before your first dynamic value gets cached.
+The key: static content _first_, dynamic content _last_. The cache works on prefixes, so everything
+before your first dynamic value gets cached.
 
 **Results:**
+
 - 85% cache hit rate
 - Input cost reduced by 42%
 - Savings: **$1,100/month**
@@ -228,7 +242,8 @@ The key: static content *first*, dynamic content *last*. The cache works on pref
 
 ## Strategy 3: Context Compression
 
-Conversation history grows linearly. By message 20, you're sending 10,000+ tokens of history with each request. Most of that is old, irrelevant context.
+Conversation history grows linearly. By message 20, you're sending 10,000+ tokens of history with
+each request. Most of that is old, irrelevant context.
 
 We implemented three compression strategies:
 
@@ -249,10 +264,7 @@ Works great for casual chat. Loses important context for complex conversations.
 Compress old messages into a summary:
 
 ```typescript
-async function getCompressedContext(
-  messages: Message[],
-  recentCount = 10
-): Promise<Message[]> {
+async function getCompressedContext(messages: Message[], recentCount = 10): Promise<Message[]> {
   if (messages.length <= recentCount) {
     return messages
   }
@@ -267,7 +279,8 @@ async function getCompressedContext(
     messages: [
       {
         role: 'system',
-        content: 'Summarize this conversation in 2-3 sentences, focusing on key decisions, facts, and context needed for future messages.',
+        content:
+          'Summarize this conversation in 2-3 sentences, focusing on key decisions, facts, and context needed for future messages.',
       },
       ...oldMessages,
     ],
@@ -327,13 +340,15 @@ async function getRelevantContext(
     .sort((a, b) => b.score - a.score)
     .slice(0, maxMessages)
     .sort((a, b) => a.message.timestamp - b.message.timestamp) // Restore chronological order
-    .map(s => s.message)
+    .map((s) => s.message)
 }
 ```
 
-We use a combination: summarization for very old messages, semantic pruning for the middle, recent messages kept intact.
+We use a combination: summarization for very old messages, semantic pruning for the middle, recent
+messages kept intact.
 
 **Results:**
+
 - Average context size: 8,000 → 2,400 tokens
 - Savings: **$1,400/month**
 
@@ -341,9 +356,11 @@ We use a combination: summarization for very old messages, semantic pruning for 
 
 ## Strategy 4: Response Caching
 
-Many queries are repeated. "What are your business hours?" gets asked 500 times per day. Why call the API 500 times for the same answer?
+Many queries are repeated. "What are your business hours?" gets asked 500 times per day. Why call
+the API 500 times for the same answer?
 
-> **Production Note:** The in-memory cache shown below is for illustration. In production, use Redis or another distributed cache to handle scale and avoid memory issues.
+> **Production Note:** The in-memory cache shown below is for illustration. In production, use Redis
+> or another distributed cache to handle scale and avoid memory issues.
 
 ```typescript
 import { createHash } from 'crypto'
@@ -374,9 +391,7 @@ const cache = new Map<string, CacheEntry>()
 function getCacheKey(message: string, systemPrompt: string): string {
   // Normalize the message
   const normalized = message.toLowerCase().trim()
-  return createHash('sha256')
-    .update(`${systemPrompt}:${normalized}`)
-    .digest('hex')
+  return createHash('sha256').update(`${systemPrompt}:${normalized}`).digest('hex')
 }
 
 async function getCachedOrFetch(
@@ -407,13 +422,11 @@ async function getCachedOrFetch(
 }
 ```
 
-For semantic matching (catching variations like "what are your hours" vs "when are you open"), we added embedding-based similarity:
+For semantic matching (catching variations like "what are your hours" vs "when are you open"), we
+added embedding-based similarity:
 
 ```typescript
-async function findSimilarCached(
-  message: string,
-  threshold = 0.92
-): Promise<string | null> {
+async function findSimilarCached(message: string, threshold = 0.92): Promise<string | null> {
   const embedding = await embed(message)
 
   for (const [key, entry] of cache.entries()) {
@@ -430,6 +443,7 @@ async function findSimilarCached(
 ```
 
 **Results:**
+
 - 23% cache hit rate
 - Zero cost for cached responses
 - Savings: **$900/month**
@@ -439,23 +453,20 @@ async function findSimilarCached(
 ## The Final Numbers
 
 **Before optimization:**
+
 - Monthly cost: $8,400
 - Cost per request: $0.028
 - 300,000 requests/month
 
 **After optimization:**
+
 - Monthly cost: $3,200
 - Cost per request: $0.011
 - Same 300,000 requests/month
 
-**Breakdown of savings:**
-| Strategy | Monthly Savings |
-|----------|-----------------|
-| Model routing | $2,800 |
-| Prompt caching | $1,100 |
-| Context compression | $1,400 |
-| Response caching | $900 |
-| **Total** | **$5,200 (62%)** |
+**Breakdown of savings:** | Strategy | Monthly Savings | |----------|-----------------| | Model
+routing | $2,800 | | Prompt caching | $1,100 | | Context compression | $1,400 | | Response caching |
+$900 | | **Total** | **$5,200 (62%)** |
 
 ---
 
@@ -463,30 +474,40 @@ async function findSimilarCached(
 
 If I were starting over:
 
-1. **Start with routing first** — Biggest impact, easiest to implement, no quality tradeoff for simple queries
+1. **Start with routing first** — Biggest impact, easiest to implement, no quality tradeoff for
+   simple queries
 
-2. **Measure before optimizing** — We wasted a week optimizing embeddings before realizing they were only 17% of our cost
+2. **Measure before optimizing** — We wasted a week optimizing embeddings before realizing they were
+   only 17% of our cost
 
-3. **Don't over-optimize** — We initially set our similarity threshold too low and cached inappropriate responses. User experience matters more than saving $0.001
+3. **Don't over-optimize** — We initially set our similarity threshold too low and cached
+   inappropriate responses. User experience matters more than saving $0.001
 
-4. **Monitor quality** — Cheaper models have different failure modes. Track user satisfaction alongside costs
+4. **Monitor quality** — Cheaper models have different failure modes. Track user satisfaction
+   alongside costs
 
-5. **Use batch when possible** — For non-real-time operations (summarization, classification), OpenAI's batch API offers 50% discount
+5. **Use batch when possible** — For non-real-time operations (summarization, classification),
+   OpenAI's batch API offers 50% discount
 
 ---
 
 ## The Takeaway
 
-AI API costs are controllable. You don't need to throw money at every request or compromise on quality.
+AI API costs are controllable. You don't need to throw money at every request or compromise on
+quality.
 
 The fundamentals:
+
 1. Route simple queries to cheap models
 2. Structure prompts for cache hits
 3. Compress conversation context
 4. Cache repeated responses
 
-These aren't theoretical optimizations—they're production-tested techniques that cut our bill from $8,400 to $3,200 without users noticing any difference.
+These aren't theoretical optimizations—they're production-tested techniques that cut our bill from
+$8,400 to $3,200 without users noticing any difference.
 
 ---
 
-*Clarity Chat includes `useModelRouter`, `useSmartCache`, and context management hooks that implement these patterns. We went through this optimization pain so you don't have to. [See the cost optimization docs →](/docs/cost-optimization)*
+_Clarity Chat includes `useModelRouter`, `useSmartCache`, and context management hooks that
+implement these patterns. We went through this optimization pain so you don't have to.
+[See the cost optimization docs →](/docs/cost-optimization)_

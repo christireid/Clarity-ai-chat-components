@@ -11,9 +11,7 @@ vi.mock('next/navigation', () => ({
 // Mock the child components
 vi.mock('@/components/Navigation/Sidebar', () => ({
   Sidebar: ({ navigation }: { navigation: unknown[] }) => (
-    <nav data-testid="sidebar">
-      Sidebar ({navigation.length} items)
-    </nav>
+    <nav data-testid="sidebar">Sidebar ({navigation.length} items)</nav>
   ),
 }))
 
@@ -61,7 +59,7 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock requestAnimationFrame
 Object.defineProperty(window, 'requestAnimationFrame', {
-  value: vi.fn((cb: FrameRequestCallback) => {
+  value: vi.fn((cb: (time: number) => void) => {
     cb(0)
     return 0
   }),
@@ -174,14 +172,18 @@ describe('DocsLayout', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /hide sidebar/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /hide sidebar/i })
+      ).toBeInTheDocument()
     })
 
     const toggleButton = screen.getByRole('button', { name: /hide sidebar/i })
     fireEvent.click(toggleButton)
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /show sidebar/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /show sidebar/i })
+      ).toBeInTheDocument()
     })
   })
 
@@ -210,7 +212,9 @@ describe('DocsLayout', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /hide sidebar/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /hide sidebar/i })
+      ).toBeInTheDocument()
     })
 
     const toggleButton = screen.getByRole('button', { name: /hide sidebar/i })
@@ -232,9 +236,14 @@ describe('DocsLayout', () => {
     )
 
     await waitFor(() => {
-      const mobileToggle = screen.getByRole('button', { name: /open navigation menu/i })
+      const mobileToggle = screen.getByRole('button', {
+        name: /open navigation menu/i,
+      })
       expect(mobileToggle).toBeInTheDocument()
-      expect(mobileToggle).toHaveAttribute('aria-controls', 'docs-sidebar-mobile')
+      expect(mobileToggle).toHaveAttribute(
+        'aria-controls',
+        'docs-sidebar-mobile'
+      )
     })
   })
 
@@ -246,14 +255,20 @@ describe('DocsLayout', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /open navigation menu/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /open navigation menu/i })
+      ).toBeInTheDocument()
     })
 
-    const mobileToggle = screen.getByRole('button', { name: /open navigation menu/i })
+    const mobileToggle = screen.getByRole('button', {
+      name: /open navigation menu/i,
+    })
     fireEvent.click(mobileToggle)
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /close navigation menu/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /close navigation menu/i })
+      ).toBeInTheDocument()
     })
   })
 
@@ -289,6 +304,8 @@ describe('DocsLayout', () => {
     expect(resizeHandle).toHaveAttribute('tabIndex', '0')
 
     // Should have keyboard instructions in aria-label
-    expect(resizeHandle.getAttribute('aria-label')).toContain('left/right arrows')
+    expect(resizeHandle.getAttribute('aria-label')).toContain(
+      'left/right arrows'
+    )
   })
 })

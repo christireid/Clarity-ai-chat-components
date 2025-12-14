@@ -229,7 +229,10 @@ function Assistant() {
         case 'get_weather':
           return await getWeather(invocation.args.location)
         case 'calculate':
-          return { result: eval(invocation.args.expression) }
+          // Safe math evaluation - sanitize input first
+          const expr = String(invocation.args.expression).replace(/[^0-9+\\-*/().\\s]/g, '')
+          const result = new Function(\`"use strict"; return (\${expr})\`)()
+          return { result: typeof result === 'number' ? result : 'Invalid' }
         default:
           throw new Error(\`Unknown tool: \${invocation.toolName}\`)
       }

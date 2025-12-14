@@ -1,6 +1,7 @@
 # Blog Post 12: Optimistic UI in AI Chat: The Pattern That Changes Everything
 
 ## Meta Information
+
 - **Reading Time:** 5 minutes (~1,200 words)
 - **Category:** Technical Implementation
 - **Primary Keyword:** optimistic UI chat
@@ -12,7 +13,9 @@
 
 **Opening line:** "Messages should appear before they're sent."
 
-Wait, what? Yes. In a well-designed chat, when a user clicks send, their message should appear instantly in the conversation—before the server confirms it. This is optimistic UI, and it's why iMessage feels faster than it actually is.
+Wait, what? Yes. In a well-designed chat, when a user clicks send, their message should appear
+instantly in the conversation—before the server confirms it. This is optimistic UI, and it's why
+iMessage feels faster than it actually is.
 
 Let's build chat that feels instant.
 
@@ -23,20 +26,21 @@ Let's build chat that feels instant.
 ### Content:
 
 **Pessimistic (traditional):**
+
 1. User clicks send
 2. Wait for server
 3. Server confirms
-4. Show message
-**Result:** 500-2000ms of nothing
+4. Show message **Result:** 500-2000ms of nothing
 
 **Optimistic:**
+
 1. User clicks send
 2. Show message immediately (status: sending)
 3. Server confirms in background
-4. Update status to "sent"
-**Result:** 0ms perceived latency
+4. Update status to "sent" **Result:** 0ms perceived latency
 
 ### Visual:
+
 ```
 [VISUAL 1: Timeline comparison]
 Pessimistic:
@@ -51,22 +55,18 @@ Click ── Message appears instantly ── Status updates
 ## Section 2: Implementation (350 words)
 
 ### Code Example:
+
 ```tsx
 import { useOptimisticMessage, Message } from '@clarity-chat/react'
 
 function OptimisticChat() {
-  const {
-    messages,
-    addOptimistic,
-    confirmMessage,
-    failMessage,
-    retryMessage,
-  } = useOptimisticMessage<Message>({
-    // Persist failed messages for retry
-    persistFailed: true,
-    // Generate temporary IDs
-    generateId: () => `temp-${Date.now()}`,
-  })
+  const { messages, addOptimistic, confirmMessage, failMessage, retryMessage } =
+    useOptimisticMessage<Message>({
+      // Persist failed messages for retry
+      persistFailed: true,
+      // Generate temporary IDs
+      generateId: () => `temp-${Date.now()}`,
+    })
 
   const handleSend = async (content: string) => {
     // 1. Add message instantly with "sending" status
@@ -88,10 +88,9 @@ function OptimisticChat() {
 
       // 3. Confirm with real server ID
       confirmMessage(tempId, {
-        id,  // Replace temp ID with server ID
+        id, // Replace temp ID with server ID
         status: 'sent',
       })
-
     } catch (error) {
       // 4. Mark as failed (but keep visible!)
       failMessage(tempId, {
@@ -103,16 +102,13 @@ function OptimisticChat() {
 
   return (
     <MessageList>
-      {messages.map(msg => (
+      {messages.map((msg) => (
         <Message
           key={msg.id}
           {...msg}
           // Visual indicators for status
           showStatus={msg.status !== 'sent'}
-          onRetry={msg.status === 'failed'
-            ? () => retryMessage(msg.id)
-            : undefined
-          }
+          onRetry={msg.status === 'failed' ? () => retryMessage(msg.id) : undefined}
         />
       ))}
     </MessageList>
@@ -121,6 +117,7 @@ function OptimisticChat() {
 ```
 
 ### Visual:
+
 ```
 [VISUAL 2: Message status states]
 Three message bubbles:
@@ -136,24 +133,28 @@ Three message bubbles:
 ### Content:
 
 **1. Sending (optimistic)**
+
 - Appears immediately
 - Slightly faded or with indicator
 - User can cancel
 - Temporary ID
 
 **2. Sent (confirmed)**
+
 - Full opacity
 - Server ID replaces temp ID
 - Optional "delivered" indicator
 - Permanent state
 
 **3. Failed (error)**
+
 - Visible with error indicator
 - Retry button
 - Never disappears (user's words are precious)
 - Can be manually dismissed
 
 ### Code snippet:
+
 ```tsx
 <Message
   content={msg.content}
@@ -165,11 +166,7 @@ Three message bubbles:
 >
   {msg.status === 'sending' && <Spinner size="sm" />}
   {msg.status === 'sent' && <CheckIcon />}
-  {msg.status === 'failed' && (
-    <button onClick={() => retry(msg.id)}>
-      Retry
-    </button>
-  )}
+  {msg.status === 'failed' && <button onClick={() => retry(msg.id)}>Retry</button>}
 </Message>
 ```
 
@@ -179,16 +176,16 @@ Three message bubbles:
 
 ### Content:
 
-**Race conditions:**
-What if user sends multiple messages quickly?
+**Race conditions:** What if user sends multiple messages quickly?
+
 ```tsx
 // Each message gets unique temp ID
 // Order preserved by timestamp
 // Server can return in any order—UI stays consistent
 ```
 
-**Duplicate prevention:**
-What if retry creates duplicate?
+**Duplicate prevention:** What if retry creates duplicate?
+
 ```tsx
 // Use idempotency keys
 const idempotencyKey = `${userId}-${timestamp}-${hash(content)}`
@@ -199,8 +196,8 @@ fetch('/api/messages', {
 })
 ```
 
-**Offline handling:**
-What if user goes offline?
+**Offline handling:** What if user goes offline?
+
 ```tsx
 const { isOnline } = useNetworkStatus()
 
@@ -218,6 +215,7 @@ if (!isOnline) {
 ### Content:
 
 **Psychology of instant feedback:**
+
 - 100ms: Feels instant
 - 100-300ms: Noticeable but acceptable
 - 300-1000ms: Feels slow
@@ -226,11 +224,13 @@ if (!isOnline) {
 Optimistic UI keeps you in the "feels instant" category, even when servers take 500ms.
 
 **The trust equation:**
+
 - Show immediately = "app is responsive"
 - Show status = "app is reliable"
 - Keep failed messages = "app respects my data"
 
 ### Visual:
+
 ```
 [VISUAL 3: Perception timeline]
 0-100ms: "Instant" ✓
@@ -246,10 +246,13 @@ Optimistic UI keeps you at 0ms
 ## Conclusion (80 words)
 
 ### Key takeaways:
+
 1. Show messages before server confirms
 2. Three states: sending, sent, failed
 3. Never lose failed messages
 4. Handle edge cases (race conditions, offline)
 
 ### Subtle CTA:
-"Clarity Chat's useOptimisticMessage hook handles temporary IDs, status transitions, retry logic, and offline queuing. Make your chat feel instant without reinventing the pattern."
+
+"Clarity Chat's useOptimisticMessage hook handles temporary IDs, status transitions, retry logic,
+and offline queuing. Make your chat feel instant without reinventing the pattern."

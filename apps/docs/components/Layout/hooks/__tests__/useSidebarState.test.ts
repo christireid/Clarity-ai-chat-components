@@ -1,3 +1,4 @@
+import React from 'react'
 import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { useSidebarState } from '../useSidebarState'
@@ -22,7 +23,7 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 
 // Mock requestAnimationFrame
-const rafMock = vi.fn((cb: FrameRequestCallback) => {
+const rafMock = vi.fn((cb: (time: number) => void) => {
   cb(0)
   return 0
 })

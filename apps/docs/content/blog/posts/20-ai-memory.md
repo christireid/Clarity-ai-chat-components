@@ -1,19 +1,24 @@
 ---
-title: "Building AI Memory That Actually Remembers"
-description: "Implement persistent AI memory. Short-term, long-term, and working memory patterns with privacy considerations."
-keywords: ["AI memory", "persistent context", "conversation memory", "user preferences", "LLM memory"]
-author: "Clarity Chat Team"
+title: 'Building AI Memory That Actually Remembers'
+description:
+  'Implement persistent AI memory. Short-term, long-term, and working memory patterns with privacy
+  considerations.'
+keywords:
+  ['AI memory', 'persistent context', 'conversation memory', 'user preferences', 'LLM memory']
+author: 'Clarity Chat Team'
 publishDate: 2025-03-13
 readingTime: 11
-category: "Advanced Patterns"
-relatedPosts: ["17-rag-production", "08-context-windows", "18-ai-agents-function-calling"]
+category: 'Advanced Patterns'
+relatedPosts: ['17-rag-production', '08-context-windows', '18-ai-agents-function-calling']
 ---
 
 # Building AI Memory That Actually Remembers
 
 LLMs are stateless. Every message is like meeting them for the first time.
 
-Your users expect AI to remember that they prefer Python over JavaScript, that they asked about refunds yesterday, that their name is Sarah. But LLMs have amnesia by design—they don't remember anything between API calls.
+Your users expect AI to remember that they prefer Python over JavaScript, that they asked about
+refunds yesterday, that their name is Sarah. But LLMs have amnesia by design—they don't remember
+anything between API calls.
 
 The memory your users expect doesn't exist. You have to build it.
 
@@ -31,27 +36,29 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 // Call 1
 await openai.chat.completions.create({
-  messages: [{ role: "user", content: "My name is Sarah" }]
+  messages: [{ role: 'user', content: 'My name is Sarah' }],
 })
 // AI: "Nice to meet you, Sarah!"
 
 // Call 2 - completely separate
 await openai.chat.completions.create({
-  messages: [{ role: "user", content: "What's my name?" }]
+  messages: [{ role: 'user', content: "What's my name?" }],
 })
 // AI: "I don't know your name. You haven't told me."
 ```
 
-The second call has no knowledge of the first. They might as well have gone to different servers on different continents.
+The second call has no knowledge of the first. They might as well have gone to different servers on
+different continents.
 
 **Why it's designed this way:**
+
 - Stateless = massively scalable
 - No server-side storage per user
 - Privacy by default (nothing persists)
 - Simpler infrastructure for providers
 
-**The consequence:**
-You must build and manage memory in your application layer. The LLM is just a function that takes input and returns output—everything else is your responsibility.
+**The consequence:** You must build and manage memory in your application layer. The LLM is just a
+function that takes input and returns output—everything else is your responsibility.
 
 ---
 
@@ -73,19 +80,15 @@ async function sendMessage(content: string) {
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      ...messages,
-      newMessage,
-    ],
+    messages: [{ role: 'system', content: systemPrompt }, ...messages, newMessage],
   })
 
   setMessages([...messages, newMessage, response.choices[0].message])
 }
 ```
 
-**Use for:** Context within a single conversation
-**Limitations:** Lost when session ends, grows linearly with conversation length
+**Use for:** Context within a single conversation **Limitations:** Lost when session ends, grows
+linearly with conversation length
 
 ### 2. User Memory (Long-term Facts)
 
@@ -114,33 +117,67 @@ interface Database {
 // Example implementation using a simple in-memory store (use a real DB in production)
 const db: Database = {
   userFacts: {
-    get: async (userId) => { /* query your database */ return [] },
-    upsert: async (data) => { /* upsert to your database */ },
-    insert: async (fact) => { /* insert into your database */ },
-    delete: async (factId) => { /* delete from your database */ },
-    deleteAll: async (userId) => { /* delete all user facts */ },
+    get: async (userId) => {
+      /* query your database */ return []
+    },
+    upsert: async (data) => {
+      /* upsert to your database */
+    },
+    insert: async (fact) => {
+      /* insert into your database */
+    },
+    delete: async (factId) => {
+      /* delete from your database */
+    },
+    deleteAll: async (userId) => {
+      /* delete all user facts */
+    },
   },
   userPatterns: {
-    get: async (userId) => { /* query your database */ return [] },
-    findOne: async (query) => { /* find one pattern */ return null },
-    insert: async (pattern) => { /* insert pattern */ },
-    update: async (pattern) => { /* update pattern */ },
+    get: async (userId) => {
+      /* query your database */ return []
+    },
+    findOne: async (query) => {
+      /* find one pattern */ return null
+    },
+    insert: async (pattern) => {
+      /* insert pattern */
+    },
+    update: async (pattern) => {
+      /* update pattern */
+    },
   },
-  exportUserData: async (userId) => ({ /* export all user data */ }),
+  exportUserData: async (userId) => ({
+    /* export all user data */
+  }),
 }
 
 // Vector store abstraction for semantic search
 interface VectorStore {
-  upsert: (data: { id: string; embedding: number[]; metadata: Record<string, unknown> }) => Promise<void>
-  query: (params: { embedding: number[]; filter?: Record<string, unknown>; topK: number }) => Promise<Array<{ metadata: Record<string, unknown> }>>
+  upsert: (data: {
+    id: string
+    embedding: number[]
+    metadata: Record<string, unknown>
+  }) => Promise<void>
+  query: (params: {
+    embedding: number[]
+    filter?: Record<string, unknown>
+    topK: number
+  }) => Promise<Array<{ metadata: Record<string, unknown> }>>
   deleteByUser: (userId: string) => Promise<void>
 }
 
 // Example: Use Pinecone, Weaviate, Qdrant, or pgvector
 const vectorStore: VectorStore = {
-  upsert: async (data) => { /* upsert to vector store */ },
-  query: async (params) => { /* query vector store */ return [] },
-  deleteByUser: async (userId) => { /* delete user vectors */ },
+  upsert: async (data) => {
+    /* upsert to vector store */
+  },
+  query: async (params) => {
+    /* query vector store */ return []
+  },
+  deleteByUser: async (userId) => {
+    /* delete user vectors */
+  },
 }
 
 interface UserFact {
@@ -160,14 +197,14 @@ await db.userFacts.upsert({
     { key: 'preferredLanguage', value: 'Python', confidence: 0.9, source: 'inferred' },
     { key: 'timezone', value: 'PST', confidence: 1.0, source: 'explicit' },
     { key: 'expertise', value: 'backend development', confidence: 0.85, source: 'inferred' },
-  ]
+  ],
 })
 
 // Include in system prompt
 function buildSystemPrompt(userFacts: UserFact[]): string {
   const factsSection = userFacts
-    .filter(f => f.confidence > 0.7)
-    .map(f => `- ${f.key}: ${f.value}`)
+    .filter((f) => f.confidence > 0.7)
+    .map((f) => `- ${f.key}: ${f.value}`)
     .join('\n')
 
   return `You are a helpful assistant.
@@ -179,8 +216,8 @@ Use this information to personalize your responses.`
 }
 ```
 
-**Use for:** Preferences, names, settings, established facts
-**Persistence:** Database, survives indefinitely
+**Use for:** Preferences, names, settings, established facts **Persistence:** Database, survives
+indefinitely
 
 ### 3. Semantic Memory (Searchable Knowledge)
 
@@ -201,8 +238,12 @@ async function summarize(messages: Message[]): Promise<string> {
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
-      { role: 'system', content: 'Summarize this conversation in 2-3 sentences, preserving key facts and decisions.' },
-      ...messages.map(m => ({ role: m.role, content: m.content }))
+      {
+        role: 'system',
+        content:
+          'Summarize this conversation in 2-3 sentences, preserving key facts and decisions.',
+      },
+      ...messages.map((m) => ({ role: m.role, content: m.content })),
     ],
     max_tokens: 150,
   })
@@ -213,8 +254,11 @@ async function extractTopic(messages: Message[]): Promise<string> {
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
-      { role: 'system', content: 'What is the main topic of this conversation? Reply with 2-4 words.' },
-      ...messages.slice(-5).map(m => ({ role: m.role, content: m.content }))
+      {
+        role: 'system',
+        content: 'What is the main topic of this conversation? Reply with 2-4 words.',
+      },
+      ...messages.slice(-5).map((m) => ({ role: m.role, content: m.content })),
     ],
     max_tokens: 20,
   })
@@ -222,10 +266,7 @@ async function extractTopic(messages: Message[]): Promise<string> {
 }
 
 // After each conversation, store a summary
-async function storeConversation(
-  userId: string,
-  messages: Message[]
-): Promise<void> {
+async function storeConversation(userId: string, messages: Message[]): Promise<void> {
   // Summarize the conversation
   const summary = await summarize(messages)
 
@@ -241,15 +282,12 @@ async function storeConversation(
       date: new Date(),
       topic: await extractTopic(messages),
       summary,
-    }
+    },
   })
 }
 
 // When user asks about past conversations
-async function recallRelevantHistory(
-  userId: string,
-  currentQuery: string
-): Promise<string[]> {
+async function recallRelevantHistory(userId: string, currentQuery: string): Promise<string[]> {
   const queryEmbedding = await embed(currentQuery)
 
   const results = await vectorStore.query({
@@ -258,23 +296,22 @@ async function recallRelevantHistory(
     topK: 3,
   })
 
-  return results.map(r => r.metadata.summary)
+  return results.map((r) => r.metadata.summary)
 }
 ```
 
-**Use for:** "What did we discuss about X last week?"
-**Persistence:** Vector database
+**Use for:** "What did we discuss about X last week?" **Persistence:** Vector database
 
 ### 4. Behavioral Memory (Patterns)
 
 Learned patterns about how the user interacts.
 
-```typescript
+````typescript
 interface UserPattern {
-  userId: string       // The user this pattern belongs to
-  behavior: string     // The identified behavior pattern
-  confidence: number   // How confident we are (0-1)
-  examples: number     // How many times we've observed this
+  userId: string // The user this pattern belongs to
+  behavior: string // The identified behavior pattern
+  confidence: number // How confident we are (0-1)
+  examples: number // How many times we've observed this
 }
 
 // Pattern storage helpers
@@ -298,7 +335,7 @@ async function incrementPattern(userId: string, behavior: string): Promise<void>
 }
 
 function hasPattern(patterns: UserPattern[], behavior: string, minConfidence: number): boolean {
-  const pattern = patterns.find(p => p.behavior === behavior)
+  const pattern = patterns.find((p) => p.behavior === behavior)
   return pattern ? pattern.confidence >= minConfidence : false
 }
 
@@ -307,7 +344,7 @@ async function updatePatterns(
   userId: string,
   message: string,
   response: string,
-  feedback?: { positive: boolean }  // Optional user feedback on the response
+  feedback?: { positive: boolean } // Optional user feedback on the response
 ): Promise<void> {
   // Detect patterns
   if (message.toLowerCase().includes('explain') && message.includes('?')) {
@@ -342,10 +379,10 @@ function getResponseStyleHints(patterns: UserPattern[]): string {
 
   return hints.join('\n')
 }
-```
+````
 
-**Use for:** Adapting response style, anticipating needs
-**Persistence:** Database, updated continuously
+**Use for:** Adapting response style, anticipating needs **Persistence:** Database, updated
+continuously
 
 ---
 
@@ -381,18 +418,15 @@ async function buildFullContext(
   }
 }
 
-function buildPromptWithContext(
-  basePrompt: string,
-  context: MemoryContext
-): string {
+function buildPromptWithContext(basePrompt: string, context: MemoryContext): string {
   let prompt = basePrompt
 
   // Add user facts
   if (context.userFacts.length > 0) {
     prompt += `\n\n## About This User\n`
     prompt += context.userFacts
-      .filter(f => f.confidence > 0.7)
-      .map(f => `- ${f.key}: ${f.value}`)
+      .filter((f) => f.confidence > 0.7)
+      .map((f) => `- ${f.key}: ${f.value}`)
       .join('\n')
   }
 
@@ -416,7 +450,8 @@ function buildPromptWithContext(
 
 ## Automatic Fact Extraction
 
-Users don't explicitly say "remember that I prefer Python." You need to extract facts from natural conversation.
+Users don't explicitly say "remember that I prefer Python." You need to extract facts from natural
+conversation.
 
 ```typescript
 async function extractFacts(message: string): Promise<UserFact[]> {
@@ -471,8 +506,8 @@ interface MemoryConfig {
   blockedCategories: string[]
 
   // How long to remember
-  factTTL: number | null  // null = forever
-  conversationTTL: number  // days
+  factTTL: number | null // null = forever
+  conversationTTL: number // days
 
   // User controls
   enableDeletion: boolean
@@ -493,11 +528,11 @@ const defaultConfig: MemoryConfig = {
 // Respect blocked categories
 async function storeFact(fact: UserFact, config: MemoryConfig): Promise<boolean> {
   // Check if category is allowed
-  if (config.blockedCategories.some(cat => fact.key.includes(cat))) {
+  if (config.blockedCategories.some((cat) => fact.key.includes(cat))) {
     return false // Don't store
   }
 
-  if (!config.allowedCategories.some(cat => fact.key.includes(cat))) {
+  if (!config.allowedCategories.some((cat) => fact.key.includes(cat))) {
     return false // Not in whitelist
   }
 
@@ -539,12 +574,15 @@ function MemoryInspector({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    db.userFacts.get(userId).then(setFacts).finally(() => setLoading(false))
+    db.userFacts
+      .get(userId)
+      .then(setFacts)
+      .finally(() => setLoading(false))
   }, [userId])
 
   const deleteFact = async (factId: string) => {
     await db.userFacts.delete(factId)
-    setFacts(facts.filter(f => f.id !== factId))
+    setFacts(facts.filter((f) => f.id !== factId))
   }
 
   const exportData = async () => {
@@ -570,7 +608,7 @@ function MemoryInspector({ userId }: { userId: string }) {
         <p className="text-gray-500">No stored information yet.</p>
       ) : (
         <ul className="space-y-2">
-          {facts.map(fact => (
+          {facts.map((fact) => (
             <li key={fact.id} className="flex justify-between items-center">
               <span>
                 <strong>{fact.key}:</strong> {fact.value}
@@ -616,4 +654,6 @@ And always: let users see, control, and delete their data. Memory without consen
 
 ---
 
-*Clarity Chat's memory management hooks handle multi-layer memory, fact extraction, and the MemoryInspector UI component. Build AI that remembers without building the infrastructure yourself. [See the memory docs →](/docs/memory)*
+_Clarity Chat's memory management hooks handle multi-layer memory, fact extraction, and the
+MemoryInspector UI component. Build AI that remembers without building the infrastructure yourself.
+[See the memory docs →](/docs/memory)_
