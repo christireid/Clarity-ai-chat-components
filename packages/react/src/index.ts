@@ -877,7 +877,20 @@ export * from './components/skeleton'
 export * from './components/animated-list'
 export * from './components/toast'
 export * from './components/progress'
-export * from './components/feedback-animation'
+// FeedbackAnimation component (renamed to avoid conflict with FeedbackAnimation type from animations)
+export {
+  FeedbackAnimation as FeedbackAnimationOverlay,
+  type FeedbackAnimationProps,
+  type FeedbackType,
+  SuccessCheckmark,
+  ErrorShake,
+  PulseAttention,
+  RippleEffect,
+  ConfettiEffect,
+  GlowEffect,
+  BounceIn,
+  SlideNotification,
+} from './components/feedback-animation'
 export * from './components/interactive-card'
 
 // Interactive Components

@@ -44,6 +44,8 @@ import type { CoreMessage } from '../hooks/use-chat-enhanced'
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** API endpoint URL - the only required prop */
   api: string
+  /** Optional chat ID for persistence and message grouping */
+  chatId?: string
   /** Optional className for the chat container */
   className?: string
   /** Custom empty state */
@@ -108,6 +110,31 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
    * When provided, shows a "Stop" button during loading state.
    */
   onStopGeneration?: () => void
+  /**
+   * Auto-scroll to bottom on new messages.
+   * Handled internally by ChatWindow - this prop is accepted for preset compatibility.
+   */
+  autoScroll?: boolean
+  /**
+   * Theme name to apply to the chat interface.
+   * Use with ThemeProvider for full theming support.
+   */
+  theme?: string
+  /**
+   * Show token counter in the input area.
+   * Displays token usage for the current message.
+   */
+  showTokenCounter?: boolean
+  /**
+   * Show network connection status indicator.
+   * Displays online/offline status.
+   */
+  showNetworkStatus?: boolean
+  /**
+   * Enable message operations (edit, delete, regenerate).
+   * When true, shows action buttons on messages.
+   */
+  enableMessageOperations?: boolean
 }
 
 /**
@@ -149,6 +176,7 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
  */
 export function ClarityChat({
   api,
+  chatId,
   className,
   emptyState,
   showHeader,
@@ -173,6 +201,13 @@ export function ClarityChat({
   showStarterPrompts,
   showFollowUpSuggestions,
   onStopGeneration,
+  // Destructure these to prevent passing to hookOptions
+  // They are accepted for API compatibility but handled differently
+  autoScroll: _autoScroll,
+  theme: _theme,
+  showTokenCounter: _showTokenCounter,
+  showNetworkStatus: _showNetworkStatus,
+  enableMessageOperations: _enableMessageOperations,
   ...hookOptions
 }: ClarityChatProps) {
   // Validate required prop with helpful error message
