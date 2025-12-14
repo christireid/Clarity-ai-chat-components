@@ -43,7 +43,11 @@ export interface ChatWindowProps {
   /** Callback when message is copied */
   onMessageCopy?: (messageId: string, content: string) => void
   /** Callback when feedback is given */
-  onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
+  onMessageFeedback?: (
+    messageId: string,
+    type: 'up' | 'down',
+    comment?: string
+  ) => void
   /** Callback when retry is requested */
   onMessageRetry?: (messageId: string) => void
   /** Callback when message is edited */
@@ -134,7 +138,7 @@ const DefaultEmptyState = ({
           opacity: [0.5, 0.8, 0.5],
         }}
         transition={{
-          duration: 3,
+          duration: durations.slower,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
@@ -147,7 +151,7 @@ const DefaultEmptyState = ({
           opacity: [0.6, 1, 0.6],
         }}
         transition={{
-          duration: 3,
+          duration: durations.slower,
           repeat: Infinity,
           ease: 'easeInOut',
           delay: 0.5,
@@ -161,7 +165,7 @@ const DefaultEmptyState = ({
           rotate: [0, 1, -1, 0],
         }}
         transition={{
-          duration: 4,
+          duration: durations.slower,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
@@ -171,7 +175,7 @@ const DefaultEmptyState = ({
             y: [0, -2, 0],
           }}
           transition={{
-            duration: 2,
+            duration: durations.slower,
             repeat: Infinity,
             ease: 'easeInOut',
           }}
@@ -209,7 +213,11 @@ const DefaultEmptyState = ({
           <div className="flex items-center justify-center gap-2 mb-5">
             <motion.div
               animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{
+                duration: durations.slower,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
             >
               <SparklesIcon size={14} className="text-primary" />
             </motion.div>
@@ -685,6 +693,7 @@ export function ChatWindow({
           onEditMessage={onEditMessage}
           onRegenerateMessage={onRegenerateMessage}
           onDeleteMessage={onDeleteMessage}
+          onStopGeneration={onStopGeneration}
           emptyState={effectiveEmptyState}
           className="flex-1 min-h-0"
         />

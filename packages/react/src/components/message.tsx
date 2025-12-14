@@ -30,11 +30,13 @@ import { CopyButton } from './copy-button'
 export interface MessageProps {
   message: MessageType
   onCopy?: (content: string) => void
-  onFeedback?: (type: 'up' | 'down') => void
+  onFeedback?: (type: 'up' | 'down', comment?: string) => void
   onRetry?: () => void
   onEdit?: (messageId: string) => void
   onRegenerate?: (messageId: string) => void
   onDelete?: (messageId: string) => void
+  /** Callback to stop AI generation (shown during streaming) */
+  onStopGeneration?: () => void
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
@@ -126,6 +128,7 @@ export function Message({
   onEdit,
   onRegenerate,
   onDelete,
+  onStopGeneration,
   showAvatar = true,
   showTimestamp = true,
   className,
@@ -148,9 +151,9 @@ export function Message({
   const [showConfetti, setShowConfetti] = React.useState(false)
 
   // React 19: Compiler optimizes this - no useCallback needed
-  const handleFeedback = (type: 'up' | 'down') => {
+  const handleFeedback = (type: 'up' | 'down', comment?: string) => {
     setFeedbackGiven(type)
-    onFeedback?.(type)
+    onFeedback?.(type, comment)
 
     // Hooked principle: Variable reward
     if (type === 'up') {
@@ -494,12 +497,14 @@ export function Message({
             feedbackGiven={feedbackGiven}
             showConfetti={showConfetti}
             hasError={message.status === 'error'}
+            isStreaming={isStreaming}
             onFeedback={handleFeedback}
             onRetry={onRetry}
             onEdit={onEdit}
             onRegenerate={onRegenerate}
             onDelete={onDelete}
-            show={isHovered || isFocusWithin || !!feedbackGiven}
+            onStopGeneration={onStopGeneration}
+            show={isHovered || isFocusWithin || !!feedbackGiven || isStreaming}
           />
         )}
 

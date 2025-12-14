@@ -31,11 +31,17 @@ import { ClarityError } from '../error/clarity-error'
 export interface MessageListProps {
   messages: MessageType[]
   onMessageCopy?: (messageId: string, content: string) => void
-  onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
+  onMessageFeedback?: (
+    messageId: string,
+    type: 'up' | 'down',
+    comment?: string
+  ) => void
   onMessageRetry?: (messageId: string) => void
   onEditMessage?: (messageId: string) => void
   onRegenerateMessage?: (messageId: string) => void
   onDeleteMessage?: (messageId: string) => void
+  /** Callback to stop AI generation (shown during streaming) */
+  onStopGeneration?: () => void
   /** Show loading skeleton while messages are being fetched */
   isLoading?: boolean
   /** Number of skeleton messages to show while loading */
@@ -98,6 +104,7 @@ export function MessageList({
   onEditMessage,
   onRegenerateMessage,
   onDeleteMessage,
+  onStopGeneration,
   isLoading = false,
   loadingCount = 3,
   emptyState,
@@ -337,13 +344,14 @@ export function MessageList({
                         onCopy={(content) =>
                           onMessageCopy?.(message.id, content)
                         }
-                        onFeedback={(type) =>
-                          onMessageFeedback?.(message.id, type)
+                        onFeedback={(type, comment) =>
+                          onMessageFeedback?.(message.id, type, comment)
                         }
                         onRetry={() => onMessageRetry?.(message.id)}
                         onEdit={() => onEditMessage?.(message.id)}
                         onRegenerate={() => onRegenerateMessage?.(message.id)}
                         onDelete={() => onDeleteMessage?.(message.id)}
+                        onStopGeneration={onStopGeneration}
                         {...grouping}
                       />
                     </motion.div>
