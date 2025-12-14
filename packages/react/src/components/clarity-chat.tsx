@@ -205,9 +205,16 @@ export function ClarityChat({
   }, [chat])
 
   const handleClear = React.useCallback(() => {
+    // Prevent clearing while a request is in progress to avoid race conditions
+    if (chat.isLoading || isRegenerating) {
+      toast?.info('Please wait for the current request to complete')
+      return
+    }
+    // Clear editing state as well
+    setEditingMessageId(null)
     chat.setMessages([])
     onClear?.()
-  }, [chat, onClear])
+  }, [chat, isRegenerating, onClear, toast])
 
   const handleDeleteMessage = React.useCallback(
     (messageId: string) => {
@@ -253,6 +260,12 @@ export function ClarityChat({
   // Handle saving edits
   const handleSaveEdit = React.useCallback(
     async (messageId: string, newContent: string) => {
+      // Prevent saving while a request is in progress (defense in depth)
+      if (chat.isLoading || isRegenerating) {
+        toast?.info('Please wait for the current request to complete')
+        return
+      }
+
       // Validate content - reject empty or whitespace-only
       const trimmedContent = newContent.trim()
       if (!trimmedContent) {
@@ -314,7 +327,7 @@ export function ClarityChat({
         }
       }
     },
-    [chat, toast]
+    [chat, isRegenerating, toast]
   )
 
   // Handle canceling edits
