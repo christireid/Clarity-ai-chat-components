@@ -304,9 +304,9 @@ This demo includes mock data. For production use:
 ## 📚 Documentation
 
 - [Clarity Chat Docs](https://docs.clarity-chat.dev)
-- [Safety Guide](../../apps/docs/guide/safety.md)
-- [Observability Guide](../../apps/docs/guide/observability.md)
-- [Token Optimization Guide](../../apps/docs/guide/token-optimization.md)
+- [Best Practices](../../docs/best-practices.md)
+- [Troubleshooting](../../docs/TROUBLESHOOTING.md)
+- [API Reference](../../docs/api-reference.md)
 
 ## 🤝 Contributing
 
