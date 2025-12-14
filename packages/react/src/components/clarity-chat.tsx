@@ -251,15 +251,12 @@ export function ClarityChat({
         const needsRegeneration = messageIndex < originalMessages.length - 1
 
         if (needsRegeneration) {
-          // Truncate and update for regeneration
-          const truncated = originalMessages.slice(0, messageIndex + 1)
-          truncated[messageIndex] = {
-            ...truncated[messageIndex]!,
-            content: newContent,
-          }
+          // Truncate to BEFORE the edited message - append will add it back with new content
+          // This avoids duplicate user messages (setMessages + append would create two)
+          const truncated = originalMessages.slice(0, messageIndex)
           chat.setMessages(truncated)
 
-          // Regenerate response
+          // Regenerate response - append adds the edited user message and triggers AI response
           setIsRegenerating(true)
           toast?.info('Regenerating response...')
           try {
@@ -311,23 +308,30 @@ export function ClarityChat({
           return
         }
 
-        // Get the preceding user message to resend
-        const userMessage = currentMessages
-          .slice(0, messageIndex)
-          .reverse()
-          .find((m) => m.role === 'user')
+        // Find the preceding user message AND its index
+        // We need the index to truncate properly and avoid duplicate messages
+        let userMessageIndex = -1
+        for (let i = messageIndex - 1; i >= 0; i--) {
+          if (currentMessages[i]?.role === 'user') {
+            userMessageIndex = i
+            break
+          }
+        }
 
-        if (!userMessage) {
+        if (userMessageIndex === -1) {
           console.warn('Cannot regenerate: no preceding user message found')
           toast?.error('Cannot regenerate: no previous message to resend')
           return
         }
 
-        // Remove messages from the regenerate point
-        const newMessages = currentMessages.slice(0, messageIndex)
+        const userMessage = currentMessages[userMessageIndex]!
+
+        // Truncate to BEFORE the user message - append will add it back
+        // This avoids duplicate user messages
+        const newMessages = currentMessages.slice(0, userMessageIndex)
         chat.setMessages(newMessages)
 
-        // Resend the user message
+        // Resend the user message - append adds it and triggers AI response
         await chat.append({ role: 'user', content: userMessage.content })
 
         onRegenerateMessage?.(messageId)
