@@ -48,8 +48,8 @@ export interface UseChatOptions extends UseClarityChatOptions {
 export interface UseChatReturn {
   /** Messages in Message[] format (ready for ChatWindow) */
   messages: Message[]
-  /** Send a message (simplified API) */
-  sendMessage: (content: string) => Promise<void>
+  /** Send a message (simplified API). Returns message ID if successful. */
+  sendMessage: (content: string) => Promise<string | null>
   /** Loading state */
   isLoading: boolean
   /** Error state */
@@ -60,7 +60,11 @@ export interface UseChatReturn {
   setInput: (value: string) => void
   /** Clear all messages */
   clearMessages: () => void
-  /** All original useClarityChat return values */
+  /** Stop the current generation */
+  stop: () => void
+  /** Reload/retry the last message */
+  reload: () => Promise<string | null>
+  /** All original useClarityChat return values for advanced use cases */
   chat: ReturnType<typeof useClarityChat>
 }
 
@@ -101,10 +105,10 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     [chat.messages, chatId]
   )
 
-  // Simplified send message function
+  // Simplified send message function - returns message ID for tracking
   const sendMessage = React.useCallback(
-    async (content: string) => {
-      await chat.append({
+    async (content: string): Promise<string | null> => {
+      return chat.append({
         role: 'user',
         content,
       })
@@ -175,6 +179,8 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     input: chat.input,
     setInput: chat.setInput,
     clearMessages,
-    chat, // Full access to underlying hook
+    stop: chat.stop,
+    reload: chat.reload,
+    chat, // Full access to underlying hook for advanced use cases
   }
 }

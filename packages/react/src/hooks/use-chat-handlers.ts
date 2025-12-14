@@ -75,6 +75,9 @@ export interface ChatHandlers {
   /** Handler for clearing messages */
   onClear: () => void
 
+  /** Handler for stopping the current generation */
+  onStopGeneration: () => void
+
   /** Handler for retrying a message */
   onMessageRetry: (messageId: string) => Promise<void>
 
@@ -127,6 +130,10 @@ export function useChatHandlers({
 
   const handleClear = React.useCallback(() => {
     chat.setMessages([])
+  }, [chat])
+
+  const handleStopGeneration = React.useCallback(() => {
+    chat.stop()
   }, [chat])
 
   const handleMessageRetry = React.useCallback(
@@ -208,6 +215,7 @@ export function useChatHandlers({
   return {
     onSendMessage: handleSendMessage,
     onClear: handleClear,
+    onStopGeneration: handleStopGeneration,
     onMessageRetry: handleMessageRetry,
     onEditMessage: handleEditMessage,
     onRegenerateMessage: handleRegenerateMessage,
