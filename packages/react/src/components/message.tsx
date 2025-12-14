@@ -204,7 +204,15 @@ export function Message({
         return (
           <div className="relative group/code my-4">
             <pre
-              className="relative overflow-x-auto bg-muted/50 border border-border rounded-lg p-4"
+              className={cn(
+                'relative overflow-x-auto p-4',
+                'bg-gradient-to-br from-muted/60 to-muted/40',
+                'border border-border/50',
+                'rounded-xl',
+                'shadow-sm',
+                'transition-shadow duration-200',
+                'group-hover/code:shadow-md'
+              )}
               {...props}
             >
               {children}
@@ -212,7 +220,7 @@ export function Message({
             {codeString && (
               <CopyButton
                 text={codeString}
-                className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
+                className="absolute top-2.5 right-2.5 opacity-0 group-hover/code:opacity-100 transition-all duration-200 translate-y-1 group-hover/code:translate-y-0"
               />
             )}
           </div>
@@ -341,11 +349,11 @@ export function Message({
       }}
       tabIndex={0}
       className={cn(
-        'group flex gap-3 rounded-xl transition-all duration-200 ease-out',
+        'group flex gap-3.5 rounded-2xl transition-all duration-200 ease-out',
         // Reduced padding for grouped messages
         isGrouped && !isGroupStart && !isGroupEnd ? 'px-4 py-1.5' : 'p-4',
         isUser && 'flex-row-reverse',
-        isHovered && 'bg-muted/40',
+        isHovered && 'bg-muted/30 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)]',
         className
       )}
     >
@@ -423,8 +431,13 @@ export function Message({
             !isUser && 'prose prose-sm dark:prose-invert max-w-none',
             // Apply streaming-specific optimizations
             !isUser && isStreaming && 'clarity-streaming-markdown',
-            isUser &&
-              'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30'
+            isUser && [
+              'px-4 py-3 rounded-2xl inline-block',
+              'bg-gradient-to-br from-primary via-primary to-primary/90',
+              'text-primary-foreground',
+              'shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.35)]',
+              'ring-1 ring-primary/20',
+            ]
           )}
         >
           {isUser ? (

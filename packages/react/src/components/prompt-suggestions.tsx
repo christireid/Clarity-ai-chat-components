@@ -208,10 +208,15 @@ export function PromptSuggestions({
                   size="sm"
                   onClick={() => onSelect(suggestion)}
                   className={cn(
-                    'group relative rounded-full',
-                    'hover:bg-primary hover:text-primary-foreground hover:border-primary',
+                    'group relative rounded-full px-4 py-2',
+                    'bg-card/80 backdrop-blur-sm',
+                    'border-border/50',
+                    'hover:bg-gradient-to-r hover:from-primary hover:to-primary/90',
+                    'hover:text-primary-foreground hover:border-primary/50',
                     'transition-all duration-200 ease-out',
-                    'hover:shadow-md hover:-translate-y-[1px]'
+                    'shadow-sm hover:shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.3)]',
+                    'hover:-translate-y-0.5 hover:scale-[1.02]',
+                    'active:scale-[0.98] active:translate-y-0'
                   )}
                   aria-label={suggestion.label || suggestion.text}
                 >
@@ -259,37 +264,50 @@ export function PromptSuggestions({
                 hoverable
                 className={cn(
                   'cursor-pointer transition-all duration-200 ease-out',
-                  'hover:shadow-lg hover:border-primary/50',
-                  'hover:-translate-y-[2px]',
-                  'group'
+                  'bg-gradient-to-br from-card to-card/95',
+                  'border-border/40',
+                  'shadow-sm',
+                  'hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)]',
+                  'hover:border-primary/30',
+                  'hover:-translate-y-1 hover:scale-[1.01]',
+                  'active:scale-[0.99] active:translate-y-0',
+                  'group overflow-hidden'
                 )}
                 onClick={() => onSelect(suggestion)}
               >
-                <CardContent className="px-4 py-3.5">
-                  <div className="flex items-start gap-3">
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <CardContent className="px-4 py-4 relative">
+                  <div className="flex items-start gap-3.5">
                     {suggestion.icon && (
                       <motion.div
-                        className="flex-shrink-0 text-primary"
-                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200"
+                        whileHover={{ scale: 1.05, rotate: 3 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                       >
                         {suggestion.icon}
                       </motion.div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm mb-1.5 text-foreground group-hover:text-primary transition-colors duration-200">
+                      <h4 className="font-semibold text-sm mb-1 text-foreground group-hover:text-primary transition-colors duration-200">
                         {suggestion.label || suggestion.text}
                       </h4>
                       {suggestion.description && (
-                        <p className="text-xs text-muted-foreground/90 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed">
                           {suggestion.description}
                         </p>
                       )}
                       {suggestion.confidence !== undefined && (
-                        <Badge variant="secondary" className="mt-2 text-xs">
+                        <Badge variant="secondary" className="mt-2.5 text-xs bg-primary/10 text-primary border-0">
                           {Math.round(suggestion.confidence * 100)}% match
                         </Badge>
                       )}
+                    </div>
+                    {/* Arrow indicator */}
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-muted/50 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-200">
+                      <svg className="w-3.5 h-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
                   </div>
                 </CardContent>
