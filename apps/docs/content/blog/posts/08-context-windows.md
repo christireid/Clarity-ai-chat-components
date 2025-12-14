@@ -244,15 +244,29 @@ function useSemanticContext(vectorStore: VectorStore) {
 Users shouldn't be surprised when they hit context limits. Show them:
 
 ```tsx
+// Utility for conditional class names (npm install clsx tailwind-merge)
+// Or use a simple version:
+function cn(...classes: (string | boolean | undefined)[]): string {
+  return classes.filter(Boolean).join(' ')
+}
+
+function formatNumber(n: number): string {
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : n.toString()
+}
+
+interface TokenCounterProps {
+  current: number
+  max: number
+  warningThreshold?: number
+  onPrune?: () => void
+}
+
 function TokenCounter({
   current,
   max,
   warningThreshold = 0.8,
-}: {
-  current: number
-  max: number
-  warningThreshold?: number
-}) {
+  onPrune,
+}: TokenCounterProps) {
   const percentage = current / max
   const isWarning = percentage > warningThreshold
   const isCritical = percentage > 0.95
@@ -279,7 +293,7 @@ function TokenCounter({
         {formatNumber(current)} / {formatNumber(max)} tokens
       </span>
 
-      {isCritical && (
+      {isCritical && onPrune && (
         <button
           onClick={onPrune}
           className="text-xs text-blue-600 hover:underline"
@@ -350,6 +364,14 @@ function useTokenWarnings(maxTokens: number) {
 
 ```tsx
 // Helper functions for context management
+function estimateTotalTokens(messages: Array<{ role: string; content: string }>): number {
+  // Rough estimate: ~4 chars per token for English
+  // For production, use tiktoken for accurate counts
+  const contentTokens = messages.reduce((sum, msg) => sum + Math.ceil(msg.content.length / 4), 0)
+  const overheadTokens = messages.length * 4 // Role markers, formatting
+  return contentTokens + overheadTokens
+}
+
 async function confirmPrune(options: { message: string }): Promise<boolean> {
   // Show a confirmation dialog to the user
   return window.confirm(options.message)
@@ -364,6 +386,7 @@ async function actualSend(content: string): Promise<void> {
   // Your actual API call to send the message
 }
 
+// Assumes contextMessages and maxTokens are in scope from component state
 async function sendMessage(content: string) {
   const totalTokens = estimateTotalTokens([
     ...contextMessages,

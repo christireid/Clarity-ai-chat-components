@@ -238,14 +238,16 @@ function hasPattern(patterns: UserPattern[], behavior: string, minConfidence: nu
 async function updatePatterns(
   userId: string,
   message: string,
-  response: string
+  response: string,
+  feedback?: { positive: boolean }  // Optional user feedback on the response
 ): Promise<void> {
   // Detect patterns
   if (message.toLowerCase().includes('explain') && message.includes('?')) {
     await incrementPattern(userId, 'prefers_detailed_explanations')
   }
 
-  if (response.includes('```') && userGavePositiveFeedback) {
+  // Track code example appreciation when user gives positive feedback
+  if (response.includes('```') && feedback?.positive) {
     await incrementPattern(userId, 'appreciates_code_examples')
   }
 

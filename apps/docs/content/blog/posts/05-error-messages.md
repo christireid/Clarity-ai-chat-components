@@ -253,6 +253,11 @@ function useSafeMessageSend() {
 Failed messages stay visible with a retry button:
 
 ```tsx
+// Utility for conditional class names
+function cn(...classes: (string | boolean | undefined)[]): string {
+  return classes.filter(Boolean).join(' ')
+}
+
 function MessageWithStatus({ message }: { message: Message }) {
   const { retrySend } = useChatActions()
 

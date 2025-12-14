@@ -198,13 +198,17 @@ Standard documentation paths used:
 **Risk:** Code examples referenced undefined functions, making them non-copy-paste ready.
 
 **Resolution:**
-- **Post 8** (Context Windows): Added `embed()` function, plus `confirmPrune()`, `pruneOldMessages()`, `actualSend()` helpers
+- **Post 5** (Error Messages): Added `cn()` utility function for conditional class names
+- **Post 6** (Typing Indicators): Added `cn()` utility function for conditional class names
+- **Post 8** (Context Windows): Added `embed()`, `estimateTotalTokens()`, `cn()`, `formatNumber()`, `confirmPrune()`, `pruneOldMessages()`, `actualSend()` helpers; added `TokenCounterProps` interface
+- **Post 9** (Production-Ready Chat): Added `cn()` utility and `formatTime()` helper
+- **Post 12** (Optimistic UI): Added `cn()` utility and `formatTime()` helper
 - **Post 13** (Cost Optimization): Added `embed()` and `cosineSimilarity()` helper functions for semantic pruning
 - **Post 15** (Model Selection): Added `extractKeywords()` function and API wrapper comments
 - **Post 17** (RAG Production): Added `countTokens()`, `tokenize()`, `embed()`, `summarize()`, `splitBySections()`, `splitByParagraphs()`, `cosineSimilarity()`, `generateAnswer()`, and `formatContext()` functions
 - **Post 18** (AI Agents): Added `PendingAction` interface, `showConfirmDialog()`, `describeAction()`, `formatToolResult()` helpers
 - **Post 19** (Security): Added complete implementations for `hasPermission()`, `isRateLimited()`, `requestUserConfirmation()`, `executeActualTool()`, `alertSecurityTeam()`, `getRecentEvents()`, and security logging infrastructure
-- **Post 20** (AI Memory): Added `embed()`, `summarize()`, `extractTopic()`, `incrementPattern()`, and `hasPattern()` helper functions
+- **Post 20** (AI Memory): Added `embed()`, `summarize()`, `extractTopic()`, `incrementPattern()`, `hasPattern()` helpers; fixed `updatePatterns()` to accept optional feedback parameter
 
 ### 2. Type Safety Issues
 **Risk:** Use of `any` type casts reduced TypeScript safety.

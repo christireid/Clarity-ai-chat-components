@@ -203,6 +203,15 @@ function useStreamingChat() {
 Screen readers and keyboard navigation:
 
 ```tsx
+// Utility for conditional class names
+function cn(...classes: (string | boolean | undefined)[]): string {
+  return classes.filter(Boolean).join(' ')
+}
+
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
 function MessageList({ messages, onRetry }: {
   messages: Message[]
   onRetry: (id: string) => void

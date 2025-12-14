@@ -289,6 +289,15 @@ function OptimisticChat() {
 The UI needs to communicate status without being noisy:
 
 ```tsx
+// Utility for conditional class names
+function cn(...classes: (string | boolean | undefined)[]): string {
+  return classes.filter(Boolean).join(' ')
+}
+
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
 function MessageBubble({
   message,
   onRetry,

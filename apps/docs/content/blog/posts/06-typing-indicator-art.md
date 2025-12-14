@@ -235,6 +235,11 @@ For these users, a static indicator with text ("Thinking...") works fine.
 The handoff from typing indicator to actual content should be seamless. No jarring pop, no flash, no jump.
 
 ```tsx
+// Utility for conditional class names
+function cn(...classes: (string | boolean | undefined)[]): string {
+  return classes.filter(Boolean).join(' ')
+}
+
 function StreamingMessage({
   content,
   isStreaming,
