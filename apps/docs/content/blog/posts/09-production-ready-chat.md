@@ -140,7 +140,7 @@ function parseSSEChunk(chunk: string): string {
 }
 
 function useStreamingChat() {
-  const { messages, addMessage, updateMessage } = useMessages()
+  const { messages, addMessage, updateMessage, removeMessage } = useMessages()
   const [status, setStatus] = useState<'idle' | 'streaming' | 'error'>('idle')
   const abortControllerRef = useRef<AbortController | null>(null)
 
@@ -161,6 +161,9 @@ function useStreamingChat() {
 
     abortControllerRef.current = new AbortController()
     setStatus('streaming')
+
+    // Declare accumulated outside try block so it's accessible in catch
+    let accumulated = ''
 
     try {
       const response = await fetch('/api/chat/stream', {
@@ -184,7 +187,6 @@ function useStreamingChat() {
       // Stream the response
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
-      let accumulated = ''
 
       while (reader) {
         const { done, value } = await reader.read()

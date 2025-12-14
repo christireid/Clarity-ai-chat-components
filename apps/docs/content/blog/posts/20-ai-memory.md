@@ -271,9 +271,10 @@ Learned patterns about how the user interacts.
 
 ```typescript
 interface UserPattern {
-  behavior: string
-  confidence: number
-  examples: number
+  userId: string       // The user this pattern belongs to
+  behavior: string     // The identified behavior pattern
+  confidence: number   // How confident we are (0-1)
+  examples: number     // How many times we've observed this
 }
 
 // Pattern storage helpers
@@ -448,7 +449,8 @@ async function handleMessage(userId: string, message: string) {
   // Extract facts in background (don't slow down response)
   extractFacts(message).then(async (facts) => {
     if (facts.length > 0) {
-      await db.userFacts.upsert(userId, facts)
+      // Use the object signature defined in the Database interface
+      await db.userFacts.upsert({ userId, facts })
     }
   })
 

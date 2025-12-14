@@ -455,6 +455,25 @@ function getErrorMessage(errorType: ErrorType): { message: string; action: strin
 Keep users informed during the retry process:
 
 ```tsx
+// Import icons from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import { AlertTriangle as AlertTriangleIcon } from 'lucide-react'
+
+// Type for error classification
+type ErrorType = 'rateLimit' | 'network' | 'server' | 'auth' | 'timeout'
+
+// Helper to get user-friendly error messages
+function getErrorMessage(errorType: ErrorType): { message: string; action: string } {
+  const messages: Record<ErrorType, { message: string; action: string }> = {
+    rateLimit: { message: 'Too many requests', action: 'Waiting before retrying...' },
+    network: { message: 'Network connection lost', action: 'Checking connection...' },
+    server: { message: 'Server temporarily unavailable', action: 'Retrying shortly...' },
+    auth: { message: 'Authentication error', action: 'Please sign in again.' },
+    timeout: { message: 'Request timed out', action: 'Retrying with longer timeout...' },
+  }
+  return messages[errorType]
+}
+
 interface RetryBannerProps {
   errorType: ErrorType
   attemptNumber: number

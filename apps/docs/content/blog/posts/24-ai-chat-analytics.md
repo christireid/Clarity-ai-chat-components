@@ -104,6 +104,18 @@ Track distribution over time. If average messages per conversation is increasing
 Direct feedback from users:
 
 ```tsx
+// Import icons from lucide-react, heroicons, or your preferred icon library
+// npm install lucide-react
+import { ThumbsUp as ThumbsUpIcon, ThumbsDown as ThumbsDownIcon } from 'lucide-react'
+
+// Analytics helper - replace with your analytics provider
+const analytics = {
+  track: (event: string, properties: Record<string, unknown>) => {
+    console.log('[Analytics]', event, properties)
+    // Send to your analytics provider (Mixpanel, Amplitude, Segment, etc.)
+  }
+}
+
 function FeedbackButtons({ messageId }: { messageId: string }) {
   const trackFeedback = (score: number) => {
     analytics.track('message_feedback', {

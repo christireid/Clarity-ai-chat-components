@@ -283,6 +283,66 @@ Pure vector search fails more often than you'd expect. "What's the cancellation 
 Combine vector similarity with keyword matching:
 
 ```typescript
+import OpenAI from 'openai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+// Embedding function
+async function embed(text: string): Promise<number[]> {
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-3-small',
+    input: text,
+  })
+  return response.data[0].embedding
+}
+
+// Chunk type for retrieval
+interface Chunk {
+  id: string
+  content: string
+  metadata?: Record<string, unknown>
+}
+
+interface SearchResult {
+  id: string
+  chunk: Chunk
+  score: number
+}
+
+interface RetrievalResult {
+  chunk: Chunk
+  score: number
+}
+
+interface RerankResult {
+  chunk: Chunk
+  score: number
+}
+
+// Vector store abstraction - implement with Pinecone, Weaviate, Qdrant, pgvector, etc.
+const vectorStore = {
+  search: async (embedding: number[], k: number): Promise<SearchResult[]> => {
+    // Example: await pinecone.query({ vector: embedding, topK: k })
+    // Returns array of { id, chunk, score }
+    return []
+  },
+  upsert: async (chunks: Array<{ id: string; embedding: number[]; metadata: Record<string, unknown> }>) => {
+    // Store chunks in vector database
+  }
+}
+
+// Keyword index abstraction - implement with Elasticsearch, Meilisearch, or in-memory BM25
+const keywordIndex = {
+  search: async (query: string, k: number): Promise<SearchResult[]> => {
+    // Example: await elasticsearch.search({ query, size: k })
+    // Returns array of { id, chunk, score }
+    return []
+  },
+  index: async (chunks: Chunk[]) => {
+    // Index chunks for keyword search
+  }
+}
+
 // Cosine similarity for vector comparison
 function cosineSimilarity(a: number[], b: number[]): number {
   const dotProduct = a.reduce((sum, val, i) => sum + val * b[i], 0)
@@ -358,6 +418,26 @@ async function hybridRetrieve(
 Initial retrieval is cheap and fast but imprecise. Reranking is expensive but accurate. Do both:
 
 ```typescript
+// npm install cohere-ai
+import { CohereClient } from 'cohere-ai'
+
+// Initialize Cohere client for reranking
+const cohereClient = new CohereClient({
+  token: process.env.COHERE_API_KEY || '',
+})
+
+// Chunk and result types (defined earlier, repeated for clarity)
+interface Chunk {
+  id: string
+  content: string
+  metadata?: Record<string, unknown>
+}
+
+interface RerankResult {
+  chunk: Chunk
+  score: number
+}
+
 async function rerank(
   query: string,
   chunks: Chunk[]
