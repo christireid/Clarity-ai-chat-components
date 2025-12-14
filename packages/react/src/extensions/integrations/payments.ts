@@ -207,7 +207,7 @@ export function createStripeExtension(
         async getSubscription(subscriptionId) {
           ctx.logger.debug(`Getting subscription: ${subscriptionId}`)
           const data = await makeStripeRequest(
-            `/subscriptions/${subscriptionId}`,
+            `/subscriptions/${encodeURIComponent(subscriptionId)}`,
             'GET'
           )
           if (!data.id) return null
@@ -224,7 +224,10 @@ export function createStripeExtension(
 
         async cancelSubscription(subscriptionId) {
           ctx.logger.debug(`Canceling subscription: ${subscriptionId}`)
-          await makeStripeRequest(`/subscriptions/${subscriptionId}`, 'DELETE')
+          await makeStripeRequest(
+            `/subscriptions/${encodeURIComponent(subscriptionId)}`,
+            'DELETE'
+          )
         },
 
         async recordUsage(subscriptionItemId, quantity, timestamp) {
@@ -232,7 +235,7 @@ export function createStripeExtension(
             `Recording usage: ${quantity} for ${subscriptionItemId}`
           )
           await makeStripeRequest(
-            `/subscription_items/${subscriptionItemId}/usage_records`,
+            `/subscription_items/${encodeURIComponent(subscriptionItemId)}/usage_records`,
             'POST',
             {
               quantity: String(quantity),
@@ -340,7 +343,7 @@ export function createLemonSqueezyExtension(
         async createPortalSession(customerId) {
           ctx.logger.debug('Creating Lemon Squeezy portal')
           const data = await makeRequest(
-            `/customers/${customerId}/customer-portal`,
+            `/customers/${encodeURIComponent(customerId)}/customer-portal`,
             'GET'
           )
           return {
@@ -351,7 +354,7 @@ export function createLemonSqueezyExtension(
 
         async getSubscription(subscriptionId) {
           const data = await makeRequest(
-            `/subscriptions/${subscriptionId}`,
+            `/subscriptions/${encodeURIComponent(subscriptionId)}`,
             'GET'
           )
           if (!data.data) return null
@@ -368,12 +371,15 @@ export function createLemonSqueezyExtension(
         },
 
         async cancelSubscription(subscriptionId) {
-          await makeRequest(`/subscriptions/${subscriptionId}`, 'DELETE')
+          await makeRequest(
+            `/subscriptions/${encodeURIComponent(subscriptionId)}`,
+            'DELETE'
+          )
         },
 
         async recordUsage(subscriptionItemId, quantity) {
           await makeRequest(
-            `/subscription-items/${subscriptionItemId}/usage-records`,
+            `/subscription-items/${encodeURIComponent(subscriptionItemId)}/usage-records`,
             'POST',
             {
               data: {

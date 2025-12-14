@@ -169,8 +169,9 @@ export function createS3Extension(
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
           ctx.logger.debug(`Uploading to S3: ${path}`)
+          const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
-            url: `https://${ctx.config.bucket}.s3.${ctx.config.region}.amazonaws.com/${path}`,
+            url: `https://${ctx.config.bucket}.s3.${ctx.config.region}.amazonaws.com/${encodedPath}`,
             path,
             size: file.size,
             contentType: options?.contentType || file.type,
@@ -185,7 +186,8 @@ export function createS3Extension(
         },
         async getSignedUrl(path, expiresIn = ctx.config.signedUrlExpiration) {
           ctx.logger.debug(`Generating signed URL for: ${path}`)
-          return `https://${ctx.config.bucket}.s3.${ctx.config.region}.amazonaws.com/${path}?signed=true`
+          const encodedPath = path.split('/').map(encodeURIComponent).join('/')
+          return `https://${ctx.config.bucket}.s3.${ctx.config.region}.amazonaws.com/${encodedPath}?signed=true`
         },
         async list(prefix) {
           ctx.logger.debug(`Listing S3 objects with prefix: ${prefix}`)
@@ -251,8 +253,9 @@ export function createCloudflareR2Extension(
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
           ctx.logger.debug(`Uploading to R2: ${path}`)
+          const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
-            url: `${ctx.config.publicUrl || `https://${ctx.config.bucket}.${ctx.config.accountId}.r2.cloudflarestorage.com`}/${path}`,
+            url: `${ctx.config.publicUrl || `https://${ctx.config.bucket}.${ctx.config.accountId}.r2.cloudflarestorage.com`}/${encodedPath}`,
             path,
             size: file.size,
             contentType: options?.contentType || file.type,
@@ -323,8 +326,9 @@ export function createSupabaseStorageExtension(
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
           ctx.logger.debug(`Uploading to Supabase Storage: ${path}`)
+          const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
-            url: `${ctx.config.supabaseUrl}/storage/v1/object/public/${ctx.config.bucket}/${path}`,
+            url: `${ctx.config.supabaseUrl}/storage/v1/object/public/${encodeURIComponent(ctx.config.bucket)}/${encodedPath}`,
             path,
             size: file.size,
             contentType: options?.contentType || file.type,
@@ -450,8 +454,9 @@ export function createUploadThingExtension(
       const adapter: StorageAdapter = {
         async upload(file, path) {
           ctx.logger.debug(`Uploading to UploadThing: ${path}`)
+          const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
-            url: `https://utfs.io/f/${path}`,
+            url: `https://utfs.io/f/${encodedPath}`,
             path,
             size: file.size,
             contentType: file.type,
@@ -520,8 +525,9 @@ export function createCloudinaryExtension(
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
           ctx.logger.debug(`Uploading to Cloudinary: ${path}`)
+          const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
-            url: `https://res.cloudinary.com/${ctx.config.cloudName}/image/upload/${path}`,
+            url: `https://res.cloudinary.com/${encodeURIComponent(ctx.config.cloudName)}/image/upload/${encodedPath}`,
             path,
             size: file.size,
             contentType: options?.contentType || file.type,
@@ -581,8 +587,9 @@ export function createVercelBlobExtension(
       const adapter: StorageAdapter = {
         async upload(file, path) {
           ctx.logger.debug(`Uploading to Vercel Blob: ${path}`)
+          const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
-            url: `https://${ctx.config.storeId || 'default'}.public.blob.vercel-storage.com/${path}`,
+            url: `https://${encodeURIComponent(ctx.config.storeId || 'default')}.public.blob.vercel-storage.com/${encodedPath}`,
             path,
             size: file.size,
             contentType: file.type,

@@ -703,7 +703,7 @@ export function createLogflareExtension(
         recordHistogram() {},
         log(level, message, context) {
           fetch(
-            `https://api.logflare.app/logs/json?source=${ctx.config.sourceToken}`,
+            `https://api.logflare.app/logs/json?source=${encodeURIComponent(ctx.config.sourceToken)}`,
             {
               method: 'POST',
               headers: {
@@ -715,7 +715,9 @@ export function createLogflareExtension(
                 metadata: { level, ...context },
               }),
             }
-          ).catch(() => {})
+          ).catch((err) => {
+            console.warn('Logflare logging failed:', err)
+          })
         },
         captureError(error, context) {
           this.log('error', error.message, { ...context, stack: error.stack })
@@ -772,7 +774,7 @@ export function createAxiomExtension(
         recordHistogram() {},
         log(level, message, context) {
           fetch(
-            `https://api.axiom.co/v1/datasets/${ctx.config.dataset}/ingest`,
+            `https://api.axiom.co/v1/datasets/${encodeURIComponent(ctx.config.dataset)}/ingest`,
             {
               method: 'POST',
               headers: {
@@ -783,7 +785,9 @@ export function createAxiomExtension(
                 { _time: new Date().toISOString(), level, message, ...context },
               ]),
             }
-          ).catch(() => {})
+          ).catch((err) => {
+            console.warn('Axiom logging failed:', err)
+          })
         },
         captureError(error, context) {
           this.log('error', error.message, { ...context, stack: error.stack })
@@ -860,7 +864,9 @@ export function createBetterStackExtension(
               message,
               ...context,
             }),
-          }).catch(() => {})
+          }).catch((err) => {
+            console.warn('Better Stack logging failed:', err)
+          })
         },
         captureError(error, context) {
           this.log('error', error.message, { ...context, stack: error.stack })
