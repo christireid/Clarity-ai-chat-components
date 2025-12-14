@@ -308,10 +308,10 @@ After exploring this demo, you'll understand:
 
 ## 🔗 Related Resources
 
-- [Architecture Overview](../../ARCHITECTURE_OVERVIEW.md)
-- [Quick Start Guide](../../QUICK_START_GUIDE.md)
-- [Components Guide](../../apps/docs/guide/components.md)
-- [API Reference](../../apps/docs/api/components.md)
+- [Architecture Overview](../../docs/architecture.md)
+- [Quick Start Guide](../../docs/getting-started.md)
+- [API Reference](../../docs/api-reference.md)
+- [Best Practices](../../docs/best-practices.md)
 
 ---
 

@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Button } from '@clarity-chat/primitives'
+import { duration } from '../animations/constants'
 
 export type NetworkStatus = 'online' | 'offline' | 'reconnecting' | 'slow'
 
@@ -90,7 +91,7 @@ const STATUS_CONFIG: Record<
       <motion.svg
         animate={{ rotate: 360 }}
         transition={{
-          duration: durations.slower,
+          duration: duration('slower'),
           repeat: Infinity,
           ease: 'linear',
         }}
@@ -201,7 +202,7 @@ export function NetworkStatusBanner({
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{
-            duration: durations.normal,
+            duration: duration('normal'),
             ease: [0.25, 0.1, 0.25, 1],
           }}
           className={cn('border-b', config.className, className)}

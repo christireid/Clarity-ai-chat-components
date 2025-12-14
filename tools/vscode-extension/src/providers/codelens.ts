@@ -19,9 +19,6 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
   ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
     this.codeLenses = []
 
-    // Get text for pattern matching
-    void document.getText()
-
     // Find OpenAI API calls
     this.findAPIPattern(
       document,

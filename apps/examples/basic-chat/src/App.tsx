@@ -1,6 +1,22 @@
+/**
+ * Basic Chat Demo - A complete example showcasing core Clarity Chat features
+ *
+ * This example demonstrates:
+ * - Message operations (edit, regenerate, delete, undo/redo)
+ * - Auto-scroll behavior
+ * - Token tracking and cost estimation
+ * - Realistic typing animation
+ * - Responsive design with mobile support
+ * - Error boundary protection
+ *
+ * For production use, replace the simulated AI response with your actual API call.
+ *
+ * @see https://github.com/christireid/Clarity-ai-chat-components/docs/getting-started.md
+ */
+
 import { useState, useCallback } from 'react'
-import { 
-  ChatWindow, 
+import {
+  ChatWindow,
   useAutoScroll,
   useTokenTracker,
   useRealisticTyping,
@@ -13,8 +29,15 @@ import {
 import '@clarity-chat/react/dist/styles/index.css'
 import type { Message } from '@clarity-chat/types'
 
+// ============================================================================
+// Main Chat Component
+// ============================================================================
+
 function ChatApp() {
-  // Use message operations hook for edit/regenerate/delete functionality
+  // -------------------------------------------------------------------------
+  // Message Operations Hook
+  // Provides edit, regenerate, delete, and undo/redo functionality
+  // -------------------------------------------------------------------------
   const {
     messages: operationMessages,
     addMessage,
@@ -47,8 +70,10 @@ function ChatApp() {
     },
   })
 
-  // Convert operation messages to Message format
-  const messages: Message[] = operationMessages.map(msg => ({
+  // -------------------------------------------------------------------------
+  // Format Messages for ChatWindow
+  // -------------------------------------------------------------------------
+  const messages: Message[] = operationMessages.map((msg) => ({
     id: msg.id,
     chatId: 'demo-chat',
     role: msg.role,
@@ -58,40 +83,47 @@ function ChatApp() {
     status: 'sent' as const,
   }))
 
+  // -------------------------------------------------------------------------
+  // Local State
+  // -------------------------------------------------------------------------
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-  
-  // Auto-scroll for better UX
-  const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({ 
+
+  // -------------------------------------------------------------------------
+  // Auto-Scroll Hook
+  // Automatically scrolls to new messages, with manual scroll detection
+  // -------------------------------------------------------------------------
+  const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
     enabled: true,
     behavior: 'smooth',
-    dependencies: [messages]
+    dependencies: [messages],
   })
-  
-  // Token tracking
-  const { 
-    totalTokens, 
-    addInputTokens, 
-    addOutputTokens,
-    estimatedCost 
-  } = useTokenTracker({
-    modelName: 'gpt-3.5-turbo',
-  })
-  
-  // Realistic typing animation
-  const { 
-    isTyping, 
-    currentStage,
-    startTyping, 
-    delayResponse 
-  } = useRealisticTyping({
-    minDelay: 800,
-    maxDelay: 2000,
-    showIndicatorAfter: 1000,
-  })
-  
-  // Responsive design
+
+  // -------------------------------------------------------------------------
+  // Token Tracking Hook
+  // Tracks token usage and estimates API costs in real-time
+  // -------------------------------------------------------------------------
+  const { totalTokens, addInputTokens, addOutputTokens, estimatedCost } =
+    useTokenTracker({
+      modelName: 'gpt-3.5-turbo',
+    })
+
+  // -------------------------------------------------------------------------
+  // Realistic Typing Hook
+  // Creates human-like typing indicators with variable delays
+  // -------------------------------------------------------------------------
+  const { isTyping, currentStage, startTyping, delayResponse } =
+    useRealisticTyping({
+      minDelay: 800,
+      maxDelay: 2000,
+      showIndicatorAfter: 1000,
+    })
+
+  // -------------------------------------------------------------------------
+  // Responsive Design Hook
+  // Adapts layout for mobile devices
+  // -------------------------------------------------------------------------
   const isMobile = useMediaQuery('(max-width: 768px)')
 
   // Handle message edit

@@ -172,7 +172,7 @@ const QUESTION_PATTERNS = [
 function calculateInformationDensity(text: string): number {
   if (!text || text.length === 0) return 0
 
-  const words = text.split(/\s+/).filter(w => w.length > 0)
+  const words = text.split(/\s+/).filter((w) => w.length > 0)
   if (words.length === 0) return 0
 
   let usefulWeight = 0
@@ -182,7 +182,10 @@ function calculateInformationDensity(text: string): number {
     let weight = 0.5 // Default neutral weight
 
     // Code indicators
-    if (/^[{}[\]()=>]$/.test(word) || /^(function|const|let|var|if|else|return|import|export)$/i.test(word)) {
+    if (
+      /^[{}[\]()=>]$/.test(word) ||
+      /^(function|const|let|var|if|else|return|import|export)$/i.test(word)
+    ) {
       weight = DENSITY_WEIGHTS.codeBlock
     }
     // Numbers
@@ -198,7 +201,7 @@ function calculateInformationDensity(text: string): number {
       weight = DENSITY_WEIGHTS.namedEntity
     }
     // Common/filler words
-    else if (FILLER_PATTERNS.some(p => p.test(word))) {
+    else if (FILLER_PATTERNS.some((p) => p.test(word))) {
       weight = DENSITY_WEIGHTS.filler
     }
     // Short common words
@@ -211,12 +214,16 @@ function calculateInformationDensity(text: string): number {
   }
 
   // Boost for questions
-  if (QUESTION_PATTERNS.some(p => p.test(text))) {
+  if (QUESTION_PATTERNS.some((p) => p.test(text))) {
     usefulWeight += 0.2 * totalWeight
   }
 
   // Check for code blocks
-  if (text.includes('```') || text.includes('function ') || text.includes('const ')) {
+  if (
+    text.includes('```') ||
+    text.includes('function ') ||
+    text.includes('const ')
+  ) {
     usefulWeight += 0.1 * totalWeight
   }
 
@@ -335,7 +342,8 @@ function generateWarnings(
       level: 'critical',
       type: 'utilization',
       message: `Context window at ${utilization.utilizationPercent.toFixed(1)}% capacity`,
-      recommendation: 'Immediately summarize or prune conversation history to avoid truncation',
+      recommendation:
+        'Immediately summarize or prune conversation history to avoid truncation',
       timestamp: now,
     })
   } else if (utilization.utilizationPercent >= options.warningThreshold * 100) {
@@ -371,7 +379,8 @@ function generateWarnings(
   }
 
   // System prompt consuming too much context
-  const systemPromptPercent = (utilization.breakdown.systemPrompt / utilization.maxTokens) * 100
+  const systemPromptPercent =
+    (utilization.breakdown.systemPrompt / utilization.maxTokens) * 100
   if (systemPromptPercent > 40) {
     warnings.push({
       level: 'warning',
@@ -396,26 +405,28 @@ function generateRecommendations(
 
   // High utilization - suggest summarization
   if (utilization.utilizationPercent > 70) {
-    const potentialSavings = Math.floor(utilization.breakdown.conversationHistory * 0.7)
-    if (potentialSavings > 500) {
-      recommendations.push({
-        id: 'summarize-history',
-        priority: 1,
-        description: 'Summarize conversation history to reduce token usage',
-        estimatedSavings: potentialSavings,
-        action: 'summarize',
-        metadata: {
-          historyTokens: utilization.breakdown.conversationHistory,
-          compressionRatio: 0.3,
-        },
-      })
-    }
+    const potentialSavings = Math.floor(
+      utilization.breakdown.conversationHistory * 0.7
+    )
+    recommendations.push({
+      id: 'summarize-history',
+      priority: 1,
+      description: 'Summarize conversation history to reduce token usage',
+      estimatedSavings: Math.max(0, potentialSavings),
+      action: 'summarize',
+      metadata: {
+        historyTokens: utilization.breakdown.conversationHistory,
+        compressionRatio: 0.3,
+      },
+    })
   }
 
   // Low density - suggest compression
   if (utilization.efficiency.informationDensity < 0.5) {
     const potentialSavings = Math.floor(
-      utilization.totalTokens * (1 - utilization.efficiency.informationDensity) * 0.5
+      utilization.totalTokens *
+        (1 - utilization.efficiency.informationDensity) *
+        0.5
     )
     if (potentialSavings > 200) {
       recommendations.push({
@@ -433,12 +444,18 @@ function generateRecommendations(
   }
 
   // Stale content - suggest archiving
-  if (utilization.efficiency.recencyScore < 0.4 && utilization.breakdown.conversationHistory > 1000) {
+  if (
+    utilization.efficiency.recencyScore < 0.4 &&
+    utilization.breakdown.conversationHistory > 1000
+  ) {
     recommendations.push({
       id: 'archive-old-context',
       priority: 3,
-      description: 'Archive old context to vector store for retrieval when needed',
-      estimatedSavings: Math.floor(utilization.breakdown.conversationHistory * 0.5),
+      description:
+        'Archive old context to vector store for retrieval when needed',
+      estimatedSavings: Math.floor(
+        utilization.breakdown.conversationHistory * 0.5
+      ),
       action: 'archive',
       metadata: {
         recencyScore: utilization.efficiency.recencyScore,
@@ -503,9 +520,7 @@ function generateRecommendations(
  * ))}
  * ```
  */
-export function useContextMonitor(
-  options: UseContextMonitorOptions = {}
-): {
+export function useContextMonitor(options: UseContextMonitorOptions = {}): {
   /** Current context utilization (after last analysis) */
   utilization: ContextUtilization | null
   /** Current warnings */
@@ -549,9 +564,12 @@ export function useContextMonitor(
     ]
   )
 
-  const [utilization, setUtilization] = React.useState<ContextUtilization | null>(null)
+  const [utilization, setUtilization] =
+    React.useState<ContextUtilization | null>(null)
   const [warnings, setWarnings] = React.useState<ContextWarning[]>([])
-  const [recommendations, setRecommendations] = React.useState<OptimizationRecommendation[]>([])
+  const [recommendations, setRecommendations] = React.useState<
+    OptimizationRecommendation[]
+  >([])
   const [history, setHistory] = React.useState<ContextUtilization[]>([])
 
   /**
@@ -566,7 +584,7 @@ export function useContextMonitor(
       setRecommendations(generateRecommendations(result, resolvedOptions))
 
       if (resolvedOptions.trackHistory) {
-        setHistory(prev => {
+        setHistory((prev) => {
           const updated = [...prev, result]
           if (updated.length > resolvedOptions.maxHistoryEntries) {
             return updated.slice(-resolvedOptions.maxHistoryEntries)
@@ -606,23 +624,59 @@ export function useContextMonitor(
     ? utilization.utilizationPercent >= resolvedOptions.criticalThreshold * 100
     : false
 
-  return {
-    utilization,
-    warnings,
-    recommendations,
-    history,
-    analyzeMessages,
-    getUtilization,
-    clearHistory,
-    isWarning,
-    isCritical,
+  /**
+   * Keep a stable API object identity so callers can safely create long-lived
+   * integrations (e.g. helpers created once) that always see the latest state.
+   *
+   * This is particularly useful for non-React consumers or helpers that store
+   * a reference to the hook return value.
+   */
+  const apiRef = React.useRef<{
+    utilization: ContextUtilization | null
+    warnings: ContextWarning[]
+    recommendations: OptimizationRecommendation[]
+    history: ContextUtilization[]
+    analyzeMessages: (messages: ContextMessage[]) => ContextUtilization
+    getUtilization: (messages: ContextMessage[]) => ContextUtilization
+    clearHistory: () => void
+    isWarning: boolean
+    isCritical: boolean
+  } | null>(null)
+
+  if (!apiRef.current) {
+    apiRef.current = {
+      utilization: null,
+      warnings: [],
+      recommendations: [],
+      history: [],
+      analyzeMessages,
+      getUtilization,
+      clearHistory,
+      isWarning: false,
+      isCritical: false,
+    }
   }
+
+  // Update the stable object with latest values each render.
+  apiRef.current.utilization = utilization
+  apiRef.current.warnings = warnings
+  apiRef.current.recommendations = recommendations
+  apiRef.current.history = history
+  apiRef.current.analyzeMessages = analyzeMessages
+  apiRef.current.getUtilization = getUtilization
+  apiRef.current.clearHistory = clearHistory
+  apiRef.current.isWarning = isWarning
+  apiRef.current.isCritical = isCritical
+
+  return apiRef.current
 }
 
 /**
  * Get utilization color for UI components
  */
-export function getUtilizationColor(percent: number): 'green' | 'yellow' | 'red' {
+export function getUtilizationColor(
+  percent: number
+): 'green' | 'yellow' | 'red' {
   if (percent < 60) return 'green'
   if (percent < 80) return 'yellow'
   return 'red'

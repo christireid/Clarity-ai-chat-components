@@ -74,6 +74,8 @@ function showSetupInstructions(provider: any) {
     <!DOCTYPE html>
     <html>
     <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
       <style>
         body {
           font-family: var(--vscode-font-family);

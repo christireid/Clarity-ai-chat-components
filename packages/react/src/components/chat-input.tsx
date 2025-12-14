@@ -231,8 +231,9 @@ export function ChatInput({
 
   // React 19: Async action with built-in state management + deduplication
   const handleSubmit = async () => {
+    const trimmedValue = value.trim()
     if (
-      !value.trim() ||
+      !trimmedValue ||
       isOverLimit ||
       disabled ||
       buttonState === 'loading' ||
@@ -245,7 +246,7 @@ export function ChatInput({
     try {
       // Wrap submission with deduplication to prevent double-submit
       await dedupeExecute('chat-submit', async () => {
-        await onSubmit(value)
+        await onSubmit(trimmedValue)
       })
       setButtonState('success')
       // Auto-reset after showing success
@@ -328,6 +329,8 @@ export function ChatInput({
             placeholder={placeholder}
             disabled={disabled}
             maxLength={validMaxLength}
+            aria-label="Message"
+            aria-disabled={disabled}
             aria-invalid={isOverLimit}
             aria-errormessage={isOverLimit ? 'char-limit-error' : undefined}
             autoResize

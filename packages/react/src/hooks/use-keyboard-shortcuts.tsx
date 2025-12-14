@@ -2,6 +2,36 @@
 
 import * as React from 'react'
 
+// ============================================================================
+// SSR-safe Platform Detection
+// ============================================================================
+
+/**
+ * Detect if the user is on a Mac/iOS device (SSR-safe)
+ */
+function detectIsMac(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return false
+  }
+  // Modern API (Chrome 90+, Edge 90+)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userAgentData = (navigator as any).userAgentData
+  if (userAgentData?.platform) {
+    return /macOS|iOS/i.test(userAgentData.platform)
+  }
+  // Fallback to userAgent
+  return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
+
+// Cache the result
+let cachedIsMac: boolean | null = null
+function getIsMac(): boolean {
+  if (cachedIsMac === null) {
+    cachedIsMac = detectIsMac()
+  }
+  return cachedIsMac
+}
+
 export type KeyboardShortcut = {
   /**
    * Key combination (e.g., 'mod+k', 'ctrl+shift+f', 'escape')
@@ -117,10 +147,7 @@ function matchesShortcut(event: KeyboardEvent, pattern: string): boolean {
   const requiresMeta = parts.includes('meta')
 
   // 'mod' is Cmd on Mac, Ctrl on Windows/Linux
-  const isMac =
-    typeof navigator !== 'undefined' &&
-    /Mac|iPod|iPhone|iPad/.test(navigator.platform)
-  const modKey = isMac ? event.metaKey : event.ctrlKey
+  const modKey = getIsMac() ? event.metaKey : event.ctrlKey
 
   const modifierMatch =
     (!requiresMod || modKey) &&
@@ -147,9 +174,12 @@ function matchesShortcut(event: KeyboardEvent, pattern: string): boolean {
  * ```
  */
 export function useShortcutDisplay(): (pattern: string) => string {
-  const isMac =
-    typeof navigator !== 'undefined' &&
-    /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+  // Use state to handle SSR hydration correctly
+  const [isMac, setIsMac] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsMac(detectIsMac())
+  }, [])
 
   return React.useCallback(
     (pattern: string): string => {
@@ -301,12 +331,13 @@ export function KeyboardShortcutsHelp({
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm ${className || ''}`}
       onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="keyboard-shortcuts-title"
+      role="presentation"
     >
       <div
         ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="keyboard-shortcuts-title"
         className="bg-card border border-border rounded-lg shadow-lg max-w-md w-full mx-4 max-h-[80vh] overflow-auto animate-in fade-in-0 zoom-in-95 duration-200"
       >
         <div className="flex items-center justify-between p-4 border-b border-border">

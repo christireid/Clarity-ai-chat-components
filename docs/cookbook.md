@@ -51,22 +51,42 @@ function App() {
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
-  const { messages } = await req.json()
-  
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages,
-    }),
-  })
+  try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
+    }
 
-  const data = await response.json()
-  return NextResponse.json({ message: data.choices[0].message })
+    const { messages } = await req.json()
+
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return NextResponse.json({ error: 'Invalid messages format' }, { status: 400 })
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages,
+      }),
+    })
+
+    if (!response.ok) {
+      return NextResponse.json({ error: 'AI provider error' }, { status: response.status })
+    }
+
+    const data = await response.json()
+    return NextResponse.json({ message: data.choices[0].message })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 }
 ```
 
@@ -141,27 +161,61 @@ function App() {
 ```tsx
 // app/api/chat/route.ts
 export async function POST(req: Request) {
-  const { messages } = await req.json()
-  
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages,
-      stream: true, // Enable streaming
-    }),
-  })
+  try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
 
-  // Return streaming response
-  return new Response(response.body, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-    },
-  })
+    const { messages } = await req.json()
+
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages,
+        stream: true,
+      }),
+    })
+
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: 'AI provider error' }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Return streaming response
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 }
 ```
 
@@ -479,7 +533,7 @@ function App() {
 - [Best Practices](./best-practices.md) - Production patterns
 - [API Reference](./api-reference.md) - Complete API docs
 - [Examples](../apps/examples/README.md) - More examples
-- [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+- [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
 
 ---
 

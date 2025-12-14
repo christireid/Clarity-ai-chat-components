@@ -3,7 +3,6 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Docker Deployment - Clarity Chat',
@@ -17,13 +16,15 @@ export default function DockerDeploymentPage() {
         <span className="docs-badge">Deployment</span>
         <h1>Docker Deployment</h1>
         <p className="docs-lead">
-          Deploy Clarity Chat with Docker for self-hosted, containerized production environments.
+          Deploy Clarity Chat with Docker for self-hosted, containerized
+          production environments.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Quick Start</h2>
-        <pre><code>{`# Clone the repository
+        <pre>
+          <code>{`# Clone the repository
 git clone https://github.com/christireid/Clarity-ai-chat-components
 cd Clarity-ai-chat-components
 
@@ -37,13 +38,15 @@ docker-compose up -d
 # View logs
 docker-compose logs -f
 
-# Access at http://localhost:3000`}</code></pre>
+# Access at http://localhost:3000`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Dockerfile</h2>
         <p>Multi-stage build for optimal image size:</p>
-        <pre><code>{`# Dockerfile
+        <pre>
+          <code>{`# Dockerfile
 FROM node:20-alpine AS base
 
 # Dependencies stage
@@ -84,7 +87,8 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]`}</code></pre>
+CMD ["node", "server.js"]`}</code>
+        </pre>
 
         <Callout type="info" title="Image Size">
           This multi-stage build reduces the final image from ~1GB to ~150MB.
@@ -94,7 +98,8 @@ CMD ["node", "server.js"]`}</code></pre>
       <section className="docs-section">
         <h2>Docker Compose</h2>
         <p>Complete stack with Redis and PostgreSQL:</p>
-        <pre><code>{`# docker-compose.yml
+        <pre>
+          <code>{`# docker-compose.yml
 version: '3.8'
 
 services:
@@ -158,12 +163,14 @@ volumes:
 
 networks:
   app-network:
-    driver: bridge`}</code></pre>
+    driver: bridge`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Nginx Configuration</h2>
-        <pre><code>{`# nginx.conf
+        <pre>
+          <code>{`# nginx.conf
 events {
     worker_connections 1024;
 }
@@ -240,24 +247,28 @@ http {
             proxy_cache_bypass $http_upgrade;
         }
     }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Production Deployment</h2>
 
         <h3>Build and Push to Registry</h3>
-        <pre><code>{`# Build image
+        <pre>
+          <code>{`# Build image
 docker build -t clarity-chat:latest .
 
 # Tag for registry
 docker tag clarity-chat:latest registry.yourdomain.com/clarity-chat:latest
 
 # Push to registry
-docker push registry.yourdomain.com/clarity-chat:latest`}</code></pre>
+docker push registry.yourdomain.com/clarity-chat:latest`}</code>
+        </pre>
 
         <h3>Deploy to Server</h3>
-        <pre><code>{`# SSH into server
+        <pre>
+          <code>{`# SSH into server
 ssh user@yourserver.com
 
 # Pull latest image
@@ -268,22 +279,26 @@ docker-compose pull
 docker-compose up -d
 
 # Clean up old images
-docker image prune -af`}</code></pre>
+docker image prune -af`}</code>
+        </pre>
 
         <h3>Zero-Downtime Deployment</h3>
-        <pre><code>{`# Deploy new version alongside old
+        <pre>
+          <code>{`# Deploy new version alongside old
 docker-compose up -d --scale app=2 --no-recreate
 
 # Wait for health check
 sleep 10
 
 # Remove old containers
-docker-compose up -d --scale app=1 --remove-orphans`}</code></pre>
+docker-compose up -d --scale app=1 --remove-orphans`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Environment Variables</h2>
-        <pre><code>{`# .env
+        <pre>
+          <code>{`# .env
 NODE_ENV=production
 
 # OpenAI
@@ -308,12 +323,14 @@ PINECONE_INDEX=clarity-chat
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
 AWS_REGION=us-east-1
-AWS_S3_BUCKET=clarity-chat-uploads`}</code></pre>
+AWS_S3_BUCKET=clarity-chat-uploads`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Health Checks</h2>
-        <pre><code>{`# Add to docker-compose.yml
+        <pre>
+          <code>{`# Add to docker-compose.yml
 services:
   app:
     healthcheck:
@@ -321,9 +338,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s`}</code></pre>
+      start_period: 40s`}</code>
+        </pre>
 
-        <pre><code>{`// app/api/health/route.ts
+        <pre>
+          <code>{`// app/api/health/route.ts
 export async function GET() {
   // Check dependencies
   const checks = {
@@ -338,14 +357,16 @@ export async function GET() {
     { status: healthy ? 'healthy' : 'unhealthy', checks },
     { status: healthy ? 200 : 503 }
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Monitoring & Logging</h2>
 
         <h3>Centralized Logging</h3>
-        <pre><code>{`# docker-compose.logging.yml
+        <pre>
+          <code>{`# docker-compose.logging.yml
 version: '3.8'
 
 services:
@@ -383,10 +404,12 @@ services:
 
 volumes:
   loki_data:
-  grafana_data:`}</code></pre>
+  grafana_data:`}</code>
+        </pre>
 
         <h3>Prometheus Metrics</h3>
-        <pre><code>{`# Add Prometheus
+        <pre>
+          <code>{`# Add Prometheus
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -400,14 +423,16 @@ services:
       - '--storage.tsdb.path=/prometheus'
 
 volumes:
-  prometheus_data:`}</code></pre>
+  prometheus_data:`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Backup & Recovery</h2>
 
         <h3>Database Backup</h3>
-        <pre><code>{`#!/bin/bash
+        <pre>
+          <code>{`#!/bin/bash
 # backup.sh
 
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -429,10 +454,12 @@ aws s3 cp $BACKUP_DIR/backup_$DATE.tar.gz \
   s3://your-backup-bucket/
 
 # Keep only last 7 days
-find $BACKUP_DIR -mtime +7 -delete`}</code></pre>
+find $BACKUP_DIR -mtime +7 -delete`}</code>
+        </pre>
 
         <h3>Restore from Backup</h3>
-        <pre><code>{`#!/bin/bash
+        <pre>
+          <code>{`#!/bin/bash
 # restore.sh
 
 BACKUP_FILE=$1
@@ -445,24 +472,30 @@ docker exec -i clarity_db psql -U postgres clarity_chat < db_*.sql
 
 # Restore Redis
 docker cp dump_*.rdb clarity_redis:/data/dump.rdb
-docker restart clarity_redis`}</code></pre>
+docker restart clarity_redis`}</code>
+        </pre>
 
         <h3>Automated Backups</h3>
-        <pre><code>{`# Add to crontab
+        <pre>
+          <code>{`# Add to crontab
 0 2 * * * /path/to/backup.sh  # Daily at 2am
-0 0 * * 0 /path/to/weekly_backup.sh  # Weekly on Sunday`}</code></pre>
+0 0 * * 0 /path/to/weekly_backup.sh  # Weekly on Sunday`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Security Hardening</h2>
 
         <h3>Non-Root User</h3>
-        <pre><code>{`# Already in Dockerfile
+        <pre>
+          <code>{`# Already in Dockerfile
 RUN adduser --system --uid 1001 nextjs
-USER nextjs`}</code></pre>
+USER nextjs`}</code>
+        </pre>
 
         <h3>Secret Management</h3>
-        <pre><code>{`# Use Docker Secrets
+        <pre>
+          <code>{`# Use Docker Secrets
 version: '3.8'
 
 services:
@@ -478,10 +511,12 @@ secrets:
   openai_api_key:
     file: ./secrets/openai_api_key.txt
   nextauth_secret:
-    file: ./secrets/nextauth_secret.txt`}</code></pre>
+    file: ./secrets/nextauth_secret.txt`}</code>
+        </pre>
 
         <h3>Network Isolation</h3>
-        <pre><code>{`# Isolate services
+        <pre>
+          <code>{`# Isolate services
 networks:
   frontend:
     driver: bridge
@@ -501,22 +536,26 @@ services:
   
   nginx:
     networks:
-      - frontend  # Only nginx exposed`}</code></pre>
+      - frontend  # Only nginx exposed`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Scaling</h2>
 
         <h3>Horizontal Scaling</h3>
-        <pre><code>{`# Scale app containers
+        <pre>
+          <code>{`# Scale app containers
 docker-compose up -d --scale app=3
 
 # Use Docker Swarm for orchestration
 docker swarm init
-docker stack deploy -c docker-compose.yml clarity-chat`}</code></pre>
+docker stack deploy -c docker-compose.yml clarity-chat`}</code>
+        </pre>
 
         <h3>Load Balancing</h3>
-        <pre><code>{`# docker-compose.swarm.yml
+        <pre>
+          <code>{`# docker-compose.swarm.yml
 version: '3.8'
 
 services:
@@ -534,13 +573,15 @@ services:
           memory: 1G
         reservations:
           cpus: '0.5'
-          memory: 512M`}</code></pre>
+          memory: 512M`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Kubernetes Alternative</h2>
         <p>For larger deployments, consider Kubernetes:</p>
-        <pre><code>{`# deployment.yaml
+        <pre>
+          <code>{`# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -584,14 +625,16 @@ spec:
             path: /api/health
             port: 3000
           initialDelaySeconds: 5
-          periodSeconds: 5`}</code></pre>
+          periodSeconds: 5`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Troubleshooting</h2>
 
         <h3>Container Won't Start</h3>
-        <pre><code>{`# View logs
+        <pre>
+          <code>{`# View logs
 docker-compose logs app
 
 # Check if port is in use
@@ -603,10 +646,12 @@ docker-compose restart
 # Rebuild from scratch
 docker-compose down -v
 docker-compose build --no-cache
-docker-compose up -d`}</code></pre>
+docker-compose up -d`}</code>
+        </pre>
 
         <h3>Out of Memory</h3>
-        <pre><code>{`# Check memory usage
+        <pre>
+          <code>{`# Check memory usage
 docker stats
 
 # Increase memory limit
@@ -615,14 +660,19 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G`}</code></pre>
+          memory: 2G`}</code>
+        </pre>
 
         <h3>Slow Performance</h3>
         <ul>
-          <li>Use production builds (<code>NODE_ENV=production</code>)</li>
+          <li>
+            Use production builds (<code>NODE_ENV=production</code>)
+          </li>
           <li>Enable Redis caching</li>
           <li>Optimize Docker image layers</li>
-          <li>Use <code>--network=host</code> for better network performance</li>
+          <li>
+            Use <code>--network=host</code> for better network performance
+          </li>
         </ul>
       </section>
 

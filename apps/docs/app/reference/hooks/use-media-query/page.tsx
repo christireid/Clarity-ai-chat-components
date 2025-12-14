@@ -1,16 +1,14 @@
-import React from 'react';
-import { Metadata } from 'next';
-;
-import { ApiTable } from '@/components/Demo/ApiTable';
-import { Callout } from '@/components/MDX/Callout';
+import React from 'react'
+import { Metadata } from 'next'
+import { ApiTable } from '@/components/Demo/ApiTable'
+import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'useMediaQuery Hook - Clarity Chat Components',
-  description: 'A React hook for responsive design that detects and responds to CSS media query matches.',
-};
+  description:
+    'A React hook for responsive design that detects and responds to CSS media query matches.',
+}
 
 export default function UseMediaQueryPage() {
   return (
@@ -19,7 +17,8 @@ export default function UseMediaQueryPage() {
         <div>
           <h1>useMediaQuery</h1>
           <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
-            A React hook for responsive design that detects and responds to CSS media query matches.
+            A React hook for responsive design that detects and responds to CSS
+            media query matches.
           </p>
         </div>
       </header>
@@ -27,13 +26,15 @@ export default function UseMediaQueryPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>useMediaQuery</code> hook listens to CSS media queries and returns a boolean indicating
-          whether the query matches the current viewport. Perfect for building responsive components that
-          adapt behavior based on screen size, orientation, color scheme, and more.
+          The <code>useMediaQuery</code> hook listens to CSS media queries and
+          returns a boolean indicating whether the query matches the current
+          viewport. Perfect for building responsive components that adapt
+          behavior based on screen size, orientation, color scheme, and more.
         </p>
 
         <Callout type="info" title="SSR-Safe">
-          This hook is safe to use with server-side rendering and prevents hydration mismatches.
+          This hook is safe to use with server-side rendering and prevents
+          hydration mismatches.
         </Callout>
       </section>
 
@@ -73,26 +74,27 @@ render(<ResponsiveComponent />)`}
               name: 'query',
               type: 'string',
               default: 'undefined',
-              description: 'CSS media query string to match (e.g., "(min-width: 768px)")'
+              description:
+                'CSS media query string to match (e.g., "(min-width: 768px)")',
             },
             {
               name: 'options',
               type: 'object',
               default: '{}',
-              description: 'Optional configuration object'
+              description: 'Optional configuration object',
             },
             {
               name: 'options.defaultValue',
               type: 'boolean',
               default: 'false',
-              description: 'Default value returned during SSR or before mount'
+              description: 'Default value returned during SSR or before mount',
             },
             {
               name: 'options.initializeWithValue',
               type: 'boolean',
               default: 'true',
-              description: 'Whether to immediately evaluate query on mount'
-            }
+              description: 'Whether to immediately evaluate query on mount',
+            },
           ]}
         />
 
@@ -103,8 +105,8 @@ render(<ResponsiveComponent />)`}
               name: 'matches',
               type: 'boolean',
               default: 'undefined',
-              description: 'Whether the media query currently matches'
-            }
+              description: 'Whether the media query currently matches',
+            },
           ]}
         />
       </section>
@@ -166,9 +168,7 @@ render(<ResponsiveBreakpoints />)`}
 
       <section className="docs-section">
         <h2>Orientation Detection</h2>
-        <p>
-          Detect device orientation for tailored layouts.
-        </p>
+        <p>Detect device orientation for tailored layouts.</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
@@ -199,9 +199,7 @@ render(<OrientationDetection />)`}
 
       <section className="docs-section">
         <h2>Color Scheme Detection</h2>
-        <p>
-          Detect user's color scheme preference (light or dark mode).
-        </p>
+        <p>Detect user's color scheme preference (light or dark mode).</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
@@ -238,9 +236,7 @@ render(<ColorSchemeDetection />)`}
 
       <section className="docs-section">
         <h2>Reduced Motion Detection</h2>
-        <p>
-          Respect user's motion preferences for better accessibility.
-        </p>
+        <p>Respect user's motion preferences for better accessibility.</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
@@ -284,9 +280,7 @@ export default function MotionDetection() {
 
       <section className="docs-section">
         <h2>Multiple Queries</h2>
-        <p>
-          Use multiple media queries for complex responsive logic.
-        </p>
+        <p>Use multiple media queries for complex responsive logic.</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
@@ -340,9 +334,7 @@ render(<MultipleQueries />)`}
 
       <section className="docs-section">
         <h2>Conditional Rendering</h2>
-        <p>
-          Render different components based on media query matches.
-        </p>
+        <p>Render different components based on media query matches.</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
@@ -388,9 +380,7 @@ render(<MobileNav />)`}
 
       <section className="docs-section">
         <h2>Custom Breakpoints</h2>
-        <p>
-          Create reusable breakpoint hooks for your design system.
-        </p>
+        <p>Create reusable breakpoint hooks for your design system.</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
@@ -459,9 +449,7 @@ render(<useBreakpoint />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Responsive Component State</h3>
-        <p>
-          Adjust component behavior dynamically based on screen size.
-        </p>
+        <p>Adjust component behavior dynamically based on screen size.</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
@@ -522,9 +510,7 @@ render(<ResponsiveTable />)`}
         />
 
         <h3>Performance Optimization</h3>
-        <p>
-          Conditionally load heavy components only when needed.
-        </p>
+        <p>Conditionally load heavy components only when needed.</p>
         <CodePlayground
           initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
@@ -567,11 +553,10 @@ render(<LazyLoadByBreakpoint />)`}
 
       <section className="docs-section">
         <h2>SSR Considerations</h2>
-        <p>
-          Handle server-side rendering safely with default values:
-        </p>
+        <p>Handle server-side rendering safely with default values:</p>
 
-        <pre><code>{`import { useMediaQuery } from '@clarity/chat-components';
+        <pre>
+          <code>{`import { useMediaQuery } from '@clarity/chat-components';
 
 // ✅ Good: Provide default value for SSR
 function MyComponent() {
@@ -588,42 +573,59 @@ function MyComponent() {
   const isMobile = useMediaQuery('(max-width: 768px)');
   // Server renders false, client might render true
   return <div>{isMobile ? 'Mobile' : 'Desktop'}</div>;
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <Callout type="warning" title="Hydration Mismatches">
-          When using SSR, always provide a <code>defaultValue</code> that matches your
-          expected server render to avoid hydration mismatches. Consider using
+          When using SSR, always provide a <code>defaultValue</code> that
+          matches your expected server render to avoid hydration mismatches.
+          Consider using
           <code>initializeWithValue: false</code> for client-only queries.
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Accessibility</h2>
-        <p>
-          Best practices for using media queries accessibly:
-        </p>
+        <p>Best practices for using media queries accessibly:</p>
 
         <h3>Respect User Preferences</h3>
         <ul>
-          <li>Always check <code>prefers-reduced-motion</code> before adding animations</li>
-          <li>Respect <code>prefers-color-scheme</code> for theme detection</li>
-          <li>Consider <code>prefers-contrast</code> for high contrast needs</li>
-          <li>Check <code>prefers-reduced-transparency</code> for visual effects</li>
+          <li>
+            Always check <code>prefers-reduced-motion</code> before adding
+            animations
+          </li>
+          <li>
+            Respect <code>prefers-color-scheme</code> for theme detection
+          </li>
+          <li>
+            Consider <code>prefers-contrast</code> for high contrast needs
+          </li>
+          <li>
+            Check <code>prefers-reduced-transparency</code> for visual effects
+          </li>
         </ul>
 
         <h3>Touch vs Mouse Detection</h3>
         <ul>
-          <li>Use <code>(hover: hover)</code> to detect hover capability</li>
-          <li>Use <code>(pointer: coarse)</code> for touch devices</li>
-          <li>Use <code>(pointer: fine)</code> for mouse/trackpad</li>
+          <li>
+            Use <code>(hover: hover)</code> to detect hover capability
+          </li>
+          <li>
+            Use <code>(pointer: coarse)</code> for touch devices
+          </li>
+          <li>
+            Use <code>(pointer: fine)</code> for mouse/trackpad
+          </li>
           <li>Don't rely solely on screen size for touch detection</li>
         </ul>
 
-        <pre><code>{`// Check for touch capability
+        <pre>
+          <code>{`// Check for touch capability
 const isTouch = useMediaQuery('(hover: none) and (pointer: coarse)');
 
 // Check for precise pointer
-const hasPrecisePointer = useMediaQuery('(hover: hover) and (pointer: fine)');`}</code></pre>
+const hasPrecisePointer = useMediaQuery('(hover: hover) and (pointer: fine)');`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -631,8 +633,14 @@ const hasPrecisePointer = useMediaQuery('(hover: hover) and (pointer: fine)');`}
 
         <h3>Performance</h3>
         <ul>
-          <li>Media query listeners are efficiently managed and cleaned up automatically</li>
-          <li>Multiple components can safely use the same query without duplication</li>
+          <li>
+            Media query listeners are efficiently managed and cleaned up
+            automatically
+          </li>
+          <li>
+            Multiple components can safely use the same query without
+            duplication
+          </li>
           <li>Consider debouncing resize-heavy operations separately</li>
           <li>Use conditional rendering to avoid loading unnecessary code</li>
         </ul>
@@ -640,14 +648,22 @@ const hasPrecisePointer = useMediaQuery('(hover: hover) and (pointer: fine)');`}
         <h3>Design Guidelines</h3>
         <ul>
           <li>Define breakpoints in a central place for consistency</li>
-          <li>Use mobile-first approach: start with mobile, enhance for desktop</li>
+          <li>
+            Use mobile-first approach: start with mobile, enhance for desktop
+          </li>
           <li>Test on real devices, not just browser resize</li>
-          <li>Consider tablet as a unique breakpoint, not just "between mobile and desktop"</li>
-          <li>Use semantic breakpoint names (isMobile, isTablet) over pixel values</li>
+          <li>
+            Consider tablet as a unique breakpoint, not just "between mobile and
+            desktop"
+          </li>
+          <li>
+            Use semantic breakpoint names (isMobile, isTablet) over pixel values
+          </li>
         </ul>
 
         <h3>Common Breakpoints</h3>
-        <pre><code>{`// Tailwind CSS default breakpoints
+        <pre>
+          <code>{`// Tailwind CSS default breakpoints
 const breakpoints = {
   sm: '(min-width: 640px)',   // Small tablets
   md: '(min-width: 768px)',   // Tablets
@@ -663,7 +679,8 @@ const breakpoints = {
   lg: '(min-width: 992px)',
   xl: '(min-width: 1200px)',
   xxl: '(min-width: 1400px)'
-};`}</code></pre>
+};`}</code>
+        </pre>
 
         <Callout type="info" title="Design Tokens">
           Consider using design tokens or CSS custom properties for breakpoints
@@ -673,10 +690,9 @@ const breakpoints = {
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <p>
-          The useMediaQuery hook is fully typed with TypeScript:
-        </p>
-        <pre><code>{`interface UseMediaQueryOptions {
+        <p>The useMediaQuery hook is fully typed with TypeScript:</p>
+        <pre>
+          <code>{`interface UseMediaQueryOptions {
   defaultValue?: boolean;
   initializeWithValue?: boolean;
 }
@@ -709,17 +725,27 @@ function useBreakpoint(): Breakpoint {
   if (isMd) return 'md';
   if (isSm) return 'sm';
   return 'xs';
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Related Hooks</h2>
         <ul>
-          <li><a href="/reference/hooks/use-window-size">useWindowSize</a> - Get current window dimensions</li>
-          <li><a href="/reference/hooks/use-breakpoint">useBreakpoint</a> - Tailwind-style breakpoint detection</li>
-          <li><a href="/reference/hooks/use-theme">useTheme</a> - Theme management with color scheme detection</li>
+          <li>
+            <a href="/reference/hooks/use-window-size">useWindowSize</a> - Get
+            current window dimensions
+          </li>
+          <li>
+            <a href="/reference/hooks/use-breakpoint">useBreakpoint</a> -
+            Tailwind-style breakpoint detection
+          </li>
+          <li>
+            <a href="/reference/hooks/use-theme">useTheme</a> - Theme management
+            with color scheme detection
+          </li>
         </ul>
       </section>
     </div>
-  );
+  )
 }

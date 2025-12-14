@@ -1,7 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'StreamBlock - Clarity Chat Components',
@@ -14,7 +13,9 @@ export default function StreamBlockPage() {
       <div className="docs-header">
         <span className="docs-badge">Component</span>
         <h1>StreamBlock</h1>
-        <p className="docs-lead">Controlled unit for chunked updates in a message.</p>
+        <p className="docs-lead">
+          Controlled unit for chunked updates in a message.
+        </p>
       </div>
 
       <section className="docs-section">

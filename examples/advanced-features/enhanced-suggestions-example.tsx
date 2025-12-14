@@ -390,7 +390,8 @@ export function CustomMLProviderExample() {
       type: 'ml',
       provider: 'custom',
       endpoint: '/api/rank-suggestions',
-      apiKey: process.env.NEXT_PUBLIC_ML_API_KEY,
+      // Note: API keys should be handled server-side in the /api/rank-suggestions route
+      // Never expose API keys with NEXT_PUBLIC_ prefix
     },
     features: {
       conversationContext: true,

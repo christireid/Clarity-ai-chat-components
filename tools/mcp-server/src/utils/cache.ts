@@ -205,36 +205,54 @@ export const CacheKeys = {
 }
 
 /**
+ * Parse environment variable as integer with default
+ */
+const parseEnvInt = (value: string | undefined, defaultValue: number): number => {
+  if (!value) return defaultValue
+  const parsed = parseInt(value, 10)
+  return isNaN(parsed) ? defaultValue : parsed
+}
+
+/**
  * Pre-configured cache instances for different resource types
+ * All values configurable via environment variables
  */
 
 // Project cache - short TTL as project files may change
-export const projectCache = new Cache<any>({
-  defaultTTL: 30 * 1000, // 30 seconds
-  maxSize: 50,
+export const projectCache = new Cache<unknown>({
+  defaultTTL: parseEnvInt(process.env.MCP_PROJECT_CACHE_TTL, 30 * 1000), // 30 seconds
+  maxSize: parseEnvInt(process.env.MCP_PROJECT_CACHE_SIZE, 50),
   name: 'project'
 })
 
 // Model info cache - long TTL as model info is static
-export const modelCache = new Cache<any>({
-  defaultTTL: 60 * 60 * 1000, // 1 hour
-  maxSize: 20,
+export const modelCache = new Cache<unknown>({
+  defaultTTL: parseEnvInt(process.env.MCP_MODEL_CACHE_TTL, 60 * 60 * 1000), // 1 hour
+  maxSize: parseEnvInt(process.env.MCP_MODEL_CACHE_SIZE, 20),
   name: 'model'
 })
 
 // Examples cache - long TTL as examples are static
-export const exampleCache = new Cache<any>({
-  defaultTTL: 60 * 60 * 1000, // 1 hour
-  maxSize: 30,
+export const exampleCache = new Cache<unknown>({
+  defaultTTL: parseEnvInt(process.env.MCP_EXAMPLE_CACHE_TTL, 60 * 60 * 1000), // 1 hour
+  maxSize: parseEnvInt(process.env.MCP_EXAMPLE_CACHE_SIZE, 30),
   name: 'example'
 })
 
-// Start periodic cleanup (every 5 minutes)
+// Cleanup interval (configurable via env)
+const cleanupIntervalMs = parseEnvInt(process.env.MCP_CACHE_CLEANUP_INTERVAL, 5 * 60 * 1000)
+
+// Start periodic cleanup
 const cleanupInterval = setInterval(() => {
   projectCache.clean()
   modelCache.clean()
   exampleCache.clean()
-}, 5 * 60 * 1000)
+}, cleanupIntervalMs)
+
+// Unref to allow process to exit
+if (cleanupInterval.unref) {
+  cleanupInterval.unref()
+}
 
 // Allow cleanup interval to be cleared for testing
 export function stopCacheCleanup(): void {

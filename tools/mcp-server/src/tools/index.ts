@@ -1102,10 +1102,12 @@ class VectorStore {
   async search(query: string, topK = 3): Promise<Document[]> {
     const queryEmbedding = await this.getEmbedding(query)
 
-    const scored = this.documents.map(doc => ({
-      doc,
-      score: this.cosineSimilarity(queryEmbedding, doc.embedding!)
-    }))
+    const scored = this.documents
+      .filter(doc => doc.embedding != null)
+      .map(doc => ({
+        doc,
+        score: this.cosineSimilarity(queryEmbedding, doc.embedding as number[])
+      }))
 
     return scored
       .sort((a, b) => b.score - a.score)
@@ -1337,8 +1339,16 @@ async function analyzeProject(projectPath: string) {
       throw new NotFoundError('Project directory', projectPath)
     }
 
-    // Count files
+    // Count files with limit to prevent DoS
+    const MAX_FILES_TO_ANALYZE = 100000
     const files = await fs.readdir(projectPath, { recursive: true })
+
+    if (files.length > MAX_FILES_TO_ANALYZE) {
+      throw new ValidationError(
+        `Project contains too many files (>${MAX_FILES_TO_ANALYZE}). This may not be a valid project directory.`,
+        { fileCount: files.length, maxAllowed: MAX_FILES_TO_ANALYZE }
+      )
+    }
     analysis.fileCount = files.length
 
     // Check for key files

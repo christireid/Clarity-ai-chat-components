@@ -1,0 +1,51 @@
+/* ==========================================================================
+   Code Blocks
+   ========================================================================== */
+
+.code-block {
+  position: relative;
+  margin: 0;
+  padding: var(--dt-space-4);
+  font-size: var(--dt-text-xs);
+  font-family: var(--dt-font-mono);
+  color: var(--dt-text-primary);
+  background: var(--dt-bg-code);
+  border: 1px solid var(--dt-border-primary);
+  border-radius: var(--dt-radius-lg);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--dt-space-2) var(--dt-space-4);
+  background: var(--dt-bg-tertiary);
+  border-bottom: 1px solid var(--dt-border-primary);
+  border-radius: var(--dt-radius-lg) var(--dt-radius-lg) 0 0;
+}
+
+.code-block-language {
+  font-size: var(--dt-text-xs);
+  font-weight: var(--dt-font-weight-medium);
+  color: var(--dt-text-tertiary);
+  text-transform: uppercase;
+}
+
+.code-copy-btn {
+  padding: var(--dt-space-1) var(--dt-space-2);
+  font-size: var(--dt-text-xs);
+  color: var(--dt-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--dt-radius-md);
+  cursor: pointer;
+  transition: all var(--dt-transition-fast);
+}
+
+.code-copy-btn:hover {
+  color: var(--dt-text-primary);
+  background: var(--dt-bg-hover);
+}

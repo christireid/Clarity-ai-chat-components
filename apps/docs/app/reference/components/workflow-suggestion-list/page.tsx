@@ -4,11 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Workflow Suggestion List - Clarity Chat Components',
-  description: 'Suggest complete workflows and multi-step processes to help users accomplish complex tasks.',
+  description:
+    'Suggest complete workflows and multi-step processes to help users accomplish complex tasks.',
 }
 
 export default function WorkflowSuggestionListPage() {
@@ -18,14 +17,18 @@ export default function WorkflowSuggestionListPage() {
         <span className="docs-badge">Component</span>
         <h1>Workflow Suggestion List</h1>
         <p className="docs-lead">
-          Suggest complete workflows for complex tasks. Like having a playbook - "Want to deploy to production? Here are the 5 steps."
+          Suggest complete workflows for complex tasks. Like having a playbook -
+          "Want to deploy to production? Here are the 5 steps."
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Instead of just suggesting single questions, suggest entire workflows. For example: "Setting up CI/CD" workflow includes: 1) Create config file, 2) Set up secrets, 3) Test locally, 4) Deploy. Users get a complete game plan.
+          Instead of just suggesting single questions, suggest entire workflows.
+          For example: "Setting up CI/CD" workflow includes: 1) Create config
+          file, 2) Set up secrets, 3) Test locally, 4) Deploy. Users get a
+          complete game plan.
         </p>
       </section>
 
@@ -93,7 +96,10 @@ render(<SimpleWorkflows />)`}
       <section className="docs-section">
         <h2>Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/components/follow-up-suggestions" className="docs-card">
+          <a
+            href="/reference/components/follow-up-suggestions"
+            className="docs-card"
+          >
             <h3>Follow-Up Suggestions</h3>
             <p>Single question suggestions</p>
           </a>
@@ -112,25 +118,24 @@ const workflowProps = [
     name: 'workflows',
     type: 'WorkflowSuggestion[]',
     required: true,
-    description: 'Array of workflow suggestions'
+    description: 'Array of workflow suggestions',
   },
   {
     name: 'onSelect',
     type: '(workflow: WorkflowSuggestion) => void',
     required: false,
-    description: 'Callback when workflow is selected'
+    description: 'Callback when workflow is selected',
   },
   {
     name: 'onPreview',
     type: '(workflow: WorkflowSuggestion) => void',
     required: false,
-    description: 'Callback to preview workflow details'
+    description: 'Callback to preview workflow details',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

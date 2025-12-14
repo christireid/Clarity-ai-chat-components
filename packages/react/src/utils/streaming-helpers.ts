@@ -1,16 +1,16 @@
 /**
  * Shared Streaming Utilities for Chat Hooks
- * 
+ *
  * This module provides reusable streaming logic that eliminates code duplication
  * across useChat, useCompletion, and useAssistant hooks.
- * 
+ *
  * **Key Features:**
  * - Type-safe streaming handlers
  * - Multiple format support (SSE, JSON, plain text)
  * - AbortSignal integration
  * - Error recovery
  * - Progress tracking
- * 
+ *
  * @module streaming-helpers
  */
 
@@ -65,16 +65,18 @@ export interface StreamResult {
 /**
  * Parse SSE (Server-Sent Events) data line
  */
-export function parseSSELine(line: string): { event?: string; data?: string; id?: string } | null {
+export function parseSSELine(
+  line: string
+): { event?: string; data?: string; id?: string } | null {
   const trimmed = line.trim()
-  
+
   if (!trimmed || trimmed.startsWith(':')) {
     return null // Comment or empty line
   }
 
   if (trimmed.startsWith('data:')) {
     const data = trimmed.slice(5).trim()
-    return { data: data === '[DONE]' ? undefined : data }
+    return { data }
   }
 
   if (trimmed.startsWith('event:')) {
@@ -87,6 +89,90 @@ export function parseSSELine(line: string): { event?: string; data?: string; id?
 
   // Plain data line (no prefix)
   return { data: trimmed }
+}
+
+interface SSEEvent {
+  event?: string
+  id?: string
+  data?: string
+}
+
+/**
+ * Minimal SSE event parser (event framing + multi-line data).
+ *
+ * Notes:
+ * - Buffers `data:` lines until a blank line terminates the event.
+ * - Joins multi-line data with `\n` per SSE spec.
+ * - Ignores comment lines starting with `:`.
+ */
+class SSEEventParser {
+  private currentEvent: SSEEvent = {}
+  private dataLines: string[] = []
+
+  reset(): void {
+    this.currentEvent = {}
+    this.dataLines = []
+  }
+
+  /**
+   * Feed a single line (without trailing newline).
+   * Returns a completed event when a blank line terminates the event.
+   */
+  feed(line: string): SSEEvent | null {
+    // Blank line terminates an event.
+    if (!line.trim()) {
+      if (
+        this.currentEvent.event === undefined &&
+        this.currentEvent.id === undefined &&
+        this.dataLines.length === 0
+      ) {
+        this.reset()
+        return null
+      }
+
+      const data =
+        this.dataLines.length > 0 ? this.dataLines.join('\n') : undefined
+      const event: SSEEvent = {
+        event: this.currentEvent.event,
+        id: this.currentEvent.id,
+        data,
+      }
+
+      this.reset()
+      return event
+    }
+
+    const parsed = parseSSELine(line)
+    if (!parsed) return null
+
+    if (parsed.event) this.currentEvent.event = parsed.event
+    if (parsed.id) this.currentEvent.id = parsed.id
+
+    // For SSE, `data:` can appear multiple times; accumulate.
+    if (parsed.data !== undefined) {
+      this.dataLines.push(parsed.data)
+    }
+
+    return null
+  }
+
+  /**
+   * Flush any in-progress event (useful at EOF).
+   */
+  flush(): SSEEvent | null {
+    if (
+      this.currentEvent.event === undefined &&
+      this.currentEvent.id === undefined &&
+      this.dataLines.length === 0
+    ) {
+      return null
+    }
+    const data =
+      this.dataLines.length > 0 ? this.dataLines.join('\n') : undefined
+    const event: SSEEvent = { ...this.currentEvent, data }
+    this.reset()
+    return event
+  }
 }
 
 /**
@@ -110,7 +196,7 @@ export function extractStreamContent(chunk: unknown): string {
 
   if (typeof chunk === 'object' && chunk !== null) {
     const obj = chunk as Record<string, unknown>
-    
+
     // OpenAI chat format
     if (obj['choices'] && Array.isArray(obj['choices'])) {
       const choice = (obj['choices'] as unknown[])[0] as Record<string, unknown>
@@ -137,7 +223,7 @@ export function extractStreamContent(chunk: unknown): string {
 
 /**
  * Process a streaming response with configurable format handling
- * 
+ *
  * @example
  * ```ts
  * const result = await processStream(response.body, {
@@ -152,6 +238,15 @@ export async function processStream(
   stream: ReadableStream<Uint8Array>,
   options: StreamOptions = {}
 ): Promise<StreamResult> {
+  if (
+    !stream ||
+    typeof (stream as ReadableStream<Uint8Array>).getReader !== 'function'
+  ) {
+    throw new Error(
+      '[processStream] Invalid stream: expected a ReadableStream<Uint8Array>.'
+    )
+  }
+
   const {
     signal,
     format = 'sse',
@@ -166,12 +261,58 @@ export async function processStream(
   const startTime = performance.now()
   const reader = stream.getReader()
   const decoder = new TextDecoder()
-  
+
   let content = ''
   let buffer = ''
   let chunks = 0
   let bytes = 0
   let cancelled = false
+  let sseDone = false
+
+  const sseParser = format === 'sse' ? new SSEEventParser() : null
+
+  const handleLine = (line: string): void => {
+    // SSE needs special handling because JSON payloads live in the `data:` field.
+    if (format === 'sse') {
+      const parser = sseParser
+      if (!parser) return
+      const event = parser.feed(line)
+      if (!event) return
+
+      // [DONE] is a convention used by some providers.
+      if (event.data?.trim() === '[DONE]') {
+        sseDone = true
+        return
+      }
+
+      if (!event.data) return
+
+      const parsedJson = onData ? safeParseJSON(event.data) : null
+      if (parsedJson) onData?.(parsedJson)
+
+      const processed = parsedJson
+        ? extractStreamContent(parsedJson)
+        : event.data
+      if (processed) {
+        content += processed
+        onChunk?.(processed)
+      }
+      return
+    }
+
+    if (!line.trim()) return
+
+    const processed = processChunkByFormat(line, format)
+    if (processed) {
+      content += processed
+      onChunk?.(processed)
+    }
+
+    if (onData) {
+      const parsed = safeParseJSON(line)
+      if (parsed) onData(parsed)
+    }
+  }
 
   try {
     while (true) {
@@ -186,10 +327,26 @@ export async function processStream(
       if (done) {
         // Process any remaining buffer
         if (buffer.trim()) {
-          const processed = processChunkByFormat(buffer, format)
-          if (processed) {
-            content += processed
-            onChunk?.(processed)
+          const remainingLines = buffer.split('\n')
+          for (const line of remainingLines) handleLine(line)
+          buffer = ''
+        }
+
+        // Flush any in-progress SSE event at EOF.
+        if (format === 'sse' && sseParser && !sseDone) {
+          const flushed = sseParser.flush()
+          if (flushed?.data?.trim() === '[DONE]') {
+            sseDone = true
+          } else if (flushed?.data) {
+            const parsedJson = onData ? safeParseJSON(flushed.data) : null
+            if (parsedJson) onData?.(parsedJson)
+            const processed = parsedJson
+              ? extractStreamContent(parsedJson)
+              : flushed.data
+            if (processed) {
+              content += processed
+              onChunk?.(processed)
+            }
           }
         }
         break
@@ -209,31 +366,22 @@ export async function processStream(
       buffer = lines.pop() || '' // Keep incomplete line in buffer
 
       for (const line of lines) {
-        if (!line.trim()) continue
-
-        const processed = processChunkByFormat(line, format)
-        if (processed) {
-          content += processed
-          onChunk?.(processed)
-        }
-
-        // Parse data if callback provided
-        if (onData) {
-          const parsed = safeParseJSON(line)
-          if (parsed) {
-            onData(parsed)
-          }
-        }
+        handleLine(line)
+        if (sseDone) break
       }
+
+      // Stop once we see [DONE] in SSE mode.
+      if (sseDone) break
 
       // Prevent buffer overflow
       if (buffer.length > maxChunkSize) {
-        console.warn('[processStream] Buffer size exceeded, flushing...')
-        const processed = processChunkByFormat(buffer, format)
-        if (processed) {
-          content += processed
-          onChunk?.(processed)
+        if (
+          typeof process !== 'undefined' &&
+          process.env?.NODE_ENV !== 'production'
+        ) {
+          console.warn('[processStream] Buffer size exceeded, flushing...')
         }
+        handleLine(buffer)
         buffer = ''
       }
     }
@@ -250,7 +398,7 @@ export async function processStream(
     }
   } catch (error: unknown) {
     const err = error instanceof Error ? error : new Error(String(error))
-    
+
     // Don't call onError for AbortError
     if (err.name !== 'AbortError') {
       onError?.(err)
@@ -276,6 +424,7 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
     case 'sse': {
       const parsed = parseSSELine(chunk)
       if (parsed?.data) {
+        if (parsed.data.trim() === '[DONE]') return ''
         const jsonData = safeParseJSON(parsed.data)
         return jsonData ? extractStreamContent(jsonData) : parsed.data
       }
@@ -296,7 +445,7 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
 
 /**
  * Create a streaming reader for easy iteration
- * 
+ *
  * @example
  * ```ts
  * for await (const chunk of createStreamReader(response.body)) {
@@ -388,7 +537,7 @@ export class StreamAccumulator {
     let hash = 0
     for (let i = 0; i < chunk.length; i++) {
       const char = chunk.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash // Convert to 32-bit integer
     }
     return hash.toString(36)
@@ -443,7 +592,7 @@ export async function retryStream<T>(
         maxDelay
       )
 
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
 
@@ -458,10 +607,10 @@ export async function mergeStreams(
   signal?: AbortSignal
 ): Promise<string> {
   const results = await Promise.all(
-    streams.map(stream => processStream(stream, { signal }))
+    streams.map((stream) => processStream(stream, { signal }))
   )
 
-  return results.map(r => r.content).join('')
+  return results.map((r) => r.content).join('')
 }
 
 /**

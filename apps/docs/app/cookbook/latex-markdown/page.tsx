@@ -3,11 +3,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'LaTeX & Markdown Rendering - Cookbook - Clarity Chat',
-  description: 'Enhance markdown responses with KaTeX math, syntax highlighting, and secure HTML rendering.',
+  description:
+    'Enhance markdown responses with KaTeX math, syntax highlighting, and secure HTML rendering.',
 }
 
 export default function LatexMarkdownCookbook() {
@@ -18,8 +17,9 @@ export default function LatexMarkdownCookbook() {
         <span className="docs-badge">Content</span>
         <h1>LaTeX + Markdown Renderer</h1>
         <p className="docs-lead">
-          Render math-heavy answers, code snippets, and tables with a single component. Perfect for education,
-          scientific, and financial assistants.
+          Render math-heavy answers, code snippets, and tables with a single
+          component. Perfect for education, scientific, and financial
+          assistants.
         </p>
       </div>
 
@@ -95,8 +95,9 @@ def quadratic(a, b, c, x):
         <h2>5. Handle Math Errors</h2>
         <Callout type="warning" title="Graceful Error Handling">
           <p>
-            Wrap <code>onMathError</code> to surface broken LaTeX to the user or log to Sentry. Use{' '}
-            <code>validateLatex</code> before saving prompts to prevent invalid expressions.
+            Wrap <code>onMathError</code> to surface broken LaTeX to the user or
+            log to Sentry. Use <code>validateLatex</code> before saving prompts
+            to prevent invalid expressions.
           </p>
         </Callout>
         <CodeBlock

@@ -169,6 +169,6 @@ const messages = useMemo(
 
 ## Need Help?
 
-- [Getting Started Guide](./getting-started-clarity-chat.md)
+- [Getting Started Guide](./getting-started.md)
 - [Feature Comparison](./clarity-vs-vercel-ai-sdk-ui.md)
 - [API Reference](../packages/react/README.md)

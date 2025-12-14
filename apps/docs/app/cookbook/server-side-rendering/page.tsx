@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Server-Side Rendering Patterns - Clarity Chat Components',
-  description: 'Learn how to use Clarity Chat Components with server-side rendering in Next.js, Remix, and other frameworks.',
+  description:
+    'Learn how to use Clarity Chat Components with server-side rendering in Next.js, Remix, and other frameworks.',
 }
 
 export default function ServerSideRenderingPage() {
@@ -18,7 +17,8 @@ export default function ServerSideRenderingPage() {
         <span className="docs-badge">Recipe</span>
         <h1>Server-Side Rendering Patterns</h1>
         <p className="docs-lead">
-          Learn how to use Clarity Chat Components with server-side rendering in Next.js, Remix, and other frameworks.
+          Learn how to use Clarity Chat Components with server-side rendering in
+          Next.js, Remix, and other frameworks.
         </p>
       </div>
 
@@ -34,9 +34,7 @@ export default function ServerSideRenderingPage() {
 
       <section className="docs-section">
         <h2>Next.js App Router SSR</h2>
-        <p>
-          Server-side render chat with initial data:
-        </p>
+        <p>Server-side render chat with initial data:</p>
         <CodePlayground
           initialCode={`// app/chat/page.tsx (Server Component)
 import { ChatClient } from './chat-client'
@@ -71,9 +69,7 @@ export function ChatClient({ initialMessages }: { initialMessages: Message[] }) 
 
       <section className="docs-section">
         <h2>Server Actions</h2>
-        <p>
-          Use Server Actions for chat operations:
-        </p>
+        <p>Use Server Actions for chat operations:</p>
         <CodePlayground
           initialCode={`// app/actions/chat.ts
 'use server'
@@ -114,9 +110,7 @@ export default function ChatPage() {
 
       <section className="docs-section">
         <h2>Streaming with SSR</h2>
-        <p>
-          Handle streaming in SSR context:
-        </p>
+        <p>Handle streaming in SSR context:</p>
         <CodePlayground
           initialCode={`// app/api/chat/route.ts
 import { StreamingTextResponse } from 'ai'
@@ -148,9 +142,7 @@ export function StreamingChat() {
 
       <section className="docs-section">
         <h2>Remix SSR</h2>
-        <p>
-          Use with Remix loader:
-        </p>
+        <p>Use with Remix loader:</p>
         <CodePlayground
           initialCode={`// app/routes/chat.tsx
 import { useLoaderData } from '@remix-run/react'
@@ -189,8 +181,14 @@ export default function ChatRoute() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/cookbook/nextjs-integration">Next.js Integration</a> - Next.js deep dive</li>
-          <li><a href="/reference/components/clarity-chat">ClarityChat</a> - Main chat component</li>
+          <li>
+            <a href="/cookbook/nextjs-integration">Next.js Integration</a> -
+            Next.js deep dive
+          </li>
+          <li>
+            <a href="/reference/components/clarity-chat">ClarityChat</a> - Main
+            chat component
+          </li>
         </ul>
       </section>
     </div>

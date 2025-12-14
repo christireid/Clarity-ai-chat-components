@@ -72,6 +72,31 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "clarityChat",
+          "title": "Clarity Chat",
+          "icon": "assets/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "clarityChat": [
+        {
+          "id": "clarityChat.explorer",
+          "name": "Explorer",
+          "icon": "assets/icon.svg",
+          "contextualTitle": "Clarity Chat Explorer"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "clarityChat.explorer",
+        "contents": "Welcome to Clarity Chat!\n\nBuild stunning AI chat applications with intelligent memory, streaming, and token optimization.\n\n[Get Started](command:clarity-chat.showWelcome)\n[Add Component](command:clarity-chat.addComponent)\n[View Documentation](command:clarity-chat.openDocs)"
+      }
+    ],
     "commands": [
       {
         "command": "clarity-chat.addComponent",
@@ -144,6 +169,30 @@
         "title": "Convert to Clarity Chat",
         "category": "Clarity Chat",
         "icon": "$(sync)"
+      },
+      {
+        "command": "clarity-chat.quickAction",
+        "title": "Quick Actions",
+        "category": "Clarity Chat",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "clarity-chat.showWelcome",
+        "title": "Show Welcome",
+        "category": "Clarity Chat",
+        "icon": "$(home)"
+      },
+      {
+        "command": "clarity-chat.refreshExplorer",
+        "title": "Refresh Explorer",
+        "category": "Clarity Chat",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "clarity-chat.insertSnippet",
+        "title": "Insert Snippet",
+        "category": "Clarity Chat",
+        "icon": "$(file-code)"
       }
     ],
     "menus": {

@@ -1,12 +1,26 @@
 # Contributing to Clarity Chat
 
-Thank you for your interest in contributing to Clarity Chat! 🎉
+**Welcome! We're excited you're here.**
 
-This document provides guidelines and instructions for contributing to the project.
+Whether you're fixing a typo, adding a feature, or sharing an idea, every contribution makes Clarity Chat better. This guide will help you get started quickly.
+
+**New to open source?** No problem! We've marked beginner-friendly issues with `good first issue`. Start there, and don't hesitate to ask questions.
 
 ---
 
-## 📋 Table of Contents
+## Quick Links
+
+| I want to... | Go to... |
+|-------------|----------|
+| Report a bug | [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues/new?template=bug_report.md) |
+| Suggest a feature | [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions/new?category=ideas) |
+| Ask a question | [Discord](https://discord.gg/clarity-chat) or [Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions) |
+| Fix a bug | [See Development Setup](#development-setup) |
+| Add a feature | [See Pull Request Process](#pull-request-process) |
+
+---
+
+## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
@@ -65,53 +79,54 @@ We welcome:
 
 ## Development Setup
 
-### 1. Fork and Clone
+### Prerequisites
+
+Before you begin, make sure you have:
+
+| Tool | Version | Check with |
+|------|---------|------------|
+| Node.js | >= 20.0.0 | `node --version` |
+| pnpm | >= 10.0.0 | `pnpm --version` |
+| Git | >= 2.0.0 | `git --version` |
+
+**Don't have pnpm?** Install it with `npm install -g pnpm`
+
+### Quick Setup (5 minutes)
 
 ```bash
-# Fork the repository on GitHub, then:
+# 1. Fork on GitHub, then clone your fork
 git clone https://github.com/YOUR_USERNAME/Clarity-ai-chat-components.git
 cd Clarity-ai-chat-components
-```
 
-### 2. Install Dependencies
-
-```bash
+# 2. Install all dependencies
 pnpm install
-```
 
-This installs dependencies for all packages in the monorepo.
-
-### 3. Build Packages
-
-```bash
+# 3. Build all packages
 pnpm build
+
+# 4. Start development (pick one)
+pnpm storybook     # Component development (recommended for UI work)
+pnpm docs          # Documentation site
+pnpm dev           # All packages in watch mode
 ```
 
-### 4. Start Development Environment
+### Verify Your Setup
 
 ```bash
-# Start Storybook (component development)
-pnpm storybook
-
-# Or start the docs site
-pnpm docs
-
-# Or work on a specific package
-pnpm --filter @clarity-chat/react dev
+# Run these commands - all should pass
+pnpm typecheck     # TypeScript validation
+pnpm lint          # Code style checks
+pnpm test          # Unit tests
 ```
 
-### 5. Run Tests
+**Troubleshooting:**
 
-```bash
-# Run all tests
-pnpm test
-
-# Watch mode
-pnpm test:watch
-
-# Coverage report
-pnpm test:coverage
-```
+| Problem | Solution |
+|---------|----------|
+| `pnpm: command not found` | Run `npm install -g pnpm` |
+| Build fails | Try `pnpm clean && pnpm install && pnpm build` |
+| Tests fail | Ensure Node.js >= 20: `node --version` |
+| Port in use | Kill process or use `pnpm storybook --port 6007` |
 
 ---
 

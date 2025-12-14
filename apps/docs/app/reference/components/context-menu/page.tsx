@@ -4,11 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'ContextMenu - Clarity Chat Components',
-  description: 'Right-click context menu component with keyboard navigation, submenus, and custom actions.',
+  description:
+    'Right-click context menu component with keyboard navigation, submenus, and custom actions.',
 }
 
 export default function ContextMenuPage() {
@@ -18,16 +17,18 @@ export default function ContextMenuPage() {
         <span className="docs-badge">Component</span>
         <h1>ContextMenu</h1>
         <p className="docs-lead">
-          Fully accessible right-click context menu with keyboard navigation, nested submenus, icons, and keyboard shortcuts.
+          Fully accessible right-click context menu with keyboard navigation,
+          nested submenus, icons, and keyboard shortcuts.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>ContextMenu</code> component provides a powerful, accessible context menu that can be triggered by
-          right-clicking or long-pressing on an element. It supports nested submenus, keyboard navigation, icons,
-          disabled states, separators, and keyboard shortcut hints.
+          The <code>ContextMenu</code> component provides a powerful, accessible
+          context menu that can be triggered by right-clicking or long-pressing
+          on an element. It supports nested submenus, keyboard navigation,
+          icons, disabled states, separators, and keyboard shortcut hints.
         </p>
       </section>
 
@@ -86,18 +87,12 @@ render(<BasicContextMenu />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="ContextMenu Props"
-          data={contextMenuProps}
-        />
+        <ApiTable title="ContextMenu Props" data={contextMenuProps} />
       </section>
 
       <section className="docs-section">
         <h2>Menu Item Types</h2>
-        <ApiTable
-          title="MenuItem Interface"
-          data={menuItemProps}
-        />
+        <ApiTable title="MenuItem Interface" data={menuItemProps} />
       </section>
 
       <section className="docs-section">
@@ -616,7 +611,8 @@ render(<SelectableContextMenu />)`}
       <section className="docs-section">
         <h2>Chat Message Context Menu</h2>
         <p>
-          A complete example of a context menu for chat messages with all features.
+          A complete example of a context menu for chat messages with all
+          features.
         </p>
         <CodePlayground
           initialCode={`function ChatMessageContextMenu() {
@@ -767,10 +763,9 @@ render(<ChatMessageContextMenu />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Dynamic Menu Items</h3>
-        <p>
-          Generate menu items dynamically based on application state:
-        </p>
-        <pre><code>{`function DynamicContextMenu() {
+        <p>Generate menu items dynamically based on application state:</p>
+        <pre>
+          <code>{`function DynamicContextMenu() {
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
 
@@ -792,13 +787,13 @@ render(<ChatMessageContextMenu />)`}
   }, [users])
 
   return <ContextMenu items={menuItems}>{children}</ContextMenu>
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Multiple Context Menus</h3>
-        <p>
-          Handle different context menus in the same component:
-        </p>
-        <pre><code>{`function MultipleContextMenus() {
+        <p>Handle different context menus in the same component:</p>
+        <pre>
+          <code>{`function MultipleContextMenus() {
   const messageMenu = [
     { id: 'reply', label: 'Reply', onSelect: handleReply },
     { id: 'delete', label: 'Delete', variant: 'danger', onSelect: handleDelete }
@@ -821,13 +816,13 @@ render(<ChatMessageContextMenu />)`}
       </ContextMenu>
     </div>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Custom Menu Rendering</h3>
-        <p>
-          Customize the appearance of menu items:
-        </p>
-        <pre><code>{`function CustomRenderedMenu() {
+        <p>Customize the appearance of menu items:</p>
+        <pre>
+          <code>{`function CustomRenderedMenu() {
   const menuItems = [
     {
       id: 'user',
@@ -847,13 +842,13 @@ render(<ChatMessageContextMenu />)`}
   ]
 
   return <ContextMenu items={menuItems}>{children}</ContextMenu>
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Context Menu with State</h3>
-        <p>
-          Track which item triggered the menu:
-        </p>
-        <pre><code>{`function MessagesWithContextMenu() {
+        <p>Track which item triggered the menu:</p>
+        <pre>
+          <code>{`function MessagesWithContextMenu() {
   const [activeMessage, setActiveMessage] = useState(null)
 
   const getMenuItems = (message) => [
@@ -871,29 +866,44 @@ render(<ChatMessageContextMenu />)`}
       <Message data={message} isActive={activeMessage?.id === message.id} />
     </ContextMenu>
   ))
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Keyboard Navigation</h2>
-        
+
         <Callout type="info" title="Keyboard Shortcuts">
           <ul>
-            <li><kbd>↑</kbd> <kbd>↓</kbd> - Navigate menu items</li>
-            <li><kbd>→</kbd> - Open submenu</li>
-            <li><kbd>←</kbd> - Close submenu</li>
-            <li><kbd>Enter</kbd> / <kbd>Space</kbd> - Select item</li>
-            <li><kbd>Esc</kbd> - Close menu</li>
-            <li><kbd>Home</kbd> - First item</li>
-            <li><kbd>End</kbd> - Last item</li>
-            <li><strong>Type to search</strong> - Jump to matching item</li>
+            <li>
+              <kbd>↑</kbd> <kbd>↓</kbd> - Navigate menu items
+            </li>
+            <li>
+              <kbd>→</kbd> - Open submenu
+            </li>
+            <li>
+              <kbd>←</kbd> - Close submenu
+            </li>
+            <li>
+              <kbd>Enter</kbd> / <kbd>Space</kbd> - Select item
+            </li>
+            <li>
+              <kbd>Esc</kbd> - Close menu
+            </li>
+            <li>
+              <kbd>Home</kbd> - First item
+            </li>
+            <li>
+              <kbd>End</kbd> - Last item
+            </li>
+            <li>
+              <strong>Type to search</strong> - Jump to matching item
+            </li>
           </ul>
         </Callout>
 
         <h3>Type-ahead Search</h3>
-        <p>
-          Quickly find menu items by typing:
-        </p>
+        <p>Quickly find menu items by typing:</p>
         <ul>
           <li>Type first letter to jump to matching items</li>
           <li>Continue typing to refine search</li>
@@ -904,40 +914,43 @@ render(<ChatMessageContextMenu />)`}
 
       <section className="docs-section">
         <h2>Mobile Support</h2>
-        
+
         <h3>Long Press Trigger</h3>
         <p>
-          On mobile devices, context menus are triggered by long-pressing (default 500ms):
+          On mobile devices, context menus are triggered by long-pressing
+          (default 500ms):
         </p>
-        <pre><code>{`<ContextMenu
+        <pre>
+          <code>{`<ContextMenu
   items={menuItems}
   longPressDuration={500} // milliseconds
   hapticFeedback={true}   // vibration on trigger
 >
   <MobileItem />
-</ContextMenu>`}</code></pre>
+</ContextMenu>`}</code>
+        </pre>
 
         <h3>Touch-Friendly Sizing</h3>
         <p>
-          Menu items automatically increase in size on touch devices for better accessibility.
+          Menu items automatically increase in size on touch devices for better
+          accessibility.
         </p>
 
         <h3>Swipe to Dismiss</h3>
-        <p>
-          Swipe down on the menu to close it on mobile devices.
-        </p>
+        <p>Swipe down on the menu to close it on mobile devices.</p>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
-        
+
         <Callout type="tip" title="Keep Menus Concise">
-          Limit context menus to 5-10 top-level items. Use submenus to organize related actions.
+          Limit context menus to 5-10 top-level items. Use submenus to organize
+          related actions.
         </Callout>
 
         <Callout type="warning" title="Don't Hide Essential Actions">
-          Important actions should also be available through visible buttons or keyboard shortcuts,
-          not hidden in context menus alone.
+          Important actions should also be available through visible buttons or
+          keyboard shortcuts, not hidden in context menus alone.
         </Callout>
 
         <h3>Menu Organization</h3>
@@ -967,18 +980,30 @@ render(<ChatMessageContextMenu />)`}
 
       <section className="docs-section">
         <h2>Accessibility</h2>
-        
+
         <h3>ARIA Attributes</h3>
         <p>
           The ContextMenu automatically includes appropriate ARIA attributes:
         </p>
         <ul>
-          <li><code>role="menu"</code> on the menu container</li>
-          <li><code>role="menuitem"</code> on clickable items</li>
-          <li><code>role="separator"</code> on dividers</li>
-          <li><code>aria-haspopup</code> for items with submenus</li>
-          <li><code>aria-disabled</code> for disabled items</li>
-          <li><code>aria-checked</code> for checkbox/radio items</li>
+          <li>
+            <code>role="menu"</code> on the menu container
+          </li>
+          <li>
+            <code>role="menuitem"</code> on clickable items
+          </li>
+          <li>
+            <code>role="separator"</code> on dividers
+          </li>
+          <li>
+            <code>aria-haspopup</code> for items with submenus
+          </li>
+          <li>
+            <code>aria-disabled</code> for disabled items
+          </li>
+          <li>
+            <code>aria-checked</code> for checkbox/radio items
+          </li>
         </ul>
 
         <h3>Focus Management</h3>
@@ -1000,9 +1025,10 @@ render(<ChatMessageContextMenu />)`}
 
       <section className="docs-section">
         <h2>Styling</h2>
-        
+
         <h3>CSS Variables</h3>
-        <pre><code>{`.context-menu {
+        <pre>
+          <code>{`.context-menu {
   --menu-bg: var(--color-surface);
   --menu-border: var(--color-border);
   --menu-shadow: var(--shadow-lg);
@@ -1011,10 +1037,12 @@ render(<ChatMessageContextMenu />)`}
   --item-active-bg: var(--color-primary);
   --item-disabled-opacity: 0.5;
   --separator-color: var(--color-border);
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Custom Styling</h3>
-        <pre><code>{`<ContextMenu
+        <pre>
+          <code>{`<ContextMenu
   items={menuItems}
   className="custom-menu"
   itemClassName="custom-menu-item"
@@ -1029,12 +1057,14 @@ render(<ChatMessageContextMenu />)`}
   }}
 >
   {children}
-</ContextMenu>`}</code></pre>
+</ContextMenu>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { ContextMenu, MenuItem } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ContextMenu, MenuItem } from '@clarity-chat/react'
 
 interface MenuItem {
   id: string
@@ -1067,13 +1097,17 @@ interface ContextMenuProps {
   }
   onOpen?: () => void
   onClose?: () => void
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/hooks/use-keyboard-shortcuts" className="docs-card">
+          <a
+            href="/reference/hooks/use-keyboard-shortcuts"
+            className="docs-card"
+          >
             <h3>useKeyboardShortcuts</h3>
             <p>Keyboard shortcut management</p>
           </a>
@@ -1100,86 +1134,87 @@ const contextMenuProps = [
     name: 'items',
     type: 'MenuItem[]',
     required: true,
-    description: 'Array of menu items to display'
+    description: 'Array of menu items to display',
   },
   {
     name: 'children',
     type: 'React.ReactNode',
     required: true,
-    description: 'Element that triggers the context menu on right-click'
+    description: 'Element that triggers the context menu on right-click',
   },
   {
     name: 'position',
     type: "'auto' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'",
     required: false,
     default: "'auto'",
-    description: 'Menu positioning relative to cursor. Auto adjusts based on viewport.'
+    description:
+      'Menu positioning relative to cursor. Auto adjusts based on viewport.',
   },
   {
     name: 'offset',
     type: '{ x: number; y: number }',
     required: false,
     default: '{ x: 0, y: 0 }',
-    description: 'Pixel offset from cursor position'
+    description: 'Pixel offset from cursor position',
   },
   {
     name: 'disabled',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Disable context menu trigger'
+    description: 'Disable context menu trigger',
   },
   {
     name: 'longPressDuration',
     type: 'number',
     required: false,
     default: '500',
-    description: 'Duration in milliseconds for long press on mobile (ms)'
+    description: 'Duration in milliseconds for long press on mobile (ms)',
   },
   {
     name: 'hapticFeedback',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'Enable haptic feedback on mobile when menu opens'
+    description: 'Enable haptic feedback on mobile when menu opens',
   },
   {
     name: 'closeOnSelect',
     type: 'boolean',
     required: false,
     default: 'true',
-    description: 'Close menu after selecting an item'
+    description: 'Close menu after selecting an item',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Custom CSS class for menu container'
+    description: 'Custom CSS class for menu container',
   },
   {
     name: 'itemClassName',
     type: 'string',
     required: false,
-    description: 'Custom CSS class for menu items'
+    description: 'Custom CSS class for menu items',
   },
   {
     name: 'styles',
     type: '{ menu?: CSSProperties; item?: CSSProperties }',
     required: false,
-    description: 'Inline styles for menu and items'
+    description: 'Inline styles for menu and items',
   },
   {
     name: 'onOpen',
     type: '() => void',
     required: false,
-    description: 'Callback when menu opens'
+    description: 'Callback when menu opens',
   },
   {
     name: 'onClose',
     type: '() => void',
     required: false,
-    description: 'Callback when menu closes'
-  }
+    description: 'Callback when menu closes',
+  },
 ]
 
 const menuItemProps = [
@@ -1187,69 +1222,72 @@ const menuItemProps = [
     name: 'id',
     type: 'string',
     required: true,
-    description: 'Unique identifier for the menu item'
+    description: 'Unique identifier for the menu item',
   },
   {
     name: 'label',
     type: 'string',
     required: true,
-    description: 'Display text for the menu item'
+    description: 'Display text for the menu item',
   },
   {
     name: 'type',
     type: "'item' | 'separator' | 'label'",
     required: false,
     default: "'item'",
-    description: 'Type of menu item. "separator" for dividers, "label" for non-interactive headers.'
+    description:
+      'Type of menu item. "separator" for dividers, "label" for non-interactive headers.',
   },
   {
     name: 'icon',
     type: 'React.ReactNode | string',
     required: false,
-    description: 'Icon to display before label (emoji string or React component)'
+    description:
+      'Icon to display before label (emoji string or React component)',
   },
   {
     name: 'shortcut',
     type: 'string',
     required: false,
-    description: 'Keyboard shortcut hint (e.g., "Cmd+K")'
+    description: 'Keyboard shortcut hint (e.g., "Cmd+K")',
   },
   {
     name: 'disabled',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Disable the menu item'
+    description: 'Disable the menu item',
   },
   {
     name: 'checked',
     type: 'boolean',
     required: false,
-    description: 'Checkbox/radio checked state'
+    description: 'Checkbox/radio checked state',
   },
   {
     name: 'variant',
     type: "'default' | 'danger'",
     required: false,
     default: "'default'",
-    description: 'Visual variant. "danger" for destructive actions (red text).'
+    description: 'Visual variant. "danger" for destructive actions (red text).',
   },
   {
     name: 'items',
     type: 'MenuItem[]',
     required: false,
-    description: 'Submenu items for nested menus'
+    description: 'Submenu items for nested menus',
   },
   {
     name: 'onSelect',
     type: '() => void',
     required: false,
-    description: 'Callback when item is selected'
+    description: 'Callback when item is selected',
   },
   {
     name: 'render',
     type: '() => React.ReactNode',
     required: false,
-    description: 'Custom render function for complete control over item appearance'
-  }
+    description:
+      'Custom render function for complete control over item appearance',
+  },
 ]

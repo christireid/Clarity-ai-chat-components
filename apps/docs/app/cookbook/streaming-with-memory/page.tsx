@@ -3,11 +3,11 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Streaming Chat with Memory - Cookbook',
-  description: 'Build a streaming chat with semantic memory and context management.',
+  description:
+    'Build a streaming chat with semantic memory and context management.',
 }
 
 export default function StreamingWithMemoryCookbook() {
@@ -17,21 +17,25 @@ export default function StreamingWithMemoryCookbook() {
         <span className="docs-badge">Cookbook</span>
         <h1>Streaming Chat with Memory</h1>
         <p className="docs-lead">
-          Implement real-time streaming responses with semantic memory and intelligent context management.
+          Implement real-time streaming responses with semantic memory and
+          intelligent context management.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This recipe shows how to combine streaming responses with semantic memory to build
-          a chat experience that maintains context across sessions and recalls relevant information.
+          This recipe shows how to combine streaming responses with semantic
+          memory to build a chat experience that maintains context across
+          sessions and recalls relevant information.
         </p>
         <Callout type="info" title="What You'll Learn">
-          • Setting up streaming with SSE or WebSockets<br/>
-          • Integrating semantic memory and vector search<br/>
-          • Managing conversation context windows<br/>
-          • Handling reconnections and error recovery
+          • Setting up streaming with SSE or WebSockets
+          <br />
+          • Integrating semantic memory and vector search
+          <br />
+          • Managing conversation context windows
+          <br />• Handling reconnections and error recovery
         </Callout>
       </section>
 
@@ -71,61 +75,96 @@ render(<StreamingMemoryChat />)`}
 
       <section className="docs-section">
         <h2>API Route Setup</h2>
-        <pre><code>{`// app/api/chat/route.ts
+        <pre>
+          <code>{`// app/api/chat/route.ts
 import { StreamingTextResponse } from 'ai'
 import { MemoryService } from '@clarity-chat/react/server'
 
 export async function POST(req: Request) {
-  const { messages, userId } = await req.json()
-  
-  // Retrieve relevant memories
-  const memory = new MemoryService({
-    vectorStore: 'pinecone',
-    apiKey: process.env.PINECONE_API_KEY
-  })
-  
-  const context = await memory.retrieveContext({
-    query: messages[messages.length - 1].content,
-    userId,
-    k: 5
-  })
-  
-  // Combine messages with memory context
-  const prompt = [
-    { role: 'system', content: 'You are a helpful assistant with memory.' },
-    ...context.map(c => ({ role: 'assistant', content: c })),
-    ...messages
-  ]
-  
-  // Stream response
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages: prompt,
-      stream: true
+  try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    const { messages, userId } = await req.json()
+
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Retrieve relevant memories
+    const memory = new MemoryService({
+      vectorStore: 'pinecone',
+      apiKey: process.env.PINECONE_API_KEY
     })
-  })
-  
-  // Store new message in memory
-  const lastMessage = messages[messages.length - 1]
-  await memory.store({
-    content: lastMessage.content,
-    userId,
-    metadata: { timestamp: Date.now() }
-  })
-  
-  return new StreamingTextResponse(response.body)
-}`}</code></pre>
+
+    const context = await memory.retrieveContext({
+      query: messages[messages.length - 1].content,
+      userId,
+      k: 5
+    })
+
+    // Combine messages with memory context
+    const prompt = [
+      { role: 'system', content: 'You are a helpful assistant with memory.' },
+      ...context.map(c => ({ role: 'assistant', content: c })),
+      ...messages
+    ]
+
+    // Stream response
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': \`Bearer \${apiKey}\`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: prompt,
+        stream: true
+      })
+    })
+
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: 'AI provider error' }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Store new message in memory
+    const lastMessage = messages[messages.length - 1]
+    await memory.store({
+      content: lastMessage.content,
+      userId,
+      metadata: { timestamp: Date.now() }
+    })
+
+    return new StreamingTextResponse(response.body)
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Advanced: Token-Optimized Memory</h2>
-        <pre><code>{`import { ChatWindow, TokenOptimizer } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ChatWindow, TokenOptimizer } from '@clarity-chat/react'
 
 export default function OptimizedMemoryChat() {
   const optimizer = new TokenOptimizer({
@@ -150,16 +189,22 @@ export default function OptimizedMemoryChat() {
       rightPanel={<TokenOptimizationPanel />}
     />
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Set appropriate <code>maxTokens</code> based on your model's context window</li>
+          <li>
+            Set appropriate <code>maxTokens</code> based on your model's context
+            window
+          </li>
           <li>Use semantic search to retrieve only relevant memories</li>
           <li>Implement exponential backoff for reconnection logic</li>
-          <li>Store embeddings asynchronously to avoid blocking the response</li>
+          <li>
+            Store embeddings asynchronously to avoid blocking the response
+          </li>
           <li>Clean up old or low-relevance memories periodically</li>
           <li>Monitor token usage and adjust compression strategies</li>
         </ul>

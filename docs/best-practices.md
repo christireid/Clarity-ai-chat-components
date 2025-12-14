@@ -398,7 +398,7 @@ function CustomLayout() {
 
 - [API Reference](./api-reference.md) - Complete API documentation
 - [Examples](../apps/examples/README.md) - 35+ production-ready examples
-- [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+- [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
 - [Architecture](./architecture.md) - System design overview
 
 ---

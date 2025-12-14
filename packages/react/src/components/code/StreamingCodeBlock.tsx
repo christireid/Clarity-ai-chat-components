@@ -86,7 +86,9 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
     const [highlightedHtml, setHighlightedHtml] = React.useState<string>('')
     const [isHighlighting, setIsHighlighting] = React.useState(false)
     const contentRef = React.useRef<HTMLDivElement>(null)
-    const highlightTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+    const highlightTimeoutRef = React.useRef<ReturnType<
+      typeof setTimeout
+    > | null>(null)
     const lastHighlightedCodeRef = React.useRef<string>('')
 
     const language = React.useMemo(

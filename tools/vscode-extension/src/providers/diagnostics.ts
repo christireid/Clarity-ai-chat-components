@@ -44,11 +44,6 @@ export class DiagnosticsProvider {
     // Check 2: Deprecated API usage
     const deprecatedPatterns = [
       {
-        pattern: /ChatWindow/g,
-        replacement: 'ChatInterface',
-        message: 'ChatWindow is deprecated, use ChatInterface instead',
-      },
-      {
         pattern: /onMessage=/g,
         replacement: 'onSend=',
         message: 'onMessage prop is deprecated, use onSend instead',
@@ -107,10 +102,10 @@ export class DiagnosticsProvider {
       diagnostics.push(diagnostic)
     }
 
-    // Check 5: Hardcoded API keys
+    // Check 5: Hardcoded API keys (OpenAI sk-*, Anthropic sk-ant-*, Google AIza*)
     if (this.hasHardcodedApiKey(text)) {
       const matches = text.matchAll(
-        /(sk-[a-zA-Z0-9]{20,}|sk-ant-[a-zA-Z0-9]{20,})/g
+        /(sk-[a-zA-Z0-9_-]{20,}|sk-ant-[a-zA-Z0-9_-]{20,}|AIza[a-zA-Z0-9_-]{30,})/g
       )
       for (const match of matches) {
         if (match.index !== undefined) {
@@ -179,7 +174,8 @@ export class DiagnosticsProvider {
   }
 
   private hasHardcodedApiKey(text: string): boolean {
-    return /(sk-[a-zA-Z0-9]{20,}|sk-ant-[a-zA-Z0-9]{20,})/.test(text)
+    // Matches OpenAI (sk-*, sk-proj-*, sk-svcacct-*), Anthropic (sk-ant-*), and Google (AIza*)
+    return /(sk-[a-zA-Z0-9_-]{20,}|sk-ant-[a-zA-Z0-9_-]{20,}|AIza[a-zA-Z0-9_-]{30,})/.test(text)
   }
 }
 
@@ -233,9 +229,7 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
     const text = document.getText(diagnostic.range)
     let replacement = text
 
-    if (text === 'ChatWindow') {
-      replacement = 'ChatInterface'
-    } else if (text === 'onMessage=') {
+    if (text === 'onMessage=') {
       replacement = 'onSend='
     }
 

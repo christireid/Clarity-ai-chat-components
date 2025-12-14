@@ -66,7 +66,7 @@ const FRAMEWORKS: FrameworkOption[] = [
 ]
 
 export async function createApiRouteCommand(
-  context: vscode.ExtensionContext,
+  _context: vscode.ExtensionContext,
   targetUri?: vscode.Uri
 ) {
   // Get workspace folder

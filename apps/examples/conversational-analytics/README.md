@@ -274,8 +274,8 @@ This demo includes mock data. For production use:
 ## 📚 Documentation
 
 - [Clarity Chat Docs](https://docs.clarity-chat.dev)
-- [Components Guide](../../apps/docs/guide/components.md)
-- [Streaming Guide](../../apps/docs/guide/streaming.md)
+- [API Reference](../../docs/api-reference.md)
+- [Best Practices](../../docs/best-practices.md)
 
 ## 🤝 Contributing
 

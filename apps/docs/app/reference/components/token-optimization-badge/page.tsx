@@ -1,7 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'TokenOptimizationBadge - Clarity Chat Components',
@@ -36,11 +35,13 @@ render(<Example />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <pre><code>{`interface TokenOptimizationBadgeProps {
+        <pre>
+          <code>{`interface TokenOptimizationBadgeProps {
   className?: string
   savingsPercent?: number // 0-100
   status?: 'idle' | 'optimizing' | 'optimized' | 'error'
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
     </div>
   )

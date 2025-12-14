@@ -4,11 +4,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'AI Agent with Tools - Cookbook - Clarity Chat',
-  description: 'Build an AI agent that can call functions, search databases, and use external APIs.',
+  description:
+    'Build an AI agent that can call functions, search databases, and use external APIs.',
 }
 
 export default function AgentWithToolsPage() {
@@ -18,7 +17,8 @@ export default function AgentWithToolsPage() {
         <span className="docs-badge">Cookbook</span>
         <h1>AI Agent with Tools</h1>
         <p className="docs-lead">
-          Give your AI superpowers. Let it check the weather, search databases, send emails - anything you can code as a function.
+          Give your AI superpowers. Let it check the weather, search databases,
+          send emails - anything you can code as a function.
         </p>
       </div>
 
@@ -32,8 +32,9 @@ export default function AgentWithToolsPage() {
         </ul>
 
         <Callout type="info" title="What Are Tools?">
-          Tools = Functions the AI can call. You define functions like "get_weather(city)"
-          and the AI decides when to call them. It's like giving the AI a toolbox.
+          Tools = Functions the AI can call. You define functions like
+          "get_weather(city)" and the AI decides when to call them. It's like
+          giving the AI a toolbox.
         </Callout>
       </section>
 
@@ -347,7 +348,9 @@ async function web_search(args: { query: string }) {
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Keep tool descriptions clear - AI uses them to decide when to call</li>
+          <li>
+            Keep tool descriptions clear - AI uses them to decide when to call
+          </li>
           <li>Validate function arguments (AI can make mistakes)</li>
           <li>Add timeout protection (tools can hang)</li>
           <li>Log all tool calls for debugging</li>
@@ -373,4 +376,3 @@ async function web_search(args: { query: string }) {
     </div>
   )
 }
-

@@ -25,7 +25,7 @@ yarn add @clarity-chat/error-handling
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
 
 ```tsx
 import { ErrorBoundary } from '@clarity-chat/error-handling'
@@ -87,7 +87,7 @@ function ChatComponent() {
 
 ## 📚 Documentation
 
-- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Getting Started Guide](../../docs/getting-started.md)
 - [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
 - [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
 - [Error Handling Guide](./docs/ERROR_HANDLING.md) - Complete guide

@@ -1,0 +1,154 @@
+/**
+ * Clarity Dev Tools - Premium CSS Styling System
+ * A modern, accessible, and delightful developer tools UI
+ *
+ * Features:
+ * - CSS Custom Properties for theming
+ * - Light and dark mode support
+ * - Smooth animations and micro-interactions
+ * - Accessible focus states
+ * - Responsive design
+ */
+
+/* ==========================================================================
+   CSS Variables - Design Tokens
+   ========================================================================== */
+
+:root {
+  /* Color Palette - Light Mode */
+  --dt-color-primary-50: #eff6ff;
+  --dt-color-primary-100: #dbeafe;
+  --dt-color-primary-200: #bfdbfe;
+  --dt-color-primary-300: #93c5fd;
+  --dt-color-primary-400: #60a5fa;
+  --dt-color-primary-500: #3b82f6;
+  --dt-color-primary-600: #2563eb;
+  --dt-color-primary-700: #1d4ed8;
+  --dt-color-primary-800: #1e40af;
+  --dt-color-primary-900: #1e3a8a;
+
+  --dt-color-success-50: #ecfdf5;
+  --dt-color-success-100: #d1fae5;
+  --dt-color-success-500: #10b981;
+  --dt-color-success-600: #059669;
+  --dt-color-success-700: #047857;
+
+  --dt-color-warning-50: #fffbeb;
+  --dt-color-warning-100: #fef3c7;
+  --dt-color-warning-500: #f59e0b;
+  --dt-color-warning-600: #d97706;
+  --dt-color-warning-700: #b45309;
+
+  --dt-color-error-50: #fef2f2;
+  --dt-color-error-100: #fee2e2;
+  --dt-color-error-500: #ef4444;
+  --dt-color-error-600: #dc2626;
+  --dt-color-error-700: #b91c1c;
+
+  --dt-color-gray-50: #f9fafb;
+  --dt-color-gray-100: #f3f4f6;
+  --dt-color-gray-200: #e5e7eb;
+  --dt-color-gray-300: #d1d5db;
+  --dt-color-gray-400: #9ca3af;
+  --dt-color-gray-500: #6b7280;
+  --dt-color-gray-600: #4b5563;
+  --dt-color-gray-700: #374151;
+  --dt-color-gray-800: #1f2937;
+  --dt-color-gray-900: #111827;
+
+  /* Semantic Colors - Light Mode */
+  --dt-bg-primary: #ffffff;
+  --dt-bg-secondary: var(--dt-color-gray-50);
+  --dt-bg-tertiary: var(--dt-color-gray-100);
+  --dt-bg-elevated: #ffffff;
+  --dt-bg-hover: var(--dt-color-gray-100);
+  --dt-bg-active: var(--dt-color-primary-50);
+  --dt-bg-code: var(--dt-color-gray-100);
+
+  --dt-text-primary: var(--dt-color-gray-900);
+  --dt-text-secondary: var(--dt-color-gray-600);
+  --dt-text-tertiary: var(--dt-color-gray-500);
+  --dt-text-inverse: #ffffff;
+  --dt-text-link: var(--dt-color-primary-600);
+
+  --dt-border-primary: var(--dt-color-gray-200);
+  --dt-border-secondary: var(--dt-color-gray-100);
+  --dt-border-focus: var(--dt-color-primary-500);
+  --dt-border-error: var(--dt-color-error-500);
+  --dt-border-success: var(--dt-color-success-500);
+
+  /* Shadows */
+  --dt-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --dt-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --dt-shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --dt-shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --dt-shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --dt-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  --dt-shadow-glow: 0 0 0 3px var(--dt-color-primary-100);
+
+  /* Typography */
+  --dt-font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --dt-font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  --dt-text-xs: 0.75rem;
+  --dt-text-sm: 0.875rem;
+  --dt-text-base: 1rem;
+  --dt-text-lg: 1.125rem;
+  --dt-text-xl: 1.25rem;
+  --dt-text-2xl: 1.5rem;
+  --dt-text-3xl: 1.875rem;
+
+  --dt-line-height-tight: 1.25;
+  --dt-line-height-normal: 1.5;
+  --dt-line-height-relaxed: 1.75;
+
+  --dt-font-weight-normal: 400;
+  --dt-font-weight-medium: 500;
+  --dt-font-weight-semibold: 600;
+  --dt-font-weight-bold: 700;
+
+  /* Spacing */
+  --dt-space-0: 0;
+  --dt-space-1: 0.25rem;
+  --dt-space-2: 0.5rem;
+  --dt-space-3: 0.75rem;
+  --dt-space-4: 1rem;
+  --dt-space-5: 1.25rem;
+  --dt-space-6: 1.5rem;
+  --dt-space-8: 2rem;
+  --dt-space-10: 2.5rem;
+  --dt-space-12: 3rem;
+  --dt-space-16: 4rem;
+
+  /* Border Radius */
+  --dt-radius-none: 0;
+  --dt-radius-sm: 0.25rem;
+  --dt-radius-md: 0.375rem;
+  --dt-radius-lg: 0.5rem;
+  --dt-radius-xl: 0.75rem;
+  --dt-radius-2xl: 1rem;
+  --dt-radius-full: 9999px;
+
+  /* Transitions */
+  --dt-transition-fast: 150ms ease;
+  --dt-transition-base: 200ms ease;
+  --dt-transition-slow: 300ms ease;
+  --dt-transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-Index */
+  --dt-z-base: 1;
+  --dt-z-dropdown: 10;
+  --dt-z-sticky: 20;
+  --dt-z-fixed: 30;
+  --dt-z-overlay: 40;
+  --dt-z-modal: 50;
+  --dt-z-popover: 60;
+  --dt-z-tooltip: 70;
+}
