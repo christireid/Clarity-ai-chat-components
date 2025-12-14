@@ -13,13 +13,13 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
-import { DURATION_SECONDS } from '../animations/constants'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { DURATION_SECONDS } from '../../animations/constants'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
 import { formatBytes } from '@clarity-chat/primitives'
   getMotionSafeDuration,
   getMotionSafeValue,
-} from '../animations/motion-safe'
+} from '../../animations/motion-safe'
 
 /**
  * Web Vitals metric

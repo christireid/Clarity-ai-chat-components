@@ -1,7 +1,7 @@
 import { logger } from '@clarity-chat/utils/logger';
 /**
  * Composable Hook Examples
- * 
+ *
  * Demonstrates how to compose multiple features together
  */
 
@@ -10,7 +10,7 @@ import {
   useChatWithFeatures,
   createChatHook,
 } from '../hooks/use-chat-composable'
-import { ChatWindow } from '../components/chat-window'
+import { ChatWindow } from '../components/chat/chat-window'
 import '@clarity-chat/react/styles.css'
 
 /**

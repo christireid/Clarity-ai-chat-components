@@ -33,7 +33,7 @@ import {
   retryWithBackoff,
   type RetryOptions,
   type RetryResult,
-} from '../utils/retry-with-backoff'
+} from '../../utils/resilience/retry-with-backoff'
 
 export interface UseRetryWithBackoffOptions extends Omit<
   RetryOptions,

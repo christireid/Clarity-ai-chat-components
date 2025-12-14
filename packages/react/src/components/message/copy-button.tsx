@@ -3,18 +3,22 @@
 import React, { memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, type ButtonProps, cn, Tooltip } from '@clarity-chat/primitives'
-import { useClipboard } from '../hooks/use-clipboard'
+import { useClipboard } from '../../hooks/ui/use-clipboard'
 import { CopyIcon, CheckIcon } from '../ui/icons'
 import { useToast } from '../ui/toast'
-import { useReducedMotion } from '../../hooks/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import { getSpring } from '../../animations/spring-presets'
+import { DURATION_SECONDS } from '../../animations/constants'
 
 export interface CopyButtonProps extends Omit<
   ButtonProps,
   'onClick' | 'state'
 > {
   text: string
+  /** Callback fired after successful copy */
   onCopy?: () => void
+  /** Callback fired when copy fails */
+  onError?: (error: Error) => void
   /** Show icon only (no text) */
   iconOnly?: boolean
   /** Custom copy text */
@@ -25,6 +29,8 @@ export interface CopyButtonProps extends Omit<
   showToast?: boolean
   /** Custom toast message */
   toastMessage?: string
+  /** Custom error toast message (default: "Failed to copy") */
+  errorToastMessage?: string
   /** Show tooltip (default: false) */
   showTooltip?: boolean
   /** Custom tooltip text */
@@ -40,11 +46,13 @@ export interface CopyButtonProps extends Omit<
  * @param props - CopyButton configuration
  * @param props.text - The text to copy to clipboard (required)
  * @param props.onCopy - Callback fired after successful copy
+ * @param props.onError - Callback fired when copy fails
  * @param props.iconOnly - Show only the icon, no text label (default: false)
  * @param props.copyText - Label shown in idle state (default: "Copy")
  * @param props.copiedText - Label shown after copying (default: "Copied!")
  * @param props.showToast - Show toast notification on copy (default: false)
  * @param props.toastMessage - Custom toast message (default: "Copied to clipboard!")
+ * @param props.errorToastMessage - Custom error toast message (default: "Failed to copy")
  *
  * @example Basic usage
  * ```tsx
@@ -74,11 +82,13 @@ export interface CopyButtonProps extends Omit<
 export function CopyButton({
   text,
   onCopy,
+  onError,
   iconOnly = false,
   copyText = 'Copy',
   copiedText = 'Copied!',
   showToast = false,
   toastMessage = 'Copied to clipboard!',
+  errorToastMessage = 'Failed to copy',
   showTooltip = false,
   tooltipText = 'Copy to clipboard',
   children,
@@ -92,6 +102,12 @@ export function CopyButton({
       onCopy?.()
       if (showToast && toast) {
         toast.success(toastMessage)
+      }
+    },
+    onError: (error) => {
+      onError?.(error)
+      if (showToast && toast) {
+        toast.error(errorToastMessage)
       }
     },
   })
@@ -127,7 +143,10 @@ export function CopyButton({
           >
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: durations.moderate, ease: 'easeOut' }}
+              transition={{
+                duration: DURATION_SECONDS.moderate,
+                ease: 'easeOut',
+              }}
             >
               <CheckIcon size={14} />
             </motion.div>

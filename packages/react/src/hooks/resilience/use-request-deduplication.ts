@@ -37,7 +37,7 @@ import {
   createMessageKey,
   type DeduplicationOptions,
   type DeduplicationStats,
-} from '../utils/request-deduplication'
+} from '../../utils/api/request-deduplication'
 
 export interface UseRequestDeduplicationOptions extends DeduplicationOptions {}
 

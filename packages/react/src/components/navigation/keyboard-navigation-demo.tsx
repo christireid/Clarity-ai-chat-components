@@ -17,12 +17,15 @@ import {
   useVimNavigation,
   useIsMac,
   defaultChatShortcuts,
-} from '../hooks/use-keyboard-navigation'
+} from '../../hooks/keyboard/use-keyboard-navigation'
 import { SkipLinks, Landmark } from './skip-links'
 import { FocusIndicator } from './focus-indicator'
 import { KeyboardShortcutsModal } from './keyboard-shortcuts-modal'
 import { ContextualKeyboardHints, WithShortcut } from './keyboard-hints-overlay'
-import { CommandPaletteEnhanced, type CommandAction } from './command-palette-enhanced'
+import {
+  CommandPaletteEnhanced,
+  type CommandAction,
+} from './command-palette-enhanced'
 
 // ============================================================================
 // Demo Messages
@@ -36,25 +39,42 @@ interface DemoMessage {
 
 const demoMessages: DemoMessage[] = [
   { id: '1', role: 'user', content: 'Hello! Can you help me with something?' },
-  { id: '2', role: 'assistant', content: 'Of course! I\'d be happy to help. What do you need assistance with?' },
-  { id: '3', role: 'user', content: 'I want to learn about keyboard navigation.' },
-  { id: '4', role: 'assistant', content: 'Great choice! Keyboard navigation improves accessibility and productivity. Here are some tips:\n\n1. Use Tab to move between focusable elements\n2. Use j/k for vim-style list navigation\n3. Press ? to see all shortcuts\n4. Use Cmd/Ctrl+K for the command palette' },
-  { id: '5', role: 'user', content: 'That\'s very helpful, thank you!' },
-  { id: '6', role: 'assistant', content: 'You\'re welcome! Feel free to explore the keyboard shortcuts. Try pressing ? to see all available shortcuts, or hold Alt to see contextual hints.' },
+  {
+    id: '2',
+    role: 'assistant',
+    content:
+      "Of course! I'd be happy to help. What do you need assistance with?",
+  },
+  {
+    id: '3',
+    role: 'user',
+    content: 'I want to learn about keyboard navigation.',
+  },
+  {
+    id: '4',
+    role: 'assistant',
+    content:
+      'Great choice! Keyboard navigation improves accessibility and productivity. Here are some tips:\n\n1. Use Tab to move between focusable elements\n2. Use j/k for vim-style list navigation\n3. Press ? to see all shortcuts\n4. Use Cmd/Ctrl+K for the command palette',
+  },
+  { id: '5', role: 'user', content: "That's very helpful, thank you!" },
+  {
+    id: '6',
+    role: 'assistant',
+    content:
+      "You're welcome! Feel free to explore the keyboard shortcuts. Try pressing ? to see all available shortcuts, or hold Alt to see contextual hints.",
+  },
 ]
 
 // ============================================================================
 // Demo Commands
 // ============================================================================
 
-const createDemoCommands = (
-  handlers: {
-    onNewChat: () => void
-    onCopyMessage: () => void
-    onToggleTheme: () => void
-    onOpenSettings: () => void
-  }
-): CommandAction[] => [
+const createDemoCommands = (handlers: {
+  onNewChat: () => void
+  onCopyMessage: () => void
+  onToggleTheme: () => void
+  onOpenSettings: () => void
+}): CommandAction[] => [
   {
     id: 'new-chat',
     label: 'New Chat',
@@ -62,8 +82,18 @@ const createDemoCommands = (
     shortcut: 'mod+n',
     category: 'Chat',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 4v16m8-8H4"
+        />
       </svg>
     ),
     onSelect: handlers.onNewChat,
@@ -75,8 +105,18 @@ const createDemoCommands = (
     shortcut: 'mod+shift+c',
     category: 'Chat',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+        />
       </svg>
     ),
     onSelect: handlers.onCopyMessage,
@@ -88,8 +128,18 @@ const createDemoCommands = (
     shortcut: 'mod+shift+l',
     category: 'Appearance',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+        />
       </svg>
     ),
     onSelect: handlers.onToggleTheme,
@@ -101,9 +151,24 @@ const createDemoCommands = (
     shortcut: 'mod+,',
     category: 'Navigation',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        />
       </svg>
     ),
     onSelect: handlers.onOpenSettings,
@@ -114,8 +179,18 @@ const createDemoCommands = (
     description: 'Navigate to different sections',
     category: 'Navigation',
     icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13 5l7 7-7 7M5 5l7 7-7 7"
+        />
       </svg>
     ),
     onSelect: () => {},
@@ -161,9 +236,7 @@ function MessageItem({ message, isFocused, itemProps }: MessageItemProps) {
       {...itemProps}
       className={cn(
         'p-4 rounded-lg transition-all duration-150 outline-none',
-        message.role === 'user'
-          ? 'bg-primary/10 ml-8'
-          : 'bg-muted/50 mr-8',
+        message.role === 'user' ? 'bg-primary/10 ml-8' : 'bg-muted/50 mr-8',
         isFocused && 'ring-2 ring-primary ring-offset-2 ring-offset-background'
       )}
       initial={{ opacity: 0, y: 10 }}
@@ -204,7 +277,8 @@ function KeyboardNavigationDemoInner() {
   const [notification, setNotification] = React.useState<string | null>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
-  const { registerShortcut, state, announceToScreenReader } = useKeyboardNavigation()
+  const { registerShortcut, state, announceToScreenReader } =
+    useKeyboardNavigation()
   const isMac = useIsMac()
 
   // Vim navigation for messages
@@ -315,8 +389,18 @@ function KeyboardNavigationDemoInner() {
                   className="px-3 py-1.5 text-sm bg-muted rounded-lg hover:bg-muted/80 transition-colors flex items-center gap-2"
                   data-shortcut="mod+k"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                   <span className="hidden sm:inline">Search</span>
                   <kbd className="hidden sm:inline px-1.5 py-0.5 text-xs bg-background rounded border">
@@ -331,8 +415,18 @@ function KeyboardNavigationDemoInner() {
                   aria-label="Keyboard shortcuts"
                   data-shortcut="?"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </button>
               </WithShortcut>
@@ -347,18 +441,57 @@ function KeyboardNavigationDemoInner() {
           {/* Instructions */}
           <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <h2 className="font-semibold mb-2 flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               Try these keyboard shortcuts
             </h2>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">j</kbd> / <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">k</kbd> - Navigate messages</li>
-              <li><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">?</kbd> - Show all shortcuts</li>
-              <li><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Cmd/Ctrl+K</kbd> - Command palette</li>
-              <li><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">g g</kbd> - Go to first message</li>
-              <li><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">i</kbd> or <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">/</kbd> - Focus input</li>
-              <li>Hold <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Alt</kbd> to see contextual hints</li>
+              <li>
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">j</kbd>{' '}
+                /{' '}
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">k</kbd>{' '}
+                - Navigate messages
+              </li>
+              <li>
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">?</kbd>{' '}
+                - Show all shortcuts
+              </li>
+              <li>
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                  Cmd/Ctrl+K
+                </kbd>{' '}
+                - Command palette
+              </li>
+              <li>
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                  g g
+                </kbd>{' '}
+                - Go to first message
+              </li>
+              <li>
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">i</kbd>{' '}
+                or{' '}
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">/</kbd>{' '}
+                - Focus input
+              </li>
+              <li>
+                Hold{' '}
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                  Alt
+                </kbd>{' '}
+                to see contextual hints
+              </li>
             </ul>
           </div>
 
@@ -407,9 +540,7 @@ function KeyboardNavigationDemoInner() {
                   }
                 }}
               />
-              <button
-                className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-              >
+              <button className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors">
                 Send
               </button>
             </div>

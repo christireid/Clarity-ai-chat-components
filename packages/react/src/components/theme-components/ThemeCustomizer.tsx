@@ -9,28 +9,28 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { useTheme, type ThemePresetName } from '../theme/ThemeProvider'
+import { useTheme, type ThemePresetName } from '../../theme/ThemeProvider'
 import {
   modernThemes,
   modernThemeMetadata,
   getThemesByCategory,
   type ModernThemePresetName,
-} from '../theme/modern-presets'
-import type { CompleteThemeConfig, ColorConfig } from '../theme/theme-config'
-import { createTheme } from '../theme/create-theme'
+} from '../../theme/modern-presets'
+import type { CompleteThemeConfig, ColorConfig } from '../../theme/theme-config'
+import { createTheme } from '../../theme/create-theme'
 import {
   getContrastRatio,
   hslStringToHex,
   hexToHSLString,
-} from '../theme/color-utils'
+} from '../../theme/color-utils'
 import {
   simulateColorBlindness,
   type ColorBlindnessType,
   generateHarmoniousPalette,
   type ColorHarmony,
-} from '../theme/color-advanced'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { useLocalStorage } from '../hooks/use-local-storage'
+} from '../../theme/color-advanced'
+import { useReducedMotion } from '@clarity-chat/primitives'
+import { useLocalStorage } from '../../hooks/storage/use-local-storage'
 
 // ============================================================================
 // Types

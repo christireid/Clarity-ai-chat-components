@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Card, Badge, cn } from '@clarity-chat/primitives'
-import { duration } from '../animations/constants'
+import { duration } from '../../animations/constants'
 
 // ============================================================================
 // Types

@@ -1,7 +1,7 @@
 import { logger } from '@clarity-chat/utils/logger';
 /**
  * Chat Recipe Components - Pre-built combinations for common patterns
- * 
+ *
  * These components combine multiple features for common use cases,
  * making it even easier to get started.
  */
@@ -10,15 +10,18 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
-import { ErrorBoundary } from './error-boundary'
-import { applyChatPreset, type ChatPreset } from '../presets/chat-presets'
-import { validateApiEndpoint, validateEnum } from '../utils/runtime-validation'
+import { ErrorBoundary } from '../feedback/error-boundary'
+import { applyChatPreset, type ChatPreset } from '../../presets/chat-presets'
+import {
+  validateApiEndpoint,
+  validateEnum,
+} from '../../utils/config/runtime-validation'
 
 /**
  * ChatWithMemory - Chat component with memory enabled
- * 
+ *
  * Perfect for conversations that need context retention.
- * 
+ *
  * @example
  * ```tsx
  * <ChatWithMemory api="/api/chat" strategy="vector-store" />
@@ -38,9 +41,13 @@ export function ChatWithMemory({
 }: ChatWithMemoryProps) {
   // Runtime validation with developer-friendly errors
   validateApiEndpoint(props.api, 'ChatWithMemory')
-  
+
   // Validate strategy
-  const validStrategies = ['sliding-window', 'semantic-chunks', 'vector-store'] as const
+  const validStrategies = [
+    'sliding-window',
+    'semantic-chunks',
+    'vector-store',
+  ] as const
   const validatedStrategy = validateEnum(
     strategy,
     'strategy',
@@ -64,9 +71,9 @@ export function ChatWithMemory({
 
 /**
  * ChatWithAnalytics - Chat component with analytics tracking
- * 
+ *
  * Automatically tracks messages, errors, and user interactions.
- * 
+ *
  * @example
  * ```tsx
  * <ChatWithAnalytics
@@ -113,9 +120,9 @@ export function ChatWithAnalytics({
 
 /**
  * ChatWithPreset - Chat component using a preset configuration
- * 
+ *
  * Apply pre-configured settings for common scenarios.
- * 
+ *
  * @example
  * ```tsx
  * <ChatWithPreset preset="enterprise" api="/api/chat" />
@@ -133,9 +140,9 @@ export function ChatWithPreset({ preset, ...props }: ChatWithPresetProps) {
 
 /**
  * ChatWithPersistence - Chat component with localStorage persistence
- * 
+ *
  * Messages are automatically saved and restored.
- * 
+ *
  * @example
  * ```tsx
  * <ChatWithPersistence
@@ -163,9 +170,9 @@ export function ChatWithPersistence({
 
 /**
  * ChatWithErrorHandling - Chat component with built-in error boundary
- * 
+ *
  * Wraps ClarityChat with ErrorBoundary for production-ready error handling.
- * 
+ *
  * @example
  * ```tsx
  * <ChatWithErrorHandling
@@ -176,7 +183,9 @@ export function ChatWithPersistence({
  */
 export interface ChatWithErrorHandlingProps extends ClarityChatProps {
   /** Custom error fallback UI */
-  errorFallback?: React.ReactNode | ((error: Error, reset: () => void) => React.ReactNode)
+  errorFallback?:
+    | React.ReactNode
+    | ((error: Error, reset: () => void) => React.ReactNode)
   /** Callback when error occurs */
   onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
 }
@@ -195,10 +204,10 @@ export function ChatWithErrorHandling({
 
 /**
  * ChatComplete - All-in-one chat component with everything enabled
- * 
+ *
  * Includes: memory, error handling, persistence, analytics hooks
  * Perfect for production applications.
- * 
+ *
  * @example
  * ```tsx
  * <ChatComplete

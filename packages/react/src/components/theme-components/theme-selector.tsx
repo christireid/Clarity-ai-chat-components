@@ -8,8 +8,8 @@ import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { useTheme, type ThemePresetName } from '../theme/ThemeProvider'
-import { getAllThemes } from '../theme/theme-builder'
+import { useTheme, type ThemePresetName } from '../../theme/ThemeProvider'
+import { getAllThemes } from '../../theme/theme-builder'
 
 export interface ThemeSelectorProps {
   /**

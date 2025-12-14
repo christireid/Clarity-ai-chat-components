@@ -16,7 +16,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * @module utils/cot-optimizer
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface CoTOptimizationOptions {
   /** Prefer Zero-Shot CoT for strong models (default true) */

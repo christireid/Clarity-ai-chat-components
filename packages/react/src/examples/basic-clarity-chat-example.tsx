@@ -1,38 +1,34 @@
 /**
  * Basic Clarity Chat Example
- * 
+ *
  * Demonstrates the simplest possible end-to-end chat using:
  * - useClarityChat hook (flagship API)
  * - ChatWindow component (production-ready UI)
- * 
+ *
  * This example shows the recommended way to use Clarity for most use cases.
- * 
+ *
  * Note: ChatWindow now accepts CoreMessage[] directly - no conversion needed!
  */
 
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
-import { ChatWindow } from '../components/chat-window'
+import { ChatWindow } from '../components/chat/chat-window'
 // Note: No conversion needed! ChatWindow accepts CoreMessage[] directly
 
 /**
  * Basic Clarity Chat Example Component
- * 
+ *
  * @example
  * ```tsx
  * import { BasicClarityChatExample } from '@clarity-chat/react/examples'
- * 
+ *
  * function App() {
  *   return <BasicClarityChatExample />
  * }
  * ```
  */
 export function BasicClarityChatExample() {
-  const {
-    messages,
-    append,
-    isLoading,
-  } = useClarityChat({
+  const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
     // Optional: Enable memory for context-aware conversations
     // memory: {
@@ -80,7 +76,7 @@ export function BasicClarityChatExample() {
 
 /**
  * Minimal Example - Even simpler version
- * 
+ *
  * Shows the absolute minimum code needed for a working chat.
  */
 export function MinimalClarityChatExample() {

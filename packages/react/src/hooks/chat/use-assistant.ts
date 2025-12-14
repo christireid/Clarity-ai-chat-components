@@ -1,16 +1,16 @@
 import { logger } from '@clarity-chat/utils/logger';
 /**
  * useAssistant - Mid-Level Assistant Hook
- * 
+ *
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Tools & Agents
- * 
+ *
  * Hook for managing AI assistant interactions with tool calling support,
  * multi-step workflows, and thread/run management.
- * 
+ *
  * For chat with tools, use top-level `useClarityChatWithTools` instead.
  * For standalone agents, use top-level `createAgent` instead.
- * 
+ *
  * **2025 Improvements**:
  * - Uses shared streaming-helpers for consistent behavior
  * - State machine with granular status tracking
@@ -20,7 +20,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * - Removed deprecated mountedRef pattern
  * - Better error handling with type guards
  * - Progress tracking support
- * 
+ *
  * @param options - Assistant configuration options
  * @param options.api - API endpoint URL (required)
  * @param options.assistantId - Assistant ID for OpenAI-compatible APIs
@@ -28,7 +28,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * @param options.onToolCall - Callback when tool is invoked
  * @param options.onFinish - Callback when assistant finishes
  * @returns Assistant state and controls
- * 
+ *
  * @example
  * ```tsx
  * const { messages, append, status, toolInvocations } = useAssistant({
@@ -36,10 +36,10 @@ import { logger } from '@clarity-chat/utils/logger';
  *   assistantId: 'asst_123',
  *   onToolCall: (invocation) => logger.debug('Tool called:', invocation),
  * })
- * 
+ *
  * await append({ role: 'user', content: 'What is the weather?' })
  * ```
- * 
+ *
  * @throws {Error} If API endpoint is invalid or missing
  */
 
@@ -47,19 +47,22 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import * as React from 'react'
 import { generateId } from '@clarity-chat/primitives'
-import { processStream, type StreamFormat } from '../utils/streaming-helpers'
+import {
+  processStream,
+  type StreamFormat,
+} from '../../utils/streaming/streaming-helpers'
 import type { CoreMessage } from './use-chat-enhanced'
 
 /**
  * Assistant status with granular state machine
  */
-export type AssistantStatus = 
-  | 'idle'              // Not doing anything
-  | 'loading'           // Initial API call
-  | 'streaming'         // Receiving content
-  | 'processing_tools'  // Executing tool calls
-  | 'complete'          // Finished successfully
-  | 'error'             // Error occurred
+export type AssistantStatus =
+  | 'idle' // Not doing anything
+  | 'loading' // Initial API call
+  | 'streaming' // Receiving content
+  | 'processing_tools' // Executing tool calls
+  | 'complete' // Finished successfully
+  | 'error' // Error occurred
 
 /**
  * Tool invocation state
@@ -90,70 +93,70 @@ interface AssistantCacheEntry {
 export interface UseAssistantOptions {
   /** API endpoint URL */
   api?: string
-  
+
   /** Assistant ID */
   assistantId?: string
-  
+
   /** Thread ID (for multi-turn conversations) */
   threadId?: string
-  
+
   /** Initial messages */
   initialMessages?: CoreMessage[]
-  
+
   /** Additional body data */
   body?: Record<string, any>
-  
+
   /** Custom headers */
   headers?: Record<string, string>
-  
+
   /** Fetch credentials mode */
   credentials?: RequestCredentials
-  
+
   /** Custom fetch implementation */
   fetch?: typeof fetch
-  
+
   /** Maximum number of steps */
   maxSteps?: number
-  
+
   /** Callback when response is received */
   onResponse?: (response: Response) => void | Promise<void>
-  
+
   /** Callback when assistant finishes */
   onFinish?: (message: CoreMessage) => void | Promise<void>
-  
+
   /** Callback on error */
   onError?: (error: Error) => void
-  
+
   /** Callback when tool is invoked */
   onToolCall?: (toolCall: ToolInvocation) => void | Promise<void>
-  
+
   /** Callback for progress updates (bytes received) */
   onProgress?: (bytes: number) => void
-  
+
   /** Callback for status changes */
   onStatusChange?: (status: AssistantStatus) => void
-  
+
   /** Enable streaming (default: true) */
   stream?: boolean
-  
+
   /** Stream format (default: 'sse') */
   streamFormat?: StreamFormat
-  
+
   /** Execute tools in parallel (default: false) */
   parallelTools?: boolean
-  
+
   /** Enable tool result caching (default: false) */
   cacheToolResults?: boolean
-  
+
   /** Tool cache TTL in milliseconds (default: 5 minutes) */
   toolCacheTTL?: number
-  
+
   /** Enable request deduplication cache (default: false) */
   enableCache?: boolean
-  
+
   /** Cache TTL in milliseconds (default: 5 minutes) */
   cacheTTL?: number
-  
+
   /** Maximum cache size (default: 100 entries) */
   maxCacheSize?: number
 
@@ -168,70 +171,70 @@ export interface UseAssistantOptions {
 
 /**
  * Return type for useAssistant hook (mid-level API)
- * 
+ *
  * Follows the standard hook return pattern:
  * - Data: `messages`, `status`, `toolInvocations` (current state)
  * - State: `isLoading`, `error`
  * - Actions: `submit`, `stop`, `abort`, `setMessages`
- * 
+ *
  * This hook provides Vercel AI SDK compatible assistant functionality with
  * tool calling support and multi-step workflows.
  */
 export interface UseAssistantReturn {
   /** Current status (data) */
   status: AssistantStatus
-  
+
   /** Current messages (data) */
   messages: CoreMessage[]
-  
+
   /** Set messages directly (action) */
   setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>
-  
+
   /** Submit a message to the assistant (action) */
   submitMessage: (
     message: string | CoreMessage,
     options?: { data?: Record<string, any> }
   ) => Promise<void>
-  
+
   /** Handle form submission */
   handleSubmit: (
     event?: React.FormEvent<HTMLFormElement>,
     options?: { data?: Record<string, any> }
   ) => void
-  
+
   /** Input value */
   input: string
-  
+
   /** Set input value */
   setInput: React.Dispatch<React.SetStateAction<string>>
-  
+
   /** Whether currently loading */
   isLoading: boolean
-  
+
   /** Current error */
   error: Error | undefined
-  
+
   /** Current assistant message being streamed */
   data: CoreMessage | undefined
-  
+
   /** Current tool invocations */
   toolInvocations: ToolInvocation[]
-  
+
   /** Stop the current assistant */
   stop: () => void
-  
+
   /** Abort controller for current request */
   abort: () => void
-  
+
   /** Append a message manually */
   append: (message: CoreMessage) => void
-  
+
   /** Clear the request cache */
   clearCache: () => void
-  
+
   /** Clear the tool cache */
   clearToolCache: () => void
-  
+
   /** Get cache statistics */
   getCacheStats: () => { enabled: boolean; size: number; toolCacheSize: number }
 }
@@ -253,7 +256,10 @@ class AssistantCache {
     return `${message}:${JSON.stringify(context || {})}`
   }
 
-  get(message: string, context?: Record<string, any>): AssistantCacheEntry | null {
+  get(
+    message: string,
+    context?: Record<string, any>
+  ): AssistantCacheEntry | null {
     const key = this.hashKey(message, context)
     const entry = this.cache.get(key)
 
@@ -272,7 +278,11 @@ class AssistantCache {
     return entry
   }
 
-  set(message: string, entry: Omit<AssistantCacheEntry, 'timestamp' | 'expiresAt'>, context?: Record<string, any>): void {
+  set(
+    message: string,
+    entry: Omit<AssistantCacheEntry, 'timestamp' | 'expiresAt'>,
+    context?: Record<string, any>
+  ): void {
     const key = this.hashKey(message, context)
     const now = Date.now()
 
@@ -346,7 +356,7 @@ class ToolCache {
 
 /**
  * useAssistant hook for AI assistants with tool calling
- * 
+ *
  * @example
  * ```tsx
  * const { status, messages, submitMessage, input, setInput, isLoading } = useAssistant({
@@ -356,11 +366,11 @@ class ToolCache {
  *     logger.debug('Tool called:', toolCall.toolName)
  *   },
  * })
- * 
+ *
  * // Submit a message
  * await submitMessage('What is the weather in San Francisco?')
  * ```
- * 
+ *
  * @example
  * ```tsx
  * // With caching, parallel tools, and status tracking
@@ -375,22 +385,28 @@ class ToolCache {
  *   },
  *   onProgress: (bytes) => setProgress(bytes),
  * })
- * 
+ *
  * // Status-based UI
  * {status === 'processing_tools' && <ToolProcessingIndicator tools={toolInvocations} />}
  * {status === 'streaming' && <StreamingIndicator />}
  * ```
  */
-export function useAssistant(options: UseAssistantOptions = {}): UseAssistantReturn {
+export function useAssistant(
+  options: UseAssistantOptions = {}
+): UseAssistantReturn {
   // Validate API endpoint
   const apiOption = options.api || '/api/assistant'
-  if (!apiOption || typeof apiOption !== 'string' || apiOption.trim().length === 0) {
+  if (
+    !apiOption ||
+    typeof apiOption !== 'string' ||
+    apiOption.trim().length === 0
+  ) {
     throw new Error(
       'useAssistant: "api" option is required.\n' +
-      'Please provide a valid API endpoint URL.\n\n' +
-      'Example:\n' +
-      '  const { messages, append } = useAssistant({ api: "/api/assistant" })\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/assistants'
+        'Please provide a valid API endpoint URL.\n\n' +
+        'Example:\n' +
+        '  const { messages, append } = useAssistant({ api: "/api/assistant" })\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/assistants'
     )
   }
 
@@ -427,8 +443,10 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | undefined>()
   const [data, setData] = React.useState<CoreMessage | undefined>()
-  const [toolInvocations, setToolInvocations] = React.useState<ToolInvocation[]>([])
-  
+  const [toolInvocations, setToolInvocations] = React.useState<
+    ToolInvocation[]
+  >([])
+
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const cacheRef = React.useRef<AssistantCache | null>(null)
   const toolCacheRef = React.useRef<ToolCache | null>(null)
@@ -453,7 +471,9 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
   const updateStatus = React.useCallback((newStatus: AssistantStatus) => {
     setStatus(newStatus)
     onStatusChangeRef.current?.(newStatus)
-    setIsLoading(newStatus !== 'idle' && newStatus !== 'complete' && newStatus !== 'error')
+    setIsLoading(
+      newStatus !== 'idle' && newStatus !== 'complete' && newStatus !== 'error'
+    )
   }, [])
 
   /**
@@ -488,7 +508,9 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
     async (tools: ToolInvocation[]): Promise<ToolInvocation[]> => {
       updateStatus('processing_tools')
 
-      const executeToolCall = async (tool: ToolInvocation): Promise<ToolInvocation> => {
+      const executeToolCall = async (
+        tool: ToolInvocation
+      ): Promise<ToolInvocation> => {
         const startTime = performance.now()
 
         try {
@@ -537,11 +559,14 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
       // Execute tools in parallel or sequentially
       const results = parallelTools
         ? await Promise.all(tools.map(executeToolCall))
-        : await tools.reduce(async (acc, tool) => {
-            const results = await acc
-            const result = await executeToolCall(tool)
-            return [...results, result]
-          }, Promise.resolve([] as ToolInvocation[]))
+        : await tools.reduce(
+            async (acc, tool) => {
+              const results = await acc
+              const result = await executeToolCall(tool)
+              return [...results, result]
+            },
+            Promise.resolve([] as ToolInvocation[])
+          )
 
       return results
     },
@@ -565,17 +590,24 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
             }
           : message
 
-      const messageContent = typeof message === 'string' ? message : message.content
-      const messageContentStr = typeof messageContent === 'string' 
-        ? messageContent 
-        : messageContent
-          .filter((part) => part.type === 'text')
-          .map((part) => (part.type === 'text' ? part.text : ''))
-          .join('')
+      const messageContent =
+        typeof message === 'string' ? message : message.content
+      const messageContentStr =
+        typeof messageContent === 'string'
+          ? messageContent
+          : messageContent
+              .filter((part) => part.type === 'text')
+              .map((part) => (part.type === 'text' ? part.text : ''))
+              .join('')
 
       // Check cache first
       if (enableCache && cacheRef.current) {
-        const requestContext = { ...body, ...options?.data, assistantId, threadId }
+        const requestContext = {
+          ...body,
+          ...options?.data,
+          assistantId,
+          threadId,
+        }
         const cached = cacheRef.current.get(messageContentStr, requestContext)
         if (cached) {
           setMessages((prev) => [...prev, userMessage, cached.message])
@@ -647,7 +679,7 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
             content: result.content || result.text || '',
             toolInvocations: result.toolInvocations || [],
           }
-          
+
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === assistantMessageId ? finalMessage : msg
@@ -657,15 +689,21 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
           setToolInvocations(finalMessage.toolInvocations || [])
 
           // Execute tools if present
-          if (finalMessage.toolInvocations && finalMessage.toolInvocations.length > 0) {
-            const toolInvocationsForExecution = finalMessage.toolInvocations.map(tool => ({
-              toolCallId: tool.toolCallId,
-              toolName: tool.toolName,
-              args: tool.args,
-              state: tool.state as 'partial-call' | 'call' | 'result',
-              result: tool.result,
-            })) as ToolInvocation[]
-            const executedTools = await executeToolCalls(toolInvocationsForExecution)
+          if (
+            finalMessage.toolInvocations &&
+            finalMessage.toolInvocations.length > 0
+          ) {
+            const toolInvocationsForExecution =
+              finalMessage.toolInvocations.map((tool) => ({
+                toolCallId: tool.toolCallId,
+                toolName: tool.toolName,
+                args: tool.args,
+                state: tool.state as 'partial-call' | 'call' | 'result',
+                result: tool.result,
+              })) as ToolInvocation[]
+            const executedTools = await executeToolCalls(
+              toolInvocationsForExecution
+            )
             setToolInvocations(executedTools)
           }
 
@@ -674,35 +712,40 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
 
           // Cache the result
           if (enableCache && cacheRef.current) {
-            const messageContentStr = typeof messageContent === 'string' 
-              ? messageContent 
-              : messageContent
-                .filter((part) => part.type === 'text')
-                .map((part) => (part.type === 'text' ? part.text : ''))
-                .join('')
+            const messageContentStr =
+              typeof messageContent === 'string'
+                ? messageContent
+                : messageContent
+                    .filter((part) => part.type === 'text')
+                    .map((part) => (part.type === 'text' ? part.text : ''))
+                    .join('')
             cacheRef.current.set(
               messageContentStr,
-              { message: finalMessage, toolInvocations: finalMessage.toolInvocations || [] },
+              {
+                message: finalMessage,
+                toolInvocations: finalMessage.toolInvocations || [],
+              },
               requestBody
             )
           }
-          
+
           return
         }
 
         // Streaming response using shared utilities
         updateStatus('streaming')
-        
+
         let accumulatedContent = ''
         let currentToolInvocations: ToolInvocation[] = []
-        
+
         await processStream(response.body, {
           format: streamFormat,
           signal: abortControllerRef.current.signal,
           onData: (parsed: any) => {
             // Handle tool invocations
             if (parsed?.toolInvocation) {
-              const toolCall: ToolInvocation = parsed.toolInvocation as ToolInvocation
+              const toolCall: ToolInvocation =
+                parsed.toolInvocation as ToolInvocation
               currentToolInvocations = [...currentToolInvocations, toolCall]
               onToolCall?.(toolCall)
               setToolInvocations(currentToolInvocations)
@@ -714,11 +757,14 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
               id: assistantMessageId,
               role: 'assistant',
               content: accumulatedContent,
-              toolInvocations: currentToolInvocations.map(tool => ({
+              toolInvocations: currentToolInvocations.map((tool) => ({
                 toolCallId: tool.toolCallId,
                 toolName: tool.toolName,
                 args: tool.args,
-                state: tool.state === 'error' ? 'call' : tool.state as 'partial-call' | 'call' | 'result',
+                state:
+                  tool.state === 'error'
+                    ? 'call'
+                    : (tool.state as 'partial-call' | 'call' | 'result'),
                 result: tool.result,
               })),
             }
@@ -738,11 +784,14 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
           id: assistantMessageId,
           role: 'assistant',
           content: accumulatedContent,
-          toolInvocations: currentToolInvocations.map(tool => ({
+          toolInvocations: currentToolInvocations.map((tool) => ({
             toolCallId: tool.toolCallId,
             toolName: tool.toolName,
             args: tool.args,
-            state: tool.state === 'error' ? 'call' : tool.state as 'partial-call' | 'call' | 'result',
+            state:
+              tool.state === 'error'
+                ? 'call'
+                : (tool.state as 'partial-call' | 'call' | 'result'),
             result: tool.result,
           })),
         }
@@ -750,11 +799,14 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
         // Execute tools if present
         if (currentToolInvocations.length > 0) {
           const executedTools = await executeToolCalls(currentToolInvocations)
-          finalMessage.toolInvocations = executedTools.map(tool => ({
+          finalMessage.toolInvocations = executedTools.map((tool) => ({
             toolCallId: tool.toolCallId,
             toolName: tool.toolName,
             args: tool.args,
-            state: tool.state === 'error' ? 'call' : tool.state as 'partial-call' | 'call' | 'result',
+            state:
+              tool.state === 'error'
+                ? 'call'
+                : (tool.state as 'partial-call' | 'call' | 'result'),
             result: tool.result,
           }))
           setToolInvocations(executedTools)
@@ -771,15 +823,19 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
 
         // Cache the result
         if (enableCache && cacheRef.current) {
-          const messageContentStr = typeof messageContent === 'string' 
-            ? messageContent 
-            : messageContent
-              .filter((part) => part.type === 'text')
-              .map((part) => (part.type === 'text' ? part.text : ''))
-              .join('')
+          const messageContentStr =
+            typeof messageContent === 'string'
+              ? messageContent
+              : messageContent
+                  .filter((part) => part.type === 'text')
+                  .map((part) => (part.type === 'text' ? part.text : ''))
+                  .join('')
           cacheRef.current.set(
             messageContentStr,
-            { message: finalMessage, toolInvocations: finalMessage.toolInvocations || [] },
+            {
+              message: finalMessage,
+              toolInvocations: finalMessage.toolInvocations || [],
+            },
             requestBody
           )
         }
@@ -824,16 +880,21 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
    * Handle form submission
    */
   const handleSubmit = React.useCallback(
-    (event?: React.FormEvent<HTMLFormElement>, options?: { data?: Record<string, any> }) => {
+    (
+      event?: React.FormEvent<HTMLFormElement>,
+      options?: { data?: Record<string, any> }
+    ) => {
       event?.preventDefault()
-      
+
       if (!input.trim() || isLoading) return
 
-      submitMessage(input.trim(), options).then(() => {
-        setInput('')
-      }).catch(() => {
-        // Error already handled
-      })
+      submitMessage(input.trim(), options)
+        .then(() => {
+          setInput('')
+        })
+        .catch(() => {
+          // Error already handled
+        })
     },
     [input, isLoading, submitMessage]
   )

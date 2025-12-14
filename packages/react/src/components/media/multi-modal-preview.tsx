@@ -9,7 +9,7 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
-import { ImageIcon, MicIcon, FileIcon, LinkIcon, PlayIcon } from './icons'
+import { ImageIcon, MicIcon, FileIcon, LinkIcon, PlayIcon } from '../ui/icons'
 
 export type AttachmentType = 'image' | 'audio' | 'video' | 'file' | 'link'
 
@@ -43,7 +43,10 @@ const typeIcon: Record<AttachmentType, React.ReactNode> = {
   link: <LinkIcon size={18} className="text-primary" />,
 }
 
-const statusBadge: Record<NonNullable<AttachmentPreview['status']>, 'warning' | 'success' | 'destructive'> = {
+const statusBadge: Record<
+  NonNullable<AttachmentPreview['status']>,
+  'warning' | 'success' | 'destructive'
+> = {
   processing: 'warning',
   ready: 'success',
   failed: 'destructive',
@@ -56,7 +59,8 @@ const statusLabel: Record<NonNullable<AttachmentPreview['status']>, string> = {
 }
 
 const defaultTitle = 'Multimodal context'
-const defaultSubtitle = 'Surface the supporting images, audio, and documents that shaped this response.'
+const defaultSubtitle =
+  'Surface the supporting images, audio, and documents that shaped this response.'
 
 export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
   attachments,
@@ -103,11 +107,20 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
   }
 
   return (
-    <Card className={cn('border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]', className)}>
+    <Card
+      className={cn(
+        'border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+        className
+      )}
+    >
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
-          <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground/80">{subtitle}</CardDescription>
+          <CardTitle className="text-lg font-semibold text-foreground">
+            {title}
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground/80">
+            {subtitle}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -151,8 +164,13 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
                   {attachment.metadata && attachment.metadata.length > 0 && (
                     <div className="flex flex-wrap gap-3 text-xs text-muted-foreground/70">
                       {attachment.metadata.map(({ label, value }) => (
-                        <div key={`${attachment.id}-${label}`} className="flex items-center gap-1">
-                          <span className="font-medium text-muted-foreground/90">{label}:</span>
+                        <div
+                          key={`${attachment.id}-${label}`}
+                          className="flex items-center gap-1"
+                        >
+                          <span className="font-medium text-muted-foreground/90">
+                            {label}:
+                          </span>
                           <span>{value}</span>
                         </div>
                       ))}
@@ -162,7 +180,11 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
               </div>
               <div className="flex flex-wrap gap-2">
                 {onOpen && (
-                  <Button variant="surface" size="sm" onClick={() => onOpen(attachment)}>
+                  <Button
+                    variant="surface"
+                    size="sm"
+                    onClick={() => onOpen(attachment)}
+                  >
                     Open
                   </Button>
                 )}
@@ -196,4 +218,3 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
 }
 
 MultiModalPreview.displayName = 'MultiModalPreview'
-

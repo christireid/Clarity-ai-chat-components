@@ -2,7 +2,7 @@ import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { useSafeTimeout } from './use-safe-timeout'
+import { useSafeTimeout } from '../ui/use-safe-timeout'
 
 /**
  * Mobile keyboard state

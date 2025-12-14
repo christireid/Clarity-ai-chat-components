@@ -13,11 +13,14 @@
  */
 
 // Main high-level component
-export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
+export {
+  ClarityChat,
+  type ClarityChatProps,
+} from './components/chat/clarity-chat'
 export {
   ClarityChatSimple,
   type ClarityChatSimpleProps,
-} from './components/clarity-chat-simple'
+} from './components/chat/clarity-chat-simple'
 
 // Main hook
 export {
@@ -27,9 +30,9 @@ export {
 } from './hooks/use-clarity-chat'
 
 // Core components
-export { ChatWindow, type ChatWindowProps } from './components/chat-window'
-export { ChatInput } from './components/chat-input'
-export { MessageList } from './components/message-list'
+export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
+export { ChatInput } from './components/chat/chat-input'
+export { MessageList } from './components/message/message-list'
 
 // Core types
 export type { Message, MessageRole } from '@clarity-chat/types'
@@ -38,28 +41,28 @@ export type { Message, MessageRole } from '@clarity-chat/types'
 export {
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
-} from './utils/message-conversion'
+} from './utils/message/message-conversion'
 
 // Error handling
-export { ErrorBoundary } from './components/error-boundary'
+export { ErrorBoundary } from './components/feedback/error-boundary'
 export {
   ChatWithErrorBoundary,
   type ChatWithErrorBoundaryProps,
-} from './components/chat-with-error-boundary'
+} from './components/chat/chat-with-error-boundary'
 
 // Composed hooks
 export {
   useChatWithOperations,
   type UseChatWithOperationsOptions,
   type UseChatWithOperationsReturn,
-} from './hooks/use-chat-with-operations'
+} from './hooks/chat/use-chat-with-operations'
 
 // Simplified hook
 export {
   useChatSimple,
   type UseChatSimpleOptions,
   type UseChatSimpleReturn,
-} from './hooks/use-chat-simple'
+} from './hooks/chat/use-chat-simple'
 
 // Memory store factory
 export {
