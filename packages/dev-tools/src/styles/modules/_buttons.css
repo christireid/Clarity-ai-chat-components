@@ -1,0 +1,115 @@
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.dt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dt-space-2);
+  padding: var(--dt-space-2) var(--dt-space-4);
+  font-size: var(--dt-text-sm);
+  font-weight: var(--dt-font-weight-medium);
+  font-family: inherit;
+  line-height: 1;
+  color: var(--dt-text-primary);
+  background: var(--dt-bg-primary);
+  border: 1px solid var(--dt-border-primary);
+  border-radius: var(--dt-radius-lg);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--dt-transition-fast);
+  user-select: none;
+}
+
+.dt-btn:hover {
+  background: var(--dt-bg-hover);
+  border-color: var(--dt-color-gray-300);
+}
+
+.dt-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--dt-shadow-glow);
+}
+
+.dt-btn:active {
+  transform: scale(0.98);
+}
+
+.dt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dt-btn:disabled:hover {
+  background: var(--dt-bg-primary);
+  transform: none;
+}
+
+/* Button Variants */
+.dt-btn-primary {
+  color: white;
+  background: var(--dt-color-primary-500);
+  border-color: var(--dt-color-primary-500);
+}
+
+.dt-btn-primary:hover {
+  background: var(--dt-color-primary-600);
+  border-color: var(--dt-color-primary-600);
+}
+
+.dt-btn-success {
+  color: white;
+  background: var(--dt-color-success-500);
+  border-color: var(--dt-color-success-500);
+}
+
+.dt-btn-success:hover {
+  background: var(--dt-color-success-600);
+  border-color: var(--dt-color-success-600);
+}
+
+.dt-btn-danger {
+  color: white;
+  background: var(--dt-color-error-500);
+  border-color: var(--dt-color-error-500);
+}
+
+.dt-btn-danger:hover {
+  background: var(--dt-color-error-600);
+  border-color: var(--dt-color-error-600);
+}
+
+.dt-btn-ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+.dt-btn-ghost:hover {
+  background: var(--dt-bg-hover);
+  border-color: transparent;
+}
+
+/* Button Sizes */
+.dt-btn-sm {
+  padding: var(--dt-space-1) var(--dt-space-2);
+  font-size: var(--dt-text-xs);
+}
+
+.dt-btn-lg {
+  padding: var(--dt-space-3) var(--dt-space-6);
+  font-size: var(--dt-text-base);
+}
+
+/* Icon Button */
+.dt-btn-icon {
+  padding: var(--dt-space-2);
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.dt-btn-icon.dt-btn-sm {
+  padding: var(--dt-space-1);
+  min-width: 28px;
+  min-height: 28px;
+}

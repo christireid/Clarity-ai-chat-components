@@ -1,27 +1,42 @@
-# Clarity Chat Component Examples
+# Clarity Chat Examples
 
-> **26 Production-Ready Examples** showcasing Clarity Chat Components
+> **30+ Production-Ready Examples** - Copy, customize, and ship.
+
+Every example is a complete, working application you can deploy in minutes.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components/tree/main/apps/examples)
 
 ---
 
-## Quick Navigation
+## Quick Start
 
-- [Hero Examples](#-hero-examples) - Best showcases
-- [Getting Started](#-getting-started) - Beginner friendly
-- [Core Features](#-core-features) - Chat fundamentals
-- [Analytics](#-analytics--optimization) - Token & cost tracking
-- [AI/ML](#-aiml-features) - RAG, multi-provider
-- [Enterprise](#-enterprise-features) - Production-ready
-- [Design System](#-design-system) - Theming & components
-- [Industry Solutions](#-industry-solutions) - Domain-specific
+```bash
+# Pick an example and run it
+cd apps/examples/basic-chat
+npm install
+npm run dev
+```
 
 ---
 
-## 🏆 Hero Examples
+## Find the Right Example
 
-Our top three showcases demonstrating the full power of Clarity Chat:
+| I want to... | Start with... | Complexity |
+|-------------|---------------|------------|
+| Learn the basics | [basic-chat](./basic-chat) | Beginner |
+| Add streaming | [streaming-chat](./streaming-chat) | Beginner |
+| Build a code assistant | [code-assistant](./code-assistant) | Intermediate |
+| Create an e-commerce bot | [ecommerce-assistant](./ecommerce-assistant) | Intermediate |
+| Build enterprise features | [enterprise-ai-ops](./enterprise-ai-ops) | Advanced |
+| Compare AI models | [model-comparison-demo](./model-comparison-demo) | Intermediate |
+| Customize themes | [theme-builder](./theme-builder) | Beginner |
+| Track token usage | [analytics-console-demo](./analytics-console-demo) | Intermediate |
+
+---
+
+## Featured Examples
+
+Three showcases demonstrating the full power of Clarity Chat:
 
 ### 1. AI Research Platform
 Enterprise-grade multi-agent RAG system with knowledge visualization.

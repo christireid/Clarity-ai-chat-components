@@ -439,7 +439,7 @@ npm install @clarity-chat/types@latest
 ## Need Help?
 
 - [Documentation](../README.md)
-- [Troubleshooting](../troubleshooting.md)
+- [Troubleshooting](../TROUBLESHOOTING.md)
 - [Discord](https://discord.gg/clarity-chat)
 - [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
 

@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Next.js Integration Deep Dive - Clarity Chat Components',
-  description: 'Complete guide to integrating Clarity Chat Components with Next.js App Router, Server Components, and API routes.',
+  description:
+    'Complete guide to integrating Clarity Chat Components with Next.js App Router, Server Components, and API routes.',
 }
 
 export default function NextJSIntegrationPage() {
@@ -18,7 +17,8 @@ export default function NextJSIntegrationPage() {
         <span className="docs-badge">Recipe</span>
         <h1>Next.js Integration Deep Dive</h1>
         <p className="docs-lead">
-          Complete guide to integrating Clarity Chat Components with Next.js App Router, Server Components, API routes, and streaming.
+          Complete guide to integrating Clarity Chat Components with Next.js App
+          Router, Server Components, API routes, and streaming.
         </p>
       </div>
 
@@ -34,9 +34,7 @@ export default function NextJSIntegrationPage() {
 
       <section className="docs-section">
         <h2>App Router Setup</h2>
-        <p>
-          Set up Clarity Chat in Next.js App Router:
-        </p>
+        <p>Set up Clarity Chat in Next.js App Router:</p>
         <CodePlayground
           initialCode={`// app/chat/page.tsx
 'use client'
@@ -61,9 +59,7 @@ export default function ChatPage() {
 
       <section className="docs-section">
         <h2>Server Component Configuration</h2>
-        <p>
-          Use Server Components for secure configuration:
-        </p>
+        <p>Use Server Components for secure configuration:</p>
         <CodePlayground
           initialCode={`// app/chat/layout.tsx
 import { ClarityChat } from '@clarity-chat/react'
@@ -98,29 +94,51 @@ export default function ChatPage() {
 
       <section className="docs-section">
         <h2>API Route with Streaming</h2>
-        <p>
-          Create streaming API route:
-        </p>
+        <p>Create streaming API route:</p>
         <CodePlayground
           initialCode={`// app/api/chat/route.ts
 import { NextRequest } from 'next/server'
 import { StreamingTextResponse } from 'ai'
 
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json()
+  try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: 'API key not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
 
-  // Create streaming response
-  const stream = await createChatStream(messages)
+    const { messages } = await req.json()
 
-  return new StreamingTextResponse(stream)
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Create streaming response
+    const stream = await createChatStream(messages, apiKey)
+
+    return new StreamingTextResponse(stream)
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
 }
 
-async function createChatStream(messages: any[]) {
-  // Use OpenAI or other provider
+async function createChatStream(messages: any[], apiKey: string) {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
+      'Authorization': \`Bearer \${apiKey}\`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -130,6 +148,10 @@ async function createChatStream(messages: any[]) {
     }),
   })
 
+  if (!response.ok) {
+    throw new Error('AI provider error')
+  }
+
   return response.body
 }`}
         />
@@ -137,9 +159,7 @@ async function createChatStream(messages: any[]) {
 
       <section className="docs-section">
         <h2>Authentication Middleware</h2>
-        <p>
-          Add authentication to chat routes:
-        </p>
+        <p>Add authentication to chat routes:</p>
         <CodePlayground
           initialCode={`// middleware.ts
 import { NextResponse } from 'next/server'
@@ -170,9 +190,7 @@ export const config = {
 
       <section className="docs-section">
         <h2>Server Actions</h2>
-        <p>
-          Use Server Actions for chat operations:
-        </p>
+        <p>Use Server Actions for chat operations:</p>
         <CodePlayground
           initialCode={`// app/actions/chat.ts
 'use server'
@@ -201,9 +219,7 @@ export async function deleteConversation(conversationId: string) {
 
       <section className="docs-section">
         <h2>Complete Next.js Integration</h2>
-        <p>
-          Complete Next.js integration example:
-        </p>
+        <p>Complete Next.js integration example:</p>
         <CodePlayground
           initialCode={`// app/chat/page.tsx
 'use client'
@@ -270,8 +286,14 @@ export async function POST(req: Request) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/clarity-chat">ClarityChat</a> - Main chat component</li>
-          <li><a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat hook</li>
+          <li>
+            <a href="/reference/components/clarity-chat">ClarityChat</a> - Main
+            chat component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
+            Chat hook
+          </li>
         </ul>
       </section>
     </div>

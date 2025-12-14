@@ -8,11 +8,10 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useChatHandlers Hook | Clarity Chat',
-  description: 'Pre-configured handlers for common chat operations, eliminating boilerplate when using useClarityChat with ChatWindow.',
+  description:
+    'Pre-configured handlers for common chat operations, eliminating boilerplate when using useClarityChat with ChatWindow.',
 }
 
 const useChatHandlersOptions: Prop[] = [
@@ -38,7 +37,8 @@ const useChatHandlersReturn: Prop[] = [
   {
     name: 'onSendMessage',
     type: '(content: string) => Promise<void>',
-    description: 'Handler for sending messages. Wraps chat.append with error handling.',
+    description:
+      'Handler for sending messages. Wraps chat.append with error handling.',
   },
   {
     name: 'onClear',
@@ -65,15 +65,17 @@ export default function UseChatHandlersPage() {
       <h1>useChatHandlers</h1>
 
       <p className="lead">
-        Pre-configured handlers for common chat operations, eliminating boilerplate
-        when using <code>useClarityChat</code> with <code>ChatWindow</code>.
+        Pre-configured handlers for common chat operations, eliminating
+        boilerplate when using <code>useClarityChat</code> with{' '}
+        <code>ChatWindow</code>.
       </p>
 
       <Callout type="info" title="Architecture Layer">
         <p>
-          <strong>useChatHandlers</strong> is a mid-level hook that provides pre-configured
-          handlers for <code>ChatWindow</code>. It wraps common patterns like sending messages,
-          clearing chat, and retrying messages with proper error handling.
+          <strong>useChatHandlers</strong> is a mid-level hook that provides
+          pre-configured handlers for <code>ChatWindow</code>. It wraps common
+          patterns like sending messages, clearing chat, and retrying messages
+          with proper error handling.
         </p>
       </Callout>
 
@@ -82,7 +84,7 @@ export default function UseChatHandlersPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the hook:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
@@ -107,8 +109,9 @@ function Chat() {
 
         <Callout type="success" title="No Boilerplate">
           <p>
-            Without <code>useChatHandlers</code>, you'd need to write error handling,
-            async/await logic, and state management yourself. This hook handles it all!
+            Without <code>useChatHandlers</code>, you'd need to write error
+            handling, async/await logic, and state management yourself. This
+            hook handles it all!
           </p>
         </Callout>
       </section>
@@ -176,7 +179,9 @@ function Chat() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Message Operations</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Message Operations
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
@@ -198,7 +203,9 @@ function Chat() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">Custom Error Handling</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          Custom Error Handling
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
@@ -247,17 +254,30 @@ function Chat() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">What It Does</h2>
         <p className="mb-4 text-gray-600 dark:text-gray-400">
-          <strong>useChatHandlers</strong> provides pre-configured handlers that:
+          <strong>useChatHandlers</strong> provides pre-configured handlers
+          that:
         </p>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>onSendMessage</strong> - Wraps <code>chat.append</code> with error handling and callbacks</li>
-          <li><strong>onClear</strong> - Clears all messages using <code>chat.setMessages([])</code></li>
-          <li><strong>onRetry</strong> - Retries a failed message using <code>chat.reload</code></li>
-          <li><strong>onEdit</strong> - Edits a message and optionally triggers a new response</li>
+          <li>
+            <strong>onSendMessage</strong> - Wraps <code>chat.append</code> with
+            error handling and callbacks
+          </li>
+          <li>
+            <strong>onClear</strong> - Clears all messages using{' '}
+            <code>chat.setMessages([])</code>
+          </li>
+          <li>
+            <strong>onRetry</strong> - Retries a failed message using{' '}
+            <code>chat.reload</code>
+          </li>
+          <li>
+            <strong>onEdit</strong> - Edits a message and optionally triggers a
+            new response
+          </li>
         </ul>
         <p className="mb-4 text-gray-600 dark:text-gray-400">
-          All handlers include proper error handling, loading states, and optional callbacks
-          for analytics and user feedback.
+          All handlers include proper error handling, loading states, and
+          optional callbacks for analytics and user feedback.
         </p>
       </section>
 
@@ -321,7 +341,10 @@ const handleRetry = async (messageId: string) => {
       </section>
 
       <Pagination
-        prev={{ title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' }}
+        prev={{
+          title: 'useClarityChat',
+          href: '/reference/hooks/use-clarity-chat',
+        }}
         next={{ title: 'useChat', href: '/reference/hooks/use-chat' }}
       />
     </>

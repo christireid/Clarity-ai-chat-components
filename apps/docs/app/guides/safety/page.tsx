@@ -5,8 +5,6 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Safety - Clarity Chat',
   description: 'Guide for safety in Clarity Chat',
@@ -16,7 +14,13 @@ export default async function SafetyGuidePage() {
   // Read markdown file
   let content: string
   try {
-    const filePath = join(process.cwd(), 'content', 'vitepress-migration', 'guide', 'safety.md')
+    const filePath = join(
+      process.cwd(),
+      'content',
+      'vitepress-migration',
+      'guide',
+      'safety.md'
+    )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
     console.error('Failed to read safety guide', error)
@@ -25,7 +29,6 @@ export default async function SafetyGuidePage() {
 
   // Parse MDX
   const { content: mdxContent } = matter(content)
-
 
   return (
     <>

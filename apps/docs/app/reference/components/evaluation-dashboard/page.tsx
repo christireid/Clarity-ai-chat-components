@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'EvaluationDashboard - Clarity Chat Components',
-  description: 'AIOps evaluation dashboard for tracking prompt performance, quality metrics, and cost trends.',
+  description:
+    'AIOps evaluation dashboard for tracking prompt performance, quality metrics, and cost trends.',
 }
 
 const props: Prop[] = [
@@ -43,7 +42,8 @@ export default function EvaluationDashboardPage() {
         <span className="docs-badge">Component</span>
         <h1>EvaluationDashboard</h1>
         <p className="docs-lead">
-          AIOps evaluation dashboard for tracking prompt performance, quality metrics, cost trends, and latency trends.
+          AIOps evaluation dashboard for tracking prompt performance, quality
+          metrics, cost trends, and latency trends.
         </p>
       </div>
 
@@ -59,9 +59,7 @@ export default function EvaluationDashboardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Display evaluation dashboard:
-        </p>
+        <p>Display evaluation dashboard:</p>
         <CodePlayground
           initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
@@ -114,9 +112,7 @@ function EvaluationView() {
 
       <section className="docs-section">
         <h2>With Quality Meter</h2>
-        <p>
-          Include response quality meter:
-        </p>
+        <p>Include response quality meter:</p>
         <CodePlayground
           initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
@@ -140,9 +136,7 @@ function WithQualityMeter() {
 
       <section className="docs-section">
         <h2>Trend Tracking</h2>
-        <p>
-          Track trends with sparklines:
-        </p>
+        <p>Track trends with sparklines:</p>
         <CodePlayground
           initialCode={`import { EvaluationDashboard } from '@clarity-chat/react'
 
@@ -178,9 +172,15 @@ function TrendTracking() {
       <section className="docs-section">
         <h2>Metric Trends</h2>
         <ul>
-          <li><strong>up</strong>: Metric is improving (green badge)</li>
-          <li><strong>down</strong>: Metric is regressing (red badge)</li>
-          <li><strong>flat</strong>: Metric is stable (blue badge)</li>
+          <li>
+            <strong>up</strong>: Metric is improving (green badge)
+          </li>
+          <li>
+            <strong>down</strong>: Metric is regressing (red badge)
+          </li>
+          <li>
+            <strong>flat</strong>: Metric is stable (blue badge)
+          </li>
         </ul>
       </section>
 
@@ -198,8 +198,18 @@ function TrendTracking() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/prompt-test-harness">PromptTestHarness</a> - Prompt testing component</li>
-          <li><a href="/reference/components/safety-review-console">SafetyReviewConsole</a> - Safety review component</li>
+          <li>
+            <a href="/reference/components/prompt-test-harness">
+              PromptTestHarness
+            </a>{' '}
+            - Prompt testing component
+          </li>
+          <li>
+            <a href="/reference/components/safety-review-console">
+              SafetyReviewConsole
+            </a>{' '}
+            - Safety review component
+          </li>
         </ul>
       </section>
     </div>

@@ -3,11 +3,11 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Tutorial: Adding RAG to Your Chatbot',
-  description: 'Add retrieval-augmented generation to chat over your documents.',
+  description:
+    'Add retrieval-augmented generation to chat over your documents.',
 }
 
 export default function AddingRAGTutorial() {
@@ -17,15 +17,17 @@ export default function AddingRAGTutorial() {
         <span className="docs-badge">Tutorial</span>
         <h1>Adding RAG to Your Chatbot</h1>
         <p className="docs-lead">
-          Enable your chatbot to answer questions based on your documents using retrieval-augmented generation.
+          Enable your chatbot to answer questions based on your documents using
+          retrieval-augmented generation.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>What is RAG?</h2>
         <p>
-          Retrieval-Augmented Generation (RAG) enhances AI responses by retrieving relevant information
-          from a knowledge base before generating answers. This allows your chatbot to:
+          Retrieval-Augmented Generation (RAG) enhances AI responses by
+          retrieving relevant information from a knowledge base before
+          generating answers. This allows your chatbot to:
         </p>
         <ul>
           <li>Answer questions about your specific documents</li>
@@ -37,7 +39,8 @@ export default function AddingRAGTutorial() {
 
       <section className="docs-section">
         <h2>Architecture Overview</h2>
-        <pre><code>{`┌─────────────────────────────────────────────┐
+        <pre>
+          <code>{`┌─────────────────────────────────────────────┐
 │                                             │
 │  User Query                                 │
 │       ↓                                     │
@@ -53,20 +56,26 @@ export default function AddingRAGTutorial() {
 │       ↓                                     │
 │  Generate Response (GPT-4)                  │
 │                                             │
-└─────────────────────────────────────────────┘`}</code></pre>
+└─────────────────────────────────────────────┘`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Step 1: Install Dependencies</h2>
-        <pre><code>{`npm install @pinecone-database/pinecone
+        <pre>
+          <code>{`npm install @pinecone-database/pinecone
 npm install langchain
-npm install pdf-parse  # for PDF processing`}</code></pre>
+npm install pdf-parse  # for PDF processing`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Step 2: Setup Vector Store</h2>
-        <p>Create <code>lib/vector-store.ts</code>:</p>
-        <pre><code>{`import { Pinecone } from '@pinecone-database/pinecone'
+        <p>
+          Create <code>lib/vector-store.ts</code>:
+        </p>
+        <pre>
+          <code>{`import { Pinecone } from '@pinecone-database/pinecone'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 
 const pinecone = new Pinecone({
@@ -139,13 +148,17 @@ function splitIntoChunks(
   }
   
   return chunks
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Step 3: Document Upload API</h2>
-        <p>Create <code>app/api/upload/route.ts</code>:</p>
-        <pre><code>{`import { NextRequest, NextResponse } from 'next/server'
+        <p>
+          Create <code>app/api/upload/route.ts</code>:
+        </p>
+        <pre>
+          <code>{`import { NextRequest, NextResponse } from 'next/server'
 import { storeDocument } from '@/lib/vector-store'
 import pdf from 'pdf-parse'
 
@@ -187,13 +200,17 @@ export async function POST(req: NextRequest) {
     filename: file.name,
     chunks: Math.ceil(text.length / 500)
   })
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Step 4: Update Chat API with RAG</h2>
-        <p>Update <code>app/api/chat/route.ts</code>:</p>
-        <pre><code>{`import OpenAI from 'openai'
+        <p>
+          Update <code>app/api/chat/route.ts</code>:
+        </p>
+        <pre>
+          <code>{`import OpenAI from 'openai'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { retrieveDocuments } from '@/lib/vector-store'
 
@@ -239,7 +256,8 @@ Instructions:
   
   const stream = OpenAIStream(response)
   return new StreamingTextResponse(stream)
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -307,7 +325,8 @@ render(<RAGChat />)`}
 
       <section className="docs-section">
         <h2>Step 6: Add Citation Display</h2>
-        <pre><code>{`import { Message, CitationCard } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Message, CitationCard } from '@clarity-chat/react'
 
 function MessageWithCitations({ message }) {
   // Extract citations from message
@@ -340,13 +359,15 @@ function extractCitations(text: string) {
     text: '...',  // Retrieve from metadata
     url: '#'
   }))
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Advanced: Hybrid Search</h2>
         <p>Combine vector search with keyword search for better retrieval:</p>
-        <pre><code>{`import { HybridSearch } from '@clarity-chat/react/utils'
+        <pre>
+          <code>{`import { HybridSearch } from '@clarity-chat/react/utils'
 
 const hybridSearch = new HybridSearch({
   vectorStore: pineconeIndex,
@@ -372,19 +393,25 @@ export async function retrieveDocuments(query: string) {
   })
   
   return reranked
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <Callout type="tip" title="Optimization Tips">
-          • Chunk size: 300-1000 tokens works well for most use cases<br/>
-          • Overlap: 10-20% of chunk size prevents losing context<br/>
-          • Top-k: Start with 3-5 documents, adjust based on results<br/>
-          • Reranking: Improves relevance, add if quality isn't sufficient
+          • Chunk size: 300-1000 tokens works well for most use cases
+          <br />
+          • Overlap: 10-20% of chunk size prevents losing context
+          <br />
+          • Top-k: Start with 3-5 documents, adjust based on results
+          <br />• Reranking: Improves relevance, add if quality isn't sufficient
         </Callout>
         <ul>
-          <li>Use semantic chunking instead of fixed-size for better context preservation</li>
+          <li>
+            Use semantic chunking instead of fixed-size for better context
+            preservation
+          </li>
           <li>Store metadata (title, date, author) for better filtering</li>
           <li>Implement hybrid search for technical documents</li>
           <li>Cache embeddings to reduce API costs</li>

@@ -15,14 +15,7 @@ import { ViewInStorybook } from '@/components/Links/StorybookLink'
 function BasicSSEDemo() {
   const [connected, setConnected] = useState(false)
 
-  const {
-    status,
-    data,
-    events,
-    error,
-    connect,
-    disconnect,
-  } = useStreamingSSE({
+  const { status, data, events, error, connect, disconnect } = useStreamingSSE({
     url: '/api/stream',
     method: 'POST',
     body: { message: 'Hello' },
@@ -94,7 +87,8 @@ const useStreamingSSEOptionsProps: Prop[] = [
     name: 'method',
     type: '"GET" | "POST"',
     default: '"GET"',
-    description: 'HTTP method for the SSE request. POST allows sending a request body.',
+    description:
+      'HTTP method for the SSE request. POST allows sending a request body.',
   },
   {
     name: 'body',
@@ -109,7 +103,8 @@ const useStreamingSSEOptionsProps: Prop[] = [
   {
     name: 'authToken',
     type: 'string',
-    description: 'Authentication token. Automatically added to headers as "Authorization: Bearer {token}".',
+    description:
+      'Authentication token. Automatically added to headers as "Authorization: Bearer {token}".',
   },
   {
     name: 'useCookieFallback',
@@ -121,7 +116,8 @@ const useStreamingSSEOptionsProps: Prop[] = [
     name: 'autoReconnect',
     type: 'boolean',
     default: 'true',
-    description: 'Automatically reconnect on connection loss with exponential backoff.',
+    description:
+      'Automatically reconnect on connection loss with exponential backoff.',
   },
   {
     name: 'maxReconnectAttempts',
@@ -133,7 +129,8 @@ const useStreamingSSEOptionsProps: Prop[] = [
     name: 'reconnectDelay',
     type: 'number',
     default: '1000',
-    description: 'Initial reconnection delay in milliseconds. Increases exponentially.',
+    description:
+      'Initial reconnection delay in milliseconds. Increases exponentially.',
   },
   {
     name: 'maxReconnectDelay',
@@ -145,13 +142,15 @@ const useStreamingSSEOptionsProps: Prop[] = [
     name: 'heartbeatInterval',
     type: 'number',
     default: '30000',
-    description: 'Heartbeat interval in milliseconds. Server should send keepalive comments.',
+    description:
+      'Heartbeat interval in milliseconds. Server should send keepalive comments.',
   },
   {
     name: 'resumeFromLastEventId',
     type: 'boolean',
     default: 'true',
-    description: 'Resume from last event ID if connection is lost. Requires server support.',
+    description:
+      'Resume from last event ID if connection is lost. Requires server support.',
   },
   {
     name: 'autoParseJson',
@@ -167,7 +166,8 @@ const useStreamingSSEOptionsProps: Prop[] = [
   {
     name: 'onMessage',
     type: '(event: SSEEvent) => void',
-    description: 'Callback for each SSE event received. Receives parsed event object.',
+    description:
+      'Callback for each SSE event received. Receives parsed event object.',
   },
   {
     name: 'onError',
@@ -182,7 +182,8 @@ const useStreamingSSEOptionsProps: Prop[] = [
   {
     name: 'onReconnecting',
     type: '(attempt: number, delay: number) => void',
-    description: 'Callback when reconnection attempt starts. Receives attempt number and delay.',
+    description:
+      'Callback when reconnection attempt starts. Receives attempt number and delay.',
   },
   {
     name: 'onMaxReconnectAttemptsReached',
@@ -249,8 +250,6 @@ const useStreamingSSEReturnProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
-
 export default function UseStreamingSSEPage() {
   return (
     <ToastProvider>
@@ -260,14 +259,17 @@ export default function UseStreamingSSEPage() {
         <h1>useStreamingSSE</h1>
 
         <p className="lead">
-          A production-ready hook for Server-Sent Events (SSE) streaming with automatic reconnection,
-          authentication handling, event parsing, and network status detection.
+          A production-ready hook for Server-Sent Events (SSE) streaming with
+          automatic reconnection, authentication handling, event parsing, and
+          network status detection.
         </p>
 
         <Callout type="info">
           <p>
-            For chat streaming, use <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> with{' '}
-            <code>transport: 'sse'</code>. useStreamingSSE is for custom SSE implementations.
+            For chat streaming, use{' '}
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> with{' '}
+            <code>transport: 'sse'</code>. useStreamingSSE is for custom SSE
+            implementations.
           </p>
         </Callout>
 
@@ -276,7 +278,8 @@ export default function UseStreamingSSEPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Try connecting to an SSE stream! See how events are received and status changes.
+            Try connecting to an SSE stream! See how events are received and
+            status changes.
           </p>
           <CodePlayground
             initialCode={`function Example() {
@@ -315,9 +318,7 @@ import type { SSEEvent, UseStreamingSSEOptions, UseStreamingSSEReturn } from '@c
 
         <h2 id="basic-usage">Basic Usage</h2>
 
-        <p>
-          Connect to an SSE endpoint and receive streaming events:
-        </p>
+        <p>Connect to an SSE endpoint and receive streaming events:</p>
 
         <ComponentPreview
           title="Simple SSE Connection"
@@ -358,9 +359,7 @@ function SimpleSSE() {
 
         <h2 id="with-post-request">With POST Request</h2>
 
-        <p>
-          Send data with POST request:
-        </p>
+        <p>Send data with POST request:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingSSE } from '@clarity-chat/react'
@@ -401,9 +400,7 @@ function SSEWithPost() {
 
         <h2 id="authentication">Authentication</h2>
 
-        <p>
-          Add authentication token or use cookie-based auth:
-        </p>
+        <p>Add authentication token or use cookie-based auth:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingSSE } from '@clarity-chat/react'
@@ -440,9 +437,7 @@ function SSEWithAuth() {
 
         <h2 id="automatic-reconnection">Automatic Reconnection</h2>
 
-        <p>
-          Configure automatic reconnection with exponential backoff:
-        </p>
+        <p>Configure automatic reconnection with exponential backoff:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingSSE } from '@clarity-chat/react'
@@ -482,16 +477,15 @@ function SSEWithReconnect() {
 
         <Callout type="tip">
           <p>
-            Reconnection delay increases exponentially: 1s → 2s → 4s → 8s → 16s → 30s (max).
-            This prevents overwhelming the server while ensuring eventual reconnection.
+            Reconnection delay increases exponentially: 1s → 2s → 4s → 8s → 16s
+            → 30s (max). This prevents overwhelming the server while ensuring
+            eventual reconnection.
           </p>
         </Callout>
 
         <h2 id="event-handling">Event Handling</h2>
 
-        <p>
-          Handle different event types:
-        </p>
+        <p>Handle different event types:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingSSE } from '@clarity-chat/react'
@@ -539,9 +533,7 @@ function SSEWithEventHandling() {
 
         <h2 id="resume-from-event-id">Resume from Event ID</h2>
 
-        <p>
-          Resume streaming from the last event ID after reconnection:
-        </p>
+        <p>Resume streaming from the last event ID after reconnection:</p>
 
         <EnhancedCodeBlock
           code={`import { useStreamingSSE } from '@clarity-chat/react'
@@ -699,16 +691,15 @@ function CompleteSSEExample() {
 
         <Callout type="warning">
           <p>
-            <strong>Note:</strong> The API endpoint <code>/api/chat/stream</code> is a placeholder.
-            You'll need to implement your own SSE endpoint that sends Server-Sent Events.
+            <strong>Note:</strong> The API endpoint{' '}
+            <code>/api/chat/stream</code> is a placeholder. You'll need to
+            implement your own SSE endpoint that sends Server-Sent Events.
           </p>
         </Callout>
 
         <h2 id="server-implementation">Server Implementation Example</h2>
 
-        <p>
-          Example Next.js API route for SSE:
-        </p>
+        <p>Example Next.js API route for SSE:</p>
 
         <EnhancedCodeBlock
           code={`// app/api/stream/route.ts
@@ -759,9 +750,7 @@ export async function POST(req: Request) {
 
         <h2 id="status-values">Status Values</h2>
 
-        <p>
-          Connection status can be one of:
-        </p>
+        <p>Connection status can be one of:</p>
 
         <ul>
           <li>
@@ -771,7 +760,8 @@ export async function POST(req: Request) {
             <strong>connecting:</strong> Establishing connection
           </li>
           <li>
-            <strong>connected:</strong> Connection established, waiting for events
+            <strong>connected:</strong> Connection established, waiting for
+            events
           </li>
           <li>
             <strong>streaming:</strong> Actively receiving events
@@ -788,19 +778,24 @@ export async function POST(req: Request) {
 
         <ul>
           <li>
-            <strong>Clean up on unmount:</strong> Always call <code>disconnect()</code> in cleanup
+            <strong>Clean up on unmount:</strong> Always call{' '}
+            <code>disconnect()</code> in cleanup
           </li>
           <li>
-            <strong>Handle errors:</strong> Provide <code>onError</code> callback for error handling
+            <strong>Handle errors:</strong> Provide <code>onError</code>{' '}
+            callback for error handling
           </li>
           <li>
-            <strong>Monitor status:</strong> Use <code>status</code> to show connection state in UI
+            <strong>Monitor status:</strong> Use <code>status</code> to show
+            connection state in UI
           </li>
           <li>
-            <strong>Use reconnection:</strong> Enable <code>autoReconnect</code> for production apps
+            <strong>Use reconnection:</strong> Enable <code>autoReconnect</code>{' '}
+            for production apps
           </li>
           <li>
-            <strong>Resume support:</strong> Enable <code>resumeFromLastEventId</code> if server supports it
+            <strong>Resume support:</strong> Enable{' '}
+            <code>resumeFromLastEventId</code> if server supports it
           </li>
         </ul>
 
@@ -808,19 +803,28 @@ export async function POST(req: Request) {
 
         <ul>
           <li>
-            <a href="/reference/hooks/use-streaming-websocket">useStreamingWebSocket</a> - WebSocket streaming hook
+            <a href="/reference/hooks/use-streaming-websocket">
+              useStreamingWebSocket
+            </a>{' '}
+            - WebSocket streaming hook
           </li>
           <li>
-            <a href="/reference/hooks/use-streamable-ui">useStreamableUI</a> - UI state for streaming
+            <a href="/reference/hooks/use-streamable-ui">useStreamableUI</a> -
+            UI state for streaming
           </li>
           <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat hook with SSE support
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
+            Chat hook with SSE support
           </li>
           <li>
-            <a href="/reference/components/streaming-message">StreamingMessage</a> - Display streaming content
+            <a href="/reference/components/streaming-message">
+              StreamingMessage
+            </a>{' '}
+            - Display streaming content
           </li>
           <li>
-            <a href="/guides/streaming">Streaming Guide</a> - SSE vs WebSocket comparison
+            <a href="/guides/streaming">Streaming Guide</a> - SSE vs WebSocket
+            comparison
           </li>
         </ul>
 

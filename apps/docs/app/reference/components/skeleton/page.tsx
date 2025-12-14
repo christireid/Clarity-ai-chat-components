@@ -12,9 +12,11 @@ import {
   SkeletonButton,
 } from '@clarity-chat/react'
 import { Badge } from '@clarity-chat/primitives'
-import { PageSkeleton, ComponentPageSkeleton, SearchResultsSkeleton } from '@/components/Loading/PageSkeleton'
-
-export const dynamic = 'force-dynamic'
+import {
+  PageSkeleton,
+  ComponentPageSkeleton,
+  SearchResultsSkeleton,
+} from '@/components/Loading/PageSkeleton'
 
 export default function SkeletonLoadersPage() {
   const [showPageSkeleton, setShowPageSkeleton] = useState(false)
@@ -25,13 +27,20 @@ export default function SkeletonLoadersPage() {
     <div className="docs-content">
       <div className="docs-header">
         <div className="flex gap-2 mb-3">
-          <Badge variant="subtle" size="sm">Component</Badge>
-          <Badge variant="success" size="sm">Stable</Badge>
-          <Badge variant="info" size="sm" dot>In Use</Badge>
+          <Badge variant="subtle" size="sm">
+            Component
+          </Badge>
+          <Badge variant="success" size="sm">
+            Stable
+          </Badge>
+          <Badge variant="info" size="sm" dot>
+            In Use
+          </Badge>
         </div>
         <h1>Skeleton Loaders</h1>
         <p className="docs-lead">
-          Loading placeholder components with shimmer and pulse animations for displaying content structure while data loads.
+          Loading placeholder components with shimmer and pulse animations for
+          displaying content structure while data loads.
         </p>
       </div>
 
@@ -40,8 +49,9 @@ export default function SkeletonLoadersPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Skeleton loaders provide visual feedback while content is loading, improving perceived performance
-          by showing the structure of the page before the actual content arrives.
+          Skeleton loaders provide visual feedback while content is loading,
+          improving perceived performance by showing the structure of the page
+          before the actual content arrives.
         </p>
       </section>
 
@@ -57,14 +67,18 @@ export default function SkeletonLoadersPage() {
 
       <section className="docs-section">
         <h2>Skeleton Text</h2>
-        <p className="mb-4">Multi-line text placeholders with customizable line count:</p>
+        <p className="mb-4">
+          Multi-line text placeholders with customizable line count:
+        </p>
         <div className="p-6 border rounded-lg bg-card space-y-6">
           <div>
             <p className="text-sm font-medium mb-2">3 Lines (default)</p>
             <SkeletonText lines={3} />
           </div>
           <div>
-            <p className="text-sm font-medium mb-2">5 Lines with 60% last line</p>
+            <p className="text-sm font-medium mb-2">
+              5 Lines with 60% last line
+            </p>
             <SkeletonText lines={5} lastLineWidth={60} />
           </div>
         </div>
@@ -85,7 +99,9 @@ export default function SkeletonLoadersPage() {
 
       <section className="docs-section">
         <h2>Skeleton Card</h2>
-        <p className="mb-4">Complete card placeholder with image, header, body, and footer:</p>
+        <p className="mb-4">
+          Complete card placeholder with image, header, body, and footer:
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SkeletonCard />
           <SkeletonCard showImage={false} bodyLines={2} />
@@ -122,7 +138,8 @@ export default function SkeletonLoadersPage() {
       <section className="docs-section">
         <h2>Real-World Examples</h2>
         <p className="mb-6">
-          See how skeleton loaders are used in production throughout this documentation site:
+          See how skeleton loaders are used in production throughout this
+          documentation site:
         </p>
 
         <div className="space-y-8">
@@ -130,7 +147,9 @@ export default function SkeletonLoadersPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold">Documentation Page Skeleton</h3>
+                <h3 className="text-lg font-semibold">
+                  Documentation Page Skeleton
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   Full page loading state for documentation pages
                 </p>
@@ -153,7 +172,9 @@ export default function SkeletonLoadersPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold">Component Page Skeleton</h3>
+                <h3 className="text-lg font-semibold">
+                  Component Page Skeleton
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   Specialized loading state for component reference pages
                 </p>
@@ -176,7 +197,9 @@ export default function SkeletonLoadersPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold">Search Results Skeleton</h3>
+                <h3 className="text-lg font-semibold">
+                  Search Results Skeleton
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   Loading state for search and command palette results
                 </p>
@@ -200,13 +223,24 @@ export default function SkeletonLoadersPage() {
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul className="space-y-2">
-          <li>✅ Use skeleton loaders for content that takes more than 300ms to load</li>
+          <li>
+            ✅ Use skeleton loaders for content that takes more than 300ms to
+            load
+          </li>
           <li>✅ Match skeleton shapes to actual content layout</li>
-          <li>✅ Use shimmer animation for dynamic data, pulse for user-initiated actions</li>
+          <li>
+            ✅ Use shimmer animation for dynamic data, pulse for user-initiated
+            actions
+          </li>
           <li>✅ Keep skeleton count consistent with expected content</li>
           <li>✅ Avoid skeleton loaders for instant operations</li>
-          <li>❌ Don't mix spinners and skeletons for the same loading state</li>
-          <li>❌ Don't show skeleton loaders indefinitely (add timeout/error state)</li>
+          <li>
+            ❌ Don't mix spinners and skeletons for the same loading state
+          </li>
+          <li>
+            ❌ Don't show skeleton loaders indefinitely (add timeout/error
+            state)
+          </li>
         </ul>
       </section>
 

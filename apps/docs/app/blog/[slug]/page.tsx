@@ -9,19 +9,21 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 import matter from 'gray-matter'
 
-export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
-
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
 }
 
 // Blog post metadata
-const blogPosts: Record<string, { title: string; date: string; readTime: string; excerpt: string }> = {
+const blogPosts: Record<
+  string,
+  { title: string; date: string; readTime: string; excerpt: string }
+> = {
   'ai-chat-ux-pain-points-and-solutions': {
-    title: 'I Built 20 AI Chat Interfaces. Here Are The 7 Mistakes That Cost Me $200K',
+    title:
+      'I Built 20 AI Chat Interfaces. Here Are The 7 Mistakes That Cost Me $200K',
     date: '2024-01-15',
     readTime: '12 min read',
-    excerpt: 'Spoiler: You\'re probably making all of them right now.',
+    excerpt: "Spoiler: You're probably making all of them right now.",
   },
   'the-7-ux-disasters-killing-ai-chat-apps-v2': {
     title: 'The 7 UX Disasters Killing AI Chat Apps (V2)',
@@ -49,7 +51,9 @@ export async function generateStaticParams() {
   return Object.keys(blogPosts).map((slug) => ({ slug }))
 }
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
   const post = blogPosts[slug]
 
@@ -89,7 +93,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <>
       <Breadcrumbs />
-      
+
       <div className="docs-content">
         <Link
           href="/blog"
@@ -103,7 +107,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <header className="mb-8">
             <span className="docs-badge">Blog Post</span>
             <h1 className="text-4xl font-bold mt-2 mb-4">{post.title}</h1>
-            
+
             <div className="flex items-center gap-4 text-sm text-text-tertiary mb-6">
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />

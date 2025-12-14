@@ -1,0 +1,19 @@
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+
+.dev-tools-root {
+  font-family: var(--dt-font-sans);
+  font-size: var(--dt-text-sm);
+  line-height: var(--dt-line-height-normal);
+  color: var(--dt-text-primary);
+  background-color: var(--dt-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dev-tools-root *,
+.dev-tools-root *::before,
+.dev-tools-root *::after {
+  box-sizing: border-box;
+}

@@ -8,11 +8,10 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'NetworkStatus | Clarity Chat',
-  description: 'Indicator for online/offline status and connectivity changes with automatic reconnection.',
+  description:
+    'Indicator for online/offline status and connectivity changes with automatic reconnection.',
 }
 
 const networkStatusProps: Prop[] = [
@@ -77,15 +76,16 @@ export default function NetworkStatusPage() {
       <h1>NetworkStatus</h1>
 
       <p className="lead">
-        Network connectivity status indicator that automatically detects online/offline state
-        and provides visual feedback to users. Perfect for offline-first applications and
-        real-time chat interfaces.
+        Network connectivity status indicator that automatically detects
+        online/offline state and provides visual feedback to users. Perfect for
+        offline-first applications and real-time chat interfaces.
       </p>
 
       <Callout type="info" title="Automatic Detection">
         <p>
-          NetworkStatus automatically detects connectivity changes using the browser's
-          online/offline events and provides visual feedback without any configuration.
+          NetworkStatus automatically detects connectivity changes using the
+          browser's online/offline events and provides visual feedback without
+          any configuration.
         </p>
       </Callout>
 
@@ -94,7 +94,7 @@ export default function NetworkStatusPage() {
         <p className="mb-6 text-gray-600 dark:text-gray-400">
           The simplest way to use the component:
         </p>
-        
+
         <EnhancedCodeBlock
           language="tsx"
           code={`import { NetworkStatus } from '@clarity-chat/react'
@@ -135,7 +135,9 @@ function Example() {
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Examples</h2>
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Status Change Callback</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Status Change Callback
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { NetworkStatus } from '@clarity-chat/react'
@@ -169,7 +171,9 @@ function ChatWithNetworkStatus() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Details and Custom Ping</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Details and Custom Ping
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { NetworkStatus } from '@clarity-chat/react'
@@ -191,7 +195,9 @@ function DetailedNetworkStatus() {
 }`}
         />
 
-        <h3 className="text-xl font-semibold mt-6 mb-4">With Offline Chat Sync</h3>
+        <h3 className="text-xl font-semibold mt-6 mb-4">
+          With Offline Chat Sync
+        </h3>
         <EnhancedCodeBlock
           language="tsx"
           code={`import { NetworkStatus, OfflineChatSync } from '@clarity-chat/react'
@@ -225,28 +231,58 @@ function OfflineChat() {
           NetworkStatus uses the browser's native online/offline detection:
         </p>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Online Detection</strong> - Listens to <code>online</code> events</li>
-          <li><strong>Offline Detection</strong> - Listens to <code>offline</code> events</li>
-          <li><strong>Visual Feedback</strong> - Shows status badge with appropriate styling</li>
-          <li><strong>Automatic Updates</strong> - Updates in real-time as connectivity changes</li>
+          <li>
+            <strong>Online Detection</strong> - Listens to <code>online</code>{' '}
+            events
+          </li>
+          <li>
+            <strong>Offline Detection</strong> - Listens to <code>offline</code>{' '}
+            events
+          </li>
+          <li>
+            <strong>Visual Feedback</strong> - Shows status badge with
+            appropriate styling
+          </li>
+          <li>
+            <strong>Automatic Updates</strong> - Updates in real-time as
+            connectivity changes
+          </li>
         </ul>
       </section>
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
         <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
-          <li><strong>Show when offline</strong> - Always show status when offline to inform users</li>
-          <li><strong>Hide when online</strong> - Optionally hide when online to reduce UI clutter</li>
-          <li><strong>Use callbacks</strong> - Implement onReconnect/onDisconnect to handle state changes</li>
-          <li><strong>Combine with offline sync</strong> - Use with OfflineChatSync for automatic message queuing</li>
-          <li><strong>Position appropriately</strong> - Use fixed position for persistent visibility</li>
+          <li>
+            <strong>Show when offline</strong> - Always show status when offline
+            to inform users
+          </li>
+          <li>
+            <strong>Hide when online</strong> - Optionally hide when online to
+            reduce UI clutter
+          </li>
+          <li>
+            <strong>Use callbacks</strong> - Implement onReconnect/onDisconnect
+            to handle state changes
+          </li>
+          <li>
+            <strong>Combine with offline sync</strong> - Use with
+            OfflineChatSync for automatic message queuing
+          </li>
+          <li>
+            <strong>Position appropriately</strong> - Use fixed position for
+            persistent visibility
+          </li>
         </ul>
       </section>
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/components/offline-chat-sync" className="docs-card">
+          <a
+            href="/reference/components/offline-chat-sync"
+            className="docs-card"
+          >
             <h3>OfflineChatSync Component</h3>
             <p>Offline message queuing</p>
           </a>
@@ -258,7 +294,10 @@ function OfflineChat() {
             <h3>Real-Time Collaboration</h3>
             <p>WebSocket connectivity</p>
           </a>
-          <a href="/reference/hooks/use-streaming-websocket" className="docs-card">
+          <a
+            href="/reference/hooks/use-streaming-websocket"
+            className="docs-card"
+          >
             <h3>useStreamingWebSocket Hook</h3>
             <p>WebSocket with auto-reconnect</p>
           </a>
@@ -266,8 +305,14 @@ function OfflineChat() {
       </section>
 
       <Pagination
-        prev={{ title: 'MessageList', href: '/reference/components/message-list' }}
-        next={{ title: 'OfflineChatSync', href: '/reference/components/offline-chat-sync' }}
+        prev={{
+          title: 'MessageList',
+          href: '/reference/components/message-list',
+        }}
+        next={{
+          title: 'OfflineChatSync',
+          href: '/reference/components/offline-chat-sync',
+        }}
       />
     </>
   )

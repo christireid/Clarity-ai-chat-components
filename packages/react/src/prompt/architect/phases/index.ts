@@ -32,7 +32,7 @@ export {
   formatStrategicPlanAsMarkdown,
   generatePlanningBlockTemplate,
   getPatternInfo,
-  getPatternsByCategory,
+  getPatternIdsByCategory,
   suggestPatternsForUseCase,
 } from './phase2-planning'
 
@@ -50,7 +50,10 @@ export {
   getDocumentationRequirements,
   generateDocTemplate,
 } from './phase3-implementation'
-export type { LegacyImprovement, LegacyImprovementType } from './phase3-implementation'
+export type {
+  LegacyImprovement,
+  LegacyImprovementType,
+} from './phase3-implementation'
 
 // Phase 4: Review & Reflection
 export {

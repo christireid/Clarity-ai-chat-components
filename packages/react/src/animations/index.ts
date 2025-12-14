@@ -44,6 +44,8 @@ export * from './constants'
 export * from './utils'
 export * from './motion-safe'
 export * from './spring-presets'
+export * from './microanimations'
+export * from './theme-animations'
 
 // Re-export the useReducedMotion hook for convenience
 export { useReducedMotion } from '../hooks/use-reduced-motion'

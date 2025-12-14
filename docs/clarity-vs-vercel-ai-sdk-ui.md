@@ -161,7 +161,7 @@ Clarity is designed to be a drop-in replacement. See the [Migration Guide](./mig
 
 ## Learn More
 
-- **[Getting Started](./getting-started-clarity-chat.md)** - Quick start guide
+- **[Getting Started](./getting-started.md)** - Quick start guide
 - **[Migration Guide](./migrating-from-vercel.md)** - Migrate from Vercel
 - **[API Reference](../../packages/react/README.md)** - Complete documentation
 - **[Architecture](./architecture.md)** - System design overview

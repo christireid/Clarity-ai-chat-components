@@ -1,0 +1,163 @@
+/* ==========================================================================
+   Error Boundary Styles
+   ========================================================================== */
+
+.error-boundary-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: var(--dt-spacing-8);
+  background: linear-gradient(
+    135deg,
+    var(--dt-color-error-50) 0%,
+    var(--dt-bg-primary) 100%
+  );
+  border-radius: var(--dt-radius-lg);
+  animation: fadeIn var(--dt-animation-normal) ease-out;
+}
+
+.error-boundary-content {
+  max-width: 500px;
+  text-align: center;
+}
+
+.error-boundary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--dt-spacing-4);
+  background: var(--dt-color-error-100);
+  border-radius: 50%;
+  color: var(--dt-color-error-600);
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.error-boundary-title {
+  margin: 0 0 var(--dt-spacing-2);
+  font-size: var(--dt-text-xl);
+  font-weight: 600;
+  color: var(--dt-color-error-700);
+}
+
+.error-boundary-message {
+  margin: 0 0 var(--dt-spacing-6);
+  color: var(--dt-text-secondary);
+  font-size: var(--dt-text-sm);
+}
+
+.error-boundary-actions {
+  display: flex;
+  gap: var(--dt-spacing-3);
+  justify-content: center;
+  margin-bottom: var(--dt-spacing-4);
+}
+
+.error-boundary-details {
+  margin-top: var(--dt-spacing-4);
+  text-align: left;
+  background: var(--dt-bg-code);
+  border-radius: var(--dt-radius-md);
+  overflow: hidden;
+}
+
+.error-details-content {
+  padding: var(--dt-spacing-4);
+}
+
+.error-section {
+  margin-bottom: var(--dt-spacing-4);
+}
+
+.error-section:last-child {
+  margin-bottom: 0;
+}
+
+.error-section h4 {
+  margin: 0 0 var(--dt-spacing-2);
+  font-size: var(--dt-text-sm);
+  font-weight: 600;
+  color: var(--dt-text-primary);
+}
+
+/* Panel-specific error fallback */
+.panel-error-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--dt-spacing-8);
+  background: var(--dt-color-error-50);
+  border: 1px solid var(--dt-color-error-200);
+  border-radius: var(--dt-radius-lg);
+  animation: fadeIn var(--dt-animation-normal) ease-out;
+}
+
+.panel-error-content {
+  display: flex;
+  align-items: center;
+  gap: var(--dt-spacing-4);
+  color: var(--dt-color-error-600);
+}
+
+.panel-error-text h4 {
+  margin: 0 0 var(--dt-spacing-1);
+  font-size: var(--dt-text-base);
+  font-weight: 600;
+  color: var(--dt-color-error-700);
+}
+
+.panel-error-text p {
+  margin: 0;
+  font-size: var(--dt-text-sm);
+  color: var(--dt-color-error-600);
+}
+
+/* Dark mode error boundary */
+.dev-tools-dark .error-boundary-fallback {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1) 0%,
+    var(--dt-bg-primary) 100%
+  );
+}
+
+.dev-tools-dark .error-boundary-icon {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--dt-color-error-400);
+}
+
+.dev-tools-dark .error-boundary-title {
+  color: var(--dt-color-error-400);
+}
+
+.dev-tools-dark .panel-error-fallback {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.dev-tools-dark .panel-error-content {
+  color: var(--dt-color-error-400);
+}
+
+.dev-tools-dark .panel-error-text h4 {
+  color: var(--dt-color-error-300);
+}
+
+.dev-tools-dark .panel-error-text p {
+  color: var(--dt-color-error-400);
+}
+
+/* Pulse animation for error icon */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}

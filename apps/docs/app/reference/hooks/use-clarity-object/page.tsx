@@ -182,8 +182,6 @@ const useClarityObjectReturnProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
-
 export default function UseClarityObjectPage() {
   return (
     <ToastProvider>
@@ -546,13 +544,30 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
+    // Validate API key exists
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'API key not configured' },
+        { status: 500 }
+      )
+    }
+
     const { query } = await req.json()
-    
+
+    // Validate input
+    if (!query || typeof query !== 'string') {
+      return NextResponse.json(
+        { error: 'Invalid query format' },
+        { status: 400 }
+      )
+    }
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
+        'Authorization': \`Bearer \${apiKey}\`,
       },
       body: JSON.stringify({
         model: 'gpt-4',
@@ -579,7 +594,7 @@ export async function POST(req: Request) {
 
     const data = await response.json()
     const content = JSON.parse(data.choices[0].message.content)
-    
+
     // Return the products array
     return NextResponse.json(content.products || [])
   } catch (error) {

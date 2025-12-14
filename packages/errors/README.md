@@ -25,7 +25,7 @@ yarn add @clarity-chat/errors
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
 
 ### Basic Example
 
@@ -487,10 +487,10 @@ export const POST = withError(async (req, res) => {
 
 ## 📚 Documentation
 
-- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Getting Started Guide](../../docs/getting-started.md)
 - [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
 - [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
-- [Error Handling Guide](../../docs/guides/error-handling.md) - Complete guide
+- [Best Practices](../../docs/best-practices.md) - Production patterns including error handling
 
 ## 📄 License
 

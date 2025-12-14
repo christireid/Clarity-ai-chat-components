@@ -4,6 +4,7 @@ import {
   applyThemeToDocument,
   createTheme as createThemeLegacy,
 } from './theme-builder'
+import { ThemeContext } from './theme-context'
 import {
   modernThemes,
   isValidModernThemeName,
@@ -14,6 +15,7 @@ import {
   type SimpleThemeConfig,
 } from './create-theme'
 import type { CompleteThemeConfig, PartialThemeConfig } from './theme-config'
+import type { ThemeContextValue } from './theme-types'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import {
   getMotionSafeDuration,
@@ -41,19 +43,8 @@ export interface ThemeConfig {
   transitionDuration?: number
 }
 
-interface ThemeContextValue {
-  theme: ThemeConfig
-  setTheme: (theme: Partial<ThemeConfig>) => void
-  mode: 'light' | 'dark'
-  toggleMode: () => void
-  resolvedTheme: CompleteThemeConfig | null
-  setPreset: (preset: ThemePresetName) => void
-  availablePresets: ThemePresetName[]
-}
-
-const ThemeContext = React.createContext<ThemeContextValue | undefined>(
-  undefined
-)
+// ThemeContext is defined in `theme-context.ts` so `useTheme()` and ThemeProvider
+// share the same context instance across all imports.
 
 /**
  * Check if a value is a CompleteThemeConfig (has colors, typography, etc.)

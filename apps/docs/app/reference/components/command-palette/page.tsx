@@ -1,7 +1,8 @@
 'use client'
 
-import { Metadata } from 'next'
-import { ToastProvider } from '@clarity-chat/react'
+import { useState, useEffect, useMemo } from 'react'
+import { ToastProvider, CommandPalette } from '@clarity-chat/react'
+import type { CommandItem } from '@clarity-chat/react'
 import { Badge } from '@clarity-chat/primitives'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -10,7 +11,95 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
+import {
+  MessageSquare,
+  Search,
+  Settings,
+  Moon,
+  Sun,
+  LogOut,
+  Terminal,
+  Calculator,
+  Calendar,
+} from 'lucide-react'
 
+function BasicCommandPaletteDemo() {
+  const [open, setOpen] = useState(false)
+  const [lastAction, setLastAction] = useState<string | null>(null)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setOpen(true)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  const commands: CommandItem[] = [
+    {
+      id: 'new-chat',
+      label: 'New Chat',
+      icon: <MessageSquare className="w-4 h-4" />,
+      group: 'Actions',
+      shortcut: '⌘N',
+      onSelect: () => setLastAction('Created new chat'),
+    },
+    {
+      id: 'search',
+      label: 'Search Messages',
+      icon: <Search className="w-4 h-4" />,
+      group: 'Actions',
+      shortcut: '⌘F',
+      onSelect: () => setLastAction('Opened search'),
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: <Settings className="w-4 h-4" />,
+      group: 'System',
+      onSelect: () => setLastAction('Opened settings'),
+    },
+    {
+      id: 'theme',
+      label: 'Toggle Theme',
+      icon: <Moon className="w-4 h-4" />,
+      group: 'System',
+      shortcut: '⌘D',
+      onSelect: () => setLastAction('Toggled theme'),
+    },
+  ]
+
+  return (
+    <div className="flex flex-col items-center justify-center p-8 border rounded-lg bg-background min-h-[200px]">
+      <button
+        onClick={() => setOpen(true)}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-sm font-medium flex items-center gap-2"
+      >
+        <Terminal className="w-4 h-4" />
+        Open Command Palette (⌘K)
+      </button>
+
+      {lastAction && (
+        <div className="mt-4 text-sm text-muted-foreground animate-in fade-in slide-in-from-bottom-2">
+          Last action:{' '}
+          <span className="font-semibold text-foreground">{lastAction}</span>
+        </div>
+      )}
+
+      <CommandPalette
+        items={commands}
+        open={open}
+        onClose={() => setOpen(false)}
+        placeholder="Type a command or search..."
+      />
+    </div>
+  )
+}
 
 const commandPaletteProps: Prop[] = [
   {
@@ -78,533 +167,232 @@ const commandPaletteProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
-
 export default function CommandPalettePage() {
   return (
     <ToastProvider>
-    <>
-      <Breadcrumbs />
+      <div className="docs-content">
+        <Breadcrumbs />
 
-      <div className="flex gap-2 mb-3">
-        <Badge variant="subtle" size="sm">Component</Badge>
-        <Badge variant="info" size="sm">New</Badge>
-      </div>
+        <ScrollReveal>
+          <div className="flex gap-2 mb-3">
+            <Badge variant="subtle" size="sm">
+              Component
+            </Badge>
+            <Badge variant="info" size="sm">
+              Interactive
+            </Badge>
+          </div>
 
-      <h1>CommandPalette</h1>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+              CommandPalette
+            </h1>
 
-      <p className="lead">
-        A keyboard-driven command palette interface, inspired by Spotlight and VS Code's command palette.
-        Trigger with Cmd+K (or Ctrl+K) for quick access to actions and navigation.
-      </p>
+            <p className="text-xl text-text-secondary leading-relaxed">
+              A keyboard-driven command palette interface, inspired by Spotlight
+              and macOS. Give your power users super-powers with instant access
+              to actions and navigation.
+            </p>
+          </div>
+        </ScrollReveal>
 
-      <ViewInStorybook component="CommandPalette" />
+        <ScrollReveal delay={0.1}>
+          <ViewInStorybook component="CommandPalette" />
+        </ScrollReveal>
 
-      <Callout type="tip">
-        <p>
-          The CommandPalette provides a fast, keyboard-first way for power users to navigate
-          and execute commands without leaving the keyboard.
-        </p>
-      </Callout>
+        <ScrollReveal delay={0.2}>
+          <Callout type="tip" className="mb-8">
+            <p>
+              The CommandPalette is accessible by default, managing focus trap,
+              keyboard navigation, and screen reader announcements
+              automatically.
+            </p>
+          </Callout>
+        </ScrollReveal>
 
-      <h2 id="import">Import</h2>
-
-      <EnhancedCodeBlock
-        code={`import { CommandPalette } from '@clarity-chat/react'`}
-        language="tsx"
-      />
-
-      <h2 id="basic-usage">Basic Usage</h2>
-
-      <EnhancedCodeBlock
-        code={`import { useState, useEffect } from 'react'
+        <ScrollReveal delay={0.3}>
+          <h2 id="demo">Interactive Demo</h2>
+          <ComponentPreview
+            title="Command Palette"
+            description="Press Cmd+K or click the button to open."
+            code={`import { useState, useEffect } from 'react'
 import { CommandPalette, CommandItem } from '@clarity-chat/react'
+import { MessageSquare, Search, Settings } from 'lucide-react'
 
-function App() {
+function Demo() {
   const [open, setOpen] = useState(false)
 
-  // Open with Cmd+K or Ctrl+K
+  // Toggle with Cmd+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
-        setOpen(true)
+        setOpen((prev) => !prev)
       }
     }
-
     window.addEventListener('keydown', handleKeyDown)
-    return (
-    <ToastProvider>) => window.removeEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  const commands: CommandItem[] = [
+  const commands = [
     {
-      id: 'new-message',
-      label: 'New Message',
-      icon: '💬',
-      group: 'Actions',
-      onSelect: () => console.log('New message'),
+      id: 'new',
+      label: 'New Chat',
+      icon: <MessageSquare className="w-4 h-4" />,
+      shortcut: '⌘N',
+      onSelect: () => console.log('New Chat'),
     },
-    {
-      id: 'search',
-      label: 'Search Messages',
-      icon: '🔍',
-      group: 'Actions',
-      shortcut: '⌘F',
-      onSelect: () => console.log('Search'),
-    },
+    // ... more commands
   ]
 
   return (
-    <ToastProvider>
     <>
-      <button onClick={() => setOpen(true)}>
-        Open Command Palette (⌘K)
-      </button>
-      
+      <button onClick={() => setOpen(true)}>Open Palette</button>
       <CommandPalette
-        items={commands}
         open={open}
         onClose={() => setOpen(false)}
-        onSelect={(item) => {
-          item.onSelect?.()
-          setOpen(false)
-        }}
+        items={commands}
       />
     </>
-    </ToastProvider>
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          >
+            <BasicCommandPaletteDemo />
+          </ComponentPreview>
+        </ScrollReveal>
 
-      <h2 id="grouped-commands">Grouped Commands</h2>
+        <ScrollReveal delay={0.4}>
+          <h2 id="import">Import</h2>
+          <EnhancedCodeBlock
+            code={`import { CommandPalette } from '@clarity-chat/react'
+import type { CommandItem } from '@clarity-chat/react'`}
+            language="tsx"
+          />
+        </ScrollReveal>
 
-      <p>Organize commands into logical groups:</p>
+        <ScrollReveal delay={0.5}>
+          <h2 id="configuration">Configuration</h2>
 
-      <EnhancedCodeBlock
-        code={`const commands: CommandItem[] = [
-  // Navigation
-  {
-    id: 'goto-home',
-    label: 'Go to Home',
-    icon: '🏠',
-    group: 'Navigation',
-    onSelect: () => navigate('/'),
-  },
-  {
-    id: 'goto-settings',
-    label: 'Go to Settings',
-    icon: '⚙️',
-    group: 'Navigation',
-    onSelect: () => navigate('/settings'),
-  },
-  
-  // Actions
-  {
-    id: 'new-chat',
-    label: 'New Chat',
-    icon: '💬',
-    group: 'Actions',
-    shortcut: '⌘N',
-    onSelect: () => createNewChat(),
-  },
-  {
-    id: 'export',
-    label: 'Export Chat',
-    icon: '📥',
-    group: 'Actions',
-    onSelect: () => exportChat(),
-  },
-  
-  // Settings
-  {
-    id: 'dark-mode',
-    label: 'Toggle Dark Mode',
-    icon: '🌙',
-    group: 'Settings',
-    shortcut: '⌘D',
-    onSelect: () => toggleTheme(),
-  },
-]`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="with-icons">With Icons</h2>
-
-      <p>Use emoji or React components as icons:</p>
-
-      <EnhancedCodeBlock
-        code={`import { MessageSquare, Search, Settings } from 'lucide-react'
-
-const commands: CommandItem[] = [
-  {
-    id: 'new-message',
-    label: 'New Message',
-    icon: <MessageSquare className="w-4 h-4" />,
-    onSelect: () => newMessage(),
-  },
-  {
-    id: 'search',
-    label: 'Search',
-    icon: <Search className="w-4 h-4" />,
-    onSelect: () => search(),
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: <Settings className="w-4 h-4" />,
-    onSelect: () => openSettings(),
-  },
-]`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
-
-      <p>Display keyboard shortcuts for commands:</p>
-
-      <EnhancedCodeBlock
-        code={`const commands: CommandItem[] = [
+          <div className="grid md:grid-cols-2 gap-8 my-8">
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Command Items</h3>
+              <p className="mb-4 text-muted-foreground">
+                Define your commands with labels, icons, groups, and shortcuts.
+              </p>
+              <EnhancedCodeBlock
+                language="tsx"
+                code={`const commands: CommandItem[] = [
   {
     id: 'save',
-    label: 'Save',
+    label: 'Save Changes',
+    icon: <SaveIcon />,
+    group: 'File',
     shortcut: '⌘S',
     onSelect: () => save(),
-  },
-  {
-    id: 'copy',
-    label: 'Copy',
-    shortcut: '⌘C',
-    onSelect: () => copy(),
-  },
-  {
-    id: 'paste',
-    label: 'Paste',
-    shortcut: '⌘V',
-    onSelect: () => paste(),
-  },
+  }
 ]`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <Callout type="tip">
-        <p>
-          Use platform-specific shortcuts: ⌘ for Mac, Ctrl for Windows/Linux.
-          The component displays them as-is, so format appropriately.
-        </p>
-      </Callout>
-
-      <h2 id="search-filtering">Search & Filtering</h2>
-
-      <p>The CommandPalette includes built-in fuzzy search:</p>
-
-      <EnhancedCodeBlock
-        code={`// User types "nm" → matches "New Message"
-// User types "stgs" → matches "Settings"
-// User types "dk" → matches "Dark Mode"
-
-<CommandPalette
+              />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Grouping</h3>
+              <p className="mb-4 text-muted-foreground">
+                Organize commands into logical sections. The component handles
+                rendering group headers.
+              </p>
+              <EnhancedCodeBlock
+                language="tsx"
+                code={`<CommandPalette
   items={commands}
-  open={open}
-  onClose={() => setOpen(false)}
-  placeholder="Search commands..."
+  groups={['Recent', 'File', 'Edit']} // Custom order
 />`}
-        language="tsx"
-      />
+              />
+            </div>
+          </div>
+        </ScrollReveal>
 
-      <h2 id="custom-actions">Custom Actions</h2>
-
-      <p>Execute custom logic when commands are selected:</p>
-
-      <EnhancedCodeBlock
-        code={`const commands: CommandItem[] = [
-  {
-    id: 'delete-chat',
-    label: 'Delete Chat',
-    icon: '🗑️',
-    group: 'Actions',
-    onSelect: async () => {
-      const confirmed = await confirmDialog('Delete this chat?')
-      if (confirmed) {
-        await deleteChat(chatId)
-        toast.success('Chat deleted')
-      }
-    },
-  },
-  {
-    id: 'share',
-    label: 'Share Chat',
-    icon: '🔗',
-    group: 'Actions',
-    onSelect: async () => {
-      const link = await generateShareLink(chatId)
-      await navigator.clipboard.writeText(link)
-      toast.success('Link copied to clipboard')
-    },
-  },
-]`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="dynamic-commands">Dynamic Commands</h2>
-
-      <p>Generate commands based on application state:</p>
-
-      <EnhancedCodeBlock
-        code={`function useCommands() {
-  const { user } = useAuth()
-  const { chats } = useChats()
-
-  return useMemo(() => {
-    const commands: CommandItem[] = []
-
-    // Recent chats
-    chats.slice(0, 5).forEach((chat) => {
-      commands.push({
-        id: \`chat-\${chat.id}\`,
-        label: \`Open: \${chat.title}\`,
-        icon: '💬',
-        group: 'Recent Chats',
-        onSelect: () => openChat(chat.id),
-      })
-    })
-
-    // User actions
-    if (user.isAdmin) {
-      commands.push({
-        id: 'admin-panel',
-        label: 'Admin Panel',
-        icon: '👑',
-        group: 'Admin',
-        onSelect: () => navigate('/admin'),
-      })
-    }
-
-    return commands
-  }, [chats, user])
-}
-
-function App() {
-  const commands = useCommands()
-  
-  return (
-    <ToastProvider>
-    <CommandPalette
-      items={commands}
-      open={open}
-      onClose={() => setOpen(false)}
-    />
-  )
-}`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="props">Props</h2>
-
-      <PropsTable props={commandPaletteProps} />
-
-      <h2 id="types">Type Definitions</h2>
-
-      <EnhancedCodeBlock
-        code={`interface CommandItem {
-  id: string
-  label: string
-  icon?: React.ReactNode | string
-  group?: string
-  shortcut?: string
-  description?: string
-  onSelect?: () => void | Promise<void>
-  disabled?: boolean
-  hidden?: boolean
-}`}
-        language="tsx"
-      />
-
-      <h2 id="styling">Custom Styling</h2>
-
-      <EnhancedCodeBlock
-        code={`<CommandPalette
-  items={commands}
-  open={open}
-  onClose={() => setOpen(false)}
-  className="custom-command-palette"
-  maxHeight="500px"
-/>`}
-        language="tsx"
-      />
-
-      <h2 id="examples">Complete Examples</h2>
-
-      <h3>Full-Featured Command Palette</h3>
-
-      <EnhancedCodeBlock
-        code={`import { useState, useEffect, useMemo } from 'react'
-import { CommandPalette, CommandItem } from '@clarity-chat/react'
-import { 
-  MessageSquare, 
-  Search, 
-  Settings, 
-  Moon, 
-  Sun, 
-  LogOut 
-} from 'lucide-react'
-
-function App() {
-  const [open, setOpen] = useState(false)
+        <ScrollReveal delay={0.6}>
+          <h2 id="dynamic-commands">Dynamic Commands</h2>
+          <p className="mb-4">
+            You can generate commands dynamically based on application state:
+          </p>
+          <EnhancedCodeBlock
+            language="tsx"
+            code={`function useCommands() {
   const { theme, setTheme } = useTheme()
-  const { user, logout } = useAuth()
-
-  // Keyboard shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        setOpen(true)
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return (
-    <ToastProvider>) => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
-
-  const commands: CommandItem[] = useMemo(() => [
-    // Navigation
+  
+  return useMemo(() => [
     {
-      id: 'new-chat',
-      label: 'New Chat',
-      icon: <MessageSquare className="w-4 h-4" />,
-      group: 'Navigation',
-      shortcut: '⌘N',
-      onSelect: () => createNewChat(),
-    },
-    {
-      id: 'search',
-      label: 'Search Messages',
-      icon: <Search className="w-4 h-4" />,
-      group: 'Navigation',
-      shortcut: '⌘F',
-      onSelect: () => openSearch(),
-    },
-    
-    // Settings
-    {
-      id: 'toggle-theme',
-      label: theme === 'dark' ? 'Light Mode' : 'Dark Mode',
-      icon: theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />,
-      group: 'Settings',
-      shortcut: '⌘D',
+      id: 'theme',
+      label: theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+      icon: theme === 'dark' ? <Sun /> : <Moon />,
       onSelect: () => setTheme(theme === 'dark' ? 'light' : 'dark'),
-    },
-    {
-      id: 'settings',
-      label: 'Open Settings',
-      icon: <Settings className="w-4 h-4" />,
-      group: 'Settings',
-      onSelect: () => navigate('/settings'),
-    },
-    
-    // Account
-    {
-      id: 'logout',
-      label: 'Log Out',
-      icon: <LogOut className="w-4 h-4" />,
-      group: 'Account',
-      onSelect: () => logout(),
-    },
+    }
   ], [theme])
-
-  return (
-    <ToastProvider>
-    <div>
-      <button 
-        onClick={() => setOpen(true)}
-        className="px-4 py-2 border rounded"
-      >
-        Press ⌘K to open
-      </button>
-
-      <CommandPalette
-        items={commands}
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={(item) => {
-          item.onSelect?.()
-          setOpen(false)
-        }}
-        placeholder="Type a command or search..."
-        showIcons
-        showShortcuts
-      />
-    </div>
-    </ToastProvider>
-  )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          />
+        </ScrollReveal>
 
-      <h2 id="accessibility">Accessibility</h2>
+        <ScrollReveal delay={0.7}>
+          <h2 id="props">Props</h2>
+          <PropsTable props={commandPaletteProps} />
+        </ScrollReveal>
 
-      <ul>
-        <li>✅ Full keyboard navigation (arrows, enter, escape)</li>
-        <li>✅ ARIA labels and roles</li>
-        <li>✅ Focus management</li>
-        <li>✅ Screen reader announcements</li>
-        <li>✅ Keyboard shortcuts display</li>
-      </ul>
+        <ScrollReveal delay={0.8}>
+          <h2 id="accessibility">Accessibility</h2>
+          <ul className="mb-8 space-y-2">
+            <li>
+              ✅ <strong>Focus Trap:</strong> Keeps focus within the modal when
+              open
+            </li>
+            <li>
+              ✅ <strong>Keyboard Navigation:</strong> Arrow keys to move, Enter
+              to select
+            </li>
+            <li>
+              ✅ <strong>Screen Reader:</strong> Announces results and selection
+            </li>
+            <li>
+              ✅ <strong>ARIA:</strong> Proper roles for combobox/listbox
+              pattern
+            </li>
+          </ul>
+        </ScrollReveal>
 
-      <h2 id="performance">Performance Tips</h2>
+        <ScrollReveal delay={0.9}>
+          <h2 id="related">Related</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <a
+              href="/reference/components/advanced-chat-input"
+              className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
+              <h3 className="font-semibold mb-1">AdvancedChatInput</h3>
+              <p className="text-sm text-muted-foreground">
+                Inline commands with / slash menu
+              </p>
+            </a>
+            <a
+              href="/reference/hooks/use-keyboard-shortcuts"
+              className="p-4 border rounded-lg hover:border-brand-500 transition-colors"
+            >
+              <h3 className="font-semibold mb-1">useKeyboardShortcuts</h3>
+              <p className="text-sm text-muted-foreground">
+                Hook for global shortcuts
+              </p>
+            </a>
+          </div>
+        </ScrollReveal>
 
-      <Callout type="tip">
-        <p>
-          <strong>Optimize for large command lists:</strong>
-        </p>
-        <ul>
-          <li>Use <code>useMemo</code> to memoize command arrays</li>
-          <li>Implement virtual scrolling for 100+ commands</li>
-          <li>Debounce search input</li>
-          <li>Lazy load command icons</li>
-        </ul>
-      </Callout>
-
-      <h2 id="best-practices">Best Practices</h2>
-
-      <ul>
-        <li>Keep command labels short and descriptive</li>
-        <li>Group related commands together</li>
-        <li>Show keyboard shortcuts for common actions</li>
-        <li>Use consistent iconography</li>
-        <li>Provide search-friendly command names</li>
-        <li>Disable unavailable commands instead of hiding them</li>
-      </ul>
-
-      <Callout type="success">
-        <p>
-          <strong>Ready to try it?</strong> Check out the{' '}
-          <a href="/examples/command-palette">Command Palette example</a> for a
-          complete implementation with all features.
-        </p>
-      </Callout>
-
-      <Pagination
-        prev={{
-          title: 'TypingIndicator',
-          href: '/reference/components/typing-indicator',
-        }}
-        next={{
-          title: 'ContextMenu',
-          href: '/reference/components/context-menu',
-        }}
-      />
-    </>
+        <Pagination
+          prev={{
+            title: 'TypingIndicator',
+            href: '/reference/components/typing-indicator',
+          }}
+          next={{
+            title: 'ContextMenu',
+            href: '/reference/components/context-menu',
+          }}
+        />
+      </div>
     </ToastProvider>
   )
 }

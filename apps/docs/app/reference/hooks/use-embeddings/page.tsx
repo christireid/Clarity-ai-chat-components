@@ -2,8 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useEmbeddings Hook | Clarity Chat',
   description:
@@ -19,8 +17,9 @@ export default function UseEmbeddingsPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useEmbeddings</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          React hook for generating text embeddings. Supports multiple providers including OpenAI,
-          Cohere, and local embedders with built-in caching for cost reduction.
+          React hook for generating text embeddings. Supports multiple providers
+          including OpenAI, Cohere, and local embedders with built-in caching
+          for cost reduction.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Mid-Level (Composable) •{' '}
@@ -33,15 +32,29 @@ export default function UseEmbeddingsPage() {
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
           <li>Implementing semantic search across documents or messages</li>
           <li>Building RAG (Retrieval Augmented Generation) pipelines</li>
-          <li>Creating similarity-based features (related content, deduplication)</li>
+          <li>
+            Creating similarity-based features (related content, deduplication)
+          </li>
           <li>When you need client-side embedding generation with caching</li>
         </ul>
 
         <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>For complete RAG pipelines - use <code className="bg-muted px-2 py-1 rounded">useRAGPipeline</code> or <code className="bg-muted px-2 py-1 rounded">useVectorStore</code> instead</li>
-          <li>Server-side batch processing - generate embeddings in your API routes</li>
-          <li>When you don&apos;t need to expose embedding operations to the client</li>
+          <li>
+            For complete RAG pipelines - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">useRAGPipeline</code>{' '}
+            or{' '}
+            <code className="bg-muted px-2 py-1 rounded">useVectorStore</code>{' '}
+            instead
+          </li>
+          <li>
+            Server-side batch processing - generate embeddings in your API
+            routes
+          </li>
+          <li>
+            When you don&apos;t need to expose embedding operations to the
+            client
+          </li>
         </ul>
       </section>
 
@@ -128,7 +141,9 @@ function CachedEmbeddings() {
                 <tbody className="divide-y">
                   <tr>
                     <td className="p-3 font-mono text-sm">provider</td>
-                    <td className="p-3 font-mono text-sm">'openai' | 'cohere' | 'local'</td>
+                    <td className="p-3 font-mono text-sm">
+                      'openai' | 'cohere' | 'local'
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Embedding provider to use.
                     </td>
@@ -173,14 +188,18 @@ function CachedEmbeddings() {
                 <tbody className="divide-y">
                   <tr>
                     <td className="p-3 font-mono text-sm">embed</td>
-                    <td className="p-3 font-mono text-sm">(text: string) =&gt; Promise&lt;number[]&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      (text: string) =&gt; Promise&lt;number[]&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Generate embedding for single text.
                     </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">embedBatch</td>
-                    <td className="p-3 font-mono text-sm">(texts: string[]) =&gt; Promise&lt;number[][]&gt;</td>
+                    <td className="p-3 font-mono text-sm">
+                      (texts: string[]) =&gt; Promise&lt;number[][]&gt;
+                    </td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Generate embeddings for multiple texts.
                     </td>
@@ -212,7 +231,8 @@ function CachedEmbeddings() {
           <div className="border rounded-lg p-4">
             <h3 className="font-semibold mb-2">OpenAI</h3>
             <p className="text-sm text-muted-foreground">
-              text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002
+              text-embedding-3-small, text-embedding-3-large,
+              text-embedding-ada-002
             </p>
           </div>
           <div className="border rounded-lg p-4">

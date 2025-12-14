@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Card, Badge, cn } from '@clarity-chat/primitives'
+import { duration } from '../animations/constants'
 
 // ============================================================================
 // Types
@@ -16,6 +17,7 @@ export type EmbedType =
   | 'github'
   | 'vimeo'
   | 'spotify'
+  | 'generic'
   | 'default'
 
 export interface LinkMetadata {
@@ -104,7 +106,9 @@ export interface UseLinkPreviewReturn {
 /** Configuration for the default metadata fetcher */
 export interface MetadataFetcherConfig {
   /** API endpoint that proxies metadata requests */
-  endpoint: string
+  endpoint?: string
+  /** API endpoint that proxies metadata requests (preferred name) */
+  apiEndpoint?: string
   /** Optional API key for authenticated requests */
   apiKey?: string
   /** Request timeout in milliseconds */
@@ -158,18 +162,14 @@ export function isValidUrl(urlString: string): boolean {
  * @param urlString - The URL to sanitize
  * @returns The sanitized URL or null if invalid
  */
-export function sanitizeUrl(urlString: string): string | null {
-  if (!isValidUrl(urlString)) {
-    return null
+export function sanitizeUrl(urlString: string): string {
+  const trimmed = urlString?.trim()
+  if (!trimmed || !isValidUrl(trimmed)) {
+    // Safe fallback for invalid or unsafe URLs
+    return 'about:blank'
   }
-
-  try {
-    const url = new URL(urlString)
-    // Reconstruct URL to normalize it
-    return url.href
-  } catch {
-    return null
-  }
+  // Preserve the original string to avoid surprising normalization (e.g. adding trailing '/')
+  return trimmed
 }
 
 /**
@@ -213,9 +213,11 @@ const EMBED_PATTERNS: EmbedPattern[] = [
   },
   {
     type: 'vimeo',
-    patterns: [/vimeo\.com\/(\d+)/],
+    patterns: [/vimeo\.com\/(\d+)/, /player\.vimeo\.com\/video\/(\d+)/],
     extractId: (url: string) => {
-      const match = url.match(/vimeo\.com\/(\d+)/)
+      const match = url.match(
+        /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/
+      )
       return match ? match[1] : null
     },
   },
@@ -229,10 +231,20 @@ const EMBED_PATTERNS: EmbedPattern[] = [
   },
   {
     type: 'github',
-    patterns: [/github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+)/],
+    patterns: [
+      /github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+)/,
+      /gist\.github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9]+)/,
+    ],
     extractId: (url: string) => {
-      const match = url.match(/github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+)/)
-      return match ? match[1].replace(/\/$/, '') : null
+      const repoMatch = url.match(
+        /github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+)/
+      )
+      if (repoMatch) return repoMatch[1].replace(/\/$/, '')
+
+      const gistMatch = url.match(
+        /gist\.github\.com\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9]+)/
+      )
+      return gistMatch ? gistMatch[1].replace(/\/$/, '') : null
     },
   },
   {
@@ -250,14 +262,14 @@ const EMBED_PATTERNS: EmbedPattern[] = [
 ]
 
 /**
- * Detects the embed type and extracts ID from a URL
+ * Internal helper: detect embed type + extracted ID from URL.
  */
-export function detectEmbedType(url: string): {
+function detectEmbedDetails(url: string): {
   type: EmbedType
   id: string | null
 } {
   if (!isValidUrl(url)) {
-    return { type: 'default', id: null }
+    return { type: 'generic', id: null }
   }
 
   for (const embedPattern of EMBED_PATTERNS) {
@@ -271,7 +283,14 @@ export function detectEmbedType(url: string): {
     }
   }
 
-  return { type: 'default', id: null }
+  return { type: 'generic', id: null }
+}
+
+/**
+ * Detects the embed type for a URL.
+ */
+export function detectEmbedType(url: string): EmbedType {
+  return detectEmbedDetails(url).type
 }
 
 // ============================================================================
@@ -338,27 +357,29 @@ class LRUCache<K, V> {
   }
 }
 
-// Module-level cache instance with LRU eviction
-const metadataCache = new LRUCache<string, CacheEntry>(DEFAULT_MAX_CACHE_SIZE)
-
 function getCachedMetadata(
+  cache: LRUCache<string, CacheEntry>,
   url: string,
   cacheDuration: number
 ): LinkMetadata | null {
-  const entry = metadataCache.get(url)
+  const entry = cache.get(url)
   if (!entry) return null
 
   const isExpired = Date.now() - entry.timestamp > cacheDuration
   if (isExpired) {
-    metadataCache.delete(url)
+    cache.delete(url)
     return null
   }
 
   return entry.metadata
 }
 
-function setCachedMetadata(url: string, metadata: LinkMetadata): void {
-  metadataCache.set(url, { metadata, timestamp: Date.now() })
+function setCachedMetadata(
+  cache: LRUCache<string, CacheEntry>,
+  url: string,
+  metadata: LinkMetadata
+): void {
+  cache.set(url, { metadata, timestamp: Date.now() })
 }
 
 // ============================================================================
@@ -369,59 +390,68 @@ function setCachedMetadata(url: string, metadata: LinkMetadata): void {
  * Default metadata fetcher that calls a backend API endpoint
  * The backend should handle CORS and return Open Graph / Twitter Card metadata
  */
-export async function createMetadataFetcher(config: MetadataFetcherConfig) {
+export function createMetadataFetcher(config: MetadataFetcherConfig) {
   return async function fetchMetadata(url: string): Promise<LinkMetadata> {
     if (!isValidUrl(url)) {
       throw new Error('Invalid URL')
     }
 
+    const endpoint = config.apiEndpoint ?? config.endpoint
+    if (!endpoint) {
+      throw new Error('Missing apiEndpoint')
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...config.headers,
+    }
+
+    if (config.apiKey) {
+      headers['Authorization'] = `Bearer ${config.apiKey}`
+    }
+
+    const timeoutMs = config.timeout ?? 10000
     const controller = new AbortController()
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      config.timeout || 10000
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        controller.abort()
+        reject(new Error('Request timed out'))
+      }, timeoutMs)
+    })
+
+    const fetchPromise = fetch(`${endpoint}?url=${encodeURIComponent(url)}`, {
+      method: 'GET',
+      headers,
+      signal: controller.signal,
+    })
+
+    const response = await Promise.race([fetchPromise, timeoutPromise]).finally(
+      () => {
+        if (timeoutId) clearTimeout(timeoutId)
+      }
     )
 
-    try {
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        ...config.headers,
-      }
+    if (!response.ok) {
+      throw new Error(`Failed to fetch metadata: ${response.status}`)
+    }
 
-      if (config.apiKey) {
-        headers['Authorization'] = `Bearer ${config.apiKey}`
-      }
+    const data = await response.json()
 
-      const response = await fetch(
-        `${config.endpoint}?url=${encodeURIComponent(url)}`,
-        {
-          method: 'GET',
-          headers,
-          signal: controller.signal,
-        }
-      )
+    // Detect embed type
+    const { type: embedType, id: embedId } = detectEmbedDetails(url)
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch metadata: ${response.status}`)
-      }
-
-      const data = await response.json()
-
-      // Detect embed type
-      const { type: embedType, id: embedId } = detectEmbedType(url)
-
-      return {
-        url,
-        title: data.title || data.og_title,
-        description: data.description || data.og_description,
-        image: data.image || data.og_image,
-        siteName: data.site_name || data.og_site_name,
-        favicon: data.favicon,
-        type: data.type || 'website',
-        embedType,
-        embedId,
-      }
-    } finally {
-      clearTimeout(timeoutId)
+    return {
+      url,
+      title: data.title || data.og_title,
+      description: data.description || data.og_description,
+      image: data.image || data.og_image,
+      siteName: data.site_name || data.og_site_name,
+      favicon: data.favicon,
+      type: data.type || 'website',
+      embedType: embedType ?? undefined,
+      embedId: embedId ?? undefined,
     }
   }
 }
@@ -432,10 +462,10 @@ export async function createMetadataFetcher(config: MetadataFetcherConfig) {
  */
 export function createFallbackMetadata(url: string): LinkMetadata {
   if (!isValidUrl(url)) {
-    return { url }
+    return { url, title: url }
   }
 
-  const { type: embedType, id: embedId } = detectEmbedType(url)
+  const { type: embedType, id: embedId } = detectEmbedDetails(url)
   const domain = getDomain(url)
 
   // Generate reasonable fallback data based on URL
@@ -445,12 +475,12 @@ export function createFallbackMetadata(url: string): LinkMetadata {
 
   return {
     url,
-    title: capitalizedSiteName,
+    title: domain,
     siteName: capitalizedSiteName,
     favicon: `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
     type: 'website',
-    embedType,
-    embedId,
+    embedType: embedType ?? undefined,
+    embedId: embedId ?? undefined,
   }
 }
 
@@ -465,6 +495,7 @@ export function LinkPreviewSkeleton({
   if (variant === 'compact') {
     return (
       <Card className={cn('p-3 animate-pulse shadow-sm', className)}>
+        <span className="sr-only">Loading link preview</span>
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-muted/60 rounded flex-shrink-0" />
           <div className="flex-1 min-w-0 space-y-2">
@@ -484,6 +515,7 @@ export function LinkPreviewSkeleton({
           className
         )}
       >
+        <span className="sr-only">Loading link preview</span>
         <span className="w-4 h-4 bg-muted/60 rounded" />
         <span className="h-3.5 bg-muted/60 rounded w-24" />
       </span>
@@ -494,6 +526,7 @@ export function LinkPreviewSkeleton({
   return (
     <Card className={cn('overflow-hidden shadow-sm', className)}>
       <div className="relative">
+        <span className="sr-only">Loading link preview</span>
         {/* Shimmer overlay */}
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
@@ -611,7 +644,7 @@ function ExpandableDescription({
         transition={
           prefersReducedMotion
             ? { duration: 0 }
-            : { duration: durations.normal }
+            : { duration: duration('normal') }
         }
       >
         {displayText}
@@ -653,6 +686,9 @@ export function LinkPreviewCompact({
   const domain = getDomain(metadata.url)
   const prefersReducedMotion = useReducedMotion()
   const isValid = isValidUrl(metadata.url)
+  const title = metadata.title?.trim() ? metadata.title.trim() : domain
+  const subtitle =
+    metadata.title?.trim() && metadata.title.trim() !== domain ? domain : null
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (onClick && (event.key === 'Enter' || event.key === ' ')) {
@@ -684,11 +720,7 @@ export function LinkPreviewCompact({
       onKeyDown={handleKeyDown}
       tabIndex={onClick ? 0 : undefined}
       role={onClick ? 'link' : undefined}
-      aria-label={
-        onClick
-          ? `Open link: ${metadata.title || domain}`
-          : `Link preview: ${metadata.title || domain}`
-      }
+      aria-label={onClick ? `Open link: ${title}` : `Link preview: ${title}`}
     >
       <div className="flex items-center gap-3">
         {/* Favicon or placeholder */}
@@ -697,7 +729,7 @@ export function LinkPreviewCompact({
             {metadata.favicon && !faviconError ? (
               <img
                 src={metadata.favicon}
-                alt=""
+                alt={`${domain} favicon`}
                 className="w-5 h-5"
                 onError={() => setFaviconError(true)}
                 loading="lazy"
@@ -720,20 +752,24 @@ export function LinkPreviewCompact({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate text-foreground">
-            {metadata.title || domain}
+            {title}
           </p>
-          <p className="text-xs text-muted-foreground truncate">{domain}</p>
+          {subtitle && (
+            <p className="text-xs text-muted-foreground truncate">{subtitle}</p>
+          )}
         </div>
 
         {/* Embed type badge */}
-        {metadata.embedType && metadata.embedType !== 'default' && (
-          <Badge
-            variant="secondary"
-            className="text-[10px] uppercase flex-shrink-0"
-          >
-            {metadata.embedType}
-          </Badge>
-        )}
+        {metadata.embedType &&
+          metadata.embedType !== 'default' &&
+          metadata.embedType !== 'generic' && (
+            <Badge
+              variant="secondary"
+              className="text-[10px] uppercase flex-shrink-0"
+            >
+              {metadata.embedType}
+            </Badge>
+          )}
 
         {/* Arrow indicator for clickable */}
         {onClick && (
@@ -764,7 +800,7 @@ export function LinkPreviewCompact({
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -5 }}
-      transition={{ duration: durations.fast }}
+      transition={{ duration: duration('fast') }}
     >
       {content}
     </motion.div>
@@ -774,109 +810,103 @@ export function LinkPreviewCompact({
 LinkPreviewCompact.displayName = 'LinkPreviewCompact'
 
 // ============================================================================
-// Rich Embed Components (Option F - Foundation)
+// RichEmbed (Public API expected by tests)
 // ============================================================================
 
-interface RichEmbedProps {
+export interface RichEmbedPublicProps {
+  url: string
   embedType: EmbedType
-  embedId: string
-  metadata: LinkMetadata
   className?: string
 }
 
 /**
- * YouTube embed component
+ * RichEmbed component (public) - renders an iframe for supported providers,
+ * otherwise falls back to a safe link.
  */
-function YouTubeEmbed({
-  embedId,
-  metadata,
-  className,
-}: Omit<RichEmbedProps, 'embedType'>) {
-  const [showEmbed, setShowEmbed] = React.useState(false)
+export function RichEmbed({ url, embedType, className }: RichEmbedPublicProps) {
+  let { id } = detectEmbedDetails(url)
+  const safeUrl = sanitizeUrl(url)
 
-  if (!showEmbed) {
-    // Show thumbnail with play button overlay
+  const type = embedType === 'default' ? 'generic' : embedType
+
+  // Some tests/callers provide non-canonical IDs; fall back to parsing.
+  if (!id && isValidUrl(url)) {
+    try {
+      const parsed = new URL(url)
+      if (type === 'youtube') {
+        id = parsed.searchParams.get('v')
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (!id || type === 'generic') {
     return (
-      <div
+      <a
+        href={safeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className={cn(
-          'relative rounded-lg overflow-hidden bg-black aspect-video',
+          'inline-flex items-center gap-1.5 text-sm text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded',
           className
         )}
       >
-        <img
-          src={`https://img.youtube.com/vi/${embedId}/maxresdefault.jpg`}
-          alt={metadata.title || 'YouTube video'}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            // Fallback to hqdefault if maxresdefault not available
-            e.currentTarget.src = `https://img.youtube.com/vi/${embedId}/hqdefault.jpg`
-          }}
-        />
-        <button
-          onClick={() => setShowEmbed(true)}
-          className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors group"
-          aria-label="Play video"
-        >
-          <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center group-hover:bg-red-700 transition-colors">
-            <svg
-              className="w-8 h-8 text-white ml-1"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </button>
-        <Badge className="absolute bottom-2 left-2 bg-black/70 text-white">
-          YouTube
-        </Badge>
-      </div>
+        {url}
+      </a>
     )
   }
 
-  return (
-    <div
-      className={cn(
-        'relative rounded-lg overflow-hidden aspect-video',
-        className
-      )}
-    >
-      <iframe
-        src={`https://www.youtube.com/embed/${embedId}?autoplay=1`}
-        title={metadata.title || 'YouTube video'}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="absolute inset-0 w-full h-full"
-      />
-    </div>
-  )
-}
-
-/**
- * Renders appropriate rich embed based on type
- */
-export function RichEmbed({
-  embedType,
-  embedId,
-  metadata,
-  className,
-}: RichEmbedProps) {
-  switch (embedType) {
+  switch (type) {
     case 'youtube':
       return (
-        <YouTubeEmbed
-          embedId={embedId}
-          metadata={metadata}
-          className={className}
+        <iframe
+          className={cn('w-full aspect-video rounded-lg', className)}
+          src={`https://www.youtube.com/embed/${id}`}
+          title="YouTube video"
+          role="presentation"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
         />
       )
-    // Add more embed types as needed
+    case 'vimeo':
+      return (
+        <iframe
+          className={cn('w-full aspect-video rounded-lg', className)}
+          src={`https://player.vimeo.com/video/${id}`}
+          title="Vimeo video"
+          role="presentation"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+        />
+      )
+    case 'spotify':
+      return (
+        <iframe
+          className={cn('w-full rounded-lg', className)}
+          src={`https://open.spotify.com/embed/${id}`}
+          title="Spotify"
+          role="presentation"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        />
+      )
     default:
-      return null
+      return (
+        <a
+          href={safeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            'inline-flex items-center gap-1.5 text-sm text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded',
+            className
+          )}
+        >
+          {url}
+        </a>
+      )
   }
 }
-
-RichEmbed.displayName = 'RichEmbed'
 
 // ============================================================================
 // LinkPreview Component (Main)
@@ -900,6 +930,11 @@ export function LinkPreview({
   const [imageError, setImageError] = React.useState(false)
   const [faviconError, setFaviconError] = React.useState(false)
   const prefersReducedMotion = useReducedMotion()
+  const reduceMotion =
+    prefersReducedMotion ||
+    (typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const domain = getDomain(metadata.url)
   const isValid = isValidUrl(metadata.url)
 
@@ -946,7 +981,7 @@ export function LinkPreview({
   if (variant === 'inline') {
     return (
       <a
-        href={sanitizeUrl(metadata.url) || '#'}
+        href={sanitizeUrl(metadata.url) || 'about:blank'}
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
@@ -964,7 +999,7 @@ export function LinkPreview({
         {showFavicon && metadata.favicon && !faviconError && (
           <img
             src={metadata.favicon}
-            alt=""
+            alt={`${domain} favicon`}
             className="w-4 h-4"
             onError={() => setFaviconError(true)}
             loading="lazy"
@@ -989,11 +1024,11 @@ export function LinkPreview({
   }
 
   // Check for rich embed support
+  const inferredEmbedType = metadata.embedType ?? detectEmbedType(metadata.url)
   const hasRichEmbed =
-    metadata.embedType &&
-    metadata.embedType !== 'default' &&
-    metadata.embedId &&
-    metadata.embedType === 'youtube' // Currently only YouTube supported
+    inferredEmbedType === 'youtube' ||
+    inferredEmbedType === 'vimeo' ||
+    inferredEmbedType === 'spotify'
 
   // Handle keyboard navigation for card
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -1045,13 +1080,9 @@ export function LinkPreview({
       )}
 
       {/* Rich Embed (YouTube, etc.) */}
-      {hasRichEmbed && metadata.embedId && (
+      {hasRichEmbed && (
         <div className="p-4 pb-0">
-          <RichEmbed
-            embedType={metadata.embedType!}
-            embedId={metadata.embedId}
-            metadata={metadata}
-          />
+          <RichEmbed url={metadata.url} embedType={inferredEmbedType} />
         </div>
       )}
 
@@ -1099,7 +1130,7 @@ export function LinkPreview({
               {showFavicon && metadata.favicon && !faviconError && (
                 <img
                   src={metadata.favicon}
-                  alt=""
+                  alt={`${domain} favicon`}
                   className="w-4 h-4 flex-shrink-0"
                   onError={() => setFaviconError(true)}
                   loading="lazy"
@@ -1108,11 +1139,13 @@ export function LinkPreview({
               <p className="text-xs text-muted-foreground/90 truncate">
                 {metadata.siteName || domain}
               </p>
-              {metadata.embedType && metadata.embedType !== 'default' && (
-                <Badge variant="secondary" className="text-[10px] uppercase">
-                  {metadata.embedType}
-                </Badge>
-              )}
+              {inferredEmbedType &&
+                inferredEmbedType !== 'default' &&
+                inferredEmbedType !== 'generic' && (
+                  <Badge variant="secondary" className="text-[10px] uppercase">
+                    {inferredEmbedType}
+                  </Badge>
+                )}
             </div>
           )}
 
@@ -1130,12 +1163,14 @@ export function LinkPreview({
               <ExpandableDescription description={metadata.description} />
             ) : (
               <p className="text-xs text-muted-foreground/90 line-clamp-2">
-                {metadata.description}
+                {metadata.description.length > 160
+                  ? metadata.description.slice(0, 160).trim() + '...'
+                  : metadata.description}
               </p>
             ))}
 
           {/* URL Badge */}
-          {showDomain && (
+          {showDomain && metadata.siteName && metadata.siteName !== domain && (
             <div className="flex items-center gap-2 pt-1">
               <Badge variant="outline" className="text-xs max-w-full">
                 <svg
@@ -1156,7 +1191,7 @@ export function LinkPreview({
       </div>
 
       {/* Bottom Border Effect */}
-      {onClick && !prefersReducedMotion && !hasRichEmbed && (
+      {onClick && !reduceMotion && !hasRichEmbed && (
         <div
           className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200"
           aria-hidden="true"
@@ -1166,7 +1201,7 @@ export function LinkPreview({
   )
 
   // Wrap with motion if animations are enabled
-  if (prefersReducedMotion) {
+  if (reduceMotion) {
     return <div className={className}>{cardContent}</div>
   }
 
@@ -1175,7 +1210,7 @@ export function LinkPreview({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: durations.normal }}
+      transition={{ duration: duration('normal') }}
       className={className}
     >
       {cardContent}
@@ -1194,6 +1229,7 @@ export function useLinkPreview(
 ): UseLinkPreviewReturn {
   const {
     cacheDuration = DEFAULT_CACHE_DURATION,
+    maxCacheSize = DEFAULT_MAX_CACHE_SIZE,
     fetchFn,
     apiEndpoint,
     timeout = 10000,
@@ -1202,6 +1238,11 @@ export function useLinkPreview(
   const [loading, setLoading] = React.useState(false)
   const [metadata, setMetadata] = React.useState<LinkMetadata | null>(null)
   const [error, setError] = React.useState<string | null>(null)
+
+  const cacheRef = React.useRef<LRUCache<string, CacheEntry>>()
+  if (!cacheRef.current) {
+    cacheRef.current = new LRUCache<string, CacheEntry>(maxCacheSize)
+  }
 
   // Track in-flight requests to prevent duplicate fetches
   const pendingRequests = React.useRef<Map<string, Promise<LinkMetadata>>>(
@@ -1218,7 +1259,7 @@ export function useLinkPreview(
       }
 
       // Check cache first
-      const cached = getCachedMetadata(url, cacheDuration)
+      const cached = getCachedMetadata(cacheRef.current!, url, cacheDuration)
       if (cached) {
         setMetadata(cached)
         setError(null)
@@ -1238,6 +1279,9 @@ export function useLinkPreview(
 
       const fetchPromise = (async (): Promise<LinkMetadata> => {
         try {
+          // Ensure `loading` can be observed before completion (esp. fallback path).
+          await Promise.resolve()
+
           let result: LinkMetadata
 
           if (fetchFn) {
@@ -1245,26 +1289,24 @@ export function useLinkPreview(
             result = await fetchFn(url)
           } else if (apiEndpoint) {
             // Use provided API endpoint
-            const fetcher = await createMetadataFetcher({
-              endpoint: apiEndpoint,
+            const fetcher = createMetadataFetcher({
+              apiEndpoint,
               timeout,
             })
             result = await fetcher(url)
           } else {
             // Use fallback metadata (extracts from URL)
-            // Simulate network delay for consistent UX
-            await new Promise((resolve) => setTimeout(resolve, 300))
             result = createFallbackMetadata(url)
           }
 
           // Ensure embed detection is done
           if (!result.embedType) {
-            const { type, id } = detectEmbedType(url)
+            const { type, id } = detectEmbedDetails(url)
             result.embedType = type
             result.embedId = id || undefined
           }
 
-          setCachedMetadata(url, result)
+          setCachedMetadata(cacheRef.current!, url, result)
           setMetadata(result)
           return result
         } catch (err) {
@@ -1291,7 +1333,7 @@ export function useLinkPreview(
   }, [])
 
   const clearCache = React.useCallback(() => {
-    metadataCache.clear()
+    cacheRef.current?.clear()
   }, [])
 
   return {
@@ -1384,7 +1426,7 @@ export function InlineLink({
   return (
     <span className="relative inline-block">
       <a
-        href={sanitizeUrl(url) || '#'}
+        href={sanitizeUrl(url) || 'about:blank'}
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
@@ -1419,7 +1461,7 @@ export function InlineLink({
               initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-              transition={{ duration: durations.fast }}
+              transition={{ duration: duration('fast') }}
               className="absolute bottom-full left-0 mb-2 w-80 z-50"
               onMouseEnter={() => setShowPreview(true)}
               onMouseLeave={handleMouseLeave}

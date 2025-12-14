@@ -4,11 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Follow-Up Suggestions - Clarity Chat Components',
-  description: 'Smart follow-up question suggestions to keep conversations flowing naturally.',
+  description:
+    'Smart follow-up question suggestions to keep conversations flowing naturally.',
 }
 
 export default function FollowUpSuggestionsPage() {
@@ -18,19 +17,23 @@ export default function FollowUpSuggestionsPage() {
         <span className="docs-badge">Component</span>
         <h1>Follow-Up Suggestions</h1>
         <p className="docs-lead">
-          Smart follow-up questions that help users continue the conversation naturally. Like having a helpful friend who knows what to ask next.
+          Smart follow-up questions that help users continue the conversation
+          naturally. Like having a helpful friend who knows what to ask next.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          After the AI responds, show 3-5 suggested follow-up questions. It's like when Netflix suggests "You might also like..." but for conversations. Helps users who might be stuck thinking "what should I ask now?"
+          After the AI responds, show 3-5 suggested follow-up questions. It's
+          like when Netflix suggests "You might also like..." but for
+          conversations. Helps users who might be stuck thinking "what should I
+          ask now?"
         </p>
-        
+
         <Callout type="info" title="Why This Matters">
-          Users often don't know what else to ask. Suggestions reduce friction and
-          keep conversations flowing. This can increase engagement by 2-3x.
+          Users often don't know what else to ask. Suggestions reduce friction
+          and keep conversations flowing. This can increase engagement by 2-3x.
         </Callout>
       </section>
 
@@ -75,9 +78,7 @@ render(<SimpleSuggestions />)`}
 
       <section className="docs-section">
         <h2>With Icons</h2>
-        <p>
-          Add visual icons to make suggestions more scannable.
-        </p>
+        <p>Add visual icons to make suggestions more scannable.</p>
         <CodePlayground
           initialCode={`function IconSuggestions() {
   const suggestions = [
@@ -122,7 +123,8 @@ render(<IconSuggestions />)`}
       <section className="docs-section">
         <h2>With Confidence Scores</h2>
         <p>
-          Show how relevant each suggestion is (useful for AI-generated suggestions).
+          Show how relevant each suggestion is (useful for AI-generated
+          suggestions).
         </p>
         <CodePlayground
           initialCode={`function RankedSuggestions() {
@@ -173,9 +175,7 @@ render(<RankedSuggestions />)`}
 
       <section className="docs-section">
         <h2>Layout Options</h2>
-        <p>
-          Choose between grid (default) or list layout.
-        </p>
+        <p>Choose between grid (default) or list layout.</p>
         <CodePlayground
           initialCode={`import { useState } from 'react'
 
@@ -223,9 +223,7 @@ render(<LayoutOptions />)`}
 
       <section className="docs-section">
         <h2>Loading State</h2>
-        <p>
-          Show skeleton placeholders while AI generates suggestions.
-        </p>
+        <p>Show skeleton placeholders while AI generates suggestions.</p>
         <CodePlayground
           initialCode={`import { useState, useEffect } from 'react'
 
@@ -354,19 +352,19 @@ render(<SmartChatSuggestions />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="FollowUpSuggestions Props"
-          data={followUpProps}
-        />
+        <ApiTable title="FollowUpSuggestions Props" data={followUpProps} />
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
-        
+
         <h3>Crafting Good Suggestions</h3>
         <ul>
           <li>✅ Make them specific to the current conversation</li>
-          <li>✅ Start with action words ("Explain...", "Show me...", "How do I...")</li>
+          <li>
+            ✅ Start with action words ("Explain...", "Show me...", "How do
+            I...")
+          </li>
           <li>✅ Include 3-5 suggestions (not too many)</li>
           <li>✅ Order by relevance/confidence</li>
           <li>❌ Avoid generic questions like "Tell me more"</li>
@@ -389,7 +387,8 @@ render(<SmartChatSuggestions />)`}
 
       <section className="docs-section">
         <h2>Generating Suggestions with AI</h2>
-        <pre><code>{`// Example: Generate contextual suggestions using OpenAI
+        <pre>
+          <code>{`// Example: Generate contextual suggestions using OpenAI
 async function generateFollowUps(conversation: Message[]) {
   const response = await openai.chat.completions.create({
     model: 'gpt-4',
@@ -416,12 +415,14 @@ useEffect(() => {
   if (messages.length > 0) {
     generateFollowUps(messages).then(setSuggestions)
   }
-}, [messages])`}</code></pre>
+}, [messages])`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { 
+        <pre>
+          <code>{`import { 
   FollowUpSuggestions,
   type FollowUpSuggestionsProps,
   type FollowUpSuggestion 
@@ -446,7 +447,8 @@ const suggestions: FollowUpSuggestion[] = [
     icon: '🚀',
     confidence: 0.9
   }
-]`}</code></pre>
+]`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -489,59 +491,58 @@ const followUpProps = [
     name: 'suggestions',
     type: 'FollowUpSuggestion[]',
     required: true,
-    description: 'Array of follow-up suggestions to display'
+    description: 'Array of follow-up suggestions to display',
   },
   {
     name: 'onSelect',
     type: '(suggestion: FollowUpSuggestion) => void',
     required: true,
-    description: 'Callback when user clicks a suggestion'
+    description: 'Callback when user clicks a suggestion',
   },
   {
     name: 'title',
     type: 'string',
     required: false,
     default: "'Suggested follow-ups'",
-    description: 'Section heading'
+    description: 'Section heading',
   },
   {
     name: 'subtitle',
     type: 'string',
     required: false,
-    description: 'Description text under the heading'
+    description: 'Description text under the heading',
   },
   {
     name: 'layout',
     type: "'grid' | 'list'",
     required: false,
     default: "'grid'",
-    description: 'Visual layout style'
+    description: 'Visual layout style',
   },
   {
     name: 'isLoading',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Show loading skeleton state'
+    description: 'Show loading skeleton state',
   },
   {
     name: 'loadingCount',
     type: 'number',
     required: false,
     default: '4',
-    description: 'Number of skeleton placeholders while loading'
+    description: 'Number of skeleton placeholders while loading',
   },
   {
     name: 'emptyState',
     type: 'React.ReactNode',
     required: false,
-    description: 'Custom component to show when no suggestions'
+    description: 'Custom component to show when no suggestions',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

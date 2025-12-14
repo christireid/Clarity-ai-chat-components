@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'SeatInviteDialog - Clarity Chat Components',
-  description: 'Dialog for inviting team members with role assignment and welcome email options.',
+  description:
+    'Dialog for inviting team members with role assignment and welcome email options.',
 }
 
 const props: Prop[] = [
@@ -21,7 +20,8 @@ const props: Prop[] = [
   {
     name: 'roles',
     type: 'string[]',
-    description: 'Available roles (default: ["Administrator", "Editor", "Viewer"])',
+    description:
+      'Available roles (default: ["Administrator", "Editor", "Viewer"])',
   },
   {
     name: 'defaultRole',
@@ -47,7 +47,8 @@ export default function SeatInviteDialogPage() {
         <span className="docs-badge">Component</span>
         <h1>SeatInviteDialog</h1>
         <p className="docs-lead">
-          Dialog for inviting team members to your organization with role assignment and optional welcome email.
+          Dialog for inviting team members to your organization with role
+          assignment and optional welcome email.
         </p>
       </div>
 
@@ -63,9 +64,7 @@ export default function SeatInviteDialogPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Invite team members:
-        </p>
+        <p>Invite team members:</p>
         <CodePlayground
           initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
@@ -94,9 +93,7 @@ function TeamInvites() {
 
       <section className="docs-section">
         <h2>Custom Roles</h2>
-        <p>
-          Define custom roles:
-        </p>
+        <p>Define custom roles:</p>
         <CodePlayground
           initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
@@ -116,9 +113,7 @@ function CustomRoles() {
 
       <section className="docs-section">
         <h2>Welcome Email</h2>
-        <p>
-          Control welcome email sending:
-        </p>
+        <p>Control welcome email sending:</p>
         <CodePlayground
           initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
@@ -144,9 +139,7 @@ function WithWelcomeEmail() {
 
       <section className="docs-section">
         <h2>Seat Management</h2>
-        <p>
-          Integrate with seat management:
-        </p>
+        <p>Integrate with seat management:</p>
         <CodePlayground
           initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
@@ -184,9 +177,15 @@ function SeatManagement({ availableSeats }: { availableSeats: number }) {
       <section className="docs-section">
         <h2>Invite Object</h2>
         <ul>
-          <li><code>email</code>: Email address of invitee</li>
-          <li><code>role</code>: Assigned role</li>
-          <li><code>sendWelcome</code>: Whether to send welcome email</li>
+          <li>
+            <code>email</code>: Email address of invitee
+          </li>
+          <li>
+            <code>role</code>: Assigned role
+          </li>
+          <li>
+            <code>sendWelcome</code>: Whether to send welcome email
+          </li>
         </ul>
       </section>
 
@@ -204,8 +203,16 @@ function SeatManagement({ availableSeats }: { availableSeats: number }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> - Multi-tenant setup</li>
-          <li><a href="/reference/components/auth-tenant-dashboard">AuthTenantDashboard</a> - Tenant dashboard</li>
+          <li>
+            <a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> -
+            Multi-tenant setup
+          </li>
+          <li>
+            <a href="/reference/components/auth-tenant-dashboard">
+              AuthTenantDashboard
+            </a>{' '}
+            - Tenant dashboard
+          </li>
         </ul>
       </section>
     </div>
