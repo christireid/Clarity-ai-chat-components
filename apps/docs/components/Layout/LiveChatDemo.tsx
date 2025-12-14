@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { CodeBlock } from '../MDX/CodeBlock'
+import { durations } from '@/lib/animations'
 
 interface Message {
   id: string

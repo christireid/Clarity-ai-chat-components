@@ -2,10 +2,10 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import {
-  scrollReveal,
+  scrollFadeIn,
   fadeInUp,
-  fadeInLeft,
-  fadeInRight,
+  slideInLeft,
+  slideInRight,
   staggerContainer,
   staggerItem,
 } from '@/lib/animations'
@@ -57,9 +57,9 @@ interface ScrollRevealProps {
 
 const animationVariants = {
   fadeInUp,
-  fadeInLeft,
-  fadeInRight,
-  fadeIn: scrollReveal,
+  fadeInLeft: slideInLeft,
+  fadeInRight: slideInRight,
+  fadeIn: scrollFadeIn,
 }
 
 /**
@@ -105,7 +105,7 @@ export function ScrollReveal({
   stagger = false,
   staggerDelay = 0.05,
 }: ScrollRevealProps) {
-  const { shouldReduceMotion } = useReducedMotion()
+  const shouldReduceMotion = useReducedMotion()
   const variants = animationVariants[animation]
 
   if (shouldReduceMotion) {

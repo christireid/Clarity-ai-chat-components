@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {
   BarChart3,
   ChevronLeft,
-  TrendingDown,
+  ChevronDown,
   DollarSign,
   Zap,
   Database,
@@ -13,12 +13,16 @@ import {
   Bot,
   User,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { useAutoScroll } from '@clarity-chat/react'
-import { generateId, sleep, estimateTokens as estimateTokensUtil } from '@/lib/demos/utils'
+import {
+  generateId,
+  sleep,
+  estimateTokens as estimateTokensUtil,
+} from '@/lib/demos/utils'
 import { useMountedRef } from '@/lib/demos/hooks'
 import { trackDemoViewed, trackMessageSent } from '@/lib/demos/analytics'
 
@@ -49,7 +53,7 @@ const OUTPUT_COST_PER_1K = 0.03 // $0.03 per 1K output tokens
 
 const sampleResponses = [
   "I understand! Let me help you with that. Here's what you need to know about token optimization in Clarity Chat...",
-  "Great question! Token management is crucial for cost-effective AI applications. The system automatically tracks usage and optimizes context...",
+  'Great question! Token management is crucial for cost-effective AI applications. The system automatically tracks usage and optimizes context...',
   "Absolutely! I can see from the token visualizer that we're efficiently using the context window. Let me explain how KV-cache helps...",
   "That's a thoughtful approach. By monitoring token usage in real-time, you can make informed decisions about when to summarize or truncate context...",
 ]
@@ -94,13 +98,15 @@ export default function TokenVisualizerDemo() {
   const estimateTokens = (text: string) => Math.ceil(text.length / 4)
 
   const resetDemo = () => {
-    setMessages([{
-      id: '1',
-      text: "Hello! I'm demonstrating token usage tracking. Watch the dashboard as we chat - you'll see tokens accumulate and optimization kick in!",
-      sender: 'bot',
-      tokens: 28,
-      timestamp: new Date(),
-    }])
+    setMessages([
+      {
+        id: '1',
+        text: "Hello! I'm demonstrating token usage tracking. Watch the dashboard as we chat - you'll see tokens accumulate and optimization kick in!",
+        sender: 'bot',
+        tokens: 28,
+        timestamp: new Date(),
+      },
+    ])
     setStats({
       inputTokens: 0,
       outputTokens: 28,
@@ -130,25 +136,27 @@ export default function TokenVisualizerDemo() {
       timestamp: new Date(),
     }
 
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsTyping(true)
     scrollToBottom()
     messageCountRef.current++
 
     // Update stats for input
-    setStats(prev => ({
+    setStats((prev) => ({
       ...prev,
       inputTokens: prev.inputTokens + inputTokens,
       totalTokens: prev.totalTokens + inputTokens,
       contextUsed: prev.contextUsed + inputTokens,
-      estimatedCost: prev.estimatedCost + (inputTokens * INPUT_COST_PER_1K / 1000),
+      estimatedCost:
+        prev.estimatedCost + (inputTokens * INPUT_COST_PER_1K) / 1000,
     }))
 
     await sleep(800)
     if (!isMountedRef.current) return
 
-    const responseText = sampleResponses[messageCountRef.current % sampleResponses.length]
+    const responseText =
+      sampleResponses[messageCountRef.current % sampleResponses.length]
     const outputTokens = estimateTokens(responseText)
     const kvCacheHit = messageCountRef.current > 2 && Math.random() > 0.3
 
@@ -160,11 +168,11 @@ export default function TokenVisualizerDemo() {
       timestamp: new Date(),
     }
 
-    setMessages(prev => [...prev, botMessage])
+    setMessages((prev) => [...prev, botMessage])
     setIsTyping(false)
 
     // Update stats for output
-    setStats(prev => {
+    setStats((prev) => {
       const newContextUsed = prev.contextUsed + outputTokens
       const shouldOptimize = newContextUsed > CONTEXT_WINDOW * 0.7
       const savedTokens = shouldOptimize ? Math.floor(newContextUsed * 0.3) : 0
@@ -177,20 +185,26 @@ export default function TokenVisualizerDemo() {
         ...prev,
         outputTokens: prev.outputTokens + outputTokens,
         totalTokens: prev.totalTokens + outputTokens,
-        contextUsed: shouldOptimize ? newContextUsed - savedTokens : newContextUsed,
+        contextUsed: shouldOptimize
+          ? newContextUsed - savedTokens
+          : newContextUsed,
         kvCacheHits: kvCacheHit ? prev.kvCacheHits + 1 : prev.kvCacheHits,
         kvCacheMisses: kvCacheHit ? prev.kvCacheMisses : prev.kvCacheMisses + 1,
-        estimatedCost: prev.estimatedCost + (outputTokens * OUTPUT_COST_PER_1K / 1000),
+        estimatedCost:
+          prev.estimatedCost + (outputTokens * OUTPUT_COST_PER_1K) / 1000,
         savedTokens: prev.savedTokens + savedTokens,
-        savedCost: prev.savedCost + (savedTokens * ((INPUT_COST_PER_1K + OUTPUT_COST_PER_1K) / 2) / 1000),
+        savedCost:
+          prev.savedCost +
+          (savedTokens * ((INPUT_COST_PER_1K + OUTPUT_COST_PER_1K) / 2)) / 1000,
       }
     })
   }
 
   const contextPercentage = (stats.contextUsed / stats.contextWindow) * 100
-  const kvCacheRate = stats.kvCacheHits + stats.kvCacheMisses > 0
-    ? (stats.kvCacheHits / (stats.kvCacheHits + stats.kvCacheMisses)) * 100
-    : 0
+  const kvCacheRate =
+    stats.kvCacheHits + stats.kvCacheMisses > 0
+      ? (stats.kvCacheHits / (stats.kvCacheHits + stats.kvCacheMisses)) * 100
+      : 0
 
   return (
     <div className="container-docs py-12">
@@ -249,12 +263,15 @@ export default function TokenVisualizerDemo() {
               <div className="mt-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
                   className={`h-full rounded-full ${
-                    contextPercentage > 80 ? 'bg-red-500' :
-                    contextPercentage > 50 ? 'bg-yellow-500' : 'bg-green-500'
+                    contextPercentage > 80
+                      ? 'bg-red-500'
+                      : contextPercentage > 50
+                        ? 'bg-yellow-500'
+                        : 'bg-green-500'
                   }`}
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min(contextPercentage, 100)}%` }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: durations.slow }}
                 />
               </div>
             </div>
@@ -274,7 +291,7 @@ export default function TokenVisualizerDemo() {
 
             <div className="p-4 rounded-xl bg-bg-secondary border border-border">
               <div className="flex items-center gap-2 text-text-secondary text-sm mb-2">
-                <TrendingDown className="w-4 h-4" />
+                <ChevronDown className="w-4 h-4" />
                 KV-Cache Rate
               </div>
               <div className="text-2xl font-bold">
@@ -298,14 +315,16 @@ export default function TokenVisualizerDemo() {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                  <TrendingDown className="w-5 h-5 text-white" />
+                  <ChevronDown className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <div className="font-semibold text-green-700 dark:text-green-300">
                     Context Optimization Activated!
                   </div>
                   <div className="text-sm text-green-600 dark:text-green-400">
-                    Summarized older messages, saved {stats.savedTokens.toLocaleString()} tokens (${stats.savedCost.toFixed(4)})
+                    Summarized older messages, saved{' '}
+                    {stats.savedTokens.toLocaleString()} tokens ($
+                    {stats.savedCost.toFixed(4)})
                   </div>
                 </div>
               </div>
@@ -352,11 +371,13 @@ export default function TokenVisualizerDemo() {
                       message.sender === 'user' ? 'flex-row-reverse' : ''
                     }`}
                   >
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.sender === 'bot'
-                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
-                        : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
-                    }`}>
+                    <div
+                      className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.sender === 'bot'
+                          ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
+                          : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
+                      }`}
+                    >
                       {message.sender === 'bot' ? (
                         <Bot className="w-5 h-5" />
                       ) : (
@@ -364,16 +385,22 @@ export default function TokenVisualizerDemo() {
                       )}
                     </div>
                     <div className="max-w-[75%]">
-                      <div className={`rounded-2xl px-4 py-3 ${
-                        message.sender === 'bot'
-                          ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
-                          : 'bg-brand-500 text-white rounded-tr-sm'
-                      }`}>
-                        <p className="text-sm leading-relaxed">{message.text}</p>
+                      <div
+                        className={`rounded-2xl px-4 py-3 ${
+                          message.sender === 'bot'
+                            ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
+                            : 'bg-brand-500 text-white rounded-tr-sm'
+                        }`}
+                      >
+                        <p className="text-sm leading-relaxed">
+                          {message.text}
+                        </p>
                       </div>
-                      <div className={`text-xs text-text-secondary mt-1 ${
-                        message.sender === 'user' ? 'text-right' : ''
-                      }`}>
+                      <div
+                        className={`text-xs text-text-secondary mt-1 ${
+                          message.sender === 'user' ? 'text-right' : ''
+                        }`}
+                      >
                         {message.tokens} tokens
                       </div>
                     </div>
@@ -388,7 +415,11 @@ export default function TokenVisualizerDemo() {
                           key={i}
                           className="w-2 h-2 rounded-full bg-indigo-500"
                           animate={{ y: [0, -4, 0] }}
-                          transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1 }}
+                          transition={{
+                            duration: durations.slower,
+                            repeat: Infinity,
+                            delay: i * 0.1,
+                          }}
                         />
                       ))}
                     </div>
@@ -433,18 +464,26 @@ export default function TokenVisualizerDemo() {
                 <div className="space-y-4">
                   {messages.map((msg, idx) => (
                     <div key={msg.id} className="flex items-center gap-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
-                        msg.sender === 'bot' ? 'bg-indigo-100 dark:bg-indigo-900' : 'bg-purple-100 dark:bg-purple-900'
-                      }`}>
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                          msg.sender === 'bot'
+                            ? 'bg-indigo-100 dark:bg-indigo-900'
+                            : 'bg-purple-100 dark:bg-purple-900'
+                        }`}
+                      >
                         {idx + 1}
                       </div>
                       <div className="flex-1">
                         <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
-                              msg.sender === 'bot' ? 'bg-indigo-500' : 'bg-purple-500'
+                              msg.sender === 'bot'
+                                ? 'bg-indigo-500'
+                                : 'bg-purple-500'
                             }`}
-                            style={{ width: `${(msg.tokens / stats.totalTokens) * 100}%` }}
+                            style={{
+                              width: `${(msg.tokens / stats.totalTokens) * 100}%`,
+                            }}
                           />
                         </div>
                       </div>
