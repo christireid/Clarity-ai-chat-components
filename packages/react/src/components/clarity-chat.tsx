@@ -231,6 +231,9 @@ export function ClarityChat({
       chat.setMessages((prevMessages: CoreMessage[]) =>
         prevMessages.filter((m) => m.id !== messageId)
       )
+      // Show toast after successful deletion (not in child component to avoid
+      // showing toast when loading guard blocks the action)
+      toast?.info('Message deleted')
       onDeleteMessage?.(messageId)
     },
     [
@@ -380,8 +383,10 @@ export function ClarityChat({
         const newMessages = originalMessages.slice(0, userMessageIndex)
         chat.setMessages(newMessages)
 
-        // Set loading state for UI feedback
+        // Set loading state for UI feedback and show toast
+        // (toast shown here, not in child component, to avoid double toasts when loading guard blocks)
         setIsRegenerating(true)
+        toast?.info('Regenerating response...')
 
         try {
           // Resend the user message - append adds it and triggers AI response

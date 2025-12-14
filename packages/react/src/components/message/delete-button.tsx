@@ -64,16 +64,14 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
     if (showConfirmation) {
       setShowDialog(true)
     } else {
-      // Show toast only when actually deleting (no confirmation)
-      showToast?.('Message deleted')
       onDelete()
     }
   }
 
   const handleConfirm = () => {
     setShowDialog(false)
-    // Show toast AFTER confirmation, not before
-    showToast?.('Message deleted')
+    // Note: Toast is handled by parent component to ensure it only shows
+    // after the delete actually succeeds (not blocked by loading guard)
     onDelete()
   }
 

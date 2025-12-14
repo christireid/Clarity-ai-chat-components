@@ -238,8 +238,9 @@ export const MessageActions = React.memo<MessageActionsProps>(
 
     const handleRegenerate = React.useCallback(() => {
       onRegenerate?.(messageId)
-      toast?.info('Regenerating response...')
-    }, [messageId, onRegenerate, toast])
+      // Note: Toast is handled by parent component (clarity-chat.tsx) to avoid
+      // double toasts when loading guard blocks the action
+    }, [messageId, onRegenerate])
 
     const handleStopGeneration = React.useCallback(() => {
       onStopGeneration?.()
