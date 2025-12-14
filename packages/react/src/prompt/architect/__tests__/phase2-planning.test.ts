@@ -14,7 +14,7 @@ import {
   formatStrategicPlanAsMarkdown,
   generatePlanningBlockTemplate,
   getPatternInfo,
-  getPatternsByCategory,
+  getPatternIdsByCategory,
   suggestPatternsForUseCase,
 } from '../phases/phase2-planning'
 import type { DesignPattern, DesignPatternCategory } from '../types'
@@ -367,9 +367,9 @@ describe('Phase 2: Strategic Planning', () => {
     })
   })
 
-  describe('getPatternsByCategory', () => {
+  describe('getPatternIdsByCategory', () => {
     it('should return only creational patterns', () => {
-      const patterns = getPatternsByCategory('creational')
+      const patterns = getPatternIdsByCategory('creational')
 
       expect(patterns.length).toBe(5)
       for (const pattern of patterns) {
@@ -378,7 +378,7 @@ describe('Phase 2: Strategic Planning', () => {
     })
 
     it('should return only behavioral patterns', () => {
-      const patterns = getPatternsByCategory('behavioral')
+      const patterns = getPatternIdsByCategory('behavioral')
 
       expect(patterns.length).toBe(11)
       for (const pattern of patterns) {
@@ -402,7 +402,9 @@ describe('Phase 2: Strategic Planning', () => {
     })
 
     it('should suggest factory for framework extension', () => {
-      const suggestions = suggestPatternsForUseCase('framework extension plugin')
+      const suggestions = suggestPatternsForUseCase(
+        'framework extension plugin'
+      )
 
       expect(suggestions).toContain('FACTORY_METHOD')
     })

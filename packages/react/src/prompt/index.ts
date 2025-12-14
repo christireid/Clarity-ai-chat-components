@@ -29,11 +29,16 @@ export * from './utils'
 
 // Architect Framework - AI Prompt Engineering for Software Quality
 export * as architect from './architect'
+export * from './architect'
 
 // Re-export commonly used constants for convenience
 export { MODEL_PRESETS } from './core/tokenizer'
 export { BUILT_IN_RECIPES } from './core/recipe'
-export { MODEL_PROFILES, getModelProfile, getModelProfileOrDefault } from './core/model-profiles'
+export {
+  MODEL_PROFILES,
+  getModelProfile,
+  getModelProfileOrDefault,
+} from './core/model-profiles'
 
 // Re-export architect recipes for convenience
 export {

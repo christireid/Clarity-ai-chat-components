@@ -5,11 +5,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Badge - Clarity Chat Components',
-  description: 'Display notification counts, status indicators, and labels with various styles and positions.',
+  description:
+    'Display notification counts, status indicators, and labels with various styles and positions.',
 }
 
 export default function BadgePage() {
@@ -19,7 +18,8 @@ export default function BadgePage() {
         <span className="docs-badge">Component</span>
         <h1>Badge</h1>
         <p className="docs-lead">
-          Display notification counts, status indicators, labels, and tags with customizable colors, sizes, and positions.
+          Display notification counts, status indicators, labels, and tags with
+          customizable colors, sizes, and positions.
         </p>
       </div>
 
@@ -28,8 +28,9 @@ export default function BadgePage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          The <code>Badge</code> component is a versatile indicator used to display counts, status, labels,
-          or tags. It can be standalone or overlaid on other components like avatars and icons.
+          The <code>Badge</code> component is a versatile indicator used to
+          display counts, status, labels, or tags. It can be standalone or
+          overlaid on other components like avatars and icons.
         </p>
       </section>
 
@@ -53,10 +54,7 @@ render(<BasicBadges />)`}
 
       <section className="docs-section">
         <h2>Props</h2>
-        <ApiTable
-          title="Badge Props"
-          data={badgeProps}
-        />
+        <ApiTable title="Badge Props" data={badgeProps} />
       </section>
 
       <section className="docs-section">
@@ -97,9 +95,7 @@ render(<BadgeVariants />)`}
 
       <section className="docs-section">
         <h2>Sizes</h2>
-        <p>
-          Choose from small, medium, or large sizes to fit your design.
-        </p>
+        <p>Choose from small, medium, or large sizes to fit your design.</p>
         <CodePlayground
           initialCode={`function BadgeSizes() {
   return (
@@ -125,9 +121,7 @@ render(<BadgeSizes />)`}
 
       <section className="docs-section">
         <h2>With Icons</h2>
-        <p>
-          Add icons to badges for better visual communication.
-        </p>
+        <p>Add icons to badges for better visual communication.</p>
         <CodePlayground
           initialCode={`function IconBadges() {
   return (
@@ -175,9 +169,7 @@ render(<IconBadges />)`}
 
       <section className="docs-section">
         <h2>Dot Badges</h2>
-        <p>
-          Use minimal dot indicators for subtle notifications.
-        </p>
+        <p>Use minimal dot indicators for subtle notifications.</p>
         <CodePlayground
           initialCode={`function DotBadges() {
   return (
@@ -233,9 +225,7 @@ render(<DotBadges />)`}
 
       <section className="docs-section">
         <h2>Positioned Badges</h2>
-        <p>
-          Overlay badges on other elements like avatars, icons, or buttons.
-        </p>
+        <p>Overlay badges on other elements like avatars, icons, or buttons.</p>
         <CodePlayground
           initialCode={`function PositionedBadges() {
   return (
@@ -312,9 +302,7 @@ render(<PositionedBadges />)`}
 
       <section className="docs-section">
         <h2>Max Count</h2>
-        <p>
-          Automatically format large numbers with a maximum display value.
-        </p>
+        <p>Automatically format large numbers with a maximum display value.</p>
         <CodePlayground
           initialCode={`function MaxCountBadges() {
   return (
@@ -348,9 +336,7 @@ render(<MaxCountBadges />)`}
 
       <section className="docs-section">
         <h2>Outline Style</h2>
-        <p>
-          Use outlined badges for a lighter visual weight.
-        </p>
+        <p>Use outlined badges for a lighter visual weight.</p>
         <CodePlayground
           initialCode={`function OutlineBadges() {
   return (
@@ -382,7 +368,8 @@ render(<OutlineBadges />)`}
       <section className="docs-section">
         <h2>Removable Badges</h2>
         <p>
-          Make badges removable with an onRemove handler, useful for tags and filters.
+          Make badges removable with an onRemove handler, useful for tags and
+          filters.
         </p>
         <CodePlayground
           initialCode={`function RemovableBadges() {
@@ -486,9 +473,7 @@ render(<PulsingBadges />)`}
 
       <section className="docs-section">
         <h2>Interactive Badges</h2>
-        <p>
-          Make badges clickable for filtering, navigation, or actions.
-        </p>
+        <p>Make badges clickable for filtering, navigation, or actions.</p>
         <CodePlayground
           initialCode={`function InteractiveBadges() {
   const [selected, setSelected] = React.useState('all')
@@ -640,7 +625,8 @@ render(<ChatBadges />)`}
         <h2>Advanced Patterns</h2>
 
         <h3>Custom Badge Colors</h3>
-        <pre><code>{`<Badge
+        <pre>
+          <code>{`<Badge
   style={{
     backgroundColor: '#8b5cf6',
     color: '#ffffff'
@@ -652,17 +638,21 @@ render(<ChatBadges />)`}
 // Or with Tailwind
 <Badge className="bg-purple-500 text-white">
   Custom Color
-</Badge>`}</code></pre>
+</Badge>`}</code>
+        </pre>
 
         <h3>Badge with Tooltip</h3>
-        <pre><code>{`import { Badge, Tooltip } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Badge, Tooltip } from '@clarity-chat/react'
 
 <Tooltip content="5 unread messages">
   <Badge variant="error">5</Badge>
-</Tooltip>`}</code></pre>
+</Tooltip>`}</code>
+        </pre>
 
         <h3>Animated Count Changes</h3>
-        <pre><code>{`import { Badge } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Badge } from '@clarity-chat/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 function AnimatedBadge({ count }) {
@@ -681,10 +671,12 @@ function AnimatedBadge({ count }) {
       </AnimatePresence>
     </Badge>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Badge Group</h3>
-        <pre><code>{`function BadgeGroup({ items }) {
+        <pre>
+          <code>{`function BadgeGroup({ items }) {
   return (
     <div className="flex flex-wrap gap-2">
       {items.map(item => (
@@ -698,14 +690,16 @@ function AnimatedBadge({ count }) {
       ))}
     </div>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Accessibility</h2>
 
         <Callout type="info" title="Screen Reader Support">
-          Use <code>aria-label</code> for badges with only numbers or icons to provide context.
+          Use <code>aria-label</code> for badges with only numbers or icons to
+          provide context.
         </Callout>
 
         <h3>Best Practices</h3>
@@ -718,7 +712,8 @@ function AnimatedBadge({ count }) {
         </ul>
 
         <h3>Example</h3>
-        <pre><code>{`<Badge
+        <pre>
+          <code>{`<Badge
   variant="error"
   aria-label="5 unread notifications"
 >
@@ -727,18 +722,21 @@ function AnimatedBadge({ count }) {
 
 <button aria-label="Notifications: 3 unread">
   <Badge variant="error">3</Badge>
-</button>`}</code></pre>
+</button>`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
 
         <Callout type="tip" title="Keep Badges Concise">
-          Badges should be short and scannable. Use abbreviations when necessary.
+          Badges should be short and scannable. Use abbreviations when
+          necessary.
         </Callout>
 
         <Callout type="warning" title="Don't Overuse">
-          Too many badges can create visual clutter. Use them sparingly for important information.
+          Too many badges can create visual clutter. Use them sparingly for
+          important information.
         </Callout>
 
         <h3>When to Use Badges</h3>
@@ -762,7 +760,8 @@ function AnimatedBadge({ count }) {
 
       <section className="docs-section">
         <h2>TypeScript</h2>
-        <pre><code>{`import { Badge, BadgeProps } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { Badge, BadgeProps } from '@clarity-chat/react'
 
 interface BadgeProps {
   children: React.ReactNode
@@ -777,7 +776,8 @@ interface BadgeProps {
   style?: React.CSSProperties
   onRemove?: () => void
   onClick?: () => void
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -810,71 +810,72 @@ const badgeProps = [
     name: 'children',
     type: 'React.ReactNode',
     required: true,
-    description: 'Badge content (text, number, or icon)'
+    description: 'Badge content (text, number, or icon)',
   },
   {
     name: 'variant',
     type: "'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'",
     required: false,
     default: "'default'",
-    description: 'Visual style variant'
+    description: 'Visual style variant',
   },
   {
     name: 'size',
     type: "'sm' | 'md' | 'lg'",
     required: false,
     default: "'md'",
-    description: 'Badge size'
+    description: 'Badge size',
   },
   {
     name: 'outline',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Use outlined style instead of filled'
+    description: 'Use outlined style instead of filled',
   },
   {
     name: 'dot',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Display as a small dot indicator'
+    description: 'Display as a small dot indicator',
   },
   {
     name: 'pulse',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Add pulsing animation'
+    description: 'Add pulsing animation',
   },
   {
     name: 'max',
     type: 'number',
     required: false,
-    description: 'Maximum value to display (e.g., 99 will show "99+" for values > 99)'
+    description:
+      'Maximum value to display (e.g., 99 will show "99+" for values > 99)',
   },
   {
     name: 'position',
     type: "'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'",
     required: false,
-    description: 'Position when overlaying on another element'
+    description: 'Position when overlaying on another element',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
+    description: 'Additional CSS classes',
   },
   {
     name: 'onRemove',
     type: '() => void',
     required: false,
-    description: 'Callback when remove button is clicked (shows × button)'
+    description: 'Callback when remove button is clicked (shows × button)',
   },
   {
     name: 'onClick',
     type: '() => void',
     required: false,
-    description: 'Click handler for interactive badges'
-  }
+    description: 'Click handler for interactive badges',
+  },
 ]

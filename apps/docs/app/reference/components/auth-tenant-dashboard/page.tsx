@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'AuthTenantDashboard - Clarity Chat Components',
-  description: 'Enterprise tenant authentication dashboard for managing tenants, users, SSO, and authentication settings.',
+  description:
+    'Enterprise tenant authentication dashboard for managing tenants, users, SSO, and authentication settings.',
 }
 
 const props: Prop[] = [
@@ -43,7 +42,8 @@ export default function AuthTenantDashboardPage() {
         <span className="docs-badge">Component</span>
         <h1>AuthTenantDashboard</h1>
         <p className="docs-lead">
-          Enterprise tenant authentication dashboard for managing tenants, users, SSO configuration, and authentication settings.
+          Enterprise tenant authentication dashboard for managing tenants,
+          users, SSO configuration, and authentication settings.
         </p>
       </div>
 
@@ -59,9 +59,7 @@ export default function AuthTenantDashboardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Display tenant authentication dashboard:
-        </p>
+        <p>Display tenant authentication dashboard:</p>
         <CodePlayground
           initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react'
 
@@ -85,9 +83,7 @@ function TenantAuth({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>SSO Configuration</h2>
-        <p>
-          Configure SSO for tenant:
-        </p>
+        <p>Configure SSO for tenant:</p>
         <CodePlayground
           initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react'
 
@@ -113,9 +109,7 @@ function WithSSO({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>User Management</h2>
-        <p>
-          Manage tenant users:
-        </p>
+        <p>Manage tenant users:</p>
         <CodePlayground
           initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react'
 
@@ -157,9 +151,22 @@ function UserManagement({ tenantId }: { tenantId: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/sso-config-wizard">SSOConfigWizard</a> - SSO configuration wizard</li>
-          <li><a href="/reference/components/seat-invite-dialog">SeatInviteDialog</a> - Seat invitation</li>
-          <li><a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> - Multi-tenant setup</li>
+          <li>
+            <a href="/reference/components/sso-config-wizard">
+              SSOConfigWizard
+            </a>{' '}
+            - SSO configuration wizard
+          </li>
+          <li>
+            <a href="/reference/components/seat-invite-dialog">
+              SeatInviteDialog
+            </a>{' '}
+            - Seat invitation
+          </li>
+          <li>
+            <a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> -
+            Multi-tenant setup
+          </li>
         </ul>
       </section>
     </div>

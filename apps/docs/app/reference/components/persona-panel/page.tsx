@@ -4,11 +4,10 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Persona Panel - Clarity Chat Components',
-  description: 'Switch between different AI personas - strategist, researcher, critic, coach, and custom roles.',
+  description:
+    'Switch between different AI personas - strategist, researcher, critic, coach, and custom roles.',
 }
 
 export default function PersonaPanelPage() {
@@ -18,14 +17,19 @@ export default function PersonaPanelPage() {
         <span className="docs-badge">Component</span>
         <h1>Persona Panel</h1>
         <p className="docs-lead">
-          Let users switch between different AI personalities. Like having a team of experts - strategist, researcher, critic, coach - each with their own style.
+          Let users switch between different AI personalities. Like having a
+          team of experts - strategist, researcher, critic, coach - each with
+          their own style.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Think of this like switching between different team members. Need strategic advice? Pick the Strategist. Need facts? Pick the Researcher. Each persona has different expertise and communication styles.
+          Think of this like switching between different team members. Need
+          strategic advice? Pick the Strategist. Need facts? Pick the
+          Researcher. Each persona has different expertise and communication
+          styles.
         </p>
       </section>
 
@@ -180,38 +184,37 @@ const personaProps = [
     name: 'personas',
     type: 'Persona[]',
     required: true,
-    description: 'Array of available personas'
+    description: 'Array of available personas',
   },
   {
     name: 'activePersonaId',
     type: 'string',
     required: false,
-    description: 'ID of currently active persona'
+    description: 'ID of currently active persona',
   },
   {
     name: 'onSelect',
     type: '(persona: Persona) => void',
     required: false,
-    description: 'Callback when persona is selected'
+    description: 'Callback when persona is selected',
   },
   {
     name: 'onConfigure',
     type: '(persona: Persona) => void',
     required: false,
-    description: 'Callback to configure persona settings'
+    description: 'Callback to configure persona settings',
   },
   {
     name: 'showTemperature',
     type: 'boolean',
     required: false,
     default: 'false',
-    description: 'Display temperature parameter'
+    description: 'Display temperature parameter',
   },
   {
     name: 'className',
     type: 'string',
     required: false,
-    description: 'Additional CSS classes'
-  }
+    description: 'Additional CSS classes',
+  },
 ]
-

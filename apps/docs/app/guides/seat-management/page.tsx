@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Seat Management Guide - Clarity Chat Components',
-  description: 'Learn how to manage seats for enterprise tenants, including invitations, role assignment, and seat limits.',
+  description:
+    'Learn how to manage seats for enterprise tenants, including invitations, role assignment, and seat limits.',
 }
 
 export default function SeatManagementPage() {
@@ -18,7 +17,8 @@ export default function SeatManagementPage() {
         <span className="docs-badge">Guide</span>
         <h1>Seat Management</h1>
         <p className="docs-lead">
-          Learn how to manage seats for enterprise tenants, including invitations, role assignment, seat limits, and user management.
+          Learn how to manage seats for enterprise tenants, including
+          invitations, role assignment, seat limits, and user management.
         </p>
       </div>
 
@@ -35,15 +35,14 @@ export default function SeatManagementPage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          Seat management allows you to control who has access to your application and what permissions they have.
+          Seat management allows you to control who has access to your
+          application and what permissions they have.
         </p>
       </section>
 
       <section className="docs-section">
         <h2>Inviting Users</h2>
-        <p>
-          Invite users to seats:
-        </p>
+        <p>Invite users to seats:</p>
         <CodePlayground
           initialCode={`import { SeatInviteDialog } from '@clarity-chat/react'
 
@@ -74,9 +73,7 @@ function InviteUsers({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>Seat Usage Tracking</h2>
-        <p>
-          Track seat usage:
-        </p>
+        <p>Track seat usage:</p>
         <CodePlayground
           initialCode={`import { AuthTenantDashboard } from '@clarity-chat/react'
 
@@ -115,9 +112,7 @@ async function fetchSeatUsage(tenantId: string) {
 
       <section className="docs-section">
         <h2>Role Management</h2>
-        <p>
-          Manage user roles:
-        </p>
+        <p>Manage user roles:</p>
         <CodePlayground
           initialCode={`function RoleManagement({ tenantId }: { tenantId: string }) {
   const [users, setUsers] = useState([])
@@ -156,9 +151,7 @@ async function fetchSeatUsage(tenantId: string) {
 
       <section className="docs-section">
         <h2>Seat Limits</h2>
-        <p>
-          Handle seat limits:
-        </p>
+        <p>Handle seat limits:</p>
         <CodePlayground
           initialCode={`import { AuthTenantDashboard, SeatInviteDialog } from '@clarity-chat/react'
 
@@ -207,8 +200,18 @@ function SeatLimits({ tenantId }: { tenantId: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/seat-invite-dialog">SeatInviteDialog</a> - Seat invitation component</li>
-          <li><a href="/reference/components/auth-tenant-dashboard">AuthTenantDashboard</a> - Tenant dashboard</li>
+          <li>
+            <a href="/reference/components/seat-invite-dialog">
+              SeatInviteDialog
+            </a>{' '}
+            - Seat invitation component
+          </li>
+          <li>
+            <a href="/reference/components/auth-tenant-dashboard">
+              AuthTenantDashboard
+            </a>{' '}
+            - Tenant dashboard
+          </li>
         </ul>
       </section>
     </div>

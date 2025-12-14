@@ -7,7 +7,6 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
-  DrawerBody,
   DrawerFooter,
   DrawerClose,
   Button,
@@ -51,11 +50,12 @@ export const RightSide: Story = {
           <DrawerTitle>Right Drawer</DrawerTitle>
           <DrawerDescription>Slides in from the right side</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm text-muted-foreground">
-            This is the default drawer position, commonly used for navigation, settings, or details panels.
+            This is the default drawer position, commonly used for navigation,
+            settings, or details panels.
           </p>
-        </DrawerBody>
+        </div>
         <DrawerFooter>
           <DrawerClose asChild>
             <Button variant="outline">Close</Button>
@@ -69,30 +69,41 @@ export const RightSide: Story = {
     const canvas = within(canvasElement)
 
     // Test drawer trigger button renders
-    const openButton = canvas.getByRole('button', { name: /open right drawer/i })
+    const openButton = canvas.getByRole('button', {
+      name: /open right drawer/i,
+    })
     await expect(openButton).toBeInTheDocument()
 
     // Test opening drawer
     await userEvent.click(openButton)
 
     // Wait for drawer to appear and test content
-    await waitFor(async () => {
-      const drawer = document.querySelector('[role="dialog"]')
-      if (drawer) {
-        const drawerCanvas = within(drawer as HTMLElement)
-        await expect(drawerCanvas.getByText('Right Drawer')).toBeInTheDocument()
-        await expect(drawerCanvas.getByText(/Slides in from the right side/i)).toBeInTheDocument()
+    await waitFor(
+      async () => {
+        const drawer = document.querySelector('[role="dialog"]')
+        if (drawer) {
+          const drawerCanvas = within(drawer as HTMLElement)
+          await expect(
+            drawerCanvas.getByText('Right Drawer')
+          ).toBeInTheDocument()
+          await expect(
+            drawerCanvas.getByText(/Slides in from the right side/i)
+          ).toBeInTheDocument()
 
-        // Test action buttons
-        const closeButton = drawerCanvas.getByRole('button', { name: /close/i })
-        const saveButton = drawerCanvas.getByRole('button', { name: /save/i })
-        await expect(closeButton).toBeInTheDocument()
-        await expect(saveButton).toBeInTheDocument()
+          // Test action buttons
+          const closeButton = drawerCanvas.getByRole('button', {
+            name: /close/i,
+          })
+          const saveButton = drawerCanvas.getByRole('button', { name: /save/i })
+          await expect(closeButton).toBeInTheDocument()
+          await expect(saveButton).toBeInTheDocument()
 
-        // Test closing drawer
-        await userEvent.click(closeButton)
-      }
-    }, { timeout: 2000 })
+          // Test closing drawer
+          await userEvent.click(closeButton)
+        }
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -107,11 +118,11 @@ export const LeftSide: Story = {
           <DrawerTitle>Left Drawer</DrawerTitle>
           <DrawerDescription>Slides in from the left side</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm text-muted-foreground">
             Perfect for navigation menus or sidebars on mobile devices.
           </p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -128,11 +139,11 @@ export const TopSide: Story = {
           <DrawerTitle>Top Drawer</DrawerTitle>
           <DrawerDescription>Slides in from the top</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm text-muted-foreground">
             Useful for notifications, banners, or search interfaces.
           </p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -149,11 +160,11 @@ export const BottomSide: Story = {
           <DrawerTitle>Bottom Drawer</DrawerTitle>
           <DrawerDescription>Slides in from the bottom</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm text-muted-foreground">
             Great for mobile sheets, quick actions, or additional options.
           </p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -174,9 +185,9 @@ export const SmallSize: Story = {
           <DrawerTitle>Small Drawer</DrawerTitle>
           <DrawerDescription>256px width</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm">Compact drawer for simple content.</p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -193,9 +204,9 @@ export const MediumSize: Story = {
           <DrawerTitle>Medium Drawer</DrawerTitle>
           <DrawerDescription>320px width (default)</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm">Standard drawer size for most use cases.</p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -212,9 +223,9 @@ export const LargeSize: Story = {
           <DrawerTitle>Large Drawer</DrawerTitle>
           <DrawerDescription>384px width</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm">Larger drawer for detailed content.</p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -231,9 +242,9 @@ export const ExtraLargeSize: Story = {
           <DrawerTitle>Extra Large Drawer</DrawerTitle>
           <DrawerDescription>480px width</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm">Extra large for complex layouts.</p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -250,9 +261,9 @@ export const FullSize: Story = {
           <DrawerTitle>Full Size Drawer</DrawerTitle>
           <DrawerDescription>Takes full screen width/height</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm">Useful for immersive experiences on mobile.</p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -273,9 +284,16 @@ export const NavigationDrawer: Story = {
           <DrawerTitle>Navigation</DrawerTitle>
           <DrawerDescription>Browse sections</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <nav className="space-y-1">
-            {['Dashboard', 'Projects', 'Tasks', 'Calendar', 'Settings', 'Help'].map((item) => (
+            {[
+              'Dashboard',
+              'Projects',
+              'Tasks',
+              'Calendar',
+              'Settings',
+              'Help',
+            ].map((item) => (
               <button
                 key={item}
                 className="w-full text-left px-4 py-2 rounded-md hover:bg-muted transition-colors text-sm"
@@ -284,7 +302,7 @@ export const NavigationDrawer: Story = {
               </button>
             ))}
           </nav>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -299,26 +317,42 @@ export const NavigationDrawer: Story = {
     await userEvent.click(menuButton)
 
     // Wait for drawer and test navigation items
-    await waitFor(async () => {
-      const drawer = document.querySelector('[role="dialog"]')
-      if (drawer) {
-        const drawerCanvas = within(drawer as HTMLElement)
+    await waitFor(
+      async () => {
+        const drawer = document.querySelector('[role="dialog"]')
+        if (drawer) {
+          const drawerCanvas = within(drawer as HTMLElement)
 
-        // Test navigation header
-        await expect(drawerCanvas.getByText('Navigation')).toBeInTheDocument()
-        await expect(drawerCanvas.getByText('Browse sections')).toBeInTheDocument()
+          // Test navigation header
+          await expect(drawerCanvas.getByText('Navigation')).toBeInTheDocument()
+          await expect(
+            drawerCanvas.getByText('Browse sections')
+          ).toBeInTheDocument()
 
-        // Test all navigation items are present
-        const navItems = ['Dashboard', 'Projects', 'Tasks', 'Calendar', 'Settings', 'Help']
-        for (const item of navItems) {
-          await expect(drawerCanvas.getByRole('button', { name: item })).toBeInTheDocument()
+          // Test all navigation items are present
+          const navItems = [
+            'Dashboard',
+            'Projects',
+            'Tasks',
+            'Calendar',
+            'Settings',
+            'Help',
+          ]
+          for (const item of navItems) {
+            await expect(
+              drawerCanvas.getByRole('button', { name: item })
+            ).toBeInTheDocument()
+          }
+
+          // Test clicking a navigation item
+          const dashboardButton = drawerCanvas.getByRole('button', {
+            name: 'Dashboard',
+          })
+          await userEvent.click(dashboardButton)
         }
-
-        // Test clicking a navigation item
-        const dashboardButton = drawerCanvas.getByRole('button', { name: 'Dashboard' })
-        await userEvent.click(dashboardButton)
-      }
-    }, { timeout: 2000 })
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -333,7 +367,7 @@ export const SettingsDrawer: Story = {
           <DrawerTitle>Settings</DrawerTitle>
           <DrawerDescription>Manage your preferences</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody className="space-y-6">
+        <div className="p-4 space-y-6">
           <div>
             <h3 className="text-sm font-semibold mb-3">Appearance</h3>
             <div className="space-y-2">
@@ -360,7 +394,7 @@ export const SettingsDrawer: Story = {
               </label>
             </div>
           </div>
-        </DrawerBody>
+        </div>
         <DrawerFooter>
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
@@ -381,34 +415,47 @@ export const SettingsDrawer: Story = {
     await userEvent.click(settingsButton)
 
     // Wait for drawer and test settings content
-    await waitFor(async () => {
-      const drawer = document.querySelector('[role="dialog"]')
-      if (drawer) {
-        const drawerCanvas = within(drawer as HTMLElement)
+    await waitFor(
+      async () => {
+        const drawer = document.querySelector('[role="dialog"]')
+        if (drawer) {
+          const drawerCanvas = within(drawer as HTMLElement)
 
-        // Test settings header
-        await expect(drawerCanvas.getByText('Settings')).toBeInTheDocument()
-        await expect(drawerCanvas.getByText('Manage your preferences')).toBeInTheDocument()
+          // Test settings header
+          await expect(drawerCanvas.getByText('Settings')).toBeInTheDocument()
+          await expect(
+            drawerCanvas.getByText('Manage your preferences')
+          ).toBeInTheDocument()
 
-        // Test section headers
-        await expect(drawerCanvas.getByText('Appearance')).toBeInTheDocument()
-        await expect(drawerCanvas.getByText('Notifications')).toBeInTheDocument()
+          // Test section headers
+          await expect(drawerCanvas.getByText('Appearance')).toBeInTheDocument()
+          await expect(
+            drawerCanvas.getByText('Notifications')
+          ).toBeInTheDocument()
 
-        // Test checkboxes are present
-        const checkboxes = drawerCanvas.getAllByRole('checkbox')
-        await expect(checkboxes.length).toBe(4)
+          // Test checkboxes are present
+          const checkboxes = drawerCanvas.getAllByRole('checkbox')
+          await expect(checkboxes.length).toBe(4)
 
-        // Test specific checkbox labels
-        await expect(drawerCanvas.getByText('Dark mode')).toBeInTheDocument()
-        await expect(drawerCanvas.getByText('Email notifications')).toBeInTheDocument()
+          // Test specific checkbox labels
+          await expect(drawerCanvas.getByText('Dark mode')).toBeInTheDocument()
+          await expect(
+            drawerCanvas.getByText('Email notifications')
+          ).toBeInTheDocument()
 
-        // Test action buttons
-        const saveButton = drawerCanvas.getByRole('button', { name: /save changes/i })
-        const cancelButton = drawerCanvas.getByRole('button', { name: /cancel/i })
-        await expect(saveButton).toBeInTheDocument()
-        await expect(cancelButton).toBeInTheDocument()
-      }
-    }, { timeout: 2000 })
+          // Test action buttons
+          const saveButton = drawerCanvas.getByRole('button', {
+            name: /save changes/i,
+          })
+          const cancelButton = drawerCanvas.getByRole('button', {
+            name: /cancel/i,
+          })
+          await expect(saveButton).toBeInTheDocument()
+          await expect(cancelButton).toBeInTheDocument()
+        }
+      },
+      { timeout: 2000 }
+    )
   },
 }
 
@@ -423,13 +470,17 @@ export const FilterDrawer: Story = {
           <DrawerTitle>Filter Results</DrawerTitle>
           <DrawerDescription>Refine your search</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody className="space-y-4">
+        <div className="p-4 space-y-4">
           <div>
             <label className="text-sm font-medium mb-2 block">Status</label>
             <div className="space-y-2">
               {['All', 'Active', 'Completed', 'Archived'].map((status) => (
                 <label key={status} className="flex items-center gap-2">
-                  <input type="radio" name="status" defaultChecked={status === 'All'} />
+                  <input
+                    type="radio"
+                    name="status"
+                    defaultChecked={status === 'All'}
+                  />
                   <span className="text-sm">{status}</span>
                 </label>
               ))}
@@ -443,7 +494,7 @@ export const FilterDrawer: Story = {
               <Badge variant="outline">Low</Badge>
             </div>
           </div>
-        </DrawerBody>
+        </div>
         <DrawerFooter>
           <Button variant="outline">Reset</Button>
           <Button>Apply Filters</Button>
@@ -457,19 +508,37 @@ export const NotificationDrawer: Story = {
   render: () => (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button>🔔 Notifications <Badge className="ml-2">3</Badge></Button>
+        <Button>
+          🔔 Notifications <Badge className="ml-2">3</Badge>
+        </Button>
       </DrawerTrigger>
       <DrawerContent side="right">
         <DrawerHeader>
           <DrawerTitle>Notifications</DrawerTitle>
           <DrawerDescription>3 unread notifications</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody className="space-y-3">
+        <div className="p-4 space-y-3">
           {[
-            { title: 'Components/Layout/Drawer', time: '2 min ago', unread: true },
-            { title: 'Components/Layout/Drawer', time: '1 hour ago', unread: true },
-            { title: 'Components/Layout/Drawer', time: '3 hours ago', unread: true },
-            { title: 'Components/Layout/Drawer', time: '1 day ago', unread: false },
+            {
+              title: 'Components/Layout/Drawer',
+              time: '2 min ago',
+              unread: true,
+            },
+            {
+              title: 'Components/Layout/Drawer',
+              time: '1 hour ago',
+              unread: true,
+            },
+            {
+              title: 'Components/Layout/Drawer',
+              time: '3 hours ago',
+              unread: true,
+            },
+            {
+              title: 'Components/Layout/Drawer',
+              time: '1 day ago',
+              unread: false,
+            },
           ].map((notification, i) => (
             <div
               key={i}
@@ -484,10 +553,12 @@ export const NotificationDrawer: Story = {
                   <div className="w-2 h-2 rounded-full bg-primary" />
                 )}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {notification.time}
+              </p>
             </div>
           ))}
-        </DrawerBody>
+        </div>
         <DrawerFooter>
           <Button variant="outline" className="w-full">
             Mark all as read
@@ -509,23 +580,29 @@ export const MobileSheet: Story = {
           <DrawerTitle>Share Options</DrawerTitle>
           <DrawerDescription>Choose how to share</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <div className="grid grid-cols-4 gap-4 text-center">
-            {['Copy Link', 'Email', 'Twitter', 'Facebook', 'WhatsApp', 'Telegram', 'More'].map(
-              (option) => (
-                <button
-                  key={option}
-                  className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl">
-                    📤
-                  </div>
-                  <span className="text-xs">{option}</span>
-                </button>
-              )
-            )}
+            {[
+              'Copy Link',
+              'Email',
+              'Twitter',
+              'Facebook',
+              'WhatsApp',
+              'Telegram',
+              'More',
+            ].map((option) => (
+              <button
+                key={option}
+                className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-muted transition-colors"
+              >
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl">
+                  📤
+                </div>
+                <span className="text-xs">{option}</span>
+              </button>
+            ))}
           </div>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -546,9 +623,9 @@ export const NoBackdropBlur: Story = {
           <DrawerTitle>Without Backdrop Blur</DrawerTitle>
           <DrawerDescription>Solid backdrop overlay</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm">Performance-friendly option.</p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -565,9 +642,9 @@ export const NoClickOutsideClose: Story = {
           <DrawerTitle>Click Outside Disabled</DrawerTitle>
           <DrawerDescription>Must use close button or Escape</DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+        <div className="p-4">
           <p className="text-sm">Prevents accidental closes.</p>
-        </DrawerBody>
+        </div>
       </DrawerContent>
     </Drawer>
   ),
@@ -598,9 +675,9 @@ export const ControlledDrawer: Story = {
               <DrawerTitle>Controlled Drawer</DrawerTitle>
               <DrawerDescription>State managed externally</DrawerDescription>
             </DrawerHeader>
-            <DrawerBody>
+            <div className="p-4">
               <p className="text-sm">External state control example.</p>
-            </DrawerBody>
+            </div>
           </DrawerContent>
         </Drawer>
       </div>
@@ -617,23 +694,35 @@ export const ControlledDrawer: Story = {
     await userEvent.click(openButton)
 
     // Wait for drawer to appear
-    await waitFor(async () => {
-      const drawer = document.querySelector('[role="dialog"]')
-      if (drawer) {
-        const drawerCanvas = within(drawer as HTMLElement)
-        await expect(drawerCanvas.getByText('Controlled Drawer')).toBeInTheDocument()
-        await expect(drawerCanvas.getByText(/State managed externally/i)).toBeInTheDocument()
-      }
-    }, { timeout: 2000 })
+    await waitFor(
+      async () => {
+        const drawer = document.querySelector('[role="dialog"]')
+        if (drawer) {
+          const drawerCanvas = within(drawer as HTMLElement)
+          await expect(
+            drawerCanvas.getByText('Controlled Drawer')
+          ).toBeInTheDocument()
+          await expect(
+            drawerCanvas.getByText(/State managed externally/i)
+          ).toBeInTheDocument()
+        }
+      },
+      { timeout: 2000 }
+    )
 
     // Test programmatic close button
-    const closeProgrammatically = canvas.getByRole('button', { name: /close programmatically/i })
+    const closeProgrammatically = canvas.getByRole('button', {
+      name: /close programmatically/i,
+    })
     await userEvent.click(closeProgrammatically)
 
     // Verify state indicator updates
-    await waitFor(async () => {
-      await expect(canvas.getByText('Drawer is closed')).toBeInTheDocument()
-    }, { timeout: 1000 })
+    await waitFor(
+      async () => {
+        await expect(canvas.getByText('Drawer is closed')).toBeInTheDocument()
+      },
+      { timeout: 1000 }
+    )
   },
 }
 

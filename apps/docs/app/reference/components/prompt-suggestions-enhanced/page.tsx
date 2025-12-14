@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'PromptSuggestionsEnhanced - Clarity Chat Components',
-  description: 'ML-based prompt suggestions with personalization, A/B testing, and effectiveness tracking.',
+  description:
+    'ML-based prompt suggestions with personalization, A/B testing, and effectiveness tracking.',
 }
 
 const props: Prop[] = [
@@ -33,12 +32,14 @@ const props: Prop[] = [
   {
     name: 'suggestionType',
     type: '"starter" | "follow-up" | "quick-reply" | "template"',
-    description: 'Type of suggestions to show (inherited from PromptSuggestions)',
+    description:
+      'Type of suggestions to show (inherited from PromptSuggestions)',
   },
   {
     name: 'layout',
     type: '"chips" | "cards" | "list"',
-    description: 'Layout style for suggestions (inherited from PromptSuggestions)',
+    description:
+      'Layout style for suggestions (inherited from PromptSuggestions)',
   },
   {
     name: 'isLoading',
@@ -48,7 +49,8 @@ const props: Prop[] = [
   {
     name: 'maxSuggestions',
     type: 'number',
-    description: 'Maximum number of suggestions to show (inherited from PromptSuggestions)',
+    description:
+      'Maximum number of suggestions to show (inherited from PromptSuggestions)',
   },
   {
     name: 'emptyState',
@@ -58,7 +60,8 @@ const props: Prop[] = [
   {
     name: 'showCategories',
     type: 'boolean',
-    description: 'Show suggestion categories (inherited from PromptSuggestions)',
+    description:
+      'Show suggestion categories (inherited from PromptSuggestions)',
   },
   {
     name: 'className',
@@ -102,7 +105,8 @@ export default function PromptSuggestionsEnhancedPage() {
         <span className="docs-badge">Component</span>
         <h1>PromptSuggestionsEnhanced</h1>
         <p className="docs-lead">
-          ML-based prompt suggestions with personalization, A/B testing, and 2-3x higher click-through rates.
+          ML-based prompt suggestions with personalization, A/B testing, and
+          2-3x higher click-through rates.
         </p>
       </div>
 
@@ -118,16 +122,15 @@ export default function PromptSuggestionsEnhancedPage() {
 
       <Callout type="info" className="my-6">
         <p>
-          <strong>New in 2025:</strong> This enhanced version provides ML-based ranking with personalization,
-          resulting in 2-3x higher click-through rates compared to basic suggestions.
+          <strong>New in 2025:</strong> This enhanced version provides ML-based
+          ranking with personalization, resulting in 2-3x higher click-through
+          rates compared to basic suggestions.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Use the component with the enhanced hook for ML-based ranking:
-        </p>
+        <p>Use the component with the enhanced hook for ML-based ranking:</p>
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -178,9 +181,7 @@ render(<ChatWithSuggestions />)`}
 
       <section className="docs-section">
         <h2>ML-Based Ranking</h2>
-        <p>
-          Configure ML-based ranking for intelligent suggestion ordering:
-        </p>
+        <p>Configure ML-based ranking for intelligent suggestion ordering:</p>
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -217,9 +218,7 @@ function MLRankedSuggestions({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Personalization</h2>
-        <p>
-          Enable personalization features to learn from user behavior:
-        </p>
+        <p>Enable personalization features to learn from user behavior:</p>
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
@@ -248,9 +247,7 @@ function PersonalizedSuggestions({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>A/B Testing</h2>
-        <p>
-          Enable A/B testing to compare suggestion strategies:
-        </p>
+        <p>Enable A/B testing to compare suggestion strategies:</p>
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
@@ -288,9 +285,7 @@ function ABTestedSuggestions({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Effectiveness Tracking</h2>
-        <p>
-          Track suggestion effectiveness metrics:
-        </p>
+        <p>Track suggestion effectiveness metrics:</p>
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react'
 
@@ -322,9 +317,7 @@ function TrackedSuggestions({ messages }: { messages: Message[] }) {
 
       <section className="docs-section">
         <h2>Fallback Strategies</h2>
-        <p>
-          Configure fallback behavior when ML is unavailable:
-        </p>
+        <p>Configure fallback behavior when ML is unavailable:</p>
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
@@ -360,8 +353,14 @@ function FallbackSuggestions({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Start with <code>hybrid</code> ranking for best balance of performance and accuracy</li>
-          <li>Enable <code>trackEffectiveness</code> to monitor suggestion performance</li>
+          <li>
+            Start with <code>hybrid</code> ranking for best balance of
+            performance and accuracy
+          </li>
+          <li>
+            Enable <code>trackEffectiveness</code> to monitor suggestion
+            performance
+          </li>
           <li>Use A/B testing to compare different ranking strategies</li>
           <li>Configure fallback strategies for reliability</li>
           <li>Enable personalization features for better user experience</li>
@@ -371,9 +370,20 @@ function FallbackSuggestions({ messages }: { messages: Message[] }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/prompt-suggestions">PromptSuggestions</a> - Basic version</li>
-          <li><a href="/guides/performance">Performance Guide</a> - Tracking and analytics</li>
-          <li><a href="/guides/token-optimization">Token Optimization Guide</a> - Cost optimization strategies</li>
+          <li>
+            <a href="/reference/components/prompt-suggestions">
+              PromptSuggestions
+            </a>{' '}
+            - Basic version
+          </li>
+          <li>
+            <a href="/guides/performance">Performance Guide</a> - Tracking and
+            analytics
+          </li>
+          <li>
+            <a href="/guides/token-optimization">Token Optimization Guide</a> -
+            Cost optimization strategies
+          </li>
         </ul>
       </section>
     </div>

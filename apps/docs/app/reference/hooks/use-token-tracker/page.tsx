@@ -46,11 +46,14 @@ function BasicTrackerDemo() {
   })
 
   const handleAddMessage = useCallback(() => {
-    const newMessage = { role: 'user' as const, content: 'This is a new message.' }
+    const newMessage = {
+      role: 'user' as const,
+      content: 'This is a new message.',
+    }
     const estimated = estimateTokens(newMessage.content)
     if (canSend(estimated)) {
       addMessage(newMessage)
-      setMessages(prev => [...prev, newMessage])
+      setMessages((prev) => [...prev, newMessage])
     } else {
       alert('Message would exceed token limit!')
     }
@@ -62,20 +65,26 @@ function BasicTrackerDemo() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold">Token Usage</span>
-            <span className={`text-sm font-bold ${
-              isCritical ? 'text-red-600' :
-              isNearLimit ? 'text-yellow-600' :
-              'text-green-600'
-            }`}>
+            <span
+              className={`text-sm font-bold ${
+                isCritical
+                  ? 'text-red-600'
+                  : isNearLimit
+                    ? 'text-yellow-600'
+                    : 'text-green-600'
+              }`}
+            >
               {percentage.toFixed(1)}%
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all ${
-                isCritical ? 'bg-red-600' :
-                isNearLimit ? 'bg-yellow-600' :
-                'bg-green-600'
+                isCritical
+                  ? 'bg-red-600'
+                  : isNearLimit
+                    ? 'bg-yellow-600'
+                    : 'bg-green-600'
               }`}
               style={{ width: `${Math.min(percentage, 100)}%` }}
             />
@@ -121,7 +130,7 @@ function BasicTrackerDemo() {
             <button
               onClick={() => {
                 removeMessage(messages.length - 1)
-                setMessages(prev => prev.slice(0, -1))
+                setMessages((prev) => prev.slice(0, -1))
               }}
               className="px-4 py-2 bg-secondary text-secondary-foreground rounded"
               aria-label="Remove last message"
@@ -150,34 +159,40 @@ const useTokenTrackerOptionsProps: Prop[] = [
     name: 'modelName',
     type: 'string',
     required: true,
-    description: 'Model name (e.g., "gpt-4", "gpt-4-turbo", "claude-3-opus"). Used for token limits and pricing.',
+    description:
+      'Model name (e.g., "gpt-4", "gpt-4-turbo", "claude-3-opus"). Used for token limits and pricing.',
   },
   {
     name: 'maxTokens',
     type: 'number',
-    description: 'Maximum tokens for model. Auto-detected if modelName matches known models.',
+    description:
+      'Maximum tokens for model. Auto-detected if modelName matches known models.',
   },
   {
     name: 'inputCostPerToken',
     type: 'number',
-    description: 'Cost per input token in dollars. Auto-detected if modelName matches known models.',
+    description:
+      'Cost per input token in dollars. Auto-detected if modelName matches known models.',
   },
   {
     name: 'outputCostPerToken',
     type: 'number',
-    description: 'Cost per output token in dollars. Auto-detected if modelName matches known models.',
+    description:
+      'Cost per output token in dollars. Auto-detected if modelName matches known models.',
   },
   {
     name: 'warningThreshold',
     type: 'number',
     default: '0.8',
-    description: 'Warning threshold as decimal (0.8 = 80%). Triggers onWarning callback.',
+    description:
+      'Warning threshold as decimal (0.8 = 80%). Triggers onWarning callback.',
   },
   {
     name: 'criticalThreshold',
     type: 'number',
     default: '0.95',
-    description: 'Critical threshold as decimal (0.95 = 95%). Triggers onCritical callback.',
+    description:
+      'Critical threshold as decimal (0.95 = 95%). Triggers onCritical callback.',
   },
   {
     name: 'onWarning',
@@ -220,7 +235,8 @@ const useTokenTrackerReturnProps: Prop[] = [
   {
     name: 'isCritical',
     type: 'boolean',
-    description: 'Whether at critical token limit (utilization >= criticalThreshold).',
+    description:
+      'Whether at critical token limit (utilization >= criticalThreshold).',
   },
   {
     name: 'percentage',
@@ -230,22 +246,26 @@ const useTokenTrackerReturnProps: Prop[] = [
   {
     name: 'canSend',
     type: '(estimatedTokens: number) => boolean',
-    description: 'Check if sending a message with estimated tokens would exceed limit.',
+    description:
+      'Check if sending a message with estimated tokens would exceed limit.',
   },
   {
     name: 'suggestPruning',
     type: 'boolean',
-    description: 'Whether to suggest pruning old messages (true when near limit).',
+    description:
+      'Whether to suggest pruning old messages (true when near limit).',
   },
   {
     name: 'addMessage',
     type: '(message: MessageWithTokens) => void',
-    description: 'Add message to tracker. Updates token counts and cost estimates.',
+    description:
+      'Add message to tracker. Updates token counts and cost estimates.',
   },
   {
     name: 'removeMessage',
     type: '(index: number) => void',
-    description: 'Remove message from tracker by index. Updates token counts and cost estimates.',
+    description:
+      'Remove message from tracker by index. Updates token counts and cost estimates.',
   },
   {
     name: 'clear',
@@ -259,8 +279,6 @@ const useTokenTrackerReturnProps: Prop[] = [
   },
 ]
 
-export const dynamic = 'force-dynamic'
-
 export default function UseTokenTrackerPage() {
   return (
     <ToastProvider>
@@ -270,8 +288,10 @@ export default function UseTokenTrackerPage() {
         <h1>useTokenTracker</h1>
 
         <p className="lead">
-          A production-ready hook for tracking token usage, estimating costs, and managing context window limits
-          in AI conversations. Provides real-time token counting, automatic model pricing lookup, and threshold-based alerts.
+          A production-ready hook for tracking token usage, estimating costs,
+          and managing context window limits in AI conversations. Provides
+          real-time token counting, automatic model pricing lookup, and
+          threshold-based alerts.
         </p>
 
         <ViewInStorybook component="useTokenTracker" />
@@ -313,9 +333,7 @@ import type { UseTokenTrackerOptions, UseTokenTrackerReturn, MessageWithTokens }
 
         <h2 id="basic-usage">Basic Usage</h2>
 
-        <p>
-          Track token usage and costs for a conversation:
-        </p>
+        <p>Track token usage and costs for a conversation:</p>
 
         <ComponentPreview
           title="Basic Token Tracker"
@@ -360,9 +378,7 @@ function BasicTracker() {
 
         <h2 id="check-before-sending">Check Before Sending</h2>
 
-        <p>
-          Check if a message would exceed the token limit:
-        </p>
+        <p>Check if a message would exceed the token limit:</p>
 
         <EnhancedCodeBlock
           code={`import { useTokenTracker } from '@clarity-chat/react'
@@ -389,9 +405,7 @@ function CheckBeforeSend() {
 
         <h2 id="cost-tracking">Cost Tracking</h2>
 
-        <p>
-          Track costs for different models:
-        </p>
+        <p>Track costs for different models:</p>
 
         <EnhancedCodeBlock
           code={`import { useTokenTracker } from '@clarity-chat/react'
@@ -417,9 +431,7 @@ function CostTracking() {
 
         <h2 id="custom-pricing">Custom Pricing</h2>
 
-        <p>
-          Override automatic pricing with custom costs:
-        </p>
+        <p>Override automatic pricing with custom costs:</p>
 
         <EnhancedCodeBlock
           code={`import { useTokenTracker } from '@clarity-chat/react'
@@ -448,9 +460,7 @@ function CustomPricing() {
 
         <h2 id="threshold-alerts">Threshold Alerts</h2>
 
-        <p>
-          Get alerts when approaching token limits:
-        </p>
+        <p>Get alerts when approaching token limits:</p>
 
         <EnhancedCodeBlock
           code={`import { useTokenTracker } from '@clarity-chat/react'
@@ -512,17 +522,32 @@ function ThresholdAlerts() {
 
         <h2 id="supported-models">Supported Models</h2>
 
-        <p>
-          Automatic pricing and limits are available for:
-        </p>
+        <p>Automatic pricing and limits are available for:</p>
 
         <ul>
-          <li><strong>GPT-4:</strong> 8192 tokens, $0.00003/$0.00006 per token</li>
-          <li><strong>GPT-4 Turbo:</strong> 128000 tokens, $0.00001/$0.00003 per token</li>
-          <li><strong>GPT-3.5 Turbo:</strong> 16385 tokens, $0.0000005/$0.0000015 per token</li>
-          <li><strong>Claude 3 Opus:</strong> 200000 tokens, $0.000015/$0.000075 per token</li>
-          <li><strong>Claude 3 Sonnet:</strong> 200000 tokens, $0.000003/$0.000015 per token</li>
-          <li><strong>Claude 3 Haiku:</strong> 200000 tokens, $0.00000025/$0.00000125 per token</li>
+          <li>
+            <strong>GPT-4:</strong> 8192 tokens, $0.00003/$0.00006 per token
+          </li>
+          <li>
+            <strong>GPT-4 Turbo:</strong> 128000 tokens, $0.00001/$0.00003 per
+            token
+          </li>
+          <li>
+            <strong>GPT-3.5 Turbo:</strong> 16385 tokens, $0.0000005/$0.0000015
+            per token
+          </li>
+          <li>
+            <strong>Claude 3 Opus:</strong> 200000 tokens, $0.000015/$0.000075
+            per token
+          </li>
+          <li>
+            <strong>Claude 3 Sonnet:</strong> 200000 tokens, $0.000003/$0.000015
+            per token
+          </li>
+          <li>
+            <strong>Claude 3 Haiku:</strong> 200000 tokens,
+            $0.00000025/$0.00000125 per token
+          </li>
         </ul>
 
         <h2 id="complete-example">Complete Example</h2>
@@ -584,9 +609,11 @@ function CompleteTrackerExample() {
         <div className="flex items-center justify-between mb-2">
           <span className="font-semibold">Token Usage</span>
           <span className={\`font-bold ${
-            isCritical ? 'text-red-600' :
-            isNearLimit ? 'text-yellow-600' :
-            'text-green-600'
+            isCritical
+              ? 'text-red-600'
+              : isNearLimit
+                ? 'text-yellow-600'
+                : 'text-green-600'
           }\`}>
             {percentage.toFixed(1)}%
           </span>
@@ -594,9 +621,11 @@ function CompleteTrackerExample() {
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
             className={\`h-2 rounded-full transition-all ${
-              isCritical ? 'bg-red-600' :
-              isNearLimit ? 'bg-yellow-600' :
-              'bg-green-600'
+              isCritical
+                ? 'bg-red-600'
+                : isNearLimit
+                  ? 'bg-yellow-600'
+                  : 'bg-green-600'
             }\`}
             style={{ width: \`\${Math.min(percentage, 100)}%\` }}
           />
@@ -680,22 +709,29 @@ function CompleteTrackerExample() {
 
         <ul>
           <li>
-            <strong>Use model name:</strong> Provide <code>modelName</code> for automatic pricing and limits
+            <strong>Use model name:</strong> Provide <code>modelName</code> for
+            automatic pricing and limits
           </li>
           <li>
-            <strong>Check before sending:</strong> Use <code>canSend</code> to prevent exceeding limits
+            <strong>Check before sending:</strong> Use <code>canSend</code> to
+            prevent exceeding limits
           </li>
           <li>
-            <strong>Monitor thresholds:</strong> Set <code>warningThreshold</code> and <code>criticalThreshold</code> for alerts
+            <strong>Monitor thresholds:</strong> Set{' '}
+            <code>warningThreshold</code> and <code>criticalThreshold</code> for
+            alerts
           </li>
           <li>
-            <strong>Track costs:</strong> Use <code>estimatedCost</code> to show users API costs
+            <strong>Track costs:</strong> Use <code>estimatedCost</code> to show
+            users API costs
           </li>
           <li>
-            <strong>Suggest pruning:</strong> Check <code>suggestPruning</code> to prompt users to trim history
+            <strong>Suggest pruning:</strong> Check <code>suggestPruning</code>{' '}
+            to prompt users to trim history
           </li>
           <li>
-            <strong>Pre-compute tokens:</strong> Provide <code>tokens</code> in messages for better performance
+            <strong>Pre-compute tokens:</strong> Provide <code>tokens</code> in
+            messages for better performance
           </li>
         </ul>
 
@@ -703,13 +739,20 @@ function CompleteTrackerExample() {
 
         <ul>
           <li>
-            <a href="/reference/hooks/use-token-optimization-enhanced">useTokenOptimizationEnhanced</a> - Comprehensive token optimization
+            <a href="/reference/hooks/use-token-optimization-enhanced">
+              useTokenOptimizationEnhanced
+            </a>{' '}
+            - Comprehensive token optimization
           </li>
           <li>
-            <a href="/reference/hooks/use-token-budget-monitor">useTokenBudgetMonitor</a> - Real-time budget monitoring with auto-trimming
+            <a href="/reference/hooks/use-token-budget-monitor">
+              useTokenBudgetMonitor
+            </a>{' '}
+            - Real-time budget monitoring with auto-trimming
           </li>
           <li>
-            <a href="/guides/token-optimization">Token Optimization Guide</a> - Token management strategies
+            <a href="/guides/token-optimization">Token Optimization Guide</a> -
+            Token management strategies
           </li>
         </ul>
 

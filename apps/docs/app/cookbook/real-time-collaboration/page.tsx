@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Real-time Collaboration Recipe - Clarity Chat Components',
-  description: 'Build a real-time collaborative chat application with cursor tracking and presence indicators.',
+  description:
+    'Build a real-time collaborative chat application with cursor tracking and presence indicators.',
 }
 
 export default function RealTimeCollaborationRecipePage() {
@@ -18,7 +17,8 @@ export default function RealTimeCollaborationRecipePage() {
         <span className="docs-badge">Recipe</span>
         <h1>Real-time Collaboration</h1>
         <p className="docs-lead">
-          Build a real-time collaborative chat application with cursor tracking, presence indicators, and conflict resolution.
+          Build a real-time collaborative chat application with cursor tracking,
+          presence indicators, and conflict resolution.
         </p>
       </div>
 
@@ -35,7 +35,9 @@ export default function RealTimeCollaborationRecipePage() {
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This recipe shows how to build a real-time collaborative chat application where multiple users can edit messages simultaneously with cursor tracking and presence indicators.
+          This recipe shows how to build a real-time collaborative chat
+          application where multiple users can edit messages simultaneously with
+          cursor tracking and presence indicators.
         </p>
       </section>
 
@@ -110,9 +112,7 @@ function CollaborativeChat({ messageId }: { messageId: string }) {
 
       <section className="docs-section">
         <h2>Message Locking</h2>
-        <p>
-          Implement message locking to prevent conflicts:
-        </p>
+        <p>Implement message locking to prevent conflicts:</p>
         <CodePlayground
           initialCode={`function WithLocking({ messageId }: { messageId: string }) {
   const [hasLock, setHasLock] = React.useState(false)
@@ -151,9 +151,7 @@ function CollaborativeChat({ messageId }: { messageId: string }) {
 
       <section className="docs-section">
         <h2>Conflict Resolution</h2>
-        <p>
-          Use operational transform for conflict resolution:
-        </p>
+        <p>Use operational transform for conflict resolution:</p>
         <CodePlayground
           initialCode={`function WithConflictResolution() {
   const [operations, setOperations] = React.useState([])
@@ -189,9 +187,7 @@ function CollaborativeChat({ messageId }: { messageId: string }) {
 
       <section className="docs-section">
         <h2>Complete Example</h2>
-        <p>
-          Complete collaborative chat implementation:
-        </p>
+        <p>Complete collaborative chat implementation:</p>
         <CodePlayground
           initialCode={`import { CollaborativeEditor, useCollaborativeSession } from '@clarity-chat/react'
 import { useEffect, useRef } from 'react'
@@ -271,8 +267,18 @@ function CollaborativeChatApp({ messageId }: { messageId: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/collaborative-editing">CollaborativeEditor</a> - Collaborative editing component</li>
-          <li><a href="/reference/hooks/use-collaborative-session">useCollaborativeSession</a> - Session management hook</li>
+          <li>
+            <a href="/reference/components/collaborative-editing">
+              CollaborativeEditor
+            </a>{' '}
+            - Collaborative editing component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-collaborative-session">
+              useCollaborativeSession
+            </a>{' '}
+            - Session management hook
+          </li>
         </ul>
       </section>
     </div>

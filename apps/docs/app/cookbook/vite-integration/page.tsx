@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Vite Integration - Clarity Chat Components',
-  description: 'Learn how to integrate Clarity Chat Components with Vite, including setup, HMR, and build optimization.',
+  description:
+    'Learn how to integrate Clarity Chat Components with Vite, including setup, HMR, and build optimization.',
 }
 
 export default function ViteIntegrationPage() {
@@ -18,7 +17,8 @@ export default function ViteIntegrationPage() {
         <span className="docs-badge">Recipe</span>
         <h1>Vite Integration</h1>
         <p className="docs-lead">
-          Learn how to integrate Clarity Chat Components with Vite, including setup, HMR, build optimization, and plugin configuration.
+          Learn how to integrate Clarity Chat Components with Vite, including
+          setup, HMR, build optimization, and plugin configuration.
         </p>
       </div>
 
@@ -34,9 +34,7 @@ export default function ViteIntegrationPage() {
 
       <section className="docs-section">
         <h2>Basic Setup</h2>
-        <p>
-          Set up Clarity Chat in a Vite project:
-        </p>
+        <p>Set up Clarity Chat in a Vite project:</p>
         <CodePlayground
           initialCode={`// vite.config.ts
 import { defineConfig } from 'vite'
@@ -76,9 +74,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
       <section className="docs-section">
         <h2>Environment Variables</h2>
-        <p>
-          Configure environment variables:
-        </p>
+        <p>Configure environment variables:</p>
         <CodePlayground
           initialCode={`// .env
 VITE_API_URL=http://localhost:3000/api
@@ -110,9 +106,7 @@ function ChatApp() {
 
       <section className="docs-section">
         <h2>Build Optimization</h2>
-        <p>
-          Optimize build for production:
-        </p>
+        <p>Optimize build for production:</p>
         <CodePlayground
           initialCode={`// vite.config.ts
 import { defineConfig } from 'vite'
@@ -140,9 +134,7 @@ export default defineConfig({
 
       <section className="docs-section">
         <h2>HMR Configuration</h2>
-        <p>
-          Configure Hot Module Replacement:
-        </p>
+        <p>Configure Hot Module Replacement:</p>
         <CodePlayground
           initialCode={`// vite.config.ts
 export default defineConfig({
@@ -177,9 +169,7 @@ function ChatComponent() {
 
       <section className="docs-section">
         <h2>Proxy Configuration</h2>
-        <p>
-          Configure proxy for API requests:
-        </p>
+        <p>Configure proxy for API requests:</p>
         <CodePlayground
           initialCode={`// vite.config.ts
 export default defineConfig({
@@ -219,8 +209,18 @@ function ChatApp() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/cookbook/server-side-rendering">Server-Side Rendering Patterns</a> - SSR patterns</li>
-          <li><a href="/guides/performance-optimization-patterns">Performance Optimization</a> - Performance guide</li>
+          <li>
+            <a href="/cookbook/server-side-rendering">
+              Server-Side Rendering Patterns
+            </a>{' '}
+            - SSR patterns
+          </li>
+          <li>
+            <a href="/guides/performance-optimization-patterns">
+              Performance Optimization
+            </a>{' '}
+            - Performance guide
+          </li>
         </ul>
       </section>
     </div>

@@ -71,7 +71,7 @@ export const AllTheProviders = ({ children }: { children: ReactNode }) => {
 export const renderWithProviders = (
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
-) => {
+): ReturnType<typeof render> => {
   return render(ui, { wrapper: AllTheProviders, ...options })
 }
 
@@ -82,7 +82,7 @@ export const renderWithTheme = (
   ui: ReactElement,
   themeName: keyof typeof themes = 'default',
   options?: Omit<RenderOptions, 'wrapper'>
-) => {
+): ReturnType<typeof render> => {
   const Wrapper = ({ children }: { children: ReactNode }) => (
     <ThemeProvider defaultTheme={themes[themeName]}>{children}</ThemeProvider>
   )
