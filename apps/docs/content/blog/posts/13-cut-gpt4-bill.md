@@ -1,5 +1,7 @@
 # I Cut My GPT-4 Bill by 60% (Real Strategies, Real Numbers)
 
+> **Pricing Note:** API pricing changes frequently. The costs in this article reflect 2025 rates—verify current pricing on the provider's website before implementation.
+
 My startup was spending $8,400/month on OpenAI. Now it's $3,200. Same features, same quality.
 
 This isn't theory—these are real numbers from a production AI chat application serving 15,000 daily active users. I'm going to share exactly what we changed, with code you can copy.
@@ -260,6 +262,22 @@ The summarization call costs ~$0.001, but saves ~$0.05 in context on subsequent 
 Keep only messages relevant to the current query:
 
 ```typescript
+// Helper functions for embeddings (use your preferred provider)
+async function embed(text: string): Promise<number[]> {
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-3-small',
+    input: text,
+  })
+  return response.data[0].embedding
+}
+
+function cosineSimilarity(a: number[], b: number[]): number {
+  const dotProduct = a.reduce((sum, val, i) => sum + val * b[i], 0)
+  const magnitudeA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0))
+  const magnitudeB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0))
+  return dotProduct / (magnitudeA * magnitudeB)
+}
+
 async function getRelevantContext(
   currentQuery: string,
   messages: Message[],
@@ -297,6 +315,8 @@ We use a combination: summarization for very old messages, semantic pruning for 
 
 Many queries are repeated. "What are your business hours?" gets asked 500 times per day. Why call the API 500 times for the same answer?
 
+> **Production Note:** The in-memory cache shown below is for illustration. In production, use Redis or another distributed cache to handle scale and avoid memory issues.
+
 ```typescript
 import { createHash } from 'crypto'
 
@@ -330,6 +350,7 @@ async function getCachedOrFetch(
   }
 
   // Cache miss - call API
+  // callOpenAI is your wrapper around openai.chat.completions.create()
   const response = await callOpenAI(message, systemPrompt)
 
   // Store in cache

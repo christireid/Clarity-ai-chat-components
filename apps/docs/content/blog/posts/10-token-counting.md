@@ -110,7 +110,9 @@ function countTokens(
 ): TokenResult {
   // OpenAI: Use tiktoken directly
   if (provider === 'openai') {
-    const encoder = encodingForModel(model as any)
+    // Note: tiktoken types may require casting for dynamic model names
+    // For type-safe usage, use a union type of supported models
+    const encoder = encodingForModel(model as Parameters<typeof encodingForModel>[0])
     const tokens = encoder.encode(text)
 
     return {
@@ -196,7 +198,8 @@ function countConversationTokens(
   systemPrompt: string,
   model = 'gpt-4o'
 ): ConversationTokens {
-  const encoder = encodingForModel(model as any)
+  // Cast needed for dynamic model parameter - tiktoken accepts specific model strings
+  const encoder = encodingForModel(model as Parameters<typeof encodingForModel>[0])
 
   // Count system prompt
   const systemTokens = encoder.encode(systemPrompt).length
@@ -269,17 +272,20 @@ interface TokenCounterProps {
   showCost?: boolean
 }
 
+// Type for tiktoken encoder
+type TiktokenEncoder = ReturnType<typeof encodingForModel>
+
 function TokenCounter({
   text,
   model = 'gpt-4o',
   maxTokens = 128000,
   showCost = true
 }: TokenCounterProps) {
-  const [encoder, setEncoder] = useState<any>(null)
+  const [encoder, setEncoder] = useState<TiktokenEncoder | null>(null)
 
   // Initialize encoder
   useEffect(() => {
-    setEncoder(encodingForModel(model as any))
+    setEncoder(encodingForModel(model as Parameters<typeof encodingForModel>[0]))
   }, [model])
 
   const { tokens, cost, percentage } = useMemo(() => {

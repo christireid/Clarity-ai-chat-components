@@ -1,5 +1,7 @@
 # What 2025 Taught Us About Building AI Products
 
+> **Historical Note:** This is a 2025 retrospective piece. While the lessons remain relevant, specific predictions and references may become dated. For the latest guidance, see our current documentation.
+
 2025 was the year AI went from demo to production—and most teams weren't ready.
 
 The hype cycle crashed into reality. Demos that wowed investors failed in production. Costs that seemed manageable at 100 users became catastrophic at 100,000. And users developed expectations that early chatbots couldn't meet.

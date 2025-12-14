@@ -61,6 +61,18 @@ This creates chunks that:
 Split on natural document boundaries:
 
 ```typescript
+// Helper: Count tokens using tiktoken or similar
+function countTokens(text: string): number {
+  // Simple approximation: ~4 chars per token for English
+  // For production, use tiktoken: encoder.encode(text).length
+  return Math.ceil(text.length / 4)
+}
+
+function tokenize(text: string): string[] {
+  // Returns array of tokens - use tiktoken for accuracy
+  return text.split(/(\s+)/)
+}
+
 interface ChunkConfig {
   minSize: number       // Minimum tokens per chunk
   maxSize: number       // Maximum tokens per chunk
@@ -125,6 +137,28 @@ function addOverlap(chunks: string[], overlapTokens: number): string[] {
 Create parent-child relationships for better context:
 
 ```typescript
+// Embedding helper - use OpenAI, Cohere, or open-source models
+async function embed(text: string): Promise<number[]> {
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-3-small',
+    input: text,
+  })
+  return response.data[0].embedding
+}
+
+// Summarization helper
+async function summarize(text: string): Promise<string> {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: 'Summarize the following text in 1-2 sentences.' },
+      { role: 'user', content: text }
+    ],
+    max_tokens: 100,
+  })
+  return response.choices[0].message.content || ''
+}
+
 interface HierarchicalChunk {
   id: string
   content: string
@@ -132,6 +166,21 @@ interface HierarchicalChunk {
   parentId?: string
   summary?: string
   embedding: number[]
+}
+
+// Document structure helpers
+function splitBySections(content: string): { index: number; heading: string; content: string }[] {
+  const sections = content.split(/^## /m)
+  return sections.slice(1).map((section, index) => {
+    const [heading, ...rest] = section.split('\n')
+    return { index, heading: heading.trim(), content: rest.join('\n').trim() }
+  })
+}
+
+function splitByParagraphs(content: string): { index: number; content: string }[] {
+  return content.split(/\n\n+/)
+    .filter(p => p.trim().length > 0)
+    .map((content, index) => ({ index, content: content.trim() }))
 }
 
 async function hierarchicalChunk(
@@ -195,6 +244,14 @@ Pure vector search fails more often than you'd expect. "What's the cancellation 
 Combine vector similarity with keyword matching:
 
 ```typescript
+// Cosine similarity for vector comparison
+function cosineSimilarity(a: number[], b: number[]): number {
+  const dotProduct = a.reduce((sum, val, i) => sum + val * b[i], 0)
+  const magnitudeA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0))
+  const magnitudeB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0))
+  return dotProduct / (magnitudeA * magnitudeB)
+}
+
 interface RetrievalConfig {
   vectorWeight: number    // Weight for semantic similarity
   keywordWeight: number   // Weight for BM25/keyword match

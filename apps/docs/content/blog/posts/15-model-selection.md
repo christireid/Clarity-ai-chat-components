@@ -1,5 +1,7 @@
 # When to Use GPT-4o Mini vs GPT-4o vs Claude 3.5
 
+> **Pricing Note:** Model pricing changes frequently. Verify current rates on OpenAI, Anthropic, and Google's pricing pages before implementation.
+
 You're overpaying for simple tasks and underpaying for complex ones.
 
 Using GPT-4 for "What's 2+2?" is like hiring a PhD to answer the phone. Using GPT-3.5 for legal analysis is like asking an intern to review contracts. Model selection isn't about finding the "best" model—it's about finding the best model *for this specific task*.
@@ -223,6 +225,14 @@ function classifyMessage(
   return 'standard'
 }
 
+// Simple keyword extraction for classification
+function extractKeywords(text: string): string[] {
+  const stopWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being'])
+  return text.toLowerCase()
+    .split(/\W+/)
+    .filter(word => word.length > 2 && !stopWords.has(word))
+}
+
 async function routeAndSend(
   message: string,
   conversationHistory: Message[],
@@ -249,6 +259,8 @@ async function routeAndSend(
   let outputTokens: number
 
   // Call appropriate provider
+  // These wrapper functions use each provider's SDK to make API calls
+  // and return { response: string, inputTokens: number, outputTokens: number }
   switch (config.provider) {
     case 'openai':
       const openaiResult = await callOpenAI(message, conversationHistory, config)

@@ -1,5 +1,7 @@
 # Prompt Injection is Your #1 Security Risk (OWASP Says So)
 
+> **Security Note:** This article references the OWASP Top 10 for LLM Applications. Security guidance evolves—check the [OWASP LLM Top 10](https://owasp.org/www-project-top-10-for-large-language-model-applications/) for the latest recommendations.
+
 OWASP ranked prompt injection as the #1 security risk for LLM applications in 2025.
 
 Not #5. Not "emerging threat." Number one—ahead of insecure output handling, training data poisoning, and denial of service.
@@ -243,11 +245,35 @@ const tools: Tool[] = [
   { name: 'delete_account', permission: 'admin', requiresConfirmation: true, rateLimit: 1 },
 ]
 
+// Security helper functions - implement based on your infrastructure
+function hasPermission(userPermission: string, requiredPermission: string): boolean {
+  const levels = { public: 0, authenticated: 1, admin: 2 }
+  return (levels[userPermission as keyof typeof levels] || 0) >=
+         (levels[requiredPermission as keyof typeof levels] || 0)
+}
+
+async function isRateLimited(toolName: string, userId: string): Promise<boolean> {
+  // Implement with Redis or in-memory rate limiter
+  // Example: return rateLimiter.isLimited(`${userId}:${toolName}`)
+  return false
+}
+
+async function requestUserConfirmation(toolName: string, args: unknown): Promise<boolean> {
+  // Implement UI confirmation dialog
+  // Returns true if user approves, false otherwise
+  return true
+}
+
+async function executeActualTool(toolName: string, args: unknown): Promise<unknown> {
+  // Route to actual tool implementation
+  throw new Error(`Tool ${toolName} not implemented`)
+}
+
 async function executeToolCall(
   toolName: string,
   args: unknown,
   userPermission: string
-): Promise<any> {
+): Promise<unknown> {
   const tool = tools.find(t => t.name === toolName)
 
   if (!tool) {
@@ -260,6 +286,7 @@ async function executeToolCall(
   }
 
   // Rate limit check
+  const userId = 'current-user' // Get from session
   if (await isRateLimited(toolName, userId)) {
     throw new Error('Rate limited')
   }
@@ -320,20 +347,39 @@ interface SecurityEvent {
   timestamp: Date
 }
 
-function logSecurityEvent(event: SecurityEvent) {
+// Security logging infrastructure - implement with your logging service
+const securityLog = {
+  insert: async (event: SecurityEvent) => {
+    // Store to database or logging service (e.g., DataDog, Splunk)
+    console.log('[SECURITY]', JSON.stringify(event))
+  }
+}
+
+async function alertSecurityTeam(event: SecurityEvent | { type: string; details: Record<string, unknown> }) {
+  // Send to PagerDuty, Slack, email, etc.
+  console.error('[SECURITY ALERT]', event)
+}
+
+async function getRecentEvents(userId: string, timeWindow: string): Promise<SecurityEvent[]> {
+  // Query your security log for recent events from this user
+  // Example: SELECT * FROM security_events WHERE user_id = ? AND timestamp > NOW() - INTERVAL ?
+  return []
+}
+
+async function logSecurityEvent(event: SecurityEvent) {
   // Store for analysis
-  securityLog.insert(event)
+  await securityLog.insert(event)
 
   // Real-time alerting for high-severity events
   if (event.type === 'tool_denied' || event.type === 'output_filtered') {
-    alertSecurityTeam(event)
+    await alertSecurityTeam(event)
   }
 
   // Track patterns
   const recentEvents = await getRecentEvents(event.userId, '1h')
   if (recentEvents.filter(e => e.type === 'suspicious_input').length > 5) {
     // Potential attack in progress
-    alertSecurityTeam({
+    await alertSecurityTeam({
       ...event,
       type: 'potential_attack',
       details: { eventCount: recentEvents.length, ...event.details },

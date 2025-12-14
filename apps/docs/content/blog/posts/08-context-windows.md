@@ -197,6 +197,15 @@ function useConversationWithSummary() {
 Store all messages in a vector database. Retrieve only relevant ones for each query.
 
 ```tsx
+// Embedding helper - use OpenAI, Cohere, or open-source models
+async function embed(text: string): Promise<number[]> {
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-3-small',
+    input: text,
+  })
+  return response.data[0].embedding
+}
+
 function useSemanticContext(vectorStore: VectorStore) {
   const [messages, setMessages] = useState<Message[]>([])
 

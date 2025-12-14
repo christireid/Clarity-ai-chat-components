@@ -145,10 +145,13 @@ interface ToolCall {
   }
 }
 
+// Generic tool handler type for flexibility
+type ToolHandler<T = Record<string, unknown>> = (args: T) => Promise<unknown>
+
 async function runAgentLoop(
   userMessage: string,
   tools: Tool[],
-  toolHandlers: Record<string, (args: any) => Promise<any>>,
+  toolHandlers: Record<string, ToolHandler>,
   maxIterations = 10
 ): Promise<string> {
   const messages: Message[] = [
@@ -271,6 +274,7 @@ Agents that call real APIs need robust error handling.
 Don't trust the AI's arguments blindly:
 
 ```typescript
+// npm install zod
 import { z } from 'zod'
 
 const searchProductsSchema = z.object({
@@ -280,11 +284,20 @@ const searchProductsSchema = z.object({
   inStock: z.boolean().optional(),
 })
 
-async function validateAndExecute(
+const addToCartSchema = z.object({
+  productId: z.string().min(1),
+  quantity: z.number().int().min(1).max(10).optional(),
+})
+
+const getOrderStatusSchema = z.object({
+  orderId: z.string().min(1),
+})
+
+async function validateAndExecute<T>(
   functionName: string,
   args: unknown,
-  handler: (args: any) => Promise<any>
-): Promise<any> {
+  handler: (args: T) => Promise<unknown>
+): Promise<unknown> {
   const schemas: Record<string, z.ZodSchema> = {
     search_products: searchProductsSchema,
     add_to_cart: addToCartSchema,
@@ -368,8 +381,8 @@ Tools fail. APIs go down. Handle it gracefully:
 ```typescript
 async function executeToolSafely(
   toolCall: ToolCall,
-  handler: (args: any) => Promise<any>
-): Promise<{ success: boolean; result?: any; error?: string }> {
+  handler: ToolHandler
+): Promise<{ success: boolean; result?: unknown; error?: string }> {
   try {
     const args = JSON.parse(toolCall.function.arguments)
     const result = await Promise.race([

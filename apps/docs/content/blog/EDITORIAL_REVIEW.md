@@ -192,18 +192,61 @@ Standard documentation paths used:
 
 ---
 
-## Minor Recommendations (Optional)
+## Issues Identified and Resolved
 
-### For Future Updates
-1. **Post 13 & 15**: Update model pricing when OpenAI/Anthropic change rates
-2. **Post 19**: Monitor OWASP LLM updates for any new guidance
-3. **Post 21**: May want to update or archive after 2026
+### 1. Missing Helper Function Definitions
+**Risk:** Code examples referenced undefined functions, making them non-copy-paste ready.
 
-### Content Freshness
+**Resolution:**
+- **Post 8** (Context Windows): Added `embed()` function definition for semantic retrieval
+- **Post 13** (Cost Optimization): Added `embed()` and `cosineSimilarity()` helper functions for semantic pruning
+- **Post 15** (Model Selection): Added `extractKeywords()` function and API wrapper comments
+- **Post 17** (RAG Production): Added `countTokens()`, `tokenize()`, `embed()`, `summarize()`, `splitBySections()`, `splitByParagraphs()`, and `cosineSimilarity()` functions
+- **Post 19** (Security): Added complete implementations for `hasPermission()`, `isRateLimited()`, `requestUserConfirmation()`, `executeActualTool()`, `alertSecurityTeam()`, `getRecentEvents()`, and security logging infrastructure
+- **Post 20** (AI Memory): Added `embed()`, `summarize()`, and `extractTopic()` helper functions
+
+### 2. Type Safety Issues
+**Risk:** Use of `any` type casts reduced TypeScript safety.
+
+**Resolution:**
+- **Post 10** (Token Counting): Replaced `any` casts with proper TypeScript types using `Parameters<typeof encodingForModel>[0]` and `ReturnType<typeof encodingForModel>`
+- **Post 18** (AI Agents): Added generic `ToolHandler` type and replaced `any` with `unknown` where appropriate
+
+### 3. Missing Imports and Dependencies
+**Risk:** Missing import statements would cause runtime errors.
+
+**Resolution:**
+- **Post 18** (AI Agents): Added `// npm install zod` comment and defined all referenced Zod schemas (`addToCartSchema`, `getOrderStatusSchema`)
+
+### 4. Security & Production Warnings
+**Risk:** Code examples could be misused in production without proper context.
+
+**Resolution:**
+- **Post 13** (Cost Optimization): Added production note about using Redis instead of in-memory cache at scale
+- **Post 19** (Security): Added link to OWASP LLM Top 10 for latest security guidance
+
+### 5. Pricing Freshness Disclaimers
+**Risk:** API pricing changes frequently; outdated prices could mislead readers.
+
+**Resolution:**
+- **Post 13** (Cost Optimization): Added pricing note banner at top of article
+- **Post 15** (Model Selection): Added pricing note banner at top of article
+
+### 6. Time-Sensitive Content
+**Risk:** Retrospective content may become dated.
+
+**Resolution:**
+- **Post 21** (2025 Lessons): Added historical note banner clarifying this is a retrospective piece
+
+---
+
+## Content Freshness Recommendations
+
 Posts should be reviewed quarterly for:
-- Model pricing accuracy
-- API changes (especially function calling schemas)
-- New security vulnerabilities
+- Model pricing accuracy (especially posts 13, 15)
+- API changes (especially function calling schemas in post 18)
+- New security vulnerabilities (post 19)
+- OWASP LLM Top 10 updates
 
 ---
 
@@ -212,10 +255,13 @@ Posts should be reviewed quarterly for:
 **All 24 posts approved for publication.**
 
 The content maintains high quality throughout:
-- Technically accurate
-- Copy-paste ready code
-- Human, thought-leader voice
-- Honest (no fabricated claims)
-- Subtly promotional without being salesy
+- ✅ Technically accurate
+- ✅ Copy-paste ready code (all helper functions now defined)
+- ✅ Human, thought-leader voice
+- ✅ Honest (no fabricated claims)
+- ✅ Subtly promotional without being salesy
+- ✅ Type-safe TypeScript (any casts replaced with proper types)
+- ✅ Production-ready warnings included
+- ✅ Pricing disclaimers added for time-sensitive content
 
-No blocking issues identified.
+All previously identified issues have been resolved. No blocking issues remain.

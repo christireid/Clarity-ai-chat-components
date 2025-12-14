@@ -120,6 +120,40 @@ Use this information to personalize your responses.`
 Past conversations stored as embeddings for retrieval.
 
 ```typescript
+// Embedding helper - use OpenAI, Cohere, or open-source models
+async function embed(text: string): Promise<number[]> {
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-3-small',
+    input: text,
+  })
+  return response.data[0].embedding
+}
+
+// Summarization helper
+async function summarize(messages: Message[]): Promise<string> {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: 'Summarize this conversation in 2-3 sentences, preserving key facts and decisions.' },
+      ...messages.map(m => ({ role: m.role, content: m.content }))
+    ],
+    max_tokens: 150,
+  })
+  return response.choices[0].message.content || ''
+}
+
+async function extractTopic(messages: Message[]): Promise<string> {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: 'What is the main topic of this conversation? Reply with 2-4 words.' },
+      ...messages.slice(-5).map(m => ({ role: m.role, content: m.content }))
+    ],
+    max_tokens: 20,
+  })
+  return response.choices[0].message.content || 'General'
+}
+
 // After each conversation, store a summary
 async function storeConversation(
   userId: string,
