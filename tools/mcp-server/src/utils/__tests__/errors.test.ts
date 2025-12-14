@@ -70,11 +70,12 @@ describe('errors', () => {
     it('should format generic Error correctly', () => {
       const error = new Error('Generic error')
       const response = formatErrorResponse(error)
-      
+
       expect(response.isError).toBe(true)
       const parsed = JSON.parse(response.content[0].text)
       expect(parsed.error.code).toBe(ErrorCode.INTERNAL_ERROR)
-      expect(parsed.error.message).toBe('Internal server error')
+      // Enhanced error handling preserves actual error message for better debugging
+      expect(parsed.error.message).toBe('Generic error')
     })
 
     it('should handle unknown error types', () => {

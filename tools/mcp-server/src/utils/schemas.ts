@@ -6,6 +6,14 @@
  */
 
 import { z } from 'zod'
+import { ValidationError } from './errors.js'
+
+// =============================================================================
+// Token Limits Configuration
+// =============================================================================
+
+/** Maximum tokens for model context windows (reasonable upper bound) */
+const MAX_CONTEXT_TOKENS = 2000000 // 2M for largest models like GPT-4 Turbo
 
 // =============================================================================
 // Common Schemas
@@ -139,13 +147,13 @@ export const CalculateCostSchema = z.object({
     .number()
     .int('Prompt tokens must be an integer')
     .min(0, 'Prompt tokens cannot be negative')
-    .max(10000000, 'Prompt tokens exceeds maximum')
+    .max(MAX_CONTEXT_TOKENS, `Prompt tokens cannot exceed ${MAX_CONTEXT_TOKENS}`)
     .describe('Number of input/prompt tokens'),
   completionTokens: z
     .number()
     .int('Completion tokens must be an integer')
     .min(0, 'Completion tokens cannot be negative')
-    .max(10000000, 'Completion tokens exceeds maximum')
+    .max(MAX_CONTEXT_TOKENS, `Completion tokens cannot exceed ${MAX_CONTEXT_TOKENS}`)
     .describe('Number of output/completion tokens'),
 })
 export type CalculateCostInput = z.infer<typeof CalculateCostSchema>
@@ -411,7 +419,13 @@ export function validateInput<T>(schema: z.ZodSchema<T>, input: unknown): T {
     const errors = result.error.errors
       .map((e) => `${e.path.join('.')}: ${e.message}`)
       .join('; ')
-    throw new Error(`Validation failed: ${errors}`)
+    throw new ValidationError(`Validation failed: ${errors}`, {
+      errors: result.error.errors.map((e) => ({
+        path: e.path.join('.'),
+        message: e.message,
+        code: e.code,
+      })),
+    })
   }
   return result.data
 }

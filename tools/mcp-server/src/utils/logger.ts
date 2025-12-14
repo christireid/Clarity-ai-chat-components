@@ -17,7 +17,8 @@ interface LogEntry {
   timestamp: string
   requestId?: string
   error?: string
-  metadata?: Record<string, any>
+  stack?: string
+  metadata?: Record<string, unknown>
 }
 
 class Logger {
@@ -31,13 +32,13 @@ class Logger {
     this.requestId = undefined
   }
 
-  private log(level: LogLevel, message: string, error?: Error, metadata?: Record<string, any>) {
+  private log(level: LogLevel, message: string, error?: Error, metadata?: Record<string, unknown>) {
     const entry: LogEntry = {
       level,
       message,
       timestamp: new Date().toISOString(),
       ...(this.requestId && { requestId: this.requestId }),
-      ...(error && { error: error.message, stack: error.stack }),
+      ...(error && { error: error.message, ...(error.stack && { stack: error.stack }) }),
       ...(metadata && { metadata })
     }
 
@@ -45,19 +46,19 @@ class Logger {
     console.error(JSON.stringify(entry))
   }
 
-  debug(message: string, metadata?: Record<string, any>) {
+  debug(message: string, metadata?: Record<string, unknown>) {
     this.log(LogLevel.DEBUG, message, undefined, metadata)
   }
 
-  info(message: string, metadata?: Record<string, any>) {
+  info(message: string, metadata?: Record<string, unknown>) {
     this.log(LogLevel.INFO, message, undefined, metadata)
   }
 
-  warn(message: string, metadata?: Record<string, any>) {
+  warn(message: string, metadata?: Record<string, unknown>) {
     this.log(LogLevel.WARN, message, undefined, metadata)
   }
 
-  error(message: string, error?: Error, metadata?: Record<string, any>) {
+  error(message: string, error?: Error, metadata?: Record<string, unknown>) {
     this.log(LogLevel.ERROR, message, error, metadata)
   }
 }
