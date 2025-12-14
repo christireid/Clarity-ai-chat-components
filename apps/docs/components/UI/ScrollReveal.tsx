@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import {
-  scrollFadeIn,
+  fadeIn,
   fadeInUp,
   slideInLeft,
   slideInRight,
@@ -59,7 +59,7 @@ const animationVariants = {
   fadeInUp,
   fadeInLeft: slideInLeft,
   fadeInRight: slideInRight,
-  fadeIn: scrollFadeIn,
+  fadeIn,
 }
 
 /**
@@ -115,11 +115,11 @@ export function ScrollReveal({
   if (stagger) {
     return (
       <motion.div
-        variants={staggerContainer}
-        initial="initial"
-        whileInView="animate"
+        variants={staggerContainer(staggerDelay)}
+        initial="hidden"
+        whileInView="show"
         viewport={{ once, amount: threshold }}
-        transition={{ delay, staggerChildren: staggerDelay }}
+        transition={{ delay }}
         className={className}
       >
         {children}
@@ -165,6 +165,7 @@ export function ScrollRevealItem({
   children: ReactNode
   className?: string
 }) {
+  // staggerItem uses 'hidden'/'show' keys to match staggerContainer
   return (
     <motion.div variants={staggerItem} className={className}>
       {children}
