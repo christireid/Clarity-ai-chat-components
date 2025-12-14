@@ -2,7 +2,7 @@
 
 import React, { memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, type ButtonProps, cn } from '@clarity-chat/primitives'
+import { Button, type ButtonProps, cn, Tooltip } from '@clarity-chat/primitives'
 import { useClipboard } from '../hooks/use-clipboard'
 import { CopyIcon, CheckIcon } from './icons'
 import { useToast } from './toast'
@@ -25,6 +25,10 @@ export interface CopyButtonProps extends Omit<
   showToast?: boolean
   /** Custom toast message */
   toastMessage?: string
+  /** Show tooltip (default: false) */
+  showTooltip?: boolean
+  /** Custom tooltip text */
+  tooltipText?: string
 }
 
 /**
@@ -75,6 +79,8 @@ export function CopyButton({
   copiedText = 'Copied!',
   showToast = false,
   toastMessage = 'Copied to clipboard!',
+  showTooltip = false,
+  tooltipText = 'Copy to clipboard',
   children,
   ...props
 }: CopyButtonProps) {
@@ -95,7 +101,7 @@ export function CopyButton({
     await copy(text)
   }, [copy, text])
 
-  return (
+  const button = (
     <Button
       variant="ghost"
       size="sm"
@@ -119,7 +125,12 @@ export function CopyButton({
             transition={getSpring('bouncy', prefersReducedMotion)}
             className="flex items-center gap-1.5"
           >
-            <CheckIcon size={14} />
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: durations.moderate, ease: 'easeOut' }}
+            >
+              <CheckIcon size={14} />
+            </motion.div>
             {!iconOnly && (
               <motion.span
                 initial={{ opacity: 0, x: -4 }}
@@ -148,6 +159,20 @@ export function CopyButton({
       </AnimatePresence>
     </Button>
   )
+
+  if (showTooltip) {
+    return (
+      <Tooltip
+        content={copied ? 'Copied!' : tooltipText}
+        side="top"
+        delay={300}
+      >
+        {button}
+      </Tooltip>
+    )
+  }
+
+  return button
 }
 
 CopyButton.displayName = 'CopyButton'
