@@ -1,0 +1,33 @@
+/**
+ * Message Utilities
+ *
+ * Utilities for message conversion, grouping, and helpers.
+ */
+
+export {
+  convertCoreMessageToMessage,
+  convertMessageToCoreMessage,
+  convertCoreMessagesToMessages,
+  convertMessagesToCoreMessages,
+} from './message-conversion'
+
+// Legacy exports for backward compatibility
+export * from './message-converter'
+
+export * from './message-grouping'
+
+export {
+  createUserMessage,
+  createAssistantMessage,
+  createSystemMessage,
+  createToolResultMessage,
+} from './chat-helpers'
+
+export {
+  createBasicChatConfig,
+  createMemoryChatConfig,
+  createStreamingChatConfig,
+  createEnterpriseChatConfig,
+  isValidApiEndpoint,
+  getApiEndpoint,
+} from './clarity-chat-helpers'
