@@ -50,12 +50,18 @@ export interface ChatWindowProps {
   ) => void
   /** Callback when retry is requested */
   onMessageRetry?: (messageId: string) => void
-  /** Callback when message is edited */
+  /** Callback when message is edited (starts edit mode) */
   onEditMessage?: (messageId: string) => void
   /** Callback when message is regenerated */
   onRegenerateMessage?: (messageId: string) => void
   /** Callback when message is deleted */
   onDeleteMessage?: (messageId: string) => void
+  /** ID of message currently being edited (for inline editing) */
+  editingMessageId?: string | null
+  /** Callback when edit is saved - receives message ID and new content */
+  onSaveEdit?: (messageId: string, newContent: string) => void
+  /** Callback when edit is cancelled */
+  onCancelEdit?: (messageId: string) => void
   /** Custom empty state */
   emptyState?: React.ReactNode
   /** Show header with session info */
@@ -368,6 +374,9 @@ export function ChatWindow({
   onEditMessage,
   onRegenerateMessage,
   onDeleteMessage,
+  editingMessageId,
+  onSaveEdit,
+  onCancelEdit,
   emptyState,
   showHeader = false,
   sessionTitle = 'Chat Session',
@@ -694,6 +703,9 @@ export function ChatWindow({
           onRegenerateMessage={onRegenerateMessage}
           onDeleteMessage={onDeleteMessage}
           onStopGeneration={onStopGeneration}
+          editingMessageId={editingMessageId}
+          onSaveEdit={onSaveEdit}
+          onCancelEdit={onCancelEdit}
           emptyState={effectiveEmptyState}
           className="flex-1 min-h-0"
         />

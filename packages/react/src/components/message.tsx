@@ -23,6 +23,7 @@ import {
   MarkdownCodeBlock,
   MessageActions,
   MessageMetadata,
+  EditableMessageContent,
 } from './message/index'
 import { ErrorMessage, type ErrorDetails } from './error-message'
 import { CopyButton } from './copy-button'
@@ -37,6 +38,12 @@ export interface MessageProps {
   onDelete?: (messageId: string) => void
   /** Callback to stop AI generation (shown during streaming) */
   onStopGeneration?: () => void
+  /** Whether this message is currently being edited */
+  isEditing?: boolean
+  /** Callback when edit is saved - receives message ID and new content */
+  onSaveEdit?: (messageId: string, newContent: string) => void
+  /** Callback when edit is cancelled */
+  onCancelEdit?: (messageId: string) => void
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
@@ -129,6 +136,9 @@ export function Message({
   onRegenerate,
   onDelete,
   onStopGeneration,
+  isEditing = false,
+  onSaveEdit,
+  onCancelEdit,
   showAvatar = true,
   showTimestamp = true,
   className,
@@ -162,6 +172,19 @@ export function Message({
       setTimeout(() => setShowConfetti(false), 1000)
     }
   }
+
+  // Handle saving edits
+  const handleSaveEdit = React.useCallback(
+    (newContent: string) => {
+      onSaveEdit?.(message.id, newContent)
+    },
+    [message.id, onSaveEdit]
+  )
+
+  // Handle canceling edits
+  const handleCancelEdit = React.useCallback(() => {
+    onCancelEdit?.(message.id)
+  }, [message.id, onCancelEdit])
 
   // Memoize markdown components to avoid recreation on every render.
   // react-markdown's `components` prop accepts Partial<Components>, allowing us to
@@ -434,19 +457,29 @@ export function Message({
             !isUser && 'prose prose-sm dark:prose-invert max-w-none',
             // Apply streaming-specific optimizations
             !isUser && isStreaming && 'clarity-streaming-markdown',
-            isUser && [
-              'px-4 py-3 rounded-2xl inline-block',
-              'bg-gradient-to-br from-primary via-primary to-primary/90',
-              'text-primary-foreground',
-              'shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.35)]',
-              'ring-1 ring-primary/20',
-            ]
+            isUser &&
+              !isEditing && [
+                'px-4 py-3 rounded-2xl inline-block',
+                'bg-gradient-to-br from-primary via-primary to-primary/90',
+                'text-primary-foreground',
+                'shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.35)]',
+                'ring-1 ring-primary/20',
+              ]
           )}
         >
           {isUser ? (
-            <p className="m-0 whitespace-pre-wrap text-primary-foreground">
-              {message.content}
-            </p>
+            isEditing ? (
+              <EditableMessageContent
+                content={message.content}
+                isEditing={isEditing}
+                onSave={handleSaveEdit}
+                onCancel={handleCancelEdit}
+              />
+            ) : (
+              <p className="m-0 whitespace-pre-wrap text-primary-foreground">
+                {message.content}
+              </p>
+            )
           ) : (
             <div className={cn(isStreaming && 'clarity-streaming-text')}>
               <ReactMarkdown
@@ -488,8 +521,8 @@ export function Message({
           </div>
         )}
 
-        {/* Actions - Show for both user and assistant messages */}
-        {(isUser || isAssistant) && (
+        {/* Actions - Show for both user and assistant messages (hide when editing) */}
+        {(isUser || isAssistant) && !isEditing && (
           <MessageActions
             messageContent={message.content}
             messageId={message.id}

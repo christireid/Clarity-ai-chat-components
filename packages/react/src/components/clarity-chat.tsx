@@ -170,6 +170,11 @@ export function ClarityChat({
     ...hookOptions,
   })
 
+  // Track which message is currently being edited
+  const [editingMessageId, setEditingMessageId] = React.useState<string | null>(
+    null
+  )
+
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = React.useMemo(
     () => convertCoreMessagesToMessages(chat.messages),
@@ -211,6 +216,65 @@ export function ClarityChat({
     },
     [chat.setMessages, onDeleteMessage]
   )
+
+  // Handle starting edit mode
+  const handleEditMessage = React.useCallback(
+    (messageId: string) => {
+      setEditingMessageId(messageId)
+      onEditMessage?.(messageId)
+    },
+    [onEditMessage]
+  )
+
+  // Handle saving edits
+  const handleSaveEdit = React.useCallback(
+    async (messageId: string, newContent: string) => {
+      try {
+        // Update the message content
+        chat.setMessages((prevMessages: CoreMessage[]) =>
+          prevMessages.map((m) =>
+            m.id === messageId ? { ...m, content: newContent } : m
+          )
+        )
+
+        // Clear editing state
+        setEditingMessageId(null)
+
+        // Find if there are assistant messages after this one
+        const currentMessages = chat.messages
+        const messageIndex = currentMessages.findIndex(
+          (m) => m.id === messageId
+        )
+
+        if (messageIndex !== -1 && messageIndex < currentMessages.length - 1) {
+          // There are messages after this one - regenerate the response
+          // Remove all messages after the edited one
+          const newMessages = currentMessages.slice(0, messageIndex + 1)
+          newMessages[messageIndex] = {
+            ...newMessages[messageIndex]!,
+            content: newContent,
+          }
+          chat.setMessages(newMessages)
+
+          // Resend to get a new response
+          await chat.append({ role: 'user', content: newContent })
+        }
+
+        toast?.success('Message updated')
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Failed to update message:', error)
+          toast?.error('Failed to update message. Please try again.')
+        }
+      }
+    },
+    [chat, toast]
+  )
+
+  // Handle canceling edits
+  const handleCancelEdit = React.useCallback(() => {
+    setEditingMessageId(null)
+  }, [])
 
   const handleRegenerateMessage = React.useCallback(
     async (messageId: string) => {
@@ -264,9 +328,12 @@ export function ClarityChat({
       onStopGeneration={handleStopGeneration}
       onMessageCopy={onMessageCopy}
       onMessageFeedback={onMessageFeedback}
-      onEditMessage={onEditMessage}
+      onEditMessage={handleEditMessage}
       onRegenerateMessage={handleRegenerateMessage}
       onDeleteMessage={handleDeleteMessage}
+      editingMessageId={editingMessageId}
+      onSaveEdit={handleSaveEdit}
+      onCancelEdit={handleCancelEdit}
       className={className}
       emptyState={emptyState}
       showHeader={showHeader}

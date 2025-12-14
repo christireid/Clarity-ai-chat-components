@@ -42,6 +42,12 @@ export interface MessageListProps {
   onDeleteMessage?: (messageId: string) => void
   /** Callback to stop AI generation (shown during streaming) */
   onStopGeneration?: () => void
+  /** ID of message currently being edited (for inline editing) */
+  editingMessageId?: string | null
+  /** Callback when edit is saved - receives message ID and new content */
+  onSaveEdit?: (messageId: string, newContent: string) => void
+  /** Callback when edit is cancelled */
+  onCancelEdit?: (messageId: string) => void
   /** Show loading skeleton while messages are being fetched */
   isLoading?: boolean
   /** Number of skeleton messages to show while loading */
@@ -105,6 +111,9 @@ export function MessageList({
   onRegenerateMessage,
   onDeleteMessage,
   onStopGeneration,
+  editingMessageId,
+  onSaveEdit,
+  onCancelEdit,
   isLoading = false,
   loadingCount = 3,
   emptyState,
@@ -352,6 +361,9 @@ export function MessageList({
                         onRegenerate={() => onRegenerateMessage?.(message.id)}
                         onDelete={() => onDeleteMessage?.(message.id)}
                         onStopGeneration={onStopGeneration}
+                        isEditing={editingMessageId === message.id}
+                        onSaveEdit={onSaveEdit}
+                        onCancelEdit={onCancelEdit}
                         {...grouping}
                       />
                     </motion.div>

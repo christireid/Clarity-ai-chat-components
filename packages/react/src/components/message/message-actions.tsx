@@ -1,28 +1,15 @@
+'use client'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Button,
-  cn,
-  Tooltip,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-  Textarea,
-} from '@clarity-chat/primitives'
+import { Button, cn, Tooltip } from '@clarity-chat/primitives'
 import { CopyButton } from '../copy-button'
 import {
   ThumbsUpIcon,
   ThumbsDownIcon,
   RefreshIcon,
   EditIcon,
-  TrashIcon,
   StopIcon,
-  CheckIcon,
-  CloseIcon,
 } from '../icons'
 import {
   ANIMATION_DURATION,
@@ -30,6 +17,8 @@ import {
   EASING_FRAMER,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
+import { FeedbackDialog } from './feedback-dialog'
+import { DeleteButton } from './delete-button'
 import { useToast } from '../toast'
 
 export interface MessageActionsProps {
@@ -79,7 +68,6 @@ const containerVariants = {
  */
 interface ActionButtonProps {
   onClick: () => void
-  onKeyDown?: (e: React.KeyboardEvent) => void
   icon: React.ReactNode
   label: string
   tooltipContent: string
@@ -95,7 +83,6 @@ const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
   (
     {
       onClick,
-      onKeyDown,
       icon,
       label,
       tooltipContent,
@@ -124,7 +111,6 @@ const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
             variant="ghost"
             size="icon"
             onClick={onClick}
-            onKeyDown={onKeyDown}
             disabled={disabled}
             className={cn(
               'h-8 w-8 rounded-lg transition-all duration-200 text-muted-foreground/70',
@@ -146,142 +132,12 @@ const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
 ActionButton.displayName = 'ActionButton'
 
 /**
- * DeleteButton - Reusable delete button with animation
- */
-interface DeleteButtonProps {
-  onClick: () => void
-  isDeleting: boolean
-  delay?: number
-}
-
-const DeleteButton: React.FC<DeleteButtonProps> = ({
-  onClick,
-  isDeleting,
-  delay = 0.1,
-}) => (
-  <Tooltip content="Delete message" side="top" delay={300}>
-    <motion.div
-      variants={buttonVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      whileHover={isDeleting ? undefined : 'hover'}
-      whileTap={isDeleting ? undefined : 'tap'}
-      transition={{ delay, duration: durations.fast }}
-    >
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onClick}
-        disabled={isDeleting}
-        className={cn(
-          'h-8 w-8 rounded-lg text-muted-foreground/70',
-          'hover:text-destructive hover:bg-destructive/10 transition-all',
-          isDeleting && 'opacity-50 cursor-not-allowed'
-        )}
-        aria-label="Delete message"
-      >
-        <motion.div
-          animate={
-            isDeleting
-              ? {
-                  rotate: [0, 10, -10, 10, 0],
-                  scale: [1, 0.9, 0.9, 0.9, 0.8],
-                }
-              : {}
-          }
-          transition={{ duration: durations.moderate }}
-        >
-          <TrashIcon size={15} />
-        </motion.div>
-      </Button>
-    </motion.div>
-  </Tooltip>
-)
-
-/**
- * FeedbackDialog - Dialog for collecting feedback comment on thumbs down
- */
-interface FeedbackDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (comment: string) => void
-  onSkip: () => void
-}
-
-const FeedbackDialog: React.FC<FeedbackDialogProps> = ({
-  open,
-  onOpenChange,
-  onSubmit,
-  onSkip,
-}) => {
-  const [comment, setComment] = React.useState('')
-
-  // Reset comment when dialog closes (handles backdrop click, escape key, etc.)
-  React.useEffect(() => {
-    if (!open) {
-      setComment('')
-    }
-  }, [open])
-
-  const handleSubmit = () => {
-    onSubmit(comment)
-    setComment('')
-    onOpenChange(false)
-  }
-
-  const handleSkip = () => {
-    onSkip()
-    setComment('')
-    onOpenChange(false)
-  }
-
-  // Handle dialog close without submitting (backdrop click, escape)
-  const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen && open) {
-      // Dialog is being closed without explicit submit/skip - treat as skip
-      onSkip()
-    }
-    onOpenChange(newOpen)
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent size="sm" animation="scale">
-        <DialogHeader>
-          <DialogTitle>What went wrong?</DialogTitle>
-          <DialogDescription>
-            Help us improve by sharing what could be better. This is optional.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="px-6 py-4">
-          <Textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="The response was inaccurate, unhelpful, or..."
-            className="min-h-[100px] resize-none"
-            autoFocus
-          />
-        </div>
-        <DialogFooter>
-          <Button variant="ghost" onClick={handleSkip}>
-            Skip
-          </Button>
-          <Button variant="default" onClick={handleSubmit}>
-            Submit feedback
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-/**
  * Message actions component with delightful UX
  *
  * Enhanced with:
  * - Tooltips on all actions for discoverability
  * - Feedback dialog for thumbs down with optional comment
+ * - Delete confirmation dialog to prevent accidents
  * - Stop button for streaming messages
  * - Role-specific actions (user: edit/delete/copy, assistant: regenerate/copy/feedback/stop)
  * - Staggered entrance animations
@@ -349,7 +205,6 @@ export const MessageActions = React.memo<MessageActionsProps>(
     }, [messageId, onDelete, toast, isDeleting])
 
     const handleThumbsDown = React.useCallback(() => {
-      // Open feedback dialog for optional comment
       setFeedbackDialogOpen(true)
     }, [])
 
@@ -389,7 +244,6 @@ export const MessageActions = React.memo<MessageActionsProps>(
     }, [])
 
     // Keyboard navigation handler for arrow keys within the actions toolbar
-    // Implements roving tabindex pattern for proper accessibility
     const handleKeyDown = React.useCallback(
       (e: React.KeyboardEvent) => {
         const buttons = getButtons()
@@ -426,7 +280,6 @@ export const MessageActions = React.memo<MessageActionsProps>(
             break
           case 'Enter':
           case ' ':
-            // Let the button's own click handler work
             return
           default:
             return
@@ -440,10 +293,9 @@ export const MessageActions = React.memo<MessageActionsProps>(
       [getButtons]
     )
 
-    // Handle focus entering the toolbar - focus first button
+    // Handle focus entering the toolbar
     const handleFocus = React.useCallback(
       (e: React.FocusEvent) => {
-        // Only handle if focus is entering the toolbar (not moving within it)
         if (e.target === actionsRef.current) {
           const buttons = getButtons()
           if (buttons.length > 0) {
@@ -456,12 +308,6 @@ export const MessageActions = React.memo<MessageActionsProps>(
       [getButtons, focusedIndex]
     )
 
-    // Track which button is focused
-    const handleButtonFocus = React.useCallback((index: number) => {
-      setFocusedIndex(index)
-    }, [])
-
-    // Don't render if not shown and not always visible
     if (!show && !alwaysVisible) return null
 
     return (
@@ -518,7 +364,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
               </Tooltip>
             )}
 
-            {/* Copy button - always shown */}
+            {/* Copy button - always shown when not streaming */}
             {!isStreaming && (
               <motion.div
                 variants={buttonVariants}
@@ -540,7 +386,6 @@ export const MessageActions = React.memo<MessageActionsProps>(
             {/* User message actions: Edit, Delete */}
             {isUserMessage && !isStreaming && (
               <>
-                {/* Edit button */}
                 {onEdit && (
                   <ActionButton
                     onClick={() => onEdit(messageId)}
@@ -552,18 +397,19 @@ export const MessageActions = React.memo<MessageActionsProps>(
                   />
                 )}
 
-                {/* Delete button */}
                 {onDelete && (
                   <DeleteButton
-                    onClick={handleDelete}
+                    onDelete={handleDelete}
                     isDeleting={isDeleting}
                     delay={0.1}
+                    showConfirmation={true}
+                    messageType="user"
                   />
                 )}
               </>
             )}
 
-            {/* Assistant message actions: Feedback, Regenerate */}
+            {/* Assistant message actions: Feedback, Regenerate, Delete */}
             {isAssistantMessage && !isStreaming && (
               <>
                 {/* Thumbs Up with Confetti */}
@@ -719,12 +565,14 @@ export const MessageActions = React.memo<MessageActionsProps>(
                   </Tooltip>
                 )}
 
-                {/* Delete button for assistant messages too */}
+                {/* Delete button */}
                 {onDelete && (
                   <DeleteButton
-                    onClick={handleDelete}
+                    onDelete={handleDelete}
                     isDeleting={isDeleting}
                     delay={0.18}
+                    showConfirmation={true}
+                    messageType="assistant"
                   />
                 )}
               </>
