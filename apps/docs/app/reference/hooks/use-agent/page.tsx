@@ -154,7 +154,10 @@ function Example() {
           required: ['expression'],
         },
         execute: async (args) => {
-          return { result: eval(args.expression) }
+          // Safe math evaluation - sanitize input
+          const expr = String(args.expression).replace(/[^0-9+\\-*/().\\s]/g, '')
+          const result = new Function(\`"use strict"; return (\${expr})\`)()
+          return { result: typeof result === 'number' ? result : 'Invalid' }
         },
       },
     ],
