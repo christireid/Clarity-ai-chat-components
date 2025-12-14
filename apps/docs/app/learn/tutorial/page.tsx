@@ -10,25 +10,26 @@ import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Tutorial: Build a Complete Chat App',
-  description: 'In this hands-on tutorial, you\'ll build a fully-featured chat application from scratch with real-time messaging, user avatars, typing indicators, and more.',
+  description:
+    "In this hands-on tutorial, you'll build a fully-featured chat application from scratch with real-time messaging, user avatars, typing indicators, and more.",
 }
 
 export default function TutorialPage() {
   return (
     <div className="docs-content">
       <Breadcrumbs />
-      
+
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
           Tutorial: Build a Complete Chat App
         </h1>
-        
+
         <p className="text-xl text-text-secondary leading-relaxed">
-          In this hands-on tutorial, you'll build a fully-featured chat application from scratch. You'll learn core concepts, best practices, and advanced patterns.
+          In this hands-on tutorial, you'll build a fully-featured chat
+          application from scratch. You'll learn core concepts, best practices,
+          and advanced patterns.
         </p>
       </div>
 
@@ -60,46 +61,72 @@ export default function TutorialPage() {
 
       <div id="what-youll-build" className="mt-12 mb-8">
         <h2 className="text-3xl font-bold mb-4">What You'll Build</h2>
-        
+
         <p className="text-text-secondary mb-6">
-          By the end of this tutorial, you'll have a production-ready chat app with:
+          By the end of this tutorial, you'll have a production-ready chat app
+          with:
         </p>
 
         <div className="grid md:grid-cols-2 gap-4">
           <div className="p-4 rounded-lg bg-bg-secondary border border-border">
             <div className="text-2xl mb-2">💬</div>
-            <h4 className="font-semibold text-text-primary mb-1">Real-time Messaging</h4>
-            <p className="text-sm text-text-secondary">Instant message display with smooth animations</p>
+            <h4 className="font-semibold text-text-primary mb-1">
+              Real-time Messaging
+            </h4>
+            <p className="text-sm text-text-secondary">
+              Instant message display with smooth animations
+            </p>
           </div>
           <div className="p-4 rounded-lg bg-bg-secondary border border-border">
             <div className="text-2xl mb-2">👤</div>
-            <h4 className="font-semibold text-text-primary mb-1">User Avatars</h4>
-            <p className="text-sm text-text-secondary">Personalized avatars and timestamps</p>
+            <h4 className="font-semibold text-text-primary mb-1">
+              User Avatars
+            </h4>
+            <p className="text-sm text-text-secondary">
+              Personalized avatars and timestamps
+            </p>
           </div>
           <div className="p-4 rounded-lg bg-bg-secondary border border-border">
             <div className="text-2xl mb-2">⌨️</div>
-            <h4 className="font-semibold text-text-primary mb-1">Typing Indicators</h4>
+            <h4 className="font-semibold text-text-primary mb-1">
+              Typing Indicators
+            </h4>
             <p className="text-sm text-secondary">Show when users are typing</p>
           </div>
           <div className="p-4 rounded-lg bg-bg-secondary border border-border">
             <div className="text-2xl mb-2">😊</div>
-            <h4 className="font-semibold text-text-primary mb-1">Message Reactions</h4>
-            <p className="text-sm text-text-secondary">Emoji reactions for messages</p>
+            <h4 className="font-semibold text-text-primary mb-1">
+              Message Reactions
+            </h4>
+            <p className="text-sm text-text-secondary">
+              Emoji reactions for messages
+            </p>
           </div>
           <div className="p-4 rounded-lg bg-bg-secondary border border-border">
             <div className="text-2xl mb-2">📎</div>
-            <h4 className="font-semibold text-text-primary mb-1">File Attachments</h4>
-            <p className="text-sm text-text-secondary">Upload and display files</p>
+            <h4 className="font-semibold text-text-primary mb-1">
+              File Attachments
+            </h4>
+            <p className="text-sm text-text-secondary">
+              Upload and display files
+            </p>
           </div>
           <div className="p-4 rounded-lg bg-bg-secondary border border-border">
             <div className="text-2xl mb-2">🌙</div>
             <h4 className="font-semibold text-text-primary mb-1">Dark Mode</h4>
-            <p className="text-sm text-text-secondary">Theme switching with smooth transitions</p>
+            <p className="text-sm text-text-secondary">
+              Theme switching with smooth transitions
+            </p>
           </div>
         </div>
       </div>
 
-      <TutorialStep step={1} title="Project Setup" nextStepHref="#basic-chat" nextStepTitle="Basic Chat Interface">
+      <TutorialStep
+        step={1}
+        title="Project Setup"
+        nextStepHref="#basic-chat"
+        nextStepTitle="Basic Chat Interface"
+      >
         <p className="text-text-secondary mb-4">
           Create a new React project with Vite and install Clarity Chat:
         </p>
@@ -123,21 +150,37 @@ npm install @clarity-chat/react`}
 
         <Callout type="tip" className="mt-4">
           <p>
-            <strong>Alternative:</strong> You can also use Next.js, Remix, or any other React framework. 
-            See the <a href="/learn/installation" className="text-brand-500 hover:underline">Installation Guide</a> for framework-specific instructions.
+            <strong>Alternative:</strong> You can also use Next.js, Remix, or
+            any other React framework. See the{' '}
+            <a
+              href="/learn/installation"
+              className="text-brand-500 hover:underline"
+            >
+              Installation Guide
+            </a>{' '}
+            for framework-specific instructions.
           </p>
         </Callout>
       </TutorialStep>
 
       <UseChatFlowAnimation />
 
-      <TutorialStep step={2} title="Basic Chat Interface" nextStepHref="#enhancements" nextStepTitle="Adding Enhancements">
+      <TutorialStep
+        step={2}
+        title="Basic Chat Interface"
+        nextStepHref="#enhancements"
+        nextStepTitle="Adding Enhancements"
+      >
         <p className="text-text-secondary mb-4">
-          Replace the contents of <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">src/App.tsx</code>:
+          Replace the contents of{' '}
+          <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">
+            src/App.tsx
+          </code>
+          :
         </p>
 
         <EnhancedCodeBlock
-        code={`import { useState } from 'react'
+          code={`import { useState } from 'react'
 import { ChatWindow, Message } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 import './App.css'
@@ -188,25 +231,25 @@ function App() {
 }
 
 export default App`}
-        language="tsx"
-        title="src/App.tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          title="src/App.tsx"
+          showLineNumbers
+        />
 
-      <p>Run your app:</p>
+        <p>Run your app:</p>
 
-      <EnhancedCodeBlock
-        code="npm run dev"
-        language="bash"
-      />
+        <EnhancedCodeBlock code="npm run dev" language="bash" />
 
-      <Callout type="success">
-        <p><strong>You did it!</strong> You now have a working chat interface. Let's add more features.</p>
-      </Callout>
+        <Callout type="success">
+          <p>
+            <strong>You did it!</strong> You now have a working chat interface.
+            Let's add more features.
+          </p>
+        </Callout>
       </TutorialStep>
 
       <h2 id="avatars">Step 3: Add Avatars</h2>
-      
+
       <p>Enhance messages with user avatars:</p>
 
       <EnhancedCodeBlock
@@ -255,7 +298,7 @@ const handleSendMessage = (text: string) => {
       />
 
       <h2 id="typing-indicator">Step 4: Typing Indicator</h2>
-      
+
       <p>Show when the bot is "typing":</p>
 
       <EnhancedCodeBlock
@@ -304,7 +347,7 @@ function App() {
       />
 
       <h2 id="reactions">Step 5: Message Reactions</h2>
-      
+
       <p>Allow users to react to messages:</p>
 
       <EnhancedCodeBlock
@@ -337,7 +380,7 @@ return (
       />
 
       <h2 id="dark-mode">Step 6: Dark Mode</h2>
-      
+
       <p>Add theme switching:</p>
 
       <EnhancedCodeBlock
@@ -369,8 +412,11 @@ function App() {
       />
 
       <h2 id="next-steps">What's Next?</h2>
-      
-      <p>Congratulations! You've built a feature-rich chat application. Here are some ideas to extend it:</p>
+
+      <p>
+        Congratulations! You've built a feature-rich chat application. Here are
+        some ideas to extend it:
+      </p>
 
       <ul>
         <li>🔐 Add user authentication</li>
@@ -384,12 +430,13 @@ function App() {
 
       <Callout type="tip">
         <p>
-          Check out our <a href="/examples">Examples</a> section to see these features in action!
+          Check out our <a href="/examples">Examples</a> section to see these
+          features in action!
         </p>
       </Callout>
 
       <h2 id="full-code">Complete Code</h2>
-      
+
       <p>Here's the full implementation:</p>
 
       <EnhancedCodeBlock

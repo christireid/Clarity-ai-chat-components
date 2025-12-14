@@ -3,11 +3,11 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Streaming Chat with Memory - Cookbook',
-  description: 'Build a streaming chat with semantic memory and context management.',
+  description:
+    'Build a streaming chat with semantic memory and context management.',
 }
 
 export default function StreamingWithMemoryCookbook() {
@@ -17,21 +17,25 @@ export default function StreamingWithMemoryCookbook() {
         <span className="docs-badge">Cookbook</span>
         <h1>Streaming Chat with Memory</h1>
         <p className="docs-lead">
-          Implement real-time streaming responses with semantic memory and intelligent context management.
+          Implement real-time streaming responses with semantic memory and
+          intelligent context management.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Overview</h2>
         <p>
-          This recipe shows how to combine streaming responses with semantic memory to build
-          a chat experience that maintains context across sessions and recalls relevant information.
+          This recipe shows how to combine streaming responses with semantic
+          memory to build a chat experience that maintains context across
+          sessions and recalls relevant information.
         </p>
         <Callout type="info" title="What You'll Learn">
-          • Setting up streaming with SSE or WebSockets<br/>
-          • Integrating semantic memory and vector search<br/>
-          • Managing conversation context windows<br/>
-          • Handling reconnections and error recovery
+          • Setting up streaming with SSE or WebSockets
+          <br />
+          • Integrating semantic memory and vector search
+          <br />
+          • Managing conversation context windows
+          <br />• Handling reconnections and error recovery
         </Callout>
       </section>
 
@@ -71,7 +75,8 @@ render(<StreamingMemoryChat />)`}
 
       <section className="docs-section">
         <h2>API Route Setup</h2>
-        <pre><code>{`// app/api/chat/route.ts
+        <pre>
+          <code>{`// app/api/chat/route.ts
 import { StreamingTextResponse } from 'ai'
 import { MemoryService } from '@clarity-chat/react/server'
 
@@ -152,12 +157,14 @@ export async function POST(req: Request) {
       headers: { 'Content-Type': 'application/json' }
     })
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Advanced: Token-Optimized Memory</h2>
-        <pre><code>{`import { ChatWindow, TokenOptimizer } from '@clarity-chat/react'
+        <pre>
+          <code>{`import { ChatWindow, TokenOptimizer } from '@clarity-chat/react'
 
 export default function OptimizedMemoryChat() {
   const optimizer = new TokenOptimizer({
@@ -182,16 +189,22 @@ export default function OptimizedMemoryChat() {
       rightPanel={<TokenOptimizationPanel />}
     />
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Set appropriate <code>maxTokens</code> based on your model's context window</li>
+          <li>
+            Set appropriate <code>maxTokens</code> based on your model's context
+            window
+          </li>
           <li>Use semantic search to retrieve only relevant memories</li>
           <li>Implement exponential backoff for reconnection logic</li>
-          <li>Store embeddings asynchronously to avoid blocking the response</li>
+          <li>
+            Store embeddings asynchronously to avoid blocking the response
+          </li>
           <li>Clean up old or low-relevance memories periodically</li>
           <li>Monitor token usage and adjust compression strategies</li>
         </ul>

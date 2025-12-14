@@ -1056,6 +1056,11 @@ export function useTokenOptimizationEnhanced(
         prefilledResponses: 0,
         preambleTokensSaved: 0,
       },
+      piiRedaction: {
+        emailsRedacted: 0,
+        phonesRedacted: 0,
+        totalTokensSaved: 0,
+      },
       promptStructure: {
         restructuredPrompts: 0,
         questionsMovedToEnd: 0,
@@ -1080,6 +1085,8 @@ export function useTokenOptimizationEnhanced(
         return messages
       }
 
+      const systemMessage = messages.find((m) => m.role === 'system')
+
       // Handle summarization strategy
       if (historyLimiting.strategy === 'summarize' && !summarizeMessage) {
         console.warn(
@@ -1099,7 +1106,6 @@ export function useTokenOptimizationEnhanced(
           return messages
         }
 
-        const systemMessage = messages.find((m) => m.role === 'system')
         const otherMessages = messages.filter((m) => m.role !== 'system')
 
         // Keep last N messages intact
@@ -1597,6 +1603,8 @@ export function useTokenOptimizationEnhanced(
     createDataReference,
     limitOutput,
     batchRequest,
+    // Required by return type: provide the history limiter API.
+    limitHistory: optimizeHistory,
     // New optimizations
     getPrefill,
     restructurePrompt,

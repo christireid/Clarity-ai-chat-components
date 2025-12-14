@@ -147,7 +147,6 @@ const FILLER_WORDS = new Set([
   'um',
   'uh',
   'like',
-  'you know',
   'actually',
   'basically',
   'literally',
@@ -157,15 +156,23 @@ const FILLER_WORDS = new Set([
   'rather',
   'pretty',
   'somewhat',
-  'sort of',
-  'kind of',
-  'a bit',
-  'a little',
   'just',
   'only',
   'simply',
   'merely',
 ])
+
+const FILLER_PHRASES = [
+  'you know',
+  'sort of',
+  'kind of',
+  'a bit',
+  'a little',
+] as const
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
 
 /**
  * Remove duplicate sentences from text
@@ -192,13 +199,31 @@ function removeDuplicateSentences(text: string): string {
 function removeFillers(text: string, preserveKeywords: string[] = []): string {
   const preserveSet = new Set(preserveKeywords.map((k) => k.toLowerCase()))
 
-  return text
+  let result = text
+
+  // Remove multi-word filler phrases first (whitespace/punctuation tolerant).
+  for (const phrase of FILLER_PHRASES) {
+    if (preserveSet.has(phrase)) continue
+    const re = new RegExp(`\\b${escapeRegExp(phrase)}\\b`, 'gi')
+    result = result.replace(re, '')
+  }
+
+  // Then remove single-word fillers.
+  result = result
     .split(/\s+/)
     .filter((word) => {
-      const lower = word.toLowerCase().replace(/[.,!?;:]$/, '')
+      const lower = word.toLowerCase().replace(/[.,!?;:]+$/, '')
       return !FILLER_WORDS.has(lower) || preserveSet.has(lower)
     })
     .join(' ')
+
+  // Cleanup punctuation/spacing left behind.
+  return result
+    .replace(/\s+,/g, ',')
+    .replace(/,\s*,/g, ', ')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([.!?])/g, '$1')
+    .trim()
 }
 
 /**
@@ -812,8 +837,8 @@ export function enforceOutputLimit(
   if (maxTokens) {
     const tokens = estimateTokens(output)
     if (tokens > maxTokens) {
-      // Rough approximation: tokens * 4 = characters (using standard ratio)
-      const maxChars = Math.floor(maxTokens * 4)
+      // Rough approximation: ~3.5 chars/token for typical English text.
+      const maxChars = Math.floor(maxTokens * 3.5)
       return enforceOutputLimit(output, {
         maxCharacters: maxChars,
         truncationStrategy,
@@ -929,8 +954,53 @@ export function createBatcher(options: BatchingOptions = {}): RequestBatcher {
  * Calculate simple similarity between two strings (Jaccard similarity)
  */
 export function calculateSimilarity(str1: string, str2: string): number {
-  const words1 = new Set(str1.toLowerCase().split(/\s+/))
-  const words2 = new Set(str2.toLowerCase().split(/\s+/))
+  const STOP_WORDS = new Set([
+    'a',
+    'an',
+    'and',
+    'are',
+    'as',
+    'at',
+    'be',
+    'but',
+    'by',
+    'for',
+    'from',
+    'how',
+    'i',
+    'in',
+    'is',
+    'it',
+    'like',
+    'of',
+    'on',
+    'or',
+    'please',
+    'the',
+    'this',
+    'to',
+    'what',
+    'whats',
+    'with',
+    'you',
+    'we',
+  ])
+
+  const tokenize = (value: string) =>
+    value
+      .toLowerCase()
+      .split(/\s+/)
+      .map((w) =>
+        w
+          .replace(/[’']/g, "'")
+          .replace(/'s$/g, '')
+          .replace(/[^a-z0-9]+/g, '')
+      )
+      .filter(Boolean)
+      .filter((w) => !STOP_WORDS.has(w))
+
+  const words1 = new Set(tokenize(str1))
+  const words2 = new Set(tokenize(str2))
 
   const intersection = new Set([...words1].filter((x) => words2.has(x)))
   const union = new Set([...words1, ...words2])

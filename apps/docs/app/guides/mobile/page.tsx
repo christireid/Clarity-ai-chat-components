@@ -3,8 +3,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Mobile Guide - Clarity Chat',
   description:
@@ -34,8 +32,8 @@ export default function MobileGuidePage() {
           <li>🧻 Safe areas keep content away from notches and home bars</li>
         </ul>
         <Callout type="info">
-          All components ship responsive styles by default. This guide focuses on
-          the extra hooks/utilities that help polish the mobile experience.
+          All components ship responsive styles by default. This guide focuses
+          on the extra hooks/utilities that help polish the mobile experience.
         </Callout>
       </section>
 
@@ -182,8 +180,8 @@ console.log('Touch target minimum', TOUCH_TARGET.minimum) // 44
         />
         <Callout type="warning">
           Avoid relying solely on icons. Pair them with accessible names (e.g.
-          <code>aria-label="Attach file"</code>) so screen reader users on mobile
-          can understand the action.
+          <code>aria-label="Attach file"</code>) so screen reader users on
+          mobile can understand the action.
         </Callout>
       </section>
 
@@ -191,12 +189,24 @@ console.log('Touch target minimum', TOUCH_TARGET.minimum) // 44
         <h2>Testing Matrix</h2>
         <p>Before shipping a release, run through this checklist:</p>
         <ul>
-          <li>✅ iOS Safari + Chrome: open/close keyboard, copy/paste, scroll</li>
-          <li>✅ Android Chrome: swipe gestures, pull-to-refresh, share sheet</li>
-          <li>✅ Landscape orientation: ensure footer and call-to-action buttons stay visible</li>
+          <li>
+            ✅ iOS Safari + Chrome: open/close keyboard, copy/paste, scroll
+          </li>
+          <li>
+            ✅ Android Chrome: swipe gestures, pull-to-refresh, share sheet
+          </li>
+          <li>
+            ✅ Landscape orientation: ensure footer and call-to-action buttons
+            stay visible
+          </li>
           <li>✅ High contrast + reduced motion modes on both platforms</li>
-          <li>✅ VoiceOver / TalkBack announces new messages and typing status</li>
-          <li>✅ Check 320&nbsp;px width for marketing checklists (App Store review!)</li>
+          <li>
+            ✅ VoiceOver / TalkBack announces new messages and typing status
+          </li>
+          <li>
+            ✅ Check 320&nbsp;px width for marketing checklists (App Store
+            review!)
+          </li>
         </ul>
         <Callout type="success">
           The marketing site and docs contain device preview iframes powered by
@@ -206,4 +216,3 @@ console.log('Touch target minimum', TOUCH_TARGET.minimum) // 44
     </div>
   )
 }
-

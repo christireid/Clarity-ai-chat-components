@@ -4,7 +4,6 @@ import { ArrowLeft, Heart, Shield, Calendar, FileText } from 'lucide-react'
 import { HealthcareWorkflow } from '@/components/Diagrams/HealthcareWorkflow'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Healthcare Assistant Example',

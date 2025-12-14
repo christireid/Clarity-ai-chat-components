@@ -4,11 +4,10 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Integration Guide - Clarity Chat',
-  description: 'Complete guide for integrating Clarity Chat into your application.',
+  description:
+    'Complete guide for integrating Clarity Chat into your application.',
 }
 
 export default function IntegrationGuidePage() {
@@ -26,10 +25,7 @@ export default function IntegrationGuidePage() {
         <h2>Quick Start</h2>
 
         <h3>Installation</h3>
-        <CodeBlock
-          language="bash"
-          code={`npm install @clarity-chat/react`}
-        />
+        <CodeBlock language="bash" code={`npm install @clarity-chat/react`} />
 
         <h3>Basic Setup</h3>
         <CodeBlock
@@ -120,9 +116,18 @@ const config = createChatConfig()
       <section className="docs-section">
         <h2>Next Steps</h2>
         <ul>
-          <li><a href="/guides/getting-started">Getting Started</a> - Learn the basics</li>
-          <li><a href="/guides/best-practices">Best Practices</a> - Best practices guide</li>
-          <li><a href="/integrations/nextjs">Next.js Integration</a> - Framework-specific guide</li>
+          <li>
+            <a href="/guides/getting-started">Getting Started</a> - Learn the
+            basics
+          </li>
+          <li>
+            <a href="/guides/best-practices">Best Practices</a> - Best practices
+            guide
+          </li>
+          <li>
+            <a href="/integrations/nextjs">Next.js Integration</a> -
+            Framework-specific guide
+          </li>
         </ul>
       </section>
     </div>

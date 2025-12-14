@@ -3,7 +3,6 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Testing Quickstart - Learn Clarity Chat',
@@ -18,9 +17,9 @@ export default function LearnTestingGuidePage() {
         <span className="docs-badge">Quick Guide</span>
         <h1>Testing Clarity Chat</h1>
         <p className="docs-lead">
-          Use this cheat sheet to set up essential tests in minutes. When you are
-          ready, the full Testing Strategy guide dives into mocked providers,
-          accessibility tooling, and CI/CD integration.
+          Use this cheat sheet to set up essential tests in minutes. When you
+          are ready, the full Testing Strategy guide dives into mocked
+          providers, accessibility tooling, and CI/CD integration.
         </p>
       </div>
 
@@ -28,13 +27,15 @@ export default function LearnTestingGuidePage() {
         <h2>Baseline Commands</h2>
         <ul>
           <li>
-            <code>npm run test</code> — runs jest + jest-axe suites (fast feedback)
+            <code>npm run test</code> — runs jest + jest-axe suites (fast
+            feedback)
           </li>
           <li>
             <code>npm run test:e2e</code> — Playwright powered end-to-end flows
           </li>
           <li>
-            <code>clarity-chat doctor</code> — validates project configuration before deploy
+            <code>clarity-chat doctor</code> — validates project configuration
+            before deploy
           </li>
         </ul>
       </section>
@@ -42,9 +43,10 @@ export default function LearnTestingGuidePage() {
       <section className="docs-section">
         <h2>Mocked Providers</h2>
         <p>
-          Install <code>@clarity-chat/dev-tools</code> and swap real providers for{' '}
-          <code>createMockProviders</code>. You get deterministic completions,
-          streaming, and error scenarios for unit and integration tests.
+          Install <code>@clarity-chat/dev-tools</code> and swap real providers
+          for <code>createMockProviders</code>. You get deterministic
+          completions, streaming, and error scenarios for unit and integration
+          tests.
         </p>
       </section>
 
@@ -53,7 +55,10 @@ export default function LearnTestingGuidePage() {
         <ul>
           <li>Integrate jest-axe into your component tests</li>
           <li>Add Playwright axe project for end-to-end coverage</li>
-          <li>Include manual keyboard + screen reader smoke checks in your release checklist</li>
+          <li>
+            Include manual keyboard + screen reader smoke checks in your release
+            checklist
+          </li>
         </ul>
       </section>
 
@@ -67,4 +72,3 @@ export default function LearnTestingGuidePage() {
     </div>
   )
 }
-

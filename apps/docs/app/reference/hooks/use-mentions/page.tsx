@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useMentions - Clarity Chat Components',
-  description: 'Hook for managing user mentions with extraction, tracking, and notification support.',
+  description:
+    'Hook for managing user mentions with extraction, tracking, and notification support.',
 }
 
 const optionsProps: Prop[] = [
@@ -38,7 +37,8 @@ export default function UseMentionsPage() {
         <span className="docs-badge">Hook</span>
         <h1>useMentions</h1>
         <p className="docs-lead">
-          Hook for managing user mentions with extraction, tracking, read status, and notification support.
+          Hook for managing user mentions with extraction, tracking, read
+          status, and notification support.
         </p>
       </div>
 
@@ -54,9 +54,7 @@ export default function UseMentionsPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Extract and track mentions:
-        </p>
+        <p>Extract and track mentions:</p>
         <CodePlayground
           initialCode={`import { useMentions } from '@clarity-chat/react'
 
@@ -99,9 +97,7 @@ function ChatWithMentions() {
 
       <section className="docs-section">
         <h2>Get User Mentions</h2>
-        <p>
-          Get all mentions for a specific user:
-        </p>
+        <p>Get all mentions for a specific user:</p>
         <CodePlayground
           initialCode={`import { useMentions } from '@clarity-chat/react'
 
@@ -131,9 +127,7 @@ function UserMentions({ userId }: { userId: string }) {
 
       <section className="docs-section">
         <h2>Mention Notifications</h2>
-        <p>
-          Handle mention notifications:
-        </p>
+        <p>Handle mention notifications:</p>
         <CodePlayground
           initialCode={`import { useMentions } from '@clarity-chat/react'
 
@@ -161,9 +155,7 @@ function WithNotifications({ currentUserId }: { currentUserId: string }) {
 
       <section className="docs-section">
         <h2>Mark as Read</h2>
-        <p>
-          Mark mentions as read:
-        </p>
+        <p>Mark mentions as read:</p>
         <CodePlayground
           initialCode={`import { useMentions } from '@clarity-chat/react'
 
@@ -201,12 +193,25 @@ function MentionList({ userId }: { userId: string }) {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>extractMentions</code>: Function to extract mentions from text</li>
-          <li><code>mentions</code>: Array of all mentions</li>
-          <li><code>unreadCount</code>: Total number of unread mentions</li>
-          <li><code>getUserMentions</code>: Function to get mentions for a user</li>
-          <li><code>markAsRead</code>: Function to mark a mention as read</li>
-          <li><code>markAllAsRead</code>: Function to mark all mentions as read for a user</li>
+          <li>
+            <code>extractMentions</code>: Function to extract mentions from text
+          </li>
+          <li>
+            <code>mentions</code>: Array of all mentions
+          </li>
+          <li>
+            <code>unreadCount</code>: Total number of unread mentions
+          </li>
+          <li>
+            <code>getUserMentions</code>: Function to get mentions for a user
+          </li>
+          <li>
+            <code>markAsRead</code>: Function to mark a mention as read
+          </li>
+          <li>
+            <code>markAllAsRead</code>: Function to mark all mentions as read
+            for a user
+          </li>
         </ul>
       </section>
 
@@ -216,7 +221,9 @@ function MentionList({ userId }: { userId: string }) {
           <li>Extract mentions before sending messages</li>
           <li>Show unread count badges for better UX</li>
           <li>Mark mentions as read when user views message</li>
-          <li>Use <code>onMention</code> to send notifications</li>
+          <li>
+            Use <code>onMention</code> to send notifications
+          </li>
           <li>Filter mentions by read status for better organization</li>
         </ul>
       </section>
@@ -224,8 +231,16 @@ function MentionList({ userId }: { userId: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/mention-system">MentionInput & MentionList</a> - Mention components</li>
-          <li><a href="/reference/components/chat-input">ChatInput</a> - Chat input component</li>
+          <li>
+            <a href="/reference/components/mention-system">
+              MentionInput & MentionList
+            </a>{' '}
+            - Mention components
+          </li>
+          <li>
+            <a href="/reference/components/chat-input">ChatInput</a> - Chat
+            input component
+          </li>
         </ul>
       </section>
     </div>

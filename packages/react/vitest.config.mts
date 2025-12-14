@@ -32,8 +32,8 @@ export default defineConfig({
     maxConcurrency: 1,
     // Increase test timeout for slower execution
     testTimeout: 20000,
-    // Disable isolation to reduce memory overhead (tests should clean up properly)
-    isolate: false,
+    // Enable isolation to avoid cumulative memory growth across the suite
+    isolate: true,
     // Include all test directories
     include: [
       'src/**/__tests__/**/*.test.{ts,tsx}',

@@ -51,7 +51,7 @@ export const DEFAULT_COMPLETION_SIGNALS = [
   'Therefore,',
   'Thus,',
   'Hence,',
-  'That\'s all',
+  "That's all",
   'That is all',
   'Hope this helps',
   'Let me know if',
@@ -84,7 +84,12 @@ export interface ChunkAnalysis {
   /** Whether streaming should continue */
   shouldContinue: boolean
   /** Reason for stop decision */
-  reason?: 'max-tokens' | 'completion-signal' | 'pattern-match' | 'repetition' | 'user-stop'
+  reason?:
+    | 'max-tokens'
+    | 'completion-signal'
+    | 'pattern-match'
+    | 'repetition'
+    | 'user-stop'
   /** Confidence in the stop decision (0-1) */
   confidence: number
   /** Detected completion signal if any */
@@ -162,13 +167,18 @@ export class StreamingResponseMonitor {
   private chunksProcessed: number = 0
   private lastChunks: string[] = []
   private stopped: boolean = false
+  private stoppedReason: ChunkAnalysis['reason'] | undefined
+  private stoppedConfidence: number | undefined
+  private stoppedSignal: string | undefined
 
   constructor(config: StreamingOptimizationConfig = {}) {
     this.config = {
       maxOutputTokens: config.maxOutputTokens ?? 4096,
-      earlyStopPatterns: config.earlyStopPatterns ?? DEFAULT_EARLY_STOP_PATTERNS,
+      earlyStopPatterns:
+        config.earlyStopPatterns ?? DEFAULT_EARLY_STOP_PATTERNS,
       cachePartialResponses: config.cachePartialResponses ?? true,
-      targetCompletionSignals: config.targetCompletionSignals ?? DEFAULT_COMPLETION_SIGNALS,
+      targetCompletionSignals:
+        config.targetCompletionSignals ?? DEFAULT_COMPLETION_SIGNALS,
       minTokensBeforeCheck: config.minTokensBeforeCheck ?? 100,
       detectRepetition: config.detectRepetition ?? true,
       repetitionWindowSize: config.repetitionWindowSize ?? 50,
@@ -185,14 +195,18 @@ export class StreamingResponseMonitor {
     if (this.stopped) {
       return {
         shouldContinue: false,
-        reason: 'user-stop',
-        confidence: 1,
+        reason: this.stoppedReason ?? 'user-stop',
+        confidence: this.stoppedConfidence ?? 1,
+        detectedSignal: this.stoppedSignal,
         currentTokens: this.tokenCount,
       }
     }
 
     this.accumulatedResponse += chunk
-    this.tokenCount = estimateTokens(this.accumulatedResponse, this.config.model)
+    this.tokenCount = estimateTokens(
+      this.accumulatedResponse,
+      this.config.model
+    )
     this.chunksProcessed++
 
     // Track recent chunks for repetition detection
@@ -208,7 +222,11 @@ export class StreamingResponseMonitor {
 
     // Only check for completion after minimum tokens
     if (this.tokenCount < this.config.minTokensBeforeCheck) {
-      return { shouldContinue: true, confidence: 0, currentTokens: this.tokenCount }
+      return {
+        shouldContinue: true,
+        confidence: 0,
+        currentTokens: this.tokenCount,
+      }
     }
 
     // Check for completion signals
@@ -231,7 +249,11 @@ export class StreamingResponseMonitor {
       }
     }
 
-    return { shouldContinue: true, confidence: 0, currentTokens: this.tokenCount }
+    return {
+      shouldContinue: true,
+      confidence: 0,
+      currentTokens: this.tokenCount,
+    }
   }
 
   /**
@@ -253,6 +275,9 @@ export class StreamingResponseMonitor {
    */
   forceStop(): void {
     this.stopped = true
+    this.stoppedReason = 'user-stop'
+    this.stoppedConfidence = 1
+    this.stoppedSignal = undefined
   }
 
   /**
@@ -267,13 +292,17 @@ export class StreamingResponseMonitor {
     this.chunksProcessed = 0
     this.lastChunks = []
     this.stopped = false
+    this.stoppedReason = undefined
+    this.stoppedConfidence = undefined
+    this.stoppedSignal = undefined
   }
 
   /**
    * Get streaming metrics
    */
   getMetrics(): StreamingMetrics {
-    const avgConfidence = this.stopEvents > 0 ? this.totalConfidence / this.stopEvents : 0
+    const avgConfidence =
+      this.stopEvents > 0 ? this.totalConfidence / this.stopEvents : 0
     // Estimate potential savings as 20% of what might have been generated
     const potentialSaved = this.stopped ? Math.floor(this.tokenCount * 0.2) : 0
 
@@ -332,7 +361,10 @@ export class StreamingResponseMonitor {
     if (this.lastChunks.length < 10) return null
 
     const recentText = this.lastChunks.join('')
-    const windowSize = Math.min(this.config.repetitionWindowSize, recentText.length / 2)
+    const windowSize = Math.min(
+      this.config.repetitionWindowSize,
+      recentText.length / 2
+    )
 
     if (windowSize < 20) return null
 
@@ -365,6 +397,9 @@ export class StreamingResponseMonitor {
     signal?: string
   ): ChunkAnalysis {
     this.stopped = true
+    this.stoppedReason = reason
+    this.stoppedConfidence = confidence
+    this.stoppedSignal = signal
     this.stopEvents++
     this.totalConfidence += confidence
 
@@ -388,7 +423,9 @@ export class PartialResponseCache {
   private maxEntries: number
   private checkpointInterval: number
 
-  constructor(options: { maxEntries?: number; checkpointInterval?: number } = {}) {
+  constructor(
+    options: { maxEntries?: number; checkpointInterval?: number } = {}
+  ) {
     this.maxEntries = options.maxEntries ?? 100
     this.checkpointInterval = options.checkpointInterval ?? 500 // tokens
   }
@@ -404,14 +441,19 @@ export class PartialResponseCache {
   ): void {
     // Only checkpoint at intervals to avoid too many writes
     const existing = this.cache.get(queryHash)
-    if (existing && !isComplete && tokens - existing.tokens < this.checkpointInterval) {
+    if (
+      existing &&
+      !isComplete &&
+      tokens - existing.tokens < this.checkpointInterval
+    ) {
       return
     }
 
     // Evict oldest if at capacity
     if (this.cache.size >= this.maxEntries) {
-      const oldest = Array.from(this.cache.entries())
-        .sort((a, b) => a[1].timestamp - b[1].timestamp)[0]
+      const oldest = Array.from(this.cache.entries()).sort(
+        (a, b) => a[1].timestamp - b[1].timestamp
+      )[0]
       if (oldest) {
         this.cache.delete(oldest[0])
       }
@@ -456,9 +498,10 @@ export class PartialResponseCache {
   getStats(): { entries: number; totalTokens: number; oldestAge: number } {
     const entries = Array.from(this.cache.values())
     const totalTokens = entries.reduce((sum, e) => sum + e.tokens, 0)
-    const oldestAge = entries.length > 0
-      ? Date.now() - Math.min(...entries.map(e => e.timestamp))
-      : 0
+    const oldestAge =
+      entries.length > 0
+        ? Date.now() - Math.min(...entries.map((e) => e.timestamp))
+        : 0
 
     return { entries: entries.length, totalTokens, oldestAge }
   }
@@ -525,7 +568,10 @@ export function createOptimizedStreamHandler(
           if (!analysis.shouldContinue) {
             earlyStopped = true
             stopReason = analysis.reason
-            callbacks.onEarlyStop?.(analysis.reason ?? 'unknown', monitor.getMetrics())
+            callbacks.onEarlyStop?.(
+              analysis.reason ?? 'unknown',
+              monitor.getMetrics()
+            )
             break
           }
         }
@@ -557,7 +603,7 @@ export function hashQuery(query: string): string {
   let hash = 0
   for (let i = 0; i < query.length; i++) {
     const char = query.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
+    hash = (hash << 5) - hash + char
     hash = hash & hash
   }
   return `q_${Math.abs(hash).toString(36)}`
@@ -566,7 +612,9 @@ export function hashQuery(query: string): string {
 /**
  * Estimate if a query is likely to produce a long response
  */
-export function estimateResponseLength(query: string): 'short' | 'medium' | 'long' {
+export function estimateResponseLength(
+  query: string
+): 'short' | 'medium' | 'long' {
   const lowerQuery = query.toLowerCase()
 
   // Long response indicators
@@ -597,17 +645,18 @@ export function estimateResponseLength(query: string): 'short' | 'medium' | 'lon
     'summarize',
   ]
 
-  if (longIndicators.some(ind => lowerQuery.includes(ind))) {
+  if (longIndicators.some((ind) => lowerQuery.includes(ind))) {
     return 'long'
   }
 
-  if (shortIndicators.some(ind => lowerQuery.includes(ind))) {
+  if (shortIndicators.some((ind) => lowerQuery.includes(ind))) {
     return 'short'
   }
 
   // Default based on query length
-  if (query.length < 50) return 'short'
-  if (query.length > 200) return 'long'
+  // Keep these thresholds conservative so typical questions fall into "medium".
+  if (query.length < 25) return 'short'
+  if (query.length > 160) return 'long'
   return 'medium'
 }
 

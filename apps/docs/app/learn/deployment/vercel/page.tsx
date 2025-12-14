@@ -5,7 +5,8 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Deploy to Vercel - Clarity Chat',
-  description: 'Step-by-step guide to deploying Clarity Chat applications on Vercel.',
+  description:
+    'Step-by-step guide to deploying Clarity Chat applications on Vercel.',
 }
 
 export default function VercelDeploymentPage() {
@@ -15,14 +16,18 @@ export default function VercelDeploymentPage() {
         <span className="docs-badge">Deployment</span>
         <h1>Deploy to Vercel</h1>
         <p className="docs-lead">
-          Deploy your Clarity Chat application to Vercel with streaming, edge functions, and optimal performance.
+          Deploy your Clarity Chat application to Vercel with streaming, edge
+          functions, and optimal performance.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Prerequisites</h2>
         <ul>
-          <li>Vercel account (<a href="https://vercel.com/signup">sign up free</a>)</li>
+          <li>
+            Vercel account (<a href="https://vercel.com/signup">sign up free</a>
+            )
+          </li>
           <li>GitHub, GitLab, or Bitbucket repository</li>
           <li>OpenAI API key or other LLM credentials</li>
         </ul>
@@ -33,7 +38,10 @@ export default function VercelDeploymentPage() {
         <Callout type="info" title="One-Click Deploy">
           Deploy a starter template with one click:
         </Callout>
-        <a href="https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components" className="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800">
+        <a
+          href="https://vercel.com/new/clone?repository-url=https://github.com/christireid/Clarity-ai-chat-components"
+          className="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800"
+        >
           Deploy to Vercel →
         </a>
       </section>
@@ -43,7 +51,8 @@ export default function VercelDeploymentPage() {
 
         <h3>1. Prepare Your Project</h3>
         <p>Ensure your Next.js project is configured for production:</p>
-        <pre><code>{`// next.config.js
+        <pre>
+          <code>{`// next.config.js
 module.exports = {
   // Enable React strict mode
   reactStrictMode: true,
@@ -59,11 +68,15 @@ module.exports = {
       ? \`https://\${process.env.VERCEL_URL}\`
       : 'http://localhost:3000'
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>2. Configure Environment Variables</h3>
-        <p>Create <code>.env.example</code> for documentation:</p>
-        <pre><code>{`# OpenAI
+        <p>
+          Create <code>.env.example</code> for documentation:
+        </p>
+        <pre>
+          <code>{`# OpenAI
 OPENAI_API_KEY=sk-...
 
 # Optional: Vector Database
@@ -76,18 +89,30 @@ NEXTAUTH_SECRET=...
 NEXTAUTH_URL=https://your-domain.com
 
 # Optional: Analytics
-NEXT_PUBLIC_ANALYTICS_ID=...`}</code></pre>
+NEXT_PUBLIC_ANALYTICS_ID=...`}</code>
+        </pre>
 
         <h3>3. Connect Repository to Vercel</h3>
         <ol>
-          <li>Go to <a href="https://vercel.com/new">vercel.com/new</a></li>
+          <li>
+            Go to <a href="https://vercel.com/new">vercel.com/new</a>
+          </li>
           <li>Import your Git repository</li>
-          <li>Select framework preset: <strong>Next.js</strong></li>
-          <li>Configure project:
+          <li>
+            Select framework preset: <strong>Next.js</strong>
+          </li>
+          <li>
+            Configure project:
             <ul>
-              <li>Build Command: <code>npm run build</code></li>
-              <li>Output Directory: <code>.next</code></li>
-              <li>Install Command: <code>npm install</code></li>
+              <li>
+                Build Command: <code>npm run build</code>
+              </li>
+              <li>
+                Output Directory: <code>.next</code>
+              </li>
+              <li>
+                Install Command: <code>npm install</code>
+              </li>
             </ul>
           </li>
         </ol>
@@ -95,21 +120,27 @@ NEXT_PUBLIC_ANALYTICS_ID=...`}</code></pre>
         <h3>4. Add Environment Variables</h3>
         <p>In Vercel dashboard → Settings → Environment Variables:</p>
         <ul>
-          <li>Add all variables from <code>.env.example</code></li>
+          <li>
+            Add all variables from <code>.env.example</code>
+          </li>
           <li>Set for Production, Preview, and Development</li>
           <li>Sensitive keys: Use Production only</li>
         </ul>
 
         <h3>5. Deploy</h3>
-        <p>Click <strong>Deploy</strong> and wait for build to complete (~2 minutes).</p>
+        <p>
+          Click <strong>Deploy</strong> and wait for build to complete (~2
+          minutes).
+        </p>
       </section>
 
       <section className="docs-section">
         <h2>Enable Streaming</h2>
         <p>Configure streaming for AI responses:</p>
-        
+
         <h3>Option 1: vercel.json (Recommended)</h3>
-        <pre><code>{`{
+        <pre>
+          <code>{`{
   "functions": {
     "app/api/chat/route.ts": {
       "maxDuration": 60
@@ -118,28 +149,32 @@ NEXT_PUBLIC_ANALYTICS_ID=...`}</code></pre>
       "maxDuration": 30
     }
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Option 2: Route Segment Config</h3>
-        <pre><code>{`// app/api/chat/route.ts
+        <pre>
+          <code>{`// app/api/chat/route.ts
 export const maxDuration = 60
-export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
   // Your streaming code
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <Callout type="warning" title="Timeout Limits">
-          • Hobby: 10s<br/>
-          • Pro: 60s<br/>
-          • Enterprise: 900s (15 min)
+          • Hobby: 10s
+          <br />
+          • Pro: 60s
+          <br />• Enterprise: 900s (15 min)
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>Edge Functions</h2>
         <p>Use Edge Runtime for lower latency (120+ global regions):</p>
-        <pre><code>{`// app/api/chat/route.ts
+        <pre>
+          <code>{`// app/api/chat/route.ts
 export const runtime = 'edge'
 
 export async function POST(req: Request) {
@@ -196,12 +231,14 @@ export async function POST(req: Request) {
       headers: { 'Content-Type': 'application/json' }
     })
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <Callout type="info" title="Edge Limitations">
-          • No Node.js APIs (fs, child_process)<br/>
-          • Max response: 4MB<br/>
-          • Use for simple proxying and streaming
+          • No Node.js APIs (fs, child_process)
+          <br />
+          • Max response: 4MB
+          <br />• Use for simple proxying and streaming
         </Callout>
       </section>
 
@@ -209,11 +246,18 @@ export async function POST(req: Request) {
         <h2>Custom Domain</h2>
         <ol>
           <li>Go to Project → Settings → Domains</li>
-          <li>Add your domain: <code>chat.yourdomain.com</code></li>
-          <li>Configure DNS:
+          <li>
+            Add your domain: <code>chat.yourdomain.com</code>
+          </li>
+          <li>
+            Configure DNS:
             <ul>
-              <li><strong>A Record:</strong> <code>76.76.21.21</code></li>
-              <li>Or <strong>CNAME:</strong> <code>cname.vercel-dns.com</code></li>
+              <li>
+                <strong>A Record:</strong> <code>76.76.21.21</code>
+              </li>
+              <li>
+                Or <strong>CNAME:</strong> <code>cname.vercel-dns.com</code>
+              </li>
             </ul>
           </li>
           <li>SSL automatically provisioned (~5 minutes)</li>
@@ -224,7 +268,8 @@ export async function POST(req: Request) {
         <h2>Performance Optimization</h2>
 
         <h3>Caching</h3>
-        <pre><code>{`// Revalidate static pages
+        <pre>
+          <code>{`// Revalidate static pages
 export const revalidate = 3600 // 1 hour
 
 // Cache API responses
@@ -236,10 +281,12 @@ export async function GET() {
       'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120'
     }
   })
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Image Optimization</h3>
-        <pre><code>{`import Image from 'next/image'
+        <pre>
+          <code>{`import Image from 'next/image'
 
 <Image
   src="/avatar.png"
@@ -247,10 +294,12 @@ export async function GET() {
   height={40}
   alt="User avatar"
   loading="lazy"
-/>`}</code></pre>
+/>`}</code>
+        </pre>
 
         <h3>Bundle Analysis</h3>
-        <pre><code>{`// Install analyzer
+        <pre>
+          <code>{`// Install analyzer
 npm install @next/bundle-analyzer
 
 // next.config.js
@@ -263,14 +312,16 @@ module.exports = withBundleAnalyzer({
 })
 
 // Run analysis
-ANALYZE=true npm run build`}</code></pre>
+ANALYZE=true npm run build`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Monitoring & Analytics</h2>
 
         <h3>Vercel Analytics</h3>
-        <pre><code>{`// app/layout.tsx
+        <pre>
+          <code>{`// app/layout.tsx
 import { Analytics } from '@vercel/analytics/react'
 
 export default function RootLayout({ children }) {
@@ -282,18 +333,22 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   )
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Speed Insights</h3>
-        <pre><code>{`npm install @vercel/speed-insights
+        <pre>
+          <code>{`npm install @vercel/speed-insights
 
 // app/layout.tsx
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
-<SpeedInsights />`}</code></pre>
+<SpeedInsights />`}</code>
+        </pre>
 
         <h3>Custom Monitoring</h3>
-        <pre><code>{`// Track API errors
+        <pre>
+          <code>{`// Track API errors
 export async function POST(req: Request) {
   try {
     return await handleRequest(req)
@@ -313,12 +368,14 @@ export async function POST(req: Request) {
     
     return Response.json({ error: 'Internal error' }, { status: 500 })
   }
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
         <h2>Environment-Specific Configuration</h2>
-        <pre><code>{`// Different configs per environment
+        <pre>
+          <code>{`// Different configs per environment
 const config = {
   production: {
     apiUrl: 'https://api.production.com',
@@ -338,7 +395,8 @@ const config = {
 }
 
 const env = process.env.VERCEL_ENV || 'development'
-export const appConfig = config[env]`}</code></pre>
+export const appConfig = config[env]`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -346,20 +404,28 @@ export const appConfig = config[env]`}</code></pre>
 
         <h3>Automatic Deployments</h3>
         <ul>
-          <li><strong>Production:</strong> Push to <code>main</code> branch</li>
-          <li><strong>Preview:</strong> Any pull request</li>
-          <li><strong>Development:</strong> Any branch push</li>
+          <li>
+            <strong>Production:</strong> Push to <code>main</code> branch
+          </li>
+          <li>
+            <strong>Preview:</strong> Any pull request
+          </li>
+          <li>
+            <strong>Development:</strong> Any branch push
+          </li>
         </ul>
 
         <h3>Deploy Hooks</h3>
         <p>Trigger deploys via API:</p>
-        <pre><code>{`# Get deploy hook URL from Settings → Git
+        <pre>
+          <code>{`# Get deploy hook URL from Settings → Git
 curl -X POST https://api.vercel.com/v1/integrations/deploy/...
 
 # Use in CI/CD
 - name: Deploy to Vercel
   run: |
-    curl -X POST \${{ secrets.VERCEL_DEPLOY_HOOK }}`}</code></pre>
+    curl -X POST \${{ secrets.VERCEL_DEPLOY_HOOK }}`}</code>
+        </pre>
 
         <h3>Preview Comments</h3>
         <p>Vercel automatically comments on PRs with preview URLs</p>
@@ -377,7 +443,8 @@ curl -X POST https://api.vercel.com/v1/integrations/deploy/...
         </ul>
 
         <h3>CORS Configuration</h3>
-        <pre><code>{`// middleware.ts
+        <pre>
+          <code>{`// middleware.ts
 import { NextResponse } from 'next/server'
 
 export function middleware(request: Request) {
@@ -399,10 +466,12 @@ export function middleware(request: Request) {
 
 export const config = {
   matcher: '/api/:path*'
-}`}</code></pre>
+}`}</code>
+        </pre>
 
         <h3>Rate Limiting</h3>
-        <pre><code>{`import { Ratelimit } from '@upstash/ratelimit'
+        <pre>
+          <code>{`import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 
 const ratelimit = new Ratelimit({
@@ -419,7 +488,8 @@ export async function POST(req: Request) {
   }
   
   // Process request
-}`}</code></pre>
+}`}</code>
+        </pre>
       </section>
 
       <section className="docs-section">
@@ -428,8 +498,12 @@ export async function POST(req: Request) {
         <h3>Build Failures</h3>
         <ul>
           <li>Check build logs in Vercel dashboard</li>
-          <li>Verify all dependencies are in <code>package.json</code></li>
-          <li>Test build locally: <code>npm run build</code></li>
+          <li>
+            Verify all dependencies are in <code>package.json</code>
+          </li>
+          <li>
+            Test build locally: <code>npm run build</code>
+          </li>
           <li>Clear build cache: Settings → General → Clear Cache</li>
         </ul>
 
@@ -443,7 +517,9 @@ export async function POST(req: Request) {
 
         <h3>Function Timeouts</h3>
         <ul>
-          <li>Increase <code>maxDuration</code> in <code>vercel.json</code></li>
+          <li>
+            Increase <code>maxDuration</code> in <code>vercel.json</code>
+          </li>
           <li>Upgrade plan for longer timeouts</li>
           <li>Use background jobs for long tasks</li>
           <li>Stream responses to keep connection alive</li>

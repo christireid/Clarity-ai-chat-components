@@ -4,11 +4,10 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Hook Performance Guide - Clarity Chat Components',
-  description: 'Learn how to optimize hook performance, including dependency management, memoization, and avoiding unnecessary computations.',
+  description:
+    'Learn how to optimize hook performance, including dependency management, memoization, and avoiding unnecessary computations.',
 }
 
 export default function HookPerformancePage() {
@@ -18,7 +17,9 @@ export default function HookPerformancePage() {
         <span className="docs-badge">Guide</span>
         <h1>Hook Performance</h1>
         <p className="docs-lead">
-          Learn how to optimize hook performance, including dependency management, memoization, avoiding unnecessary computations, and hook composition.
+          Learn how to optimize hook performance, including dependency
+          management, memoization, avoiding unnecessary computations, and hook
+          composition.
         </p>
       </div>
 
@@ -34,9 +35,7 @@ export default function HookPerformancePage() {
 
       <section className="docs-section">
         <h2>Dependency Optimization</h2>
-        <p>
-          Optimize hook dependencies:
-        </p>
+        <p>Optimize hook dependencies:</p>
         <CodePlayground
           initialCode={`import { useMemo, useCallback } from 'react'
 import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
@@ -82,9 +81,7 @@ function BadExample() {
 
       <section className="docs-section">
         <h2>Memoizing Hook Results</h2>
-        <p>
-          Memoize expensive hook computations:
-        </p>
+        <p>Memoize expensive hook computations:</p>
         <CodePlayground
           initialCode={`import { useMemo } from 'react'
 import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
@@ -127,9 +124,7 @@ function FilteredMessages() {
 
       <section className="docs-section">
         <h2>Avoiding Unnecessary Hook Calls</h2>
-        <p>
-          Avoid calling hooks unnecessarily:
-        </p>
+        <p>Avoid calling hooks unnecessarily:</p>
         <CodePlayground
           initialCode={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
 
@@ -176,9 +171,7 @@ function SmartOptimization() {
 
       <section className="docs-section">
         <h2>Hook Composition</h2>
-        <p>
-          Compose hooks efficiently:
-        </p>
+        <p>Compose hooks efficiently:</p>
         <CodePlayground
           initialCode={`import {
   useClarityChat,
@@ -237,9 +230,7 @@ function ChatWithOptimization() {
 
       <section className="docs-section">
         <h2>Performance Measurement</h2>
-        <p>
-          Measure hook performance:
-        </p>
+        <p>Measure hook performance:</p>
         <CodePlayground
           initialCode={`import { useEffect, useRef } from 'react'
 import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
@@ -299,8 +290,16 @@ function AnalyticsOptimization() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/guides/hook-dependencies">Hook Dependencies</a> - Dependency management</li>
-          <li><a href="/guides/performance-optimization-patterns">Performance Optimization Patterns</a> - General optimization</li>
+          <li>
+            <a href="/guides/hook-dependencies">Hook Dependencies</a> -
+            Dependency management
+          </li>
+          <li>
+            <a href="/guides/performance-optimization-patterns">
+              Performance Optimization Patterns
+            </a>{' '}
+            - General optimization
+          </li>
         </ul>
       </section>
     </div>

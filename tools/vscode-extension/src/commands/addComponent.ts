@@ -1,23 +1,41 @@
 /**
  * Add Component Command
- * Provides a visual picker to insert Clarity Chat components
+ * An enhanced, delightful experience for adding Clarity Chat components
  */
 
 import * as vscode from 'vscode'
+import { addImportToFile, stripIconPrefix } from '../utils/import-utils'
 
 interface ComponentItem extends vscode.QuickPickItem {
   value: string
   category: string
   code: string
   imports: string
+  isRecent?: boolean
+  isPinned?: boolean
+}
+
+interface CategoryInfo {
+  icon: string
+  description: string
+}
+
+const CATEGORY_INFO: Record<string, CategoryInfo> = {
+  'Top-Level': { icon: '🚀', description: 'Complete, drop-in solutions' },
+  'Building Blocks': { icon: '🧱', description: 'Core chat components' },
+  Streaming: { icon: '🌊', description: 'Real-time content display' },
+  Providers: { icon: '⚙️', description: 'Context and state management' },
+  'Token Management': { icon: '📊', description: 'Token usage tracking' },
+  Utilities: { icon: '🔧', description: 'Helper components' },
+  Configuration: { icon: '⚡', description: 'Settings and configuration' },
 }
 
 const COMPONENTS: ComponentItem[] = [
   // Top-Level Components
   {
-    label: '$(symbol-class) ClarityChat',
+    label: '$(comment-discussion) ClarityChat',
     description: 'Complete drop-in chat UI',
-    detail: 'Full-featured chat interface with all bells and whistles',
+    detail: '🚀 Top-Level • Full-featured chat interface with streaming, memory, and markdown',
     value: 'ClarityChat',
     category: 'Top-Level',
     imports: "import { ClarityChat } from '@clarity-chat/react'",
@@ -29,9 +47,9 @@ const COMPONENTS: ComponentItem[] = [
 />`,
   },
   {
-    label: '$(symbol-class) ClarityChatPresets',
+    label: '$(list-selection) ClarityChatPresets',
     description: 'Pre-configured chat variants',
-    detail: 'Ready-to-use chat presets for common use cases',
+    detail: '🚀 Top-Level • Ready-to-use presets: minimal, standard, enterprise',
     value: 'ClarityChatPresets',
     category: 'Top-Level',
     imports: "import { ClarityChatPresets } from '@clarity-chat/react'",
@@ -45,7 +63,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(window) ChatWindow',
     description: 'Chat container component',
-    detail: 'Scrollable container with proper chat layout',
+    detail: '🧱 Building Blocks • Scrollable container with proper chat layout',
     value: 'ChatWindow',
     category: 'Building Blocks',
     imports: "import { ChatWindow } from '@clarity-chat/react'",
@@ -56,7 +74,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(list-ordered) MessageList',
     description: 'Message display list',
-    detail: 'Renders messages with virtualization for performance',
+    detail: '🧱 Building Blocks • Renders messages with virtualization for performance',
     value: 'MessageList',
     category: 'Building Blocks',
     imports: "import { MessageList } from '@clarity-chat/react'",
@@ -69,7 +87,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(edit) ChatInput',
     description: 'Chat input with submit',
-    detail: 'Full-featured input with file upload and voice support',
+    detail: '🧱 Building Blocks • Full-featured input with file upload and voice support',
     value: 'ChatInput',
     category: 'Building Blocks',
     imports: "import { ChatInput } from '@clarity-chat/react'",
@@ -84,7 +102,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(comment) MessageBubble',
     description: 'Individual message display',
-    detail: 'Styled message bubble with role-based theming',
+    detail: '🧱 Building Blocks • Styled message bubble with role-based theming',
     value: 'MessageBubble',
     category: 'Building Blocks',
     imports: "import { MessageBubble } from '@clarity-chat/react'",
@@ -99,7 +117,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(pulse) StreamingMessage',
     description: 'Real-time text streaming',
-    detail: 'Displays streaming text with typing cursor',
+    detail: '🌊 Streaming • Displays streaming text with typing cursor',
     value: 'StreamingMessage',
     category: 'Streaming',
     imports: "import { StreamingMessage } from '@clarity-chat/react'",
@@ -112,7 +130,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(loading~spin) ThinkingIndicator',
     description: 'AI thinking animation',
-    detail: 'Visual indicator while AI processes request',
+    detail: '🌊 Streaming • Visual indicator while AI processes request',
     value: 'ThinkingIndicator',
     category: 'Streaming',
     imports: "import { ThinkingIndicator } from '@clarity-chat/react'",
@@ -124,7 +142,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(keyboard) TypingIndicator',
     description: 'User typing indicator',
-    detail: 'Shows when user or AI is typing',
+    detail: '🌊 Streaming • Shows when user or AI is typing',
     value: 'TypingIndicator',
     category: 'Streaming',
     imports: "import { TypingIndicator } from '@clarity-chat/react'",
@@ -135,7 +153,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(database) MemoryProvider',
     description: 'Memory context provider',
-    detail: 'Enables conversation memory for child components',
+    detail: '⚙️ Providers • Enables conversation memory for child components',
     value: 'MemoryProvider',
     category: 'Providers',
     imports: "import { MemoryProvider } from '@clarity-chat/react'",
@@ -149,7 +167,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(symbol-namespace) ClarityChatProvider',
     description: 'Main context provider',
-    detail: 'Root provider for Clarity Chat context',
+    detail: '⚙️ Providers • Root provider for Clarity Chat context',
     value: 'ClarityChatProvider',
     category: 'Providers',
     imports: "import { ClarityChatProvider } from '@clarity-chat/react'",
@@ -162,7 +180,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(dashboard) TokenBudgetDisplay',
     description: 'Token usage visualization',
-    detail: 'Shows token consumption with visual progress',
+    detail: '📊 Token Management • Shows token consumption with visual progress',
     value: 'TokenBudgetDisplay',
     category: 'Token Management',
     imports: "import { TokenBudgetDisplay } from '@clarity-chat/react'",
@@ -175,7 +193,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(graph) TokenCounter',
     description: 'Token count display',
-    detail: 'Displays current token count',
+    detail: '📊 Token Management • Displays current token count',
     value: 'TokenCounter',
     category: 'Token Management',
     imports: "import { TokenCounter } from '@clarity-chat/react'",
@@ -189,7 +207,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(markdown) MarkdownRenderer',
     description: 'Markdown content display',
-    detail: 'Renders markdown with syntax highlighting',
+    detail: '🔧 Utilities • Renders markdown with syntax highlighting',
     value: 'MarkdownRenderer',
     category: 'Utilities',
     imports: "import { MarkdownRenderer } from '@clarity-chat/react'",
@@ -201,7 +219,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(code) CodeBlock',
     description: 'Syntax highlighted code',
-    detail: 'Code block with copy button and language detection',
+    detail: '🔧 Utilities • Code block with copy button and language detection',
     value: 'CodeBlock',
     category: 'Utilities',
     imports: "import { CodeBlock } from '@clarity-chat/react'",
@@ -215,7 +233,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(error) ErrorBoundary',
     description: 'Error boundary wrapper',
-    detail: 'Catches and displays errors gracefully',
+    detail: '🔧 Utilities • Catches and displays errors gracefully',
     value: 'ErrorBoundary',
     category: 'Utilities',
     imports: "import { ErrorBoundary } from '@clarity-chat/react'",
@@ -231,7 +249,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(server) ModelSelector',
     description: 'AI model dropdown',
-    detail: 'Select from available AI models',
+    detail: '⚡ Configuration • Select from available AI models',
     value: 'ModelSelector',
     category: 'Configuration',
     imports: "import { ModelSelector } from '@clarity-chat/react'",
@@ -244,7 +262,7 @@ const COMPONENTS: ComponentItem[] = [
   {
     label: '$(settings-gear) SettingsPanel',
     description: 'Chat settings panel',
-    detail: 'Configurable settings for chat behavior',
+    detail: '⚡ Configuration • Configurable settings for chat behavior',
     value: 'SettingsPanel',
     category: 'Configuration',
     imports: "import { SettingsPanel } from '@clarity-chat/react'",
@@ -255,154 +273,202 @@ const COMPONENTS: ComponentItem[] = [
   },
 ]
 
-export async function addComponentCommand(_context: vscode.ExtensionContext) {
+const RECENT_KEY = 'clarity-chat.recentComponents'
+const PINNED_KEY = 'clarity-chat.pinnedComponents'
+
+export async function addComponentCommand(context: vscode.ExtensionContext) {
   const editor = vscode.window.activeTextEditor
   if (!editor) {
     vscode.window.showErrorMessage('No active editor found')
     return
   }
 
-  // Group components by category
-  const categories = [...new Set(COMPONENTS.map((c) => c.category))]
+  // Get recent and pinned components
+  const recentNames = context.globalState.get<string[]>(RECENT_KEY, [])
+  const pinnedNames = context.globalState.get<string[]>(PINNED_KEY, [])
 
-  // Show category picker first
-  const categoryPick = await vscode.window.showQuickPick(
-    [
-      {
-        label: 'All Components',
-        description: 'Show all available components',
-        value: 'all',
-      },
-      ...categories.map((cat) => ({
-        label: `$(folder) ${cat}`,
-        description: `${COMPONENTS.filter((c) => c.category === cat).length} components`,
-        value: cat,
-      })),
-    ],
-    {
-      placeHolder: 'Select component category',
-      title: 'Clarity Chat Components',
+  // Build items with pinned and recent at top
+  const buildItems = (): ComponentItem[] => {
+    const items: ComponentItem[] = []
+
+    // Add pinned components
+    const pinnedItems = COMPONENTS.filter((c) => pinnedNames.includes(c.value))
+    if (pinnedItems.length > 0) {
+      items.push({
+        label: 'Pinned',
+        kind: vscode.QuickPickItemKind.Separator,
+      } as ComponentItem)
+      items.push(
+        ...pinnedItems.map((c) => ({
+          ...c,
+          label: `$(pinned) ${stripIconPrefix(c.label)}`,
+          description: `⭐ ${c.description}`,
+          isPinned: true,
+        }))
+      )
     }
-  )
 
-  if (!categoryPick) return
+    // Add recent components (excluding pinned)
+    const recentItems = COMPONENTS.filter(
+      (c) => recentNames.includes(c.value) && !pinnedNames.includes(c.value)
+    )
+      .sort(
+        (a, b) => recentNames.indexOf(a.value) - recentNames.indexOf(b.value)
+      )
+      .slice(0, 3)
 
-  // Filter components by category
-  const filteredComponents =
-    categoryPick.value === 'all'
-      ? COMPONENTS
-      : COMPONENTS.filter((c) => c.category === categoryPick.value)
-
-  // Show component picker
-  const selection = (await vscode.window.showQuickPick(
-    filteredComponents.map((comp) => ({
-      ...comp,
-      buttons: [
-        {
-          iconPath: new vscode.ThemeIcon('book'),
-          tooltip: 'View Documentation',
-        },
-      ],
-    })),
-    {
-      placeHolder: 'Select a component to add',
-      title: 'Clarity Chat Components',
-      matchOnDescription: true,
-      matchOnDetail: true,
+    if (recentItems.length > 0) {
+      items.push({
+        label: 'Recently Used',
+        kind: vscode.QuickPickItemKind.Separator,
+      } as ComponentItem)
+      items.push(
+        ...recentItems.map((c) => ({
+          ...c,
+          label: `$(history) ${stripIconPrefix(c.label)}`,
+          isRecent: true,
+        }))
+      )
     }
-  )) as ComponentItem | undefined
 
-  if (!selection) return
-
-  // Check if import already exists
-  const document = editor.document
-  const text = document.getText()
-  const hasImport =
-    text.includes(selection.value) && text.includes('@clarity-chat/react')
-
-  // Prepare the code to insert
-  const insertText = selection.code
-
-  // If import doesn't exist, ask if user wants to add it
-  if (!hasImport) {
-    const addImport = await vscode.window.showQuickPick(
-      [
-        {
-          label: 'Yes',
-          description: 'Add import statement at the top',
-          value: true,
-        },
-        { label: 'No', description: 'Insert component only', value: false },
-      ],
-      {
-        placeHolder: `Add import for ${selection.value}?`,
-        title: 'Add Import',
+    // Add all components by category
+    const categories = [...new Set(COMPONENTS.map((c) => c.category))]
+    for (const category of categories) {
+      const categoryInfo = CATEGORY_INFO[category] || {
+        icon: '📦',
+        description: '',
       }
+      items.push({
+        label: `${categoryInfo.icon} ${category}`,
+        kind: vscode.QuickPickItemKind.Separator,
+      } as ComponentItem)
+      items.push(...COMPONENTS.filter((c) => c.category === category))
+    }
+
+    return items
+  }
+
+  // Create the quick pick
+  const picker = vscode.window.createQuickPick<ComponentItem>()
+  picker.items = buildItems()
+  picker.placeholder = 'Search components... (type to filter)'
+  picker.title = 'Add Clarity Chat Component'
+  picker.matchOnDescription = true
+  picker.matchOnDetail = true
+
+  // Add action buttons
+  picker.buttons = [
+    {
+      iconPath: new vscode.ThemeIcon('preview'),
+      tooltip: 'Open Component Gallery',
+    },
+    {
+      iconPath: new vscode.ThemeIcon('book'),
+      tooltip: 'Open Documentation',
+    },
+  ]
+
+  // Dispose picker when hidden to prevent memory leaks
+  picker.onDidHide(() => picker.dispose())
+
+  picker.onDidTriggerButton((button) => {
+    if (button.tooltip === 'Open Component Gallery') {
+      vscode.commands.executeCommand('clarity-chat.showPreview')
+    } else if (button.tooltip === 'Open Documentation') {
+      vscode.commands.executeCommand('clarity-chat.openDocs')
+    }
+    picker.hide()
+  })
+
+  picker.onDidAccept(async () => {
+    const selection = picker.selectedItems[0]
+    if (!selection || selection.kind === vscode.QuickPickItemKind.Separator) {
+      return
+    }
+
+    // Find the original component
+    const originalComponent = COMPONENTS.find((c) => c.code === selection.code)
+    if (!originalComponent) return
+
+    // Update recent components
+    const updated = [
+      originalComponent.value,
+      ...recentNames.filter((n) => n !== originalComponent.value),
+    ].slice(0, 10)
+    context.globalState.update(RECENT_KEY, updated)
+
+    picker.hide()
+
+    // Check if import already exists
+    const document = editor.document
+    const text = document.getText()
+    const hasImport =
+      text.includes(originalComponent.value) &&
+      text.includes('@clarity-chat/react')
+
+    // If import doesn't exist, ask if user wants to add it
+    if (!hasImport) {
+      const addImport = await vscode.window.showQuickPick(
+        [
+          {
+            label: '$(add) Yes, add import',
+            description: 'Add import statement at the top',
+            value: 'add',
+          },
+          {
+            label: '$(clippy) Copy to clipboard',
+            description: 'Copy import statement to clipboard',
+            value: 'copy',
+          },
+          {
+            label: '$(x) No, skip import',
+            description: 'Insert component only',
+            value: 'skip',
+          },
+        ],
+        {
+          placeHolder: `Add import for ${originalComponent.value}?`,
+          title: 'Import Handling',
+        }
+      )
+
+      if (!addImport) return
+
+      if (addImport.value === 'add') {
+        await addImportToFile(editor, originalComponent.imports)
+      } else if (addImport.value === 'copy') {
+        await vscode.env.clipboard.writeText(originalComponent.imports)
+        vscode.window.showInformationMessage('Import copied to clipboard')
+      }
+    }
+
+    // Insert the component as a snippet
+    const snippet = new vscode.SnippetString(originalComponent.code)
+    await editor.insertSnippet(snippet)
+
+    // Show success message with actions
+    const action = await vscode.window.showInformationMessage(
+      `✓ Added ${originalComponent.value}`,
+      'Pin Component',
+      'View Docs'
     )
 
-    if (addImport?.value) {
-      // Find the best location for the import
-      const importLocation = findImportLocation(document)
-
-      await editor.edit((editBuilder) => {
-        // Add import
-        editBuilder.insert(importLocation, selection.imports + '\n')
-      })
-    }
-  }
-
-  // Insert the component as a snippet
-  const snippet = new vscode.SnippetString(insertText)
-  await editor.insertSnippet(snippet)
-
-  // Show success message
-  vscode.window
-    .showInformationMessage(`Added ${selection.value} component`, 'View Docs')
-    .then((choice) => {
-      if (choice === 'View Docs') {
-        vscode.env.openExternal(
-          vscode.Uri.parse(
-            `https://docs.claritychat.dev/components/${selection.value.toLowerCase()}`
-          )
+    if (action === 'Pin Component') {
+      const newPinned = [
+        ...new Set([...pinnedNames, originalComponent.value]),
+      ].slice(0, 5)
+      context.globalState.update(PINNED_KEY, newPinned)
+      vscode.window.showInformationMessage(
+        `${originalComponent.value} pinned for quick access!`
+      )
+    } else if (action === 'View Docs') {
+      vscode.env.openExternal(
+        vscode.Uri.parse(
+          `https://docs.claritychat.dev/components/${originalComponent.value.toLowerCase()}`
         )
-      }
-    })
-}
-
-function findImportLocation(document: vscode.TextDocument): vscode.Position {
-  const text = document.getText()
-  const lines = text.split('\n')
-
-  // Find the last import statement
-  let lastImportLine = -1
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-    if (line.startsWith('import ') || line.startsWith('import{')) {
-      lastImportLine = i
-    } else if (
-      lastImportLine >= 0 &&
-      line &&
-      !line.startsWith('//') &&
-      !line.startsWith('/*')
-    ) {
-      // Found non-import, non-comment line after imports
-      break
+      )
     }
-  }
+  })
 
-  if (lastImportLine >= 0) {
-    return new vscode.Position(lastImportLine + 1, 0)
-  }
-
-  // No imports found, insert at the beginning (after any 'use client' directive)
-  for (let i = 0; i < Math.min(lines.length, 5); i++) {
-    if (
-      lines[i].includes("'use client'") ||
-      lines[i].includes('"use client"')
-    ) {
-      return new vscode.Position(i + 1, 0)
-    }
-  }
-
-  return new vscode.Position(0, 0)
+  picker.show()
 }

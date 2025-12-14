@@ -2,8 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'useIndexedDB Hook | Clarity Chat',
   description:
@@ -19,8 +17,9 @@ export default function UseIndexedDBPage() {
         </div>
         <h1 className="text-4xl font-bold mb-4">useIndexedDB</h1>
         <p className="text-xl text-muted-foreground mb-4">
-          IndexedDB hook for large data persistence. Use for storing large conversations (&gt;5MB)
-          or when you need structured queries. Falls back to localStorage when IndexedDB is unavailable.
+          IndexedDB hook for large data persistence. Use for storing large
+          conversations (&gt;5MB) or when you need structured queries. Falls
+          back to localStorage when IndexedDB is unavailable.
         </p>
         <p className="text-muted-foreground">
           <strong>Architecture Layer:</strong> Low-Level (Utilities) •{' '}
@@ -31,17 +30,30 @@ export default function UseIndexedDBPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
-          <li>Persisting large conversation histories that exceed localStorage limits (&gt;5MB)</li>
-          <li>Offline-first chat applications requiring reliable local storage</li>
-          <li>When you need indexed queries on stored data (e.g., search by date)</li>
+          <li>
+            Persisting large conversation histories that exceed localStorage
+            limits (&gt;5MB)
+          </li>
+          <li>
+            Offline-first chat applications requiring reliable local storage
+          </li>
+          <li>
+            When you need indexed queries on stored data (e.g., search by date)
+          </li>
           <li>Applications storing media or large attachments locally</li>
         </ul>
 
         <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-          <li>Small amounts of data (&lt;5MB) - use <code className="bg-muted px-2 py-1 rounded">useLocalStorage</code> instead</li>
+          <li>
+            Small amounts of data (&lt;5MB) - use{' '}
+            <code className="bg-muted px-2 py-1 rounded">useLocalStorage</code>{' '}
+            instead
+          </li>
           <li>Server-side rendering - IndexedDB is browser-only</li>
-          <li>Data that needs to sync across devices - use a backend database</li>
+          <li>
+            Data that needs to sync across devices - use a backend database
+          </li>
         </ul>
       </section>
 
@@ -120,7 +132,8 @@ function ConversationStorage() {
                     <td className="p-3 font-mono text-sm">config</td>
                     <td className="p-3 font-mono text-sm">IndexedDBConfig</td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      Database configuration including name, version, and stores.
+                      Database configuration including name, version, and
+                      stores.
                     </td>
                   </tr>
                   <tr>
@@ -157,42 +170,66 @@ function ConversationStorage() {
                   <tr>
                     <td className="p-3 font-mono text-sm">data</td>
                     <td className="p-3 font-mono text-sm">T | null</td>
-                    <td className="p-3 text-sm text-muted-foreground">Current data.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Current data.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">isLoading</td>
                     <td className="p-3 font-mono text-sm">boolean</td>
-                    <td className="p-3 text-sm text-muted-foreground">Loading state.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Loading state.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">error</td>
                     <td className="p-3 font-mono text-sm">Error | null</td>
-                    <td className="p-3 text-sm text-muted-foreground">Error state.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Error state.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">save</td>
-                    <td className="p-3 font-mono text-sm">(value: T) =&gt; Promise&lt;void&gt;</td>
-                    <td className="p-3 text-sm text-muted-foreground">Save data to IndexedDB.</td>
+                    <td className="p-3 font-mono text-sm">
+                      (value: T) =&gt; Promise&lt;void&gt;
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Save data to IndexedDB.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">load</td>
-                    <td className="p-3 font-mono text-sm">() =&gt; Promise&lt;T | null&gt;</td>
-                    <td className="p-3 text-sm text-muted-foreground">Load data from IndexedDB.</td>
+                    <td className="p-3 font-mono text-sm">
+                      () =&gt; Promise&lt;T | null&gt;
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Load data from IndexedDB.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">remove</td>
-                    <td className="p-3 font-mono text-sm">() =&gt; Promise&lt;void&gt;</td>
-                    <td className="p-3 text-sm text-muted-foreground">Delete data from IndexedDB.</td>
+                    <td className="p-3 font-mono text-sm">
+                      () =&gt; Promise&lt;void&gt;
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Delete data from IndexedDB.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">clear</td>
-                    <td className="p-3 font-mono text-sm">() =&gt; Promise&lt;void&gt;</td>
-                    <td className="p-3 text-sm text-muted-foreground">Clear all data in store.</td>
+                    <td className="p-3 font-mono text-sm">
+                      () =&gt; Promise&lt;void&gt;
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Clear all data in store.
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">isAvailable</td>
                     <td className="p-3 font-mono text-sm">boolean</td>
-                    <td className="p-3 text-sm text-muted-foreground">Whether IndexedDB is available.</td>
+                    <td className="p-3 text-sm text-muted-foreground">
+                      Whether IndexedDB is available.
+                    </td>
                   </tr>
                 </tbody>
               </table>

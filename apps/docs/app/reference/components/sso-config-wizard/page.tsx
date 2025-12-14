@@ -5,11 +5,10 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'SSOConfigWizard - Clarity Chat Components',
-  description: 'Step-by-step wizard for configuring SSO (Single Sign-On) for enterprise tenants.',
+  description:
+    'Step-by-step wizard for configuring SSO (Single Sign-On) for enterprise tenants.',
 }
 
 const props: Prop[] = [
@@ -48,7 +47,8 @@ export default function SSOConfigWizardPage() {
         <span className="docs-badge">Component</span>
         <h1>SSOConfigWizard</h1>
         <p className="docs-lead">
-          Step-by-step wizard for configuring SSO (Single Sign-On) for enterprise tenants with SAML, OIDC, and OAuth support.
+          Step-by-step wizard for configuring SSO (Single Sign-On) for
+          enterprise tenants with SAML, OIDC, and OAuth support.
         </p>
       </div>
 
@@ -64,9 +64,7 @@ export default function SSOConfigWizardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Configure SSO for a tenant:
-        </p>
+        <p>Configure SSO for a tenant:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
@@ -95,9 +93,7 @@ function SSOSetup({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>SAML Configuration</h2>
-        <p>
-          Configure SAML SSO:
-        </p>
+        <p>Configure SAML SSO:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
@@ -122,9 +118,7 @@ function SAMLSetup({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>OIDC Configuration</h2>
-        <p>
-          Configure OIDC SSO:
-        </p>
+        <p>Configure OIDC SSO:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
@@ -149,9 +143,7 @@ function OIDCSetup({ tenantId }: { tenantId: string }) {
 
       <section className="docs-section">
         <h2>OAuth Configuration</h2>
-        <p>
-          Configure OAuth SSO:
-        </p>
+        <p>Configure OAuth SSO:</p>
         <CodePlayground
           initialCode={`import { SSOConfigWizard } from '@clarity-chat/react'
 
@@ -182,9 +174,16 @@ function OAuthSetup({ tenantId }: { tenantId: string }) {
       <section className="docs-section">
         <h2>SSO Providers</h2>
         <ul>
-          <li><strong>SAML</strong>: Security Assertion Markup Language (enterprise standard)</li>
-          <li><strong>OIDC</strong>: OpenID Connect (modern standard)</li>
-          <li><strong>OAuth</strong>: OAuth 2.0 (authorization framework)</li>
+          <li>
+            <strong>SAML</strong>: Security Assertion Markup Language
+            (enterprise standard)
+          </li>
+          <li>
+            <strong>OIDC</strong>: OpenID Connect (modern standard)
+          </li>
+          <li>
+            <strong>OAuth</strong>: OAuth 2.0 (authorization framework)
+          </li>
         </ul>
       </section>
 
@@ -202,8 +201,16 @@ function OAuthSetup({ tenantId }: { tenantId: string }) {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/auth-tenant-dashboard">AuthTenantDashboard</a> - Tenant authentication dashboard</li>
-          <li><a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> - Multi-tenant setup</li>
+          <li>
+            <a href="/reference/components/auth-tenant-dashboard">
+              AuthTenantDashboard
+            </a>{' '}
+            - Tenant authentication dashboard
+          </li>
+          <li>
+            <a href="/cookbook/multi-tenant-chat">Multi-Tenant Chat Recipe</a> -
+            Multi-tenant setup
+          </li>
         </ul>
       </section>
     </div>

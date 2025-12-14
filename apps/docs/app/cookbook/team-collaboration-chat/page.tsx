@@ -4,8 +4,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Cookbook: Team Collaboration Chat',
   description:
@@ -19,8 +17,8 @@ export default function TeamCollaborationRecipePage() {
         <span className="docs-badge">Cookbook</span>
         <h1>Team Collaboration Chat</h1>
         <p className="docs-lead">
-          Implement a shared workspace where multiple teammates can chat, see who
-          is online, and view typing indicators in real time.
+          Implement a shared workspace where multiple teammates can chat, see
+          who is online, and view typing indicators in real time.
         </p>
       </div>
 
@@ -89,8 +87,8 @@ io.on('connection', (socket) => {
       <section className="docs-section">
         <h2>2. Client Hook</h2>
         <p>
-          Combine <code>useChat</code> with <code>socket.io-client</code> to keep
-          the transcript in sync for all participants.
+          Combine <code>useChat</code> with <code>socket.io-client</code> to
+          keep the transcript in sync for all participants.
         </p>
         <CodeBlock
           language="tsx"
@@ -213,22 +211,38 @@ export function TeamChatPage({ user }: { user: Presence }) {
       <section className="docs-section">
         <h2>Scaling Tips</h2>
         <ul>
-          <li>Persist messages in your database and broadcast from the server</li>
-          <li>Integrate <code>QuotaManager</code> to prevent abuse in high-traffic rooms</li>
-          <li>Use <code>TenantManager</code> to isolate conversations per workspace</li>
-          <li>Log events with <code>AuditLogger</code> for compliance (e.g. finance, healthcare)</li>
-          <li>Use <code>PresenceAvatarStack</code> or custom UI to display status</li>
+          <li>
+            Persist messages in your database and broadcast from the server
+          </li>
+          <li>
+            Integrate <code>QuotaManager</code> to prevent abuse in high-traffic
+            rooms
+          </li>
+          <li>
+            Use <code>TenantManager</code> to isolate conversations per
+            workspace
+          </li>
+          <li>
+            Log events with <code>AuditLogger</code> for compliance (e.g.
+            finance, healthcare)
+          </li>
+          <li>
+            Use <code>PresenceAvatarStack</code> or custom UI to display status
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <Callout type="success">
-          Related recipes: <Link href="/cookbook/analytics-tracking">Analytics &amp; Tracking</Link>{' '}
-          to measure engagement, <Link href="/cookbook/error-handling">Robust Error Handling</Link>{' '}
-          for resilient WebSocket reconnection flows.
+          Related recipes:{' '}
+          <Link href="/cookbook/analytics-tracking">
+            Analytics &amp; Tracking
+          </Link>{' '}
+          to measure engagement,{' '}
+          <Link href="/cookbook/error-handling">Robust Error Handling</Link> for
+          resilient WebSocket reconnection flows.
         </Callout>
       </section>
     </div>
   )
 }
-
