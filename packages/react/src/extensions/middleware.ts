@@ -39,16 +39,23 @@ function generateRequestId(): string {
 }
 
 function createDefaultLogger(): ExtensionLogger {
+  const isDev = process.env.NODE_ENV === 'development'
   return {
-    debug: (msg, ...args) => console.debug('[Middleware]', msg, ...args),
-    info: (msg, ...args) => console.info('[Middleware]', msg, ...args),
+    debug: (msg, ...args) => {
+      if (isDev) console.debug('[Middleware]', msg, ...args)
+    },
+    info: (msg, ...args) => {
+      if (isDev) console.info('[Middleware]', msg, ...args)
+    },
     warn: (msg, ...args) => console.warn('[Middleware]', msg, ...args),
     error: (msg, ...args) => console.error('[Middleware]', msg, ...args),
     child: (prefix) => ({
-      debug: (msg, ...args) =>
-        console.debug(`[Middleware:${prefix}]`, msg, ...args),
-      info: (msg, ...args) =>
-        console.info(`[Middleware:${prefix}]`, msg, ...args),
+      debug: (msg, ...args) => {
+        if (isDev) console.debug(`[Middleware:${prefix}]`, msg, ...args)
+      },
+      info: (msg, ...args) => {
+        if (isDev) console.info(`[Middleware:${prefix}]`, msg, ...args)
+      },
       warn: (msg, ...args) =>
         console.warn(`[Middleware:${prefix}]`, msg, ...args),
       error: (msg, ...args) =>

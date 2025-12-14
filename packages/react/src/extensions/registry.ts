@@ -101,16 +101,20 @@ class StateManagerImpl implements ExtensionStateManager {
 // ============================================
 
 class LoggerImpl implements ExtensionLogger {
+  private isDev = process.env.NODE_ENV === 'development'
+
   constructor(private prefix: string) {}
 
   debug(message: string, ...args: unknown[]): void {
-    if (process.env.NODE_ENV === 'development') {
+    if (this.isDev) {
       console.debug(`[${this.prefix}]`, message, ...args)
     }
   }
 
   info(message: string, ...args: unknown[]): void {
-    console.info(`[${this.prefix}]`, message, ...args)
+    if (this.isDev) {
+      console.info(`[${this.prefix}]`, message, ...args)
+    }
   }
 
   warn(message: string, ...args: unknown[]): void {

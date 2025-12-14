@@ -121,6 +121,28 @@ tests/visual/__diff_output__/
 **/tsup.config.bundled_*.d.mts
 **/tsup.config.bundled_*.d.mts.map
 
+# Vitest setup artifacts
+**/vitest.setup.d.ts
+**/vitest.setup.d.ts.map
+
+# Package examples build artifacts
+packages/*/examples/**/*.js
+packages/*/examples/**/*.d.ts
+packages/*/examples/**/*.js.map
+packages/*/examples/**/*.d.ts.map
+
+# Package test build artifacts
+packages/*/__tests__/**/*.js
+packages/*/__tests__/**/*.d.ts
+packages/*/__tests__/**/*.js.map
+packages/*/__tests__/**/*.d.ts.map
+
+# CLI template build artifacts (keep source .ts/.tsx only)
+packages/cli/templates/**/*.js
+packages/cli/templates/**/*.d.ts
+packages/cli/templates/**/*.js.map
+packages/cli/templates/**/*.d.ts.map
+
 # Backup files
 *.backup
 *.bak
