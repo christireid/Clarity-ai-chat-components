@@ -106,7 +106,8 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "node scripts/build-sequential.js",
+    "build:parallel": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "typecheck": "pnpm -C ../license run build && pnpm -C ../memory run build && pnpm -C ../types run build && pnpm -C ../utils run build && pnpm -C ../primitives run build && tsc --noEmit",
