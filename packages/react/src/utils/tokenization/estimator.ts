@@ -7,6 +7,7 @@
  * @module tokenization/estimator
  */
 
+import { TokenCounter } from '@clarity-chat/token-optimization'
 import type { ModelName } from './accurate-counter'
 
 /**
@@ -137,16 +138,8 @@ export function estimateTokens(
 ): number {
   if (!text) return 0
 
-  const charsPerToken = model
-    ? (MODEL_CHAR_RATIOS[model] ?? inferRatioFromModelName(model))
-    : DEFAULT_CHARS_PER_TOKEN
-
-  // Use effective char count for CJK-aware estimation
-  const effectiveLength = containsCJK(text)
-    ? getEffectiveCharCount(text)
-    : text.length
-
-  return Math.ceil(effectiveLength / charsPerToken)
+  // Use the new TokenCounter for accurate token counting
+  return TokenCounter.count(text)
 }
 
 /**
@@ -162,15 +155,8 @@ export function estimateTokensByProvider(
 ): number {
   if (!text) return 0
 
-  const charsPerToken =
-    PROVIDER_CHAR_RATIOS[provider] ?? DEFAULT_CHARS_PER_TOKEN
-
-  // Use CJK-aware character counting for consistency with estimateTokens()
-  const effectiveLength = containsCJK(text)
-    ? getEffectiveCharCount(text)
-    : text.length
-
-  return Math.ceil(effectiveLength / charsPerToken)
+  // Use the new TokenCounter for accurate token counting regardless of provider
+  return TokenCounter.count(text)
 }
 
 /**

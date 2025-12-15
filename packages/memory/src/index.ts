@@ -42,7 +42,7 @@ export {
   MemoryCompressor,
   SemanticChunker,
   ContextOptimizer,
-} from './token-optimizer'
+} from '@clarity-chat/token-optimization'
 
 // LLM-based summarization (80-90% token reduction)
 export {

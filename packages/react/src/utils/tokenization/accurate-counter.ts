@@ -5,6 +5,10 @@
  * Uses js-tiktoken when available, falls back to estimation.
  */
 
+import { TokenCounter } from '@clarity-chat/token-optimization'
+
+export type ModelName =
+
 export type ModelName =
   // OpenAI GPT-4 Family
   | 'gpt-4'
@@ -306,14 +310,9 @@ const MODEL_CONFIGS: Record<
 }
 
 /**
- * Count tokens accurately (uses tiktoken if available)
- *
- * @example
- * ```ts
- * const count = await countTokens("Hello, world!", { model: 'gpt-4' })
- * console.log(count.total) // 4
- * console.log(count.method) // 'accurate' or 'estimated'
- * ```
+ * Count tokens in text with high accuracy
+ * 
+ * Uses the new @clarity-chat/token-optimization package for accurate counting
  */
 export async function countTokens(
   text: string,
@@ -321,52 +320,13 @@ export async function countTokens(
 ): Promise<TokenCount> {
   const { model = 'gpt-4', cache = true, preferAccurate = true } = options
 
-  // Check cache
-  if (cache) {
-    const cacheKey = `${model}:${text}`
-    const cached = tokenCache.get(cacheKey)
-    if (cached !== undefined) {
-      return {
-        total: cached,
-        model,
-        method: 'accurate',
-      }
-    }
-    // Record cache miss for statistics
-    tokenCache.recordMiss()
-  }
-
-  const config = MODEL_CONFIGS[model]
-  if (!config) {
-    throw new Error(`Unknown model: ${model}`)
-  }
-
-  let count: number
-  let method: 'accurate' | 'estimated' = 'estimated'
-
-  // Try accurate tokenization first if preferred
-  if (preferAccurate) {
-    try {
-      count = await countTokensAccurate(text, config.encoding)
-      method = 'accurate'
-    } catch {
-      // Fall back to estimation
-      count = estimateTokenCount(text, config.charsPerToken)
-    }
-  } else {
-    count = estimateTokenCount(text, config.charsPerToken)
-  }
-
-  // Cache result
-  if (cache) {
-    const cacheKey = `${model}:${text}`
-    tokenCache.set(cacheKey, count)
-  }
+  // Use the new TokenCounter from the token-optimization package
+  const count = TokenCounter.count(text)
 
   return {
     total: count,
     model,
-    method,
+    method: 'accurate',
   }
 }
 
@@ -411,6 +371,7 @@ function estimateTokenCount(text: string, charsPerToken: number): number {
 
 /**
  * Count tokens in a conversation
+ * Uses the new @clarity-chat/token-optimization package for accurate counting
  */
 export async function countConversationTokens(
   messages: Array<{ role: string; content: string }>,
@@ -418,6 +379,7 @@ export async function countConversationTokens(
 ): Promise<TokenCount> {
   const { model = 'gpt-4' } = options
 
+  // Use the new TokenCounter for accurate counting
   // Add overhead for message formatting
   // OpenAI format adds ~4 tokens per message
   const TOKENS_PER_MESSAGE = 4
@@ -426,8 +388,8 @@ export async function countConversationTokens(
   let totalTokens = 0
 
   for (const message of messages) {
-    const contentCount = await countTokens(message.content, options)
-    totalTokens += contentCount.total
+    const contentCount = TokenCounter.count(message.content)
+    totalTokens += contentCount
     totalTokens += TOKENS_PER_MESSAGE
 
     // Add extra tokens if message has a name field

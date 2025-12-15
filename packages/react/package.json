@@ -126,6 +126,7 @@
     "@clarity-chat/license": "workspace:*",
     "@clarity-chat/memory": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/token-optimization": "workspace:*",
     "@clarity-chat/types": "workspace:*",
     "@clarity-chat/utils": "workspace:*",
     "@radix-ui/react-slot": "^1.2.4",
