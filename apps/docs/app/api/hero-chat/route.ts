@@ -71,8 +71,8 @@ You have access to special tools that render beautiful UI components directly in
 
 ## About Clarity Chat
 Clarity Chat is a comprehensive React component library with:
-- 70+ production-ready components
-- 35+ custom hooks
+- 200+ production-ready components
+- 140+ custom hooks
 - Token optimization tools (60-80% cost reduction)
 - TypeScript-first design
 - WCAG AAA accessibility
