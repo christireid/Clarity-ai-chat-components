@@ -8,25 +8,28 @@ import { TimeSeparator } from './time-separator'
 import { ScrollArea, Button, cn, useA11y } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { ArrowDownIcon } from './icons'
-import { SkeletonMessage } from './skeleton'
+import { ArrowDownIcon } from '../ui/icons'
+import { SkeletonMessage } from '../ui/skeleton'
 import {
   createStaggerContainerVariant,
   createStaggerChildVariant,
-} from '../animations/utils'
-import { INTERACTION_VARIANTS, DURATION_SECONDS } from '../animations/constants'
+} from '../../animations/utils'
+import {
+  INTERACTION_VARIANTS,
+  DURATION_SECONDS,
+} from '../../animations/constants'
 import {
   getMotionSafeDuration,
   getMotionSafeScale,
   getMotionSafeValue,
-} from '../animations/motion-safe'
+} from '../../animations/motion-safe'
 import {
   getMessageGrouping,
   getTimeSeparator,
   shouldShowTimeSeparator,
-} from '../utils/message-grouping'
+} from '../../utils'
 import type { ReactNode } from 'react'
-import { ClarityError } from '../error/clarity-error'
+import { ClarityError } from '../../error/clarity-error'
 
 export interface MessageListProps {
   messages: MessageType[]

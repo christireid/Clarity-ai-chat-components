@@ -26,7 +26,7 @@ import {
   MessageMetadata,
   EditableMessageContent,
 } from './message/index'
-import { ErrorMessage, type ErrorDetails } from './error-message'
+import { ErrorMessage, type ErrorDetails } from '../feedback/error-message'
 import { CopyButton } from './copy-button'
 
 export interface MessageProps {

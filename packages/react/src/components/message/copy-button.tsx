@@ -4,10 +4,10 @@ import React, { memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, type ButtonProps, cn, Tooltip } from '@clarity-chat/primitives'
 import { useClipboard } from '../hooks/use-clipboard'
-import { CopyIcon, CheckIcon } from './icons'
-import { useToast } from './toast'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { getSpring } from '../animations/spring-presets'
+import { CopyIcon, CheckIcon } from '../ui/icons'
+import { useToast } from '../ui/toast'
+import { useReducedMotion } from '../../hooks/use-reduced-motion'
+import { getSpring } from '../../animations/spring-presets'
 
 export interface CopyButtonProps extends Omit<
   ButtonProps,
