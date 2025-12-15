@@ -44,6 +44,11 @@
       "import": "./dist/core.mjs",
       "require": "./dist/core.js"
     },
+    "./core-minimal": {
+      "types": "./dist/core-minimal.d.ts",
+      "import": "./dist/core-minimal.mjs",
+      "require": "./dist/core-minimal.js"
+    },
     "./animations": {
       "types": "./dist/animations/index.d.ts",
       "import": "./dist/animations/index.mjs",

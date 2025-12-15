@@ -2,7 +2,11 @@ import { defineConfig } from 'tsup'
 
 const commonConfig = {
   format: ['cjs', 'esm'] as const,
-  dts: false, // Temporarily disabled due to strict TypeScript errors
+  dts: {
+    resolve: true,
+    // Only include types from source, exclude node_modules
+    only: true,
+  },
   external: [
     'react',
     'react-dom',
@@ -46,6 +50,13 @@ export default defineConfig([
     entry: { core: 'src/core.ts' },
     ...commonConfig,
     clean: false,
+  },
+  // Core minimal entry (ultra-light ~30KB)
+  {
+    entry: { 'core-minimal': 'src/core-minimal.ts' },
+    ...commonConfig,
+    clean: false,
+    splitting: true, // Enable code splitting for lazy loads
   },
   // Utils entry
   {
