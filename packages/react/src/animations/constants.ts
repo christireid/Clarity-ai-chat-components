@@ -45,6 +45,8 @@ export const ANIMATION_DURATION = {
   slower: 400,
   /** 500ms - Page-level transitions */
   slowest: 500,
+  /** 150ms - Quantum animations for enhanced UI */
+  quantum: 150,
   // Legacy alias - use 'slower' instead
   /** @deprecated Use 'slower' instead */
   'extra-slow': 500,
@@ -62,6 +64,7 @@ export const DURATION_CSS = {
   slow: '300ms',
   slower: '400ms',
   slowest: '500ms',
+  quantum: '150ms',
 } as const
 
 /**
@@ -76,6 +79,7 @@ export const DURATION_SECONDS = {
   slow: 0.3,
   slower: 0.4,
   slowest: 0.5,
+  quantum: 0.15,
 } as const
 
 /**
@@ -92,6 +96,7 @@ export const TAILWIND_DURATION = {
   slow: 'duration-300',
   slower: 'duration-500', // Tailwind doesn't have 400, using closest
   slowest: 'duration-500',
+  quantum: 'duration-150',
 } as const
 
 // =============================================================================
@@ -476,6 +481,61 @@ export const ANIMATION_PRESETS = {
     animate: { opacity: 1, scaleY: 1, originY: 0 },
     exit: { opacity: 0, scaleY: 0, originY: 0 },
   },
+  /** Quantum animations for 2025 enhancements */
+  quantum: {
+    initial: { opacity: 0, scale: 0.9, filter: 'blur(2px)' },
+    animate: { 
+      opacity: 1, 
+      scale: 1, 
+      filter: 'blur(0px)',
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 20,
+      },
+    },
+    exit: { opacity: 0, scale: 0.9, filter: 'blur(2px)' },
+  },
+  /** Glassmorphism entrance animation */
+  glassmorphism: {
+    initial: { opacity: 0, backdropFilter: 'blur(0px)' },
+    animate: { 
+      opacity: 1, 
+      backdropFilter: 'blur(16px)',
+      transition: {
+        duration: DURATION_SECONDS.slow,
+        ease: EASING_FRAMER.smooth,
+      },
+    },
+    exit: { opacity: 0, backdropFilter: 'blur(0px)' },
+  },
+  /** Aurora gradient animation */
+  aurora: {
+    initial: { opacity: 0, backgroundPosition: '0% 50%' },
+    animate: { 
+      opacity: 1, 
+      backgroundPosition: '100% 50%',
+      transition: {
+        duration: DURATION_SECONDS.slowest,
+        ease: EASING_FRAMER.smooth,
+        repeat: Infinity,
+        repeatType: 'reverse',
+      },
+    },
+    exit: { opacity: 0, backgroundPosition: '0% 50%' },
+  },
+  /** Neumorphism press effect */
+  neumorphism: {
+    initial: { boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.7)' },
+    animate: { 
+      boxShadow: 'inset 1px 1px 3px rgba(0,0,0,0.1), inset -1px -1px 3px rgba(255,255,255,0.7)',
+      transition: {
+        duration: DURATION_SECONDS.fast,
+        ease: EASING_FRAMER.out,
+      },
+    },
+    exit: { boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.7)' },
+  },
 } as const
 
 /**
@@ -528,6 +588,27 @@ export const ANIMATION_PRESETS_REDUCED = {
     animate: { opacity: 1, originY: 0 },
     exit: { opacity: 0, originY: 0 },
   },
+  // 2025 Enhancement tokens (reduced motion)
+  quantum: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  },
+  glassmorphism: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  },
+  aurora: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  },
+  neumorphism: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  },
 } as const
 
 // =============================================================================
@@ -566,6 +647,7 @@ export const CSS_VARS = {
     slow: '--animation-duration-slow',
     slower: '--animation-duration-slower',
     slowest: '--animation-duration-slowest',
+    quantum: '--animation-duration-quantum',
   },
   easing: {
     default: '--animation-easing-default',
@@ -592,6 +674,7 @@ export function generateCSSVars(): string {
       --animation-duration-slow: ${DURATION_CSS.slow};
       --animation-duration-slower: ${DURATION_CSS.slower};
       --animation-duration-slowest: ${DURATION_CSS.slowest};
+      --animation-duration-quantum: ${DURATION_CSS.quantum};
 
       /* Animation Easings */
       --animation-easing-default: ${ANIMATION_EASING.default};
