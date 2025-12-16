@@ -1,93 +1,88 @@
 /**
- * Token Optimization System - Foundation Phase
+ * Token Optimization Package - Enhanced Implementation
  * 
- * Enterprise-grade token optimization with proven 50-70% cost reduction
- * Combines context caching, compression, and intelligent model routing
+ * This package provides advanced token optimization capabilities including:
+ * - Enhanced security with comprehensive threat protection
+ * - Quality gates with 85% minimum quality preservation
+ * - Cost-aware optimization with budget management
+ * - Advanced semantic caching with 90%+ cost reduction
+ * - Dynamic compression with quality preservation
  */
 
-// Core tokenizers
-export { AdvancedTokenCounter, countTokens, countTokensWithConfidence } from './tokenizers/advanced-counter'
+// Security exports
+export { EnhancedSecurityManager } from './security/enhanced-security'
 export type { 
-  ModelFamily, 
-  ContentType, 
-  TokenCountResult, 
-  AdvancedTokenizerConfig,
-  TokenCounterMetrics
-} from './tokenizers/advanced-counter'
+  EnhancedSecurityConfig, 
+  SecurityContext, 
+  ThreatIntelligence,
+  EnhancedValidationResult 
+} from './security/enhanced-security'
 
-// Context caching (90% cost reduction for cached tokens)
-export { AdvancedContextCache, cacheContext, getCacheStats } from './caching/advanced-cache'
-export type { 
-  CacheConfig, 
-  CachedContext, 
-  CacheResult, 
-  CacheStats 
-} from './caching/advanced-cache'
-
-// Basic compression (70% compression ratio)
-export { BasicCompressionEngine, compressText, compressTextBatch } from './compression/basic-engine'
-export type { 
-  CompressionStrategy, 
-  CompressionResult, 
-  CompressionConfig 
-} from './compression/basic-engine'
-
-// Model routing (30% cost reduction through intelligent selection)
-export { SimpleModelRouter, routeToOptimalModel, getModelCostComparison } from './routing/simple-router'
-export type { 
-  ModelPricing, 
-  RoutingRequest, 
-  RoutingDecision 
-} from './routing/simple-router'
-
-// Advanced budget management (for future phases)
-export { AdvancedTokenBudgetManager, optimizeTokenBudget, optimizeTokensWithCompression } from './budget/advanced-budget'
-export type { 
-  TokenBudgetConfig, 
-  TokenAllocation, 
-  AllocationStrategy,
-  AllocationResult,
-  ContextFactors
-} from './budget/advanced-budget'
-
-// Unified optimizer (combines all techniques)
-export { UnifiedTokenOptimizer, optimizeTokens, getOptimizationStats } from './unified-optimizer'
-export type { 
-  UnifiedOptimizationRequest,
-  UnifiedOptimizationResult,
-  OptimizationRequirements,
-  OptimizationConstraints
-} from './unified-optimizer'
-
-// Security and formats (for future phases)
 export { TokenSecurityManager } from './security/token-security'
-export { ToonOptimizer } from './formats/toon-optimizer'
+export type { 
+  SecurityConfig as TokenSecurityConfig, 
+  SecurityEvent, 
+  SanitizationResult,
+  ProtectionResult,
+  ComplianceReport 
+} from './security/token-security'
 
-// Legacy compatibility layer
-export {
-  TokenCounter,
-  TokenBudgetManager,
-  MemoryCompressor,
-  SemanticChunker,
-  ContextOptimizer
-} from './legacy-compatibility'
+// Security configuration builder
+export { createSecurityConfig, SecurityProfiles } from './security/security-config-builder'
+export type { SecurityConfigBuilder } from './security/security-config-builder'
 
-// Types
+// Security testing playground
+export { createSecurityTestingPlayground, runSecurityTests } from './security/security-testing-playground'
+export type { SecurityTestCase, SecurityTestResult } from './security/security-testing-playground'
+
+// Security event streaming
+export { createSecurityEventStreamer, SecurityStreamSubscribers } from './security/security-event-streaming'
+export type { SecurityStreamEvent, StreamSubscriber, StreamMetrics } from './security/security-event-streaming'
+
+// Redis security store
+export { createSecurityStore } from './security/redis-security-store'
+export type { RedisSecurityStore } from './security/redis-security-store'
+
+// Security dashboard
+export { createSecurityDashboard } from './security/security-dashboard'
+export type { SecurityDashboard } from './security/security-dashboard'
+
+// Quality exports
+export { QualityGate } from './quality/quality-gate'
+export type { 
+  QualityGateConfig,
+  QualityMetrics as QualityGateMetrics,
+  QualityCheckResult,
+  QualityContext
+} from './quality/quality-gate'
+
+// Cost exports
+export { CostAwareOptimizer } from './cost/cost-aware-optimizer'
 export type {
-  TokenizerConfig,
-  SecurityConfig,
-  ToonConfig,
-  CompressionResult as LegacyCompressionResult,
-  CacheStats,
-  MLPrediction,
-  AdvancedSecurityConfig
-} from './types'
+  CostAwareConfig,
+  CostEstimate,
+  OptimizationStrategy as CostOptimizationStrategy,
+  BudgetStatus,
+  ResourceRequirements
+} from './cost/cost-aware-optimizer'
 
-// Constants
-export { 
-  DEFAULT_TOKENIZER_CONFIG,
-  DEFAULT_SECURITY_CONFIG,
-  DEFAULT_CACHE_CONFIG,
-  MAX_COMPRESSION_RATIO,
-  SECURITY_LEVELS
-} from './constants'
+// Caching exports
+export { AdvancedSemanticCache } from './caching/advanced-semantic-cache'
+export type {
+  SemanticCacheConfig,
+  CachedEntry,
+  CacheMetadata,
+  SemanticCacheResult,
+  CacheContext,
+  CacheStats
+} from './caching/advanced-semantic-cache'
+
+// Compression exports
+export { DynamicCompressionEngine } from './compression/dynamic-compression'
+export type {
+  DynamicCompressionConfig,
+  CompressionStrategy,
+  CompressionResult,
+  CompressionContext,
+  QualityMetrics as CompressionQualityMetrics
+} from './compression/dynamic-compression'

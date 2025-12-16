@@ -20,7 +20,7 @@ export default defineConfig({
   target: 'es2020',
   platform: 'neutral',
   esbuildOptions: (options) => {
-    options.drop = ['console', 'debugger']
+    // options.drop = ['console', 'debugger']
   },
   banner: {
     js: `/**

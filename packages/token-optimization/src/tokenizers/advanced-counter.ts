@@ -5,7 +5,7 @@
  * and model-specific optimizations based on empirical analysis
  */
 
-import { encoding_for_model, get_encoding, type TiktokenModel } from '@dqbd/tiktoken'
+import { encoding_for_model } from '@dqbd/tiktoken'
 
 /**
  * Supported model families for token counting
@@ -28,124 +28,221 @@ export interface TokenCountResult {
   /** Content type detected */
   contentType: ContentType
   /** Model used for counting */
-  model?: ModelFamily
-  /** Additional metadata */
-  metadata?: {
-    specialTokens?: number
-    contentTypeScore?: number
-    estimationMethod?: string
-  }
+  model: ModelFamily
+  /** Processing time in milliseconds */
+  processingTime: number
+  /** Whether cache was used */
+  cached: boolean
 }
 
 /**
- * Model-specific character-to-token ratios based on empirical analysis
- */
-const MODEL_RATIOS: Record<ModelFamily, { prose: number; code: number }> = {
-  'gpt-4': { prose: 4.0, code: 3.5 },
-  'gpt-3.5': { prose: 4.0, code: 3.5 },
-  'claude': { prose: 3.8, code: 3.3 },
-  'gemini': { prose: 3.9, code: 3.4 },
-  'generic': { prose: 4.0, code: 3.5 },
-}
-
-/**
- * Configuration for advanced token counting
+ * Configuration for the advanced token counter
  */
 export interface AdvancedTokenizerConfig {
-  model?: ModelFamily
-  enableCaching?: boolean
-  cacheSize?: number
-  enableMonitoring?: boolean
-  enableContentDetection?: boolean
-  fallbackToHeuristics?: boolean
+  /** Default model family to use */
+  defaultModel: ModelFamily
+  /** Enable caching of token counts */
+  enableCache: boolean
+  /** Cache timeout in milliseconds */
+  cacheTimeout: number
+  /** Enable content type detection */
+  enableContentDetection: boolean
+  /** Enable performance monitoring */
+  enableMonitoring: boolean
+  /** Confidence threshold for approximate counts */
+  confidenceThreshold: number
 }
 
 /**
- * Performance metrics for token counting operations
+ * Performance metrics for the tokenizer
  */
 export interface TokenCounterMetrics {
-  totalOperations: number
-  cacheHitRate: number
-  averageExecutionTime: number
+  /** Total token counts performed */
+  totalCounts: number
+  /** Number of cache hits */
+  cacheHits: number
+  /** Average processing time */
+  averageProcessingTime: number
+  /** Distribution of content types */
   contentTypeDistribution: Record<ContentType, number>
-  modelAccuracy: Record<ModelFamily, number>
+  /** Cache hit rate */
+  cacheHitRate: number
 }
 
 /**
- * Advanced token counter with model-specific optimizations
+ * Model-specific token ratios based on empirical analysis
+ * These ratios represent characters per token for different content types
+ */
+const MODEL_RATIOS: Record<ModelFamily, Record<ContentType, number>> = {
+  'gpt-4': {
+    prose: 4.0,
+    code: 3.5,
+    mixed: 3.8,
+    unknown: 3.9
+  },
+  'gpt-3.5': {
+    prose: 4.2,
+    code: 3.8,
+    mixed: 4.0,
+    unknown: 4.1
+  },
+  'claude': {
+    prose: 3.8,
+    code: 3.3,
+    mixed: 3.6,
+    unknown: 3.7
+  },
+  'gemini': {
+    prose: 3.9,
+    code: 3.4,
+    mixed: 3.7,
+    unknown: 3.8
+  },
+  'generic': {
+    prose: 4.0,
+    code: 3.5,
+    mixed: 3.8,
+    unknown: 3.9
+  }
+}
+
+/**
+ * Advanced token counter with caching and content analysis
  */
 export class AdvancedTokenCounter {
-  private static instance: AdvancedTokenCounter
-  private encoder: any
   private cache: Map<string, { count: number; timestamp: number }>
   private metrics: TokenCounterMetrics
-  private config: Required<AdvancedTokenizerConfig>
+  private tiktokenEncoders: Map<ModelFamily, any>
 
-  constructor(config: AdvancedTokenizerConfig = {}) {
-    this.config = {
-      model: config.model || 'generic',
-      enableCaching: config.enableCaching ?? true,
-      cacheSize: config.cacheSize ?? 10000,
-      enableMonitoring: config.enableMonitoring ?? true,
-      enableContentDetection: config.enableContentDetection ?? true,
-      fallbackToHeuristics: config.fallbackToHeuristics ?? true,
-    }
-
+  constructor(private config: AdvancedTokenizerConfig) {
     this.cache = new Map()
+    this.tiktokenEncoders = new Map()
     this.metrics = {
-      totalOperations: 0,
-      cacheHitRate: 0,
-      averageExecutionTime: 0,
-      contentTypeDistribution: { prose: 0, code: 0, mixed: 0, unknown: 0 },
-      modelAccuracy: { 'gpt-4': 0, 'gpt-3.5': 0, claude: 0, gemini: 0, generic: 0 },
+      totalCounts: 0,
+      cacheHits: 0,
+      averageProcessingTime: 0,
+      contentTypeDistribution: {
+        prose: 0,
+        code: 0,
+        mixed: 0,
+        unknown: 0
+      },
+      cacheHitRate: 0
     }
 
-    this.initializeEncoder()
-    this.setupCacheManagement()
+    this.initializeEncoders()
   }
 
-  /**
-   * Get singleton instance
-   */
-  static getInstance(config?: AdvancedTokenizerConfig): AdvancedTokenCounter {
-    if (!this.instance) {
-      this.instance = new AdvancedTokenCounter(config)
-    }
-    return this.instance
-  }
-
-  /**
-   * Initialize the tokenizer encoder
-   */
-  private initializeEncoder(): void {
+  private initializeEncoders(): void {
+    // Initialize Tiktoken encoders for supported models
     try {
-      if (this.config.model && ['gpt-4', 'gpt-3.5'].includes(this.config.model)) {
-        this.encoder = encoding_for_model(this.config.model as TiktokenModel)
-      } else {
-        // Use cl100k_base for most models
-        this.encoder = get_encoding('cl100k_base')
-      }
+      this.tiktokenEncoders.set('gpt-4', encoding_for_model('gpt-4'))
+      this.tiktokenEncoders.set('gpt-3.5', encoding_for_model('gpt-3.5-turbo'))
     } catch (error) {
-      console.warn(`Failed to initialize encoder for ${this.config.model}:`, error)
-      this.encoder = null
+      console.warn('Failed to initialize Tiktoken encoders, falling back to heuristic counting')
     }
+  }
+
+  /**
+   * Count tokens with high accuracy using Tiktoken when available
+   */
+  async countWithConfidence(
+    text: string,
+    model: ModelFamily = this.config.defaultModel
+  ): Promise<TokenCountResult> {
+    const startTime = Date.now()
+    const cacheKey = `${model}:${text}`
+
+    // Check cache first
+    if (this.config.enableCache) {
+      const cached = this.cache.get(cacheKey)
+      if (cached && Date.now() - cached.timestamp < this.config.cacheTimeout) {
+        this.metrics.cacheHits++
+        this.updateMetrics()
+        
+        return {
+          count: cached.count,
+          confidence: 'exact',
+          contentType: this.detectContentType(text),
+          model,
+          processingTime: Date.now() - startTime,
+          cached: true
+        }
+      }
+    }
+
+    // Detect content type
+    const contentType = this.detectContentType(text)
+
+    // Try to use Tiktoken for exact counting
+    let count: number
+    let confidence: 'exact' | 'high' | 'approximate' = 'exact'
+
+    const encoder = this.tiktokenEncoders.get(model)
+    if (encoder) {
+      try {
+        count = encoder.encode(text).length
+      } catch (error) {
+        // Fallback to heuristic counting
+        count = this.estimateWithHeuristics(text, model, contentType)
+        confidence = 'approximate'
+      }
+    } else {
+      // Use heuristic counting
+      count = this.estimateWithHeuristics(text, model, contentType)
+      confidence = 'approximate'
+    }
+
+    // Cache the result
+    if (this.config.enableCache) {
+      this.cache.set(cacheKey, { count, timestamp: Date.now() })
+    }
+
+    this.metrics.totalCounts++
+    this.updateMetrics()
+
+    return {
+      count,
+      confidence,
+      contentType,
+      model,
+      processingTime: Date.now() - startTime,
+      cached: false
+    }
+  }
+
+  /**
+   * Simple token counting without detailed analysis
+   */
+  count(text: string, model: ModelFamily = this.config.defaultModel): number {
+    return Math.ceil(text.length / MODEL_RATIOS[model][this.detectContentType(text)])
+  }
+
+  /**
+   * Estimate token count using heuristics when exact counting is not available
+   */
+  private estimateWithHeuristics(
+    text: string,
+    model: ModelFamily,
+    contentType: ContentType
+  ): number {
+    const ratio = MODEL_RATIOS[model][contentType]
+    return Math.ceil(text.length / ratio)
   }
 
   /**
    * Detect content type based on text characteristics
    */
   private detectContentType(text: string): ContentType {
-    if (!text || text.length === 0) return 'unknown'
-
-    // Code detection patterns
     const codePatterns = [
-      /^\s*(function|const|let|var|class|import|export|if|for|while|return)\s/m,
-      /[{}();=]/g,
-      /^\s*\/\//m,
-      /^\s*#\s*(include|define|pragma)/m,
-      /^\s*(def|class|import|from|if|elif|else|for|while|return)\s/m,
-      /`[^`]*`|'[^']*'|"[^"]*"/g, // String literals
-      /\b(console|print|printf|cout|System\.out)\b/g, // Output statements
+      /function\s+\w+\s*\(/,
+      /const\s+\w+\s*=/,
+      /class\s+\w+/,
+      /def\s+\w+\s*\(/,
+      /\{.*\}/,
+      /\[.*\]/,
+      /import\s+\w+/,
+      /export\s+\w+/
     ]
 
     const codeMatches = codePatterns.reduce((count, pattern) => {
@@ -154,7 +251,6 @@ export class AdvancedTokenCounter {
     }, 0)
 
     const codeRatio = codeMatches / (text.length / 100)
-    const contentTypeScore = codeRatio
 
     if (codeRatio > 2) {
       this.metrics.contentTypeDistribution.code++
@@ -164,348 +260,33 @@ export class AdvancedTokenCounter {
       this.metrics.contentTypeDistribution.mixed++
       return 'mixed'
     }
+    
     this.metrics.contentTypeDistribution.prose++
     return 'prose'
   }
 
   /**
-   * Count special tokens that may affect the count
+   * Count tokens for multiple texts efficiently
    */
-  private countSpecialTokenAdjustment(text: string): number {
-    let adjustment = 0
-
-    // URLs are typically 1 token regardless of length
-    const urls = text.match(/https?:\/\/[^\s]+/g)
-    if (urls) {
-      urls.forEach((url) => {
-        // Subtract characters, add 1 token
-        adjustment -= Math.floor(url.length / 4) - 1
-      })
-    }
-
-    // Numbers are typically 1-2 tokens regardless of length
-    const numbers = text.match(/\d{4,}/g)
-    if (numbers) {
-      numbers.forEach((num) => {
-        adjustment -= Math.floor(num.length / 4) - 2
-      })
-    }
-
-    // Email addresses
-    const emails = text.match(/[^\s@]+@[^\s@]+\.[^\s@]+/g)
-    if (emails) {
-      emails.forEach(() => {
-        adjustment += 1 // Usually 1 token
-      })
-    }
-
-    return Math.round(adjustment)
+  async countBatch(
+    texts: string[],
+    model: ModelFamily = this.config.defaultModel
+  ): Promise<number[]> {
+    return Promise.all(texts.map(text => this.countWithConfidence(text, model).then(result => result.count)))
   }
 
   /**
-   * Count tokens with high accuracy and confidence assessment
+   * Count tokens for multiple texts with confidence information
    */
-  countWithConfidence(text: string, model?: ModelFamily): TokenCountResult {
-    const startTime = performance.now()
-    
-    if (!text) {
-      return {
-        count: 0,
-        confidence: 'exact',
-        contentType: 'unknown',
-        model: model || this.config.model,
-      }
-    }
-
-    const targetModel = model || this.config.model
-    const cacheKey = `${text}:${targetModel}`
-
-    // Check cache
-    if (this.config.enableCaching) {
-      const cached = this.cache.get(cacheKey)
-      if (cached && Date.now() - cached.timestamp < 3600000) { // 1 hour TTL
-        this.updateMetrics('cache_hit')
-        return {
-          count: cached.count,
-          confidence: 'exact',
-          contentType: 'unknown', // Could cache this too
-          model: targetModel,
-        }
-      }
-    }
-
-    let count: number
-    let confidence: 'exact' | 'high' | 'approximate'
-    let contentType: ContentType
-
-    // Use tiktoken for exact counting if available
-    if (this.encoder && ['gpt-4', 'gpt-3.5'].includes(targetModel)) {
-      try {
-        count = this.encoder.encode(text).length
-        confidence = 'exact'
-        contentType = this.config.enableContentDetection ? this.detectContentType(text) : 'unknown'
-      } catch (error) {
-        // Fallback to heuristics
-        count = this.estimateWithHeuristics(text, targetModel)
-        confidence = 'approximate'
-        contentType = 'unknown'
-      }
-    } else {
-      // Use heuristics for other models
-      count = this.estimateWithHeuristics(text, targetModel)
-      confidence = this.encoder ? 'high' : 'approximate'
-      contentType = this.config.enableContentDetection ? this.detectContentType(text) : 'unknown'
-    }
-
-    const result: TokenCountResult = {
-      count: Math.max(1, count),
-      confidence,
-      contentType,
-      model: targetModel,
-      metadata: {
-        specialTokens: this.countSpecialTokenAdjustment(text),
-        contentTypeScore: contentType !== 'unknown' ? 0.8 : 0,
-        estimationMethod: confidence === 'exact' ? 'tiktoken' : 'heuristic',
-      },
-    }
-
-    // Cache result
-    if (this.config.enableCaching) {
-      this.addToCache(cacheKey, result.count)
-    }
-
-    this.updateMetrics('operation', performance.now() - startTime)
-    return result
+  async countBatchWithConfidence(
+    texts: string[],
+    model: ModelFamily = this.config.defaultModel
+  ): Promise<TokenCountResult[]> {
+    return Promise.all(texts.map(text => this.countWithConfidence(text, model)))
   }
 
   /**
-   * Estimate tokens using model-specific heuristics
-   */
-  private estimateWithHeuristics(text: string, model: ModelFamily): number {
-    if (!this.config.fallbackToHeuristics) {
-      return Math.ceil(text.length / 4) // Basic fallback
-    }
-
-    const contentType = this.detectContentType(text)
-    const ratios = MODEL_RATIOS[model]
-
-    let ratio: number
-    switch (contentType) {
-      case 'code':
-        ratio = ratios.code
-        break
-      case 'prose':
-        ratio = ratios.prose
-        break
-      case 'mixed':
-        ratio = (ratios.code + ratios.prose) / 2
-        break
-      default:
-        ratio = 4.0 // Default chars per token
-    }
-
-    const baseCount = Math.ceil(text.length / ratio)
-    const adjustment = this.countSpecialTokenAdjustment(text)
-    return Math.max(1, baseCount + adjustment)
-  }
-
-  /**
-   * Count tokens (backward compatible)
-   */
-  count(text: string, model?: ModelFamily): number {
-    return this.countWithConfidence(text, model).count
-  }
-
-  /**
-   * Count tokens in multiple texts efficiently
-   */
-  countBatch(texts: string[], model?: ModelFamily): number {
-    return texts.reduce((sum, text) => sum + this.count(text, model), 0)
-  }
-
-  /**
-   * Count multiple texts with confidence information
-   */
-  countBatchWithConfidence(texts: string[], model?: ModelFamily): TokenCountResult {
-    if (texts.length === 0) {
-      return {
-        count: 0,
-        confidence: 'exact',
-        contentType: 'unknown',
-        model: model || this.config.model,
-      }
-    }
-
-    let totalCount = 0
-    let hasApproximate = false
-    const contentTypes: ContentType[] = []
-
-    for (const text of texts) {
-      const result = this.countWithConfidence(text, model)
-      totalCount += result.count
-      if (result.confidence === 'approximate') {
-        hasApproximate = true
-      }
-      contentTypes.push(result.contentType)
-    }
-
-    // Determine overall content type
-    const codeCount = contentTypes.filter((t) => t === 'code').length
-    const proseCount = contentTypes.filter((t) => t === 'prose').length
-    let overallType: ContentType = 'mixed'
-    if (codeCount > proseCount * 2) overallType = 'code'
-    else if (proseCount > codeCount * 2) overallType = 'prose'
-
-    return {
-      count: totalCount,
-      confidence: hasApproximate ? 'approximate' : 'high',
-      contentType: overallType,
-      model: model || this.config.model,
-    }
-  }
-
-  /**
-   * Truncate text to fit token budget with intelligent boundary detection
-   */
-  truncate(text: string, maxTokens: number): string {
-    const tokens = this.count(text)
-    if (tokens <= maxTokens) return text
-
-    const ratio = maxTokens / tokens
-    const targetLength = Math.floor(text.length * ratio)
-
-    // Try to break at natural boundaries
-    const truncated = text.slice(0, targetLength)
-    const boundaries = [
-      truncated.lastIndexOf('.'),
-      truncated.lastIndexOf('\n'),
-      truncated.lastIndexOf('!'),
-      truncated.lastIndexOf('?'),
-      truncated.lastIndexOf(';'),
-      truncated.lastIndexOf(','),
-    ].filter(pos => pos > targetLength * 0.7) // Only consider boundaries in the last 30%
-
-    const breakPoint = Math.max(...boundaries)
-
-    if (breakPoint > targetLength * 0.7) {
-      return text.slice(0, breakPoint + 1).trim()
-    }
-
-    // If no good boundary found, use binary search for exact token count
-    return this.truncateWithBinarySearch(text, maxTokens)
-  }
-
-  /**
-   * Truncate using binary search for exact token count
-   */
-  private truncateWithBinarySearch(text: string, maxTokens: number): string {
-    let left = 0
-    let right = text.length
-
-    while (left < right) {
-      const mid = Math.floor((left + right) / 2)
-      const truncated = text.slice(0, mid)
-      const truncatedTokens = this.count(truncated)
-
-      if (truncatedTokens <= maxTokens) {
-        left = mid + 1
-      } else {
-        right = mid
-      }
-    }
-
-    const result = text.slice(0, left - 1).trim()
-    return result || text.slice(0, maxTokens * 3) // Fallback
-  }
-
-  /**
-   * Split text into sentences
-   */
-  splitSentences(text: string): string[] {
-    return text
-      .split(/[.!?]+/)
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0)
-  }
-
-  /**
-   * Get token-to-character ratio for current model
-   */
-  getTokenRatio(contentType: ContentType = 'prose'): number {
-    const ratios = MODEL_RATIOS[this.config.model]
-    switch (contentType) {
-      case 'code':
-        return ratios.code
-      case 'prose':
-        return ratios.prose
-      default:
-        return (ratios.code + ratios.prose) / 2
-    }
-  }
-
-  /**
-   * Update performance metrics
-   */
-  private updateMetrics(type: 'operation' | 'cache_hit', value?: number): void {
-    if (!this.config.enableMonitoring) return
-
-    this.metrics.totalOperations++
-
-    if (type === 'cache_hit') {
-      // Update cache hit rate
-      const totalOps = this.metrics.totalOperations
-      const currentHits = this.metrics.cacheHitRate * (totalOps - 1)
-      this.metrics.cacheHitRate = (currentHits + 1) / totalOps
-    } else if (type === 'operation' && value) {
-      // Update average execution time
-      const currentTotal = this.metrics.averageExecutionTime * (this.metrics.totalOperations - 1)
-      this.metrics.averageExecutionTime = (currentTotal + value) / this.metrics.totalOperations
-    }
-  }
-
-  /**
-   * Add result to cache with TTL
-   */
-  private addToCache(key: string, count: number): void {
-    // If cache is full, remove oldest entries
-    if (this.config.cacheSize && this.cache.size >= this.config.cacheSize) {
-      const entriesToRemove = Math.floor(this.cache.size * 0.1) // Remove 10% of entries
-      const entries = Array.from(this.cache.entries())
-      for (let i = 0; i < entriesToRemove && i < entries.length; i++) {
-        this.cache.delete(entries[i][0])
-      }
-    }
-
-    this.cache.set(key, { count, timestamp: Date.now() })
-  }
-
-  /**
-   * Setup automatic cache management
-   */
-  private setupCacheManagement(): void {
-    if (!this.config.enableCaching) return
-
-    // Clear expired entries every 5 minutes
-    setInterval(() => {
-      const now = Date.now()
-      const expiredKeys: string[] = []
-
-      for (const [key, entry] of this.cache) {
-        if (now - entry.timestamp > 3600000) { // 1 hour TTL
-          expiredKeys.push(key)
-        }
-      }
-
-      expiredKeys.forEach(key => this.cache.delete(key))
-
-      if (this.config.enableMonitoring && expiredKeys.length > 0) {
-        console.log(`[AdvancedTokenCounter] Cleared ${expiredKeys.length} expired cache entries`)
-      }
-    }, 300000)
-  }
-
-  /**
-   * Get performance metrics
+   * Get current performance metrics
    */
   getMetrics(): TokenCounterMetrics {
     return { ...this.metrics }
@@ -516,12 +297,24 @@ export class AdvancedTokenCounter {
    */
   resetMetrics(): void {
     this.metrics = {
-      totalOperations: 0,
-      cacheHitRate: 0,
-      averageExecutionTime: 0,
-      contentTypeDistribution: { prose: 0, code: 0, mixed: 0, unknown: 0 },
-      modelAccuracy: { 'gpt-4': 0, 'gpt-3.5': 0, claude: 0, gemini: 0, generic: 0 },
+      totalCounts: 0,
+      cacheHits: 0,
+      averageProcessingTime: 0,
+      contentTypeDistribution: {
+        prose: 0,
+        code: 0,
+        mixed: 0,
+        unknown: 0
+      },
+      cacheHitRate: 0
     }
+  }
+
+  /**
+   * Update internal metrics
+   */
+  private updateMetrics(): void {
+    this.metrics.cacheHitRate = this.metrics.cacheHits / Math.max(1, this.metrics.totalCounts)
   }
 
   /**
@@ -529,26 +322,41 @@ export class AdvancedTokenCounter {
    */
   destroy(): void {
     this.cache.clear()
-    this.encoder = null
+    this.tiktokenEncoders.forEach(encoder => encoder.free())
   }
 }
 
 /**
- * Convenience function for counting tokens with confidence
+ * Convenience function for quick token counting
  */
-export function countTokensWithConfidence(
-  text: string,
-  model?: ModelFamily,
-  config?: AdvancedTokenizerConfig
-): TokenCountResult {
-  const counter = AdvancedTokenCounter.getInstance(config)
-  return counter.countWithConfidence(text, model)
+export function countTokens(text: string, model?: ModelFamily): number {
+  const counter = new AdvancedTokenCounter({
+    defaultModel: model || 'generic',
+    enableCache: true,
+    cacheTimeout: 3600000,
+    enableContentDetection: true,
+    enableMonitoring: false,
+    confidenceThreshold: 0.8
+  })
+  
+  return counter.count(text, model || 'generic')
 }
 
 /**
- * Convenience function for basic token counting
+ * Convenience function for token counting with confidence information
  */
-export function countTokens(text: string, model?: ModelFamily): number {
-  const counter = AdvancedTokenCounter.getInstance()
-  return counter.count(text, model)
+export async function countTokensWithConfidence(
+  text: string,
+  model?: ModelFamily
+): Promise<TokenCountResult> {
+  const counter = new AdvancedTokenCounter({
+    defaultModel: model || 'generic',
+    enableCache: true,
+    cacheTimeout: 3600000,
+    enableContentDetection: true,
+    enableMonitoring: false,
+    confidenceThreshold: 0.8
+  })
+  
+  return await counter.countWithConfidence(text, model || 'generic')
 }
