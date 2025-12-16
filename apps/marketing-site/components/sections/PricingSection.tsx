@@ -4,14 +4,16 @@ import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import Link from 'next/link'
-import { Check, ArrowRight, Sparkles } from 'lucide-react'
+import { Check, ArrowRight, Sparkles, Building, Code } from 'lucide-react'
 import { durations } from '@/lib/constants'
+import TiltCard from '../ui/TiltCard'
 
 const tiers = [
   {
     name: 'Starter',
     price: { monthly: 0, annual: 0 },
     description: 'Perfect for learning and prototyping',
+    icon: Code,
     features: [
       '15+ core components',
       'Basic streaming support',
@@ -28,15 +30,16 @@ const tiers = [
   {
     name: 'Pro',
     price: { monthly: 49, annual: 39 },
-    description: 'Best for teams building production apps',
+    description: 'Best for shipping commercial AI apps',
+    icon: Sparkles,
     features: [
       '50+ components',
-      'All AI providers',
-      'Memory management',
-      'Token optimization',
+      'Code Interpreter & Voice UI',
+      '60fps Token Optimization',
+      'Memory Management Hooks',
       'Priority email support',
-      'Premium themes',
-      'Analytics integrations',
+      'Figma Design Kit',
+      'Commercial License',
       'Private Slack channel',
     ],
     cta: 'Start Free Trial',
@@ -47,14 +50,15 @@ const tiers = [
   {
     name: 'Enterprise',
     price: { monthly: 'Custom', annual: 'Custom' },
-    description: 'For companies with advanced needs',
+    description: 'For teams scaling past 100k users',
+    icon: Building,
     features: [
       'Everything in Pro',
-      'SSO & RBAC',
-      'Audit logging',
+      'Unlimited Developer Seats',
+      'Source Code Access',
       'White-label options',
-      'Dedicated support (4h SLA)',
-      'Custom integrations',
+      'Dedicated Slack Channel',
+      'Custom Component Dev',
       'SOC 2 compliance',
       'On-premises deployment',
     ],
@@ -147,10 +151,15 @@ export default function PricingSection() {
               typeof tier.price[billingPeriod] === 'number'
                 ? tier.price[billingPeriod]
                 : tier.price[billingPeriod]
+            
+            const Icon = tier.icon
 
             return (
-              <motion.div
+              <TiltCard
                 key={tier.name}
+                className={`h-full`}
+              >
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={
                   isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
@@ -160,7 +169,7 @@ export default function PricingSection() {
                   tier.highlighted
                     ? 'border-2 border-clarity-500/50 scale-105 z-10'
                     : 'border border-white/10'
-                } bg-surface-800 overflow-hidden`}
+                } bg-surface-800 overflow-hidden h-full flex flex-col`}
               >
                 {/* Highlighted badge */}
                 {tier.highlighted && (
@@ -177,10 +186,16 @@ export default function PricingSection() {
                   <div className="absolute inset-0 bg-gradient-to-b from-clarity-500/10 to-transparent pointer-events-none" />
                 )}
 
-                <div className="p-8 pt-12">
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    {tier.name}
-                  </h3>
+                <div className="p-8 pt-12 flex-1 flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`p-2 rounded-lg bg-gradient-to-br ${tier.gradient} bg-opacity-10 text-white`}>
+                        <Icon className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white">
+                        {tier.name}
+                    </h3>
+                  </div>
+                  
                   <p className="text-gray-400 text-sm mb-6">
                     {tier.description}
                   </p>
@@ -206,12 +221,17 @@ export default function PricingSection() {
                       typeof price === 'number' &&
                       price > 0 && (
                         <p className="text-sm text-gray-500 mt-1">
-                          Billed annually (${price * 12}/year)
+                          per developer / billed annually
                         </p>
                       )}
+                     {price === 0 && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          Free forever for personal use
+                        </p>
+                     )}
                   </div>
 
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-3 mb-8 flex-1">
                     {tier.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
                         <div className="mt-0.5 p-0.5 rounded-full bg-clarity-500/20">
@@ -235,6 +255,7 @@ export default function PricingSection() {
                   </Link>
                 </div>
               </motion.div>
+              </TiltCard>
             )
           })}
         </div>
