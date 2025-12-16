@@ -8,6 +8,8 @@
  */
 
 import { TokenCounter } from '@clarity-chat/token-optimization'
+import { InputValidator } from './input-validator.js'
+import { errorHandler, ErrorCategory, ErrorSeverity } from './enhanced-error-handling.js'
 import type { ModelName } from './accurate-counter'
 
 /**
@@ -136,10 +138,35 @@ export function estimateTokens(
   text: string,
   model?: ModelName | string
 ): number {
-  if (!text) return 0
+  try {
+    // Validate input
+    const validation = InputValidator.validateTextInput(text, { allowEmpty: true });
+    if (!validation.valid) {
+      throw errorHandler.createError(
+        `Invalid input: ${validation.errors.join(', ')}`,
+        'INVALID_INPUT',
+        ErrorCategory.VALIDATION,
+        ErrorSeverity.LOW,
+        { operation: 'estimateTokens', input: text }
+      );
+    }
 
-  // Use the new TokenCounter for accurate token counting
-  return TokenCounter.count(text)
+    const validText = validation.sanitized || '';
+    if (!validText) return 0;
+
+    // Use the new TokenCounter for accurate token counting
+    return TokenCounter.count(validText);
+  } catch (error) {
+    // Handle errors with recovery
+    return errorHandler.handleError(
+      error,
+      { operation: 'estimateTokens', input: text },
+      { 
+        attemptRecovery: true,
+        fallbackValue: Math.ceil((text?.length || 0) / DEFAULT_CHARS_PER_TOKEN)
+      }
+    );
+  }
 }
 
 /**
