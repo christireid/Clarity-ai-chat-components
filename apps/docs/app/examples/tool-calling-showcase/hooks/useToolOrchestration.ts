@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -148,7 +149,7 @@ export function useToolOrchestration(
       try {
         await executeToolCall(pendingApproval, message.id)
       } catch (error) {
-        console.error('Tool execution failed:', error)
+        logger.logger.error('Tool execution failed:', error)
       }
     }
 
@@ -348,7 +349,7 @@ export function useToolOrchestration(
               setMessages((prev) => [...prev, chartOffer])
             }
           } catch (error) {
-            console.error('Tool execution failed:', error)
+            logger.logger.error('Tool execution failed:', error)
           }
         }
       }

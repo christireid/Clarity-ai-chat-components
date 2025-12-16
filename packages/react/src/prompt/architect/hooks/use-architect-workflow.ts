@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useArchitectWorkflow Hook
  *
@@ -88,10 +89,10 @@ const INITIAL_STATE: ArchitectWorkflowState = {
  * ```typescript
  * const workflow = useArchitectWorkflow({
  *   onPhaseComplete: (phase, result) => {
- *     console.log(`Phase ${phase} complete`)
+ *     logger.debug(`Phase ${phase} complete`)
  *   },
  *   onWorkflowComplete: (state) => {
- *     console.log('Workflow complete!', state)
+ *     logger.debug('Workflow complete!', state)
  *   },
  * })
  *

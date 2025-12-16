@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -70,7 +71,7 @@ function AppShortcuts({ children }: { children: React.ReactNode }) {
     category: 'Chat',
   })
 
-  useKeyboardShortcut(['?'], () => console.log('Help shown'), {
+  useKeyboardShortcut(['?'], () => logger.debug('Help shown'), {
     id: 'help',
     description: 'Show keyboard shortcuts',
     category: 'General',

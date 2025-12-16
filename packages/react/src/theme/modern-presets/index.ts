@@ -4,15 +4,26 @@
  * Pre-built theme configurations for common use cases.
  * Each preset includes light and dark variants.
  *
- * Available themes (24 total):
+ * Available themes (30 total):
+ * 
+ * Core Themes:
  * - Default: Clean professional with indigo accents
  * - Neutral: Minimal monochrome (Linear-inspired)
  * - Vibrant: Bold purple/pink theme
  * - High Contrast: WCAG AAA accessible
+ * 
+ * 2025 Trending Themes:
+ * - Glassmorphism: Modern glass effects with transparency
+ * - Aurora: Dynamic flowing gradients
+ * - Neumorphism: Soft extruded UI with tactile realism
+ * 
+ * Nature-Inspired Themes:
  * - Ocean: Calming blue-teal inspired by the sea
  * - Sunset: Warm orange/amber theme
  * - Forest: Natural green nature theme
  * - Rose: Elegant pink-rose theme
+ * 
+ * Professional Themes:
  * - Midnight: Deep purple night theme
  * - Slate: Sophisticated professional gray
  * - Emerald: Rich luxurious green
@@ -98,8 +109,34 @@ export { emeraldLightTheme, emeraldDarkTheme, emeraldThemeMetadata }
 import { amberLightTheme, amberDarkTheme, amberThemeMetadata } from './amber'
 export { amberLightTheme, amberDarkTheme, amberThemeMetadata }
 
+// 2025 Trending Themes
+import {
+  glassmorphismLightTheme,
+  glassmorphismDarkTheme,
+  glassmorphismThemeMetadata,
+} from './glassmorphism'
+export {
+  glassmorphismLightTheme,
+  glassmorphismDarkTheme,
+  glassmorphismThemeMetadata,
+}
+
+import { auroraLightTheme, auroraDarkTheme, auroraThemeMetadata } from './aurora'
+export { auroraLightTheme, auroraDarkTheme, auroraThemeMetadata }
+
+import {
+  neumorphismLightTheme,
+  neumorphismDarkTheme,
+  neumorphismThemeMetadata,
+} from './neumorphism'
+export {
+  neumorphismLightTheme,
+  neumorphismDarkTheme,
+  neumorphismThemeMetadata,
+}
+
 /**
- * All available theme presets (24 themes)
+ * All available theme presets (30 themes)
  * Organized by category for easy discovery
  */
 export const modernThemes = {
@@ -147,9 +184,18 @@ export const modernThemes = {
   emerald: emeraldLightTheme,
   'emerald-dark': emeraldDarkTheme,
 
-  // Amber theme - Warm golden
-  amber: amberLightTheme,
-  'amber-dark': amberDarkTheme,
+  // 2025 Trending Themes
+  // Glassmorphism theme - Modern glass effects with transparency
+  glassmorphism: glassmorphismLightTheme,
+  'glassmorphism-dark': glassmorphismDarkTheme,
+
+  // Aurora theme - Dynamic flowing gradients
+  aurora: auroraLightTheme,
+  'aurora-dark': auroraDarkTheme,
+
+  // Neumorphism theme - Soft extruded UI with tactile realism
+  neumorphism: neumorphismLightTheme,
+  'neumorphism-dark': neumorphismDarkTheme,
 } as const
 
 /**
@@ -451,6 +497,79 @@ export const modernThemeMetadata: Record<ModernThemePresetName, ThemeMetadata> =
         backgroundColor: '#1a1308',
       },
     },
+    // 2025 Trending Themes
+    glassmorphism: {
+      name: 'glassmorphism',
+      displayName: 'Glassmorphism',
+      description: 'Modern glass effects with transparency and depth',
+      author: 'Clarity Chat',
+      version: '2.0.0',
+      preview: {
+        primaryColor: '#3b82f6',
+        secondaryColor: '#f0f9ff',
+        backgroundColor: '#ffffff',
+      },
+    },
+    'glassmorphism-dark': {
+      name: 'glassmorphism-dark',
+      displayName: 'Glassmorphism Dark',
+      description: 'Frosted glass effects with dark transparency',
+      author: 'Clarity Chat',
+      version: '2.0.0',
+      preview: {
+        primaryColor: '#60a5fa',
+        secondaryColor: '#1e3a8a',
+        backgroundColor: '#0a0a0a',
+      },
+    },
+    aurora: {
+      name: 'aurora',
+      displayName: 'Aurora',
+      description: 'Dynamic flowing gradients inspired by northern lights',
+      author: 'Clarity Chat',
+      version: '2.0.0',
+      preview: {
+        primaryColor: '#8b5cf6',
+        secondaryColor: '#f3e8ff',
+        backgroundColor: '#ffffff',
+      },
+    },
+    'aurora-dark': {
+      name: 'aurora-dark',
+      displayName: 'Aurora Dark',
+      description: 'Deep cosmic gradients with luminous aurora effects',
+      author: 'Clarity Chat',
+      version: '2.0.0',
+      preview: {
+        primaryColor: '#a78bfa',
+        secondaryColor: '#581c87',
+        backgroundColor: '#0a0a0a',
+      },
+    },
+    neumorphism: {
+      name: 'neumorphism',
+      displayName: 'Neumorphism',
+      description: 'Soft extruded UI with tactile realism and depth',
+      author: 'Clarity Chat',
+      version: '2.0.0',
+      preview: {
+        primaryColor: '#6366f1',
+        secondaryColor: '#f4f4f5',
+        backgroundColor: '#f8fafc',
+      },
+    },
+    'neumorphism-dark': {
+      name: 'neumorphism-dark',
+      displayName: 'Neumorphism Dark',
+      description: 'Dark neumorphic design with soft shadows and highlights',
+      author: 'Clarity Chat',
+      version: '2.0.0',
+      preview: {
+        primaryColor: '#818cf8',
+        secondaryColor: '#1e293b',
+        backgroundColor: '#0f172a',
+      },
+    },
   }
 
 /**
@@ -518,6 +637,8 @@ export function getThemesByCategory(): Record<string, ModernThemePresetName[]> {
       'neutral-dark',
       'slate',
       'slate-dark',
+      'glassmorphism',
+      'glassmorphism-dark',
     ],
     vibrant: [
       'vibrant',
@@ -526,6 +647,8 @@ export function getThemesByCategory(): Record<string, ModernThemePresetName[]> {
       'rose-dark',
       'midnight',
       'midnight-dark',
+      'aurora',
+      'aurora-dark',
     ],
     nature: [
       'ocean',
@@ -537,6 +660,14 @@ export function getThemesByCategory(): Record<string, ModernThemePresetName[]> {
     ],
     warm: ['sunset', 'sunset-dark', 'amber', 'amber-dark'],
     accessible: ['high-contrast', 'high-contrast-dark'],
+    '2025-trending': [
+      'glassmorphism',
+      'glassmorphism-dark',
+      'aurora',
+      'aurora-dark',
+      'neumorphism',
+      'neumorphism-dark',
+    ],
   }
 }
 

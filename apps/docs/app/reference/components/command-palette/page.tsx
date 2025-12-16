@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
@@ -240,7 +241,7 @@ function Demo() {
       label: 'New Chat',
       icon: <MessageSquare className="w-4 h-4" />,
       shortcut: '⌘N',
-      onSelect: () => console.log('New Chat'),
+      onSelect: () => logger.debug('New Chat'),
     },
     // ... more commands
   ]

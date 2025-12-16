@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * AI Model Response Comparison Tools
  * Compare responses from different AI models to help developers choose the right model
@@ -319,7 +320,7 @@ export async function compareModels(
 
       comparator.addResponse(promptId, response)
     } catch (error) {
-      console.error(`Error calling ${config.provider}/${config.model}:`, error)
+      logger.logger.error(`Error calling ${config.provider}/${config.model}:`, error)
     }
   }
 

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Advanced Clarity Chat Example
  * 
@@ -117,7 +118,7 @@ export function ClarityChatAdvancedExample() {
           memoryOperations: prev.memoryOperations + 1,
         }))
 
-        console.error(`Memory ${operation} error:`, error)
+        logger.logger.error(`Memory ${operation} error:`, error)
       },
     },
     onFinish: async (message) => {

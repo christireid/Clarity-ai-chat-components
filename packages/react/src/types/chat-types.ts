@@ -5,6 +5,7 @@
  */
 
 import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced'
+import { isString, isArray } from '@clarity-chat/utils/validation'
 
 /**
  * Type guard for string content
@@ -12,7 +13,7 @@ import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced
 export function isStringContent(
   content: CoreMessageContent
 ): content is string {
-  return typeof content === 'string'
+  return isString(content)
 }
 
 /**
@@ -21,7 +22,7 @@ export function isStringContent(
 export function isArrayContent(
   content: CoreMessageContent
 ): content is Extract<CoreMessageContent, Array<unknown>> {
-  return Array.isArray(content)
+  return isArray(content)
 }
 
 /**

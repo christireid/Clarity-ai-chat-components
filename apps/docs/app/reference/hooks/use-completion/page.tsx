@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -143,7 +144,7 @@ function Autocomplete() {
 
   const handleComplete = async (prompt: string) => {
     const result = await complete(prompt)
-    console.log('Completion:', result)
+    logger.debug('Completion:', result)
   }
 
   return (
@@ -245,7 +246,7 @@ function TextGenerator() {
   const { completion, complete, isLoading, stop } = useCompletion({
     api: '/api/completion',
     onFinish: (prompt, completion) => {
-      console.log('Generated:', completion)
+      logger.debug('Generated:', completion)
     },
   })
 
@@ -304,8 +305,8 @@ function Completion() {
   const { completion, complete, error, isLoading } = useCompletion({
     api: '/api/completion',
     onError: (error) => {
-      console.error('Completion error:', error)
-      toast.error('Failed to generate completion')
+      logger.logger.error('Completion error:', error)
+      toast.logger.error('Failed to generate completion')
     },
   })
 

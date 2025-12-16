@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Meta, StoryObj } from '@storybook/react'
 import { ErrorBoundary } from './ErrorBoundary'
 import { ConfigurationError, APIError } from '../errors'
@@ -96,8 +97,8 @@ export const WithErrorCallback: Story = {
   args: {
     children: <ThrowError />,
     onError: (error, errorInfo) => {
-      console.log('Error caught:', error)
-      console.log('Error info:', errorInfo)
+      logger.debug('Error caught:', error)
+      logger.debug('Error info:', errorInfo)
     },
   },
 }

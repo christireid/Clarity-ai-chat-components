@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -337,7 +338,7 @@ function DevToolsProvider({
                 <ActionButton
                   onClick={() => {
                     const data = analytics.exportData()
-                    console.log('[DevTools] Exported data:', data)
+                    logger.debug('[DevTools] Exported data:', data)
                     navigator.clipboard?.writeText(
                       JSON.stringify(data, null, 2)
                     )

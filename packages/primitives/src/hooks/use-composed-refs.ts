@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -72,7 +73,7 @@ export function composeRefs<T>(
  *
  *     React.useEffect(() => {
  *       // Can access via internalRef.current
- *       console.log(internalRef.current?.offsetWidth)
+ *       logger.debug(internalRef.current?.offsetWidth)
  *     }, [])
  *
  *     return <button ref={composedRef} {...props} />

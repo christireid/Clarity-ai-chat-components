@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ConversationTimeline } from '@clarity-chat/react'
 import type { ConversationTimelineEvent } from '@clarity-chat/react'
@@ -49,7 +50,7 @@ assistant responses, tool calls, and system events.
 <ConversationTimeline
   events={events}
   onEventClick={(event) => {
-    console.log('Event clicked:', event)
+    SecureLogger.debug('Event clicked:', event)
   }}
 />
 \`\`\`
@@ -196,7 +197,7 @@ export const WithJumpTo: Story = {
   args: {
     events: mockEvents,
     onJumpToEvent: (event) => {
-      console.log('Jumping to event:', event.id)
+      SecureLogger.debug('Jumping to event:', event.id)
       alert(`Jumping to: ${event.title}`)
     },
   },

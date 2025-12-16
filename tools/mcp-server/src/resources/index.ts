@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * MCP Resources for Clarity Chat
  * 
@@ -165,7 +166,7 @@ async function chat(message: string) {
 
 // Usage
 const answer = await chat('What is TypeScript?')
-console.log(answer)
+SecureLogger.debug(answer)
 \`\`\`
 
 ## Next Steps
@@ -340,7 +341,7 @@ const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
 
 const result = await model.generateContent('Hello!')
 const response = await result.response
-console.log(response.text())
+SecureLogger.debug(response.text())
 \`\`\`
 
 ### Streaming

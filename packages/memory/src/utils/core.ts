@@ -4,6 +4,8 @@
  * Basic utility functions.
  */
 
+
+
 /**
  * Check if a value is a non-empty string
  */
@@ -193,18 +195,7 @@ export function truncateToTokens(text: string, maxTokens: number): string {
   return text.substring(0, maxChars).trim()
 }
 
-/**
- * Format bytes to human-readable string
- */
-export function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Bytes'
-  
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
-}
+
 
 /**
  * Check if code is running in browser

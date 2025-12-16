@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -87,7 +88,7 @@ app.post('/api/chat', async (req, res) => {
 
     res.end()
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.logger.error('Chat API error:', error)
     if (!res.headersSent) {
       res.status(500).json({ error: 'Internal server error' })
     }
@@ -95,7 +96,7 @@ app.post('/api/chat', async (req, res) => {
 })
 
 app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000')
+  logger.debug('Server running on http://localhost:3000')
 })`}
         />
       </section>
@@ -210,7 +211,7 @@ export class ChatController {
 
       res.end()
     } catch (error) {
-      console.error('Chat API error:', error)
+      logger.logger.error('Chat API error:', error)
       if (!res.headersSent) {
         res.status(500).json({ error: 'Internal server error' })
       }
@@ -340,7 +341,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
     // Handle stream errors
     stream.on('error', (error) => {
-      console.error('Stream error:', error)
+      logger.logger.error('Stream error:', error)
       if (!res.headersSent) {
         res.status(500).json({ error: 'Stream error occurred' })
       }
@@ -356,7 +357,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
     res.end()
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.logger.error('Chat API error:', error)
 
     // Handle specific error types
     if (error.status === 429) {

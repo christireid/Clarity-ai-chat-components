@@ -9,6 +9,7 @@
 import * as React from 'react'
 import {
   UserInteractionAnalytics,
+import { SecureLogger } from '@/lib/security/secureLogger';
   ABTestingDashboard,
   useInteractionTracking,
   useABTesting,
@@ -21,10 +22,12 @@ import {
 } from '@clarity-chat/react'
 import type {
   ExperimentResult,
+import { SecureLogger } from '@/lib/security/secureLogger';
   ExperimentVariant,
 } from '@clarity-chat/react'
 import { ErrorBoundary, LoadingSpinner, ErrorState } from '../utils/error-boundary'
 
+import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type definitions for this example
 interface ChatMessage {
   id: string
@@ -55,11 +58,11 @@ export function BasicInteractionExample() {
         updateInterval={5000}
         detailed
         onEventTracked={(event) => {
-          console.log('Event tracked:', event)
+          SecureLogger.debug('Event tracked:', event)
         }}
         onAnalyticsGenerated={(metrics) => {
-          console.log('Engagement score:', metrics.engagementScore)
-          console.log('Bounce rate:', metrics.bounceRate)
+          SecureLogger.debug('Engagement score:', metrics.engagementScore)
+          SecureLogger.debug('Bounce rate:', metrics.bounceRate)
         }}
       />
     </div>
@@ -86,7 +89,7 @@ export function FeatureDiscoveryExample() {
 
   const handleFeatureClick = (featureId: string, featureName: string) => {
     trackFeatureDiscovery(featureName, featureId)
-    console.log(`Feature discovered: ${featureName}`)
+    SecureLogger.debug(`Feature discovered: ${featureName}`)
   }
 
   // Count discoveries per feature
@@ -265,10 +268,10 @@ export function ABTestingExample() {
         }}
         showStatistics
         onSelectExperiment={(exp) => {
-          console.log('Selected experiment:', exp.experimentName)
+          SecureLogger.debug('Selected experiment:', exp.experimentName)
         }}
         onDeclareWinner={(expId, winnerId) => {
-          console.log(`Winner declared for ${expId}: ${winnerId}`)
+          SecureLogger.debug(`Winner declared for ${expId}: ${winnerId}`)
           alert(`Winner declared! Variant ${winnerId} wins.`)
         }}
       />
@@ -419,7 +422,7 @@ export function ProductionAnalyticsExample() {
         const data = await response.json()
         setExperiments(data.experiments)
       } catch (err) {
-        console.error('Failed to load experiments:', err)
+        SecureLogger.error('Failed to load experiments:', err)
         setError(err instanceof Error ? err : new Error('Failed to load experiments'))
       } finally {
         setIsLoading(false)
@@ -444,7 +447,7 @@ export function ProductionAnalyticsExample() {
       const data = await response.json()
       setExperiments(data.experiments)
     } catch (err) {
-      console.error('Failed to declare winner:', err)
+      SecureLogger.error('Failed to declare winner:', err)
       alert('Failed to declare winner')
     }
   }
@@ -487,7 +490,7 @@ export function ProductionAnalyticsExample() {
                 body: JSON.stringify(event),
               })
             } catch (err) {
-              console.error('Failed to send event:', err)
+              SecureLogger.error('Failed to send event:', err)
             }
           }}
           onAnalyticsGenerated={async (metrics) => {
@@ -499,7 +502,7 @@ export function ProductionAnalyticsExample() {
                 body: JSON.stringify(metrics),
               })
             } catch (err) {
-              console.error('Failed to send metrics:', err)
+              SecureLogger.error('Failed to send metrics:', err)
             }
           }}
         />
@@ -542,11 +545,11 @@ export function CompleteAnalyticsSuiteExample() {
           updateInterval={5000}
           detailed
           onEventTracked={(event) => {
-            console.log('[Analytics] Event:', event.type, event.target)
+            SecureLogger.debug('[Analytics] Event:', event.type, event.target)
           }}
           onAnalyticsGenerated={(metrics) => {
-            console.log('[Analytics] Engagement score:', metrics.engagementScore)
-            console.log('[Analytics] Top features:', metrics.topFeatures)
+            SecureLogger.debug('[Analytics] Engagement score:', metrics.engagementScore)
+            SecureLogger.debug('[Analytics] Top features:', metrics.topFeatures)
           }}
         />
       </div>
@@ -563,10 +566,10 @@ export function CompleteAnalyticsSuiteExample() {
           }}
           showStatistics
           onSelectExperiment={(exp) => {
-            console.log('[A/B Test] Selected:', exp.experimentName)
+            SecureLogger.debug('[A/B Test] Selected:', exp.experimentName)
           }}
           onDeclareWinner={(expId, winnerId) => {
-            console.log('[A/B Test] Winner:', winnerId)
+            SecureLogger.debug('[A/B Test] Winner:', winnerId)
             // Track winner declaration as feature discovery
             trackFeatureDiscovery('ab-test-winner-declared')
           }}

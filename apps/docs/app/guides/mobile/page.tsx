@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -54,8 +55,8 @@ export default function MobileGuidePage() {
 export function MobileChat() {
   const chat = useChat({ api: '/api/chat/mobile' })
   const keyboard = useMobileKeyboard({
-    onKeyboardShow: (height) => console.log('Keyboard height', height),
-    onKeyboardHide: () => console.log('Keyboard hidden'),
+    onKeyboardShow: (height) => logger.debug('Keyboard height', height),
+    onKeyboardHide: () => logger.debug('Keyboard hidden'),
     autoScroll: true,
     scrollOffset: 24,
   })
@@ -175,7 +176,7 @@ function MobileActions() {
   )
 }
 
-console.log('Touch target minimum', TOUCH_TARGET.minimum) // 44
+logger.debug('Touch target minimum', TOUCH_TARGET.minimum) // 44
 `}
         />
         <Callout type="warning">

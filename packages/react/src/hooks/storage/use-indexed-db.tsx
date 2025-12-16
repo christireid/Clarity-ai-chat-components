@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -102,7 +103,7 @@ export function useIndexedDB<T>(
         dbRef.current = db
       } catch (err) {
         setError(err as Error)
-        console.error('Failed to initialize IndexedDB:', err)
+        logger.logger.error('Failed to initialize IndexedDB:', err)
       }
     }
 
@@ -442,7 +443,7 @@ export function useConversationStorage(
           dbRef.current = request.result
         }
       } catch (err) {
-        console.error('Failed to initialize conversation storage:', err)
+        logger.logger.error('Failed to initialize conversation storage:', err)
       }
     }
 

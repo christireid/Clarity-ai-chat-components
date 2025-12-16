@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Documentation Assistant API Endpoint - Optimized
  *
@@ -12,13 +13,18 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+
+const logger = getLogger('docs-assistant')
+
 import {
   enhanceMessageWithRAG,
+
   formatCitations,
   shouldUseRAG,
 } from '@/lib/ai/rag'
 import {
   createSSEStream,
+
   getStreamingFunction,
   checkRateLimit,
   validateRequest,
@@ -27,19 +33,23 @@ import {
 } from '@/lib/ai/streaming'
 import {
   SYSTEM_PROMPT,
+
   ERROR_PROMPT,
   RATE_LIMIT_PROMPT,
 } from '@/lib/ai/prompts'
 import {
   getOrCreateSessionForRequest,
+
   updateSessionWithMessages,
   type SessionMessage,
 } from '@/lib/ai/sessionStore'
 import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
 
+
 // Token optimization imports from @clarity-chat/react
 import {
   compressPrompt,
+
   balancedCompress,
   compressConversation,
   routeQuery,
@@ -249,7 +259,7 @@ export async function POST(request: NextRequest) {
           request.headers.get('user-agent') || undefined
         )
       } catch (error) {
-        console.error('Session error:', error)
+        logger.error('Session error:', error)
       }
     }
 
@@ -268,7 +278,7 @@ export async function POST(request: NextRequest) {
       if (enableCompression) {
         const compressed = compressSystemPrompt(SYSTEM_PROMPT)
         systemPrompt = compressed.compressed
-        console.log(
+        logger.debug(
           `System prompt compressed: ${compressed.savingsPercent.toFixed(1)}% savings`
         )
       }
@@ -291,7 +301,7 @@ export async function POST(request: NextRequest) {
       )
       messages = [messages[0], ...compressed]
       compressionStats = stats
-      console.log(
+      logger.debug(
         `Conversation compressed: ${stats.savingsPercent.toFixed(1)}% savings`
       )
     }
@@ -316,7 +326,7 @@ export async function POST(request: NextRequest) {
         .map((m) => m.content)
 
       routingDecision = selectModel(body.message, contextHistory)
-      console.log(`Model routing: ${routingDecision.reasoning}`)
+      logger.debug(`Model routing: ${routingDecision.reasoning}`)
     }
 
     // Determine if we should use RAG
@@ -350,7 +360,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('API error:', error)
+    logger.error('API error:', error)
 
     return NextResponse.json(
       {
@@ -448,7 +458,7 @@ async function* streamWithRAGOptimized(
             },
           ])
         } catch (error) {
-          console.error('Failed to save session:', error)
+          logger.error('Failed to save session:', error)
         }
       }
 
@@ -514,7 +524,7 @@ async function* streamWithRAGOptimized(
           contextHash,
         })
       } catch (error) {
-        console.error('Failed to cache response:', error)
+        logger.error('Failed to cache response:', error)
       }
     }
 
@@ -534,11 +544,11 @@ async function* streamWithRAGOptimized(
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        logger.error('Failed to save session:', error)
       }
     }
   } catch (error) {
-    console.error('RAG streaming error:', error)
+    logger.error('RAG streaming error:', error)
     yield handleStreamError(error)
   }
 }
@@ -586,7 +596,7 @@ async function* streamWithoutRAGOptimized(
             },
           ])
         } catch (error) {
-          console.error('Failed to save session:', error)
+          logger.error('Failed to save session:', error)
         }
       }
 
@@ -619,7 +629,7 @@ async function* streamWithoutRAGOptimized(
           model: routingDecision?.model.id || process.env.AI_MODEL || 'unknown',
         })
       } catch (error) {
-        console.error('Failed to cache response:', error)
+        logger.error('Failed to cache response:', error)
       }
     }
 
@@ -639,11 +649,11 @@ async function* streamWithoutRAGOptimized(
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        logger.error('Failed to save session:', error)
       }
     }
   } catch (error) {
-    console.error('Streaming error:', error)
+    logger.error('Streaming error:', error)
     yield handleStreamError(error)
   }
 }
@@ -659,7 +669,7 @@ export async function GET() {
   try {
     cacheStats = await cache.getStats()
   } catch (error) {
-    console.error('Failed to get cache stats:', error)
+    logger.error('Failed to get cache stats:', error)
   }
 
   return NextResponse.json({

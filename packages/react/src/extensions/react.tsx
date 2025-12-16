@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Extension React Integration
  *
@@ -537,7 +538,7 @@ export function ExtensionStatus({
       return loading as React.ReactElement | null
     case 'error':
       if (typeof error === 'function' && extension.error) {
-        return error(extension.error) as React.ReactElement | null
+        return logger.error(extension.error) as React.ReactElement | null
       }
       return error as React.ReactElement | null
     default:

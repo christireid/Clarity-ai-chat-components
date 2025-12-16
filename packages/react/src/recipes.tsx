@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Clarity Chat Recipes - Common Patterns & Examples
  * 
@@ -38,7 +39,7 @@ export default function App() {
       theme="dark"
       enableMemory
       showTokenCounter
-      onMessageSent={(msg) => console.log('Sent:', msg)}
+      onMessageSent={(msg) => logger.debug('Sent:', msg)}
     />
   )
 }
@@ -273,9 +274,9 @@ function App() {
       api="/api/chat"
       onError={(error) => {
         // Custom error handling
-        console.error('Chat error:', error)
+        logger.logger.error('Chat error:', error)
         // Show user-friendly message
-        toast.error('Failed to send message. Please try again.')
+        toast.logger.error('Failed to send message. Please try again.')
       }}
     />
   )

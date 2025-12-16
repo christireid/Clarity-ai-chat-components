@@ -9,6 +9,7 @@
 
 import * as React from 'react'
 
+import { SecureLogger } from '@/lib/security/secureLogger';
 // =============================================================================
 // 💡 Types
 // =============================================================================
@@ -64,7 +65,7 @@ export class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
+    SecureLogger.error('ErrorBoundary caught an error:', error, errorInfo)
     this.props.onError?.(error, errorInfo)
   }
 

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -57,7 +58,7 @@ let presence: Presence[] = []
 let messages: Message[] = []
 
 io.on('connection', (socket) => {
-  console.log('Client connected', socket.id)
+  logger.debug('Client connected', socket.id)
 
   socket.emit('bootstrap', { messages, presence })
 

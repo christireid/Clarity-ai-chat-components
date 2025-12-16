@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Live Demo Chat API Endpoint
  *
@@ -79,8 +80,8 @@ function createPlainTextStream(
         }
         controller.close()
       } catch (error) {
-        console.error('Streaming error:', error)
-        controller.error(error)
+        logger.error('Streaming error:', error)
+        controller.logger.error(error)
       }
     },
   })
@@ -170,7 +171,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('API error:', error)
+    logger.error('API error:', error)
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { NextResponse } from 'next/server'
 import {
   type HookInfo,
@@ -349,7 +350,7 @@ export async function GET(
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    console.error('[AI Hook Lookup API] Error:', error)
+    logger.error('[AI Hook Lookup API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

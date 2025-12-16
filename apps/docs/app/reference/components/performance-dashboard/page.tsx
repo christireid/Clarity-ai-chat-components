@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -84,7 +85,7 @@ render(<Example />)`}
       <PerformanceDashboard 
         thresholds={thresholds}
         onThresholdExceeded={(metric) => {
-          console.warn('Performance issue:', metric)
+          logger.warn('Performance issue:', metric)
         }}
       />
     </div>

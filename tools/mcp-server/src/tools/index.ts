@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * MCP Tools for Clarity Chat
  *
@@ -1443,7 +1444,7 @@ async function main() {
     model: 'gpt-4-turbo',
     messages: [{ role: 'user', content: 'Hello!' }]
   })
-  console.log(response.choices[0].message.content)
+  SecureLogger.debug(response.choices[0].message.content)
 }
 
 main()`

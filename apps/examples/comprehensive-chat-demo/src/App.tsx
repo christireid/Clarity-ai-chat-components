@@ -1,5 +1,6 @@
 /**
  * Comprehensive Chat Demo
+import { SecureLogger } from '@/lib/security/secureLogger';
  *
  * Demonstrates all modern AI chat features working together:
  * - Message operations (edit, regenerate, delete)
@@ -114,16 +115,16 @@ function ComprehensiveChatApp() {
       },
     ],
     onEdit: (messageId, newContent) => {
-      console.log('Message edited:', messageId, newContent)
+      SecureLogger.debug('Message edited:', messageId, newContent)
     },
     onRegenerate: (messageId) => {
-      console.log('Regenerating:', messageId)
+      SecureLogger.debug('Regenerating:', messageId)
     },
     onDelete: (messageId) => {
-      console.log('Message deleted:', messageId)
+      SecureLogger.debug('Message deleted:', messageId)
     },
     onBranch: (branchId, parentMessageId) => {
-      console.log('Branched from:', parentMessageId, 'to:', branchId)
+      SecureLogger.debug('Branched from:', parentMessageId, 'to:', branchId)
     },
   })
 

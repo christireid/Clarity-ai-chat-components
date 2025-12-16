@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Advanced Example: Multi-modal chat with tool calling
  * 
@@ -27,12 +28,12 @@ function MultiModalChatExample() {
       return truncateMessagesToTokenLimit(messages, 4000).slice(-10)
     },
     onFinish: (message) => {
-      console.log('Message finished:', message)
+      SecureLogger.debug('Message finished:', message)
       
       // Check for tool calls
       const toolCalls = extractToolCalls(message)
       if (toolCalls.length > 0) {
-        console.log('Tool calls detected:', toolCalls)
+        SecureLogger.debug('Tool calls detected:', toolCalls)
       }
     },
   })
@@ -113,12 +114,12 @@ function ToolCallingExample() {
     api: '/api/assistant',
     assistantId: 'tool-assistant',
     onToolCall: (toolCall) => {
-      console.log('Tool called:', toolCall)
+      SecureLogger.debug('Tool called:', toolCall)
       
       // Simulate tool execution
       if (toolCall.toolName === 'get_weather') {
         // In real app, this would call an actual API
-        console.log('Getting weather for:', toolCall.args)
+        SecureLogger.debug('Getting weather for:', toolCall.args)
       }
     },
   })

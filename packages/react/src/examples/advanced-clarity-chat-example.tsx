@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Advanced Clarity Chat Example
  * 
@@ -46,7 +47,7 @@ export function AdvancedClarityChatExample() {
     },
     transport,
     onError: (err) => {
-      console.error('Chat error:', err)
+      logger.logger.error('Chat error:', err)
       // Custom error handling
     },
   })

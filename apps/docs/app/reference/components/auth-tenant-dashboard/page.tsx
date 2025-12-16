@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -68,11 +69,11 @@ function TenantAuth({ tenantId }: { tenantId: string }) {
     <AuthTenantDashboard
       tenantId={tenantId}
       onTenantUpdate={(updates) => {
-        console.log('Tenant updated:', updates)
+        logger.debug('Tenant updated:', updates)
         // Update tenant settings
       }}
       onSSOConfigure={(config) => {
-        console.log('SSO configured:', config)
+        logger.debug('SSO configured:', config)
         // Save SSO configuration
       }}
     />
@@ -98,7 +99,7 @@ function WithSSO({ tenantId }: { tenantId: string }) {
         })
         
         if (response.ok) {
-          console.log('SSO configured successfully')
+          logger.debug('SSO configured successfully')
         }
       }}
     />
@@ -118,13 +119,13 @@ function UserManagement({ tenantId }: { tenantId: string }) {
     <AuthTenantDashboard
       tenantId={tenantId}
       onUserAdd={(user) => {
-        console.log('Adding user:', user.email)
+        logger.debug('Adding user:', user.email)
       }}
       onUserRemove={(userId) => {
-        console.log('Removing user:', userId)
+        logger.debug('Removing user:', userId)
       }}
       onUserUpdate={(userId, updates) => {
-        console.log('Updating user:', userId, updates)
+        logger.debug('Updating user:', userId, updates)
       }}
     />
   )

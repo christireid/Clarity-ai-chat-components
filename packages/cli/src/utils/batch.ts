@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Batch operation utilities
  * Process multiple items in parallel or sequentially
@@ -123,7 +124,7 @@ export async function batchAddComponents(
       info(`Progress: ${completed}/${total} components added`)
     },
     onError: (component, err) => {
-      error(`Failed to add component: ${component}`)
+      logger.error(`Failed to add component: ${component}`)
     },
   })
 }

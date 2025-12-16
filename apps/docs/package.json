@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "@clarity-chat/utils": "workspace:*",
     "@clarity-chat/primitives": "workspace:*",
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
@@ -63,7 +64,6 @@
     "uuid": "^11.0.3"
   },
   "devDependencies": {
-    "@clarity-chat/utils": "workspace:*",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",

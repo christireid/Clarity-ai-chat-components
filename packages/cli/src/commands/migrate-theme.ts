@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Theme Migration command - Migrate from legacy to modern theme system
  */

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 
 /**
@@ -307,7 +308,7 @@ For details, see: .github/DOCUMENTATION_POLICY.md
 async function main() {
   const format = process.argv.includes('--json') ? 'json' : 'text'
 
-  console.log('🔍 Analyzing documentation health...\n')
+  SecureLogger.debug('🔍 Analyzing documentation health...\n')
 
   // Gather data
   const mdCount = await countFiles('*.md')
@@ -351,7 +352,7 @@ async function main() {
   }
 
   // Output report
-  console.log(formatReport(report, format))
+  SecureLogger.debug(formatReport(report, format))
 
   // Exit with appropriate code
   if (report.status === 'critical') {
@@ -364,6 +365,6 @@ async function main() {
 }
 
 main().catch(error => {
-  console.error('Error running documentation health check:', error)
+  SecureLogger.error('Error running documentation health check:', error)
   process.exit(1)
 })

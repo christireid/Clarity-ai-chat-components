@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -64,7 +65,7 @@ export default function MultiModalPreviewPage() {
   return (
     <MultiModalPreview
       attachments={attachments}
-      onOpen={(a) => console.log('Open:', a.title)}
+      onOpen={(a) => logger.debug('Open:', a.title)}
     />
   )
 }

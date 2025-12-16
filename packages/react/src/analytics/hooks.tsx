@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Analytics Hooks
  * 
@@ -253,7 +254,7 @@ export function useTrackTiming() {
     (timerName: string, properties?: Record<string, any>) => {
       const startTime = timers.current[timerName]
       if (startTime === undefined) {
-        console.warn(`Timer "${timerName}" was not started`)
+        logger.warn(`Timer "${timerName}" was not started`)
         return
       }
       

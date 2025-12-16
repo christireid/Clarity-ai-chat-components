@@ -1,43 +1,88 @@
 /**
- * Token Optimization System
+ * Token Optimization Package - Enhanced Implementation
  * 
- * Advanced token counting, compression, and optimization for AI applications
- * with enterprise-grade security and 60-90% cost reduction
+ * This package provides advanced token optimization capabilities including:
+ * - Enhanced security with comprehensive threat protection
+ * - Quality gates with 85% minimum quality preservation
+ * - Cost-aware optimization with budget management
+ * - Advanced semantic caching with 90%+ cost reduction
+ * - Dynamic compression with quality preservation
  */
 
-// Core exports
-export { AccurateTokenCounter } from './tokenizers/accurate-counter'
+// Security exports
+export { EnhancedSecurityManager } from './security/enhanced-security'
+export type { 
+  EnhancedSecurityConfig, 
+  SecurityContext, 
+  ThreatIntelligence,
+  EnhancedValidationResult 
+} from './security/enhanced-security'
+
 export { TokenSecurityManager } from './security/token-security'
-export { ToonOptimizer } from './formats/toon-optimizer'
+export type { 
+  SecurityConfig as TokenSecurityConfig, 
+  SecurityEvent, 
+  SanitizationResult,
+  ProtectionResult,
+  ComplianceReport 
+} from './security/token-security'
 
-// Main optimizer that combines all features
-export { UnifiedTokenOptimizer } from './unified-optimizer'
+// Security configuration builder
+export { createSecurityConfig, SecurityProfiles } from './security/security-config-builder'
+export type { SecurityConfigBuilder } from './security/security-config-builder'
 
-// Legacy compatibility layer
-export {
-  TokenCounter,
-  TokenBudgetManager,
-  MemoryCompressor,
-  SemanticChunker,
-  ContextOptimizer
-} from './legacy-compatibility'
+// Security testing playground
+export { createSecurityTestingPlayground, runSecurityTests } from './security/security-testing-playground'
+export type { SecurityTestCase, SecurityTestResult } from './security/security-testing-playground'
 
-// Types
+// Security event streaming
+export { createSecurityEventStreamer, SecurityStreamSubscribers } from './security/security-event-streaming'
+export type { SecurityStreamEvent, StreamSubscriber, StreamMetrics } from './security/security-event-streaming'
+
+// Redis security store
+export { createSecurityStore } from './security/redis-security-store'
+export type { RedisSecurityStore } from './security/redis-security-store'
+
+// Security dashboard
+export { createSecurityDashboard } from './security/security-dashboard'
+export type { SecurityDashboard } from './security/security-dashboard'
+
+// Quality exports
+export { QualityGate } from './quality/quality-gate'
+export type { 
+  QualityGateConfig,
+  QualityMetrics as QualityGateMetrics,
+  QualityCheckResult,
+  QualityContext
+} from './quality/quality-gate'
+
+// Cost exports
+export { CostAwareOptimizer } from './cost/cost-aware-optimizer'
 export type {
-  TokenizerConfig,
-  SecurityConfig,
-  ToonConfig,
-  CompressionResult,
-  CacheStats,
-  MLPrediction,
-  AdvancedSecurityConfig
-} from './types'
+  CostAwareConfig,
+  CostEstimate,
+  OptimizationStrategy as CostOptimizationStrategy,
+  BudgetStatus,
+  ResourceRequirements
+} from './cost/cost-aware-optimizer'
 
-// Constants
-export { 
-  DEFAULT_TOKENIZER_CONFIG,
-  DEFAULT_SECURITY_CONFIG,
-  DEFAULT_CACHE_CONFIG,
-  MAX_COMPRESSION_RATIO,
-  SECURITY_LEVELS
-} from './constants'
+// Caching exports
+export { AdvancedSemanticCache } from './caching/advanced-semantic-cache'
+export type {
+  SemanticCacheConfig,
+  CachedEntry,
+  CacheMetadata,
+  SemanticCacheResult,
+  CacheContext,
+  CacheStats
+} from './caching/advanced-semantic-cache'
+
+// Compression exports
+export { DynamicCompressionEngine } from './compression/dynamic-compression'
+export type {
+  DynamicCompressionConfig,
+  CompressionStrategy,
+  CompressionResult,
+  CompressionContext,
+  QualityMetrics as CompressionQualityMetrics
+} from './compression/dynamic-compression'

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -780,8 +781,8 @@ function AvatarMenu() {
   src="/large-avatar.jpg"
   name="User Name"
   loading="lazy"
-  onLoad={() => console.log('Avatar loaded')}
-  onError={() => console.log('Avatar failed to load')}
+  onLoad={() => logger.debug('Avatar loaded')}
+  onError={() => logger.debug('Avatar failed to load')}
 />`}</code>
         </pre>
       </section>

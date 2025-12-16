@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Observability & Monitoring Extensions
  *
@@ -716,7 +717,7 @@ export function createLogflareExtension(
               }),
             }
           ).catch((err) => {
-            console.warn('Logflare logging failed:', err)
+            logger.warn('Logflare logging failed:', err)
           })
         },
         captureError(error, context) {
@@ -786,7 +787,7 @@ export function createAxiomExtension(
               ]),
             }
           ).catch((err) => {
-            console.warn('Axiom logging failed:', err)
+            logger.warn('Axiom logging failed:', err)
           })
         },
         captureError(error, context) {
@@ -865,7 +866,7 @@ export function createBetterStackExtension(
               ...context,
             }),
           }).catch((err) => {
-            console.warn('Better Stack logging failed:', err)
+            logger.warn('Better Stack logging failed:', err)
           })
         },
         captureError(error, context) {

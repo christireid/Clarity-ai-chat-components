@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced error handling utilities for CLI
  * Provides actionable error messages and proper exit codes
@@ -6,6 +7,7 @@
 import pc from 'picocolors'
 import boxen from 'boxen'
 import { getLogger } from './logger.js'
+
 
 const logger = getLogger('errors')
 
@@ -83,7 +85,7 @@ export function handleError(error: string | Error | unknown): never {
 
   if (normalizedError instanceof CLIError) {
     if (!isJsonMode) {
-      console.error('\n')
+      logger.error('\n')
       const errorBox = boxen(
         pc.bold(pc.red(normalizedError.message)) +
           (normalizedError.suggestions.length > 0
@@ -107,9 +109,9 @@ export function handleError(error: string | Error | unknown): never {
           titleAlignment: 'center',
         }
       )
-      console.error(errorBox)
+      logger.error(errorBox)
     } else {
-      console.error(
+      logger.error(
         JSON.stringify({
           error: normalizedError.message,
           code: normalizedError.code,
@@ -125,7 +127,7 @@ export function handleError(error: string | Error | unknown): never {
 
   if (normalizedError instanceof Error) {
     if (!isJsonMode) {
-      console.error('\n')
+      logger.error('\n')
       const errorBox = boxen(
         pc.bold(pc.red('Unexpected Error:')) +
           '\n\n' +
@@ -142,9 +144,9 @@ export function handleError(error: string | Error | unknown): never {
           titleAlignment: 'center',
         }
       )
-      console.error(errorBox)
+      logger.error(errorBox)
     } else {
-      console.error(
+      logger.error(
         JSON.stringify({
           error: normalizedError.message,
           stack: normalizedError.stack,
@@ -157,8 +159,8 @@ export function handleError(error: string | Error | unknown): never {
   }
 
   if (!isJsonMode) {
-    console.error('\n')
-    console.error(
+    logger.error('\n')
+    logger.error(
       boxen(pc.bold(pc.red('Unknown Error')), {
         padding: 1,
         margin: 1,

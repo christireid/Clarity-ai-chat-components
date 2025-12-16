@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 'use client'
 
 import { useState, useRef } from 'react'
@@ -163,11 +164,11 @@ export default function EnhancedStreamingChat() {
       }
     } catch (error: any) {
       if (error.name === 'AbortError') {
-        console.log('Request cancelled')
+        SecureLogger.debug('Request cancelled')
         // Remove incomplete message
         setMessages((prev) => prev.filter((msg) => msg.id !== assistantMessage.id))
       } else {
-        console.error('Error:', error)
+        SecureLogger.error('Error:', error)
         // Update message with error
         setMessages((prev) =>
           prev.map((msg) =>

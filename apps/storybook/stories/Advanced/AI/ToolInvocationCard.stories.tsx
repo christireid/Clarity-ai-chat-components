@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ToolInvocationCard, type ToolStatus } from '@clarity-chat/react'
 import { useState } from 'react'
@@ -123,8 +124,8 @@ export const PendingWithApproval: Story = {
     toolCall: searchTool,
     status: 'pending',
     requiresApproval: true,
-    onApprove: (tool) => console.log('Approved:', tool),
-    onReject: (tool) => console.log('Rejected:', tool),
+    onApprove: (tool) => SecureLogger.debug('Approved:', tool),
+    onReject: (tool) => SecureLogger.debug('Rejected:', tool),
   },
 }
 
@@ -182,7 +183,7 @@ export const Error: Story = {
     toolCall: databaseTool,
     status: 'error',
     error: 'Database connection timeout. Unable to execute query after 30 seconds.',
-    onRetry: (tool) => console.log('Retrying:', tool),
+    onRetry: (tool) => SecureLogger.debug('Retrying:', tool),
   },
 }
 
@@ -196,7 +197,7 @@ export const ErrorWithStackTrace: Story = {
   at processToolCall (agent.ts:89)
   
 Caused by: Connection refused - ECONNREFUSED 127.0.0.1:5432`,
-    onRetry: (tool) => console.log('Retrying:', tool),
+    onRetry: (tool) => SecureLogger.debug('Retrying:', tool),
   },
 }
 
@@ -478,7 +479,7 @@ export const VeryLongArguments: Story = {
     },
     status: 'pending',
     requiresApproval: true,
-    onApprove: (tool) => console.log('Approved:', tool),
+    onApprove: (tool) => SecureLogger.debug('Approved:', tool),
   },
 }
 

@@ -1,5 +1,6 @@
 /**
  * Customized Chat Example
+import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Shows how to customize ClarityChat with different options.
  */
@@ -21,13 +22,13 @@ export default function App() {
         sessionTitle="My AI Assistant"
         sessionSubtitle="Ask me anything!"
         onMessageSent={(msg) => {
-          console.log('Message sent:', msg.content)
+          SecureLogger.debug('Message sent:', msg.content)
         }}
         onMessageReceived={(msg) => {
-          console.log('Message received:', msg.content)
+          SecureLogger.debug('Message received:', msg.content)
         }}
         onError={(error) => {
-          console.error('Chat error:', error)
+          SecureLogger.error('Chat error:', error)
         }}
       />
     </div>

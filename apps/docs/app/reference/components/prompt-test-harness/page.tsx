@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -117,10 +118,10 @@ function PromptTesting() {
       variants={variants}
       tests={tests}
       onRunAll={() => {
-        console.log('Running all tests')
+        logger.debug('Running all tests')
       }}
       onRunVariant={(variantId) => {
-        console.log('Running variant:', variantId)
+        logger.debug('Running variant:', variantId)
       }}
     />
   )
@@ -148,7 +149,7 @@ function WithDatasets() {
       variants={variants}
       tests={tests}
       onSelectDataset={(datasetId) => {
-        console.log('Selected dataset:', datasetId)
+        logger.debug('Selected dataset:', datasetId)
         loadTestsForDataset(datasetId)
       }}
     />

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -152,7 +153,7 @@ export interface ThemeAnalyticsSummary {
  *
  *   // Get summary for reporting:
  *   const summary = analytics.getSummary()
- *   console.log(`Most used theme: ${summary.mostUsedPreset}`)
+ *   logger.debug(`Most used theme: ${summary.mostUsedPreset}`)
  * }
  * ```
  */
@@ -180,7 +181,7 @@ export function useThemeAnalytics(
       setEvents((prev) => [...prev, event])
 
       if (debug && process.env.NODE_ENV !== 'production') {
-        console.log('[ThemeAnalytics]', event.type, event.data)
+        logger.debug('[ThemeAnalytics]', event.type, event.data)
       }
 
       onEvent?.(event)

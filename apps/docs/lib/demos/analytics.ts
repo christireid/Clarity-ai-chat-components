@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Demo analytics utilities
  * Track user engagement with demos for conversion insights
@@ -60,7 +61,7 @@ export const trackDemoEvent = (data: DemoEventData): void => {
 
   // Log in development
   if (process.env.NODE_ENV === 'development') {
-    console.log('[Demo Analytics]', { demo_name, action, label, value, metadata })
+    logger.debug('[Demo Analytics]', { demo_name, action, label, value, metadata })
   }
 
   // Send to Google Analytics if available

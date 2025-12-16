@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * URL State Utilities Tests
  */
@@ -105,7 +106,7 @@ describe('URL State Utilities', () => {
 
     it('should handle state without templateId', () => {
       const stateWithoutTemplate: PlaygroundState = {
-        code: 'console.log("test")',
+        code: 'logger.debug("test")',
         theme: 'light',
         settings: sampleState.settings,
       }

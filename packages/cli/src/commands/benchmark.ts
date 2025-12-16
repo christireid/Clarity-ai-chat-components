@@ -5,6 +5,7 @@
 import { performance } from 'perf_hooks'
 import fs from 'fs-extra'
 import path from 'path'
+import { formatDuration } from '@clarity-chat/utils/format'
 import { createBanner, createDivider } from '../ui/banner.js'
 import { successMessage, infoMessage, warningMessage } from '../ui/messages.js'
 import { createTable } from '../ui/table.js'
@@ -45,14 +46,7 @@ function calculateStats(values: number[]): Omit<BenchmarkResult, 'name' | 'itera
   }
 }
 
-/**
- * Format duration
- */
-function formatDuration(ms: number): string {
-  if (ms < 1) return `${(ms * 1000).toFixed(2)}µs`
-  if (ms < 1000) return `${ms.toFixed(2)}ms`
-  return `${(ms / 1000).toFixed(2)}s`
-}
+
 
 /**
  * Run a benchmark

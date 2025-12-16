@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -142,7 +143,7 @@ const defaultConfig: SummarizationConfig = {
  *     includeKeyTopics: true,
  *   }}
  *   onSummaryGenerated={(summary) => {
- *     console.log('Summary:', summary.content)
+ *     logger.debug('Summary:', summary.content)
  *   }}
  * />
  * ```
@@ -317,7 +318,7 @@ export function ConversationSummarizer({
 
         onSummaryGenerated?.(summary)
       } catch (err) {
-        console.error('Failed to generate summary:', err)
+        logger.logger.error('Failed to generate summary:', err)
         setError(err instanceof Error ? err.message : 'Failed to generate summary')
       } finally {
         setIsGenerating(false)

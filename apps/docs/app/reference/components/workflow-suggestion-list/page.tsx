@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -68,7 +69,7 @@ export default function WorkflowSuggestionListPage() {
   return (
     <WorkflowSuggestionList
       workflows={workflows}
-      onSelect={(w) => console.log('Selected:', w.name)}
+      onSelect={(w) => logger.debug('Selected:', w.name)}
     />
   )
 }

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { VirtualizedMessageList as MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -49,9 +50,9 @@ and comprehensive message management features.
 \`\`\`tsx
 <MessageList
   messages={messages}
-  onMessageCopy={(id, content) => console.log('Copied:', content)}
-  onMessageFeedback={(id, type) => console.log('Feedback:', type)}
-  onMessageRetry={(id) => console.log('Retry:', id)}
+  onMessageCopy={(id, content) => SecureLogger.debug('Copied:', content)}
+  onMessageFeedback={(id, type) => SecureLogger.debug('Feedback:', type)}
+  onMessageRetry={(id) => SecureLogger.debug('Retry:', id)}
 />
 \`\`\`
         `,
@@ -147,9 +148,9 @@ Would you like to know more about a specific hook?`,
 export const Default: Story = {
   args: {
     messages: mockMessages,
-    onMessageCopy: (id, content) => console.log('Copy:', id, content),
-    onMessageFeedback: (id, type) => console.log('Feedback:', id, type),
-    onMessageRetry: (id) => console.log('Retry:', id),
+    onMessageCopy: (id, content) => SecureLogger.debug('Copy:', id, content),
+    onMessageFeedback: (id, type) => SecureLogger.debug('Feedback:', id, type),
+    onMessageRetry: (id) => SecureLogger.debug('Retry:', id),
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)

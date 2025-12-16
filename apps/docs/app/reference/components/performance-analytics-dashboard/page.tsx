@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -110,7 +111,7 @@ function ChatWithPerformance() {
         showMemoryUsage
         showFPS
         onDataUpdate={(data) => {
-          console.log('Performance:', data)
+          logger.debug('Performance:', data)
         }}
       />
     </div>
@@ -134,7 +135,7 @@ function WebVitalsDashboard() {
       showWebVitals={true}
       onDataUpdate={(data) => {
         data.webVitals.forEach((vital) => {
-          console.log(\`\${vital.name}: \${vital.value} (\${vital.rating})\`)
+          logger.debug(\`\${vital.name}: \${vital.value} (\${vital.rating})\`)
         })
       }}
     />
@@ -156,7 +157,7 @@ function ComponentMetricsDashboard() {
       showComponentMetrics={true}
       onDataUpdate={(data) => {
         data.componentMetrics.forEach((metric) => {
-          console.log(\`\${metric.name}: \${metric.averageRenderTime}ms\`)
+          logger.debug(\`\${metric.name}: \${metric.averageRenderTime}ms\`)
         })
       }}
     />
@@ -178,7 +179,7 @@ function NetworkDashboard() {
       showNetworkMetrics={true}
       onDataUpdate={(data) => {
         data.networkMetrics.forEach((metric) => {
-          console.log(\`\${metric.method} \${metric.url}: \${metric.duration}ms\`)
+          logger.debug(\`\${metric.method} \${metric.url}: \${metric.duration}ms\`)
         })
       }}
     />
@@ -201,10 +202,10 @@ function MemoryFPSDashboard() {
       showFPS={true}
       onDataUpdate={(data) => {
         if (data.memoryUsage) {
-          console.log(\`Memory: \${data.memoryUsage.used}MB / \${data.memoryUsage.total}MB\`)
+          logger.debug(\`Memory: \${data.memoryUsage.used}MB / \${data.memoryUsage.total}MB\`)
         }
         if (data.fps) {
-          console.log(\`FPS: \${data.fps}\`)
+          logger.debug(\`FPS: \${data.fps}\`)
         }
       }}
     />
@@ -250,7 +251,7 @@ function CustomDataDashboard() {
       showWebVitals
       onDataUpdate={(updatedData) => {
         // Handle data updates
-        console.log('Performance data updated:', updatedData)
+        logger.debug('Performance data updated:', updatedData)
       }}
     />
   )

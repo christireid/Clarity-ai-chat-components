@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback } from 'react'
@@ -23,8 +24,8 @@ function BasicAdvancedInputDemo() {
 
   const handleSubmit = useCallback(
     (text: string, attachments?: MessageAttachment[]) => {
-      console.log('Message:', text)
-      console.log('Attachments:', attachments)
+      logger.debug('Message:', text)
+      logger.debug('Attachments:', attachments)
       setValue('')
     },
     []
@@ -65,8 +66,8 @@ function FileUploadDemo() {
 
   const handleSubmit = useCallback(
     (text: string, attachments?: MessageAttachment[]) => {
-      console.log('Message:', text)
-      console.log('Attachments:', attachments)
+      logger.debug('Message:', text)
+      logger.debug('Attachments:', attachments)
       setValue('')
     },
     []
@@ -221,8 +222,8 @@ export default function AdvancedChatInputPage() {
   const [value, setValue] = React.useState('')
 
   const handleSubmit = (text, attachments) => {
-    console.log('Message:', text)
-    console.log('Attachments:', attachments)
+    logger.debug('Message:', text)
+    logger.debug('Attachments:', attachments)
     setValue('')
   }
 
@@ -274,8 +275,8 @@ function SimpleAdvancedInput() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback((text: string, attachments?: MessageAttachment[]) => {
-    console.log('Message:', text)
-    console.log('Attachments:', attachments)
+    logger.debug('Message:', text)
+    logger.debug('Attachments:', attachments)
     setValue('')
   }, [])
 

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MemoryInspector } from '@clarity-chat/react'
 import type { MemoryItem } from '@clarity-chat/react'
@@ -62,15 +63,15 @@ export const WithActions: Story = {
   args: {
     memories: mockMemories,
     onRemove: (memory) => {
-      console.log('Removing memory:', memory.id)
+      SecureLogger.debug('Removing memory:', memory.id)
       alert(`Removed: ${memory.label}`)
     },
     onPromote: (memory) => {
-      console.log('Promoting memory:', memory.id)
+      SecureLogger.debug('Promoting memory:', memory.id)
       alert(`Promoted: ${memory.label}`)
     },
     onRefresh: () => {
-      console.log('Refreshing memories')
+      SecureLogger.debug('Refreshing memories')
       alert('Refreshing...')
     },
   },

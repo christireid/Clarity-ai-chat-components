@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState } from 'react'
@@ -47,7 +48,7 @@ export function FeedbackWidget({ pageId, className = '' }: FeedbackWidgetProps) 
       setSubmitted(true)
       setShowDetails(false)
     } catch (err) {
-      console.error('Feedback submission error:', err)
+      logger.logger.error('Feedback submission error:', err)
       setError('Failed to submit feedback. Please try again.')
       // Still mark as submitted to not frustrate user
       setSubmitted(true)

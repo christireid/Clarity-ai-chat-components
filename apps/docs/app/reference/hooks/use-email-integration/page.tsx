@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -92,7 +93,7 @@ function AccountConnector() {
 
   const handleConnect = async (provider: EmailProvider) => {
     const account = await connectAccount(provider)
-    console.log('Account connected:', account.email)
+    logger.debug('Account connected:', account.email)
   }
 
   return (
@@ -120,7 +121,7 @@ function EmailSender() {
       subject: 'Hello from Chat',
       body: 'This email was sent from the chat interface.',
     })
-    console.log('Email sent')
+    logger.debug('Email sent')
   }
 
   return <button onClick={handleSend}>Send Email</button>
@@ -139,7 +140,7 @@ function EmailSearch() {
 
   const handleSearch = async (query: string) => {
     const threads = await searchThreads('account-123', query)
-    console.log('Search results:', threads)
+    logger.debug('Search results:', threads)
   }
 
   return (

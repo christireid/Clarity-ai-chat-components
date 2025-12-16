@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Token Optimization Hook (Unified)
  *
@@ -391,7 +392,7 @@ function getPresetConfig(
  *
  * // Optimize structured data (uses TOON if beneficial)
  * const optimized = await optimizeData(myData)
- * console.log(`Saved ${optimized.optimizations.toon?.savingsPercent}%`)
+ * logger.debug(`Saved ${optimized.optimizations.toon?.savingsPercent}%`)
  *
  * // Prepare messages with cache control
  * const messages = prepareMessages(conversationMessages)
@@ -403,7 +404,7 @@ function getPresetConfig(
  * const prefill = getPrefill('json') // returns '{'
  *
  * // Track total savings
- * console.log(`Total saved: $${stats.overall.totalCostSaved.toFixed(4)}`)
+ * logger.debug(`Total saved: $${stats.overall.totalCostSaved.toFixed(4)}`)
  * ```
  */
 export function useTokenOptimizationEnhanced(
@@ -1089,7 +1090,7 @@ export function useTokenOptimizationEnhanced(
 
       // Handle summarization strategy
       if (historyLimiting.strategy === 'summarize' && !summarizeMessage) {
-        console.warn(
+        logger.warn(
           'Summarization strategy selected but no summarizeMessage callback provided. Falling back to default.'
         )
         return limitHistory(messages, {
@@ -1142,7 +1143,7 @@ export function useTokenOptimizationEnhanced(
             ...recentMessages,
           ]
         } catch (error) {
-          console.warn(
+          logger.warn(
             'Summarization failed, falling back to sliding window',
             error
           )
@@ -1298,7 +1299,7 @@ export function useTokenOptimizationEnhanced(
             ...recentMessages,
           ]
         } catch (error) {
-          console.warn(
+          logger.warn(
             'Smart history optimization failed, falling back to default',
             error
           )

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * useClarityChat Showcase Example
  *
@@ -54,7 +55,7 @@ function ChatShowcase() {
       : undefined,
     transport,
     onError: (err) => {
-      console.error('Chat error:', err)
+      SecureLogger.error('Chat error:', err)
     },
   })
 

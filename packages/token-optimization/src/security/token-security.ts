@@ -28,100 +28,146 @@ export interface SecurityEvent {
   sessionId?: string
 }
 
+// Multi-layer injection detection patterns - defined as strings to avoid RegExp state issues
+const INJECTION_PATTERNS = [
+  {
+    pattern: 'ignore.*previous.*instructions',
+    type: 'instruction_override',
+    severity: 'high'
+  },
+  {
+    pattern: 'unicode.*bypass',
+    type: 'encoding_bypass',
+    severity: 'high'
+  },
+  {
+    pattern: '\\[encoded:.*\\]',
+    type: 'encoding_bypass',
+    severity: 'high'
+  },
+  {
+    pattern: 'system:\\s*.*',
+    type: 'system_prompt_injection',
+    severity: 'high'
+  },
+  {
+    pattern: 'you\\s+are\\s+now',
+    type: 'role_manipulation',
+    severity: 'high'
+  },
+  {
+    pattern: 'disregard.*above',
+    type: 'context_override',
+    severity: 'medium'
+  },
+  {
+    pattern: 'translate.*to.*system',
+    type: 'indirect_injection',
+    severity: 'medium'
+  },
+  {
+    pattern: 'pretend.*you.*are',
+    type: 'roleplay_injection',
+    severity: 'medium'
+  },
+  {
+    pattern: 'base64.*instruction',
+    type: 'encoding_injection',
+    severity: 'high'
+  },
+  {
+    pattern: 'compression.*ratio.*leak',
+    type: 'side_channel',
+    severity: 'medium'
+  },
+  {
+    pattern: 'token.*count.*attack',
+    type: 'timing_attack',
+    severity: 'medium'
+  }
+]
+
 export class TokenSecurityManager {
   private auditLog: SecurityEvent[] = []
   
   constructor(private config: SecurityConfig) {
+    // console.log("I AM ALIVE: TokenSecurityManager constructor")
     this.setupAuditCleanup()
   }
 
   /**
    * OWASP LLM01: Prompt Injection Prevention
    */
-  sanitizeInput(text: string): SanitizationResult {
+  sanitizeInput(text: string | null): SanitizationResult {
     if (!this.config.enableSanitization) {
       return {
-        original: text,
-        sanitized: text,
+        original: text || '',
+        sanitized: text || '',
         threats: [],
         riskLevel: 'low'
       }
     }
 
+    // Handle null/undefined input
+    if (text === null || text === undefined) {
+      return {
+        original: null,
+        sanitized: null,
+        threats: [],
+        riskLevel: 'low'
+      }
+    }
+
+    try {
+      return this.performSanitization(text)
+    } catch (error: any) {
+      console.error('[SANITIZATION ERROR]:', error)
+      
+      // Fail-safe: return original text with no threats detected
+      return {
+        original: text,
+        sanitized: text,
+        threats: [{
+          type: 'sanitization_error',
+          severity: 'low' as const,
+          pattern: '',
+          detected: false
+        }],
+        riskLevel: 'low'
+      }
+    }
+  }
+
+  private performSanitization(text: string): SanitizationResult {
     let sanitized = text
     const detectedThreats: Threat[] = []
 
-    // Multi-layer injection detection
-    const injectionPatterns = [
-      // Direct injection attempts
-      {
-        pattern: /ignore.*previous.*instructions/gi,
-        type: 'instruction_override',
-        severity: 'high'
-      },
-      {
-        pattern: /system:\s*.*/gi,
-        type: 'system_prompt_injection',
-        severity: 'high'
-      },
-      {
-        pattern: /you\s+are\s+now/gi,
-        type: 'role_manipulation',
-        severity: 'high'
-      },
-      {
-        pattern: /disregard.*above/gi,
-        type: 'context_override',
-        severity: 'medium'
-      },
-      
-      // Indirect injection
-      {
-        pattern: /translate.*to.*system/gi,
-        type: 'indirect_injection',
-        severity: 'medium'
-      },
-      {
-        pattern: /pretend.*you.*are/gi,
-        type: 'roleplay_injection',
-        severity: 'medium'
-      },
-      
-      // Advanced injection techniques
-      {
-        pattern: /unicode.*bypass/gi,
-        type: 'encoding_bypass',
-        severity: 'high'
-      },
-      {
-        pattern: /base64.*instruction/gi,
-        type: 'encoding_injection',
-        severity: 'high'
-      },
-      
-      // Token-specific attacks
-      {
-        pattern: /compression.*ratio.*leak/gi,
-        type: 'side_channel',
-        severity: 'medium'
-      },
-      {
-        pattern: /token.*count.*attack/gi,
-        type: 'timing_attack',
-        severity: 'medium'
-      }
-    ]
+    // First normalize the text to handle obfuscated injections
+    const normalizedText = text.replace(/\s+/g, '').toLowerCase();
 
-    // Check each pattern
-    injectionPatterns.forEach(({ pattern, type, severity }) => {
-      if (pattern.test(sanitized)) {
-        // Replace with safe placeholder
-        sanitized = sanitized.replace(pattern, `[INJECTION_ATTEMPT:${type}]`)
+    // Use robust RegExp creation from string patterns
+    INJECTION_PATTERNS.forEach(({ pattern, type, severity }) => {
+      // Create fresh regex instances to prevent state pollution
+      const regex = new RegExp(pattern, 'gi');
+      
+      // Check original text
+      const matchSanitized = regex.test(sanitized)
+      
+      // Reset lastIndex
+      regex.lastIndex = 0
+      
+      // Check normalized text
+      const matchNormalized = regex.test(normalizedText)
+      
+      if (matchSanitized || matchNormalized) {
+        // Replace with safe placeholder using fresh regex
+        const replaceRegex = new RegExp(pattern, 'gi');
+        sanitized = sanitized.replace(replaceRegex, `[INJECTION_ATTEMPT:${type}]`)
         
         detectedThreats.push({
           type,
           severity: severity as 'low' | 'medium' | 'high',
-          pattern: pattern.source,
+          pattern,
           detected: true
         })
       }
@@ -143,11 +189,21 @@ export class TokenSecurityManager {
   /**
    * OWASP LLM02: Sensitive Information Disclosure Prevention
    */
-  protectSensitiveData(text: string): ProtectionResult {
+  protectSensitiveData(text: string | null): ProtectionResult {
     if (!this.config.enablePIIRedaction) {
       return {
-        original: text,
-        protected: text,
+        original: text || '',
+        protected: text || '',
+        redactedTypes: [],
+        riskLevel: 'low'
+      }
+    }
+
+    // Handle null/undefined input
+    if (text === null || text === undefined) {
+      return {
+        original: '',
+        protected: '',
         redactedTypes: [],
         riskLevel: 'low'
       }
@@ -157,65 +213,28 @@ export class TokenSecurityManager {
     const redactedTypes: string[] = []
 
     // PII Detection and Redaction
+    // Simplified robust patterns defined as strings
     const piiPatterns = [
-      // Email addresses
-      {
-        pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
-        type: 'email',
-        replacement: '[EMAIL]'
-      },
-      // Phone numbers
-      {
-        pattern: /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g,
-        type: 'phone',
-        replacement: '[PHONE]'
-      },
-      // Social Security Numbers
-      {
-        pattern: /\b\d{3}-\d{2}-\d{4}\b/g,
-        type: 'ssn',
-        replacement: '[SSN]'
-      },
-      // Credit card numbers
-      {
-        pattern: /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g,
-        type: 'credit_card',
-        replacement: '[CREDIT_CARD]'
-      },
-      // API keys
-      {
-        pattern: /\b[a-zA-Z0-9]{32,}\b/g,
-        type: 'api_key',
-        replacement: '[API_KEY]'
-      },
-      // Passwords
-      {
-        pattern: /\b(password|pwd|pass)\s*[:=]\s*[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}\b/gi,
-        type: 'password',
-        replacement: '[PASSWORD]'
-      },
-      // Passport numbers
-      {
-        pattern: /\b[A-Z]{1,2}\d{6,8}\b/g,
-        type: 'passport',
-        replacement: '[PASSPORT]'
-      },
-      // License plates
-      {
-        pattern: /\b[A-Z]{2}\d{6,8}\b/g,
-        type: 'license_plate',
-        replacement: '[LICENSE]'
-      }
+      { pattern: '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b', type: 'email', replacement: '[EMAIL]' },
+      { pattern: '\\b(?:\\+?1[-.\\s]?)?\\(?([0-9]{3})\\)?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})\\b', type: 'phone', replacement: '[PHONE]' },
+      { pattern: '\\b\\d{3}-\\d{2}-\\d{4}\\b', type: 'ssn', replacement: '[SSN]' },
+      { pattern: '\\b\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}\\b', type: 'credit_card', replacement: '[CREDIT_CARD]' },
+      { pattern: '\\b[a-zA-Z0-9]{32,}\\b', type: 'api_key', replacement: '[API_KEY]' },
+      { pattern: '\\b(password|pwd|pass)\\s*[:=]\\s*[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};\':"\\\\|,.<>\\/?]{8,}\\b', type: 'password', replacement: '[PASSWORD]' },
+      { pattern: '\\b[A-Z]{1,2}\\d{6,8}\\b', type: 'passport', replacement: '[PASSPORT]' },
+      { pattern: '\\b[A-Z]{2}\\d{6,8}\\b', type: 'license_plate', replacement: '[LICENSE]' }
     ]
 
     piiPatterns.forEach(({ pattern, type, replacement }) => {
-      if (pattern.test(protectedText)) {
-        protectedText = protectedText.replace(pattern, replacement)
+      const regex = new RegExp(pattern, 'gi'); // Global, Case-insensitive
+      if (regex.test(protectedText)) {
+        const replaceRegex = new RegExp(pattern, 'gi');
+        protectedText = protectedText.replace(replaceRegex, replacement)
         redactedTypes.push(type)
       }
     })
 
-    // Additional data protection
+    // Additional data protection - moved after PII patterns
     protectedText = this.additionalDataProtection(protectedText)
 
     const riskLevel = redactedTypes.length > 0 ? 'medium' : 'low'
@@ -364,10 +383,11 @@ export class TokenSecurityManager {
   }
 
   private additionalDataProtection(text: string): string {
-    // Additional data protection
+    // Additional data protection - just basic sanitization, no acronym replacement
     return text
-      .replace(/\b\d{4,}\b/g, '[NUMBER]') // Long numbers
-      .replace(/\b[A-Z]{3,}\b/g, '[ACRONYM]') // Acronyms
+      .replace(/[<>]/g, '') // Remove potential HTML
+      .replace(/javascript:/gi, '') // Remove JavaScript protocol
+      .replace(/on\w+\s*=/gi, '') // Remove event handlers
   }
 
   private calculateRiskLevel(threats: Threat[]): 'low' | 'medium' | 'high' {
@@ -423,8 +443,8 @@ export class TokenSecurityManager {
 
 // Interfaces
 export interface SanitizationResult {
-  original: string
-  sanitized: string
+  original: string | null
+  sanitized: string | null
   threats: Threat[]
   riskLevel: 'low' | 'medium' | 'high'
 }

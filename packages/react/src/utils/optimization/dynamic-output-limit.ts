@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Dynamic Output Token Calculator
  *
@@ -134,8 +135,8 @@ const BREVITY_INSTRUCTIONS: Array<{ maxTokens: number; instruction: string }> = 
  *   taskType: 'chat',
  * })
  *
- * console.log(result.recommendedMaxTokens) // e.g., 500
- * console.log(result.brevityInstruction)   // "Be concise..."
+ * logger.debug(result.recommendedMaxTokens) // e.g., 500
+ * logger.debug(result.brevityInstruction)   // "Be concise..."
  *
  * // Use in API call
  * const response = await api.chat({

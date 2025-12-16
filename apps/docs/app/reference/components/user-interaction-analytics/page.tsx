@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -112,7 +113,7 @@ function HeatmapView({ events }: { events: InteractionEvent[] }) {
       events={events}
       showHeatmap={true}
       onEventClick={(event) => {
-        console.log('Clicked event:', event)
+        logger.debug('Clicked event:', event)
         // Show event details
       }}
     />

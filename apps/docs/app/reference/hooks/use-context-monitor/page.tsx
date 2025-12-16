@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -133,9 +134,9 @@ function WithRecommendations({ messages }: { messages: Message[] }) {
     maxTokens: 128000,
     enableRecommendations: true,
     onRecommendation: (rec) => {
-      console.log(\`Recommendation: \${rec.description}\`)
-      console.log(\`Estimated savings: \${rec.estimatedSavings} tokens\`)
-      console.log(\`Action: \${rec.action}\`)
+      logger.debug(\`Recommendation: \${rec.description}\`)
+      logger.debug(\`Estimated savings: \${rec.estimatedSavings} tokens\`)
+      logger.debug(\`Action: \${rec.action}\`)
     },
   })
 
@@ -165,13 +166,13 @@ function WithWarnings({ messages }: { messages: Message[] }) {
     maxTokens: 128000,
     onWarning: (warning) => {
       if (warning.level === 'critical') {
-        console.error(warning.message)
+        logger.logger.error(warning.message)
         // Show critical alert
       } else if (warning.level === 'warning') {
-        console.warn(warning.message)
+        logger.warn(warning.message)
         // Show warning notification
       }
-      console.log('Recommendation:', warning.recommendation)
+      logger.debug('Recommendation:', warning.recommendation)
     },
   })
 

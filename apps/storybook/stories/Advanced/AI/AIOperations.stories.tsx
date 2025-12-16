@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   PromptTestHarness,
@@ -38,7 +39,7 @@ export const PromptTestHarnessDefault: StoryObj<typeof PromptTestHarness> = {
     <div style={{ width: '100%', height: '800px', padding: '24px' }}>
       <PromptTestHarness
         onTest={(prompt, variables) => {
-          console.log('Testing prompt:', prompt, 'with variables:', variables)
+          SecureLogger.debug('Testing prompt:', prompt, 'with variables:', variables)
           return Promise.resolve({
             response: 'This is a simulated AI response based on your prompt.',
             latency: 1234,
@@ -71,7 +72,7 @@ export const PromptTestHarnessABTest: StoryObj<typeof PromptTestHarness> = {
       <PromptTestHarness
         mode="ab-test"
         onTest={(prompt, variables) => {
-          console.log('A/B Testing prompt:', prompt)
+          SecureLogger.debug('A/B Testing prompt:', prompt)
           return Promise.resolve({
             response: 'Variant response',
             latency: Math.random() * 2000,
@@ -243,7 +244,7 @@ export const SafetyReviewConsoleDefault: StoryObj<typeof SafetyReviewConsole> = 
           },
         ]}
         onReview={(id, decision, notes) => {
-          console.log('Reviewing:', id, decision, notes)
+          SecureLogger.debug('Reviewing:', id, decision, notes)
         }}
         stats={{
           totalFlags: 156,
@@ -290,7 +291,7 @@ export const SafetyReviewConsoleFiltered: StoryObj<typeof SafetyReviewConsole> =
         ]}
         filterBy="pii"
         onReview={(id, decision, notes) => {
-          console.log('Reviewing PII:', id, decision)
+          SecureLogger.debug('Reviewing PII:', id, decision)
         }}
         stats={{
           totalFlags: 45,

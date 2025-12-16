@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Advanced Conversation Export Utilities
  *
@@ -507,7 +508,7 @@ export async function exportConversation(
       // For now, export as HTML and let user print to PDF
       content = exportToHTML(messages, options)
       mimeType = 'text/html'
-      console.warn('PDF export: Please use browser "Print to PDF" feature')
+      logger.warn('PDF export: Please use browser "Print to PDF" feature')
       break
 
     default:

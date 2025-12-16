@@ -1,3 +1,6 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
 import { test, expect } from '@playwright/test'
 
 /**
@@ -9,12 +12,12 @@ function attachPageDiagnostics(page: any) {
   // Surface runtime failures that can leave Storybook preview stuck loading.
   page.on('pageerror', (err: any) => {
     // eslint-disable-next-line no-console
-    console.error('[playwright][pageerror]', err)
+    SecureLogger.error('[playwright][pageerror]', err)
   })
   page.on('console', (msg: any) => {
     if (msg.type?.() === 'error') {
       // eslint-disable-next-line no-console
-      console.error('[playwright][console.error]', msg.text?.())
+      SecureLogger.error('[playwright][console.error]', msg.text?.())
     }
   })
 }

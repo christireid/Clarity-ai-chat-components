@@ -1,3 +1,6 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -54,7 +57,7 @@ describe('review-checks', () => {
       const content = `
 const x = 1
 // review-ignore: consoleLog
-console.log('test')
+SecureLogger.debug('test')
 `
       const result = parseSuppressions(content)
 
@@ -102,7 +105,7 @@ const x = 1
     it('should return true for suppressed rules', () => {
       const suppressions = parseSuppressions(`
 // review-ignore: consoleLog
-console.log('test')
+SecureLogger.debug('test')
 `)
 
       expect(isSuppressed(suppressions, 'consoleLog', 2)).toBe(true)
@@ -113,7 +116,7 @@ console.log('test')
       const suppressions = parseSuppressions(`
 // review-ignore: all
 const data: any = {}
-console.log('test')
+SecureLogger.debug('test')
 `)
 
       expect(isSuppressed(suppressions, 'consoleLog', 2)).toBe(true)
@@ -215,9 +218,9 @@ const data: any = {}
         tempFile,
         `
 // Test file for auto-fix
-console.log('should be removed')
+SecureLogger.debug('should be removed')
 const x = 1
-console.debug('also removed')
+SecureLogger.debug('also removed')
 `
       )
     })

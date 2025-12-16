@@ -1,5 +1,6 @@
 /**
  * Advanced Chat Integration Example
+import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates a full-featured chat implementation with all enhancements.
  * This example shows how to use all the blueprint features together.
@@ -117,7 +118,7 @@ export function AdvancedChatIntegration() {
     includeImages: boolean
     includeAttachments: boolean
   }) => {
-    console.log('Exporting:', options)
+    SecureLogger.debug('Exporting:', options)
     // Implement export logic
   }
 

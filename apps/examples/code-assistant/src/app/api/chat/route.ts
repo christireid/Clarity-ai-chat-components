@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { SecureLogger } from '@/lib/security/secureLogger';
 import OpenAI from 'openai'
 
 export const runtime = 'edge'
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
           controller.close()
         } catch (err) {
-          console.error('Stream error:', err)
+          SecureLogger.error('Stream error:', err)
           controller.error(err)
         }
       },
@@ -92,7 +93,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (err: any) {
-    console.error('Chat API error:', err)
+    SecureLogger.error('Chat API error:', err)
 
     if (err?.status === 401) {
       return new Response(

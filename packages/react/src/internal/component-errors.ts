@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Component-Specific Error Utilities
  *
@@ -319,14 +320,14 @@ export function createErrorHandler(
   return (error: Error, errorInfo: ErrorInfo) => {
     // Enhance error with component context if not already a ComponentError
     if (!(error instanceof ComponentError)) {
-      console.error(
+      logger.logger.error(
         `[Clarity Chat] ${component} encountered an error:`,
         error,
         '\n\nComponent Stack:',
         errorInfo.componentStack
       )
     } else {
-      console.error(error.message)
+      logger.logger.error(error.message)
     }
 
     // Call additional handler if provided

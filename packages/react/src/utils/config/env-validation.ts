@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Environment Variable Validation Utilities
  *
@@ -100,7 +101,7 @@ export function validateAIProvider(
   }
 
   if (options.logWarnings && warnings.length > 0) {
-    console.warn('[Clarity Chat] Configuration warnings:', warnings)
+    logger.warn('[Clarity Chat] Configuration warnings:', warnings)
   }
 
   if (options.throwOnError && !result.isValid) {
@@ -162,7 +163,7 @@ export function validateVectorStore(
   }
 
   if (options.logWarnings && warnings.length > 0) {
-    console.warn('[Clarity Chat] Vector store warnings:', warnings)
+    logger.warn('[Clarity Chat] Vector store warnings:', warnings)
   }
 
   if (options.throwOnError && !result.isValid) {
@@ -238,7 +239,7 @@ export function validateClarityChatConfig(
   }
 
   if (options.logWarnings && warnings.length > 0) {
-    console.warn('[Clarity Chat] Configuration warnings:', warnings)
+    logger.warn('[Clarity Chat] Configuration warnings:', warnings)
   }
 
   if (options.throwOnError && !result.isValid) {

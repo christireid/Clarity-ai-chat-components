@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useStreamableUI } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -51,8 +52,8 @@ const { values, latest, status, isStreaming, reset } = useStreamableUI(
   streamableSource,
   {
     mode: 'append',
-    onUpdate: (value) => console.log('Updated:', value),
-    onComplete: (finalValue) => console.log('Complete:', finalValue),
+    onUpdate: (value) => SecureLogger.debug('Updated:', value),
+    onComplete: (finalValue) => SecureLogger.debug('Complete:', finalValue),
   }
 )
 \`\`\`
@@ -72,10 +73,10 @@ function AsyncIterableDemo() {
   const { values, latest, status, isStreaming, reset } = useStreamableUI(source, {
     mode: 'append',
     onUpdate: (value) => {
-      console.log('Value updated:', value)
+      SecureLogger.debug('Value updated:', value)
     },
     onComplete: (finalValue) => {
-      console.log('Streaming complete:', finalValue)
+      SecureLogger.debug('Streaming complete:', finalValue)
     },
   })
 
@@ -248,7 +249,7 @@ function ReplaceModeDemo() {
   const { values, latest, status, isStreaming, reset } = useStreamableUI(source, {
     mode: 'replace', // Replace instead of append
     onUpdate: (value) => {
-      console.log('Value replaced:', value)
+      SecureLogger.debug('Value replaced:', value)
     },
   })
 
@@ -336,7 +337,7 @@ function TransformDemo() {
       return String(value)
     },
     onUpdate: (value) => {
-      console.log('Transformed value:', value)
+      SecureLogger.debug('Transformed value:', value)
     },
   })
 
@@ -420,7 +421,7 @@ function ErrorHandlingDemo() {
   const { values, latest, status, error, isStreaming, reset } = useStreamableUI(source, {
     mode: 'append',
     onError: (err) => {
-      console.error('Stream error:', err)
+      SecureLogger.error('Stream error:', err)
     },
   })
 

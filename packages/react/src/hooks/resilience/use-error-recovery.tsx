@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -148,7 +149,7 @@ function getUserFriendlyMessage(errorType: string): string {
  * const handleSend = async () => {
  *   const result = await execute('Hello!')
  *   if (result) {
- *     console.log('Success:', result)
+ *     logger.debug('Success:', result)
  *   }
  * }
  * 
@@ -165,15 +166,15 @@ function getUserFriendlyMessage(errorType: string): string {
  *     return true
  *   },
  *   onRetryStart: (attempt) => {
- *     console.log(`Retry attempt ${attempt}`)
+ *     logger.debug(`Retry attempt ${attempt}`)
  *     analytics.track('retry_started', { attempt })
  *   },
  *   onRetrySuccess: (result, attempt) => {
- *     console.log(`Success after ${attempt} attempts`)
+ *     logger.debug(`Success after ${attempt} attempts`)
  *     analytics.track('retry_succeeded', { attempt })
  *   },
  *   onMaxAttemptsReached: (error) => {
- *     console.error('Max retries reached:', error)
+ *     logger.logger.error('Max retries reached:', error)
  *     showSupportDialog()
  *   },
  * })
@@ -300,17 +301,17 @@ export function useErrorRecovery<T = any>(
           return result
         } catch (err) {
           lastError = err as Error
-          console.error(`[useErrorRecovery] Attempt ${currentAttempt} failed:`, err)
+          logger.logger.error(`[useErrorRecovery] Attempt ${currentAttempt} failed:`, err)
 
           // Check if should retry
           if (!shouldRetryRef.current(lastError, currentAttempt)) {
-            console.log('[useErrorRecovery] shouldRetry returned false - stopping retries')
+            logger.debug('[useErrorRecovery] shouldRetry returned false - stopping retries')
             break
           }
 
           // Check if reached max attempts
           if (currentAttempt >= maxAttempts) {
-            console.log('[useErrorRecovery] Max attempts reached')
+            logger.debug('[useErrorRecovery] Max attempts reached')
             break
           }
 
@@ -340,7 +341,7 @@ export function useErrorRecovery<T = any>(
    */
   const retry = React.useCallback(async (): Promise<T | null> => {
     if (!canRetry) {
-      console.warn('[useErrorRecovery] Cannot retry - max attempts reached or no error')
+      logger.warn('[useErrorRecovery] Cannot retry - max attempts reached or no error')
       return null
     }
 

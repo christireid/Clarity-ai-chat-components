@@ -1,4 +1,5 @@
 import type { Message } from '@clarity-chat/types'
+import { SecureLogger } from '@/lib/security/secureLogger';
 
 export interface ChatResponse {
   message: Message
@@ -50,7 +51,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.error('Error reading localStorage:', error);
+      SecureLogger.error('Error reading localStorage:', error);
       return initialValue;
     }
   });
@@ -59,7 +60,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
     try {
       window.localStorage.setItem(key, JSON.stringify(storedValue));
     } catch (error) {
-      console.error('Error writing to localStorage:', error);
+      SecureLogger.error('Error writing to localStorage:', error);
     }
   }, [key, storedValue]);
 

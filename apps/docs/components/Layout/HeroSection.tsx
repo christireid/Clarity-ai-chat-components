@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { HeroParticlesLazy } from '@/components/hero/HeroParticlesLazy'
+import { CardSkeleton } from './Skeletons'
 
 interface HeroSectionProps {
   title: React.ReactNode
@@ -125,7 +127,7 @@ function InstallCommand({ command }: { command: string }) {
         setShowConfetti(false)
       }, 2000)
     } catch (error) {
-      toast.error('Failed to copy', {
+      toast.logger.error('Failed to copy', {
         description: 'Please try selecting and copying manually',
         action: { label: 'Try again', onClick: copyToClipboard },
       })

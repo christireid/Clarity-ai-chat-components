@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CitationCard } from '@clarity-chat/react'
 import { useState } from 'react'
@@ -275,7 +276,7 @@ const MultipleCitations = () => {
         <CitationCard
           key={citation.id}
           citation={citation}
-          onClick={() => console.log('Clicked citation:', citation.id)}
+          onClick={() => SecureLogger.debug('Clicked citation:', citation.id)}
         />
       ))}
     </div>

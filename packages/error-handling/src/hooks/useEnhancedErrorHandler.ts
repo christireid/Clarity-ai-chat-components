@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -77,9 +78,9 @@ export function useEnhancedErrorHandler(
 
       // Log in development
       if (logInDev && process.env['NODE_ENV'] === 'development') {
-        console.error('[useEnhancedErrorHandler]', normalizedError)
+        logger.logger.error('[useEnhancedErrorHandler]', normalizedError)
         if (isClarityError(normalizedError)) {
-          console.error('Details:', normalizedError.toJSON())
+          logger.logger.error('Details:', normalizedError.toJSON())
         }
       }
 
