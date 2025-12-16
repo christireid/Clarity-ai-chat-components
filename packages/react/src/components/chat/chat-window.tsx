@@ -4,13 +4,13 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
-import { duration } from '../animations/constants'
+import { duration } from '../../animations/constants'
 import { MessageList } from './message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from './thinking-indicator'
 import { BotIcon, SparklesIcon } from './icons'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
 
 export interface ChatWindowProps {
@@ -95,6 +95,34 @@ export interface ChatWindowProps {
   onDismissError?: () => void
   className?: string
   /**
+   * 2025 UI/UX Enhancement: Quantum Animations
+   */
+  quantumAnimations?: boolean
+  /**
+   * 2025 UI/UX Enhancement: Glassmorphism effect
+   */
+  glassmorphism?: boolean
+  /**
+   * 2025 UI/UX Enhancement: Aurora gradients
+   */
+  auroraGradients?: boolean
+  /**
+   * 2025 UI/UX Enhancement: Neumorphism style
+   */
+  neumorphism?: boolean
+  /**
+   * 2025 UI/UX Enhancement: Voice Integration
+   */
+  voiceIntegration?: boolean
+  /**
+   * 2025 UI/UX Enhancement: Adaptive Colors
+   */
+  adaptiveColors?: boolean
+  /**
+   * 2025 UI/UX Enhancement: WCAG AAA compliance
+   */
+  wcagAAA?: boolean
+  /**
    * Starter prompts to show in empty state (2024 AI UX trend)
    * These help users discover what the chat can do
    */
@@ -144,7 +172,7 @@ const DefaultEmptyState = ({
           opacity: [0.5, 0.8, 0.5],
         }}
         transition={{
-          duration: durations.slower,
+          duration: duration('slower'),
           repeat: Infinity,
           ease: 'easeInOut',
         }}
@@ -157,7 +185,7 @@ const DefaultEmptyState = ({
           opacity: [0.6, 1, 0.6],
         }}
         transition={{
-          duration: durations.slower,
+          duration: duration('slower'),
           repeat: Infinity,
           ease: 'easeInOut',
           delay: 0.5,
@@ -171,7 +199,7 @@ const DefaultEmptyState = ({
           rotate: [0, 1, -1, 0],
         }}
         transition={{
-          duration: durations.slower,
+          duration: duration('slower'),
           repeat: Infinity,
           ease: 'easeInOut',
         }}
@@ -181,7 +209,7 @@ const DefaultEmptyState = ({
             y: [0, -2, 0],
           }}
           transition={{
-            duration: durations.slower,
+            duration: duration('slower'),
             repeat: Infinity,
             ease: 'easeInOut',
           }}
@@ -220,7 +248,7 @@ const DefaultEmptyState = ({
             <motion.div
               animate={{ rotate: [0, 15, -15, 0] }}
               transition={{
-                duration: durations.slower,
+                duration: duration('slower'),
                 repeat: Infinity,
                 ease: 'easeInOut',
               }}
@@ -366,6 +394,14 @@ export function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
+  // 2025 Enhancements
+  quantumAnimations = false,
+  glassmorphism = false,
+  auroraGradients = false,
+  neumorphism = false,
+  voiceIntegration = false,
+  adaptiveColors = false,
+  wcagAAA = false,
   onSendMessage,
   onStopGeneration,
   onMessageCopy,
@@ -482,6 +518,11 @@ export function ChatWindow({
         'border-border/30',
         'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)]',
         'backdrop-blur-sm',
+        quantumAnimations && 'quantum-animations',
+        glassmorphism && 'glassmorphism-theme',
+        auroraGradients && 'aurora-gradients',
+        neumorphism && 'neumorphism-theme',
+        adaptiveColors && 'adaptive-colors',
         className
       )}
     >

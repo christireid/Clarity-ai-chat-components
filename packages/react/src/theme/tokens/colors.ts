@@ -67,6 +67,37 @@ export interface ColorTokens {
   surfaceMuted?: HSLValue
   surfaceElevated?: HSLValue
   surfaceOverlay?: HSLValue
+
+  // 2025 Enhancement tokens
+  glassmorphism?: {
+    background: HSLValue
+    backdrop: HSLValue
+    border: HSLValue
+    shadow: HSLValue
+  }
+  aurora?: {
+    gradient1: HSLValue
+    gradient2: HSLValue
+    gradient3: HSLValue
+    accent: HSLValue
+  }
+  neumorphism?: {
+    light: HSLValue
+    dark: HSLValue
+    highlight: HSLValue
+    shadow: HSLValue
+  }
+  adaptive?: {
+    background: HSLValue
+    foreground: HSLValue
+    accent: HSLValue
+  }
+  quantum?: {
+    primary: HSLValue
+    secondary: HSLValue
+    glow: HSLValue
+    pulse: HSLValue
+  }
 }
 
 /**

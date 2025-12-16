@@ -33,6 +33,8 @@ export const ANIMATION_DURATION = {
   instant: 0,
   /** 75ms - Micro-interactions */
   faster: 75,
+  /** 150ms - Quantum interactions (2025 Trend) */
+  quantum: 150,
   /** 150ms - Quick interactions (buttons, inputs) */
   fast: 150,
   /** 200ms - Standard UI transitions */
@@ -56,6 +58,7 @@ export const ANIMATION_DURATION = {
 export const DURATION_CSS = {
   instant: '0ms',
   faster: '75ms',
+  quantum: '150ms',
   fast: '150ms',
   normal: '200ms',
   moderate: '250ms',
@@ -70,6 +73,7 @@ export const DURATION_CSS = {
 export const DURATION_SECONDS = {
   instant: 0,
   faster: 0.075,
+  quantum: 0.15,
   fast: 0.15,
   normal: 0.2,
   moderate: 0.25,
@@ -85,6 +89,7 @@ export const DURATION_SECONDS = {
 export const TAILWIND_DURATION = {
   instant: 'duration-0',
   faster: 'duration-75',
+  quantum: 'duration-150',
   fast: 'duration-150',
   normal: 'duration-200',
   // Tailwind doesn't have 250; 300 is the closest non-jarring default.
