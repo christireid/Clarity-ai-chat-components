@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -702,7 +703,7 @@ export function ChatErrorBoundary({
 }: ChatErrorBoundaryProps) {
   const handleError = React.useCallback(
     (error: Error, info: React.ErrorInfo) => {
-      console.error('[ChatErrorBoundary]', {
+      logger.logger.error('[ChatErrorBoundary]', {
         chatId,
         provider,
         error: isClarityError(error) ? error.toJSON() : error,

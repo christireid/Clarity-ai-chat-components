@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -60,7 +61,7 @@ export function useThrottle<T>(value: T, delay: number = 500): T {
  * @example
  * ```tsx
  * const throttledResize = useThrottledCallback(
- *   () => console.log('Resized!'),
+ *   () => logger.debug('Resized!'),
  *   200
  * )
  * 

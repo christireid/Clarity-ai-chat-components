@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { NextResponse } from 'next/server'
 import { searchData } from '@/lib/search-data'
 import { fuzzyScore } from '@/lib/fuzzy-search'
@@ -582,7 +583,7 @@ export async function GET(request: Request) {
       },
     })
   } catch (error) {
-    console.error('[AI Search API] Error:', error)
+    logger.error('[AI Search API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

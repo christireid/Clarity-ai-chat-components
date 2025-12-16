@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Security Manager - Unified Security Layer (2025)
  *
@@ -572,7 +573,7 @@ export class SecurityManager {
       try {
         await handler.handle(event)
       } catch (error) {
-        console.error('Alert handler failed:', error)
+        logger.logger.error('Alert handler failed:', error)
       }
     }
   }
@@ -702,7 +703,7 @@ export class WebhookAlertHandler implements AlertHandler {
         }),
       })
     } catch (error) {
-      console.error('Webhook alert failed:', error)
+      logger.logger.error('Webhook alert failed:', error)
     }
   }
 }
@@ -718,7 +719,7 @@ export class ConsoleAlertHandler implements AlertHandler {
         : event.severity === 'warning'
           ? '⚠️'
           : 'ℹ️'
-    console.warn(
+    logger.warn(
       `${emoji} Security Alert [${event.severity.toUpperCase()}]: ${event.type}`,
       event.details
     )

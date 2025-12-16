@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -193,7 +194,7 @@ React.useEffect(() => {
       deferredPrompt.prompt()
       const { outcome } = await deferredPrompt.userChoice
       if (outcome === 'accepted') {
-        console.log('App installed')
+        logger.debug('App installed')
       }
       setDeferredPrompt(null)
       setShowPrompt(false)

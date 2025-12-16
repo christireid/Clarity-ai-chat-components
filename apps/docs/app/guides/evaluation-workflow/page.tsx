@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -120,7 +121,7 @@ function TrendTracking() {
       trends={trends}
       onTrendAnalysis={(trend) => {
         if (trend.direction === 'down') {
-          console.warn('Quality declining:', trend)
+          logger.warn('Quality declining:', trend)
         }
       }}
     />

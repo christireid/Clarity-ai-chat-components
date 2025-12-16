@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
@@ -124,10 +125,10 @@ NEXT_PUBLIC_ANALYTICS_ID=...`}
   placeholder="Ask me anything..."
 
   // Callbacks
-  onMessage={(msg) => console.log('New message:', msg)}
-  onError={(err) => console.error('Error:', err)}
-  onStreamStart={() => console.log('Stream started')}
-  onStreamEnd={() => console.log('Stream ended')}
+  onMessage={(msg) => logger.debug('New message:', msg)}
+  onError={(err) => logger.logger.error('Error:', err)}
+  onStreamStart={() => logger.debug('Stream started')}
+  onStreamEnd={() => logger.debug('Stream ended')}
 />`}
         />
 

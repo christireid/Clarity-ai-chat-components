@@ -1,5 +1,7 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { truncate } from '@clarity-chat/utils/format'
+import { debounce } from '@clarity-chat/utils/async'
 
 /**
  * Combines class names using clsx and tailwind-merge
@@ -32,30 +34,4 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-/**
- * Truncate text to a specified length
- */
-export function truncate(text: string, length: number): string {
-  if (text.length <= length) return text
-  return text.slice(0, length).trim() + '...'
-}
-
-/**
- * Debounce function
- */
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
-
-  return function executedFunction(...args: Parameters<T>) {
-    const later = () => {
-      timeout = null
-      func(...args)
-    }
-
-    if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-  }
-}
+export { truncate, debounce }

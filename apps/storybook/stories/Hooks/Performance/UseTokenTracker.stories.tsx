@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { useTokenTracker, type MessageWithTokens } from '@clarity-chat/react'
@@ -339,8 +340,8 @@ export const RealTimeMonitoring: Story = {
       modelName: 'gpt-4',
       warningThreshold: 0.6,
       criticalThreshold: 0.8,
-      onWarning: () => console.log('⚠️ Warning threshold reached!'),
-      onCritical: () => console.log('🚨 Critical threshold reached!'),
+      onWarning: () => SecureLogger.debug('⚠️ Warning threshold reached!'),
+      onCritical: () => SecureLogger.debug('🚨 Critical threshold reached!'),
     })
 
     const [isSimulating, setIsSimulating] = React.useState(false)

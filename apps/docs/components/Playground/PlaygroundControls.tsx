@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -47,7 +48,7 @@ export function PlaygroundControls({
       toast.success('Code copied to clipboard')
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      toast.error('Failed to copy code')
+      toast.logger.error('Failed to copy code')
     }
   }
 
@@ -121,7 +122,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
       toast.success('Opening in CodeSandbox...')
     } catch (error) {
-      toast.error('Failed to export to CodeSandbox')
+      toast.logger.error('Failed to export to CodeSandbox')
     } finally {
       setTimeout(() => setIsExporting(false), 1000)
     }
@@ -272,7 +273,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         toast.success('Share link copied to clipboard')
                         setTimeout(() => setCopied(false), 2000)
                       } catch (error) {
-                        toast.error('Failed to copy share link')
+                        toast.logger.error('Failed to copy share link')
                       }
                     }}
                     className={cn(

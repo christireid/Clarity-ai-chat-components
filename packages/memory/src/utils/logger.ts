@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Logger Utility
  * 
@@ -7,7 +8,7 @@
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug'
 
 export interface Logger {
-  error(message: string, ...args: any[]): void
+  logger.error(message: string, ...args: any[]): void
   warn(message: string, ...args: any[]): void
   info(message: string, ...args: any[]): void
   debug(message: string, ...args: any[]): void
@@ -29,27 +30,27 @@ class ClarityLogger implements Logger {
     return messageLevelIndex <= currentLevelIndex
   }
 
-  error(message: string, ...args: any[]): void {
+  logger.error(message: string, ...args: any[]): void {
     if (this.shouldLog('error')) {
-      console.error(`${this.prefix} [ERROR] ${message}`, ...args)
+      logger.logger.error(`${this.prefix} [ERROR] ${message}`, ...args)
     }
   }
 
   warn(message: string, ...args: any[]): void {
     if (this.shouldLog('warn')) {
-      console.warn(`${this.prefix} [WARN] ${message}`, ...args)
+      logger.warn(`${this.prefix} [WARN] ${message}`, ...args)
     }
   }
 
   info(message: string, ...args: any[]): void {
     if (this.shouldLog('info')) {
-      console.info(`${this.prefix} [INFO] ${message}`, ...args)
+      logger.info(`${this.prefix} [INFO] ${message}`, ...args)
     }
   }
 
   debug(message: string, ...args: any[]): void {
     if (this.shouldLog('debug')) {
-      console.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
+      logger.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
     }
   }
 

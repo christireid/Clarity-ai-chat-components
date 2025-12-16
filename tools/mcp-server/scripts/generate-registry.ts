@@ -1,3 +1,6 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 /**
  * Component Registry Generator
@@ -307,7 +310,7 @@ function parseSourceDirectory(sourceDir: string): RegistryInput {
   const hooks: RegistryInput['hooks'] = []
 
   if (!fs.existsSync(sourceDir)) {
-    console.error(`Directory not found: ${sourceDir}`)
+    SecureLogger.error(`Directory not found: ${sourceDir}`)
     return { components, hooks }
   }
 
@@ -353,7 +356,7 @@ function parseSourceDirectory(sourceDir: string): RegistryInput {
  */
 function loadFromJson(filePath: string): RegistryInput | null {
   if (!fs.existsSync(filePath)) {
-    console.error(`File not found: ${filePath}`)
+    SecureLogger.error(`File not found: ${filePath}`)
     return null
   }
 
@@ -361,7 +364,7 @@ function loadFromJson(filePath: string): RegistryInput | null {
     const content = fs.readFileSync(filePath, 'utf-8')
     return JSON.parse(content) as RegistryInput
   } catch (error) {
-    console.error('Error parsing JSON:', error)
+    SecureLogger.error('Error parsing JSON:', error)
     return null
   }
 }
@@ -413,7 +416,7 @@ function generateSampleJson(): void {
 
   const outputPath = path.join(__dirname, '../registry-input.sample.json')
   fs.writeFileSync(outputPath, JSON.stringify(sample, null, 2))
-  console.log(`Sample JSON written to: ${outputPath}`)
+  SecureLogger.debug(`Sample JSON written to: ${outputPath}`)
 }
 
 /**
@@ -422,8 +425,8 @@ function generateSampleJson(): void {
 async function main(): Promise<void> {
   const args = process.argv.slice(2)
 
-  console.log('Component Registry Generator')
-  console.log('============================\n')
+  SecureLogger.debug('Component Registry Generator')
+  SecureLogger.debug('============================\n')
 
   if (args.includes('--sample')) {
     generateSampleJson()
@@ -436,7 +439,7 @@ async function main(): Promise<void> {
     const jsonIndex = args.indexOf('--from-json')
     const jsonPath = args[jsonIndex + 1]
     if (!jsonPath) {
-      console.error('Please provide a JSON file path after --from-json')
+      SecureLogger.error('Please provide a JSON file path after --from-json')
       process.exit(1)
     }
     input = loadFromJson(jsonPath)
@@ -445,46 +448,46 @@ async function main(): Promise<void> {
   }
 
   if (!input) {
-    console.log('Usage:')
-    console.log('  npx tsx scripts/generate-registry.ts <source-dir>')
-    console.log('  npx tsx scripts/generate-registry.ts --from-json <file>')
-    console.log('  npx tsx scripts/generate-registry.ts --sample')
+    SecureLogger.debug('Usage:')
+    SecureLogger.debug('  npx tsx scripts/generate-registry.ts <source-dir>')
+    SecureLogger.debug('  npx tsx scripts/generate-registry.ts --from-json <file>')
+    SecureLogger.debug('  npx tsx scripts/generate-registry.ts --sample')
     return
   }
 
-  console.log(`Found ${input.components.length} components`)
-  console.log(`Found ${input.hooks.length} hooks\n`)
+  SecureLogger.debug(`Found ${input.components.length} components`)
+  SecureLogger.debug(`Found ${input.hooks.length} hooks\n`)
 
   if (args.includes('--output')) {
     // Generate TypeScript output
-    console.log('// Generated Components\n')
+    SecureLogger.debug('// Generated Components\n')
     for (const comp of input.components) {
       const definition = generateComponentDefinition(comp)
-      console.log(formatComponentAsTypeScript(definition))
-      console.log('')
+      SecureLogger.debug(formatComponentAsTypeScript(definition))
+      SecureLogger.debug('')
     }
 
-    console.log('\n// Generated Hooks\n')
+    SecureLogger.debug('\n// Generated Hooks\n')
     for (const hook of input.hooks) {
       const definition = generateHookDefinition(hook)
-      console.log(formatHookAsTypeScript(definition))
-      console.log('')
+      SecureLogger.debug(formatHookAsTypeScript(definition))
+      SecureLogger.debug('')
     }
   } else {
     // Just list what was found
-    console.log('Components:')
+    SecureLogger.debug('Components:')
     for (const comp of input.components) {
-      console.log(
+      SecureLogger.debug(
         `  - ${comp.name} (${comp.category || inferCategory(comp.name)})`
       )
     }
 
-    console.log('\nHooks:')
+    SecureLogger.debug('\nHooks:')
     for (const hook of input.hooks) {
-      console.log(`  - ${hook.name}`)
+      SecureLogger.debug(`  - ${hook.name}`)
     }
 
-    console.log('\nRun with --output to generate TypeScript definitions.')
+    SecureLogger.debug('\nRun with --output to generate TypeScript definitions.')
   }
 }
 

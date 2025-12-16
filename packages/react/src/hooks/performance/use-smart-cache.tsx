@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -53,7 +54,7 @@ export interface UseSmartCacheReturn<T = any> {
  *     // Try cache first
  *     const cached = await cache.get(query)
  *     if (cached) {
- *       console.log('Cache hit!')
+ *       logger.debug('Cache hit!')
  *       return cached
  *     }
  *

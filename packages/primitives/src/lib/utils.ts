@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -66,7 +67,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     }
     return false
   } catch (error) {
-    console.error('Failed to copy to clipboard:', error)
+    logger.logger.error('Failed to copy to clipboard:', error)
     return false
   }
 }

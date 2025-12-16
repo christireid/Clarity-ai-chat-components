@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 export interface PlaygroundTemplate {
   id: string
   name: string
@@ -236,7 +237,7 @@ Here's a code example:
 
 \\\`\\\`\\\`javascript
 function greet(name) {
-  console.log(\\\`Hello, \\\${name}!\\\`)
+  logger.debug(\\\`Hello, \\\${name}!\\\`)
 }
 
 greet('World')
@@ -583,13 +584,13 @@ export default function App() {
       id: 'export', 
       label: 'Export Chat', 
       icon: '📥',
-      action: () => console.log('Export')
+      action: () => logger.debug('Export')
     },
     { 
       id: 'settings', 
       label: 'Settings', 
       icon: '⚙️',
-      action: () => console.log('Settings')
+      action: () => logger.debug('Settings')
     }
   ]
 

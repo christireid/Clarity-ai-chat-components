@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -181,10 +182,10 @@ function AgentExample() {
     maxIterations: 10,
   }, {
     onThought: (thought) => {
-      console.log('Agent thinking:', thought)
+      logger.debug('Agent thinking:', thought)
     },
     onAction: (tool, args) => {
-      console.log('Agent using tool:', tool, args)
+      logger.debug('Agent using tool:', tool, args)
       setSteps(prev => [...prev, {
         id: Date.now().toString(),
         title: \`Using \${tool}\`,
@@ -195,7 +196,7 @@ function AgentExample() {
       }])
     },
     onObservation: (result) => {
-      console.log('Tool result:', result)
+      logger.debug('Tool result:', result)
       setSteps(prev => prev.map(step =>
         step.status === 'running'
           ? { ...step, status: 'succeeded', completedAt: new Date(), outputPreview: JSON.stringify(result).slice(0, 100) }
@@ -203,7 +204,7 @@ function AgentExample() {
       ))
     },
     onAnswer: (answer) => {
-      console.log('Final answer:', answer)
+      logger.debug('Final answer:', answer)
     },
   })
 
@@ -284,11 +285,11 @@ function AgentRunFeedExample() {
         steps={steps}
         onRetry={(step) => {
           // Retry failed step
-          console.log('Retrying:', step)
+          logger.debug('Retrying:', step)
         }}
         onOpenLogs={(step) => {
           // Show detailed logs
-          console.log('Logs for:', step)
+          logger.debug('Logs for:', step)
         }}
       />
     </div>
@@ -589,7 +590,7 @@ function CompleteAgentExample() {
     maxIterations: 10,
   }, {
     onThought: (thought) => {
-      console.log('Thinking:', thought)
+      logger.debug('Thinking:', thought)
     },
     onAction: (tool, args) => {
       setSteps(prev => [...prev, {
@@ -614,10 +615,10 @@ function CompleteAgentExample() {
       ))
     },
     onAnswer: (answer) => {
-      console.log('Answer:', answer)
+      logger.debug('Answer:', answer)
     },
     onError: (error) => {
-      console.error('Agent error:', error)
+      logger.logger.error('Agent error:', error)
       setSteps(prev => prev.map(step =>
         step.status === 'running'
           ? { ...step, status: 'failed', completedAt: new Date() }
@@ -673,10 +674,10 @@ function CompleteAgentExample() {
       <AgentRunFeed
         steps={steps}
         onRetry={(step) => {
-          console.log('Retrying step:', step)
+          logger.debug('Retrying step:', step)
         }}
         onOpenLogs={(step) => {
-          console.log('Logs for step:', step)
+          logger.debug('Logs for step:', step)
         }}
       />
 

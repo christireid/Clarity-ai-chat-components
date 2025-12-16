@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useChatEnhanced as useChat } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -55,8 +56,8 @@ with streaming support, message management, and tool calling capabilities.
 const { messages, append, isLoading, handleSubmit, input, setInput } = useChat({
   api: '/api/chat',
   initialMessages: [],
-  onFinish: (message) => console.log('Finished:', message),
-  onError: (error) => console.error('Error:', error),
+  onFinish: (message) => SecureLogger.debug('Finished:', message),
+  onError: (error) => SecureLogger.error('Error:', error),
 })
 
 // Handle form submission
@@ -79,10 +80,10 @@ function BasicChatDemo() {
   const { messages, append, isLoading, handleSubmit, input, setInput, error, stop } = useChat({
     initialMessages: [],
     onFinish: (message) => {
-      console.log('Message finished:', message)
+      SecureLogger.debug('Message finished:', message)
     },
     onError: (error) => {
-      console.error('Chat error:', error)
+      SecureLogger.error('Chat error:', error)
     },
   })
 
@@ -430,7 +431,7 @@ function ErrorHandlingDemo() {
   const { messages, append, isLoading, error, stop } = useChat({
     initialMessages: [],
     onError: (error) => {
-      console.error('Chat error:', error)
+      SecureLogger.error('Chat error:', error)
     },
     keepLastMessageOnError: true,
   })
@@ -461,7 +462,7 @@ function ErrorHandlingDemo() {
       
       setMessage('')
     } catch (err) {
-      console.error('Failed to append:', err)
+      SecureLogger.error('Failed to append:', err)
     }
   }
 

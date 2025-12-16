@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * doctor command - Check project health and configuration
  */
@@ -395,7 +396,7 @@ GOOGLE_API_KEY=your_key_here
           } else if (result.status === 'warn') {
             warn(`${name}: ${result.message}`)
           } else {
-            error(`${name}: ${result.message}`)
+            logger.error(`${name}: ${result.message}`)
           }
         })
       }
@@ -408,7 +409,7 @@ GOOGLE_API_KEY=your_key_here
           } else if (result.status === 'warn') {
             warn(`${name}: ${result.message}`)
           } else {
-            error(`${name}: ${result.message}`)
+            logger.error(`${name}: ${result.message}`)
           }
         })
       })
@@ -448,7 +449,7 @@ GOOGLE_API_KEY=your_key_here
       console.log('\n' + pc.bold('Summary:'))
       success(`Passed: ${passCount}`)
       if (warnCount > 0) warn(`Warnings: ${warnCount}`)
-      if (failCount > 0) error(`Failed: ${failCount}`)
+      if (failCount > 0) logger.error(`Failed: ${failCount}`)
     }
 
     // Auto-fix if requested
@@ -476,7 +477,7 @@ GOOGLE_API_KEY=your_key_here
           } catch (err) {
             fixSpinner.fail(`Failed to fix ${name}`)
             logger.error(err instanceof Error ? err : new Error(String(err)))
-            error(`Failed to fix: ${name}`)
+            logger.error(`Failed to fix: ${name}`)
           }
         }
       }

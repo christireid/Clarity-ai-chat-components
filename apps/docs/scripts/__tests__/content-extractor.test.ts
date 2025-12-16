@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Tests for content extraction utilities
  */
@@ -212,7 +213,7 @@ describe('estimateTokens', () => {
 
   it('should handle code content', () => {
     const code = `function hello() {
-  console.log('Hello, World!');
+  logger.debug('Hello, World!');
 }`
     const result = estimateTokens(code)
     expect(result).toBeGreaterThan(0)

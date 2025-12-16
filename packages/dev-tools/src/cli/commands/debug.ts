@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Debug command
  *
@@ -59,11 +60,11 @@ debugCommand
         hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
         hasGoogleKey: !!process.env.GOOGLE_API_KEY,
       }
-      console.log(JSON.stringify(jsonOutput, null, 2))
+      logger.debug(JSON.stringify(jsonOutput, null, 2))
     } else {
-      console.log()
-      console.log(infoBox(keyValueTable(envInfo), 'Environment Information'))
-      console.log()
+      logger.debug()
+      logger.debug(infoBox(keyValueTable(envInfo), 'Environment Information'))
+      logger.debug()
     }
   })
 
@@ -88,9 +89,9 @@ debugCommand
       colors: true,
     })
 
-    console.log()
-    console.log(chalk.bold.blue('Testing logger at all levels...'))
-    console.log()
+    logger.debug()
+    logger.debug(chalk.bold.blue('Testing logger at all levels...'))
+    logger.debug()
 
     logger.trace('This is a trace message', { detail: 'finest level' })
     logger.debug('This is a debug message', { detail: 'debugging info' })
@@ -98,13 +99,13 @@ debugCommand
     logger.warn('This is a warning message', { detail: 'something to watch' })
     logger.error('This is an error message', { detail: 'something went wrong' })
 
-    console.log()
-    console.log(chalk.bold.blue('Custom message:'))
+    logger.debug()
+    logger.debug(chalk.bold.blue('Custom message:'))
     logger.info(options.message, { level: options.level })
 
-    console.log()
-    console.log(successBox(`Logger test complete at level: ${options.level}`))
-    console.log()
+    logger.debug()
+    logger.debug(successBox(`Logger test complete at level: ${options.level}`))
+    logger.debug()
   })
 
 // Subcommand: timing - Test timing utilities
@@ -116,9 +117,9 @@ debugCommand
     const logger = createLogger({ level: 'debug' })
     const delay = parseInt(options.delay)
 
-    console.log()
-    console.log(chalk.bold.blue(`Testing timing with ${delay}ms delay...`))
-    console.log()
+    logger.debug()
+    logger.debug(chalk.bold.blue(`Testing timing with ${delay}ms delay...`))
+    logger.debug()
 
     logger.time('Operation 1')
     await sleep(delay)
@@ -137,9 +138,9 @@ debugCommand
     logger.timeEnd('Sub-operation B')
     logger.timeEnd('Nested operations')
 
-    console.log()
-    console.log(successBox('Timing test complete'))
-    console.log()
+    logger.debug()
+    logger.debug(successBox('Timing test complete'))
+    logger.debug()
   })
 
 // Subcommand: request - Simulate API request debugging
@@ -158,9 +159,9 @@ debugCommand
       prefix: `[${options.provider}]`,
     })
 
-    console.log()
-    console.log(chalk.bold.blue('Simulating API request debugging...'))
-    console.log()
+    logger.debug()
+    logger.debug(chalk.bold.blue('Simulating API request debugging...'))
+    logger.debug()
 
     // Simulate request lifecycle
     logger.time('Total Request')
@@ -208,9 +209,9 @@ debugCommand
       'Estimated Cost': '$0.001',
     }
 
-    console.log()
-    console.log(infoBox(keyValueTable(summary), 'Request Summary'))
-    console.log()
+    logger.debug()
+    logger.debug(infoBox(keyValueTable(summary), 'Request Summary'))
+    logger.debug()
   })
 
 function sleep(ms: number): Promise<void> {

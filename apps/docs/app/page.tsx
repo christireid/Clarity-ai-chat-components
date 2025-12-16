@@ -8,6 +8,8 @@ import { CodeExample } from '@/components/Demo/CodeExample'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
 import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
+import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
+import { BundleSizeAnalyzer } from '@/components/Diagrams/BundleSizeAnalyzer'
 
 // Lazy load the animated background to reduce initial bundle size
 // This component is decorative and can load after initial render
@@ -224,6 +226,12 @@ function App() {
           </div>
         </div>
       </section>
+
+      {/* Component Showcase */}
+      <ComponentShowcase />
+
+      {/* Bundle Size Analyzer */}
+      <BundleSizeAnalyzer />
 
       {/* Links Section */}
       <section className="container-docs py-24 border-t border-border">

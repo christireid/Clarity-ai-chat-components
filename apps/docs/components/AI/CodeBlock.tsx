@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
@@ -20,7 +21,7 @@ import {
   durations,
 } from '@/lib/animations'
 import { toast, toastMessages } from '@/lib/toast'
-
+import DOMPurify from 'dompurify'
 // Import language support
 import 'prismjs/components/prism-typescript'
 import 'prismjs/components/prism-javascript'
@@ -56,6 +57,15 @@ export function CodeBlock({
   const codeRef = useRef<HTMLElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // SECURITY: Sanitize highlighted code before rendering
+  const sanitizedHighlightedCode = useMemo(() => {
+    if (!highlightedCode) return code
+    return DOMPurify.sanitize(highlightedCode, {
+      ALLOWED_TAGS: ['span', 'div', 'br', 'strong', 'em', 'code', 'pre'],
+      ALLOWED_ATTR: ['class', 'style']
+    })
+  }, [highlightedCode, code])
+
   // Parse URL hash for line highlighting (#L10-L15)
   useEffect(() => {
     const hash = window.location.hash
@@ -90,7 +100,7 @@ export function CodeBlock({
       const highlighted = Prism.highlight(code, grammar, language)
       setHighlightedCode(highlighted)
     } catch (error) {
-      console.error('Prism highlighting error:', error)
+      logger.logger.error('Prism highlighting error:', error)
       setHighlightedCode(code)
     }
   }, [code, language])
@@ -122,8 +132,8 @@ export function CodeBlock({
 
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error('Failed to copy code:', error)
-      toast.error(toastMessages.copyFailed, {
+      logger.logger.error('Failed to copy code:', error)
+      toast.logger.error(toastMessages.copyFailed, {
         action: {
           label: 'Try again',
           onClick: () => handleCopy(),
@@ -145,8 +155,8 @@ export function CodeBlock({
       URL.revokeObjectURL(url)
       toast.success(`Downloaded ${filename || `code.${language}`}`)
     } catch (error) {
-      console.error('Failed to download code:', error)
-      toast.error('Failed to download code', {
+      logger.logger.error('Failed to download code:', error)
+      toast.logger.error('Failed to download code', {
         action: {
           label: 'Retry',
           onClick: () => handleDownload(),
@@ -489,7 +499,10 @@ export function CodeBlock({
                             'bg-brand-500/10 border-l-4 border-brand-500 pl-3 -ml-3 font-medium'
                         )}
                         dangerouslySetInnerHTML={{
-                          __html: highlightedLine || '\n',
+                          __html: DOMPurify.sanitize(highlightedLine || '\n', {
+                            ALLOWED_TAGS: ['span', 'div', 'br'],
+                            ALLOWED_ATTR: ['class', 'style']
+                          })
                         }}
                       />
                     </motion.div>
@@ -498,7 +511,7 @@ export function CodeBlock({
               </div>
             ) : (
               <span
-                dangerouslySetInnerHTML={{ __html: highlightedCode || code }}
+                dangerouslySetInnerHTML={{ __html: sanitizedHighlightedCode }}
               />
             )}
           </code>
@@ -638,7 +651,12 @@ export function RenderWithCodeBlocks({
  * Render inline code snippets in text
  */
 function renderInlineCode(text: string): string {
-  return text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
+  // SECURITY: Sanitize the text before processing
+  const sanitizedText = DOMPurify.sanitize(text, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: []
+  })
+  return sanitizedText.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
 }
 
 /**

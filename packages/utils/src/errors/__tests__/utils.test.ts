@@ -18,7 +18,6 @@ import {
 import { ClarityError } from '../base.js'
 import { APIKeyMissingError } from '../api.js'
 import { ValidationError } from '../validation.js'
-
 // Concrete implementation for testing
 class TestClarityError extends ClarityError {
   constructor(code: string, userMessage: string) {
@@ -70,8 +69,9 @@ describe('logError', () => {
     logError(error)
 
     expect(consoleErrorSpy).toHaveBeenCalled()
-    const loggedMessage = consoleErrorSpy.mock.calls[0][0]
-    expect(loggedMessage).toContain('Test message')
+    const allArgs = consoleErrorSpy.mock.calls.flat()
+    const hasMessage = allArgs.some(arg => String(arg).includes('Test message'))
+    expect(hasMessage).toBe(true)
   })
 
   it('should log regular Error with stack', () => {
@@ -80,16 +80,18 @@ describe('logError', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalled()
     // Should log "Unexpected Error" for non-ClarityErrors
-    const calls = consoleErrorSpy.mock.calls.map((c) => c[0])
-    expect(calls.some((c: string) => c.includes('Unexpected Error'))).toBe(true)
+    const allArgs = consoleErrorSpy.mock.calls.flat()
+    const hasUnexpectedError = allArgs.some(arg => String(arg).includes('Unexpected Error'))
+    expect(hasUnexpectedError).toBe(true)
   })
 
   it('should log stack trace for regular errors', () => {
     const error = new Error('Error with stack')
     logError(error)
 
-    const calls = consoleErrorSpy.mock.calls.map((c) => c[0])
-    expect(calls.some((c: string) => c.includes('Stack trace'))).toBe(true)
+    const allArgs = consoleErrorSpy.mock.calls.flat()
+    const hasStackTrace = allArgs.some(arg => String(arg).includes('Stack trace'))
+    expect(hasStackTrace).toBe(true)
   })
 })
 

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -151,7 +152,7 @@ export async function POST(req: Request) {
 
     return new StreamingTextResponse(response.body)
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.logger.error('Chat API error:', error)
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
@@ -178,7 +179,7 @@ export default function OptimizedMemoryChat() {
     enableMemory: true,
     tokenOptimizer: optimizer,
     onTokensOptimized: (savings) => {
-      console.log(\`Saved \${savings.percent}% tokens\`)
+      logger.debug(\`Saved \${savings.percent}% tokens\`)
     }
   })
 

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -43,12 +44,12 @@ export default function ThemeSelectorPage() {
 <ThemeSelector 
   showPreview
   orientation="vertical"
-  onThemeChange={(theme) => console.log(theme)}
+  onThemeChange={(theme) => logger.debug(theme)}
 />
 
 // Dropdown variant
 <ThemeSelectorDropdown 
-  onThemeChange={(theme) => console.log(theme)}
+  onThemeChange={(theme) => logger.debug(theme)}
 />`}</code>
           </pre>
         </div>

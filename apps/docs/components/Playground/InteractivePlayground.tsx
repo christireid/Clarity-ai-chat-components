@@ -15,6 +15,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import DOMPurify from 'dompurify'
 
 interface PlaygroundProps {
   initialCode: string
@@ -338,7 +339,10 @@ export function InteractivePlayground({
               >
                 <pre className="text-sm font-mono leading-6 whitespace-pre-wrap break-words">
                   <code
-                    dangerouslySetInnerHTML={{ __html: highlightedCode + '\n' }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedCode + '\n', {
+                      ALLOWED_TAGS: ['span', 'div', 'br', 'strong', 'em', 'code'],
+                      ALLOWED_ATTR: ['class', 'style']
+                    }) }}
                   />
                 </pre>
               </div>

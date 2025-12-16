@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Clarity Chat - Theme Composer
  *
@@ -679,7 +680,7 @@ export class ThemeBuilder {
       }
     } catch {
       // If contrast fixing fails, return original colors
-      console.warn(
+      logger.warn(
         '[ThemeBuilder] Auto-contrast adjustment failed, using original colors'
       )
     }

@@ -1,3 +1,5 @@
+import { error as logError } from '../logger';
+
 /**
  * CLI Error Classes
  *
@@ -159,9 +161,9 @@ export function handleCLIError(error: string | Error | unknown): never {
 
   if (normalizedError instanceof CLIError) {
     if (isJsonMode) {
-      console.error(JSON.stringify(normalizedError.toJSON()))
+      logError(JSON.stringify(normalizedError.toJSON()))
     } else {
-      console.error(normalizedError.format())
+      logError(normalizedError.format())
     }
 
     if (typeof process !== 'undefined') {
@@ -172,24 +174,24 @@ export function handleCLIError(error: string | Error | unknown): never {
 
   // Generic error
   if (isJsonMode) {
-    console.error(
+    logError(
       JSON.stringify({
         error: normalizedError.message,
         stack: normalizedError.stack,
       })
     )
   } else {
-    console.error(`\n✖ Error: ${normalizedError.message}`)
+    logError(`\n✖ Error: ${normalizedError.message}`)
 
     const showStack =
       typeof process !== 'undefined' &&
       (process.env?.DEBUG || process.env?.VERBOSE)
     if (showStack && normalizedError.stack) {
-      console.error('\n' + normalizedError.stack)
+      logError('\n' + normalizedError.stack)
     } else {
-      console.error('   Run with --verbose for more details')
+      logError('   Run with --verbose for more details')
     }
-    console.error('')
+    logError('')
   }
 
   if (typeof process !== 'undefined') {

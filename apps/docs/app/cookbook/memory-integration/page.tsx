@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -139,8 +140,8 @@ function Chat() {
   })
 
   // Access memory information
-  console.log('Memory tokens used:', memoryInfo?.tokensUsed)
-  console.log('Memory messages:', memoryInfo?.messageCount)
+  logger.debug('Memory tokens used:', memoryInfo?.tokensUsed)
+  logger.debug('Memory messages:', memoryInfo?.messageCount)
 
   return (
     <ChatWindow

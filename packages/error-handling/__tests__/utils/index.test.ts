@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Tests for utils/index.ts exports
  * This file verifies that all utilities are properly exported from the barrel file

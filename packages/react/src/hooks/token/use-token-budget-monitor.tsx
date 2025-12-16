@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -202,8 +203,8 @@ function createInitialUsage(config: TokenBudgetConfig): TokenUsage {
  *   const { usage, isWarning, isCritical, updateMessages } = useTokenBudgetMonitor({
  *     maxInputTokens: 128000,
  *     reservedForOutput: 4096,
- *     onWarning: (usage) => console.log('Warning:', usage.utilizationPercent),
- *     onCritical: (usage) => console.log('Critical:', usage.utilizationPercent),
+ *     onWarning: (usage) => logger.debug('Warning:', usage.utilizationPercent),
+ *     onCritical: (usage) => logger.debug('Critical:', usage.utilizationPercent),
  *     autoTrim: true,
  *   })
  *
@@ -227,12 +228,12 @@ export function useTokenBudgetMonitor(
   // Validate config in development
   if (process.env['NODE_ENV'] !== 'production') {
     if (config.maxInputTokens <= 0) {
-      console.warn('[useTokenBudgetMonitor] maxInputTokens must be positive')
+      logger.warn('[useTokenBudgetMonitor] maxInputTokens must be positive')
     }
     const reserved =
       config.reservedForOutput ?? DEFAULT_CONFIG.reservedForOutput
     if (reserved >= config.maxInputTokens) {
-      console.warn(
+      logger.warn(
         '[useTokenBudgetMonitor] reservedForOutput should be less than maxInputTokens'
       )
     }
@@ -240,12 +241,12 @@ export function useTokenBudgetMonitor(
     const critical =
       config.criticalThreshold ?? DEFAULT_CONFIG.criticalThreshold
     if (warning >= critical) {
-      console.warn(
+      logger.warn(
         '[useTokenBudgetMonitor] warningThreshold should be less than criticalThreshold'
       )
     }
     if (warning < 0 || warning > 1 || critical < 0 || critical > 1) {
-      console.warn(
+      logger.warn(
         '[useTokenBudgetMonitor] thresholds should be between 0 and 1'
       )
     }
@@ -862,7 +863,7 @@ export interface TokenCostEstimate {
  * ```typescript
  * const { usage } = useTokenBudgetMonitor(config)
  * const cost = estimateTokenCost(usage, 'gpt-4o')
- * console.log(cost?.formattedCost) // "$0.0125"
+ * logger.debug(cost?.formattedCost) // "$0.0125"
  * ```
  */
 export function estimateTokenCost(

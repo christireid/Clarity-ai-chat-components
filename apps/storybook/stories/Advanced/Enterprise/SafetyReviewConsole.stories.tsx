@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SafetyReviewConsole } from '@clarity-chat/react'
 
@@ -67,15 +68,15 @@ export const WithCallbacks: Story = {
     content: sampleContent,
     highlights: sampleHighlights,
     onRedact: (highlight) => {
-      console.log('Redact highlight:', highlight)
+      SecureLogger.debug('Redact highlight:', highlight)
       alert(`Redacting: ${highlight.category} (${highlight.severity})`)
     },
     onApprove: () => {
-      console.log('Approved')
+      SecureLogger.debug('Approved')
       alert('Content approved')
     },
     onReject: () => {
-      console.log('Rejected')
+      SecureLogger.debug('Rejected')
       alert('Content rejected')
     },
   },

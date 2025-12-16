@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
@@ -55,7 +56,7 @@ const response = await openai.chat.completions.create({
   messages,
 })
 
-console.log(response.choices[0].message.content)
+logger.debug(response.choices[0].message.content)
 `}
         />
         <Callout type="info">
@@ -90,7 +91,7 @@ inspector.completeCall(callId, {
   body: { usage: { prompt_tokens: 20, completion_tokens: 40 } },
 })
 
-console.table(inspector.getStats())
+logger.debug(inspector.getStats())
 `}
         />
         <Callout type="tip">
@@ -118,8 +119,8 @@ const { result, metrics } = await profiler.profile(
   { trackMemory: true },
 )
 
-console.log('Duration', metrics.duration, 'ms')
-console.log('Tokens/sec', metrics.tokensPerSecond)
+logger.debug('Duration', metrics.duration, 'ms')
+logger.debug('Tokens/sec', metrics.tokensPerSecond)
 profiler.printReport()
 `}
         />

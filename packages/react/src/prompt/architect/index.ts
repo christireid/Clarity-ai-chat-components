@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Architect Framework
  *
@@ -33,7 +34,7 @@
  * // Or use the workflow hook
  * const workflow = useArchitectWorkflow({
  *   onPhaseComplete: (phase, result) => {
- *     console.log(`Phase ${phase} complete:`, result)
+ *     logger.debug(`Phase ${phase} complete:`, result)
  *   },
  * })
  * ```

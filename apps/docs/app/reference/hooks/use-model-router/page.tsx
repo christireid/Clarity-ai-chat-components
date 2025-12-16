@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -46,7 +47,7 @@ export default function UseModelRouterPage() {
 
   const handleSend = async (message: string) => {
     const model = await route(message)
-    console.log(\`Using model: \${model.name}\`)
+    logger.debug(\`Using model: \${model.name}\`)
     // Use selected model for request
   }
 
@@ -196,7 +197,7 @@ function ProductionChat() {
       maxCostPerUser: 10.0,
       maxCostPerDay: 1000.0,
       onBudgetExceeded: (user) => {
-        console.warn(\`Budget exceeded for \${user}\`)
+        logger.warn(\`Budget exceeded for \${user}\`)
       }
     },
     

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -139,7 +140,7 @@ export function ErrorAnalyticsProvider({
   const log = React.useCallback(
     (message: string, data?: unknown) => {
       if (enableLogging) {
-        console.log(`[ErrorAnalytics] ${message}`, data)
+        logger.debug(`[ErrorAnalytics] ${message}`, data)
       }
     },
     [enableLogging]

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -176,7 +177,7 @@ function EngagementMetrics() {
 function WithCallbacks() {
   const { trackEvent } = useInteractionTracking({
     onEvent: (event) => {
-      console.log('Event tracked:', event)
+      logger.debug('Event tracked:', event)
       // Send to analytics service
       sendToAnalytics(event)
     },

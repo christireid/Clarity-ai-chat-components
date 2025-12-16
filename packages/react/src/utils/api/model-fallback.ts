@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Model Fallback Utilities
  * 
@@ -52,7 +53,7 @@ export interface FallbackResult<T> {
  *       { provider: 'openai', model: 'gpt-3.5', priority: 3 },
  *     ],
  *     onFallback: (from, to, error) => {
- *       console.log(`Falling back from ${from.model} to ${to.model}`)
+ *       logger.debug(`Falling back from ${from.model} to ${to.model}`)
  *     },
  *   }
  * )
@@ -225,7 +226,7 @@ function calculateDelay(
  *   await sleep(5000, controller.signal)
  * } catch (error) {
  *   if (error.name === 'AbortError') {
- *     console.log('Sleep was cancelled')
+ *     logger.debug('Sleep was cancelled')
  *   }
  * }
  * ```

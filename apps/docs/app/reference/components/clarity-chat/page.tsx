@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -246,7 +247,7 @@ function CustomHeaderChat() {
       sessionSubtitle="Ask me anything!"
       showMessageCount
       headerActions={
-        <button onClick={() => console.log('Settings')}>
+        <button onClick={() => logger.debug('Settings')}>
           Settings
         </button>
       }
@@ -314,10 +315,10 @@ function AdvancedChat() {
       api="/api/chat"
       enableMessageOperations
       onMessageCopy={(id, content) => {
-        console.log('Message copied:', id)
+        logger.debug('Message copied:', id)
       }}
       onMessageFeedback={(messageId, feedbackType) => {
-        console.log('Feedback:', messageId, feedbackType)
+        logger.debug('Feedback:', messageId, feedbackType)
       }}
     />
   )

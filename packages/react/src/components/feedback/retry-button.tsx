@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -237,7 +238,7 @@ export function RetryButton({
       // Reset on success
       setCurrentAttempt(0)
     } catch (error) {
-      console.error('[RetryButton] Retry failed:', error)
+      logger.logger.error('[RetryButton] Retry failed:', error)
       onRetryFail?.(nextAttempt, error as Error)
     } finally {
       setIsRetrying(false)

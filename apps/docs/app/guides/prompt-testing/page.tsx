@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -68,7 +69,7 @@ function TestSetup() {
       dataset={testDataset}
       prompt="You are a helpful assistant."
       onTestComplete={(results) => {
-        console.log('Test results:', results)
+        logger.debug('Test results:', results)
       }}
     />
   )
@@ -149,7 +150,7 @@ function ABTestPrompts() {
         prompt={promptA}
         variant="A"
         onTestComplete={(resultsA) => {
-          console.log('Variant A results:', resultsA)
+          logger.debug('Variant A results:', resultsA)
         }}
       />
       <PromptTestHarness
@@ -157,7 +158,7 @@ function ABTestPrompts() {
         prompt={promptB}
         variant="B"
         onTestComplete={(resultsB) => {
-          console.log('Variant B results:', resultsB)
+          logger.debug('Variant B results:', resultsB)
         }}
       />
     </div>

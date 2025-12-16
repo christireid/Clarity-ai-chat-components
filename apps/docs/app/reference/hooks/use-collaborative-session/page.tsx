@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -91,10 +92,10 @@ function CollaborativeChat({ sessionId }: { sessionId: string }) {
     sessionId,
     currentUser,
     onUserJoin: (user) => {
-      console.log('User joined:', user.name)
+      logger.debug('User joined:', user.name)
     },
     onUserLeave: (userId) => {
-      console.log('User left:', userId)
+      logger.debug('User left:', userId)
     },
   })
 

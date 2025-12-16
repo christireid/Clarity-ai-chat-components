@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useQuickOptimize Hook
  * 
@@ -118,7 +119,7 @@ export function useQuickOptimize(
       setError(error)
       // Only log in development
       if (process.env.NODE_ENV === 'development') {
-        console.error('[useQuickOptimize] Optimization failed:', error)
+        logger.logger.error('[useQuickOptimize] Optimization failed:', error)
       }
       // Fallback to original messages
       setOptimizedMessages(messages)

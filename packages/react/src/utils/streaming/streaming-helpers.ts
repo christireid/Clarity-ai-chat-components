@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Shared Streaming Utilities for Chat Hooks
  *
@@ -230,7 +231,7 @@ export function extractStreamContent(chunk: unknown): string {
  *   format: 'sse',
  *   signal: controller.signal,
  *   onChunk: (chunk) => setContent(prev => prev + chunk),
- *   onComplete: (full) => console.log('Done:', full),
+ *   onComplete: (full) => logger.debug('Done:', full),
  * })
  * ```
  */
@@ -379,7 +380,7 @@ export async function processStream(
           typeof process !== 'undefined' &&
           process.env?.NODE_ENV !== 'production'
         ) {
-          console.warn('[processStream] Buffer size exceeded, flushing...')
+          logger.warn('[processStream] Buffer size exceeded, flushing...')
         }
         handleLine(buffer)
         buffer = ''
@@ -449,7 +450,7 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
  * @example
  * ```ts
  * for await (const chunk of createStreamReader(response.body)) {
- *   console.log('Chunk:', chunk)
+ *   logger.debug('Chunk:', chunk)
  * }
  * ```
  */

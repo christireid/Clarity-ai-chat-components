@@ -8,6 +8,7 @@ import {
   createErrorResponse,
   getStableTimestamp,
 } from '@/lib/ai/types'
+import { logApiError } from '@/lib/security/secureLogger'
 
 /**
  * Single Component Lookup API
@@ -295,7 +296,7 @@ export async function GET(
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    console.error('[AI Component Lookup API] Error:', error)
+    logApiError(error as Error, 'AI Component Lookup API', null)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

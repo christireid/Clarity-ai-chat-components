@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 
 /**
@@ -121,7 +122,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
  *     </div>
  *   )}
  *   onError={(error, errorInfo) => {
- *     console.error('Chat error:', error, errorInfo)
+ *     logger.logger.error('Chat error:', error, errorInfo)
  *     analytics.track('chat_error', { error: error.message })
  *   }}
  * >
@@ -132,7 +133,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
  * <ErrorBoundary
  *   resetKeys={[conversationId]}
  *   onReset={() => {
- *     console.log('Error boundary reset for new conversation')
+ *     logger.debug('Error boundary reset for new conversation')
  *   }}
  * >
  *   <ChatWindow conversationId={conversationId} />
@@ -173,7 +174,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log error to console
-    console.error('[ErrorBoundary] Error caught:', error, errorInfo)
+    logger.logger.error('[ErrorBoundary] Error caught:', error, errorInfo)
 
     // Custom error logging
     if (this.props.logError) {

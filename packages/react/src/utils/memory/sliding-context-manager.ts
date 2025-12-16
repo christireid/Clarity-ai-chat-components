@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Sliding Context Window Manager with RAG Integration
  * 
@@ -128,7 +129,7 @@ export class SlidingContextManager {
           }
         )
       } catch (error) {
-        console.warn('Vector store retrieval failed:', error)
+        logger.warn('Vector store retrieval failed:', error)
         // Fallback to empty historical context
       }
     }

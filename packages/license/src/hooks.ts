@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * React Hooks for License Verification
  *
@@ -264,7 +265,7 @@ export function useLicenseWarning(
           ? (status.reason ?? 'No valid license')
           : `Requires ${requiredPlan} plan, current: ${status.payload?.plan}`
 
-        console.warn(
+        logger.warn(
           `%c Clarity Chat License Warning %c\n\n` +
             `The "${featureName}" feature requires a ${requiredPlan} license.\n\n` +
             `${reason}\n\n` +

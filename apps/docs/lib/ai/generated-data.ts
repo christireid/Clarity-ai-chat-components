@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Auto-generated Component and Hook Data
  *
@@ -832,7 +833,7 @@ export const generatedComponents: GeneratedComponent[] = [
       'ChatWithErrorBoundary - Chat component with built-in error handling * Wraps ClarityChat with ErrorBoundary for production-ready error handling. This is useful when you want error boundaries without manually wrapping.',
     props: [],
     examples: [
-      "import { ChatWithErrorBoundary } from '@clarity-chat/react'\n\nfunction App() {\n  return (\n    <ChatWithErrorBoundary\n      api=\"/api/chat\"\n      onError={(error) => console.error('Chat error:', error)}\n    />\n  )\n}",
+      "import { ChatWithErrorBoundary } from '@clarity-chat/react'\n\nfunction App() {\n  return (\n    <ChatWithErrorBoundary\n      api=\"/api/chat\"\n      onError={(error) => logger.error('Chat error:', error)}\n    />\n  )\n}",
       '// Basic usage\n<ChatWithErrorBoundary api="/api/chat" />\n\n// With custom error handling\n<ChatWithErrorBoundary\n  api="/api/chat"\n  onError={(error) => {\n    // Send to error tracking service\n    trackError(error)\n  }}\n  errorFallback={(error, reset) => (\n    <div>\n      <p>Something went wrong: {error.message}</p>\n      <button onClick={reset}>Try Again</button>\n    </div>\n  )}\n/>',
     ],
     importPath: '@clarity-chat/react',
@@ -1771,7 +1772,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      "<ConversationSummarizer\n  messages={messages}\n  config={{\n    trigger: 'manual',\n    provider: { type: 'openai', model: 'gpt-4o' },\n    includeActionItems: true,\n    includeKeyTopics: true,\n  }}\n  onSummaryGenerated={(summary) => {\n    console.log('Summary:', summary.content)\n  }}\n/>",
+      "<ConversationSummarizer\n  messages={messages}\n  config={{\n    trigger: 'manual',\n    provider: { type: 'openai', model: 'gpt-4o' },\n    includeActionItems: true,\n    includeKeyTopics: true,\n  }}\n  onSummaryGenerated={(summary) => {\n    logger.debug('Summary:', summary.content)\n  }}\n/>",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -2514,7 +2515,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      "// Basic usage\nconst [messages, setMessages] = useState<HistoryMessage[]>([\n  { id: '1', role: 'user', content: 'Hello!' },\n  { id: '2', role: 'assistant', content: 'Hi there!' },\n])\n\n<HistoryManager\n  messages={messages}\n  onMessagesChange={setMessages}\n  maxTokens={4096}\n/>\n\n// With pruning callback and compact mode\n<HistoryManager\n  messages={messages}\n  onMessagesChange={setMessages}\n  maxTokens={4096}\n  compact={true}\n  onPrune={(count, tokens) => {\n    console.log(`Pruned ${count} messages, saved ${tokens} tokens`)\n  }}\n/>",
+      "// Basic usage\nconst [messages, setMessages] = useState<HistoryMessage[]>([\n  { id: '1', role: 'user', content: 'Hello!' },\n  { id: '2', role: 'assistant', content: 'Hi there!' },\n])\n\n<HistoryManager\n  messages={messages}\n  onMessagesChange={setMessages}\n  maxTokens={4096}\n/>\n\n// With pruning callback and compact mode\n<HistoryManager\n  messages={messages}\n  onMessagesChange={setMessages}\n  maxTokens={4096}\n  compact={true}\n  onPrune={(count, tokens) => {\n    logger.debug(`Pruned ${count} messages, saved ${tokens} tokens`)\n  }}\n/>",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -3660,7 +3661,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      "// Basic controlled usage\nconst [preference, setPreference] = useState<OutputPreference>('balanced')\n\n<OutputPreferenceSelector\n  value={preference}\n  onChange={(pref) => {\n    setPreference(pref.mode)\n    console.log('Max tokens:', pref.maxTokens)\n    console.log('Instruction:', pref.brevityInstruction)\n  }}\n/>\n\n// With token estimates\n<OutputPreferenceSelector\n  value={preference}\n  onChange={handleChange}\n  modelCapacity={128000}\n  inputTokens={5000}\n  showTokenEstimate={true}\n/>\n\n// Compact mode for toolbars\n<OutputPreferenceSelector\n  value={preference}\n  onChange={handleChange}\n  displayMode=\"compact\"\n  size=\"sm\"\n/>",
+      "// Basic controlled usage\nconst [preference, setPreference] = useState<OutputPreference>('balanced')\n\n<OutputPreferenceSelector\n  value={preference}\n  onChange={(pref) => {\n    setPreference(pref.mode)\n    logger.debug('Max tokens:', pref.maxTokens)\n    logger.debug('Instruction:', pref.brevityInstruction)\n  }}\n/>\n\n// With token estimates\n<OutputPreferenceSelector\n  value={preference}\n  onChange={handleChange}\n  modelCapacity={128000}\n  inputTokens={5000}\n  showTokenEstimate={true}\n/>\n\n// Compact mode for toolbars\n<OutputPreferenceSelector\n  value={preference}\n  onChange={handleChange}\n  displayMode=\"compact\"\n  size=\"sm\"\n/>",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -3731,7 +3732,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      "<PerformanceAnalyticsDashboard\n  updateInterval={1000}\n  showWebVitals\n  showComponentMetrics\n  showMemoryUsage\n  showFPS\n  onDataUpdate={(data) => {\n    console.log('Performance:', data)\n  }}\n/>",
+      "<PerformanceAnalyticsDashboard\n  updateInterval={1000}\n  showWebVitals\n  showComponentMetrics\n  showMemoryUsage\n  showFPS\n  onDataUpdate={(data) => {\n    logger.debug('Performance:', data)\n  }}\n/>",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -4870,7 +4871,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      "<ThemePreview \n  showEditor\n  onThemeChange={theme => console.log('Theme changed:', theme)}\n/>",
+      "<ThemePreview \n  showEditor\n  onThemeChange={theme => logger.debug('Theme changed:', theme)}\n/>",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -4906,7 +4907,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      '<ThemeSelector \n  showPreview \n  orientation="vertical"\n  onThemeChange={(theme) => console.log(\'Theme changed:\', theme)}\n/>',
+      '<ThemeSelector \n  showPreview \n  orientation="vertical"\n  onThemeChange={(theme) => logger.debug(\'Theme changed:\', theme)}\n/>',
     ],
     importPath: '@clarity-chat/react',
   },
@@ -5115,7 +5116,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      "// Basic usage\n<TokenCounter\n  currentTokens={1250}\n  maxTokens={4096}\n/>\n\n// With cost estimation\n<TokenCounter\n  currentTokens={3500}\n  maxTokens={4096}\n  costPerToken={0.000002} // $0.002 per 1K tokens\n  showCost={true}\n/>\n\n// With warnings and pruning\n<TokenCounter\n  currentTokens={3400}\n  maxTokens={4096}\n  showWarning={true}\n  warningThreshold={0.8}\n  criticalThreshold={0.95}\n  suggestPruning={true}\n  onWarning={() => {\n    console.log('Approaching token limit')\n  }}\n  onCritical={() => {\n    console.log('Critical token limit!')\n    showPruneDialog()\n  }}\n  onPruneSuggested={() => {\n    pruneOldMessages()\n  }}\n/>\n\n// Small variant for compact UI\n<TokenCounter\n  currentTokens={500}\n  maxTokens={4096}\n  size=\"sm\"\n  showBar={false}\n/>",
+      "// Basic usage\n<TokenCounter\n  currentTokens={1250}\n  maxTokens={4096}\n/>\n\n// With cost estimation\n<TokenCounter\n  currentTokens={3500}\n  maxTokens={4096}\n  costPerToken={0.000002} // $0.002 per 1K tokens\n  showCost={true}\n/>\n\n// With warnings and pruning\n<TokenCounter\n  currentTokens={3400}\n  maxTokens={4096}\n  showWarning={true}\n  warningThreshold={0.8}\n  criticalThreshold={0.95}\n  suggestPruning={true}\n  onWarning={() => {\n    logger.debug('Approaching token limit')\n  }}\n  onCritical={() => {\n    logger.debug('Critical token limit!')\n    showPruneDialog()\n  }}\n  onPruneSuggested={() => {\n    pruneOldMessages()\n  }}\n/>\n\n// Small variant for compact UI\n<TokenCounter\n  currentTokens={500}\n  maxTokens={4096}\n  size=\"sm\"\n  showBar={false}\n/>",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -5636,7 +5637,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      '// Basic usage\n<VoiceInput\n  onTranscript={(text) => {\n    console.log(\'Voice input:\', text)\n    sendMessage(text)\n  }}\n/>\n\n// With custom styling\n<VoiceInput\n  onTranscript={handleVoiceInput}\n  size="lg"\n  variant="primary"\n  showInterim={true}\n  autoSubmit={true}\n/>\n\n// Multi-language\n<VoiceInput\n  onTranscript={handleInput}\n  lang="es-ES"\n  tooltipText="Habla en español"\n/>\n\n// With callbacks\n<VoiceInput\n  onTranscript={handleInput}\n  onStart={() => console.log(\'Started listening\')}\n  onStop={() => console.log(\'Stopped listening\')}\n  onError={(err) => console.error(\'Voice error:\', err)}\n/>',
+      '// Basic usage\n<VoiceInput\n  onTranscript={(text) => {\n    logger.debug(\'Voice input:\', text)\n    sendMessage(text)\n  }}\n/>\n\n// With custom styling\n<VoiceInput\n  onTranscript={handleVoiceInput}\n  size="lg"\n  variant="primary"\n  showInterim={true}\n  autoSubmit={true}\n/>\n\n// Multi-language\n<VoiceInput\n  onTranscript={handleInput}\n  lang="es-ES"\n  tooltipText="Habla en español"\n/>\n\n// With callbacks\n<VoiceInput\n  onTranscript={handleInput}\n  onStart={() => logger.debug(\'Started listening\')}\n  onStop={() => logger.debug(\'Stopped listening\')}\n  onError={(err) => logger.logger.error(\'Voice error:\', err)}\n/>',
     ],
     importPath: '@clarity-chat/react',
   },
@@ -5730,7 +5731,7 @@ export const generatedHooks: GeneratedHook[] = [
     ],
     examples: [
       "const agent = useAgent({\n  model: 'gpt-4',\n  tools: [webSearchTool, calculatorTool],\n})\n\nconst response = await agent.run({ query: 'What is 2+2?' })",
-      "const agent = useAgent({\n  model: 'gpt-4',\n  tools: [webSearchTool, calculatorTool],\n  api: '/api/agent',\n})\n\nconst response = await agent.run({ query: 'What is 2+2?' })\nconsole.log(response) // \"4\"",
+      "const agent = useAgent({\n  model: 'gpt-4',\n  tools: [webSearchTool, calculatorTool],\n  api: '/api/agent',\n})\n\nconst response = await agent.run({ query: 'What is 2+2?' })\nlogger.debug(response) // \"4\"",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -5931,9 +5932,9 @@ export const generatedHooks: GeneratedHook[] = [
       },
     ],
     examples: [
-      "const { messages, append, status, toolInvocations } = useAssistant({\n  api: '/api/assistant',\n  assistantId: 'asst_123',\n  onToolCall: (invocation) => console.log('Tool called:', invocation),\n})\n\nawait append({ role: 'user', content: 'What is the weather?' })",
-      "const { status, messages, submitMessage, input, setInput, isLoading } = useAssistant({\n  api: '/api/assistant',\n  assistantId: 'my-assistant',\n  onToolCall: (toolCall) => {\n    console.log('Tool called:', toolCall.toolName)\n  },\n})\n\n// Submit a message\nawait submitMessage('What is the weather in San Francisco?')",
-      "// With caching, parallel tools, and status tracking\nconst { status, submitMessage, toolInvocations } = useAssistant({\n  api: '/api/assistant',\n  enableCache: true, // Request deduplication\n  cacheToolResults: true, // Cache tool results\n  parallelTools: true, // Execute multiple tools simultaneously\n  onStatusChange: (status) => {\n    console.log('Status:', status)\n    // idle → loading → streaming → processing_tools → complete\n  },\n  onProgress: (bytes) => setProgress(bytes),\n})\n\n// Status-based UI\n{status === 'processing_tools' && <ToolProcessingIndicator tools={toolInvocations} />}\n{status === 'streaming' && <StreamingIndicator />}",
+      "const { messages, append, status, toolInvocations } = useAssistant({\n  api: '/api/assistant',\n  assistantId: 'asst_123',\n  onToolCall: (invocation) => logger.debug('Tool called:', invocation),\n})\n\nawait append({ role: 'user', content: 'What is the weather?' })",
+      "const { status, messages, submitMessage, input, setInput, isLoading } = useAssistant({\n  api: '/api/assistant',\n  assistantId: 'my-assistant',\n  onToolCall: (toolCall) => {\n    logger.debug('Tool called:', toolCall.toolName)\n  },\n})\n\n// Submit a message\nawait submitMessage('What is the weather in San Francisco?')",
+      "// With caching, parallel tools, and status tracking\nconst { status, submitMessage, toolInvocations } = useAssistant({\n  api: '/api/assistant',\n  enableCache: true, // Request deduplication\n  cacheToolResults: true, // Cache tool results\n  parallelTools: true, // Execute multiple tools simultaneously\n  onStatusChange: (status) => {\n    logger.debug('Status:', status)\n    // idle → loading → streaming → processing_tools → complete\n  },\n  onProgress: (bytes) => setProgress(bytes),\n})\n\n// Status-based UI\n{status === 'processing_tools' && <ToolProcessingIndicator tools={toolInvocations} />}\n{status === 'streaming' && <StreamingIndicator />}",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -6229,7 +6230,7 @@ export const generatedHooks: GeneratedHook[] = [
     returns: [],
     examples: [
       "const chat = useClarityChat({ api: '/api/chat' })\nconst handlers = useChatHandlers({ chat })\n\n<ChatWindow\n  messages={chat.messages}\n  onSendMessage={handlers.onSendMessage}\n  onClear={handlers.onClear}\n  onMessageRetry={handlers.onRetry}\n/>",
-      "// With callbacks\nconst handlers = useChatHandlers({\n  chat,\n  onMessageSent: (content) => console.log('Sent:', content),\n  onMessageError: (error) => console.error('Error:', error),\n})",
+      "// With callbacks\nconst handlers = useChatHandlers({\n  chat,\n  onMessageSent: (content) => logger.debug('Sent:', content),\n  onMessageError: (error) => logger.logger.error('Error:', error),\n})",
       "const chat = useClarityChat({ api: '/api/chat' })\nconst handlers = useChatHandlers({ chat })\n\nreturn (\n  <ChatWindow\n    messages={chat.messages}\n    isLoading={chat.isLoading}\n    onSendMessage={handlers.onSendMessage}\n    onClear={handlers.onClear}\n  />\n)",
     ],
     importPath: '@clarity-chat/react',
@@ -6667,7 +6668,7 @@ export const generatedHooks: GeneratedHook[] = [
     ],
     examples: [
       "interface Product {\n  name: string\n  price: number\n  description: string\n}\n\nconst { object, run, isLoading } = useClarityObject<Product>({\n  api: '/api/generate-object',\n  initialInput: { query: 'laptops' },\n})\n\nawait run({ query: 'gaming laptops' })",
-      "// With streaming\nconst { object, run, isLoading, progress } = useClarityObject<Product>({\n  api: '/api/generate-object',\n  stream: true,\n  onProgress: (chunk) => console.log('Progress:', chunk),\n})",
+      "// With streaming\nconst { object, run, isLoading, progress } = useClarityObject<Product>({\n  api: '/api/generate-object',\n  stream: true,\n  onProgress: (chunk) => logger.debug('Progress:', chunk),\n})",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -6856,7 +6857,7 @@ export const generatedHooks: GeneratedHook[] = [
     ],
     examples: [
       'const { isOpen, toggle, close, shortcutDisplay } = useCommandPalette()\n\nreturn (\n  <>\n    <button onClick={toggle}>\n      Command Palette ({shortcutDisplay})\n    </button>\n    <CommandPalette\n      items={commands}\n      open={isOpen}\n      onClose={close}\n    />\n  </>\n)',
-      "// With callbacks\nconst { isOpen, close } = useCommandPalette({\n  onOpen: () => console.log('Opened'),\n  onClose: () => console.log('Closed'),\n  shortcut: 'mod+p', // Use Cmd+P instead of Cmd+K\n})",
+      "// With callbacks\nconst { isOpen, close } = useCommandPalette({\n  onOpen: () => logger.debug('Opened'),\n  onClose: () => logger.debug('Closed'),\n  shortcut: 'mod+p', // Use Cmd+P instead of Cmd+K\n})",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -6991,8 +6992,8 @@ export const generatedHooks: GeneratedHook[] = [
       },
     ],
     examples: [
-      "const { completion, complete, isLoading } = useCompletion({\n  api: '/api/completion',\n  onFinish: (prompt, completion) => console.log('Done:', completion),\n})\n\nawait complete('Write a story about')",
-      "const { completion, complete, isLoading } = useCompletion({\n  api: '/api/completion',\n  onFinish: (prompt, completion) => {\n    console.log('Completed:', completion)\n  },\n})\n\n// Complete a prompt\nawait complete('What is the capital of France?')",
+      "const { completion, complete, isLoading } = useCompletion({\n  api: '/api/completion',\n  onFinish: (prompt, completion) => logger.debug('Done:', completion),\n})\n\nawait complete('Write a story about')",
+      "const { completion, complete, isLoading } = useCompletion({\n  api: '/api/completion',\n  onFinish: (prompt, completion) => {\n    logger.debug('Completed:', completion)\n  },\n})\n\n// Complete a prompt\nawait complete('What is the capital of France?')",
       "// With caching and progress tracking\nconst { completion, complete, isLoading } = useCompletion({\n  api: '/api/completion',\n  enableCache: true,\n  cacheTTL: 600000, // 10 minutes\n  onProgress: (bytes) => setProgress(bytes),\n  streamFormat: 'sse',\n})\n\n// Repeated calls with same prompt use cache\nawait complete('What is the capital of France?') // API call\nawait complete('What is the capital of France?') // From cache (instant)",
     ],
     importPath: '@clarity-chat/react',
@@ -7282,7 +7283,7 @@ export const generatedHooks: GeneratedHook[] = [
       },
     ],
     examples: [
-      "// Basic message operations\nconst {\n  messages,\n  addMessage,\n  editMessage,\n  deleteMessage,\n  undo,\n  canUndo,\n} = useMessageOperations({\n  onEdit: (id, content) => {\n    console.log('Message edited:', id, content)\n  },\n})\n\n// Add messages\nconst msgId = addMessage({\n  role: 'user',\n  content: 'Hello!',\n})\n\n// Edit message\neditMessage(msgId, 'Hi there!')\n\n// Undo if needed\nif (canUndo) {\n  undo()\n}\n\n// Regenerate AI response\nconst {\n  regenerateMessage,\n  onRegenerate,\n} = useMessageOperations({\n  onRegenerate: async (messageId) => {\n    const context = getMessagesUpTo(messageId)\n    const response = await sendToAI(context)\n    // Replace old message with new response\n  },\n})\n\n// Branch conversation\nconst {\n  branchConversation,\n  getBranches,\n  switchToBranch,\n} = useMessageOperations({\n  onBranch: (branchId, parentId) => {\n    console.log('Created branch:', branchId)\n  },\n})\n\n// Create branch from message\nconst branchId = branchConversation(messageId)\n\n// List all branches\nconst branches = getBranches()\n\n// Switch between branches\nswitchToBranch(branchId)",
+      "// Basic message operations\nconst {\n  messages,\n  addMessage,\n  editMessage,\n  deleteMessage,\n  undo,\n  canUndo,\n} = useMessageOperations({\n  onEdit: (id, content) => {\n    logger.debug('Message edited:', id, content)\n  },\n})\n\n// Add messages\nconst msgId = addMessage({\n  role: 'user',\n  content: 'Hello!',\n})\n\n// Edit message\neditMessage(msgId, 'Hi there!')\n\n// Undo if needed\nif (canUndo) {\n  undo()\n}\n\n// Regenerate AI response\nconst {\n  regenerateMessage,\n  onRegenerate,\n} = useMessageOperations({\n  onRegenerate: async (messageId) => {\n    const context = getMessagesUpTo(messageId)\n    const response = await sendToAI(context)\n    // Replace old message with new response\n  },\n})\n\n// Branch conversation\nconst {\n  branchConversation,\n  getBranches,\n  switchToBranch,\n} = useMessageOperations({\n  onBranch: (branchId, parentId) => {\n    logger.debug('Created branch:', branchId)\n  },\n})\n\n// Create branch from message\nconst branchId = branchConversation(messageId)\n\n// List all branches\nconst branches = getBranches()\n\n// Switch between branches\nswitchToBranch(branchId)",
     ],
     importPath: '@clarity-chat/react',
   },
@@ -7290,7 +7291,7 @@ export const generatedHooks: GeneratedHook[] = [
     name: 'useMounted',
     file: 'use-mounted.ts',
     description:
-      "Track if component is currently mounted. * ⚠️ **DEPRECATED**: This pattern is discouraged in React 18+ with concurrent rendering. * **Why deprecated:** - Masks real bugs (updating unmounted components) - Doesn't work well with Suspense/concurrent features - AbortController is the modern standard for cancellation - Can lead to \"zombie children\" that appear to work but have subtle issues * **Migration Path:** * **Before (with useMounted):** ```tsx const isMounted = useMounted() * useEffect(() => { async function fetchData() { const data = await api.get('/data') if (isMounted()) { setData(data) } } fetchData() }, []) ``` * **After (with AbortController - RECOMMENDED):** ```tsx useEffect(() => { const controller = new AbortController() * async function fetchData() { try { const data = await api.get('/data', { signal: controller.signal }) setData(data) // Won't execute if aborted } catch (error) { if (error.name !== 'AbortError') { console.error('Fetch failed:', error) } } } * fetchData() * return () => { controller.abort() // Cancels the request } }, []) ``` * **After (with ignore flag for non-cancellable operations):** ```tsx useEffect(() => { let ignore = false * async function fetchData() { const data = await api.get('/data') if (!ignore) { setData(data) } } * fetchData() * return () => { ignore = true } }, []) ``` * **For backwards compatibility**, this hook remains available but will log a warning in development mode. It will be removed in v3.0.",
+      "Track if component is currently mounted. * ⚠️ **DEPRECATED**: This pattern is discouraged in React 18+ with concurrent rendering. * **Why deprecated:** - Masks real bugs (updating unmounted components) - Doesn't work well with Suspense/concurrent features - AbortController is the modern standard for cancellation - Can lead to \"zombie children\" that appear to work but have subtle issues * **Migration Path:** * **Before (with useMounted):** ```tsx const isMounted = useMounted() * useEffect(() => { async function fetchData() { const data = await api.get('/data') if (isMounted()) { setData(data) } } fetchData() }, []) ``` * **After (with AbortController - RECOMMENDED):** ```tsx useEffect(() => { const controller = new AbortController() * async function fetchData() { try { const data = await api.get('/data', { signal: controller.signal }) setData(data) // Won't execute if aborted } catch (error) { if (error.name !== 'AbortError') { logger.error('Fetch failed:', error) } } } * fetchData() * return () => { controller.abort() // Cancels the request } }, []) ``` * **After (with ignore flag for non-cancellable operations):** ```tsx useEffect(() => { let ignore = false * async function fetchData() { const data = await api.get('/data') if (!ignore) { setData(data) } } * fetchData() * return () => { ignore = true } }, []) ``` * **For backwards compatibility**, this hook remains available but will log a warning in development mode. It will be removed in v3.0.",
     deprecated: true,
     parameters: [],
     returns: [],
@@ -7756,7 +7757,7 @@ export const generatedHooks: GeneratedHook[] = [
       },
     ],
     examples: [
-      "const { content, isStreaming, startStreaming, stopStreaming } = useStreaming({\n  onChunk: (chunk) => console.log('Received:', chunk),\n  onComplete: (full) => console.log('Done!', full)\n})\n\n// Start streaming with cancellation support\nconst controller = new AbortController()\nawait startStreaming(response.body, { signal: controller.signal })\n\n// Stop streaming early if needed\nstopStreaming()",
+      "const { content, isStreaming, startStreaming, stopStreaming } = useStreaming({\n  onChunk: (chunk) => logger.debug('Received:', chunk),\n  onComplete: (full) => logger.debug('Done!', full)\n})\n\n// Start streaming with cancellation support\nconst controller = new AbortController()\nawait startStreaming(response.body, { signal: controller.signal })\n\n// Stop streaming early if needed\nstopStreaming()",
     ],
     importPath: '@clarity-chat/react',
   },

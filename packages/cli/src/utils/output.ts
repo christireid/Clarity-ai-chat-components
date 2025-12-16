@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Output formatting utilities
  * Supports multiple output modes: human-readable, JSON, quiet, verbose
@@ -5,6 +6,7 @@
 
 import pc from 'picocolors'
 import { getLogger } from './logger.js'
+
 
 const logger = getLogger('output')
 

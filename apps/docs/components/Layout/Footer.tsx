@@ -18,10 +18,13 @@ const footerNavigation = {
     { name: 'API Reference', href: '/reference/api' },
   ],
   community: [
-    { name: 'GitHub', href: 'https://github.com/christireid/Clarity-ai-chat-components' },
-    { name: 'Storybook', href: 'https://storybook.clarity-chat.dev' },
-    { name: 'Examples', href: '/examples' },
+    {
+      name: 'GitHub',
+      href: 'https://github.com/christireid/Clarity-ai-chat-components',
+    },
+    { name: 'Examples', href: '/examples-catalog' },
     { name: 'Blog', href: '/blog' },
+    { name: 'Changelog', href: '/changelog' },
   ],
   about: [
     { name: 'About', href: '/about' },
@@ -32,9 +35,11 @@ const footerNavigation = {
 }
 
 const socialLinks = [
-  { name: 'GitHub', href: 'https://github.com/christireid/Clarity-ai-chat-components', icon: Github },
-  { name: 'Twitter', href: 'https://twitter.com/claritychat', icon: Twitter },
-  { name: 'YouTube', href: 'https://youtube.com/@claritychat', icon: Youtube },
+  {
+    name: 'GitHub',
+    href: 'https://github.com/christireid/Clarity-ai-chat-components',
+    icon: Github,
+  },
 ]
 
 export function Footer() {
@@ -58,10 +63,15 @@ export function Footer() {
               key={section.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.4, delay: sectionIndex * 0.1 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{
+                duration: durations.slow,
+                delay: sectionIndex * 0.1,
+              }}
             >
-              <h3 className="font-semibold text-text-primary mb-4">{section.title}</h3>
+              <h3 className="font-semibold text-text-primary mb-4">
+                {section.title}
+              </h3>
               <ul className="space-y-3">
                 {section.items.map((item, itemIndex) => (
                   <motion.li
@@ -69,7 +79,10 @@ export function Footer() {
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: sectionIndex * 0.1 + itemIndex * 0.05 }}
+                    transition={{
+                      duration: durations.moderate,
+                      delay: sectionIndex * 0.1 + itemIndex * 0.05,
+                    }}
                   >
                     <Link
                       href={item.href}
@@ -85,7 +98,7 @@ export function Footer() {
                           className="absolute bottom-0 left-0 h-px bg-brand-500"
                           initial={{ width: 0 }}
                           whileHover={{ width: '100%' }}
-                          transition={{ duration: 0.2 }}
+                          transition={{ duration: durations.normal }}
                         />
                       </span>
                       {item.href.startsWith('http') && (
@@ -104,7 +117,7 @@ export function Footer() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.6 }}
+          transition={{ duration: durations.slow, delay: 0.6 }}
           className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4"
         >
           {/* Logo & Copyright */}
@@ -112,12 +125,12 @@ export function Footer() {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.7 }}
+            transition={{ duration: durations.slow, delay: 0.7 }}
             className="flex items-center gap-2 text-text-secondary text-sm"
           >
             <motion.div
               whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: durations.slower }}
             >
               <BookOpen className="w-5 h-5 text-brand-500" />
             </motion.div>
@@ -129,7 +142,7 @@ export function Footer() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.7 }}
+            transition={{ duration: durations.slow, delay: 0.7 }}
             className="flex items-center gap-4"
           >
             {socialLinks.map((social, index) => {
@@ -145,7 +158,10 @@ export function Footer() {
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: 0.8 + index * 0.1 }}
+                  transition={{
+                    duration: durations.moderate,
+                    delay: 0.8 + index * 0.1,
+                  }}
                   whileHover={{ scale: 1.2, rotate: 5 }}
                   whileTap={{ scale: 0.9 }}
                 >

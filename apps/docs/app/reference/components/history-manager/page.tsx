@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -165,7 +166,7 @@ function BulkOperations() {
       allowBulkDelete={true}
       allowIndividualDelete={true}
       onPrune={(prunedCount, tokensSaved) => {
-        console.log(\`Pruned \${prunedCount} messages, saved \${tokensSaved} tokens\`)
+        logger.debug(\`Pruned \${prunedCount} messages, saved \${tokensSaved} tokens\`)
       }}
     />
   )

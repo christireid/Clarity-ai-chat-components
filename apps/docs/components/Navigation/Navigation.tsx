@@ -15,6 +15,7 @@ import {
   BookOpen,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
+import { AccessibilityButton } from '../Layout/AccessibilityMenu'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from '@/lib/toast'
@@ -31,6 +32,7 @@ const navigation = [
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [accessibilityOpen, setAccessibilityOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
@@ -196,6 +198,9 @@ export function Navigation() {
                 </AnimatePresence>
               </motion.button>
 
+              {/* Accessibility Menu */}
+              <AccessibilityButton onClick={() => setAccessibilityOpen(true)} />
+
               {/* GitHub */}
               <motion.a
                 href="https://github.com/christireid/Clarity-ai-chat-components"
@@ -305,6 +310,12 @@ export function Navigation() {
 
       {/* Search Dialog */}
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Accessibility Menu */}
+      <AccessibilityMenu
+        isOpen={accessibilityOpen}
+        onClose={() => setAccessibilityOpen(false)}
+      />
     </>
   )
 }

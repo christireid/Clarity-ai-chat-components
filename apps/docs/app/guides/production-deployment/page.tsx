@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -189,7 +190,7 @@ class OpenTelemetryBackend implements ObservabilityBackend {
   }
 
   async sendEvaluation(evaluation) {
-    console.log('Evaluation', evaluation)
+    logger.debug('Evaluation', evaluation)
   }
 }
 

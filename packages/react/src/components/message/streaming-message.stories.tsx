@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * StreamingMessage Storybook Stories
  */
@@ -139,8 +140,8 @@ export const WithToolCalls: Story = {
       },
     ],
     showTools: true,
-    onToolApprove: (tool) => console.log('Approved:', tool),
-    onToolReject: (tool) => console.log('Rejected:', tool),
+    onToolApprove: (tool) => logger.debug('Approved:', tool),
+    onToolReject: (tool) => logger.debug('Rejected:', tool),
   },
   parameters: {
     docs: {

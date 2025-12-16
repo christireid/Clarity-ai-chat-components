@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AgentRunFeed } from '@clarity-chat/react'
 import type { AgentRunStep } from '@clarity-chat/react'
@@ -96,7 +97,7 @@ export const WithRetry: Story = {
   args: {
     steps: mockSteps,
     onRetry: (step) => {
-      console.log('Retrying step:', step.id)
+      SecureLogger.debug('Retrying step:', step.id)
       alert(`Retrying: ${step.title}`)
     },
   },
@@ -106,7 +107,7 @@ export const WithLogs: Story = {
   args: {
     steps: mockSteps,
     onOpenLogs: (step) => {
-      console.log('Opening logs for step:', step.id)
+      SecureLogger.debug('Opening logs for step:', step.id)
       alert(`Logs for: ${step.title}`)
     },
   },

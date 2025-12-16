@@ -194,30 +194,7 @@ export class ProgressTracker {
   }
 }
 
-/**
- * Format duration for display
- */
-export function formatDuration(ms: number): string {
-  if (ms < 1000) {
-    return `${ms}ms`
-  }
-  if (ms < 60000) {
-    return `${(ms / 1000).toFixed(2)}s`
-  }
-  const minutes = Math.floor(ms / 60000)
-  const seconds = Math.round((ms % 60000) / 1000)
-  return `${minutes}m ${seconds}s`
-}
+import { formatDuration } from '@clarity-chat/utils/format'
+import { formatSize } from '@clarity-chat/utils/format'
 
-/**
- * Format file size for display
- */
-export function formatSize(bytes: number): string {
-  if (bytes < 1024) {
-    return `${bytes} B`
-  }
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`
-  }
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
+export { formatDuration, formatSize }

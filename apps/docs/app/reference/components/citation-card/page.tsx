@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -159,7 +160,7 @@ const citation = {
           <code>{`<CitationCard
   citation={citation}
   onClick={(c) => {
-    console.log('Citation clicked:', c)
+    logger.debug('Citation clicked:', c)
     openDetailModal(c)
   }}
 />`}</code>

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -82,7 +83,7 @@ function ABTestingView() {
       showSignificance={true}
       showRecommendations={true}
       onExperimentClick={(experiment) => {
-        console.log('Selected experiment:', experiment.id)
+        logger.debug('Selected experiment:', experiment.id)
       }}
     />
   )
@@ -101,7 +102,7 @@ function VariantComparison({ experiments }: { experiments: ExperimentResult[] })
     <ABTestingDashboard
       experiments={experiments}
       onVariantSelect={(experimentId, variantId) => {
-        console.log(\`Selected variant \${variantId} for experiment \${experimentId}\`)
+        logger.debug(\`Selected variant \${variantId} for experiment \${experimentId}\`)
         // Apply variant
       }}
     />
@@ -123,9 +124,9 @@ function SignificanceView({ experiments }: { experiments: ExperimentResult[] }) 
       showSignificance={true}
       onExperimentClick={(experiment) => {
         if (experiment.significance?.isSignificant) {
-          console.log('Experiment is statistically significant!')
-          console.log('P-value:', experiment.significance.pValue)
-          console.log('Confidence:', experiment.significance.confidenceLevel)
+          logger.debug('Experiment is statistically significant!')
+          logger.debug('P-value:', experiment.significance.pValue)
+          logger.debug('Confidence:', experiment.significance.confidenceLevel)
         }
       }}
     />
@@ -147,7 +148,7 @@ function RecommendationsView({ experiments }: { experiments: ExperimentResult[] 
       showRecommendations={true}
       onExperimentClick={(experiment) => {
         if (experiment.recommendation) {
-          console.log('Recommendation:', experiment.recommendation)
+          logger.debug('Recommendation:', experiment.recommendation)
           // Apply recommendation
         }
       }}

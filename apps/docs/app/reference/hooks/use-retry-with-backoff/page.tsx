@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -92,7 +93,7 @@ export default function UseRetryWithBackoffPage() {
   maxRetries: 5,
   baseDelay: 500, // Start fast
   onRetry: (attempt, delay) => {
-    console.log(\`Retrying... attempt \${attempt} in \${delay}ms\`)
+    logger.debug(\`Retrying... attempt \${attempt} in \${delay}ms\`)
   }
 })
 
@@ -101,7 +102,7 @@ const sendMessage = async (text: string) => {
     await execute(() => api.post('/messages', { text }))
   } catch (error) {
     // Failed after all 5 retries
-    toast.error('Could not send message. Please check your connection.')
+    toast.logger.error('Could not send message. Please check your connection.')
   }
 }`}
         language="tsx"

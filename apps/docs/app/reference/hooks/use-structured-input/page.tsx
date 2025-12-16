@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -102,7 +103,7 @@ function PromptBuilder() {
       e.preventDefault()
       submit()
       if (isValid) {
-        console.log('Formatted prompt:', result.formattedPrompt)
+        logger.debug('Formatted prompt:', result.formattedPrompt)
       }
     }}>
       {fields.map(field => (

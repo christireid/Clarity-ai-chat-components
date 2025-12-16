@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -105,7 +106,7 @@ function getShikiTheme(theme: CodeThemeName | BundledTheme): BundledTheme {
  *   highlightLines="2,5-7"
  * >
  * {`const greeting = "Hello, World!"
- * console.log(greeting)`}
+ * logger.debug(greeting)`}
  * </CodeBlock>
  * ```
  */
@@ -210,7 +211,7 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
           setIsLoading(false)
         }
       } catch (err) {
-        console.error('Shiki highlighting failed:', err)
+        logger.logger.error('Shiki highlighting failed:', err)
         if (!cancelled) {
           setError(
             err instanceof Error ? err : new Error('Highlighting failed')

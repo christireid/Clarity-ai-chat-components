@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * Documentation Indexer for AI Assistant
@@ -226,19 +227,19 @@ function extractMetadata(content: string, filePath: string): { title?: string; d
  * Main indexing function
  */
 async function indexDocumentation() {
-  console.log('📚 Clarity Chat Documentation Indexer')
-  console.log('=====================================\n')
+  logger.debug('📚 Clarity Chat Documentation Indexer')
+  logger.debug('=====================================\n')
 
   const appDir = path.join(process.cwd(), 'app')
   const pattern = path.join(appDir, '**/page.{tsx,mdx}')
 
-  console.log('🔍 Scanning for documentation pages...\n')
+  logger.debug('🔍 Scanning for documentation pages...\n')
 
   const files = await glob(pattern, {
     ignore: ['**/node_modules/**', '**/.next/**', '**/dist/**']
   })
 
-  console.log(`Found ${files.length} documentation pages\n`)
+  logger.debug(`Found ${files.length} documentation pages\n`)
 
   const allChunks: DocChunk[] = []
   const stats: IndexStats = {
@@ -255,7 +256,7 @@ async function indexDocumentation() {
       const meta = extractMetadata(rawContent, filePath)
 
       if (!meta.title) {
-        console.log(`⚠️  Skipping ${filePath} - no title found`)
+        logger.debug(`⚠️  Skipping ${filePath} - no title found`)
         continue
       }
 
@@ -269,7 +270,7 @@ async function indexDocumentation() {
       }
 
       if (!content || content.length < 100) {
-        console.log(`⚠️  Skipping ${filePath} - insufficient content`)
+        logger.debug(`⚠️  Skipping ${filePath} - insufficient content`)
         continue
       }
 
@@ -305,9 +306,9 @@ async function indexDocumentation() {
       stats.totalPages++
       stats.byCategory[category] = (stats.byCategory[category] || 0) + 1
 
-      console.log(`✅ ${meta.title} → ${chunks.length} chunks`)
+      logger.debug(`✅ ${meta.title} → ${chunks.length} chunks`)
     } catch (error) {
-      console.error(`❌ Error processing ${filePath}:`, error)
+      logger.logger.error(`❌ Error processing ${filePath}:`, error)
     }
   }
 
@@ -318,17 +319,17 @@ async function indexDocumentation() {
   const outputPath = path.join(process.cwd(), 'lib', 'ai', 'docs-index.json')
   await fs.writeFile(outputPath, JSON.stringify(allChunks, null, 2), 'utf-8')
 
-  console.log('\n📊 Indexing Statistics:')
-  console.log('=======================')
-  console.log(`Total Pages: ${stats.totalPages}`)
-  console.log(`Total Chunks: ${stats.totalChunks}`)
-  console.log(`Average Chunk Size: ${stats.avgChunkSize} characters`)
-  console.log(`\nBy Category:`)
+  logger.debug('\n📊 Indexing Statistics:')
+  logger.debug('=======================')
+  logger.debug(`Total Pages: ${stats.totalPages}`)
+  logger.debug(`Total Chunks: ${stats.totalChunks}`)
+  logger.debug(`Average Chunk Size: ${stats.avgChunkSize} characters`)
+  logger.debug(`\nBy Category:`)
   Object.entries(stats.byCategory).forEach(([cat, count]) => {
-    console.log(`  ${cat}: ${count}`)
+    logger.debug(`  ${cat}: ${count}`)
   })
-  console.log(`\n✅ Index saved to: ${outputPath}`)
-  console.log(`📦 Total index size: ${(stats.totalSize / 1024).toFixed(2)} KB`)
+  logger.debug(`\n✅ Index saved to: ${outputPath}`)
+  logger.debug(`📦 Total index size: ${(stats.totalSize / 1024).toFixed(2)} KB`)
 }
 
 // Run the indexer

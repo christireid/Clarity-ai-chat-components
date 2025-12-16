@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * TokenCostPreview Storybook Stories
  *
@@ -44,7 +45,7 @@ function ChatInput() {
         model="gpt-4"
         onCostChange={(cost, tokens) => {
           if (cost > 0.10) {
-            console.log('Warning: message is expensive!')
+            logger.debug('Warning: message is expensive!')
           }
         }}
       />

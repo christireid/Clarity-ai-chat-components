@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Unified Logger
  *
@@ -199,7 +200,7 @@ export function getLogger(
         error?.stack &&
         (process.env.DEBUG || process.env.VERBOSE || globalOptions.verbose)
       ) {
-        console.error(pc.gray(error.stack))
+        logger.logger.error(pc.gray(error.stack))
       }
     }
   }
@@ -247,7 +248,7 @@ export const info = (message: string, ...args: unknown[]): void =>
 export const warn = (message: string, ...args: unknown[]): void =>
   defaultLogger.warn(message, ...args)
 export const error = (message: string | Error, ...args: unknown[]): void =>
-  defaultLogger.error(message, ...args)
+  defaultLogger.logger.error(message, ...args)
 export const success = (message: string, ...args: unknown[]): void =>
   defaultLogger.success(message, ...args)
 export const debug = (message: string, ...args: unknown[]): void =>

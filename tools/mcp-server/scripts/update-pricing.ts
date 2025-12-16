@@ -1,3 +1,6 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 /**
  * Model Pricing Update Script
@@ -88,7 +91,7 @@ function generateSamplePricingConfig(): void {
   }
 
   fs.writeFileSync(PRICING_CONFIG_PATH, JSON.stringify(sampleConfig, null, 2))
-  console.log(`Sample pricing config written to: ${PRICING_CONFIG_PATH}`)
+  SecureLogger.debug(`Sample pricing config written to: ${PRICING_CONFIG_PATH}`)
 }
 
 /**
@@ -96,7 +99,7 @@ function generateSamplePricingConfig(): void {
  */
 function loadPricingConfig(): PricingConfig | null {
   if (!fs.existsSync(PRICING_CONFIG_PATH)) {
-    console.log(
+    SecureLogger.debug(
       'No pricing.json found. Run with --generate-sample to create one.'
     )
     return null
@@ -106,7 +109,7 @@ function loadPricingConfig(): PricingConfig | null {
     const content = fs.readFileSync(PRICING_CONFIG_PATH, 'utf-8')
     return JSON.parse(content) as PricingConfig
   } catch (error) {
-    console.error('Error reading pricing.json:', error)
+    SecureLogger.error('Error reading pricing.json:', error)
     return null
   }
 }
@@ -130,7 +133,7 @@ function updatePricing(update: PricingUpdate, registryContent: string): string {
 
   const match = registryContent.match(modelPattern)
   if (!match) {
-    console.warn(`Model ${update.modelId} not found in registry`)
+    SecureLogger.warn(`Model ${update.modelId} not found in registry`)
     return registryContent
   }
 
@@ -175,10 +178,10 @@ function validatePricing(update: PricingUpdate): string[] {
 function comparePricing(config: PricingConfig): void {
   const registryContent = readModelRegistry()
 
-  console.log('\n=== Pricing Comparison ===\n')
-  console.log(`Source: ${config.source}`)
-  console.log(`Last Updated: ${config.lastUpdated}`)
-  console.log('')
+  SecureLogger.debug('\n=== Pricing Comparison ===\n')
+  SecureLogger.debug(`Source: ${config.source}`)
+  SecureLogger.debug(`Last Updated: ${config.lastUpdated}`)
+  SecureLogger.debug('')
 
   for (const update of config.updates) {
     // Extract current pricing from registry
@@ -198,34 +201,34 @@ function comparePricing(config: PricingConfig): void {
       const cachedChanged = currentCached !== update.cached
 
       if (inputChanged || outputChanged || cachedChanged) {
-        console.log(`${update.modelId}:`)
+        SecureLogger.debug(`${update.modelId}:`)
         if (inputChanged) {
-          console.log(`  Input:  $${currentInput}/1M -> $${update.input}/1M`)
+          SecureLogger.debug(`  Input:  $${currentInput}/1M -> $${update.input}/1M`)
         }
         if (outputChanged) {
-          console.log(`  Output: $${currentOutput}/1M -> $${update.output}/1M`)
+          SecureLogger.debug(`  Output: $${currentOutput}/1M -> $${update.output}/1M`)
         }
         if (cachedChanged) {
-          console.log(
+          SecureLogger.debug(
             `  Cached: $${currentCached ?? 'N/A'}/1M -> $${update.cached ?? 'N/A'}/1M`
           )
         }
       } else {
-        console.log(`${update.modelId}: No changes`)
+        SecureLogger.debug(`${update.modelId}: No changes`)
       }
     } else {
-      console.log(`${update.modelId}: Not found in registry`)
+      SecureLogger.debug(`${update.modelId}: Not found in registry`)
     }
   }
 
-  console.log('\nRun with --apply to apply these changes.')
+  SecureLogger.debug('\nRun with --apply to apply these changes.')
 }
 
 /**
  * Apply pricing updates to registry
  */
 function applyPricingUpdates(config: PricingConfig): void {
-  console.log('\n=== Applying Pricing Updates ===\n')
+  SecureLogger.debug('\n=== Applying Pricing Updates ===\n')
 
   // Validate all updates first
   const allErrors: string[] = []
@@ -235,8 +238,8 @@ function applyPricingUpdates(config: PricingConfig): void {
   }
 
   if (allErrors.length > 0) {
-    console.error('Validation errors:')
-    allErrors.forEach((e) => console.error(`  - ${e}`))
+    SecureLogger.error('Validation errors:')
+    allErrors.forEach((e) => SecureLogger.error(`  - ${e}`))
     process.exit(1)
   }
 
@@ -245,7 +248,7 @@ function applyPricingUpdates(config: PricingConfig): void {
 
   for (const update of config.updates) {
     registryContent = updatePricing(update, registryContent)
-    console.log(`Updated: ${update.modelId}`)
+    SecureLogger.debug(`Updated: ${update.modelId}`)
   }
 
   // Update the "Last updated" comment
@@ -256,8 +259,8 @@ function applyPricingUpdates(config: PricingConfig): void {
   // Write updated registry
   fs.writeFileSync(MODEL_REGISTRY_PATH, registryContent)
 
-  console.log(`\nUpdated ${config.updates.length} models.`)
-  console.log(`Registry written to: ${MODEL_REGISTRY_PATH}`)
+  SecureLogger.debug(`\nUpdated ${config.updates.length} models.`)
+  SecureLogger.debug(`Registry written to: ${MODEL_REGISTRY_PATH}`)
 }
 
 /**
@@ -271,8 +274,8 @@ function applyPricingUpdates(config: PricingConfig): void {
  * For now, this returns the manual config.
  */
 async function fetchLatestPricing(): Promise<PricingConfig | null> {
-  console.log('Note: Automatic pricing fetching not implemented.')
-  console.log('Using manual pricing.json configuration.')
+  SecureLogger.debug('Note: Automatic pricing fetching not implemented.')
+  SecureLogger.debug('Using manual pricing.json configuration.')
   return loadPricingConfig()
 }
 
@@ -282,8 +285,8 @@ async function fetchLatestPricing(): Promise<PricingConfig | null> {
 async function main(): Promise<void> {
   const args = process.argv.slice(2)
 
-  console.log('Model Pricing Update Tool')
-  console.log('=========================')
+  SecureLogger.debug('Model Pricing Update Tool')
+  SecureLogger.debug('=========================')
 
   if (args.includes('--generate-sample')) {
     generateSamplePricingConfig()
@@ -292,8 +295,8 @@ async function main(): Promise<void> {
 
   const config = await fetchLatestPricing()
   if (!config) {
-    console.log('\nTo create a pricing config:')
-    console.log('  npx tsx scripts/update-pricing.ts --generate-sample')
+    SecureLogger.debug('\nTo create a pricing config:')
+    SecureLogger.debug('  npx tsx scripts/update-pricing.ts --generate-sample')
     return
   }
 

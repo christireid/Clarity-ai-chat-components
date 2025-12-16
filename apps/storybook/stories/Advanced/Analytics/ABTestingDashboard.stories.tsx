@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
 import { ABTestingDashboard, type ExperimentResult } from '@clarity-chat/react'
@@ -250,7 +251,7 @@ function ExperimentsPage() {
       isLoading={isLoading}
       error={error}
       onRefresh={refetch}
-      onSelectExperiment={(exp) => console.log('Selected:', exp.experimentName)}
+      onSelectExperiment={(exp) => SecureLogger.debug('Selected:', exp.experimentName)}
       onDeclareWinner={(expId, winnerId) => declareWinner(expId, winnerId)}
     />
   )
@@ -315,7 +316,7 @@ export const WithRefresh: Story = {
   name: 'With Refresh Button',
   args: {
     experiments: sampleExperiments,
-    onRefresh: () => console.log('Refreshing data...'),
+    onRefresh: () => SecureLogger.debug('Refreshing data...'),
   },
   parameters: {
     docs: {
@@ -495,7 +496,7 @@ export const KeyboardNavigation: Story = {
   args: {
     experiments: sampleExperiments,
     enableKeyboardShortcuts: true,
-    onRefresh: () => console.log('Refreshing...'),
+    onRefresh: () => SecureLogger.debug('Refreshing...'),
   },
   parameters: {
     docs: {

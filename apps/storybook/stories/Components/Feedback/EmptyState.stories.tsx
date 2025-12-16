@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   EmptyState,
@@ -234,7 +235,7 @@ export const WithoutDescription: Story = {
     title: 'Components/Feedback/EmptyState',
     action: {
       label: 'Send a message',
-      onClick: () => console.log('Action clicked'),
+      onClick: () => SecureLogger.debug('Action clicked'),
     },
   },
 }
@@ -281,7 +282,7 @@ export const PrimaryActionVariant: Story = {
     description: 'Click below to start your first project.',
     action: {
       label: 'Get Started',
-      onClick: () => console.log('Get started!'),
+      onClick: () => SecureLogger.debug('Get started!'),
       variant: 'primary',
     },
   },
@@ -309,7 +310,7 @@ export const SuccessActionVariant: Story = {
     description: 'Your account has been successfully configured.',
     action: {
       label: 'Continue to Dashboard',
-      onClick: () => console.log('Continue clicked'),
+      onClick: () => SecureLogger.debug('Continue clicked'),
       variant: 'success',
     },
   },
@@ -450,15 +451,15 @@ export const InteractiveDemo: Story = {
     const renderState = () => {
       switch (scenario) {
         case 'data':
-          return <EmptyState icon={<Database className="text-primary" size={32} />} title="No data yet" description="Get started by adding your first item" action={{ label: 'Get Started', onClick: () => console.log('Create clicked'), variant: 'primary' }} />
+          return <EmptyState icon={<Database className="text-primary" size={32} />} title="No data yet" description="Get started by adding your first item" action={{ label: 'Get Started', onClick: () => SecureLogger.debug('Create clicked'), variant: 'primary' }} />
         case 'search':
-          return <NoSearchResultsState searchQuery="test query" onClearSearch={() => console.log('Clear')} />
+          return <NoSearchResultsState searchQuery="test query" onClearSearch={() => SecureLogger.debug('Clear')} />
         case 'conversation':
-          return <NoConversationsState onCreateConversation={() => console.log('Start')} />
+          return <NoConversationsState onCreateConversation={() => SecureLogger.debug('Start')} />
         case 'error':
-          return <ErrorState onRetry={() => console.log('Retry')} />
+          return <ErrorState onRetry={() => SecureLogger.debug('Retry')} />
         case 'success':
-          return <SuccessState title="Success!" description="Operation completed successfully" onContinue={() => console.log('Continue')} />
+          return <SuccessState title="Success!" description="Operation completed successfully" onContinue={() => SecureLogger.debug('Continue')} />
         default:
           return null
       }
@@ -541,7 +542,7 @@ export const InteractiveDemo: Story = {
 export const Accessibility: Story = {
   render: () => (
     <div className="space-y-8 max-w-2xl">
-      <NoDataEmptyState onAction={() => console.log('Action')} />
+      <NoDataEmptyState onAction={() => SecureLogger.debug('Action')} />
       
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm space-y-2">
         <strong>Accessibility Features:</strong>

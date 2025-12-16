@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -104,8 +105,8 @@ function ChatWithPreference() {
         value={preference}
         onChange={(pref) => {
           setPreference(pref.mode)
-          console.log('Max tokens:', pref.maxTokens)
-          console.log('Brevity instruction:', pref.brevityInstruction)
+          logger.debug('Max tokens:', pref.maxTokens)
+          logger.debug('Brevity instruction:', pref.brevityInstruction)
         }}
       />
     </div>
