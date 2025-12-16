@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Github, Shield, Sparkles, Zap } from 'lucide-react'
-import CodePreview from '../ui/CodePreview'
+import SplitScreenDemo from '../ui/SplitScreenDemo'
 import { durations } from '@/lib/constants'
 
 // Dynamically import Hero3D to avoid SSR issues with Three.js
@@ -32,11 +32,14 @@ const companyLogos = [
   { name: 'EduTech', color: 'text-pink-400' },
 ]
 
+import MagneticButton from '../ui/MagneticButton'
+
 export default function HeroSection() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-surface-950">
       {/* Background elements */}
       <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+      <div className="absolute inset-0 bg-noise opacity-[0.15] mix-blend-overlay pointer-events-none" />
 
       {/* Gradient orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-clarity-500/20 rounded-full blur-3xl" />
@@ -113,24 +116,22 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: durations.slow }}
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10"
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10 items-center lg:items-center"
             >
-              <Link
+              <MagneticButton
                 href="/docs/guides/getting-started"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-semibold text-white rounded-xl bg-gradient-to-r from-clarity-500 to-cosmic-500 hover:from-clarity-400 hover:to-cosmic-400 transition-all shadow-lg shadow-clarity-500/20 hover:shadow-clarity-400/30 hover:-translate-y-0.5"
+                icon={<ArrowRight className="w-4 h-4" />}
               >
                 Get Started Free
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
+              </MagneticButton>
+              
+              <MagneticButton
                 href="https://github.com/christireid/Clarity-ai-chat-components"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-semibold text-white rounded-xl border border-white/20 hover:bg-white/5 hover:border-white/30 transition-all"
+                variant="secondary"
+                icon={<Github className="w-5 h-5" />}
               >
-                <Github className="w-5 h-5" />
                 View on GitHub
-              </Link>
+              </MagneticButton>
             </motion.div>
 
             {/* Trust badges */}
@@ -160,9 +161,9 @@ export default function HeroSection() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: durations.slow }}
-            className="relative"
+            className="relative w-full lg:w-[120%]"
           >
-            <CodePreview />
+            <SplitScreenDemo />
           </motion.div>
         </div>
 
