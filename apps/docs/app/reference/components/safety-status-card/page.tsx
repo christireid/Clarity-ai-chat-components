@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -113,7 +114,7 @@ render(<BasicSafety />)`}
       checks={checks}
       lastReviewedAt={new Date()}
       onAcknowledge={(check) => {
-        console.log('Acknowledged:', check.label)
+        logger.debug('Acknowledged:', check.label)
       }}
     />
   )

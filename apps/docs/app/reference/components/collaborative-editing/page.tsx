@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -142,8 +143,8 @@ function CollaborativeMessage({ message }: { message: Message }) {
       currentUser={currentUser}
       activeUsers={activeUsers}
       onChange={(content, operation) => {
-        console.log('Content changed:', content)
-        console.log('Operation:', operation)
+        logger.debug('Content changed:', content)
+        logger.debug('Operation:', operation)
         // Sync to server
       }}
     />
@@ -221,7 +222,7 @@ function WithCursors({ message }: { message: Message }) {
       activeUsers={activeUsers}
       showCursors={true}
       onCursorMove={(position) => {
-        console.log('Cursor moved:', position)
+        logger.debug('Cursor moved:', position)
         // Broadcast cursor position
         broadcastCursorPosition(position)
       }}

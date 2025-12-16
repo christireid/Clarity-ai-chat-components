@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -78,7 +79,7 @@ const analytics = calculateAnalytics(messages)`}
       <CodeBlock
         language="ts"
         code={`const sanitized = sanitizeMessages(messages, { privacyMode: true })
-console.log(sanitized[0].content) // Emails/phones redacted`}
+logger.debug(sanitized[0].content) // Emails/phones redacted`}
       />
 
       <h2 id="custom-template">Custom Templates</h2>

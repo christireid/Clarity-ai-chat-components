@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -388,7 +389,7 @@ function AgentWithRetry() {
 
   const handleOpenLogs = useCallback((step: AgentRunStep) => {
     // Open logs modal or navigate to logs page
-    console.log('Logs for:', step)
+    logger.debug('Logs for:', step)
   }, [])
 
   return (
@@ -589,12 +590,12 @@ function CompleteAgentFeed() {
 
   const handleRetry = useCallback((step: AgentRunStep) => {
     // Retry logic
-    console.log('Retrying step:', step.id)
+    logger.debug('Retrying step:', step.id)
   }, [])
 
   const handleOpenLogs = useCallback((step: AgentRunStep) => {
     // Open logs
-    console.log('Opening logs for:', step.id)
+    logger.debug('Opening logs for:', step.id)
   }, [])
 
   return (

@@ -31,6 +31,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@clarity-chat/utils': path.resolve(__dirname, '../utils/src'),
     },
     dedupe: ['zod', 'fs-extra'],
   },

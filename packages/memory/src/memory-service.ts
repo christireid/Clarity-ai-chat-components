@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Memory Service
  *
@@ -39,6 +40,8 @@ import {
   type DecayManagerConfig,
   type DecayResult,
 } from './utils/decay-manager'
+
+const logger = getLogger('memory-service')
 
 /**
  * Memory Service
@@ -154,7 +157,7 @@ export class MemoryService {
         memory.embedding = await this.embeddings.embedText(content)
       } catch (error) {
         if (this.config.debug) {
-          console.error('Failed to generate embedding:', error)
+          logger.error('Failed to generate embedding:', error)
         }
       }
     } else if (options.embedding) {
@@ -255,7 +258,7 @@ export class MemoryService {
       // Run decay in background (don't block recall)
       this.runDecay().catch((error) => {
         if (this.config.debug) {
-          console.error('Auto-decay failed:', error)
+          logger.error('Auto-decay failed:', error)
         }
       })
     }
@@ -290,7 +293,7 @@ export class MemoryService {
       }))
     } catch (error) {
       if (this.config.debug) {
-        console.error('Vector search failed:', error)
+        logger.error('Vector search failed:', error)
       }
       return []
     }
@@ -413,7 +416,7 @@ export class MemoryService {
           updated.embedding = await this.embeddings.embedText(updates.content)
         } catch (error) {
           if (this.config.debug) {
-            console.error('Failed to regenerate embedding:', error)
+            logger.error('Failed to regenerate embedding:', error)
           }
         }
       }
@@ -453,7 +456,7 @@ export class MemoryService {
         )
       } catch (error) {
         if (this.config.debug) {
-          console.error('Failed to delete from vector store:', error)
+          logger.error('Failed to delete from vector store:', error)
         }
       }
     }
@@ -595,7 +598,7 @@ export class MemoryService {
       })
     } catch (error) {
       if (this.config.debug) {
-        console.error('Failed to update vector store:', error)
+        logger.error('Failed to update vector store:', error)
       }
     }
   }
@@ -709,7 +712,7 @@ export class MemoryService {
     this.cleanupInterval = setInterval(() => {
       this.cleanup().catch((error) => {
         if (this.config.debug) {
-          console.error('Cleanup task failed:', error)
+          logger.error('Cleanup task failed:', error)
         }
       })
     }, this.config.cleanupInterval!)
@@ -722,7 +725,7 @@ export class MemoryService {
     this.summarizationInterval = setInterval(() => {
       this.runSummarizationCycle().catch((error) => {
         if (this.config.debug) {
-          console.error('Summarization task failed:', error)
+          logger.error('Summarization task failed:', error)
         }
       })
     }, this.config.summarizationInterval!)
@@ -735,7 +738,7 @@ export class MemoryService {
     this.decayInterval = setInterval(() => {
       this.runDecay().catch((error) => {
         if (this.config.debug) {
-          console.error('Decay task failed:', error)
+          logger.error('Decay task failed:', error)
         }
       })
     }, this.config.decay!.decayInterval!)
@@ -795,13 +798,13 @@ export class MemoryService {
         }
       } catch (error) {
         if (this.config.debug) {
-          console.error(`Failed to process decay for ${result.id}:`, error)
+          logger.error(`Failed to process decay for ${result.id}:`, error)
         }
       }
     }
 
     if (this.config.debug && candidates.length > 0) {
-      console.log(
+      logger.debug(
         `[MemoryService] Decay cycle complete: ` +
           `${deleted} deleted, ${compressed} compressed, ${kept} kept`
       )
@@ -906,7 +909,7 @@ export class MemoryService {
           bytesSaved += memory.content.length - summary.length
 
           if (this.config.debug) {
-            console.log(
+            logger.debug(
               `Summarized memory ${memory.id}: ${memory.content.length} -> ${summary.length} chars`
             )
           }
@@ -915,14 +918,14 @@ export class MemoryService {
         }
       } catch (error) {
         if (this.config.debug) {
-          console.error(`Failed to summarize memory ${memory.id}:`, error)
+          logger.error(`Failed to summarize memory ${memory.id}:`, error)
         }
       }
     }
 
     // Log cycle metrics
     if (this.config.debug && (summarizedCount > 0 || batch.length > 0)) {
-      console.log(
+      logger.debug(
         `[MemoryService] Summarization cycle complete: ` +
           `${summarizedCount}/${batch.length} memories compressed, ` +
           `${bytesSaved} bytes saved, ` +
@@ -1065,7 +1068,7 @@ export class MemoryService {
           listener(event)
         } catch (error) {
           if (this.config.debug) {
-            console.error('Event listener error:', error)
+            logger.error('Event listener error:', error)
           }
         }
       }

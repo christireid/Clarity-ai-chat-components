@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useEffect, useRef } from 'react'
@@ -25,7 +26,7 @@ export function usePerformanceMonitoring() {
       metricsRef.current.pageLoadTime = loadTime
 
       // Log to console (in production, you'd send to analytics)
-      console.log('📊 Performance Metrics:', {
+      logger.debug('📊 Performance Metrics:', {
         pageLoadTime: Math.round(loadTime),
         ...metricsRef.current,
       })
@@ -44,7 +45,7 @@ export function usePerformanceMonitoring() {
         })
         fcpObserver.observe({ entryTypes: ['paint'] })
       } catch (error) {
-        console.warn('Failed to observe paint metrics:', error)
+        logger.warn('Failed to observe paint metrics:', error)
       }
 
       // Largest Contentful Paint
@@ -56,7 +57,7 @@ export function usePerformanceMonitoring() {
         })
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
       } catch (error) {
-        console.warn('Failed to observe LCP metrics:', error)
+        logger.warn('Failed to observe LCP metrics:', error)
       }
 
       // First Input Delay
@@ -69,7 +70,7 @@ export function usePerformanceMonitoring() {
         })
         fidObserver.observe({ entryTypes: ['first-input'] })
       } catch (error) {
-        console.warn('Failed to observe FID metrics:', error)
+        logger.warn('Failed to observe FID metrics:', error)
       }
 
       // Layout Shift
@@ -85,7 +86,7 @@ export function usePerformanceMonitoring() {
         })
         clsObserver.observe({ entryTypes: ['layout-shift'] })
       } catch (error) {
-        console.warn('Failed to observe CLS metrics:', error)
+        logger.warn('Failed to observe CLS metrics:', error)
       }
     }
 
@@ -151,7 +152,7 @@ export function AnalyticsScript() {
       }
 
       // In production, you'd send this to your analytics service
-      console.log('📈 Page View:', data)
+      logger.debug('📈 Page View:', data)
     }
 
     trackPageView()
@@ -164,7 +165,7 @@ export function AnalyticsScript() {
         target.href.startsWith('http') &&
         !target.href.includes(window.location.hostname)
       ) {
-        console.log('🔗 Outbound Link:', target.href)
+        logger.debug('🔗 Outbound Link:', target.href)
       }
     }
 

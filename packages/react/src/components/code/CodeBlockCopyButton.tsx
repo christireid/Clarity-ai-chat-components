@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -50,7 +51,7 @@ export interface CodeBlockCopyButtonProps {
  * ```tsx
  * <CodeBlockCopyButton
  *   content={codeString}
- *   onCopy={() => console.log('Copied!')}
+ *   onCopy={() => logger.debug('Copied!')}
  * />
  * ```
  */

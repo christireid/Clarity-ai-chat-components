@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Error Handling Utilities
  *
@@ -5,6 +6,8 @@
  */
 
 import { ClarityError } from './base.js'
+
+import { error } from '../logger';
 
 /**
  * Format any error for display
@@ -17,7 +20,7 @@ import { ClarityError } from './base.js'
  * try {
  *   await riskyOperation()
  * } catch (error) {
- *   console.error(formatError(error))
+ *   logger.error(formatError(error))
  * }
  * ```
  */
@@ -34,14 +37,16 @@ export function formatError(error: Error | ClarityError): string {
  *
  * @param error - Error to log
  */
-export function logError(error: Error | ClarityError): void {
-  if (error instanceof ClarityError) {
-    console.error(error.toTerminalString())
+export function logError(errorToLog: Error | ClarityError): void {
+  if (errorToLog instanceof ClarityError) {
+    logger.error(errorToLog.toTerminalString())
   } else {
-    console.error('\n❌ Unexpected Error:', error.message)
-    console.error('\nStack trace:')
-    console.error(error.stack)
-    console.error('')
+    logger.error('\n❌ Unexpected Error:', errorToLog.message)
+    if (errorToLog.stack) {
+      logger.error('\nStack trace:')
+      logger.error(errorToLog.stack)
+    }
+    logger.error('')
   }
 }
 
@@ -171,7 +176,7 @@ export function createErrorHandler() {
  * ```ts
  * const safeFetch = withErrorHandling(
  *   async (url: string) => fetch(url),
- *   (error) => console.error('Fetch failed:', error)
+ *   (error) => logger.error('Fetch failed:', error)
  * )
  * ```
  */
@@ -203,7 +208,7 @@ export function withErrorHandling<
  * ```ts
  * assert(user !== null, new ValidationError('User is required', 'user'))
  * // TypeScript now knows user is not null
- * console.log(user.name)
+ * debug(user.name)
  * ```
  */
 export function assert(
@@ -231,11 +236,11 @@ export function assert(
  * const [error, user] = await tryCatch(() => fetchUser(id))
  *
  * if (error) {
- *   console.error('Failed to fetch user:', error.message)
+ *   logger.error('Failed to fetch user:', error.message)
  *   return
  * }
  *
- * console.log('Got user:', user.name)
+ * debug('Got user:', user.name)
  * ```
  */
 export async function tryCatch<T>(
@@ -260,7 +265,7 @@ export async function tryCatch<T>(
  * const [error, data] = tryCatchSync(() => JSON.parse(jsonString))
  *
  * if (error) {
- *   console.error('Invalid JSON:', error.message)
+ *   logger.error('Invalid JSON:', error.message)
  *   return
  * }
  * ```
@@ -285,7 +290,7 @@ export function tryCatchSync<T>(fn: () => T): [null, T] | [Error, null] {
  * ```ts
  * if (isErrorType(error, ValidationError)) {
  *   // Handle validation error
- *   console.log(error.field)
+ *   debug(error.field)
  * }
  * ```
  */
@@ -305,7 +310,7 @@ export function isErrorType<T extends Error>(
  * @example
  * ```ts
  * catch (error) {
- *   console.error('Failed:', getErrorMessage(error))
+ *   logger.error('Failed:', getErrorMessage(error))
  * }
  * ```
  */

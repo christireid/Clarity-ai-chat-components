@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -581,7 +582,7 @@ export function EnhancedErrorBoundary({
     (error: Error, info: React.ErrorInfo) => {
       // Log to external service
       if (enableLogging) {
-        console.error('[EnhancedErrorBoundary] Caught error:', {
+        logger.logger.error('[EnhancedErrorBoundary] Caught error:', {
           error: isClarityError(error) ? error.toJSON() : error,
           componentStack: info.componentStack,
         })
@@ -602,7 +603,7 @@ export function EnhancedErrorBoundary({
       next?: unknown[]
     }) => {
       if (enableLogging) {
-        console.info('[EnhancedErrorBoundary] Reset:', details.reason)
+        logger.info('[EnhancedErrorBoundary] Reset:', details.reason)
       }
       onReset?.(details)
     },

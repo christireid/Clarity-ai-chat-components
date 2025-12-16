@@ -1,4 +1,8 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
 'use client'
+import { SecureLogger } from '@/lib/security/secureLogger';
 
 /**
  * Multi-Provider Chat Component
@@ -18,6 +22,7 @@
 import { useState, useRef, useEffect, useCallback, FormEvent } from 'react'
 import {
   PROVIDERS,
+import { SecureLogger } from '@/lib/security/secureLogger';
   MODELS,
   getModelsByProvider,
   getModelById,

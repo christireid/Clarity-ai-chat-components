@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Chroma Vector Store Implementation
  *
@@ -48,7 +49,7 @@ const validateEndpoint = (
     typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
 
   if (isLocalhost && isProduction && !isExplicitConfig) {
-    console.warn(
+    logger.warn(
       '[ChromaVectorStore] Using localhost endpoint in production environment. ' +
         'This will likely fail. Set the CHROMA_ENDPOINT environment variable or ' +
         'pass an explicit endpoint in the config.'
@@ -56,7 +57,7 @@ const validateEndpoint = (
   }
 
   if (isLocalhost && !isExplicitConfig && typeof window !== 'undefined') {
-    console.info(
+    logger.info(
       '[ChromaVectorStore] Using default localhost:8000 endpoint. ' +
         'For production, configure CHROMA_ENDPOINT or pass endpoint in config.'
     )

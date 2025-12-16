@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Optimized Message Component
  *
@@ -174,7 +175,7 @@ function MessageOptimizedInner({
           onFeedback?.(type)
 
           if (type === 'up') {
-            console.log('🎉 Positive feedback received!')
+            logger.debug('🎉 Positive feedback received!')
           }
         },
         [onFeedback]

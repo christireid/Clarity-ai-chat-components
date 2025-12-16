@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { SecureLogger } from '@/lib/security/secureLogger';
 import OpenAI from 'openai'
 import { searchProducts, getProduct, getRecommendations } from '@/lib/products'
 
@@ -177,7 +178,7 @@ Always be friendly, knowledgeable, and customer-focused. Use the available funct
       message: message.content,
     })
   } catch (error) {
-    console.error('Chat API error:', error)
+    SecureLogger.error('Chat API error:', error)
     return NextResponse.json(
       { error: 'Failed to process request' },
       { status: 500 }

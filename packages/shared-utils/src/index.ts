@@ -1,3 +1,4 @@
+import { warn } from '@clarity-chat/utils';
 /**
  * @clarity-chat/shared-utils
  *
@@ -15,7 +16,6 @@
  * ```ts
  * import { getLogger, LRUCache, startSpinner } from '@clarity-chat/utils'
  * // Or for better tree-shaking:
- * import { getLogger } from '@clarity-chat/utils/logger'
  * import { LRUCache } from '@clarity-chat/utils/cache'
  * import { startSpinner } from '@clarity-chat/utils/progress'
  * ```
@@ -28,7 +28,7 @@ if (
   typeof process !== 'undefined' &&
   process.env?.['NODE_ENV'] !== 'production'
 ) {
-  console.warn(
+  warn(
     '\x1b[33m[@clarity-chat/shared-utils] DEPRECATION WARNING\x1b[0m\n' +
       '\n' +
       'This package has been consolidated into @clarity-chat/utils.\n' +
@@ -43,7 +43,6 @@ if (
 
 // Re-export everything from the consolidated utils package
 
-// Logger (from @clarity-chat/utils/logger)
 export {
   LogLevel,
   type LogLevelString,

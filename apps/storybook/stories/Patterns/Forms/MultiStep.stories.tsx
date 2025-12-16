@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow, ChatInput, Button } from '@clarity-chat/react'
 import { StatusBadge } from '../../../.storybook/blocks'
@@ -123,7 +124,7 @@ export const BasicMultiStepForm: Story = {
     }
 
     const handleSubmit = () => {
-      console.log('Form submitted:', formData)
+      SecureLogger.debug('Form submitted:', formData)
       alert('Form submitted successfully! Check console for data.')
     }
 

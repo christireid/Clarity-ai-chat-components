@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -69,7 +70,7 @@ function ShareConversation({ messages, conversationId }: { messages: Message[], 
       allowComments: true,
       allowDownload: true,
     })
-    console.log('Share link:', shareLink.url)
+    logger.debug('Share link:', shareLink.url)
   }
 
   return (
@@ -103,7 +104,7 @@ function PasswordProtectedShare() {
       password: 'secure-password',
       expiration: '30days',
     })
-    console.log('Protected share link:', shareLink.url)
+    logger.debug('Protected share link:', shareLink.url)
   }
 
   return <button onClick={handleShare}>Create Protected Share</button>

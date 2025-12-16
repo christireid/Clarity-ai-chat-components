@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -285,7 +286,7 @@ export function CalendarIntegration({
     } catch (error) {
       // Silently fail for availability (non-critical)
       if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to load availability:', error)
+        logger.logger.error('Failed to load availability:', error)
       }
     }
   }, [fetchAvailability, range, isMounted])

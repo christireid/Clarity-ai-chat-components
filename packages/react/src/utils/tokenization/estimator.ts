@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Centralized Token Estimation
  *
@@ -257,9 +258,9 @@ export function validateEstimation(
  * @example
  * ```typescript
  * const debug = estimateTokensDebug("Hello 你好", 'gpt-4')
- * console.log(debug.tokens) // Accounts for CJK characters
- * console.log(debug.method) // 'model-specific'
- * console.log(debug.hasCJK) // true
+ * logger.debug(debug.tokens) // Accounts for CJK characters
+ * logger.debug(debug.method) // 'model-specific'
+ * logger.debug(debug.hasCJK) // true
  * ```
  */
 export function estimateTokensDebug(
@@ -332,7 +333,7 @@ const CHUNK_SIZE = 10000 // 10KB per chunk
  * // For large documents
  * const tokens = await estimateTokensAsync(largeDocument, 'gpt-4', {
  *   onProgress: (processed, total) => {
- *     console.log(`${Math.round(processed / total * 100)}% done`)
+ *     logger.debug(`${Math.round(processed / total * 100)}% done`)
  *   }
  * })
  * ```

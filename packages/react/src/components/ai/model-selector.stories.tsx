@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * ModelSelector Storybook Stories
  */
@@ -37,7 +38,7 @@ function App() {
       value={model}
       onChange={(id, config) => {
         setModel(id)
-        console.log('Config:', config)
+        logger.debug('Config:', config)
       }}
     />
   )

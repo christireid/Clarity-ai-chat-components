@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -198,7 +199,7 @@ const quotas = new QuotaManager({
   },
   resetPeriod: 'monthly',
   onWarning(quota) {
-    console.warn('Quota warning', quota)
+    logger.warn('Quota warning', quota)
   },
   onExceeded(quota) {
     // raise webhook, alert, or notify billing

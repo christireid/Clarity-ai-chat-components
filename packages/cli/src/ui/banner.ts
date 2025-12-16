@@ -6,6 +6,7 @@
 import pc from 'picocolors'
 import gradient from 'gradient-string'
 
+
 export interface BannerOptions {
   gradient?:
     | 'pastel'

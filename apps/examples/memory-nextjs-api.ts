@@ -1,5 +1,6 @@
 /**
  * Next.js API Route Example - Framework-Agnostic Memory Usage
+import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * File: app/api/chat/route.ts
  */
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
       memoriesUsed: memories.length,
     })
   } catch (error) {
-    console.error('Chat error:', error)
+    SecureLogger.error('Chat error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -122,7 +123,7 @@ export async function GET() {
 
     return NextResponse.json(stats)
   } catch (error) {
-    console.error('Stats error:', error)
+    SecureLogger.error('Stats error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

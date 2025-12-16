@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 import { MessageFlowSequence } from '@/components/Diagrams/MessageFlowSequence'
 import { FeedbackWidget } from '@/components/FeedbackWidget'
@@ -51,7 +52,7 @@ function ChatComponent() {
   } = useChat({
     apiEndpoint: '/api/chat',
     model: 'gpt-4',
-    onError: (error) => console.error(error)
+    onError: (error) => logger.logger.error(error)
   })
 
   return (

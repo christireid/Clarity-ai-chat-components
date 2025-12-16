@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
 import {
@@ -205,7 +206,7 @@ export const AsyncErrorHandling: Story = {
         <DashboardErrorBoundary
           widgetName="API Data"
           onError={(error) =>
-            console.log('[Storybook] Async error caught:', error.message)
+            SecureLogger.debug('[Storybook] Async error caught:', error.message)
           }
         >
           <AsyncErrorWidget />
@@ -252,7 +253,7 @@ export const MultipleWidgets: Story = {
               key={widget.id}
               widgetName={widget.name}
               onError={(error) =>
-                console.log(`[${widget.name}] Error:`, error.message)
+                SecureLogger.debug(`[${widget.name}] Error:`, error.message)
               }
             >
               <div
@@ -328,7 +329,7 @@ export const ExponentialBackoffRetry: Story = {
           initialBackoffMs={1000}
           maxBackoffMs={10000}
           onMaxRetriesExceeded={(error, attempts) =>
-            console.log(
+            SecureLogger.debug(
               `[Storybook] Max retries (${attempts}) exceeded:`,
               error.message
             )
@@ -445,7 +446,7 @@ export const MaxRetriesExceeded: Story = {
           initialBackoffMs={500}
           onMaxRetriesExceeded={(error, attempts) => {
             setRetryAttempts(attempts)
-            console.log(`[Storybook] Gave up after ${attempts} attempts`)
+            SecureLogger.debug(`[Storybook] Gave up after ${attempts} attempts`)
           }}
         >
           <AlwaysBrokenWidget />

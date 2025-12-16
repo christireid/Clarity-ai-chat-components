@@ -1,4 +1,5 @@
 'use client'
+import { SecureLogger } from '@/lib/security/secureLogger';
 
 /**
  * Error Boundary Component
@@ -9,6 +10,7 @@
 
 import { Component, ReactNode } from 'react'
 
+import { SecureLogger } from '@/lib/security/secureLogger';
 interface ErrorBoundaryProps {
   children: ReactNode
   fallback?: ReactNode
@@ -34,7 +36,7 @@ export class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    console.error('Error caught by boundary:', error, errorInfo)
+    SecureLogger.error('Error caught by boundary:', error, errorInfo)
     this.props.onError?.(error, errorInfo)
   }
 

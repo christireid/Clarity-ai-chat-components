@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Clarity Chat - Theme Creation Utilities
  *
@@ -149,7 +150,7 @@ function getThemeByName(name: string): CompleteThemeConfig {
   }
   // Warn about invalid preset and fallback to default
   if (process.env.NODE_ENV !== 'production') {
-    console.warn(
+    logger.warn(
       `[Clarity Chat] Unknown theme preset "${name}". ` +
         `Available presets: ${Object.keys(modernThemes).join(', ')}. ` +
         `Falling back to "default".`

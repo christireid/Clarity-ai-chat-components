@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -152,10 +153,10 @@ function ChatWithNetworkStatus() {
         onStatusChange={(status) => {
           setConnectionStatus(status)
           if (status === 'offline') {
-            console.log('Connection lost - queuing messages')
+            logger.debug('Connection lost - queuing messages')
             // Queue messages for later
           } else if (status === 'online') {
-            console.log('Connection restored - syncing messages')
+            logger.debug('Connection restored - syncing messages')
             // Sync pending messages
           }
         }}
@@ -209,7 +210,7 @@ function OfflineChat() {
         onStatusChange={(status) => {
           if (status === 'online') {
             // OfflineChatSync will automatically sync
-            console.log('Connection restored - syncing messages...')
+            logger.debug('Connection restored - syncing messages...')
           }
         }}
       />

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Agent Orchestration System
  *
@@ -19,8 +20,8 @@
  *   'What is the population of Tokyo and how does it compare to New York?'
  * )
  *
- * console.log(execution.answer)
- * console.log(execution.steps) // See the agent's reasoning process
+ * logger.debug(execution.answer)
+ * logger.debug(execution.steps) // See the agent's reasoning process
  * ```
  *
  * @example
@@ -110,7 +111,7 @@ export interface ParsedToolCall {
  * })
  *
  * const execution = await agent.execute('What is the population of Tokyo?')
- * console.log(execution.answer)
+ * logger.debug(execution.answer)
  * ```
  *
  * @throws {Error} If agent configuration is invalid

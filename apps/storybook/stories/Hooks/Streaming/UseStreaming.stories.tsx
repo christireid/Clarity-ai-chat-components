@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useStreaming } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -45,9 +46,9 @@ from ReadableStream sources with automatic text decoding and state management.
 
 \`\`\`tsx
 const { content, isStreaming, startStreaming, stopStreaming, reset } = useStreaming({
-  onChunk: (chunk) => console.log('Received:', chunk),
-  onComplete: (full) => console.log('Done!', full),
-  onError: (error) => console.error('Error:', error)
+  onChunk: (chunk) => SecureLogger.debug('Received:', chunk),
+  onComplete: (full) => SecureLogger.debug('Done!', full),
+  onError: (error) => SecureLogger.error('Error:', error)
 })
 
 // Start streaming
@@ -82,13 +83,13 @@ function createMockStream(text: string, delay = 50): ReadableStream<Uint8Array> 
 function BasicStreamingDemo() {
   const { content, isStreaming, startStreaming, stopStreaming, reset } = useStreaming({
     onChunk: (chunk) => {
-      console.log('Chunk received:', chunk)
+      SecureLogger.debug('Chunk received:', chunk)
     },
     onComplete: (full) => {
-      console.log('Streaming complete:', full)
+      SecureLogger.debug('Streaming complete:', full)
     },
     onError: (error) => {
-      console.error('Streaming error:', error)
+      SecureLogger.error('Streaming error:', error)
     },
   })
 
@@ -158,15 +159,15 @@ function StreamingWithCallbacks() {
   const { content, isStreaming, startStreaming, reset } = useStreaming({
     onChunk: (chunk) => {
       setChunks((prev) => [...prev, chunk])
-      console.log('Chunk received:', chunk)
+      SecureLogger.debug('Chunk received:', chunk)
     },
     onComplete: (full) => {
       setCompleted(true)
-      console.log('Streaming complete! Full content:', full)
+      SecureLogger.debug('Streaming complete! Full content:', full)
     },
     onError: (err) => {
       setError(err)
-      console.error('Streaming error:', err)
+      SecureLogger.error('Streaming error:', err)
     },
   })
 
@@ -270,7 +271,7 @@ function StreamingWithCancellation() {
       await startStreaming(stream, { signal: controller.signal })
     } catch (error: any) {
       if (error.message !== 'Request cancelled') {
-        console.error('Streaming error:', error)
+        SecureLogger.error('Streaming error:', error)
       }
     }
   }
@@ -336,7 +337,7 @@ export const Cancellation: Story = {
 function StreamingFromAPI() {
   const { content, isStreaming, startStreaming, reset } = useStreaming({
     onComplete: (full) => {
-      console.log('API streaming complete:', full)
+      SecureLogger.debug('API streaming complete:', full)
     },
   })
 

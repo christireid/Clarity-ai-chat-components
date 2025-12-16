@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Watch mode utilities for CLI
  * Enables auto-execution of commands on file changes

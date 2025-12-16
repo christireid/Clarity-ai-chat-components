@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -109,10 +110,10 @@ function formatCost(cost: number): string {
  *   criticalThreshold={0.95}
  *   suggestPruning={true}
  *   onWarning={() => {
- *     console.log('Approaching token limit')
+ *     logger.debug('Approaching token limit')
  *   }}
  *   onCritical={() => {
- *     console.log('Critical token limit!')
+ *     logger.debug('Critical token limit!')
  *     showPruneDialog()
  *   }}
  *   onPruneSuggested={() => {

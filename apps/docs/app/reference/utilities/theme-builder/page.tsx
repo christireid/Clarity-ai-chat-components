@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -41,7 +42,7 @@ const theme = createTheme({
 
 const validation = validateTheme(theme)
 if (validation.valid) {
-  console.log('Theme is valid!')
+  logger.debug('Theme is valid!')
 }`}</code></pre>
         </div>
       </section>

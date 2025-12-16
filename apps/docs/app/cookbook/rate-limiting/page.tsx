@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -46,7 +47,7 @@ const limiter = new TokenBucketRateLimiter({
   storage: new MemoryRateLimitStorage(),
   keyGenerator: (tenantId) => \`ratelimit:tenant:\${tenantId}\`,
   onLimitExceeded: (tenantId, retryAfter) => {
-    console.warn('Rate limit exceeded for', tenantId, 'retry after', retryAfter)
+    logger.warn('Rate limit exceeded for', tenantId, 'retry after', retryAfter)
   },
 })
 
@@ -92,7 +93,7 @@ const quotas = new QuotaManager({
   },
   resetPeriod: 'monthly',
   onWarning: (quota) => {
-    console.warn('Tenant near quota', quota)
+    logger.warn('Tenant near quota', quota)
   },
   onExceeded: (quota) => {
     // Notify billing, send webhook, etc.

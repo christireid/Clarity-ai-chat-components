@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { CodeBlock } from '@clarity-chat/react'
@@ -10,7 +11,7 @@ import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 function BasicCodeBlockDemo() {
   const code = `function greeting(name: string) {
-  console.log(\`Hello, \${name}!\`);
+  logger.debug(\`Hello, \${name}!\`);
   return true;
 }`
 
@@ -112,7 +113,7 @@ export default function CodeBlockPage() {
   highlightLines="2"
 >
   {\`function greeting(name: string) {
-  console.log(\\\`Hello, \\\${name}!\\\`);
+  logger.debug(\\\`Hello, \\\${name}!\\\`);
   return true;
 }\`}
 </CodeBlock>`}

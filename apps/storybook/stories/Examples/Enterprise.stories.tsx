@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SeatInviteDialog,
@@ -40,7 +41,7 @@ export const SeatInviteDialogDefault: StoryObj<typeof SeatInviteDialog> = {
       open={true}
       onOpenChange={() => {}}
       onInvite={(emails, role) => {
-        console.log('Inviting:', emails, 'with role:', role)
+        SecureLogger.debug('Inviting:', emails, 'with role:', role)
       }}
       availableSeats={5}
     />
@@ -53,7 +54,7 @@ export const SeatInviteDialogLimitedSeats: StoryObj<typeof SeatInviteDialog> = {
       open={true}
       onOpenChange={() => {}}
       onInvite={(emails, role) => {
-        console.log('Inviting:', emails, 'with role:', role)
+        SecureLogger.debug('Inviting:', emails, 'with role:', role)
       }}
       availableSeats={1}
     />
@@ -69,7 +70,7 @@ export const SSOConfigWizardDefault: StoryObj<typeof SSOConfigWizard> = {
     <div style={{ width: '800px', height: '600px' }}>
       <SSOConfigWizard
         onComplete={(config) => {
-          console.log('SSO configured:', config)
+          SecureLogger.debug('SSO configured:', config)
           alert('SSO Configuration completed!')
         }}
       />
@@ -88,7 +89,7 @@ export const SSOConfigWizardWithExisting: StoryObj<typeof SSOConfigWizard> = {
           enabled: true,
         }}
         onComplete={(config) => {
-          console.log('SSO updated:', config)
+          SecureLogger.debug('SSO updated:', config)
         }}
       />
     </div>
@@ -124,13 +125,13 @@ export const ApiTokenManagerDefault: StoryObj<typeof ApiTokenManager> = {
           },
         ]}
         onCreateToken={(name, scopes) => {
-          console.log('Creating token:', name, scopes)
+          SecureLogger.debug('Creating token:', name, scopes)
         }}
         onRevokeToken={(tokenId) => {
-          console.log('Revoking token:', tokenId)
+          SecureLogger.debug('Revoking token:', tokenId)
         }}
         onRegenerateToken={(tokenId) => {
-          console.log('Regenerating token:', tokenId)
+          SecureLogger.debug('Regenerating token:', tokenId)
         }}
       />
     </div>
@@ -143,7 +144,7 @@ export const ApiTokenManagerEmpty: StoryObj<typeof ApiTokenManager> = {
       <ApiTokenManager
         tokens={[]}
         onCreateToken={(name, scopes) => {
-          console.log('Creating first token:', name, scopes)
+          SecureLogger.debug('Creating first token:', name, scopes)
         }}
         onRevokeToken={(tokenId) => {}}
         onRegenerateToken={(tokenId) => {}}
@@ -196,7 +197,7 @@ export const AuthTenantDashboardDefault: StoryObj<typeof AuthTenantDashboard> = 
           },
         ]}
         onUserAction={(action, userId) => {
-          console.log('User action:', action, userId)
+          SecureLogger.debug('User action:', action, userId)
         }}
       />
     </div>
@@ -235,7 +236,7 @@ export const AuthTenantDashboardMultipleTenants: StoryObj<typeof AuthTenantDashb
           },
         ]}
         onUserAction={(action, userId) => {
-          console.log('User action:', action, userId)
+          SecureLogger.debug('User action:', action, userId)
         }}
       />
     </div>

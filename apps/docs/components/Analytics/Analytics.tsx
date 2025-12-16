@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useEffect, useCallback, createContext, useContext, type ReactNode } from 'react'
@@ -71,7 +72,7 @@ export function AnalyticsProvider({
       if (!enabled) return
 
       if (debug) {
-        console.log('[Analytics] Page view:', path)
+        logger.debug('[Analytics] Page view:', path)
       }
 
       // Google Analytics
@@ -90,7 +91,7 @@ export function AnalyticsProvider({
       if (!enabled) return
 
       if (debug) {
-        console.log('[Analytics] Event:', name, properties)
+        logger.debug('[Analytics] Event:', name, properties)
       }
 
       // Google Analytics

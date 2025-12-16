@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ function VoiceInput() {
   } = useVoiceInput({
     language: 'en-US',
     continuous: false,
-    onResult: (text) => console.log('Transcribed:', text)
+    onResult: (text) => logger.debug('Transcribed:', text)
   })
 
   if (!isSupported) {

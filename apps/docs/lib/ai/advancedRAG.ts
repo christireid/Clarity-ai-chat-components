@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Advanced RAG Features
  *
@@ -280,9 +281,9 @@ export async function retrieveWithContext(
   // Enhance query with context
   const enhancedQuery = enhanceQueryWithContext(query, context)
 
-  console.log(`Original query: "${query}"`)
-  console.log(`Enhanced query: "${enhancedQuery}"`)
-  console.log(`Is follow-up: ${isFollowUp}`)
+  logger.debug(`Original query: "${query}"`)
+  logger.debug(`Enhanced query: "${enhancedQuery}"`)
+  logger.debug(`Is follow-up: ${isFollowUp}`)
 
   // Generate embedding for enhanced query
   const queryEmbedding = await generateEmbedding(enhancedQuery)

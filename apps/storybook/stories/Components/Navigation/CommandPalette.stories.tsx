@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CommandPalette, CommandItem, useCommandPalette } from '@clarity-chat/react'
 import { useState } from 'react'
@@ -74,7 +75,7 @@ const basicCommands: CommandItem[] = [
     description: 'Start a new conversation',
     shortcut: ['⌘', 'N'],
     category: 'Actions',
-    onSelect: () => console.log('New chat'),
+    onSelect: () => SecureLogger.debug('New chat'),
   },
   {
     id: 'search',
@@ -82,7 +83,7 @@ const basicCommands: CommandItem[] = [
     description: 'Search through your message history',
     shortcut: ['⌘', 'F'],
     category: 'Actions',
-    onSelect: () => console.log('Search'),
+    onSelect: () => SecureLogger.debug('Search'),
   },
   {
     id: 'settings',
@@ -90,14 +91,14 @@ const basicCommands: CommandItem[] = [
     description: 'Configure your preferences',
     shortcut: ['⌘', ','],
     category: 'Navigation',
-    onSelect: () => console.log('Settings'),
+    onSelect: () => SecureLogger.debug('Settings'),
   },
   {
     id: 'export',
     label: 'Export Conversation',
     description: 'Download conversation as file',
     category: 'Actions',
-    onSelect: () => console.log('Export'),
+    onSelect: () => SecureLogger.debug('Export'),
   },
 ]
 
@@ -284,35 +285,35 @@ export const SearchDemo: Story = {
         label: 'New Conversation',
         description: 'Start a fresh chat',
         category: 'Chat',
-        onSelect: () => console.log('New conversation'),
+        onSelect: () => SecureLogger.debug('New conversation'),
       },
       {
         id: 'find-conversation',
         label: 'Find Conversation',
         description: 'Search your chat history',
         category: 'Chat',
-        onSelect: () => console.log('Find'),
+        onSelect: () => SecureLogger.debug('Find'),
       },
       {
         id: 'delete-conversation',
         label: 'Delete Conversation',
         description: 'Remove a conversation',
         category: 'Chat',
-        onSelect: () => console.log('Delete'),
+        onSelect: () => SecureLogger.debug('Delete'),
       },
       {
         id: 'export-data',
         label: 'Export Data',
         description: 'Download your conversations',
         category: 'Data',
-        onSelect: () => console.log('Export'),
+        onSelect: () => SecureLogger.debug('Export'),
       },
       {
         id: 'import-data',
         label: 'Import Data',
         description: 'Upload conversations',
         category: 'Data',
-        onSelect: () => console.log('Import'),
+        onSelect: () => SecureLogger.debug('Import'),
       },
     ]
 
@@ -360,8 +361,8 @@ export const KeyboardShortcuts: Story = {
   render: () => {
     // Use the useCommandPalette hook for proper toggle behavior
     const { isOpen, toggle, close, shortcutDisplay } = useCommandPalette({
-      onOpen: () => console.log('Command palette opened'),
-      onClose: () => console.log('Command palette closed'),
+      onOpen: () => SecureLogger.debug('Command palette opened'),
+      onClose: () => SecureLogger.debug('Command palette closed'),
     })
 
     return (

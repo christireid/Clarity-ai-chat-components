@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * init command - Initialize a new Clarity Chat project
  */
@@ -12,6 +13,7 @@ import path from 'path'
 import { InitWizard } from '../components/InitWizard.js'
 import { detectFramework, detectPackageManager } from '../utils/detect.js'
 import { installDependencies } from '../utils/install.js'
+import { createConfigManager } from '@clarity-chat/utils/config-manager'
 import { getLogger } from '../utils/logger.js'
 import { ValidationError, ConfigError, handleError } from '../utils/errors.js'
 import {
@@ -32,6 +34,15 @@ import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('init')
 
+const InitSchema = {
+  template: { type: 'string', required: false },
+  framework: { type: 'string', required: false },
+  install: { type: 'boolean', default: true },
+  git: { type: 'boolean', default: true },
+} as const
+
+const configManager = createConfigManager(InitSchema)
+
 interface InitOptions {
   template?: string
   framework?: string
@@ -39,8 +50,14 @@ interface InitOptions {
   git?: boolean
 }
 
-export async function initCommand(options: InitOptions) {
+export async function initCommand(rawOptions: InitOptions) {
   try {
+    const configResult = configManager.validate(rawOptions)
+    if (!configResult.success) {
+      throw new ValidationError(`Invalid init options: ${configResult.errors.join(', ')}`)
+    }
+    const options = configManager.merge(rawOptions)
+
     // Only show banner if not in JSON/quiet mode
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')

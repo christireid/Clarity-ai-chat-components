@@ -14,6 +14,7 @@ import {
   mergeComponentData,
   getDataSourceInfo,
 } from '@/lib/ai/merge-component-data'
+import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * AI-Optimized Components API
@@ -723,7 +724,7 @@ export async function GET() {
       headers: API_RESPONSE_HEADERS,
     })
   } catch (error) {
-    console.error('[AI Components API] Error:', error)
+    logger.error('[AI Components API] Error:', error)
 
     const errorResponse = createErrorResponse(
       'INTERNAL_ERROR',

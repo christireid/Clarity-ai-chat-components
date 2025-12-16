@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback } from 'react'
@@ -16,7 +17,7 @@ function BasicInputDemo() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    console.log('Sending:', text)
+    logger.debug('Sending:', text)
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
     setValue('')
@@ -39,7 +40,7 @@ function CharacterLimitDemo() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    console.log('Sending:', text)
+    logger.debug('Sending:', text)
     await new Promise((resolve) => setTimeout(resolve, 1000))
     setValue('')
   }, [])
@@ -167,7 +168,7 @@ export default function ChatInputPage() {
   const [value, setValue] = React.useState('')
 
   const handleSubmit = async (text) => {
-    console.log('Sending:', text)
+    logger.debug('Sending:', text)
     await new Promise(resolve => setTimeout(resolve, 1000))
     setValue('')
   }
@@ -212,7 +213,7 @@ function SimpleChatInput() {
   const [value, setValue] = useState('')
 
   const handleSubmit = useCallback(async (text: string) => {
-    console.log('Sending:', text)
+    logger.debug('Sending:', text)
     // Send to your API
     await fetch('/api/chat', {
       method: 'POST',
@@ -312,7 +313,7 @@ function ChatWithAsyncSubmit() {
       setValue('')
     } catch (error) {
       // Error - button shows error icon for 2 seconds
-      console.error('Failed to send:', error)
+      logger.logger.error('Failed to send:', error)
       // Error state is handled automatically
     }
   }

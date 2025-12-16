@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Toast Notification System
  *
@@ -20,7 +21,7 @@
  * toast.success('Settings saved!')
  *
  * // Error with action
- * toast.error('Failed to load', {
+ * toast.logger.error('Failed to load', {
  *   action: {
  *     label: 'Retry',
  *     onClick: () => refetch()
@@ -108,7 +109,7 @@ export function unregisterToastHandler() {
  */
 function showToast(message: string, options?: ToastOptions) {
   if (!toastHandler) {
-    console.warn(
+    logger.warn(
       'Toast handler not registered. Did you add <ToastManager /> to your app?'
     )
     return
@@ -191,7 +192,7 @@ export const toast = {
     } catch (error) {
       const errorMessage =
         typeof messages.error === 'function'
-          ? messages.error(error as Error)
+          ? messages.logger.error(error as Error)
           : messages.error
       showToast(errorMessage, { type: 'error' })
       throw error

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import React, { useState } from 'react'
 import {
   usePromptCompression,
@@ -37,15 +38,15 @@ export function App() {
 
   const router = useModelRouter({
     onRoute: (decision) => {
-      console.log(`Routed to ${decision.model.name}`)
-      console.log(`Estimated savings: ${decision.savingsPercent.toFixed(1)}%`)
+      SecureLogger.debug(`Routed to ${decision.model.name}`)
+      SecureLogger.debug(`Estimated savings: ${decision.savingsPercent.toFixed(1)}%`)
     },
   })
 
   const limiter = useResponseLimiter({
     preset: 'brief',
     onTruncate: (original, truncated) => {
-      console.log(`Truncated ${original.length - truncated.length} characters`)
+      SecureLogger.debug(`Truncated ${original.length - truncated.length} characters`)
     },
   })
 
@@ -54,7 +55,7 @@ export function App() {
     maxWaitTime: 1000,
     processor: async (queries) => {
       // Simulate batch API call
-      console.log(`Processing batch of ${queries.length} queries`)
+      SecureLogger.debug(`Processing batch of ${queries.length} queries`)
       return queries.map(q => `Response to: ${q}`)
     },
   })
@@ -121,12 +122,12 @@ export function App() {
     try {
       // Step 1: Compress prompt
       const compressionResult = compression.compress(input)
-      console.log(`Compressed: ${compressionResult.tokenSavings} tokens saved`)
+      SecureLogger.debug(`Compressed: ${compressionResult.tokenSavings} tokens saved`)
 
       // Step 2: Check cache
       const cached = await cache.get(compressionResult.compressed)
       if (cached) {
-        console.log('Cache hit!')
+        SecureLogger.debug('Cache hit!')
         setMessages(prev => [
           ...prev,
           { role: 'user', content: input },
@@ -138,11 +139,11 @@ export function App() {
 
       // Step 3: Route to best model
       const routing = router.route(compressionResult.compressed)
-      console.log(`Using model: ${routing.model.name}`)
+      SecureLogger.debug(`Using model: ${routing.model.name}`)
 
       // Step 4: Create limited prompt
       const limitedPrompt = limiter.createPrompt(compressionResult.compressed)
-      console.log(`Constraints: ${limitedPrompt.constraints.join(', ')}`)
+      SecureLogger.debug(`Constraints: ${limitedPrompt.constraints.join(', ')}`)
 
       // Step 5: Simulate API call (in real app, call your API here)
       const mockResponse = `This is a simulated response using ${routing.model.name}. ` +
@@ -151,7 +152,7 @@ export function App() {
 
       // Step 6: Enforce response limits
       const limitedResponse = limiter.enforce(mockResponse)
-      console.log(`Response limited: ${limitedResponse.tokensSaved} tokens saved`)
+      SecureLogger.debug(`Response limited: ${limitedResponse.tokensSaved} tokens saved`)
 
       // Step 7: Cache result
       await cache.set(compressionResult.compressed, limitedResponse.response)

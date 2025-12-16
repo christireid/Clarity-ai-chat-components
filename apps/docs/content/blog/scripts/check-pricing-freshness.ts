@@ -1,4 +1,5 @@
 #!/usr/bin/env npx ts-node
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Pricing Freshness Checker
  *
@@ -114,7 +115,7 @@ function scanAllPosts(): PricingMention[] {
     const filePath = path.join(POSTS_DIR, postFile)
 
     if (!fs.existsSync(filePath)) {
-      console.warn(`Warning: Post not found: ${postFile}`)
+      logger.warn(`Warning: Post not found: ${postFile}`)
       continue
     }
 
@@ -148,7 +149,7 @@ function loadBaseline(): PricingBaseline | null {
     const content = fs.readFileSync(BASELINE_FILE, 'utf-8')
     return JSON.parse(content) as PricingBaseline
   } catch {
-    console.warn('Warning: Could not parse baseline file')
+    logger.warn('Warning: Could not parse baseline file')
     return null
   }
 }
@@ -161,7 +162,7 @@ function saveBaseline(mentions: PricingMention[]): void {
   }
 
   fs.writeFileSync(BASELINE_FILE, JSON.stringify(baseline, null, 2))
-  console.log(`Baseline saved to ${BASELINE_FILE}`)
+  logger.debug(`Baseline saved to ${BASELINE_FILE}`)
 }
 
 function compareMentions(
@@ -255,47 +256,47 @@ function compareMentions(
 }
 
 function printReport(report: FreshnessReport): void {
-  console.log('\n' + '='.repeat(60))
-  console.log('PRICING FRESHNESS REPORT')
-  console.log('='.repeat(60))
-  console.log(`Checked at: ${report.checkedAt}`)
-  console.log(`Posts checked: ${report.postsChecked}`)
-  console.log(`Pricing mentions found: ${report.mentionsFound}`)
-  console.log('')
+  logger.debug('\n' + '='.repeat(60))
+  logger.debug('PRICING FRESHNESS REPORT')
+  logger.debug('='.repeat(60))
+  logger.debug(`Checked at: ${report.checkedAt}`)
+  logger.debug(`Posts checked: ${report.postsChecked}`)
+  logger.debug(`Pricing mentions found: ${report.mentionsFound}`)
+  logger.debug('')
 
   if (report.newMentions.length > 0) {
-    console.log('NEW MENTIONS:')
+    logger.debug('NEW MENTIONS:')
     report.newMentions.forEach((m) => {
-      console.log(`  [${m.file}:${m.line}] ${m.value}`)
-      console.log(`    "${m.text}"`)
+      logger.debug(`  [${m.file}:${m.line}] ${m.value}`)
+      logger.debug(`    "${m.text}"`)
     })
-    console.log('')
+    logger.debug('')
   }
 
   if (report.changedMentions.length > 0) {
-    console.log('CHANGED MENTIONS:')
+    logger.debug('CHANGED MENTIONS:')
     report.changedMentions.forEach(({ old, new: newM }) => {
-      console.log(`  [${newM.file}:${newM.line}]`)
-      console.log(`    Old: ${old.value}`)
-      console.log(`    New: ${newM.value}`)
+      logger.debug(`  [${newM.file}:${newM.line}]`)
+      logger.debug(`    Old: ${old.value}`)
+      logger.debug(`    New: ${newM.value}`)
     })
-    console.log('')
+    logger.debug('')
   }
 
   if (report.removedMentions.length > 0) {
-    console.log('REMOVED MENTIONS:')
+    logger.debug('REMOVED MENTIONS:')
     report.removedMentions.forEach((m) => {
-      console.log(`  [${m.file}:${m.line}] ${m.value}`)
+      logger.debug(`  [${m.file}:${m.line}] ${m.value}`)
     })
-    console.log('')
+    logger.debug('')
   }
 
   if (report.recommendations.length > 0) {
-    console.log('RECOMMENDATIONS:')
+    logger.debug('RECOMMENDATIONS:')
     report.recommendations.forEach((rec, i) => {
-      console.log(`  ${i + 1}. ${rec}`)
+      logger.debug(`  ${i + 1}. ${rec}`)
     })
-    console.log('')
+    logger.debug('')
   }
 
   const hasIssues =
@@ -304,12 +305,12 @@ function printReport(report: FreshnessReport): void {
     report.recommendations.length > 0
 
   if (!hasIssues) {
-    console.log('✅ No pricing freshness issues detected')
+    logger.debug('✅ No pricing freshness issues detected')
   } else {
-    console.log('⚠️  Review recommended before publishing')
+    logger.debug('⚠️  Review recommended before publishing')
   }
 
-  console.log('='.repeat(60) + '\n')
+  logger.debug('='.repeat(60) + '\n')
 }
 
 // =============================================================================
@@ -359,24 +360,24 @@ const CURRENT_PRICING_REFERENCE = {
 }
 
 function printPricingReference(): void {
-  console.log('\n' + '='.repeat(60))
-  console.log('CURRENT PRICING REFERENCE')
-  console.log(`Last updated: ${CURRENT_PRICING_REFERENCE.lastUpdated}`)
-  console.log('='.repeat(60))
+  logger.debug('\n' + '='.repeat(60))
+  logger.debug('CURRENT PRICING REFERENCE')
+  logger.debug(`Last updated: ${CURRENT_PRICING_REFERENCE.lastUpdated}`)
+  logger.debug('='.repeat(60))
 
   for (const [model, pricing] of Object.entries(
     CURRENT_PRICING_REFERENCE.models
   )) {
-    console.log(`${model}:`)
-    console.log(`  Input:  $${pricing.input} ${pricing.unit}`)
+    logger.debug(`${model}:`)
+    logger.debug(`  Input:  $${pricing.input} ${pricing.unit}`)
     if (pricing.output > 0) {
-      console.log(`  Output: $${pricing.output} ${pricing.unit}`)
+      logger.debug(`  Output: $${pricing.output} ${pricing.unit}`)
     }
   }
 
-  console.log('')
-  console.log(`Note: ${CURRENT_PRICING_REFERENCE.note}`)
-  console.log('='.repeat(60) + '\n')
+  logger.debug('')
+  logger.debug(`Note: ${CURRENT_PRICING_REFERENCE.note}`)
+  logger.debug('='.repeat(60) + '\n')
 }
 
 // =============================================================================
@@ -388,8 +389,8 @@ function main(): void {
   const updateBaseline = args.includes('--update-baseline')
   const showReference = args.includes('--reference')
 
-  console.log('Pricing Freshness Checker')
-  console.log('Scanning posts for pricing information...\n')
+  logger.debug('Pricing Freshness Checker')
+  logger.debug('Scanning posts for pricing information...\n')
 
   if (showReference) {
     printPricingReference()
@@ -397,11 +398,11 @@ function main(): void {
   }
 
   const currentMentions = scanAllPosts()
-  console.log(`Found ${currentMentions.length} pricing mentions`)
+  logger.debug(`Found ${currentMentions.length} pricing mentions`)
 
   if (updateBaseline) {
     saveBaseline(currentMentions)
-    console.log(
+    logger.debug(
       '\nBaseline updated. Run without --update-baseline to check freshness.'
     )
     return
@@ -410,9 +411,9 @@ function main(): void {
   const baseline = loadBaseline()
 
   if (!baseline) {
-    console.log('\nNo baseline found. Creating initial baseline...')
+    logger.debug('\nNo baseline found. Creating initial baseline...')
     saveBaseline(currentMentions)
-    console.log('Run this script again to check for changes.')
+    logger.debug('Run this script again to check for changes.')
     return
   }
 

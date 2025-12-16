@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Embedding Cache Implementation
  * 
@@ -136,7 +137,7 @@ export class LocalStorageEmbeddingCache implements EmbeddingCache {
       localStorage.setItem(this.storageKey, JSON.stringify(data))
     } catch (error) {
       // Handle quota exceeded
-      console.warn('LocalStorage cache write failed:', error)
+      logger.warn('LocalStorage cache write failed:', error)
     }
   }
   

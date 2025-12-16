@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -88,7 +89,7 @@ const variantMap = {
  * // Basic usage
  * <VoiceInput
  *   onTranscript={(text) => {
- *     console.log('Voice input:', text)
+ *     logger.debug('Voice input:', text)
  *     sendMessage(text)
  *   }}
  * />
@@ -112,9 +113,9 @@ const variantMap = {
  * // With callbacks
  * <VoiceInput
  *   onTranscript={handleInput}
- *   onStart={() => console.log('Started listening')}
- *   onStop={() => console.log('Stopped listening')}
- *   onError={(err) => console.error('Voice error:', err)}
+ *   onStart={() => logger.debug('Started listening')}
+ *   onStop={() => logger.debug('Stopped listening')}
+ *   onError={(err) => logger.logger.error('Voice error:', err)}
  * />
  * ```
  */

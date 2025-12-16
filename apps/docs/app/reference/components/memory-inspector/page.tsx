@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -183,7 +184,7 @@ function ManageableMemory() {
   }
 
   const handleRefresh = () => {
-    console.log('Refreshing memories from AI...')
+    logger.debug('Refreshing memories from AI...')
     // In real app: fetch updated memories from backend
   }
 

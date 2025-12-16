@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * System Prompt Templates
  *
@@ -94,7 +95,7 @@ function MyChat() {
     <ChatWindow
       messages={messages}        // <- Your array of messages
       onSend={(text) => {         // <- Called when user sends a message
-        console.log('User said:', text)
+        logger.debug('User said:', text)
         // Add your message handling here
       }}
     />
@@ -327,7 +328,7 @@ const chat = useChat({ api: '/api/custom-chat' })
 
 // With error handling
 const chat = useChat({
-  onError: (error) => toast.error(error.message)
+  onError: (error) => toast.logger.error(error.message)
 })
 \`\`\`
 

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Theme Preview Component
  *
@@ -42,7 +43,7 @@ export interface ThemePreviewProps {
  * ```tsx
  * <ThemePreview
  *   showEditor
- *   onThemeChange={theme => console.log('Theme changed:', theme)}
+ *   onThemeChange={theme => logger.debug('Theme changed:', theme)}
  * />
  * ```
  */

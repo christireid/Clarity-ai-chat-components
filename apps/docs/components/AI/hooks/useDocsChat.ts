@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { useState, useRef, useCallback, useEffect } from 'react'
 import {
   useToast,
@@ -75,7 +76,7 @@ export function useDocsChat() {
     criticalThreshold: TOKEN_CRITICAL_THRESHOLD,
     onWarning: () => toast.warning('Approaching context limit'),
     onCritical: () =>
-      toast.error('Near context limit - consider clearing conversation'),
+      toast.logger.error('Near context limit - consider clearing conversation'),
   })
 
   // Session ID
@@ -360,7 +361,7 @@ export function useDocsChat() {
                 }
               } catch (parseError) {
                 if (process.env.NODE_ENV === 'development') {
-                  console.debug('[DocsAssistant] JSON parse error:', parseError)
+                  logger.debug('[DocsAssistant] JSON parse error:', parseError)
                 }
               }
             }
@@ -453,7 +454,7 @@ export function useDocsChat() {
         } else {
           const retryInfo =
             currentRetry > 0 ? ` (after ${currentRetry} retries)` : ''
-          toast.error(`${errorMsg}${retryInfo}`, 'Failed to get response')
+          toast.logger.error(`${errorMsg}${retryInfo}`, 'Failed to get response')
           const errorMessage: Message = {
             id: `error-${Date.now()}`,
             chatId: 'docs-assistant',
@@ -560,8 +561,8 @@ export function useDocsChat() {
             : "Feedback received. We'll work on improving."
         )
       } catch (error) {
-        console.error('Failed to submit feedback:', error)
-        toast.error('Failed to submit feedback. Please try again.')
+        logger.logger.error('Failed to submit feedback:', error)
+        toast.logger.error('Failed to submit feedback. Please try again.')
         // Revert optimistic update on failure
         setMessages((prev) =>
           prev.map((m) =>
@@ -594,8 +595,8 @@ export function useDocsChat() {
           throw new Error(downloadResult.error || 'Download failed')
         }
       } catch (error) {
-        console.error('Failed to export conversation:', error)
-        toast.error('Failed to export conversation')
+        logger.logger.error('Failed to export conversation:', error)
+        toast.logger.error('Failed to export conversation')
         throw error
       }
     },

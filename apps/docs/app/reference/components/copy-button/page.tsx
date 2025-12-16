@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -33,7 +34,7 @@ export default function CopyButtonPage() {
 
 <CopyButton 
   text="Hello, world!" 
-  onCopy={() => console.log('Copied!')}
+  onCopy={() => logger.debug('Copied!')}
 />
 
 // Icon only

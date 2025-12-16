@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Metadata } from 'next'
@@ -102,7 +103,7 @@ function StreamingChat() {
   } = useStreamingChat({
     apiEndpoint: '/api/chat/stream',
     onError: (error) => {
-      console.error('Streaming error:', error)
+      logger.logger.error('Streaming error:', error)
     },
   })
 

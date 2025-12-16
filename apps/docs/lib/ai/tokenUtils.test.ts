@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Token Utilities Tests
  *
@@ -209,7 +210,7 @@ describe('PROMPT_TEMPLATES token estimate validation', () => {
 
       // Log for debugging if test fails
       if (!result.isValid) {
-        console.log(
+        logger.debug(
           `Template "${template.id}": calculated=${calculated}, declared=${declared}, variance=${Math.round(result.variance * 100)}%`
         )
       }

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Analyze command - Analyze project structure and usage
  */
@@ -20,6 +21,7 @@ import { createBanner, createDivider } from '../ui/banner.js'
 import { successMessage, infoMessage } from '../ui/messages.js'
 import { createTable } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
+
 
 const logger = getLogger('analyze')
 

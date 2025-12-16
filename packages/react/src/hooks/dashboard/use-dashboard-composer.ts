@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -280,7 +281,7 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
   const log = React.useCallback(
     (message: string, ...args: unknown[]) => {
       if (debug) {
-        console.log(`[useDashboardComposer] ${message}`, ...args)
+        logger.debug(`[useDashboardComposer] ${message}`, ...args)
       }
     },
     [debug]

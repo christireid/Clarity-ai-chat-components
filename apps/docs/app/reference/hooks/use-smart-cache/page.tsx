@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -253,10 +254,10 @@ function CachedChat() {
   const cache = useSmartCache({
     cacheType: 'memory',
     onCacheHit: (key) => {
-      console.log('Cache hit:', key)
+      logger.debug('Cache hit:', key)
     },
     onCacheMiss: (key) => {
-      console.log('Cache miss:', key)
+      logger.debug('Cache miss:', key)
     },
   })
 

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -179,7 +180,7 @@ function TokenManagement() {
     <ApiTokenManager
       tenantId={tenant.tenantId}
       onTokenCreate={(token) => {
-        console.log('Token created:', token.id)
+        logger.debug('Token created:', token.id)
       }}
       onTokenRevoke={(tokenId) => {
         fetch(\`/api/tenants/\${tenant.tenantId}/tokens/\${tokenId}\`, {

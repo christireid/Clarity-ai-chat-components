@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import React from 'react'
@@ -203,7 +204,7 @@ function PromptBuilder() {
       fields={fields}
       values={values}
       onChange={setValues}
-      onSubmit={(result) => console.log(result)}
+      onSubmit={(result) => logger.debug(result)}
     />
   )
 }`}

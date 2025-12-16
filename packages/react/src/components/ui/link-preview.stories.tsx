@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * LinkPreview Storybook Stories
  *
@@ -168,7 +169,7 @@ const longDescriptionMetadata: LinkMetadata = {
 export const Default: Story = {
   args: {
     metadata: githubMetadata,
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -198,8 +199,8 @@ export const CardVariant: Story = {
 export const WithRemoveButton: Story = {
   args: {
     metadata: githubMetadata,
-    onClick: () => console.log('Link clicked'),
-    onRemove: () => console.log('Remove clicked'),
+    onClick: () => logger.debug('Link clicked'),
+    onRemove: () => logger.debug('Remove clicked'),
   },
   parameters: {
     docs: {
@@ -218,7 +219,7 @@ export const CompactVariant: Story = {
   args: {
     metadata: githubMetadata,
     variant: 'compact',
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -233,7 +234,7 @@ export const CompactWithoutImage: Story = {
   args: {
     metadata: minimalMetadata,
     variant: 'compact',
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -253,7 +254,7 @@ export const InlineVariant: Story = {
   args: {
     metadata: githubMetadata,
     variant: 'inline',
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -321,7 +322,7 @@ export const Error: Story = {
     <LinkPreviewError
       url="https://broken-link.example.com/page"
       error="Failed to fetch metadata: Network error"
-      onRetry={() => console.log('Retry clicked')}
+      onRetry={() => logger.debug('Retry clicked')}
     />
   ),
   parameters: {
@@ -359,7 +360,7 @@ export const NoImage: Story = {
       ...githubMetadata,
       image: undefined,
     },
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -373,7 +374,7 @@ export const NoImage: Story = {
 export const LongTitle: Story = {
   args: {
     metadata: longTitleMetadata,
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -387,7 +388,7 @@ export const LongTitle: Story = {
 export const LongDescription: Story = {
   args: {
     metadata: longDescriptionMetadata,
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -401,7 +402,7 @@ export const LongDescription: Story = {
 export const MinimalMetadata: Story = {
   args: {
     metadata: minimalMetadata,
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -420,7 +421,7 @@ export const WithoutDescription: Story = {
   args: {
     metadata: githubMetadata,
     showDescription: false,
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -435,7 +436,7 @@ export const WithoutImage: Story = {
   args: {
     metadata: githubMetadata,
     showImage: false,
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -452,7 +453,7 @@ export const MinimalDisplay: Story = {
     showImage: false,
     showDescription: false,
     showDomain: false,
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     docs: {
@@ -470,7 +471,7 @@ export const MinimalDisplay: Story = {
 export const DarkMode: Story = {
   args: {
     metadata: videoMetadata,
-    onClick: () => console.log('Link clicked'),
+    onClick: () => logger.debug('Link clicked'),
   },
   parameters: {
     backgrounds: { default: 'dark' },
@@ -657,8 +658,8 @@ export const SmartPreview: Story = {
     <div className="max-w-md">
       <SmartLinkPreview
         url="https://github.com/anthropics/claude-code"
-        onLoad={(data) => console.log('Loaded:', data)}
-        onError={(err) => console.log('Error:', err)}
+        onLoad={(data) => logger.debug('Loaded:', data)}
+        onError={(err) => logger.debug('Error:', err)}
       />
     </div>
   ),
@@ -792,18 +793,18 @@ export const AccessibilityDemo: Story = {
       </p>
       <LinkPreview
         metadata={githubMetadata}
-        onClick={() => console.log('First link')}
+        onClick={() => logger.debug('First link')}
         aria-label="GitHub repository for Claude Code CLI tool"
       />
       <LinkPreview
         metadata={articleMetadata}
         variant="compact"
-        onClick={() => console.log('Second link')}
+        onClick={() => logger.debug('Second link')}
       />
       <LinkPreview
         metadata={videoMetadata}
         variant="compact"
-        onClick={() => console.log('Third link')}
+        onClick={() => logger.debug('Third link')}
       />
     </div>
   ),
@@ -824,7 +825,7 @@ export const WithCustomStyling: Story = {
   args: {
     metadata: githubMetadata,
     className: 'border-2 border-primary/30 bg-primary/5',
-    onClick: () => console.log('Clicked'),
+    onClick: () => logger.debug('Clicked'),
   },
   parameters: {
     docs: {

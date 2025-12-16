@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import {
@@ -159,8 +160,8 @@ class ParticleErrorBoundary extends Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error for debugging
-    console.error('[HeroParticles] WebGL Error:', error)
-    console.error('[HeroParticles] Error Info:', errorInfo)
+    logger.logger.error('[HeroParticles] WebGL Error:', error)
+    logger.logger.error('[HeroParticles] Error Info:', errorInfo)
 
     // Call optional error handler
     this.props.onError?.(error, errorInfo)
@@ -708,7 +709,7 @@ export function HeroParticles({
       <ParticleErrorBoundary
         fallback={<GradientFallback isDark={deferredIsDark} />}
         onError={(error) => {
-          console.warn(
+          logger.warn(
             '[HeroParticles] Falling back to gradient due to error:',
             error.message
           )

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { StreamCancellation } from '@clarity-chat/react'
 
@@ -12,7 +13,7 @@ export default meta
 type Story = StoryObj<typeof StreamCancellation>
 
 export const Default: Story = {
-  args: { isStreaming: true, onCancel: () => console.log('Cancelled') },
+  args: { isStreaming: true, onCancel: () => SecureLogger.debug('Cancelled') },
 }
 
 export const WithProgress: Story = {

@@ -1,5 +1,6 @@
 /**
  * Analytics Summary API
+import { SecureLogger } from '@/lib/security/secureLogger';
  * GET: Get aggregate statistics
  */
 
@@ -13,7 +14,7 @@ export async function GET() {
     return NextResponse.json(stats)
     
   } catch (error) {
-    console.error('Analytics summary error:', error)
+    SecureLogger.error('Analytics summary error:', error)
     return NextResponse.json(
       { error: 'Failed to get summary' },
       { status: 500 }

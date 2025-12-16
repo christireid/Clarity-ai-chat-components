@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Performance Monitoring Utilities
  *
@@ -110,7 +111,7 @@ export function useRenderPerformance(
 
     // Log slow renders in development
     if (process.env['NODE_ENV'] === 'development' && renderTime > 16) {
-      console.warn(
+      logger.warn(
         `[Performance] ${componentName} took ${renderTime.toFixed(2)}ms to render (${renderCount.current} renders)`
       )
     }
@@ -149,7 +150,7 @@ export function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
       })
 
       if (Object.keys(changedProps).length > 0) {
-        console.log('[WhyDidYouUpdate]', name, changedProps)
+        logger.debug('[WhyDidYouUpdate]', name, changedProps)
       }
     }
 
@@ -171,7 +172,7 @@ export function useMountTime(componentName: string) {
       const lifetime = unmountTime - mountTime
 
       if (process.env['NODE_ENV'] === 'development') {
-        console.log(
+        logger.debug(
           `[Mount Time] ${componentName} was mounted for ${lifetime.toFixed(2)}ms`
         )
       }
@@ -385,7 +386,7 @@ export function useMemoryLeakDetector(componentName: string) {
       EventTarget.prototype.removeEventListener = originalRemoveEventListener
 
       if (listeners.length > 0) {
-        console.warn(
+        logger.warn(
           `[Memory Leak] ${componentName} may have ${listeners.length} unremoved event listeners:`,
           listeners.map((l) => l.type)
         )

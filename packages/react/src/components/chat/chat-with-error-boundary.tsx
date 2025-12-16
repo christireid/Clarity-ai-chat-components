@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * ChatWithErrorBoundary - Chat component with built-in error handling
  * 
@@ -12,7 +13,7 @@
  *   return (
  *     <ChatWithErrorBoundary
  *       api="/api/chat"
- *       onError={(error) => console.error('Chat error:', error)}
+ *       onError={(error) => logger.logger.error('Chat error:', error)}
  *     />
  *   )
  * }

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AuditLogViewer } from '@clarity-chat/react'
 
@@ -117,7 +118,7 @@ export const WithClickHandler: Story = {
   args: {
     logs: sampleLogs,
     onEntryClick: (entry) => {
-      console.log('Clicked entry:', entry)
+      SecureLogger.debug('Clicked entry:', entry)
       alert(`Clicked: ${entry.action} by ${entry.actor.name}`)
     },
   },

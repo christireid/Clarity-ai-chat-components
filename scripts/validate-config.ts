@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env npx tsx
 /**
  * Configuration Validator CLI
@@ -412,23 +413,23 @@ function validateGitIgnore(ctx: ValidationContext): ValidationResult {
 
 function printResult(name: string, result: ValidationResult): void {
   const status = result.valid ? '✅' : '❌'
-  console.log(`${status} ${name}`)
+  SecureLogger.debug(`${status} ${name}`)
 
   for (const error of result.errors) {
-    console.log(`   ❌ ${error}`)
+    SecureLogger.debug(`   ❌ ${error}`)
   }
   for (const warning of result.warnings) {
-    console.log(`   ⚠️  ${warning}`)
+    SecureLogger.debug(`   ⚠️  ${warning}`)
   }
   for (const fix of result.fixes) {
-    console.log(`   🔧 ${fix}`)
+    SecureLogger.debug(`   🔧 ${fix}`)
   }
 }
 
 async function main() {
   const shouldFix = process.argv.includes('--fix')
 
-  console.log('\n🔍 Clarity Chat Configuration Validator\n')
+  SecureLogger.debug('\n🔍 Clarity Chat Configuration Validator\n')
 
   const ctx: ValidationContext = {
     fix: shouldFix,
@@ -459,32 +460,32 @@ async function main() {
     totalWarnings += result.warnings.length
   }
 
-  console.log('\n' + '─'.repeat(50))
-  console.log(
+  SecureLogger.debug('\n' + '─'.repeat(50))
+  SecureLogger.debug(
     `\n📊 Summary: ${totalErrors} error(s), ${totalWarnings} warning(s)\n`
   )
 
   if (allValid && totalWarnings === 0) {
-    console.log('✅ All validations passed! Your configuration looks great.\n')
+    SecureLogger.debug('✅ All validations passed! Your configuration looks great.\n')
   } else if (allValid) {
-    console.log(
+    SecureLogger.debug(
       '⚠️  Configuration is valid, but there are warnings to address.\n'
     )
   } else {
-    console.log('❌ Configuration has errors that should be fixed.\n')
+    SecureLogger.debug('❌ Configuration has errors that should be fixed.\n')
   }
 
-  console.log('💡 Tips:')
-  console.log('   - Run with --fix to auto-fix some issues (coming soon)')
-  console.log(
+  SecureLogger.debug('💡 Tips:')
+  SecureLogger.debug('   - Run with --fix to auto-fix some issues (coming soon)')
+  SecureLogger.debug(
     '   - See https://clarity-chat.dev/setup for recommended configuration'
   )
-  console.log('')
+  SecureLogger.debug('')
 
   process.exit(allValid ? 0 : 1)
 }
 
 main().catch((error) => {
-  console.error('❌ Error:', error.message)
+  SecureLogger.error('❌ Error:', error.message)
   process.exit(1)
 })

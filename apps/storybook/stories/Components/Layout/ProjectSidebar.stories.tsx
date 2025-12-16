@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ProjectSidebar } from '@clarity-chat/react'
 
@@ -17,5 +18,5 @@ const mockProjects = [
 ]
 
 export const Default: Story = {
-  args: { projects: mockProjects, activeProjectId: '1', onProjectSelect: (id) => console.log(id) },
+  args: { projects: mockProjects, activeProjectId: '1', onProjectSelect: (id) => SecureLogger.debug(id) },
 }

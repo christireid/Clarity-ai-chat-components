@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -110,10 +111,10 @@ function ThreadedMessage({ message, thread }: { message: Message, thread?: Threa
       parentMessage={message}
       thread={thread}
       onSendMessage={(threadId, content) => {
-        console.log('Sending to thread:', threadId, content)
+        logger.debug('Sending to thread:', threadId, content)
       }}
       onCreateThread={(parentMessageId) => {
-        console.log('Creating thread for:', parentMessageId)
+        logger.debug('Creating thread for:', parentMessageId)
       }}
     />
   )
@@ -134,10 +135,10 @@ function AllThreads({ threads, parentMessages }: { threads: Thread[], parentMess
       threads={threads}
       parentMessages={parentMessages}
       onSelectThread={(threadId) => {
-        console.log('Selected thread:', threadId)
+        logger.debug('Selected thread:', threadId)
       }}
       onArchiveThread={(threadId) => {
-        console.log('Archived thread:', threadId)
+        logger.debug('Archived thread:', threadId)
       }}
     />
   )

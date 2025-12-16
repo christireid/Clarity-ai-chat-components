@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState } from 'react'
@@ -58,7 +59,7 @@ export function ExportButton({
       setTimeout(() => setDownloading(false), 500)
       setTimeout(() => setShowMenu(false), 1000)
     } catch (error) {
-      console.error('Export failed:', error)
+      logger.logger.error('Export failed:', error)
       setDownloading(false)
     }
   }

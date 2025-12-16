@@ -1,8 +1,10 @@
 'use client'
+import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { useEffect } from 'react'
 import { AlertCircle, RefreshCw } from 'lucide-react'
 
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Error Boundary Page
  *
@@ -18,7 +20,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // Log error to your error reporting service
-    console.error('Application error:', error)
+    SecureLogger.error('Application error:', error)
   }, [error])
 
   return (

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { SeatInviteDialog } from '@clarity-chat/react'
@@ -65,7 +66,7 @@ export const Default: Story = {
   args: {
     triggerLabel: 'Invite teammate',
     roles: ['Administrator', 'Editor', 'Viewer'],
-    onInvite: (invite) => console.log('Invite sent:', invite),
+    onInvite: (invite) => SecureLogger.debug('Invite sent:', invite),
   },
 }
 
@@ -74,7 +75,7 @@ export const CustomRoles: Story = {
     triggerLabel: 'Add team member',
     roles: ['Owner', 'Admin', 'Developer', 'Designer', 'Guest'],
     defaultRole: 'Developer',
-    onInvite: (invite) => console.log('Invite sent:', invite),
+    onInvite: (invite) => SecureLogger.debug('Invite sent:', invite),
   },
   parameters: {
     docs: {
@@ -89,7 +90,7 @@ export const SingleRole: Story = {
   args: {
     triggerLabel: 'Invite viewer',
     roles: ['Viewer'],
-    onInvite: (invite) => console.log('Invite sent:', invite),
+    onInvite: (invite) => SecureLogger.debug('Invite sent:', invite),
   },
   parameters: {
     docs: {
@@ -120,7 +121,7 @@ export const WithTeamList: Story = {
         status: 'pending' as const,
       }
       setTeam([...team, newMember])
-      console.log('Invite sent:', invite)
+      SecureLogger.debug('Invite sent:', invite)
     }
 
     return (
@@ -283,7 +284,7 @@ export const PermissionLevels: Story = {
     }
 
     const handleInvite = (invite: { email: string; role: string; sendWelcome: boolean }) => {
-      console.log('Inviting with role:', invite)
+      SecureLogger.debug('Inviting with role:', invite)
       setSelectedRole(invite.role)
     }
 

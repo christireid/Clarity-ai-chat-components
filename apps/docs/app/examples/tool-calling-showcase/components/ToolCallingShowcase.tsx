@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -79,7 +80,7 @@ class ToolErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ToolErrorBoundary caught error:', error, errorInfo)
+    logger.logger.error('ToolErrorBoundary caught error:', error, errorInfo)
     this.props.onError?.(error, errorInfo)
   }
 

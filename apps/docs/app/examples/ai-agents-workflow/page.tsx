@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Cpu, Workflow, Zap } from 'lucide-react'
@@ -162,8 +163,8 @@ const strategist = createAgent({
   context: { salesData, budget: 10000 }
 })
 
-console.log(result.strategy)
-console.log(result.agentChain) // Shows which agents ran`}</code>
+logger.debug(result.strategy)
+logger.debug(result.agentChain) // Shows which agents ran`}</code>
           </pre>
 
           <h2>🛠️ Custom Tools</h2>

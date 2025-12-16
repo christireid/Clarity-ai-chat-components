@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { useErrorRecovery } from '@clarity-chat/react'
@@ -110,8 +111,8 @@ export const BasicExample: Story = {
       },
       maxAttempts: 3,
       backoffMs: [1000, 2000, 3000],
-      onRetryStart: (attempt) => console.log(`Retry attempt ${attempt}`),
-      onRetrySuccess: (_, attempt) => console.log(`Succeeded on attempt ${attempt}`),
+      onRetryStart: (attempt) => SecureLogger.debug(`Retry attempt ${attempt}`),
+      onRetrySuccess: (_, attempt) => SecureLogger.debug(`Succeeded on attempt ${attempt}`),
     })
 
     const handleExecute = async () => {
@@ -316,7 +317,7 @@ export const RetryStrategyExample: Story = {
       },
       maxAttempts: 5,
       backoffMs: backoffDelays[backoffStrategy],
-      onRetryStart: (attempt) => console.log(`Starting attempt ${attempt}`),
+      onRetryStart: (attempt) => SecureLogger.debug(`Starting attempt ${attempt}`),
     })
 
     const handleStart = async () => {
