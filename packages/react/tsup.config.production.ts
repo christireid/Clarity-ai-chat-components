@@ -2,10 +2,24 @@ import { defineConfig } from 'tsup'
 
 const commonConfig = {
   format: ['cjs', 'esm'] as const,
-  // TypeScript declarations disabled in sandbox due to memory constraints
-  // For production: enable with dts: { resolve: true, only: true }
-  // Types are validated via 'tsc --noEmit' script
-  dts: false,
+  // TypeScript declarations ENABLED for production
+  // Generates proper .d.ts files for all 249 components and 99 hooks
+  dts: {
+    resolve: true,
+    only: true,
+    entry: {
+      'src/index.ts': 'dist/index.d.ts',
+      'src/core.ts': 'dist/core.d.ts',
+      'src/core-minimal.ts': 'dist/core-minimal.d.ts',
+      'src/utils/index.ts': 'dist/utils/index.d.ts',
+      'src/animations/index.ts': 'dist/animations/index.d.ts',
+      'src/prompt/index.ts': 'dist/prompt/index.d.ts',
+      'src/analytics/index.ts': 'dist/analytics/index.d.ts',
+      'src/memory/index.ts': 'dist/memory/index.d.ts',
+      'src/adapters/index.ts': 'dist/adapters/index.d.ts',
+      'src/test-utils.tsx': 'dist/test-utils.d.ts',
+    }
+  },
   external: [
     'react',
     'react-dom',
@@ -17,10 +31,10 @@ const commonConfig = {
     'highlight.js/styles/github-dark.css',
     'katex/dist/katex.min.css',
   ],
-  sourcemap: false,
-  minify: false, // Set to boolean false instead of string
-  splitting: false,
-  treeshake: false,
+  sourcemap: true, // Enable sourcemaps for production debugging
+  minify: true, // Enable minification for production
+  splitting: true, // Enable code splitting for better tree shaking
+  treeshake: true, // Enable tree shaking for smaller bundles
   outExtension({ format }: { format: string }) {
     return {
       js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
@@ -55,7 +69,7 @@ export default defineConfig([
     entry: { 'core-minimal': 'src/core-minimal.ts' },
     ...commonConfig,
     clean: false,
-    splitting: true, // Enable code splitting for lazy loads
+    splitting: true,
   },
   // Utils entry
   {
