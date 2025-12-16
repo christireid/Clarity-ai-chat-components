@@ -6,6 +6,7 @@ import '@/styles/syntax-highlighting.css'
 import { Providers } from './providers'
 import { Navigation } from '@/components/Navigation/Navigation'
 import { Footer } from '@/components/Layout/Footer'
+import { AnalyticsScript } from '@/lib/analytics'
 import {
   StructuredData,
   OrganizationStructuredData,
@@ -120,6 +121,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
+        <AnalyticsScript />
         <Providers>
           <a href="#main-content" className="skip-to-content">
             Skip to content

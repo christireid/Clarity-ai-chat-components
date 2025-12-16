@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { HeroParticlesLazy } from '@/components/hero/HeroParticlesLazy'
+import { CardSkeleton } from './Skeletons'
 
 interface HeroSectionProps {
   title: React.ReactNode
