@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     template: '%s | Clarity Chat UI',
   },
   description:
-    'A comprehensive React UI library for building beautiful, accessible chat interfaces with 70+ components, 35+ hooks, and 150+ animations.',
+    'A comprehensive React UI library for building beautiful, accessible chat interfaces with 200+ components, 140+ hooks, and 150+ animations.',
   keywords: [
     'react',
     'ui library',

@@ -7,7 +7,7 @@
 <h1>Build Beautiful AI Chat Interfaces<br/>in Minutes, Not Months</h1>
 
 <p><strong>The most complete, production-ready AI chat component library for React.</strong><br/>
-249K+ lines of code. 320+ components. 139 hooks. Trusted by developers worldwide.</p>
+249K+ lines of code. 200+ components. 140+ hooks. Trusted by developers worldwide.</p>
 
 <p>
   <a href="https://github.com/christireid/Clarity-ai-chat-components/stargazers"><img src="https://img.shields.io/github/stars/christireid/Clarity-ai-chat-components?style=social" alt="GitHub Stars" /></a>
@@ -50,6 +50,7 @@ export default function App() {
 ```
 
 **That's it.** You now have:
+
 - ✅ Streaming responses with auto-reconnection
 - ✅ Beautiful animations and dark mode
 - ✅ Full keyboard navigation (try `Shift + ?`)
@@ -70,6 +71,7 @@ export default function App() {
 <td width="50%">
 
 ### **Without Clarity Chat**
+
 - ⏱️ **Weeks** of development
 - 🔧 **10+** dependencies to manage
 - ♿ DIY accessibility compliance
@@ -81,6 +83,7 @@ export default function App() {
 <td width="50%">
 
 ### **With Clarity Chat**
+
 - ⚡ **Minutes** to production
 - 📦 **1** tree-shakeable package
 - ✨ WCAG AAA built-in
@@ -111,7 +114,8 @@ export default function App() {
 <td width="33%" valign="top">
 
 #### 🎨 **Components**
-- **320+** React components
+
+- **200+** React components
 - **13** theme presets
 - **150+** animations
 - Virtual scrolling
@@ -121,7 +125,8 @@ export default function App() {
 <td width="33%" valign="top">
 
 #### ⚙️ **Hooks & Logic**
-- **139** custom hooks
+
+- **140+** custom hooks
 - Streaming (SSE/WebSocket)
 - Token optimization
 - Error recovery
@@ -131,6 +136,7 @@ export default function App() {
 <td width="33%" valign="top">
 
 #### 🤖 **Enterprise AI**
+
 - Vector stores (4 providers)
 - RAG pipeline
 - Agent orchestration
@@ -145,7 +151,8 @@ export default function App() {
 
 <div align="center">
 
-**📊 249K+ Lines of Code** • **🧪 313 Tests (80%+ Coverage)** • **📚 47 Documentation Guides** • **🎯 100% TypeScript**
+**📊 249K+ Lines of Code** • **🧪 313 Tests (80%+ Coverage)** • **📚 47 Documentation Guides** •
+**🎯 100% TypeScript**
 
 </div>
 
@@ -157,33 +164,36 @@ export default function App() {
 
 ## 🎯 Key Features
 
-### **💰 Token Optimization Suite** → *Save 60-90% on AI costs*
+### **💰 Token Optimization Suite** → _Save 60-90% on AI costs_
+
 ```tsx
 import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
 
 const { optimizeData, calculateCost } = useTokenOptimizationEnhanced({
-  enableTOON: true,        // 30-60% token savings
-  enableCaching: true,     // 50-90% with prompt caching
-  enableCompression: true  // 20-35% additional savings
+  enableTOON: true, // 30-60% token savings
+  enableCaching: true, // 50-90% with prompt caching
+  enableCompression: true, // 20-35% additional savings
 })
 
 // Result: $0.05 instead of $0.12 per request
 ```
 
-### **🛡️ Enterprise Security** → *OWASP LLM Top 10 2025 compliant*
+### **🛡️ Enterprise Security** → _OWASP LLM Top 10 2025 compliant_
+
 ```tsx
 import { useSecureChat } from '@clarity-chat/react'
 
 const { sendMessage } = useSecureChat({
   config: {
-    promptInjection: { enabled: true },  // 90%+ detection rate
-    pii: { enabled: true },               // GDPR/HIPAA compliant
-    jailbreakPrevention: { enabled: true } // 99% prevention
-  }
+    promptInjection: { enabled: true }, // 90%+ detection rate
+    pii: { enabled: true }, // GDPR/HIPAA compliant
+    jailbreakPrevention: { enabled: true }, // 99% prevention
+  },
 })
 ```
 
-### **🎨 Beautiful Design System** → *13 themes, 150+ animations*
+### **🎨 Beautiful Design System** → _13 themes, 150+ animations_
+
 ```tsx
 import { ThemeProvider, themes } from '@clarity-chat/react'
 
@@ -193,14 +203,15 @@ import { ThemeProvider, themes } from '@clarity-chat/react'
 // ... and 10 more!
 ```
 
-### **⚡ Streaming & Real-Time** → *SSE & WebSocket support*
+### **⚡ Streaming & Real-Time** → _SSE & WebSocket support_
+
 ```tsx
 import { useStreamingSSE } from '@clarity-chat/react'
 
 const { streamMessage, isStreaming } = useStreamingSSE({
   endpoint: '/api/chat/stream',
-  autoReconnect: true,  // Exponential backoff
-  reconnectDelay: 1000
+  autoReconnect: true, // Exponential backoff
+  reconnectDelay: 1000,
 })
 ```
 
@@ -245,11 +256,7 @@ bun add @clarity-chat/react
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'
 
-<ClarityChatPresets.WithMemory 
-  api="/api/chat"
-  memoryStrategy="sliding-window"
-  maxTokens={4000}
-/>
+;<ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" maxTokens={4000} />
 ```
 
 </details>
@@ -260,12 +267,7 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'
 
-<ClarityChatPresets.Enterprise 
-  api="/api/chat"
-  enableRAG
-  enableSafety
-  enableAnalytics
-/>
+;<ClarityChatPresets.Enterprise api="/api/chat" enableRAG enableSafety enableAnalytics />
 ```
 
 </details>
@@ -276,7 +278,7 @@ import { ClarityChatPresets } from '@clarity-chat/react'
 ```tsx
 import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
 
-<ThemeProvider theme="ocean">
+;<ThemeProvider theme="ocean">
   <ClarityChat api="/api/chat" />
 </ThemeProvider>
 ```
@@ -298,6 +300,7 @@ import { ThemeProvider, ClarityChat } from '@clarity-chat/react'
 <td width="50%">
 
 #### 🛍️ **Multi-Provider Chat**
+
 AI-powered chat with OpenAI, Anthropic, Google support
 
 [View Example →](./examples/multi-provider)
@@ -305,7 +308,8 @@ AI-powered chat with OpenAI, Anthropic, Google support
 </td>
 <td width="50%">
 
-#### 💻 **Tool Calling Demo**  
+#### 💻 **Tool Calling Demo**
+
 AI function calling with weather, search, calculator tools
 
 [View Example →](./examples/tool-calling)
@@ -316,6 +320,7 @@ AI function calling with weather, search, calculator tools
 <td width="50%">
 
 #### 🛡️ **Security Features**
+
 Prompt injection detection, PII redaction, security policies
 
 [View Example →](./examples/security-examples)
@@ -324,6 +329,7 @@ Prompt injection detection, PII redaction, security policies
 <td width="50%">
 
 #### ⚡ **Advanced Features**
+
 Battery-aware streaming, performance optimization, analytics
 
 [View Example →](./examples/advanced-features)
@@ -368,11 +374,11 @@ Battery-aware streaming, performance optimization, analytics
 
 <div align="center">
 
-| Getting Started | Guides | API Reference | Examples |
-|:---:|:---:|:---:|:---:|
-| [Quick Start](./docs/getting-started.md) | [Theming](./docs/architecture.md) | [Components](./apps/docs/api/components.md) | [Browse All](./examples) |
-| [Installation](./apps/docs/guide/installation.md) | [Token Optimization](./docs/cookbook.md) | [Hooks](./apps/docs/api/hooks.md) | [Basic Chat](./examples/basic-chat) |
-| [Migration](./docs/migrating-from-vercel.md) | [Streaming](./apps/docs/guide/streaming.md) | [Utilities](./apps/docs/api/utilities.md) | [Advanced](./examples/advanced-features) |
+|                  Getting Started                  |                   Guides                    |                API Reference                |                 Examples                 |
+| :-----------------------------------------------: | :-----------------------------------------: | :-----------------------------------------: | :--------------------------------------: |
+|     [Quick Start](./docs/getting-started.md)      |      [Theming](./docs/architecture.md)      | [Components](./apps/docs/api/components.md) |         [Browse All](./examples)         |
+| [Installation](./apps/docs/guide/installation.md) |  [Token Optimization](./docs/cookbook.md)   |      [Hooks](./apps/docs/api/hooks.md)      |   [Basic Chat](./examples/basic-chat)    |
+|   [Migration](./docs/migrating-from-vercel.md)    | [Streaming](./apps/docs/guide/streaming.md) |  [Utilities](./apps/docs/api/utilities.md)  | [Advanced](./examples/advanced-features) |
 
 </div>
 
@@ -394,7 +400,9 @@ Battery-aware streaming, performance optimization, analytics
   <a href="https://github.com/christireid/Clarity-ai-chat-components"><img src="https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
 </p>
 
-**[📧 Email Support](mailto:support@codeclarity.ai)** • **[🐛 Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** • **[💡 Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions)**
+**[📧 Email Support](mailto:support@codeclarity.ai)** •
+**[🐛 Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** •
+**[💡 Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions)**
 
 </div>
 
@@ -431,7 +439,8 @@ Battery-aware streaming, performance optimization, analytics
 
 We welcome contributions! Please read our [Contributing Guide](./CONTRIBUTING.md) to get started.
 
-**⚠️ Documentation Policy:** We maintain a clean repository structure. Please review our [Documentation Policy](./.github/DOCUMENTATION_POLICY.md) before adding documentation files.
+**⚠️ Documentation Policy:** We maintain a clean repository structure. Please review our
+[Documentation Policy](./.github/DOCUMENTATION_POLICY.md) before adding documentation files.
 
 <br />
 
@@ -458,6 +467,8 @@ MIT © 2024 [Code & Clarity](https://codeclarity.ai)
   <a href="https://discord.gg/clarity-chat"><strong>💬 Join Discord</strong></a>
 </p>
 
-<sub>Made with [React](https://react.dev) • [TypeScript](https://www.typescriptlang.org) • [Tailwind CSS](https://tailwindcss.com) • [Framer Motion](https://www.framer.com/motion) • [Radix UI](https://www.radix-ui.com)</sub>
+<sub>Made with [React](https://react.dev) • [TypeScript](https://www.typescriptlang.org) •
+[Tailwind CSS](https://tailwindcss.com) • [Framer Motion](https://www.framer.com/motion) •
+[Radix UI](https://www.radix-ui.com)</sub>
 
 </div>

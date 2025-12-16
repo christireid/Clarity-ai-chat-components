@@ -10,7 +10,7 @@ import {
   Sparkles,
   Download,
   Zap,
-  TreePine
+  TreePine,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
@@ -44,7 +44,14 @@ const competitors: BundleInfo[] = [
     size: 27,
     gzipped: 8.5,
     color: 'bg-green-500',
-    features: ['70+ components', '35+ hooks', 'Memory', 'Streaming', 'Full theming', 'Accessibility'],
+    features: [
+      '200+ components',
+      '140+ hooks',
+      'Memory',
+      'Streaming',
+      'Full theming',
+      'Accessibility',
+    ],
   },
 ]
 
@@ -119,7 +126,7 @@ export default function BundleComparisonDemo() {
     setTimeout(() => setRunAnimation(true), 100)
   }
 
-  const maxSize = Math.max(...competitors.map(c => c.size))
+  const maxSize = Math.max(...competitors.map((c) => c.size))
 
   return (
     <div className="container-docs py-12">
@@ -145,8 +152,8 @@ export default function BundleComparisonDemo() {
               </span>
             </h1>
             <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-              See how Clarity Chat compares to competitors. Smaller bundles mean faster
-              load times and better user experience.
+              See how Clarity Chat compares to competitors. Smaller bundles mean
+              faster load times and better user experience.
             </p>
           </div>
         </ScrollReveal>
@@ -197,9 +204,12 @@ export default function BundleComparisonDemo() {
                       >
                         <Sparkles
                           className={`w-6 h-6 ${
-                            ['text-yellow-400', 'text-green-400', 'text-blue-400', 'text-pink-400'][
-                              Math.floor(Math.random() * 4)
-                            ]
+                            [
+                              'text-yellow-400',
+                              'text-green-400',
+                              'text-blue-400',
+                              'text-pink-400',
+                            ][Math.floor(Math.random() * 4)]
                           }`}
                         />
                       </motion.div>
@@ -216,7 +226,9 @@ export default function BundleComparisonDemo() {
                   <div key={lib.name} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className={`font-semibold ${isClarity ? 'text-green-600 dark:text-green-400' : ''}`}>
+                        <span
+                          className={`font-semibold ${isClarity ? 'text-green-600 dark:text-green-400' : ''}`}
+                        >
                           {lib.name}
                         </span>
                         {isClarity && animationComplete && (
@@ -237,9 +249,11 @@ export default function BundleComparisonDemo() {
                       <motion.div
                         className={`h-full ${lib.color} rounded-lg flex items-center justify-end px-4`}
                         initial={{ width: 0 }}
-                        animate={{ width: runAnimation ? `${widthPercentage}%` : 0 }}
+                        animate={{
+                          width: runAnimation ? `${widthPercentage}%` : 0,
+                        }}
                         transition={{
-                          duration: 1.5,
+                          duration: durations.slower,
                           delay: idx * 0.3,
                           ease: 'easeOut',
                         }}
@@ -283,12 +297,20 @@ export default function BundleComparisonDemo() {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl">
-                        <div className="text-3xl font-bold text-green-600 dark:text-green-400">27KB</div>
-                        <div className="text-xs text-text-secondary">Minified</div>
+                        <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                          27KB
+                        </div>
+                        <div className="text-xs text-text-secondary">
+                          Minified
+                        </div>
                       </div>
                       <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl">
-                        <div className="text-3xl font-bold text-green-600 dark:text-green-400">8.5KB</div>
-                        <div className="text-xs text-text-secondary">Gzipped</div>
+                        <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                          8.5KB
+                        </div>
+                        <div className="text-xs text-text-secondary">
+                          Gzipped
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -358,7 +380,7 @@ export default function BundleComparisonDemo() {
                     animate={{
                       width: `${(parseFloat(treeShakeExamples[selectedTreeShake].size) / 27) * 100}%`,
                     }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: durations.slow }}
                   />
                 </div>
 
@@ -390,7 +412,8 @@ export default function BundleComparisonDemo() {
               {
                 icon: Download,
                 title: 'Less Data Transfer',
-                description: 'Save bandwidth costs and improve mobile experience',
+                description:
+                  'Save bandwidth costs and improve mobile experience',
                 stat: '8.5KB',
               },
               {
@@ -413,7 +436,9 @@ export default function BundleComparisonDemo() {
                     {benefit.stat}
                   </div>
                   <h3 className="font-bold mb-1">{benefit.title}</h3>
-                  <p className="text-sm text-text-secondary">{benefit.description}</p>
+                  <p className="text-sm text-text-secondary">
+                    {benefit.description}
+                  </p>
                 </div>
               )
             })}

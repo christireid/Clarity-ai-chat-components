@@ -12,7 +12,7 @@ import {
   Monitor,
   Search,
   ExternalLink,
-  BookOpen
+  BookOpen,
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
 import clsx from 'clsx'
@@ -22,7 +22,7 @@ import { toast } from '@/lib/toast'
 const navigation = [
   { name: 'Demos', href: '/demos' },
   { name: 'Learn', href: '/learn/quick-start' },
-  { name: 'Docs', href: '/guides' },
+  { name: 'Guides', href: '/guides' },
   { name: 'Reference', href: '/reference/components' },
   { name: 'Cookbook', href: '/cookbook' },
   { name: 'Examples', href: '/examples' },
@@ -64,17 +64,20 @@ export function Navigation() {
       newTheme = 'light'
       setTheme('light')
     }
-    
+
     const themeIcons = {
       light: '☀️',
       dark: '🌙',
-      system: '💻'
+      system: '💻',
     }
-    
-    toast.success(`Theme: ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`, {
-      description: `Switched to ${themeIcons[newTheme as keyof typeof themeIcons]} ${newTheme} mode`,
-      duration: 2000,
-    })
+
+    toast.success(
+      `Theme: ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`,
+      {
+        description: `Switched to ${themeIcons[newTheme as keyof typeof themeIcons]} ${newTheme} mode`,
+        duration: durations.slower,
+      }
+    )
   }
 
   const getThemeIcon = () => {
@@ -91,14 +94,19 @@ export function Navigation() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-8">
-              <Link href="/" className="group flex items-center gap-2 font-bold text-xl">
+              <Link
+                href="/"
+                className="group flex items-center gap-2 font-bold text-xl"
+              >
                 <motion.div
                   whileHover={{ rotate: 15, scale: 1.1 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 15 }}
                 >
                   <BookOpen className="w-6 h-6 text-brand-500" />
                 </motion.div>
-                <span className="group-hover:text-brand-500 transition-colors">Clarity Chat</span>
+                <span className="group-hover:text-brand-500 transition-colors">
+                  Clarity Chat
+                </span>
               </Link>
 
               {/* Desktop Navigation */}
@@ -108,7 +116,10 @@ export function Navigation() {
                     key={item.name}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    transition={{
+                      duration: durations.moderate,
+                      delay: index * 0.05,
+                    }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -127,7 +138,7 @@ export function Navigation() {
                           className="absolute bottom-1 left-4 right-4 h-0.5 bg-brand-500"
                           initial={{ scaleX: 0 }}
                           whileHover={{ scaleX: 1 }}
-                          transition={{ duration: 0.2 }}
+                          transition={{ duration: durations.normal }}
                         />
                       )}
                     </Link>
@@ -178,7 +189,7 @@ export function Navigation() {
                     initial={{ rotate: -90, opacity: 0 }}
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: durations.normal }}
                   >
                     {getThemeIcon()}
                   </motion.div>
@@ -213,7 +224,7 @@ export function Navigation() {
                       initial={{ rotate: -90, opacity: 0 }}
                       animate={{ rotate: 0, opacity: 1 }}
                       exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: durations.normal }}
                     >
                       <X className="w-6 h-6" />
                     </motion.div>
@@ -223,7 +234,7 @@ export function Navigation() {
                       initial={{ rotate: 90, opacity: 0 }}
                       animate={{ rotate: 0, opacity: 1 }}
                       exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: durations.normal }}
                     >
                       <Menu className="w-6 h-6" />
                     </motion.div>
@@ -240,7 +251,10 @@ export function Navigation() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                transition={{
+                  duration: durations.moderate,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
                 className="md:hidden overflow-hidden border-t border-border"
               >
                 <motion.div

@@ -405,7 +405,7 @@ export default App`}
                     Components
                   </h3>
                   <p className="text-sm text-text-secondary">
-                    Explore all 70+ components with interactive examples
+                    Explore all 200+ components with interactive examples
                   </p>
                 </a>
 
