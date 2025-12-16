@@ -16,6 +16,7 @@ import {
 import { DURATION_SECONDS } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import {
+import { formatBytes } from '@clarity-chat/primitives'
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../animations/motion-safe'
@@ -337,12 +338,7 @@ export function PerformanceAnalyticsDashboard({
   /**
    * Format bytes to human-readable format
    */
-  const formatBytes = (bytes: number): string => {
-    if (bytes === 0) return '0 B'
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`
+  `
   }
 
   /**

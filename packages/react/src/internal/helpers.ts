@@ -1,3 +1,4 @@
+import { formatBytes } from '@clarity-chat/primitives'
 /**
  * Internal Helper Functions
  *
@@ -175,28 +176,7 @@ export async function retry<T>(
 /**
  * Format bytes to human-readable string
  */
-export function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B'
-
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  const k = 1024
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${units[i]}`
-}
-
-/**
- * Check if running in browser environment
- */
-export function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof document !== 'undefined'
-}
-
-/**
- * Check if running in server environment
- */
-export function isServer(): boolean {
-  return typeof window === 'undefined'
+export   return typeof window === 'undefined'
 }
 
 /**
