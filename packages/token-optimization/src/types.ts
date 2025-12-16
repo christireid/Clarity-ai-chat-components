@@ -277,3 +277,8 @@ export interface TokenOptimizationStats {
   cacheHitRate: number
   methods: Record<string, number>
 }
+
+// Export commonly used types for convenience
+export type TokenCount = TokenInfo
+export type OptimizationStrategy = 'toon' | 'llmlingua' | 'semantic' | 'truncation' | 'hybrid'
+export type AdvancedSecurityConfigType = AdvancedSecurityConfig
