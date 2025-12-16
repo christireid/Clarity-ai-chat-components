@@ -14,7 +14,7 @@
  */
 
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import { estimateTokens as centralEstimateTokens } from './tokenization/estimator'
+import { TokenCounter } from '@clarity-chat/token-optimization'
 
 // ============================================================================
 // Types
@@ -299,11 +299,13 @@ export function shortenPrompt(
 }
 
 /**
- * Estimate token count using centralized estimator
- * @deprecated Import { estimateTokens } from './tokenization/estimator' directly for model-specific estimation
+ * Estimate token count using TokenCounter from the new package
+ * @deprecated Use TokenCounter.count() directly for accurate token counting
  */
 export function estimateTokens(text: string): number {
-  return centralEstimateTokens(text)
+  if (!text) return 0
+  const tokenCounter = new TokenCounter()
+  return tokenCounter.count(text)
 }
 
 /**

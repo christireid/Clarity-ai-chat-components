@@ -12,6 +12,9 @@ import { BotIcon, SparklesIcon } from './icons'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
+import { useUIEnhancements, getEnhancedClassName } from '../../contexts/ui-enhancements'
+import { useSecurity } from '../../utils/security'
+import { usePerformanceMonitoring, useRenderOptimization, use60FPSAnimation } from '../../utils/performance'
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */
@@ -19,6 +22,14 @@ export interface ChatWindowProps {
   isLoading?: boolean
   /** AI processing status for thinking indicator */
   aiStatus?: AIStatus
+  /** UI Enhancement flags for 2025 features */
+  quantumAnimations?: boolean
+  glassmorphism?: boolean
+  auroraGradients?: boolean
+  neumorphism?: boolean
+  voiceIntegration?: boolean
+  adaptiveColors?: boolean
+  wcagAAA?: boolean
   onSendMessage: (content: string) => void
   /**
    * Callback to stop/cancel the current AI generation.
@@ -123,16 +134,25 @@ interface DefaultEmptyStateProps {
   showStarterPrompts?: boolean
 }
 
-const DefaultEmptyState = ({
+const DefaultEmptyState = React.memo(({
   starterPrompts,
   onSelectPrompt,
   showStarterPrompts = true,
-}: DefaultEmptyStateProps) => (
+}: DefaultEmptyStateProps) => {
+  const { animate: animate60FPS } = use60FPSAnimation(true)
+  
+  return (
+    <motion.div
+      className="text-center space-y-8 px-4 py-8"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
+    >
   <motion.div
     className="text-center space-y-8 px-4 py-8"
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
+    transition={{ duration: effectiveQuantumAnimations ? duration('quantum') : duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
   >
     {/* Animated icon with decorative rings */}
     <div className="relative inline-flex items-center justify-center">
@@ -366,6 +386,13 @@ export function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
+  quantumAnimations = false,
+  glassmorphism = false,
+  auroraGradients = false,
+  neumorphism = false,
+  voiceIntegration = false,
+  adaptiveColors = false,
+  wcagAAA = false,
   onSendMessage,
   onStopGeneration,
   onMessageCopy,
@@ -393,6 +420,13 @@ export function ChatWindow({
   followUpSuggestions,
   showStarterPrompts = true,
   showFollowUpSuggestions = true,
+  quantumAnimations = false,
+  glassmorphism = false,
+  auroraGradients = false,
+  neumorphism = false,
+  voiceIntegration = false,
+  adaptiveColors = false,
+  wcagAAA = false,
 }: ChatWindowProps) {
   // Runtime validation
   if (!Array.isArray(messages)) {
@@ -414,6 +448,22 @@ export function ChatWindow({
   }
 
   const [input, setInput] = React.useState('')
+
+  // Security and enhancement hooks
+  const security = useSecurity()
+  const enhancements = useUIEnhancements()
+  const { measureRender, isPerformanceAcceptable, animate } = usePerformanceMonitoring()
+  const { animate: animate60FPS } = use60FPSAnimation(effectiveQuantumAnimations)
+
+  // Use enhancement props or fall back to context values
+  const enhancements = useUIEnhancements()
+  const effectiveQuantumAnimations = quantumAnimations ?? enhancements.quantumAnimations
+  const effectiveGlassmorphism = glassmorphism ?? enhancements.glassmorphism
+  const effectiveAuroraGradients = auroraGradients ?? enhancements.auroraGradients
+  const effectiveNeumorphism = neumorphism ?? enhancements.neumorphism
+  const effectiveVoiceIntegration = voiceIntegration ?? enhancements.voiceIntegration
+  const effectiveAdaptiveColors = adaptiveColors ?? enhancements.adaptiveColors
+  const effectiveWCAGAAA = wcagAAA ?? enhancements.wcagAAA
 
   // Convert CoreMessage[] to Message[] if needed
   // Check if first message has 'content' property that could be string or array
@@ -439,7 +489,14 @@ export function ChatWindow({
 
   // React 19: Compiler optimizes - no useCallback needed
   const handleSubmit = (content: string) => {
-    onSendMessage(content)
+    // Security validation
+    const validation = security.validateInput(content)
+    if (!validation.isValid) {
+      console.warn('Security validation failed:', validation.error)
+      return
+    }
+    
+    onSendMessage(validation.sanitized || content)
     setInput('')
   }
 
@@ -482,7 +539,16 @@ export function ChatWindow({
         'border-border/30',
         'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)]',
         'backdrop-blur-sm',
-        className
+        getEnhancedClassName({
+          className,
+          quantumAnimations: effectiveQuantumAnimations,
+          glassmorphism: effectiveGlassmorphism,
+          auroraGradients: effectiveAuroraGradients,
+          neumorphism: effectiveNeumorphism,
+          voiceIntegration: effectiveVoiceIntegration,
+          adaptiveColors: effectiveAdaptiveColors,
+          wcagAAA: effectiveWCAGAAA,
+        })
       )}
     >
       {/* Optional Header */}

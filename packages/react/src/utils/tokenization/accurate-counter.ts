@@ -6,9 +6,11 @@ import { logger } from '@clarity-chat/utils/logger';
  * Uses js-tiktoken when available, falls back to estimation.
  */
 
+import { TokenCounter } from '@clarity-chat/token-optimization'
+import { InputValidator } from './input-validator.js'
+import { errorHandler, ErrorCategory, ErrorSeverity } from './enhanced-error-handling.js'
+
 export type ModelName =
-  // OpenAI GPT-4 Family
-  | 'gpt-4'
   | 'gpt-4-turbo'
   | 'gpt-4o'
   | 'gpt-4o-mini'
@@ -307,7 +309,9 @@ const MODEL_CONFIGS: Record<
 }
 
 /**
- * Count tokens accurately (uses tiktoken if available)
+ * Count tokens in text with high accuracy
+ *
+ * Uses the new @clarity-chat/token-optimization package for accurate counting.
  *
  * @example
  * ```ts
@@ -322,52 +326,13 @@ export async function countTokens(
 ): Promise<TokenCount> {
   const { model = 'gpt-4', cache = true, preferAccurate = true } = options
 
-  // Check cache
-  if (cache) {
-    const cacheKey = `${model}:${text}`
-    const cached = tokenCache.get(cacheKey)
-    if (cached !== undefined) {
-      return {
-        total: cached,
-        model,
-        method: 'accurate',
-      }
-    }
-    // Record cache miss for statistics
-    tokenCache.recordMiss()
-  }
-
-  const config = MODEL_CONFIGS[model]
-  if (!config) {
-    throw new Error(`Unknown model: ${model}`)
-  }
-
-  let count: number
-  let method: 'accurate' | 'estimated' = 'estimated'
-
-  // Try accurate tokenization first if preferred
-  if (preferAccurate) {
-    try {
-      count = await countTokensAccurate(text, config.encoding)
-      method = 'accurate'
-    } catch {
-      // Fall back to estimation
-      count = estimateTokenCount(text, config.charsPerToken)
-    }
-  } else {
-    count = estimateTokenCount(text, config.charsPerToken)
-  }
-
-  // Cache result
-  if (cache) {
-    const cacheKey = `${model}:${text}`
-    tokenCache.set(cacheKey, count)
-  }
+  // Use the new TokenCounter from the token-optimization package
+  const count = TokenCounter.count(text)
 
   return {
     total: count,
     model,
-    method,
+    method: 'accurate',
   }
 }
 
@@ -412,6 +377,7 @@ function estimateTokenCount(text: string, charsPerToken: number): number {
 
 /**
  * Count tokens in a conversation
+ * Uses the new @clarity-chat/token-optimization package for accurate counting
  */
 export async function countConversationTokens(
   messages: Array<{ role: string; content: string }>,
@@ -419,31 +385,108 @@ export async function countConversationTokens(
 ): Promise<TokenCount> {
   const { model = 'gpt-4' } = options
 
-  // Add overhead for message formatting
-  // OpenAI format adds ~4 tokens per message
-  const TOKENS_PER_MESSAGE = 4
-  const TOKENS_PER_NAME = 1
-
-  let totalTokens = 0
-
-  for (const message of messages) {
-    const contentCount = await countTokens(message.content, options)
-    totalTokens += contentCount.total
-    totalTokens += TOKENS_PER_MESSAGE
-
-    // Add extra tokens if message has a name field
-    if ('name' in message) {
-      totalTokens += TOKENS_PER_NAME
+  try {
+    // Validate inputs
+    const modelValidation = InputValidator.validateModel(model);
+    if (!modelValidation.valid) {
+      throw errorHandler.createError(
+        `Invalid model: ${modelValidation.errors.join(', ')}`,
+        'INVALID_MODEL',
+        ErrorCategory.VALIDATION,
+        ErrorSeverity.LOW,
+        { operation: 'countConversationTokens', config: options }
+      );
     }
-  }
 
-  // Add 2 tokens for priming the response
-  totalTokens += 2
+    const validModel = modelValidation.sanitized || 'gpt-4';
 
-  return {
-    total: totalTokens,
-    model,
-    method: 'accurate',
+    // Validate messages
+    if (!Array.isArray(messages)) {
+      throw errorHandler.createError(
+        'Messages must be an array',
+        'INVALID_MESSAGES',
+        ErrorCategory.VALIDATION,
+        ErrorSeverity.LOW,
+        { operation: 'countConversationTokens', input: messages }
+      );
+    }
+
+    // Use the new TokenCounter for accurate counting
+    // Add overhead for message formatting
+    // OpenAI format adds ~4 tokens per message
+    const TOKENS_PER_MESSAGE = 4
+    const TOKENS_PER_NAME = 1
+
+    let totalTokens = 0
+
+    for (let i = 0; i < messages.length; i++) {
+      const message = messages[i];
+      
+      // Validate message structure
+      if (!message || typeof message !== 'object') {
+        throw errorHandler.createError(
+          `Message at index ${i} is invalid`,
+          'INVALID_MESSAGE',
+          ErrorCategory.VALIDATION,
+          ErrorSeverity.LOW,
+          { operation: 'countConversationTokens', input: message }
+        );
+      }
+
+      if (typeof message.content !== 'string') {
+        throw errorHandler.createError(
+          `Message at index ${i} must have string content`,
+          'INVALID_MESSAGE_CONTENT',
+          ErrorCategory.VALIDATION,
+          ErrorSeverity.LOW,
+          { operation: 'countConversationTokens', input: message.content }
+        );
+      }
+
+      // Validate content
+      const contentValidation = InputValidator.validateTextInput(message.content, { allowEmpty: true });
+      if (!contentValidation.valid) {
+        throw errorHandler.createError(
+          `Message content at index ${i} is invalid: ${contentValidation.errors.join(', ')}`,
+          'INVALID_CONTENT',
+          ErrorCategory.VALIDATION,
+          ErrorSeverity.LOW,
+          { operation: 'countConversationTokens', input: message.content }
+        );
+      }
+
+      const validContent = contentValidation.sanitized || '';
+      const contentCount = TokenCounter.count(validContent);
+      totalTokens += contentCount;
+      totalTokens += TOKENS_PER_MESSAGE;
+
+      // Add extra tokens if message has a name field
+      if ('name' in message && message.name) {
+        totalTokens += TOKENS_PER_NAME;
+      }
+    }
+
+    // Add 2 tokens for priming the response
+    totalTokens += 2
+
+    return {
+      total: totalTokens,
+      model: validModel,
+      method: 'accurate',
+    }
+  } catch (error) {
+    return errorHandler.handleError(
+      error,
+      { operation: 'countConversationTokens', input: messages, config: options },
+      {
+        attemptRecovery: true,
+        fallbackValue: { 
+          total: messages.reduce((sum, msg) => sum + (msg.content?.length || 0), 0) / 4,
+          model: model || 'gpt-4',
+          method: 'fallback'
+        }
+      }
+    );
   }
 }
 

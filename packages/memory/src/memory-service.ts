@@ -34,7 +34,7 @@ import type {
   ContextBundle,
   TokenBreakdown,
 } from './types'
-import { TokenCounter, ContextOptimizer } from './token-optimizer'
+import { TokenCounter, ContextOptimizer } from '@clarity-chat/token-optimization'
 import {
   DecayManager,
   type DecayManagerConfig,
