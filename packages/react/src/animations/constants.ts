@@ -33,6 +33,8 @@ export const ANIMATION_DURATION = {
   instant: 0,
   /** 75ms - Micro-interactions */
   faster: 75,
+  /** 150ms - Quantum interactions (2025 Trend) */
+  quantum: 150,
   /** 150ms - Quick interactions (buttons, inputs) */
   fast: 150,
   /** 200ms - Standard UI transitions */
@@ -45,8 +47,6 @@ export const ANIMATION_DURATION = {
   slower: 400,
   /** 500ms - Page-level transitions */
   slowest: 500,
-  /** 150ms - Quantum animations for enhanced UI */
-  quantum: 150,
   // Legacy alias - use 'slower' instead
   /** @deprecated Use 'slower' instead */
   'extra-slow': 500,
@@ -58,13 +58,13 @@ export const ANIMATION_DURATION = {
 export const DURATION_CSS = {
   instant: '0ms',
   faster: '75ms',
+  quantum: '150ms',
   fast: '150ms',
   normal: '200ms',
   moderate: '250ms',
   slow: '300ms',
   slower: '400ms',
   slowest: '500ms',
-  quantum: '150ms',
 } as const
 
 /**
@@ -73,13 +73,13 @@ export const DURATION_CSS = {
 export const DURATION_SECONDS = {
   instant: 0,
   faster: 0.075,
+  quantum: 0.15,
   fast: 0.15,
   normal: 0.2,
   moderate: 0.25,
   slow: 0.3,
   slower: 0.4,
   slowest: 0.5,
-  quantum: 0.15,
 } as const
 
 /**
@@ -89,6 +89,7 @@ export const DURATION_SECONDS = {
 export const TAILWIND_DURATION = {
   instant: 'duration-0',
   faster: 'duration-75',
+  quantum: 'duration-150',
   fast: 'duration-150',
   normal: 'duration-200',
   // Tailwind doesn't have 250; 300 is the closest non-jarring default.
@@ -96,7 +97,6 @@ export const TAILWIND_DURATION = {
   slow: 'duration-300',
   slower: 'duration-500', // Tailwind doesn't have 400, using closest
   slowest: 'duration-500',
-  quantum: 'duration-150',
 } as const
 
 // =============================================================================
