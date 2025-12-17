@@ -20,7 +20,7 @@ import { logger } from '@clarity-chat/utils/logger';
  *     const { result } = await execute(() => submitForm(data))
  *     toast.success('Submitted!')
  *   } catch (error) {
- *     toast.logger.error('Failed after all retries')
+ *     toast.error('Failed after all retries')
  *   }
  * }
  * ```

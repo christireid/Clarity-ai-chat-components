@@ -173,7 +173,7 @@ export function NetworkStatus({
         setInternalStatus('unstable')
       }
     } catch (error) {
-      logger.logger.error('[NetworkStatus] Ping failed:', error)
+      logger.error('[NetworkStatus] Ping failed:', error)
       setInternalStatus('offline')
       setLatency(null)
     }

@@ -72,7 +72,7 @@ export function HeroChatStorageIndicator({
           }
         }
       } catch {
-        logger.logger.error('Failed to import conversations')
+        logger.error('Failed to import conversations')
       }
     }
     input.click()

@@ -78,9 +78,9 @@ export function useEnhancedErrorHandler(
 
       // Log in development
       if (logInDev && process.env['NODE_ENV'] === 'development') {
-        logger.logger.error('[useEnhancedErrorHandler]', normalizedError)
+        logger.error('[useEnhancedErrorHandler]', normalizedError)
         if (isClarityError(normalizedError)) {
-          logger.logger.error('Details:', normalizedError.toJSON())
+          logger.error('Details:', normalizedError.toJSON())
         }
       }
 

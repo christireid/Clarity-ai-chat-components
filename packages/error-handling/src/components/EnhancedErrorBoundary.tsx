@@ -582,7 +582,7 @@ export function EnhancedErrorBoundary({
     (error: Error, info: React.ErrorInfo) => {
       // Log to external service
       if (enableLogging) {
-        logger.logger.error('[EnhancedErrorBoundary] Caught error:', {
+        logger.error('[EnhancedErrorBoundary] Caught error:', {
           error: isClarityError(error) ? error.toJSON() : error,
           componentStack: info.componentStack,
         })

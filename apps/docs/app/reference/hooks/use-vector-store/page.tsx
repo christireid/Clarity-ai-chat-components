@@ -359,7 +359,7 @@ function RobustVectorStore() {
       const results = await vectorStore.search(query)
       return results
     } catch (error) {
-      logger.logger.error('Search failed:', error)
+      logger.error('Search failed:', error)
       return []
     }
   }

@@ -32,7 +32,7 @@ class ClarityLogger implements Logger {
 
   logger.error(message: string, ...args: any[]): void {
     if (this.shouldLog('error')) {
-      logger.logger.error(`${this.prefix} [ERROR] ${message}`, ...args)
+      logger.error(`${this.prefix} [ERROR] ${message}`, ...args)
     }
   }
 

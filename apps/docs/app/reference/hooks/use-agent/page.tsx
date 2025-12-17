@@ -271,7 +271,7 @@ function RobustAgent() {
       const response = await agent.run({ query })
       return response
     } catch (error) {
-      logger.logger.error('Agent error:', error)
+      logger.error('Agent error:', error)
       return 'Sorry, I encountered an error. Please try again.'
     }
   }

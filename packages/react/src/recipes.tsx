@@ -274,9 +274,9 @@ function App() {
       api="/api/chat"
       onError={(error) => {
         // Custom error handling
-        logger.logger.error('Chat error:', error)
+        logger.error('Chat error:', error)
         // Show user-friendly message
-        toast.logger.error('Failed to send message. Please try again.')
+        toast.error('Failed to send message. Please try again.')
       }}
     />
   )

@@ -26,7 +26,7 @@ export default async function AuditLoggingGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read audit-logging guide', error)
+    logger.error('Failed to read audit-logging guide', error)
     content = '# Audit-logging\n\nContent not available.'
   }
 

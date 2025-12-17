@@ -21,7 +21,7 @@ import { logger } from '@clarity-chat/utils/logger';
  *       // Request was debounced, ignore
  *       return
  *     }
- *     toast.logger.error('Failed to submit')
+ *     toast.error('Failed to submit')
  *   }
  * }
  * ```

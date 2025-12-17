@@ -47,7 +47,7 @@ export function CodeBlock({
 
       timeoutRef.current = setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      toast.logger.error('Failed to copy code')
+      toast.error('Failed to copy code')
     }
   }, [code, toast])
 
@@ -65,7 +65,7 @@ export function CodeBlock({
       URL.revokeObjectURL(url)
       toast.success('Code downloaded')
     } catch (error) {
-      toast.logger.error('Failed to download code')
+      toast.error('Failed to download code')
     }
   }, [code, language, toast])
 

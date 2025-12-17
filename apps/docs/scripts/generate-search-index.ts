@@ -142,7 +142,7 @@ async function generateSearchIndex() {
         category,
       })
     } catch (error) {
-      logger.logger.error(`Error processing ${filePath}:`, error)
+      logger.error(`Error processing ${filePath}:`, error)
     }
   }
 

@@ -214,7 +214,7 @@ export function createErrorLogger(config: ErrorLoggerConfig = {}): ErrorLogger {
             onDropped?.(toSend.length, 'send-failed-queue-full')
           }
           // Also log to console as fallback
-          logger.logger.error(
+          logger.error(
             '[ErrorLogger] Failed to send logs to endpoint:',
             fetchError
           )

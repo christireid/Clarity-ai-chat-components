@@ -14,8 +14,8 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    logger.logger.error('Application error:', error)
-    toast.logger.error('Something went wrong', {
+    logger.error('Application error:', error)
+    toast.error('Something went wrong', {
       description: error.message || 'An unexpected error occurred',
       action: { label: 'Try again', onClick: reset },
       persistent: true,

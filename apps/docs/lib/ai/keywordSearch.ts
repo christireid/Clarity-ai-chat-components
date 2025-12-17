@@ -51,7 +51,7 @@ function loadDocumentationIndex(): DocChunk[] {
     const indexData = fs.readFileSync(indexPath, 'utf-8')
     return JSON.parse(indexData)
   } catch (error) {
-    logger.logger.error('Failed to load documentation index:', error)
+    logger.error('Failed to load documentation index:', error)
     return []
   }
 }

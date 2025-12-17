@@ -90,7 +90,7 @@ export function useStreamingChat(
       validateStreamingProtocol(protocol)
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        logger.logger.error('[useStreamingChat] Validation error:', error)
+        logger.error('[useStreamingChat] Validation error:', error)
         throw error
       }
     }

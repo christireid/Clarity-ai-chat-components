@@ -211,7 +211,7 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
           setIsLoading(false)
         }
       } catch (err) {
-        logger.logger.error('Shiki highlighting failed:', err)
+        logger.error('Shiki highlighting failed:', err)
         if (!cancelled) {
           setError(
             err instanceof Error ? err : new Error('Highlighting failed')

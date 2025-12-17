@@ -47,7 +47,7 @@ export function AdvancedClarityChatExample() {
     },
     transport,
     onError: (err) => {
-      logger.logger.error('Chat error:', err)
+      logger.error('Chat error:', err)
       // Custom error handling
     },
   })

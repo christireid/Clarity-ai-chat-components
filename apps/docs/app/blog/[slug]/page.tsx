@@ -84,7 +84,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const filePath = join(process.cwd(), 'content', 'blog', `${slug}.md`)
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error(`Failed to read blog post: ${slug}`, error)
+    logger.error(`Failed to read blog post: ${slug}`, error)
     notFound()
   }
 

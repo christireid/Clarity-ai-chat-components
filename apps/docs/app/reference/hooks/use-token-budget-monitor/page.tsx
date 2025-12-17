@@ -713,7 +713,7 @@ function CompleteBudgetMonitorExample() {
       logger.debug('Critical:', usage.utilizationPercent)
     },
     onExceeded: (usage) => {
-      logger.logger.error('Exceeded:', usage.utilizationPercent)
+      logger.error('Exceeded:', usage.utilizationPercent)
     },
     autoTrim: false, // Manual trimming
   })

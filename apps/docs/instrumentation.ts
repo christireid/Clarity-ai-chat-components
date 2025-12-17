@@ -56,7 +56,7 @@ export function onRequestError(
   }
 ) {
   // Log errors for monitoring
-  logger.logger.error('[Request Error]', {
+  logger.error('[Request Error]', {
     digest: error.digest,
     message: error.message,
     path: request.path,

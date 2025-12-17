@@ -204,7 +204,7 @@ async function performSemanticSearch(
       })
     })
   } catch (error) {
-    logger.logger.error('Semantic search error:', error)
+    logger.error('Semantic search error:', error)
     // Return empty map on error - keyword search will still work
   }
 

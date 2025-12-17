@@ -619,7 +619,7 @@ function CompleteStreamableUIExample() {
       logger.debug('Stream complete! Final:', finalValue)
     },
     onError: (err) => {
-      logger.logger.error('Stream error:', err)
+      logger.error('Stream error:', err)
     },
   })
 

@@ -422,7 +422,7 @@ export function useToast(): ToastContextValue {
         return ''
       },
       error: (description: string, title?: string) => {
-        toast.logger.error(description, title)
+        toast.error(description, title)
         return ''
       },
       info: (description: string, title?: string) => {

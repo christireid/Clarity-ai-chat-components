@@ -409,7 +409,7 @@ const apiKey = response.SecretString`}</code>
         <pre>
           <code>{`// Lambda function logging
 logger.debug('Request received:', JSON.stringify(event))
-logger.logger.error('Error:', error.message)
+logger.error('Error:', error.message)
 
 // Query logs with CloudWatch Insights
 fields @timestamp, @message

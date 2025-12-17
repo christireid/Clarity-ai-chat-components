@@ -41,7 +41,7 @@ export function CustomChatWithHandlers() {
       // Analytics tracking, etc.
     },
     onMessageError: (error) => {
-      logger.logger.error('Failed to send:', error)
+      logger.error('Failed to send:', error)
       // Error reporting, etc.
     },
   })
@@ -79,7 +79,7 @@ export function VercelCompatibleChat() {
       logger.debug('Message finished:', message)
     },
     onError: (error) => {
-      logger.logger.error('Chat error:', error)
+      logger.error('Chat error:', error)
     },
   })
 

@@ -106,7 +106,7 @@ export function ExportDialog({
         setProgress(0)
       }, 500)
     } catch (error) {
-      logger.logger.error('Export failed:', error)
+      logger.error('Export failed:', error)
       alert('Export failed. Please try again.')
     } finally {
       setExporting(false)

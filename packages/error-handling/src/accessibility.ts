@@ -393,7 +393,7 @@ export function useColorContrast(
         wcag: result
       });
     } catch (error) {
-      logger.logger.error('Color contrast calculation failed', {
+      logger.error('Color contrast calculation failed', {
         foreground: foregroundColor,
         background: backgroundColor,
         error: error instanceof Error ? error.message : String(error)

@@ -343,7 +343,7 @@ function ApprovalWorkflow() {
       const result = await callToolAPI(toolCall)
       setExecutedTools(prev => new Map(prev).set(toolCall.id, result))
     } catch (error) {
-      logger.logger.error('Tool execution failed:', error)
+      logger.error('Tool execution failed:', error)
     }
   }
 
@@ -478,7 +478,7 @@ function ChatWithTools() {
       setToolResults(prev => new Map(prev).set(toolCall.id, result))
       return result
     } catch (error) {
-      logger.logger.error('Tool execution failed:', error)
+      logger.error('Tool execution failed:', error)
       throw error
     }
   }

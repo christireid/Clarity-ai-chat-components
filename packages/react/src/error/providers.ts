@@ -22,7 +22,7 @@ function safeDevLog(...args: unknown[]): void {
 
 function safeDevError(...args: unknown[]): void {
   if (!isDev()) return
-  logger.logger.error(...args)
+  logger.error(...args)
 }
 
 function hasLocalStorage(): boolean {
@@ -419,11 +419,11 @@ export function createConsoleErrorProvider(): ErrorProvider {
       logger.debug(`%c${report.severity.toUpperCase()}`, style, report.message)
 
       if (report.stack) {
-        logger.logger.error('Stack:', report.stack)
+        logger.error('Stack:', report.stack)
       }
 
       if (report.componentStack) {
-        logger.logger.error('Component Stack:', report.componentStack)
+        logger.error('Component Stack:', report.componentStack)
       }
 
       if (report.context) {

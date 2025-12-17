@@ -81,7 +81,7 @@ export function useErrorRecovery() {
         const error = err instanceof Error ? err : new Error(String(err))
         setLastRecoveryError(error)
         setIsRecovering(false)
-        logger.logger.error('Recovery strategy failed:', error)
+        logger.error('Recovery strategy failed:', error)
         return false
       }
     },

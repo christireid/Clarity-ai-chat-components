@@ -127,7 +127,7 @@ function InstallCommand({ command }: { command: string }) {
         setShowConfetti(false)
       }, 2000)
     } catch (error) {
-      toast.logger.error('Failed to copy', {
+      toast.error('Failed to copy', {
         description: 'Please try selecting and copying manually',
         action: { label: 'Try again', onClick: copyToClipboard },
       })

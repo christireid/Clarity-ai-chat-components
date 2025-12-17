@@ -121,7 +121,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
           logger.debug('[Analytics] Providers initialized successfully')
         }
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to initialize providers:', error)
+        logger.error('[Analytics] Failed to initialize providers:', error)
         setIsInitialized(true) // Continue even if initialization fails
       }
     }
@@ -226,7 +226,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
         try {
           provider.track(event)
         } catch (error) {
-          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -248,7 +248,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
         try {
           provider.identify?.(user)
         } catch (error) {
-          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -268,7 +268,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
         try {
           provider.page?.(pageView)
         } catch (error) {
-          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -289,7 +289,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
       try {
         provider.reset?.()
       } catch (error) {
-        logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
+        logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
       }
     })
   }, [isEnabled, isInitialized, config])

@@ -703,7 +703,7 @@ export function ChatErrorBoundary({
 }: ChatErrorBoundaryProps) {
   const handleError = React.useCallback(
     (error: Error, info: React.ErrorInfo) => {
-      logger.logger.error('[ChatErrorBoundary]', {
+      logger.error('[ChatErrorBoundary]', {
         chatId,
         provider,
         error: isClarityError(error) ? error.toJSON() : error,

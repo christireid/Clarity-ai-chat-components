@@ -26,7 +26,7 @@ export default async function InstallationGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read installation guide', error)
+    logger.error('Failed to read installation guide', error)
     content = '# Installation\n\nContent not available.'
   }
 

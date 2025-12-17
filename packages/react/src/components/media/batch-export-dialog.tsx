@@ -136,7 +136,7 @@ export function BatchExportDialog({
         ...options,
       })
     } catch (error) {
-      logger.logger.error('Batch export failed:', error)
+      logger.error('Batch export failed:', error)
     } finally {
       setIsExporting(false)
     }

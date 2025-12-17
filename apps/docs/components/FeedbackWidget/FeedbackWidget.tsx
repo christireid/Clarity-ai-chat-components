@@ -48,7 +48,7 @@ export function FeedbackWidget({ pageId, className = '' }: FeedbackWidgetProps) 
       setSubmitted(true)
       setShowDetails(false)
     } catch (err) {
-      logger.logger.error('Feedback submission error:', err)
+      logger.error('Feedback submission error:', err)
       setError('Failed to submit feedback. Please try again.')
       // Still mark as submitted to not frustrate user
       setSubmitted(true)

@@ -37,11 +37,11 @@ export const SSEStreamingChatExample: React.FC = () => {
         logger.debug('Stream completed')
         disconnect()
       } else if (event.type === 'error') {
-        logger.logger.error('Server error:', event.data)
+        logger.error('Server error:', event.data)
       }
     },
     onError: (error) => {
-      logger.logger.error('SSE Error:', error)
+      logger.error('SSE Error:', error)
     },
     onReconnecting: (attempt, delay) => {
       logger.debug(`Reconnecting... Attempt ${attempt}, delay ${delay}ms`)
@@ -164,7 +164,7 @@ export const WebSocketChatExample: React.FC = () => {
       }
     },
     onError: (error) => {
-      logger.logger.error('WebSocket Error:', error)
+      logger.error('WebSocket Error:', error)
     },
     onReconnecting: (attempt, delay) => {
       logger.debug(`Reconnecting... Attempt ${attempt}, delay ${delay}ms`)

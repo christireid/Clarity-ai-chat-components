@@ -42,7 +42,7 @@ import * as React from 'react'
  *       setData(data) // Won't execute if aborted
  *     } catch (error) {
  *       if (error.name !== 'AbortError') {
- *         logger.logger.error('Fetch failed:', error)
+ *         logger.error('Fetch failed:', error)
  *       }
  *     }
  *   }

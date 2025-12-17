@@ -114,7 +114,7 @@ export function Intermediate_ChatWithErrorHandling() {
   
   React.useEffect(() => {
     if (error) {
-      logger.logger.error('Chat error:', error)
+      logger.error('Chat error:', error)
       // Could integrate with error tracking service
     }
   }, [error])

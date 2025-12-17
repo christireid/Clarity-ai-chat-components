@@ -271,7 +271,7 @@ export function AIAssistantTemplate({
               content: responseContent,
             })
           } catch (error) {
-            logger.logger.error('AI Assistant error:', error)
+            logger.error('AI Assistant error:', error)
             addOperationMessage({
               chatId,
               role: 'assistant',
@@ -401,7 +401,7 @@ export function AIAssistantTemplate({
           content: responseContent,
         })
       } catch (error) {
-        logger.logger.error('AI Assistant error:', error)
+        logger.error('AI Assistant error:', error)
         addOperationMessage({
           chatId,
           role: 'assistant',
