@@ -1,8 +1,7 @@
 # Phase 2: Library Index & Surface Area Mapping
 
-> **Created**: 2025-01-XX
-> **Status**: Not Started
-> **Goal**: Complete inventory of all public APIs and component surface area
+> **Created**: 2025-01-XX **Status**: Not Started **Goal**: Complete inventory of all public APIs
+> and component surface area
 
 ---
 
@@ -46,7 +45,30 @@ import '@clarity-chat/react/styles.css'
 ### Current Component Count
 
 **Claimed**: 200+ components  
-**Actual**: *[To be counted]*
+**Actual**: **177 component files** (excluding tests/stories) **Breakdown by Category**:
+
+- Message components: 24
+- UI utilities: 18
+- AI components: 12
+- Chat components: 11
+- Navigation: 10
+- Dashboards: 8
+- Code components: 7
+- Context: 7
+- Media: 7
+- Token: 7
+- Feedback: 6
+- Input: 6
+- Theme components: 6
+- Conversation: 5
+- AB Testing: 4
+- Enterprise: 4
+- Prompt: 4
+- AI Ops: 3
+- Search: 3
+
+**Note**: Many files contain multiple exported components, so actual component count is higher.
+Needs detailed cataloging.
 
 ---
 
@@ -56,32 +78,39 @@ import '@clarity-chat/react/styles.css'
 
 For each component, document:
 
-| Component | Purpose | Required Props | Optional Props | Variants | Theming | Accessibility | Storybook | Notes |
-|-----------|---------|---------------|----------------|----------|---------|---------------|-----------|-------|
-| Name | Brief | List | List | Yes/No | Yes/No | WCAG Level | ✅/❌ | Issues |
+| Component | Purpose | Required Props | Optional Props | Variants | Theming | Accessibility | Storybook | Notes  |
+| --------- | ------- | -------------- | -------------- | -------- | ------- | ------------- | --------- | ------ |
+| Name      | Brief   | List           | List           | Yes/No   | Yes/No  | WCAG Level    | ✅/❌     | Issues |
 
 ### Component Categories
 
 #### 🗨️ Chat Components
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 💬 Message Components
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### ⌨️ Input Components
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 🎨 Theme Components
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 🔧 Utility Components
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 🏢 Enterprise Components
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 🎯 AI-Specific Components
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 ---
 
@@ -89,44 +118,52 @@ For each component, document:
 
 ### Hooks Matrix Template
 
-| Hook | Purpose | Parameters | Return Value | Dependencies | Edge Cases | Tests | Docs |
-|------|---------|-----------|--------------|--------------|------------|-------|------|
-| Name | Brief | Types | Types | List | Known issues | ✅/❌ | ✅/❌ |
+| Hook | Purpose | Parameters | Return Value | Dependencies | Edge Cases   | Tests | Docs  |
+| ---- | ------- | ---------- | ------------ | ------------ | ------------ | ----- | ----- |
+| Name | Brief   | Types      | Types        | List         | Known issues | ✅/❌ | ✅/❌ |
 
 ### Current Hook Count
 
 **Claimed**: 140+ hooks  
-**Actual**: *[To be counted]*
+**Actual**: _[To be counted]_
 
 ### Hook Categories
 
 #### 🔄 Streaming Hooks
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 💾 Memory Hooks
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 🎨 Theme Hooks
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 📊 Analytics Hooks
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 #### 🔒 Security Hooks
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 ---
 
 ## Utilities Catalog
 
 ### Utility Functions
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 ### Helper Functions
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 ### Type Utilities
-*[To be cataloged]*
+
+_[To be cataloged]_
 
 ---
 
@@ -134,7 +171,7 @@ For each component, document:
 
 ### Available Contexts
 
-*[To be mapped]*
+_[To be mapped]_
 
 ---
 
@@ -142,15 +179,15 @@ For each component, document:
 
 ### Identified Duplicates
 
-*[To be analyzed]*
+_[To be analyzed]_
 
 ### Overlapping Functionality
 
-*[To be analyzed]*
+_[To be analyzed]_
 
 ### Inconsistent APIs
 
-*[To be identified]*
+_[To be identified]_
 
 ---
 
@@ -164,11 +201,11 @@ For each component, document:
 
 ### Theme System
 
-*[To be documented]*
+_[To be documented]_
 
 ### CSS Architecture
 
-*[To be analyzed]*
+_[To be analyzed]_
 
 ---
 
@@ -176,15 +213,15 @@ For each component, document:
 
 ### Story Files Analysis
 
-*[To be completed]*
+_[To be completed]_
 
 ### Missing Stories
 
-*[To be identified]*
+_[To be identified]_
 
 ### Story Quality Assessment
 
-*[To be evaluated]*
+_[To be evaluated]_
 
 ---
 
