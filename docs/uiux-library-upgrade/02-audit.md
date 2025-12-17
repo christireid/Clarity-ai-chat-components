@@ -666,20 +666,20 @@ panels.
 ### Issues by Severity
 
 - **Blocker**: 0
-- **High**: 0
-- **Medium**: 0
-- **Low**: 0
-- **Total**: 0
+- **High**: 5 (2 API Ergonomics, 1 Accessibility, 2 AI UX)
+- **Medium**: 8 (3 API Ergonomics, 2 Accessibility, 3 AI UX)
+- **Low**: 4 (1 API Ergonomics, 1 Accessibility, 2 AI UX)
+- **Total**: 17
 
 ### Issues by Type
 
-- **API Ergonomics**: 0
+- **API Ergonomics**: 6 (2 High, 3 Medium, 1 Low)
 - **Visual Consistency**: 0
 - **Interaction Behavior**: 0
-- **Accessibility**: 0
+- **Accessibility**: 4 (1 High, 2 Medium, 1 Low)
 - **Theming**: 0
 - **Documentation**: 0
-- **AI UX**: 0
+- **AI UX**: 7 (2 High, 3 Medium, 2 Low)
 
 ---
 
