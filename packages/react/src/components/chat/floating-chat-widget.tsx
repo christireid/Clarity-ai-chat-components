@@ -3,14 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useClarityChat } from '../../hooks/use-clarity-chat/use-clarity-chat'
+import { springPresets } from '@clarity-chat/primitives'
 import { MessageSquare, X, Send, Sparkles, Bot, Key, ChevronDown, User } from 'lucide-react'
-
-// Simple helper for durations since we might not have access to primitives directly if not exported
-const durations = {
-    short: 0.2,
-    medium: 0.4,
-    long: 0.6
-}
 
 export interface FloatingChatWidgetProps {
     apiEndpoint?: string
@@ -67,6 +61,7 @@ export function FloatingChatWidget({
             initial={{ opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={springPresets.snappy}
             className="mb-4 w-[350px] sm:w-[400px] h-[500px] bg-surface-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col"
           >
             {/* Header */}
