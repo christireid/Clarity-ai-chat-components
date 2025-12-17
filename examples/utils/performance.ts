@@ -66,7 +66,7 @@ type MetricsCallback = (metrics: Partial<PerformanceMetrics>) => void
  * ```tsx
  * useEffect(() => {
  *   return observeWebVitals((metrics) => {
- *     console.log('Web Vitals:', metrics)
+ *     SecureLogger.debug('Web Vitals:', metrics)
  *   })
  * }, [])
  * ```
@@ -260,6 +260,7 @@ export function getMemoryMetrics(): MemoryMetrics | null {
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 
+import { SecureLogger } from '@/lib/security/secureLogger';
 interface UsePerformanceOptions {
   /** Update interval in milliseconds */
   updateInterval?: number

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Middleware Pipeline System
  *
@@ -42,24 +43,24 @@ function createDefaultLogger(): ExtensionLogger {
   const isDev = process.env.NODE_ENV === 'development'
   return {
     debug: (msg, ...args) => {
-      if (isDev) console.debug('[Middleware]', msg, ...args)
+      if (isDev) logger.debug('[Middleware]', msg, ...args)
     },
     info: (msg, ...args) => {
-      if (isDev) console.info('[Middleware]', msg, ...args)
+      if (isDev) logger.info('[Middleware]', msg, ...args)
     },
-    warn: (msg, ...args) => console.warn('[Middleware]', msg, ...args),
-    error: (msg, ...args) => console.error('[Middleware]', msg, ...args),
+    warn: (msg, ...args) => logger.warn('[Middleware]', msg, ...args),
+    error: (msg, ...args) => logger.logger.error('[Middleware]', msg, ...args),
     child: (prefix) => ({
       debug: (msg, ...args) => {
-        if (isDev) console.debug(`[Middleware:${prefix}]`, msg, ...args)
+        if (isDev) logger.debug(`[Middleware:${prefix}]`, msg, ...args)
       },
       info: (msg, ...args) => {
-        if (isDev) console.info(`[Middleware:${prefix}]`, msg, ...args)
+        if (isDev) logger.info(`[Middleware:${prefix}]`, msg, ...args)
       },
       warn: (msg, ...args) =>
-        console.warn(`[Middleware:${prefix}]`, msg, ...args),
+        logger.warn(`[Middleware:${prefix}]`, msg, ...args),
       error: (msg, ...args) =>
-        console.error(`[Middleware:${prefix}]`, msg, ...args),
+        logger.logger.error(`[Middleware:${prefix}]`, msg, ...args),
       child: function (p: string) {
         return createDefaultLogger().child(`${prefix}:${p}`)
       },

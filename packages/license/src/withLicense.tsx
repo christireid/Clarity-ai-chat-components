@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Higher-Order Components for License Verification
  *
@@ -109,7 +110,7 @@ export function withLicense<P extends object>(
         !hasWarnedRecently(componentName)
       ) {
         markWarningShown(componentName)
-        console.warn(
+        logger.warn(
           `%c[Clarity Chat]%c ${componentName} requires a valid license.\n` +
             `Status: ${status.status}\n` +
             `${status.reason ?? ''}\n` +

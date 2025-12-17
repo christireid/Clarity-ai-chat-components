@@ -1,5 +1,6 @@
 /**
  * Node.js Express Example - Framework-Agnostic Memory Usage
+import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * This example shows how to use @clarity-chat/memory in a Node.js backend
  */
@@ -101,7 +102,7 @@ app.post('/api/chat', async (req, res) => {
       tokensUsed: memories.reduce((sum, m) => sum + m.memory.tokens, 0),
     })
   } catch (error) {
-    console.error('Chat error:', error)
+    SecureLogger.error('Chat error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -126,7 +127,7 @@ app.get('/api/preferences/:userId', async (req, res) => {
       })),
     })
   } catch (error) {
-    console.error('Preferences error:', error)
+    SecureLogger.error('Preferences error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -151,7 +152,7 @@ app.post('/api/preferences/:userId', async (req, res) => {
 
     res.json({ success: true })
   } catch (error) {
-    console.error('Set preference error:', error)
+    SecureLogger.error('Set preference error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -162,7 +163,7 @@ app.get('/api/stats', async (req, res) => {
     const stats = memoryService.getStats()
     res.json(stats)
   } catch (error) {
-    console.error('Stats error:', error)
+    SecureLogger.error('Stats error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -197,8 +198,8 @@ async function callLLM(message: string, context: string): Promise<string> {
 // Start server
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
-  console.log(`Memory-enabled API server listening on port ${PORT}`)
-  console.log(`Try: POST http://localhost:${PORT}/api/chat`)
+  SecureLogger.debug(`Memory-enabled API server listening on port ${PORT}`)
+  SecureLogger.debug(`Try: POST http://localhost:${PORT}/api/chat`)
 })
 
 export default app

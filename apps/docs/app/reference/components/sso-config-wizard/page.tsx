@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -79,11 +80,11 @@ function SSOSetup({ tenantId }: { tenantId: string }) {
         })
         
         if (response.ok) {
-          console.log('SSO configured successfully')
+          logger.debug('SSO configured successfully')
         }
       }}
       onCancel={() => {
-        console.log('SSO configuration cancelled')
+        logger.debug('SSO configuration cancelled')
       }}
     />
   )

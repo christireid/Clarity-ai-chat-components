@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * docs command - Open documentation or search
  * Enhanced with beautiful UI components

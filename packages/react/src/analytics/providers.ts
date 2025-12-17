@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Built-in Analytics Providers
  * 
@@ -13,16 +14,16 @@ export function createConsoleProvider(): AnalyticsProvider {
   return {
     name: 'console',
     track: (event) => {
-      console.log('[Analytics] Event:', event)
+      logger.debug('[Analytics] Event:', event)
     },
     identify: (user) => {
-      console.log('[Analytics] User identified:', user)
+      logger.debug('[Analytics] User identified:', user)
     },
     page: (pageView) => {
-      console.log('[Analytics] Page view:', pageView)
+      logger.debug('[Analytics] Page view:', pageView)
     },
     reset: () => {
-      console.log('[Analytics] Reset')
+      logger.debug('[Analytics] Reset')
     },
   }
 }
@@ -305,7 +306,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(payload),
         })
       } catch (error) {
-        console.error('[Analytics] Failed to send event to custom API:', error)
+        logger.logger.error('[Analytics] Failed to send event to custom API:', error)
       }
     },
     identify: async (user) => {
@@ -319,7 +320,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(user),
         })
       } catch (error) {
-        console.error('[Analytics] Failed to identify user:', error)
+        logger.logger.error('[Analytics] Failed to identify user:', error)
       }
     },
     page: async (pageView) => {
@@ -333,7 +334,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(pageView),
         })
       } catch (error) {
-        console.error('[Analytics] Failed to track page view:', error)
+        logger.logger.error('[Analytics] Failed to track page view:', error)
       }
     },
   }
@@ -361,7 +362,7 @@ export function createLocalStorageProvider(storageKey: string = 'analytics_event
         
         localStorage.setItem(storageKey, JSON.stringify(events))
       } catch (error) {
-        console.error('[Analytics] Failed to store event:', error)
+        logger.logger.error('[Analytics] Failed to store event:', error)
       }
     },
     identify: (user) => {
@@ -370,7 +371,7 @@ export function createLocalStorageProvider(storageKey: string = 'analytics_event
       try {
         localStorage.setItem(`${storageKey}_user`, JSON.stringify(user))
       } catch (error) {
-        console.error('[Analytics] Failed to store user:', error)
+        logger.logger.error('[Analytics] Failed to store user:', error)
       }
     },
     reset: () => {
@@ -380,7 +381,7 @@ export function createLocalStorageProvider(storageKey: string = 'analytics_event
         localStorage.removeItem(storageKey)
         localStorage.removeItem(`${storageKey}_user`)
       } catch (error) {
-        console.error('[Analytics] Failed to reset:', error)
+        logger.logger.error('[Analytics] Failed to reset:', error)
       }
     },
   }

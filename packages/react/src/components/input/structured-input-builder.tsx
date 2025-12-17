@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -620,7 +621,7 @@ export function StructuredInputBuilder({
       const ids = fields.map((f) => f.id)
       const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
       if (duplicates.length > 0) {
-        console.warn(
+        logger.warn(
           `[StructuredInputBuilder] Duplicate field IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
             `Each field must have a unique ID to avoid accessibility and rendering issues.`
         )
@@ -973,8 +974,8 @@ export function StructuredInputBuilder({
  * />
  *
  * // Access computed result
- * console.log(result.totalTokens)
- * console.log(result.isValid)
+ * logger.debug(result.totalTokens)
+ * logger.debug(result.isValid)
  * ```
  */
 export function useStructuredInput(

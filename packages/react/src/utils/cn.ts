@@ -1,7 +1,13 @@
 /**
- * Re-export cn utility from @clarity-chat/primitives
- *
- * This ensures consistency across the library. The canonical implementation
- * is in @clarity-chat/primitives/lib/utils.
+ * Local utility function to merge Tailwind CSS classes
+ * Uses clsx for conditional classes and tailwind-merge to handle conflicts
+ * This is a local version to avoid circular dependencies
  */
-export { cn } from '@clarity-chat/primitives'
+export function cn(...inputs: Array<string | number | boolean | undefined | null>) {
+  return inputs
+    .filter(Boolean)
+    .map(String)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}

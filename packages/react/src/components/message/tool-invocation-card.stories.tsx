@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * ToolInvocationCard Storybook Stories
  */
@@ -39,8 +40,8 @@ import { ToolInvocationCard } from '@clarity-chat/react'
   }}
   status="pending"
   requiresApproval
-  onApprove={(tool) => console.log('Approved:', tool)}
-  onReject={(tool) => console.log('Rejected:', tool)}
+  onApprove={(tool) => logger.debug('Approved:', tool)}
+  onReject={(tool) => logger.debug('Rejected:', tool)}
 />
 \`\`\`
         `
@@ -68,8 +69,8 @@ export const Pending: Story = {
     toolCall: exampleTool,
     status: 'pending',
     requiresApproval: true,
-    onApprove: (tool) => console.log('Approved:', tool),
-    onReject: (tool) => console.log('Rejected:', tool)
+    onApprove: (tool) => logger.debug('Approved:', tool),
+    onReject: (tool) => logger.debug('Rejected:', tool)
   },
   parameters: {
     docs: {
@@ -151,7 +152,7 @@ export const Error: Story = {
     toolCall: exampleTool,
     status: 'error',
     error: 'Network timeout: Unable to reach search API after 30 seconds',
-    onRetry: (tool) => console.log('Retrying:', tool)
+    onRetry: (tool) => logger.debug('Retrying:', tool)
   },
   parameters: {
     docs: {

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useStreamingChat - Top-level hook for streaming chat
  *
@@ -92,7 +93,7 @@ export function useStreamingChat(
       validateStreamingProtocol(protocol)
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        console.error('[useStreamingChat] Validation error:', error)
+        logger.logger.error('[useStreamingChat] Validation error:', error)
         throw error
       }
     }

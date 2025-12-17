@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -407,7 +408,7 @@ export function useToast(): ToastContextValue {
       ;(globalThis as any).__clarityChatToastProviderWarned ??= false
       if (!(globalThis as any).__clarityChatToastProviderWarned) {
         ;(globalThis as any).__clarityChatToastProviderWarned = true
-        console.warn(
+        logger.warn(
           '[Clarity Chat] ToastProvider missing; falling back to no-op toasts.'
         )
       }
@@ -421,7 +422,7 @@ export function useToast(): ToastContextValue {
         return ''
       },
       error: (description: string, title?: string) => {
-        toast.error(description, title)
+        toast.logger.error(description, title)
         return ''
       },
       info: (description: string, title?: string) => {
@@ -455,16 +456,16 @@ export function useToast(): ToastContextValue {
 
 export const toast = {
   success: (description: string, title?: string) => {
-    console.log('[Toast] Success:', title, description)
+    logger.debug('[Toast] Success:', title, description)
     // Implementation would render toast outside React tree
   },
   error: (description: string, title?: string) => {
-    console.log('[Toast] Error:', title, description)
+    logger.debug('[Toast] Error:', title, description)
   },
   info: (description: string, title?: string) => {
-    console.log('[Toast] Info:', title, description)
+    logger.debug('[Toast] Info:', title, description)
   },
   warning: (description: string, title?: string) => {
-    console.log('[Toast] Warning:', title, description)
+    logger.debug('[Toast] Warning:', title, description)
   },
 }

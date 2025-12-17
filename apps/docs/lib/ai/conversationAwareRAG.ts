@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Conversation-Aware RAG
  *
@@ -85,7 +86,7 @@ export async function conversationAwareRAG(
   const topicShift = detectTopicShift(userQuery, conversationHistory)
 
   if (topicShift.hasShifted) {
-    console.log(`📊 Topic shift detected: ${topicShift.previousTopic} → ${topicShift.newTopic}`)
+    logger.debug(`📊 Topic shift detected: ${topicShift.previousTopic} → ${topicShift.newTopic}`)
   }
 
   // Retrieve with conversation context
@@ -100,7 +101,7 @@ export async function conversationAwareRAG(
     maxMessages: maxConversationMessages,
   })
 
-  console.log(`🔍 Retrieved ${sources.length} sources (follow-up: ${isFollowUp})`)
+  logger.debug(`🔍 Retrieved ${sources.length} sources (follow-up: ${isFollowUp})`)
 
   // Build documentation context
   const docContext = buildContext(sources, maxContextLength)

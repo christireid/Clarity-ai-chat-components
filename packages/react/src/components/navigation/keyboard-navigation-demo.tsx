@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -199,21 +200,21 @@ const createDemoCommands = (handlers: {
         label: 'Home',
         shortcut: 'g h',
         category: 'Navigation',
-        onSelect: () => console.log('Go to home'),
+        onSelect: () => logger.debug('Go to home'),
       },
       {
         id: 'go-settings',
         label: 'Settings',
         shortcut: 'g s',
         category: 'Navigation',
-        onSelect: () => console.log('Go to settings'),
+        onSelect: () => logger.debug('Go to settings'),
       },
       {
         id: 'go-history',
         label: 'Chat History',
         shortcut: 'g c',
         category: 'Navigation',
-        onSelect: () => console.log('Go to history'),
+        onSelect: () => logger.debug('Go to history'),
       },
     ],
   },

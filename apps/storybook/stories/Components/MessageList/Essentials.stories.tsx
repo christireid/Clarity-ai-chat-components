@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { VirtualizedMessageList as MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -189,13 +190,13 @@ export const WithActions: Story = {
     autoScroll: true,
     showScrollButton: true,
     onMessageCopy: (id, content) => {
-      console.log('Copied message:', id, content)
+      SecureLogger.debug('Copied message:', id, content)
     },
     onMessageFeedback: (id, type) => {
-      console.log('Feedback:', id, type)
+      SecureLogger.debug('Feedback:', id, type)
     },
     onMessageRetry: (id) => {
-      console.log('Retry message:', id)
+      SecureLogger.debug('Retry message:', id)
     },
   },
   parameters: {

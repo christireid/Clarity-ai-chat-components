@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 import { ChatWindow } from '../components/chat/chat-window'
 import { useMessageOperations } from '../hooks/message/use-message-operations'
@@ -190,10 +191,10 @@ export function SupportBot({
       },
     ],
     onEdit: (messageId, newContent) => {
-      console.log('Message edited:', messageId, newContent)
+      logger.debug('Message edited:', messageId, newContent)
     },
     onDelete: (messageId) => {
-      console.log('Message deleted:', messageId)
+      logger.debug('Message deleted:', messageId)
     },
   })
 

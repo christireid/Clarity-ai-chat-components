@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -72,14 +73,14 @@ function ChatWithMentions() {
   } = useMentions({
     users,
     onMention: (mention) => {
-      console.log('User mentioned:', mention.userId)
+      logger.debug('User mentioned:', mention.userId)
       // Send notification
     },
   })
 
   const handleSend = (text: string) => {
     const extracted = extractMentions(text)
-    console.log('Mentions in message:', extracted)
+    logger.debug('Mentions in message:', extracted)
     // Send message with mentions
   }
 

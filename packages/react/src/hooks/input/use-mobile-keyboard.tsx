@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -85,10 +86,10 @@ function isMobileDevice(): boolean {
  * function ChatWindow() {
  *   const keyboard = useMobileKeyboard({
  *     onKeyboardShow: (height) => {
- *       console.log('Keyboard shown, height:', height)
+ *       logger.debug('Keyboard shown, height:', height)
  *     },
  *     onKeyboardHide: () => {
- *       console.log('Keyboard hidden')
+ *       logger.debug('Keyboard hidden')
  *     },
  *     autoScroll: true,
  *     scrollOffset: 20

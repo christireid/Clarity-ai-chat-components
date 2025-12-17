@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useChatHandlers - Mid-Level Handler Hook
  * 
@@ -31,8 +32,8 @@
  * // With callbacks
  * const handlers = useChatHandlers({
  *   chat,
- *   onMessageSent: (content) => console.log('Sent:', content),
- *   onMessageError: (error) => console.error('Error:', error),
+ *   onMessageSent: (content) => logger.debug('Sent:', content),
+ *   onMessageError: (error) => logger.logger.error('Error:', error),
  * })
  * ```
  */

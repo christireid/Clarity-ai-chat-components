@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -31,7 +32,7 @@ export default function TokenCounterUtilPage() {
 
 const tokens = countTokens('Hello world', 'gpt-4')
 const cost = estimateCost(tokens, 'gpt-4')
-console.log(\`\${tokens} tokens = $\${cost}\`)`}</code></pre>
+logger.debug(\`\${tokens} tokens = $\${cost}\`)`}</code></pre>
         </div>
       </section>
     </div>

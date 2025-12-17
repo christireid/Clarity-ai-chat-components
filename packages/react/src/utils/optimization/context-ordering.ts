@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Context Ordering Utilities
  *
@@ -477,7 +478,7 @@ function wrapInSection(content: string, sectionName: string): string {
  *   strategy: 'importance-weighted',
  *   addStructuralMarkers: true
  * })
- * console.log(`Deprioritized: ${optimized.deprioritizedMessages.length} messages`)
+ * logger.debug(`Deprioritized: ${optimized.deprioritizedMessages.length} messages`)
  * ```
  */
 export function optimizeContextLayout(

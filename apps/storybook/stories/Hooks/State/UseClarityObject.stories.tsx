@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useClarityObject } from '@clarity-chat/react'
 import { Button, Card, CardHeader, CardContent, Badge } from '@clarity-chat/primitives'
@@ -110,10 +111,10 @@ function ProductRecommendations() {
     initialInput: { query },
     stream: false,
     onFinish: (obj) => {
-      console.log('Generated products:', obj)
+      SecureLogger.debug('Generated products:', obj)
     },
     onError: (err) => {
-      console.error('Error generating products:', err)
+      SecureLogger.error('Error generating products:', err)
     },
   })
 
@@ -123,9 +124,9 @@ function ProductRecommendations() {
     try {
       const result = await mockApiCall({ query })
       // In real usage, the hook handles this via the API endpoint
-      console.log('Would call API with:', { query })
+      SecureLogger.debug('Would call API with:', { query })
     } catch (err) {
-      console.error('Error:', err)
+      SecureLogger.error('Error:', err)
     }
   }
 
@@ -275,7 +276,7 @@ function StreamingExample() {
     initialInput: { topic: 'AI technologies' },
     stream: true,
     onProgress: (chunk) => {
-      console.log('Received chunk:', chunk)
+      SecureLogger.debug('Received chunk:', chunk)
     },
   })
 

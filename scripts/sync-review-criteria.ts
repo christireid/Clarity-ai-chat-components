@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 /**
  * Sync Review Criteria
@@ -74,7 +75,7 @@ function loadAllCriteria(): CriteriaItem[] {
   const criteriaPath = path.join(process.cwd(), CRITERIA_DIR)
 
   if (!fs.existsSync(criteriaPath)) {
-    console.error(`Criteria directory not found: ${criteriaPath}`)
+    SecureLogger.error(`Criteria directory not found: ${criteriaPath}`)
     return []
   }
 
@@ -112,53 +113,53 @@ function extractRulesFromChecks(): string[] {
 }
 
 function generateReport(criteria: CriteriaItem[], rules: string[]): void {
-  console.log('\n╔═══════════════════════════════════════════════════════════╗')
-  console.log('║         Review Criteria Sync Report                        ║')
-  console.log('╚═══════════════════════════════════════════════════════════╝\n')
+  SecureLogger.debug('\n╔═══════════════════════════════════════════════════════════╗')
+  SecureLogger.debug('║         Review Criteria Sync Report                        ║')
+  SecureLogger.debug('╚═══════════════════════════════════════════════════════════╝\n')
 
   // Rules coverage
-  console.log('📋 RULES COVERAGE\n')
-  console.log('Rule                    │ Criteria Files')
-  console.log('────────────────────────┼─────────────────────────────────')
+  SecureLogger.debug('📋 RULES COVERAGE\n')
+  SecureLogger.debug('Rule                    │ Criteria Files')
+  SecureLogger.debug('────────────────────────┼─────────────────────────────────')
 
   for (const rule of rules) {
     const criteriaFiles = RULE_TO_CRITERIA[rule] || ['(unmapped)']
     const status = RULE_TO_CRITERIA[rule] ? '✓' : '⚠'
-    console.log(`${status} ${rule.padEnd(20)} │ ${criteriaFiles.join(', ')}`)
+    SecureLogger.debug(`${status} ${rule.padEnd(20)} │ ${criteriaFiles.join(', ')}`)
   }
 
   // Criteria coverage
-  console.log('\n\n📚 CRITERIA FILES\n')
+  SecureLogger.debug('\n\n📚 CRITERIA FILES\n')
 
   for (const item of criteria) {
     const rulesForCriteria = Object.entries(RULE_TO_CRITERIA)
       .filter(([_, files]) => files.includes(item.file))
       .map(([rule]) => rule)
 
-    console.log(`\n${item.category.toUpperCase()} (${item.file})`)
-    console.log(`  Automated checks: ${rulesForCriteria.length > 0 ? rulesForCriteria.join(', ') : 'None'}`)
-    console.log(`  Manual review items: ${item.items.length}`)
+    SecureLogger.debug(`\n${item.category.toUpperCase()} (${item.file})`)
+    SecureLogger.debug(`  Automated checks: ${rulesForCriteria.length > 0 ? rulesForCriteria.join(', ') : 'None'}`)
+    SecureLogger.debug(`  Manual review items: ${item.items.length}`)
   }
 
   // Summary
   const mappedRules = rules.filter((r) => RULE_TO_CRITERIA[r])
   const unmappedRules = rules.filter((r) => !RULE_TO_CRITERIA[r])
 
-  console.log('\n\n📊 SUMMARY\n')
-  console.log(`Total automated rules:    ${rules.length}`)
-  console.log(`Mapped to criteria:       ${mappedRules.length}`)
-  console.log(`Unmapped rules:           ${unmappedRules.length}`)
-  console.log(`Criteria files:           ${criteria.length}`)
+  SecureLogger.debug('\n\n📊 SUMMARY\n')
+  SecureLogger.debug(`Total automated rules:    ${rules.length}`)
+  SecureLogger.debug(`Mapped to criteria:       ${mappedRules.length}`)
+  SecureLogger.debug(`Unmapped rules:           ${unmappedRules.length}`)
+  SecureLogger.debug(`Criteria files:           ${criteria.length}`)
 
   if (unmappedRules.length > 0) {
-    console.log(`\n⚠️  Unmapped rules: ${unmappedRules.join(', ')}`)
-    console.log('   Add these to RULE_TO_CRITERIA in sync-review-criteria.ts')
+    SecureLogger.debug(`\n⚠️  Unmapped rules: ${unmappedRules.join(', ')}`)
+    SecureLogger.debug('   Add these to RULE_TO_CRITERIA in sync-review-criteria.ts')
   }
 
   // Coverage by category
-  console.log('\n\n📈 COVERAGE BY CATEGORY\n')
-  console.log('Category      │ Auto Rules │ Coverage')
-  console.log('──────────────┼────────────┼──────────')
+  SecureLogger.debug('\n\n📈 COVERAGE BY CATEGORY\n')
+  SecureLogger.debug('Category      │ Auto Rules │ Coverage')
+  SecureLogger.debug('──────────────┼────────────┼──────────')
 
   for (const item of criteria) {
     const rulesForCriteria = Object.entries(RULE_TO_CRITERIA)
@@ -166,10 +167,10 @@ function generateReport(criteria: CriteriaItem[], rules: string[]): void {
       .map(([rule]) => rule)
 
     const coverage = rulesForCriteria.length > 0 ? '✓ Partial' : '○ Manual only'
-    console.log(`${item.category.padEnd(13)} │ ${String(rulesForCriteria.length).padEnd(10)} │ ${coverage}`)
+    SecureLogger.debug(`${item.category.padEnd(13)} │ ${String(rulesForCriteria.length).padEnd(10)} │ ${coverage}`)
   }
 
-  console.log('\n')
+  SecureLogger.debug('\n')
 }
 
 function validateAlignment(criteria: CriteriaItem[], rules: string[]): boolean {
@@ -178,7 +179,7 @@ function validateAlignment(criteria: CriteriaItem[], rules: string[]): boolean {
   // Check all rules are mapped
   for (const rule of rules) {
     if (!RULE_TO_CRITERIA[rule]) {
-      console.warn(`⚠️  Rule '${rule}' is not mapped to any criteria file`)
+      SecureLogger.warn(`⚠️  Rule '${rule}' is not mapped to any criteria file`)
       valid = false
     }
   }
@@ -187,7 +188,7 @@ function validateAlignment(criteria: CriteriaItem[], rules: string[]): boolean {
   for (const item of criteria) {
     const hasRules = Object.values(RULE_TO_CRITERIA).some((files) => files.includes(item.file))
     if (!hasRules && item.file !== 'clarity-chat.md') {
-      console.warn(`⚠️  Criteria file '${item.file}' has no automated checks`)
+      SecureLogger.warn(`⚠️  Criteria file '${item.file}' has no automated checks`)
     }
   }
 
@@ -202,7 +203,7 @@ function main(): void {
   const rules = extractRulesFromChecks()
 
   if (criteria.length === 0) {
-    console.error('No criteria files found')
+    SecureLogger.error('No criteria files found')
     process.exit(1)
   }
 
@@ -213,9 +214,9 @@ function main(): void {
   const valid = validateAlignment(criteria, rules)
 
   if (valid) {
-    console.log('✓ All rules are mapped to criteria files')
+    SecureLogger.debug('✓ All rules are mapped to criteria files')
   } else {
-    console.log('\nRun with --report for detailed coverage analysis')
+    SecureLogger.debug('\nRun with --report for detailed coverage analysis')
   }
 }
 

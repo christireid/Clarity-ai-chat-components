@@ -128,14 +128,23 @@ export function showStandaloneToast(message: string, type: ToastType = 'info') {
 
   toastEl.className = `px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 ${bgColors[type]}`
   toastEl.setAttribute('role', 'alert')
-  toastEl.innerHTML = `
-    <span class="text-sm font-medium">${message}</span>
-    <button onclick="this.parentElement.remove()" class="ml-2 hover:opacity-70">
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
+  // SECURITY: Create elements safely to prevent XSS
+  const messageSpan = document.createElement('span')
+  messageSpan.className = 'text-sm font-medium'
+  messageSpan.textContent = message // Use textContent to prevent XSS
+  
+  const closeButton = document.createElement('button')
+  closeButton.className = 'ml-2 hover:opacity-70'
+  closeButton.setAttribute('aria-label', 'Close notification')
+  closeButton.innerHTML = `
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
   `
+  closeButton.addEventListener('click', () => toastEl.remove())
+  
+  toastEl.appendChild(messageSpan)
+  toastEl.appendChild(closeButton)
 
   container.appendChild(toastEl)
 

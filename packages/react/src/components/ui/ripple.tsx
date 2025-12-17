@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Ripple Effect Component
  *
@@ -214,7 +215,7 @@ export const WithRipple: React.FC<WithRippleProps> = ({
  *
  * // With HOC
  * const MyButton = () => (
- *   <WithRipple onClick={() => console.log('clicked')}>
+ *   <WithRipple onClick={() => logger.debug('clicked')}>
  *     <button>Click me</button>
  *   </WithRipple>
  * )

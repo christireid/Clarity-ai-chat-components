@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
@@ -77,7 +78,7 @@ clarity-codemod migrate 1 3 ./src`}
 import { ChatWindow } from '@clarity-chat/react'
 
 <ChatWindow
-  onMessage={(msg) => console.log(msg)}
+  onMessage={(msg) => logger.debug(msg)}
   config={{ apiKey: process.env.CLARITY_KEY }}
 />
 
@@ -85,7 +86,7 @@ import { ChatWindow } from '@clarity-chat/react'
 import { ChatInterface } from '@clarity-chat/react'
 
 <ChatInterface
-  onSend={(msg) => console.log(msg)}
+  onSend={(msg) => logger.debug(msg)}
   config={{ credentials: { apiKey: process.env.CLARITY_KEY } }}
 />
 `}

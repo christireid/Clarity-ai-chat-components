@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 /**
  * Documentation Indexing Script
@@ -91,7 +92,7 @@ async function findDocFiles(
       }
     }
   } catch (error) {
-    console.warn(`Warning: Could not read directory ${dirPath}:`, error)
+    SecureLogger.warn(`Warning: Could not read directory ${dirPath}:`, error)
   }
 
   return files
@@ -189,7 +190,7 @@ async function processDocFile(file: DocFile): Promise<DocChunk[]> {
  * Main indexing function
  */
 async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
-  console.log('🚀 Starting documentation indexing...\n')
+  SecureLogger.debug('🚀 Starting documentation indexing...\n')
 
   const stats: IndexStats = {
     totalFiles: 0,
@@ -206,44 +207,44 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
     await vectorStore.initialize()
 
     if (options.clear) {
-      console.log('🗑️  Clearing existing index...')
+      SecureLogger.debug('🗑️  Clearing existing index...')
       await vectorStore.clear()
     }
   }
 
   // Find all documentation files
-  console.log('📁 Scanning documentation directories...\n')
+  SecureLogger.debug('📁 Scanning documentation directories...\n')
   const allFiles: DocFile[] = []
 
   for (const dir of DOC_DIRS) {
     const dirPath = path.resolve(process.cwd(), dir.path)
     try {
       const files = await findDocFiles(dirPath, dir.category)
-      console.log(`  ✓ ${dir.path}: ${files.length} files`)
+      SecureLogger.debug(`  ✓ ${dir.path}: ${files.length} files`)
       allFiles.push(...files)
     } catch (error) {
-      console.log(`  ⚠ ${dir.path}: Not found (skipping)`)
+      SecureLogger.debug(`  ⚠ ${dir.path}: Not found (skipping)`)
     }
   }
 
-  console.log(`\n📄 Found ${allFiles.length} documentation files\n`)
+  SecureLogger.debug(`\n📄 Found ${allFiles.length} documentation files\n`)
   stats.totalFiles = allFiles.length
 
   // Process all files
-  console.log('📝 Processing files and generating chunks...\n')
+  SecureLogger.debug('📝 Processing files and generating chunks...\n')
   const allChunks: DocChunk[] = []
 
   for (const file of allFiles) {
     try {
       const chunks = await processDocFile(file)
       allChunks.push(...chunks)
-      console.log(`  ✓ ${path.relative(process.cwd(), file.path)}: ${chunks.length} chunks`)
+      SecureLogger.debug(`  ✓ ${path.relative(process.cwd(), file.path)}: ${chunks.length} chunks`)
     } catch (error) {
-      console.error(`  ✗ ${path.relative(process.cwd(), file.path)}: ${error instanceof Error ? error.message : 'Error'}`)
+      SecureLogger.error(`  ✗ ${path.relative(process.cwd(), file.path)}: ${error instanceof Error ? error.message : 'Error'}`)
     }
   }
 
-  console.log(`\n📦 Generated ${allChunks.length} chunks\n`)
+  SecureLogger.debug(`\n📦 Generated ${allChunks.length} chunks\n`)
   stats.totalChunks = allChunks.length
 
   // Calculate token count and cost
@@ -251,22 +252,22 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
   stats.totalTokens = texts.reduce((sum, text) => sum + estimateTokenCount(text), 0)
   stats.estimatedCost = estimateEmbeddingCost(stats.totalTokens)
 
-  console.log(`💰 Estimated cost: $${stats.estimatedCost.toFixed(4)} (${stats.totalTokens.toLocaleString()} tokens)\n`)
+  SecureLogger.debug(`💰 Estimated cost: $${stats.estimatedCost.toFixed(4)} (${stats.totalTokens.toLocaleString()} tokens)\n`)
 
   if (options.dryRun) {
-    console.log('🏃 Dry run complete - no embeddings generated\n')
+    SecureLogger.debug('🏃 Dry run complete - no embeddings generated\n')
     return stats
   }
 
   // Generate embeddings in batches
-  console.log('🧠 Generating embeddings...\n')
+  SecureLogger.debug('🧠 Generating embeddings...\n')
   const batchSize = 100 // Process 100 chunks at a time
 
   for (let i = 0; i < allChunks.length; i += batchSize) {
     const batch = allChunks.slice(i, i + batchSize)
     const batchTexts = batch.map((c) => c.content)
 
-    console.log(`  Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allChunks.length / batchSize)}...`)
+    SecureLogger.debug(`  Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allChunks.length / batchSize)}...`)
 
     try {
       const embeddings = await generateEmbeddingsBatch(batchTexts)
@@ -279,27 +280,27 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
       // Store in vector database
       await vectorStore.upsertBatch(batch)
 
-      console.log(`  ✓ Batch ${Math.floor(i / batchSize) + 1} complete`)
+      SecureLogger.debug(`  ✓ Batch ${Math.floor(i / batchSize) + 1} complete`)
     } catch (error) {
-      console.error(`  ✗ Batch ${Math.floor(i / batchSize) + 1} failed:`, error)
+      SecureLogger.error(`  ✗ Batch ${Math.floor(i / batchSize) + 1} failed:`, error)
     }
   }
 
   stats.endTime = Date.now()
 
   // Print final statistics
-  console.log('\n✅ Indexing complete!\n')
-  console.log('📊 Statistics:')
-  console.log(`  Files processed: ${stats.totalFiles}`)
-  console.log(`  Chunks created: ${stats.totalChunks}`)
-  console.log(`  Total tokens: ${stats.totalTokens.toLocaleString()}`)
-  console.log(`  Estimated cost: $${stats.estimatedCost.toFixed(4)}`)
-  console.log(`  Time elapsed: ${((stats.endTime - stats.startTime) / 1000).toFixed(2)}s`)
+  SecureLogger.debug('\n✅ Indexing complete!\n')
+  SecureLogger.debug('📊 Statistics:')
+  SecureLogger.debug(`  Files processed: ${stats.totalFiles}`)
+  SecureLogger.debug(`  Chunks created: ${stats.totalChunks}`)
+  SecureLogger.debug(`  Total tokens: ${stats.totalTokens.toLocaleString()}`)
+  SecureLogger.debug(`  Estimated cost: $${stats.estimatedCost.toFixed(4)}`)
+  SecureLogger.debug(`  Time elapsed: ${((stats.endTime - stats.startTime) / 1000).toFixed(2)}s`)
 
   const storeStats = await vectorStore.getStats()
-  console.log(`\n📚 Vector store stats:`)
-  console.log(`  Total vectors: ${storeStats.count}`)
-  console.log(`  Dimensions: ${storeStats.dimensions}`)
+  SecureLogger.debug(`\n📚 Vector store stats:`)
+  SecureLogger.debug(`  Total vectors: ${storeStats.count}`)
+  SecureLogger.debug(`  Dimensions: ${storeStats.dimensions}`)
 
   return stats
 }
@@ -314,10 +315,10 @@ const options = {
 // Run the indexing
 indexDocs(options)
   .then(() => {
-    console.log('\n🎉 Done!')
+    SecureLogger.debug('\n🎉 Done!')
     process.exit(0)
   })
   .catch((error) => {
-    console.error('\n❌ Error:', error)
+    SecureLogger.error('\n❌ Error:', error)
     process.exit(1)
   })

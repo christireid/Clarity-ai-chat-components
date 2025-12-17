@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Happy Path Workflows - Real-World Usage Examples
  *
@@ -308,10 +309,10 @@ export function CustomChatWithToolsWorkflow() {
   const handlers = useChatHandlers({
     chat,
     onMessageSent: (content) => {
-      console.log('Message sent:', content)
+      logger.debug('Message sent:', content)
     },
     onMessageError: (error) => {
-      console.error('Failed to send message:', error)
+      logger.logger.error('Failed to send message:', error)
     },
   })
 

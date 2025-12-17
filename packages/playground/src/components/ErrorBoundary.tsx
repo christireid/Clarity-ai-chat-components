@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Error Boundary Component
  *
@@ -138,7 +139,7 @@ export class ErrorBoundary extends Component<
     this.props.onError?.(error, errorInfo)
 
     // Log to console for debugging
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
+    logger.logger.error('ErrorBoundary caught an error:', error, errorInfo)
   }
 
   handleReset = () => {
@@ -321,7 +322,7 @@ export class PreviewErrorBoundary extends Component<
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Preview error:', error, errorInfo)
+    logger.logger.error('Preview error:', error, errorInfo)
   }
 
   handleRetry = () => {

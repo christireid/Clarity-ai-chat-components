@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Color Token Migration Codemod
  *
@@ -328,13 +329,13 @@ if (require.main === module) {
   const dryRun = !args.includes('--apply')
   const targetPath = args.find((arg) => !arg.startsWith('--')) || '.'
 
-  console.log(`\n🎨 Color Token Migration Tool`)
-  console.log(`${'─'.repeat(40)}`)
-  console.log(
+  logger.debug(`\n🎨 Color Token Migration Tool`)
+  logger.debug(`${'─'.repeat(40)}`)
+  logger.debug(
     `Mode: ${dryRun ? 'Dry Run (use --apply to write changes)' : 'Apply Changes'}`
   )
-  console.log(`Target: ${targetPath}`)
-  console.log('')
+  logger.debug(`Target: ${targetPath}`)
+  logger.debug('')
 
   const stat = fs.statSync(targetPath)
   const results = stat.isDirectory()
@@ -342,9 +343,9 @@ if (require.main === module) {
     : [migrateFile(targetPath, dryRun)]
 
   const report = generateReport(results)
-  console.log(report)
+  logger.debug(report)
 
   if (dryRun && results.some((r) => r.changes.length > 0)) {
-    console.log('\n💡 Run with --apply to apply these changes')
+    logger.debug('\n💡 Run with --apply to apply these changes')
   }
 }

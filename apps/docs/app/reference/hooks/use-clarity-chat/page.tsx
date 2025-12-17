@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import Link from 'next/link'
@@ -265,7 +266,7 @@ function ChatWithErrorHandling() {
   const chat = useClarityChat({
     api: '/api/chat',
     onError: (error) => {
-      console.error('Chat error:', error)
+      logger.logger.error('Chat error:', error)
     },
   })
 

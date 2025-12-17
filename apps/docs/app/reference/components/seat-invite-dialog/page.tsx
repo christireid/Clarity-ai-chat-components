@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -82,7 +83,7 @@ function TeamInvites() {
         })
         
         if (response.ok) {
-          console.log('Invite sent to', invite.email)
+          logger.debug('Invite sent to', invite.email)
         }
       }}
     />
@@ -103,7 +104,7 @@ function CustomRoles() {
       roles={['Owner', 'Admin', 'Member', 'Guest']}
       defaultRole="Member"
       onInvite={(invite) => {
-        console.log('Inviting as', invite.role)
+        logger.debug('Inviting as', invite.role)
       }}
     />
   )

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FollowUpSuggestions } from '@clarity-chat/react'
 import type { FollowUpSuggestion } from '@clarity-chat/react'
@@ -50,7 +51,7 @@ Supports grid and list layouts with loading states.
 <FollowUpSuggestions
   suggestions={suggestions}
   onSelect={(suggestion) => {
-    console.log('Selected:', suggestion)
+    SecureLogger.debug('Selected:', suggestion)
   }}
   layout="grid"
 />
@@ -127,7 +128,7 @@ export const Default: Story = {
   args: {
     suggestions: mockSuggestions,
     onSelect: (suggestion) => {
-      console.log('Selected:', suggestion.title)
+      SecureLogger.debug('Selected:', suggestion.title)
       alert(`Selected: ${suggestion.title}`)
     },
   },
@@ -148,7 +149,7 @@ export const GridLayout: Story = {
   args: {
     suggestions: mockSuggestions,
     layout: 'grid',
-    onSelect: (suggestion) => console.log('Selected:', suggestion),
+    onSelect: (suggestion) => SecureLogger.debug('Selected:', suggestion),
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -167,7 +168,7 @@ export const ListLayout: Story = {
   args: {
     suggestions: mockSuggestions,
     layout: 'list',
-    onSelect: (suggestion) => console.log('Selected:', suggestion),
+    onSelect: (suggestion) => SecureLogger.debug('Selected:', suggestion),
   },
 }
 
@@ -185,7 +186,7 @@ export const CustomTitle: Story = {
     suggestions: mockSuggestions,
     title: 'Advanced/AI/FollowUpSuggestions',
     subtitle: 'Advanced/AI/FollowUpSuggestions',
-    onSelect: (suggestion) => console.log('Selected:', suggestion),
+    onSelect: (suggestion) => SecureLogger.debug('Selected:', suggestion),
   },
 }
 
@@ -211,6 +212,6 @@ export const ManySuggestions: Story = {
       confidence: 0.9 - i * 0.05,
     })),
     layout: 'grid',
-    onSelect: (suggestion) => console.log('Selected:', suggestion),
+    onSelect: (suggestion) => SecureLogger.debug('Selected:', suggestion),
   },
 }

@@ -1,0 +1,16 @@
+{
+  "cost": ["price", "pricing", "bill", "billing", "expensive", "cheap", "payment"],
+  "price": ["cost", "pricing", "bill", "billing", "expensive", "cheap"],
+  "pay": ["cost", "price", "bill", "billing"],
+  "install": ["setup", "get started", "import", "usage", "guide"],
+  "setup": ["install", "configure", "init"],
+  "slow": ["performance", "speed", "fast", "lag", "fps", "latency"],
+  "fast": ["performance", "speed", "slow", "latency", "fps", "real-time"],
+  "fps": ["fast", "speed", "performance"],
+  "set": ["setup", "install", "configure"],
+  "token": ["cost", "budget", "context", "limit"],
+  "memory": ["context", "history", "remember", "recall"],
+  "capability": ["feature", "function", "support"],
+  "key": ["api key", "secret", "auth", "env"],
+  "demo": ["example", "preview", "showcase"]
+}

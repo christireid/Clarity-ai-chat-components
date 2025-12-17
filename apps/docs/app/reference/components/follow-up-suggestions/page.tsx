@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -60,7 +61,7 @@ export default function FollowUpSuggestionsPage() {
   ]
 
   const handleSelect = (suggestion) => {
-    console.log('Selected:', suggestion.title)
+    logger.debug('Selected:', suggestion.title)
     // In real app: add this as a new message
   }
 
@@ -162,7 +163,7 @@ render(<IconSuggestions />)`}
   return (
     <FollowUpSuggestions
       suggestions={suggestions}
-      onSelect={(s) => console.log('Selected:', s)}
+      onSelect={(s) => logger.debug('Selected:', s)}
       title="You might want to ask"
       subtitle="AI-ranked by relevance to your conversation"
     />
@@ -211,7 +212,7 @@ function LayoutOptions() {
       <FollowUpSuggestions
         suggestions={suggestions}
         layout={layout}
-        onSelect={(s) => console.log(s.title)}
+        onSelect={(s) => logger.debug(s.title)}
       />
     </div>
   )

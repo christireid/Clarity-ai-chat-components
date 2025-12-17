@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -101,7 +102,7 @@ function AnalyticsView({ messages }: { messages: Message[] }) {
       autoGenerate
       updateInterval={30000}
       onAnalyticsGenerated={(analytics) => {
-        console.log('Analytics:', analytics)
+        logger.debug('Analytics:', analytics)
       }}
     />
   )

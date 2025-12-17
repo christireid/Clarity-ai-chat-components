@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PromptSuggestions, type PromptSuggestion } from '@clarity-chat/react'
 import { SparklesIcon, CodeIcon, FileTextIcon, MessageSquareIcon } from 'lucide-react'
@@ -50,7 +51,7 @@ Supports starter prompts and follow-up prompts with icons and categories.
 <PromptSuggestions
   suggestions={prompts}
   onSelect={(suggestion) => {
-    console.log('Selected:', suggestion)
+    SecureLogger.debug('Selected:', suggestion)
   }}
 />
 \`\`\`
@@ -169,7 +170,7 @@ export const StarterPrompts: Story = {
   args: {
     suggestions: starterPrompts,
     onSelect: (suggestion) => {
-      console.log('Selected:', suggestion.text)
+      SecureLogger.debug('Selected:', suggestion.text)
     },
     suggestionType: 'starter',
     layout: 'chips',
@@ -193,7 +194,7 @@ export const FollowUpPrompts: Story = {
   args: {
     suggestions: followUpPrompts,
     onSelect: (suggestion) => {
-      console.log('Selected:', suggestion.text)
+      SecureLogger.debug('Selected:', suggestion.text)
     },
     suggestionType: 'follow-up',
     layout: 'chips',
@@ -216,7 +217,7 @@ export const CardsLayout: Story = {
   args: {
     suggestions: starterPrompts,
     onSelect: (suggestion) => {
-      console.log('Selected:', suggestion.text)
+      SecureLogger.debug('Selected:', suggestion.text)
     },
     layout: 'cards',
     showCategories: false,
@@ -227,7 +228,7 @@ export const ListLayout: Story = {
   args: {
     suggestions: followUpPrompts,
     onSelect: (suggestion) => {
-      console.log('Selected:', suggestion.text)
+      SecureLogger.debug('Selected:', suggestion.text)
     },
     layout: 'list',
   },
@@ -237,7 +238,7 @@ export const WithCategories: Story = {
   args: {
     suggestions: starterPrompts,
     onSelect: (suggestion) => {
-      console.log('Selected:', suggestion.text)
+      SecureLogger.debug('Selected:', suggestion.text)
     },
     layout: 'chips',
     showCategories: true,

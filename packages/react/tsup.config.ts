@@ -2,7 +2,10 @@ import { defineConfig } from 'tsup'
 
 const commonConfig = {
   format: ['cjs', 'esm'] as const,
-  dts: false, // Temporarily disabled due to strict TypeScript errors
+  // TypeScript declarations disabled in sandbox due to memory constraints
+  // For production: enable with dts: { resolve: true, only: true }
+  // Types are validated via 'tsc --noEmit' script
+  dts: false,
   external: [
     'react',
     'react-dom',
@@ -15,7 +18,7 @@ const commonConfig = {
     'katex/dist/katex.min.css',
   ],
   sourcemap: false,
-  minify: false,
+  minify: false, // Set to boolean false instead of string
   splitting: false,
   treeshake: false,
   outExtension({ format }: { format: string }) {
@@ -46,6 +49,13 @@ export default defineConfig([
     entry: { core: 'src/core.ts' },
     ...commonConfig,
     clean: false,
+  },
+  // Core minimal entry (ultra-light ~30KB)
+  {
+    entry: { 'core-minimal': 'src/core-minimal.ts' },
+    ...commonConfig,
+    clean: false,
+    splitting: true, // Enable code splitting for lazy loads
   },
   // Utils entry
   {

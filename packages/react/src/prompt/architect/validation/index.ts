@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Validation Module
  *
@@ -13,9 +14,9 @@
  * // Safe validation with result
  * const result = safeValidators.securityFinding(data)
  * if (result.success) {
- *   console.log(result.data)
+ *   logger.debug(result.data)
  * } else {
- *   console.error(result.error.getFormattedErrors())
+ *   logger.logger.error(result.error.getFormattedErrors())
  * }
  *
  * // Direct schema usage

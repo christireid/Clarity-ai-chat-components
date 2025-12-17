@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState } from 'react'
@@ -155,8 +156,8 @@ export default function AnimationsConceptPage() {
   INTERACTION_VARIANTS,
 } from '@clarity-chat/react'
 
-console.log(ANIMATION_DURATION.normal) // 250
-console.log(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
+logger.debug(ANIMATION_DURATION.normal) // 250
+logger.debug(ANIMATION_EASING.spring)   // cubic-bezier(0.34, 1.56, 0.64, 1)`}
           />
         </section>
       </ScrollReveal>

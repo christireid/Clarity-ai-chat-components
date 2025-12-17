@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useChat - Legacy chat hook (DEPRECATED)
  * 
@@ -76,7 +77,7 @@ export interface UseChatReturn {
 export function useChat(options: UseChatOptions = {}): UseChatReturn {
   // Log deprecation warning in development
   if (process.env['NODE_ENV'] === 'development') {
-    console.warn(
+    logger.warn(
       '[useChat] This hook is deprecated. Please migrate to `useClarityChat` from @clarity-chat/react. ' +
       'See migration guide: https://github.com/clarity-chat/clarity-chat/blob/main/MIGRATION_GUIDE.md'
     )
@@ -91,7 +92,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const sendMessage = React.useCallback(
     async (content: string, options?: { signal?: AbortSignal }) => {
       if (!onSendMessage) {
-        console.warn('[useChat] onSendMessage is required to send messages')
+        logger.warn('[useChat] onSendMessage is required to send messages')
         return
       }
 
@@ -128,7 +129,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     async (messageId: string, options?: { signal?: AbortSignal }) => {
       const message = messages.find((m) => m.id === messageId)
       if (!message || message.role !== 'user') {
-        console.warn('[useChat] Cannot retry: message not found or not a user message')
+        logger.warn('[useChat] Cannot retry: message not found or not a user message')
         return
       }
 

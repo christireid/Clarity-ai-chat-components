@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Customer Support Chat Template
  *
@@ -34,7 +35,7 @@ export interface CustomerSupportTemplateProps {
  * <CustomerSupportTemplate
  *   companyName="Acme Corp"
  *   supportCategories={['Orders', 'Returns', 'Technical']}
- *   onEscalate={(conversation) => console.log('Escalate:', conversation)}
+ *   onEscalate={(conversation) => logger.debug('Escalate:', conversation)}
  * />
  * ```
  */
@@ -69,10 +70,10 @@ export function CustomerSupportTemplate({
       },
     ],
     onEdit: (messageId, newContent) => {
-      console.log('Message edited:', messageId, newContent)
+      logger.debug('Message edited:', messageId, newContent)
     },
     onDelete: (messageId) => {
-      console.log('Message deleted:', messageId)
+      logger.debug('Message deleted:', messageId)
     },
   })
 

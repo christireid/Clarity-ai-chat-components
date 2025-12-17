@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * KV Cache-Aligned Prompt Builder
  *
@@ -222,8 +223,8 @@ function getTrimmableSegments(segments: PromptSegment[]): PromptSegment[] {
  *   reservedForOutput: 2000,
  * })
  *
- * console.log(result.messages) // Formatted for API
- * console.log(result.kvCacheablePrefix) // Tokens in cacheable prefix
+ * logger.debug(result.messages) // Formatted for API
+ * logger.debug(result.kvCacheablePrefix) // Tokens in cacheable prefix
  * ```
  */
 export function buildKVCacheOptimizedPrompt(

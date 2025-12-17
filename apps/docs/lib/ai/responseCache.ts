@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Response Cache
  *
@@ -107,14 +108,14 @@ export class RedisResponseCache implements ResponseCache {
       // Track cache hit
       await this.redis.hincrby(this.getStatsKey(), 'hits', 1)
 
-      console.log(`✅ Cache HIT for query: "${query.substring(0, 50)}..."`)
+      logger.debug(`✅ Cache HIT for query: "${query.substring(0, 50)}..."`)
       return response
     }
 
     // Track cache miss
     await this.redis.hincrby(this.getStatsKey(), 'misses', 1)
 
-    console.log(`❌ Cache MISS for query: "${query.substring(0, 50)}..."`)
+    logger.debug(`❌ Cache MISS for query: "${query.substring(0, 50)}..."`)
     return null
   }
 
@@ -142,7 +143,7 @@ export class RedisResponseCache implements ResponseCache {
 
     await this.redis.set(key, cachedResponse, { ex: ttl })
 
-    console.log(`💾 Cached response for query: "${query.substring(0, 50)}..."`)
+    logger.debug(`💾 Cached response for query: "${query.substring(0, 50)}..."`)
   }
 
   async getStats(): Promise<CacheStats> {
@@ -172,7 +173,7 @@ export class RedisResponseCache implements ResponseCache {
       await this.redis.del(...keys)
     }
 
-    console.log(`🗑️  Cleared ${keys.length} cached responses`)
+    logger.debug(`🗑️  Cleared ${keys.length} cached responses`)
   }
 }
 
@@ -192,12 +193,12 @@ export class LocalResponseCache implements ResponseCache {
       cached.hits++
       this.stats.hits++
 
-      console.log(`✅ Cache HIT (local) for query: "${query.substring(0, 50)}..."`)
+      logger.debug(`✅ Cache HIT (local) for query: "${query.substring(0, 50)}..."`)
       return cached
     }
 
     this.stats.misses++
-    console.log(`❌ Cache MISS (local) for query: "${query.substring(0, 50)}..."`)
+    logger.debug(`❌ Cache MISS (local) for query: "${query.substring(0, 50)}..."`)
     return null
   }
 
@@ -224,7 +225,7 @@ export class LocalResponseCache implements ResponseCache {
 
     this.cache.set(key, cachedResponse)
 
-    console.log(`💾 Cached response (local) for query: "${query.substring(0, 50)}..."`)
+    logger.debug(`💾 Cached response (local) for query: "${query.substring(0, 50)}..."`)
 
     // Auto-cleanup: remove oldest entries if cache grows too large
     if (this.cache.size > 100) {
@@ -254,7 +255,7 @@ export class LocalResponseCache implements ResponseCache {
     this.cache.clear()
     this.stats = { hits: 0, misses: 0 }
 
-    console.log(`🗑️  Cleared ${size} cached responses (local)`)
+    logger.debug(`🗑️  Cleared ${size} cached responses (local)`)
   }
 }
 
@@ -268,10 +269,10 @@ export function getResponseCache(): ResponseCache {
     process.env.NODE_ENV === 'production'
 
   if (useRedis) {
-    console.log('Using Redis response cache (Upstash)')
+    logger.debug('Using Redis response cache (Upstash)')
     return new RedisResponseCache()
   } else {
-    console.log('Using local response cache (development mode)')
+    logger.debug('Using local response cache (development mode)')
     return new LocalResponseCache()
   }
 }

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Error Boundary with Error Tracking Integration
  *
@@ -229,7 +230,7 @@ export function ErrorBoundaryEnhanced({
         originalError: currentError,
       })
 
-      console.log('[ErrorBoundaryEnhanced] User feedback submitted:', feedback)
+      logger.debug('[ErrorBoundaryEnhanced] User feedback submitted:', feedback)
     },
     [currentError, currentErrorInfo, errorReporter, errorContext, severity]
   )

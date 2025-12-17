@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -62,7 +63,7 @@ function InviteUsers({ tenantId }: { tenantId: string }) {
         })
 
         if (response.ok) {
-          console.log('Invitation sent')
+          logger.debug('Invitation sent')
         }
       }}
     />

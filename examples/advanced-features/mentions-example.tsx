@@ -10,6 +10,7 @@
 import * as React from 'react'
 import {
   MentionInput,
+import { SecureLogger } from '@/lib/security/secureLogger';
   MentionList,
   useMentions,
   ChatWindow,
@@ -17,6 +18,7 @@ import {
 import type { MentionableUser, Mention } from '@clarity-chat/react'
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@clarity-chat/primitives'
 
+import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type for chat messages with mentions (used in Example 4)
 interface ChatMessageWithMentions {
   id: string
@@ -45,8 +47,8 @@ export function BasicMentionExample() {
   ]
 
   const handleSubmit = () => {
-    console.log('Message:', value)
-    console.log('Mentions:', mentions)
+    SecureLogger.debug('Message:', value)
+    SecureLogger.debug('Mentions:', mentions)
 
     // Send to backend
     // await fetch('/api/chat', { ... })
@@ -117,12 +119,12 @@ export function MentionInboxExample() {
     markAllAsRead,
   } = useMentions({
     onMentionAdded: (mention) => {
-      console.log('New mention added:', mention)
+      SecureLogger.debug('New mention added:', mention)
       // Show notification
       // notify(`You were mentioned!`)
     },
     onMentionRead: (mention) => {
-      console.log('Mention marked as read:', mention)
+      SecureLogger.debug('Mention marked as read:', mention)
     },
   })
 
@@ -387,7 +389,7 @@ export function CompleteMentionChatExample() {
         }),
       })
     } catch (error) {
-      console.error('Failed to send message:', error)
+      SecureLogger.error('Failed to send message:', error)
     }
 
     // Clear input
@@ -598,7 +600,7 @@ export function ProductionMentionExample() {
         const data = await response.json()
         setUsers(data.users)
       } catch (error) {
-        console.error('Failed to load users:', error)
+        SecureLogger.error('Failed to load users:', error)
       } finally {
         setIsLoadingUsers(false)
       }
@@ -615,7 +617,7 @@ export function ProductionMentionExample() {
         const data = await response.json()
         data.mentions.forEach(addMention)
       } catch (error) {
-        console.error('Failed to load mentions:', error)
+        SecureLogger.error('Failed to load mentions:', error)
       }
     }
 
@@ -639,7 +641,7 @@ export function ProductionMentionExample() {
 
       setInputValue('')
     } catch (error) {
-      console.error('Failed to send message:', error)
+      SecureLogger.error('Failed to send message:', error)
     }
   }
 
@@ -651,7 +653,7 @@ export function ProductionMentionExample() {
 
       markAsRead(mentionId)
     } catch (error) {
-      console.error('Failed to mark mention as read:', error)
+      SecureLogger.error('Failed to mark mention as read:', error)
     }
   }
 

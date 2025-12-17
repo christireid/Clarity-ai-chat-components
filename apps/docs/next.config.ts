@@ -91,6 +91,42 @@ const nextConfig: NextConfig = {
     ]
   },
 
+  // Redirects for confusing guides section
+  async redirects() {
+    return [
+      {
+        source: '/guides',
+        destination: '/learn/guides',
+        permanent: true,
+      },
+      {
+        source: '/guides/prompt-testing',
+        destination: '/learn/guides/prompt-testing',
+        permanent: true,
+      },
+      {
+        source: '/guides/testing',
+        destination: '/learn/guides/testing',
+        permanent: true,
+      },
+      {
+        source: '/guides/accessibility',
+        destination: '/learn/guides/accessibility',
+        permanent: true,
+      },
+      {
+        source: '/concepts/animations',
+        destination: '/learn/concepts/animations',
+        permanent: true,
+      },
+      {
+        source: '/demos/accessibility-audit',
+        destination: '/learn/demos/accessibility-audit',
+        permanent: true,
+      },
+    ]
+  },
+
   // Webpack configuration for non-Turbopack builds
   webpack: (config) => {
     // Handle SVG imports

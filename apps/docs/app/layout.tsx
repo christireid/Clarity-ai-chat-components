@@ -6,6 +6,7 @@ import '@/styles/syntax-highlighting.css'
 import { Providers } from './providers'
 import { Navigation } from '@/components/Navigation/Navigation'
 import { Footer } from '@/components/Layout/Footer'
+import { AnalyticsScript } from '@/lib/analytics'
 import {
   StructuredData,
   OrganizationStructuredData,
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
     template: '%s | Clarity Chat UI',
   },
   description:
-    'A comprehensive React UI library for building beautiful, accessible chat interfaces with 70+ components, 35+ hooks, and 150+ animations.',
+    'A comprehensive React UI library for building beautiful, accessible chat interfaces with 200+ components, 140+ hooks, and 150+ animations.',
   keywords: [
     'react',
     'ui library',
@@ -120,6 +121,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
+        <AnalyticsScript />
         <Providers>
           <a href="#main-content" className="skip-to-content">
             Skip to content

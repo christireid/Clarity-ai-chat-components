@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -168,7 +169,7 @@ export interface UseStreamingSSEReturn {
  *         disconnect()
  *       }
  *     },
- *     onError: (error) => console.error('SSE Error:', error),
+ *     onError: (error) => logger.logger.error('SSE Error:', error),
  *   })
  *
  *   return (
@@ -210,7 +211,7 @@ export interface UseStreamingSSEReturn {
  * ```tsx
  * const { events, status, connect, disconnect } = useStreamingSSE({
  *   url: '/api/stream',
- *   onMessage: (event) => console.log('Event:', event),
+ *   onMessage: (event) => logger.debug('Event:', event),
  * })
  *
  * React.useEffect(() => {
@@ -329,7 +330,7 @@ export function useStreamingSSE(
     }
 
     heartbeatTimeoutRef.current = setTimeout(() => {
-      console.warn(
+      logger.warn(
         '[useStreamingSSE] Heartbeat timeout - connection may be stale'
       )
       if (autoReconnect && shouldReconnectRef.current) {
@@ -489,7 +490,7 @@ export function useStreamingSSE(
         return
       }
 
-      console.error('[useStreamingSSE] Connection error:', error)
+      logger.logger.error('[useStreamingSSE] Connection error:', error)
       setError(error)
       setStatus('error')
       onError?.(error)
@@ -519,7 +520,7 @@ export function useStreamingSSE(
           connect()
         }, delay)
       } else if (reconnectAttempt >= maxReconnectAttempts) {
-        console.error('[useStreamingSSE] Max reconnection attempts reached')
+        logger.logger.error('[useStreamingSSE] Max reconnection attempts reached')
         onMaxReconnectAttemptsReached?.()
         shouldReconnectRef.current = false
       }

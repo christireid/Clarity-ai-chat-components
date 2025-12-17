@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -25,7 +26,7 @@ export default async function FileUploadGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    console.error('Failed to read file-upload guide', error)
+    logger.logger.error('Failed to read file-upload guide', error)
     content = '# File-upload\n\nContent not available.'
   }
 

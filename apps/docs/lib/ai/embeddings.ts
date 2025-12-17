@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Embeddings Generation
  *
@@ -54,7 +55,7 @@ export async function generateEmbedding(
 
     return response.data[0].embedding
   } catch (error) {
-    console.error('Error generating embedding:', error)
+    logger.logger.error('Error generating embedding:', error)
     throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
@@ -90,7 +91,7 @@ export async function generateEmbeddingsBatch(
 
     return embeddings
   } catch (error) {
-    console.error('Error generating embeddings batch:', error)
+    logger.logger.error('Error generating embeddings batch:', error)
     throw new Error(`Failed to generate embeddings: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

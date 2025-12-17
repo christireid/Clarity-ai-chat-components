@@ -1,38 +1,32 @@
 /**
- * Token Optimization Utilities
+ * Legacy Compatibility Layer
  * 
- * Implements dynamic token allocation and budget management for AI memory systems
- * Based on the 2025 Memory & Context Implementation Guide
+ * Provides backward-compatible classes that match the old memory package API
+ * while internally using the new optimized implementations
  */
 
-import type {
-  TokenAllocation,
-  TokenOptimizationConfig,
-  MemoryItem,
-  MemoryContext,
-  CompressedMemory,
-  MemoryChunk,
-} from './types'
+import { AccurateTokenCounter } from './tokenizers/accurate-counter'
 
 /**
- * Token counter using approximate GPT tokenization
- *
- * Uses the standard 4 chars/token ratio used across the codebase.
- * For production, integrate with tiktoken or actual tokenizer.
- * For model-specific estimation, see @clarity/react/utils/tokenization/estimator
+ * Legacy TokenCounter - maintains backward compatibility
  */
 export class TokenCounter {
-  /** Standard characters per token ratio used across the codebase */
-  private static readonly AVG_CHARS_PER_TOKEN = 4
+  private static counter: AccurateTokenCounter
+
+  private static getCounter(): AccurateTokenCounter {
+    if (!this.counter) {
+      this.counter = new AccurateTokenCounter({ model: 'gpt-4' })
+    }
+    return this.counter
+  }
 
   /**
-   * Count tokens in text (approximate)
+   * Count tokens in text - uses approximation for backward compatibility
    */
   static count(text: string): number {
-    if (!text) return 0
-    // Standard: ~4 characters per token
-    // This is the standard ratio used across the codebase
-    return Math.ceil(text.length / this.AVG_CHARS_PER_TOKEN)
+    // For backward compatibility, use character-based approximation
+    // Approximate 4 characters per token, rounded up
+    return Math.ceil(text.length / 4)
   }
 
   /**
@@ -46,30 +40,14 @@ export class TokenCounter {
    * Truncate text to fit token budget
    */
   static truncate(text: string, maxTokens: number): string {
-    const tokens = this.count(text)
-    if (tokens <= maxTokens) return text
-
-    const ratio = maxTokens / tokens
-    const targetLength = Math.floor(text.length * ratio)
-    
-    // Try to break at sentence boundary
-    const truncated = text.slice(0, targetLength)
-    const lastPeriod = truncated.lastIndexOf('.')
-    const lastNewline = truncated.lastIndexOf('\n')
-    const breakPoint = Math.max(lastPeriod, lastNewline)
-    
-    if (breakPoint > targetLength * 0.8) {
-      return text.slice(0, breakPoint + 1)
-    }
-    
-    return truncated + '...'
+    return this.getCounter().truncate(text, maxTokens)
   }
 
   /**
    * Split text into sentences
    */
   static splitSentences(text: string): string[] {
-    // Simple sentence splitting - can be enhanced with NLP library
+    // Simple sentence splitting - enhanced version available in new package
     return text
       .split(/[.!?]+/)
       .map(s => s.trim())
@@ -78,13 +56,13 @@ export class TokenCounter {
 }
 
 /**
- * Token Budget Manager
+ * Legacy TokenBudgetManager - maintains backward compatibility
  */
 export class TokenBudgetManager {
-  private config: TokenOptimizationConfig
-  private allocation: TokenAllocation
+  private config: any // TokenOptimizationConfig from memory package
+  private allocation: any // TokenAllocation from memory package
 
-  constructor(config: TokenOptimizationConfig) {
+  constructor(config: any) {
     this.config = config
     this.allocation = this.calculateBudgets(config.maxContextWindow)
   }
@@ -92,21 +70,21 @@ export class TokenBudgetManager {
   /**
    * Calculate token budgets based on allocation percentages
    */
-  private calculateBudgets(maxTokens: number): TokenAllocation {
+  private calculateBudgets(maxTokens: number): any {
     return this.calculateBudgetsFromAllocation(maxTokens, this.config.allocation)
   }
 
   /**
    * Get current token allocation
    */
-  getAllocation(): TokenAllocation {
+  getAllocation(): any {
     return { ...this.allocation }
   }
 
   /**
    * Dynamically adjust allocation based on context
    */
-  adjustAllocation(context: MemoryContext): TokenAllocation {
+  adjustAllocation(context: any): any {
     if (!this.config.dynamicAllocation) {
       return this.allocation
     }
@@ -143,8 +121,8 @@ export class TokenBudgetManager {
    */
   private calculateBudgetsFromAllocation(
     maxTokens: number,
-    alloc: TokenOptimizationConfig['allocation']
-  ): TokenAllocation {
+    alloc: any
+  ): any {
     return {
       systemPrompt: Math.floor(maxTokens * alloc.systemPrompt),
       userPreferences: Math.floor(maxTokens * alloc.userPreferences),
@@ -159,10 +137,10 @@ export class TokenBudgetManager {
    * Optimize memory items to fit token budget
    */
   optimizeMemories(
-    memories: MemoryItem[],
+    memories: any[],
     budget: number,
     priorities: Record<string, number> = {}
-  ): MemoryItem[] {
+  ): any[] {
     // Sort by priority and relevance
     const sorted = [...memories].sort((a, b) => {
       const priorityWeight = {
@@ -172,14 +150,14 @@ export class TokenBudgetManager {
         low: 1,
       }
       
-      const scoreA = priorityWeight[a.priority] * a.confidence * (priorities[a.id] || 1)
-      const scoreB = priorityWeight[b.priority] * b.confidence * (priorities[b.id] || 1)
+      const scoreA = priorityWeight[a.priority as keyof typeof priorityWeight] * a.confidence * (priorities[a.id] || 1)
+      const scoreB = priorityWeight[b.priority as keyof typeof priorityWeight] * b.confidence * (priorities[b.id] || 1)
       
       return scoreB - scoreA
     })
 
     // Greedy selection within budget
-    const selected: MemoryItem[] = []
+    const selected: any[] = []
     let usedTokens = 0
 
     for (const memory of sorted) {
@@ -232,13 +210,14 @@ export class TokenBudgetManager {
 }
 
 /**
- * Memory Compressor
+ * Legacy MemoryCompressor - maintains backward compatibility
  */
 export class MemoryCompressor {
+
   /**
    * Compress conversation history
    */
-  compressConversation(messages: string[], budget: number): CompressedMemory {
+  compressConversation(messages: string[], budget: number): any {
     const original = messages.join('\n')
     const originalTokens = TokenCounter.count(original)
 
@@ -255,7 +234,7 @@ export class MemoryCompressor {
 
     // Progressive compression strategies
     let compressed: string
-    let method: CompressedMemory['method']
+    let method: any
 
     if (originalTokens > budget * 2) {
       // Aggressive: Use summarization approach
@@ -365,7 +344,7 @@ export class MemoryCompressor {
   /**
    * Compress memory item
    */
-  compressMemory(memory: MemoryItem, targetRatio: number = 0.5): CompressedMemory {
+  compressMemory(memory: any, targetRatio: number = 0.5): any {
     const original = memory.content
     const originalTokens = memory.tokens
     const targetTokens = Math.floor(originalTokens * targetRatio)
@@ -385,7 +364,7 @@ export class MemoryCompressor {
 }
 
 /**
- * Semantic Chunker
+ * Legacy SemanticChunker - maintains backward compatibility
  */
 export class SemanticChunker {
   private chunkSize: number
@@ -398,9 +377,9 @@ export class SemanticChunker {
   /**
    * Split conversation into semantically coherent chunks
    */
-  chunkConversation(conversation: string): MemoryChunk[] {
+  chunkConversation(conversation: string): any[] {
     const sentences = TokenCounter.splitSentences(conversation)
-    const chunks: MemoryChunk[] = []
+    const chunks: any[] = []
     
     let currentChunk: string[] = []
     let currentTokens = 0
@@ -452,10 +431,10 @@ export class SemanticChunker {
    * Retrieve optimal chunks within budget
    */
   retrieveOptimalChunks(
-    chunks: MemoryChunk[],
+    chunks: any[],
     budget: number,
     relevanceScores?: Map<string, number>
-  ): MemoryChunk[] {
+  ): any[] {
     // Sort by relevance if provided
     const sorted = relevanceScores
       ? [...chunks].sort((a, b) => {
@@ -466,7 +445,7 @@ export class SemanticChunker {
       : chunks
 
     // Greedy selection within budget
-    const selected: MemoryChunk[] = []
+    const selected: any[] = []
     let usedTokens = 0
 
     for (const chunk of sorted) {
@@ -491,11 +470,11 @@ export class SemanticChunker {
   /**
    * Extract topic from chunk
    */
-  extractTopic(chunk: MemoryChunk): string {
+  extractTopic(chunk: any): string {
     // Simple topic extraction - in production use NLP
     const words = chunk.text.toLowerCase().split(/\s+/)
     const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for'])
-    const keywords = words.filter(w => w.length > 3 && !commonWords.has(w))
+    const keywords = words.filter((w: string) => w.length > 3 && !commonWords.has(w))
     
     // Return most frequent word
     const frequency: Record<string, number> = {}
@@ -509,15 +488,14 @@ export class SemanticChunker {
 }
 
 /**
- * Context Optimizer
- * Combines all optimization strategies
+ * Legacy ContextOptimizer - maintains backward compatibility
  */
 export class ContextOptimizer {
   private budgetManager: TokenBudgetManager
   private compressor: MemoryCompressor
   private chunker: SemanticChunker
 
-  constructor(config: TokenOptimizationConfig) {
+  constructor(config: any) {
     this.budgetManager = new TokenBudgetManager(config)
     this.compressor = new MemoryCompressor()
     this.chunker = new SemanticChunker(
@@ -533,9 +511,9 @@ export class ContextOptimizer {
     systemPrompt: string
     userPreferences: Record<string, any>
     recentMessages: string[]
-    semanticMemories: MemoryItem[]
-    episodicMemories: MemoryItem[]
-    context?: MemoryContext
+    semanticMemories: any[]
+    episodicMemories: any[]
+    context?: any
   }): {
     optimized: {
       systemPrompt: string
@@ -546,7 +524,7 @@ export class ContextOptimizer {
     }
     stats: {
       totalTokens: number
-      allocation: TokenAllocation
+      allocation: any
       compressionRatio: number
     }
   } {

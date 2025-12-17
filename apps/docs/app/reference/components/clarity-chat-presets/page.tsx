@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -252,7 +253,7 @@ function CustomizedChat() {
       showTokenCounter
       enableMessageOperations
       onMessageCopy={(id, content) => {
-        console.log('Copied:', id)
+        logger.debug('Copied:', id)
       }}
       className="h-screen"
     />

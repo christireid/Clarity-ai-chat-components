@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Runtime Validation Utilities
  *
@@ -90,7 +91,7 @@ export function validateEnum<T extends string>(
 
   if (!allowedValues.includes(value)) {
     if (defaultValue !== undefined) {
-      console.warn(
+      logger.warn(
         `[${componentName}] Invalid ${paramName}: "${value}". ` +
           `Must be one of: ${allowedValues.join(', ')}. Using default: "${defaultValue}"`
       )

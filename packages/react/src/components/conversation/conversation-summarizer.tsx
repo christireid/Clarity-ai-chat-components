@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -142,7 +143,7 @@ const defaultConfig: SummarizationConfig = {
  *     includeKeyTopics: true,
  *   }}
  *   onSummaryGenerated={(summary) => {
- *     console.log('Summary:', summary.content)
+ *     logger.debug('Summary:', summary.content)
  *   }}
  * />
  * ```

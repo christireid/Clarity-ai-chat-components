@@ -11,6 +11,7 @@
 import * as React from 'react'
 import {
   useChatEnhanced,
+import { SecureLogger } from '@/lib/security/secureLogger';
   PromptSuggestionsEnhanced,
   ConversationSummarizer,
   BatteryIndicator,
@@ -20,6 +21,7 @@ import {
 } from '@clarity-chat/react'
 import { useFocusTrap, useEscapeKey } from '../utils/accessibility'
 
+import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type definitions for this example
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
@@ -101,7 +103,7 @@ export function AdvancedChatApplication() {
   const handlePerformanceUpdate = React.useCallback((data: PerformanceData) => {
     // Send to your analytics service
     if (data.webVitals?.length > 0) {
-      console.log('Web Vitals:', data.webVitals)
+      SecureLogger.debug('Web Vitals:', data.webVitals)
 
       // Example: Track to analytics
       // analytics.track('web_vitals', {
@@ -113,12 +115,12 @@ export function AdvancedChatApplication() {
 
     // Monitor memory usage
     if (data.memoryUsage && data.memoryUsage.used / data.memoryUsage.limit > 0.8) {
-      console.warn('High memory usage detected:', data.memoryUsage)
+      SecureLogger.warn('High memory usage detected:', data.memoryUsage)
     }
 
     // Monitor FPS
     if (data.fps && data.fps < 30) {
-      console.warn('Low FPS detected:', data.fps)
+      SecureLogger.warn('Low FPS detected:', data.fps)
     }
   }, [])
 
@@ -216,7 +218,7 @@ export function AdvancedChatApplication() {
                 includeCodeSnippets: true,
               }}
               onSummaryGenerated={(summary) => {
-                console.log('Summary generated:', summary)
+                SecureLogger.debug('Summary generated:', summary)
 
                 // Track to analytics
                 // analytics.track('summary_generated', {

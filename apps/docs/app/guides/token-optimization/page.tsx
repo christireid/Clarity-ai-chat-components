@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -205,9 +206,9 @@ function ToonExample() {
     ]
 
     const result = await optimizeData(data)
-    console.log('Format:', result.format) // 'toon' or 'json'
-    console.log('Content:', result.content)
-    console.log('Savings:', result.optimizations.toon?.savingsPercent)
+    logger.debug('Format:', result.format) // 'toon' or 'json'
+    logger.debug('Content:', result.content)
+    logger.debug('Savings:', result.optimizations.toon?.savingsPercent)
   }
 
   return <button onClick={handleOptimize}>Optimize with TOON</button>
@@ -320,9 +321,9 @@ function CompressionExample() {
     clearly. Always consider multiple perspectives and provide balanced views.\`
 
     const result = await optimizePrompt(longPrompt)
-    console.log('Original tokens:', result.tokens.original)
-    console.log('Compressed tokens:', result.tokens.optimized)
-    console.log('Savings:', result.optimizations.compression?.savingsPercent)
+    logger.debug('Original tokens:', result.tokens.original)
+    logger.debug('Compressed tokens:', result.tokens.optimized)
+    logger.debug('Savings:', result.optimizations.compression?.savingsPercent)
   }
 
   return <button onClick={handleCompress}>Compress Prompt</button>
@@ -712,7 +713,7 @@ function CompleteOptimizationExample() {
     // Route query to appropriate model
     const model = await routeQuery('What is 2+2?')
 
-    console.log('Total savings:', stats.overall.totalCostSaved)
+    logger.debug('Total savings:', stats.overall.totalCostSaved)
   }
 
   return (

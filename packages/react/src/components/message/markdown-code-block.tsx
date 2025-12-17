@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import React, { useEffect, useState } from 'react'
@@ -66,7 +67,7 @@ async function loadPrism(): Promise<typeof import('prismjs') | null> {
       prismLoaded = true
       return Prism
     } catch (error) {
-      console.warn(
+      logger.warn(
         'Prism.js not available, syntax highlighting disabled:',
         error
       )
@@ -144,7 +145,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
                 )
                 setHighlightedCode(highlighted)
               } catch (error) {
-                console.error('Prism highlighting error:', error)
+                logger.logger.error('Prism highlighting error:', error)
                 setHighlightedCode(codeString)
               }
             } else {
@@ -153,7 +154,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
             }
           })
           .catch((error) => {
-            console.warn('Failed to load Prism:', error)
+            logger.warn('Failed to load Prism:', error)
             setHighlightedCode(codeString)
           })
       }

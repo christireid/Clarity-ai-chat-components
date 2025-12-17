@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EnhancedCodeBlock } from '@clarity-chat/react'
 
@@ -30,7 +31,7 @@ function createUser(name: string, email: string): User {
 }
 
 const user = createUser('John Doe', 'john@example.com')
-console.log(user)`
+SecureLogger.debug(user)`
 
 const pythonCode = `def fibonacci(n: int) -> list[int]:
     """Generate Fibonacci sequence up to n terms."""

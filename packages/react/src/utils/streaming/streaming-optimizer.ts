@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Streaming Response Optimization
  *
@@ -148,13 +149,13 @@ export interface PartialResponseEntry {
  * for await (const chunk of stream) {
  *   const analysis = monitor.onChunk(chunk)
  *   if (!analysis.shouldContinue) {
- *     console.log(`Stopping: ${analysis.reason}`)
+ *     logger.debug(`Stopping: ${analysis.reason}`)
  *     break
  *   }
  *   // Process chunk...
  * }
  *
- * console.log('Tokens saved:', monitor.getMetrics().potentialTokensSaved)
+ * logger.debug('Tokens saved:', monitor.getMetrics().potentialTokensSaved)
  * ```
  */
 export class StreamingResponseMonitor {
@@ -523,7 +524,7 @@ export class PartialResponseCache {
  * })
  *
  * if (result.earlyStopped) {
- *   console.log('Saved tokens:', result.tokensSaved)
+ *   logger.debug('Saved tokens:', result.tokensSaved)
  * }
  * ```
  */

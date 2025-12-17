@@ -1,3 +1,6 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Structured logging utility for MCP server
  * 
@@ -43,7 +46,7 @@ class Logger {
     }
 
     // Use console.error for stdio transport (stderr)
-    console.error(JSON.stringify(entry))
+    SecureLogger.error(JSON.stringify(entry))
   }
 
   debug(message: string, metadata?: Record<string, unknown>) {

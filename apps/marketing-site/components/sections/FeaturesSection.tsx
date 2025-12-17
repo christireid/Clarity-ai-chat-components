@@ -17,6 +17,8 @@ import {
   Lock,
 } from 'lucide-react'
 import { durations } from '@/lib/constants'
+import TokenSavingsCalculator from '../ui/TokenSavingsCalculator'
+import SpotlightCard from '../ui/SpotlightCard'
 
 const features = [
   {
@@ -134,15 +136,16 @@ function FeatureCard({
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{ duration: durations.slow, delay: index * 0.1 }}
-      className={`glass-card glass-card-hover p-6 border ${feature.borderColor} transition-all duration-300`}
     >
-      <div className={`inline-flex p-3 rounded-xl ${feature.bgColor} mb-4`}>
-        <Icon className={`w-6 h-6 ${feature.color}`} />
-      </div>
-      <h3 className="text-lg font-semibold text-white mb-2">{feature.name}</h3>
-      <p className="text-gray-400 text-sm leading-relaxed">
-        {feature.description}
-      </p>
+      <SpotlightCard className={`h-full p-6 border ${feature.borderColor} transition-all duration-300`}>
+        <div className={`inline-flex p-3 rounded-xl ${feature.bgColor} mb-4`}>
+          <Icon className={`w-6 h-6 ${feature.color}`} />
+        </div>
+        <h3 className="text-lg font-semibold text-white mb-2">{feature.name}</h3>
+        <p className="text-gray-400 text-sm leading-relaxed">
+          {feature.description}
+        </p>
+      </SpotlightCard>
     </motion.div>
   )
 }
@@ -237,6 +240,24 @@ export default function FeaturesSection() {
             />
           ))}
         </div>
+        {/* Calculator */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: durations.slow }}
+          className="mt-32 max-w-4xl mx-auto"
+        >
+            <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-white mb-4">
+                    Stop Burning Tokens 🔥
+                </h2>
+                <p className="text-gray-400">
+                    See how much Clarity Cache could save you.
+                </p>
+            </div>
+            <TokenSavingsCalculator />
+        </motion.div>
       </div>
     </section>
   )

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -94,7 +95,7 @@ const initialMetrics: DashboardPerformanceMetrics = {
  *     dashboardId: 'analytics',
  *     slowRenderThreshold: 16, // 60fps target
  *     onSlowRender: (duration) => {
- *       console.warn(`Slow render: ${duration}ms`)
+ *       logger.warn(`Slow render: ${duration}ms`)
  *     },
  *   })
  *
@@ -109,7 +110,7 @@ const initialMetrics: DashboardPerformanceMetrics = {
  *   }
  *
  *   // In dev tools or debug panel
- *   console.log(getSummary())
+ *   logger.debug(getSummary())
  *
  *   return <Dashboard />
  * }
@@ -141,7 +142,7 @@ export function useDashboardPerformance(
   const log = React.useCallback(
     (message: string, ...args: unknown[]) => {
       if (debug) {
-        console.log(`[DashboardPerf:${dashboardId}] ${message}`, ...args)
+        logger.debug(`[DashboardPerf:${dashboardId}] ${message}`, ...args)
       }
     },
     [debug, dashboardId]

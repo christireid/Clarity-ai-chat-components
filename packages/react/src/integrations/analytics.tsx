@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Analytics Integration
  *
@@ -154,7 +155,7 @@ export function AnalyticsProvider({
         })
       })
       .catch((err) => {
-        console.warn('[Clarity Chat] PostHog not available:', err.message)
+        logger.warn('[Clarity Chat] PostHog not available:', err.message)
         setIsReady(true)
       })
 
@@ -175,7 +176,7 @@ export function AnalyticsProvider({
         inject({ debug: vercelConfig.debug ?? false })
       })
       .catch((err) => {
-        console.warn(
+        logger.warn(
           '[Clarity Chat] Vercel Analytics not available:',
           err.message
         )

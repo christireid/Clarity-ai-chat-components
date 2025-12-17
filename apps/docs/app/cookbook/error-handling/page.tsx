@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -49,7 +50,7 @@ function Chat() {
       api="/api/chat"
       onError={(error) => {
         // Custom error handling
-        console.error('Chat error:', error)
+        logger.logger.error('Chat error:', error)
       }}
     />
   )
@@ -75,7 +76,7 @@ function Chat() {
       onError={(error) => {
         if (error.message.includes('network') || error.message.includes('fetch')) {
           // Network error - show retry option
-          toast.error('Network error. Check your connection and try again.')
+          toast.logger.error('Network error. Check your connection and try again.')
         }
       }}
     />
@@ -95,7 +96,7 @@ function Chat() {
       onError={(error) => {
         if (error.message.includes('rate limit') || error.status === 429) {
           // Rate limit - show wait message
-          toast.error('Too many requests. Please wait a moment and try again.')
+          toast.logger.error('Too many requests. Please wait a moment and try again.')
         }
       }}
     />
@@ -162,8 +163,8 @@ function Chat() {
         try {
           await append({ role: 'user', content })
         } catch (err) {
-          console.error('Failed to send message:', err)
-          toast.error('Failed to send message. Please try again.')
+          logger.logger.error('Failed to send message:', err)
+          toast.logger.error('Failed to send message. Please try again.')
         }
       }}
     />
@@ -296,7 +297,7 @@ function ChatApp() {
   api="/api/chat"
   onError={(error) => {
     const userMessage = getErrorMessage(error)
-    toast.error(userMessage)
+    toast.logger.error(userMessage)
   }}
 />`}
         />
@@ -328,11 +329,11 @@ function Chat() {
 
         // Also log to console in development
         if (process.env.NODE_ENV === 'development') {
-          console.error('Chat error:', error)
+          logger.logger.error('Chat error:', error)
         }
 
         // Show user-friendly message
-        toast.error(getErrorMessage(error))
+        toast.logger.error(getErrorMessage(error))
       }}
     />
   )

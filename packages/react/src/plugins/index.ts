@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Plugin System
  *
@@ -152,11 +153,11 @@ export interface CreatePluginOptions {
  *
  *   hooks: {
  *     beforeToolExecution: async (toolName, args) => {
- *       console.log(`Executing tool: ${toolName}`, args)
+ *       logger.debug(`Executing tool: ${toolName}`, args)
  *       return true // Allow execution
  *     },
  *     afterToolExecution: async (toolName, result) => {
- *       console.log(`Tool result: ${toolName}`, result)
+ *       logger.debug(`Tool result: ${toolName}`, result)
  *     },
  *   },
  * })
@@ -191,7 +192,7 @@ export function createPlugin(options: CreatePluginOptions): Plugin {
   // Validate semver format (basic check)
   const semverRegex = /^\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?$/
   if (!semverRegex.test(options.version)) {
-    console.warn(
+    logger.warn(
       `[createPlugin] Plugin "${options.name}" version "${options.version}" ` +
         'does not follow semver format (e.g., "1.0.0"). Consider using semver.'
     )

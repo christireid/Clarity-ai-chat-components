@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -161,7 +162,7 @@ export function useMessageHistory(
     const interval = setInterval(() => {
       // Use ref to get latest messages without re-creating interval
       saveConversation(conversationId, messagesRef.current).catch((err) => {
-        console.error('Auto-save failed:', err)
+        logger.logger.error('Auto-save failed:', err)
       })
     }, saveInterval)
 

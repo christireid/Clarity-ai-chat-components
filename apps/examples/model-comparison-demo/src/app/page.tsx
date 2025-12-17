@@ -1,4 +1,5 @@
 'use client'
+import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { useState } from 'react'
 import { ModelSelector, StreamingMessage } from '@clarity-chat/react'
@@ -40,7 +41,7 @@ export default function Home() {
       setLeftError(null)
     },
     onError: (error) => {
-      console.error('Left model error:', error)
+      SecureLogger.error('Left model error:', error)
       setLeftError(error)
       setIsLeftStreaming(false)
     },
@@ -55,7 +56,7 @@ export default function Home() {
       setRightError(null)
     },
     onError: (error) => {
-      console.error('Right model error:', error)
+      SecureLogger.error('Right model error:', error)
       setRightError(error)
       setIsRightStreaming(false)
     },
@@ -88,7 +89,7 @@ export default function Home() {
     const rightModelData = getModelMetadata(rightModel)
 
     if (!leftModelData || !rightModelData) {
-      console.error('Model metadata not found')
+      SecureLogger.error('Model metadata not found')
       setIsLeftStreaming(false)
       setIsRightStreaming(false)
       return
@@ -115,7 +116,7 @@ export default function Home() {
         }),
       ])
     } catch (error) {
-      console.error('Comparison error:', error)
+      SecureLogger.error('Comparison error:', error)
       setIsLeftStreaming(false)
       setIsRightStreaming(false)
     }

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * AI Hooks
  * 
@@ -72,7 +73,7 @@ export function useSuggestions(
         setSuggestions(results)
       } catch (error) {
         if (config.debug) {
-          console.error('[AI] Failed to get suggestions:', error)
+          logger.logger.error('[AI] Failed to get suggestions:', error)
         }
         setSuggestions([])
       } finally {
@@ -205,7 +206,7 @@ export function useSentimentAnalysis(options?: { debounceMs?: number }) {
           setSentiment(result)
         } catch (error) {
           if (config.debug) {
-            console.error('[AI] Failed to analyze sentiment:', error)
+            logger.logger.error('[AI] Failed to analyze sentiment:', error)
           }
           setSentiment(null)
         } finally {

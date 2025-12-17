@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Chain-of-Thought (CoT) Optimization
  *
@@ -209,7 +210,7 @@ export function analyzeCoTPrompt(prompt: string): CoTAnalysis {
  *   preferZeroShot: true,
  *   modelStrength: 'strong'
  * })
- * console.log(`Saved ${result.tokensSaved} tokens (${result.savingsPercent.toFixed(1)}%)`)
+ * logger.debug(`Saved ${result.tokensSaved} tokens (${result.savingsPercent.toFixed(1)}%)`)
  * ```
  */
 export function optimizeCoTPrompt(

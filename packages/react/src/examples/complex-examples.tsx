@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Complex Examples - Full Workflow Compositions
  *
@@ -59,7 +60,7 @@ function EnterpriseChatInner() {
       }
     },
     onMessageError: (error) => {
-      console.error('Message error:', error)
+      logger.logger.error('Message error:', error)
     },
   })
 
@@ -279,7 +280,7 @@ export function CustomStreamingChat() {
       reset()
     },
     onError: (error) => {
-      console.error('Streaming error:', error)
+      logger.logger.error('Streaming error:', error)
       setIsLoading(false)
     },
   })

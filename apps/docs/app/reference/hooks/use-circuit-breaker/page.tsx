@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -85,7 +86,7 @@ export default function UseCircuitBreakerPage() {
         code={`const { execute, state } = useCircuitBreaker({
   failureThreshold: 3,
   resetTimeout: 10000, // 10 seconds
-  onOpen: () => toast.error('Service unavailable, trying alternatives...'),
+  onOpen: () => toast.logger.error('Service unavailable, trying alternatives...'),
 })
 
 const handleFetch = async () => {
@@ -99,7 +100,7 @@ const handleFetch = async () => {
       return getCachedData()
     }
     // Handle standard error
-    console.error(error)
+    logger.logger.error(error)
   }
 }`}
         language="tsx"

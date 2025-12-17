@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useClarityObject - Top-Level Structured Output Hook
  *
@@ -32,7 +33,7 @@
  * const { object, run, isLoading, progress } = useClarityObject<Product>({
  *   api: '/api/generate-object',
  *   stream: true,
- *   onProgress: (chunk) => console.log('Progress:', chunk),
+ *   onProgress: (chunk) => logger.debug('Progress:', chunk),
  * })
  * ```
  */

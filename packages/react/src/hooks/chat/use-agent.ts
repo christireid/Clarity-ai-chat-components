@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useAgent - Top-level hook for AI agents
  *
@@ -81,7 +82,7 @@ export interface UseAgentReturn {
  * })
  *
  * const response = await agent.run({ query: 'What is 2+2?' })
- * console.log(response) // "4"
+ * logger.debug(response) // "4"
  * ```
  */
 export function useAgent(options: UseAgentOptions): UseAgentReturn {
@@ -96,7 +97,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
       }
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        console.error('[useAgent] Validation error:', error)
+        logger.logger.error('[useAgent] Validation error:', error)
         throw error
       }
     }
@@ -153,7 +154,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         setError(error)
         // Log error for debugging
         if (process.env['NODE_ENV'] === 'development') {
-          console.error('[useAgent] Execution failed:', error)
+          logger.logger.error('[useAgent] Execution failed:', error)
         }
         throw error
       } finally {

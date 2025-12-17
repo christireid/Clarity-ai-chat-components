@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useRetryWithBackoff - React Hook for Retry with Exponential Backoff
  *
@@ -19,7 +20,7 @@
  *     const { result } = await execute(() => submitForm(data))
  *     toast.success('Submitted!')
  *   } catch (error) {
- *     toast.error('Failed after all retries')
+ *     toast.logger.error('Failed after all retries')
  *   }
  * }
  * ```

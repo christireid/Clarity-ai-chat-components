@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -16,6 +17,7 @@ import {
 } from '@clarity-chat/primitives'
 import { Progress } from '../ui/progress'
 import type { ExportFormat } from '@clarity-chat/types'
+import { formatBytes } from '@clarity-chat/primitives'
 
 /**
  * Resource item for batch export
@@ -134,7 +136,7 @@ export function BatchExportDialog({
         ...options,
       })
     } catch (error) {
-      console.error('Batch export failed:', error)
+      logger.logger.error('Batch export failed:', error)
     } finally {
       setIsExporting(false)
     }
@@ -400,27 +402,3 @@ export function BatchExportDialog({
 }
 
 // Helper functions
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
-}
-
-function formatRelativeTime(date: Date): string {
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-  const diffHours = Math.floor(diffMs / 3600000)
-  const diffDays = Math.floor(diffMs / 86400000)
-
-  if (diffMins < 1) return 'just now'
-  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`
-  if (diffHours < 24)
-    return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`
-  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`
-  return date.toLocaleDateString()
-}
-
-BatchExportDialog.displayName = 'BatchExportDialog'

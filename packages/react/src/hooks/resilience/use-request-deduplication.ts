@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useRequestDeduplication - React Hook for Request Deduplication
  *
@@ -8,7 +9,7 @@
  * ```tsx
  * const { execute, isPending, stats } = useRequestDeduplication({
  *   debounceMs: 300,
- *   onDedupe: () => console.log('Duplicate request blocked'),
+ *   onDedupe: () => logger.debug('Duplicate request blocked'),
  * })
  *
  * const handleSubmit = async () => {
@@ -20,7 +21,7 @@
  *       // Request was debounced, ignore
  *       return
  *     }
- *     toast.error('Failed to submit')
+ *     toast.logger.error('Failed to submit')
  *   }
  * }
  * ```

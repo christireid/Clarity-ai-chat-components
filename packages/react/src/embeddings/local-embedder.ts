@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Local Embedding Generator
  *
@@ -159,7 +160,7 @@ function generateFallbackEmbedding(text: string, dimensions: number): number[] {
  *
  * // Generate single embedding
  * const result = await embedder.embed('What is React?')
- * console.log(result.embedding) // [0.1, 0.2, ...]
+ * logger.debug(result.embedding) // [0.1, 0.2, ...]
  *
  * // Batch embed for efficiency
  * const results = await embedder.embedBatch([

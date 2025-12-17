@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Analytics Provider
  * 
@@ -89,7 +90,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
       const doNotTrack = navigator.doNotTrack || (window as any).doNotTrack || (navigator as any).msDoNotTrack
       if (doNotTrack === '1' || doNotTrack === 'yes') {
         if (config.debug) {
-          console.log('[Analytics] Disabled due to Do Not Track setting')
+          logger.debug('[Analytics] Disabled due to Do Not Track setting')
         }
         return false
       }
@@ -107,7 +108,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
     
     const initializeProviders = async () => {
       if (config.debug) {
-        console.log('[Analytics] Initializing providers:', config.providers?.map(p => p.name))
+        logger.debug('[Analytics] Initializing providers:', config.providers?.map(p => p.name))
       }
       
       try {
@@ -117,10 +118,10 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
         setIsInitialized(true)
         
         if (config.debug) {
-          console.log('[Analytics] Providers initialized successfully')
+          logger.debug('[Analytics] Providers initialized successfully')
         }
       } catch (error) {
-        console.error('[Analytics] Failed to initialize providers:', error)
+        logger.logger.error('[Analytics] Failed to initialize providers:', error)
         setIsInitialized(true) // Continue even if initialization fails
       }
     }
@@ -217,7 +218,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
       }
       
       if (config.debug) {
-        console.log('[Analytics] Track:', event)
+        logger.debug('[Analytics] Track:', event)
       }
       
       // Send to all providers
@@ -225,7 +226,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
         try {
           provider.track(event)
         } catch (error) {
-          console.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -240,14 +241,14 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
       currentUserId.current = user.id
       
       if (config.debug) {
-        console.log('[Analytics] Identify:', user)
+        logger.debug('[Analytics] Identify:', user)
       }
       
       config.providers?.forEach(provider => {
         try {
           provider.identify?.(user)
         } catch (error) {
-          console.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -260,14 +261,14 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
       if (!isEnabled || !isInitialized) return
       
       if (config.debug) {
-        console.log('[Analytics] Page:', pageView)
+        logger.debug('[Analytics] Page:', pageView)
       }
       
       config.providers?.forEach(provider => {
         try {
           provider.page?.(pageView)
         } catch (error) {
-          console.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -281,14 +282,14 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
     currentUserId.current = undefined
     
     if (config.debug) {
-      console.log('[Analytics] Reset')
+      logger.debug('[Analytics] Reset')
     }
     
     config.providers?.forEach(provider => {
       try {
         provider.reset?.()
       } catch (error) {
-        console.error(`[Analytics] Error in provider ${provider.name}:`, error)
+        logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
       }
     })
   }, [isEnabled, isInitialized, config])

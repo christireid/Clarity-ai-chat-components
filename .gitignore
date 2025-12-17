@@ -3,6 +3,10 @@ node_modules/
 .pnp
 .pnp.js
 
+# Package manager lockfiles (project uses pnpm)
+package-lock.json
+yarn.lock
+
 # Testing
 coverage/
 .nyc_output/

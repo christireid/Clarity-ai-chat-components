@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -197,8 +198,8 @@ function safeCalculateOutputLimit(
  *   value={preference}
  *   onChange={(pref) => {
  *     setPreference(pref.mode)
- *     console.log('Max tokens:', pref.maxTokens)
- *     console.log('Instruction:', pref.brevityInstruction)
+ *     logger.debug('Max tokens:', pref.maxTokens)
+ *     logger.debug('Instruction:', pref.brevityInstruction)
  *   }}
  * />
  *
@@ -619,7 +620,7 @@ export function useOutputPreference(
  * <UncontrolledOutputPreferenceSelector
  *   ref={selectorRef}
  *   defaultValue="balanced"
- *   onValueChange={(pref) => console.log('Changed:', pref)}
+ *   onValueChange={(pref) => logger.debug('Changed:', pref)}
  * />
  *
  * // Later, read current value

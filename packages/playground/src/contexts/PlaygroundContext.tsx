@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Playground Context
  *
@@ -388,7 +389,7 @@ export function PlaygroundProvider({ children }: PlaygroundProviderProps) {
         dispatch({ type: 'SET_TEMPLATE', templateId })
         toast.success(`Loaded template: ${template.name}`)
       } else {
-        toast.error(`Template "${templateId}" not found`)
+        toast.logger.error(`Template "${templateId}" not found`)
       }
     }
 
@@ -463,7 +464,7 @@ export function PlaygroundProvider({ children }: PlaygroundProviderProps) {
       if (result.success) {
         toast.success('Link copied to clipboard!')
       } else {
-        toast.error('Failed to copy link')
+        toast.logger.error('Failed to copy link')
       }
     }
 
@@ -501,7 +502,7 @@ export function PlaygroundProvider({ children }: PlaygroundProviderProps) {
         await navigator.clipboard.writeText(state.code)
         toast.success('Code copied to clipboard!')
       } catch {
-        toast.error('Failed to copy code')
+        toast.logger.error('Failed to copy code')
       }
     }
 

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Session Store
  *
@@ -267,10 +268,10 @@ export function getSessionStore(): SessionStore {
     process.env.NODE_ENV === 'production'
 
   if (useRedis) {
-    console.log('Using Redis session store (Upstash)')
+    logger.debug('Using Redis session store (Upstash)')
     return new RedisSessionStore()
   } else {
-    console.log('Using local session store (development mode)')
+    logger.debug('Using local session store (development mode)')
     return new LocalSessionStore()
   }
 }

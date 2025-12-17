@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -15,6 +16,7 @@ import {
 import { DURATION_SECONDS } from '../../animations/constants'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import {
+import { formatBytes } from '@clarity-chat/primitives'
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../../animations/motion-safe'
@@ -228,7 +230,7 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
         }
         return undefined
       } catch (error) {
-        console.warn('Failed to collect Web Vitals:', error)
+        logger.warn('Failed to collect Web Vitals:', error)
         return undefined
       }
     }
@@ -308,7 +310,7 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
  *   showMemoryUsage
  *   showFPS
  *   onDataUpdate={(data) => {
- *     console.log('Performance:', data)
+ *     logger.debug('Performance:', data)
  *   }}
  * />
  * ```
@@ -336,12 +338,7 @@ export function PerformanceAnalyticsDashboard({
   /**
    * Format bytes to human-readable format
    */
-  const formatBytes = (bytes: number): string => {
-    if (bytes === 0) return '0 B'
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`
+  `
   }
 
   /**

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SafetyStatusCard } from '@clarity-chat/react'
 import type { SafetyCheckItem } from '@clarity-chat/react'
@@ -126,11 +127,11 @@ export const WithActions: Story = {
     checks: mockChecks,
     lastReviewedAt: new Date(),
     onReviewPolicy: () => {
-      console.log('Reviewing policy')
+      SecureLogger.debug('Reviewing policy')
       alert('Opening policy review...')
     },
     onAcknowledge: (check) => {
-      console.log('Acknowledging check:', check.id)
+      SecureLogger.debug('Acknowledging check:', check.id)
       alert(`Acknowledged: ${check.label}`)
     },
   },

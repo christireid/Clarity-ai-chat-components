@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Theme Validator
  *
@@ -202,10 +203,10 @@ function validateContrast(
  *
  * const result = validateThemeConfig(myTheme)
  * if (!result.valid) {
- *   console.error('Theme validation failed:', result.errors)
+ *   logger.logger.error('Theme validation failed:', result.errors)
  * }
  * if (result.warnings.length > 0) {
- *   console.warn('Theme warnings:', result.warnings)
+ *   logger.warn('Theme warnings:', result.warnings)
  * }
  * ```
  */
@@ -388,7 +389,7 @@ export function validateThemeWithWarnings(
   if (process.env.NODE_ENV !== 'production') {
     // Log warnings
     if (result.warnings.length > 0) {
-      console.warn(
+      logger.warn(
         '[Clarity Chat] Theme validation warnings:\n' +
           result.warnings
             .map(
@@ -400,7 +401,7 @@ export function validateThemeWithWarnings(
 
     // Log errors
     if (result.errors.length > 0) {
-      console.error(
+      logger.logger.error(
         '[Clarity Chat] Theme validation errors:\n' +
           result.errors
             .map(

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Rate Limit Header Parsing Utility
  *
@@ -39,7 +40,7 @@ export interface RateLimitInfo {
  *
  * if (response.status === 429) {
  *   const limits = parseRateLimitHeaders(response)
- *   console.log(`Rate limited. Retry after ${limits.retryAfter}s`)
+ *   logger.debug(`Rate limited. Retry after ${limits.retryAfter}s`)
  *
  *   if (limits.retryAfter) {
  *     await sleep(limits.retryAfter * 1000)

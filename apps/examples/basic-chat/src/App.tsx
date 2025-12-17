@@ -1,5 +1,6 @@
 /**
  * Basic Chat Demo - A complete example showcasing core Clarity Chat features
+import { SecureLogger } from '@/lib/security/secureLogger';
  *
  * This example demonstrates:
  * - Message operations (edit, regenerate, delete, undo/redo)
@@ -59,14 +60,14 @@ function ChatApp() {
       },
     ],
     onEdit: (messageId, newContent) => {
-      console.log('Message edited:', messageId, newContent)
+      SecureLogger.debug('Message edited:', messageId, newContent)
     },
     onRegenerate: (messageId) => {
-      console.log('Regenerating message:', messageId)
+      SecureLogger.debug('Regenerating message:', messageId)
       // Will be handled by handleRegenerate below
     },
     onDelete: (messageId) => {
-      console.log('Message deleted:', messageId)
+      SecureLogger.debug('Message deleted:', messageId)
     },
   })
 
@@ -232,7 +233,7 @@ I'm here to help!`
     } catch (err) {
       setIsLoading(false)
       setError(err instanceof Error ? err.message : 'Failed to send message')
-      console.error('Error sending message:', err)
+      SecureLogger.error('Error sending message:', err)
     }
   }, [addMessage, addInputTokens, addOutputTokens, startTyping, delayResponse])
 

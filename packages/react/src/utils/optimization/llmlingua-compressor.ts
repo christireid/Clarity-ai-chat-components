@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * LLMLingua-2 Style Prompt Compressor
  *
@@ -415,8 +416,8 @@ function iterativeCompress(
  * await compressor.initialize()
  *
  * const result = await compressor.compress(ragContext)
- * console.log(`Compressed from ${result.originalTokens} to ${result.compressedTokens}`)
- * console.log(`Ratio: ${result.compressionRatio}`) // ~0.5-0.7 with statistical method
+ * logger.debug(`Compressed from ${result.originalTokens} to ${result.compressedTokens}`)
+ * logger.debug(`Ratio: ${result.compressionRatio}`) // ~0.5-0.7 with statistical method
  *
  * // Compress with preserved segments
  * const result2 = await compressor.compressWithSegments(text, [
@@ -794,7 +795,7 @@ export class LLMLinguaCompressor {
  * const compressor = new LLMLinguaCompressor({ targetRatio: 0.25 })
  * const batch1 = await compressRAGContext(docs1, {}, compressor)
  * const batch2 = await compressRAGContext(docs2, {}, compressor)
- * console.log(compressor.getStats()) // Shows combined stats
+ * logger.debug(compressor.getStats()) // Shows combined stats
  * ```
  */
 export async function compressRAGContext(

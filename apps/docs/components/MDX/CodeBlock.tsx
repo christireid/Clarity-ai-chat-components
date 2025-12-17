@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
@@ -46,7 +47,7 @@ export function CodeBlock({
 
       timeoutRef.current = setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      toast.error('Failed to copy code')
+      toast.logger.error('Failed to copy code')
     }
   }, [code, toast])
 
@@ -64,7 +65,7 @@ export function CodeBlock({
       URL.revokeObjectURL(url)
       toast.success('Code downloaded')
     } catch (error) {
-      toast.error('Failed to download code')
+      toast.logger.error('Failed to download code')
     }
   }, [code, language, toast])
 
