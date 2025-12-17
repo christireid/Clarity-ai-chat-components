@@ -295,29 +295,121 @@ _[Missing or unhelpful empty states]_
 
 ## Accessibility
 
-### ARIA Issues
+### 🔴 Blocker Issues
 
-_[Missing or incorrect ARIA attributes]_
+_No accessibility blockers identified_
 
-### Semantic HTML Issues
+### 🟠 High Priority Issues
 
-_[Non-semantic markup]_
+#### [HIGH] Missing aria-live Announcements for Dynamic Content
 
-### Screen Reader Issues
+**Type**: Accessibility  
+**Component**: Message streaming, loading states  
+**Severity**: High
 
-_[Poor screen reader experience]_
+**Description**: While 71 instances of `aria-live` exist, some critical dynamic content may lack
+proper announcements.
 
-### Keyboard Navigation Issues
+**Current Status**:
 
-_[Elements not keyboard accessible]_
+- ✅ 71 `aria-live` regions identified
+- ✅ 306 `aria-label` attributes (excellent)
+- ✅ 28 `role="alert"` for errors
+- ⚠️ Need to verify streaming messages announce properly
 
-### Color Contrast Issues
+**Expected Behavior**: All dynamic content (streaming responses, loading states, errors) should
+announce to screen readers.
 
-_[WCAG contrast failures]_
+**Impact**: Screen reader users miss important updates
 
-### Focus Management Issues
+**Proposed Fix**:
 
-_[Missing or incorrect focus indicators]_
+1. Audit all streaming components for aria-live
+2. Add polite announcements for message updates
+3. Add assertive announcements for errors
+4. Test with NVDA/JAWS/VoiceOver
+
+**Breaking Change**: No  
+**Effort**: Medium
+
+---
+
+### 🟡 Medium Priority Issues
+
+#### [MEDIUM] Keyboard Navigation Coverage
+
+**Type**: Accessibility  
+**Component**: Multiple  
+**Severity**: Medium
+
+**Description**: Keyboard navigation patterns exist but need verification:
+
+- 36 `tabIndex` implementations
+- 34 `onKeyDown` handlers
+- 1 `onKeyPress` (deprecated pattern!)
+
+**Issues**:
+
+- `onKeyPress` is deprecated, should use `onKeyDown`
+- Need to verify all interactive elements are keyboard accessible
+- Focus trap patterns for modals/dialogs?
+
+**Proposed Fix**:
+
+1. Replace `onKeyPress` with `onKeyDown`
+2. Audit all interactive components for keyboard access
+3. Implement focus traps where needed
+4. Add keyboard shortcut documentation
+
+**Breaking Change**: No  
+**Effort**: Medium
+
+---
+
+#### [MEDIUM] Focus Management Consistency
+
+**Type**: Accessibility  
+**Component**: Multiple  
+**Severity**: Medium
+
+**Description**: Focus management exists but needs standardization:
+
+- 27 `.focus()` calls
+- 9 `autoFocus` props
+- Need to verify focus returns after modal close
+
+**Proposed Fix**:
+
+1. Create useFocusManagement hook for consistency
+2. Ensure focus returns to trigger element after dialogs
+3. Document focus management patterns
+
+**Breaking Change**: No  
+**Effort**: Medium
+
+---
+
+### 🟢 Low Priority Issues
+
+#### [LOW] ARIA Attribute Coverage
+
+**Type**: Accessibility  
+**Severity**: Low
+
+**Current Coverage** (Good overall):
+
+- aria-label: 306 ✅
+- aria-hidden: 126 ✅
+- aria-live: 71 ✅
+- aria-describedby: 23 ✅
+- aria-checked: 19 ✅
+- aria-expanded: 11 ⚠️
+- aria-labelledby: 11 ⚠️
+- aria-selected: 11 ⚠️
+
+**Proposed Fix**: Increase coverage for expandable/selectable components
+
+**Effort**: Small
 
 ---
 
