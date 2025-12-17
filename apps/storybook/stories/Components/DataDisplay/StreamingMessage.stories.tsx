@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { StreamingMessage } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'
@@ -184,8 +183,8 @@ export const WithToolCalls: Story = {
     isStreaming: false,
     showTools: true,
     toolCalls: mockToolCalls,
-    onToolApprove: (tool) => SecureLogger.debug('Approved:', tool),
-    onToolReject: (tool) => SecureLogger.debug('Rejected:', tool),
+    onToolApprove: (tool) => console.log('Approved:', tool),
+    onToolReject: (tool) => console.log('Rejected:', tool),
   },
 }
 
@@ -341,7 +340,7 @@ const ToolApprovalDemo = () => {
   const [toolStates, setToolStates] = useState<Record<string, any>>({})
 
   const handleApprove = (tool: ToolCall) => {
-    SecureLogger.debug('Approved:', tool)
+    console.log('Approved:', tool)
     setToolStates((prev) => ({
       ...prev,
       [tool.id]: { status: 'approved', result: 'Tool executed successfully!' },
@@ -349,7 +348,7 @@ const ToolApprovalDemo = () => {
   }
 
   const handleReject = (tool: ToolCall) => {
-    SecureLogger.debug('Rejected:', tool)
+    console.log('Rejected:', tool)
     setToolStates((prev) => ({
       ...prev,
       [tool.id]: { status: 'rejected' },

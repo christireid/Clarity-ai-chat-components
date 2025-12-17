@@ -19,7 +19,6 @@
 
 import * as React from 'react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // =============================================================================
 // 💡 Types
 // =============================================================================
@@ -320,7 +319,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    SecureLogger.error('Chat error:', error, errorInfo)
+    console.error('Chat error:', error, errorInfo)
   }
 
   render(): React.ReactNode {

@@ -10,7 +10,6 @@
 import * as React from 'react'
 import {
   MessageThreadView,
-import { SecureLogger } from '@/lib/security/secureLogger';
   ThreadList,
   ChatWindow,
   Message,
@@ -18,7 +17,6 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Thread, ThreadViewConfig } from '@clarity-chat/react'
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@clarity-chat/primitives'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // =============================================================================
 // Example 1: Basic Inline Threading
 // =============================================================================
@@ -339,7 +337,7 @@ export function ThreadBrowserExample() {
   ])
 
   const handleSelectThread = (thread: Thread) => {
-    SecureLogger.debug('Selected thread:', thread)
+    console.log('Selected thread:', thread)
     // Mark thread as read
     setThreads(prev => prev.map(t =>
       t.id === thread.id ? { ...t, unreadCount: 0 } : t
@@ -407,7 +405,7 @@ export function ProductionThreadingExample() {
         setThreads(data.threads)
         setMessages(data.messages)
       } catch (error) {
-        SecureLogger.error('Failed to load threads:', error)
+        console.error('Failed to load threads:', error)
       } finally {
         setIsLoading(false)
       }
@@ -427,7 +425,7 @@ export function ProductionThreadingExample() {
       const newThread = await response.json()
       setThreads(prev => [...prev, newThread])
     } catch (error) {
-      SecureLogger.error('Failed to create thread:', error)
+      console.error('Failed to create thread:', error)
     }
   }
 
@@ -452,7 +450,7 @@ export function ProductionThreadingExample() {
         return thread
       }))
     } catch (error) {
-      SecureLogger.error('Failed to send thread reply:', error)
+      console.error('Failed to send thread reply:', error)
     }
   }
 
@@ -466,7 +464,7 @@ export function ProductionThreadingExample() {
         thread.id === threadId ? { ...thread, unreadCount: 0 } : thread
       ))
     } catch (error) {
-      SecureLogger.error('Failed to mark thread as read:', error)
+      console.error('Failed to mark thread as read:', error)
     }
   }
 
@@ -554,17 +552,17 @@ export function AdvancedThreadingExample() {
                 config={advancedConfig}
                 onSendMessage={(content) => {
                   // Custom send logic
-                  SecureLogger.debug('Sending to thread:', thread?.id, content)
+                  console.log('Sending to thread:', thread?.id, content)
                 }}
                 onCreateThread={() => {
                   // Custom thread creation
-                  SecureLogger.debug('Creating thread for:', message.id)
+                  console.log('Creating thread for:', message.id)
                 }}
                 onThreadExpand={() => {
-                  SecureLogger.debug('Thread expanded:', thread?.id)
+                  console.log('Thread expanded:', thread?.id)
                 }}
                 onThreadCollapse={() => {
-                  SecureLogger.debug('Thread collapsed:', thread?.id)
+                  console.log('Thread collapsed:', thread?.id)
                 }}
                 layout="inline"
                 className="custom-thread-styling"

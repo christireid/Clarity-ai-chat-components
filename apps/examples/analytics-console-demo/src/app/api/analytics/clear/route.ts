@@ -1,6 +1,5 @@
 /**
  * Clear Analytics API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * DELETE: Clear all analytics data (dev only)
  */
 
@@ -25,7 +24,7 @@ export async function DELETE() {
     })
     
   } catch (error) {
-    SecureLogger.error('Clear analytics error:', error)
+    console.error('Clear analytics error:', error)
     return NextResponse.json(
       { error: 'Failed to clear analytics' },
       { status: 500 }

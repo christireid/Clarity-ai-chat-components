@@ -1,6 +1,5 @@
 /**
  * RAG Chat API - Retrieval Augmented Generation
-import { SecureLogger } from '@/lib/security/secureLogger';
  * Searches documents, builds context, and streams AI response
  */
 
@@ -98,7 +97,7 @@ export async function POST(request: Request) {
       contextTokens,
       promptTokens
     ).catch(error => {
-      SecureLogger.error('Streaming error:', error)
+      console.error('Streaming error:', error)
       writer.write(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`))
       writer.close()
     })
@@ -112,7 +111,7 @@ export async function POST(request: Request) {
     })
     
   } catch (error: any) {
-    SecureLogger.error('RAG chat error:', error)
+    console.error('RAG chat error:', error)
     return new Response(JSON.stringify({ error: error.message || 'RAG chat failed' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Beautiful prompts using @clack/prompts
  * Provides graceful cancellation, cleanup handling, and consistent UX

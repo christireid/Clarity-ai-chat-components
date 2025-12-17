@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ErrorBoundary } from '@clarity-chat/error-handling'
 import { ConfigurationError, APIError } from '@clarity-chat/error-handling'
@@ -97,8 +96,8 @@ export const WithErrorCallback: Story = {
   args: {
     children: <ThrowError />,
     onError: (error, errorInfo) => {
-      SecureLogger.debug('Error caught:', error)
-      SecureLogger.debug('Error info:', errorInfo)
+      console.log('Error caught:', error)
+      console.log('Error info:', errorInfo)
     },
   },
 }

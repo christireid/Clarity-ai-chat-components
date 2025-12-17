@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PromptLibrary } from '@clarity-chat/react'
 
@@ -18,5 +17,5 @@ const mockPrompts = [
 ]
 
 export const Default: Story = {
-  args: { prompts: mockPrompts, onPromptSelect: (p) => SecureLogger.debug(p) },
+  args: { prompts: mockPrompts, onPromptSelect: (p) => console.log(p) },
 }

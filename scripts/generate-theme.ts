@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env npx tsx
 /**
  * Theme Generator CLI
@@ -232,7 +231,7 @@ function ask(
 async function main() {
   const parsedArgs = parseArgs()
 
-  SecureLogger.debug('\n🎨 Clarity Chat Theme Generator\n')
+  console.log('\n🎨 Clarity Chat Theme Generator\n')
 
   let themeName: string
   let primaryColor: string
@@ -264,12 +263,12 @@ async function main() {
 
   // Validate inputs
   if (!themeName) {
-    SecureLogger.error('❌ Theme name is required')
+    console.error('❌ Theme name is required')
     process.exit(1)
   }
 
   if (!primaryColor || !primaryColor.match(/^#?[0-9a-fA-F]{6}$/)) {
-    SecureLogger.error('❌ Invalid hex color. Use format: #3b82f6')
+    console.error('❌ Invalid hex color. Use format: #3b82f6')
     process.exit(1)
   }
 
@@ -294,23 +293,23 @@ async function main() {
   fs.writeFileSync(jsonPath, JSON.stringify(theme, null, 2))
   fs.writeFileSync(cssPath, css)
 
-  SecureLogger.debug(`\n✅ Generated theme "${themeName}":`)
-  SecureLogger.debug(`   📄 ${jsonPath}`)
-  SecureLogger.debug(`   🎨 ${cssPath}`)
+  console.log(`\n✅ Generated theme "${themeName}":`)
+  console.log(`   📄 ${jsonPath}`)
+  console.log(`   🎨 ${cssPath}`)
 
-  SecureLogger.debug('\n📝 Usage:')
-  SecureLogger.debug(`   1. Import the CSS: import './themes/${slug}.css'`)
-  SecureLogger.debug(`   2. Add data attribute: <html data-theme="${slug}">`)
-  SecureLogger.debug(`   3. Or use ThemeProvider: <ThemeProvider theme="${slug}">`)
+  console.log('\n📝 Usage:')
+  console.log(`   1. Import the CSS: import './themes/${slug}.css'`)
+  console.log(`   2. Add data attribute: <html data-theme="${slug}">`)
+  console.log(`   3. Or use ThemeProvider: <ThemeProvider theme="${slug}">`)
 
-  SecureLogger.debug('\n🎨 Theme Colors:')
-  SecureLogger.debug(`   Primary:    ${theme.colors.primary}`)
-  SecureLogger.debug(`   Background: ${theme.colors.background}`)
-  SecureLogger.debug(`   Foreground: ${theme.colors.foreground}`)
-  SecureLogger.debug('')
+  console.log('\n🎨 Theme Colors:')
+  console.log(`   Primary:    ${theme.colors.primary}`)
+  console.log(`   Background: ${theme.colors.background}`)
+  console.log(`   Foreground: ${theme.colors.foreground}`)
+  console.log('')
 }
 
 main().catch((error) => {
-  SecureLogger.error('❌ Error:', error.message)
+  console.error('❌ Error:', error.message)
   process.exit(1)
 })

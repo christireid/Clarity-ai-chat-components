@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SessionSummaryCard } from '@clarity-chat/react'
 import type { SessionSummaryHighlights, SessionMetric } from '@clarity-chat/react'
@@ -65,11 +64,11 @@ export const WithActions: Story = {
     summary: mockSummary,
     metrics: mockMetrics,
     onAction: (action) => {
-      SecureLogger.debug('Action selected:', action)
+      console.log('Action selected:', action)
       alert(`Selected: ${action}`)
     },
     onExport: () => {
-      SecureLogger.debug('Exporting session')
+      console.log('Exporting session')
       alert('Exporting session summary...')
     },
   },

@@ -1,6 +1,5 @@
 // Type-safe streaming chat hook - Example hook needs type updates
 import { useState, useCallback } from 'react'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 // Local types for model comparison  
 export type ChatMessage = any
@@ -119,14 +118,14 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}) {
                     break
                 }
               } catch (parseError) {
-                SecureLogger.error('Failed to parse SSE message:', parseError)
+                console.error('Failed to parse SSE message:', parseError)
               }
             }
           }
         }
       } catch (err: any) {
         if (err.name === 'AbortError') {
-          SecureLogger.debug('Stream aborted by user')
+          console.log('Stream aborted by user')
         } else {
           const errorMessage = err.message || 'An error occurred during streaming'
           setError(errorMessage)

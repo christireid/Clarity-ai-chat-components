@@ -1,6 +1,5 @@
 /**
  * Daily Analytics API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * GET: Get daily breakdown
  */
 
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest) {
     })
     
   } catch (error) {
-    SecureLogger.error('Daily analytics error:', error)
+    console.error('Daily analytics error:', error)
     return NextResponse.json(
       { error: 'Failed to get daily analytics' },
       { status: 500 }

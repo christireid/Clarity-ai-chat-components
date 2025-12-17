@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Message } from '@clarity-chat/types'
 import { sendChatMessage } from '@/api/chat'
 import { useAppStore } from '@/lib/store'
@@ -44,7 +43,7 @@ export function useChat() {
       queryClient.invalidateQueries({ queryKey: ['conversations'] })
     },
     onError: (error, content) => {
-      SecureLogger.error('Failed to send message:', error)
+      console.error('Failed to send message:', error)
       // Optionally remove the optimistically added message
     },
   })

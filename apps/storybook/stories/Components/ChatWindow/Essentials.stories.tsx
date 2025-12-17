@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -114,7 +113,7 @@ export const BasicChat: Story = {
     messages: mockMessages,
     isLoading: false,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {
@@ -140,7 +139,7 @@ export const WithLoadingState: Story = {
     messages: mockMessages,
     isLoading: true,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {
@@ -165,7 +164,7 @@ export const EmptyChat: Story = {
     messages: [],
     isLoading: false,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {
@@ -191,7 +190,7 @@ export const WithTokenCounter: Story = {
     isLoading: false,
     showTokenCounter: true,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {
@@ -306,7 +305,7 @@ The \`useState\` hook returns an array with the current state value and a functi
     ],
     isLoading: false,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {

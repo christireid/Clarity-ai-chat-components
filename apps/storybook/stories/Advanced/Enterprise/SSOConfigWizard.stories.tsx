@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { SSOConfigWizard, type SSOConfigStep } from '@clarity-chat/react'
@@ -182,9 +181,9 @@ export const Default: Story = {
     steps: oktaSteps,
     metadata: mockMetadata,
     notes: '',
-    onNotesChange: (value) => SecureLogger.debug('Notes:', value),
-    onDownloadMetadata: () => SecureLogger.debug('Downloading metadata...'),
-    onSubmit: () => SecureLogger.debug('Configuration submitted'),
+    onNotesChange: (value) => console.log('Notes:', value),
+    onDownloadMetadata: () => console.log('Downloading metadata...'),
+    onSubmit: () => console.log('Configuration submitted'),
   },
 }
 

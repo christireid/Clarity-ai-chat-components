@@ -11,7 +11,6 @@ import { useState } from 'react'
 import { SecurityManager, type SecurityResult } from '@clarity-chat/react'
 import { MessageActionsSecure, type SecurityInfo } from '@clarity-chat/react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Example: Chat message with security-enhanced actions
  */
@@ -62,7 +61,7 @@ export function SecureMessageActionsExample() {
   }
 
   const handleReport = (messageId: string, reason: string) => {
-    SecureLogger.debug('Message reported:', { messageId, reason })
+    console.log('Message reported:', { messageId, reason })
     // In production: Send to your backend
   }
 

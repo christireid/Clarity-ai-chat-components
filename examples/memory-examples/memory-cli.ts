@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Standalone Node.js CLI Example - Clarity Memory
  *
@@ -13,7 +12,6 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 import * as readline from 'readline'
 import { clarityMemory } from '../../packages/memory/src/factory'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize memory service with file persistence
 // @ts-expect-error - Example uses minimal config, factory provides defaults
 const memory = clarityMemory({
@@ -33,12 +31,12 @@ const rl = readline.createInterface({
   prompt: '\n💭 You: '
 })
 
-SecureLogger.debug('╔═══════════════════════════════════════════════════════════╗')
-SecureLogger.debug('║         🧠 Clarity Memory CLI Chat Demo                 ║')
-SecureLogger.debug('╚═══════════════════════════════════════════════════════════╝')
-SecureLogger.debug('\nThis is a simple CLI chat with memory capabilities.')
-SecureLogger.debug('Type your messages and the system will remember context.')
-SecureLogger.debug('Commands: /stats, /clear, /exit\n')
+console.log('╔═══════════════════════════════════════════════════════════╗')
+console.log('║         🧠 Clarity Memory CLI Chat Demo                 ║')
+console.log('╚═══════════════════════════════════════════════════════════╝')
+console.log('\nThis is a simple CLI chat with memory capabilities.')
+console.log('Type your messages and the system will remember context.')
+console.log('Commands: /stats, /clear, /exit\n')
 
 rl.prompt()
 
@@ -52,7 +50,7 @@ rl.on('line', async (input) => {
 
   // Handle special commands
   if (message === '/exit' || message === '/quit') {
-    SecureLogger.debug('\n👋 Goodbye! Closing memory and exiting...')
+    console.log('\n👋 Goodbye! Closing memory and exiting...')
     await memory.close()
     rl.close()
     process.exit(0)
@@ -60,24 +58,24 @@ rl.on('line', async (input) => {
 
   if (message === '/stats') {
     const stats = memory.getStats()
-    SecureLogger.debug('\n📊 Memory Statistics:')
-    SecureLogger.debug(`  Total memories: ${stats.total}`)
-    SecureLogger.debug(`  By type: ${JSON.stringify(stats.byType, null, 2)}`)
-    SecureLogger.debug(`  Total tokens: ${stats.totalTokens}`)
+    console.log('\n📊 Memory Statistics:')
+    console.log(`  Total memories: ${stats.total}`)
+    console.log(`  By type: ${JSON.stringify(stats.byType, null, 2)}`)
+    console.log(`  Total tokens: ${stats.totalTokens}`)
     rl.prompt()
     return
   }
 
   if (message === '/clear') {
     // Note: clearAll() may not be available, this is a placeholder
-    SecureLogger.debug('✨ Memory cleared (in production, implement clearAll() method)')
+    console.log('✨ Memory cleared (in production, implement clearAll() method)')
     rl.prompt()
     return
   }
 
   if (message.startsWith('/')) {
-    SecureLogger.debug(`\n❌ Unknown command: ${message}`)
-    SecureLogger.debug('Available commands: /stats, /clear, /exit')
+    console.log(`\n❌ Unknown command: ${message}`)
+    console.log('Available commands: /stats, /clear, /exit')
     rl.prompt()
     return
   }
@@ -102,7 +100,7 @@ rl.on('line', async (input) => {
     )
 
     // Display response
-    SecureLogger.debug(`\n🤖 Assistant: ${response}`)
+    console.log(`\n🤖 Assistant: ${response}`)
 
     // Store the conversation
     await Promise.all([
@@ -122,17 +120,17 @@ rl.on('line', async (input) => {
 
     // Show memory info
     if (relevantMemories.length > 0) {
-      SecureLogger.debug(`   (Used ${relevantMemories.length} relevant memories)`)
+      console.log(`   (Used ${relevantMemories.length} relevant memories)`)
     }
   } catch (error) {
-    SecureLogger.error('\n❌ Error:', error)
+    console.error('\n❌ Error:', error)
   }
 
   rl.prompt()
 })
 
 rl.on('close', () => {
-  SecureLogger.debug('\n👋 Session ended.')
+  console.log('\n👋 Session ended.')
   process.exit(0)
 })
 

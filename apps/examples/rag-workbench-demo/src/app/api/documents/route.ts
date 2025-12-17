@@ -1,6 +1,5 @@
 /**
  * Document management API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * POST: Upload document
  * GET: List documents
  * DELETE: Delete document
@@ -72,7 +71,7 @@ export async function POST(request: NextRequest) {
     })
     
   } catch (error) {
-    SecureLogger.error('Document upload error:', error)
+    console.error('Document upload error:', error)
     return NextResponse.json(
       { error: 'Failed to upload document' },
       { status: 500 }
@@ -99,7 +98,7 @@ export async function GET() {
     })
     
   } catch (error) {
-    SecureLogger.error('Document list error:', error)
+    console.error('Document list error:', error)
     return NextResponse.json(
       { error: 'Failed to list documents' },
       { status: 500 }
@@ -134,7 +133,7 @@ export async function DELETE(request: NextRequest) {
     })
     
   } catch (error) {
-    SecureLogger.error('Document delete error:', error)
+    console.error('Document delete error:', error)
     return NextResponse.json(
       { error: 'Failed to delete document' },
       { status: 500 }

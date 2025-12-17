@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FileUpload } from '@clarity-chat/react'
 import { expect, within } from 'storybook/test'
@@ -54,7 +53,7 @@ file validation, and multiple file support.
 \`\`\`tsx
 <FileUpload
   onFilesSelected={(files) => {
-    SecureLogger.debug('Files selected:', files)
+    console.log('Files selected:', files)
   }}
   maxFiles={5}
   maxSize={10 * 1024 * 1024} // 10MB
@@ -111,7 +110,7 @@ type Story = StoryObj<typeof FileUpload>
 export const Default: Story = {
   args: {
     onFilesSelected: (files) => {
-      SecureLogger.debug('Files selected:', files)
+      console.log('Files selected:', files)
     },
     maxFiles: 5,
     maxSize: 10 * 1024 * 1024, // 10MB
@@ -136,7 +135,7 @@ export const Default: Story = {
 export const ImageOnly: Story = {
   args: {
     onFilesSelected: (files) => {
-      SecureLogger.debug('Images selected:', files)
+      console.log('Images selected:', files)
     },
     accept: 'image/*',
     maxFiles: 3,
@@ -158,7 +157,7 @@ export const ImageOnly: Story = {
 export const SingleFile: Story = {
   args: {
     onFilesSelected: (files) => {
-      SecureLogger.debug('File selected:', files)
+      console.log('File selected:', files)
     },
     maxFiles: 1,
   },
@@ -176,7 +175,7 @@ export const SingleFile: Story = {
 export const WithValidation: Story = {
   args: {
     onFilesSelected: (files) => {
-      SecureLogger.debug('Valid files:', files)
+      console.log('Valid files:', files)
     },
     maxSize: 5 * 1024 * 1024, // 5MB
     accept: '.pdf,.doc,.docx',

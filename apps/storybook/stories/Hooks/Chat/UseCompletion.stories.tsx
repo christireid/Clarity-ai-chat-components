@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useCompletion } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -52,7 +51,7 @@ provide a prompt and receive a completion.
 const { completion, complete, isLoading, error, stop } = useCompletion({
   api: '/api/completion',
   onFinish: (prompt, completion) => {
-    SecureLogger.debug('Completed:', completion)
+    console.log('Completed:', completion)
   },
 })
 
@@ -72,10 +71,10 @@ type Story = StoryObj<typeof meta>
 function BasicCompletionDemo() {
   const { completion, complete, isLoading, error, stop } = useCompletion({
     onFinish: (prompt, completion) => {
-      SecureLogger.debug('Completion finished:', { prompt, completion })
+      console.log('Completion finished:', { prompt, completion })
     },
     onError: (error) => {
-      SecureLogger.error('Completion error:', error)
+      console.error('Completion error:', error)
     },
   })
 
@@ -149,7 +148,7 @@ function MockAPIDemo() {
     // Mock API endpoint
     api: '/api/completion',
     onFinish: (prompt, completion) => {
-      SecureLogger.debug('Mock completion finished')
+      console.log('Mock completion finished')
     },
   })
 
@@ -246,7 +245,7 @@ export const WithMockAPI: Story = {
 function ErrorHandlingDemo() {
   const { completion, complete, isLoading, error, stop } = useCompletion({
     onError: (error) => {
-      SecureLogger.error('Error caught:', error)
+      console.error('Error caught:', error)
     },
   })
 
@@ -263,7 +262,7 @@ function ErrorHandlingDemo() {
       
       await complete(prompt)
     } catch (err) {
-      SecureLogger.error('Completion failed:', err)
+      console.error('Completion failed:', err)
     }
   }
 
@@ -325,7 +324,7 @@ export const ErrorHandling: Story = {
 function CancellationDemo() {
   const { completion, complete, isLoading, stop } = useCompletion({
     onFinish: (prompt, completion) => {
-      SecureLogger.debug('Completion finished (not cancelled)')
+      console.log('Completion finished (not cancelled)')
     },
   })
 

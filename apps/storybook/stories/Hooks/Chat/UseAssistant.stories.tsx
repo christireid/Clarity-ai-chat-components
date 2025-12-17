@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useAssistant } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -57,7 +54,7 @@ const { status, messages, submitMessage, handleSubmit, input, setInput } = useAs
   assistantId: 'asst_123',
   threadId: 'thread_456',
   onToolCall: (toolCall) => {
-    SecureLogger.debug('Tool called:', toolCall)
+    console.log('Tool called:', toolCall)
   },
 })
 
@@ -81,13 +78,13 @@ function BasicAssistantDemo() {
   const { status, messages, submitMessage, handleSubmit, input, setInput, error, stop } = useAssistant({
     assistantId: 'demo-assistant',
     onToolCall: (toolCall) => {
-      SecureLogger.debug('Tool called:', toolCall)
+      console.log('Tool called:', toolCall)
     },
     onFinish: (message) => {
-      SecureLogger.debug('Assistant finished:', message)
+      console.log('Assistant finished:', message)
     },
     onError: (error) => {
-      SecureLogger.error('Assistant error:', error)
+      console.error('Assistant error:', error)
     },
   })
 
@@ -282,7 +279,7 @@ function ToolCallingDemo() {
   const { status, messages, submitMessage, isLoading } = useAssistant({
     assistantId: 'demo-assistant',
     onToolCall: (toolCall) => {
-      SecureLogger.debug('Tool invocation:', toolCall)
+      console.log('Tool invocation:', toolCall)
       // In a real app, you would handle the tool call here
       // For example, call an API, update database, etc.
     },

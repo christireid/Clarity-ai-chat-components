@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useClipboard } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -67,10 +66,10 @@ function BasicClipboardDemo() {
   const { copy, copied, reset } = useClipboard({
     timeout: 2000,
     onSuccess: () => {
-      SecureLogger.debug('Copied successfully!')
+      console.log('Copied successfully!')
     },
     onError: (error) => {
-      SecureLogger.error('Copy failed:', error)
+      console.error('Copy failed:', error)
     },
   })
 
@@ -124,7 +123,7 @@ function CustomTimeoutDemo() {
   const { copy, copied, reset } = useClipboard({
     timeout,
     onSuccess: () => {
-      SecureLogger.debug('Copied with timeout:', timeout)
+      console.log('Copied with timeout:', timeout)
     },
   })
 

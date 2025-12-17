@@ -7,14 +7,12 @@
 import * as React from 'react'
 import {
   PromptSuggestionsEnhanced,
-import { SecureLogger } from '@/lib/security/secureLogger';
   usePromptSuggestionsEnhanced,
   useChatEnhanced,
 } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { accessibleClickHandler } from '../utils/accessibility'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type for prompt suggestions used throughout these examples
 interface PromptSuggestion {
   id: string
@@ -282,7 +280,7 @@ export function ABTestingExample() {
   React.useEffect(() => {
     // Send to your analytics service
     if (stats.totalInteractions > 0) {
-      SecureLogger.debug('A/B Test Results:', {
+      console.log('A/B Test Results:', {
         variant: abVariant,
         ctr: stats.clickThroughRate,
         avgConfidence: stats.averageConfidence,

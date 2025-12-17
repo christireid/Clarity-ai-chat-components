@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { Message } from '@clarity-chat/react'
@@ -56,9 +55,9 @@ feedback, and interactive features.
 \`\`\`tsx
 <Message
   message={message}
-  onFeedback={(type) => SecureLogger.debug('Feedback:', type)}
-  onCopy={(id, content) => SecureLogger.debug('Copied:', content)}
-  onRetry={(id) => SecureLogger.debug('Retry:', id)}
+  onFeedback={(type) => console.log('Feedback:', type)}
+  onCopy={(id, content) => console.log('Copied:', content)}
+  onRetry={(id) => console.log('Retry:', id)}
 />
 \`\`\`
         `,
@@ -150,7 +149,7 @@ export const AssistantMessage: Story = {
       message={createAssistantMessage(
         'Of course! React animations can be achieved using libraries like **Framer Motion** or CSS transitions. What specific animation are you trying to create?'
       )}
-      onFeedback={(type) => SecureLogger.debug('Feedback:', type)}
+      onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -278,7 +277,7 @@ export const ActionBarReveal: Story = {
         message={createAssistantMessage(
           'Hover over me to reveal the action bar with smooth slide-up animation!'
         )}
-        onFeedback={(type) => SecureLogger.debug('Feedback:', type)}
+        onFeedback={(type) => console.log('Feedback:', type)}
       />
     </div>
   ),
@@ -304,7 +303,7 @@ export const FeedbackWithConfetti: Story = {
           message={createAssistantMessage(
             'Great question! Click the thumbs up to see the confetti animation.'
           )}
-          onFeedback={(type) => SecureLogger.debug('Feedback:', type)}
+          onFeedback={(type) => console.log('Feedback:', type)}
         />
       </div>
     )
@@ -354,7 +353,7 @@ export const WithMarkdown: Story = {
         "```\n\n" +
         "Pretty cool, right?"
       )}
-      onFeedback={(type) => SecureLogger.debug('Feedback:', type)}
+      onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
 }
@@ -381,7 +380,7 @@ export const WithCodeBlock: Story = {
         "```\n\n" +
         "Hover over the code block to see the copy button!"
       )}
-      onFeedback={(type) => SecureLogger.debug('Feedback:', type)}
+      onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
 }
@@ -420,7 +419,7 @@ export const ErrorStatus: Story = {
       message={createAssistantMessage('Failed to generate response', {
         status: 'error',
       })}
-      onRetry={() => SecureLogger.debug('Retry clicked')}
+      onRetry={() => console.log('Retry clicked')}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -448,7 +447,7 @@ export const WithMetadata: Story = {
           model: 'gpt-4',
         },
       })}
-      onFeedback={(type) => SecureLogger.debug('Feedback:', type)}
+      onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
 }
@@ -488,7 +487,7 @@ export const Conversation: Story = {
           <Message
             key={msg.id}
             message={msg}
-            onFeedback={(type) => SecureLogger.debug('Feedback for ' + msg.id + ':', type)}
+            onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
           />
         ))}
       </div>
@@ -536,7 +535,7 @@ export const InteractiveDemo: Story = {
             <Message
               key={msg.id}
               message={msg}
-              onFeedback={(type) => SecureLogger.debug('Feedback for ' + msg.id + ':', type)}
+              onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
             />
           ))}
         </div>

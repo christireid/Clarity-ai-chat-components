@@ -11,7 +11,6 @@
 import express, { type Request, type Response } from 'express'
 import { MemoryService, type MemoryServiceConfig } from '../../packages/memory/src/index'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type for memory query options (used in GET /api/memories/:userId)
 interface MemoryQueryOptions {
   metadata?: Record<string, string>
@@ -113,7 +112,7 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       context: (contextBundle.formatted || '').substring(0, 200) + '...'
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -142,7 +141,7 @@ app.get('/api/preferences/:userId', async (req: Request, res: Response) => {
       }))
     })
   } catch (error) {
-    SecureLogger.error('Preferences error:', error)
+    console.error('Preferences error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -170,7 +169,7 @@ app.post('/api/preferences/:userId', async (req: Request, res: Response) => {
 
     res.json({ success: true, memoryId })
   } catch (error) {
-    SecureLogger.error('Set preference error:', error)
+    console.error('Set preference error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -184,7 +183,7 @@ app.get('/api/stats', async (_req: Request, res: Response) => {
     const stats = memory.getStats()
     res.json(stats)
   } catch (error) {
-    SecureLogger.error('Stats error:', error)
+    console.error('Stats error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -220,7 +219,7 @@ app.get('/api/memories/:userId', async (req: Request, res: Response) => {
       }))
     })
   } catch (error) {
-    SecureLogger.error('Memories error:', error)
+    console.error('Memories error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -239,7 +238,7 @@ app.delete('/api/memories/:memoryId', async (req: Request, res: Response) => {
     const success = await memory.forget(memoryId)
     res.json({ success })
   } catch (error) {
-    SecureLogger.error('Delete memory error:', error)
+    console.error('Delete memory error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -284,16 +283,16 @@ async function callLLM(message: string, context: string): Promise<string> {
 // Start server
 const PORT = process.env['PORT'] || 3000
 app.listen(PORT, () => {
-  SecureLogger.debug(`\n✨ Clarity Memory API Server`)
-  SecureLogger.debug(`📡 Listening on port ${PORT}`)
-  SecureLogger.debug(`\nAvailable endpoints:`)
-  SecureLogger.debug(`  POST   http://localhost:${PORT}/api/chat`)
-  SecureLogger.debug(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
-  SecureLogger.debug(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
-  SecureLogger.debug(`  GET    http://localhost:${PORT}/api/memories/:userId`)
-  SecureLogger.debug(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
-  SecureLogger.debug(`  GET    http://localhost:${PORT}/api/stats`)
-  SecureLogger.debug(`  GET    http://localhost:${PORT}/health\n`)
+  console.log(`\n✨ Clarity Memory API Server`)
+  console.log(`📡 Listening on port ${PORT}`)
+  console.log(`\nAvailable endpoints:`)
+  console.log(`  POST   http://localhost:${PORT}/api/chat`)
+  console.log(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
+  console.log(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
+  console.log(`  GET    http://localhost:${PORT}/api/memories/:userId`)
+  console.log(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
+  console.log(`  GET    http://localhost:${PORT}/api/stats`)
+  console.log(`  GET    http://localhost:${PORT}/health\n`)
 })
 
 export default app

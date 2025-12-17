@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { useStreamingSSE, type SSEEvent } from '@clarity-chat/react'
@@ -38,7 +37,7 @@ React hook for Server-Sent Events (SSE) streaming with automatic reconnection, e
 \`\`\`tsx
 const { status, data, connect, disconnect } = useStreamingSSE({
   url: '/api/stream',
-  onMessage: (event) => SecureLogger.debug(event.data),
+  onMessage: (event) => console.log(event.data),
   autoReconnect: true,
 })
 

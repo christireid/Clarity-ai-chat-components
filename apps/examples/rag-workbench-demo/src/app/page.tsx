@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * RAG Workbench - Main UI
  * Document Q&A with Retrieval Augmented Generation
@@ -58,7 +57,7 @@ export default function RAGWorkbenchPage() {
       const data = await response.json()
       setDocuments(data.documents || [])
     } catch (error) {
-      SecureLogger.error('Failed to load documents:', error)
+      console.error('Failed to load documents:', error)
     }
   }
 
@@ -94,7 +93,7 @@ export default function RAGWorkbenchPage() {
         fileInputRef.current.value = ''
       }
     } catch (error) {
-      SecureLogger.error('Upload error:', error)
+      console.error('Upload error:', error)
       alert('Upload failed')
     } finally {
       setIsUploading(false)
@@ -113,7 +112,7 @@ export default function RAGWorkbenchPage() {
         loadDocuments()
       }
     } catch (error) {
-      SecureLogger.error('Delete error:', error)
+      console.error('Delete error:', error)
     }
   }
 
@@ -206,7 +205,7 @@ export default function RAGWorkbenchPage() {
         }
       }
     } catch (error) {
-      SecureLogger.error('Query error:', error)
+      console.error('Query error:', error)
       alert('Query failed: ' + (error as Error).message)
     } finally {
       setIsLoading(false)

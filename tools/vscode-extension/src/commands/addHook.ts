@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Add Hook Command
  * An enhanced experience for adding Clarity Chat hooks with pinning and history
@@ -74,7 +73,7 @@ const HOOKS: HookItem[] = [
 } = useChatEnhanced({
   api: '\${1:/api/chat}',
   onFinish: (message) => {
-    \${2:SecureLogger.debug('Message complete:', message)}
+    \${2:console.log('Message complete:', message)}
   },
 })`,
   },
@@ -130,7 +129,7 @@ const HOOKS: HookItem[] = [
 } = useStreamingSSE({
   url: '\${1:/api/chat}',
   onChunk: (chunk) => {
-    \${2:SecureLogger.debug('Received chunk:', chunk)}
+    \${2:console.log('Received chunk:', chunk)}
   },
 })`,
   },
@@ -224,7 +223,7 @@ const HOOKS: HookItem[] = [
 } = useLoadingState({
   timeout: \${1:30000},
   onTimeout: () => {
-    \${2:SecureLogger.error('Request timed out')}
+    \${2:console.error('Request timed out')}
   },
 })`,
   },
@@ -242,7 +241,7 @@ const HOOKS: HookItem[] = [
   retryLastAction,
 } = useErrorHandler({
   onError: (error) => {
-    \${1:SecureLogger.error('Chat error:', error)}
+    \${1:console.error('Chat error:', error)}
   },
   retryCount: \${2:3},
 })`,

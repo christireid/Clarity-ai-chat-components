@@ -1,6 +1,5 @@
 /**
  * Analytics Logging API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * POST: Log a new analytics entry
  */
 
@@ -62,7 +61,7 @@ export async function POST(request: NextRequest) {
     })
     
   } catch (error) {
-    SecureLogger.error('Analytics log error:', error)
+    console.error('Analytics log error:', error)
     return NextResponse.json(
       { error: 'Failed to log analytics' },
       { status: 500 }

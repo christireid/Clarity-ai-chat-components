@@ -11,7 +11,6 @@
 import Fastify from 'fastify'
 import { clarityMemory } from '../../packages/memory/src/factory'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize memory service
 // @ts-expect-error - Example uses minimal config, factory provides defaults
 const memory = clarityMemory({
@@ -264,16 +263,16 @@ const start = async () => {
 
     await fastify.listen({ port: PORT, host: HOST })
 
-    SecureLogger.debug(`\n✨ Clarity Memory Fastify API Server`)
-    SecureLogger.debug(`📡 Listening on http://${HOST}:${PORT}`)
-    SecureLogger.debug(`\nAvailable endpoints:`)
-    SecureLogger.debug(`  POST   http://localhost:${PORT}/api/chat`)
-    SecureLogger.debug(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
-    SecureLogger.debug(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
-    SecureLogger.debug(`  GET    http://localhost:${PORT}/api/memories/:userId`)
-    SecureLogger.debug(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
-    SecureLogger.debug(`  GET    http://localhost:${PORT}/api/stats`)
-    SecureLogger.debug(`  GET    http://localhost:${PORT}/health\n`)
+    console.log(`\n✨ Clarity Memory Fastify API Server`)
+    console.log(`📡 Listening on http://${HOST}:${PORT}`)
+    console.log(`\nAvailable endpoints:`)
+    console.log(`  POST   http://localhost:${PORT}/api/chat`)
+    console.log(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
+    console.log(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
+    console.log(`  GET    http://localhost:${PORT}/api/memories/:userId`)
+    console.log(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
+    console.log(`  GET    http://localhost:${PORT}/api/stats`)
+    console.log(`  GET    http://localhost:${PORT}/health\n`)
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)

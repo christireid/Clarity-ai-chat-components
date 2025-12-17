@@ -10,7 +10,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { clarityMemory } from '@clarity-chat/memory'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize memory service (singleton pattern for API routes)
 let memoryInstance: ReturnType<typeof clarityMemory> | null = null
 
@@ -83,7 +82,7 @@ export async function POST(request: NextRequest) {
       tokensUsed: contextBundle.tokenBreakdown.total
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -127,7 +126,7 @@ export async function GET(request: NextRequest) {
       }))
     })
   } catch (error) {
-    SecureLogger.error('Stats error:', error)
+    console.error('Stats error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

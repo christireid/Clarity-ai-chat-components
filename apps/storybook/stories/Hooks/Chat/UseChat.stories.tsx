@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useChat } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -414,7 +413,7 @@ function ChatWithCancellation() {
       setInput('')
     } catch (error: any) {
       if (error.message !== 'Request cancelled') {
-        SecureLogger.error('Send error:', error)
+        console.error('Send error:', error)
       }
     } finally {
       setAbortController(null)

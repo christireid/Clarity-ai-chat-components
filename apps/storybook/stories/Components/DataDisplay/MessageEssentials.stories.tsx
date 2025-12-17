@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { Message } from '@clarity-chat/react'
@@ -143,7 +142,7 @@ export const AssistantMessage: Story = {
     showAvatar: true,
     showTimestamp: false,
     enableMarkdown: true,
-    onFeedback: (type) => SecureLogger.debug('Feedback:', type),
+    onFeedback: (type) => console.log('Feedback:', type),
   },
   parameters: {
     docs: {
@@ -192,7 +191,7 @@ export const Conversation: Story = {
             message={msg}
             showAvatar={true}
             enableMarkdown={msg.role === 'assistant'}
-            onFeedback={(type) => SecureLogger.debug(`Feedback for ${msg.id}:`, type)}
+            onFeedback={(type) => console.log(`Feedback for ${msg.id}:`, type)}
           />
         ))}
       </div>
@@ -261,7 +260,7 @@ export const ErrorState: Story = {
     showAvatar: true,
     enableMarkdown: false,
     onRetry: (id) => {
-      SecureLogger.debug('Retrying message:', id)
+      console.log('Retrying message:', id)
       alert('Retrying...')
     },
   },

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * License Verification
  *
@@ -32,7 +31,7 @@ const CURRENT_VERSION = 1
  * const status = verifyLicense('CC-1-eyJ...-abc123');
  *
  * if (status.status === 'Valid') {
- *   logger.debug(`Licensed to: ${status.payload?.licensee}`);
+ *   console.log(`Licensed to: ${status.payload?.licensee}`);
  * }
  * ```
  */

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Logger Tests
  */
@@ -10,6 +9,7 @@ import {
   setRequestId,
   getRequestId,
   getLogger,
+  logger,
   info,
   warn,
   error,

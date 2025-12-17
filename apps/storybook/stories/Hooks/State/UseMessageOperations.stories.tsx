@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useMessageOperations } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -58,8 +57,8 @@ const {
   canRedo
 } = useMessageOperations({
   initialMessages: [],
-  onEdit: (id, content) => SecureLogger.debug('Edited:', id, content),
-  onRegenerate: (id) => SecureLogger.debug('Regenerating:', id)
+  onEdit: (id, content) => console.log('Edited:', id, content),
+  onRegenerate: (id) => console.log('Regenerating:', id)
 })
 \`\`\`
         `,
@@ -364,7 +363,7 @@ function RegenerationDemo() {
       },
     ],
     onRegenerate: (id) => {
-      SecureLogger.debug('Regenerating message:', id)
+      console.log('Regenerating message:', id)
       // In a real app, this would trigger an API call
     },
   })

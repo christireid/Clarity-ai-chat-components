@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MultiModalPreview } from '@clarity-chat/react'
 import type { AttachmentPreview } from '@clarity-chat/react'
@@ -105,15 +104,15 @@ export const WithActions: Story = {
   args: {
     attachments: mockAttachments,
     onOpen: (attachment) => {
-      SecureLogger.debug('Opening:', attachment.id)
+      console.log('Opening:', attachment.id)
       alert(`Opening: ${attachment.title}`)
     },
     onRetry: (attachment) => {
-      SecureLogger.debug('Retrying:', attachment.id)
+      console.log('Retrying:', attachment.id)
       alert(`Retrying: ${attachment.title}`)
     },
     onRemove: (attachment) => {
-      SecureLogger.debug('Removing:', attachment.id)
+      console.log('Removing:', attachment.id)
       alert(`Removed: ${attachment.title}`)
     },
   },

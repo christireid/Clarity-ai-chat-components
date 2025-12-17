@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Initialize Project Command
  */
@@ -188,7 +185,7 @@ async function main() {
     ]
   })
 
-  SecureLogger.debug(response.choices[0].message.content)
+  console.log(response.choices[0].message.content)
 }
 
 main()
@@ -204,6 +201,6 @@ async function createFile(relativePath: string, content: string) {
   try {
     await vscode.workspace.fs.writeFile(uri, Buffer.from(content, 'utf8'))
   } catch (error) {
-    SecureLogger.error(`Failed to create file ${relativePath}:`, error)
+    console.error(`Failed to create file ${relativePath}:`, error)
   }
 }

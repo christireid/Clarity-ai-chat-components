@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Example: Performance Issues
 // This file contains intentional performance problems for training purposes
 
@@ -26,7 +25,7 @@ export function UserList({ users, onSelect }: UserListProps) {
 
   // ISSUE 3: Creating new function on every render
   const handleClick = (user: User) => {
-    SecureLogger.debug('Selected:', user.name)
+    console.log('Selected:', user.name)
     onSelect(user)
   }
 

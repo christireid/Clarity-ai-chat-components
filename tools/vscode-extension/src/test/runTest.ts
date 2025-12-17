@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * VS Code Extension Test Runner
  *
@@ -26,7 +25,7 @@ async function main() {
       ]
     })
   } catch (err) {
-    SecureLogger.error('Failed to run tests:', err)
+    console.error('Failed to run tests:', err)
     process.exit(1)
   }
 }

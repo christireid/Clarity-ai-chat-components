@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Search API - Find relevant chunks
  */
@@ -56,7 +55,7 @@ export async function POST(request: NextRequest) {
     })
     
   } catch (error) {
-    SecureLogger.error('Search error:', error)
+    console.error('Search error:', error)
     return NextResponse.json(
       { error: 'Search failed' },
       { status: 500 }

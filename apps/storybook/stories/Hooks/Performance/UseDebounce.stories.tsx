@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useDebounce } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -71,7 +70,7 @@ function SearchDemo() {
   useEffect(() => {
     if (debouncedSearch) {
       setApiCalls((prev) => prev + 1)
-      SecureLogger.debug('API call with:', debouncedSearch)
+      console.log('API call with:', debouncedSearch)
     }
   }, [debouncedSearch])
 
@@ -142,7 +141,7 @@ function AutoSaveDemo() {
       // Simulate auto-save
       setSaves((prev) => prev + 1)
       setLastSaved(new Date().toLocaleTimeString())
-      SecureLogger.debug('Auto-saving:', debouncedContent)
+      console.log('Auto-saving:', debouncedContent)
     }
   }, [debouncedContent])
 

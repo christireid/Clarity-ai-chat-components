@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow, useClarityChat, MemoryProvider, ThemeProvider } from '@clarity-chat/react'
 import { useState } from 'react'
@@ -115,7 +114,7 @@ export const WithErrorRecovery: Story = {
         api: '/api/chat',
         onError: (err) => {
           setError(err)
-          SecureLogger.error('Chat error:', err)
+          console.error('Chat error:', err)
         },
         retry: {
           maxAttempts: 3,
@@ -184,7 +183,7 @@ export const WithAnalytics: Story = {
         api: '/api/chat',
         onMessageSent: (message) => {
           // Track message sent
-          SecureLogger.debug('Analytics: Message sent', {
+          console.log('Analytics: Message sent', {
             id: message.id,
             length: message.content.length,
             timestamp: message.createdAt,
@@ -192,7 +191,7 @@ export const WithAnalytics: Story = {
         },
         onMessageReceived: (message) => {
           // Track message received
-          SecureLogger.debug('Analytics: Message received', {
+          console.log('Analytics: Message received', {
             id: message.id,
             length: message.content.length,
             timestamp: message.createdAt,
@@ -209,11 +208,11 @@ export const WithAnalytics: Story = {
           }}
           onFeedback={(messageId, type) => {
             // Track feedback
-            SecureLogger.debug('Analytics: Feedback', { messageId, type })
+            console.log('Analytics: Feedback', { messageId, type })
           }}
           onCopy={(messageId, content) => {
             // Track copy
-            SecureLogger.debug('Analytics: Message copied', { messageId })
+            console.log('Analytics: Message copied', { messageId })
           }}
         />
       )

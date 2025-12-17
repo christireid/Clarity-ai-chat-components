@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Update checking utilities
  * Check for CLI updates and notify users

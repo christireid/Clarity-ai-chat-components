@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AdvancedChatInput, type Suggestion } from '@clarity-chat/react'
 import { useState } from 'react'
@@ -54,7 +51,7 @@ file attachments, suggestions, and rich text editing.
 \`\`\`tsx
 <AdvancedChatInput
   onSubmit={(content, attachments) => {
-    SecureLogger.debug('Submitted:', content, attachments)
+    console.log('Submitted:', content, attachments)
   }}
   onSuggestionRequest={async (query, trigger) => {
     // Return suggestions based on trigger (@ or /)
@@ -150,7 +147,7 @@ const InteractiveStory = () => {
 
   const handleSubmit = (content: string, attachments?: any[]) => {
     setMessages((prev) => [...prev, content])
-    SecureLogger.debug('Message submitted:', content, attachments)
+    console.log('Message submitted:', content, attachments)
   }
 
   const handleSuggestionRequest = async (query: string, trigger: '@' | '/'): Promise<Suggestion[]> => {
@@ -183,7 +180,7 @@ const InteractiveStory = () => {
   }
 
   const handleFileUpload = async (files: File[]) => {
-    SecureLogger.debug('Files uploaded:', files)
+    console.log('Files uploaded:', files)
     return files.map((file) => ({
       id: `${Date.now()}-${file.name}`,
       type: file.type.startsWith('image/') ? 'image' : 'document',
