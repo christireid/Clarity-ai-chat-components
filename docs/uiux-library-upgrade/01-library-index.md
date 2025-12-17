@@ -199,15 +199,83 @@ _[To be mapped]_
 
 ### Identified Duplicates
 
-_[To be analyzed]_
+**Chat Hooks (Potential Overlap)**:
+
+- `use-chat.ts` (DEPRECATED - to be removed in v3.0)
+- `use-chat-enhanced.ts`
+- `use-chat-simple.ts`
+- `use-chat-core.ts`
+- `use-chat-unified.ts`
+- `use-chat-composable.ts`
+- `use-chat-with-operations.ts`
+- `use-clarity-chat.ts` (NEW recommended)
+
+**Analysis**: 8 different chat hooks suggest feature creep and unclear migration path. While
+`use-chat.ts` is properly deprecated, the relationships between other hooks are unclear.
+
+**Recommendation**: Consolidate or create clear documentation explaining when to use each hook.
 
 ### Overlapping Functionality
 
-_[To be analyzed]_
+**Message Components**:
 
-### Inconsistent APIs
+- 24 message-related component files
+- Need to verify if there's overlap between message display, actions, formatting
 
-_[To be identified]_
+**Code Components**:
+
+- 7 code-related components
+- Check for duplicate syntax highlighting/copy functionality
+
+### API Consistency Analysis
+
+**✅ CONSISTENT PATTERNS** (Good!):
+
+1. **Event Handlers**:
+   - Consistent use of `on` prefix (onClick, onChange, onSubmit)
+   - Good: 625 `onClick`, 516 `onChange`, 99 `onError`
+
+2. **Boolean Props**:
+   - Consistent use of `show` prefix for visibility (showAvatar, showHeader)
+   - Consistent use of `enable` prefix for features (enableLearning, enableSound)
+   - Consistent use of `is` prefix for state (isLoading, isStreaming)
+
+3. **State Props**:
+   - 344 instances of `isLoading` - excellent consistency
+   - 108 instances of `isStreaming` - good pattern
+
+**⚠️ POTENTIAL INCONSISTENCIES**:
+
+1. **Boolean Naming Variations**:
+   - Some use `show*` (showAvatar: 27)
+   - Some use `enable*` (enableKeyboardShortcuts: 14)
+   - Some use `is*` (isEditing: 27)
+   - **Question**: When to use each? Need guidelines
+
+2. **Callback Handler Naming**:
+   - Props use `on*` pattern (good: onSubmit, onError, onRetry)
+   - Internal handlers use `handle*` pattern (good: handleClick, handleSubmit)
+   - **Consistent** but needs documentation
+
+3. **Multiple Chat Hooks** (as noted above):
+   - Unclear which hook to use for different scenarios
+   - Need "Choose Your Hook" decision tree
+
+**🔍 NEEDS INVESTIGATION**:
+
+1. **Prop Variations**:
+   - `onChange` vs `onValueChange` - are both used?
+   - `onSubmit` vs `onSendMessage` - which contexts?
+   - `onDelete` vs `onRemove` - consistency?
+
+2. **Escape Hatches**:
+   - Do all components accept `className`?
+   - Do components accept `style` prop?
+   - Are there `asChild` patterns for polymorphism?
+
+3. **ref Handling**:
+   - React 19 uses `ref` as prop - is this consistent?
+   - Are all components `forwardRef` wrapped where needed?
 
 ---
 
