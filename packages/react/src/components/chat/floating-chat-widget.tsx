@@ -5,19 +5,26 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useClarityChat } from '../../hooks/use-clarity-chat/use-clarity-chat'
 import { springPresets } from '@clarity-chat/primitives'
 import { MessageSquare, X, Send, Sparkles, Bot, Key, ChevronDown, User } from 'lucide-react'
+import type { ClarityMemoryOptions, ClarityPromptOptimizationOptions } from '../../hooks/use-clarity-chat/types'
 
 export interface FloatingChatWidgetProps {
     apiEndpoint?: string
     initialMessage?: string
     title?: string
     subtitle?: string
+    /** Memory configuration for long-term recall */
+    memoryConfig?: ClarityMemoryOptions
+    /** Prompt optimization configuration for token management */
+    optimizationConfig?: ClarityPromptOptimizationOptions
 }
 
 export function FloatingChatWidget({
     apiEndpoint = '/api/chat',
     initialMessage = "Hi! 👋 I'm Aura. Ask me anything!",
     title = 'Aura',
-    subtitle = 'AI Specialist • Online'
+    subtitle = 'AI Specialist • Online',
+    memoryConfig,
+    optimizationConfig
 }: FloatingChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
@@ -39,6 +46,8 @@ export function FloatingChatWidget({
             content: initialMessage
         }
     ],
+    memory: memoryConfig,
+    promptOptimization: optimizationConfig,
     onError: (err: Error) => {
         console.error("Chat error:", err);
     }
