@@ -15,6 +15,9 @@
  * // With variant
  * <AnimatedDots variant="pulse" />
  *
+ * // For typing indicator
+ * <AnimatedDots ariaLabel="AI is typing" />
+ *
  * // Customized
  * <AnimatedDots
  *   variant="wave"
@@ -46,7 +49,7 @@ export type AnimatedDotsSize = 'sm' | 'md' | 'lg'
 export interface AnimatedDotsProps {
   /** Animation variant (default: 'bounce') */
   variant?: AnimatedDotsVariant
-  /** Number of dots (default: 3) */
+  /** Number of dots (default: 3, clamped to 1-10) */
   count?: number
   /** Size preset (default: 'md') */
   size?: AnimatedDotsSize
@@ -58,47 +61,82 @@ export interface AnimatedDotsProps {
   staggerDelay?: number
   /** Animation duration in seconds (default: varies by variant) */
   duration?: number
+  /** Accessible label for screen readers (default: 'Loading') */
+  ariaLabel?: string
 }
 
 /**
  * Size configurations
  */
-const SIZE_CONFIG = {
+const SIZE_CONFIG: Record<AnimatedDotsSize, { dot: string; gap: string }> = {
   sm: { dot: 'w-1 h-1', gap: 'gap-1' },
   md: { dot: 'w-2 h-2', gap: 'gap-1.5' },
   lg: { dot: 'w-3 h-3', gap: 'gap-2' },
-} as const
+}
 
 /**
  * Animation configurations for each variant
  */
-const ANIMATION_CONFIG = {
+const ANIMATION_CONFIG: Record<
+  AnimatedDotsVariant,
+  {
+    animate: Record<string, number[]>
+    initial: Record<string, number>
+    transition: Record<string, unknown>
+    defaultDuration: number | undefined
+  }
+> = {
   bounce: {
     animate: { y: [-2, -6, -2], opacity: [0.6, 1, 0.6] },
+    initial: { y: -2, opacity: 0.6 },
     transition: { type: 'spring', damping: 10, stiffness: 400 },
     defaultDuration: undefined, // Uses spring physics
   },
   pulse: {
     animate: { scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] },
+    initial: { scale: 1, opacity: 0.5 },
     transition: { ease: 'easeInOut' },
     defaultDuration: 1,
   },
   wave: {
     animate: { opacity: [0.3, 1, 0.3], scale: [0.9, 1.1, 0.9] },
+    initial: { opacity: 0.3, scale: 0.9 },
     transition: { ease: 'linear' },
     defaultDuration: 1.2,
   },
   fade: {
     animate: { opacity: [0.3, 1, 0.3] },
+    initial: { opacity: 0.3 },
     transition: { ease: 'easeInOut' },
     defaultDuration: 1.4,
   },
-} as const
+}
 
 /**
  * Reduced motion animation (subtle opacity only)
  */
-const REDUCED_MOTION_ANIMATE = { opacity: [0.5, 0.8, 0.5] }
+const REDUCED_MOTION_CONFIG = {
+  animate: { opacity: [0.5, 0.8, 0.5] },
+  initial: { opacity: 0.5 },
+}
+
+/**
+ * Default values
+ */
+const DEFAULT_VARIANT: AnimatedDotsVariant = 'bounce'
+const DEFAULT_SIZE: AnimatedDotsSize = 'md'
+const DEFAULT_COUNT = 3
+const MIN_COUNT = 1
+const MAX_COUNT = 10
+
+/**
+ * Validate and normalize count value
+ */
+function normalizeCount(count: number | undefined): number {
+  if (count === undefined) return DEFAULT_COUNT
+  if (!Number.isFinite(count)) return DEFAULT_COUNT
+  return Math.max(MIN_COUNT, Math.min(MAX_COUNT, Math.floor(count)))
+}
 
 /**
  * AnimatedDots - Reusable animated dots indicator
@@ -111,25 +149,32 @@ const REDUCED_MOTION_ANIMATE = { opacity: [0.5, 0.8, 0.5] }
  * - Respects prefers-reduced-motion
  * - Customizable size, count, and timing
  * - Accessible with proper aria attributes
+ * - Safe handling of invalid inputs
  */
 export function AnimatedDots({
-  variant = 'bounce',
-  count = 3,
-  size = 'md',
+  variant = DEFAULT_VARIANT,
+  count = DEFAULT_COUNT,
+  size = DEFAULT_SIZE,
   className,
   dotClassName,
   staggerDelay = 0.15,
   duration,
+  ariaLabel = 'Loading',
 }: AnimatedDotsProps) {
   const prefersReducedMotion = useReducedMotion()
-  const sizeConfig = SIZE_CONFIG[size]
-  const animationConfig = ANIMATION_CONFIG[variant]
+
+  // Validate variant with fallback
+  const safeVariant = ANIMATION_CONFIG[variant] ? variant : DEFAULT_VARIANT
+
+  // Validate size with fallback
+  const safeSize = SIZE_CONFIG[size] ? size : DEFAULT_SIZE
+
+  // Get configs with validation
+  const sizeConfig = SIZE_CONFIG[safeSize]
+  const animationConfig = ANIMATION_CONFIG[safeVariant]
 
   // Validate and clamp count to reasonable bounds (1-10)
-  const safeCount = React.useMemo(
-    () => Math.max(1, Math.min(10, Math.floor(count))),
-    [count]
-  )
+  const safeCount = React.useMemo(() => normalizeCount(count), [count])
 
   // Create array of dot indices
   const dots = React.useMemo(
@@ -137,63 +182,54 @@ export function AnimatedDots({
     [safeCount]
   )
 
-  // Determine the animation to use
-  const animate = prefersReducedMotion
-    ? REDUCED_MOTION_ANIMATE
-    : animationConfig.animate
+  // Memoize transition config for stable reference
+  const baseTransition = React.useMemo(
+    () => ({
+      ...animationConfig.transition,
+      duration: duration ?? animationConfig.defaultDuration,
+      repeat: Infinity,
+    }),
+    [animationConfig.transition, animationConfig.defaultDuration, duration]
+  )
 
-  // Build transition config
-  const baseTransition = {
-    ...animationConfig.transition,
-    duration: duration ?? animationConfig.defaultDuration,
-    repeat: Infinity,
-  }
+  // Determine animation config based on reduced motion preference
+  const { animate, initial } = prefersReducedMotion
+    ? REDUCED_MOTION_CONFIG
+    : animationConfig
 
-  if (prefersReducedMotion) {
-    // For reduced motion, use longer duration with simple easing
-    return (
-      <div
-        className={cn('flex items-center', sizeConfig.gap, className)}
-        role="status"
-        aria-label="Loading"
-      >
-        {dots.map((i) => (
-          <motion.span
-            key={i}
-            aria-hidden="true"
-            animate={animate}
-            transition={{
-              duration: durations.slower,
-              repeat: Infinity,
-              delay: i * staggerDelay,
-              ease: 'easeInOut',
-            }}
-            className={cn(
-              'rounded-full bg-current',
-              sizeConfig.dot,
-              dotClassName
-            )}
-          />
-        ))}
-      </div>
-    )
-  }
+  // Build transition for each dot (considers reduced motion)
+  const getTransition = React.useCallback(
+    (index: number) => {
+      if (prefersReducedMotion) {
+        return {
+          duration: durations.slower,
+          repeat: Infinity,
+          delay: index * staggerDelay,
+          ease: 'easeInOut',
+        }
+      }
+      return {
+        ...baseTransition,
+        delay: index * staggerDelay,
+      }
+    },
+    [prefersReducedMotion, baseTransition, staggerDelay]
+  )
 
   return (
     <div
       className={cn('flex items-center', sizeConfig.gap, className)}
       role="status"
-      aria-label="Loading"
+      aria-busy="true"
+      aria-label={ariaLabel}
     >
       {dots.map((i) => (
         <motion.span
           key={i}
           aria-hidden="true"
+          initial={initial}
           animate={animate}
-          transition={{
-            ...baseTransition,
-            delay: i * staggerDelay,
-          }}
+          transition={getTransition(i)}
           className={cn(
             'rounded-full bg-current',
             sizeConfig.dot,

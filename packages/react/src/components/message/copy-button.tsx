@@ -1,6 +1,6 @@
 'use client'
 
-import React, { memo } from 'react'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, type ButtonProps, cn, Tooltip } from '@clarity-chat/primitives'
 import { useClipboard } from '../../hooks/ui/use-clipboard'
@@ -117,12 +117,33 @@ export function CopyButton({
     await copy(text)
   }, [copy, text])
 
+  // Track copy status for screen reader announcement
+  const [statusMessage, setStatusMessage] = React.useState<string | null>(null)
+
+  // Clear status after announcement
+  React.useEffect(() => {
+    if (statusMessage) {
+      const timer = setTimeout(() => setStatusMessage(null), 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [statusMessage])
+
+  // Enhanced copy handler with status announcement
+  const handleCopyWithAnnouncement = React.useCallback(async () => {
+    try {
+      await handleCopy()
+      setStatusMessage(toastMessage)
+    } catch {
+      setStatusMessage(errorToastMessage)
+    }
+  }, [handleCopy, toastMessage, errorToastMessage])
+
   const button = (
     <Button
       variant="ghost"
       size="sm"
       // Don't use state prop - causes double checkmark (Button shows its own + our CheckIcon)
-      onClick={handleCopy}
+      onClick={handleCopyWithAnnouncement}
       aria-label={copied ? copiedText : copyText}
       className={cn(
         'transition-all duration-200',
@@ -176,6 +197,15 @@ export function CopyButton({
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Screen reader announcement */}
+      <span
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {statusMessage}
+      </span>
     </Button>
   )
 
