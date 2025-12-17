@@ -14,6 +14,11 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { PromptVersion, PromptEnvironment } from '../../prompts/types'
+import {
+  useReducedMotion,
+  getMotionSafePreset,
+  getMotionSafeTransition,
+} from '../../animations'
 
 /**
  * Props for PromptVersionHistory component
@@ -130,6 +135,7 @@ export function PromptVersionHistory({
   const [expandedVersionId, setExpandedVersionId] = React.useState<
     string | null
   >(null)
+  const prefersReducedMotion = useReducedMotion()
 
   // Sort versions by creation date (newest first)
   const sortedVersions = React.useMemo(
@@ -230,20 +236,26 @@ export function PromptVersionHistory({
 
               <AnimatePresence>
                 {sortedVersions.map((version, index) => {
-                  const isActive = version.isActive || version.id === activeVersionId
+                  const isActive =
+                    version.isActive || version.id === activeVersionId
                   const isExpanded = expandedVersionId === version.id
-                  const isSelectedForComparison = selectedForComparison.includes(
-                    version.id
-                  )
+                  const isSelectedForComparison =
+                    selectedForComparison.includes(version.id)
                   const envBadges = getEnvironmentBadges(version.id)
 
                   return (
                     <motion.div
                       key={version.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ delay: index * 0.05 }}
+                      {...getMotionSafePreset(
+                        prefersReducedMotion,
+                        'slideRight'
+                      )}
+                      transition={getMotionSafeTransition(
+                        prefersReducedMotion,
+                        'normal',
+                        'out',
+                        { delay: index * 0.05 }
+                      )}
                       className="relative pl-10 pb-6 last:pb-0"
                     >
                       {/* Timeline dot */}
@@ -255,7 +267,8 @@ export function PromptVersionHistory({
                           isActive
                             ? 'bg-primary border-primary scale-125'
                             : 'bg-background border-muted-foreground',
-                          isSelectedForComparison && 'ring-2 ring-primary ring-offset-2'
+                          isSelectedForComparison &&
+                            'ring-2 ring-primary ring-offset-2'
                         )}
                       />
 
@@ -328,9 +341,15 @@ export function PromptVersionHistory({
                           <AnimatePresence>
                             {isExpanded && (
                               <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
+                                {...getMotionSafePreset(
+                                  prefersReducedMotion,
+                                  'fadeIn'
+                                )}
+                                transition={getMotionSafeTransition(
+                                  prefersReducedMotion,
+                                  'fast',
+                                  'out'
+                                )}
                                 className="mt-3 pt-3 border-t"
                               >
                                 <pre className="text-xs bg-muted/50 p-3 rounded overflow-auto max-h-40">
@@ -351,6 +370,8 @@ export function PromptVersionHistory({
                                   isExpanded ? null : version.id
                                 )
                               }}
+                              aria-expanded={isExpanded}
+                              aria-label={`${isExpanded ? 'Hide' : 'Show'} template for version ${version.version}`}
                             >
                               {isExpanded ? '▲ Hide' : '▼ Show'} Template
                             </Button>
@@ -367,6 +388,8 @@ export function PromptVersionHistory({
                                   e.stopPropagation()
                                   toggleComparisonSelection(version.id)
                                 }}
+                                aria-pressed={isSelectedForComparison}
+                                aria-label={`${isSelectedForComparison ? 'Deselect' : 'Select'} version ${version.version} for comparison`}
                               >
                                 {isSelectedForComparison
                                   ? '✓ Selected'
@@ -382,6 +405,7 @@ export function PromptVersionHistory({
                                   e.stopPropagation()
                                   onSetActive(version.id)
                                 }}
+                                aria-label={`Set version ${version.version} as active`}
                               >
                                 Set Active
                               </Button>
@@ -395,15 +419,24 @@ export function PromptVersionHistory({
                                   e.stopPropagation()
                                   onRollback(version.id)
                                 }}
+                                aria-label={`Rollback to version ${version.version}`}
                               >
                                 Rollback
                               </Button>
                             )}
 
                             {showDeployment && onDeploy && (
-                              <div className="ml-auto flex gap-1">
+                              <div
+                                className="ml-auto flex gap-1"
+                                role="group"
+                                aria-label="Deploy to environment"
+                              >
                                 {(
-                                  ['development', 'staging', 'production'] as const
+                                  [
+                                    'development',
+                                    'staging',
+                                    'production',
+                                  ] as const
                                 ).map((env) => {
                                   const isDeployed =
                                     deployedVersions[env] === version.id
@@ -422,7 +455,11 @@ export function PromptVersionHistory({
                                         }
                                       }}
                                       disabled={isDeployed}
-                                      title={`Deploy to ${env}`}
+                                      aria-label={
+                                        isDeployed
+                                          ? `Already deployed to ${env}`
+                                          : `Deploy version ${version.version} to ${env}`
+                                      }
                                     >
                                       {env[0]?.toUpperCase()}
                                     </Button>

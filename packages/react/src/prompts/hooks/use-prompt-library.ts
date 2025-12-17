@@ -57,7 +57,9 @@ export interface UsePromptLibraryReturn {
     /** Get templates by tag */
     getByTag: (tag: string) => PromptTemplate[]
     /** Add a template */
-    add: (template: Omit<PromptTemplate, 'id'> & { id?: string }) => PromptTemplate
+    add: (
+      template: Omit<PromptTemplate, 'id'> & { id?: string }
+    ) => PromptTemplate
     /** Update a template */
     update: (id: string, updates: Partial<PromptTemplate>) => void
     /** Remove a template */
@@ -86,7 +88,9 @@ export interface UsePromptLibraryReturn {
       templateId: string,
       versionId1: string,
       versionId2: string
-    ) => { version1: PromptVersion; version2: PromptVersion; diff: string[] } | undefined
+    ) =>
+      | { version1: PromptVersion; version2: PromptVersion; diff: string[] }
+      | undefined
     /** Rollback to version */
     rollback: (templateId: string, versionId: string) => void
   }
@@ -95,7 +99,10 @@ export interface UsePromptLibraryReturn {
     /** Get deployments for environment */
     getByEnvironment: (env: PromptEnvironment) => PromptDeployment[]
     /** Get active deployment for template in environment */
-    getActive: (templateId: string, env: PromptEnvironment) => PromptDeployment | undefined
+    getActive: (
+      templateId: string,
+      env: PromptEnvironment
+    ) => PromptDeployment | undefined
     /** Deploy version to environment */
     deploy: (
       templateId: string,
@@ -281,8 +288,7 @@ export function usePromptLibrary(
     () => ({
       getAll: () => state.templates,
       get: (id: string) => state.templates.find((t) => t.id === id),
-      getByName: (name: string) =>
-        state.templates.find((t) => t.name === name),
+      getByName: (name: string) => state.templates.find((t) => t.name === name),
       search: (query: string) => {
         const lowerQuery = query.toLowerCase()
         return state.templates.filter(
@@ -425,9 +431,7 @@ export function usePromptLibrary(
         state.versions[templateId]?.find((v) => v.id === versionId),
       getActive: (templateId: string) => {
         const versions = state.versions[templateId] || []
-        return (
-          versions.find((v) => v.isActive) || versions[versions.length - 1]
-        )
+        return versions.find((v) => v.isActive) || versions[versions.length - 1]
       },
       create: createVersion,
       setActive: (templateId: string, versionId: string) => {
@@ -442,11 +446,7 @@ export function usePromptLibrary(
           },
         }))
       },
-      compare: (
-        templateId: string,
-        versionId1: string,
-        versionId2: string
-      ) => {
+      compare: (templateId: string, versionId1: string, versionId2: string) => {
         const versions = state.versions[templateId] || []
         const version1 = versions.find((v) => v.id === versionId1)
         const version2 = versions.find((v) => v.id === versionId2)
@@ -560,11 +560,12 @@ export function usePromptLibrary(
           ...prev,
           deployments: {
             ...prev.deployments,
-            [targetEnv]: prev.deployments[targetEnv]?.map((d) =>
-              d.id === deploymentId
-                ? { ...d, status: 'rolled-back' as const }
-                : d
-            ) || [],
+            [targetEnv]:
+              prev.deployments[targetEnv]?.map((d) =>
+                d.id === deploymentId
+                  ? { ...d, status: 'rolled-back' as const }
+                  : d
+              ) || [],
           },
         }))
 
@@ -593,11 +594,18 @@ export function usePromptLibrary(
             if (idx !== undefined && idx >= 0 && prev.deployments[env]) {
               updatedDeployments = {
                 ...updatedDeployments,
-                [env]: prev.deployments[env]?.map((d, i) =>
-                  i === idx
-                    ? { ...d, trafficPercentage: Math.min(100, Math.max(0, percentage)) }
-                    : d
-                ) || [],
+                [env]:
+                  prev.deployments[env]?.map((d, i) =>
+                    i === idx
+                      ? {
+                          ...d,
+                          trafficPercentage: Math.min(
+                            100,
+                            Math.max(0, percentage)
+                          ),
+                        }
+                      : d
+                  ) || [],
               }
               break
             }
@@ -638,32 +646,66 @@ export function usePromptLibrary(
     )
   }, [state])
 
-  const importLibrary = React.useCallback((json: string): boolean => {
-    try {
-      const data = JSON.parse(json)
-      if (!data.templates || !Array.isArray(data.templates)) {
+  const importLibrary = React.useCallback(
+    (json: string): boolean => {
+      try {
+        const data = JSON.parse(json)
+
+        // Validate required structure
+        if (!data.templates || !Array.isArray(data.templates)) {
+          return false
+        }
+
+        // Validate each template has required fields
+        const isValidTemplate = (t: unknown): t is PromptTemplate => {
+          if (!t || typeof t !== 'object') return false
+          const template = t as Record<string, unknown>
+          return (
+            typeof template.id === 'string' &&
+            typeof template.name === 'string' &&
+            typeof template.template === 'string'
+          )
+        }
+
+        if (!data.templates.every(isValidTemplate)) {
+          return false
+        }
+
+        // Validate versions structure if present
+        if (data.versions && typeof data.versions !== 'object') {
+          return false
+        }
+
+        // Validate deployments structure if present
+        if (data.deployments) {
+          const validEnvs = ['development', 'staging', 'production']
+          const deploymentKeys = Object.keys(data.deployments)
+          if (!deploymentKeys.every((key) => validEnvs.includes(key))) {
+            return false
+          }
+        }
+
+        setState((prev) => ({
+          ...prev,
+          templates: data.templates,
+          versions: data.versions || prev.versions,
+          deployments: data.deployments || prev.deployments,
+          history: data.history || prev.history,
+        }))
+
+        addHistoryEntry({
+          templateId: 'library',
+          changeType: 'updated',
+          description: 'Imported library from file',
+        })
+
+        return true
+      } catch {
         return false
       }
-
-      setState((prev) => ({
-        ...prev,
-        templates: data.templates || prev.templates,
-        versions: data.versions || prev.versions,
-        deployments: data.deployments || prev.deployments,
-        history: data.history || prev.history,
-      }))
-
-      addHistoryEntry({
-        templateId: 'library',
-        changeType: 'updated',
-        description: 'Imported library from file',
-      })
-
-      return true
-    } catch {
-      return false
-    }
-  }, [addHistoryEntry])
+    },
+    [addHistoryEntry]
+  )
 
   // Reset
   const reset = React.useCallback(() => {
