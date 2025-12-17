@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '../index.js';
 /**
  * Logger Tests
  */

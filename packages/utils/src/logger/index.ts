@@ -281,6 +281,17 @@ export function getLogger(
 const defaultLogger = getLogger('app')
 
 /**
+ * Default logger instance for direct use
+ * @example
+ * ```ts
+ * import { logger } from '@clarity-chat/utils/logger'
+ * logger.info('Hello')
+ * logger.error('Something went wrong')
+ * ```
+ */
+export const logger = defaultLogger
+
+/**
  * Log an info message using the default logger
  */
 export const info = (message: string, ...args: unknown[]): void =>
