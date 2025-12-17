@@ -144,6 +144,19 @@ export function PromptVariablesEditor({
     return extractVariablesFromTemplate(template)
   }, [template, autoDetect])
 
+  // Emit change to parent - defined first to avoid circular dependency
+  const emitChange = React.useCallback(
+    (vars: EditableVariable[]) => {
+      // Strip internal _key before emitting
+      const cleaned = vars.map(({ _key, ...rest }) => rest)
+      onChange(cleaned)
+    },
+    [onChange]
+  )
+
+  // Ref to track if we should emit changes (to avoid emitting during sync)
+  const shouldEmitRef = React.useRef(false)
+
   // Sync with external variables prop
   React.useEffect(() => {
     setEditableVariables((prevEditableVars) => {
@@ -161,40 +174,34 @@ export function PromptVariablesEditor({
   React.useEffect(() => {
     if (!autoDetect || !template) return
 
-    setEditableVariables((prevVars) => {
-      const existingNames = new Set(prevVars.map((v) => v.name))
-      const newVars: EditableVariable[] = []
+    const existingNames = new Set(editableVariables.map((v) => v.name))
+    const newVars: EditableVariable[] = []
 
-      detectedVarNames.forEach((name) => {
-        if (!existingNames.has(name)) {
-          newVars.push({
-            name,
-            type: 'string',
-            required: false,
-            _key: generateKey(),
-          })
-        }
-      })
-
-      if (newVars.length > 0) {
-        const updated = [...prevVars, ...newVars]
-        // Use setTimeout to avoid state update during render
-        setTimeout(() => emitChange(updated), 0)
-        return updated
+    detectedVarNames.forEach((name) => {
+      if (!existingNames.has(name)) {
+        newVars.push({
+          name,
+          type: 'string',
+          required: false,
+          _key: generateKey(),
+        })
       }
-      return prevVars
     })
-  }, [detectedVarNames, autoDetect, template, emitChange])
 
-  // Emit change to parent
-  const emitChange = React.useCallback(
-    (vars: EditableVariable[]) => {
-      // Strip internal _key before emitting
-      const cleaned = vars.map(({ _key, ...rest }) => rest)
-      onChange(cleaned)
-    },
-    [onChange]
-  )
+    if (newVars.length > 0) {
+      const updated = [...editableVariables, ...newVars]
+      setEditableVariables(updated)
+      shouldEmitRef.current = true
+    }
+  }, [detectedVarNames, autoDetect, template]) // Intentionally exclude editableVariables to avoid infinite loop
+
+  // Emit changes after auto-detection updates
+  React.useEffect(() => {
+    if (shouldEmitRef.current) {
+      shouldEmitRef.current = false
+      emitChange(editableVariables)
+    }
+  }, [editableVariables, emitChange])
 
   // Update variable
   const updateVariable = React.useCallback(

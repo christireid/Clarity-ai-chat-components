@@ -225,33 +225,47 @@ export function PromptPlayground({
         {/* Model Selector & Template Selector */}
         <div className="flex items-center gap-3 mt-3">
           {showModelSelector && (
-            <select
-              value={pricing.id}
-              onChange={(e) => setModel(e.target.value)}
-              className="text-sm border rounded px-2 py-1 bg-background"
-              disabled={readOnly}
-            >
-              {Object.values(MODEL_PRICING).map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2">
+              <label htmlFor="playground-model-select" className="sr-only">
+                Select AI model
+              </label>
+              <select
+                id="playground-model-select"
+                value={pricing.id}
+                onChange={(e) => setModel(e.target.value)}
+                className="text-sm border rounded px-2 py-1 bg-background"
+                disabled={readOnly}
+                aria-label="Select AI model for cost estimation"
+              >
+                {Object.values(MODEL_PRICING).map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
           {templates.length > 0 && (
-            <select
-              value={selectedTemplateId}
-              onChange={(e) => handleSelectTemplate(e.target.value)}
-              className="flex-1 text-sm border rounded px-2 py-1 bg-background"
-              disabled={readOnly}
-            >
-              <option value="">Select a template...</option>
-              {templates.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex-1 flex items-center gap-2">
+              <label htmlFor="playground-template-select" className="sr-only">
+                Select template
+              </label>
+              <select
+                id="playground-template-select"
+                value={selectedTemplateId}
+                onChange={(e) => handleSelectTemplate(e.target.value)}
+                className="flex-1 text-sm border rounded px-2 py-1 bg-background"
+                disabled={readOnly}
+                aria-label="Select a prompt template"
+              >
+                <option value="">Select a template...</option>
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
         </div>
       </CardHeader>
@@ -277,26 +291,45 @@ export function PromptPlayground({
                 {/* Name & Description */}
                 {onSave && (
                   <div className="flex gap-2">
-                    <Input
-                      placeholder="Prompt name"
-                      value={promptName}
-                      onChange={(e) => setPromptName(e.target.value)}
-                      className="flex-1"
-                      disabled={readOnly}
-                    />
-                    <Input
-                      placeholder="Description (optional)"
-                      value={promptDescription}
-                      onChange={(e) => setPromptDescription(e.target.value)}
-                      className="flex-1"
-                      disabled={readOnly}
-                    />
+                    <div className="flex-1">
+                      <label htmlFor="playground-prompt-name" className="sr-only">
+                        Prompt name
+                      </label>
+                      <Input
+                        id="playground-prompt-name"
+                        placeholder="Prompt name"
+                        value={promptName}
+                        onChange={(e) => setPromptName(e.target.value)}
+                        className="w-full"
+                        disabled={readOnly}
+                        aria-label="Prompt name"
+                        aria-required="true"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label htmlFor="playground-prompt-description" className="sr-only">
+                        Description
+                      </label>
+                      <Input
+                        id="playground-prompt-description"
+                        placeholder="Description (optional)"
+                        value={promptDescription}
+                        onChange={(e) => setPromptDescription(e.target.value)}
+                        className="w-full"
+                        disabled={readOnly}
+                        aria-label="Prompt description (optional)"
+                      />
+                    </div>
                   </div>
                 )}
 
                 {/* Template Editor */}
                 <div className="flex-1 relative">
+                  <label htmlFor="playground-template-editor" className="sr-only">
+                    Prompt template editor
+                  </label>
                   <Textarea
+                    id="playground-template-editor"
                     value={state.template}
                     onChange={(e) => handleTemplateChange(e.target.value)}
                     placeholder="Enter your prompt template here...&#10;&#10;Use {{variable}} syntax for variables."
@@ -306,9 +339,12 @@ export function PromptPlayground({
                       !validation.valid && 'border-destructive'
                     )}
                     disabled={readOnly}
+                    aria-label="Prompt template editor"
+                    aria-describedby={!validation.valid ? 'playground-validation-errors' : undefined}
+                    aria-invalid={!validation.valid}
                   />
                   {state.isRendering && (
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-2 right-2" aria-live="polite">
                       <Badge variant="secondary" className="animate-pulse">
                         Rendering...
                       </Badge>
@@ -318,7 +354,13 @@ export function PromptPlayground({
 
                 {/* Validation Errors */}
                 {!validation.valid && validation.errors && (
-                  <div className="text-sm text-destructive space-y-1">
+                  <div
+                    id="playground-validation-errors"
+                    role="alert"
+                    aria-live="polite"
+                    className="text-sm text-destructive space-y-1"
+                  >
+                    <span className="sr-only">Validation errors:</span>
                     {validation.errors.map((error, i) => (
                       <p key={i}>• {error}</p>
                     ))}
@@ -349,10 +391,10 @@ export function PromptPlayground({
 
             {/* Variables Tab */}
             <TabsContent value="variables" className="h-full p-4 mt-0 overflow-auto">
-              <div className="space-y-4">
+              <div className="space-y-4" role="group" aria-label="Template variables">
                 {detectedVariables.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
-                    <div className="text-4xl mb-2">{'{ }'}</div>
+                    <div className="text-4xl mb-2" aria-hidden="true">{'{ }'}</div>
                     <p className="text-sm">No variables detected</p>
                     <p className="text-xs mt-1">
                       Use {'{{variable}}'} syntax in your template
@@ -369,12 +411,17 @@ export function PromptPlayground({
                         transition={{ delay: index * 0.05 }}
                         className="space-y-1"
                       >
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <code className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                        <label
+                          htmlFor={`playground-var-${varName}`}
+                          className="text-sm font-medium flex items-center gap-2"
+                        >
+                          <code className="px-1.5 py-0.5 bg-muted rounded text-xs" aria-hidden="true">
                             {`{{${varName}}}`}
                           </code>
+                          <span className="sr-only">Variable {varName}</span>
                         </label>
                         <Input
+                          id={`playground-var-${varName}`}
                           value={
                             (state.variables[varName] as string | undefined) ||
                             ''
@@ -382,6 +429,7 @@ export function PromptPlayground({
                           onChange={(e) => setVariable(varName, e.target.value)}
                           placeholder={`Enter value for ${varName}`}
                           disabled={readOnly}
+                          aria-label={`Value for variable ${varName}`}
                         />
                       </motion.div>
                     ))}
@@ -428,12 +476,18 @@ export function PromptPlayground({
                 {/* Rendered Output */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-medium">Rendered Output</h4>
+                    <h4 id="playground-output-label" className="text-sm font-medium">
+                      Rendered Output
+                    </h4>
                     <Badge variant="outline" className="font-mono text-xs">
+                      <span className="sr-only">Token count:</span>
                       {state.tokenCount} tokens
                     </Badge>
                   </div>
                   <div
+                    role="region"
+                    aria-labelledby="playground-output-label"
+                    aria-live="polite"
                     className={cn(
                       'p-4 rounded-lg border bg-muted/30',
                       'font-mono text-sm whitespace-pre-wrap',
@@ -451,11 +505,15 @@ export function PromptPlayground({
 
                 {/* Errors */}
                 {state.errors.length > 0 && (
-                  <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    className="p-3 rounded-lg bg-destructive/10 border border-destructive/20"
+                  >
                     <h4 className="text-sm font-medium text-destructive mb-2">
                       Errors
                     </h4>
-                    <ul className="text-sm text-destructive space-y-1">
+                    <ul className="text-sm text-destructive space-y-1" aria-label="Render errors">
                       {state.errors.map((error, i) => (
                         <li key={i}>• {error}</li>
                       ))}

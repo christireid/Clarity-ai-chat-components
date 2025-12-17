@@ -371,6 +371,52 @@ export function usePromptLibrary(
     [state.templates, addHistoryEntry]
   )
 
+  // Helper function for creating versions (extracted to avoid self-reference)
+  const createVersion = React.useCallback(
+    (templateId: string, template: string, notes?: string): PromptVersion => {
+      const newVersion: PromptVersion = {
+        id: generateId(),
+        templateId,
+        version: '0.0.0', // Placeholder, will be computed in setState
+        template,
+        createdAt: Date.now(),
+        notes,
+        isActive: true,
+      }
+
+      setState((prev) => {
+        const existingVersions = prev.versions[templateId] || []
+        const computedVersion = generateVersion(existingVersions)
+        const versionWithNumber = { ...newVersion, version: computedVersion }
+
+        return {
+          ...prev,
+          versions: {
+            ...prev.versions,
+            [templateId]: [
+              ...existingVersions.map((v) => ({ ...v, isActive: false })),
+              versionWithNumber,
+            ],
+          },
+        }
+      })
+
+      // Use setTimeout to avoid calling setState during render
+      setTimeout(() => {
+        addHistoryEntry({
+          templateId,
+          changeType: 'version-created',
+          description: `Created version`,
+          versionId: newVersion.id,
+          newValue: template,
+        })
+      }, 0)
+
+      return newVersion
+    },
+    [addHistoryEntry]
+  )
+
   // Version operations
   const versionOps = React.useMemo(
     () => ({
@@ -383,46 +429,7 @@ export function usePromptLibrary(
           versions.find((v) => v.isActive) || versions[versions.length - 1]
         )
       },
-      create: (
-        templateId: string,
-        template: string,
-        notes?: string
-      ): PromptVersion => {
-        const existingVersions = state.versions[templateId] || []
-        const newVersion: PromptVersion = {
-          id: generateId(),
-          templateId,
-          version: generateVersion(existingVersions),
-          template,
-          createdAt: Date.now(),
-          notes,
-          isActive: true,
-        }
-
-        setState((prev) => {
-          const versions = prev.versions[templateId] || []
-          return {
-            ...prev,
-            versions: {
-              ...prev.versions,
-              [templateId]: [
-                ...versions.map((v) => ({ ...v, isActive: false })),
-                newVersion,
-              ],
-            },
-          }
-        })
-
-        addHistoryEntry({
-          templateId,
-          changeType: 'version-created',
-          description: `Created version ${newVersion.version}`,
-          versionId: newVersion.id,
-          newValue: template,
-        })
-
-        return newVersion
-      },
+      create: createVersion,
       setActive: (templateId: string, versionId: string) => {
         setState((prev) => ({
           ...prev,
@@ -458,14 +465,14 @@ export function usePromptLibrary(
         if (!version) return
 
         // Create a new version from the rollback target
-        versionOps.create(
+        createVersion(
           templateId,
           version.template,
           `Rolled back to version ${version.version}`
         )
       },
     }),
-    [state.versions, addHistoryEntry]
+    [state.versions, createVersion]
   )
 
   // Deployment operations
@@ -526,44 +533,48 @@ export function usePromptLibrary(
         return deployment
       },
       rollback: (deploymentId: string) => {
-        setState((prev) => {
-          const envs: PromptEnvironment[] = [
-            'development',
-            'staging',
-            'production',
-          ]
-          let updatedDeployments = { ...prev.deployments }
-          let targetDeployment: PromptDeployment | undefined
+        // First, find the target deployment from current state
+        const envs: PromptEnvironment[] = [
+          'development',
+          'staging',
+          'production',
+        ]
+        let targetDeployment: PromptDeployment | undefined
+        let targetEnv: PromptEnvironment | undefined
 
-          for (const env of envs) {
-            const deployment = prev.deployments[env]?.find(
-              (d) => d.id === deploymentId
-            )
-            if (deployment) {
-              targetDeployment = deployment
-              updatedDeployments = {
-                ...updatedDeployments,
-                [env]: prev.deployments[env]?.map((d) =>
-                  d.id === deploymentId
-                    ? { ...d, status: 'rolled-back' as const }
-                    : d
-                ) || [],
-              }
-              break
-            }
+        for (const env of envs) {
+          const deployment = state.deployments[env]?.find(
+            (d) => d.id === deploymentId
+          )
+          if (deployment) {
+            targetDeployment = deployment
+            targetEnv = env
+            break
           }
+        }
 
-          if (targetDeployment) {
-            addHistoryEntry({
-              templateId: targetDeployment.templateId,
-              changeType: 'rolled-back',
-              description: `Rolled back deployment in ${targetDeployment.environment}`,
-              versionId: targetDeployment.versionId,
-              environment: targetDeployment.environment,
-            })
-          }
+        if (!targetDeployment || !targetEnv) return
 
-          return { ...prev, deployments: updatedDeployments }
+        // Update state
+        setState((prev) => ({
+          ...prev,
+          deployments: {
+            ...prev.deployments,
+            [targetEnv]: prev.deployments[targetEnv]?.map((d) =>
+              d.id === deploymentId
+                ? { ...d, status: 'rolled-back' as const }
+                : d
+            ) || [],
+          },
+        }))
+
+        // Add history entry after state update
+        addHistoryEntry({
+          templateId: targetDeployment.templateId,
+          changeType: 'rolled-back',
+          description: `Rolled back deployment in ${targetDeployment.environment}`,
+          versionId: targetDeployment.versionId,
+          environment: targetDeployment.environment,
         })
       },
       updateTraffic: (deploymentId: string, percentage: number) => {

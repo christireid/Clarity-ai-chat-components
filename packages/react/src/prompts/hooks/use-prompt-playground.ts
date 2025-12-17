@@ -223,19 +223,41 @@ export function usePromptPlayground(
   // Debounce timer ref
   const debounceRef = React.useRef<ReturnType<typeof setTimeout>>()
 
-  // Render function
+  // Refs to avoid stale closures in performRender
+  const stateRef = React.useRef(state)
+  const pricingRef = React.useRef(pricing)
+  const callbacksRef = React.useRef({ onRender, onError })
+
+  // Keep refs updated
+  React.useEffect(() => {
+    stateRef.current = state
+  }, [state])
+
+  React.useEffect(() => {
+    pricingRef.current = pricing
+  }, [pricing])
+
+  React.useEffect(() => {
+    callbacksRef.current = { onRender, onError }
+  }, [onRender, onError])
+
+  // Render function - uses refs to avoid stale closures
   const performRender = React.useCallback((): PromptRenderResult => {
+    const currentState = stateRef.current
+    const currentPricing = pricingRef.current
+    const { onRender: renderCallback, onError: errorCallback } = callbacksRef.current
+
     setState((prev) => ({ ...prev, isRendering: true }))
 
     try {
-      const result = templateEngine.render(state.template, {
-        variables: state.variables as Record<string, unknown>,
+      const result = templateEngine.render(currentState.template, {
+        variables: currentState.variables as Record<string, unknown>,
         trim: true,
         validate: true,
       })
 
       const tokenCount = estimateTokens(result.prompt)
-      const costEstimate = (tokenCount / 1000) * pricing.inputCostPer1k
+      const costEstimate = (tokenCount / 1000) * currentPricing.inputCostPer1k
 
       setState((prev) => ({
         ...prev,
@@ -247,9 +269,9 @@ export function usePromptPlayground(
       }))
 
       if (result.errors && result.errors.length > 0) {
-        onError?.(result.errors)
+        errorCallback?.(result.errors)
       } else {
-        onRender?.(result)
+        renderCallback?.(result)
       }
 
       return result
@@ -261,7 +283,7 @@ export function usePromptPlayground(
         errors: [errorMessage],
         isRendering: false,
       }))
-      onError?.([errorMessage])
+      errorCallback?.([errorMessage])
       return {
         prompt: '',
         usedVariables: [],
@@ -269,7 +291,7 @@ export function usePromptPlayground(
         success: false,
       }
     }
-  }, [state.template, state.variables, templateEngine, pricing, onRender, onError])
+  }, [templateEngine])
 
   // Auto-render with debounce
   React.useEffect(() => {
