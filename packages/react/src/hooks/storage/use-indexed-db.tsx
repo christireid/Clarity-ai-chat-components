@@ -103,7 +103,7 @@ export function useIndexedDB<T>(
         dbRef.current = db
       } catch (err) {
         setError(err as Error)
-        logger.logger.error('Failed to initialize IndexedDB:', err)
+        logger.error('Failed to initialize IndexedDB:', err)
       }
     }
 
@@ -443,7 +443,7 @@ export function useConversationStorage(
           dbRef.current = request.result
         }
       } catch (err) {
-        logger.logger.error('Failed to initialize conversation storage:', err)
+        logger.error('Failed to initialize conversation storage:', err)
       }
     }
 

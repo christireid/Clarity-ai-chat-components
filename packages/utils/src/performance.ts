@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+
 /**
  * Performance Monitor
  * 

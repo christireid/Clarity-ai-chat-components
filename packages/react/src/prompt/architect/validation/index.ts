@@ -16,7 +16,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * if (result.success) {
  *   logger.debug(result.data)
  * } else {
- *   logger.logger.error(result.error.getFormattedErrors())
+ *   logger.error(result.error.getFormattedErrors())
  * }
  *
  * // Direct schema usage

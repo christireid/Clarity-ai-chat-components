@@ -16,6 +16,19 @@ export default defineConfig({
       rollupTypes: true,
     }),
   ],
+  resolve: {
+    alias: [
+      { find: '@clarity-chat/utils/async', replacement: resolve(__dirname, '../utils/src/async/index.ts') },
+      { find: '@clarity-chat/utils/cache', replacement: resolve(__dirname, '../utils/src/cache/index.ts') },
+      { find: '@clarity-chat/utils/errors', replacement: resolve(__dirname, '../utils/src/errors/index.ts') },
+      { find: '@clarity-chat/utils/format', replacement: resolve(__dirname, '../utils/src/format/index.ts') },
+      { find: '@clarity-chat/utils/logger', replacement: resolve(__dirname, '../utils/src/logger/index.ts') },
+      { find: '@clarity-chat/utils/progress', replacement: resolve(__dirname, '../utils/src/progress/index.ts') },
+      { find: '@clarity-chat/utils/validation', replacement: resolve(__dirname, '../utils/src/validation/index.ts') },
+      { find: /^@clarity-chat\/utils\/(.*)/, replacement: resolve(__dirname, '../utils/src/$1') },
+      { find: '@clarity-chat/utils', replacement: resolve(__dirname, '../utils/src/index.ts') },
+    ],
+  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),

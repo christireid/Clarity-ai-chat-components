@@ -137,6 +137,7 @@ describe('useErrorRecovery', () => {
 
     expect(recoveryResult).toBe(false)
     expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.any(String),
       expect.stringContaining('No recovery strategy found')
     )
 

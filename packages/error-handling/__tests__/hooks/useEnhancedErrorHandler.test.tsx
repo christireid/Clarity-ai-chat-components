@@ -145,10 +145,15 @@ describe('useEnhancedErrorHandler', () => {
       // Should be called twice: once for error, once for details
       expect(consoleSpy).toHaveBeenCalledTimes(2)
       expect(consoleSpy).toHaveBeenCalledWith(
+        expect.any(String),
         '[useEnhancedErrorHandler]',
         expect.any(ApiError)
       )
-      expect(consoleSpy).toHaveBeenCalledWith('Details:', expect.any(Object))
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.any(String),
+        'Details:',
+        expect.any(Object)
+      )
 
       process.env['NODE_ENV'] = originalEnv
       consoleSpy.mockRestore()

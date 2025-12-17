@@ -44,7 +44,7 @@ export function ProductRecommendationExample() {
       logger.debug('Generated products:', result)
     },
     onError: (err) => {
-      logger.logger.error('Error generating products:', err)
+      logger.error('Error generating products:', err)
     },
   })
 

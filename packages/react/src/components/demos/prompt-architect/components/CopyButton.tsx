@@ -44,7 +44,7 @@ export function CopyButton({
       // Reset after 2 seconds
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      logger.logger.error('Failed to copy:', err)
+      logger.error('Failed to copy:', err)
     }
   }, [text, onCopy])
 

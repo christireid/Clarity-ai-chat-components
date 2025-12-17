@@ -126,7 +126,7 @@ export class MemoryService {
         memory.embedding = await this.embeddings.embedText(content)
       } catch (error) {
         if (this.config.debug) {
-          logger.logger.error('Failed to generate embedding:', error)
+          logger.error('Failed to generate embedding:', error)
         }
       }
     } else if (options.embedding) {
@@ -247,7 +247,7 @@ export class MemoryService {
       }))
     } catch (error) {
       if (this.config.debug) {
-        logger.logger.error('Vector search failed:', error)
+        logger.error('Vector search failed:', error)
       }
       return []
     }
@@ -354,7 +354,7 @@ export class MemoryService {
           updated.embedding = await this.embeddings.embedText(updates.content)
         } catch (error) {
           if (this.config.debug) {
-            logger.logger.error('Failed to regenerate embedding:', error)
+            logger.error('Failed to regenerate embedding:', error)
           }
         }
       }
@@ -394,7 +394,7 @@ export class MemoryService {
         )
       } catch (error) {
         if (this.config.debug) {
-          logger.logger.error('Failed to delete from vector store:', error)
+          logger.error('Failed to delete from vector store:', error)
         }
       }
     }
@@ -530,7 +530,7 @@ export class MemoryService {
       })
     } catch (error) {
       if (this.config.debug) {
-        logger.logger.error('Failed to update vector store:', error)
+        logger.error('Failed to update vector store:', error)
       }
     }
   }
@@ -642,7 +642,7 @@ export class MemoryService {
     this.cleanupInterval = setInterval(() => {
       this.cleanup().catch(error => {
         if (this.config.debug) {
-          logger.logger.error('Cleanup task failed:', error)
+          logger.error('Cleanup task failed:', error)
         }
       })
     }, this.config.cleanupInterval!)
@@ -695,7 +695,7 @@ export class MemoryService {
           listener(event)
         } catch (error) {
           if (this.config.debug) {
-            logger.logger.error('Event listener error:', error)
+            logger.error('Event listener error:', error)
           }
         }
       }

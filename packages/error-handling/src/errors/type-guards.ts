@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Type guards for all Clarity Chat error types
  * Use these for type-safe error handling in catch blocks

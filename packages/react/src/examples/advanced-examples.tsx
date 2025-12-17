@@ -203,7 +203,7 @@ export function Advanced_CustomIntegrations() {
         body: JSON.stringify({ message: content }),
       })
     } catch (error) {
-      logger.logger.error('External service error:', error)
+      logger.error('External service error:', error)
     }
   }, [])
 
