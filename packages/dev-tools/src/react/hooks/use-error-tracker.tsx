@@ -1,0 +1,230 @@
+/**
+ * React hook for Error Tracking and Recovery
+ *
+ * Track errors and monitor recovery attempts
+ */
+
+'use client'
+
+import * as React from 'react'
+import {
+  getErrorTracker,
+  createErrorTracker,
+  type ErrorTracker,
+  type ErrorEvent,
+  type ErrorCategory,
+  type ErrorSeverity,
+  type RecoveryAttempt,
+  type ErrorStats,
+} from '../../debug/error-tracker'
+
+export interface UseErrorTrackerOptions {
+  enabled?: boolean
+  component?: string
+  autoTrack?: boolean
+  onError?: (event: ErrorEvent) => void
+}
+
+export interface UseErrorTrackerReturn {
+  stats: ErrorStats
+  errors: ErrorEvent[]
+  activeErrors: ErrorEvent[]
+  track: (error: Error, options?: {
+    severity?: ErrorSeverity
+    category?: ErrorCategory
+    context?: Record<string, unknown>
+  }) => ErrorEvent
+  trackRecovery: (eventId: string, options: {
+    strategy: string
+    successful: boolean
+    duration: number
+    error?: string
+  }) => RecoveryAttempt | null
+  resolve: (eventId: string) => boolean
+  getRecommendations: () => string[]
+  clear: () => void
+  withErrorTracking: <T>(fn: () => Promise<T>, options?: {
+    recoveryStrategy?: string
+    onError?: (error: Error) => void
+  }) => Promise<T>
+}
+
+/**
+ * Hook to track errors and recovery
+ */
+export function useErrorTracker(
+  options: UseErrorTrackerOptions = {}
+): UseErrorTrackerReturn {
+  const {
+    enabled = process.env.NODE_ENV === 'development',
+    component,
+    autoTrack = true,
+    onError,
+  } = options
+
+  const tracker = React.useMemo(() => {
+    return getErrorTracker()
+  }, [])
+
+  const [stats, setStats] = React.useState<ErrorStats>(() => tracker.getStats())
+  const [errors, setErrors] = React.useState<ErrorEvent[]>([])
+
+  // Subscribe to error events
+  React.useEffect(() => {
+    if (!enabled) return
+
+    const unsubscribe = tracker.addListener((event) => {
+      setStats(tracker.getStats())
+      setErrors(tracker.getErrors())
+      onError?.(event)
+    })
+
+    // Initial load
+    setStats(tracker.getStats())
+    setErrors(tracker.getErrors())
+
+    return unsubscribe
+  }, [tracker, enabled, onError])
+
+  // Auto-track global errors
+  React.useEffect(() => {
+    if (!enabled || !autoTrack) return
+
+    const handleError = (event: ErrorEvent) => {
+      tracker.track({
+        error: event.error instanceof Error ? event.error : new Error(String(event.error)),
+        component,
+      })
+    }
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      tracker.track({
+        error: event.reason instanceof Error ? event.reason : new Error(String(event.reason)),
+        component,
+        category: 'unknown',
+      })
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('error', handleError as any)
+      window.addEventListener('unhandledrejection', handleUnhandledRejection)
+
+      return () => {
+        window.removeEventListener('error', handleError as any)
+        window.removeEventListener('unhandledrejection', handleUnhandledRejection)
+      }
+    }
+  }, [enabled, autoTrack, component, tracker])
+
+  const track = React.useCallback((error: Error, trackOptions?: {
+    severity?: ErrorSeverity
+    category?: ErrorCategory
+    context?: Record<string, unknown>
+  }) => {
+    return tracker.track({
+      error,
+      component,
+      ...trackOptions,
+    })
+  }, [tracker, component])
+
+  const trackRecovery = React.useCallback((eventId: string, recoveryOptions: {
+    strategy: string
+    successful: boolean
+    duration: number
+    error?: string
+  }) => {
+    const result = tracker.trackRecovery(eventId, recoveryOptions)
+    setStats(tracker.getStats())
+    setErrors(tracker.getErrors())
+    return result
+  }, [tracker])
+
+  const resolve = React.useCallback((eventId: string) => {
+    const result = tracker.resolve(eventId)
+    setStats(tracker.getStats())
+    setErrors(tracker.getErrors())
+    return result
+  }, [tracker])
+
+  const getRecommendations = React.useCallback(() => {
+    return tracker.getRecommendations()
+  }, [tracker])
+
+  const clear = React.useCallback(() => {
+    tracker.clear()
+    setStats(tracker.getStats())
+    setErrors([])
+  }, [tracker])
+
+  const withErrorTracking = React.useCallback(async <T,>(
+    fn: () => Promise<T>,
+    trackingOptions?: {
+      recoveryStrategy?: string
+      onError?: (error: Error) => void
+    }
+  ): Promise<T> => {
+    const startTime = performance.now()
+    let event: ErrorEvent | null = null
+
+    try {
+      return await fn()
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      event = track(err)
+      trackingOptions?.onError?.(err)
+      throw error
+    } finally {
+      if (event && trackingOptions?.recoveryStrategy) {
+        const duration = performance.now() - startTime
+        trackRecovery(event.id, {
+          strategy: trackingOptions.recoveryStrategy,
+          successful: !event,
+          duration,
+        })
+      }
+    }
+  }, [track, trackRecovery])
+
+  const activeErrors = React.useMemo(() => {
+    return errors.filter(e => !e.resolved)
+  }, [errors])
+
+  return {
+    stats,
+    errors,
+    activeErrors,
+    track,
+    trackRecovery,
+    resolve,
+    getRecommendations,
+    clear,
+    withErrorTracking,
+  }
+}
+
+/**
+ * Error boundary hook
+ */
+export function useErrorBoundary(options?: UseErrorTrackerOptions) {
+  const [error, setError] = React.useState<Error | null>(null)
+  const tracker = useErrorTracker(options)
+
+  const resetError = React.useCallback(() => {
+    setError(null)
+  }, [])
+
+  const captureError = React.useCallback((err: Error) => {
+    setError(err)
+    tracker.track(err)
+  }, [tracker])
+
+  return {
+    error,
+    resetError,
+    captureError,
+    ...tracker,
+  }
+}
+
+export default useErrorTracker

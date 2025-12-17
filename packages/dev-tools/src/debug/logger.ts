@@ -160,7 +160,7 @@ export class Logger {
     this.log('warn', message, context)
   }
 
-  logger.error(message: string, context?: Record<string, any>): void {
+  error(message: string, context?: Record<string, any>): void {
     this.log('error', message, context)
   }
 
