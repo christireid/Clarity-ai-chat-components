@@ -1,10 +1,10 @@
+'use client'
+
 /**
  * Performance Monitoring Dashboard
  *
  * Visual dashboard for performance metrics
  */
-
-'use client'
 
 import * as React from 'react'
 import { useRenderPerformance } from '../../hooks/performance/use-performance'
@@ -450,9 +450,15 @@ export function PerformanceDashboard({
 }
 
 /**
- * Format bytes to human-readable string
+ * Performance Badge - shows current render performance status
  */
-o = useMemoryUsage()
+interface PerformanceBadgeProps {
+  className?: string
+}
+
+export function PerformanceBadge({ className }: PerformanceBadgeProps) {
+  const performanceMetrics = useRenderPerformance()
+  const memoryInfo = useMemoryUsage()
 
   const status = React.useMemo(() => {
     if (performanceMetrics.lastRenderTime > 50) return 'poor'

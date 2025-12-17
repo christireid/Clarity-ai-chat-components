@@ -5,29 +5,16 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
 import { duration } from '../../animations/constants'
-<<<<<<< HEAD
-import MessageList from './virtualized-message-list'
+import { MessageList } from '../message/message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from '../message/thinking-indicator'
 import { BotIcon, SparklesIcon } from '../ui/icons'
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
-import { convertCoreMessagesToMessages } from '../../utils/message'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/prompt-suggestions'
-=======
-import { MessageList } from './message-list'
-import { ChatInput } from './chat-input'
-import { ThinkingIndicator } from './thinking-indicator'
-import { BotIcon, SparklesIcon } from './icons'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
-import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
-import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
-import { useUIEnhancements, getEnhancedClassName } from '../../contexts/ui-enhancements'
-import { useSecurity } from '../../utils/security'
-import { usePerformanceMonitoring, useRenderOptimization, use60FPSAnimation } from '../../utils/performance'
->>>>>>> origin/main
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */
@@ -180,8 +167,6 @@ const DefaultEmptyState = React.memo(({
   onSelectPrompt,
   showStarterPrompts = true,
 }: DefaultEmptyStateProps) => {
-  const { animate: animate60FPS } = use60FPSAnimation(true)
-  
   return (
     <motion.div
       className="text-center space-y-8 px-4 py-8"
@@ -189,57 +174,41 @@ const DefaultEmptyState = React.memo(({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
     >
-  <motion.div
-    className="text-center space-y-8 px-4 py-8"
-    initial={{ opacity: 0, scale: 0.95 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: effectiveQuantumAnimations ? duration('quantum') : duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
-  >
-    {/* Animated icon with decorative rings */}
-    <div className="relative inline-flex items-center justify-center">
-      {/* Outer decorative ring */}
-      <motion.div
-        className="absolute w-32 h-32 rounded-full border border-primary/10"
-        animate={{
-          scale: [1, 1.05, 1],
-          opacity: [0.5, 0.8, 0.5],
-        }}
-        transition={{
-          duration: duration('slower'),
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-      {/* Middle decorative ring */}
-      <motion.div
-        className="absolute w-28 h-28 rounded-full border border-primary/20"
-        animate={{
-          scale: [1, 1.03, 1],
-          opacity: [0.6, 1, 0.6],
-        }}
-        transition={{
-          duration: duration('slower'),
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 0.5,
-        }}
-      />
-      {/* Main icon container */}
-      <motion.div
-        className="relative z-10 inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/15 to-primary/5 shadow-[0_8px_32px_-8px_hsl(var(--primary)/0.3)] ring-1 ring-primary/20"
-        animate={{
-          scale: [1, 1.02, 1],
-          rotate: [0, 1, -1, 0],
-        }}
-        transition={{
-          duration: duration('slower'),
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      >
+      {/* Animated icon with decorative rings */}
+      <div className="relative inline-flex items-center justify-center">
+        {/* Outer decorative ring */}
         <motion.div
+          className="absolute w-32 h-32 rounded-full border border-primary/10"
           animate={{
-            y: [0, -2, 0],
+            scale: [1, 1.05, 1],
+            opacity: [0.5, 0.8, 0.5],
+          }}
+          transition={{
+            duration: duration('slower'),
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        {/* Middle decorative ring */}
+        <motion.div
+          className="absolute w-28 h-28 rounded-full border border-primary/20"
+          animate={{
+            scale: [1, 1.03, 1],
+            opacity: [0.6, 1, 0.6],
+          }}
+          transition={{
+            duration: duration('slower'),
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 0.5,
+          }}
+        />
+        {/* Main icon container */}
+        <motion.div
+          className="relative z-10 inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/15 to-primary/5 shadow-[0_8px_32px_-8px_hsl(var(--primary)/0.3)] ring-1 ring-primary/20"
+          animate={{
+            scale: [1, 1.02, 1],
+            rotate: [0, 1, -1, 0],
           }}
           transition={{
             duration: duration('slower'),
@@ -247,63 +216,74 @@ const DefaultEmptyState = React.memo(({
             ease: 'easeInOut',
           }}
         >
-          <BotIcon size={40} className="text-primary" />
+          <motion.div
+            animate={{
+              y: [0, -2, 0],
+            }}
+            transition={{
+              duration: duration('slower'),
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          >
+            <BotIcon size={40} className="text-primary" />
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </div>
+      </div>
 
-    <div className="space-y-3">
-      <h3 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-        Start a conversation
-      </h3>
-      <p className="text-sm text-muted-foreground/80 max-w-md mx-auto leading-relaxed">
-        Send a message to begin chatting with the AI assistant. I'm here to help
-        with your questions and tasks.
-      </p>
-    </div>
+      <div className="space-y-3">
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+          Start a conversation
+        </h3>
+        <p className="text-sm text-muted-foreground/80 max-w-md mx-auto leading-relaxed">
+          Send a message to begin chatting with the AI assistant. I'm here to help
+          with your questions and tasks.
+        </p>
+      </div>
 
-    {/* Starter Prompts - 2024 AI UX Pattern */}
-    {showStarterPrompts &&
-      starterPrompts &&
-      starterPrompts.length > 0 &&
-      onSelectPrompt && (
-        <motion.div
-          className="pt-6"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 0.2,
-            duration: duration('slow'),
-            ease: [0.25, 0.1, 0.25, 1],
-          }}
-        >
-          <div className="flex items-center justify-center gap-2 mb-5">
-            <motion.div
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{
-                duration: duration('slower'),
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            >
-              <SparklesIcon size={14} className="text-primary" />
-            </motion.div>
-            <span className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
-              Try asking
-            </span>
-          </div>
-          <PromptSuggestions
-            suggestions={starterPrompts}
-            onSelect={onSelectPrompt}
-            suggestionType="starter"
-            layout="chips"
-            maxSuggestions={4}
-            className="justify-center"
-          />
-        </motion.div>
-      )}
-  </motion.div>
-)
+      {/* Starter Prompts - 2024 AI UX Pattern */}
+      {showStarterPrompts &&
+        starterPrompts &&
+        starterPrompts.length > 0 &&
+        onSelectPrompt && (
+          <motion.div
+            className="pt-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: 0.2,
+              duration: duration('slow'),
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+          >
+            <div className="flex items-center justify-center gap-2 mb-5">
+              <motion.div
+                animate={{ rotate: [0, 15, -15, 0] }}
+                transition={{
+                  duration: duration('slower'),
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              >
+                <SparklesIcon size={14} className="text-primary" />
+              </motion.div>
+              <span className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
+                Try asking
+              </span>
+            </div>
+            <PromptSuggestions
+              suggestions={starterPrompts}
+              onSelect={onSelectPrompt}
+              suggestionType="starter"
+              layout="chips"
+              maxSuggestions={4}
+              className="justify-center"
+            />
+          </motion.div>
+        )}
+    </motion.div>
+  )
+})
 
 /**
  * ChatWindow - Mid-Level Composable Component
@@ -483,22 +463,6 @@ export function ChatWindow({
 
   const [input, setInput] = React.useState('')
 
-  // Security and enhancement hooks
-  const security = useSecurity()
-  const enhancements = useUIEnhancements()
-  const { measureRender, isPerformanceAcceptable, animate } = usePerformanceMonitoring()
-  const { animate: animate60FPS } = use60FPSAnimation(effectiveQuantumAnimations)
-
-  // Use enhancement props or fall back to context values
-  const enhancements = useUIEnhancements()
-  const effectiveQuantumAnimations = quantumAnimations ?? enhancements.quantumAnimations
-  const effectiveGlassmorphism = glassmorphism ?? enhancements.glassmorphism
-  const effectiveAuroraGradients = auroraGradients ?? enhancements.auroraGradients
-  const effectiveNeumorphism = neumorphism ?? enhancements.neumorphism
-  const effectiveVoiceIntegration = voiceIntegration ?? enhancements.voiceIntegration
-  const effectiveAdaptiveColors = adaptiveColors ?? enhancements.adaptiveColors
-  const effectiveWCAGAAA = wcagAAA ?? enhancements.wcagAAA
-
   // Convert CoreMessage[] to Message[] if needed
   // Check if first message has 'content' property that could be string or array
   // CoreMessage has content: string | Array<...>, Message has content: string
@@ -523,14 +487,7 @@ export function ChatWindow({
 
   // React 19: Compiler optimizes - no useCallback needed
   const handleSubmit = (content: string) => {
-    // Security validation
-    const validation = security.validateInput(content)
-    if (!validation.isValid) {
-      console.warn('Security validation failed:', validation.error)
-      return
-    }
-    
-    onSendMessage(validation.sanitized || content)
+    onSendMessage(content)
     setInput('')
   }
 
@@ -573,16 +530,7 @@ export function ChatWindow({
         'border-border/30',
         'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)]',
         'backdrop-blur-sm',
-        getEnhancedClassName({
-          className,
-          quantumAnimations: effectiveQuantumAnimations,
-          glassmorphism: effectiveGlassmorphism,
-          auroraGradients: effectiveAuroraGradients,
-          neumorphism: effectiveNeumorphism,
-          voiceIntegration: effectiveVoiceIntegration,
-          adaptiveColors: effectiveAdaptiveColors,
-          wcagAAA: effectiveWCAGAAA,
-        })
+        className
       )}
     >
       {/* Optional Header */}

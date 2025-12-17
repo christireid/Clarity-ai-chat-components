@@ -174,9 +174,10 @@ export async function retry<T>(
 }
 
 /**
- * Format bytes to human-readable string
+ * Check if running on server
  */
-export   return typeof window === 'undefined'
+export function isServer(): boolean {
+  return typeof window === 'undefined'
 }
 
 /**

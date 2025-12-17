@@ -119,11 +119,11 @@ class LoggerImpl implements ExtensionLogger {
   }
 
   warn(message: string, ...args: unknown[]): void {
-    logger.warn(`[${this.prefix}]`, message, ...args)
+    console.warn(`[${this.prefix}]`, message, ...args)
   }
 
-  logger.error(message: string, ...args: unknown[]): void {
-    logger.logger.error(`[${this.prefix}]`, message, ...args)
+  error(message: string, ...args: unknown[]): void {
+    console.error(`[${this.prefix}]`, message, ...args)
   }
 
   child(childPrefix: string): ExtensionLogger {
@@ -145,7 +145,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
       try {
         handler(data)
       } catch (e) {
-        logger.logger.error(`Event handler error for ${event}:`, e)
+        console.error(`Event handler error for ${event}:`, e)
       }
     })
 
@@ -156,7 +156,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
         try {
           handler(data)
         } catch (e) {
-          logger.logger.error(`Once handler error for ${event}:`, e)
+          console.error(`Once handler error for ${event}:`, e)
         }
       })
       this.onceHandlers.delete(event)

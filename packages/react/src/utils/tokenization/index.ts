@@ -48,7 +48,6 @@ export {
   tokenAnalyticsMonitor,
   type TokenUsageEvent,
   type TokenAnalytics,
-  type TokenMetrics
   type TokenMetrics,
   type TokenAlert 
 } from './token-analytics.js';
