@@ -285,6 +285,8 @@ const DefaultEmptyState = React.memo(({
   )
 })
 
+DefaultEmptyState.displayName = 'DefaultEmptyState'
+
 /**
  * ChatWindow - Mid-Level Composable Component
  *

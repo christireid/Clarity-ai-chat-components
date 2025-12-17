@@ -86,9 +86,19 @@ export interface AccessibilityProps {
   'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
   'aria-hidden'?: boolean
   'aria-disabled'?: boolean
+  'aria-busy'?: boolean
+  'aria-required'?: boolean
+  'aria-readonly'?: boolean
+  'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling'
   'aria-live'?: 'off' | 'assertive' | 'polite'
   'aria-atomic'?: boolean
   'aria-relevant'?: 'additions' | 'additions removals' | 'additions text' | 'all' | 'removals' | 'text'
+  'aria-valuenow'?: number
+  'aria-valuemin'?: number
+  'aria-valuemax'?: number
+  'aria-valuetext'?: string
+  'aria-current'?: boolean | 'false' | 'true' | 'page' | 'step' | 'location' | 'date' | 'time'
+  'aria-modal'?: boolean
   role?: string
   tabIndex?: number
 }
