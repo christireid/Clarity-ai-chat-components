@@ -115,7 +115,7 @@ export {
   // Deprecated but kept for backward compatibility
   coreMessagesToMessages,
   coreMessageToMessage,
-} from '../utils/message-conversion'
+} from '../utils/message/message-conversion'
 
 // Helper hooks
 export {
