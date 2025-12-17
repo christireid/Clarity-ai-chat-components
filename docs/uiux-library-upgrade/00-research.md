@@ -278,21 +278,70 @@ _[Full anti-pattern guide to be completed]_
 
 ## Design & API Principles
 
-### Core Principles for Clarity Chat
+### Core Principles for Clarity Chat Enhancement
 
-**To be defined based on research:**
+Based on research, these principles will guide all library improvements:
 
-1. **Principle Name**
-   - Description
-   - Rationale
-   - Example
+#### 1. **Composability Over Configuration**
 
-2. **Principle Name**
-   - Description
-   - Rationale
-   - Example
+- **Principle**: Favor small, composable components over large, prop-heavy monoliths
+- **Rationale**: Developers want flexibility to build custom flows without fighting APIs
+- **Example**: Instead of `<Chat showAvatar={true} showTimestamp={true}>`, prefer
+  `<Chat><Chat.Avatar /><Chat.Timestamp /></Chat>`
 
-_[5-10 core principles will be established]_
+#### 2. **Escape Hatches Everywhere**
+
+- **Principle**: Every component must provide a way to customize/override behavior
+- **Rationale**: "I can't customize this" is the #1 reason teams abandon libraries
+- **Example**: Expose `asChild`, `renderXxx` props, or `className` + `style` access
+
+#### 3. **Consistent API Surface**
+
+- **Principle**: Use same prop names across similar components
+- **Rationale**: Reduces cognitive load, improves discoverability
+- **Example**: If one component uses `onValueChange`, all should (not `onChange` elsewhere)
+
+#### 4. **TypeScript as Documentation**
+
+- **Principle**: Types should teach users how to use components
+- **Rationale**: IntelliSense is the first documentation developers see
+- **Example**: Use descriptive type names, JSDoc comments on all props
+
+#### 5. **Accessibility by Default**
+
+- **Principle**: Components should be accessible without additional props
+- **Rationale**: Developers shouldn't have to think about ARIA/WCAG basics
+- **Example**: Auto-generate IDs, labels, roles; provide escape hatches for advanced cases
+
+#### 6. **Performance is a Feature**
+
+- **Principle**: Components must handle 1000+ items without performance degradation
+- **Rationale**: AI chats grow long quickly; users notice jank
+- **Example**: Virtual scrolling, memoization, lazy loading built into components
+
+#### 7. **AI-Specific Patterns Built In**
+
+- **Principle**: Streaming, tool calls, citations aren't afterthoughts
+- **Rationale**: This is an AI library; these should be first-class features
+- **Example**: Native streaming support, tool call visualization, citation components
+
+#### 8. **Test-Friendly Design**
+
+- **Principle**: Components should be easy to test in isolation
+- **Rationale**: "Can't test it" leads to low-quality integrations
+- **Example**: Avoid hidden global state, export test utilities, use `data-testid`
+
+#### 9. **Documentation = Real-World Examples**
+
+- **Principle**: Show complete, copy-pasteable examples, not just props
+- **Rationale**: Developers learn by example, not by reading API references
+- **Example**: Every component story shows 3-5 real scenarios (basic, edge cases, advanced)
+
+#### 10. **Evolutionary, Not Revolutionary**
+
+- **Principle**: Prefer incremental improvements over breaking rewrites
+- **Rationale**: Stability builds trust; migrations kill adoption
+- **Example**: Add new patterns alongside old, deprecate gracefully with codemods
 
 ---
 
