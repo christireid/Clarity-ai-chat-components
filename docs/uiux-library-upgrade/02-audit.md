@@ -1,8 +1,7 @@
 # Phase 3: UX + DX Audit (Library-Focused)
 
-> **Created**: 2025-01-XX
-> **Status**: Not Started
-> **Goal**: Comprehensive audit of library ergonomics, consistency, and quality
+> **Created**: 2025-01-XX **Status**: Not Started **Goal**: Comprehensive audit of library
+> ergonomics, consistency, and quality
 
 ---
 
@@ -25,27 +24,20 @@
 ```markdown
 #### [SEVERITY] Issue Title
 
-**Type**: API Ergonomics | Visual | Interaction | A11y | Theming | Docs | AI UX
-**Component/Hook**: Name
-**Severity**: Blocker | High | Medium | Low
+**Type**: API Ergonomics | Visual | Interaction | A11y | Theming | Docs | AI UX **Component/Hook**:
+Name **Severity**: Blocker | High | Medium | Low
 
-**Description**:
-[What's wrong]
+**Description**: [What's wrong]
 
-**Current Behavior**:
-[How it works now]
+**Current Behavior**: [How it works now]
 
-**Expected Behavior**:
-[How it should work]
+**Expected Behavior**: [How it should work]
 
-**Impact**:
-[Who/what is affected]
+**Impact**: [Who/what is affected]
 
-**Proposed Fix**:
-[Suggested solution]
+**Proposed Fix**: [Suggested solution]
 
-**Breaking Change**: Yes | No
-**Effort**: Small | Medium | Large
+**Breaking Change**: Yes | No **Effort**: Small | Medium | Large
 ```
 
 ---
@@ -54,19 +46,206 @@
 
 ### 🔴 Blocker Issues
 
-*[Issues that prevent library usage]*
+_No blockers identified - library is functional_
 
 ### 🟠 High Priority Issues
 
-*[Issues that significantly degrade DX]*
+#### [HIGH] Multiple Chat Hook Confusion
+
+**Type**: API Ergonomics  
+**Component/Hook**: Chat hooks (8 variations)  
+**Severity**: High
+
+**Description**: 8 different chat hooks exist with unclear relationships and no decision tree:
+
+- `use-chat.ts` (deprecated, will be removed in v3.0)
+- `use-chat-enhanced.ts`
+- `use-chat-simple.ts`
+- `use-chat-core.ts`
+- `use-chat-unified.ts`
+- `use-chat-composable.ts`
+- `use-chat-with-operations.ts`
+- `use-clarity-chat.ts` (new recommended)
+
+**Current Behavior**: Developers must read through all 8 hooks to figure out which one to use.
+
+**Expected Behavior**: Clear "Choose Your Hook" guide with decision tree based on use case.
+
+**Impact**:
+
+- New developers confused about which hook to use
+- Increased time to first integration
+- Potential for wrong hook selection
+- Documentation burden
+
+**Proposed Fix**:
+
+1. Create decision tree diagram in docs
+2. Add "When to use" section to each hook's JSDoc
+3. Consider consolidating hooks in v3.0
+4. Add migration guides for deprecated hooks
+
+**Breaking Change**: No (for documentation), Yes (for consolidation)  
+**Effort**: Medium (documentation), Large (consolidation)
+
+---
+
+#### [HIGH] Component Prop Count Explosion
+
+**Type**: API Ergonomics  
+**Component**: ClarityChat (and similar)  
+**Severity**: High
+
+**Description**: Top-level components have 20+ props, making them hard to configure and document.
+
+**Example**:
+
+```typescript
+// ClarityChat has 25+ props
+<ClarityChat
+  api="/api/chat"
+  chatId="..."
+  className="..."
+  emptyState={...}
+  showHeader={...}
+  sessionTitle="..."
+  sessionSubtitle="..."
+  headerActions={...}
+  showMessageCount={...}
+  onExport={...}
+  onClear={...}
+  autoScroll={...}
+  onMessageCopy={...}
+  onMessageFeedback={...}
+  onEditMessage={...}
+  // ... 10 more props
+/>
+```
+
+**Expected Behavior**: Use compound component pattern or config object:
+
+```typescript
+// Option 1: Compound components
+<ClarityChat api="/api/chat">
+  <ClarityChat.Header title="..." subtitle="..." />
+  <ClarityChat.Messages />
+  <ClarityChat.Input />
+</ClarityChat>
+
+// Option 2: Config object
+<ClarityChat
+  api="/api/chat"
+  config={{
+    ui: { showHeader: true, showTimestamp: true },
+    callbacks: { onCopy, onFeedback },
+    features: { messageOperations: true }
+  }}
+/>
+```
+
+**Impact**:
+
+- Overwhelming for new users
+- Hard to remember which props are available
+- TypeScript autocomplete noise
+- Documentation becomes lengthy
+
+**Proposed Fix**:
+
+1. Introduce compound component pattern for complex components
+2. Group related props into config objects
+3. Maintain backward compatibility with prop spreading
+
+**Breaking Change**: No (if backward compatible)  
+**Effort**: Large
+
+---
 
 ### 🟡 Medium Priority Issues
 
-*[Issues that cause friction]*
+#### [MEDIUM] Inconsistent Callback Prop Naming
+
+**Type**: API Ergonomics  
+**Component**: Multiple  
+**Severity**: Medium
+
+**Description**: Callback props use inconsistent patterns:
+
+- `onChange` (516 instances)
+- `onValueChange` (needs verification if used)
+- `onSubmit` (96 instances)
+- `onSendMessage` (81 instances)
+- `onDelete` (65 instances)
+- `onRemove` (needs verification if used)
+
+**Current Behavior**: Developers need to remember which variant each component uses.
+
+**Expected Behavior**: Consistent naming convention across library:
+
+- Form inputs: `onChange` + `onSubmit`
+- Actions: `on<Action>` (onDelete, onCopy, onRetry)
+- Never mix `onChange`/`onValueChange` or `onDelete`/`onRemove`
+
+**Impact**: Cognitive load, harder to guess correct prop name
+
+**Proposed Fix**:
+
+1. Audit all components for prop name consistency
+2. Establish naming convention in docs
+3. Add ESLint rule to enforce convention
+4. Provide deprecation warnings for non-standard names
+
+**Breaking Change**: Yes (for renaming)  
+**Effort**: Medium
+
+---
+
+#### [MEDIUM] Limited Escape Hatches for Customization
+
+**Type**: API Ergonomics  
+**Component**: Multiple  
+**Severity**: Medium
+
+**Description**: Escape hatch coverage is inconsistent:
+
+- **className**: 196/177 files (~110% - some duplicates)
+- **style**: 86/177 files (~49%)
+- **asChild**: 3/177 files (~1.7%)
+- **forwardRef**: 3/177 files (~1.7%)
+- **ref prop**: 1/177 files (~0.6%)
+
+**Impact**:
+
+- ~50% of components don't accept `style` prop
+- Almost no `asChild` pattern for polymorphism (Radix-style)
+- Minimal ref forwarding for focus management
+- Hard to customize components deeply
+
+**Proposed Fix**:
+
+1. Add `className` and `style` to ALL public components
+2. Implement `asChild` pattern for components that render specific elements
+3. Add ref forwarding to all interactive components
+4. Document customization patterns
+
+**Breaking Change**: No  
+**Effort**: Large
+
+---
 
 ### 🟢 Low Priority Issues
 
-*[Nice-to-have improvements]*
+#### [LOW] Missing `data-testid` Attributes
+
+**Type**: API Ergonomics  
+**Component**: Multiple  
+**Severity**: Low
+
+**Description**: Not all components include `data-testid` for easy testing.
+
+**Proposed Fix**: Add optional `data-testid` prop to all components, auto-generate if not provided.
+
+**Effort**: Medium
 
 ---
 
@@ -74,19 +253,19 @@
 
 ### Color System Issues
 
-*[Inconsistencies in color usage]*
+_[Inconsistencies in color usage]_
 
 ### Typography Issues
 
-*[Font size, weight, line-height inconsistencies]*
+_[Font size, weight, line-height inconsistencies]_
 
 ### Spacing Issues
 
-*[Padding, margin, gap inconsistencies]*
+_[Padding, margin, gap inconsistencies]_
 
 ### Component Visual Drift
 
-*[Components that don't look cohesive together]*
+_[Components that don't look cohesive together]_
 
 ---
 
@@ -94,23 +273,23 @@
 
 ### Keyboard Navigation Issues
 
-*[Tab order, shortcuts, focus management]*
+_[Tab order, shortcuts, focus management]_
 
 ### Mouse/Touch Interaction Issues
 
-*[Click targets, hover states, gestures]*
+_[Click targets, hover states, gestures]_
 
 ### Loading State Issues
 
-*[Inconsistent or missing loading indicators]*
+_[Inconsistent or missing loading indicators]_
 
 ### Error State Issues
 
-*[Poor error messaging, no recovery options]*
+_[Poor error messaging, no recovery options]_
 
 ### Empty State Issues
 
-*[Missing or unhelpful empty states]*
+_[Missing or unhelpful empty states]_
 
 ---
 
@@ -118,27 +297,27 @@
 
 ### ARIA Issues
 
-*[Missing or incorrect ARIA attributes]*
+_[Missing or incorrect ARIA attributes]_
 
 ### Semantic HTML Issues
 
-*[Non-semantic markup]*
+_[Non-semantic markup]_
 
 ### Screen Reader Issues
 
-*[Poor screen reader experience]*
+_[Poor screen reader experience]_
 
 ### Keyboard Navigation Issues
 
-*[Elements not keyboard accessible]*
+_[Elements not keyboard accessible]_
 
 ### Color Contrast Issues
 
-*[WCAG contrast failures]*
+_[WCAG contrast failures]_
 
 ### Focus Management Issues
 
-*[Missing or incorrect focus indicators]*
+_[Missing or incorrect focus indicators]_
 
 ---
 
@@ -146,19 +325,19 @@
 
 ### Theme System Issues
 
-*[Inflexible or incomplete theming]*
+_[Inflexible or incomplete theming]_
 
 ### CSS Override Issues
 
-*[Hard to customize styles]*
+_[Hard to customize styles]_
 
 ### Missing Escape Hatches
 
-*[No way to access internal components]*
+_[No way to access internal components]_
 
 ### Variant System Issues
 
-*[Inconsistent or missing variants]*
+_[Inconsistent or missing variants]_
 
 ---
 
@@ -166,23 +345,23 @@
 
 ### Missing Documentation
 
-*[Undocumented components/hooks]*
+_[Undocumented components/hooks]_
 
 ### Unclear Examples
 
-*[Examples that don't help]*
+_[Examples that don't help]_
 
 ### Missing Real-World Scenarios
 
-*[Only trivial examples provided]*
+_[Only trivial examples provided]_
 
 ### Storybook Quality Issues
 
-*[Poor or missing stories]*
+_[Poor or missing stories]_
 
 ### API Reference Issues
 
-*[Incomplete or inaccurate API docs]*
+_[Incomplete or inaccurate API docs]_
 
 ---
 
@@ -190,27 +369,27 @@
 
 ### Streaming Issues
 
-*[Poor streaming UX]*
+_[Poor streaming UX]_
 
 ### Message Affordance Issues
 
-*[Missing regenerate, copy, edit actions]*
+_[Missing regenerate, copy, edit actions]_
 
 ### Code Block Issues
 
-*[Poor code rendering or interaction]*
+_[Poor code rendering or interaction]_
 
 ### Error Recovery Issues
 
-*[No retry mechanisms]*
+_[No retry mechanisms]_
 
 ### Long Content Issues
 
-*[No virtualization or pagination]*
+_[No virtualization or pagination]_
 
 ### Trust Cue Issues
 
-*[No source citations, confidence indicators]*
+_[No source citations, confidence indicators]_
 
 ---
 
