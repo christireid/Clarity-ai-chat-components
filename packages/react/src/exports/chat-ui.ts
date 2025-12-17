@@ -1,6 +1,6 @@
 /**
  * Chat UI Domain Exports
- * 
+ *
  * Top-level: Drop-in components
  * Mid-level: Composable building blocks
  * Low-level: Primitives and utilities
@@ -40,7 +40,11 @@ export {
 // ============================================================================
 
 // Simplified unified hook
-export { useChat, type UseChatOptions, type UseChatReturn } from '../hooks/use-chat-unified'
+export {
+  useChat,
+  type UseChatOptions,
+  type UseChatReturn,
+} from '../hooks/chat/use-chat-unified'
 
 // Main chat hook
 export {
@@ -53,7 +57,7 @@ export {
   type ClarityChatErrorInfo,
   type ClarityPromptOptimizationOptions,
   type ClarityChatTokenStats,
-} from '../hooks/use-clarity-chat'
+} from '../hooks/chat/use-clarity-chat'
 
 // Composable hooks
 export {
@@ -62,7 +66,7 @@ export {
   createChatHook,
   ChatHookBuilder,
   type ChatFeatures,
-} from '../hooks/use-chat-composable'
+} from '../hooks/chat/use-chat-composable'
 
 // Chat window component
 export { ChatWindow, type ChatWindowProps } from '../components/chat-window'
@@ -74,7 +78,10 @@ export { VirtualizedMessageList } from '../components/virtualized-message-list'
 
 // Input components
 export { ChatInput, type ChatInputProps } from '../components/chat-input'
-export { AdvancedChatInput, type AdvancedChatInputProps } from '../components/advanced-chat-input'
+export {
+  AdvancedChatInput,
+  type AdvancedChatInputProps,
+} from '../components/advanced-chat-input'
 
 // ============================================================================
 // LOW-LEVEL: Primitives and Utilities
@@ -86,7 +93,7 @@ export {
   useChat as useChatLegacy,
   type UseChatOptions as UseChatOptionsLegacy,
   type UseChatReturn as UseChatReturnLegacy,
-} from '../hooks/use-chat'
+} from '../hooks/chat/use-chat'
 
 // Enhanced chat hook (internal use, but exported for advanced users)
 // Note: This is useChat from use-chat-enhanced.ts
@@ -94,7 +101,7 @@ export {
   useChat as useChatEnhanced,
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
-} from '../hooks/use-chat-enhanced'
+} from '../hooks/chat/use-chat-enhanced'
 
 // Message conversion utilities
 export {
@@ -105,7 +112,7 @@ export {
   // Deprecated but kept for backward compatibility
   coreMessagesToMessages,
   coreMessageToMessage,
-} from '../utils/message-conversion'
+} from '../utils/message/message-conversion'
 
 // Helper hooks
 export {
@@ -114,7 +121,7 @@ export {
   useClarityChatWithPersistence,
   useClarityChatWithDebounce,
   useClarityChatWithAutoSave,
-} from '../hooks/use-clarity-chat-helpers'
+} from '../hooks/chat/use-clarity-chat-helpers'
 
 // Tool integration
 export {
@@ -122,4 +129,4 @@ export {
   type UseClarityChatWithToolsOptions,
   type UseClarityChatWithToolsReturn,
   type ExtractedToolResult,
-} from '../hooks/use-clarity-chat-with-tools'
+} from '../hooks/chat/use-clarity-chat-with-tools'

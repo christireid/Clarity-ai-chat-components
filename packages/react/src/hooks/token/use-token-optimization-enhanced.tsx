@@ -32,40 +32,40 @@ import {
   formatForLLM,
   parseFlexible,
   type ToonOptimizationResult,
-} from '../utils/toon'
+} from '../../utils/toon'
 import {
   countTokens,
   countConversationTokens,
   type TokenCount,
   type ModelName,
-} from '../utils/tokenization'
+} from '../../utils/tokenization'
 import {
   calculateCost,
   type CostCalculation,
-} from '../utils/tokenization/model-pricing'
+} from '../../utils/tokenization/model-pricing'
 import {
   PromptCacheManager,
   createAnthropicCachedMessages,
   type CacheStats,
-} from '../utils/prompt-caching'
+} from '../../utils/prompt-caching'
 
 // Import existing utilities
-import { type CompressionResult } from '../utils/prompt-compression'
+import { type CompressionResult } from '../../utils/optimization/prompt-compression'
 import {
   intelligentCompress,
   type LLMLinguaConfig,
-} from '../utils/llmlingua-compressor'
-import { SmartCache } from '../utils/smart-cache'
+} from '../../utils/optimization/llmlingua-compressor'
+import { SmartCache } from '../../utils/optimization/smart-cache'
 
 // Import persistent cache utilities
 import {
   createPersistentSemanticCache,
   type SemanticCacheConfig,
-} from '../utils/semantic-cache-persistent'
+} from '../../utils/optimization/semantic-cache-persistent'
 import {
   MODEL_REGISTRY,
   type ModelId,
-} from '../utils/tokenization/model-registry'
+} from '../../utils/tokenization/model-registry'
 
 // Import utilities from token-optimization for unified API
 import {
@@ -82,18 +82,18 @@ import {
   type ReferenceOptions,
   type OutputLimitOptions,
   type BatchingOptions,
-} from '../utils/token-optimization'
+} from '../../utils/optimization/token-optimization'
 
 // Import new optimization utilities
 import {
   PREFILL_TEMPLATES,
   type PrefillConfig,
   type PrefillTemplate,
-} from '../utils/response-prefilling'
+} from '../../utils/optimization/response-prefilling'
 import {
   restructurePrompt as restructurePromptUtil,
   type PromptStructureOptions,
-} from '../utils/prompt-structure'
+} from '../../utils/optimization/prompt-structure'
 
 export interface EnhancedTokenOptimizationOptions {
   /** Model to use */

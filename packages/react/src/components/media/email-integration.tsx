@@ -2,25 +2,14 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Card,
-  CardContent,
-  Badge,
-  Button,
-  cn,
-} from '@clarity-chat/primitives'
-import { RefreshIcon, CloseIcon } from './icons'
-import { useIsMounted } from '../hooks/use-is-mounted'
+import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
+import { RefreshIcon, CloseIcon } from '../ui/icons'
+import { useIsMounted } from '../../hooks/ui/use-is-mounted'
 
 /**
  * Email provider types
  */
-export type EmailProvider =
-  | 'gmail'
-  | 'outlook'
-  | 'yahoo'
-  | 'imap'
-  | 'exchange'
+export type EmailProvider = 'gmail' | 'outlook' | 'yahoo' | 'imap' | 'exchange'
 
 /**
  * Email account
@@ -147,7 +136,10 @@ interface EmailIntegrationState {
 /**
  * Props for EmailIntegration
  */
-export interface EmailIntegrationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+export interface EmailIntegrationProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'onSelect'
+> {
   /** Connected accounts */
   accounts?: EmailAccount[]
   /** Initial threads */
@@ -161,7 +153,12 @@ export interface EmailIntegrationProps extends Omit<React.HTMLAttributes<HTMLDiv
   /** Callback when thread selected */
   onThreadSelect?: (thread: EmailThread) => void
   /** Callback to send email */
-  onSendEmail?: (message: Omit<EmailMessage, 'id' | 'timestamp' | 'read' | 'starred' | 'labels'>) => Promise<EmailMessage>
+  onSendEmail?: (
+    message: Omit<
+      EmailMessage,
+      'id' | 'timestamp' | 'read' | 'starred' | 'labels'
+    >
+  ) => Promise<EmailMessage>
   /** Callback to reply to thread */
   onReply?: (threadId: string, body: string) => Promise<EmailMessage>
   /** Fetch threads function */
@@ -177,7 +174,10 @@ export interface EmailIntegrationProps extends Omit<React.HTMLAttributes<HTMLDiv
 /**
  * Provider configuration
  */
-const PROVIDER_CONFIG: Record<EmailProvider, { name: string; icon: string; color: string }> = {
+const PROVIDER_CONFIG: Record<
+  EmailProvider,
+  { name: string; icon: string; color: string }
+> = {
   gmail: { name: 'Gmail', icon: '📧', color: '#EA4335' },
   outlook: { name: 'Outlook', icon: '📬', color: '#0078D4' },
   yahoo: { name: 'Yahoo', icon: '📩', color: '#6001D2' },
@@ -224,10 +224,11 @@ function getParticipantName(participant: EmailParticipant): string {
  * Get thread participants display
  */
 function getParticipantsDisplay(participants: EmailParticipant[]): string {
-  const others = participants.filter(p => !p.isMe)
+  const others = participants.filter((p) => !p.isMe)
   if (others.length === 0) return 'Me'
   if (others.length === 1) return getParticipantName(others[0])
-  if (others.length === 2) return `${getParticipantName(others[0])}, ${getParticipantName(others[1])}`
+  if (others.length === 2)
+    return `${getParticipantName(others[0])}, ${getParticipantName(others[1])}`
   return `${getParticipantName(others[0])} +${others.length - 1}`
 }
 
@@ -269,12 +270,13 @@ export function EmailIntegration({
   const [selectedAccount, setSelectedAccount] = React.useState<string | null>(
     accounts.length > 0 ? accounts[0].id : null
   )
-  const [selectedThread, setSelectedThread] = React.useState<EmailThread | null>(null)
+  const [selectedThread, setSelectedThread] =
+    React.useState<EmailThread | null>(null)
   const [replyText, setReplyText] = React.useState('')
 
   // Clear error helper
   const clearError = React.useCallback(() => {
-    setState(prev => ({ ...prev, error: null }))
+    setState((prev) => ({ ...prev, error: null }))
   }, [])
 
   // Clear reply text when thread changes
@@ -286,12 +288,12 @@ export function EmailIntegration({
   const loadThreads = React.useCallback(async () => {
     if (!fetchThreads) return
 
-    setState(prev => ({ ...prev, loading: true, error: null }))
+    setState((prev) => ({ ...prev, loading: true, error: null }))
 
     try {
       const threads = await fetchThreads(selectedAccount || undefined)
       if (isMounted.current) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           threads: threads.slice(0, maxThreads),
           loading: false,
@@ -299,9 +301,10 @@ export function EmailIntegration({
       }
     } catch (error) {
       if (isMounted.current) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          error: error instanceof Error ? error.message : 'Failed to load emails',
+          error:
+            error instanceof Error ? error.message : 'Failed to load emails',
           loading: false,
         }))
       }
@@ -309,67 +312,75 @@ export function EmailIntegration({
   }, [fetchThreads, selectedAccount, maxThreads, isMounted])
 
   // Select thread and load messages
-  const selectThread = React.useCallback(async (thread: EmailThread) => {
-    setSelectedThread(thread)
-    onThreadSelect?.(thread)
+  const selectThread = React.useCallback(
+    async (thread: EmailThread) => {
+      setSelectedThread(thread)
+      onThreadSelect?.(thread)
 
-    // Mark as read
-    if (thread.unread && markAsRead) {
-      try {
-        await markAsRead(thread.id)
-        if (isMounted.current) {
-          setState(prev => ({
-            ...prev,
-            threads: prev.threads.map(t =>
-              t.id === thread.id ? { ...t, unread: false } : t
-            ),
-          }))
+      // Mark as read
+      if (thread.unread && markAsRead) {
+        try {
+          await markAsRead(thread.id)
+          if (isMounted.current) {
+            setState((prev) => ({
+              ...prev,
+              threads: prev.threads.map((t) =>
+                t.id === thread.id ? { ...t, unread: false } : t
+              ),
+            }))
+          }
+        } catch {
+          // Silently fail for mark as read
         }
-      } catch {
-        // Silently fail for mark as read
       }
-    }
 
-    // Load full messages if needed
-    if (fetchMessages && !thread.messages) {
-      try {
-        const messages = await fetchMessages(thread.id)
-        if (isMounted.current) {
-          setSelectedThread(prev => prev ? { ...prev, messages } : null)
+      // Load full messages if needed
+      if (fetchMessages && !thread.messages) {
+        try {
+          const messages = await fetchMessages(thread.id)
+          if (isMounted.current) {
+            setSelectedThread((prev) => (prev ? { ...prev, messages } : null))
+          }
+        } catch {
+          // Failed to load messages, keep thread selected without full messages
         }
-      } catch {
-        // Failed to load messages, keep thread selected without full messages
       }
-    }
-  }, [onThreadSelect, markAsRead, fetchMessages, isMounted])
+    },
+    [onThreadSelect, markAsRead, fetchMessages, isMounted]
+  )
 
   // Send reply
   const sendReply = React.useCallback(async () => {
     if (!selectedThread || !onReply || !replyText.trim()) return
 
-    setState(prev => ({ ...prev, syncing: true }))
+    setState((prev) => ({ ...prev, syncing: true }))
 
     try {
       const message = await onReply(selectedThread.id, replyText)
       if (isMounted.current) {
-        setSelectedThread(prev => prev ? {
-          ...prev,
-          messages: [...(prev.messages || []), message],
-          messageCount: prev.messageCount + 1,
-          lastMessageAt: message.timestamp,
-        } : null)
+        setSelectedThread((prev) =>
+          prev
+            ? {
+                ...prev,
+                messages: [...(prev.messages || []), message],
+                messageCount: prev.messageCount + 1,
+                lastMessageAt: message.timestamp,
+              }
+            : null
+        )
         setReplyText('')
       }
     } catch (error) {
       if (isMounted.current) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          error: error instanceof Error ? error.message : 'Failed to send reply',
+          error:
+            error instanceof Error ? error.message : 'Failed to send reply',
         }))
       }
     } finally {
       if (isMounted.current) {
-        setState(prev => ({ ...prev, syncing: false }))
+        setState((prev) => ({ ...prev, syncing: false }))
       }
     }
   }, [selectedThread, onReply, replyText, isMounted])
@@ -383,17 +394,28 @@ export function EmailIntegration({
 
   // Calculate unread count
   const unreadCount = React.useMemo(() => {
-    return state.threads.filter(t => t.unread).length
+    return state.threads.filter((t) => t.unread).length
   }, [state.threads])
 
   return (
-    <div ref={ref} className={cn('space-y-4', className)} role="region" aria-label="Email integration" {...props}>
+    <div
+      ref={ref}
+      className={cn('space-y-4', className)}
+      role="region"
+      aria-label="Email integration"
+      {...props}
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold">Email</h3>
           {unreadCount > 0 && (
-            <Badge variant="default" aria-label={`${unreadCount} unread emails`}>{unreadCount}</Badge>
+            <Badge
+              variant="default"
+              aria-label={`${unreadCount} unread emails`}
+            >
+              {unreadCount}
+            </Badge>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -405,7 +427,9 @@ export function EmailIntegration({
               disabled={state.loading}
               aria-label="Refresh emails"
             >
-              <RefreshIcon className={cn('w-4 h-4', state.loading && 'animate-spin')} />
+              <RefreshIcon
+                className={cn('w-4 h-4', state.loading && 'animate-spin')}
+              />
             </Button>
           )}
         </div>
@@ -413,8 +437,12 @@ export function EmailIntegration({
 
       {/* Account selector */}
       {showAccountSelector && state.accounts.length > 1 && (
-        <div className="flex flex-wrap gap-2" role="tablist" aria-label="Email accounts">
-          {state.accounts.map(account => {
+        <div
+          className="flex flex-wrap gap-2"
+          role="tablist"
+          aria-label="Email accounts"
+        >
+          {state.accounts.map((account) => {
             const config = PROVIDER_CONFIG[account.provider]
             return (
               <Button
@@ -471,7 +499,8 @@ export function EmailIntegration({
                 <div className="text-sm text-muted-foreground">
                   {getParticipantsDisplay(selectedThread.participants)}
                   {' - '}
-                  {selectedThread.messageCount} message{selectedThread.messageCount !== 1 ? 's' : ''}
+                  {selectedThread.messageCount} message
+                  {selectedThread.messageCount !== 1 ? 's' : ''}
                 </div>
               </div>
               <Button
@@ -497,7 +526,9 @@ export function EmailIntegration({
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium">
-                        {message.from.isMe ? 'Me' : getParticipantName(message.from)}
+                        {message.from.isMe
+                          ? 'Me'
+                          : getParticipantName(message.from)}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {formatTimestamp(message.timestamp)}
@@ -508,8 +539,12 @@ export function EmailIntegration({
                     </div>
                     {message.attachments && message.attachments.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {message.attachments.map(attachment => (
-                          <Badge key={attachment.id} variant="outline" className="text-xs">
+                        {message.attachments.map((attachment) => (
+                          <Badge
+                            key={attachment.id}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {attachment.filename}
                           </Badge>
                         ))}
@@ -573,28 +608,36 @@ export function EmailIntegration({
                         onClick={() => selectThread(thread)}
                       >
                         {/* Unread indicator */}
-                        <div className={cn(
-                          'w-2 h-2 rounded-full mt-2 shrink-0',
-                          thread.unread ? 'bg-primary' : 'bg-transparent'
-                        )} />
+                        <div
+                          className={cn(
+                            'w-2 h-2 rounded-full mt-2 shrink-0',
+                            thread.unread ? 'bg-primary' : 'bg-transparent'
+                          )}
+                        />
 
                         {/* Thread info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <span className={cn(
-                              'truncate',
-                              thread.unread && 'font-semibold'
-                            )}>
+                            <span
+                              className={cn(
+                                'truncate',
+                                thread.unread && 'font-semibold'
+                              )}
+                            >
                               {getParticipantsDisplay(thread.participants)}
                             </span>
                             <span className="text-xs text-muted-foreground shrink-0">
                               {formatTimestamp(thread.lastMessageAt)}
                             </span>
                           </div>
-                          <div className={cn(
-                            'text-sm truncate',
-                            thread.unread ? 'text-foreground' : 'text-muted-foreground'
-                          )}>
+                          <div
+                            className={cn(
+                              'text-sm truncate',
+                              thread.unread
+                                ? 'text-foreground'
+                                : 'text-muted-foreground'
+                            )}
+                          >
                             {thread.subject}
                           </div>
                           <div className="text-xs text-muted-foreground truncate">
@@ -602,8 +645,12 @@ export function EmailIntegration({
                           </div>
                           {thread.labels.length > 0 && (
                             <div className="flex gap-1 mt-1">
-                              {thread.labels.slice(0, 3).map(label => (
-                                <Badge key={label} variant="outline" className="text-xs">
+                              {thread.labels.slice(0, 3).map((label) => (
+                                <Badge
+                                  key={label}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
                                   {label}
                                 </Badge>
                               ))}
@@ -653,7 +700,9 @@ export function EmailIntegration({
                   )}
                 >
                   <div className="font-medium">{notification.title}</div>
-                  <div className="text-xs text-muted-foreground">{notification.body}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {notification.body}
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -680,140 +729,182 @@ export function useEmailIntegration(options: {
   const [error, setError] = React.useState<string | null>(null)
 
   // Fetch threads
-  const fetchThreads = React.useCallback(async (accountId?: string): Promise<EmailThread[]> => {
-    if (!options.apiEndpoint) return []
+  const fetchThreads = React.useCallback(
+    async (accountId?: string): Promise<EmailThread[]> => {
+      if (!options.apiEndpoint) return []
 
-    const targetAccount = accountId || options.accountId
-    setLoading(true)
-    setError(null)
+      const targetAccount = accountId || options.accountId
+      setLoading(true)
+      setError(null)
 
-    try {
-      const params = targetAccount ? `?accountId=${targetAccount}` : ''
-      const response = await fetch(`${options.apiEndpoint}/threads${params}`, {
-        headers: options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {},
-      })
+      try {
+        const params = targetAccount ? `?accountId=${targetAccount}` : ''
+        const response = await fetch(
+          `${options.apiEndpoint}/threads${params}`,
+          {
+            headers: options.apiKey
+              ? { Authorization: `Bearer ${options.apiKey}` }
+              : {},
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
+
+        const data = await response.json()
+        const fetchedThreads = (data.threads || []).map(
+          (t: Record<string, unknown>) => ({
+            ...t,
+            lastMessageAt: new Date(t.lastMessageAt as string),
+          })
+        )
+
+        setThreads(fetchedThreads)
+        return fetchedThreads
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Failed to fetch threads'
+        setError(message)
+        throw err
+      } finally {
+        setLoading(false)
+      }
+    },
+    [options.apiEndpoint, options.apiKey, options.accountId]
+  )
+
+  // Fetch messages for a thread
+  const fetchMessages = React.useCallback(
+    async (threadId: string): Promise<EmailMessage[]> => {
+      if (!options.apiEndpoint) return []
+
+      const response = await fetch(
+        `${options.apiEndpoint}/threads/${threadId}/messages`,
+        {
+          headers: options.apiKey
+            ? { Authorization: `Bearer ${options.apiKey}` }
+            : {},
+        }
+      )
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
 
       const data = await response.json()
-      const fetchedThreads = (data.threads || []).map((t: Record<string, unknown>) => ({
-        ...t,
-        lastMessageAt: new Date(t.lastMessageAt as string),
+      return (data.messages || []).map((m: Record<string, unknown>) => ({
+        ...m,
+        timestamp: new Date(m.timestamp as string),
       }))
-
-      setThreads(fetchedThreads)
-      return fetchedThreads
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch threads'
-      setError(message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [options.apiEndpoint, options.apiKey, options.accountId])
-
-  // Fetch messages for a thread
-  const fetchMessages = React.useCallback(async (threadId: string): Promise<EmailMessage[]> => {
-    if (!options.apiEndpoint) return []
-
-    const response = await fetch(`${options.apiEndpoint}/threads/${threadId}/messages`, {
-      headers: options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {},
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
-    }
-
-    const data = await response.json()
-    return (data.messages || []).map((m: Record<string, unknown>) => ({
-      ...m,
-      timestamp: new Date(m.timestamp as string),
-    }))
-  }, [options.apiEndpoint, options.apiKey])
+    },
+    [options.apiEndpoint, options.apiKey]
+  )
 
   // Send email
-  const sendEmail = React.useCallback(async (
-    message: Omit<EmailMessage, 'id' | 'timestamp' | 'read' | 'starred' | 'labels'>
-  ): Promise<EmailMessage> => {
-    if (!options.apiEndpoint) {
-      throw new Error('No API endpoint configured')
-    }
+  const sendEmail = React.useCallback(
+    async (
+      message: Omit<
+        EmailMessage,
+        'id' | 'timestamp' | 'read' | 'starred' | 'labels'
+      >
+    ): Promise<EmailMessage> => {
+      if (!options.apiEndpoint) {
+        throw new Error('No API endpoint configured')
+      }
 
-    const response = await fetch(`${options.apiEndpoint}/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {}),
-      },
-      body: JSON.stringify(message),
-    })
+      const response = await fetch(`${options.apiEndpoint}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.apiKey
+            ? { Authorization: `Bearer ${options.apiKey}` }
+            : {}),
+        },
+        body: JSON.stringify(message),
+      })
 
-    if (!response.ok) {
-      throw new Error(`Failed to send email: HTTP ${response.status}`)
-    }
+      if (!response.ok) {
+        throw new Error(`Failed to send email: HTTP ${response.status}`)
+      }
 
-    return await response.json()
-  }, [options.apiEndpoint, options.apiKey])
+      return await response.json()
+    },
+    [options.apiEndpoint, options.apiKey]
+  )
 
   // Reply to thread
-  const replyToThread = React.useCallback(async (
-    threadId: string,
-    body: string
-  ): Promise<EmailMessage> => {
-    if (!options.apiEndpoint) {
-      throw new Error('No API endpoint configured')
-    }
+  const replyToThread = React.useCallback(
+    async (threadId: string, body: string): Promise<EmailMessage> => {
+      if (!options.apiEndpoint) {
+        throw new Error('No API endpoint configured')
+      }
 
-    const response = await fetch(`${options.apiEndpoint}/threads/${threadId}/reply`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {}),
-      },
-      body: JSON.stringify({ body }),
-    })
+      const response = await fetch(
+        `${options.apiEndpoint}/threads/${threadId}/reply`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(options.apiKey
+              ? { Authorization: `Bearer ${options.apiKey}` }
+              : {}),
+          },
+          body: JSON.stringify({ body }),
+        }
+      )
 
-    if (!response.ok) {
-      throw new Error(`Failed to send reply: HTTP ${response.status}`)
-    }
+      if (!response.ok) {
+        throw new Error(`Failed to send reply: HTTP ${response.status}`)
+      }
 
-    return await response.json()
-  }, [options.apiEndpoint, options.apiKey])
+      return await response.json()
+    },
+    [options.apiEndpoint, options.apiKey]
+  )
 
   // Mark thread as read
-  const markAsRead = React.useCallback(async (threadId: string): Promise<void> => {
-    if (!options.apiEndpoint) return
+  const markAsRead = React.useCallback(
+    async (threadId: string): Promise<void> => {
+      if (!options.apiEndpoint) return
 
-    await fetch(`${options.apiEndpoint}/threads/${threadId}/read`, {
-      method: 'POST',
-      headers: options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {},
-    })
+      await fetch(`${options.apiEndpoint}/threads/${threadId}/read`, {
+        method: 'POST',
+        headers: options.apiKey
+          ? { Authorization: `Bearer ${options.apiKey}` }
+          : {},
+      })
 
-    setThreads(prev => prev.map(t =>
-      t.id === threadId ? { ...t, unread: false } : t
-    ))
-  }, [options.apiEndpoint, options.apiKey])
+      setThreads((prev) =>
+        prev.map((t) => (t.id === threadId ? { ...t, unread: false } : t))
+      )
+    },
+    [options.apiEndpoint, options.apiKey]
+  )
 
   // Search emails
-  const searchEmails = React.useCallback(async (query: string): Promise<EmailThread[]> => {
-    if (!options.apiEndpoint) return []
+  const searchEmails = React.useCallback(
+    async (query: string): Promise<EmailThread[]> => {
+      if (!options.apiEndpoint) return []
 
-    const response = await fetch(
-      `${options.apiEndpoint}/search?q=${encodeURIComponent(query)}`,
-      {
-        headers: options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {},
+      const response = await fetch(
+        `${options.apiEndpoint}/search?q=${encodeURIComponent(query)}`,
+        {
+          headers: options.apiKey
+            ? { Authorization: `Bearer ${options.apiKey}` }
+            : {},
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`Search failed: HTTP ${response.status}`)
       }
-    )
 
-    if (!response.ok) {
-      throw new Error(`Search failed: HTTP ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data.threads || []
-  }, [options.apiEndpoint, options.apiKey])
+      const data = await response.json()
+      return data.threads || []
+    },
+    [options.apiEndpoint, options.apiKey]
+  )
 
   return {
     threads,

@@ -9,7 +9,11 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
-import { AlertTriangleIcon, ShieldCheckIcon, ShieldCloseIcon } from './icons'
+import {
+  AlertTriangleIcon,
+  ShieldCheckIcon,
+  ShieldCloseIcon,
+} from '../ui/icons'
 
 export type SafetyStatus = 'pass' | 'warn' | 'fail'
 
@@ -37,11 +41,12 @@ const statusIcon: Record<SafetyStatus, React.ReactNode> = {
   fail: <ShieldCloseIcon size={16} className="text-destructive" />,
 }
 
-const statusBadge: Record<SafetyStatus, 'success' | 'warning' | 'destructive'> = {
-  pass: 'success',
-  warn: 'warning',
-  fail: 'destructive',
-}
+const statusBadge: Record<SafetyStatus, 'success' | 'warning' | 'destructive'> =
+  {
+    pass: 'success',
+    warn: 'warning',
+    fail: 'destructive',
+  }
 
 const statusLabel: Record<SafetyStatus, string> = {
   pass: 'Cleared',
@@ -50,7 +55,8 @@ const statusLabel: Record<SafetyStatus, string> = {
 }
 
 const defaultTitle = 'Safety guardrails'
-const defaultSubtitle = 'Monitor policy checks on the latest model response before returning it to end-users.'
+const defaultSubtitle =
+  'Monitor policy checks on the latest model response before returning it to end-users.'
 
 export const SafetyStatusCard: React.FC<SafetyStatusCardProps> = ({
   checks,
@@ -64,14 +70,20 @@ export const SafetyStatusCard: React.FC<SafetyStatusCardProps> = ({
   const totalFails = checks.filter((check) => check.status === 'fail').length
   const totalWarnings = checks.filter((check) => check.status === 'warn').length
 
-  const overallStatus: SafetyStatus = totalFails > 0 ? 'fail' : totalWarnings > 0 ? 'warn' : 'pass'
+  const overallStatus: SafetyStatus =
+    totalFails > 0 ? 'fail' : totalWarnings > 0 ? 'warn' : 'pass'
 
   const reviewedLabel = lastReviewedAt
     ? `Last reviewed ${lastReviewedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`
     : 'Awaiting review'
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_20px_48px_rgba(15,23,42,0.18)]', className)}>
+    <Card
+      className={cn(
+        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_20px_48px_rgba(15,23,42,0.18)]',
+        className
+      )}
+    >
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1.5">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
@@ -83,7 +95,9 @@ export const SafetyStatusCard: React.FC<SafetyStatusCardProps> = ({
           </CardDescription>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant={statusBadge[overallStatus]}>{statusLabel[overallStatus]}</Badge>
+          <Badge variant={statusBadge[overallStatus]}>
+            {statusLabel[overallStatus]}
+          </Badge>
           {onReviewPolicy && (
             <Button variant="ghost" size="sm" onClick={onReviewPolicy}>
               Review policy
@@ -110,7 +124,10 @@ export const SafetyStatusCard: React.FC<SafetyStatusCardProps> = ({
                   {statusIcon[check.status]}
                   {check.label}
                 </div>
-                <Badge variant={statusBadge[check.status]} className="text-[11px]">
+                <Badge
+                  variant={statusBadge[check.status]}
+                  className="text-[11px]"
+                >
                   {statusLabel[check.status]}
                 </Badge>
               </div>
@@ -146,4 +163,3 @@ export const SafetyStatusCard: React.FC<SafetyStatusCardProps> = ({
 }
 
 SafetyStatusCard.displayName = 'SafetyStatusCard'
-

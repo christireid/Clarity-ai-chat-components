@@ -21,7 +21,7 @@ import {
   EASING_FRAMER,
   // createSuccessAnimation, // Reserved for future use
   // createErrorAnimation, // Reserved for future use
-} from '../animations'
+} from '../../animations'
 
 export type FeedbackType = 'success' | 'error' | 'warning' | 'info'
 
@@ -175,7 +175,7 @@ export const ErrorShake: React.FC<{
           : {}
       }
       transition={{
-        duration: 0.5,
+        duration: durations.slow,
         ease: EASING_FRAMER.default,
       }}
       className={className}
@@ -204,7 +204,7 @@ export const PulseAttention: React.FC<{
           : {}
       }
       transition={{
-        duration: 1,
+        duration: durations.slower,
         repeat: Infinity,
         ease: EASING_FRAMER.inOut,
       }}
@@ -250,7 +250,7 @@ export const RippleEffect: React.FC<{
             initial={{ scale: 0, opacity: 0.6 }}
             animate={{ scale: 2.5, opacity: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1, ease: EASING_FRAMER.out }}
+            transition={{ duration: durations.slower, ease: EASING_FRAMER.out }}
             className="absolute inset-0 rounded-full border-4"
             style={{ borderColor: color }}
           />
@@ -350,7 +350,7 @@ export const GlowEffect: React.FC<{
           : {}
       }
       transition={{
-        duration: 2,
+        duration: durations.slower,
         repeat: Infinity,
         ease: EASING_FRAMER.inOut,
       }}
@@ -379,7 +379,7 @@ export const BounceIn: React.FC<{
           }}
           exit={{ scale: 0 }}
           transition={{
-            duration: 0.5,
+            duration: durations.slow,
             times: [0, 0.4, 0.6, 0.8, 1],
             ease: EASING_FRAMER.out,
           }}

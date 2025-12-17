@@ -16,8 +16,8 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Kbd } from '@clarity-chat/primitives'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { formatShortcutDisplay } from '../hooks/use-keyboard-navigation'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
 
 export interface KeyboardHint {
   /** Unique identifier */
@@ -320,19 +320,21 @@ export function ContextualKeyboardHints({
     })
 
     // Find buttons with aria-keyshortcuts
-    document.querySelectorAll('[aria-keyshortcuts]').forEach((element, index) => {
-      const shortcut = element.getAttribute('aria-keyshortcuts')
-      const description = element.getAttribute('aria-label')
+    document
+      .querySelectorAll('[aria-keyshortcuts]')
+      .forEach((element, index) => {
+        const shortcut = element.getAttribute('aria-keyshortcuts')
+        const description = element.getAttribute('aria-label')
 
-      if (shortcut) {
-        newHints.push({
-          id: `aria-hint-${index}`,
-          target: `[aria-keyshortcuts="${shortcut}"]`,
-          shortcut,
-          description: description?.slice(0, 20),
-        })
-      }
-    })
+        if (shortcut) {
+          newHints.push({
+            id: `aria-hint-${index}`,
+            target: `[aria-keyshortcuts="${shortcut}"]`,
+            shortcut,
+            description: description?.slice(0, 20),
+          })
+        }
+      })
 
     setHints(newHints)
   }, [])
@@ -383,7 +385,13 @@ export function ContextualKeyboardHints({
     }
   }, [enabled, modifierKey, delay, discoverHints])
 
-  return <KeyboardHintsOverlay hints={hints} visible={visible} className={className} />
+  return (
+    <KeyboardHintsOverlay
+      hints={hints}
+      visible={visible}
+      className={className}
+    />
+  )
 }
 
 ContextualKeyboardHints.displayName = 'ContextualKeyboardHints'

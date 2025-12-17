@@ -15,9 +15,15 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Kbd } from '@clarity-chat/primitives'
-import { useFocusTrap, useFocusRestoration } from '../accessibility/focus-management'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { formatShortcutDisplay, useIsMac } from '../hooks/use-keyboard-navigation'
+import {
+  useFocusTrap,
+  useFocusRestoration,
+} from '../../accessibility/focus-management'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import {
+  formatShortcutDisplay,
+  useIsMac,
+} from '../../hooks/keyboard/use-keyboard-navigation'
 
 export interface ShortcutItem {
   id: string

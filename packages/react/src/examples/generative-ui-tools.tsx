@@ -1,6 +1,6 @@
 /**
  * Generative UI Tools Example
- * 
+ *
  * Demonstrates end-to-end generative UI with:
  * - Tool definitions (weather, FAQ search)
  * - Tool UI registry
@@ -9,11 +9,26 @@
  */
 
 import * as React from 'react'
-import { useClarityChat, convertCoreMessagesToMessages } from '../hooks/use-clarity-chat'
-import { ChatWindow } from '../components/chat-window'
-import { ClarityToolResult, type ToolCall } from '../components/clarity-tool-result'
-import { createToolUIRegistry, type ToolComponentRegistry } from '../agents/tool-ui-registry'
-import { Card, CardContent, CardHeader, Badge, Button } from '@clarity-chat/primitives'
+import {
+  useClarityChat,
+  convertCoreMessagesToMessages,
+} from '../hooks/chat/use-clarity-chat'
+import { ChatWindow } from '../components/chat/chat-window'
+import {
+  ClarityToolResult,
+  type ToolCall,
+} from '../components/clarity-tool-result'
+import {
+  createToolUIRegistry,
+  type ToolComponentRegistry,
+} from '../agents/tool-ui-registry'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Badge,
+  Button,
+} from '@clarity-chat/primitives'
 import type { Tool } from '../agents/types'
 
 // ============================================================================
@@ -42,7 +57,7 @@ const weatherTool: Tool = {
     // Mock weather API
     const { location, units = 'celsius' } = args
     await new Promise((resolve) => setTimeout(resolve, 500))
-    
+
     return {
       location,
       temperature: units === 'celsius' ? 22 : 72,
@@ -75,7 +90,7 @@ const faqSearchTool: Tool = {
     // Mock FAQ search
     const { query, limit = 3 } = args
     await new Promise((resolve) => setTimeout(resolve, 300))
-    
+
     const faqs = [
       {
         question: 'How do I reset my password?',
@@ -93,7 +108,7 @@ const faqSearchTool: Tool = {
         category: 'Support',
       },
     ]
-    
+
     return {
       query,
       results: faqs.slice(0, limit),
@@ -238,7 +253,7 @@ export function GenerativeUIToolsExample() {
           try {
             const args = JSON.parse(argsStr)
             const result = JSON.parse(resultStr)
-            
+
             return {
               ...msg,
               toolCall: {
@@ -261,7 +276,7 @@ export function GenerativeUIToolsExample() {
   const handleToolExecution = React.useCallback(
     async (toolName: string, args: Record<string, any>) => {
       let result: any
-      
+
       if (toolName === 'get_weather') {
         result = await weatherTool.execute(args)
       } else if (toolName === 'search_faq') {
@@ -307,24 +322,29 @@ export function GenerativeUIToolsExample() {
                 >
                   <div className="text-sm font-medium mb-1">{msg.role}</div>
                   <div className="text-sm">{msg.content}</div>
-                  
+
                   {/* Render tool result if available */}
-                  {'toolCall' in msg && msg.toolCall && 'toolResult' in msg && msg.toolResult && (
-                    <ClarityToolResult
-                      registry={toolRegistry}
-                      toolCall={msg.toolCall as ToolCall}
-                      result={msg.toolResult}
-                      messages={messages}
-                    />
-                  )}
+                  {'toolCall' in msg &&
+                    msg.toolCall &&
+                    'toolResult' in msg &&
+                    msg.toolResult && (
+                      <ClarityToolResult
+                        registry={toolRegistry}
+                        toolCall={msg.toolCall as ToolCall}
+                        result={msg.toolResult}
+                        messages={messages}
+                      />
+                    )}
                 </div>
               </div>
             ))}
-            
+
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-muted rounded-lg p-4">
-                  <div className="text-sm text-muted-foreground">Thinking...</div>
+                  <div className="text-sm text-muted-foreground">
+                    Thinking...
+                  </div>
                 </div>
               </div>
             )}
@@ -349,7 +369,9 @@ export function GenerativeUIToolsExample() {
             />
             <Button
               onClick={async () => {
-                const input = document.querySelector('input') as HTMLInputElement
+                const input = document.querySelector(
+                  'input'
+                ) as HTMLInputElement
                 if (input?.value.trim()) {
                   await handleSendMessage(input.value)
                   input.value = ''
@@ -360,20 +382,30 @@ export function GenerativeUIToolsExample() {
               Send
             </Button>
           </div>
-          
+
           {/* Demo buttons */}
           <div className="mt-2 flex gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleToolExecution('get_weather', { location: 'San Francisco', units: 'celsius' })}
+              onClick={() =>
+                handleToolExecution('get_weather', {
+                  location: 'San Francisco',
+                  units: 'celsius',
+                })
+              }
             >
               Get Weather Demo
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleToolExecution('search_faq', { query: 'password', limit: 3 })}
+              onClick={() =>
+                handleToolExecution('search_faq', {
+                  query: 'password',
+                  limit: 3,
+                })
+              }
             >
               Search FAQ Demo
             </Button>

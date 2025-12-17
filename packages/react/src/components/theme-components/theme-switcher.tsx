@@ -3,12 +3,12 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
-} from '../animations/motion-safe'
+} from '../../animations/motion-safe'
 
 export type Theme = 'light' | 'dark' | 'system'
 
@@ -310,10 +310,7 @@ export function ThemeSwitcher({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{
-                        delay: getMotionSafeDuration(
-                          prefersReducedMotion,
-                          0.2
-                        ),
+                        delay: getMotionSafeDuration(prefersReducedMotion, 0.2),
                       }}
                       className="mt-4 p-3 rounded border border-border/40 shadow-sm"
                       style={{

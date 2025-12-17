@@ -1,16 +1,16 @@
 /**
  * Clarity Chat with Memory Example
- * 
+ *
  * Example demonstrating useClarityChat with memory integration enabled.
  * Shows how to use MemoryProvider and enable memory features.
- * 
+ *
  * @example
  * ```tsx
- * import { 
+ * import {
  *   MemoryProvider,
- *   ClarityChatWithMemoryExample 
+ *   ClarityChatWithMemoryExample
  * } from '@clarity-chat/react'
- * 
+ *
  * function App() {
  *   return (
  *     <MemoryProvider config={{ maxMemories: 1000 }}>
@@ -22,15 +22,15 @@
  */
 
 import * as React from 'react'
-import { useClarityChat } from '../hooks/use-clarity-chat'
-import { ChatWindow } from '../components/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { useClarityChat } from '../hooks/chat/use-clarity-chat'
+import { ChatWindow } from '../components/chat/chat-window'
+import { convertCoreMessagesToMessages } from '../utils/message/message-conversion'
 import { MemoryProvider } from '../memory/memory-provider'
 import type { MemoryServiceConfig } from '@clarity-chat/memory'
 
 /**
  * Clarity Chat with Memory Example Component
- * 
+ *
  * Demonstrates useClarityChat with memory integration enabled.
  * Memory automatically stores conversations and enriches context.
  */
@@ -80,7 +80,7 @@ export function ClarityChatWithMemoryExample() {
 
 /**
  * Wrapper component that includes MemoryProvider
- * 
+ *
  * Use this if you don't already have MemoryProvider in your app.
  */
 export function ClarityChatWithMemoryExampleWrapped({

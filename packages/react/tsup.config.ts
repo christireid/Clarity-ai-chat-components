@@ -16,6 +16,7 @@ const commonConfig = {
     'mermaid',
     'highlight.js/styles/github-dark.css',
     'katex/dist/katex.min.css',
+    'dompurify',
   ],
   sourcemap: false,
   minify: false, // Set to boolean false instead of string

@@ -21,12 +21,12 @@ import {
   formatRelativeTime,
 } from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
-import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from './icons'
+import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from '../ui/icons'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   INTERACTION_VARIANTS,
-} from '../animations/constants'
+} from '../../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -141,250 +141,248 @@ function MessageOptimizedInner({
   className,
   ref,
 }: MessageOptimizedProps) {
-      const [isHovered, setIsHovered] = React.useState(false)
-      const [feedbackGiven, setFeedbackGiven] = React.useState<
-        'up' | 'down' | null
-      >(message.feedback?.type || null)
+  const [isHovered, setIsHovered] = React.useState(false)
+  const [feedbackGiven, setFeedbackGiven] = React.useState<
+    'up' | 'down' | null
+  >(message.feedback?.type || null)
 
-      const isUser = message.role === 'user'
-      const isAssistant = message.role === 'assistant'
-      const isStreaming = message.status === 'streaming'
+  const isUser = message.role === 'user'
+  const isAssistant = message.role === 'assistant'
+  const isStreaming = message.status === 'streaming'
 
-      // Memoize expensive markdown parsing
-      const markdownContent = React.useMemo(() => {
-        if (isUser) return null
+  // Memoize expensive markdown parsing
+  const markdownContent = React.useMemo(() => {
+    if (isUser) return null
 
-        return (
-          <>
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight as any]}
-              components={markdownComponents}
-            >
-              {message.content}
-            </ReactMarkdown>
-          </>
-        )
-      }, [message.content, isUser])
+    return (
+      <>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeHighlight as any]}
+          components={markdownComponents}
+        >
+          {message.content}
+        </ReactMarkdown>
+      </>
+    )
+  }, [message.content, isUser])
 
-      // Memoize event handlers with useCallback
-      const handleFeedback = React.useCallback(
-        (type: 'up' | 'down') => {
-          setFeedbackGiven(type)
-          onFeedback?.(type)
+  // Memoize event handlers with useCallback
+  const handleFeedback = React.useCallback(
+    (type: 'up' | 'down') => {
+      setFeedbackGiven(type)
+      onFeedback?.(type)
 
-          if (type === 'up') {
-            console.log('🎉 Positive feedback received!')
-          }
-        },
-        [onFeedback]
-      )
+      if (type === 'up') {
+        console.log('🎉 Positive feedback received!')
+      }
+    },
+    [onFeedback]
+  )
 
-      const handleMouseEnter = React.useCallback(() => {
-        setIsHovered(true)
-      }, [])
+  const handleMouseEnter = React.useCallback(() => {
+    setIsHovered(true)
+  }, [])
 
-      const handleMouseLeave = React.useCallback(() => {
-        setIsHovered(false)
-      }, [])
+  const handleMouseLeave = React.useCallback(() => {
+    setIsHovered(false)
+  }, [])
 
-      const handleRetry = React.useCallback(() => {
-        onRetry?.()
-      }, [onRetry])
+  const handleRetry = React.useCallback(() => {
+    onRetry?.()
+  }, [onRetry])
 
-      return (
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{
-            duration: ANIMATION_DURATION.normal / 1000,
-            ease: EASING_FRAMER.out,
-          }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{
+        duration: ANIMATION_DURATION.normal / 1000,
+        ease: EASING_FRAMER.out,
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={cn(
+        'group flex gap-3 p-4 rounded-lg transition-colors',
+        isUser && 'flex-row-reverse',
+        isHovered && 'bg-muted/50',
+        className
+      )}
+    >
+      {/* Avatar */}
+      {showAvatar && (
+        <Avatar
+          alt={isUser ? 'User' : 'AI Assistant'}
+          fallback={isUser ? 'U' : 'AI'}
+          className="flex-shrink-0"
+        />
+      )}
+
+      {/* Message Content */}
+      <div
+        className={cn('flex-1 space-y-2', isUser && 'flex flex-col items-end')}
+      >
+        {/* Header */}
+        <div
           className={cn(
-            'group flex gap-3 p-4 rounded-lg transition-colors',
-            isUser && 'flex-row-reverse',
-            isHovered && 'bg-muted/50',
-            className
+            'flex items-center gap-2',
+            isUser && 'flex-row-reverse'
           )}
         >
-          {/* Avatar */}
-          {showAvatar && (
-            <Avatar
-              alt={isUser ? 'User' : 'AI Assistant'}
-              fallback={isUser ? 'U' : 'AI'}
-              className="flex-shrink-0"
-            />
+          <span className="font-semibold text-sm">
+            {isUser ? 'You' : 'AI Assistant'}
+          </span>
+          {showTimestamp && (
+            <span className="text-xs text-muted-foreground">
+              {formatRelativeTime(message.createdAt)}
+            </span>
+          )}
+          {message.status === 'sending' && (
+            <Badge variant="secondary" dot>
+              Sending
+            </Badge>
+          )}
+          {message.status === 'error' && (
+            <Badge variant="destructive">Error</Badge>
+          )}
+        </div>
+
+        {/* Content */}
+        <div
+          className={cn(
+            !isUser && 'prose prose-sm dark:prose-invert max-w-none',
+            isUser &&
+              'bg-primary text-primary-foreground px-4 py-2 rounded-lg inline-block'
+          )}
+        >
+          {isUser ? (
+            <p className="m-0 whitespace-pre-wrap text-primary-foreground">
+              {message.content}
+            </p>
+          ) : (
+            markdownContent
           )}
 
-          {/* Message Content */}
-          <div
-            className={cn(
-              'flex-1 space-y-2',
-              isUser && 'flex flex-col items-end'
-            )}
-          >
-            {/* Header */}
-            <div
-              className={cn(
-                'flex items-center gap-2',
-                isUser && 'flex-row-reverse'
-              )}
+          {isStreaming && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ repeat: Infinity, duration: durations.slower }}
+              className="inline-block w-2 h-4 bg-current ml-1"
+            />
+          )}
+        </div>
+
+        {/* Attachments */}
+        {message.attachments && message.attachments.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {message.attachments.map((attachment) => (
+              <Badge key={attachment.id} variant="outline">
+                {attachment.name}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {/* Actions */}
+        <AnimatePresence>
+          {isAssistant && (isHovered || feedbackGiven) && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{
+                duration: ANIMATION_DURATION.fast / 1000,
+                ease: EASING_FRAMER.out,
+              }}
+              className="flex items-center gap-2"
             >
-              <span className="font-semibold text-sm">
-                {isUser ? 'You' : 'AI Assistant'}
-              </span>
-              {showTimestamp && (
-                <span className="text-xs text-muted-foreground">
-                  {formatRelativeTime(message.createdAt)}
-                </span>
-              )}
-              {message.status === 'sending' && (
-                <Badge variant="secondary" dot>
-                  Sending
-                </Badge>
-              )}
-              {message.status === 'error' && (
-                <Badge variant="destructive">Error</Badge>
-              )}
-            </div>
+              <CopyButton text={message.content} size="sm" />
 
-            {/* Content */}
-            <div
-              className={cn(
-                !isUser && 'prose prose-sm dark:prose-invert max-w-none',
-                isUser &&
-                  'bg-primary text-primary-foreground px-4 py-2 rounded-lg inline-block'
-              )}
-            >
-              {isUser ? (
-                <p className="m-0 whitespace-pre-wrap text-primary-foreground">
-                  {message.content}
-                </p>
-              ) : (
-                markdownContent
-              )}
-
-              {isStreaming && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ repeat: Infinity, duration: 0.8 }}
-                  className="inline-block w-2 h-4 bg-current ml-1"
-                />
-              )}
-            </div>
-
-            {/* Attachments */}
-            {message.attachments && message.attachments.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {message.attachments.map((attachment) => (
-                  <Badge key={attachment.id} variant="outline">
-                    {attachment.name}
-                  </Badge>
-                ))}
-              </div>
-            )}
-
-            {/* Actions */}
-            <AnimatePresence>
-              {isAssistant && (isHovered || feedbackGiven) && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{
-                    duration: ANIMATION_DURATION.fast / 1000,
-                    ease: EASING_FRAMER.out,
-                  }}
-                  className="flex items-center gap-2"
-                >
-                  <CopyButton text={message.content} size="sm" />
-
-                  <motion.div
-                    whileHover={INTERACTION_VARIANTS.iconButton.hover}
-                    whileTap={INTERACTION_VARIANTS.iconButton.tap}
-                    transition={INTERACTION_VARIANTS.iconButton.transition}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleFeedback('up')}
-                      className={cn(
-                        'transition-colors',
-                        feedbackGiven === 'up' && 'text-success bg-success/10'
-                      )}
-                      aria-label="Good response"
-                    >
-                      <ThumbsUpIcon size={6} />
-                    </Button>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={INTERACTION_VARIANTS.iconButton.hover}
-                    whileTap={INTERACTION_VARIANTS.iconButton.tap}
-                    transition={INTERACTION_VARIANTS.iconButton.transition}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleFeedback('down')}
-                      className={cn(
-                        'transition-colors',
-                        feedbackGiven === 'down' &&
-                          'text-destructive bg-destructive/10'
-                      )}
-                      aria-label="Poor response"
-                    >
-                      <ThumbsDownIcon size={6} />
-                    </Button>
-                  </motion.div>
-
-                  {message.status === 'error' && onRetry && (
-                    <motion.div
-                      whileHover={INTERACTION_VARIANTS.button.hover}
-                      whileTap={INTERACTION_VARIANTS.button.tap}
-                      transition={INTERACTION_VARIANTS.button.transition}
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleRetry}
-                        className="gap-1.5"
-                      >
-                        <RefreshIcon size={6} />
-                        Retry
-                      </Button>
-                    </motion.div>
+              <motion.div
+                whileHover={INTERACTION_VARIANTS.iconButton.hover}
+                whileTap={INTERACTION_VARIANTS.iconButton.tap}
+                transition={INTERACTION_VARIANTS.iconButton.transition}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleFeedback('up')}
+                  className={cn(
+                    'transition-colors',
+                    feedbackGiven === 'up' && 'text-success bg-success/10'
                   )}
+                  aria-label="Good response"
+                >
+                  <ThumbsUpIcon size={6} />
+                </Button>
+              </motion.div>
+
+              <motion.div
+                whileHover={INTERACTION_VARIANTS.iconButton.hover}
+                whileTap={INTERACTION_VARIANTS.iconButton.tap}
+                transition={INTERACTION_VARIANTS.iconButton.transition}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleFeedback('down')}
+                  className={cn(
+                    'transition-colors',
+                    feedbackGiven === 'down' &&
+                      'text-destructive bg-destructive/10'
+                  )}
+                  aria-label="Poor response"
+                >
+                  <ThumbsDownIcon size={6} />
+                </Button>
+              </motion.div>
+
+              {message.status === 'error' && onRetry && (
+                <motion.div
+                  whileHover={INTERACTION_VARIANTS.button.hover}
+                  whileTap={INTERACTION_VARIANTS.button.tap}
+                  transition={INTERACTION_VARIANTS.button.transition}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRetry}
+                    className="gap-1.5"
+                  >
+                    <RefreshIcon size={6} />
+                    Retry
+                  </Button>
                 </motion.div>
               )}
-            </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-            {/* Metadata */}
-            {message.metadata && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                {message.metadata.tokens && (
-                  <span>{message.metadata.tokens} tokens</span>
-                )}
-                {message.metadata.processingTime && (
-                  <span>• {message.metadata.processingTime}ms</span>
-                )}
-                {message.metadata.model && (
-                  <span>• {message.metadata.model}</span>
-                )}
-              </div>
+        {/* Metadata */}
+        {message.metadata && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            {message.metadata.tokens && (
+              <span>{message.metadata.tokens} tokens</span>
             )}
+            {message.metadata.processingTime && (
+              <span>• {message.metadata.processingTime}ms</span>
+            )}
+            {message.metadata.model && <span>• {message.metadata.model}</span>}
           </div>
-        </motion.div>
-      )
+        )}
+      </div>
+    </motion.div>
+  )
 }
 
 // Custom comparison function for React.memo
-const messageOptimizedAreEqual = (prevProps: MessageOptimizedProps, nextProps: MessageOptimizedProps) => {
+const messageOptimizedAreEqual = (
+  prevProps: MessageOptimizedProps,
+  nextProps: MessageOptimizedProps
+) => {
   // Compare all props that affect rendering
   // Note: ref comparison ensures new refs get attached (React 19 ref-as-prop pattern)
   return (
@@ -405,6 +403,9 @@ const messageOptimizedAreEqual = (prevProps: MessageOptimizedProps, nextProps: M
  * Memoized and exported MessageOptimized component
  * React 19: Uses ref as prop with React.memo
  */
-export const MessageOptimized = React.memo(MessageOptimizedInner, messageOptimizedAreEqual)
+export const MessageOptimized = React.memo(
+  MessageOptimizedInner,
+  messageOptimizedAreEqual
+)
 
 MessageOptimized.displayName = 'MessageOptimized'

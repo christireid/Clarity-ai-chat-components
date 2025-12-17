@@ -1,17 +1,32 @@
 /**
  * Integrated Generative UI Example
- * 
+ *
  * Complete example showing useClarityChat + useAssistant + tool registry
  * working together for a full generative UI experience.
  */
 
 import * as React from 'react'
-import { useClarityChat, convertCoreMessagesToMessages } from '../hooks/use-clarity-chat'
-import { useAssistant, type ToolInvocation } from '../hooks/use-assistant'
-import { ChatWindow } from '../components/chat-window'
-import { ClarityToolResult, type ToolCall } from '../components/clarity-tool-result'
-import { createToolUIRegistry, type ToolComponentRegistry } from '../agents/tool-ui-registry'
-import { Card, CardContent, CardHeader, Badge, Button } from '@clarity-chat/primitives'
+import {
+  useClarityChat,
+  convertCoreMessagesToMessages,
+} from '../hooks/chat/use-clarity-chat'
+import { useAssistant, type ToolInvocation } from '../hooks/chat/use-assistant'
+import { ChatWindow } from '../components/chat/chat-window'
+import {
+  ClarityToolResult,
+  type ToolCall,
+} from '../components/clarity-tool-result'
+import {
+  createToolUIRegistry,
+  type ToolComponentRegistry,
+} from '../agents/tool-ui-registry'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Badge,
+  Button,
+} from '@clarity-chat/primitives'
 import type { Tool } from '../agents/types'
 
 // ============================================================================
@@ -39,7 +54,7 @@ const weatherTool: Tool = {
   async execute(args) {
     const { location, units = 'celsius' } = args
     await new Promise((resolve) => setTimeout(resolve, 500))
-    
+
     return {
       location,
       temperature: units === 'celsius' ? 22 : 72,
@@ -71,7 +86,7 @@ const faqSearchTool: Tool = {
   async execute(args) {
     const { query, limit = 3 } = args
     await new Promise((resolve) => setTimeout(resolve, 300))
-    
+
     return {
       query,
       results: [
@@ -268,9 +283,7 @@ export function GenerativeUIIntegratedExample() {
           showHeader
           sessionTitle="Generative UI"
           sessionSubtitle={
-            useAssistantMode
-              ? 'Assistant with tool calling'
-              : 'Standard chat'
+            useAssistantMode ? 'Assistant with tool calling' : 'Standard chat'
           }
         />
       </div>
@@ -289,16 +302,23 @@ export function GenerativeUIIntegratedExample() {
               }
 
               return (
-                <div key={invocation.toolCallId || idx} className="border rounded-lg p-3 bg-background">
+                <div
+                  key={invocation.toolCallId || idx}
+                  className="border rounded-lg p-3 bg-background"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-xs font-medium">
                       Tool: {invocation.toolName}
                     </div>
-                    <Badge variant={
-                      invocation.state === 'result' ? 'success' :
-                      invocation.state === 'error' ? 'destructive' :
-                      'info'
-                    }>
+                    <Badge
+                      variant={
+                        invocation.state === 'result'
+                          ? 'success'
+                          : invocation.state === 'error'
+                            ? 'destructive'
+                            : 'info'
+                      }
+                    >
                       {invocation.state}
                     </Badge>
                   </div>
@@ -310,9 +330,11 @@ export function GenerativeUIIntegratedExample() {
                       messages={messages}
                     />
                   )}
-                  {(invocation.state === 'call' || invocation.state === 'partial-call') && (
+                  {(invocation.state === 'call' ||
+                    invocation.state === 'partial-call') && (
                     <div className="text-sm text-muted-foreground">
-                      Executing tool with args: {JSON.stringify(invocation.args)}
+                      Executing tool with args:{' '}
+                      {JSON.stringify(invocation.args)}
                     </div>
                   )}
                   {invocation.state === 'error' && (

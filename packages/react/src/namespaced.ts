@@ -26,16 +26,21 @@
  */
 
 // Import components
-import { ClarityChat, type ClarityChatProps } from './components/chat/clarity-chat'
+import {
+  ClarityChat,
+  type ClarityChatProps,
+} from './components/chat/clarity-chat'
 import { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
 import { ChatInput, type ChatInputProps } from './components/chat/chat-input'
-import MessageList, { type MessageListProps } from './components/chat/virtualized-message-list'
+import MessageList, {
+  type MessageListProps,
+} from './components/chat/virtualized-message-list'
 import { Message, type MessageProps } from './components/message/message'
-import { ThinkingIndicator } from './components/ai/thinking-indicator'
+import { ThinkingIndicator } from './components/message/thinking-indicator'
 import {
   PromptSuggestions,
   type PromptSuggestion,
-} from './components/input/prompt-suggestions'
+} from './components/prompt/prompt-suggestions'
 
 // Import hooks
 import {
@@ -53,7 +58,7 @@ import {
   type UseChatHandlersOptions,
   type ChatHandlers,
 } from './hooks/chat/use-chat-handlers'
-import { useKeyboardShortcuts } from './hooks/navigation/use-keyboard-shortcuts'
+import { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
 import { useChatHistory } from './hooks/chat/use-chat-history'
 
 // Import types
@@ -65,7 +70,7 @@ import type {
 import type { Message as MessageType, AIStatus } from '@clarity-chat/types'
 
 // Import utilities
-import { convertCoreMessagesToMessages } from './utils/message-conversion'
+import { convertCoreMessagesToMessages } from './utils/message/message-conversion'
 
 /**
  * Namespaced hooks for chat functionality

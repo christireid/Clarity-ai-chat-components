@@ -1,24 +1,24 @@
 /**
  * Token Optimization Badge Component
- * 
+ *
  * Compact badge showing token savings and optimization status.
  * Perfect for headers, toolbars, or compact UIs.
  */
 
 import * as React from 'react'
-import { type TokenOptimizationStats } from '../hooks/use-token-optimization'
+import { type TokenOptimizationStats } from '../../hooks/token/use-token-optimization'
 import { cn } from '@clarity-chat/primitives'
 
 export interface TokenOptimizationBadgeProps {
   /** Statistics to display */
   stats: TokenOptimizationStats
-  
+
   /** Show cost savings */
   showCost?: boolean
-  
+
   /** Custom className */
   className?: string
-  
+
   /** Size variant */
   size?: 'sm' | 'md' | 'lg'
 }
@@ -45,11 +45,11 @@ function formatCost(cost: number): string {
 
 /**
  * Token Optimization Badge component
- * 
+ *
  * @example
  * ```tsx
  * const { stats } = useTokenOptimization({ enableCaching: true })
- * 
+ *
  * <TokenOptimizationBadge stats={stats} showCost={true} />
  * ```
  */

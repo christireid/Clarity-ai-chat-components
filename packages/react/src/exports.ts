@@ -56,7 +56,7 @@ export {
   type ClarityChatErrorInfo,
   type ClarityPromptOptimizationOptions,
   type ClarityChatTokenStats,
-} from './hooks/use-clarity-chat'
+} from './hooks/chat/use-clarity-chat'
 
 // Mid-Level: Composable hooks
 export {
@@ -64,31 +64,31 @@ export {
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
-} from './hooks/use-chat-enhanced'
+} from './hooks/chat/use-chat-enhanced'
 export {
   useChatHandlers,
   type UseChatHandlersOptions,
   type ChatHandlers,
-} from './hooks/use-chat-handlers'
+} from './hooks/chat/use-chat-handlers'
 export {
   useClarityChatWithTools,
   type UseClarityChatWithToolsOptions,
   type UseClarityChatWithToolsReturn,
   type ExtractedToolResult,
-} from './hooks/use-clarity-chat-with-tools'
+} from './hooks/chat/use-clarity-chat-with-tools'
 
 // Low-Level: Primitives
 export {
   useChat,
   type UseChatOptions as UseChatOptionsLegacy,
   type UseChatReturn as UseChatReturnLegacy,
-} from './hooks/use-chat'
+} from './hooks/chat/use-chat'
 export {
   convertCoreMessageToMessage,
   convertMessageToCoreMessage,
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
-} from './utils/message-conversion'
+} from './utils/message/message-conversion'
 
 // ============================================================================
 // DOMAIN 3: MEMORY & CONTEXT
@@ -131,10 +131,10 @@ export * from './embeddings'
 // Top-Level: Abstracted via useClarityChat (transport option)
 
 // Mid-Level: Transport hooks
-export * from './hooks/use-streaming-sse'
-export * from './hooks/use-streaming-websocket'
-export * from './hooks/use-streaming'
-export * from './hooks/use-streamable-ui'
+export * from './hooks/streaming/use-streaming-sse'
+export * from './hooks/streaming/use-streaming-websocket'
+export * from './hooks/streaming/use-streaming'
+export * from './hooks/streaming/use-streamable-ui'
 
 // Low-Level: Primitives
 export type { StreamChunk } from './adapters/types'
@@ -150,14 +150,14 @@ export {
   useClarityObject,
   type UseClarityObjectOptions,
   type UseClarityObjectReturn,
-} from './hooks/use-clarity-object'
+} from './hooks/chat/use-clarity-object'
 
 // Top-Level: Drop-in ready agent hook
 export {
   useAgent,
   type UseAgentOptions,
   type UseAgentReturn,
-} from './hooks/use-agent'
+} from './hooks/chat/use-agent'
 
 // Mid-Level: Tool integration
 export * from './agents/tool-ui-registry'
@@ -383,7 +383,7 @@ export {
   type ChatMessage as ChatHistoryMessage,
   type ChatHistoryOptions,
   type UseChatHistoryReturn,
-} from './hooks/use-chat-history'
+} from './hooks/chat/use-chat-history'
 
 // Integrations (Sentry, Analytics) - explicitly named to avoid conflicts
 export {
@@ -411,47 +411,47 @@ export {
 } from './integrations/analytics'
 
 // Additional Hooks
-export * from './hooks/use-completion'
-export * from './hooks/use-assistant'
-export * from './hooks/use-auto-scroll'
-export * from './hooks/use-clipboard'
-export * from './hooks/use-debounce'
-export * from './hooks/use-throttle'
-export * from './hooks/use-event-listener'
-export * from './hooks/use-intersection-observer'
-export * from './hooks/use-local-storage'
-export * from './hooks/use-indexed-db'
-export * from './hooks/use-media-query'
-export * from './hooks/use-mounted'
-export * from './hooks/use-previous'
-export * from './hooks/use-toggle'
-export * from './hooks/use-window-size'
-export * from './hooks/use-error-recovery'
-export * from './hooks/use-token-tracker'
-export * from './hooks/use-token-optimization'
-export * from './hooks/use-message-operations'
-export * from './hooks/use-message-history'
-export * from './hooks/use-realistic-typing'
-export * from './hooks/use-command-palette-commands'
-export * from './hooks/use-optimistic-message'
-export * from './hooks/use-performance'
-export * from './hooks/use-deferred-search'
-export * from './hooks/use-voice-input'
-export * from './hooks/use-model-router'
-export * from './hooks/use-smart-throttle'
-export * from './hooks/use-smart-cache'
-export * from './hooks/use-character-counter'
-export * from './hooks/use-submit-button-state'
-export * from './hooks/use-mobile-keyboard'
-export { useDesignTokens } from './hooks/use-design-tokens'
-export * from './hooks/use-theme-analytics'
+export * from './hooks/chat/use-completion'
+export * from './hooks/chat/use-assistant'
+export * from './hooks/ui/use-auto-scroll'
+export * from './hooks/ui/use-clipboard'
+export * from './hooks/ui/use-debounce'
+export * from './hooks/ui/use-throttle'
+export * from './hooks/ui/use-event-listener'
+export * from './hooks/ui/use-intersection-observer'
+export * from './hooks/storage/use-local-storage'
+export * from './hooks/storage/use-indexed-db'
+export * from './hooks/ui/use-media-query'
+export * from './hooks/ui/use-mounted'
+export * from './hooks/ui/use-previous'
+export * from './hooks/ui/use-toggle'
+export * from './hooks/ui/use-window-size'
+export * from './hooks/resilience/use-error-recovery'
+export * from './hooks/token/use-token-tracker'
+export * from './hooks/token/use-token-optimization'
+export * from './hooks/message/use-message-operations'
+export * from './hooks/message/use-message-history'
+export * from './hooks/input/use-realistic-typing'
+export * from './hooks/keyboard/use-command-palette-commands'
+export * from './hooks/message/use-optimistic-message'
+export * from './hooks/performance/use-performance'
+export * from './hooks/performance/use-deferred-search'
+export * from './hooks/input/use-voice-input'
+export * from './hooks/model/use-model-router'
+export * from './hooks/performance/use-smart-throttle'
+export * from './hooks/performance/use-smart-cache'
+export * from './hooks/input/use-character-counter'
+export * from './hooks/input/use-submit-button-state'
+export * from './hooks/input/use-mobile-keyboard'
+export { useDesignTokens } from './hooks/theme/use-design-tokens'
+export * from './hooks/theme/use-theme-analytics'
 export {
   useBatteryAware,
   withBatteryOptimizations,
   type BatteryStatus,
   type BatteryAwareConfig,
   type OptimizationRecommendations,
-} from './hooks/use-battery-aware'
+} from './hooks/performance/use-battery-aware'
 
 // Additional Utilities
 // Note: Specific utils are exported above. Commenting out barrel export to avoid duplicates.
@@ -484,7 +484,7 @@ export {
   useClarityChatWithPersistence,
   useClarityChatWithDebounce,
   useClarityChatWithAutoSave,
-} from './hooks/use-clarity-chat-helpers'
+} from './hooks/chat/use-clarity-chat-helpers'
 
 // Testing utilities (for test files only)
 export {

@@ -10,13 +10,13 @@ import {
   FileIcon,
   SparklesIcon,
   CheckCircleIcon,
-} from './icons'
+} from '../ui/icons'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   duration,
-} from '../animations/constants'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+} from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 
 export interface ThinkingIndicatorProps {
   status?: AIStatus

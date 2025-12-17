@@ -10,7 +10,7 @@
  * @module utils/response-prefilling
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface PrefillConfig {
   /** The prefill text to start the response with */
@@ -45,7 +45,11 @@ export const PREFILL_TEMPLATES: Record<string, PrefillTemplate> = {
       structuredOutput: true,
       contentType: 'json',
     },
-    useCases: ['API responses', 'Structured data extraction', 'Configuration generation'],
+    useCases: [
+      'API responses',
+      'Structured data extraction',
+      'Configuration generation',
+    ],
   },
   jsonArray: {
     name: 'JSON Array',
@@ -212,7 +216,7 @@ export function createOpenAIPrefill(
   const formatInstructions = getFormatInstructions(config)
 
   // Find existing system message or create placeholder
-  const existingSystemIndex = messages.findIndex(m => m.role === 'system')
+  const existingSystemIndex = messages.findIndex((m) => m.role === 'system')
 
   let modifiedMessages = [...messages]
   if (existingSystemIndex >= 0 && modifiedMessages[existingSystemIndex]) {
@@ -232,7 +236,9 @@ export function createOpenAIPrefill(
   return {
     messages: modifiedMessages,
     systemSuffix: formatInstructions,
-    responseFormat: config.structuredOutput ? { type: 'json_object' } : undefined,
+    responseFormat: config.structuredOutput
+      ? { type: 'json_object' }
+      : undefined,
   }
 }
 
@@ -245,11 +251,15 @@ function getFormatInstructions(config: PrefillConfig): string {
   // Add content type specific instructions
   switch (config.contentType) {
     case 'json':
-      instructions.push('Respond ONLY with valid JSON. Do not include any text before or after the JSON.')
+      instructions.push(
+        'Respond ONLY with valid JSON. Do not include any text before or after the JSON.'
+      )
       instructions.push('Do not include markdown code blocks around the JSON.')
       break
     case 'code':
-      instructions.push('Provide the code directly without any explanation or preamble.')
+      instructions.push(
+        'Provide the code directly without any explanation or preamble.'
+      )
       instructions.push('Start immediately with the code block.')
       break
     case 'markdown':
@@ -258,8 +268,12 @@ function getFormatInstructions(config: PrefillConfig): string {
       break
     case 'text':
     default:
-      instructions.push('Respond directly without any preamble or pleasantries.')
-      instructions.push('Do not start with phrases like "Sure", "Of course", "Here\'s".')
+      instructions.push(
+        'Respond directly without any preamble or pleasantries.'
+      )
+      instructions.push(
+        'Do not start with phrases like "Sure", "Of course", "Here\'s".'
+      )
       break
   }
 
@@ -376,11 +390,14 @@ export function estimatePrefillSavings(config: PrefillConfig): {
 
   const minSavedTokens = Math.ceil(baseSavings.minSavedTokens * multiplier)
   const maxSavedTokens = Math.ceil(baseSavings.maxSavedTokens * multiplier)
-  const averageSavedTokens = Math.ceil(baseSavings.averageSavedTokens * multiplier)
+  const averageSavedTokens = Math.ceil(
+    baseSavings.averageSavedTokens * multiplier
+  )
 
   // Estimate typical response is 200 tokens, so savings percent
   const typicalResponseTokens = 200
-  const estimatedSavingsPercent = (averageSavedTokens / typicalResponseTokens) * 100
+  const estimatedSavingsPercent =
+    (averageSavedTokens / typicalResponseTokens) * 100
 
   return {
     minSavedTokens,
@@ -409,46 +426,28 @@ export function choosePrefillTemplate(query: string): PrefillTemplate | null {
   }
 
   // Code detection
-  if (
-    lowerQuery.includes('typescript') ||
-    lowerQuery.includes('ts code')
-  ) {
+  if (lowerQuery.includes('typescript') || lowerQuery.includes('ts code')) {
     return PREFILL_TEMPLATES.typescript!
   }
-  if (
-    lowerQuery.includes('python') ||
-    lowerQuery.includes('py code')
-  ) {
+  if (lowerQuery.includes('python') || lowerQuery.includes('py code')) {
     return PREFILL_TEMPLATES.python!
   }
-  if (
-    lowerQuery.includes('javascript') ||
-    lowerQuery.includes('js code')
-  ) {
+  if (lowerQuery.includes('javascript') || lowerQuery.includes('js code')) {
     return PREFILL_TEMPLATES.javascript!
   }
 
   // Analysis detection
-  if (
-    lowerQuery.includes('analyze') ||
-    lowerQuery.includes('analysis')
-  ) {
+  if (lowerQuery.includes('analyze') || lowerQuery.includes('analysis')) {
     return PREFILL_TEMPLATES.analysis!
   }
 
   // Summary detection
-  if (
-    lowerQuery.includes('summarize') ||
-    lowerQuery.includes('summary')
-  ) {
+  if (lowerQuery.includes('summarize') || lowerQuery.includes('summary')) {
     return PREFILL_TEMPLATES.summary!
   }
 
   // List detection
-  if (
-    lowerQuery.includes('list') ||
-    lowerQuery.includes('enumerate')
-  ) {
+  if (lowerQuery.includes('list') || lowerQuery.includes('enumerate')) {
     if (lowerQuery.includes('numbered') || lowerQuery.includes('steps')) {
       return PREFILL_TEMPLATES.numberedList!
     }

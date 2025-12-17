@@ -5,10 +5,10 @@
  */
 
 import { useState, useCallback } from 'react'
-import { ChatWindow } from '../components/chat-window'
+import { ChatWindow } from '../components/chat/chat-window'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { supportChatTheme } from '../theme/modern-presets'
-import { useMessageOperations } from '../hooks/use-message-operations'
+import { useMessageOperations } from '../hooks/message/use-message-operations'
 import type { Message } from '@clarity-chat/types'
 
 export interface CustomerSupportTemplateProps {

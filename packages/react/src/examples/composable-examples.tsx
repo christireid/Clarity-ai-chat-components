@@ -1,6 +1,6 @@
 /**
  * Composable Hook Examples
- * 
+ *
  * Demonstrates how to compose multiple features together
  */
 
@@ -8,8 +8,8 @@ import {
   useChatComposable,
   useChatWithFeatures,
   createChatHook,
-} from '../hooks/use-chat-composable'
-import { ChatWindow } from '../components/chat-window'
+} from '../hooks/chat/use-chat-composable'
+import { ChatWindow } from '../components/chat/chat-window'
 import '@clarity-chat/react/styles.css'
 
 /**

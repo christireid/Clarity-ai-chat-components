@@ -5,7 +5,7 @@
  * Can save 20-40% on repeated or similar queries.
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface CacheEntry<T = any> {
   /** Unique cache key */
@@ -89,22 +89,22 @@ function hashQuery(query: string): string {
 
 /**
  * Smart cache with semantic similarity matching
- * 
+ *
  * @example
  * ```tsx
  * // Basic exact matching
  * const cache = new SmartCache<string>()
- * 
+ *
  * cache.set('What is React?', 'React is a JavaScript library...')
  * const result = cache.get('What is React?')
- * 
+ *
  * // With semantic similarity
  * const cache = new SmartCache<string>({
  *   enableSemanticMatching: true,
  *   embedFunction: async (text) => await getEmbedding(text),
  *   similarityThreshold: 0.85
  * })
- * 
+ *
  * cache.set('What is React?', 'React is a JavaScript library...')
  * // Will find similar query even with different wording
  * const result = cache.get('Can you explain React?')
@@ -112,7 +112,9 @@ function hashQuery(query: string): string {
  */
 export class SmartCache<T = any> {
   private cache: Map<string, CacheEntry<T>> = new Map()
-  private options: Required<Omit<CacheOptions, 'embedFunction'>> & { embedFunction?: CacheOptions['embedFunction'] }
+  private options: Required<Omit<CacheOptions, 'embedFunction'>> & {
+    embedFunction?: CacheOptions['embedFunction']
+  }
   private stats: CacheStats = {
     size: 0,
     hits: 0,
@@ -166,7 +168,11 @@ export class SmartCache<T = any> {
   /**
    * Set cache entry
    */
-  async set(query: string, response: T, options?: { ttl?: number; tags?: string[] }): Promise<void> {
+  async set(
+    query: string,
+    response: T,
+    options?: { ttl?: number; tags?: string[] }
+  ): Promise<void> {
     const key = hashQuery(query)
     const timestamp = Date.now()
     const ttl = options?.ttl ?? this.options.defaultTTL
@@ -217,7 +223,10 @@ export class SmartCache<T = any> {
         if (!entry.embedding || this.isExpired(entry)) continue
 
         const similarity = cosineSimilarity(queryEmbedding, entry.embedding)
-        if (similarity > bestSimilarity && similarity >= this.options.similarityThreshold) {
+        if (
+          similarity > bestSimilarity &&
+          similarity >= this.options.similarityThreshold
+        ) {
           bestSimilarity = similarity
           bestMatch = entry
         }
@@ -246,7 +255,7 @@ export class SmartCache<T = any> {
     let oldestTime = Infinity
 
     for (const [key, entry] of this.cache.entries()) {
-      const score = entry.timestamp - (entry.hits * 1000) // Favor frequently accessed
+      const score = entry.timestamp - entry.hits * 1000 // Favor frequently accessed
       if (score < oldestTime) {
         oldestTime = score
         oldestKey = key
@@ -325,8 +334,8 @@ export class SmartCache<T = any> {
    * Get entries by tag
    */
   getByTag(tag: string): CacheEntry<T>[] {
-    return Array.from(this.cache.values()).filter(
-      (entry) => entry.tags?.includes(tag)
+    return Array.from(this.cache.values()).filter((entry) =>
+      entry.tags?.includes(tag)
     )
   }
 }
@@ -335,7 +344,8 @@ export class SmartCache<T = any> {
  * Simple in-memory cache without semantic matching
  */
 export class SimpleCache<T = any> {
-  private cache: Map<string, { value: T; timestamp: number; ttl?: number }> = new Map()
+  private cache: Map<string, { value: T; timestamp: number; ttl?: number }> =
+    new Map()
   private hits = 0
   private misses = 0
 
@@ -346,7 +356,7 @@ export class SimpleCache<T = any> {
 
   get(key: string): T | null {
     const entry = this.cache.get(key)
-    
+
     if (!entry) {
       this.misses++
       return null

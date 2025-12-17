@@ -1,13 +1,13 @@
 /**
  * Clarity Chat with WebSocket Example
- * 
+ *
  * Example demonstrating useClarityChat with WebSocket transport.
  * Shows how to use WebSocket for bidirectional real-time chat.
- * 
+ *
  * @example
  * ```tsx
  * import { ClarityChatWebSocketExample } from '@clarity-chat/react/examples'
- * 
+ *
  * function App() {
  *   return <ClarityChatWebSocketExample />
  * }
@@ -15,14 +15,14 @@
  */
 
 import * as React from 'react'
-import { useClarityChat } from '../hooks/use-clarity-chat'
-import { ChatWindow } from '../components/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { useClarityChat } from '../hooks/chat/use-clarity-chat'
+import { ChatWindow } from '../components/chat/chat-window'
+import { convertCoreMessagesToMessages } from '../utils/message/message-conversion'
 import { Badge } from '@clarity-chat/primitives'
 
 /**
  * Clarity Chat with WebSocket Example Component
- * 
+ *
  * Demonstrates useClarityChat with WebSocket transport for real-time chat.
  * WebSocket provides bidirectional communication and lower latency.
  */

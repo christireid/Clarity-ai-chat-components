@@ -10,8 +10,8 @@ import * as React from 'react'
 import type {
   UseClarityChatReturn,
   UseClarityChatOptions,
-} from '../hooks/use-clarity-chat'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
+} from '../hooks/chat/use-clarity-chat'
+import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
 
 /**
  * Mock implementation of useClarityChat for testing

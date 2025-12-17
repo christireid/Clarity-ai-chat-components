@@ -12,7 +12,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
-import { Skeleton, SkeletonText } from './skeleton'
+import { Skeleton, SkeletonText } from '../ui/skeleton'
 
 export interface FollowUpSuggestion {
   id: string
@@ -68,7 +68,7 @@ export function FollowUpSuggestions({
       initial={{ opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.96 }}
-      transition={{ 
+      transition={{
         // Framer Motion 12: Spring follow-up cards
         type: 'spring',
         damping: 24,
@@ -143,7 +143,7 @@ export function FollowUpSuggestions({
           key={`skeleton-${index}`}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.2, delay: index * 0.05 }}
+          transition={{ duration: durations.normal, delay: index * 0.05 }}
           className="rounded-lg border bg-muted/50 p-4 shadow-sm"
         >
           <div className="flex items-center gap-3.5">
@@ -166,9 +166,12 @@ export function FollowUpSuggestions({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: durations.normal }}
     >
-      <Card ref={containerRef} className={cn('shadow-lg overflow-hidden', className)}>
+      <Card
+        ref={containerRef}
+        className={cn('shadow-lg overflow-hidden', className)}
+      >
         <CardHeader className="space-y-2 p-4 pb-2">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/30">
@@ -216,7 +219,7 @@ export function FollowUpSuggestions({
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: durations.normal }}
               className="rounded-lg border border-dashed bg-muted/50 p-8 text-center"
             >
               <svg

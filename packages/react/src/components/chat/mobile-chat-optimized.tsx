@@ -5,12 +5,12 @@ import { motion, useMotionValue, useTransform } from 'framer-motion'
 import type { PanInfo } from 'framer-motion'
 import { Card, CardContent, Button, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { DURATION_SECONDS } from '../animations/constants'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { DURATION_SECONDS } from '../../animations/constants'
+import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
-} from '../animations/motion-safe'
+} from '../../animations/motion-safe'
 
 /**
  * Swipe action configuration

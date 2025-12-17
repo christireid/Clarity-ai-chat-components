@@ -121,7 +121,7 @@ class LoggerImpl implements ExtensionLogger {
     console.warn(`[${this.prefix}]`, message, ...args)
   }
 
-  console.error(message: string, ...args: unknown[]): void {
+  error(message: string, ...args: unknown[]): void {
     console.error(`[${this.prefix}]`, message, ...args)
   }
 

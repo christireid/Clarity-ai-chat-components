@@ -4,13 +4,22 @@
 
 import { describe, it, expect, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useArchitectWorkflow } from '../hooks/use-architect-workflow'
-import { useSecurityAudit } from '../hooks/use-security-audit'
-import { useDesignPatterns } from '../hooks/use-design-patterns'
-import { createAuditResult, createSecurityFinding } from '../phases/phase1-audit'
-import { createStrategicPlan, createPlanningStep } from '../phases/phase2-planning'
+import { useArchitectWorkflow } from '../hooks/hooks/use-architect-workflow'
+import { useSecurityAudit } from '../hooks/hooks/use-security-audit'
+import { useDesignPatterns } from '../hooks/hooks/use-design-patterns'
+import {
+  createAuditResult,
+  createSecurityFinding,
+} from '../phases/phase1-audit'
+import {
+  createStrategicPlan,
+  createPlanningStep,
+} from '../phases/phase2-planning'
 import { createImplementationOutput } from '../phases/phase3-implementation'
-import { createReviewResult, createDRYCheckResult } from '../phases/phase4-review'
+import {
+  createReviewResult,
+  createDRYCheckResult,
+} from '../phases/phase4-review'
 
 describe('Architect Hooks', () => {
   describe('useArchitectWorkflow', () => {
@@ -308,9 +317,7 @@ describe('Architect Hooks', () => {
 
     it('should end audit', () => {
       const onAuditComplete = vi.fn()
-      const { result } = renderHook(() =>
-        useSecurityAudit({ onAuditComplete })
-      )
+      const { result } = renderHook(() => useSecurityAudit({ onAuditComplete }))
 
       act(() => {
         result.current.startAudit()
@@ -334,7 +341,12 @@ describe('Architect Hooks', () => {
 
       act(() => {
         result.current.addFinding('A03_INJECTION', 'high', 'Test 1', 'Fix')
-        result.current.addFinding('A07_AUTH_FAILURES', 'medium', 'Test 2', 'Fix')
+        result.current.addFinding(
+          'A07_AUTH_FAILURES',
+          'medium',
+          'Test 2',
+          'Fix'
+        )
       })
 
       expect(result.current.state.findings.length).toBe(2)
@@ -369,7 +381,12 @@ describe('Architect Hooks', () => {
       act(() => {
         result.current.addFinding('A03_INJECTION', 'high', 'Test', 'Fix')
         result.current.addFinding('A07_AUTH_FAILURES', 'medium', 'Test', 'Fix')
-        result.current.addFinding('A01_BROKEN_ACCESS_CONTROL', 'high', 'Test', 'Fix')
+        result.current.addFinding(
+          'A01_BROKEN_ACCESS_CONTROL',
+          'high',
+          'Test',
+          'Fix'
+        )
       })
 
       const highFindings = result.current.getFindingsBySeverity('high')
@@ -388,7 +405,8 @@ describe('Architect Hooks', () => {
         result.current.addFinding('A07_AUTH_FAILURES', 'high', 'Test 3', 'Fix')
       })
 
-      const injectionFindings = result.current.getFindingsByType('A03_INJECTION')
+      const injectionFindings =
+        result.current.getFindingsByType('A03_INJECTION')
       expect(injectionFindings.length).toBe(2)
     })
 
@@ -399,7 +417,12 @@ describe('Architect Hooks', () => {
         result.current.addFinding('A03_INJECTION', 'critical', 'Test', 'Fix')
         result.current.addFinding('A03_INJECTION', 'high', 'Test', 'Fix')
         result.current.addFinding('A07_AUTH_FAILURES', 'high', 'Test', 'Fix')
-        result.current.addFinding('A01_BROKEN_ACCESS_CONTROL', 'medium', 'Test', 'Fix')
+        result.current.addFinding(
+          'A01_BROKEN_ACCESS_CONTROL',
+          'medium',
+          'Test',
+          'Fix'
+        )
       })
 
       expect(result.current.severityCounts.critical).toBe(1)
@@ -595,7 +618,9 @@ describe('Architect Hooks', () => {
     it('should suggest patterns for use case', () => {
       const { result } = renderHook(() => useDesignPatterns())
 
-      const suggestions = result.current.suggestPatterns('event notification system')
+      const suggestions = result.current.suggestPatterns(
+        'event notification system'
+      )
 
       expect(suggestions.length).toBeGreaterThan(0)
       expect(suggestions).toContain('OBSERVER')

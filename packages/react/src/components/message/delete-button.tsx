@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@clarity-chat/primitives'
-import { TrashIcon } from '../icons'
+import { TrashIcon } from '../ui/icons'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 // Animation variants for buttons

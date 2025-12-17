@@ -7,7 +7,7 @@
 'use client'
 
 import * as React from 'react'
-import { useRenderPerformance } from '../hooks/use-performance'
+import { useRenderPerformance } from '../../hooks/performance/use-performance'
 import { formatBytes } from '@clarity-chat/primitives'
 
 // Stub hook for memory usage (not available in all browsers)
@@ -450,9 +450,11 @@ export function PerformanceDashboard({
 }
 
 /**
- * Format bytes to human-readable string
+ * Performance Badge - Compact performance status indicator
  */
-o = useMemoryUsage()
+function PerformanceBadge({ className }: { className?: string }) {
+  const { performanceMetrics } = usePerformanceMonitoring()
+  const memoryInfo = useMemoryUsage()
 
   const status = React.useMemo(() => {
     if (performanceMetrics.lastRenderTime > 50) return 'poor'

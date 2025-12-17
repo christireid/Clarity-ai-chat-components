@@ -1,19 +1,22 @@
 /**
  * Complex Examples - Full Workflow Compositions
- * 
+ *
  * These examples demonstrate complex, real-world use cases combining
  * multiple APIs and domains. Each example is 80-150 lines of code.
  */
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
-import { useClarityChat } from '../hooks/use-clarity-chat'
-import { useChatHandlers } from '../hooks/use-chat-handlers'
-import { ChatWindow } from '../components/chat-window'
+import { useClarityChat } from '../hooks/chat/use-clarity-chat'
+import { useChatHandlers } from '../hooks/chat/use-chat-handlers'
+import { ChatWindow } from '../components/chat/chat-window'
 import { MemoryProvider, useMemoryContext } from '../memory/memory-provider'
-import { useClarityChatWithTools, createToolUIRegistry } from '../hooks/use-clarity-chat-with-tools'
+import {
+  useClarityChatWithTools,
+  createToolUIRegistry,
+} from '../hooks/chat/use-clarity-chat-with-tools'
 import { createAgent } from '../agents'
-import { useStreaming } from '../hooks/use-streaming'
+import { useStreaming } from '../hooks/streaming/use-streaming'
 
 // ============================================================================
 // Example 1: Enterprise Chat with Memory and Advanced Features (100 lines)
@@ -149,12 +152,15 @@ export function AgentPoweredChat() {
     []
   )
 
-  const handleComplexQuery = React.useCallback(async (query: string) => {
-    // Use agent for complex multi-step queries
-    const execution = await agent.execute(query)
-    // Agent results can be integrated into chat
-    console.log('Agent execution:', execution)
-  }, [agent])
+  const handleComplexQuery = React.useCallback(
+    async (query: string) => {
+      // Use agent for complex multi-step queries
+      const execution = await agent.execute(query)
+      // Agent results can be integrated into chat
+      console.log('Agent execution:', execution)
+    },
+    [agent]
+  )
 
   return (
     <div>
@@ -249,16 +255,17 @@ export function CustomStreamingChat() {
   const [messages, setMessages] = React.useState<any[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
 
-  const { content: streamContent, startStreaming, reset } = useStreaming({
+  const {
+    content: streamContent,
+    startStreaming,
+    reset,
+  } = useStreaming({
     onChunk: (chunk) => {
       // Update UI incrementally
       setMessages((prev) => {
         const last = prev[prev.length - 1]
         if (last && last.role === 'assistant') {
-          return [
-            ...prev.slice(0, -1),
-            { ...last, content: streamContent },
-          ]
+          return [...prev.slice(0, -1), { ...last, content: streamContent }]
         }
         return prev
       })
@@ -277,27 +284,30 @@ export function CustomStreamingChat() {
     },
   })
 
-  const handleSend = React.useCallback(async (content: string) => {
-    setIsLoading(true)
-    setMessages((prev) => [...prev, { role: 'user', content }])
-    
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: content }),
-      })
+  const handleSend = React.useCallback(
+    async (content: string) => {
+      setIsLoading(true)
+      setMessages((prev) => [...prev, { role: 'user', content }])
 
-      if (!response.body) {
-        throw new Error('No response body')
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: content }),
+        })
+
+        if (!response.body) {
+          throw new Error('No response body')
+        }
+
+        await startStreaming(response.body)
+      } catch (error) {
+        console.error('Streaming error:', error)
+        setIsLoading(false)
       }
-
-      await startStreaming(response.body)
-    } catch (error) {
-      console.error('Streaming error:', error)
-      setIsLoading(false)
-    }
-  }, [startStreaming])
+    },
+    [startStreaming]
+  )
 
   return (
     <ChatWindow

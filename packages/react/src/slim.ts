@@ -37,10 +37,16 @@
 // CORE COMPONENTS - Drop-in chat UI
 // ============================================================================
 
-export { ClarityChat, type ClarityChatProps } from './components/chat/clarity-chat'
+export {
+  ClarityChat,
+  type ClarityChatProps,
+} from './components/chat/clarity-chat'
 export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
 export { ChatInput, type ChatInputProps } from './components/chat/chat-input'
-export { default as MessageList, type MessageListProps } from './components/chat/virtualized-message-list'
+export {
+  default as MessageList,
+  type MessageListProps,
+} from './components/chat/virtualized-message-list'
 export { Message, type MessageProps } from './components/message/message'
 
 // ============================================================================
@@ -78,4 +84,4 @@ export type { Message as MessageType, AIStatus } from '@clarity-chat/types'
 // UTILITIES - Message conversion helpers
 // ============================================================================
 
-export { convertCoreMessagesToMessages } from './utils/message-conversion'
+export { convertCoreMessagesToMessages } from './utils/message/message-conversion'

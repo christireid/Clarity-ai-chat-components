@@ -12,7 +12,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
-import { SparklesIcon, LoaderIcon, CheckIcon, XIcon } from './icons'
+import { SparklesIcon, LoaderIcon, CheckIcon, XIcon } from '../ui/icons'
 
 export type AgentRunStatus = 'pending' | 'running' | 'succeeded' | 'failed'
 
@@ -37,13 +37,18 @@ export interface AgentRunFeedProps {
 }
 
 const statusIcon: Record<AgentRunStatus, React.ReactNode> = {
-  pending: <LoaderIcon size={16} className="animate-spin text-muted-foreground" />,
+  pending: (
+    <LoaderIcon size={16} className="animate-spin text-muted-foreground" />
+  ),
   running: <SparklesIcon size={16} className="text-primary animate-pulse" />,
   succeeded: <CheckIcon size={16} className="text-success" />,
   failed: <XIcon size={16} className="text-destructive" />,
 }
 
-const statusBadge: Record<AgentRunStatus, 'info' | 'info' | 'success' | 'destructive'> = {
+const statusBadge: Record<
+  AgentRunStatus,
+  'info' | 'info' | 'success' | 'destructive'
+> = {
   pending: 'info',
   running: 'info',
   succeeded: 'success',
@@ -58,7 +63,8 @@ const statusLabel: Record<AgentRunStatus, string> = {
 }
 
 const defaultTitle = 'Agent execution feed'
-const defaultSubtitle = 'Observe how the orchestrator called tools, merged evidence, and delivered the final answer.'
+const defaultSubtitle =
+  'Observe how the orchestrator called tools, merged evidence, and delivered the final answer.'
 
 export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
   steps,
@@ -69,7 +75,8 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
   subtitle = defaultSubtitle,
 }) => {
   const sortedSteps = React.useMemo(
-    () => [...steps].sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime()),
+    () =>
+      [...steps].sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime()),
     [steps]
   )
 
@@ -80,11 +87,20 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
   }
 
   return (
-    <Card className={cn('border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]', className)}>
+    <Card
+      className={cn(
+        'border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+        className
+      )}
+    >
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
-          <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground/80">{subtitle}</CardDescription>
+          <CardTitle className="text-lg font-semibold text-foreground">
+            {title}
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground/80">
+            {subtitle}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent>
@@ -96,7 +112,10 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                transition={{
+                  duration: durations.normal,
+                  ease: [0.4, 0, 0.2, 1],
+                }}
                 className="rounded-lg border border-border/50 bg-muted p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -105,14 +124,22 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
                       {statusIcon[step.status]}
                     </span>
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-foreground">{step.title}</span>
+                      <span className="text-sm font-semibold text-foreground">
+                        {step.title}
+                      </span>
                       <span className="text-xs text-muted-foreground/70">
-                        Started {step.startedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        Started{' '}
+                        {step.startedAt.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={statusBadge[step.status]}>{statusLabel[step.status]}</Badge>
+                    <Badge variant={statusBadge[step.status]}>
+                      {statusLabel[step.status]}
+                    </Badge>
                     {step.tool && (
                       <Badge variant="outline" className="text-[11px]">
                         Tool • {step.tool}
@@ -140,7 +167,11 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   {onOpenLogs && (
-                    <Button variant="ghost" size="sm" onClick={() => onOpenLogs(step)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onOpenLogs(step)}
+                    >
                       View logs
                     </Button>
                   )}
@@ -164,4 +195,3 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
 }
 
 AgentRunFeed.displayName = 'AgentRunFeed'
-

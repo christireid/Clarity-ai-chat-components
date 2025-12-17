@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { useStreamingSSE } from '../hooks/use-streaming-sse'
-import { useStreamingWebSocket } from '../hooks/use-streaming-websocket'
+import { useStreamingSSE } from '../hooks/streaming/use-streaming-sse'
+import { useStreamingWebSocket } from '../hooks/streaming/use-streaming-websocket'
 import { StreamCancellation } from '../components/stream-cancellation'
 import { Button } from '@clarity-chat/primitives'
 import { cn } from '@clarity-chat/primitives'

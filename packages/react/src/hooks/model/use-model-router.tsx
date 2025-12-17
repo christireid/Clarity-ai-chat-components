@@ -1,8 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import { ModelRouter, COMMON_MODELS } from '../utils/model-router'
-import type { RouteModelConfig, RoutingDecision } from '../utils/model-router'
+import { ModelRouter, COMMON_MODELS } from '../../utils/api/model-router'
+import type {
+  RouteModelConfig,
+  RoutingDecision,
+} from '../../utils/api/model-router'
 
 export interface UseModelRouterOptions {
   /** Available models to route between */
