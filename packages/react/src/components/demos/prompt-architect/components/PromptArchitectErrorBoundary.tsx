@@ -1,14 +1,17 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
  * PromptArchitectErrorBoundary
  *
  * Error boundary wrapper specifically for the Prompt Architect Studio.
- * Catches render errors and displays a friendly fallback UI.
+ * This is a thin wrapper around the base ErrorBoundary with custom
+ * fallback UI.
+ *
+ * @see {@link ../../../../components/feedback/error-boundary.tsx} for the base implementation
  */
 
 import * as React from 'react'
+import { ErrorBoundary } from '../../../feedback/error-boundary'
 import { ErrorFallback } from './ErrorFallback'
 
 export interface PromptArchitectErrorBoundaryProps {
@@ -25,60 +28,45 @@ export interface PromptArchitectErrorBoundaryProps {
   onReset?: () => void
 }
 
-interface ErrorBoundaryState {
-  error: Error | null
-  errorInfo: React.ErrorInfo | null
-}
-
 /**
  * Error boundary for the Prompt Architect demo
+ *
+ * Uses the base ErrorBoundary with a custom fallback UI styled
+ * for the PromptArchitect context.
  */
-export class PromptArchitectErrorBoundary extends React.Component<
-  PromptArchitectErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: PromptArchitectErrorBoundaryProps) {
-    super(props)
-    this.state = {
-      error: null,
-      errorInfo: null,
-    }
-  }
-
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { error }
-  }
-
-  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    this.setState({ errorInfo })
-    this.props.onError?.(error, errorInfo)
-
-    // Log error in development
-    if (process.env.NODE_ENV === 'development') {
-      logger.logger.error('[PromptArchitect] Error caught:', error)
-      logger.logger.error('[PromptArchitect] Error info:', errorInfo)
-    }
-  }
-
-  resetError = (): void => {
-    this.setState({ error: null, errorInfo: null })
-    this.props.onReset?.()
-  }
-
-  override render(): React.ReactNode {
-    const { children, fallback } = this.props
-    const { error } = this.state
-
-    if (error) {
+export function PromptArchitectErrorBoundary({
+  children,
+  fallback,
+  onError,
+  onReset,
+}: PromptArchitectErrorBoundaryProps) {
+  // Use custom fallback or default ErrorFallback
+  const renderFallback = React.useCallback(
+    (error: Error, resetError: () => void) => {
       if (fallback) {
-        return fallback({ error, resetError: this.resetError })
+        return fallback({ error, resetError })
       }
+      return <ErrorFallback error={error} resetError={resetError} />
+    },
+    [fallback]
+  )
 
-      return <ErrorFallback error={error} resetError={this.resetError} />
-    }
-
-    return children
-  }
+  return (
+    <ErrorBoundary
+      fallback={renderFallback}
+      onError={onError}
+      onReset={onReset}
+      logError={(error, errorInfo) => {
+        // Log to console in development with PromptArchitect context
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[PromptArchitect] Error caught:', error)
+          console.error('[PromptArchitect] Error info:', errorInfo)
+        }
+      }}
+    >
+      {children}
+    </ErrorBoundary>
+  )
 }
 
 export default PromptArchitectErrorBoundary
