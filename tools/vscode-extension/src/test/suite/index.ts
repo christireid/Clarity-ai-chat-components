@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Test Suite Entry Point
  *
@@ -32,7 +33,7 @@ export async function run(): Promise<void> {
         }
       })
     } catch (err) {
-      console.error(err)
+      SecureLogger.error(err)
       reject(err)
     }
   })

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Notification Service Extensions
  *

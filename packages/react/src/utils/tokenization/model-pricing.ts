@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Model Pricing and Cost Calculation
  *
@@ -102,7 +103,7 @@ export interface CostCalculation {
  *   inputTokens: 1000,
  *   outputTokens: 500
  * })
- * console.log(cost.totalCost) // $0.06
+ * logger.debug(cost.totalCost) // $0.06
  * ```
  */
 export function calculateCost(params: {

@@ -26,42 +26,42 @@
  */
 
 // Import components
-import { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
-import { ChatWindow, type ChatWindowProps } from './components/chat-window'
-import { ChatInput, type ChatInputProps } from './components/chat-input'
-import { MessageList, type MessageListProps } from './components/message-list'
-import { Message, type MessageProps } from './components/message'
-import { ThinkingIndicator } from './components/thinking-indicator'
+import { ClarityChat, type ClarityChatProps } from './components/chat/clarity-chat'
+import { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
+import { ChatInput, type ChatInputProps } from './components/chat/chat-input'
+import MessageList, { type MessageListProps } from './components/chat/virtualized-message-list'
+import { Message, type MessageProps } from './components/message/message'
+import { ThinkingIndicator } from './components/ai/thinking-indicator'
 import {
   PromptSuggestions,
   type PromptSuggestion,
-} from './components/prompt-suggestions'
+} from './components/input/prompt-suggestions'
 
 // Import hooks
 import {
   useChat,
   type UseChatOptions,
   type UseChatReturn,
-} from './hooks/use-chat-unified'
+} from './hooks/chat/use-chat-unified'
 import {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './hooks/use-clarity-chat'
+} from './hooks/chat/use-clarity-chat'
 import {
   useChatHandlers,
   type UseChatHandlersOptions,
   type ChatHandlers,
-} from './hooks/use-chat-handlers'
-import { useKeyboardShortcuts } from './hooks/use-keyboard-shortcuts'
-import { useChatHistory } from './hooks/use-chat-history'
+} from './hooks/chat/use-chat-handlers'
+import { useKeyboardShortcuts } from './hooks/navigation/use-keyboard-shortcuts'
+import { useChatHistory } from './hooks/chat/use-chat-history'
 
 // Import types
 import type {
   CoreMessage,
   CoreMessageContent,
   MessageRole,
-} from './hooks/use-chat-enhanced'
+} from './hooks/chat/use-chat-enhanced'
 import type { Message as MessageType, AIStatus } from '@clarity-chat/types'
 
 // Import utilities

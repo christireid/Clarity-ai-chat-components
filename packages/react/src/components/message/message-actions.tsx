@@ -19,7 +19,7 @@ import {
 import { ConfettiAnimation } from './confetti-animation'
 import { FeedbackDialog } from './feedback-dialog'
 import { DeleteButton } from './delete-button'
-import { useToast } from '../toast'
+import { useToast } from '../ui/toast'
 
 export interface MessageActionsProps {
   messageContent: string

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -245,10 +246,10 @@ function MeasuredOptimization() {
 
   useEffect(() => {
     const duration = Date.now() - startTime.current
-    console.log(\`Optimization took \${duration}ms\`)
+    logger.debug(\`Optimization took \${duration}ms\`)
 
     if (duration > 100) {
-      console.warn('Optimization is slow')
+      logger.warn('Optimization is slow')
     }
   }, [optimization.messages])
 

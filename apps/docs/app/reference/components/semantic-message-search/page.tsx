@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -106,9 +107,9 @@ function ChatWithSemanticSearch({ messages }: { messages: Message[] }) {
           maxResults: 10,
         }}
         onResultsFound={(results) => {
-          console.log('Found', results.length, 'results')
+          logger.debug('Found', results.length, 'results')
           results.forEach((result) => {
-            console.log('Message:', result.message.content, 'Score:', result.score)
+            logger.debug('Message:', result.message.content, 'Score:', result.score)
           })
         }}
       />

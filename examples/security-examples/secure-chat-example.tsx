@@ -20,6 +20,7 @@
 import { useState } from 'react'
 import {
   useSecureChat,
+import { SecureLogger } from '@/lib/security/secureLogger';
   useSecurityMonitor,
   useSecurityEvents,
   SecurityManager,
@@ -74,11 +75,11 @@ export function SimpleSecureChat() {
     },
     userId: 'demo-user',
     onSecurityBlock: (reason, details) => {
-      console.error('Security block:', reason, details)
+      SecureLogger.error('Security block:', reason, details)
       alert(`Message blocked: ${reason}`)
     },
     onSecurityWarning: (warning, details) => {
-      console.warn('Security warning:', warning, details)
+      SecureLogger.warn('Security warning:', warning, details)
     },
   })
 
@@ -153,7 +154,7 @@ export function AdvancedSecureChat() {
   const { events: criticalEvents } = useSecurityEvents({
     filter: { severity: 'critical' },
     onEvent: (event) => {
-      console.error('Critical security event:', event)
+      SecureLogger.error('Critical security event:', event)
       // Could trigger alerts, notifications, etc.
     },
   })

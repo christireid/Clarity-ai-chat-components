@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PersonaPanel } from '@clarity-chat/react'
 import type { Persona } from '@clarity-chat/react'
@@ -61,7 +62,7 @@ export const WithSelection: Story = {
     personas: mockPersonas,
     activePersonaId: '1',
     onSelect: (persona) => {
-      console.log('Selected persona:', persona.name)
+      SecureLogger.debug('Selected persona:', persona.name)
       alert(`Selected: ${persona.name}`)
     },
   },
@@ -71,9 +72,9 @@ export const WithConfiguration: Story = {
   args: {
     personas: mockPersonas,
     activePersonaId: '2',
-    onSelect: (persona) => console.log('Selected:', persona),
+    onSelect: (persona) => SecureLogger.debug('Selected:', persona),
     onConfigure: (persona) => {
-      console.log('Configuring persona:', persona.name)
+      SecureLogger.debug('Configuring persona:', persona.name)
       alert(`Configure: ${persona.name}`)
     },
   },

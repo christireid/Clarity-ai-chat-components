@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Documentation Assistant API Endpoint
  *
@@ -68,9 +69,34 @@ export async function POST(request: NextRequest) {
     // Parse request body
     const body = (await request.json()) as RequestBody
 
+    // Input validation
+    const MAX_MESSAGE_LENGTH = 10000 // 10KB max message length
+    const MAX_MESSAGES_COUNT = 50 // Max conversation history
+
     if (!body.message) {
       return NextResponse.json(
         { error: 'Message is required' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      typeof body.message !== 'string' ||
+      body.message.length > MAX_MESSAGE_LENGTH
+    ) {
+      return NextResponse.json(
+        {
+          error: `Message must be a string under ${MAX_MESSAGE_LENGTH} characters`,
+        },
+        { status: 400 }
+      )
+    }
+
+    if (body.messages && body.messages.length > MAX_MESSAGES_COUNT) {
+      return NextResponse.json(
+        {
+          error: `Conversation history limited to ${MAX_MESSAGES_COUNT} messages`,
+        },
         { status: 400 }
       )
     }
@@ -119,7 +145,7 @@ export async function POST(request: NextRequest) {
           request.headers.get('user-agent') || undefined
         )
       } catch (error) {
-        console.error('Session error:', error)
+        logger.error('Session error:', error)
         // Continue without session if it fails
       }
     }
@@ -213,7 +239,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('API error:', error)
+    logger.error('API error:', error)
 
     return NextResponse.json(
       {
@@ -304,7 +330,7 @@ async function* streamWithRAG(
             },
           ])
         } catch (error) {
-          console.error('Failed to save session:', error)
+          logger.error('Failed to save session:', error)
         }
       }
 
@@ -367,7 +393,7 @@ async function* streamWithRAG(
           contextHash,
         })
       } catch (error) {
-        console.error('Failed to cache response:', error)
+        logger.error('Failed to cache response:', error)
         // Don't fail the request if caching fails
       }
     }
@@ -388,12 +414,12 @@ async function* streamWithRAG(
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        logger.error('Failed to save session:', error)
         // Don't fail the request if session save fails
       }
     }
   } catch (error) {
-    console.error('RAG streaming error:', error)
+    logger.error('RAG streaming error:', error)
     yield handleStreamError(error)
   }
 }
@@ -489,7 +515,7 @@ async function* streamWithEnhancedRAG(
             },
           ])
         } catch (error) {
-          console.error('Failed to save session:', error)
+          logger.error('Failed to save session:', error)
         }
       }
 
@@ -556,7 +582,7 @@ async function* streamWithEnhancedRAG(
           contextHash,
         })
       } catch (error) {
-        console.error('Failed to cache response:', error)
+        logger.error('Failed to cache response:', error)
       }
     }
 
@@ -576,11 +602,11 @@ async function* streamWithEnhancedRAG(
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        logger.error('Failed to save session:', error)
       }
     }
   } catch (error) {
-    console.error('Enhanced RAG streaming error:', error)
+    logger.error('Enhanced RAG streaming error:', error)
     yield handleStreamError(error)
   }
 }
@@ -634,7 +660,7 @@ async function* streamWithoutRAG(
             },
           ])
         } catch (error) {
-          console.error('Failed to save session:', error)
+          logger.error('Failed to save session:', error)
         }
       }
 
@@ -663,7 +689,7 @@ async function* streamWithoutRAG(
           model: modelOverride || process.env.AI_MODEL || 'unknown',
         })
       } catch (error) {
-        console.error('Failed to cache response:', error)
+        logger.error('Failed to cache response:', error)
         // Don't fail the request if caching fails
       }
     }
@@ -684,12 +710,12 @@ async function* streamWithoutRAG(
           },
         ])
       } catch (error) {
-        console.error('Failed to save session:', error)
+        logger.error('Failed to save session:', error)
         // Don't fail the request if session save fails
       }
     }
   } catch (error) {
-    console.error('Streaming error:', error)
+    logger.error('Streaming error:', error)
     yield handleStreamError(error)
   }
 }
@@ -706,7 +732,7 @@ export async function GET() {
   try {
     cacheStats = await cache.getStats()
   } catch (error) {
-    console.error('Failed to get cache stats:', error)
+    logger.error('Failed to get cache stats:', error)
   }
 
   return NextResponse.json({

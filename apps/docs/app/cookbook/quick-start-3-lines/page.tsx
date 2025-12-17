@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -135,7 +136,7 @@ export async function POST(req: NextRequest) {
     }
   )
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.logger.error('Chat API error:', error)
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -242,7 +243,7 @@ app.post('/api/chat', async (req, res) => {
 
     res.end()
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.logger.error('Chat API error:', error)
     if (!res.headersSent) {
       res.status(500).json({ error: 'Internal server error' })
     }
@@ -250,7 +251,7 @@ app.post('/api/chat', async (req, res) => {
 })
 
 app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000')
+  logger.debug('Server running on http://localhost:3000')
 })`}
         />
       </section>

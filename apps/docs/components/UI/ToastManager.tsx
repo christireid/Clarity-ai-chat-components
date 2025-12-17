@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -17,7 +18,7 @@ import type { Toast } from './Toast'
  *
  * Usage:
  * 1. Add <ToastManager /> to your root layout (once)
- * 2. Use toast.success(), toast.error(), etc. anywhere in your app
+ * 2. Use toast.success(), toast.logger.error(), etc. anywhere in your app
  *
  * @example
  * ```tsx
@@ -44,7 +45,7 @@ import type { Toast } from './Toast'
  *       await saveData()
  *       toast.success('Saved successfully!')
  *     } catch (error) {
- *       toast.error('Failed to save')
+ *       toast.logger.error('Failed to save')
  *     }
  *   }
  * }

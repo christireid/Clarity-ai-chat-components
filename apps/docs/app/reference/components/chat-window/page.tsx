@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback } from 'react'
@@ -346,12 +347,12 @@ import { Button } from '@clarity-chat/react'
 function ChatWithHeader() {
   const handleExport = () => {
     // Export conversation logic
-    console.log('Exporting conversation...')
+    logger.debug('Exporting conversation...')
   }
 
   const handleClear = () => {
     // Clear conversation logic
-    console.log('Clearing conversation...')
+    logger.debug('Clearing conversation...')
   }
 
   return (
@@ -436,7 +437,7 @@ function ChatWithOperations() {
 
   const handleEdit = (messageId: string) => {
     // Open edit dialog or inline editing
-    console.log('Editing message:', messageId)
+    logger.debug('Editing message:', messageId)
   }
 
   const handleDelete = (messageId: string) => {
@@ -445,12 +446,12 @@ function ChatWithOperations() {
 
   const handleRegenerate = async (messageId: string) => {
     // Regenerate the assistant's response
-    console.log('Regenerating message:', messageId)
+    logger.debug('Regenerating message:', messageId)
   }
 
   const handleFeedback = (messageId: string, type: 'up' | 'down') => {
     // Send feedback to your analytics or API
-    console.log('Feedback:', messageId, type)
+    logger.debug('Feedback:', messageId, type)
   }
 
   const handleCopy = (messageId: string, content: string) => {
@@ -658,7 +659,7 @@ function CompleteChat() {
             navigator.clipboard.writeText(content)
           }}
           onMessageFeedback={(id, type) => {
-            console.log('Feedback:', id, type)
+            logger.debug('Feedback:', id, type)
           }}
           className="border border-border rounded-lg shadow-lg"
         />

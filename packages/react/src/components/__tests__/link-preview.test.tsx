@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import {
@@ -152,7 +153,7 @@ describe('LinkPreview', () => {
       render(<LinkPreview metadata={sampleMetadata} />)
 
       const img = screen.getByRole('img', { name: /preview image/i })
-      fireEvent.error(img)
+      fireEvent.logger.error(img)
 
       // After error, should not show the broken image
       expect(

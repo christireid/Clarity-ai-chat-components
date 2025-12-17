@@ -19,7 +19,9 @@
         "!.next/cache/**",
         "storybook-static/**",
         "build/**"
-      ]
+      ],
+      "cache": true,
+      "env": ["NODE_OPTIONS"]
     },
     "dev": {
       "cache": false,

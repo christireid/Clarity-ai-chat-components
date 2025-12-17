@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Feedback Store
  *
@@ -157,7 +158,7 @@ export class LocalFeedbackStore implements FeedbackStore {
     }
 
     this.feedbacks.set(id, fullFeedback)
-    console.log('📝 Feedback saved (local):', fullFeedback)
+    logger.debug('📝 Feedback saved (local):', fullFeedback)
   }
 
   async getAllFeedback(): Promise<Feedback[]> {
@@ -209,10 +210,10 @@ export function getFeedbackStore(): FeedbackStore {
     process.env.NODE_ENV === 'production'
 
   if (useRedis) {
-    console.log('Using Redis feedback store (Upstash)')
+    logger.debug('Using Redis feedback store (Upstash)')
     return new RedisFeedbackStore()
   } else {
-    console.log('Using local feedback store (development mode)')
+    logger.debug('Using local feedback store (development mode)')
     return new LocalFeedbackStore()
   }
 }

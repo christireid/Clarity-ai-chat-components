@@ -8,6 +8,8 @@ import { CodeExample } from '@/components/Demo/CodeExample'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
 import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
 import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
+import { ComponentShowcase } from '@/components/Layout/ComponentShowcase'
+import { BundleSizeAnalyzer } from '@/components/Diagrams/BundleSizeAnalyzer'
 
 // Lazy load the animated background to reduce initial bundle size
 // This component is decorative and can load after initial render
@@ -43,7 +45,7 @@ export default function HomePage() {
             <span className="text-brand-500">That Don't Fight You</span>
           </>
         }
-        description="You've rebuilt chat from scratch three times already. Stop. 70+ production-ready components with streaming, accessibility, and theming—all built-in. Copy, paste, ship."
+        description="You've rebuilt chat from scratch three times already. Stop. 200+ production-ready components with streaming, accessibility, and theming—all built-in. Copy, paste, ship."
         installCommand="npm install @clarity-chat/react"
         primaryCta={{
           text: 'Get Started in 60s',
@@ -114,7 +116,9 @@ function App() {
       {/* Features Grid */}
       <section className="container-docs py-24">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Built for Developers Who Ship</h2>
+          <h2 className="text-4xl font-bold mb-4">
+            Built for Developers Who Ship
+          </h2>
           <p className="text-xl text-text-secondary">
             Everything you need. Nothing you don't.
           </p>
@@ -124,7 +128,7 @@ function App() {
           features={[
             {
               icon: <Layers className="w-8 h-8" />,
-              title: '70+ Components',
+              title: '200+ Components',
               description:
                 'From basic messages to advanced patterns like command palettes, drag & drop, and context menus.',
             },
@@ -138,7 +142,7 @@ function App() {
               icon: <Palette className="w-8 h-8" />,
               title: 'Fully Customizable',
               description:
-                'Built with Tailwind CSS. 11 themes included. Override any style. Dark mode by default.',
+                'Built with Tailwind CSS. 13 themes included. Override any style. Dark mode by default.',
             },
             {
               icon: <Accessibility className="w-8 h-8" />,
@@ -177,7 +181,9 @@ function App() {
         {/* Feature Comparison */}
         <div className="mt-24">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">More Features, Less Work</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              More Features, Less Work
+            </h2>
             <p className="text-xl text-text-secondary">
               See how Clarity stacks up against the alternatives.
             </p>
@@ -196,10 +202,12 @@ function App() {
 
           <div className="relative">
             <Heart className="w-12 h-12 mx-auto mb-4 fill-current" />
-            <h2 className="text-4xl font-bold mb-4">Ship Your First Chat Today</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              Ship Your First Chat Today
+            </h2>
             <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              One install. One import. One minute to a working chat.
-              No boilerplate. No configuration hell. Just results.
+              One install. One import. One minute to a working chat. No
+              boilerplate. No configuration hell. Just results.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
@@ -219,85 +227,57 @@ function App() {
         </div>
       </section>
 
+      {/* Component Showcase */}
+      <ComponentShowcase />
+
+      {/* Bundle Size Analyzer */}
+      <BundleSizeAnalyzer />
+
       {/* Links Section */}
       <section className="container-docs py-24 border-t border-border">
-        <ScrollReveal stagger staggerDelay={0.15} className="grid md:grid-cols-3 gap-8">
+        <ScrollReveal
+          stagger
+          staggerDelay={0.15}
+          className="grid md:grid-cols-3 gap-8"
+        >
           <ScrollRevealItem>
             <div>
               <h3 className="text-2xl font-bold mb-4">Learn</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/learn/quick-start"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>Quick Start</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/learn/tutorial"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>Tutorial</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/learn/concepts"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>Core Concepts</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold mb-4">Reference</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/reference/components"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>Components</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/reference/hooks"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>Hooks</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/reference/api"
-                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
-                >
-                  <span>API Reference</span>
-                  <span className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </li>
-            </ul>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="/learn/quick-start"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>Quick Start</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/learn/tutorial"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>Tutorial</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/learn/concepts"
+                    className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
+                  >
+                    <span>Core Concepts</span>
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </li>
+              </ul>
             </div>
           </ScrollRevealItem>
           <ScrollRevealItem>

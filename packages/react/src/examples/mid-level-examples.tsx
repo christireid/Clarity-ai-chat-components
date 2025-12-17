@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Mid-Level Examples - Composable Building Blocks
  * 
@@ -36,11 +37,11 @@ export function CustomChatWithHandlers() {
   const handlers = useChatHandlers({
     chat,
     onMessageSent: (content) => {
-      console.log('Message sent:', content)
+      logger.debug('Message sent:', content)
       // Analytics tracking, etc.
     },
     onMessageError: (error) => {
-      console.error('Failed to send:', error)
+      logger.logger.error('Failed to send:', error)
       // Error reporting, etc.
     },
   })
@@ -75,10 +76,10 @@ export function VercelCompatibleChat() {
       { role: 'system', content: 'You are a helpful assistant.' },
     ],
     onFinish: (message) => {
-      console.log('Message finished:', message)
+      logger.debug('Message finished:', message)
     },
     onError: (error) => {
-      console.error('Chat error:', error)
+      logger.logger.error('Chat error:', error)
     },
   })
 

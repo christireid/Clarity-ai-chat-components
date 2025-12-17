@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Extension Registry
  *
@@ -90,7 +91,7 @@ class StateManagerImpl implements ExtensionStateManager {
       try {
         cb(value)
       } catch (e) {
-        console.error('State subscriber error:', e)
+        logger.logger.error('State subscriber error:', e)
       }
     })
   }
@@ -101,24 +102,28 @@ class StateManagerImpl implements ExtensionStateManager {
 // ============================================
 
 class LoggerImpl implements ExtensionLogger {
+  private isDev = process.env.NODE_ENV === 'development'
+
   constructor(private prefix: string) {}
 
   debug(message: string, ...args: unknown[]): void {
-    if (process.env.NODE_ENV === 'development') {
-      console.debug(`[${this.prefix}]`, message, ...args)
+    if (this.isDev) {
+      logger.debug(`[${this.prefix}]`, message, ...args)
     }
   }
 
   info(message: string, ...args: unknown[]): void {
-    console.info(`[${this.prefix}]`, message, ...args)
+    if (this.isDev) {
+      logger.info(`[${this.prefix}]`, message, ...args)
+    }
   }
 
   warn(message: string, ...args: unknown[]): void {
-    console.warn(`[${this.prefix}]`, message, ...args)
+    logger.warn(`[${this.prefix}]`, message, ...args)
   }
 
-  error(message: string, ...args: unknown[]): void {
-    console.error(`[${this.prefix}]`, message, ...args)
+  logger.error(message: string, ...args: unknown[]): void {
+    logger.logger.error(`[${this.prefix}]`, message, ...args)
   }
 
   child(childPrefix: string): ExtensionLogger {
@@ -140,7 +145,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
       try {
         handler(data)
       } catch (e) {
-        console.error(`Event handler error for ${event}:`, e)
+        logger.logger.error(`Event handler error for ${event}:`, e)
       }
     })
 
@@ -151,7 +156,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
         try {
           handler(data)
         } catch (e) {
-          console.error(`Once handler error for ${event}:`, e)
+          logger.logger.error(`Once handler error for ${event}:`, e)
         }
       })
       this.onceHandlers.delete(event)
@@ -813,7 +818,7 @@ export class ExtensionRegistryImpl implements ExtensionRegistry {
       try {
         handler(eventData)
       } catch (e) {
-        console.error('Registry event handler error:', e)
+        logger.logger.error('Registry event handler error:', e)
       }
     })
   }
@@ -831,7 +836,7 @@ export class ExtensionRegistryImpl implements ExtensionRegistry {
 
   private log(...args: unknown[]): void {
     if (this.options.debug) {
-      console.log('[ExtensionRegistry]', ...args)
+      logger.debug('[ExtensionRegistry]', ...args)
     }
   }
 }

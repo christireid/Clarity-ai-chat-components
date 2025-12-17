@@ -1,4 +1,5 @@
 #!/usr/bin/env npx ts-node
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Hook Metadata Validation Script
  *
@@ -149,37 +150,37 @@ function validateMetadata(): ValidationResult {
 }
 
 function main() {
-  console.log('========================================')
-  console.log('Hook Metadata Validation')
-  console.log('========================================\n')
+  logger.debug('========================================')
+  logger.debug('Hook Metadata Validation')
+  logger.debug('========================================\n')
 
   const result = validateMetadata()
 
   // Print info
   if (result.info.length > 0) {
-    console.log('INFO:')
-    result.info.forEach((msg) => console.log(`  - ${msg}`))
-    console.log()
+    logger.debug('INFO:')
+    result.info.forEach((msg) => logger.debug(`  - ${msg}`))
+    logger.debug()
   }
 
   // Print warnings
   if (result.warnings.length > 0) {
-    console.log('WARNINGS:')
-    result.warnings.forEach((msg) => console.log(`  ⚠️  ${msg}`))
-    console.log()
+    logger.debug('WARNINGS:')
+    result.warnings.forEach((msg) => logger.debug(`  ⚠️  ${msg}`))
+    logger.debug()
   }
 
   // Print errors
   if (result.errors.length > 0) {
-    console.log('ERRORS:')
-    result.errors.forEach((msg) => console.log(`  ❌ ${msg}`))
-    console.log()
+    logger.debug('ERRORS:')
+    result.errors.forEach((msg) => logger.debug(`  ❌ ${msg}`))
+    logger.debug()
   }
 
   // Summary
-  console.log('========================================')
-  console.log(`Summary: ${result.errors.length} errors, ${result.warnings.length} warnings`)
-  console.log('========================================')
+  logger.debug('========================================')
+  logger.debug(`Summary: ${result.errors.length} errors, ${result.warnings.length} warnings`)
+  logger.debug('========================================')
 
   // Exit with error code if there are errors
   if (result.errors.length > 0) {

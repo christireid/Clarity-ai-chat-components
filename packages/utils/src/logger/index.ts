@@ -309,3 +309,22 @@ export const success = (message: string, ...args: unknown[]): void =>
  */
 export const debug = (message: string, ...args: unknown[]): void =>
   defaultLogger.debug(message, ...args)
+
+/**
+ * Pre-configured logger instance for convenience imports
+ *
+ * @example
+ * ```ts
+ * import { logger } from '@clarity-chat/utils/logger'
+ * logger.info('Hello')
+ * logger.error('Something went wrong')
+ * ```
+ */
+export const logger = {
+  info,
+  warn,
+  error,
+  success,
+  debug,
+  getLogger,
+}

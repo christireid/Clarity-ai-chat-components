@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * CRM & Customer Support Extensions
  *
@@ -9,6 +10,23 @@
 
 import { defineExtension } from '../builder'
 import type { Extension } from '../types'
+
+// ============================================
+// Security Helpers
+// ============================================
+
+/**
+ * Validates that an ID contains only safe characters (alphanumeric, hyphens, underscores)
+ * Prevents script injection via malicious config values
+ */
+function validateSafeId(value: string, fieldName: string): string {
+  if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
+    throw new Error(
+      `Invalid ${fieldName}: must contain only alphanumeric characters, hyphens, and underscores`
+    )
+  }
+  return value
+}
 
 // ============================================
 // Types
@@ -133,13 +151,22 @@ export function createIntercomExtension(
     initialize: async (ctx) => {
       ctx.logger.info('Intercom extension initialized')
 
-      // Load Intercom widget
+      // Validate appId to prevent script injection
+      const safeAppId = validateSafeId(ctx.config.appId, 'Intercom App ID')
+
+      // Load Intercom widget using safe DOM API
       if (typeof window !== 'undefined') {
+        // Set up Intercom settings safely via window object
+        const win = window as unknown as {
+          intercomSettings?: { app_id: string }
+        }
+        win.intercomSettings = { app_id: safeAppId }
+
+        // Load the Intercom SDK from their CDN
         const script = document.createElement('script')
-        script.innerHTML = `
-          window.intercomSettings = { app_id: "${ctx.config.appId}" };
-          (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/${ctx.config.appId}';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
-        `
+        script.type = 'text/javascript'
+        script.async = true
+        script.src = `https://widget.intercom.io/widget/${encodeURIComponent(safeAppId)}`
         document.head.appendChild(script)
       }
 
@@ -249,9 +276,14 @@ export function createZendeskExtension(
 
       // Load Zendesk Chat widget if chatKey provided
       if (typeof window !== 'undefined' && ctx.config.chatKey) {
+        // Validate chatKey to prevent script injection
+        const safeChatKey = validateSafeId(
+          ctx.config.chatKey,
+          'Zendesk Chat Key'
+        )
         const script = document.createElement('script')
         script.id = 'ze-snippet'
-        script.src = `https://static.zdassets.com/ekr/snippet.js?key=${ctx.config.chatKey}`
+        script.src = `https://static.zdassets.com/ekr/snippet.js?key=${encodeURIComponent(safeChatKey)}`
         document.head.appendChild(script)
       }
 
@@ -385,11 +417,17 @@ export function createHubSpotExtension(
     initialize: async (ctx) => {
       ctx.logger.info('HubSpot extension initialized')
 
+      // Validate portalId to prevent script injection
+      const safePortalId = validateSafeId(
+        ctx.config.portalId,
+        'HubSpot Portal ID'
+      )
+
       // Load HubSpot tracking code
       if (typeof window !== 'undefined') {
         const script = document.createElement('script')
         script.id = 'hs-script-loader'
-        script.src = `//js.hs-scripts.com/${ctx.config.portalId}.js`
+        script.src = `//js.hs-scripts.com/${encodeURIComponent(safePortalId)}.js`
         script.async = true
         script.defer = true
         document.head.appendChild(script)
@@ -668,34 +706,69 @@ export function createDriftExtension(
     initialize: async (ctx) => {
       ctx.logger.info('Drift extension initialized')
 
-      // Load Drift widget
+      // Validate embedId to prevent script injection
+      const safeEmbedId = validateSafeId(ctx.config.embedId, 'Drift Embed ID')
+
+      // Load Drift widget using safe DOM API
       if (typeof window !== 'undefined') {
-        const script = document.createElement('script')
-        script.innerHTML = `
-          !function() {
-            var t = window.driftt = window.drift = window.driftt || [];
-            if (!t.init) {
-              if (t.invoked) return void (window.console && console.error && console.error("Drift snippet included twice."));
-              t.invoked = !0, t.methods = [ "identify", "config", "track", "reset", "debug", "show", "ping", "page", "hide", "off", "on" ],
-              t.factory = function(e) {
-                return function() {
-                  var n = Array.prototype.slice.call(arguments);
-                  return n.unshift(e), t.push(n), t;
-                };
-              }, t.methods.forEach(function(e) {
-                t[e] = t.factory(e);
-              }), t.load = function(t) {
-                var e = 3e5, n = Math.ceil(new Date() / e) * e, o = document.createElement("script");
-                o.type = "text/javascript", o.async = !0, o.crossorigin = "anonymous", o.src = "https://js.driftt.com/include/" + n + "/" + t + ".js";
-                var i = document.getElementsByTagName("script")[0];
-                i.parentNode.insertBefore(o, i);
-              };
+        // Initialize Drift API stub safely
+        type DriftStub = unknown[] & {
+          invoked?: boolean
+          methods?: string[]
+          factory?: (e: string) => (...args: unknown[]) => DriftStub
+          load?: (embedId: string) => void
+          SNIPPET_VERSION?: string
+          [key: string]: unknown
+        }
+        const win = window as unknown as {
+          driftt?: DriftStub
+          drift?: DriftStub
+        }
+
+        const t: DriftStub = (win.driftt = win.drift = win.driftt || [])
+        if (!t.load) {
+          if (t.invoked) {
+            logger.logger.error('Drift snippet included twice.')
+          } else {
+            t.invoked = true
+            t.methods = [
+              'identify',
+              'config',
+              'track',
+              'reset',
+              'debug',
+              'show',
+              'ping',
+              'page',
+              'hide',
+              'off',
+              'on',
+            ]
+            t.factory = function (e: string) {
+              return function (...args: unknown[]) {
+                args.unshift(e)
+                t.push(args)
+                return t
+              }
             }
-          }();
-          drift.SNIPPET_VERSION = '0.3.1';
-          drift.load('${ctx.config.embedId}');
-        `
-        document.head.appendChild(script)
+            t.methods.forEach(function (e) {
+              t[e] = t.factory?.(e)
+            })
+            t.load = function (embedId: string) {
+              const e = 3e5
+              const n = Math.ceil(Date.now() / e) * e
+              const o = document.createElement('script')
+              o.type = 'text/javascript'
+              o.async = true
+              o.crossOrigin = 'anonymous'
+              o.src = `https://js.driftt.com/include/${n}/${encodeURIComponent(embedId)}.js`
+              const i = document.getElementsByTagName('script')[0]
+              i.parentNode?.insertBefore(o, i)
+            }
+          }
+        }
+        t.SNIPPET_VERSION = '0.3.1'
+        t.load?.(safeEmbedId)
       }
 
       // Type-safe helper for Drift global

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Tracer
  *
@@ -218,7 +219,7 @@ export class ConsoleBackend implements ObservabilityBackend {
   name = 'console'
 
   async sendTrace(trace: Trace): Promise<void> {
-    console.log('[Trace]', {
+    logger.debug('[Trace]', {
       id: trace.id,
       name: trace.name,
       duration: trace.duration,
@@ -227,7 +228,7 @@ export class ConsoleBackend implements ObservabilityBackend {
   }
 
   async sendSpan(span: TraceSpan): Promise<void> {
-    console.log('[Span]', {
+    logger.debug('[Span]', {
       id: span.id,
       name: span.name,
       type: span.type,
@@ -236,7 +237,7 @@ export class ConsoleBackend implements ObservabilityBackend {
   }
 
   async sendEvaluation(evaluation: any): Promise<void> {
-    console.log('[Evaluation]', evaluation)
+    logger.debug('[Evaluation]', evaluation)
   }
 }
 

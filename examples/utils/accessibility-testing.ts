@@ -1,3 +1,6 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Accessibility Testing Utilities
  *
@@ -57,7 +60,7 @@ export interface AccessibilityResult {
  *   if (process.env.NODE_ENV === 'development') {
  *     runAccessibilityChecks().then(({ violations }) => {
  *       if (violations.length > 0) {
- *         console.warn('Accessibility violations:', violations)
+ *         SecureLogger.warn('Accessibility violations:', violations)
  *       }
  *     })
  *   }
@@ -170,11 +173,11 @@ export async function logAccessibilityViolations(): Promise<void> {
     const { violations } = await runAccessibilityChecks()
 
     if (violations.length === 0) {
-      console.log('%c✓ No accessibility violations found', 'color: green')
+      SecureLogger.debug('%c✓ No accessibility violations found', 'color: green')
       return
     }
 
-    console.group(`%c⚠️ ${violations.length} accessibility violations`, 'color: orange')
+    SecureLogger.debug(`%c⚠️ ${violations.length} accessibility violations`, 'color: orange')
 
     violations.forEach((v) => {
       const impactColor = {
@@ -184,19 +187,19 @@ export async function logAccessibilityViolations(): Promise<void> {
         minor: 'gray',
       }[v.impact]
 
-      console.group(`%c${v.id}`, `color: ${impactColor}; font-weight: bold`)
-      console.log('Impact:', v.impact)
-      console.log('Description:', v.description)
-      console.log('Help:', v.help)
-      console.log('Docs:', v.helpUrl)
-      console.log('Affected elements:', v.nodes.map((n) => n.target.join(', ')))
-      console.groupEnd()
+      SecureLogger.debug(`%c${v.id}`, `color: ${impactColor}; font-weight: bold`)
+      SecureLogger.debug('Impact:', v.impact)
+      SecureLogger.debug('Description:', v.description)
+      SecureLogger.debug('Help:', v.help)
+      SecureLogger.debug('Docs:', v.helpUrl)
+      SecureLogger.debug('Affected elements:', v.nodes.map((n) => n.target.join(', ')))
+      SecureLogger.debug()
     })
 
-    console.groupEnd()
+    SecureLogger.debug()
   } catch (error) {
     // axe-core might not be installed
-    console.warn('Accessibility checks skipped (axe-core not available)')
+    SecureLogger.warn('Accessibility checks skipped (axe-core not available)')
   }
 }
 
@@ -206,6 +209,7 @@ export async function logAccessibilityViolations(): Promise<void> {
 
 import { useEffect, useState, useCallback } from 'react'
 
+import { SecureLogger } from '@/lib/security/secureLogger';
 interface UseAccessibilityCheckOptions {
   /** Run checks automatically on mount */
   autoRun?: boolean
@@ -252,7 +256,7 @@ export function useAccessibilityCheck(options: UseAccessibilityCheckOptions = {}
       const results = await runAccessibilityChecks()
       setViolations(results.violations)
     } catch (error) {
-      console.warn('Accessibility check failed:', error)
+      SecureLogger.warn('Accessibility check failed:', error)
     } finally {
       setIsChecking(false)
     }

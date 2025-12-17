@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback } from 'react'
@@ -62,7 +63,7 @@ function ToolCardWithApprovalDemo() {
   }, [])
 
   const handleReject = useCallback(() => {
-    console.log('Tool rejected')
+    logger.debug('Tool rejected')
   }, [])
 
   return (
@@ -202,8 +203,8 @@ export default function ToolInvocationCardPage() {
       toolCall={toolCall}
       status="pending"
       requiresApproval
-      onApprove={() => console.log('Approved')}
-      onReject={() => console.log('Rejected')}
+      onApprove={() => logger.debug('Approved')}
+      onReject={() => logger.debug('Rejected')}
     />
   )
 }
@@ -301,7 +302,7 @@ function ToolWithApproval() {
       result={result}
       requiresApproval
       onApprove={handleApprove}
-      onReject={() => console.log('Rejected')}
+      onReject={() => logger.debug('Rejected')}
     />
   )
 }`}
@@ -350,7 +351,7 @@ function ToolWithApproval() {
   toolCall={toolCall}
   status="error"
   error="Failed to connect to API"
-  onRetry={() => console.log('Retry')}
+  onRetry={() => logger.debug('Retry')}
 />`}
           language="tsx"
           showLineNumbers
@@ -432,7 +433,7 @@ function ToolWithError() {
 
   const handleRetry = useCallback(() => {
     // Retry the tool call
-    console.log('Retrying tool call...')
+    logger.debug('Retrying tool call...')
   }, [])
 
   return (

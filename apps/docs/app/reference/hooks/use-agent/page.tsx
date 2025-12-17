@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -154,7 +155,10 @@ function Example() {
           required: ['expression'],
         },
         execute: async (args) => {
-          return { result: eval(args.expression) }
+          // Safe math evaluation - sanitize input
+          const expr = String(args.expression).replace(/[^0-9+\\-*/().\\s]/g, '')
+          const result = new Function(\`"use strict"; return (\${expr})\`)()
+          return { result: typeof result === 'number' ? result : 'Invalid' }
         },
       },
     ],
@@ -267,7 +271,7 @@ function RobustAgent() {
       const response = await agent.run({ query })
       return response
     } catch (error) {
-      console.error('Agent error:', error)
+      logger.logger.error('Agent error:', error)
       return 'Sorry, I encountered an error. Please try again.'
     }
   }

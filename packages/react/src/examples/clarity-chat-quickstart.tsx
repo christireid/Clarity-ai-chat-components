@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * ClarityChat Quickstart Example
  * 
@@ -65,16 +66,16 @@ export function FullFeaturedExample() {
         sessionTitle="Full Featured Chat"
         showMessageCount
         onMessageCopy={(id, content) => {
-          console.log('Message copied:', id, content)
+          logger.debug('Message copied:', id, content)
         }}
         onMessageFeedback={(id, type) => {
-          console.log('Feedback:', id, type)
+          logger.debug('Feedback:', id, type)
         }}
         onExport={() => {
-          console.log('Export conversation')
+          logger.debug('Export conversation')
         }}
         onClear={() => {
-          console.log('Clear conversation')
+          logger.debug('Clear conversation')
         }}
         memory={{
           enabled: true,

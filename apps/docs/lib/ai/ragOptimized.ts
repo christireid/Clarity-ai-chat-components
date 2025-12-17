@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * RAG Optimized - Enhanced Retrieval-Augmented Generation
  *
@@ -203,7 +204,7 @@ async function performSemanticSearch(
       })
     })
   } catch (error) {
-    console.error('Semantic search error:', error)
+    logger.logger.error('Semantic search error:', error)
     // Return empty map on error - keyword search will still work
   }
 

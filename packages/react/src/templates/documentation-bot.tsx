@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Documentation Bot Template
  *
@@ -71,7 +72,7 @@ export function createDocumentationBot(_config: {
   // Recommended approach: Use ChatWindow + RAG + ContextManager (see JSDoc above)
 
   if (process.env['NODE_ENV'] === 'development' && _config) {
-    console.info(
+    logger.info(
       'createDocumentationBot: Template function called. ' +
         'For full documentation bot features, use ChatWindow with useRAG hook. ' +
         'See component documentation for implementation examples.'

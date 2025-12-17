@@ -1,14 +1,12 @@
 import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
-// TODO: Re-enable when vitest-axe is properly installed via pnpm
-// import * as axeMatchers from 'vitest-axe/matchers'
+import * as axeMatchers from 'vitest-axe/matchers'
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers)
 // Extend Vitest's expect with vitest-axe matchers
-// TODO: Re-enable when vitest-axe is properly installed via pnpm
-// expect.extend(axeMatchers)
+expect.extend(axeMatchers)
 
 // Cleanup after each test
 afterEach(() => {
@@ -25,17 +23,28 @@ Object.defineProperty(window, 'scrollTo', {
 vi.mock('framer-motion', async () => {
   const React = await import('react')
   return {
-    motion: new Proxy({}, {
-      get(_target, prop) {
-        if (typeof prop === 'string') {
-          return ({ children, ...props }: any) => {
-            const { animate, initial, exit, transition, whileHover, whileTap, ...restProps } = props
-            return React.createElement(prop, restProps, children)
+    motion: new Proxy(
+      {},
+      {
+        get(_target, prop) {
+          if (typeof prop === 'string') {
+            return ({ children, ...props }: any) => {
+              const {
+                animate: _animate,
+                initial: _initial,
+                exit: _exit,
+                transition: _transition,
+                whileHover: _whileHover,
+                whileTap: _whileTap,
+                ...restProps
+              } = props
+              return React.createElement(prop, restProps, children)
+            }
           }
-        }
-        return undefined
-      },
-    }),
+          return undefined
+        },
+      }
+    ),
     AnimatePresence: ({ children }: any) => children,
   }
 })

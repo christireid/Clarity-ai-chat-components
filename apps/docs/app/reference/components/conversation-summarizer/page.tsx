@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -106,12 +107,12 @@ function ChatWithSummaries() {
           includeKeyTopics: true,
         }}
         onSummaryGenerated={(summary) => {
-          console.log('Summary:', summary.content)
+          logger.debug('Summary:', summary.content)
           if (summary.keyTopics) {
-            console.log('Key Topics:', summary.keyTopics)
+            logger.debug('Key Topics:', summary.keyTopics)
           }
           if (summary.actionItems) {
-            console.log('Action Items:', summary.actionItems)
+            logger.debug('Action Items:', summary.actionItems)
           }
         }}
       />
@@ -146,7 +147,7 @@ function AutoSummarizeChat({ messages }: { messages: Message[] }) {
       onSummaryGenerated={(summary) => {
         // Automatically generated every 10 messages
         setIsGenerating(false)
-        console.log('Auto-generated summary:', summary.content)
+        logger.debug('Auto-generated summary:', summary.content)
       }}
     />
   )
@@ -176,7 +177,7 @@ function MultiLevelSummaries({ messages }: { messages: Message[] }) {
       }}
       defaultLevel="detailed"
       onSummaryGenerated={(summary) => {
-        console.log(\`\${summary.level} summary:\`, summary.content)
+        logger.debug(\`\${summary.level} summary:\`, summary.content)
       }}
     />
   )
@@ -203,13 +204,13 @@ function RichSummaries({ messages }: { messages: Message[] }) {
       }}
       onSummaryGenerated={(summary) => {
         if (summary.keyTopics) {
-          console.log('Topics:', summary.keyTopics)
+          logger.debug('Topics:', summary.keyTopics)
         }
         if (summary.actionItems) {
-          console.log('Actions:', summary.actionItems)
+          logger.debug('Actions:', summary.actionItems)
         }
         if (summary.codeSnippets) {
-          console.log('Code:', summary.codeSnippets)
+          logger.debug('Code:', summary.codeSnippets)
         }
       }}
     />
@@ -274,7 +275,7 @@ function SummariesWithHistory({ messages }: { messages: Message[] }) {
       showHistory={true}  // Show all generated summaries
       onSummaryGenerated={(summary) => {
         // Track summary history
-        console.log('Summary generated at:', new Date(summary.timestamp))
+        logger.debug('Summary generated at:', new Date(summary.timestamp))
       }}
     />
   )

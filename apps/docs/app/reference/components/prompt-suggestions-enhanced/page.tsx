@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -188,7 +189,7 @@ import type { Message } from '@clarity-chat/types'
 
 function MLRankedSuggestions({ messages }: { messages: Message[] }) {
   const handleSelect = (suggestion: { id: string; text: string; type: string }) => {
-    console.log('Selected:', suggestion.text)
+    logger.debug('Selected:', suggestion.text)
     // Handle suggestion selection
   }
 
@@ -274,7 +275,7 @@ function ABTestedSuggestions({ messages }: { messages: Message[] }) {
       }}
         onSelect={(suggestion) => {
           // Track which variant performs better
-          console.log('Variant:', abVariant, 'CTR:', stats.clickThroughRate)
+          logger.debug('Variant:', abVariant, 'CTR:', stats.clickThroughRate)
         }}
       />
     </>
@@ -295,7 +296,7 @@ function TrackedSuggestions({ messages }: { messages: Message[] }) {
   })
 
   React.useEffect(() => {
-    console.log('Stats:', {
+    logger.debug('Stats:', {
       clickThroughRate: stats.clickThroughRate,
       totalInteractions: stats.totalInteractions,
       averageConfidence: stats.averageConfidence,
@@ -332,7 +333,7 @@ function FallbackSuggestions({ messages }: { messages: Message[] }) {
       }}
       onSelect={(suggestion) => {
         // Gracefully degrades to rule-based ranking if ML fails
-        console.log('Selected:', suggestion.text)
+        logger.debug('Selected:', suggestion.text)
       }}
     />
   )

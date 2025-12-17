@@ -55,7 +55,8 @@
     "react": "^19.2.0",
     "table": "^6.8.1",
     "terminal-link": "^3.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@clarity-chat/utils": "file:../utils"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",

@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -113,7 +114,7 @@ export const Default: Story = {
     messages: mockMessages,
     isLoading: false,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
 }
@@ -123,7 +124,7 @@ export const Loading: Story = {
     messages: mockMessages,
     isLoading: true,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
 }
@@ -133,7 +134,7 @@ export const EmptyChat: Story = {
     messages: [],
     isLoading: false,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
 }
@@ -164,7 +165,7 @@ export const LongConversation: Story = {
     ],
     isLoading: false,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
 }
@@ -224,7 +225,7 @@ export const WithError: Story = {
     isLoading: false,
     error: 'Failed to send message. Please try again.',
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
   parameters: {
@@ -251,7 +252,7 @@ export const Streaming: Story = {
     ],
     isLoading: true,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
   parameters: {
@@ -659,7 +660,7 @@ export const MobileView: Story = {
     messages: mockMessages,
     isLoading: false,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
   decorators: [
@@ -696,7 +697,7 @@ export const CustomEmptyState: Story = {
     messages: [],
     isLoading: false,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
     emptyState: (
       <div
@@ -828,7 +829,7 @@ You can use multiple \`useState\` calls for different pieces of state.`,
     ],
     isLoading: false,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
   parameters: {
@@ -876,7 +877,7 @@ export const WithMarkdownTable: Story = {
     ],
     isLoading: false,
     onSendMessage: (content: string) => {
-      console.log('Message sent:', content)
+      SecureLogger.debug('Message sent:', content)
     },
   },
   parameters: {

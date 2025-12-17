@@ -60,7 +60,7 @@ export type FeedbackType = 'up' | 'down'
  *
  * // Accessing custom properties requires type narrowing
  * if (typeof metadata.customField === 'string') {
- *   console.log(metadata.customField)
+ *   logger.debug(metadata.customField)
  * }
  * ```
  */

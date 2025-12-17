@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -143,7 +144,7 @@ function SecureMessageActions({ message }: { message: Message }) {
       showConfetti={false}
       hasError={false}
       onFeedback={(type) => {
-        console.log('Feedback:', type)
+        logger.debug('Feedback:', type)
       }}
       show={true}
       securityInfo={{
@@ -153,7 +154,7 @@ function SecureMessageActions({ message }: { message: Message }) {
         sanitized: false,
       }}
       onReport={(reason) => {
-        console.log('Reported:', reason)
+        logger.debug('Reported:', reason)
         // Send report to server
       }}
     />

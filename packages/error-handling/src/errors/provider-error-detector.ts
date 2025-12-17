@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Provider error detection with confidence scoring
  *
@@ -425,7 +426,7 @@ export function logDetectionResult(
   result: DetectionResult
 ): void {
   if (result.confidence === 'low') {
-    console.warn(
+    logger.warn(
       `[ProviderErrorDetector] Low confidence detection for ${provider} (${statusCode}):`,
       {
         code: result.code,

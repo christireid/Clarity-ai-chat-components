@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -78,8 +79,8 @@ function App() {
     shortcutDisplay, // "⌘K" on Mac, "Ctrl+K" on Windows
   } = useCommandPalette({
     shortcut: 'mod+k', // 'mod' = Cmd on Mac, Ctrl on Windows
-    onOpen: () => console.log('Command palette opened'),
-    onClose: () => console.log('Command palette closed'),
+    onOpen: () => logger.debug('Command palette opened'),
+    onClose: () => logger.debug('Command palette closed'),
   })
 
   return (

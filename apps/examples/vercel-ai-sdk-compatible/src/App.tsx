@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Vercel AI SDK Compatible Example
  *
@@ -25,10 +26,10 @@ function ChatExample() {
       api: '/api/chat',
       initialMessages: [],
       onFinish: (message) => {
-        console.log('Message finished:', message)
+        SecureLogger.debug('Message finished:', message)
       },
       onError: (error) => {
-        console.error('Chat error:', error)
+        SecureLogger.error('Chat error:', error)
       },
     })
 
@@ -91,7 +92,7 @@ function CompletionExample() {
   const { completion, complete, isLoading, stop } = useCompletion({
     api: '/api/completion',
     onFinish: (prompt, completion) => {
-      console.log('Completion finished:', { prompt, completion })
+      SecureLogger.debug('Completion finished:', { prompt, completion })
     },
   })
 
@@ -154,10 +155,10 @@ function AssistantExample() {
     api: '/api/assistant',
     assistantId: 'example-assistant',
     onToolCall: (toolCall) => {
-      console.log('Tool called:', toolCall)
+      SecureLogger.debug('Tool called:', toolCall)
     },
     onFinish: (message) => {
-      console.log('Assistant finished:', message)
+      SecureLogger.debug('Assistant finished:', message)
     },
   })
 

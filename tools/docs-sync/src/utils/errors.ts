@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Structured error handling for docs-sync
  * Provides actionable error messages and proper exit codes
@@ -157,7 +158,7 @@ export function handleError(error: string | Error | unknown): never {
 
   if (normalizedError instanceof DocsSyncError) {
     if (isJsonMode) {
-      console.error(
+      SecureLogger.error(
         JSON.stringify({
           error: normalizedError.message,
           code: normalizedError.code,
@@ -166,27 +167,27 @@ export function handleError(error: string | Error | unknown): never {
         })
       )
     } else {
-      console.error('')
-      console.error(
+      SecureLogger.error('')
+      SecureLogger.error(
         pc.bold(pc.red(`✖ ${normalizedError.name}: ${normalizedError.message}`))
       )
 
       if (normalizedError.suggestions.length > 0) {
-        console.error('')
-        console.error(pc.bold(pc.yellow('💡 Suggestions:')))
+        SecureLogger.error('')
+        SecureLogger.error(pc.bold(pc.yellow('💡 Suggestions:')))
         for (const suggestion of normalizedError.suggestions) {
-          console.error(pc.gray(`   • ${suggestion}`))
+          SecureLogger.error(pc.gray(`   • ${suggestion}`))
         }
       }
 
       if (normalizedError.docs) {
-        console.error('')
-        console.error(
+        SecureLogger.error('')
+        SecureLogger.error(
           pc.bold(pc.blue('📚 Documentation: ')) +
             pc.underline(pc.cyan(normalizedError.docs))
         )
       }
-      console.error('')
+      SecureLogger.error('')
     }
 
     process.exit(normalizedError.code)
@@ -194,25 +195,25 @@ export function handleError(error: string | Error | unknown): never {
 
   // Generic error
   if (isJsonMode) {
-    console.error(
+    SecureLogger.error(
       JSON.stringify({
         error: normalizedError.message,
         stack: normalizedError.stack,
       })
     )
   } else {
-    console.error('')
-    console.error(pc.bold(pc.red(`✖ Error: ${normalizedError.message}`)))
+    SecureLogger.error('')
+    SecureLogger.error(pc.bold(pc.red(`✖ Error: ${normalizedError.message}`)))
 
     if (process.env.DEBUG || process.env.VERBOSE) {
       if (normalizedError.stack) {
-        console.error('')
-        console.error(pc.gray(normalizedError.stack))
+        SecureLogger.error('')
+        SecureLogger.error(pc.gray(normalizedError.stack))
       }
     } else {
-      console.error(pc.gray('   Run with --verbose for more details'))
+      SecureLogger.error(pc.gray('   Run with --verbose for more details'))
     }
-    console.error('')
+    SecureLogger.error('')
   }
 
   process.exit(ExitCode.GENERAL_ERROR)

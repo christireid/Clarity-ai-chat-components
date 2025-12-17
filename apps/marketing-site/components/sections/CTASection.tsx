@@ -6,6 +6,7 @@ import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { Copy, Check, ArrowRight, Zap } from 'lucide-react'
 import { durations } from '@/lib/constants'
+import NewsletterSignup from '../ui/NewsletterSignup'
 
 export default function CTASection() {
   const ref = useRef(null)
@@ -145,6 +146,15 @@ export default function CTASection() {
             <div className="w-2 h-2 rounded-full bg-green-500" />
             <span>30-day money back</span>
           </div>
+        </motion.div>
+        {/* Newsletter Signup */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: durations.slow, delay: 0.6 }}
+          className="mt-20 max-w-3xl mx-auto text-left"
+        >
+            <NewsletterSignup />
         </motion.div>
       </div>
     </section>

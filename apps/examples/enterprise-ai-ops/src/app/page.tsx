@@ -1,4 +1,5 @@
 'use client'
+import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { useState } from 'react'
 import {
@@ -121,7 +122,7 @@ export default function EnterpriseAIOps() {
                     details: { category: 'violence' },
                   },
                 ]}
-                onReview={(id) => console.log('Review', id)}
+                onReview={(id) => SecureLogger.debug('Review', id)}
               />
               <SafetyStatusCard
                 status={{
@@ -160,7 +161,7 @@ export default function EnterpriseAIOps() {
                   timestamp: new Date(),
                 },
               ]}
-              onSelectEvaluation={(id) => console.log('Select', id)}
+              onSelectEvaluation={(id) => SecureLogger.debug('Select', id)}
             />
           )}
 
@@ -182,7 +183,7 @@ export default function EnterpriseAIOps() {
                   status: 'failed',
                 },
               ]}
-              onRunTest={(id) => console.log('Run test', id)}
+              onRunTest={(id) => SecureLogger.debug('Run test', id)}
             />
           )}
 

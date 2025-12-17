@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -155,8 +156,8 @@ function ChatWithMentions() {
         setMentions(newMentions)
       }}
       onSubmit={() => {
-        console.log('Message:', value)
-        console.log('Mentions:', mentions)
+        logger.debug('Message:', value)
+        logger.debug('Mentions:', mentions)
         // Send message
       }}
       placeholder="Type @ to mention someone"
@@ -222,11 +223,11 @@ function MentionsView({ mentions, messages, users }: { mentions: Mention[], mess
       users={users}
       currentUserId="user-1"
       onMentionClick={(mention) => {
-        console.log('Clicked mention:', mention)
+        logger.debug('Clicked mention:', mention)
         // Navigate to message
       }}
       onMarkAsRead={(mentionId) => {
-        console.log('Marked as read:', mentionId)
+        logger.debug('Marked as read:', mentionId)
         // Update mention status
       }}
     />

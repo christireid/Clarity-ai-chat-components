@@ -99,7 +99,7 @@ export const DOCS_STARTER_PROMPTS: PromptSuggestion[] = [
     id: 'hooks',
     text: 'What hooks are available for chat functionality?',
     label: 'Hooks',
-    description: 'Discover 35+ custom hooks for advanced features',
+    description: 'Discover 140+ custom hooks for advanced features',
     icon: <Code2 className="w-4 h-4" />,
     type: 'starter',
     category: 'Reference',

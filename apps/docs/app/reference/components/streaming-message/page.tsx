@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
@@ -59,7 +60,7 @@ function StreamingWithToolsDemo() {
   ])
 
   const handleToolApprove = useCallback((tool: ToolCall) => {
-    console.log('Tool approved:', tool)
+    logger.debug('Tool approved:', tool)
   }, [])
 
   return (
@@ -300,7 +301,7 @@ function StreamingWithTools() {
 
   const handleToolApprove = (tool: ToolCall) => {
     // Execute the tool
-    console.log('Approved:', tool)
+    logger.debug('Approved:', tool)
   }
 
   return (
@@ -310,7 +311,7 @@ function StreamingWithTools() {
       toolCalls={toolCalls}
       showTools
       onToolApprove={handleToolApprove}
-      onToolReject={(tool) => console.log('Rejected:', tool)}
+      onToolReject={(tool) => logger.debug('Rejected:', tool)}
     />
   )
 }`}
@@ -497,7 +498,7 @@ function CompleteStreamingExample() {
 
   const handleToolApprove = useCallback((tool: ToolCall) => {
     // Execute tool
-    console.log('Executing tool:', tool)
+    logger.debug('Executing tool:', tool)
   }, [])
 
   return (
@@ -511,7 +512,7 @@ function CompleteStreamingExample() {
       showCitations
       showTools
       onToolApprove={handleToolApprove}
-      onToolReject={(tool) => console.log('Rejected:', tool)}
+      onToolReject={(tool) => logger.debug('Rejected:', tool)}
     />
   )
 }`}

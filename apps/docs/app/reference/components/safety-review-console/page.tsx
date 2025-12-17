@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -106,14 +107,14 @@ function SafetyReview({ content }: { content: string }) {
       content={content}
       highlights={highlights}
       onRedact={(highlight) => {
-        console.log('Redacting:', highlight)
+        logger.debug('Redacting:', highlight)
         // Redact content
       }}
       onApprove={() => {
-        console.log('Content approved')
+        logger.debug('Content approved')
       }}
       onReject={() => {
-        console.log('Content rejected')
+        logger.debug('Content rejected')
       }}
     />
   )

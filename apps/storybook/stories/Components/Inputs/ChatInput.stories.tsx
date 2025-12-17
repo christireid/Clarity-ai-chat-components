@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatInput } from '@clarity-chat/react'
 import { useState } from 'react'
@@ -80,7 +81,7 @@ export const Default: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
         />
@@ -113,7 +114,7 @@ export const WithCharacterLimit: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
           maxLength={200}
@@ -136,7 +137,7 @@ export const CustomPlaceholder: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
           placeholder="Ask me anything..."
@@ -164,7 +165,7 @@ export const CharacterCounterStates: Story = {
             value={value1}
             onChange={setValue1}
             onSubmit={(val) => {
-              console.log('Submitted:', val)
+              SecureLogger.debug('Submitted:', val)
               setValue1('')
             }}
             maxLength={100}
@@ -177,7 +178,7 @@ export const CharacterCounterStates: Story = {
             value={value2}
             onChange={setValue2}
             onSubmit={(val) => {
-              console.log('Submitted:', val)
+              SecureLogger.debug('Submitted:', val)
               setValue2('')
             }}
             maxLength={100}
@@ -190,7 +191,7 @@ export const CharacterCounterStates: Story = {
             value={value3}
             onChange={setValue3}
             onSubmit={(val) => {
-              console.log('Submitted:', val)
+              SecureLogger.debug('Submitted:', val)
               setValue3('')
             }}
             maxLength={100}
@@ -214,7 +215,7 @@ export const CustomWarningThreshold: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
           maxLength={100}
@@ -238,7 +239,7 @@ export const NoCharacterCounter: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
           maxLength={200}
@@ -263,7 +264,7 @@ export const SendButtonStates: Story = {
     const [shouldFail, setShouldFail] = useState(false)
     
     const handleSubmit = async (val: string) => {
-      console.log('Submitting:', val)
+      SecureLogger.debug('Submitting:', val)
       await new Promise((resolve, reject) => {
         setTimeout(() => {
           if (shouldFail) {
@@ -338,7 +339,7 @@ export const FocusGlowAnimation: Story = {
             value={value}
             onChange={setValue}
             onSubmit={(val) => {
-              console.log('Submitted:', val)
+              SecureLogger.debug('Submitted:', val)
               setValue('')
             }}
             glowOnFocus={true}
@@ -354,7 +355,7 @@ export const FocusGlowAnimation: Story = {
             value={value}
             onChange={setValue}
             onSubmit={(val) => {
-              console.log('Submitted:', val)
+              SecureLogger.debug('Submitted:', val)
               setValue('')
             }}
             glowOnFocus={false}
@@ -377,7 +378,7 @@ export const HeightAnimation: Story = {
             value={value}
             onChange={setValue}
             onSubmit={(val) => {
-              console.log('Submitted:', val)
+              SecureLogger.debug('Submitted:', val)
               setValue('')
             }}
             animateHeight={true}
@@ -393,7 +394,7 @@ export const HeightAnimation: Story = {
             value={value}
             onChange={setValue}
             onSubmit={(val) => {
-              console.log('Submitted:', val)
+              SecureLogger.debug('Submitted:', val)
               setValue('')
             }}
             animateHeight={false}
@@ -470,7 +471,7 @@ export const SupportTicket: Story = {
     const [submitted, setSubmitted] = useState(false)
     
     const handleSubmit = async (val: string) => {
-      console.log('Ticket submitted:', val)
+      SecureLogger.debug('Ticket submitted:', val)
       await new Promise((resolve) => setTimeout(resolve, 2000))
       setValue('')
       setSubmitted(true)
@@ -564,7 +565,7 @@ export const Disabled: Story = {
         <ChatInput
           value={value}
           onChange={setValue}
-          onSubmit={(val) => console.log('Submitted:', val)}
+          onSubmit={(val) => SecureLogger.debug('Submitted:', val)}
           disabled={true}
         />
       </div>
@@ -596,7 +597,7 @@ export const LongContent: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
         />
@@ -618,7 +619,7 @@ export const VeryShortLimit: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
           maxLength={50}
@@ -646,7 +647,7 @@ export const Accessibility: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
           maxLength={200}
@@ -693,7 +694,7 @@ export const Playground: Story = {
           value={value}
           onChange={setValue}
           onSubmit={(val) => {
-            console.log('Submitted:', val)
+            SecureLogger.debug('Submitted:', val)
             setValue('')
           }}
         />

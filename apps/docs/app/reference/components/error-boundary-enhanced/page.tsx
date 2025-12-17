@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -36,7 +37,7 @@ export default function ErrorBoundaryEnhancedPage() {
   severity="error"
   errorContext={{ userId: '123', page: 'chat' }}
   onError={(error, errorInfo) => {
-    console.error('Error caught:', error)
+    logger.logger.error('Error caught:', error)
   }}
 >
   <YourApp />

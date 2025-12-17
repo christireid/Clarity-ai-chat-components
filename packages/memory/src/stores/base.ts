@@ -11,6 +11,8 @@ export interface SearchOptions {
   types?: MemoryType[]
   filters?: Record<string, any>
   tags?: string[]
+  scopes?: string[]  // Add scopes to top-level options
+  userId?: string   // Add userId to top-level options
 }
 
 export interface VectorStore {

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Feedback API Endpoint
  *
@@ -6,6 +7,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getFeedbackStore } from '@/lib/ai/feedbackStore'
+
+const logger = getLogger('feedback')
+
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
@@ -58,14 +62,14 @@ export async function POST(request: NextRequest) {
       metadata: body.metadata || {},
     })
 
-    console.log(`✅ Feedback received: ${body.type} for message ${body.messageId}`)
+    logger.debug(`✅ Feedback received: ${body.type} for message ${body.messageId}`)
 
     return NextResponse.json({
       success: true,
       message: 'Feedback received. Thank you!',
     })
   } catch (error) {
-    console.error('Feedback error:', error)
+    logger.error('Feedback error:', error)
 
     return NextResponse.json(
       {
@@ -108,7 +112,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    console.error('Stats error:', error)
+    logger.error('Stats error:', error)
 
     return NextResponse.json(
       {

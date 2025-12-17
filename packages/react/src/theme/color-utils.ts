@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Clarity Chat - Color Utilities
  *
@@ -195,7 +196,7 @@ const FALLBACK_HSL = '0 0% 50%'
 export function toHSLString(color: string): string {
   if (!color || typeof color !== 'string') {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn(
+      logger.warn(
         `[Clarity Chat] Invalid color value: ${color}. Using fallback.`
       )
     }
@@ -211,7 +212,7 @@ export function toHSLString(color: string): string {
 
   // Warn about invalid color in development
   if (process.env.NODE_ENV !== 'production') {
-    console.warn(
+    logger.warn(
       `[Clarity Chat] Unrecognized color format: "${color}". ` +
         `Expected hex (#RRGGBB) or HSL (H S% L%). Using fallback.`
     )

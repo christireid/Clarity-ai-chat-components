@@ -37,11 +37,11 @@
 // CORE COMPONENTS - Drop-in chat UI
 // ============================================================================
 
-export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
-export { ChatWindow, type ChatWindowProps } from './components/chat-window'
-export { ChatInput, type ChatInputProps } from './components/chat-input'
-export { MessageList, type MessageListProps } from './components/message-list'
-export { Message, type MessageProps } from './components/message'
+export { ClarityChat, type ClarityChatProps } from './components/chat/clarity-chat'
+export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
+export { ChatInput, type ChatInputProps } from './components/chat/chat-input'
+export { default as MessageList, type MessageListProps } from './components/chat/virtualized-message-list'
+export { Message, type MessageProps } from './components/message/message'
 
 // ============================================================================
 // CORE HOOKS - Essential chat state management
@@ -51,17 +51,17 @@ export {
   useChat,
   type UseChatOptions,
   type UseChatReturn,
-} from './hooks/use-chat-unified'
+} from './hooks/chat/use-chat-unified'
 export {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './hooks/use-clarity-chat'
+} from './hooks/chat/use-clarity-chat'
 export {
   useChatHandlers,
   type UseChatHandlersOptions,
   type ChatHandlers,
-} from './hooks/use-chat-handlers'
+} from './hooks/chat/use-chat-handlers'
 
 // ============================================================================
 // CORE TYPES - Essential type definitions
@@ -71,7 +71,7 @@ export type {
   CoreMessage,
   CoreMessageContent,
   MessageRole,
-} from './hooks/use-chat-enhanced'
+} from './hooks/chat/use-chat-enhanced'
 export type { Message as MessageType, AIStatus } from '@clarity-chat/types'
 
 // ============================================================================

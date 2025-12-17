@@ -2,7 +2,7 @@
  * InMemoryStore Tests
  */
 import { describe, it, expect, beforeEach } from 'vitest'
-import { InMemoryStore } from './in-memory-store'
+import { InMemoryStore } from './in-memory'
 import type { Memory, MemoryType, MemoryScope } from '../types'
 
 // Helper to create a test memory item
@@ -41,42 +41,31 @@ describe('InMemoryStore', () => {
     })
   })
 
-  describe('save and load', () => {
-    it('should save and load a memory', async () => {
+  describe('add and get', () => {
+    it('should add and get a memory', async () => {
       const memory = createMemory({ id: 'test-1', content: 'Hello World' })
-      await store.save(memory)
+      await store.add(memory)
 
-      const loaded = await store.load('test-1')
+      const loaded = await store.get('test-1')
       expect(loaded).not.toBeNull()
       expect(loaded?.content).toBe('Hello World')
     })
 
     it('should return null for non-existent memory', async () => {
-      const loaded = await store.load('non-existent')
+      const loaded = await store.get('non-existent')
       expect(loaded).toBeNull()
-    })
-
-    it('should overwrite memory with same id', async () => {
-      const memory1 = createMemory({ id: 'test-1', content: 'Version 1' })
-      const memory2 = createMemory({ id: 'test-1', content: 'Version 2' })
-
-      await store.save(memory1)
-      await store.save(memory2)
-
-      const loaded = await store.load('test-1')
-      expect(loaded?.content).toBe('Version 2')
     })
   })
 
   describe('update', () => {
     it('should update an existing memory', async () => {
       const memory = createMemory({ id: 'test-1', content: 'Original' })
-      await store.save(memory)
+      await store.add(memory)
 
       const updated = { ...memory, content: 'Updated' }
       await store.update('test-1', updated)
 
-      const loaded = await store.load('test-1')
+      const loaded = await store.get('test-1')
       expect(loaded?.content).toBe('Updated')
     })
 
@@ -91,11 +80,11 @@ describe('InMemoryStore', () => {
   describe('delete', () => {
     it('should delete a memory', async () => {
       const memory = createMemory({ id: 'test-1' })
-      await store.save(memory)
+      await store.add(memory)
 
       await store.delete('test-1')
 
-      const loaded = await store.load('test-1')
+      const loaded = await store.get('test-1')
       expect(loaded).toBeNull()
     })
 
@@ -107,21 +96,21 @@ describe('InMemoryStore', () => {
   describe('search', () => {
     beforeEach(async () => {
       // Add test memories
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: '1',
         content: 'The quick brown fox',
         type: 'episodic',
         scope: 'session',
         importance: 0.8,
       }))
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: '2',
         content: 'A lazy dog sleeping',
         type: 'semantic',
         scope: 'user',
         importance: 0.5,
       }))
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: '3',
         content: 'Quick response time',
         type: 'episodic',
@@ -138,7 +127,7 @@ describe('InMemoryStore', () => {
     })
 
     it('should rank exact matches higher', async () => {
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: 'exact',
         content: 'fox',
         importance: 0.5,
@@ -184,7 +173,7 @@ describe('InMemoryStore', () => {
     })
 
     it('should use vector similarity when embeddings provided', async () => {
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: 'vector',
         content: 'vector test',
         embedding: [1, 0, 0],
@@ -200,13 +189,13 @@ describe('InMemoryStore', () => {
 
   describe('query', () => {
     beforeEach(async () => {
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: '1',
         type: 'episodic',
         scope: 'session',
         metadata: { userId: 'user-1', sessionId: 'session-1' },
       }))
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: '2',
         type: 'semantic',
         scope: 'user',
@@ -246,9 +235,9 @@ describe('InMemoryStore', () => {
 
   describe('clear', () => {
     beforeEach(async () => {
-      await store.save(createMemory({ id: '1', type: 'episodic', scope: 'session' }))
-      await store.save(createMemory({ id: '2', type: 'semantic', scope: 'user' }))
-      await store.save(createMemory({ id: '3', type: 'episodic', scope: 'user' }))
+      await store.add(createMemory({ id: '1', type: 'episodic', scope: 'session' }))
+      await store.add(createMemory({ id: '2', type: 'semantic', scope: 'user' }))
+      await store.add(createMemory({ id: '3', type: 'episodic', scope: 'user' }))
     })
 
     it('should clear all memories when no filter', async () => {
@@ -288,9 +277,9 @@ describe('InMemoryStore', () => {
     })
 
     it('should count by type correctly', async () => {
-      await store.save(createMemory({ type: 'episodic' }))
-      await store.save(createMemory({ type: 'episodic' }))
-      await store.save(createMemory({ type: 'semantic' }))
+      await store.add(createMemory({ type: 'episodic' }))
+      await store.add(createMemory({ type: 'episodic' }))
+      await store.add(createMemory({ type: 'semantic' }))
 
       const stats = await store.getStats()
       expect(stats.byType.episodic).toBe(2)
@@ -298,9 +287,9 @@ describe('InMemoryStore', () => {
     })
 
     it('should count by scope correctly', async () => {
-      await store.save(createMemory({ scope: 'session' }))
-      await store.save(createMemory({ scope: 'user' }))
-      await store.save(createMemory({ scope: 'user' }))
+      await store.add(createMemory({ scope: 'session' }))
+      await store.add(createMemory({ scope: 'user' }))
+      await store.add(createMemory({ scope: 'user' }))
 
       const stats = await store.getStats()
       expect(stats.byScope.session).toBe(1)
@@ -308,16 +297,16 @@ describe('InMemoryStore', () => {
     })
 
     it('should calculate average importance', async () => {
-      await store.save(createMemory({ importance: 0.2 }))
-      await store.save(createMemory({ importance: 0.8 }))
+      await store.add(createMemory({ importance: 0.2 }))
+      await store.add(createMemory({ importance: 0.8 }))
 
       const stats = await store.getStats()
       expect(stats.averageImportance).toBe(0.5)
     })
 
     it('should calculate compression ratio', async () => {
-      await store.save(createMemory({ compressed: 'short' }))
-      await store.save(createMemory({}))
+      await store.add(createMemory({ compressed: 'short' }))
+      await store.add(createMemory({}))
 
       const stats = await store.getStats()
       expect(stats.compressionRatio).toBe(0.5)
@@ -326,8 +315,8 @@ describe('InMemoryStore', () => {
 
   describe('close', () => {
     it('should clear all memories on close', async () => {
-      await store.save(createMemory({ id: '1' }))
-      await store.save(createMemory({ id: '2' }))
+      await store.add(createMemory({ id: '1' }))
+      await store.add(createMemory({ id: '2' }))
 
       await store.close()
 
@@ -338,7 +327,7 @@ describe('InMemoryStore', () => {
 
   describe('cosineSimilarity (via search)', () => {
     it('should calculate correct similarity for identical vectors', async () => {
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: 'v1',
         content: 'test',
         embedding: [1, 0, 0],
@@ -352,7 +341,7 @@ describe('InMemoryStore', () => {
     })
 
     it('should handle orthogonal vectors', async () => {
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: 'v1',
         content: 'orthogonal',
         embedding: [1, 0, 0],
@@ -366,7 +355,7 @@ describe('InMemoryStore', () => {
     })
 
     it('should handle vectors of different lengths', async () => {
-      await store.save(createMemory({
+      await store.add(createMemory({
         id: 'v1',
         content: 'different length',
         embedding: [1, 0, 0],

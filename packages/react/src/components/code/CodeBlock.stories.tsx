@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Meta, StoryObj } from '@storybook/react'
 import { CodeBlock } from './CodeBlock'
 import { CODE_THEMES, getDarkThemes, getLightThemes } from './themes'
@@ -75,7 +76,7 @@ const user: User = {
   createdAt: new Date(),
 };
 
-console.log(greetUser(user));`
+logger.debug(greetUser(user));`
 
 const pythonCode = `import asyncio
 from dataclasses import dataclass
@@ -179,8 +180,8 @@ export const WithHighlightedLines: Story = {
 export const DiffView: Story = {
   args: {
     children: `function greet(name) {
--  console.log('Hello ' + name);
-+  console.log(\`Hello, \${name}!\`);
+-  logger.debug('Hello ' + name);
++  logger.debug(\`Hello, \${name}!\`);
    return name;
 }`,
     language: 'javascript',

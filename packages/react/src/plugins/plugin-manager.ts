@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Plugin Manager
  *
@@ -130,7 +131,7 @@ export class PluginManager implements PluginManagerInterface {
             results.push(result as T)
           }
         } catch (error) {
-          console.error(`Plugin ${config.plugin.name} hook ${hookName} failed:`, error)
+          logger.logger.error(`Plugin ${config.plugin.name} hook ${hookName} failed:`, error)
         }
       }
     }
@@ -148,7 +149,7 @@ export class PluginManager implements PluginManagerInterface {
         try {
           handler(data)
         } catch (error) {
-          console.error(`Event handler for ${event} failed:`, error)
+          logger.logger.error(`Event handler for ${event} failed:`, error)
         }
       })
     }
@@ -193,7 +194,7 @@ export class PluginManager implements PluginManagerInterface {
       state: this.sharedState,
       emit: (event, data) => this.emit(event, data),
       log: (message, level = 'info') => {
-        console.log(`[Plugin:${plugin.name}] [${level}]`, message)
+        logger.debug(`[Plugin:${plugin.name}] [${level}]`, message)
       },
     }
 

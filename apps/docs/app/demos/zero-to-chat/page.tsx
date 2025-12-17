@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -44,7 +45,7 @@ export default function App() {
       theme="auto"
       showTimestamps
       enableMarkdown
-      onMessageSent={(msg) => console.log('Sent:', msg)}
+      onMessageSent={(msg) => logger.debug('Sent:', msg)}
     />
   )
 }`
@@ -264,7 +265,7 @@ export default function ZeroToChatDemo() {
                           <span className="text-cyan-300">enableMarkdown</span>
                           {'\n      '}
                           <span className="text-cyan-300">onMessageSent</span>=
-                          <span className="text-yellow-300">{'{(msg) => console.log(msg)}'}</span>
+                          <span className="text-yellow-300">{'{(msg) => logger.debug(msg)}'}</span>
                           {'\n    '}
                           <span className="text-blue-400">{'/>'}</span>
                           {'\n  '}

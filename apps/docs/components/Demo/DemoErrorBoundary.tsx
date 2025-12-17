@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import React, { Component, ErrorInfo, ReactNode } from 'react'
@@ -37,8 +38,8 @@ export class DemoErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.error('Demo Error:', error)
-      console.error('Component Stack:', errorInfo.componentStack)
+      logger.logger.error('Demo Error:', error)
+      logger.logger.error('Component Stack:', errorInfo.componentStack)
     }
 
     // Call optional error handler

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -192,7 +193,7 @@ function Example() {
   const { messages, append, status, toolInvocations } = useAssistant({
     api: '/api/assistant',
     onToolCall: async (invocation) => {
-      console.log('Tool called:', invocation.toolName, invocation.args)
+      logger.debug('Tool called:', invocation.toolName, invocation.args)
       // Return tool result
       return { result: 'Tool executed successfully' }
     },
@@ -229,7 +230,10 @@ function Assistant() {
         case 'get_weather':
           return await getWeather(invocation.args.location)
         case 'calculate':
-          return { result: eval(invocation.args.expression) }
+          // Safe math evaluation - sanitize input first
+          const expr = String(invocation.args.expression).replace(/[^0-9+\\-*/().\\s]/g, '')
+          const result = new Function(\`"use strict"; return (\${expr})\`)()
+          return { result: typeof result === 'number' ? result : 'Invalid' }
         default:
           throw new Error(\`Unknown tool: \${invocation.toolName}\`)
       }
@@ -257,7 +261,7 @@ function Assistant() {
     threadId,
     onFinish: (message) => {
       // Thread ID is automatically managed
-      console.log('Assistant finished:', message)
+      logger.debug('Assistant finished:', message)
     },
   })
 

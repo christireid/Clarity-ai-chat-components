@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -100,7 +101,7 @@ export function useControllableState<T>(
 
     if (isDev) {
       if (isControlledRef.current !== isControlled) {
-        console.warn(
+        logger.warn(
           `[useControllableState] Component is switching from ${
             isControlledRef.current ? 'controlled' : 'uncontrolled'
           } to ${

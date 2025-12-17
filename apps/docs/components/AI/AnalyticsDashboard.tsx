@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -47,7 +48,7 @@ export function AnalyticsDashboard({
       setSummary(data.data)
       setLastUpdated(new Date())
     } catch (err) {
-      console.error('Failed to fetch analytics:', err)
+      logger.logger.error('Failed to fetch analytics:', err)
       setError(err instanceof Error ? err.message : 'Failed to load analytics')
     } finally {
       setLoading(false)

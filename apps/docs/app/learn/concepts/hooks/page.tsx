@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Metadata } from 'next'
@@ -20,7 +21,7 @@ export default function HooksConceptPage() {
             React Hooks
           </h1>
           <p className="text-xl text-text-secondary leading-relaxed">
-            Clarity Chat provides 35+ React hooks to handle chat functionality,
+            Clarity Chat provides 140+ React hooks to handle chat functionality,
             state management, streaming, and more. Hooks provide a clean,
             composable API for building chat interfaces.
           </p>
@@ -102,7 +103,7 @@ function StreamingChat() {
   } = useStreamingChat({
     apiEndpoint: '/api/chat/stream',
     onError: (error) => {
-      console.error('Streaming error:', error)
+      logger.logger.error('Streaming error:', error)
     },
   })
 

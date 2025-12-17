@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * AI Safety Utilities
  *
@@ -30,7 +31,7 @@
  * const result = await safety.check(userInput)
  *
  * if (!result.safe) {
- *   console.log('Issues:', result.issues)
+ *   logger.debug('Issues:', result.issues)
  *   // Handle unsafe content
  * }
  * ```

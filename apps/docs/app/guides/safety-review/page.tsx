@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -103,7 +104,7 @@ function PromptInjectionDetection({ content }: { content: string }) {
       highlights={highlights}
       onReject={() => {
         // Reject unsafe content
-        console.log('Content rejected due to prompt injection')
+        logger.debug('Content rejected due to prompt injection')
       }}
     />
   )
@@ -147,7 +148,7 @@ function detectPromptInjection(content: string) {
       content={content}
       highlights={highlights}
       onReject={() => {
-        console.log('Content rejected due to jailbreak attempt')
+        logger.debug('Content rejected due to jailbreak attempt')
       }}
     />
   )
@@ -193,10 +194,10 @@ function ContentModeration({ content }: { content: string }) {
       content={content}
       highlights={highlights}
       onApprove={() => {
-        console.log('Content approved')
+        logger.debug('Content approved')
       }}
       onReject={() => {
-        console.log('Content rejected')
+        logger.debug('Content rejected')
       }}
       onRedact={(highlight) => {
         return redactContent(content, highlight)

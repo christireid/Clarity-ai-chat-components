@@ -1,4 +1,5 @@
 #!/usr/bin/env npx ts-node
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Batch Add FeedbackWidget to Hook Pages
  *
@@ -148,9 +149,9 @@ function addFeedbackWidget(filePath: string): UpdateResult {
 }
 
 function main() {
-  console.log('========================================')
-  console.log('Adding FeedbackWidget to Hook Pages')
-  console.log('========================================\n')
+  logger.debug('========================================')
+  logger.debug('Adding FeedbackWidget to Hook Pages')
+  logger.debug('========================================\n')
 
   const results: UpdateResult[] = []
 
@@ -174,26 +175,26 @@ function main() {
   const errors = results.filter((r) => r.status === 'error')
 
   if (updated.length > 0) {
-    console.log('UPDATED:')
-    updated.forEach((r) => console.log(`  ✅ ${r.file}`))
-    console.log()
+    logger.debug('UPDATED:')
+    updated.forEach((r) => logger.debug(`  ✅ ${r.file}`))
+    logger.debug()
   }
 
   if (skipped.length > 0) {
-    console.log('SKIPPED:')
-    skipped.forEach((r) => console.log(`  ⏭️  ${r.file}: ${r.message}`))
-    console.log()
+    logger.debug('SKIPPED:')
+    skipped.forEach((r) => logger.debug(`  ⏭️  ${r.file}: ${r.message}`))
+    logger.debug()
   }
 
   if (errors.length > 0) {
-    console.log('ERRORS:')
-    errors.forEach((r) => console.log(`  ❌ ${r.file}: ${r.message}`))
-    console.log()
+    logger.debug('ERRORS:')
+    errors.forEach((r) => logger.debug(`  ❌ ${r.file}: ${r.message}`))
+    logger.debug()
   }
 
-  console.log('========================================')
-  console.log(`Summary: ${updated.length} updated, ${skipped.length} skipped, ${errors.length} errors`)
-  console.log('========================================')
+  logger.debug('========================================')
+  logger.debug(`Summary: ${updated.length} updated, ${skipped.length} skipped, ${errors.length} errors`)
+  logger.debug('========================================')
 
   if (errors.length > 0) {
     process.exit(1)

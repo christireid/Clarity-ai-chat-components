@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -70,7 +71,7 @@ function AvailabilityView() {
     const end = new Date('2025-01-20T17:00:00')
     
     const slots = await checkAvailability(start, end)
-    console.log('Availability:', slots)
+    logger.debug('Availability:', slots)
   }
 
   return (
@@ -102,9 +103,9 @@ function FreeSlotFinder() {
     const freeSlots = await findFreeSlots(start, end, duration)
     
     if (freeSlots.length > 0) {
-      console.log('Available slots:', freeSlots)
+      logger.debug('Available slots:', freeSlots)
     } else {
-      console.log('No free slots found')
+      logger.debug('No free slots found')
     }
   }
 
@@ -130,7 +131,7 @@ function MeetingTimeSuggestions() {
     
     const suggestions = await suggestMeetingTime(start, end, duration, attendees)
     
-    console.log('Suggested times:', suggestions)
+    logger.debug('Suggested times:', suggestions)
   }
 
   return <button onClick={getSuggestions}>Get Suggestions</button>

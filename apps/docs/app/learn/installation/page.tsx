@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Metadata } from 'next'
@@ -309,7 +310,7 @@ function App() {
     <div style={{ height: '100vh' }}>
       <ChatWindow
         messages={[]}
-        onSendMessage={(text) => console.log(text)}
+        onSendMessage={(text) => logger.debug(text)}
       />
     </div>
   )

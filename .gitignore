@@ -3,9 +3,15 @@ node_modules/
 .pnp
 .pnp.js
 
+# Package manager lockfiles (project uses pnpm)
+package-lock.json
+yarn.lock
+
 # Testing
 coverage/
 .nyc_output/
+playwright-report/
+test-results/
 
 # Production builds
 dist/
@@ -101,6 +107,12 @@ apps/storybook/stories/**/*.js.map
 apps/storybook/stories/**/*.d.ts
 apps/storybook/stories/**/*.d.ts.map
 
+# Package story build artifacts
+packages/*/stories/**/*.js
+packages/*/stories/**/*.d.ts
+packages/*/stories/**/*.js.map
+packages/*/stories/**/*.d.ts.map
+
 # Playwright visual diffs (generated)
 tests/visual/__diff_output__/
 
@@ -108,9 +120,32 @@ tests/visual/__diff_output__/
 **/*.config.d.ts
 **/*.config.d.ts.map
 **/*.config.js.map
+**/vitest.config.js
 **/tsup.config.bundled_*.mjs
 **/tsup.config.bundled_*.d.mts
 **/tsup.config.bundled_*.d.mts.map
+
+# Vitest setup artifacts
+**/vitest.setup.d.ts
+**/vitest.setup.d.ts.map
+
+# Package examples build artifacts
+packages/*/examples/**/*.js
+packages/*/examples/**/*.d.ts
+packages/*/examples/**/*.js.map
+packages/*/examples/**/*.d.ts.map
+
+# Package test build artifacts
+packages/*/__tests__/**/*.js
+packages/*/__tests__/**/*.d.ts
+packages/*/__tests__/**/*.js.map
+packages/*/__tests__/**/*.d.ts.map
+
+# CLI template build artifacts (keep source .ts/.tsx only)
+packages/cli/templates/**/*.js
+packages/cli/templates/**/*.d.ts
+packages/cli/templates/**/*.js.map
+packages/cli/templates/**/*.d.ts.map
 
 # Backup files
 *.backup

@@ -67,7 +67,7 @@ export default async function Image() {
               fontWeight: 500,
             }}
           >
-            70+ Components · 35+ Hooks · 11 Themes
+            200+ Components · 140+ Hooks · 13 Themes
           </span>
         </div>
 

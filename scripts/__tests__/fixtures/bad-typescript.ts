@@ -1,3 +1,4 @@
+import { SecureLogger } from '@/lib/security/secureLogger';
 // Test fixture: TypeScript issues
 export function badFunction(data: any) {
   const result: any = data.value
@@ -5,5 +6,5 @@ export function badFunction(data: any) {
 }
 
 export const handler = (event: any) => {
-  console.log(event)
+  SecureLogger.debug(event)
 }

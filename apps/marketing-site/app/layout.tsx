@@ -1,5 +1,12 @@
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -66,23 +73,23 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+import MarketingAssistant from '@/components/marketing-assistant/ChatWidget'
+import SmoothScroll from '@/components/ui/SmoothScroll'
+import ScrollProgress from '@/components/ui/ScrollProgress'
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-      </head>
-      <body className="min-h-screen bg-surface-950 text-white antialiased">
-        {children}
+    <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen bg-surface-950 text-white antialiased font-sans">
+        <SmoothScroll>
+          <ScrollProgress />
+          {children}
+          <MarketingAssistant />
+        </SmoothScroll>
       </body>
     </html>
   )
