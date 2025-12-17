@@ -4,19 +4,26 @@
  * WCAG 2.1 AAA compliance utilities and components
  *
  * Features:
+ * - Core utilities (ARIA helpers, contrast checking, screen reader support)
+ * - WCAG validation and compliance checking
  * - Focus management (trap, restoration, roving tabindex)
- * - Keyboard shortcuts system (primary exports from hooks/keyboard)
- * - Screen reader utilities
- * - ARIA helpers
- * - Contrast checking
+ * - Keyboard shortcuts system
+ * - Accessibility automation
  */
 
-export * from './a11y-utils'
+// Core utilities - ARIA, contrast, reduced motion, screen reader helpers
+export * from './core-utilities'
+
+// WCAG compliance validation and auditing
+export * from './wcag-validator'
+
+// Focus management
 export * from './focus-management'
 
-// Note: KeyboardShortcut, useKeyboardShortcut, useKeyboardShortcuts are
-// exported from hooks/keyboard to avoid duplicate exports.
-// We only export the provider and default shortcuts here.
+// Accessibility automation framework
+export * from './accessibility-automation'
+
+// Keyboard shortcuts - provider and defaults only (hooks from hooks/keyboard)
 export {
   KeyboardShortcutsProvider,
   type KeyboardShortcutsProviderProps,
