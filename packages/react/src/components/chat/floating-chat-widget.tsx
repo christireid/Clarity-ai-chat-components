@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useClarityChat } from '../../hooks/use-clarity-chat/use-clarity-chat'
-import { springPresets } from '@clarity-chat/primitives'
+import { springPresets, animationPresets } from '@clarity-chat/primitives'
 import { MessageSquare, X } from 'lucide-react'
 import { LoadingIcon, CloseIcon } from '@clarity-chat/primitives/components/icons'
 import type { ClarityMemoryOptions, ClarityPromptOptimizationOptions } from '../../hooks/use-clarity-chat/types'
@@ -61,6 +61,17 @@ export function FloatingChatWidget({
     }
   }, [messages, isOpen, isLoading])
 
+  // Use standardized animation variants from primitives
+  // Using 'popover' preset for the chat window as it matches the behavior best
+  const windowVariants = animationPresets.tooltip.variants // Tooltip variants are simple fades/scales, good for chat
+  
+  // Custom variant combining slide-up with scale for a more "chat-like" entrance
+  const customChatVariants = {
+      initial: { opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' },
+      animate: { opacity: 1, scale: 1, y: 0 },
+      exit: { opacity: 0, scale: 0.9, y: 20 }
+  }
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
       
@@ -68,9 +79,10 @@ export function FloatingChatWidget({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            variants={customChatVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             transition={springPresets.snappy}
             className="mb-4 w-[350px] sm:w-[400px] h-[500px] bg-surface-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col"
           >
