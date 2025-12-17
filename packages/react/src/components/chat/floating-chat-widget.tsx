@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useClarityChat } from '../../hooks/use-clarity-chat/use-clarity-chat'
 import { springPresets } from '@clarity-chat/primitives'
-import { MessageSquare, X, Send, Sparkles, Bot, Key, ChevronDown, User } from 'lucide-react'
+import { MessageSquare, X } from 'lucide-react'
+import { LoadingIcon, CloseIcon } from '@clarity-chat/primitives/components/icons'
 import type { ClarityMemoryOptions, ClarityPromptOptimizationOptions } from '../../hooks/use-clarity-chat/types'
 
 export interface FloatingChatWidgetProps {
@@ -78,7 +79,9 @@ export function FloatingChatWidget({
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-clarity-500 to-cosmic-500 flex items-center justify-center shadow-lg shadow-clarity-500/20">
-                    <Sparkles className="w-5 h-5 text-white" />
+                    <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                    </svg>
                   </div>
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface-900 rounded-full" />
                 </div>
@@ -93,13 +96,15 @@ export function FloatingChatWidget({
                     className={`p-2 rounded-lg transition-colors ${userApiKey ? 'text-clarity-400 bg-clarity-500/10' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                     title="Enter API Key"
                  >
-                    <Key className="w-4 h-4" />
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                    </svg>
                  </button>
                  <button 
                     onClick={() => setIsOpen(false)}
                     className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                  >
-                    <X className="w-5 h-5" />
+                    <CloseIcon className="w-5 h-5" />
                  </button>
               </div>
             </div>
@@ -141,7 +146,9 @@ export function FloatingChatWidget({
                 >
                   {msg.role === 'assistant' && (
                     <div className="w-8 h-8 rounded-full bg-surface-800 border border-white/5 flex items-center justify-center flex-shrink-0">
-                      <Bot className="w-4 h-4 text-clarity-400" />
+                      <svg className="w-4 h-4 text-clarity-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7V5.73C7.4 5.39 7 4.74 7 4a2 2 0 0 1 2-2h3z" />
+                      </svg>
                     </div>
                   )}
                   <div
@@ -155,7 +162,10 @@ export function FloatingChatWidget({
                   </div>
                   {msg.role === 'user' && (
                     <div className="w-8 h-8 rounded-full bg-surface-800 border border-white/5 flex items-center justify-center flex-shrink-0">
-                      <User className="w-4 h-4 text-gray-400" />
+                      <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
                     </div>
                   )}
                 </motion.div>
@@ -164,7 +174,9 @@ export function FloatingChatWidget({
               {isLoading && (
                 <div className="flex gap-3 justify-start">
                     <div className="w-8 h-8 rounded-full bg-surface-800 border border-white/5 flex items-center justify-center flex-shrink-0">
-                      <Bot className="w-4 h-4 text-clarity-400" />
+                      <svg className="w-4 h-4 text-clarity-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7V5.73C7.4 5.39 7 4.74 7 4a2 2 0 0 1 2-2h3z" />
+                      </svg>
                     </div>
                     <div className="bg-surface-800 border border-white/5 rounded-2xl rounded-bl-none p-3 flex gap-1 items-center">
                         <div className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-bounce" />
@@ -194,7 +206,12 @@ export function FloatingChatWidget({
                   disabled={!input.trim() || isLoading}
                   className="absolute right-2 p-1.5 bg-clarity-500 text-white rounded-lg hover:bg-clarity-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  <Send className="w-4 h-4" />
+                  {isLoading ? <LoadingIcon className="w-4 h-4" /> : (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                  )}
                 </button>
               </form>
             </div>
@@ -217,7 +234,9 @@ export function FloatingChatWidget({
         )}
         
         {isOpen ? (
-          <ChevronDown className="w-6 h-6" />
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         ) : (
           <MessageSquare className="w-6 h-6" />
         )}
