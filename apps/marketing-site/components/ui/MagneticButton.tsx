@@ -3,6 +3,7 @@
 import React, { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { useMagnetic } from '@clarity-chat/primitives'
 
 interface ButtonProps {
   children: React.ReactNode
@@ -21,27 +22,7 @@ export default function MagneticButton({
   onClick,
   icon,
 }: ButtonProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e
-    const { left, top, width, height } = ref.current?.getBoundingClientRect() ?? {
-      left: 0,
-      top: 0,
-      width: 0,
-      height: 0,
-    }
-
-    const x = clientX - (left + width / 2)
-    const y = clientY - (top + height / 2)
-    
-    setPosition({ x: x * 0.15, y: y * 0.15 })
-  }
-
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 })
-  }
+  const { ref, position, handleMouseMove, handleMouseLeave } = useMagnetic({ strength: 0.15 })
 
   const variants = {
     primary: 'bg-gradient-to-r from-clarity-500 to-cosmic-500 text-white shadow-lg shadow-clarity-500/20 hover:shadow-clarity-400/30',
