@@ -14,6 +14,10 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.10",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
+    "@clarity-chat/utils": "workspace:*",
     "@studio-freight/react-lenis": "^0.0.47",
     "ai": "^2.2.31",
     "clsx": "^2.1.1",
