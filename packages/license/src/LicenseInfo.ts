@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * LicenseInfo Static Class
  *
@@ -44,7 +43,7 @@ function notifyListeners(): void {
     } catch (error) {
       // Log errors in development mode to help debugging
       if (isDevelopment()) {
-        logger.logger.error(
+        console.error(
           '[Clarity Chat License] Error in subscription callback:',
           error
         )

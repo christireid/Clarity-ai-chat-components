@@ -1,8 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * IndexedDB Storage Example
  * Demonstrates using browser-native IndexedDB storage
- * 
+ *
  * Note: This example is for browser environments only
  * Run in a browser console or use with a bundler
  */
@@ -12,12 +11,12 @@ import { clarityMemory } from '../src/core/memory'
 async function main() {
   // Check if we're in a browser environment
   if (typeof window === 'undefined' || !window.indexedDB) {
-    logger.logger.error('❌ IndexedDB is only available in browser environments')
-    logger.debug('   This example should be run in a browser')
+    console.error('❌ IndexedDB is only available in browser environments')
+    console.log('   This example should be run in a browser')
     return
   }
 
-  logger.debug('🗄️  IndexedDB Storage Example\n')
+  console.log('🗄️  IndexedDB Storage Example\n')
 
   // Create memory instance with IndexedDB storage
   const mem = clarityMemory({
@@ -27,10 +26,10 @@ async function main() {
     },
   })
 
-  logger.debug('✅ Memory instance created with IndexedDB storage')
+  console.log('✅ Memory instance created with IndexedDB storage')
 
   // Add some memories
-  logger.debug('\n📝 Adding memories...')
+  console.log('\n📝 Adding memories...')
   await mem.add("User prefers dark mode", {
     type: 'semantic',
     importance: 0.9,
@@ -46,34 +45,34 @@ async function main() {
     type: 'episodic',
   })
 
-  logger.debug('✅ Memories added and persisted to IndexedDB')
+  console.log('✅ Memories added and persisted to IndexedDB')
 
   // Get statistics
   const stats = await mem.getStats()
-  logger.debug(`\n📊 Statistics:`)
-  logger.debug(`   Total: ${stats.total}`)
-  logger.debug(`   By type:`, stats.byType)
+  console.log(`\n📊 Statistics:`)
+  console.log(`   Total: ${stats.total}`)
+  console.log(`   By type:`, stats.byType)
 
   // Search for memories
   const results = await mem.search("user preferences", {
     limit: 5,
   })
 
-  logger.debug(`\n🔍 Found ${results.length} relevant memories:`)
+  console.log(`\n🔍 Found ${results.length} relevant memories:`)
   results.forEach((result, i) => {
-    logger.debug(`   ${i + 1}. [${result.score.toFixed(2)}] ${result.memory.content}`)
+    console.log(`   ${i + 1}. [${result.score.toFixed(2)}] ${result.memory.content}`)
   })
 
   // Close
   await mem.close()
-  logger.debug('\n✅ Example complete!')
-  logger.debug('   Memories are persisted in IndexedDB')
-  logger.debug('   Database name: clarity-memory-example')
+  console.log('\n✅ Example complete!')
+  console.log('   Memories are persisted in IndexedDB')
+  console.log('   Database name: clarity-memory-example')
 }
 
 // Only run if in browser
 if (typeof window !== 'undefined') {
   main().catch(console.error)
 } else {
-  logger.debug('This example requires a browser environment')
+  console.log('This example requires a browser environment')
 }
