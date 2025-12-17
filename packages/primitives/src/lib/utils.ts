@@ -142,8 +142,8 @@ export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
-  
+  let timeout: ReturnType<typeof setTimeout> | null = null
+
   return (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout)
     timeout = setTimeout(() => func(...args), wait)
@@ -172,25 +172,32 @@ export function parseFileSize(sizeStr: string): number {
   
   const match = sizeStr.trim().match(/^(\d+(?:\.\d+)?)\s*([KMGT]?B)$/i)
   if (!match) throw new Error(`Invalid file size format: ${sizeStr}`)
-  
-  const [, size, unit] = match
+
+  const size = match[1]
+  const unit = match[2]
+  if (!size || !unit) throw new Error(`Invalid file size format: ${sizeStr}`)
   return parseFloat(size) * units[unit.toUpperCase() as keyof typeof units]
 }
 
 /**
  * Deep merge objects
  */
-export function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
+export function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
   const result = { ...target }
-  
+
   for (const key in source) {
-    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-      result[key] = deepMerge(result[key] || {}, source[key] as any)
+    const sourceValue = source[key]
+    if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
+      const targetValue = result[key] as Record<string, unknown> | undefined
+      result[key] = deepMerge(
+        targetValue ?? ({} as Record<string, unknown>),
+        sourceValue as Record<string, unknown>
+      ) as T[Extract<keyof T, string>]
     } else {
-      result[key] = source[key] as any
+      result[key] = sourceValue as T[Extract<keyof T, string>]
     }
   }
-  
+
   return result
 }
 
@@ -238,7 +245,11 @@ export function isBrowser(): boolean {
  * Check if running in Node.js environment
  */
 export function isNode(): boolean {
-  return typeof process !== 'undefined' && process.versions?.node !== undefined
+  // Check for Node.js environment without relying on @types/node
+  return (
+    typeof globalThis !== 'undefined' &&
+    typeof (globalThis as { process?: { versions?: { node?: string } } }).process?.versions?.node === 'string'
+  )
 }
 
 /**
@@ -331,7 +342,7 @@ export function throttle<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): T {
-  let timeout: NodeJS.Timeout | null = null
+  let timeout: ReturnType<typeof setTimeout> | null = null
   let previous = 0
   
   return ((...args: Parameters<T>): ReturnType<T> | void => {
@@ -367,7 +378,7 @@ export function escapeHtml(text: string): string {
     "'": '&#39;'
   }
   
-  return text.replace(/[&<>"']/g, (m) => map[m])
+  return text.replace(/[&<>"']/g, (m) => map[m] ?? m)
 }
 
 /**
@@ -382,7 +393,7 @@ export function unescapeHtml(html: string): string {
     '&#39;': "'"
   }
   
-  return html.replace(/&(?:amp|lt|gt|quot|#39);/g, (m) => map[m])
+  return html.replace(/&(?:amp|lt|gt|quot|#39);/g, (m) => map[m] ?? m)
 }
 
 /**
@@ -536,7 +547,7 @@ export function flatten<T>(array: (T | T[])[]): T[] {
 /**
  * Pick properties from object
  */
-export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   const result = {} as Pick<T, K>
   for (const key of keys) {
     if (key in obj) {
@@ -549,7 +560,7 @@ export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
 /**
  * Omit properties from object
  */
-export function omit<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
   const result = { ...obj }
   for (const key of keys) {
     delete result[key]
