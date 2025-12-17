@@ -459,29 +459,205 @@ _[Incomplete or inaccurate API docs]_
 
 ## AI-Specific UX Gaps
 
-### Streaming Issues
+### 🟠 High Priority Issues
 
-_[Poor streaming UX]_
+#### [HIGH] Code Block UX Enhancement Needed
 
-### Message Affordance Issues
+**Type**: AI-Specific UX  
+**Component**: Code rendering in messages  
+**Severity**: High
 
-_[Missing regenerate, copy, edit actions]_
+**Description**: Code blocks exist (7 code components identified) but need verification of:
 
-### Code Block Issues
+- Syntax highlighting quality
+- Copy button consistency
+- Language badge display
+- Line numbering
+- Code execution/playground features
 
-_[Poor code rendering or interaction]_
+**Research Finding**: Modern AI chat libraries (Vercel AI Elements, Chatbot UI) provide:
 
-### Error Recovery Issues
+- Native syntax highlighting with Shiki
+- One-click copy with visual feedback
+- Language detection and badges
+- Line numbers for reference
+- Code diff visualization
 
-_[No retry mechanisms]_
+**Current Status**:
 
-### Long Content Issues
+- ✅ Code components exist
+- ✅ Copy functionality mentioned
+- ⚠️ Need to verify consistency across 7 code components
 
-_[No virtualization or pagination]_
+**Proposed Fix**:
 
-### Trust Cue Issues
+1. Audit all 7 code components for feature parity
+2. Standardize code block component with all features
+3. Add code execution sandbox (optional feature)
+4. Document code block customization
 
-_[No source citations, confidence indicators]_
+**Breaking Change**: No  
+**Effort**: Medium
+
+---
+
+#### [HIGH] Message Actions Pattern Standardization
+
+**Type**: AI-Specific UX  
+**Component**: Message actions (regenerate, retry, edit, copy)  
+**Severity**: High
+
+**Description**: Message actions exist but need pattern standardization:
+
+- `onRetry`: 97 instances ✅
+- `onCopy`: 43 instances ✅
+- `onRegenerate`: mentioned in components
+- `onEdit`: mentioned in components
+- `onDelete`: 65 instances ✅
+
+**Expected Pattern** (from research):
+
+```tsx
+<Message>
+  <Message.Actions>
+    <Message.Copy />
+    <Message.Regenerate />
+    <Message.Edit />
+    <Message.Branch /> {/* Create conversation branch */}
+    <Message.Delete />
+  </Message.Actions>
+</Message>
+```
+
+**Impact**: Inconsistent action availability confuses users
+
+**Proposed Fix**:
+
+1. Create `<MessageActions>` compound component
+2. Document when each action is appropriate
+3. Add keyboard shortcuts for actions
+4. Add action permission system
+
+**Breaking Change**: No (if backward compatible)  
+**Effort**: Medium
+
+---
+
+### 🟡 Medium Priority Issues
+
+#### [MEDIUM] Streaming Experience Polish
+
+**Type**: AI-Specific UX  
+**Component**: Streaming messages  
+**Severity**: Medium
+
+**Description**: Streaming exists (108 `isStreaming` instances) but needs polish:
+
+- ✅ Typing indicators exist
+- ✅ `aria-live` announcements (71 instances)
+- ⚠️ Cursor animation quality?
+- ⚠️ Stop generation button?
+- ⚠️ Partial message rendering performance?
+
+**Research Finding**: Best practices include:
+
+- Smooth cursor animation
+- Stop button always visible during streaming
+- Progressive rendering without layout shift
+- Word-by-word (not char-by-char) for readability
+
+**Proposed Fix**:
+
+1. Add prominent stop button during streaming
+2. Optimize rendering performance (React.memo)
+3. Add smooth cursor animation
+4. Test with long responses (1000+ tokens)
+
+**Breaking Change**: No  
+**Effort**: Medium
+
+---
+
+#### [MEDIUM] Citation and Trust Cues
+
+**Type**: AI-Specific UX  
+**Component**: Message metadata  
+**Severity**: Medium
+
+**Description**: Modern AI applications show:
+
+- Source citations with links
+- Confidence scores
+- Model information
+- Token usage
+- Response time
+
+**Current Status**:
+
+- MessageMetadata component exists
+- Need to verify what's included
+
+**Proposed Fix**:
+
+1. Add citation component with source links
+2. Add confidence score badge
+3. Add model/provider info display
+4. Add optional response timing
+
+**Breaking Change**: No  
+**Effort**: Small to Medium
+
+---
+
+#### [MEDIUM] Tool Call Visualization
+
+**Type**: AI-Specific UX  
+**Component**: Tool/function calling display  
+**Severity**: Medium
+
+**Description**: As AI models support tool calling (GPT-4, Claude), need clear visualization of:
+
+- Tool name and description
+- Parameters sent
+- Results received
+- Success/failure status
+
+**Research Finding**: Vercel AI Elements provides `<ToolCall>` components
+
+**Proposed Fix**:
+
+1. Create `<ToolCallDisplay>` component
+2. Show tool name, params, results
+3. Add expand/collapse for details
+4. Add status indicators
+
+**Breaking Change**: No  
+**Effort**: Medium
+
+---
+
+### 🟢 Low Priority Issues
+
+#### [LOW] Conversation Branching
+
+**Type**: AI-Specific UX  
+**Severity**: Low
+
+**Description**: Allow users to branch conversations and explore multiple responses.
+
+**Effort**: Large
+
+---
+
+#### [LOW] Reasoning Panel (o1-style)
+
+**Type**: AI-Specific UX  
+**Severity**: Low
+
+**Description**: For models that expose reasoning (like OpenAI o1), show expandable reasoning
+panels.
+
+**Effort**: Medium
 
 ---
 
