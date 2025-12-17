@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * StreamableValue utilities - Vercel AI SDK compatible
  * 
@@ -31,7 +30,7 @@ export function createStreamableValue<T = any>(initialValue?: T): StreamableValu
     },
     update(newValue: T) {
       if (isDone) {
-        logger.warn('StreamableValue: Cannot update after done() is called')
+        console.warn('StreamableValue: Cannot update after done() is called')
         return
       }
       currentValue = newValue

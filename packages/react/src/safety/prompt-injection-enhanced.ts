@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Prompt Injection Detection (2025)
  *
@@ -587,7 +586,7 @@ Respond with JSON:
         explanation: result.explanation,
       }
     } catch (error) {
-      logger.logger.error('LLM-as-judge detection failed:', error)
+      console.error('LLM-as-judge detection failed:', error)
       return {
         safe: true,
         confidence: 0,

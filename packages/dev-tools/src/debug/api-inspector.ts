@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * API Inspector for debugging AI provider API calls
  * 
@@ -120,10 +119,10 @@ class APIInspector {
         `Model: ${chalk.cyan(options.model)}`,
         `Endpoint: ${chalk.gray(options.endpoint)}`,
       ].join('\n')
-      
-      logger.debug()
-      logger.debug(infoBox(info, `🔍 API Call ${id.substring(0, 12)}...`))
-      logger.debug()
+
+      console.log()
+      console.log(infoBox(info, `🔍 API Call ${id.substring(0, 12)}...`))
+      console.log()
     }
 
     return id
@@ -141,7 +140,7 @@ class APIInspector {
     log.timing.ttfb = performance.now() - log.timing.startTime
 
     if (this.verbose) {
-      logger.debug(chalk.cyan(`   ⚡ TTFB: ${log.timing.ttfb.toFixed(2)}ms`))
+      console.log(chalk.cyan(`   ⚡ TTFB: ${log.timing.ttfb.toFixed(2)}ms`))
     }
   }
 
@@ -173,7 +172,7 @@ class APIInspector {
 
     if (this.verbose) {
       const preview = content.length > 50 ? content.substring(0, 50) + '...' : content
-      logger.debug(chalk.gray(`   📦 Chunk ${log.response.chunks.length}: ${preview}`))
+      console.log(chalk.gray(`   📦 Chunk ${log.response.chunks.length}: ${preview}`))
     }
   }
 
@@ -231,10 +230,10 @@ class APIInspector {
       if (log.response.chunks) {
         summary['Chunks'] = chalk.cyan(log.response.chunks.length.toString())
       }
-      
-      logger.debug()
-      logger.debug(successBox(keyValueTable(summary), `✅ Call ${id.substring(0, 12)}... Complete`))
-      logger.debug()
+
+      console.log()
+      console.log(successBox(keyValueTable(summary), `✅ Call ${id.substring(0, 12)}... Complete`))
+      console.log()
     }
   }
 
@@ -265,10 +264,10 @@ class APIInspector {
       if (log.error?.code) {
         errorInfo['Code'] = chalk.yellow(log.error.code)
       }
-      
-      logger.debug()
-      logger.debug(errorBox(keyValueTable(errorInfo), `❌ Call ${id.substring(0, 12)}... Failed`))
-      logger.debug()
+
+      console.log()
+      console.log(errorBox(keyValueTable(errorInfo), `❌ Call ${id.substring(0, 12)}... Failed`))
+      console.log()
     }
   }
 

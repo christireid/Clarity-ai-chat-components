@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Product Recommendation Object Example
  * 
@@ -41,10 +40,10 @@ export function ProductRecommendationExample() {
       maxResults: 5,
     },
     onFinish: (result) => {
-      logger.debug('Generated products:', result)
+      console.log('Generated products:', result)
     },
     onError: (err) => {
-      logger.logger.error('Error generating products:', err)
+      console.error('Error generating products:', err)
     },
   })
 

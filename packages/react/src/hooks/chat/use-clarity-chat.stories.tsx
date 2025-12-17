@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useClarityChat Storybook Stories
  * 
@@ -272,7 +271,7 @@ export const AdvancedFeatures: Story = {
       userId: 'user-123',
       threadId: 'thread-456',
       onFinish: (message) => {
-        logger.debug('Message finished:', message)
+        console.log('Message finished:', message)
       },
       fetch: async (url, options) => {
         const body = JSON.parse(options?.body as string || '{}')

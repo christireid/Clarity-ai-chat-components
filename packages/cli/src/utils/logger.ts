@@ -1,8 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced structured logging utility
  * Supports log levels, structured output, and request tracking
- * 
+ *
  */
 
 import pc from 'picocolors'
@@ -161,9 +160,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        utilsLogger.logger.error(formatLogEntry(entry))
+        console.error(formatLogEntry(entry))
       } else {
-        utilsLogger.logger.error(formatPrefix('✖', pc.red), errorMessage, ...args)
+        console.error(formatPrefix('✖', pc.red), errorMessage, ...args)
 
         if (
           error &&
@@ -171,7 +170,7 @@ export function getLogger(
           error.stack &&
           (process.env.DEBUG || process.env.VERBOSE)
         ) {
-          utilsLogger.logger.error(pc.gray(String(error.stack)))
+          console.error(pc.gray(String(error.stack)))
         }
       }
     },

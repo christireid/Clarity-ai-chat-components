@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -435,7 +434,7 @@ export function HistoryToolbar({
  *   maxTokens={4096}
  *   compact={true}
  *   onPrune={(count, tokens) => {
- *     logger.debug(`Pruned ${count} messages, saved ${tokens} tokens`)
+ *     console.log(`Pruned ${count} messages, saved ${tokens} tokens`)
  *   }}
  * />
  * ```
@@ -463,7 +462,7 @@ export function HistoryManager({
       const uniqueIds = new Set(ids)
       if (uniqueIds.size !== ids.length) {
         const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
-        logger.warn(
+        console.warn(
           `[HistoryManager] Duplicate message IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
           'Each message must have a unique id for correct behavior.'
         )

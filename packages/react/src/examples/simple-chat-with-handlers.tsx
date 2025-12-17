@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Simple Chat with Handlers Example
  * 
@@ -18,10 +17,10 @@ export function SimpleChatWithHandlers() {
   const handlers = useChatHandlers({
     chat,
     onMessageSent: (content) => {
-      logger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
     onMessageError: (error) => {
-      logger.logger.error('Failed to send message:', error)
+      console.error('Failed to send message:', error)
     },
   })
 

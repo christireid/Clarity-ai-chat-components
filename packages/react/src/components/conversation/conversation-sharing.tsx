@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -218,7 +217,7 @@ export function ConversationSharing({
       await navigator.clipboard.writeText(link)
       onLinkCopied?.(link)
     } catch (error) {
-      logger.logger.error('Failed to copy link:', error)
+      console.error('Failed to copy link:', error)
     }
   }
 

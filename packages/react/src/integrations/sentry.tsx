@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Sentry Error Tracking Integration
  *
@@ -122,7 +121,7 @@ export function initSentry(options: SentryOptions): void {
       }
     })
     .catch((err) => {
-      logger.warn('[Clarity Chat] Sentry not available:', err.message)
+      console.warn('[Clarity Chat] Sentry not available:', err.message)
     })
 }
 
@@ -141,7 +140,7 @@ export function captureAIError(
   }
 ): string | undefined {
   if (!sentryInstance) {
-    logger.logger.error('[Clarity Chat] Sentry not initialized:', error)
+    console.error('[Clarity Chat] Sentry not initialized:', error)
     return undefined
   }
 
@@ -205,7 +204,7 @@ export function useSentryChat(): {
   const captureError = React.useCallback(
     (error: Error, context?: Record<string, unknown>) => {
       if (!sentryInstance) {
-        logger.logger.error('[Clarity Chat] Sentry error:', error)
+        console.error('[Clarity Chat] Sentry error:', error)
         return
       }
 

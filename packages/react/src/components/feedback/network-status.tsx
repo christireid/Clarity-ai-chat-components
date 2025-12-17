@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -173,7 +172,7 @@ export function NetworkStatus({
         setInternalStatus('unstable')
       }
     } catch (error) {
-      logger.logger.error('[NetworkStatus] Ping failed:', error)
+      console.error('[NetworkStatus] Ping failed:', error)
       setInternalStatus('offline')
       setLatency(null)
     }

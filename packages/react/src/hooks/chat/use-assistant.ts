@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useAssistant - Mid-Level Assistant Hook
  * 
@@ -34,7 +33,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * const { messages, append, status, toolInvocations } = useAssistant({
  *   api: '/api/assistant',
  *   assistantId: 'asst_123',
- *   onToolCall: (invocation) => logger.debug('Tool called:', invocation),
+ *   onToolCall: (invocation) => console.log('Tool called:', invocation),
  * })
  * 
  * await append({ role: 'user', content: 'What is the weather?' })
@@ -353,7 +352,7 @@ class ToolCache {
  *   api: '/api/assistant',
  *   assistantId: 'my-assistant',
  *   onToolCall: (toolCall) => {
- *     logger.debug('Tool called:', toolCall.toolName)
+ *     console.log('Tool called:', toolCall.toolName)
  *   },
  * })
  * 
@@ -370,7 +369,7 @@ class ToolCache {
  *   cacheToolResults: true, // Cache tool results
  *   parallelTools: true, // Execute multiple tools simultaneously
  *   onStatusChange: (status) => {
- *     logger.debug('Status:', status)
+ *     console.log('Status:', status)
  *     // idle → loading → streaming → processing_tools → complete
  *   },
  *   onProgress: (bytes) => setProgress(bytes),

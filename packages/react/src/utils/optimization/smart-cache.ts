@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Smart Caching System with Semantic Similarity
  *
@@ -178,7 +177,7 @@ export class SmartCache<T = any> {
       try {
         embedding = await this.options.embedFunction(query)
       } catch (error) {
-        logger.warn('Failed to generate embedding:', error)
+        console.warn('Failed to generate embedding:', error)
       }
     }
 
@@ -226,7 +225,7 @@ export class SmartCache<T = any> {
 
       return bestMatch
     } catch (error) {
-      logger.warn('Semantic matching failed:', error)
+      console.warn('Semantic matching failed:', error)
       return null
     }
   }

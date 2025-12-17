@@ -142,8 +142,8 @@ export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
-  
+  let timeout: ReturnType<typeof setTimeout> | null = null
+
   return (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout)
     timeout = setTimeout(() => func(...args), wait)
@@ -162,35 +162,43 @@ export function generateUniqueFilename(prefix: string, extension: string): strin
  * Parse file size string (e.g., "1.5 MB") to bytes
  */
 export function parseFileSize(sizeStr: string): number {
-  const units = {
+  const units: Record<string, number> = {
     B: 1,
     KB: 1024,
     MB: 1024 * 1024,
     GB: 1024 * 1024 * 1024,
     TB: 1024 * 1024 * 1024 * 1024
   }
-  
+
   const match = sizeStr.trim().match(/^(\d+(?:\.\d+)?)\s*([KMGT]?B)$/i)
   if (!match) throw new Error(`Invalid file size format: ${sizeStr}`)
-  
+
   const [, size, unit] = match
-  return parseFloat(size) * units[unit.toUpperCase() as keyof typeof units]
+  if (!size || !unit) throw new Error(`Invalid file size format: ${sizeStr}`)
+  const multiplier = units[unit.toUpperCase()]
+  if (multiplier === undefined) throw new Error(`Invalid file size unit: ${unit}`)
+  return parseFloat(size) * multiplier
 }
 
 /**
  * Deep merge objects
  */
 export function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
-  const result = { ...target }
-  
+  const result = { ...target } as T
+
   for (const key in source) {
-    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-      result[key] = deepMerge(result[key] || {}, source[key] as any)
-    } else {
-      result[key] = source[key] as any
+    const sourceValue = source[key]
+    if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
+      const targetValue = result[key]
+      result[key] = deepMerge(
+        (targetValue && typeof targetValue === 'object' ? targetValue : {}) as Record<string, any>,
+        sourceValue as Record<string, any>
+      ) as T[Extract<keyof T, string>]
+    } else if (sourceValue !== undefined) {
+      result[key] = sourceValue as T[Extract<keyof T, string>]
     }
   }
-  
+
   return result
 }
 
@@ -238,7 +246,9 @@ export function isBrowser(): boolean {
  * Check if running in Node.js environment
  */
 export function isNode(): boolean {
-  return typeof process !== 'undefined' && process.versions?.node !== undefined
+  return typeof globalThis !== 'undefined' &&
+    typeof (globalThis as any).process !== 'undefined' &&
+    (globalThis as any).process?.versions?.node !== undefined
 }
 
 /**
@@ -331,13 +341,13 @@ export function throttle<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): T {
-  let timeout: NodeJS.Timeout | null = null
+  let timeout: ReturnType<typeof setTimeout> | null = null
   let previous = 0
-  
+
   return ((...args: Parameters<T>): ReturnType<T> | void => {
     const now = Date.now()
     const remaining = wait - (now - previous)
-    
+
     if (remaining <= 0 || remaining > wait) {
       if (timeout) {
         clearTimeout(timeout)
@@ -366,8 +376,8 @@ export function escapeHtml(text: string): string {
     '"': '&quot;',
     "'": '&#39;'
   }
-  
-  return text.replace(/[&<>"']/g, (m) => map[m])
+
+  return text.replace(/[&<>"']/g, (m) => map[m] ?? m)
 }
 
 /**
@@ -381,8 +391,8 @@ export function unescapeHtml(html: string): string {
     '&quot;': '"',
     '&#39;': "'"
   }
-  
-  return html.replace(/&(?:amp|lt|gt|quot|#39);/g, (m) => map[m])
+
+  return html.replace(/&(?:amp|lt|gt|quot|#39);/g, (m) => map[m] ?? m)
 }
 
 /**
@@ -536,7 +546,7 @@ export function flatten<T>(array: (T | T[])[]): T[] {
 /**
  * Pick properties from object
  */
-export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   const result = {} as Pick<T, K>
   for (const key of keys) {
     if (key in obj) {

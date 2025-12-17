@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useChatEnhanced - Mid-Level Enhanced Chat Hook
  * 
@@ -24,7 +23,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * const { messages, append, isLoading } = useChatEnhanced({
  *   api: '/api/chat',
  *   initialMessages: [{ role: 'user', content: 'Hello' }],
- *   onFinish: (message) => logger.debug('Finished:', message),
+ *   onFinish: (message) => console.log('Finished:', message),
  * })
  * 
  * await append({ role: 'user', content: 'Tell me a joke' })
@@ -200,8 +199,8 @@ export interface UseChatReturn {
  * const { messages, append, isLoading, handleSubmit, input, setInput } = useChat({
  *   api: '/api/chat',
  *   initialMessages: [],
- *   onFinish: (message) => logger.debug('Finished:', message),
- *   onError: (error) => logger.logger.error('Error:', error),
+ *   onFinish: (message) => console.log('Finished:', message),
+ *   onError: (error) => console.error('Error:', error),
  * })
  * ```
  */

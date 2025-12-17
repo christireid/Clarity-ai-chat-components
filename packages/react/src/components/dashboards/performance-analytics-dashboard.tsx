@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -230,7 +229,7 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
         }
         return undefined
       } catch (error) {
-        logger.warn('Failed to collect Web Vitals:', error)
+        console.warn('Failed to collect Web Vitals:', error)
         return undefined
       }
     }
@@ -310,7 +309,7 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
  *   showMemoryUsage
  *   showFPS
  *   onDataUpdate={(data) => {
- *     logger.debug('Performance:', data)
+ *     console.log('Performance:', data)
  *   }}
  * />
  * ```

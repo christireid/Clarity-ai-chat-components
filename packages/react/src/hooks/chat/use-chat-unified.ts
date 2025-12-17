@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useChat - Unified chat hook with sensible defaults
  *
@@ -138,7 +137,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           JSON.stringify(chat.messages) // Store CoreMessage[] format
         )
       } catch (error) {
-        logger.warn('[useChat] Failed to persist messages:', error)
+        console.warn('[useChat] Failed to persist messages:', error)
       }
     }
   }, [messages.length, persistMessages, storageKey, chat.messages])
@@ -153,7 +152,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           chat.setMessages(parsed)
         }
       } catch (error) {
-        logger.warn('[useChat] Failed to load persisted messages:', error)
+        console.warn('[useChat] Failed to load persisted messages:', error)
       }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps

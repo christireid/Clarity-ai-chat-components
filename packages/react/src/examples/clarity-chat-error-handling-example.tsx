@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Clarity Chat Error Handling Example
  * 
@@ -126,7 +125,7 @@ export function ClarityChatErrorHandlingExample() {
       maxRetryAttempts: 3,
       onMemoryError: (error, operation) => {
         // Custom error handling
-        logger.logger.error(`Memory ${operation} failed:`, error)
+        console.error(`Memory ${operation} failed:`, error)
         
         // You could send to error tracking service here
         // trackError('memory_operation_failed', { operation, error: error.message })

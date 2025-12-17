@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Usage Quota System
  *
@@ -17,10 +16,10 @@ import { logger } from '@clarity-chat/utils/logger';
  *   resetPeriod: 'monthly',
  *   storage: new MemoryQuotaStorage(),
  *   onWarning: (quota) => {
- *     logger.debug(`Warning: ${quota.used}/${quota.limit} used`)
+ *     console.log(`Warning: ${quota.used}/${quota.limit} used`)
  *   },
  *   onExceeded: (quota) => {
- *     logger.debug('Quota exceeded!')
+ *     console.log('Quota exceeded!')
  *   },
  * })
  *

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -136,7 +135,7 @@ export function BatchExportDialog({
         ...options,
       })
     } catch (error) {
-      logger.logger.error('Batch export failed:', error)
+      console.error('Batch export failed:', error)
     } finally {
       setIsExporting(false)
     }

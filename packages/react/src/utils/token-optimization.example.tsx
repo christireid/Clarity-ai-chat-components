@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Token Optimization Examples
  * 
@@ -35,9 +34,9 @@ export function BasicTokenOptimizationExample() {
     // Optimize prompt before sending
     const { optimized, savings } = optimizePrompt(message)
     
-    logger.debug(`Original: ${message}`)
-    logger.debug(`Optimized: ${optimized}`)
-    logger.debug(`Saved ${savings.tokensSaved} tokens (${savings.percentage.toFixed(1)}%)`)
+    console.log(`Original: ${message}`)
+    console.log(`Optimized: ${optimized}`)
+    console.log(`Saved ${savings.tokensSaved} tokens (${savings.percentage.toFixed(1)}%)`)
     
     // Send optimized message to API
     // await sendToAPI(optimized)
@@ -126,7 +125,7 @@ export function FullOptimizationExample() {
     // 3. Check cache
     const cached = getCachedResponse(optimized)
     if (cached) {
-      logger.debug('Using cached response!')
+      console.log('Using cached response!')
       append({ role: 'assistant', content: cached })
       return
     }
@@ -273,8 +272,8 @@ export function ModelRoutingExample() {
     // Automatically route to appropriate model
     const model = routeQuery(query)
     
-    logger.debug(`Query routed to: ${model}`)
-    logger.debug(`Cost savings: $${stats.costSavings.toFixed(4)}`)
+    console.log(`Query routed to: ${model}`)
+    console.log(`Cost savings: $${stats.costSavings.toFixed(4)}`)
 
     const response = await fetch('/api/chat', {
       method: 'POST',

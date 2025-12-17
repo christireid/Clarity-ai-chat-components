@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Composable Hook Examples
  * 
@@ -31,10 +30,10 @@ export function ComposableExample() {
       },
       analytics: {
         onMessageSent: (content) => {
-          logger.debug('Message sent:', content)
+          console.log('Message sent:', content)
         },
         onMessageReceived: (messageId) => {
-          logger.debug('Message received:', messageId)
+          console.log('Message received:', messageId)
         },
       },
     },
@@ -85,8 +84,8 @@ export function BuilderExample() {
     .withMemory('vector-store', 8000)
     .withPersistence('my-chat-session')
     .withAnalytics({
-      onMessageSent: (content) => logger.debug('Sent:', content),
-      onMessageReceived: (id) => logger.debug('Received:', id),
+      onMessageSent: (content) => console.log('Sent:', content),
+      onMessageReceived: (id) => console.log('Received:', id),
     })
     .withErrorRecovery(3)
     .build()

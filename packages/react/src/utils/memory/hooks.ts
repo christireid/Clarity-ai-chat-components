@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * React Hooks for Memory Management
  * 
@@ -157,7 +156,7 @@ export function useMemoryStats(userId: string) {
       const newStats = service.getStats(userId)
       setStats(newStats)
     } catch (err) {
-      logger.logger.error('Failed to get memory stats:', err)
+      console.error('Failed to get memory stats:', err)
     } finally {
       setIsLoading(false)
     }

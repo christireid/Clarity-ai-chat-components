@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -55,8 +54,8 @@ export class PromptArchitectErrorBoundary extends React.Component<
 
     // Log error in development
     if (process.env.NODE_ENV === 'development') {
-      logger.logger.error('[PromptArchitect] Error caught:', error)
-      logger.logger.error('[PromptArchitect] Error info:', errorInfo)
+      console.error('[PromptArchitect] Error caught:', error)
+      console.error('[PromptArchitect] Error info:', errorInfo)
     }
   }
 

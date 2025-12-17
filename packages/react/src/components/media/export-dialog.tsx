@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -106,7 +105,7 @@ export function ExportDialog({
         setProgress(0)
       }, 500)
     } catch (error) {
-      logger.logger.error('Export failed:', error)
+      console.error('Export failed:', error)
       alert('Export failed. Please try again.')
     } finally {
       setExporting(false)

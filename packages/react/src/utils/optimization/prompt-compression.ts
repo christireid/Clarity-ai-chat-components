@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Prompt Compression Utilities
  *
@@ -240,8 +239,8 @@ function reducePunctuationHelper(text: string): string {
  *   }
  * )
  * 
- * logger.debug(result.compressed) // "Pls help me understand how I can improve my code quality."
- * logger.debug(result.savingsPercent) // ~15%
+ * console.log(result.compressed) // "Pls help me understand how I can improve my code quality."
+ * console.log(result.savingsPercent) // ~15%
  * ```
  */
 export function compressPrompt(

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -240,7 +239,7 @@ export function ThemeProvider({
         }
       }
     } catch (error) {
-      logger.warn('Failed to load theme from localStorage:', error)
+      console.warn('Failed to load theme from localStorage:', error)
     }
 
     setIsHydrated(true)
@@ -282,7 +281,7 @@ export function ThemeProvider({
       }
       // Warn about invalid preset and fallback to default
       if (process.env.NODE_ENV !== 'production') {
-        logger.warn(
+        console.warn(
           `[Clarity Chat] Unknown theme preset "${preset}". ` +
             `Available presets: ${Object.keys(modernThemes).join(', ')}. ` +
             `Falling back to "default".`
@@ -390,7 +389,7 @@ export function ThemeProvider({
 
         localStorage.setItem(storageKey, JSON.stringify(toStore))
       } catch (error) {
-        logger.warn('Failed to save theme to localStorage:', error)
+        console.warn('Failed to save theme to localStorage:', error)
       }
     }
   }, [
@@ -421,7 +420,7 @@ export function ThemeProvider({
       }
     } catch (error) {
       // BroadcastChannel may not be available in some environments
-      logger.warn('Cross-tab theme sync not available:', error)
+      console.warn('Cross-tab theme sync not available:', error)
     }
 
     return () => {
@@ -440,7 +439,7 @@ export function ThemeProvider({
     if (typeof BroadcastChannel === 'undefined') {
       // Log warning in development only
       if (process.env.NODE_ENV !== 'production') {
-        logger.warn(
+        console.warn(
           '[Clarity Chat] BroadcastChannel API not available. ' +
             'Cross-tab theme sync will fall back to localStorage-only persistence. ' +
             'Theme changes will sync on page reload but not in real-time.'

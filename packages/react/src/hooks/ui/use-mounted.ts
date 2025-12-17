@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -42,7 +41,7 @@ import * as React from 'react'
  *       setData(data) // Won't execute if aborted
  *     } catch (error) {
  *       if (error.name !== 'AbortError') {
- *         logger.logger.error('Fetch failed:', error)
+ *         console.error('Fetch failed:', error)
  *       }
  *     }
  *   }
@@ -88,7 +87,7 @@ export function useMounted(): () => boolean {
   React.useEffect(() => {
     // Log deprecation warning in development
     if (process.env['NODE_ENV'] === 'development') {
-      logger.warn(
+      console.warn(
         '[useMounted] This hook is deprecated and will be removed in v3.0. ' +
         'Use AbortController for cancellable operations instead. ' +
         'See https://react.dev/learn/synchronizing-with-effects#fetching-data'

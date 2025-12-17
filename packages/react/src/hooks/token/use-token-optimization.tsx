@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Token Optimization Hook (Legacy)
  *
@@ -165,7 +164,7 @@ export interface UseTokenOptimizationReturn {
  *
  * // Optimize prompt before sending
  * const { optimized, savings } = optimizePrompt(userInput)
- * logger.debug(`Saved ${savings.tokensSaved} tokens (${savings.percentage.toFixed(1)}%)`)
+ * console.log(`Saved ${savings.tokensSaved} tokens (${savings.percentage.toFixed(1)}%)`)
  *
  * // Limit history
  * const limitedMessages = optimizeHistory(messages)
@@ -186,7 +185,7 @@ export function useTokenOptimization(
   // Emit deprecation warning in development
   React.useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      logger.warn(
+      console.warn(
         '[useTokenOptimization] DEPRECATED: useTokenOptimization is deprecated. ' +
           'Please migrate to useTokenOptimizationEnhanced for additional features including ' +
           'TOON encoding, accurate tokenization, prompt caching, presets, and more. ' +

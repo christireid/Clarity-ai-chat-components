@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Watch mode utilities for CLI
  * Enables auto-execution of commands on file changes
@@ -40,10 +39,10 @@ export function watchFiles(options: WatchOptions): () => void {
 
     timeout = setTimeout(async () => {
       try {
-        logger.debug(`File changed: ${file}`)
+        console.log(`File changed: ${file}`)
         await onChange(file)
       } catch (error) {
-        logger.error('Error in watch callback', error)
+        console.error('Error in watch callback', error)
       }
     }, debounce)
   }
@@ -67,10 +66,10 @@ export function watchFiles(options: WatchOptions): () => void {
         }
       })
       watchers.push(watcher)
-      logger.info(`Watching: ${dirPath}`)
+      console.info(`Watching: ${dirPath}`)
     } catch (error) {
       // Directory might not exist, skip
-      logger.debug(`Skipping watch for ${dirPath}: ${error}`)
+      console.log(`Skipping watch for ${dirPath}: ${error}`)
     }
   })
 
@@ -79,7 +78,7 @@ export function watchFiles(options: WatchOptions): () => void {
       clearTimeout(timeout)
     }
     watchers.forEach(watcher => watcher.close())
-    logger.info('Stopped watching files')
+    console.info('Stopped watching files')
   }
 }
 
@@ -93,9 +92,9 @@ export function watchAndRebuild(
   return watchFiles({
     ...options,
     onChange: async () => {
-      logger.info('Files changed, rebuilding...')
+      console.info('Files changed, rebuilding...')
       await buildFn()
-      logger.success('Rebuild complete')
+      console.log('Rebuild complete')
     },
   })
 }

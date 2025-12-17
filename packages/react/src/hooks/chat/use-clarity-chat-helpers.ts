@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Helper Hooks for useClarityChat
  *
@@ -165,7 +164,7 @@ export function useClarityChatWithPersistence(
           JSON.stringify(chat.messages)
         )
       } catch (error) {
-        logger.warn('Failed to persist messages:', error)
+        console.warn('Failed to persist messages:', error)
       }
     }
   }, [chat.messages, persistMessages, storageKey])
@@ -176,7 +175,7 @@ export function useClarityChatWithPersistence(
       try {
         localStorage.setItem(`${storageKey}-input`, chat.input)
       } catch (error) {
-        logger.warn('Failed to persist input:', error)
+        console.warn('Failed to persist input:', error)
       }
     }
   }, [chat.input, persistInput, storageKey])
@@ -187,7 +186,7 @@ export function useClarityChatWithPersistence(
       localStorage.removeItem(`${storageKey}-messages`)
       localStorage.removeItem(`${storageKey}-input`)
     } catch (error) {
-      logger.warn('Failed to clear persistence:', error)
+      console.warn('Failed to clear persistence:', error)
     }
   }, [storageKey])
 
@@ -256,7 +255,7 @@ export function useClarityChatWithAutoSave(
       try {
         localStorage.setItem(autoSaveKey, chat.input)
       } catch (error) {
-        logger.warn('Failed to auto-save draft:', error)
+        console.warn('Failed to auto-save draft:', error)
       }
     }, autoSaveInterval)
 
@@ -280,7 +279,7 @@ export function useClarityChatWithAutoSave(
       localStorage.removeItem(autoSaveKey)
       chat.setInput('')
     } catch (error) {
-      logger.warn('Failed to clear draft:', error)
+      console.warn('Failed to clear draft:', error)
     }
   }, [autoSaveKey, chat.setInput])
 

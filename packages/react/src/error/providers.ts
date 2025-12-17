@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Built-in error tracking providers
  *
@@ -17,12 +16,12 @@ function isDev(): boolean {
 function safeDevLog(...args: unknown[]): void {
   if (!isDev()) return
   // Keep dev-only logs minimal and never include secrets.
-  logger.debug(...args)
+  console.log(...args)
 }
 
 function safeDevError(...args: unknown[]): void {
   if (!isDev()) return
-  logger.logger.error(...args)
+  console.error(...args)
 }
 
 function hasLocalStorage(): boolean {
@@ -416,33 +415,33 @@ export function createConsoleErrorProvider(): ErrorProvider {
         font-weight: bold;
       `
 
-      logger.debug(`%c${report.severity.toUpperCase()}`, style, report.message)
+      console.log(`%c${report.severity.toUpperCase()}`, style, report.message)
 
       if (report.stack) {
-        logger.logger.error('Stack:', report.stack)
+        console.error('Stack:', report.stack)
       }
 
       if (report.componentStack) {
-        logger.logger.error('Component Stack:', report.componentStack)
+        console.error('Component Stack:', report.componentStack)
       }
 
       if (report.context) {
-        logger.debug('Context:', report.context)
+        console.log('Context:', report.context)
       }
 
       if (report.environment) {
-        logger.debug('Environment:', report.environment)
+        console.log('Environment:', report.environment)
       }
 
       if (report.tags) {
-        logger.debug('Tags:', report.tags)
+        console.log('Tags:', report.tags)
       }
 
       if (report.userFeedback) {
-        logger.debug('User Feedback:', report.userFeedback)
+        console.log('User Feedback:', report.userFeedback)
       }
 
-      logger.debug()
+      console.log()
     },
 
     setUser: (
@@ -450,15 +449,15 @@ export function createConsoleErrorProvider(): ErrorProvider {
       email?: string,
       userData?: Record<string, any>
     ) => {
-      logger.debug('[Error Reporter] Set user:', { userId, email, ...userData })
+      console.log('[Error Reporter] Set user:', { userId, email, ...userData })
     },
 
     setContext: (context: Record<string, any>) => {
-      logger.debug('[Error Reporter] Set context:', context)
+      console.log('[Error Reporter] Set context:', context)
     },
 
     addBreadcrumb: (message: string, data?: Record<string, any>) => {
-      logger.debug('[Error Reporter] Breadcrumb:', message, data)
+      console.log('[Error Reporter] Breadcrumb:', message, data)
     },
   }
 }

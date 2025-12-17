@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -68,7 +67,7 @@ export function useSubmitButtonState({
       }, 1000)
     } catch (error) {
       setButtonState('error')
-      logger.logger.error('[ChatInput] Submit error:', error)
+      console.error('[ChatInput] Submit error:', error)
       // Auto-reset after showing error
       timeoutRef.current = setTimeout(() => {
         setButtonState('idle')

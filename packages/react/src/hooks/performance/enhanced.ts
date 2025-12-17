@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Performance Optimization Utilities
  * 
@@ -124,7 +123,7 @@ export function useBatchedState<T>(
 
   const startBatch = useCallback(() => {
     isBatchingRef.current = true;
-    logger.debug('Batched state updates started');
+    console.log('Batched state updates started');
   }, []);
 
   const endBatch = useCallback(() => {
@@ -132,7 +131,7 @@ export function useBatchedState<T>(
     if (Object.keys(pendingUpdatesRef.current).length > 0) {
       setState(prev => ({ ...prev, ...pendingUpdatesRef.current }));
       pendingUpdatesRef.current = {};
-      logger.debug('Batched state updates applied');
+      console.log('Batched state updates applied');
     }
   }, []);
 
@@ -272,7 +271,7 @@ export function useMemoizedSelector<T, R>(
   if (stateRef.current !== state || !resultRef.current) {
     resultRef.current = selectorRef.current(state);
     stateRef.current = state;
-    logger.debug('MemoizedSelector recomputed', { stateChanged: stateRef.current !== state });
+    console.log('MemoizedSelector recomputed', { stateChanged: stateRef.current !== state });
   }
 
   return useMemo(() => resultRef.current!, deps);
@@ -299,7 +298,7 @@ export function useDeepMemo<T>(
   if (depsChanged || valueRef.current === undefined) {
     depsRef.current = deps;
     valueRef.current = factory();
-    logger.debug('useDeepMemo recomputed', { depsChanged });
+    console.log('useDeepMemo recomputed', { depsChanged });
   }
 
   return valueRef.current!;
@@ -357,7 +356,7 @@ export function useVirtualList<T>(
   const paddingTop = startIndex * itemHeight;
   const paddingBottom = (itemCount - endIndex - 1) * itemHeight;
 
-  logger.debug('Virtual list computed', {
+  console.log('Virtual list computed', {
     totalItems: itemCount,
     visibleItems: virtualItems.length,
     startIndex,
@@ -494,7 +493,7 @@ export function useEventDelegation(
       ...options 
     });
 
-    logger.debug('Event delegation set up', { 
+    console.log('Event delegation set up', { 
       eventType, 
       container: container.tagName,
       options 
@@ -560,7 +559,7 @@ export function useContextSelector<T, R>(
   const contextValue = useContext(context);
   const selectedValue = useMemo(() => selector(contextValue), [contextValue, selector]);
   
-  logger.debug('Context selector computed', {
+  console.log('Context selector computed', {
     contextChanged: contextValue !== selectedValue,
     selectorName: selector.name || 'anonymous'
   });
@@ -628,7 +627,7 @@ export function measurePerformance<T>(
   const result = fn();
   const end = performance.now();
   
-  logger.debug('Performance measurement', {
+  console.log('Performance measurement', {
     name,
     duration: end - start,
     timestamp: new Date().toISOString()

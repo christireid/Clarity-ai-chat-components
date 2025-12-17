@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Analytics Provider
  * 
@@ -90,7 +89,7 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
       const doNotTrack = navigator.doNotTrack || (window as any).doNotTrack || (navigator as any).msDoNotTrack
       if (doNotTrack === '1' || doNotTrack === 'yes') {
         if (config.debug) {
-          logger.debug('[Analytics] Disabled due to Do Not Track setting')
+          console.log('[Analytics] Disabled due to Do Not Track setting')
         }
         return false
       }
@@ -108,20 +107,20 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
     
     const initializeProviders = async () => {
       if (config.debug) {
-        logger.debug('[Analytics] Initializing providers:', config.providers?.map(p => p.name))
+        console.log('[Analytics] Initializing providers:', config.providers?.map(p => p.name))
       }
-      
+
       try {
         await Promise.all(
           config.providers!.map(provider => provider.init?.())
         )
         setIsInitialized(true)
-        
+
         if (config.debug) {
-          logger.debug('[Analytics] Providers initialized successfully')
+          console.log('[Analytics] Providers initialized successfully')
         }
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to initialize providers:', error)
+        console.error('[Analytics] Failed to initialize providers:', error)
         setIsInitialized(true) // Continue even if initialization fails
       }
     }
@@ -216,17 +215,17 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
         userId: currentUserId.current,
         sessionId,
       }
-      
+
       if (config.debug) {
-        logger.debug('[Analytics] Track:', event)
+        console.log('[Analytics] Track:', event)
       }
-      
+
       // Send to all providers
       config.providers?.forEach(provider => {
         try {
           provider.track(event)
         } catch (error) {
-          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          console.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -239,16 +238,16 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
       if (!isEnabled || !isInitialized) return
       
       currentUserId.current = user.id
-      
+
       if (config.debug) {
-        logger.debug('[Analytics] Identify:', user)
+        console.log('[Analytics] Identify:', user)
       }
-      
+
       config.providers?.forEach(provider => {
         try {
           provider.identify?.(user)
         } catch (error) {
-          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          console.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -259,16 +258,16 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
   const page = React.useCallback(
     (pageView: PageView) => {
       if (!isEnabled || !isInitialized) return
-      
+
       if (config.debug) {
-        logger.debug('[Analytics] Page:', pageView)
+        console.log('[Analytics] Page:', pageView)
       }
-      
+
       config.providers?.forEach(provider => {
         try {
           provider.page?.(pageView)
         } catch (error) {
-          logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
+          console.error(`[Analytics] Error in provider ${provider.name}:`, error)
         }
       })
     },
@@ -280,16 +279,16 @@ export function AnalyticsProvider({ children, config }: AnalyticsProviderProps) 
     if (!isEnabled || !isInitialized) return
     
     currentUserId.current = undefined
-    
+
     if (config.debug) {
-      logger.debug('[Analytics] Reset')
+      console.log('[Analytics] Reset')
     }
-    
+
     config.providers?.forEach(provider => {
       try {
         provider.reset?.()
       } catch (error) {
-        logger.logger.error(`[Analytics] Error in provider ${provider.name}:`, error)
+        console.error(`[Analytics] Error in provider ${provider.name}:`, error)
       }
     })
   }, [isEnabled, isInitialized, config])

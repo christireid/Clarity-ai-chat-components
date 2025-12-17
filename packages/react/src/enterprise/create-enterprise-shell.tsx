@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * createEnterpriseShell - Top-level API for enterprise setup
  *
@@ -169,7 +168,7 @@ export function createEnterpriseShell(
     logEvent: (event: string, data?: any) => {
       if (!audit.enabled) return
       // Audit logging logic would go here
-      logger.debug('[Audit]', event, data)
+      console.log('[Audit]', event, data)
     },
   }
 

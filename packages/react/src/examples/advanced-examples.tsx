@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Advanced / Enterprise Examples - Full Power Demonstrations
  *
@@ -39,11 +38,11 @@ export function Advanced_EnterpriseChatStack() {
           showMessageCount
           onMessageFeedback={(msg, feedback) => {
             // Custom feedback handling
-            logger.debug('Feedback received:', { msg, feedback })
+            console.log('Feedback received:', { msg, feedback })
           }}
           onExport={() => {
             // Custom export logic
-            logger.debug('Exporting conversation')
+            console.log('Exporting conversation')
           }}
         />
       </MemoryProvider>
@@ -203,7 +202,7 @@ export function Advanced_CustomIntegrations() {
         body: JSON.stringify({ message: content }),
       })
     } catch (error) {
-      logger.logger.error('External service error:', error)
+      console.error('External service error:', error)
     }
   }, [])
 
@@ -211,7 +210,7 @@ export function Advanced_CustomIntegrations() {
   React.useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1]
-      logger.debug('New message:', {
+      console.log('New message:', {
         role: lastMessage.role,
         content: lastMessage.content.substring(0, 50),
       })
@@ -233,7 +232,7 @@ export function Advanced_CustomIntegrations() {
       onMessageCopy={(id, content) => {
         // Custom copy handling
         navigator.clipboard.writeText(content)
-        logger.debug('Copied message:', id)
+        console.log('Copied message:', id)
       }}
       onMessageFeedback={(id, type) => {
         // Custom feedback handling

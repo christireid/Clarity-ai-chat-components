@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Configuration validator
  * 
@@ -407,10 +406,10 @@ export function printValidationResults(results: ValidationResult, title?: string
     const content = results.warnings.length > 0
       ? `All validations passed with ${results.warnings.length} warning(s)`
       : 'All validations passed!'
-    
-    logger.debug()
-    logger.debug(successBox(content, title || '✅ Validation'))
-    logger.debug()
+
+    console.log()
+    console.log(successBox(content, title || '✅ Validation'))
+    console.log()
     
     if (results.warnings.length > 0) {
       const columns: TableColumn[] = [
@@ -419,8 +418,8 @@ export function printValidationResults(results: ValidationResult, title?: string
       ]
 
       const warningData = results.warnings.map(w => [w.field, w.message])
-      logger.debug(table(warningData, columns))
-      logger.debug()
+      console.log(table(warningData, columns))
+      console.log()
     }
     
     return
@@ -439,11 +438,11 @@ export function printValidationResults(results: ValidationResult, title?: string
     error.message,
   ])
 
-  logger.debug()
-  logger.debug(errorBox('Validation failed', title || '❌ Validation'))
-  logger.debug()
-  logger.debug(table(errorData, columns))
-  logger.debug()
+  console.log()
+  console.log(errorBox('Validation failed', title || '❌ Validation'))
+  console.log()
+  console.log(table(errorData, columns))
+  console.log()
 
   if (results.warnings.length > 0) {
     const warningColumns: TableColumn[] = [
@@ -452,10 +451,10 @@ export function printValidationResults(results: ValidationResult, title?: string
     ]
 
     const warningData = results.warnings.map(w => [w.field, w.message])
-    logger.debug(warningBox('Additional warnings', '⚠️  Warnings'))
-    logger.debug()
-    logger.debug(table(warningData, warningColumns))
-    logger.debug()
+    console.log(warningBox('Additional warnings', '⚠️  Warnings'))
+    console.log()
+    console.log(table(warningData, warningColumns))
+    console.log()
   }
 }
 

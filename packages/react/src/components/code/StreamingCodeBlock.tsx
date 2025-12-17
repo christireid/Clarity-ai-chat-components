@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -126,7 +125,7 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
           })
           setHighlightedHtml(html)
         } catch (err) {
-          logger.logger.error('Shiki streaming highlight failed:', err)
+          console.error('Shiki streaming highlight failed:', err)
           setHighlightedHtml(`<code>${escapeHtml(codeToHighlight)}</code>`)
         } finally {
           setIsHighlighting(false)

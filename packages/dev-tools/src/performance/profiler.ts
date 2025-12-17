@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Performance profiler for AI chat applications
  * 
@@ -76,7 +75,7 @@ class Profiler {
 
     const metrics = this.metrics.get(name)
     if (!metrics) {
-      warn(`No metrics found for operation: ${name}`)
+      console.warn(`No metrics found for operation: ${name}`)
       return
     }
 
@@ -248,9 +247,9 @@ class Profiler {
       `Average Duration: ${chalk.cyan(summary.avgDuration.toFixed(2) + 'ms')}`,
     ].join('\n')
 
-    logger.debug()
-    logger.debug(infoBox(summaryContent, '📊 Performance Summary'))
-    logger.debug()
+    console.log()
+    console.log(infoBox(summaryContent, '📊 Performance Summary'))
+    console.log()
 
     // Operations table
     const operations = this.getAllMetrics()
@@ -282,8 +281,8 @@ class Profiler {
         ]
       })
 
-      logger.debug(table(tableData, columns))
-      logger.debug()
+      console.log(table(tableData, columns))
+      console.log()
 
       // Highlight slowest/fastest
       if (summary.slowestOperation && summary.fastestOperation) {
@@ -293,8 +292,8 @@ class Profiler {
           chalk.yellow('🐌 Slowest: ') + chalk.red(summary.slowestOperation.name) + 
             chalk.gray(` (${summary.slowestOperation.duration?.toFixed(2)}ms)`),
         ].join('\n')
-        logger.debug(infoBox(highlight, '⚡ Highlights'))
-        logger.debug()
+        console.log(infoBox(highlight, '⚡ Highlights'))
+        console.log()
       }
     }
   }
@@ -318,11 +317,11 @@ class Profiler {
       'Max': chalk.yellow(metrics.maxChunkTime.toFixed(2) + 'ms'),
     }
 
-    logger.debug()
-    logger.debug(infoBox(keyValueTable(metricsData), '📡 Streaming Performance'))
-    logger.debug()
-    logger.debug(infoBox(keyValueTable(timingData), '⏱️  Chunk Timing'))
-    logger.debug()
+    console.log()
+    console.log(infoBox(keyValueTable(metricsData), '📡 Streaming Performance'))
+    console.log()
+    console.log(infoBox(keyValueTable(timingData), '⏱️  Chunk Timing'))
+    console.log()
   }
 
   /**

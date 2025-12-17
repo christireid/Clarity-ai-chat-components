@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Chat Recipe Components - Pre-built combinations for common patterns
  * 
@@ -249,7 +248,7 @@ export function ChatComplete({
     <ErrorBoundary
       onError={(error, errorInfo) => {
         onError?.(error)
-        logger.logger.error('[ChatComplete] Error:', error, errorInfo)
+        console.error('[ChatComplete] Error:', error, errorInfo)
       }}
     >
       {chatComponent}

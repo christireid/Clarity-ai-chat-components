@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -271,7 +270,7 @@ function estimateTokensFromText(text: string): number {
  *   outputCostPerToken: 0.00004,
  *   warningThreshold: 0.7,
  *   onWarning: () => {
- *     logger.debug('Approaching token limit')
+ *     console.log('Approaching token limit')
  *   },
  *   onCritical: () => {
  *     showPruneDialog()

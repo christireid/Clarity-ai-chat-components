@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Middleware Pipeline System
  *
@@ -43,24 +42,24 @@ function createDefaultLogger(): ExtensionLogger {
   const isDev = process.env.NODE_ENV === 'development'
   return {
     debug: (msg, ...args) => {
-      if (isDev) logger.debug('[Middleware]', msg, ...args)
+      if (isDev) console.log('[Middleware]', msg, ...args)
     },
     info: (msg, ...args) => {
-      if (isDev) logger.info('[Middleware]', msg, ...args)
+      if (isDev) console.info('[Middleware]', msg, ...args)
     },
-    warn: (msg, ...args) => logger.warn('[Middleware]', msg, ...args),
-    error: (msg, ...args) => logger.logger.error('[Middleware]', msg, ...args),
+    warn: (msg, ...args) => console.warn('[Middleware]', msg, ...args),
+    error: (msg, ...args) => console.error('[Middleware]', msg, ...args),
     child: (prefix) => ({
       debug: (msg, ...args) => {
-        if (isDev) logger.debug(`[Middleware:${prefix}]`, msg, ...args)
+        if (isDev) console.log(`[Middleware:${prefix}]`, msg, ...args)
       },
       info: (msg, ...args) => {
-        if (isDev) logger.info(`[Middleware:${prefix}]`, msg, ...args)
+        if (isDev) console.info(`[Middleware:${prefix}]`, msg, ...args)
       },
       warn: (msg, ...args) =>
-        logger.warn(`[Middleware:${prefix}]`, msg, ...args),
+        console.warn(`[Middleware:${prefix}]`, msg, ...args),
       error: (msg, ...args) =>
-        logger.logger.error(`[Middleware:${prefix}]`, msg, ...args),
+        console.error(`[Middleware:${prefix}]`, msg, ...args),
       child: function (p: string) {
         return createDefaultLogger().child(`${prefix}:${p}`)
       },
@@ -110,19 +109,19 @@ class MiddlewarePipelineImpl<
       }
 
       try {
-        context.logger.debug(`Executing middleware: ${current.name}`)
+        context.console.log(`Executing middleware: ${current.name}`)
         const start = performance.now()
 
         const result = await current.handler(input, context, chain)
 
         const duration = performance.now() - start
-        context.logger.debug(
+        context.console.log(
           `Middleware ${current.name} completed in ${duration.toFixed(2)}ms`
         )
 
         return result
       } catch (error) {
-        context.logger.error(`Middleware ${current.name} failed:`, error)
+        context.console.error(`Middleware ${current.name} failed:`, error)
         throw error
       }
     }
@@ -157,19 +156,19 @@ export function createLoggingMiddleware<T>(name = 'logging'): Middleware<T, T> {
     name,
     priority: 1,
     handler: async (input, context, next) => {
-      context.logger.info(`Request ${context.requestId} started`)
+      context.console.info(`Request ${context.requestId} started`)
       const start = performance.now()
 
       try {
         const result = await next()
         const duration = performance.now() - start
-        context.logger.info(
+        context.console.info(
           `Request ${context.requestId} completed in ${duration.toFixed(2)}ms`
         )
         return result
       } catch (error) {
         const duration = performance.now() - start
-        context.logger.error(
+        context.console.error(
           `Request ${context.requestId} failed after ${duration.toFixed(2)}ms:`,
           error
         )
@@ -244,7 +243,7 @@ export function createRetryMiddleware<T>(
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
           if (attempt > 0) {
-            context.logger.info(
+            context.console.info(
               `Request ${context.requestId} retry attempt ${attempt}/${maxRetries}`
             )
           }
@@ -338,7 +337,7 @@ export function createCachingMiddleware<T>(
       const now = Date.now()
 
       if (cached && cached.expires > now) {
-        context.logger.debug(`Cache hit for ${key}`)
+        context.console.log(`Cache hit for ${key}`)
         return cached.value
       }
 
@@ -347,7 +346,7 @@ export function createCachingMiddleware<T>(
         cache.delete(key)
       }
 
-      context.logger.debug(`Cache miss for ${key}`)
+      context.console.log(`Cache miss for ${key}`)
       const result = await next()
 
       // Evict expired entries first, then oldest if still over limit

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * AI Assistant Template
  *
@@ -77,14 +76,14 @@ export function AIAssistantTemplate({
   } = useMessageOperations({
     initialMessages: [],
     onEdit: (messageId, newContent) => {
-      logger.debug('Message edited:', messageId, newContent)
+      console.log('Message edited:', messageId, newContent)
     },
     onRegenerate: (messageId) => {
-      logger.debug('Regenerating:', messageId)
+      console.log('Regenerating:', messageId)
       // Will be handled by handleRegenerate below
     },
     onDelete: (messageId) => {
-      logger.debug('Message deleted:', messageId)
+      console.log('Message deleted:', messageId)
     },
   })
 
@@ -271,7 +270,7 @@ export function AIAssistantTemplate({
               content: responseContent,
             })
           } catch (error) {
-            logger.logger.error('AI Assistant error:', error)
+            console.error('AI Assistant error:', error)
             addOperationMessage({
               chatId,
               role: 'assistant',
@@ -401,7 +400,7 @@ export function AIAssistantTemplate({
           content: responseContent,
         })
       } catch (error) {
-        logger.logger.error('AI Assistant error:', error)
+        console.error('AI Assistant error:', error)
         addOperationMessage({
           chatId,
           role: 'assistant',

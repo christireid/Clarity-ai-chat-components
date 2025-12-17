@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Intermediate Examples - Real-World Usage Patterns
  * 
@@ -40,10 +39,10 @@ export function Intermediate_CustomChat() {
       onClear={clearMessages}
       onMessageCopy={(id, content) => {
         navigator.clipboard.writeText(content)
-        logger.debug('Message copied:', id)
+        console.log('Message copied:', id)
       }}
       onMessageFeedback={(id, type) => {
-        logger.debug('Feedback:', { id, type })
+        console.log('Feedback:', { id, type })
       }}
     />
   )
@@ -65,7 +64,7 @@ export function Intermediate_ChatWithAnalytics() {
         sessionTitle="Analytics Chat"
         onMessageFeedback={(id, type) => {
           // Analytics tracked automatically via provider
-          logger.debug('Feedback tracked:', { id, type })
+          console.log('Feedback tracked:', { id, type })
         }}
       />
     </AnalyticsProvider>
@@ -114,7 +113,7 @@ export function Intermediate_ChatWithErrorHandling() {
   
   React.useEffect(() => {
     if (error) {
-      logger.logger.error('Chat error:', error)
+      console.error('Chat error:', error)
       // Could integrate with error tracking service
     }
   }, [error])
@@ -138,7 +137,7 @@ export function Intermediate_ChatWithErrorHandling() {
         onSendMessage={sendMessage}
         onMessageRetry={(id) => {
           // Custom retry logic
-          logger.debug('Retrying message:', id)
+          console.log('Retrying message:', id)
         }}
       />
     </div>

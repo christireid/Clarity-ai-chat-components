@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useArchitectChat Hook
  *
@@ -199,7 +198,7 @@ export function parseResponseBlocks(content: string): ParsedResponseBlock[] {
  *   recipe: 'masterArchitect',
  *   onBlocksParsed: (blocks) => {
  *     const codeBlocks = blocks.filter(b => b.type === 'code')
- *     logger.debug('Generated code:', codeBlocks)
+ *     console.log('Generated code:', codeBlocks)
  *   },
  * })
  *
@@ -207,7 +206,7 @@ export function parseResponseBlocks(content: string): ParsedResponseBlock[] {
  * await architect.sendMessage('Review this code for security issues: ...')
  *
  * // Check workflow progress
- * logger.debug(`Phase: ${architect.currentPhase}, Progress: ${architect.progress}%`)
+ * console.log(`Phase: ${architect.currentPhase}, Progress: ${architect.progress}%`)
  *
  * // Get parsed content
  * const code = architect.getCodeBlocks()

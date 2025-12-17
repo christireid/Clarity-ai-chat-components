@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Production-Ready Memory Service
  * 
@@ -149,7 +148,7 @@ export class MemoryService {
     options?: MemoryStorageOptions
   ): Promise<void> {
     if (!this.config.vectorStore) {
-      logger.warn('Vector store not configured, falling back to session memory')
+      console.warn('Vector store not configured, falling back to session memory')
       await this.storeSessionMemory(memory)
       return
     }
@@ -158,7 +157,7 @@ export class MemoryService {
       // Store in vector database with retry logic
       await this.storeWithRetry(memory, 3)
     } catch (error) {
-      logger.logger.error('Failed to store in vector database, falling back to session memory:', error)
+      console.error('Failed to store in vector database, falling back to session memory:', error)
       // Fallback to session memory on failure
       await this.storeSessionMemory(memory)
     }
@@ -288,7 +287,7 @@ export class MemoryService {
 
       return result as MemoryItem[]
     } catch (error) {
-      logger.logger.error('Long-term memory retrieval failed:', error)
+      console.error('Long-term memory retrieval failed:', error)
       // Fallback: return empty array and continue with other layers
       return []
     }

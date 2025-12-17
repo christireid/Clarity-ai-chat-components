@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * generate command - Generate code (component, hook, context, adapter, test)
  *
@@ -416,7 +415,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   const generator = GENERATORS[type]
 
   if (!generator) {
-    logger.error(`Unknown generator type: ${type}`)
+    console.error(`Unknown generator type: ${type}`)
 
     // Display available generators in a beautiful table
     const columns: TableColumn[] = [
@@ -453,7 +452,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   let name = options.name
   if (!name) {
     if (options.yes) {
-      log.logger.error('--name is required when using --yes flag')
+      console.error('--name is required when using --yes flag')
       process.exit(1)
     }
     name = await promptText({
@@ -473,7 +472,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   } else {
     const validation = validateName(name)
     if (validation) {
-      log.logger.error(validation)
+      console.error(validation)
       process.exit(1)
     }
   }
@@ -665,7 +664,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     // Clean up on error
     await clearCleanup()
 
-    log.logger.error(error instanceof Error ? error.message : String(error))
+    console.error(error instanceof Error ? error.message : String(error))
     console.log()
     console.log(
       errorBox('Failed to generate files. Check the error above.', '✗ Error')

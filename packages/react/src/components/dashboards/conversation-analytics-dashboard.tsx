@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -580,7 +579,7 @@ export function ConversationAnalyticsDashboard({
       setAnalytics(result)
       onAnalyticsGenerated?.(result)
     } catch (err) {
-      logger.logger.error('Analytics generation error:', err)
+      console.error('Analytics generation error:', err)
       setError(
         err instanceof Error ? err.message : 'Failed to generate analytics'
       )

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 import { useStreamingSSE } from '../hooks/use-streaming-sse'
 import { useStreamingWebSocket } from '../hooks/use-streaming-websocket'
@@ -34,17 +33,17 @@ export const SSEStreamingChatExample: React.FC = () => {
     onMessage: (event) => {
       // Handle special event types
       if (event.type === 'done') {
-        logger.debug('Stream completed')
+        console.log('Stream completed')
         disconnect()
       } else if (event.type === 'error') {
-        logger.logger.error('Server error:', event.data)
+        console.error('Server error:', event.data)
       }
     },
     onError: (error) => {
-      logger.logger.error('SSE Error:', error)
+      console.error('SSE Error:', error)
     },
     onReconnecting: (attempt, delay) => {
-      logger.debug(`Reconnecting... Attempt ${attempt}, delay ${delay}ms`)
+      console.log(`Reconnecting... Attempt ${attempt}, delay ${delay}ms`)
     },
   })
 
@@ -164,10 +163,10 @@ export const WebSocketChatExample: React.FC = () => {
       }
     },
     onError: (error) => {
-      logger.logger.error('WebSocket Error:', error)
+      console.error('WebSocket Error:', error)
     },
     onReconnecting: (attempt, delay) => {
-      logger.debug(`Reconnecting... Attempt ${attempt}, delay ${delay}ms`)
+      console.log(`Reconnecting... Attempt ${attempt}, delay ${delay}ms`)
     },
   })
 

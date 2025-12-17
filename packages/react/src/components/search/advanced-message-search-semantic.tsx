@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -562,7 +561,7 @@ export function SemanticMessageSearch({
         if (!isMountedRef.current) return
         if (err instanceof Error && err.name === 'AbortError') return
 
-        logger.logger.error('Search error:', err)
+        console.error('Search error:', err)
         setError(err instanceof Error ? err.message : 'Search failed')
       } finally {
         if (isMountedRef.current) {

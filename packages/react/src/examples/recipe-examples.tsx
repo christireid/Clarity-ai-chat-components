@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Recipe Component Examples
  * 
@@ -39,15 +38,15 @@ export function AnalyticsChatExample() {
       <ChatWithAnalytics
         api="/api/chat"
         onMessageSent={(content) => {
-          logger.debug('Message sent:', content)
+          console.log('Message sent:', content)
           // Send to analytics service
         }}
         onMessageReceived={(messageId) => {
-          logger.debug('Message received:', messageId)
+          console.log('Message received:', messageId)
           // Track in analytics
         }}
         onError={(error) => {
-          logger.logger.error('Chat error:', error)
+          console.error('Chat error:', error)
           // Send to error tracking
         }}
       />
@@ -91,7 +90,7 @@ export function ErrorHandlingChatExample() {
       <ChatWithErrorHandling
         api="/api/chat"
         onError={(error, errorInfo) => {
-          logger.logger.error('Error caught:', error, errorInfo)
+          console.error('Error caught:', error, errorInfo)
           // Send to error tracking service
         }}
         errorFallback={(error, reset) => (
@@ -117,13 +116,13 @@ export function CompleteChatExample() {
         memoryStrategy="vector-store"
         storageKey="complete-chat"
         onMessageSent={(content) => {
-          logger.debug('Sent:', content)
+          console.log('Sent:', content)
         }}
         onMessageReceived={(id) => {
-          logger.debug('Received:', id)
+          console.log('Received:', id)
         }}
         onError={(error) => {
-          logger.logger.error('Error:', error)
+          console.error('Error:', error)
         }}
       />
     </div>

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Accessibility Utilities
  * 
@@ -104,11 +103,11 @@ export function useFocusManagement(
       const initialElement = containerRef.current.querySelector(initialFocus) as HTMLElement;
       if (initialElement && focusableElementsRef.current.includes(initialElement)) {
         initialElement.focus({ preventScroll: false });
-        logger.debug('Focus set to initial element', { selector: initialFocus });
+        console.log('Focus set to initial element', { selector: initialFocus });
       }
     } else if (focusableElementsRef.current.length > 0) {
       focusableElementsRef.current[0].focus({ preventScroll: false });
-      logger.debug('Focus set to first focusable element');
+      console.log('Focus set to first focusable element');
     }
 
     // Handle focus trapping
@@ -125,7 +124,7 @@ export function useFocusManagement(
           : (currentIndex + 1) % focusableElementsRef.current.length;
 
         focusableElementsRef.current[nextIndex].focus();
-        logger.debug('Focus trapped to next element', { direction: event.shiftKey ? 'previous' : 'next' });
+        console.log('Focus trapped to next element', { direction: event.shiftKey ? 'previous' : 'next' });
       };
 
       document.addEventListener('keydown', handleKeyDown);
@@ -143,7 +142,7 @@ export function useFocusManagement(
 
         if (elementToFocus && elementToFocus.focus) {
           elementToFocus.focus({ preventScroll: true });
-          logger.debug('Focus restored to previous element');
+          console.log('Focus restored to previous element');
         }
       }
     };
@@ -225,7 +224,7 @@ export function useScreenReaderAnnounce(
       region.style.overflow = 'hidden';
       document.body.appendChild(region);
       announcementRef.current = region;
-      logger.debug('Created ARIA live region', { priority });
+      console.log('Created ARIA live region', { priority });
     }
 
     const timeoutId = setTimeout(() => {
@@ -238,10 +237,10 @@ export function useScreenReaderAnnounce(
           if (announcementRef.current) {
             announcementRef.current.textContent = message;
             setIsAnnouncing(true);
-            
+
             // Reset announcing state after a reasonable time
             setTimeout(() => setIsAnnouncing(false), 1000);
-            logger.debug('Screen reader announcement', { message, priority });
+            console.log('Screen reader announcement', { message, priority });
           }
         }, 100);
       }
@@ -256,7 +255,7 @@ export function useScreenReaderAnnounce(
       if (announcementRef.current) {
         document.body.removeChild(announcementRef.current);
         announcementRef.current = null;
-        logger.debug('Removed ARIA live region');
+        console.log('Removed ARIA live region');
       }
     };
   }, []);
@@ -293,9 +292,9 @@ export function useHighContrastMode(): boolean {
       
       const highContrast = isWindowsHighContrast || isForcedColors;
       setIsHighContrast(highContrast);
-      
+
       if (highContrast) {
-        logger.debug('High contrast mode detected', {
+        console.log('High contrast mode detected', {
           windowsHighContrast: isWindowsHighContrast,
           forcedColors: isForcedColors
         });
@@ -336,7 +335,7 @@ export function useReducedMotion(): boolean {
 
     const handleChange = (event: MediaQueryListEvent) => {
       setPrefersReducedMotion(event.matches);
-      logger.debug('Reduced motion preference changed', { prefersReducedMotion: event.matches });
+      console.log('Reduced motion preference changed', { prefersReducedMotion: event.matches });
     };
 
     mediaQuery.addEventListener('change', handleChange);
@@ -385,15 +384,15 @@ export function useColorContrast(
         largeAAA: ratio >= 4.5
       };
       setContrast(result);
-      
-      logger.debug('Color contrast calculated', {
+
+      console.log('Color contrast calculated', {
         foreground: foregroundColor,
         background: backgroundColor,
         ratio,
         wcag: result
       });
     } catch (error) {
-      logger.logger.error('Color contrast calculation failed', {
+      console.error('Color contrast calculation failed', {
         foreground: foregroundColor,
         background: backgroundColor,
         error: error instanceof Error ? error.message : String(error)
@@ -503,7 +502,7 @@ export function useKeyboardNavigation(
           event.preventDefault();
         }
         handler(event);
-        logger.debug('Keyboard navigation event handled', { key: event.key });
+        console.log('Keyboard navigation event handled', { key: event.key });
       }
     };
 
@@ -531,7 +530,7 @@ export function useFocusManagementLegacy() {
    */
   const captureFocus = useCallback(() => {
     previousFocusRef.current = document.activeElement as HTMLElement;
-    logger.debug('Focus captured for error handling');
+    console.log('Focus captured for error handling');
   }, []);
 
   /**
@@ -540,7 +539,7 @@ export function useFocusManagementLegacy() {
   const focusError = useCallback(() => {
     if (errorContainerRef.current) {
       errorContainerRef.current.focus({ preventScroll: false });
-      logger.debug('Focus moved to error container');
+      console.log('Focus moved to error container');
     }
   }, []);
 
@@ -551,7 +550,7 @@ export function useFocusManagementLegacy() {
     if (previousFocusRef.current && previousFocusRef.current.focus) {
       previousFocusRef.current.focus({ preventScroll: true });
       previousFocusRef.current = null;
-      logger.debug('Focus restored to previous element');
+      console.log('Focus restored to previous element');
     }
   }, []);
 
@@ -629,8 +628,8 @@ export function useAnnounce() {
           announceRef.current.textContent = message;
         }
       }, 100);
-      
-      logger.debug('Screen reader announcement (legacy)', { message, priority });
+
+      console.log('Screen reader announcement (legacy)', { message, priority });
     },
     []
   );

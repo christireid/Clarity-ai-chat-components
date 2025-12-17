@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useClarityChat - Top-Level Chat State Hook
  *
@@ -217,7 +216,7 @@ export function useClarityChat(
 
           setMemoryError({ error: err, operation: 'store', errorType })
           memory.onMemoryError?.(err, 'store')
-          logger.warn(
+          console.warn(
             `[Clarity Chat] Memory storage failed (${errorType}):`,
             err.message
           )
@@ -297,7 +296,7 @@ export function useClarityChat(
 
               setMemoryError({ error: err, operation: 'query', errorType })
               memory.onMemoryError?.(err, 'query')
-              logger.warn(
+              console.warn(
                 `[Clarity Chat] Memory query failed (${errorType}):`,
                 err.message
               )
@@ -311,7 +310,7 @@ export function useClarityChat(
           const err = error as Error
           const errorType = classifyError(err)
           memory.onMemoryError?.(err, 'query')
-          logger.warn(
+          console.warn(
             `[Clarity Chat] Memory operation failed (${errorType}):`,
             err.message
           )
@@ -386,7 +385,7 @@ export function useClarityChat(
             },
           })
         } catch (error) {
-          logger.warn('[useClarityChat] Prompt optimization failed:', error)
+          console.warn('[useClarityChat] Prompt optimization failed:', error)
         }
       }
 

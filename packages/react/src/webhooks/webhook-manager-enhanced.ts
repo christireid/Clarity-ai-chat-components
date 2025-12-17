@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Webhook Manager (SECURITY FIXED)
  *
@@ -130,7 +129,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
         }
       }
     } catch (error) {
-      logger.logger.error('Failed to load pending deliveries:', error)
+      console.error('Failed to load pending deliveries:', error)
     }
   }
 
@@ -231,7 +230,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
 
       // Check rate limit
       if (!this.checkRateLimit(endpoint.id)) {
-        logger.warn(`Rate limit exceeded for endpoint ${endpoint.id}`)
+        console.warn(`Rate limit exceeded for endpoint ${endpoint.id}`)
         continue
       }
 
@@ -406,11 +405,11 @@ export class EnhancedWebhookManager implements WebhookHandler {
       if (timestamp) {
         const age = Date.now() - timestamp
         if (age > this.config.maxTimestampAge) {
-          logger.warn('Webhook timestamp too old, possible replay attack')
+          console.warn('Webhook timestamp too old, possible replay attack')
           return false
         }
         if (age < -60000) {
-          logger.warn('Webhook timestamp is in the future')
+          console.warn('Webhook timestamp is in the future')
           return false
         }
       }
@@ -429,7 +428,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
 
       return result === 0
     } catch (error) {
-      logger.logger.error('Signature verification error:', error)
+      console.error('Signature verification error:', error)
       return false
     }
   }

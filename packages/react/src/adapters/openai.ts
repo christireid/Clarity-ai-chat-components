@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * OpenAI Model Adapter
  *
@@ -214,7 +213,7 @@ export const openAIAdapter: ModelAdapter = {
               }
             }
           } catch (e) {
-            logger.logger.error('Failed to parse streaming chunk:', e)
+            console.error('Failed to parse streaming chunk:', e)
           }
         }
       }
