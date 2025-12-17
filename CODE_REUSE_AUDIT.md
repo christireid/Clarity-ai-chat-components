@@ -8,24 +8,24 @@ The current codebase demonstrates a robust monorepo structure with well-defined 
 ## Inventory of Existing Assets
 The following packages serve as the source of truth:
 
-1.  **@clarity/primitives** (`packages/primitives`)
+1.  **@clarity-chat/primitives** (`packages/primitives`)
     *   **Components**: `Button`, `Card`, `Input`, `Dialog`, `Icons`, etc.
     *   **Utils**: `cn` (Tailwind merge), `formatRelativeTime`, `copyToClipboard`.
-2.  **@clarity/react** (`packages/react`)
+2.  **@clarity-chat/react** (`packages/react`)
     *   **Hooks**: `useClarityChat`, `useTokenBudgetMonitor`, `useAssistant`.
     *   **Components**: `ClarityChat`, `ChatWindow`, `MessageList`.
     *   **Utils**: Advanced AI helpers, streaming utilities.
-3.  **@clarity/utils** (`packages/utils`)
+3.  **@clarity-chat/utils** (`packages/utils`)
     *   **Modules**: `format`, `cache`, `async`, `validation`, `errors`.
 
 ## Critical Issues (Must Fix)
 
 | File | Issue | Existing Asset to Use | Refactor Approach |
 |------|-------|----------------------|-------------------|
-| `apps/marketing-site/lib/utils.ts` | Duplicate `cn` utility function | `@clarity/primitives/lib/utils` or `@clarity/react` | Remove local definition, import from package. |
-| `apps/marketing-site/components/marketing-assistant/ChatWidget.tsx` | Re-implements chat logic using raw `ai/react` | `@clarity/react` (`useClarityChat`) | Replace `useChat` with `useClarityChat` to inherit enterprise features (token tracking, etc.). |
-| `apps/marketing-site/components/ui/MagneticButton.tsx` | Custom Button with hardcoded styles | `@clarity/primitives` (`Button`) | Refactor to use `Button` as base, or move "Magnetic" logic to a wrapper/hook in primitives. |
-| `apps/marketing-site/components/marketing-assistant/ChatWidget.tsx` | Local Lucide icons imports | `@clarity/primitives/components/icons` | Standardize on package icons to ensure consistent stroke width/size. |
+| `apps/marketing-site/lib/utils.ts` | Duplicate `cn` utility function | `@clarity-chat/primitives/lib/utils` or `@clarity-chat/react` | Remove local definition, import from package. |
+| `apps/marketing-site/components/marketing-assistant/ChatWidget.tsx` | Re-implements chat logic using raw `ai/react` | `@clarity-chat/react` (`useClarityChat`) | Replace `useChat` with `useClarityChat` to inherit enterprise features (token tracking, etc.). |
+| `apps/marketing-site/components/ui/MagneticButton.tsx` | Custom Button with hardcoded styles | `@clarity-chat/primitives` (`Button`) | Refactor to use `Button` as base, or move "Magnetic" logic to a wrapper/hook in primitives. |
+| `apps/marketing-site/components/marketing-assistant/ChatWidget.tsx` | Local Lucide icons imports | `@clarity-chat/primitives/components/icons` | Standardize on package icons to ensure consistent stroke width/size. |
 
 ## Opportunities (Nice to Have)
 
@@ -43,4 +43,4 @@ The following packages serve as the source of truth:
 ## New Abstractions
 
 *   **`useMagnetic`**: Hook for mouse-following effects.
-*   **`ChatWidget`**: The floating chat widget pattern is likely needed by other apps (e.g., `docs-site`). It should be promoted to `@clarity/react/components/chat/floating-chat-widget.tsx`.
+*   **`ChatWidget`**: The floating chat widget pattern is likely needed by other apps (e.g., `docs-site`). It should be promoted to `@clarity-chat/react/components/chat/floating-chat-widget.tsx`.
