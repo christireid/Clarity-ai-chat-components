@@ -502,6 +502,7 @@ export {
 
 // UI Primitives
 export * from './components/ui/skeleton'
+export * from './components/ui/animated-dots'
 export * from './components/ui/animated-list'
 export * from './components/ui/toast'
 export * from './components/ui/progress'
