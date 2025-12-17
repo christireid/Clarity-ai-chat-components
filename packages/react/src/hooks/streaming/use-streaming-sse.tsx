@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -109,8 +108,8 @@ export interface UseStreamingSSEReturn {
   /** Accumulated data from streaming events */
   data: string
 
-  /** Current error if any */
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
 
   /** Connect to SSE endpoint */
   connect: () => void
@@ -520,7 +519,9 @@ export function useStreamingSSE(
           connect()
         }, delay)
       } else if (reconnectAttempt >= maxReconnectAttempts) {
-        logger.logger.error('[useStreamingSSE] Max reconnection attempts reached')
+        logger.logger.error(
+          '[useStreamingSSE] Max reconnection attempts reached'
+        )
         onMaxReconnectAttemptsReached?.()
         shouldReconnectRef.current = false
       }

@@ -1,4 +1,5 @@
-import { logger } from '@clarity-chat/utils/logger';
+'use client'
+
 /**
  * useStreamingChat - Top-level hook for streaming chat
  *
@@ -13,9 +14,8 @@ import { logger } from '@clarity-chat/utils/logger';
  *
  * await chat.send('Hello')
  * ```
+ * @module
  */
-
-'use client'
 
 import * as React from 'react'
 import {
@@ -51,8 +51,8 @@ export interface UseStreamingChatReturn {
   send: (content: string) => Promise<void>
   /** Whether streaming is active */
   isStreaming: boolean
-  /** Current error */
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
 }
 
 /**
