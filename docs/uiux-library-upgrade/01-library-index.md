@@ -125,7 +125,27 @@ _[To be cataloged]_
 ### Current Hook Count
 
 **Claimed**: 140+ hooks  
-**Actual**: _[To be counted]_
+**Actual**: **101 hook files** (excluding tests) **Breakdown by Category**:
+
+- Chat hooks: 20
+- UI hooks: 17
+- Performance: 7
+- Streaming: 6
+- Input: 6
+- Keyboard: 6
+- Resilience: 5
+- Theme: 5
+- Token: 5
+- Dashboard: 4
+- Message: 4
+- Storage: 4
+- ClarityChat: 4
+- Context: 2
+- Model: 2
+- Security: 2
+- Plus 1 top-level hook
+
+**Note**: Similar to components, many files export multiple hooks. Detailed cataloging needed.
 
 ### Hook Categories
 
