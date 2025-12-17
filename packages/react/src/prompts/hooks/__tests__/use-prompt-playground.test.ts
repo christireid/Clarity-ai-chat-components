@@ -101,13 +101,17 @@ describe('usePromptPlayground', () => {
         result.current.setVariables({ name: 'Alice', age: '30' })
       })
 
-      expect(result.current.state.variables).toEqual({ name: 'Alice', age: '30' })
+      expect(result.current.state.variables).toEqual({
+        name: 'Alice',
+        age: '30',
+      })
     })
 
     it('should extract variables from template', () => {
       const { result } = renderHook(() =>
         usePromptPlayground({
-          initialTemplate: 'Hello {{name}}, you are {{age}} years old. {{name}} is great!',
+          initialTemplate:
+            'Hello {{name}}, you are {{age}} years old. {{name}} is great!',
         })
       )
 
@@ -157,14 +161,13 @@ describe('usePromptPlayground', () => {
       // Before debounce
       expect(onRender).not.toHaveBeenCalled()
 
-      // After debounce
-      act(() => {
+      // After debounce - advance timers and flush all pending effects
+      await act(async () => {
         vi.advanceTimersByTime(150)
+        await vi.runAllTimersAsync()
       })
 
-      await waitFor(() => {
-        expect(result.current.state.output).toBe('Hello Universe')
-      })
+      expect(result.current.state.output).toBe('Hello Universe')
     })
 
     it('should report errors for invalid templates', () => {
@@ -236,7 +239,9 @@ describe('usePromptPlayground', () => {
       )
 
       expect(result.current.pricing.id).toBe('gpt-3.5-turbo')
-      expect(result.current.pricing.inputCostPer1k).toBe(MODEL_PRICING['gpt-3.5-turbo']?.inputCostPer1k)
+      expect(result.current.pricing.inputCostPer1k).toBe(
+        MODEL_PRICING['gpt-3.5-turbo']?.inputCostPer1k
+      )
     })
 
     it('should change model', () => {

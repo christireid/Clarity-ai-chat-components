@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 /**
  * Pre-commit Review Checks
@@ -24,6 +21,17 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 import * as fs from 'fs'
 import * as path from 'path'
 import { execSync } from 'child_process'
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Simple logger shim (standalone script doesn't have access to SecureLogger)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SecureLogger = {
+  debug: (...args: unknown[]) => console.log(...args),
+  info: (...args: unknown[]) => console.info(...args),
+  warn: (...args: unknown[]) => console.warn(...args),
+  error: (...args: unknown[]) => console.error(...args),
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -90,7 +98,8 @@ const CHECKS: Record<string, CheckDefinition> = {
   arbitraryTailwind: {
     pattern:
       /className=["'][^"']*(?:w-\[\d+px\]|h-\[\d+px\]|p-\[\d+px\]|m-\[\d+px\]|text-\[\d+px\]|gap-\[\d+px\])/g,
-    message: 'Arbitrary pixel value found. Use design tokens (e.g., w-80 instead of w-[320px])',
+    message:
+      'Arbitrary pixel value found. Use design tokens (e.g., w-80 instead of w-[320px])',
     severity: 'warning',
     fixable: false,
   },
@@ -98,7 +107,8 @@ const CHECKS: Record<string, CheckDefinition> = {
   // Tailwind: Hardcoded hex colors
   hardcodedColors: {
     pattern: /className=["'][^"']*(?:bg-\[#|text-\[#|border-\[#)/g,
-    message: 'Hardcoded hex color found. Use theme colors (e.g., bg-gray-100 instead of bg-[#f5f5f5])',
+    message:
+      'Hardcoded hex color found. Use theme colors (e.g., bg-gray-100 instead of bg-[#f5f5f5])',
     severity: 'warning',
     fixable: false,
   },
@@ -120,7 +130,8 @@ const CHECKS: Record<string, CheckDefinition> = {
           content
         )
       const hasUseClient =
-        content.trimStart().startsWith("'use client'") || content.trimStart().startsWith('"use client"')
+        content.trimStart().startsWith("'use client'") ||
+        content.trimStart().startsWith('"use client"')
       return hasHooks && !hasUseClient
     },
     message: "File uses React hooks but missing 'use client' directive",
@@ -132,7 +143,8 @@ const CHECKS: Record<string, CheckDefinition> = {
   // TypeScript: Explicit 'any' type
   explicitAny: {
     pattern: /:\s*any(?:\s*[;,)\]}]|\s*$)/gm,
-    message: "Explicit 'any' type found. Use proper types or 'unknown' with type guards",
+    message:
+      "Explicit 'any' type found. Use proper types or 'unknown' with type guards",
     severity: 'warning',
     fixable: false,
   },
@@ -140,7 +152,8 @@ const CHECKS: Record<string, CheckDefinition> = {
   // Security: Dangerous innerHTML
   dangerousHtml: {
     pattern: /dangerouslySetInnerHTML\s*=\s*\{/g,
-    message: 'dangerouslySetInnerHTML usage found. Ensure content is sanitized (DOMPurify)',
+    message:
+      'dangerouslySetInnerHTML usage found. Ensure content is sanitized (DOMPurify)',
     severity: 'warning',
     fixable: false,
   },
@@ -148,7 +161,8 @@ const CHECKS: Record<string, CheckDefinition> = {
   // Security: Unvalidated URL in src/href
   dynamicUrl: {
     pattern: /(?:src|href)=\{[^}]*(?:user|input|param|query)[^}]*\}/gi,
-    message: 'Dynamic URL detected. Validate URLs before use to prevent XSS/open redirect',
+    message:
+      'Dynamic URL detected. Validate URLs before use to prevent XSS/open redirect',
     severity: 'warning',
     fixable: false,
   },
@@ -161,10 +175,13 @@ const CHECKS: Record<string, CheckDefinition> = {
         return false
       }
       const hasNativeImg = /<img\s+[^>]*src=/.test(content)
-      const hasNextImage = /import.*Image.*from\s+['"]next\/image['"]/.test(content)
+      const hasNextImage = /import.*Image.*from\s+['"]next\/image['"]/.test(
+        content
+      )
       return hasNativeImg && !hasNextImage
     },
-    message: 'Native <img> tag found. Use next/image for automatic optimization',
+    message:
+      'Native <img> tag found. Use next/image for automatic optimization',
     severity: 'warning',
     fixable: false,
   },
@@ -172,7 +189,8 @@ const CHECKS: Record<string, CheckDefinition> = {
   // Performance: Inline arrow functions in JSX onClick
   inlineArrowJsx: {
     pattern: /onClick=\{\s*\(\)\s*=>\s*\w+\(/g,
-    message: 'Inline arrow function in onClick. Consider useCallback for stable references',
+    message:
+      'Inline arrow function in onClick. Consider useCallback for stable references',
     severity: 'warning',
     fixable: false,
   },
@@ -249,15 +267,25 @@ function parseSuppressions(content: string): SuppressionInfo {
   return { lineSuppressions, fileSuppressions }
 }
 
-function isSuppressed(suppressions: SuppressionInfo, ruleName: string, lineNumber: number): boolean {
+function isSuppressed(
+  suppressions: SuppressionInfo,
+  ruleName: string,
+  lineNumber: number
+): boolean {
   // Check file-wide suppressions
-  if (suppressions.fileSuppressions.has(ruleName) || suppressions.fileSuppressions.has('all')) {
+  if (
+    suppressions.fileSuppressions.has(ruleName) ||
+    suppressions.fileSuppressions.has('all')
+  ) {
     return true
   }
 
   // Check line-specific suppressions
   const lineSuppressed = suppressions.lineSuppressions.get(lineNumber)
-  if (lineSuppressed && (lineSuppressed.has(ruleName) || lineSuppressed.has('all'))) {
+  if (
+    lineSuppressed &&
+    (lineSuppressed.has(ruleName) || lineSuppressed.has('all'))
+  ) {
     return true
   }
 
@@ -303,7 +331,11 @@ function getFilesFromPath(filePath: string): string[] {
       const entries = fs.readdirSync(dir, { withFileTypes: true })
       for (const entry of entries) {
         const entryPath = path.join(dir, entry.name)
-        if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
+        if (
+          entry.isDirectory() &&
+          !entry.name.startsWith('.') &&
+          entry.name !== 'node_modules'
+        ) {
           walk(entryPath)
         } else if (entry.isFile() && /\.(tsx?|jsx?)$/.test(entry.name)) {
           files.push(entryPath)
@@ -322,7 +354,10 @@ function getFilesFromPath(filePath: string): string[] {
 // Core Check Logic
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function checkFile(filePath: string, options: Options): Promise<{ issues: Issue[]; fixed: Issue[] }> {
+async function checkFile(
+  filePath: string,
+  options: Options
+): Promise<{ issues: Issue[]; fixed: Issue[] }> {
   const issues: Issue[] = []
   const fixed: Issue[] = []
 
@@ -335,7 +370,9 @@ async function checkFile(filePath: string, options: Options): Promise<{ issues: 
     for (const [ruleName, check] of Object.entries(CHECKS)) {
       // Skip if file matches exclude pattern
       if (check.exclude) {
-        const shouldExclude = check.exclude.some((pattern) => filePath.includes(pattern))
+        const shouldExclude = check.exclude.some((pattern) =>
+          filePath.includes(pattern)
+        )
         if (shouldExclude) continue
       }
 
@@ -433,13 +470,18 @@ async function checkFile(filePath: string, options: Options): Promise<{ issues: 
   return { issues, fixed }
 }
 
-async function checkFiles(files: string[], options: Options): Promise<CheckResult> {
+async function checkFiles(
+  files: string[],
+  options: Options
+): Promise<CheckResult> {
   const startTime = Date.now()
   const allIssues: Issue[] = []
   const allFixed: Issue[] = []
 
   // Process files in parallel for performance
-  const results = await Promise.all(files.map((file) => checkFile(file, options)))
+  const results = await Promise.all(
+    files.map((file) => checkFile(file, options))
+  )
 
   for (const result of results) {
     allIssues.push(...result.issues)
@@ -461,21 +503,29 @@ async function checkFiles(files: string[], options: Options): Promise<CheckResul
 
 function printConsoleResults(result: CheckResult): void {
   if (result.issues.length === 0 && result.fixed.length === 0) {
-    SecureLogger.debug(`${colors.green}✓ All review checks passed${colors.reset}`)
+    SecureLogger.debug(
+      `${colors.green}✓ All review checks passed${colors.reset}`
+    )
     SecureLogger.debug(
       `${colors.dim}  Checked ${result.filesChecked} file(s) in ${result.duration}ms${colors.reset}`
     )
     return
   }
 
-  SecureLogger.debug(`\n${colors.cyan}━━━ Review Check Results ━━━${colors.reset}\n`)
+  SecureLogger.debug(
+    `\n${colors.cyan}━━━ Review Check Results ━━━${colors.reset}\n`
+  )
 
   // Show fixed issues first
   if (result.fixed.length > 0) {
-    SecureLogger.debug(`${colors.green}✓ Auto-fixed ${result.fixed.length} issue(s):${colors.reset}`)
+    SecureLogger.debug(
+      `${colors.green}✓ Auto-fixed ${result.fixed.length} issue(s):${colors.reset}`
+    )
     for (const issue of result.fixed) {
       const relativePath = path.relative(process.cwd(), issue.file)
-      SecureLogger.debug(`  ${colors.dim}${relativePath}:${issue.line} - ${issue.rule}${colors.reset}`)
+      SecureLogger.debug(
+        `  ${colors.dim}${relativePath}:${issue.line} - ${issue.rule}${colors.reset}`
+      )
     }
     SecureLogger.debug('')
   }
@@ -495,8 +545,12 @@ function printConsoleResults(result: CheckResult): void {
     for (const issue of fileIssues) {
       const icon = issue.severity === 'error' ? '✗' : '⚠'
       const color = issue.severity === 'error' ? colors.red : colors.yellow
-      const fixableHint = issue.fixable ? ` ${colors.dim}(--fix available)${colors.reset}` : ''
-      SecureLogger.debug(`  ${color}${icon}${colors.reset} Line ${issue.line}: ${issue.message}${fixableHint}`)
+      const fixableHint = issue.fixable
+        ? ` ${colors.dim}(--fix available)${colors.reset}`
+        : ''
+      SecureLogger.debug(
+        `  ${color}${icon}${colors.reset} Line ${issue.line}: ${issue.message}${fixableHint}`
+      )
       SecureLogger.debug(`    ${colors.dim}Rule: ${issue.rule}${colors.reset}`)
     }
     SecureLogger.debug('')
@@ -507,22 +561,34 @@ function printConsoleResults(result: CheckResult): void {
   const warnings = result.issues.filter((i) => i.severity === 'warning')
 
   SecureLogger.debug(`${colors.cyan}━━━ Summary ━━━${colors.reset}`)
-  SecureLogger.debug(`${colors.dim}Checked ${result.filesChecked} file(s) in ${result.duration}ms${colors.reset}`)
+  SecureLogger.debug(
+    `${colors.dim}Checked ${result.filesChecked} file(s) in ${result.duration}ms${colors.reset}`
+  )
   if (errors.length > 0) {
-    SecureLogger.debug(`${colors.red}✗ ${errors.length} error(s)${colors.reset}`)
+    SecureLogger.debug(
+      `${colors.red}✗ ${errors.length} error(s)${colors.reset}`
+    )
   }
   if (warnings.length > 0) {
-    SecureLogger.debug(`${colors.yellow}⚠ ${warnings.length} warning(s)${colors.reset}`)
+    SecureLogger.debug(
+      `${colors.yellow}⚠ ${warnings.length} warning(s)${colors.reset}`
+    )
   }
   if (result.fixed.length > 0) {
-    SecureLogger.debug(`${colors.green}✓ ${result.fixed.length} auto-fixed${colors.reset}`)
+    SecureLogger.debug(
+      `${colors.green}✓ ${result.fixed.length} auto-fixed${colors.reset}`
+    )
   }
   SecureLogger.debug('')
 
   // Suppression hint
   if (result.issues.length > 0) {
-    SecureLogger.debug(`${colors.dim}Suppress with: // review-ignore: ruleName${colors.reset}`)
-    SecureLogger.debug(`${colors.dim}Suppress next line: // review-ignore-next-line: ruleName${colors.reset}`)
+    SecureLogger.debug(
+      `${colors.dim}Suppress with: // review-ignore: ruleName${colors.reset}`
+    )
+    SecureLogger.debug(
+      `${colors.dim}Suppress next line: // review-ignore-next-line: ruleName${colors.reset}`
+    )
     SecureLogger.debug('')
   }
 }
@@ -585,12 +651,13 @@ function parseArgs(args: string[]): Options {
         options.fix = true
         break
       case '--output':
-      case '-o':
+      case '-o': {
         const outputValue = args[++i]
         if (outputValue === 'json' || outputValue === 'console') {
           options.output = outputValue
         }
         break
+      }
       default:
         if (!arg.startsWith('-')) {
           options.files.push(arg)
@@ -631,7 +698,10 @@ ${colors.bold}Suppression:${colors.reset}
 
 ${colors.bold}Rules:${colors.reset}
 ${Object.entries(CHECKS)
-  .map(([name, check]) => `  ${check.fixable ? '🔧' : '  '} ${name} - ${check.message.split('.')[0]}`)
+  .map(
+    ([name, check]) =>
+      `  ${check.fixable ? '🔧' : '  '} ${name} - ${check.message.split('.')[0]}`
+  )
   .join('\n')}
 `)
 }
@@ -652,9 +722,13 @@ async function main(): Promise<void> {
     files = getStagedFiles()
     if (files.length === 0) {
       if (options.output === 'json') {
-        SecureLogger.debug(JSON.stringify({ passed: true, filesChecked: 0, issues: [] }))
+        SecureLogger.debug(
+          JSON.stringify({ passed: true, filesChecked: 0, issues: [] })
+        )
       } else {
-        SecureLogger.debug(`${colors.dim}No staged TypeScript/JavaScript files to check${colors.reset}`)
+        SecureLogger.debug(
+          `${colors.dim}No staged TypeScript/JavaScript files to check${colors.reset}`
+        )
       }
       process.exit(0)
     }
@@ -680,15 +754,23 @@ async function main(): Promise<void> {
   // Exit code
   if (!result.passed) {
     if (options.output !== 'json') {
-      SecureLogger.debug(`${colors.red}Review checks failed. Please fix errors before committing.${colors.reset}`)
-      SecureLogger.debug(`${colors.dim}Tip: Run 'pnpm review' for detailed AI-powered suggestions.${colors.reset}\n`)
+      SecureLogger.debug(
+        `${colors.red}Review checks failed. Please fix errors before committing.${colors.reset}`
+      )
+      SecureLogger.debug(
+        `${colors.dim}Tip: Run 'pnpm review' for detailed AI-powered suggestions.${colors.reset}\n`
+      )
     }
     process.exit(1)
   }
 
   if (result.issues.length > 0 && options.output !== 'json') {
-    SecureLogger.debug(`${colors.yellow}Review checks passed with warnings.${colors.reset}`)
-    SecureLogger.debug(`${colors.dim}Consider running 'pnpm review' for detailed suggestions.${colors.reset}\n`)
+    SecureLogger.debug(
+      `${colors.yellow}Review checks passed with warnings.${colors.reset}`
+    )
+    SecureLogger.debug(
+      `${colors.dim}Consider running 'pnpm review' for detailed suggestions.${colors.reset}\n`
+    )
   }
 }
 

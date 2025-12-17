@@ -15,6 +15,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { PromptVariable } from '../../prompts/types'
+import { getMotionSafePreset, useReducedMotion } from '../../animations'
 
 /**
  * Extended variable type with editing metadata
@@ -259,6 +260,8 @@ export function PromptVariablesEditor({
     return detectedVarNames.filter((name) => !trackedNames.has(name))
   }, [editableVariables, detectedVarNames])
 
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <Card className={cn('', className)}>
       <CardHeader className="pb-3">
@@ -327,14 +330,17 @@ export function PromptVariablesEditor({
                   className="list-none"
                 >
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
+                    {...getMotionSafePreset(prefersReducedMotion, 'slideDown')}
+                    transition={
+                      prefersReducedMotion ? { duration: 0 } : undefined
+                    }
                     className={cn(
                       'p-4 border rounded-lg',
                       'bg-card hover:bg-accent/5',
                       'transition-colors duration-150',
-                      allowReorder && !readOnly && 'cursor-grab active:cursor-grabbing'
+                      allowReorder &&
+                        !readOnly &&
+                        'cursor-grab active:cursor-grabbing'
                     )}
                   >
                     {/* Variable Header */}

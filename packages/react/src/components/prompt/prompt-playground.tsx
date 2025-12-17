@@ -19,6 +19,7 @@ import {
   TabsContent,
 } from '@clarity-chat/primitives'
 import type { PromptTemplate, PromptVariable } from '../../prompts/types'
+import { getMotionSafePreset, useReducedMotion } from '../../animations'
 import {
   usePromptPlayground,
   MODEL_PRICING,
@@ -120,6 +121,7 @@ export function PromptPlayground({
   const [promptDescription, setPromptDescription] = React.useState(
     template?.description || ''
   )
+  const prefersReducedMotion = useReducedMotion()
 
   // Extract variables from template
   const detectedVariables = React.useMemo(
@@ -134,10 +136,7 @@ export function PromptPlayground({
   }, [validate, showValidation])
 
   // Cost estimation
-  const cost = React.useMemo(
-    () => getEstimatedCost(500),
-    [getEstimatedCost]
-  )
+  const cost = React.useMemo(() => getEstimatedCost(500), [getEstimatedCost])
 
   // Handle template text change
   const handleTemplateChange = React.useCallback(
@@ -292,7 +291,10 @@ export function PromptPlayground({
                 {onSave && (
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <label htmlFor="playground-prompt-name" className="sr-only">
+                      <label
+                        htmlFor="playground-prompt-name"
+                        className="sr-only"
+                      >
                         Prompt name
                       </label>
                       <Input
@@ -307,7 +309,10 @@ export function PromptPlayground({
                       />
                     </div>
                     <div className="flex-1">
-                      <label htmlFor="playground-prompt-description" className="sr-only">
+                      <label
+                        htmlFor="playground-prompt-description"
+                        className="sr-only"
+                      >
                         Description
                       </label>
                       <Input
@@ -325,7 +330,10 @@ export function PromptPlayground({
 
                 {/* Template Editor */}
                 <div className="flex-1 relative">
-                  <label htmlFor="playground-template-editor" className="sr-only">
+                  <label
+                    htmlFor="playground-template-editor"
+                    className="sr-only"
+                  >
                     Prompt template editor
                   </label>
                   <Textarea
@@ -340,7 +348,11 @@ export function PromptPlayground({
                     )}
                     disabled={readOnly}
                     aria-label="Prompt template editor"
-                    aria-describedby={!validation.valid ? 'playground-validation-errors' : undefined}
+                    aria-describedby={
+                      !validation.valid
+                        ? 'playground-validation-errors'
+                        : undefined
+                    }
                     aria-invalid={!validation.valid}
                   />
                   {state.isRendering && (
@@ -390,11 +402,20 @@ export function PromptPlayground({
             </TabsContent>
 
             {/* Variables Tab */}
-            <TabsContent value="variables" className="h-full p-4 mt-0 overflow-auto">
-              <div className="space-y-4" role="group" aria-label="Template variables">
+            <TabsContent
+              value="variables"
+              className="h-full p-4 mt-0 overflow-auto"
+            >
+              <div
+                className="space-y-4"
+                role="group"
+                aria-label="Template variables"
+              >
                 {detectedVariables.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
-                    <div className="text-4xl mb-2" aria-hidden="true">{'{ }'}</div>
+                    <div className="text-4xl mb-2" aria-hidden="true">
+                      {'{ }'}
+                    </div>
                     <p className="text-sm">No variables detected</p>
                     <p className="text-xs mt-1">
                       Use {'{{variable}}'} syntax in your template
@@ -402,44 +423,61 @@ export function PromptPlayground({
                   </div>
                 ) : (
                   <AnimatePresence mode="popLayout">
-                    {detectedVariables.map((varName, index) => (
-                      <motion.div
-                        key={varName}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="space-y-1"
-                      >
-                        <label
-                          htmlFor={`playground-var-${varName}`}
-                          className="text-sm font-medium flex items-center gap-2"
-                        >
-                          <code className="px-1.5 py-0.5 bg-muted rounded text-xs" aria-hidden="true">
-                            {`{{${varName}}}`}
-                          </code>
-                          <span className="sr-only">Variable {varName}</span>
-                        </label>
-                        <Input
-                          id={`playground-var-${varName}`}
-                          value={
-                            (state.variables[varName] as string | undefined) ||
-                            ''
+                    {detectedVariables.map((varName, index) => {
+                      const variants = getMotionSafePreset(
+                        prefersReducedMotion,
+                        'slideDown'
+                      )
+                      return (
+                        <motion.div
+                          key={varName}
+                          {...variants}
+                          transition={
+                            prefersReducedMotion
+                              ? { duration: 0 }
+                              : { delay: index * 0.05 }
                           }
-                          onChange={(e) => setVariable(varName, e.target.value)}
-                          placeholder={`Enter value for ${varName}`}
-                          disabled={readOnly}
-                          aria-label={`Value for variable ${varName}`}
-                        />
-                      </motion.div>
-                    ))}
+                          className="space-y-1"
+                        >
+                          <label
+                            htmlFor={`playground-var-${varName}`}
+                            className="text-sm font-medium flex items-center gap-2"
+                          >
+                            <code
+                              className="px-1.5 py-0.5 bg-muted rounded text-xs"
+                              aria-hidden="true"
+                            >
+                              {`{{${varName}}}`}
+                            </code>
+                            <span className="sr-only">Variable {varName}</span>
+                          </label>
+                          <Input
+                            id={`playground-var-${varName}`}
+                            value={
+                              (state.variables[varName] as
+                                | string
+                                | undefined) || ''
+                            }
+                            onChange={(e) =>
+                              setVariable(varName, e.target.value)
+                            }
+                            placeholder={`Enter value for ${varName}`}
+                            disabled={readOnly}
+                            aria-label={`Value for variable ${varName}`}
+                          />
+                        </motion.div>
+                      )
+                    })}
                   </AnimatePresence>
                 )}
               </div>
             </TabsContent>
 
             {/* Preview Tab */}
-            <TabsContent value="preview" className="h-full p-4 mt-0 overflow-auto">
+            <TabsContent
+              value="preview"
+              className="h-full p-4 mt-0 overflow-auto"
+            >
               <div className="space-y-4">
                 {/* Cost Breakdown */}
                 {showCostEstimate && (
@@ -476,7 +514,10 @@ export function PromptPlayground({
                 {/* Rendered Output */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 id="playground-output-label" className="text-sm font-medium">
+                    <h4
+                      id="playground-output-label"
+                      className="text-sm font-medium"
+                    >
                       Rendered Output
                     </h4>
                     <Badge variant="outline" className="font-mono text-xs">
@@ -513,7 +554,10 @@ export function PromptPlayground({
                     <h4 className="text-sm font-medium text-destructive mb-2">
                       Errors
                     </h4>
-                    <ul className="text-sm text-destructive space-y-1" aria-label="Render errors">
+                    <ul
+                      className="text-sm text-destructive space-y-1"
+                      aria-label="Render errors"
+                    >
                       {state.errors.map((error, i) => (
                         <li key={i}>• {error}</li>
                       ))}
