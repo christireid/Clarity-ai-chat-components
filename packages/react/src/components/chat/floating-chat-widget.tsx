@@ -98,7 +98,11 @@ export function FloatingChatWidget({
     }
   }, [messages, isOpen, isLoading, error])
 
-  // Custom variant combining slide-up with scale
+  // Use standardized animation variants from primitives
+  // Using 'popover' preset for the chat window as it matches the behavior best
+  const windowVariants = animationPresets.tooltip.variants // Tooltip variants are simple fades/scales, good for chat
+  
+  // Custom variant combining slide-up with scale for a more "chat-like" entrance
   const customChatVariants = {
       initial: { opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' },
       animate: { opacity: 1, scale: 1, y: 0 },
@@ -216,7 +220,7 @@ export function FloatingChatWidget({
                     animate={{ opacity: 1 }}
                     className="flex justify-center my-2"
                 >
-                    <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs px-3 py-2 rounded-lg max-w-[90%] text-center">
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs px-3 py-2 rounded-lg max-w-[90%] text-center">
                         <span className="font-bold block mb-1">Error</span>
                         {error.message || 'Something went wrong. Please try again.'}
                     </div>
