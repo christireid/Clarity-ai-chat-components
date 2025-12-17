@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Error Handling Utilities
  *
@@ -6,8 +5,6 @@ import { logger } from '@clarity-chat/utils/logger';
  */
 
 import { ClarityError } from './base.js'
-
-import { error } from '../logger';
 
 /**
  * Format any error for display
@@ -39,14 +36,14 @@ export function formatError(error: Error | ClarityError): string {
  */
 export function logError(errorToLog: Error | ClarityError): void {
   if (errorToLog instanceof ClarityError) {
-    logger.error(errorToLog.toTerminalString())
+    console.error(errorToLog.toTerminalString())
   } else {
-    logger.error('\n❌ Unexpected Error:', errorToLog.message)
+    console.error('\n❌ Unexpected Error:', errorToLog.message)
     if (errorToLog.stack) {
-      logger.error('\nStack trace:')
-      logger.error(errorToLog.stack)
+      console.error('\nStack trace:')
+      console.error(errorToLog.stack)
     }
-    logger.error('')
+    console.error('')
   }
 }
 

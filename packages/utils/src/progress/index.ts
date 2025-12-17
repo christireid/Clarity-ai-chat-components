@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Progress Tracking Utilities
  *
@@ -27,7 +26,7 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import { formatDuration } from '../format/index.js'
 
-import { debug, error, warn } from '../logger';
+import { debug, warn } from '../logger'
 
 // Spinner interface matching ora's API
 interface Spinner {
@@ -45,8 +44,6 @@ type OraFactory = (options: {
   spinner?: string
   isSilent?: boolean
 }) => Spinner
-
-
 
 let oraFactory: OraFactory | null | undefined = undefined // undefined = not loaded yet
 let currentSpinner: Spinner | null = null
@@ -120,7 +117,7 @@ function createFallbackSpinner(initialText: string): Spinner {
     },
     fail: (msg?: string) => {
       isActive = false
-      logger.error(`✗ ${msg ?? currentText}`)
+      console.error(`✗ ${msg ?? currentText}`)
       return fallback
     },
     warn: (msg?: string) => {

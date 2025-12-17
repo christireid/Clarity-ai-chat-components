@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * Clarity Chat Codemods CLI
@@ -45,7 +44,9 @@ program
 
     const transform = availableTransforms.find((t) => t.name === transformName)
     if (!transform) {
-      logger.logger.error(chalk.red(`❌ Transform "${transformName}" not found`))
+      logger.logger.error(
+        chalk.red(`❌ Transform "${transformName}" not found`)
+      )
       logger.debug(
         chalk.gray('\nRun') +
           chalk.cyan(' clarity-codemod list ') +
