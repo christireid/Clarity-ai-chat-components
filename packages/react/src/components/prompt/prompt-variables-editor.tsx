@@ -84,7 +84,7 @@ function extractVariablesFromTemplate(template: string): string[] {
  * Generate unique key
  */
 function generateKey(): string {
-  return `var-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return `var-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 /**
@@ -146,40 +146,45 @@ export function PromptVariablesEditor({
 
   // Sync with external variables prop
   React.useEffect(() => {
-    const newVars = variables.map((v) => {
-      const existing = editableVariables.find((ev) => ev.name === v.name)
-      return {
-        ...v,
-        _key: existing?._key || generateKey(),
-      }
+    setEditableVariables((prevEditableVars) => {
+      return variables.map((v) => {
+        const existing = prevEditableVars.find((ev) => ev.name === v.name)
+        return {
+          ...v,
+          _key: existing?._key || generateKey(),
+        }
+      })
     })
-    setEditableVariables(newVars)
   }, [variables])
 
   // Auto-detect and add missing variables
   React.useEffect(() => {
     if (!autoDetect || !template) return
 
-    const existingNames = new Set(editableVariables.map((v) => v.name))
-    const newVars: EditableVariable[] = []
+    setEditableVariables((prevVars) => {
+      const existingNames = new Set(prevVars.map((v) => v.name))
+      const newVars: EditableVariable[] = []
 
-    detectedVarNames.forEach((name) => {
-      if (!existingNames.has(name)) {
-        newVars.push({
-          name,
-          type: 'string',
-          required: false,
-          _key: generateKey(),
-        })
+      detectedVarNames.forEach((name) => {
+        if (!existingNames.has(name)) {
+          newVars.push({
+            name,
+            type: 'string',
+            required: false,
+            _key: generateKey(),
+          })
+        }
+      })
+
+      if (newVars.length > 0) {
+        const updated = [...prevVars, ...newVars]
+        // Use setTimeout to avoid state update during render
+        setTimeout(() => emitChange(updated), 0)
+        return updated
       }
+      return prevVars
     })
-
-    if (newVars.length > 0) {
-      const updated = [...editableVariables, ...newVars]
-      setEditableVariables(updated)
-      emitChange(updated)
-    }
-  }, [detectedVarNames, autoDetect])
+  }, [detectedVarNames, autoDetect, template, emitChange])
 
   // Emit change to parent
   const emitChange = React.useCallback(
@@ -334,6 +339,7 @@ export function PromptVariablesEditor({
                       )}
                       <div className="flex-1">
                         <Input
+                          id={`name-${variable._key}`}
                           value={variable.name}
                           onChange={(e) =>
                             updateVariable(variable._key, {
@@ -343,6 +349,7 @@ export function PromptVariablesEditor({
                           placeholder="Variable name"
                           className="font-mono text-sm"
                           disabled={readOnly}
+                          aria-label="Variable name"
                         />
                       </div>
                       {isDetected(variable.name) && (
@@ -356,6 +363,7 @@ export function PromptVariablesEditor({
                           size="sm"
                           onClick={() => removeVariable(variable._key)}
                           className="text-destructive hover:text-destructive"
+                          aria-label={`Remove variable ${variable.name}`}
                         >
                           ✕
                         </Button>
@@ -367,10 +375,14 @@ export function PromptVariablesEditor({
                       {/* Type */}
                       {showTypes && (
                         <div className="space-y-1">
-                          <label className="text-xs text-muted-foreground">
+                          <label
+                            htmlFor={`type-${variable._key}`}
+                            className="text-xs text-muted-foreground"
+                          >
                             Type
                           </label>
                           <select
+                            id={`type-${variable._key}`}
                             value={variable.type || 'string'}
                             onChange={(e) =>
                               updateVariable(variable._key, {
@@ -379,6 +391,7 @@ export function PromptVariablesEditor({
                             }
                             className="w-full text-sm border rounded px-2 py-1.5 bg-background"
                             disabled={readOnly}
+                            aria-label={`Type for ${variable.name}`}
                           >
                             {VARIABLE_TYPES.map((type) => (
                               <option key={type.value} value={type.value}>
@@ -391,10 +404,14 @@ export function PromptVariablesEditor({
 
                       {/* Default Value */}
                       <div className="space-y-1">
-                        <label className="text-xs text-muted-foreground">
+                        <label
+                          htmlFor={`default-${variable._key}`}
+                          className="text-xs text-muted-foreground"
+                        >
                           Default Value
                         </label>
                         <Input
+                          id={`default-${variable._key}`}
                           value={
                             variable.default !== undefined
                               ? String(variable.default)
@@ -408,16 +425,21 @@ export function PromptVariablesEditor({
                           placeholder="Optional default"
                           className="text-sm"
                           disabled={readOnly}
+                          aria-label={`Default value for ${variable.name}`}
                         />
                       </div>
                     </div>
 
                     {/* Description */}
                     <div className="mt-3 space-y-1">
-                      <label className="text-xs text-muted-foreground">
+                      <label
+                        htmlFor={`desc-${variable._key}`}
+                        className="text-xs text-muted-foreground"
+                      >
                         Description
                       </label>
                       <Input
+                        id={`desc-${variable._key}`}
                         value={variable.description || ''}
                         onChange={(e) =>
                           updateVariable(variable._key, {
@@ -427,6 +449,7 @@ export function PromptVariablesEditor({
                         placeholder="Describe what this variable is for"
                         className="text-sm"
                         disabled={readOnly}
+                        aria-label={`Description for ${variable.name}`}
                       />
                     </div>
 

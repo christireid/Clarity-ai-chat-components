@@ -12,7 +12,6 @@
 import * as React from 'react'
 import type {
   PromptTemplate,
-  PromptVariable,
   PromptPlaygroundState,
   PromptRenderResult,
 } from '../types'

@@ -248,6 +248,7 @@ export function PromptVersionHistory({
                     >
                       {/* Timeline dot */}
                       <div
+                        aria-hidden="true"
                         className={cn(
                           'absolute left-2.5 w-3 h-3 rounded-full border-2',
                           'transition-all duration-200',
@@ -260,14 +261,23 @@ export function PromptVersionHistory({
 
                       {/* Version Card */}
                       <Card
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Version ${version.version}${isActive ? ', Active' : ''}${version.notes ? `, ${version.notes}` : ''}`}
                         className={cn(
                           'cursor-pointer transition-all duration-200',
-                          'hover:shadow-md',
+                          'hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                           isActive && 'border-primary/50',
                           isSelectedForComparison &&
                             'border-primary ring-1 ring-primary/30'
                         )}
                         onClick={() => onSelectVersion?.(version)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            onSelectVersion?.(version)
+                          }
+                        }}
                       >
                         <CardContent className="p-4">
                           {/* Header */}
