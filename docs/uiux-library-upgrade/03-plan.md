@@ -428,19 +428,285 @@ import { useClarityChat } from '@clarity-chat/react'
 
 ## Implementation Timeline
 
-_[To be defined after audit completion]_
+### Overall Schedule (14-17 weeks total)
+
+```
+Week 1-3:   Phase 1 - Foundations & Quick Wins
+Week 4-6:   Phase 2 - Core AI Components (Part 1)
+Week 7-9:   Phase 2 - Core AI Components (Part 2)
+Week 10:    Testing, Bug Fixes, Documentation
+Week 11-17: Phase 3 - v3.0 (if approved)
+```
+
+### Detailed Sprint Breakdown
+
+#### Sprint 1 (Weeks 1-3): Foundations
+
+- **Week 1**: Documentation improvements
+  - Days 1-2: Create hook decision tree
+  - Days 3-5: Update all hook documentation
+- **Week 2**: Accessibility fixes
+  - Days 1-2: Audit streaming aria-live
+  - Days 3-4: Fix keyboard navigation
+  - Day 5: Screen reader testing
+- **Week 3**: Code quality
+  - Days 1-3: Standardize 7 code components
+  - Days 4-5: Testing and documentation
+
+**Deliverables:**
+
+- ✅ Hook decision tree published
+- ✅ Zero accessibility issues
+- ✅ Unified code block component
+
+#### Sprint 2 (Weeks 4-6): AI Components Part 1
+
+- **Week 4**: MessageActions compound component
+  - Days 1-3: Build component + 5 actions
+  - Days 4-5: Storybook stories + tests
+- **Week 5**: Citation & Trust Cues
+  - Days 1-2: Citation component
+  - Days 3-4: Confidence badges, metadata
+  - Day 5: Integration testing
+- **Week 6**: Tool Call Visualization
+  - Days 1-3: ToolCallDisplay component
+  - Days 4-5: Examples + documentation
+
+**Deliverables:**
+
+- ✅ MessageActions shipped
+- ✅ Citation system functional
+- ✅ Tool calls visualized
+
+#### Sprint 3 (Weeks 7-9): API Improvements
+
+- **Week 7**: Escape hatches
+  - Days 1-3: Add style prop to 50% of components
+  - Days 4-5: Test + document
+- **Week 8**: asChild pattern
+  - Days 1-4: Implement for 50+ components
+  - Day 5: Documentation + examples
+- **Week 9**: Ref forwarding
+  - Days 1-3: Add to interactive components
+  - Days 4-5: Testing + regression checks
+
+**Deliverables:**
+
+- ✅ 100% components have style prop
+- ✅ asChild pattern available
+- ✅ Ref forwarding complete
+
+#### Sprint 4 (Week 10): Stabilization
+
+- Testing week (no new features)
+- Bug fixes from community feedback
+- Documentation polish
+- Performance benchmarking
+
+**Deliverables:**
+
+- ✅ All tests passing
+- ✅ No regressions
+- ✅ Documentation complete
+
+#### Sprint 5-8 (Weeks 11-17): v3.0 (Optional)
+
+- **Week 11-12**: Hook consolidation
+- **Week 13-14**: Component refactoring
+- **Week 15-16**: Migration tooling
+- **Week 17**: Beta testing + release
+
+**Deliverables:**
+
+- ✅ v3.0 shipped
+- ✅ Migration codemod
+- ✅ LTS support for v2.x
 
 ---
 
 ## Resource Requirements
 
-_[To be defined]_
+### Team Composition
+
+**Recommended Team:**
+
+- 1 Senior Engineer (full-time) - Technical lead
+- 1 Mid-level Engineer (full-time) - Implementation
+- 1 Designer (25% time) - Visual consistency review
+- 1 Technical Writer (25% time) - Documentation
+- 1 QA Engineer (50% time) - Testing
+- 1 Accessibility Specialist (consulting) - A11y review
+
+**Alternative (Smaller Team):**
+
+- 1 Full-stack Engineer (full-time) - All implementation
+- 1 Designer/Writer (25% time) - Design + docs
+- Community volunteers for testing
+
+### Skills Required
+
+**Phase 1 (Essential):**
+
+- React 19 expertise
+- TypeScript advanced
+- Accessibility (WCAG 2.2)
+- Technical writing
+
+**Phase 2 (Essential):**
+
+- Component library design
+- API design patterns
+- Performance optimization
+- Storybook
+
+**Phase 3 (v3.0 - If pursuing):**
+
+- Breaking change management
+- Migration tooling (AST manipulation)
+- Community management
+- Codemod authoring
+
+### External Dependencies
+
+**None** - All work can be done internally.
+
+**Optional:**
+
+- User testing platform (for decision tree validation)
+- Accessibility testing service (for comprehensive audit)
+- Community feedback (Discord, GitHub Discussions)
 
 ---
 
 ## Success Metrics
 
-_[How we measure success]_
+### Quantitative Metrics
+
+#### Developer Experience (DX)
+
+```
+Target Metrics:
+- Time to first integration: <10 minutes (from 20 minutes)
+- Documentation completeness: 95%+ (from 85%)
+- Hook selection confusion: <10% of developers (from 40%)
+- Component customization success: 90%+ (from 60%)
+```
+
+#### Code Quality
+
+```
+Target Metrics:
+- Bundle size: -15% (Phase 3 only)
+- Test coverage: 85%+ (maintained)
+- TypeScript strict mode: 100%
+- ESLint errors: 0
+- Accessibility score (Lighthouse): 100
+```
+
+#### Component Metrics
+
+```
+Target Metrics:
+- Components with className: 100% (from 110%)
+- Components with style prop: 100% (from 49%)
+- Components with asChild: 30%+ (from 1.7%)
+- Components with ref forwarding: 50%+ (from 0.6%)
+```
+
+#### AI UX Metrics
+
+```
+Target Metrics:
+- Code block feature parity: 100% (from ~70%)
+- Message action availability: 100% (from partial)
+- Streaming UX polish: 9/10 rating (from 7/10)
+- Tool call visualization: Available (from missing)
+```
+
+### Qualitative Metrics
+
+#### User Satisfaction
+
+- **Survey target**: 8.5/10 satisfaction score (from 7.5/10)
+- **NPS target**: +50 (from +30)
+- **GitHub issues**: <5 open confusion issues (from 15)
+- **Documentation clarity**: 9/10 rating (from 7/10)
+
+#### Community Engagement
+
+- **Discord activity**: +30% increase
+- **GitHub stars**: +20% increase
+- **NPM downloads**: +50% increase
+- **Tutorial completions**: 80%+ success rate
+
+### Phase-Specific Success Criteria
+
+#### Phase 1 Success = 4/5 criteria met
+
+1. ✅ Hook decision tree used by 80%+ of new developers
+2. ✅ Zero accessibility regressions (automated tests)
+3. ✅ Code block standardization reduces related issues by 50%
+4. ✅ Documentation satisfaction: 8/10+
+5. ✅ Community feedback: "Much clearer!" sentiment
+
+#### Phase 2 Success = 5/6 criteria met
+
+1. ✅ MessageActions adopted in 60%+ of implementations
+2. ✅ Citation components used in production apps
+3. ✅ Tool call visualization demos successful
+4. ✅ asChild pattern documented in top 10 most-viewed docs
+5. ✅ Escape hatch complaints reduced by 70%
+6. ✅ Bundle size increase <10KB
+
+#### Phase 3 Success = 5/6 criteria met (if pursuing)
+
+1. ✅ 90%+ of users migrate successfully using codemod
+2. ✅ Hook consolidation reduces confusion to <10%
+3. ✅ Bundle size reduced 15%+
+4. ✅ No major regressions in production apps
+5. ✅ Community support: 75%+ approval
+6. ✅ LTS v2.x has <10 critical bugs
+
+### Monitoring Plan
+
+**Weekly Metrics:**
+
+- CI/CD success rate
+- Test coverage %
+- Bundle size (bytes)
+- Build time
+- Lighthouse scores
+
+**Monthly Metrics:**
+
+- NPM download trends
+- GitHub issue volume
+- Discord question patterns
+- Documentation page views
+- User survey responses
+
+**Quarterly Metrics:**
+
+- NPS score
+- Community growth
+- Production adoption rate
+- Breaking issue count
+
+### Rollback Criteria
+
+**Automatic Rollback Triggers:**
+
+- Test coverage drops below 75%
+- Accessibility score drops below 90
+- Breaking changes without deprecation path
+- Bundle size increases >25%
+
+**Manual Rollback Consideration:**
+
+- Community backlash (>30% negative)
+- Production critical bugs (>5 in first week)
+- Performance degradation (>20% slower)
+- Major framework incompatibility
 
 ---
 
