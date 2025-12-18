@@ -1,4 +1,4 @@
-import { logger } from '../logger/index.js';
+import { logger } from '../logger'
 /**
  * Progress Tracking Utilities
  *
@@ -27,7 +27,7 @@ import { logger } from '../logger/index.js';
 
 import { formatDuration } from '../format/index.js'
 
-import { debug, error, warn } from '../logger';
+import { debug, warn } from '../logger';
 
 // Spinner interface matching ora's API
 interface Spinner {

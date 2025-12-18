@@ -116,9 +116,9 @@ const variantMap = {
  * // With callbacks
  * <VoiceInput
  *   onTranscript={handleInput}
- *   onStart={() => console.log('Started listening')}
- *   onStop={() => console.log('Stopped listening')}
- *   onError={(err) => console.error('Voice error:', err)}
+ *   onStart={() => logger.debug('Started listening')}
+ *   onStop={() => logger.debug('Stopped listening')}
+ *   onError={(err) => logger.error('Voice error:', err)}
  * />
  * ```
  */

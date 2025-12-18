@@ -129,7 +129,7 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryProps, ErrorState> {
       }
 
       logger.error('Component Stack:', errorInfo.componentStack)
-      logger.debug()
+      logger.debug('--- End Error Report ---')
     }
   }
 

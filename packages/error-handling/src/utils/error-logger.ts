@@ -364,7 +364,7 @@ export function configureErrorLogger(config: ErrorLoggerConfig): void {
  * ```
  */
 export function logError(error: Error, options?: LogOptions): void {
-  getErrorLogger().logger.error(error, options)
+  getErrorLogger().error(error, options)
 }
 
 /**

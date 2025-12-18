@@ -1,13 +1,14 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Clarity Chat Error Handling Example
- *
+ * 
  * Example demonstrating error handling with useClarityChat,
  * including memory error handling, retry logic, and error display.
- *
+ * 
  * @example
  * ```tsx
  * import { ClarityChatErrorHandlingExample } from '@clarity-chat/react/examples'
- *
+ * 
  * function App() {
  *   return <ClarityChatErrorHandlingExample />
  * }
@@ -16,8 +17,8 @@
 
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
-import { ChatWindow } from '../components/chat/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message/message-conversion'
+import { ChatWindow } from '../components/chat-window'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import { ErrorBoundary } from '../components/error-boundary'
 import { Badge, Alert, Button } from '@clarity-chat/primitives'
 
@@ -31,14 +32,7 @@ function ErrorDisplay({
   errorInfo: {
     memoryError: Error | null
     memoryErrorOperation: 'query' | 'store' | null
-    memoryErrorType:
-      | 'network'
-      | 'ratelimit'
-      | 'server'
-      | 'auth'
-      | 'memory'
-      | 'unknown'
-      | null
+    memoryErrorType: 'network' | 'ratelimit' | 'server' | 'auth' | 'memory' | 'unknown' | null
   }
   onDismiss: () => void
 }) {
@@ -84,11 +78,18 @@ function ErrorDisplay({
             <Badge variant="outline" className="text-xs">
               {errorInfo.memoryErrorOperation || 'unknown'}
             </Badge>
-            <span className="text-sm font-medium">Memory Operation Failed</span>
+            <span className="text-sm font-medium">
+              Memory Operation Failed
+            </span>
           </div>
           <p className="text-sm">{getErrorMessage()}</p>
         </div>
-        <Button size="sm" variant="ghost" onClick={onDismiss} className="ml-2">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={onDismiss}
+          className="ml-2"
+        >
           Dismiss
         </Button>
       </div>
@@ -98,7 +99,7 @@ function ErrorDisplay({
 
 /**
  * Clarity Chat with Error Handling Example Component
- *
+ * 
  * Demonstrates comprehensive error handling with useClarityChat:
  * - Memory error callbacks
  * - Error state display
@@ -125,8 +126,8 @@ export function ClarityChatErrorHandlingExample() {
       maxRetryAttempts: 3,
       onMemoryError: (error, operation) => {
         // Custom error handling
-        console.error(`Memory ${operation} failed:`, error)
-
+        logger.error(`Memory ${operation} failed:`, error)
+        
         // You could send to error tracking service here
         // trackError('memory_operation_failed', { operation, error: error.message })
       },
@@ -169,9 +170,7 @@ export function ClarityChatErrorHandlingExample() {
         <div className="border-b bg-card px-4 py-2">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">
-                Chat with Error Handling
-              </h2>
+              <h2 className="text-lg font-semibold">Chat with Error Handling</h2>
               <p className="text-sm text-muted-foreground">
                 Demonstrates memory error handling and recovery
               </p>

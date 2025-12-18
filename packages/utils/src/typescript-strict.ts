@@ -1,4 +1,4 @@
-import { logger } from './logger/index.js';
+import { logger } from './logger';
 /**
  * Enhanced TypeScript Strict Mode Utilities
  * 
@@ -29,7 +29,7 @@ import { logger } from './logger/index.js';
  * ```
  */
 
-import { error, debug } from './logger';
+import { debug } from './logger';
 
 // ============================================================================
 // Core Strict Types

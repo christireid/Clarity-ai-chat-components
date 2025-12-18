@@ -56,7 +56,7 @@ export function useErrorHandler(options?: UseErrorHandlerOptions) {
           logger.error('\n' + err.toString())
         }
 
-        logger.debug()
+        logger.debug('--- End Error Report ---')
       }
 
       // Show toast notification if enabled

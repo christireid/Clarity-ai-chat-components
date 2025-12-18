@@ -1,4 +1,4 @@
-import { logger } from './logger/index.js';
+
 /**
  * Configuration Manager
  * 
@@ -101,7 +101,7 @@ export function createConfigManager<T extends Record<string, any>>(
         }
         break
 
-      case 'number':
+      case 'number': {
         const numValue = isString(processedValue) ? parseFloat(processedValue) : processedValue
         if (!isNumber(numValue)) {
           errors.push(`Field '${key}' must be a number`)
@@ -115,6 +115,7 @@ export function createConfigManager<T extends Record<string, any>>(
         }
         processedValue = numValue
         break
+      }
 
       case 'boolean':
         if (processedValue === 'true') processedValue = true
