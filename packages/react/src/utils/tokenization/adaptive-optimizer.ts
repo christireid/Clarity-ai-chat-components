@@ -1,22 +1,6 @@
 /**
  * Adaptive Token Usage Strategies Based on Context and Model
  *
-<<<<<<< HEAD
- * @deprecated This module will be consolidated into `utils/optimization/token-optimization.ts` in v3.0.
- * The adaptive strategies will be available as configuration options.
- *
- * **Migration:**
- * ```tsx
- * // Before (deprecated)
- * import { AdaptiveOptimizer } from '@clarity-chat/react/utils/tokenization'
- *
- * // After (recommended in v3)
- * import { createTokenOptimizer } from '@clarity-chat/react'
- * const optimizer = createTokenOptimizer({ adaptive: true, ... })
- * ```
- *
-=======
->>>>>>> origin/main
  * This module implements intelligent token optimization that adapts based on:
  * - Model-specific token efficiency patterns
  * - Content complexity and domain

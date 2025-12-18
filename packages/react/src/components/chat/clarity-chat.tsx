@@ -39,11 +39,7 @@ import {
   type UseClarityChatOptions,
 } from '../../hooks/chat/use-clarity-chat'
 import { ChatWindow } from './chat-window'
-<<<<<<< HEAD
-import { convertCoreMessagesToMessages } from '../../utils/message'
-=======
 import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
->>>>>>> origin/main
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import { useToast } from '../ui/toast'
 

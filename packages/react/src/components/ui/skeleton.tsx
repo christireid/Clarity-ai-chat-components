@@ -6,16 +6,12 @@
  */
 
 import * as React from 'react'
-<<<<<<< HEAD
-import { cn } from '@clarity-chat/primitives'
-=======
 import { motion, type HTMLMotionProps } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import {
   createPulseAnimation,
   createShimmerAnimation,
 } from '../../animations/utils'
->>>>>>> origin/main
 
 export interface SkeletonProps extends Omit<
   HTMLMotionProps<'div'>,

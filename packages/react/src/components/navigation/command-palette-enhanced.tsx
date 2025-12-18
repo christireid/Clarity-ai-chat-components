@@ -23,14 +23,9 @@ import {
   useFocusTrap,
   useFocusRestoration,
 } from '../../accessibility/focus-management'
-<<<<<<< HEAD
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
-=======
 import { useReducedMotion } from '@clarity-chat/primitives'
 import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
 import { EASING_FRAMER } from '../../animations/constants'
->>>>>>> origin/main
 
 // ============================================================================
 // Types

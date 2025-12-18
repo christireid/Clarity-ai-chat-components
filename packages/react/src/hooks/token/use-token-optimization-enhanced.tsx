@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-'use client'
-
-=======
->>>>>>> origin/main
 /**
  * Enhanced Token Optimization Hook (Unified)
  *
@@ -65,11 +60,7 @@ import {
 } from '../../utils/prompt-caching'
 
 // Import existing utilities
-<<<<<<< HEAD
-import { type CompressionResult } from '../../utils/memory/prompt-compression'
-=======
 import { type CompressionResult } from '../../utils/optimization/prompt-compression'
->>>>>>> origin/main
 import {
   intelligentCompress,
   type LLMLinguaConfig,

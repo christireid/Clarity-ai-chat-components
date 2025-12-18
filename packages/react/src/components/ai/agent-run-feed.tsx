@@ -13,13 +13,10 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { SparklesIcon, LoaderIcon, CheckIcon, XIcon } from '../ui/icons'
-<<<<<<< HEAD
-=======
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
->>>>>>> origin/main
 
 export type AgentRunStatus = 'pending' | 'running' | 'succeeded' | 'failed'
 
@@ -121,11 +118,7 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
                 exit={{ opacity: 0, y: -12 }}
                 transition={{
                   duration: durations.normal,
-<<<<<<< HEAD
-                  ease: [0.4, 0, 0.2, 1],
-=======
                   ease: EASING_FRAMER.default,
->>>>>>> origin/main
                 }}
                 className="rounded-lg border border-border/50 bg-muted p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
               >

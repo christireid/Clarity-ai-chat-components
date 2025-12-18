@@ -16,11 +16,7 @@ import {
   EASING_FRAMER,
   duration,
 } from '../../animations/constants'
-<<<<<<< HEAD
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-=======
 import { AnimatedDots } from '../ui/animated-dots'
->>>>>>> origin/main
 
 export interface ThinkingIndicatorProps {
   status?: AIStatus

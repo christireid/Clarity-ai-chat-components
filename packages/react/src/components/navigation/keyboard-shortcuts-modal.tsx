@@ -19,19 +19,12 @@ import {
   useFocusTrap,
   useFocusRestoration,
 } from '../../accessibility/focus-management'
-<<<<<<< HEAD
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-=======
 import { useReducedMotion } from '@clarity-chat/primitives'
->>>>>>> origin/main
 import {
   formatShortcutDisplay,
   useIsMac,
 } from '../../hooks/keyboard/use-keyboard-navigation'
-<<<<<<< HEAD
-=======
 import { EASING_FRAMER } from '../../animations/constants'
->>>>>>> origin/main
 
 export interface ShortcutItem {
   id: string

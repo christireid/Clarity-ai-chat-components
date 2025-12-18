@@ -36,11 +36,7 @@ import {
   EASING_FRAMER,
   // createSlideVariant, // Reserved for future use
 } from '../../animations'
-<<<<<<< HEAD
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-=======
 import { useReducedMotion } from '@clarity-chat/primitives'
->>>>>>> origin/main
 import {
   getMotionSafeDuration,
   getMotionSafeValue,

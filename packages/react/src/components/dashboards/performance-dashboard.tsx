@@ -8,10 +8,6 @@
 
 import * as React from 'react'
 import { useRenderPerformance } from '../../hooks/performance/use-performance'
-<<<<<<< HEAD
-import { formatBytes } from '@clarity-chat/primitives'
-=======
->>>>>>> origin/main
 
 // Stub hook for memory usage (not available in all browsers)
 function useMemoryUsage() {
@@ -455,14 +451,6 @@ export function PerformanceDashboard({
 /**
  * Performance Badge - shows current render performance status
  */
-<<<<<<< HEAD
-interface PerformanceBadgeProps {
-  className?: string
-}
-
-export function PerformanceBadge({ className }: PerformanceBadgeProps) {
-  const performanceMetrics = useRenderPerformance()
-=======
 function formatBytes(bytes: number): string {
   if (bytes <= 0 || !Number.isFinite(bytes)) return '0 B'
 
@@ -485,7 +473,6 @@ PerformanceDashboard.displayName = 'PerformanceDashboard'
 
 export function PerformanceBadge({ className }: { className?: string }) {
   const performanceMetrics = useRenderPerformance('PerformanceBadge')
->>>>>>> origin/main
   const memoryInfo = useMemoryUsage()
 
   const status = React.useMemo(() => {

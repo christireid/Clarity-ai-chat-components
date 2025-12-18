@@ -20,10 +20,7 @@ import {
 } from '../../hooks/keyboard/use-keyboard-shortcuts'
 import { DashboardProgress } from '../ui/dashboard-progress'
 import { KeyboardShortcutHint } from '../navigation/keyboard-shortcut-hint'
-<<<<<<< HEAD
-=======
 import { Skeleton } from '../ui/skeleton'
->>>>>>> origin/main
 
 /**
  * Experiment variant

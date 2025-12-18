@@ -69,10 +69,7 @@ const CopyIcon = Copy as React.ComponentType<{ className?: string }>
 const SortIcon = ArrowUpDown as React.ComponentType<{ className?: string }>
 
 import { useDeferredSearch } from '../../hooks/performance/use-deferred-search'
-<<<<<<< HEAD
-=======
 import { DURATION_SECONDS as durations } from '../../animations/constants'
->>>>>>> origin/main
 
 /**
  * Filter criteria for advanced search

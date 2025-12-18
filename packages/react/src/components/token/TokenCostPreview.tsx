@@ -20,11 +20,7 @@
 import * as React from 'react'
 import { estimateTokens } from '../../utils/tokenization/estimator'
 import { calculateCost } from '../../utils/tokenization/model-pricing'
-<<<<<<< HEAD
-import type { ModelName } from '../utils/tokenization/accurate-counter'
-=======
 import type { ModelName } from '../../utils/tokenization/accurate-counter'
->>>>>>> origin/main
 
 // =============================================================================
 // useTokenEstimate Hook

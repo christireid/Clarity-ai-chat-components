@@ -6,11 +6,7 @@ import { Button, type ButtonProps, cn, Tooltip } from '@clarity-chat/primitives'
 import { useClipboard } from '../../hooks/ui/use-clipboard'
 import { CopyIcon, CheckIcon } from '../ui/icons'
 import { useToast } from '../ui/toast'
-<<<<<<< HEAD
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-=======
 import { useReducedMotion } from '@clarity-chat/primitives'
->>>>>>> origin/main
 import { getSpring } from '../../animations/spring-presets'
 import { DURATION_SECONDS } from '../../animations/constants'
 

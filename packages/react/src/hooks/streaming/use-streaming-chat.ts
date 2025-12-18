@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-'use client'
-
-=======
->>>>>>> origin/main
 /**
  * useStreamingChat - Top-level hook for streaming chat
  *
@@ -21,16 +16,8 @@
  */
 
 import * as React from 'react'
-<<<<<<< HEAD
-import {
-  useClarityChat,
-  type UseClarityChatOptions,
-} from '../chat/use-clarity-chat'
-import { convertCoreMessagesToMessages } from '../../utils/message'
-=======
 import { useClarityChat, type UseClarityChatOptions } from '../use-clarity-chat'
 import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
->>>>>>> origin/main
 import {
   validateApiEndpoint,
   validateStreamingProtocol,

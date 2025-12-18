@@ -24,11 +24,7 @@
 import * as React from 'react'
 import { useTheme } from '../../theme/ThemeProvider'
 import { hslStringToHex } from '../../theme/color-utils'
-<<<<<<< HEAD
-import type { ColorConfig } from '../theme/theme-config'
-=======
 import type { ColorConfig } from '../../theme/theme-config'
->>>>>>> origin/main
 
 /**
  * Color values in both HSL string and hex formats

@@ -20,19 +20,10 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
-<<<<<<< HEAD
-import {
-  MarkdownCodeBlock,
-  MessageActions,
-  MessageMetadata,
-  EditableMessageContent,
-} from './index'
-=======
 import { MarkdownCodeBlock } from './markdown-code-block'
 import { MessageActions } from './message-actions'
 import { MessageMetadata } from './message-metadata'
 import { EditableMessageContent } from './editable-message-content'
->>>>>>> origin/main
 import { ErrorMessage, type ErrorDetails } from '../feedback/error-message'
 import { CopyButton } from './copy-button'
 

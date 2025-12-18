@@ -14,11 +14,7 @@ import {
   formatBytes,
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS } from '../../animations/constants'
-<<<<<<< HEAD
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-=======
 import { useReducedMotion } from '@clarity-chat/primitives'
->>>>>>> origin/main
 import {
   getMotionSafeDuration,
   getMotionSafeValue,

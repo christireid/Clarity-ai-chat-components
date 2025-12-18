@@ -16,11 +16,7 @@ import {
   getThemesByCategory,
   type ModernThemePresetName,
 } from '../../theme/modern-presets'
-<<<<<<< HEAD
-import type { CompleteThemeConfig, ColorConfig } from '../theme/theme-config'
-=======
 import type { CompleteThemeConfig, ColorConfig } from '../../theme/theme-config'
->>>>>>> origin/main
 import { createTheme } from '../../theme/create-theme'
 import {
   getContrastRatio,
@@ -33,11 +29,7 @@ import {
   generateHarmoniousPalette,
   type ColorHarmony,
 } from '../../theme/color-advanced'
-<<<<<<< HEAD
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-=======
 import { useReducedMotion } from '@clarity-chat/primitives'
->>>>>>> origin/main
 import { useLocalStorage } from '../../hooks/storage/use-local-storage'
 
 // ============================================================================

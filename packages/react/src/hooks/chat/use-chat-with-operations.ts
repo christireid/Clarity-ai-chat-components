@@ -47,11 +47,7 @@ import { useMessageOperations } from '../message/use-message-operations'
 import {
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
-<<<<<<< HEAD
-} from '../../utils/message'
-=======
 } from '../../utils/message/message-conversion'
->>>>>>> origin/main
 import type { Message } from '@clarity-chat/types'
 
 /**

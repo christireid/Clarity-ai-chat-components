@@ -1,16 +1,5 @@
 'use client'
 
-<<<<<<< HEAD
-import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '../../utils/cn'
-import { useClipboard } from '../../hooks/ui/use-clipboard'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-import { getSpring } from '../../animations/spring-presets'
-import { CopyIcon, CheckIcon, AlertCircleIcon } from '../ui/icons'
-
-=======
->>>>>>> origin/main
 /**
  * CodeBlockCopyButton Component
  *

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Memory Inspector Component
  * 
@@ -58,7 +57,7 @@ export function MemoryInspector({
       
       setMemories(mems)
     } catch (error) {
-      logger.error('Failed to load memory data:', error)
+      console.error('Failed to load memory data:', error)
     } finally {
       setLoading(false)
     }

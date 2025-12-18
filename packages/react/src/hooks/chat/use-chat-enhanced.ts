@@ -1,30 +1,9 @@
 'use client'
 
-<<<<<<< HEAD
-/**
- * useChatEnhanced - Mid-Level Enhanced Chat Hook
- *
- * @deprecated This hook will be merged into `useClarityChat` in v3.0.
- * Please migrate to `useClarityChat` which provides the same functionality
- * with a unified API.
- *
- * **Migration:**
- * ```tsx
- * // Before (deprecated)
- * import { useChatEnhanced } from '@clarity-chat/react'
- * const { messages, append } = useChatEnhanced({ api: '/api/chat' })
- *
- * // After (recommended)
- * import { useClarityChat } from '@clarity-chat/react'
- * const { messages, append } = useClarityChat({ api: '/api/chat' })
- * ```
- *
-=======
 import { logger } from '@clarity-chat/utils/logger'
 /**
  * useChatEnhanced - Mid-Level Enhanced Chat Hook
  *
->>>>>>> origin/main
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Chat & Completions
  *
@@ -32,12 +11,9 @@ import { logger } from '@clarity-chat/utils/logger'
  * Provides a complete chat interface with streaming support, message management,
  * and all features found in Vercel AI SDK's useChat, plus additional enterprise features.
  *
-<<<<<<< HEAD
-=======
  * For simpler use cases, use top-level `useClarityChat` instead.
  * For basic chat, use `useChat` (low-level) instead.
  *
->>>>>>> origin/main
  * @param options - Chat configuration options
  * @param options.api - API endpoint URL (required)
  * @param options.initialMessages - Initial messages array

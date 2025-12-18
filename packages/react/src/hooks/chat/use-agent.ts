@@ -1,9 +1,6 @@
 'use client'
 
-<<<<<<< HEAD
-=======
 import { logger } from '@clarity-chat/utils/logger'
->>>>>>> origin/main
 /**
  * useAgent - Top-level hook for AI agents
  *

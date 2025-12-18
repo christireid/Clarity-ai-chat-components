@@ -3,11 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Button } from '@clarity-chat/primitives'
-<<<<<<< HEAD
-import { duration } from '../../animations/constants'
-=======
 import { duration, EASING_FRAMER } from '../../animations/constants'
->>>>>>> origin/main
 
 export type NetworkStatus = 'online' | 'offline' | 'reconnecting' | 'slow'
 

@@ -54,22 +54,6 @@
 // Components for building chat interfaces
 // =============================================================================
 
-<<<<<<< HEAD
-// Tier 1: Drop-in Ready
-export {
-  ClarityChat,
-  ClarityChatPresets,
-  ClarityChatSimple,
-  ChatComplete,
-  ChatWithMemory,
-  ChatWithAnalytics,
-  ChatWithPreset,
-  type ChatCompleteProps,
-  type ChatWithMemoryProps,
-  type ChatWithAnalyticsProps,
-  type ChatWithPresetProps,
-} from './components/chat'
-=======
 // Top-Level: Drop-in ready components
 export { ClarityChat } from './components/chat/clarity-chat'
 export { ClarityChatPresets } from './components/chat/clarity-chat-presets'
@@ -97,7 +81,6 @@ export { ClarityToolResult } from './components/message/clarity-tool-result'
 export { CitationCard } from './components/message/citation-card'
 export { CopyButton } from './components/message/copy-button'
 export { FileUpload } from './components/input/file-upload'
->>>>>>> origin/main
 
 // Tier 2: Composable
 export {
@@ -166,11 +149,7 @@ export {
   convertMessageToCoreMessage,
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
-<<<<<<< HEAD
-} from './utils/message'
-=======
 } from './utils/message/message-conversion'
->>>>>>> origin/main
 
 // =============================================================================
 // DOMAIN 3: MEMORY & CONTEXT
@@ -435,23 +414,6 @@ export * from './animations'
 // Accessibility
 export * from './accessibility'
 
-<<<<<<< HEAD
-// Templates
-export * from './templates'
-
-// Error Handling
-export * from './error'
-
-// =============================================================================
-// COMPONENTS (All component domains)
-// =============================================================================
-
-// Message Components
-export * from './components/message'
-
-// Input Components
-export * from './components/input'
-=======
 // Additional Components (organized by feature)
 export { ModelSelector } from './components/ai/model-selector'
 export { ContextCard } from './components/context/context-card'
@@ -556,7 +518,6 @@ export { ConversationBranchVisualizer } from './components/conversation/conversa
 
 // Markdown & Rendering
 export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
->>>>>>> origin/main
 
 // Search Components
 export * from './components/search'
@@ -664,8 +625,6 @@ export type {
   ChatAnalyticsConfig,
   ChatPerformanceMetrics,
 } from './types/clarity-chat-types'
-<<<<<<< HEAD
-=======
 
 // Helper hooks (legacy, consider deprecating)
 export {
@@ -698,4 +657,3 @@ export * from './components/ui/toast'
 export * from './components/ui/progress'
 export * from './components/ui/feedback-animation'
 export * from './components/ui/interactive-card'
->>>>>>> origin/main

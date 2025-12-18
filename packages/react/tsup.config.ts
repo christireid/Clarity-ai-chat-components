@@ -107,42 +107,16 @@ export default defineConfig([
     ...commonConfig,
     clean: false,
   },
-<<<<<<< HEAD
-  // Hooks entry
-  {
-    entry: { hooks: 'src/hooks.ts' },
-=======
   // Slim entry (minimal bundle ~200KB)
   {
     entry: { slim: 'src/slim.ts' },
->>>>>>> origin/main
     outDir: 'dist',
     ...commonConfig,
     clean: false,
   },
-<<<<<<< HEAD
-  // Types entry
-  {
-    entry: { types: 'src/types.ts' },
-    outDir: 'dist',
-    ...commonConfig,
-    clean: false,
-  },
-  // Components entry
-  {
-    entry: { 'components/index': 'src/components/index.ts' },
-    outDir: 'dist',
-    ...commonConfig,
-    clean: false,
-  },
-  // Exports entry (structured API reference)
-  {
-    entry: { exports: 'src/exports.ts' },
-=======
   // Namespaced entry (Clarity.Chat pattern)
   {
     entry: { namespaced: 'src/namespaced.ts' },
->>>>>>> origin/main
     outDir: 'dist',
     ...commonConfig,
     clean: false,

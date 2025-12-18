@@ -521,13 +521,7 @@ export function useStreamingSSE(
           connect()
         }, delay)
       } else if (reconnectAttempt >= maxReconnectAttempts) {
-<<<<<<< HEAD
-        logger.logger.error(
-          '[useStreamingSSE] Max reconnection attempts reached'
-        )
-=======
         logger.error('[useStreamingSSE] Max reconnection attempts reached')
->>>>>>> origin/main
         onMaxReconnectAttemptsReached?.()
         shouldReconnectRef.current = false
       }

@@ -14,11 +14,7 @@ import {
   hslToHex,
   validateTheme,
 } from '../../theme/theme-builder'
-<<<<<<< HEAD
-import type { CompleteThemeConfig } from '../theme/theme-config'
-=======
 import type { CompleteThemeConfig } from '../../theme/theme-config'
->>>>>>> origin/main
 
 export interface ThemePreviewProps {
   /**

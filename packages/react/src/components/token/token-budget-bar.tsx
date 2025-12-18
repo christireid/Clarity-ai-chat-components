@@ -12,10 +12,7 @@ import {
   formatTokenUsage,
   estimateTokenCost,
 } from '../../hooks/token/use-token-budget-monitor'
-<<<<<<< HEAD
-=======
 import { DURATION_SECONDS as durations } from '../../animations/constants'
->>>>>>> origin/main
 
 export interface TokenBudgetBarProps {
   /** Current token usage from useTokenBudgetMonitor */

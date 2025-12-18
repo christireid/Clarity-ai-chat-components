@@ -10,11 +10,6 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-<<<<<<< HEAD
-import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
-import { getSpring } from '../../animations/spring-presets'
-=======
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
@@ -23,7 +18,6 @@ import {
 import { useReducedMotion } from '@clarity-chat/primitives'
 import { getSpring } from '../../animations/spring-presets'
 import { Skeleton } from './skeleton'
->>>>>>> origin/main
 
 /**
  * Linear Progress Bar

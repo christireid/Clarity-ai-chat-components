@@ -14,10 +14,7 @@ import {
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
-<<<<<<< HEAD
-=======
 import { DURATION_SECONDS as durations } from '../../animations/constants'
->>>>>>> origin/main
 
 /**
  * Summary detail level
@@ -337,15 +334,8 @@ export function ConversationSummarizer({
 
         onSummaryGenerated?.(summary)
       } catch (err) {
-<<<<<<< HEAD
-        console.error('Failed to generate summary:', err)
-        setError(
-          err instanceof Error ? err.message : 'Failed to generate summary'
-        )
-=======
         logger.error('Failed to generate summary:', err)
         setError(err instanceof Error ? err.message : 'Failed to generate summary')
->>>>>>> origin/main
       } finally {
         setIsGenerating(false)
       }

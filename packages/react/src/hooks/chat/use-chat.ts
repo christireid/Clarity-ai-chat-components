@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-'use client'
-
-=======
->>>>>>> origin/main
 /**
  * useChat - Legacy chat hook (DEPRECATED)
  *
@@ -142,13 +137,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     async (messageId: string, options?: { signal?: AbortSignal }) => {
       const message = messages.find((m) => m.id === messageId)
       if (!message || message.role !== 'user') {
-<<<<<<< HEAD
-        logger.warn(
-          '[useChat] Cannot retry: message not found or not a user message'
-        )
-=======
         console.warn('[useChat] Cannot retry: message not found or not a user message')
->>>>>>> origin/main
         return
       }
 

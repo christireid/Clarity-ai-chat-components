@@ -4,14 +4,10 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import { useVoiceInput } from '../../hooks/input/use-voice-input'
-<<<<<<< HEAD
-import { useQuantumVoice, type QuantumVoiceState } from '../../hooks/input/use-quantum-voice'
-=======
 import {
   EASING_FRAMER,
   DURATION_SECONDS as durations,
 } from '../../animations/constants'
->>>>>>> origin/main
 import type { ReactNode } from 'react'
 
 /**

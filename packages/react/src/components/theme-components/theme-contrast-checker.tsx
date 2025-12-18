@@ -12,11 +12,7 @@ import {
   meetsContrastRequirement,
   hslStringToHex,
 } from '../../theme/color-utils'
-<<<<<<< HEAD
-import type { CompleteThemeConfig } from '../theme/theme-config'
-=======
 import type { CompleteThemeConfig } from '../../theme/theme-config'
->>>>>>> origin/main
 
 /**
  * WCAG compliance levels
