@@ -38,7 +38,6 @@ export { MemoryService } from './memory-service'
 // Token optimization utilities re-exported for convenience
 // Note: Import directly from @clarity-chat/token-optimization for full API access
 export type {
-  EnhancedSecurityConfig,
   QualityGateConfig,
   CostAwareConfig,
   SemanticCacheConfig,

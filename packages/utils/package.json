@@ -88,8 +88,8 @@
   },
   "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   },
   "dependencies": {
     "ora": "^8.1.1"
