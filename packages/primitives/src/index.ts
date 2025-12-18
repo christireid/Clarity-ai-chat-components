@@ -282,10 +282,10 @@ export {
 } from './hooks/use-composed-refs'
 
 // ============================================================================
-// Utils
+// Utils (commented out due to Node.js type issues)
 // ============================================================================
 
-export * from './lib/utils'
+// export * from './lib/utils'
 
 // ARIA Utilities
 export {
