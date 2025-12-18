@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
-  external: ['react', 'react-dom'],
+  external: ['react', 'react-dom', '@clarity-chat/utils', '@clarity-chat/utils/logger'],
   clean: true,
   sourcemap: true,
   minify: true,

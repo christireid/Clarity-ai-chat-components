@@ -253,7 +253,7 @@ export function useTrackTiming() {
     (timerName: string, properties?: Record<string, any>) => {
       const startTime = timers.current[timerName]
       if (startTime === undefined) {
-        logger.warn(`Timer "${timerName}" was not started`)
+        console.warn(`Timer "${timerName}" was not started`)
         return
       }
       

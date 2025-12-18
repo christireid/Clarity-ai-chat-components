@@ -96,7 +96,7 @@ export const WithRetry: Story = {
   args: {
     steps: mockSteps,
     onRetry: (step) => {
-      SecureLogger.debug('Retrying step:', step.id)
+      console.log('Retrying step:', step.id)
       alert(`Retrying: ${step.title}`)
     },
   },
@@ -106,7 +106,7 @@ export const WithLogs: Story = {
   args: {
     steps: mockSteps,
     onOpenLogs: (step) => {
-      SecureLogger.debug('Opening logs for step:', step.id)
+      console.log('Opening logs for step:', step.id)
       alert(`Logs for: ${step.title}`)
     },
   },

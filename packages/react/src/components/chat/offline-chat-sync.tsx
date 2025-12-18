@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
@@ -113,14 +115,20 @@ export function OfflineChatSync({
 
           // Create messages store
           if (!db.objectStoreNames.contains(config.storeName)) {
-            const store = db.createObjectStore(config.storeName, { keyPath: 'id' })
+            const store = db.createObjectStore(config.storeName, {
+              keyPath: 'id',
+            })
             store.createIndex('timestamp', 'timestamp', { unique: false })
           }
 
           // Create pending operations store
           if (!db.objectStoreNames.contains('pending')) {
-            const pendingStore = db.createObjectStore('pending', { keyPath: 'id' })
-            pendingStore.createIndex('timestamp', 'timestamp', { unique: false })
+            const pendingStore = db.createObjectStore('pending', {
+              keyPath: 'id',
+            })
+            pendingStore.createIndex('timestamp', 'timestamp', {
+              unique: false,
+            })
           }
         }
       } catch (error) {
@@ -185,7 +193,10 @@ export function OfflineChatSync({
     if (!dbRef.current) return
 
     try {
-      const transaction = dbRef.current.transaction([config.storeName], 'readwrite')
+      const transaction = dbRef.current.transaction(
+        [config.storeName],
+        'readwrite'
+      )
       const store = transaction.objectStore(config.storeName)
 
       for (const msg of msgs) {
@@ -207,7 +218,10 @@ export function OfflineChatSync({
     if (!dbRef.current) return []
 
     try {
-      const transaction = dbRef.current.transaction([config.storeName], 'readonly')
+      const transaction = dbRef.current.transaction(
+        [config.storeName],
+        'readonly'
+      )
       const store = transaction.objectStore(config.storeName)
       const request = store.getAll()
 
@@ -230,7 +244,7 @@ export function OfflineChatSync({
       const store = transaction.objectStore('pending')
       store.put(op)
 
-      setPendingOps(prev => [...prev, op])
+      setPendingOps((prev) => [...prev, op])
     } catch (error) {
       logger.error('Failed to save pending operation:', error)
     }
@@ -265,7 +279,7 @@ export function OfflineChatSync({
       for (const op of pendingOps) {
         try {
           // Simulate API call
-          await new Promise(resolve => setTimeout(resolve, 100))
+          await new Promise((resolve) => setTimeout(resolve, 100))
 
           // Remove from pending
           await removePendingOperation(op.id)
@@ -303,7 +317,7 @@ export function OfflineChatSync({
       const store = transaction.objectStore('pending')
       store.delete(id)
 
-      setPendingOps(prev => prev.filter(op => op.id !== id))
+      setPendingOps((prev) => prev.filter((op) => op.id !== id))
     } catch (error) {
       logger.error('Failed to remove pending operation:', error)
     }
@@ -318,7 +332,7 @@ export function OfflineChatSync({
       const store = transaction.objectStore('pending')
       store.put(op)
 
-      setPendingOps(prev => prev.map(o => o.id === op.id ? op : o))
+      setPendingOps((prev) => prev.map((o) => (o.id === op.id ? op : o)))
     } catch (error) {
       logger.error('Failed to update pending operation:', error)
     }
@@ -373,9 +387,7 @@ export function OfflineChatSync({
             </div>
 
             {pendingOps.length > 0 && (
-              <Badge variant="secondary">
-                {pendingOps.length} pending
-              </Badge>
+              <Badge variant="secondary">{pendingOps.length} pending</Badge>
             )}
 
             {lastSync && (
@@ -407,9 +419,14 @@ export function OfflineChatSync({
           <CardContent className="p-3">
             <div className="text-xs font-medium mb-2">Pending Operations:</div>
             <div className="space-y-1">
-              {pendingOps.slice(0, 5).map(op => (
-                <div key={op.id} className="text-xs flex items-center justify-between">
-                  <span>{op.type} - {op.messageId.slice(0, 8)}</span>
+              {pendingOps.slice(0, 5).map((op) => (
+                <div
+                  key={op.id}
+                  className="text-xs flex items-center justify-between"
+                >
+                  <span>
+                    {op.type} - {op.messageId.slice(0, 8)}
+                  </span>
                   <Badge variant="outline" className="text-xs">
                     Retry: {op.retryCount}/{config.maxRetries}
                   </Badge>
@@ -454,13 +471,19 @@ export function useOfflineChat(config?: Partial<OfflineStorageConfig>) {
           const db = (event.target as IDBOpenDBRequest).result
 
           if (!db.objectStoreNames.contains(fullConfig.storeName)) {
-            const store = db.createObjectStore(fullConfig.storeName, { keyPath: 'id' })
+            const store = db.createObjectStore(fullConfig.storeName, {
+              keyPath: 'id',
+            })
             store.createIndex('timestamp', 'timestamp', { unique: false })
           }
 
           if (!db.objectStoreNames.contains('pending')) {
-            const pendingStore = db.createObjectStore('pending', { keyPath: 'id' })
-            pendingStore.createIndex('timestamp', 'timestamp', { unique: false })
+            const pendingStore = db.createObjectStore('pending', {
+              keyPath: 'id',
+            })
+            pendingStore.createIndex('timestamp', 'timestamp', {
+              unique: false,
+            })
           }
         }
       } catch (error) {
@@ -491,17 +514,22 @@ export function useOfflineChat(config?: Partial<OfflineStorageConfig>) {
     if (!dbRef.current) return
 
     try {
-      const transaction = dbRef.current.transaction([fullConfig.storeName], 'readwrite')
+      const transaction = dbRef.current.transaction(
+        [fullConfig.storeName],
+        'readwrite'
+      )
       const store = transaction.objectStore(fullConfig.storeName)
       store.put(message)
 
-      setMessages(prev => [...prev, message])
+      setMessages((prev) => [...prev, message])
     } catch (error) {
       logger.error('Failed to save message:', error)
     }
   }
 
-  const queueOperation = async (op: Omit<PendingOperation, 'id' | 'timestamp' | 'retryCount'>) => {
+  const queueOperation = async (
+    op: Omit<PendingOperation, 'id' | 'timestamp' | 'retryCount'>
+  ) => {
     if (!dbRef.current) return
 
     const operation: PendingOperation = {
@@ -516,7 +544,7 @@ export function useOfflineChat(config?: Partial<OfflineStorageConfig>) {
       const store = transaction.objectStore('pending')
       store.put(operation)
 
-      setPendingOps(prev => [...prev, operation])
+      setPendingOps((prev) => [...prev, operation])
     } catch (error) {
       logger.error('Failed to queue operation:', error)
     }
@@ -526,7 +554,10 @@ export function useOfflineChat(config?: Partial<OfflineStorageConfig>) {
     if (!dbRef.current) return
 
     try {
-      const transaction = dbRef.current.transaction([fullConfig.storeName], 'readwrite')
+      const transaction = dbRef.current.transaction(
+        [fullConfig.storeName],
+        'readwrite'
+      )
       const store = transaction.objectStore(fullConfig.storeName)
       store.clear()
 

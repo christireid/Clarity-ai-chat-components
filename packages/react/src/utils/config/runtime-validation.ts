@@ -90,7 +90,7 @@ export function validateEnum<T extends string>(
 
   if (!allowedValues.includes(value)) {
     if (defaultValue !== undefined) {
-      logger.warn(
+      console.warn(
         `[${componentName}] Invalid ${paramName}: "${value}". ` +
           `Must be one of: ${allowedValues.join(', ')}. Using default: "${defaultValue}"`
       )

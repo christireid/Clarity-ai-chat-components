@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import {
   Badge,
@@ -11,7 +12,7 @@ import {
   Textarea,
   cn,
 } from '@clarity-chat/primitives'
-import { Skeleton } from '../skeleton'
+import { Skeleton } from '../ui/skeleton'
 
 export interface SSOConfigStep {
   id: string

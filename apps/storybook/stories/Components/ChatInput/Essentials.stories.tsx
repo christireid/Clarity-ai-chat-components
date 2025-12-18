@@ -90,13 +90,13 @@ type Story = StoryObj<typeof ChatInput>
 export const BasicInput: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <ChatInput
         value={value}
         onChange={setValue}
         onSubmit={(val) => {
-          SecureLogger.debug('Submitted:', val)
+          console.log('Submitted:', val)
           setValue('')
         }}
         placeholder="Type a message..."
@@ -124,13 +124,13 @@ This pattern works for 90% of use cases.
 export const WithPlaceholder: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <ChatInput
         value={value}
         onChange={setValue}
         onSubmit={(val) => {
-          SecureLogger.debug('Submitted:', val)
+          console.log('Submitted:', val)
           setValue('')
         }}
         placeholder="Ask me anything..."
@@ -153,16 +153,16 @@ export const DisabledState: Story = {
   render: () => {
     const [value, setValue] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    
+
     const handleSubmit = async (val: string) => {
       setIsLoading(true)
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      SecureLogger.debug('Submitted:', val)
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+      console.log('Submitted:', val)
       setValue('')
       setIsLoading(false)
     }
-    
+
     return (
       <ChatInput
         value={value}
@@ -191,13 +191,13 @@ and provides clear feedback to users.
 export const WithMaxLength: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <ChatInput
         value={value}
         onChange={setValue}
         onSubmit={(val) => {
-          SecureLogger.debug('Submitted:', val)
+          console.log('Submitted:', val)
           setValue('')
         }}
         maxLength={100}
@@ -222,18 +222,18 @@ prevent typing beyond the limit and provide visual feedback.
 export const WithFileUpload: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     const handleFileUpload = (file: File) => {
-      SecureLogger.debug('File uploaded:', file.name, file.size)
+      console.log('File uploaded:', file.name, file.size)
       // Handle file upload
     }
-    
+
     return (
       <ChatInput
         value={value}
         onChange={setValue}
         onSubmit={(val) => {
-          SecureLogger.debug('Submitted:', val)
+          console.log('Submitted:', val)
           setValue('')
         }}
         allowFileUpload={true}
@@ -264,22 +264,33 @@ export const Interactive: Story = {
   render: () => {
     const [value, setValue] = useState('')
     const [messages, setMessages] = useState<string[]>([])
-    
+
     const handleSubmit = (val: string) => {
       setMessages([...messages, val])
       setValue('')
     }
-    
+
     return (
       <div>
-        <div style={{ marginBottom: '16px', padding: '16px', background: '#f5f5f5', borderRadius: '8px' }}>
+        <div
+          style={{
+            marginBottom: '16px',
+            padding: '16px',
+            background: '#f5f5f5',
+            borderRadius: '8px',
+          }}
+        >
           <strong>Messages:</strong>
           {messages.length === 0 ? (
-            <p style={{ color: '#666', margin: '8px 0 0 0' }}>No messages yet. Try typing and pressing Enter!</p>
+            <p style={{ color: '#666', margin: '8px 0 0 0' }}>
+              No messages yet. Try typing and pressing Enter!
+            </p>
           ) : (
             <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
               {messages.map((msg, i) => (
-                <li key={i} style={{ marginBottom: '4px' }}>{msg}</li>
+                <li key={i} style={{ marginBottom: '4px' }}>
+                  {msg}
+                </li>
               ))}
             </ul>
           )}

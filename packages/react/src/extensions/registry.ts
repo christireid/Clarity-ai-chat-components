@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Extension Registry
  *
@@ -121,7 +122,7 @@ class LoggerImpl implements ExtensionLogger {
     logger.warn(`[${this.prefix}]`, message, ...args)
   }
 
-  logger.error(message: string, ...args: unknown[]): void {
+  error(message: string, ...args: unknown[]): void {
     logger.error(`[${this.prefix}]`, message, ...args)
   }
 

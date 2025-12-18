@@ -26,7 +26,7 @@ export default async function MultiTenancyGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read multi-tenancy guide', error)
+    logger.error('Failed to read multi-tenancy guide', error)
     content = '# Multi-tenancy\n\nContent not available.'
   }
 

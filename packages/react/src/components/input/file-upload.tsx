@@ -4,6 +4,10 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn, formatFileSize } from '@clarity-chat/primitives'
 import type { MessageAttachment } from '@clarity-chat/types'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 export interface FileUploadProps {
   onUpload: (files: File[]) => Promise<MessageAttachment[]>
@@ -15,7 +19,7 @@ export interface FileUploadProps {
 
 /**
  * FileUpload component - Enhanced with React 19 features
- * 
+ *
  * React 19 Enhancements:
  * - Removed React.memo() - compiler handles optimization
  * - Simplified event handlers - compiler optimizes
@@ -52,33 +56,39 @@ export function FileUpload({
   )
 
   // Memoize file handling to prevent recreation
-  const handleFiles = React.useCallback(async (newFiles: File[]) => {
-    setError(null)
+  const handleFiles = React.useCallback(
+    async (newFiles: File[]) => {
+      setError(null)
 
-    // Validate total count
-    if (files.length + newFiles.length > maxFiles) {
-      setError(`Maximum ${maxFiles} files allowed`)
-      return
-    }
-
-    // Validate each file
-    for (const file of newFiles) {
-      const error = validateFile(file)
-      if (error) {
-        setError(error)
+      // Validate total count
+      if (files.length + newFiles.length > maxFiles) {
+        setError(`Maximum ${maxFiles} files allowed`)
         return
       }
-    }
 
-    setFiles((prev) => [...prev, ...newFiles])
-  }, [files.length, maxFiles, validateFile])
+      // Validate each file
+      for (const file of newFiles) {
+        const error = validateFile(file)
+        if (error) {
+          setError(error)
+          return
+        }
+      }
+
+      setFiles((prev) => [...prev, ...newFiles])
+    },
+    [files.length, maxFiles, validateFile]
+  )
 
   // Memoize input handler
-  const handleFileInput = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || [])
-    handleFiles(selectedFiles)
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }, [handleFiles])
+  const handleFileInput = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selectedFiles = Array.from(e.target.files || [])
+      handleFiles(selectedFiles)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    },
+    [handleFiles]
+  )
 
   // Memoize drag handlers
   const handleDragEnter = React.useCallback((e: React.DragEvent) => {
@@ -98,14 +108,17 @@ export function FileUpload({
     e.stopPropagation()
   }, [])
 
-  const handleDrop = React.useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
+  const handleDrop = React.useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragging(false)
 
-    const droppedFiles = Array.from(e.dataTransfer.files)
-    handleFiles(droppedFiles)
-  }, [handleFiles])
+      const droppedFiles = Array.from(e.dataTransfer.files)
+      handleFiles(droppedFiles)
+    },
+    [handleFiles]
+  )
 
   // Memoize remove handler
   const removeFile = React.useCallback((index: number) => {
@@ -184,7 +197,7 @@ export function FileUpload({
           animate={{
             scale: isDragging ? 1.05 : 1,
           }}
-          transition={{ 
+          transition={{
             // Framer Motion 12: Spring scale on drag
             type: 'spring',
             damping: 18,
@@ -196,7 +209,7 @@ export function FileUpload({
             animate={{
               y: isDragging ? -4 : 0,
             }}
-            transition={{ 
+            transition={{
               // Framer Motion 12: Spring bounce on drag
               type: 'spring',
               damping: 15,
@@ -221,7 +234,7 @@ export function FileUpload({
                 key={type}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.05, duration: 0.2 }}
+                transition={{ delay: i * 0.05, duration: durations.normal }}
               >
                 <Badge variant="outline" className="text-xs">
                   {type.replace('*', 'all')}
@@ -244,12 +257,23 @@ export function FileUpload({
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{
+              duration: durations.normal,
+              ease: EASING_FRAMER.sharp,
+            }}
             className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm"
           >
             <div className="flex items-start gap-2">
-              <svg className="h-4 w-4 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <svg
+                className="h-4 w-4 shrink-0 mt-0.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
               {error}
             </div>
@@ -287,19 +311,30 @@ export function FileUpload({
                   initial={{ opacity: 0, x: -20, scale: 0.95 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 20, scale: 0.95 }}
-                  transition={{ delay: index * 0.05, duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                  transition={{
+                    delay: index * 0.05,
+                    duration: durations.normal,
+                    ease: EASING_FRAMER.sharp,
+                  }}
                   className="flex items-center gap-3 p-3 bg-card border border-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 ease-out"
                 >
                   <motion.span
                     className="text-2xl"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ delay: index * 0.05 + 0.1, type: 'spring', stiffness: 500, damping: 30 }}
+                    transition={{
+                      delay: index * 0.05 + 0.1,
+                      type: 'spring',
+                      stiffness: 500,
+                      damping: 30,
+                    }}
                   >
                     {getFileIcon(file)}
                   </motion.span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{file.name}</p>
+                    <p className="text-sm font-semibold text-foreground truncate">
+                      {file.name}
+                    </p>
                     <p className="text-xs text-muted-foreground/90">
                       {formatFileSize(file.size)} •{' '}
                       {file.type || 'Unknown type'}
@@ -313,8 +348,18 @@ export function FileUpload({
                     className="flex-shrink-0 h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive"
                     aria-label="Remove file"
                   >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </Button>
                 </motion.div>

@@ -384,7 +384,7 @@ const CLARITY_HOOKS: Record<string, ClarityItemInfo> = {
     returns: '{ ...useClarityChat, reload, stop, setMessages }',
     example: `const { messages, reload, stop } = useChatEnhanced({
   api: '/api/chat',
-  onFinish: (message) => SecureLogger.debug('Done:', message),
+  onFinish: (message) => console.log('Done:', message),
 })`,
     docs: 'https://docs.claritychat.dev/hooks/use-chat-enhanced',
   },
@@ -396,7 +396,7 @@ const CLARITY_HOOKS: Record<string, ClarityItemInfo> = {
     example: `const { memoryInfo, clearMemory } = useMemoryContext()
 
 // Check memory usage
-SecureLogger.debug(\`Using \${memoryInfo.totalTokens} tokens\`)
+console.log(\`Using \${memoryInfo.totalTokens} tokens\`)
 
 // Clear conversation memory
 clearMemory()`,
@@ -420,7 +420,7 @@ clearMemory()`,
     returns: '{ data, isStreaming, error, startStream, stopStream }',
     example: `const { data, isStreaming, startStream } = useStreamingSSE({
   url: '/api/chat',
-  onMessage: (chunk) => SecureLogger.debug(chunk),
+  onMessage: (chunk) => console.log(chunk),
 })`,
     docs: 'https://docs.claritychat.dev/hooks/use-streaming-sse',
   },
@@ -480,7 +480,7 @@ const cost = estimateCost(1000, 500) // input, output`,
     returns: '{ isLoading, startLoading, stopLoading, error }',
     example: `const { isLoading, startLoading, stopLoading } = useLoadingState({
   timeout: 30000,
-  onTimeout: () => SecureLogger.debug('Request timed out'),
+  onTimeout: () => console.log('Request timed out'),
 })`,
     docs: 'https://docs.claritychat.dev/hooks/use-loading-state',
   },

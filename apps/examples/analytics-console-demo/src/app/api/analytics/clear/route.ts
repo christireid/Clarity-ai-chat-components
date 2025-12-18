@@ -15,16 +15,15 @@ export async function DELETE() {
         { status: 403 }
       )
     }
-    
+
     clearAllEntries()
-    
+
     return NextResponse.json({
       success: true,
-      message: 'All analytics data cleared'
+      message: 'All analytics data cleared',
     })
-    
   } catch (error) {
-    SecureLogger.error('Clear analytics error:', error)
+    console.error('Clear analytics error:', error)
     return NextResponse.json(
       { error: 'Failed to clear analytics' },
       { status: 500 }

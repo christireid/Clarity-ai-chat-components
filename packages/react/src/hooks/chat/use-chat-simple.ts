@@ -1,3 +1,6 @@
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useChatSimple - Simplified chat hook
  *
@@ -23,15 +26,16 @@
  * ```
  */
 
-'use client'
-
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import type { Message } from '@clarity-chat/types'
 
 /** Request body data for chat API */
-export type ChatRequestBody = Record<string, string | number | boolean | string[] | number[] | null>
+export type ChatRequestBody = Record<
+  string,
+  string | number | boolean | string[] | number[] | null
+>
 
 /**
  * Simplified options - only the essentials

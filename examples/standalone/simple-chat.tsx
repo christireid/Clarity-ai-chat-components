@@ -39,7 +39,10 @@ interface ChatState {
 
 type ChatAction =
   | { type: 'ADD_MESSAGE'; payload: Message }
-  | { type: 'UPDATE_MESSAGE'; payload: { id: string; updates: Partial<Message> } }
+  | {
+      type: 'UPDATE_MESSAGE'
+      payload: { id: string; updates: Partial<Message> }
+    }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: Error | null }
   | { type: 'CLEAR_MESSAGES' }
@@ -75,10 +78,12 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 }
 
 // Simulates an AI response with streaming
-async function* simulateStreamingResponse(prompt: string): AsyncGenerator<string> {
+async function* simulateStreamingResponse(
+  prompt: string
+): AsyncGenerator<string> {
   const responses: Record<string, string> = {
     hello: "Hello! I'm a demo chat assistant. How can I help you today?",
-    help: "I can help you understand how this chat interface works. Try asking me questions or just say hello!",
+    help: 'I can help you understand how this chat interface works. Try asking me questions or just say hello!',
     default: `I received your message: "${prompt.slice(0, 50)}${prompt.length > 50 ? '...' : ''}". This is a simulated response that demonstrates streaming text output. In a real application, this would connect to an AI API like OpenAI or Anthropic.`,
   }
 
@@ -141,7 +146,10 @@ function useChat() {
         fullContent += chunk
         dispatch({
           type: 'UPDATE_MESSAGE',
-          payload: { id: assistantMessage.id, updates: { content: fullContent } },
+          payload: {
+            id: assistantMessage.id,
+            updates: { content: fullContent },
+          },
         })
       }
 
@@ -204,7 +212,10 @@ function MessageBubble({ message }: MessageBubbleProps) {
       >
         <p className="whitespace-pre-wrap">{message.content}</p>
         {isStreaming && (
-          <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse" aria-hidden="true" />
+          <span
+            className="inline-block w-2 h-4 ml-1 bg-current animate-pulse"
+            aria-hidden="true"
+          />
         )}
         <time
           className={`block text-xs mt-2 ${isUser ? 'text-blue-200' : 'text-gray-500'}`}
@@ -269,7 +280,11 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
       >
         {disabled ? (
           <span className="flex items-center gap-2">
-            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" aria-hidden="true">
+            <svg
+              className="w-4 h-4 animate-spin"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <circle
                 className="opacity-25"
                 cx="12"
@@ -308,7 +323,10 @@ interface ErrorBoundaryState {
   error: Error | null
 }
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -319,14 +337,19 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    SecureLogger.error('Chat error:', error, errorInfo)
+    console.error('Chat error:', error, errorInfo)
   }
 
   render(): React.ReactNode {
     if (this.state.hasError) {
       return (
-        <div role="alert" className="p-6 bg-red-50 border border-red-200 rounded-lg text-center">
-          <h2 className="text-lg font-semibold text-red-800 mb-2">Something went wrong</h2>
+        <div
+          role="alert"
+          className="p-6 bg-red-50 border border-red-200 rounded-lg text-center"
+        >
+          <h2 className="text-lg font-semibold text-red-800 mb-2">
+            Something went wrong
+          </h2>
           <p className="text-red-600 mb-4">{this.state.error?.message}</p>
           <button
             onClick={() => this.setState({ hasError: false, error: null })}
@@ -422,7 +445,10 @@ export function SimpleChat() {
 
         {/* Error Display */}
         {error && (
-          <div role="alert" className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+          <div
+            role="alert"
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm"
+          >
             Error: {error.message}
           </div>
         )}
@@ -431,7 +457,8 @@ export function SimpleChat() {
         <footer className="pt-4 border-t">
           <ChatInput onSend={sendMessage} disabled={isLoading} />
           <p className="text-xs text-gray-400 mt-2 text-center">
-            This is a demo with simulated responses. No data is sent to any server.
+            This is a demo with simulated responses. No data is sent to any
+            server.
           </p>
         </footer>
       </div>

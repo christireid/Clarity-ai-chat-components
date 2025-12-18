@@ -5,5 +5,5 @@ export function badFunction(data: any) {
 }
 
 export const handler = (event: any) => {
-  SecureLogger.debug(event)
+  console.log(event)
 }

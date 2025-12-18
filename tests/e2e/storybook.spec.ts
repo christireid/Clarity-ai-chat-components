@@ -9,12 +9,12 @@ function attachPageDiagnostics(page: any) {
   // Surface runtime failures that can leave Storybook preview stuck loading.
   page.on('pageerror', (err: any) => {
     // eslint-disable-next-line no-console
-    SecureLogger.error('[playwright][pageerror]', err)
+    console.error('[playwright][pageerror]', err)
   })
   page.on('console', (msg: any) => {
     if (msg.type?.() === 'error') {
       // eslint-disable-next-line no-console
-      SecureLogger.error('[playwright][console.error]', msg.text?.())
+      console.error('[playwright][console.error]', msg.text?.())
     }
   })
 }

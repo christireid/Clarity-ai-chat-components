@@ -56,7 +56,7 @@ export async function checkForUpdates(): Promise<UpdateInfo | null> {
       isPatch: versionDiff === 'patch',
     }
   } catch (error) {
-    logger.debug('Failed to check for updates', error)
+    console.log('Failed to check for updates', error)
     return null
   }
 }
@@ -114,6 +114,6 @@ export async function checkAndNotifyUpdate(): Promise<void> {
     }
   } catch (error) {
     // Silently fail - update checking should not block CLI usage
-    logger.debug('Update check failed', error)
+    console.log('Update check failed', error)
   }
 }

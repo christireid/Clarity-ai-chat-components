@@ -308,10 +308,10 @@ program
       // Output based on format
       switch (options.output) {
         case 'json':
-          console.debug(formatAsJSON(filtered))
+          console.log(formatAsJSON(filtered))
           break
         case 'github': {
-          console.debug(formatAsGitHubOutput(filtered))
+          console.log(formatAsGitHubOutput(filtered))
           // Write to file for GitHub Actions
           const outputPath = join(config.cacheDir, 'change-analysis.json')
           ensureDirectories(config)
@@ -319,7 +319,7 @@ program
           break
         }
         default:
-          console.debug(formatAsText(filtered))
+          console.log(formatAsText(filtered))
       }
 
       // Exit with appropriate code
@@ -436,7 +436,7 @@ program
 
       // Output
       if (options.output === 'json') {
-        console.debug(JSON.stringify(results, null, 2))
+        console.log(JSON.stringify(results, null, 2))
       } else {
         printSummary('API Extraction Results', [
           { label: 'Duration', value: formatDuration(Date.now() - startTime) },
@@ -526,7 +526,7 @@ program
         { description: 'documentation generation', maxRetries: 2 }
       )
 
-      console.debug(formatGenerationResult(result))
+      console.log(formatGenerationResult(result))
 
       // Write files
       if (!options.dryRun) {
@@ -590,10 +590,10 @@ program
 
       succeedSpinner('Changelog generated')
 
-      console.debug(formatChangelogResult(entry, hasBreakingChanges))
-      console.debug('')
-      console.debug('--- Generated Changelog ---')
-      console.debug(markdown)
+      console.log(formatChangelogResult(entry, hasBreakingChanges))
+      console.log('')
+      console.log('--- Generated Changelog ---')
+      console.log(markdown)
 
       if (!options.dryRun) {
         updateChangelogFile(config.changelog.outputPath, markdown)
@@ -973,7 +973,7 @@ program
       ])
 
       if (issues.length > 0) {
-        console.debug('')
+        console.log('')
         for (const issue of issues) {
           if (issue.type === 'error') {
             error(issue.message)
@@ -1060,13 +1060,13 @@ program
       // Output based on format
       switch (options.output) {
         case 'json':
-          console.debug(formatDiffAsJSON(diffResult))
+          console.log(formatDiffAsJSON(diffResult))
           break
         case 'changelog':
-          console.debug(formatDiffForChangelog(diffResult))
+          console.log(formatDiffForChangelog(diffResult))
           break
         default:
-          console.debug(formatDiffAsText(diffResult))
+          console.log(formatDiffAsText(diffResult))
       }
 
       // Save current as new baseline if no baseline existed

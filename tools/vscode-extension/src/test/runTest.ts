@@ -21,11 +21,11 @@ async function main() {
       extensionTestsPath,
       launchArgs: [
         '--disable-extensions', // Disable other extensions
-        '--disable-gpu' // Faster in CI
-      ]
+        '--disable-gpu', // Faster in CI
+      ],
     })
   } catch (err) {
-    SecureLogger.error('Failed to run tests:', err)
+    console.error('Failed to run tests:', err)
     process.exit(1)
   }
 }

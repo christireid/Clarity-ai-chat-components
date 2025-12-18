@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 import { useCallback } from 'react'
 import { ClarityChatError } from '../errors'
 
@@ -15,7 +16,7 @@ export interface UseErrorHandlerOptions {
 
 /**
  * Hook for centralized error handling with logging and notifications
- * 
+ *
  * @example
  * ```tsx
  * const { handleError } = useErrorHandler({
@@ -26,7 +27,7 @@ export interface UseErrorHandlerOptions {
  *     Sentry.captureException(error)
  *   }
  * })
- * 
+ *
  * try {
  *   await riskyOperation()
  * } catch (error) {

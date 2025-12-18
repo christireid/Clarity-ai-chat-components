@@ -8,7 +8,7 @@ function getOpenAIClient() {
   if (!apiKey) {
     throw new Error(
       'OPENAI_API_KEY environment variable is required. ' +
-      'Please set it in your .env.local file.'
+        'Please set it in your .env.local file.'
     )
   }
   return new OpenAI({ apiKey })
@@ -177,7 +177,7 @@ Always be friendly, knowledgeable, and customer-focused. Use the available funct
       message: message.content,
     })
   } catch (error) {
-    SecureLogger.error('Chat API error:', error)
+    console.error('Chat API error:', error)
     return NextResponse.json(
       { error: 'Failed to process request' },
       { status: 500 }

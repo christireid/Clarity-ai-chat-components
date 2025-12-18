@@ -54,7 +54,7 @@ export const SupportBotCustomized: StoryObj<typeof SupportBot> = {
         ]}
         escalationThreshold={3}
         onEscalate={() => {
-          SecureLogger.debug('Escalating to human agent')
+          console.log('Escalating to human agent')
           alert('A support specialist will be with you shortly...')
         }}
       />

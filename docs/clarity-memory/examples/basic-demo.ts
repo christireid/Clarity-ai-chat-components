@@ -1,6 +1,6 @@
 /**
  * Clarity Memory - Basic Demo
- * 
+ *
  * This demo shows the core features of Clarity Memory in a simple,
  * copy-paste-ready example.
  */
@@ -8,131 +8,135 @@
 import { clarityMemory } from '@clarity-chat/memory'
 
 async function basicDemo() {
-  SecureLogger.debug('🚀 Clarity Memory - Basic Demo\n')
+  console.log('🚀 Clarity Memory - Basic Demo\n')
 
   // ============================================
   // 1. Zero-Config Usage
   // ============================================
-  SecureLogger.debug('1. Zero-Config Usage')
-  SecureLogger.debug('─────────────────────')
-  
+  console.log('1. Zero-Config Usage')
+  console.log('─────────────────────')
+
   // Simplest possible usage - works immediately!
   const memory = clarityMemory()
-  
+
   // Add memories
-  await memory.add("User likes pizza")
-  await memory.add("User works as a software engineer")
-  await memory.add("User lives in San Francisco")
-  await memory.add("User prefers dark mode")
-  
-  SecureLogger.debug('✅ Added 4 memories\n')
+  await memory.add('User likes pizza')
+  await memory.add('User works as a software engineer')
+  await memory.add('User lives in San Francisco')
+  await memory.add('User prefers dark mode')
+
+  console.log('✅ Added 4 memories\n')
 
   // ============================================
   // 2. Simple Recall
   // ============================================
-  SecureLogger.debug('2. Simple Recall')
-  SecureLogger.debug('────────────────')
-  
-  const results = await memory.recall("What does the user like?")
-  SecureLogger.debug(`Found ${results.memories.length} relevant memories:`)
+  console.log('2. Simple Recall')
+  console.log('────────────────')
+
+  const results = await memory.recall('What does the user like?')
+  console.log(`Found ${results.memories.length} relevant memories:`)
   results.memories.forEach((m, i) => {
-    SecureLogger.debug(`  ${i + 1}. ${m.content}`)
+    console.log(`  ${i + 1}. ${m.content}`)
   })
-  SecureLogger.debug(`Tokens used: ${results.tokens}\n`)
+  console.log(`Tokens used: ${results.tokens}\n`)
 
   // ============================================
   // 3. Advanced Search
   // ============================================
-  SecureLogger.debug('3. Advanced Search')
-  SecureLogger.debug('──────────────────')
-  
+  console.log('3. Advanced Search')
+  console.log('──────────────────')
+
   const searchResults = await memory.search({
-    query: "Where does the user work?",
+    query: 'Where does the user work?',
     limit: 5,
     minScore: 0.5,
     sortBy: 'relevance',
   })
-  
-  SecureLogger.debug(`Found ${searchResults.length} results:`)
+
+  console.log(`Found ${searchResults.length} results:`)
   searchResults.forEach((result, i) => {
-    SecureLogger.debug(`  ${i + 1}. ${result.memory.content} (score: ${result.score.toFixed(2)})`)
+    console.log(
+      `  ${i + 1}. ${result.memory.content} (score: ${result.score.toFixed(2)})`
+    )
   })
-  SecureLogger.debug()
+  console.log()
 
   // ============================================
   // 4. Context Bundling
   // ============================================
-  SecureLogger.debug('4. Context Bundling for LLM')
-  SecureLogger.debug('────────────────────────────')
-  
+  console.log('4. Context Bundling for LLM')
+  console.log('────────────────────────────')
+
   const bundle = await memory.context({
-    query: "Tell me about the user",
+    query: 'Tell me about the user',
     maxTokens: 2000,
     format: 'openai',
     includeSummary: true,
   })
-  
-  SecureLogger.debug(`Context bundle prepared:`)
-  SecureLogger.debug(`  Messages: ${bundle.messages.length}`)
-  SecureLogger.debug(`  Tokens: ${bundle.tokens}`)
-  SecureLogger.debug(`  Summary: ${bundle.summary ? 'Yes' : 'No'}`)
-  SecureLogger.debug(`  Format: ${bundle.format}`)
-  SecureLogger.debug()
+
+  console.log(`Context bundle prepared:`)
+  console.log(`  Messages: ${bundle.messages.length}`)
+  console.log(`  Tokens: ${bundle.tokens}`)
+  console.log(`  Summary: ${bundle.summary ? 'Yes' : 'No'}`)
+  console.log(`  Format: ${bundle.format}`)
+  console.log()
 
   // ============================================
   // 5. Memory Management
   // ============================================
-  SecureLogger.debug('5. Memory Management')
-  SecureLogger.debug('───────────────────')
-  
+  console.log('5. Memory Management')
+  console.log('───────────────────')
+
   // Get stats
   const stats = await memory.stats()
-  SecureLogger.debug(`Total memories: ${stats.totalMemories}`)
-  SecureLogger.debug(`Total tokens: ${stats.tokens}`)
-  SecureLogger.debug(`Average importance: ${stats.averageImportance.toFixed(2)}`)
-  SecureLogger.debug()
+  console.log(`Total memories: ${stats.totalMemories}`)
+  console.log(`Total tokens: ${stats.tokens}`)
+  console.log(`Average importance: ${stats.averageImportance.toFixed(2)}`)
+  console.log()
 
   // Promote a memory
   const firstMemory = results.memories[0]
   if (firstMemory) {
     await memory.promote(firstMemory.id)
-    SecureLogger.debug(`✅ Promoted memory: ${firstMemory.content.substring(0, 30)}...`)
+    console.log(
+      `✅ Promoted memory: ${firstMemory.content.substring(0, 30)}...`
+    )
   }
-  SecureLogger.debug()
+  console.log()
 
   // ============================================
   // 6. Compression
   // ============================================
-  SecureLogger.debug('6. Memory Compression')
-  SecureLogger.debug('─────────────────────')
-  
+  console.log('6. Memory Compression')
+  console.log('─────────────────────')
+
   // Add more memories to demonstrate compression
   for (let i = 0; i < 10; i++) {
     await memory.add(`Memory item ${i}: Some information about topic ${i % 3}`)
   }
-  
+
   const compressionResult = await memory.compress({
     strategy: 'adaptive',
     targetSize: '50%',
   })
-  
-  SecureLogger.debug(`Compression result:`)
-  SecureLogger.debug(`  Before: ${compressionResult.before} memories`)
-  SecureLogger.debug(`  After: ${compressionResult.after} memories`)
-  SecureLogger.debug(`  Ratio: ${compressionResult.ratio.toFixed(2)}`)
-  SecureLogger.debug(`  Strategy: ${compressionResult.strategy}`)
-  SecureLogger.debug()
+
+  console.log(`Compression result:`)
+  console.log(`  Before: ${compressionResult.before} memories`)
+  console.log(`  After: ${compressionResult.after} memories`)
+  console.log(`  Ratio: ${compressionResult.ratio.toFixed(2)}`)
+  console.log(`  Strategy: ${compressionResult.strategy}`)
+  console.log()
 
   // ============================================
   // 7. Cleanup
   // ============================================
-  SecureLogger.debug('7. Cleanup')
-  SecureLogger.debug('──────────')
-  
-  await memory.close()
-  SecureLogger.debug('✅ Memory closed\n')
+  console.log('7. Cleanup')
+  console.log('──────────')
 
-  SecureLogger.debug('✨ Demo complete!')
+  await memory.close()
+  console.log('✅ Memory closed\n')
+
+  console.log('✨ Demo complete!')
 }
 
 // Run the demo

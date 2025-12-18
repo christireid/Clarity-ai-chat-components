@@ -1,16 +1,21 @@
 /**
  * Chat Showcase
- * 
+ *
  * Demonstrates chat-specific components
  */
 
-import { Message, ChatInput, ThinkingIndicator, EmptyState } from '@clarity-chat/react'
+import {
+  Message,
+  ChatInput,
+  ThinkingIndicator,
+  EmptyState,
+} from '@clarity-chat/react'
 import { useState } from 'react'
 import type { Message as MessageType } from '@clarity-chat/types'
 
 export function ChatShowcase() {
   const [inputValue, setInputValue] = useState('')
-  
+
   const messages: MessageType[] = [
     {
       id: '1',
@@ -34,7 +39,8 @@ export function ChatShowcase() {
       id: '3',
       chatId: 'showcase',
       role: 'assistant',
-      content: "I'd be happy to help! The design system uses 6 core patterns: ring-based borders, refined shadows, consistent radius, enhanced focus states, precise hover effects, and consistent opacity. Which would you like to learn about?",
+      content:
+        "I'd be happy to help! The design system uses 6 core patterns: ring-based borders, refined shadows, consistent radius, enhanced focus states, precise hover effects, and consistent opacity. Which would you like to learn about?",
       createdAt: new Date(),
       updatedAt: new Date(),
       status: 'sent',
@@ -56,10 +62,7 @@ export function ChatShowcase() {
         <h3 className="text-xl font-semibold mb-4">Message Bubbles</h3>
         <div className="space-y-4 max-w-2xl">
           {messages.map((message) => (
-            <Message
-              key={message.id}
-              message={message}
-            />
+            <Message key={message.id} message={message} />
           ))}
         </div>
         <div className="mt-4 p-4 rounded-lg ring-1 ring-border/30 bg-muted/30">
@@ -81,7 +84,9 @@ export function ChatShowcase() {
           <ThinkingIndicator />
         </div>
         <div className="mt-4 p-4 rounded-lg ring-1 ring-border/30 bg-muted/30">
-          <h4 className="text-sm font-medium mb-2">Thinking Indicator Features:</h4>
+          <h4 className="text-sm font-medium mb-2">
+            Thinking Indicator Features:
+          </h4>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Animated dots to show AI is processing</li>
             <li>• rounded-md ring-1 ring-border/30</li>
@@ -99,7 +104,7 @@ export function ChatShowcase() {
             value={inputValue}
             onChange={(value) => setInputValue(value)}
             onSubmit={() => {
-              SecureLogger.debug('Submitted:', inputValue)
+              console.log('Submitted:', inputValue)
               setInputValue('')
             }}
             placeholder="Type your message..."
@@ -123,15 +128,25 @@ export function ChatShowcase() {
         <div className="max-w-2xl">
           <EmptyState
             icon={
-              <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              <svg
+                className="w-12 h-12"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
               </svg>
             }
             title="No messages yet"
             description="Start a conversation to see messages appear here"
             action={{
               label: 'Start Chatting',
-              onClick: () => SecureLogger.debug('Start chatting clicked')
+              onClick: () => console.log('Start chatting clicked'),
             }}
           />
         </div>
@@ -154,8 +169,18 @@ export function ChatShowcase() {
           <div className="px-6 py-4 border-b border-border/50 backdrop-blur-sm">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
-                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg
+                  className="w-5 h-5 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
               <div>
@@ -168,10 +193,7 @@ export function ChatShowcase() {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.map((message) => (
-              <Message
-                key={message.id}
-                message={message}
-              />
+              <Message key={message.id} message={message} />
             ))}
             <ThinkingIndicator />
           </div>
@@ -182,7 +204,7 @@ export function ChatShowcase() {
               value={inputValue}
               onChange={(value) => setInputValue(value)}
               onSubmit={() => {
-                SecureLogger.debug('Submitted:', inputValue)
+                console.log('Submitted:', inputValue)
                 setInputValue('')
               }}
               placeholder="Type your message..."

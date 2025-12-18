@@ -96,8 +96,8 @@ export const WithErrorCallback: Story = {
   args: {
     children: <ThrowError />,
     onError: (error, errorInfo) => {
-      logger.debug('Error caught:', error)
-      logger.debug('Error info:', errorInfo)
+      console.log('Error caught:', error)
+      console.log('Error info:', errorInfo)
     },
   },
 }

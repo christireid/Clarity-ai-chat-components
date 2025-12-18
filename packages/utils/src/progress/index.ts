@@ -1,4 +1,4 @@
-import { logger } from '../logger';
+import { logger } from '../logger'
 /**
  * Progress Tracking Utilities
  *
@@ -27,7 +27,7 @@ import { logger } from '../logger';
 
 import { formatDuration } from '../format/index.js'
 
-import { debug, warn } from '../logger';
+import { debug, warn } from '../logger'
 
 // Spinner interface matching ora's API
 interface Spinner {
@@ -45,8 +45,6 @@ type OraFactory = (options: {
   spinner?: string
   isSilent?: boolean
 }) => Spinner
-
-
 
 let oraFactory: OraFactory | null | undefined = undefined // undefined = not loaded yet
 let currentSpinner: Spinner | null = null

@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import type { ButtonState } from '@clarity-chat/primitives'
 
@@ -18,7 +20,7 @@ export interface SubmitButtonStateResult {
 
 /**
  * Custom hook for managing submit button state
- * 
+ *
  * @example
  * ```tsx
  * const { buttonState, handleSubmit } = useSubmitButtonState({
@@ -52,7 +54,7 @@ export function useSubmitButtonState({
       return
 
     setButtonState('loading')
-    
+
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)

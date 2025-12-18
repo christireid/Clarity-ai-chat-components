@@ -21,7 +21,7 @@
  *   category: 'utility',
  *   description: 'A custom extension',
  *   initialize: (ctx) => {
- *     ctx.logger.info('Extension initialized!')
+ *     ctx.console.info('Extension initialized!')
  *   },
  * })
  *

@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import {
@@ -132,7 +134,10 @@ export function ExportDialog({
                   key={fmt.value}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: index * 0.05 }}
+                  transition={{
+                    duration: durations.normal,
+                    delay: index * 0.05,
+                  }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setFormat(fmt.value)}
@@ -146,7 +151,7 @@ export function ExportDialog({
                   <motion.span
                     className="text-3xl"
                     animate={format === fmt.value ? { scale: [1, 1.2, 1] } : {}}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: durations.moderate }}
                   >
                     {fmt.icon}
                   </motion.span>
@@ -189,7 +194,10 @@ export function ExportDialog({
                   key={key}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, delay: 0.3 + index * 0.05 }}
+                  transition={{
+                    duration: durations.normal,
+                    delay: 0.3 + index * 0.05,
+                  }}
                   className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
                 >
                   <input
@@ -216,7 +224,7 @@ export function ExportDialog({
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: 0.5 }}
+              transition={{ duration: durations.normal, delay: 0.5 }}
             >
               <h3 className="text-sm font-semibold mb-3">
                 Date Range (Optional)
@@ -242,7 +250,7 @@ export function ExportDialog({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.2, delay: 0.6 }}
+            transition={{ duration: durations.normal, delay: 0.6 }}
             className="p-4 bg-muted/50 rounded-lg"
           >
             <div className="flex items-center gap-3">
@@ -289,7 +297,7 @@ export function ExportDialog({
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  transition={{ duration: durations.moderate, ease: 'easeOut' }}
                   className="h-full bg-primary rounded-full"
                 />
               </div>
@@ -300,7 +308,7 @@ export function ExportDialog({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, delay: 0.7 }}
+            transition={{ duration: durations.normal, delay: 0.7 }}
             className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
           >
             <p className="text-xs text-muted-foreground">

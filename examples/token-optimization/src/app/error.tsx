@@ -11,7 +11,7 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    SecureLogger.error('Optimization error:', error)
+    console.error('Optimization error:', error)
   }, [error])
 
   return (

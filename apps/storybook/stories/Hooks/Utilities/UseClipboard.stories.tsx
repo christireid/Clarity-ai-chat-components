@@ -5,17 +5,17 @@ import { useState } from 'react'
 
 /**
  * **useClipboard Hook**
- * 
+ *
  * Hook for copying text to clipboard with success tracking
  * and automatic reset.
- * 
+ *
  * **Key Features:**
  * - Copy text to clipboard
  * - Success state tracking
  * - Automatic reset after timeout
  * - Success/error callbacks
  * - Browser compatibility (modern API + fallback)
- * 
+ *
  * **Use Cases:**
  * - Copy buttons
  * - Share functionality
@@ -66,10 +66,10 @@ function BasicClipboardDemo() {
   const { copy, copied, reset } = useClipboard({
     timeout: 2000,
     onSuccess: () => {
-      SecureLogger.debug('Copied successfully!')
+      console.log('Copied successfully!')
     },
     onError: (error) => {
-      SecureLogger.error('Copy failed:', error)
+      console.error('Copy failed:', error)
     },
   })
 
@@ -123,7 +123,7 @@ function CustomTimeoutDemo() {
   const { copy, copied, reset } = useClipboard({
     timeout,
     onSuccess: () => {
-      SecureLogger.debug('Copied with timeout:', timeout)
+      console.log('Copied with timeout:', timeout)
     },
   })
 
@@ -215,7 +215,10 @@ const data = await response.json()`,
     <div className="space-y-4 max-w-2xl">
       <h3 className="font-medium">Code Snippets</h3>
       {codeSnippets.map((snippet, index) => (
-        <div key={index} className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+        <div
+          key={index}
+          className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-900"
+        >
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">{snippet.name}</span>
             <Button

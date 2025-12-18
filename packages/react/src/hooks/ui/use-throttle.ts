@@ -60,7 +60,7 @@ export function useThrottle<T>(value: T, delay: number = 500): T {
  * @example
  * ```tsx
  * const throttledResize = useThrottledCallback(
- *   () => logger.debug('Resized!'),
+ *   () => console.log('Resized!'),
  *   200
  * )
  * 

@@ -328,13 +328,13 @@ if (require.main === module) {
   const dryRun = !args.includes('--apply')
   const targetPath = args.find((arg) => !arg.startsWith('--')) || '.'
 
-  logger.debug(`\n🎨 Color Token Migration Tool`)
-  logger.debug(`${'─'.repeat(40)}`)
-  logger.debug(
+  console.log(`\n🎨 Color Token Migration Tool`)
+  console.log(`${'─'.repeat(40)}`)
+  console.log(
     `Mode: ${dryRun ? 'Dry Run (use --apply to write changes)' : 'Apply Changes'}`
   )
-  logger.debug(`Target: ${targetPath}`)
-  logger.debug('')
+  console.log(`Target: ${targetPath}`)
+  console.log('')
 
   const stat = fs.statSync(targetPath)
   const results = stat.isDirectory()
@@ -342,9 +342,9 @@ if (require.main === module) {
     : [migrateFile(targetPath, dryRun)]
 
   const report = generateReport(results)
-  logger.debug(report)
+  console.log(report)
 
   if (dryRun && results.some((r) => r.changes.length > 0)) {
-    logger.debug('\n💡 Run with --apply to apply these changes')
+    console.log('\n💡 Run with --apply to apply these changes')
   }
 }

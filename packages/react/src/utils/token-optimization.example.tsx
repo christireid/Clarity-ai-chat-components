@@ -1,6 +1,6 @@
 /**
  * Token Optimization Examples
- * 
+ *
  * Comprehensive examples showing how to use token optimization features
  * in your AI chat applications.
  */
@@ -10,18 +10,15 @@ import {
   useTokenOptimization,
   TokenOptimizationPanel,
   TokenOptimizationBadge,
-} from '../hooks/use-token-optimization'
-import { useChat } from '../hooks/use-chat-enhanced'
+} from '../hooks/token/use-token-optimization'
+import { useChat } from '../hooks/chat/use-chat-enhanced'
 
 // ============================================================================
 // Example 1: Basic Usage with Prompt Shortening
 // ============================================================================
 
 export function BasicTokenOptimizationExample() {
-  const {
-    optimizePrompt,
-    stats,
-  } = useTokenOptimization({
+  const { optimizePrompt, stats } = useTokenOptimization({
     enablePromptShortening: true,
     promptShortening: {
       removeFillers: true,
@@ -33,11 +30,13 @@ export function BasicTokenOptimizationExample() {
   const handleSend = async (message: string) => {
     // Optimize prompt before sending
     const { optimized, savings } = optimizePrompt(message)
-    
-    logger.debug(`Original: ${message}`)
-    logger.debug(`Optimized: ${optimized}`)
-    logger.debug(`Saved ${savings.tokensSaved} tokens (${savings.percentage.toFixed(1)}%)`)
-    
+
+    console.log(`Original: ${message}`)
+    console.log(`Optimized: ${optimized}`)
+    console.log(
+      `Saved ${savings.tokensSaved} tokens (${savings.percentage.toFixed(1)}%)`
+    )
+
     // Send optimized message to API
     // await sendToAPI(optimized)
   }
@@ -73,7 +72,7 @@ export function FullOptimizationExample() {
     enableThrottling: true,
     enableModelRouting: true,
     enableOutputLimits: true,
-    
+
     // Configuration
     promptShortening: {
       removeFillers: true,
@@ -125,7 +124,7 @@ export function FullOptimizationExample() {
     // 3. Check cache
     const cached = getCachedResponse(optimized)
     if (cached) {
-      logger.debug('Using cached response!')
+      console.log('Using cached response!')
       append({ role: 'assistant', content: cached })
       return
     }
@@ -175,11 +174,7 @@ export function FullOptimizationExample() {
 // ============================================================================
 
 export function SimilarityCachingExample() {
-  const {
-    getCachedResponse,
-    setCachedResponse,
-    stats,
-  } = useTokenOptimization({
+  const { getCachedResponse, setCachedResponse, stats } = useTokenOptimization({
     enableSimilarityCaching: true,
     similarityCaching: {
       similarityThreshold: 0.7,
@@ -234,9 +229,15 @@ export function BatchingExample() {
   const handleBatchOperation = async () => {
     // These requests will be batched together
     const results = await Promise.all([
-      batchRequest(() => fetch('/api/analyze?text=text1').then(r => r.json())),
-      batchRequest(() => fetch('/api/analyze?text=text2').then(r => r.json())),
-      batchRequest(() => fetch('/api/analyze?text=text3').then(r => r.json())),
+      batchRequest(() =>
+        fetch('/api/analyze?text=text1').then((r) => r.json())
+      ),
+      batchRequest(() =>
+        fetch('/api/analyze?text=text2').then((r) => r.json())
+      ),
+      batchRequest(() =>
+        fetch('/api/analyze?text=text3').then((r) => r.json())
+      ),
     ])
 
     return results
@@ -245,9 +246,7 @@ export function BatchingExample() {
   return (
     <div>
       <TokenOptimizationPanel stats={stats} />
-      <button onClick={handleBatchOperation}>
-        Run Batch Analysis
-      </button>
+      <button onClick={handleBatchOperation}>Run Batch Analysis</button>
     </div>
   )
 }
@@ -271,9 +270,9 @@ export function ModelRoutingExample() {
   const handleQuery = async (query: string) => {
     // Automatically route to appropriate model
     const model = routeQuery(query)
-    
-    logger.debug(`Query routed to: ${model}`)
-    logger.debug(`Cost savings: $${stats.costSavings.toFixed(4)}`)
+
+    console.log(`Query routed to: ${model}`)
+    console.log(`Cost savings: $${stats.costSavings.toFixed(4)}`)
 
     const response = await fetch('/api/chat', {
       method: 'POST',
@@ -316,12 +315,13 @@ export function IntegratedChatExample() {
       // Cache assistant responses
       if (message.role === 'assistant') {
         const lastUserMessage = chat.messages
-          .filter(m => m.role === 'user')
+          .filter((m) => m.role === 'user')
           .pop()
         if (lastUserMessage) {
-          const userText = typeof lastUserMessage.content === 'string'
-            ? lastUserMessage.content
-            : JSON.stringify(lastUserMessage.content)
+          const userText =
+            typeof lastUserMessage.content === 'string'
+              ? lastUserMessage.content
+              : JSON.stringify(lastUserMessage.content)
           optimization.setCachedResponse(userText, message.content)
         }
       }
@@ -361,9 +361,12 @@ export function IntegratedChatExample() {
         // Override messages for this request
         experimental_prepareRequestBody: (currentMessages) => {
           return {
-            messages: limitedMessages.map(m => ({
+            messages: limitedMessages.map((m) => ({
               role: m.role,
-              content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
+              content:
+                typeof m.content === 'string'
+                  ? m.content
+                  : JSON.stringify(m.content),
             })),
           }
         },
@@ -374,7 +377,7 @@ export function IntegratedChatExample() {
   return (
     <div>
       <TokenOptimizationPanel stats={optimization.stats} />
-      
+
       <form onSubmit={handleSubmit}>
         <input
           value={chat.input}
@@ -389,7 +392,10 @@ export function IntegratedChatExample() {
       <div>
         {chat.messages.map((msg) => (
           <div key={msg.id}>
-            <strong>{msg.role}:</strong> {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+            <strong>{msg.role}:</strong>{' '}
+            {typeof msg.content === 'string'
+              ? msg.content
+              : JSON.stringify(msg.content)}
           </div>
         ))}
       </div>

@@ -6,7 +6,7 @@
  */
 
 import type { CompleteThemeConfig, ThemeMetadata } from '../theme-config'
-import { createPreset } from '../base'
+import { createPreset } from './base'
 
 /**
  * Neumorphism light theme
@@ -413,7 +413,4 @@ export const neumorphismPreset = createPreset({
   metadata: neumorphismThemeMetadata,
 })
 
-/**
- * Export individual themes
- */
-export { neumorphismLightTheme, neumorphismDarkTheme, neumorphismThemeMetadata }
+// Themes are already exported with 'export const' declarations above

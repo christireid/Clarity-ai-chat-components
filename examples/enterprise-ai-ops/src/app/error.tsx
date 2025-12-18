@@ -11,7 +11,7 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    SecureLogger.error('Dashboard error:', error)
+    console.error('Dashboard error:', error)
   }, [error])
 
   return (

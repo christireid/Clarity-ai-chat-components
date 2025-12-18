@@ -11,9 +11,24 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
-import { BotIcon, UserIcon, SearchIcon, SparklesIcon, FileIcon } from './icons'
+import {
+  BotIcon,
+  UserIcon,
+  SearchIcon,
+  SparklesIcon,
+  FileIcon,
+} from '../ui/icons'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
-export type TimelineEventType = 'user' | 'assistant' | 'tool' | 'system' | 'note'
+export type TimelineEventType =
+  | 'user'
+  | 'assistant'
+  | 'tool'
+  | 'system'
+  | 'note'
 
 export interface ConversationTimelineEvent {
   id: string
@@ -36,7 +51,10 @@ export interface ConversationTimelineProps {
   subtitle?: string
 }
 
-const typeStyles: Record<TimelineEventType, { bg: string; border: string; icon: React.ReactNode }> = {
+const typeStyles: Record<
+  TimelineEventType,
+  { bg: string; border: string; icon: React.ReactNode }
+> = {
   user: {
     bg: 'from-primary/12 via-primary/5 to-transparent',
     border: 'border-primary/40',
@@ -64,20 +82,27 @@ const typeStyles: Record<TimelineEventType, { bg: string; border: string; icon: 
   },
 }
 
-const statusText: Record<NonNullable<ConversationTimelineEvent['status']>, string> = {
+const statusText: Record<
+  NonNullable<ConversationTimelineEvent['status']>,
+  string
+> = {
   pending: 'Pending',
   complete: 'Complete',
   error: 'Needs attention',
 }
 
-const statusVariant: Record<NonNullable<ConversationTimelineEvent['status']>, 'warning' | 'success' | 'destructive'> = {
+const statusVariant: Record<
+  NonNullable<ConversationTimelineEvent['status']>,
+  'warning' | 'success' | 'destructive'
+> = {
   pending: 'warning',
   complete: 'success',
   error: 'destructive',
 }
 
 const defaultTitle = 'Conversation timeline'
-const defaultSubtitle = 'Inspect how the session evolved across user input, model responses, and tool calls.'
+const defaultSubtitle =
+  'Inspect how the session evolved across user input, model responses, and tool calls.'
 
 export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
   events,
@@ -88,7 +113,8 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
   subtitle = defaultSubtitle,
 }) => {
   const sortedEvents = React.useMemo(
-    () => [...events].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()),
+    () =>
+      [...events].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()),
     [events]
   )
 
@@ -99,11 +125,20 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
     })
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card
+      className={cn(
+        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]',
+        className
+      )}
+    >
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
-          <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground/80">{subtitle}</CardDescription>
+          <CardTitle className="text-lg font-semibold text-foreground">
+            {title}
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground/80">
+            {subtitle}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent>
@@ -123,10 +158,15 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                  transition={{
+                    duration: durations.normal,
+                    ease: EASING_FRAMER.default,
+                  }}
                   className="relative pl-12"
                 >
-                  <span className={timelineDotClasses}>{event.icon ?? style.icon}</span>
+                  <span className={timelineDotClasses}>
+                    {event.icon ?? style.icon}
+                  </span>
                   <div
                     className={cn(
                       'group flex flex-col gap-2 rounded-lg border bg-gradient-to-br p-4 text-sm shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] backdrop-blur-sm transition-all duration-150 ease-out hover:-translate-y-px hover:border-primary/40',
@@ -136,7 +176,9 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <h3 className="text-base font-semibold text-foreground">{event.title}</h3>
+                        <h3 className="text-base font-semibold text-foreground">
+                          {event.title}
+                        </h3>
                         <span className="text-xs font-medium text-muted-foreground/70">
                           {formatTime(event.timestamp)}
                         </span>
@@ -163,8 +205,13 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                     {event.metadata && event.metadata.length > 0 && (
                       <div className="flex flex-wrap gap-3 text-xs text-muted-foreground/70">
                         {event.metadata.map(({ label, value }) => (
-                          <div key={`${event.id}-${label}`} className="flex items-center gap-1">
-                            <span className="font-medium text-muted-foreground/90">{label}:</span>
+                          <div
+                            key={`${event.id}-${label}`}
+                            className="flex items-center gap-1"
+                          >
+                            <span className="font-medium text-muted-foreground/90">
+                              {label}:
+                            </span>
                             <span>{value}</span>
                           </div>
                         ))}
@@ -182,7 +229,9 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                     )}
                   </div>
 
-                  {!isLast && <span className="sr-only">Continues to next event</span>}
+                  {!isLast && (
+                    <span className="sr-only">Continues to next event</span>
+                  )}
                 </motion.li>
               )
             })}
@@ -194,4 +243,3 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
 }
 
 ConversationTimeline.displayName = 'ConversationTimeline'
-

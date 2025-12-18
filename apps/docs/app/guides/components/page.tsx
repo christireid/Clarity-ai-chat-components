@@ -26,7 +26,7 @@ export default async function ComponentsGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read components guide', error)
+    logger.error('Failed to read components guide', error)
     content = '# Components\n\nContent not available.'
   }
 

@@ -24,7 +24,10 @@ const CATEGORY_INFO: Record<string, CategoryInfo> = {
   Primary: { icon: '⭐', description: 'Essential chat hooks' },
   Memory: { icon: '🧠', description: 'Conversation memory management' },
   Streaming: { icon: '🌊', description: 'Real-time data streaming' },
-  'Token Optimization': { icon: '📊', description: 'Token usage & optimization' },
+  'Token Optimization': {
+    icon: '📊',
+    description: 'Token usage & optimization',
+  },
   'UI State': { icon: '🎨', description: 'UI state management' },
   Provider: { icon: '🔌', description: 'AI provider integration' },
   Utilities: { icon: '🔧', description: 'Helper utilities' },
@@ -35,7 +38,8 @@ const HOOKS: HookItem[] = [
   {
     label: '$(symbol-method) useClarityChat',
     description: 'Primary chat hook',
-    detail: '⭐ Primary • Full-featured chat state management with streaming, memory, and optimization',
+    detail:
+      '⭐ Primary • Full-featured chat state management with streaming, memory, and optimization',
     value: 'useClarityChat',
     category: 'Primary',
     imports: "import { useClarityChat } from '@clarity-chat/react'",
@@ -60,7 +64,8 @@ const HOOKS: HookItem[] = [
   {
     label: '$(symbol-method) useChatEnhanced',
     description: 'Composable chat hook',
-    detail: '⭐ Primary • Enhanced hook with more granular control and composability',
+    detail:
+      '⭐ Primary • Enhanced hook with more granular control and composability',
     value: 'useChatEnhanced',
     category: 'Primary',
     imports: "import { useChatEnhanced } from '@clarity-chat/react'",
@@ -73,7 +78,7 @@ const HOOKS: HookItem[] = [
 } = useChatEnhanced({
   api: '\${1:/api/chat}',
   onFinish: (message) => {
-    \${2:SecureLogger.debug('Message complete:', message)}
+    \${2:console.log('Message complete:', message)}
   },
 })`,
   },
@@ -82,7 +87,8 @@ const HOOKS: HookItem[] = [
   {
     label: '$(database) useMemoryContext',
     description: 'Access memory state',
-    detail: '🧠 Memory • Get and manage conversation memory from MemoryProvider',
+    detail:
+      '🧠 Memory • Get and manage conversation memory from MemoryProvider',
     value: 'useMemoryContext',
     category: 'Memory',
     imports: "import { useMemoryContext } from '@clarity-chat/react'",
@@ -129,7 +135,7 @@ const HOOKS: HookItem[] = [
 } = useStreamingSSE({
   url: '\${1:/api/chat}',
   onChunk: (chunk) => {
-    \${2:SecureLogger.debug('Received chunk:', chunk)}
+    \${2:console.log('Received chunk:', chunk)}
   },
 })`,
   },
@@ -157,7 +163,8 @@ const HOOKS: HookItem[] = [
   {
     label: '$(dashboard) useTokenBudgetMonitor',
     description: 'Token budget tracking',
-    detail: '📊 Token Optimization • Monitor and optimize token usage to stay within budget',
+    detail:
+      '📊 Token Optimization • Monitor and optimize token usage to stay within budget',
     value: 'useTokenBudgetMonitor',
     category: 'Token Optimization',
     imports: "import { useTokenBudgetMonitor } from '@clarity-chat/react'",
@@ -176,10 +183,12 @@ const HOOKS: HookItem[] = [
   {
     label: '$(zap) useTokenOptimizationEnhanced',
     description: 'Advanced token optimization',
-    detail: '📊 Token Optimization • Advanced optimization strategies for token efficiency',
+    detail:
+      '📊 Token Optimization • Advanced optimization strategies for token efficiency',
     value: 'useTokenOptimizationEnhanced',
     category: 'Token Optimization',
-    imports: "import { useTokenOptimizationEnhanced } from '@clarity-chat/react'",
+    imports:
+      "import { useTokenOptimizationEnhanced } from '@clarity-chat/react'",
     code: `const {
   optimizedMessages,
   compressionRatio,
@@ -211,7 +220,8 @@ const HOOKS: HookItem[] = [
   {
     label: '$(symbol-boolean) useLoadingState',
     description: 'Loading state management',
-    detail: '🎨 UI State • Manage loading states with timeout and error handling',
+    detail:
+      '🎨 UI State • Manage loading states with timeout and error handling',
     value: 'useLoadingState',
     category: 'UI State',
     imports: "import { useLoadingState } from '@clarity-chat/react'",
@@ -223,7 +233,7 @@ const HOOKS: HookItem[] = [
 } = useLoadingState({
   timeout: \${1:30000},
   onTimeout: () => {
-    \${2:SecureLogger.error('Request timed out')}
+    \${2:console.error('Request timed out')}
   },
 })`,
   },
@@ -241,7 +251,7 @@ const HOOKS: HookItem[] = [
   retryLastAction,
 } = useErrorHandler({
   onError: (error) => {
-    \${1:SecureLogger.error('Chat error:', error)}
+    \${1:console.error('Chat error:', error)}
   },
   retryCount: \${2:3},
 })`,
@@ -389,7 +399,9 @@ export async function addHookCommand(context: vscode.ExtensionContext) {
     const recentItems = HOOKS.filter(
       (h) => recentNames.includes(h.value) && !pinnedNames.includes(h.value)
     )
-      .sort((a, b) => recentNames.indexOf(a.value) - recentNames.indexOf(b.value))
+      .sort(
+        (a, b) => recentNames.indexOf(a.value) - recentNames.indexOf(b.value)
+      )
       .slice(0, 3)
 
     if (recentItems.length > 0) {

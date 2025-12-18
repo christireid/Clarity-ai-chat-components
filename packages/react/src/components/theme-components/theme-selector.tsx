@@ -7,8 +7,8 @@
 'use client'
 
 import * as React from 'react'
-import { useTheme, type ThemePresetName } from '../theme/ThemeProvider'
-import { getAllThemes } from '../theme/theme-builder'
+import { useTheme, type ThemePresetName } from '../../theme/ThemeProvider'
+import { getAllThemes } from '../../theme/theme-builder'
 
 export interface ThemeSelectorProps {
   /**
@@ -46,7 +46,7 @@ export interface ThemeSelectorProps {
  * <ThemeSelector
  *   showPreview
  *   orientation="vertical"
- *   onThemeChange={(theme) => logger.debug('Theme changed:', theme)}
+ *   onThemeChange={(theme) => console.log('Theme changed:', theme)}
  * />
  * ```
  */

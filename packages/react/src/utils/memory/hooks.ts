@@ -1,6 +1,7 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * React Hooks for Memory Management
- * 
+ *
  * Provides convenient React hooks for integrating memory functionality
  * into chat components.
  */
@@ -53,12 +54,15 @@ export function useMemories(
   const [error, setError] = useState<Error | null>(null)
 
   // Memoize options to prevent unnecessary re-renders
-  const memoizedOptions = useMemo(() => options, [
-    (options as any)?.limit,
-    options?.scope,
-    options?.type,
-    (options as any)?.minImportanceScore,
-  ])
+  const memoizedOptions = useMemo(
+    () => options,
+    [
+      (options as any)?.limit,
+      options?.scope,
+      options?.type,
+      (options as any)?.minImportanceScore,
+    ]
+  )
 
   const retrieve = useCallback(
     async (retrievalOptions?: Partial<MemoryRetrievalOptions>) => {
@@ -73,7 +77,9 @@ export function useMemories(
         })
         setMemories(result)
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to retrieve memories'))
+        setError(
+          err instanceof Error ? err : new Error('Failed to retrieve memories')
+        )
       } finally {
         setIsLoading(false)
       }
@@ -99,7 +105,9 @@ export function useMemories(
         await retrieve() // Refresh memories
         return stored
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to store memory'))
+        setError(
+          err instanceof Error ? err : new Error('Failed to store memory')
+        )
         throw err
       } finally {
         setIsLoading(false)
@@ -118,7 +126,9 @@ export function useMemories(
         // For now, just refresh to exclude it
         await retrieve()
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to remove memory'))
+        setError(
+          err instanceof Error ? err : new Error('Failed to remove memory')
+        )
       } finally {
         setIsLoading(false)
       }
@@ -196,7 +206,12 @@ export function useMemoryStorage(userId: string) {
           value: message.content,
           scope: options?.scope ?? 'session',
           type: options?.type ?? 'episodic',
-          layer: options?.scope === 'session' ? 'real-time' : options?.scope === 'thread' ? 'session' : 'semantic',
+          layer:
+            options?.scope === 'session'
+              ? 'real-time'
+              : options?.scope === 'thread'
+                ? 'session'
+                : 'semantic',
           importanceScore: options?.importanceScore,
           tokens: estimateTokens(message.content),
         },

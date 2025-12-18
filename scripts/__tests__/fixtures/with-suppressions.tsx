@@ -3,7 +3,7 @@
 
 export function ComponentWithSuppressions() {
   // review-ignore: consoleLog
-  SecureLogger.debug('This should be ignored')
+  console.log('This should be ignored')
 
   // review-ignore-next-line: explicitAny
   const data: any = fetchData()

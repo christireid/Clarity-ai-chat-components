@@ -16,7 +16,8 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
+import { EASING_FRAMER } from '../../animations/constants'
 
 export interface FocusIndicatorProps {
   /** Whether to show the focus indicator */
@@ -203,7 +204,7 @@ export function FocusIndicator({
           }}
           transition={{
             duration: animationDuration / 1000,
-            ease: [0.25, 0.1, 0.25, 1],
+            ease: EASING_FRAMER.sharp,
           }}
           style={{
             borderWidth: ringWidth,
@@ -320,10 +321,7 @@ export function FocusVisible({ children }: FocusVisibleProps) {
   const isFocusVisible = isFocused && isKeyboardNav
 
   return (
-    <div
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-    >
+    <div onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}>
       {children(isFocusVisible)}
     </div>
   )

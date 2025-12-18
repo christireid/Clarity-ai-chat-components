@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * retrieveMemories - Low-level utility for retrieving memories
  *

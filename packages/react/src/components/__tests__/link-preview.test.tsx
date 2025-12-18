@@ -152,7 +152,7 @@ describe('LinkPreview', () => {
       render(<LinkPreview metadata={sampleMetadata} />)
 
       const img = screen.getByRole('img', { name: /preview image/i })
-      fireEvent.logger.error(img)
+      fireEvent.error(img)
 
       // After error, should not show the broken image
       expect(

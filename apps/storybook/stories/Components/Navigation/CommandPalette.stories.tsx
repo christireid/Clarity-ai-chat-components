@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { CommandPalette, CommandItem, useCommandPalette } from '@clarity-chat/react'
+import {
+  CommandPalette,
+  CommandItem,
+  useCommandPalette,
+} from '@clarity-chat/react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 
@@ -74,7 +78,7 @@ const basicCommands: CommandItem[] = [
     description: 'Start a new conversation',
     shortcut: ['⌘', 'N'],
     category: 'Actions',
-    onSelect: () => SecureLogger.debug('New chat'),
+    onSelect: () => console.log('New chat'),
   },
   {
     id: 'search',
@@ -82,7 +86,7 @@ const basicCommands: CommandItem[] = [
     description: 'Search through your message history',
     shortcut: ['⌘', 'F'],
     category: 'Actions',
-    onSelect: () => SecureLogger.debug('Search'),
+    onSelect: () => console.log('Search'),
   },
   {
     id: 'settings',
@@ -90,14 +94,14 @@ const basicCommands: CommandItem[] = [
     description: 'Configure your preferences',
     shortcut: ['⌘', ','],
     category: 'Navigation',
-    onSelect: () => SecureLogger.debug('Settings'),
+    onSelect: () => console.log('Settings'),
   },
   {
     id: 'export',
     label: 'Export Conversation',
     description: 'Download conversation as file',
     category: 'Actions',
-    onSelect: () => SecureLogger.debug('Export'),
+    onSelect: () => console.log('Export'),
   },
 ]
 
@@ -135,7 +139,9 @@ export const Default: Story = {
     await expect(canvas.getByText('Open Settings')).toBeInTheDocument()
 
     // Test descriptions render
-    await expect(canvas.getByText(/Start a new conversation/)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/Start a new conversation/)
+    ).toBeInTheDocument()
 
     // Test keyboard shortcuts display
     await expect(canvas.getByText('⌘')).toBeInTheDocument()
@@ -284,35 +290,35 @@ export const SearchDemo: Story = {
         label: 'New Conversation',
         description: 'Start a fresh chat',
         category: 'Chat',
-        onSelect: () => SecureLogger.debug('New conversation'),
+        onSelect: () => console.log('New conversation'),
       },
       {
         id: 'find-conversation',
         label: 'Find Conversation',
         description: 'Search your chat history',
         category: 'Chat',
-        onSelect: () => SecureLogger.debug('Find'),
+        onSelect: () => console.log('Find'),
       },
       {
         id: 'delete-conversation',
         label: 'Delete Conversation',
         description: 'Remove a conversation',
         category: 'Chat',
-        onSelect: () => SecureLogger.debug('Delete'),
+        onSelect: () => console.log('Delete'),
       },
       {
         id: 'export-data',
         label: 'Export Data',
         description: 'Download your conversations',
         category: 'Data',
-        onSelect: () => SecureLogger.debug('Export'),
+        onSelect: () => console.log('Export'),
       },
       {
         id: 'import-data',
         label: 'Import Data',
         description: 'Upload conversations',
         category: 'Data',
-        onSelect: () => SecureLogger.debug('Import'),
+        onSelect: () => console.log('Import'),
       },
     ]
 
@@ -360,8 +366,8 @@ export const KeyboardShortcuts: Story = {
   render: () => {
     // Use the useCommandPalette hook for proper toggle behavior
     const { isOpen, toggle, close, shortcutDisplay } = useCommandPalette({
-      onOpen: () => SecureLogger.debug('Command palette opened'),
-      onClose: () => SecureLogger.debug('Command palette closed'),
+      onOpen: () => console.log('Command palette opened'),
+      onClose: () => console.log('Command palette closed'),
     })
 
     return (
@@ -402,7 +408,8 @@ export const KeyboardShortcuts: Story = {
           </div>
 
           <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-sm">
-            <strong>Toggle behavior:</strong> Press {shortcutDisplay} to open, press again to close!
+            <strong>Toggle behavior:</strong> Press {shortcutDisplay} to open,
+            press again to close!
           </div>
         </div>
 
@@ -421,11 +428,7 @@ export const KeyboardShortcuts: Story = {
           Toggle Palette ({shortcutDisplay})
         </button>
 
-        <CommandPalette
-          items={basicCommands}
-          open={isOpen}
-          onClose={close}
-        />
+        <CommandPalette items={basicCommands} open={isOpen} onClose={close} />
       </div>
     )
   },
@@ -665,11 +668,7 @@ export const QuickActions: Story = {
           </div>
         )}
 
-        <CommandPalette
-          items={quickActions}
-          open={isOpen}
-          onClose={close}
-        />
+        <CommandPalette items={quickActions} open={isOpen} onClose={close} />
       </div>
     )
   },
@@ -692,11 +691,7 @@ export const Accessibility: Story = {
           Open Command Palette ({shortcutDisplay})
         </button>
 
-        <CommandPalette
-          items={basicCommands}
-          open={isOpen}
-          onClose={close}
-        />
+        <CommandPalette items={basicCommands} open={isOpen} onClose={close} />
 
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm space-y-2">
           <strong>Accessibility Features:</strong>
@@ -725,7 +720,10 @@ export const UseCommandPaletteHook: Story = {
     const [events, setEvents] = useState<string[]>([])
 
     const addEvent = (event: string) => {
-      setEvents((prev) => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${event}`])
+      setEvents((prev) => [
+        ...prev.slice(-4),
+        `${new Date().toLocaleTimeString()}: ${event}`,
+      ])
     }
 
     // Demonstrate all hook options
@@ -735,7 +733,8 @@ export const UseCommandPaletteHook: Story = {
       shortcutEnabled: true,
       onOpen: () => addEvent('onOpen callback fired'),
       onClose: () => addEvent('onClose callback fired'),
-      onToggle: (open) => addEvent(`onToggle callback: ${open ? 'opened' : 'closed'}`),
+      onToggle: (open) =>
+        addEvent(`onToggle callback: ${open ? 'opened' : 'closed'}`),
     })
 
     return (
@@ -746,7 +745,9 @@ export const UseCommandPaletteHook: Story = {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="text-muted-foreground">Current State</div>
-              <div className="font-semibold text-lg">{isOpen ? 'Open' : 'Closed'}</div>
+              <div className="font-semibold text-lg">
+                {isOpen ? 'Open' : 'Closed'}
+              </div>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="text-muted-foreground">Shortcut</div>
@@ -776,8 +777,11 @@ export const UseCommandPaletteHook: Story = {
           </div>
 
           <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-sm">
-            <strong>Try it:</strong> Press <kbd className="px-2 py-0.5 bg-background border rounded">{shortcutDisplay}</kbd> to toggle.
-            It will open if closed, and close if open!
+            <strong>Try it:</strong> Press{' '}
+            <kbd className="px-2 py-0.5 bg-background border rounded">
+              {shortcutDisplay}
+            </kbd>{' '}
+            to toggle. It will open if closed, and close if open!
           </div>
         </div>
 
@@ -786,7 +790,9 @@ export const UseCommandPaletteHook: Story = {
             <h4 className="font-medium text-sm mb-2">Event Log</h4>
             <div className="space-y-1 text-xs font-mono">
               {events.map((event, i) => (
-                <div key={i} className="text-muted-foreground">{event}</div>
+                <div key={i} className="text-muted-foreground">
+                  {event}
+                </div>
               ))}
             </div>
           </div>
@@ -812,11 +818,7 @@ export const UseCommandPaletteHook: Story = {
 })`}</pre>
         </div>
 
-        <CommandPalette
-          items={basicCommands}
-          open={isOpen}
-          onClose={close}
-        />
+        <CommandPalette items={basicCommands} open={isOpen} onClose={close} />
       </div>
     )
   },

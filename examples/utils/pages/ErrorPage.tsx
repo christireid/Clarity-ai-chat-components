@@ -28,7 +28,7 @@ export function ErrorPage({
   description,
 }: ErrorPageProps) {
   useEffect(() => {
-    SecureLogger.error('Application error:', error)
+    console.error('Application error:', error)
   }, [error])
 
   return (

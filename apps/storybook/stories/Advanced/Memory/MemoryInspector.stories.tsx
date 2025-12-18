@@ -62,15 +62,15 @@ export const WithActions: Story = {
   args: {
     memories: mockMemories,
     onRemove: (memory) => {
-      SecureLogger.debug('Removing memory:', memory.id)
+      console.log('Removing memory:', memory.id)
       alert(`Removed: ${memory.label}`)
     },
     onPromote: (memory) => {
-      SecureLogger.debug('Promoting memory:', memory.id)
+      console.log('Promoting memory:', memory.id)
       alert(`Promoted: ${memory.label}`)
     },
     onRefresh: () => {
-      SecureLogger.debug('Refreshing memories')
+      console.log('Refreshing memories')
       alert('Refreshing...')
     },
   },

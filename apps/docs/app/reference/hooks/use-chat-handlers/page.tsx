@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -163,9 +162,9 @@ function Chat() {
       analytics.track('message_sent', { length: content.length })
     },
     onMessageError: (error) => {
-      logger.logger.error('Failed to send message:', error)
+      logger.error('Failed to send message:', error)
       // Show user-friendly error
-      toast.logger.error('Failed to send message. Please try again.')
+      toast.error('Failed to send message. Please try again.')
     },
   })
 
@@ -219,11 +218,11 @@ function Chat() {
     onMessageError: (error) => {
       // Custom error handling
       if (error.message.includes('rate limit')) {
-        toast.logger.error('Too many requests. Please wait a moment.')
+        toast.error('Too many requests. Please wait a moment.')
       } else if (error.message.includes('network')) {
-        toast.logger.error('Network error. Check your connection.')
+        toast.error('Network error. Check your connection.')
       } else {
-        toast.logger.error('Something went wrong. Please try again.')
+        toast.error('Something went wrong. Please try again.')
       }
       
       // Log to error tracking

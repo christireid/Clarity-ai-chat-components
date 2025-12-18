@@ -33,7 +33,7 @@
  * // Or use the workflow hook
  * const workflow = useArchitectWorkflow({
  *   onPhaseComplete: (phase, result) => {
- *     logger.debug(`Phase ${phase} complete:`, result)
+ *     console.log(`Phase ${phase} complete:`, result)
  *   },
  * })
  * ```

@@ -1,8 +1,8 @@
 /**
  * Tool Invocation Card Component
- * 
+ *
  * Displays function/tool calls with approval flow and result visualization
- * 
+ *
  * @example
  * ```tsx
  * <ToolInvocationCard
@@ -19,17 +19,23 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Card, 
-  CardContent, 
+import {
+  Card,
+  CardContent,
   CardHeader,
-  Button, 
-  Badge, 
-  cn 
+  Button,
+  Badge,
+  cn,
 } from '@clarity-chat/primitives'
 import type { ToolCall } from '../adapters/types'
 
-export type ToolStatus = 'pending' | 'approved' | 'rejected' | 'executing' | 'success' | 'error'
+export type ToolStatus =
+  | 'pending'
+  | 'approved'
+  | 'rejected'
+  | 'executing'
+  | 'success'
+  | 'error'
 
 export interface ToolInvocationCardProps {
   /** Tool call data */
@@ -56,7 +62,9 @@ export interface ToolInvocationCardProps {
   className?: string
 }
 
-const getStatusBadgeVariant = (status: ToolStatus): 'default' | 'secondary' | 'success' | 'warning' | 'destructive' | 'info' => {
+const getStatusBadgeVariant = (
+  status: ToolStatus
+): 'default' | 'secondary' | 'success' | 'warning' | 'destructive' | 'info' => {
   switch (status) {
     case 'pending':
       return 'warning'
@@ -102,20 +110,22 @@ export function ToolInvocationCard({
   onRetry,
   formatArguments = true,
   expandableResult = true,
-  className = ''
+  className = '',
 }: ToolInvocationCardProps) {
   const [isResultExpanded, setIsResultExpanded] = React.useState(false)
   const [isArgsExpanded, setIsArgsExpanded] = React.useState(false)
-  
+
   const parseArguments = () => {
     try {
       const parsed = JSON.parse(toolCall.function.arguments)
-      return formatArguments ? JSON.stringify(parsed, null, 2) : toolCall.function.arguments
+      return formatArguments
+        ? JSON.stringify(parsed, null, 2)
+        : toolCall.function.arguments
     } catch {
       return toolCall.function.arguments
     }
   }
-  
+
   const formatResult = () => {
     if (error) return error
     if (typeof result === 'string') return result
@@ -125,12 +135,12 @@ export function ToolInvocationCard({
       return String(result)
     }
   }
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
+      transition={{
         // Framer Motion 12: Spring entrance for tool card
         type: 'spring',
         damping: 22,
@@ -145,11 +155,21 @@ export function ToolInvocationCard({
             <div className="flex items-start gap-3.5 flex-1 min-w-0">
               {/* Icon */}
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                  />
                 </svg>
               </div>
-              
+
               {/* Tool Name & Status */}
               <div className="flex-1 min-w-0 space-y-1.5">
                 <div className="flex items-center gap-2.5 flex-wrap">
@@ -164,10 +184,12 @@ export function ToolInvocationCard({
                   </Badge>
                 </div>
 
-                <p className="text-xs text-muted-foreground/90">Tool Invocation</p>
+                <p className="text-xs text-muted-foreground/90">
+                  Tool Invocation
+                </p>
               </div>
             </div>
-            
+
             {/* Approval Actions */}
             {requiresApproval && status === 'pending' && (
               <div className="flex gap-2.5 shrink-0">
@@ -177,8 +199,18 @@ export function ToolInvocationCard({
                     onClick={() => onApprove(toolCall)}
                     className="gap-1.5"
                   >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     Approve
                   </Button>
@@ -190,8 +222,18 @@ export function ToolInvocationCard({
                     onClick={() => onReject(toolCall)}
                     className="gap-1.5"
                   >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                     Reject
                   </Button>
@@ -218,21 +260,28 @@ export function ToolInvocationCard({
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
-            
+
             <AnimatePresence>
               {isArgsExpanded && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: durations.normal }}
                   className="overflow-hidden"
                 >
                   <pre className="rounded-lg border bg-muted/50 p-3 text-xs overflow-x-auto">
-                    <code className="text-foreground font-mono">{parseArguments()}</code>
+                    <code className="text-foreground font-mono">
+                      {parseArguments()}
+                    </code>
                   </pre>
                 </motion.div>
               )}
@@ -251,15 +300,35 @@ export function ToolInvocationCard({
                     <span className="flex items-center gap-2.5">
                       {error ? (
                         <>
-                          <svg className="h-4 w-4 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <svg
+                            className="h-4 w-4 text-destructive"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
                           </svg>
                           Error Details
                         </>
                       ) : (
                         <>
-                          <svg className="h-4 w-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <svg
+                            className="h-4 w-4 text-success"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
                           </svg>
                           Result
                         </>
@@ -274,31 +343,42 @@ export function ToolInvocationCard({
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </button>
-                  
+
                   <AnimatePresence>
                     {isResultExpanded && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: durations.normal }}
                         className="overflow-hidden space-y-3.5"
                       >
-                        <pre className={cn(
-                          'rounded-lg border p-3 text-sm overflow-x-auto',
-                          error ? 'bg-destructive/10 border-destructive/30' : 'bg-muted/50'
-                        )}>
-                          <code className={cn(
-                            'font-mono',
-                            error ? 'text-destructive' : 'text-foreground'
-                          )}>
+                        <pre
+                          className={cn(
+                            'rounded-lg border p-3 text-sm overflow-x-auto',
+                            error
+                              ? 'bg-destructive/10 border-destructive/30'
+                              : 'bg-muted/50'
+                          )}
+                        >
+                          <code
+                            className={cn(
+                              'font-mono',
+                              error ? 'text-destructive' : 'text-foreground'
+                            )}
+                          >
                             {formatResult()}
                           </code>
                         </pre>
-                        
+
                         {error && onRetry && (
                           <Button
                             size="sm"
@@ -306,8 +386,18 @@ export function ToolInvocationCard({
                             onClick={() => onRetry(toolCall)}
                             className="gap-1.5"
                           >
-                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            <svg
+                              className="h-4 w-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                              />
                             </svg>
                             Retry
                           </Button>
@@ -318,18 +408,24 @@ export function ToolInvocationCard({
                 </>
               ) : (
                 <div className="space-y-3.5">
-                  <pre className={cn(
-                    'rounded-lg border p-3 text-sm overflow-x-auto',
-                    error ? 'bg-destructive/10 border-destructive/30' : 'bg-muted/50'
-                  )}>
-                    <code className={cn(
-                      'font-mono',
-                      error ? 'text-destructive' : 'text-foreground'
-                    )}>
+                  <pre
+                    className={cn(
+                      'rounded-lg border p-3 text-sm overflow-x-auto',
+                      error
+                        ? 'bg-destructive/10 border-destructive/30'
+                        : 'bg-muted/50'
+                    )}
+                  >
+                    <code
+                      className={cn(
+                        'font-mono',
+                        error ? 'text-destructive' : 'text-foreground'
+                      )}
+                    >
                       {formatResult()}
                     </code>
                   </pre>
-                  
+
                   {error && onRetry && (
                     <Button
                       size="sm"
@@ -337,8 +433,18 @@ export function ToolInvocationCard({
                       onClick={() => onRetry(toolCall)}
                       className="gap-1.5"
                     >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
                       </svg>
                       Retry
                     </Button>

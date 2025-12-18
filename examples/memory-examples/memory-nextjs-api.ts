@@ -19,8 +19,8 @@ async function getMemory() {
     memoryInstance = clarityMemory({
       debug: true,
       storage: {
-        type: 'memory' // Use file or database in production
-      }
+        type: 'memory', // Use file or database in production
+      },
     })
     await memoryInstance.initialize()
   }
@@ -49,16 +49,19 @@ export async function POST(request: NextRequest) {
     const relevantMemories = await memory.recall(message, {
       limit: 5,
       minConfidence: 0.7,
-      metadata: { userId, sessionId }
+      metadata: { userId, sessionId },
     })
 
     // Get optimized context bundle
     const contextBundle = await memory.context({
-      maxTokens: 1000
+      maxTokens: 1000,
     })
 
     // Call your LLM with context
-    const response = await generateResponse(message, contextBundle.formatted || '')
+    const response = await generateResponse(
+      message,
+      contextBundle.formatted || ''
+    )
 
     // Store user message and response
     await Promise.all([
@@ -66,23 +69,23 @@ export async function POST(request: NextRequest) {
         type: 'episodic',
         scope: 'session',
         importance: 0.5,
-        tags: ['user-message', userId, sessionId].filter(Boolean)
+        tags: ['user-message', userId, sessionId].filter(Boolean),
       }),
       memory.add(response, {
         type: 'episodic',
         scope: 'session',
         importance: 0.6,
-        tags: ['assistant-response', userId, sessionId].filter(Boolean)
-      })
+        tags: ['assistant-response', userId, sessionId].filter(Boolean),
+      }),
     ])
 
     return NextResponse.json({
       response,
       memoriesUsed: relevantMemories.length,
-      tokensUsed: contextBundle.tokenBreakdown.total
+      tokensUsed: contextBundle.tokenBreakdown.total,
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -100,10 +103,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId')
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'userId required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'userId required' }, { status: 400 })
     }
 
     const memory = await getMemory()
@@ -113,20 +113,20 @@ export async function GET(request: NextRequest) {
     const recentMemories = await memory.query({
       types: ['episodic'],
       metadata: { userId },
-      limit: 20
+      limit: 20,
     })
 
     return NextResponse.json({
       stats,
-      recentMemories: recentMemories.map(r => ({
+      recentMemories: recentMemories.map((r) => ({
         content: r.memory.content,
         type: r.memory.type,
         timestamp: r.memory.timestamp,
-        tags: r.memory.tags
-      }))
+        tags: r.memory.tags,
+      })),
     })
   } catch (error) {
-    SecureLogger.error('Stats error:', error)
+    console.error('Stats error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -138,7 +138,10 @@ export async function GET(request: NextRequest) {
  * Mock LLM response generator
  * Replace with actual LLM integration (OpenAI, Anthropic, etc.)
  */
-async function generateResponse(message: string, context: string): Promise<string> {
+async function generateResponse(
+  message: string,
+  context: string
+): Promise<string> {
   // Example with Vercel AI SDK:
   // import { streamText } from 'ai'
   // import { openai } from '@ai-sdk/openai'

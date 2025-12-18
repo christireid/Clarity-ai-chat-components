@@ -121,7 +121,7 @@ export default function EnterpriseAIOps() {
                     details: { category: 'violence' },
                   },
                 ]}
-                onReview={(id) => SecureLogger.debug('Review', id)}
+                onReview={(id) => console.log('Review', id)}
               />
               <SafetyStatusCard
                 status={{
@@ -160,7 +160,7 @@ export default function EnterpriseAIOps() {
                   timestamp: new Date(),
                 },
               ]}
-              onSelectEvaluation={(id) => SecureLogger.debug('Select', id)}
+              onSelectEvaluation={(id) => console.log('Select', id)}
             />
           )}
 
@@ -182,7 +182,7 @@ export default function EnterpriseAIOps() {
                   status: 'failed',
                 },
               ]}
-              onRunTest={(id) => SecureLogger.debug('Run test', id)}
+              onRunTest={(id) => console.log('Run test', id)}
             />
           )}
 

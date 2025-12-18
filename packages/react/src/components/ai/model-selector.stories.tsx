@@ -37,7 +37,7 @@ function App() {
       value={model}
       onChange={(id, config) => {
         setModel(id)
-        logger.debug('Config:', config)
+        console.log('Config:', config)
       }}
     />
   )

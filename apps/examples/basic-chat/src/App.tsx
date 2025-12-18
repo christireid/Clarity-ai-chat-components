@@ -54,19 +54,19 @@ function ChatApp() {
         id: '1',
         chatId: 'demo-chat',
         role: 'assistant' as const,
-        content: 'Hello! I\'m your AI assistant. How can I help you today?',
+        content: "Hello! I'm your AI assistant. How can I help you today?",
         timestamp: Date.now() - 5000,
       },
     ],
     onEdit: (messageId, newContent) => {
-      SecureLogger.debug('Message edited:', messageId, newContent)
+      console.log('Message edited:', messageId, newContent)
     },
     onRegenerate: (messageId) => {
-      SecureLogger.debug('Regenerating message:', messageId)
+      console.log('Regenerating message:', messageId)
       // Will be handled by handleRegenerate below
     },
     onDelete: (messageId) => {
-      SecureLogger.debug('Message deleted:', messageId)
+      console.log('Message deleted:', messageId)
     },
   })
 
@@ -127,82 +127,93 @@ function ChatApp() {
   const isMobile = useMediaQuery('(max-width: 768px)')
 
   // Handle message edit
-  const handleEdit = useCallback((messageId: string) => {
-    setEditingMessageId(messageId)
-    const message = messages.find(m => m.id === messageId)
-    if (message) {
-      const newContent = prompt('Edit message:', message.content) || message.content
-      if (newContent !== message.content) {
-        editMessage(messageId, newContent)
+  const handleEdit = useCallback(
+    (messageId: string) => {
+      setEditingMessageId(messageId)
+      const message = messages.find((m) => m.id === messageId)
+      if (message) {
+        const newContent =
+          prompt('Edit message:', message.content) || message.content
+        if (newContent !== message.content) {
+          editMessage(messageId, newContent)
+        }
       }
-    }
-    setEditingMessageId(null)
-  }, [messages, editMessage])
+      setEditingMessageId(null)
+    },
+    [messages, editMessage]
+  )
 
   // Handle message regenerate
-  const handleRegenerate = useCallback(async (messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message || message.role !== 'assistant') return
+  const handleRegenerate = useCallback(
+    async (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message || message.role !== 'assistant') return
 
-    setIsLoading(true)
-    try {
-      // Find the user message that prompted this response
-      const messageIndex = messages.findIndex(m => m.id === messageId)
-      const previousUserMessage = messages[messageIndex - 1]
-      
-      if (previousUserMessage && previousUserMessage.role === 'user') {
-        // Delete old message first
-        deleteMessage(messageId)
-        await new Promise(resolve => setTimeout(resolve, 300))
-        
-        // Simulate regenerating the response
-        const responseContent = `[Regenerated] You said: "${previousUserMessage.content}". This is a regenerated response with different wording.`
-        
-        // Add new regenerated message
-        addMessage({
-          chatId: 'demo-chat',
-          role: 'assistant',
-          content: responseContent,
-        })
-        
-        // Simulate AI response delay
-        await new Promise(resolve => setTimeout(resolve, 800))
+      setIsLoading(true)
+      try {
+        // Find the user message that prompted this response
+        const messageIndex = messages.findIndex((m) => m.id === messageId)
+        const previousUserMessage = messages[messageIndex - 1]
+
+        if (previousUserMessage && previousUserMessage.role === 'user') {
+          // Delete old message first
+          deleteMessage(messageId)
+          await new Promise((resolve) => setTimeout(resolve, 300))
+
+          // Simulate regenerating the response
+          const responseContent = `[Regenerated] You said: "${previousUserMessage.content}". This is a regenerated response with different wording.`
+
+          // Add new regenerated message
+          addMessage({
+            chatId: 'demo-chat',
+            role: 'assistant',
+            content: responseContent,
+          })
+
+          // Simulate AI response delay
+          await new Promise((resolve) => setTimeout(resolve, 800))
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to regenerate')
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to regenerate')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [messages, deleteMessage, addMessage])
+    },
+    [messages, deleteMessage, addMessage]
+  )
 
   // Handle message delete
-  const handleDelete = useCallback((messageId: string) => {
-    if (confirm('Delete this message?')) {
-      deleteMessage(messageId)
-    }
-  }, [deleteMessage])
+  const handleDelete = useCallback(
+    (messageId: string) => {
+      if (confirm('Delete this message?')) {
+        deleteMessage(messageId)
+      }
+    },
+    [deleteMessage]
+  )
 
-  const handleSendMessage = useCallback(async (content: string) => {
-    try {
-      setError(null)
-      
-      // Add user message using operations hook
-      addMessage({
-        chatId: 'demo-chat',
-        role: 'user',
-        content,
-      })
-      
-      // Estimate user message tokens (rough: 1 token ≈ 4 chars)
-      const userTokens = Math.ceil(content.length / 4)
-      addInputTokens(userTokens)
-      
-      // Start typing indicator
-      startTyping(content, 200)
-      setIsLoading(true)
+  const handleSendMessage = useCallback(
+    async (content: string) => {
+      try {
+        setError(null)
 
-      // Simulate AI response
-      const responseContent = `You said: "${content}". This is a demo response. In a real application, this would be replaced with an actual AI API call.
+        // Add user message using operations hook
+        addMessage({
+          chatId: 'demo-chat',
+          role: 'user',
+          content,
+        })
+
+        // Estimate user message tokens (rough: 1 token ≈ 4 chars)
+        const userTokens = Math.ceil(content.length / 4)
+        addInputTokens(userTokens)
+
+        // Start typing indicator
+        startTyping(content, 200)
+        setIsLoading(true)
+
+        // Simulate AI response
+        const responseContent = `You said: "${content}". This is a demo response. In a real application, this would be replaced with an actual AI API call.
 
 Here are some things you could try:
 - Ask me a question
@@ -213,34 +224,36 @@ Here are some things you could try:
 - **Try deleting** - Click Delete on any message
 
 I'm here to help!`
-      
-      // Apply realistic delay
-      await delayResponse(responseContent, content)
-      
-      // Estimate AI response tokens
-      const aiTokens = Math.ceil(responseContent.length / 4)
-      addOutputTokens(aiTokens)
-      
-      // Add AI message using operations hook
-      addMessage({
-        chatId: 'demo-chat',
-        role: 'assistant',
-        content: responseContent,
-      })
-      
-      setIsLoading(false)
-    } catch (err) {
-      setIsLoading(false)
-      setError(err instanceof Error ? err.message : 'Failed to send message')
-      SecureLogger.error('Error sending message:', err)
-    }
-  }, [addMessage, addInputTokens, addOutputTokens, startTyping, delayResponse])
+
+        // Apply realistic delay
+        await delayResponse(responseContent, content)
+
+        // Estimate AI response tokens
+        const aiTokens = Math.ceil(responseContent.length / 4)
+        addOutputTokens(aiTokens)
+
+        // Add AI message using operations hook
+        addMessage({
+          chatId: 'demo-chat',
+          role: 'assistant',
+          content: responseContent,
+        })
+
+        setIsLoading(false)
+      } catch (err) {
+        setIsLoading(false)
+        setError(err instanceof Error ? err.message : 'Failed to send message')
+        console.error('Error sending message:', err)
+      }
+    },
+    [addMessage, addInputTokens, addOutputTokens, startTyping, delayResponse]
+  )
 
   return (
-    <div 
-      style={{ 
-        width: '100%', 
-        maxWidth: isMobile ? '100%' : '800px', 
+    <div
+      style={{
+        width: '100%',
+        maxWidth: isMobile ? '100%' : '800px',
         height: isMobile ? '100vh' : '600px',
         display: 'flex',
         flexDirection: 'column',
@@ -251,25 +264,40 @@ I'm here to help!`
       }}
     >
       {/* Header with token counter and status */}
-      <div style={{ 
-        padding: '1rem', 
-        borderBottom: '1px solid #e5e7eb',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexShrink: 0,
-        flexWrap: 'wrap',
-        gap: '1rem',
-      }}>
+      <div
+        style={{
+          padding: '1rem',
+          borderBottom: '1px solid #e5e7eb',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexShrink: 0,
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
           <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>
             Basic Chat Demo
           </h2>
-          <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#6b7280' }}>
+          <p
+            style={{
+              margin: '0.25rem 0 0',
+              fontSize: '0.875rem',
+              color: '#6b7280',
+            }}
+          >
             Try editing, regenerating, or deleting messages!
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
           {/* Undo/Redo buttons */}
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
@@ -305,7 +333,7 @@ I'm here to help!`
               ↷ Redo
             </button>
           </div>
-          <TokenCounter 
+          <TokenCounter
             tokens={totalTokens}
             cost={estimatedCost}
             compact={isMobile}
@@ -313,19 +341,23 @@ I'm here to help!`
           <NetworkStatus />
         </div>
       </div>
-      
+
       {/* Error display */}
       {error && (
-        <div style={{
-          padding: '1rem',
-          background: '#fef2f2',
-          border: '1px solid #fecaca',
-          borderRadius: '0.5rem',
-          margin: '1rem',
-          flexShrink: 0,
-        }}>
-          <p style={{ margin: 0, color: '#991b1b', fontSize: '0.875rem' }}>{error}</p>
-          <button 
+        <div
+          style={{
+            padding: '1rem',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '0.5rem',
+            margin: '1rem',
+            flexShrink: 0,
+          }}
+        >
+          <p style={{ margin: 0, color: '#991b1b', fontSize: '0.875rem' }}>
+            {error}
+          </p>
+          <button
             onClick={() => setError(null)}
             style={{
               marginTop: '0.5rem',
@@ -342,29 +374,33 @@ I'm here to help!`
           </button>
         </div>
       )}
-      
+
       {/* Typing indicator */}
       {isTyping && currentStage && (
-        <div style={{
-          padding: '0.5rem 1rem',
-          background: '#f3f4f6',
-          borderBottom: '1px solid #e5e7eb',
-          fontSize: '0.875rem',
-          color: '#6b7280',
-          flexShrink: 0,
-        }}>
+        <div
+          style={{
+            padding: '0.5rem 1rem',
+            background: '#f3f4f6',
+            borderBottom: '1px solid #e5e7eb',
+            fontSize: '0.875rem',
+            color: '#6b7280',
+            flexShrink: 0,
+          }}
+        >
           {currentStage.label}
         </div>
       )}
-      
+
       {/* Scroll to bottom button */}
       {!isNearBottom && (
-        <div style={{
-          position: 'absolute',
-          bottom: '100px',
-          right: '20px',
-          zIndex: 10,
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '100px',
+            right: '20px',
+            zIndex: 10,
+          }}
+        >
           <button
             onClick={scrollToBottom}
             style={{
@@ -385,7 +421,7 @@ I'm here to help!`
           </button>
         </div>
       )}
-      
+
       {/* Chat window with auto-scroll */}
       <div ref={scrollRef} style={{ flex: 1, overflow: 'auto' }}>
         <ChatWindow
@@ -406,19 +442,27 @@ function App() {
   return (
     <ErrorBoundary
       fallback={(error) => (
-        <div style={{
-          padding: '2rem',
-          textAlign: 'center',
-          maxWidth: '600px',
-          margin: '0 auto',
-        }}>
-          <h1 style={{ color: '#dc2626', fontSize: '1.5rem', marginBottom: '1rem' }}>
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            maxWidth: '600px',
+            margin: '0 auto',
+          }}
+        >
+          <h1
+            style={{
+              color: '#dc2626',
+              fontSize: '1.5rem',
+              marginBottom: '1rem',
+            }}
+          >
             Something went wrong
           </h1>
           <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
             {error.message}
           </p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             style={{
               padding: '0.75rem 1.5rem',

@@ -94,7 +94,7 @@ const initialMetrics: DashboardPerformanceMetrics = {
  *     dashboardId: 'analytics',
  *     slowRenderThreshold: 16, // 60fps target
  *     onSlowRender: (duration) => {
- *       logger.warn(`Slow render: ${duration}ms`)
+ *       console.warn(`Slow render: ${duration}ms`)
  *     },
  *   })
  *
@@ -109,7 +109,7 @@ const initialMetrics: DashboardPerformanceMetrics = {
  *   }
  *
  *   // In dev tools or debug panel
- *   logger.debug(getSummary())
+ *   console.log(getSummary())
  *
  *   return <Dashboard />
  * }
@@ -141,7 +141,7 @@ export function useDashboardPerformance(
   const log = React.useCallback(
     (message: string, ...args: unknown[]) => {
       if (debug) {
-        logger.debug(`[DashboardPerf:${dashboardId}] ${message}`, ...args)
+        console.log(`[DashboardPerf:${dashboardId}] ${message}`, ...args)
       }
     },
     [debug, dashboardId]

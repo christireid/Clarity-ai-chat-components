@@ -72,7 +72,7 @@ export function AdvancedOptimizedChat() {
       routing.routingDecision.shouldSwitch &&
       routing.routingDecision.recommendedModel
     ) {
-      SecureLogger.debug(
+      console.log(
         'Model switch recommended:',
         routing.routingDecision.reasoning
       )

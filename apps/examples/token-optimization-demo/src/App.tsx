@@ -14,12 +14,14 @@ import '@clarity-chat/react/styles.css'
 
 /**
  * Comprehensive Token Optimization Demo
- * 
+ *
  * Demonstrates all token optimization features working together.
  */
 export function App() {
   const [input, setInput] = useState('')
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([])
+  const [messages, setMessages] = useState<
+    Array<{ role: 'user' | 'assistant'; content: string }>
+  >([])
   const [isLoading, setIsLoading] = useState(false)
 
   // Initialize all optimization features
@@ -37,15 +39,15 @@ export function App() {
 
   const router = useModelRouter({
     onRoute: (decision) => {
-      SecureLogger.debug(`Routed to ${decision.model.name}`)
-      SecureLogger.debug(`Estimated savings: ${decision.savingsPercent.toFixed(1)}%`)
+      console.log(`Routed to ${decision.model.name}`)
+      console.log(`Estimated savings: ${decision.savingsPercent.toFixed(1)}%`)
     },
   })
 
   const limiter = useResponseLimiter({
     preset: 'brief',
     onTruncate: (original, truncated) => {
-      SecureLogger.debug(`Truncated ${original.length - truncated.length} characters`)
+      console.log(`Truncated ${original.length - truncated.length} characters`)
     },
   })
 
@@ -54,8 +56,8 @@ export function App() {
     maxWaitTime: 1000,
     processor: async (queries) => {
       // Simulate batch API call
-      SecureLogger.debug(`Processing batch of ${queries.length} queries`)
-      return queries.map(q => `Response to: ${q}`)
+      console.log(`Processing batch of ${queries.length} queries`)
+      return queries.map((q) => `Response to: ${q}`)
     },
   })
 
@@ -67,14 +69,13 @@ export function App() {
   })
 
   // Calculate combined metrics
-  const totalTokensSaved = 
+  const totalTokensSaved =
     compression.totalTokensSaved +
     cache.stats.tokensSaved +
     limiter.stats.tokensSaved
 
-  const totalCostSaved = 
-    cache.stats.costSaved +
-    router.stats.totalEstimatedCost * 0.3 // Rough estimate
+  const totalCostSaved =
+    cache.stats.costSaved + router.stats.totalEstimatedCost * 0.3 // Rough estimate
 
   const metrics = {
     totalTokens: compression.compressionCount * 100 + totalTokensSaved, // Rough estimate
@@ -109,9 +110,12 @@ export function App() {
         percent: 0,
       },
     },
-    savingsPercent: totalTokensSaved > 0 
-      ? (totalTokensSaved / (compression.compressionCount * 100 + totalTokensSaved)) * 100 
-      : 0,
+    savingsPercent:
+      totalTokensSaved > 0
+        ? (totalTokensSaved /
+            (compression.compressionCount * 100 + totalTokensSaved)) *
+          100
+        : 0,
   }
 
   const handleSend = async () => {
@@ -121,13 +125,13 @@ export function App() {
     try {
       // Step 1: Compress prompt
       const compressionResult = compression.compress(input)
-      SecureLogger.debug(`Compressed: ${compressionResult.tokenSavings} tokens saved`)
+      console.log(`Compressed: ${compressionResult.tokenSavings} tokens saved`)
 
       // Step 2: Check cache
       const cached = await cache.get(compressionResult.compressed)
       if (cached) {
-        SecureLogger.debug('Cache hit!')
-        setMessages(prev => [
+        console.log('Cache hit!')
+        setMessages((prev) => [
           ...prev,
           { role: 'user', content: input },
           { role: 'assistant', content: cached },
@@ -138,26 +142,29 @@ export function App() {
 
       // Step 3: Route to best model
       const routing = router.route(compressionResult.compressed)
-      SecureLogger.debug(`Using model: ${routing.model.name}`)
+      console.log(`Using model: ${routing.model.name}`)
 
       // Step 4: Create limited prompt
       const limitedPrompt = limiter.createPrompt(compressionResult.compressed)
-      SecureLogger.debug(`Constraints: ${limitedPrompt.constraints.join(', ')}`)
+      console.log(`Constraints: ${limitedPrompt.constraints.join(', ')}`)
 
       // Step 5: Simulate API call (in real app, call your API here)
-      const mockResponse = `This is a simulated response using ${routing.model.name}. ` +
+      const mockResponse =
+        `This is a simulated response using ${routing.model.name}. ` +
         `Your query was: "${compressionResult.compressed}". ` +
         `Token optimization is active with ${metrics.savingsPercent.toFixed(1)}% savings!`
 
       // Step 6: Enforce response limits
       const limitedResponse = limiter.enforce(mockResponse)
-      SecureLogger.debug(`Response limited: ${limitedResponse.tokensSaved} tokens saved`)
+      console.log(
+        `Response limited: ${limitedResponse.tokensSaved} tokens saved`
+      )
 
       // Step 7: Cache result
       await cache.set(compressionResult.compressed, limitedResponse.response)
 
       // Update messages
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { role: 'user', content: input },
         { role: 'assistant', content: limitedResponse.response },
@@ -211,7 +218,7 @@ export function App() {
           {/* Chat Interface */}
           <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
             <h2 className="text-xl font-semibold mb-4">Try It Out</h2>
-            
+
             {/* Messages */}
             <div className="space-y-4 mb-4 min-h-[200px] max-h-[400px] overflow-y-auto">
               {messages.length === 0 ? (
@@ -246,7 +253,9 @@ export function App() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSend()}
+                onKeyPress={(e) =>
+                  e.key === 'Enter' && !isLoading && handleSend()
+                }
                 placeholder="Type your message..."
                 disabled={isLoading}
                 className="flex-1 px-4 py-2 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -275,7 +284,9 @@ export function App() {
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Compressions:</span>
-                  <span className="font-medium">{compression.compressionCount}</span>
+                  <span className="font-medium">
+                    {compression.compressionCount}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Avg Savings:</span>
@@ -309,7 +320,9 @@ export function App() {
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Queries:</span>
-                  <span className="font-medium">{router.stats.totalQueries}</span>
+                  <span className="font-medium">
+                    {router.stats.totalQueries}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Avg Savings:</span>
@@ -324,7 +337,8 @@ export function App() {
           {/* Info Footer */}
           <div className="text-center text-sm text-muted-foreground">
             <p>
-              This demo simulates API calls. In production, integrate with your actual API.
+              This demo simulates API calls. In production, integrate with your
+              actual API.
             </p>
             <p className="mt-1">
               Check the browser console for detailed optimization logs.

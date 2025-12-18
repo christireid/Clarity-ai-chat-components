@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 
 /**
@@ -6,19 +7,21 @@ import * as React from 'react'
 export interface ErrorBoundaryProps {
   /** Child components to render */
   children: React.ReactNode
-  
+
   /** Fallback UI to render when error occurs */
-  fallback?: React.ReactNode | ((error: Error, resetError: () => void) => React.ReactNode)
-  
+  fallback?:
+    | React.ReactNode
+    | ((error: Error, resetError: () => void) => React.ReactNode)
+
   /** Callback when error is caught */
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void
-  
+
   /** Callback when error boundary is reset */
   onReset?: () => void
-  
+
   /** Keys that trigger reset when changed */
   resetKeys?: Array<string | number>
-  
+
   /** Custom error logging function */
   logError?: (error: Error, errorInfo: React.ErrorInfo) => void
 }
@@ -61,18 +64,18 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
           Something went wrong
         </h2>
       </div>
-      
+
       <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
         {error.message || 'An unexpected error occurred. Please try again.'}
       </p>
-      
+
       <button
         onClick={resetError}
         className="px-4 py-2 bg-destructive hover:opacity-90 text-destructive-foreground rounded-lg transition-all duration-150 ease-out hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px focus:outline-none focus:ring-2 focus:ring-ring/50 focus:ring-offset-2"
       >
         Try Again
       </button>
-      
+
       {process.env['NODE_ENV'] === 'development' && (
         <details className="mt-4 text-left w-full max-w-2xl">
           <summary className="text-sm text-muted-foreground cursor-pointer hover:underline hover:text-foreground transition-colors">
@@ -89,7 +92,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
 
 /**
  * Production-ready Error Boundary component for graceful error handling.
- * 
+ *
  * **Features:**
  * - Catches JavaScript errors anywhere in child component tree
  * - Logs error information for debugging
@@ -98,20 +101,20 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
  * - Supports custom fallback components
  * - Automatic reset when resetKeys change
  * - Development mode shows detailed error info
- * 
+ *
  * **Use Cases:**
  * - Wrap entire chat application for top-level error handling
  * - Wrap individual message components for isolated error handling
  * - Wrap streaming components to handle API failures
  * - Wrap third-party integrations
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage with default fallback
  * <ErrorBoundary>
  *   <ChatWindow />
  * </ErrorBoundary>
- * 
+ *
  * // Custom fallback UI
  * <ErrorBoundary
  *   fallback={(error, reset) => (
@@ -127,7 +130,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
  * >
  *   <ChatWindow />
  * </ErrorBoundary>
- * 
+ *
  * // Auto-reset on conversation change
  * <ErrorBoundary
  *   resetKeys={[conversationId]}
@@ -137,7 +140,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
  * >
  *   <ChatWindow conversationId={conversationId} />
  * </ErrorBoundary>
- * 
+ *
  * // Custom error logging
  * <ErrorBoundary
  *   logError={(error, errorInfo) => {
@@ -154,7 +157,10 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
  * </ErrorBoundary>
  * ```
  */
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = {

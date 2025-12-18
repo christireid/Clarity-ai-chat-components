@@ -371,7 +371,7 @@ export async function POST(request: NextRequest) {
           // Close the stream
           controller.close()
         } catch (error: any) {
-          SecureLogger.error('Streaming error:', error)
+          console.error('Streaming error:', error)
 
           // Send error message
           controller.enqueue(
@@ -397,7 +397,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    SecureLogger.error('API error:', error)
+    console.error('API error:', error)
     return new Response(
       JSON.stringify({
         error: error.message || 'Internal server error',

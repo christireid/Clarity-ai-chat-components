@@ -72,7 +72,7 @@ async function checkForUpdates(): Promise<PackageUpdate[]> {
     for (const packageName of clarityPackages) {
       // Validate package name to prevent command injection
       if (!isValidPackageName(packageName)) {
-        logger.warn(`Skipping invalid package name: ${packageName}`)
+        console.warn(`Skipping invalid package name: ${packageName}`)
         continue
       }
 
@@ -234,7 +234,7 @@ async function installUpdates(updates: PackageUpdate[]) {
     success('Updates installed successfully!')
   } catch (err) {
     spinner.fail('Failed to install updates')
-    logger.error(err instanceof Error ? err : new Error(String(err)))
+    console.error(err instanceof Error ? err : new Error(String(err)))
     throw new ValidationError('Failed to install updates', [
       'Check your internet connection',
       'Verify package manager is installed',

@@ -237,7 +237,7 @@ export class FileStore implements VectorStore {
         // No backup to restore from
       }
 
-      logger.logger.error('Failed to persist memories:', error)
+      logger.error('Failed to persist memories:', error)
       throw error
     }
   }

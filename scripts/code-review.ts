@@ -35,7 +35,8 @@ const colors = {
 const REVIEW_TYPES = {
   full: {
     name: 'Full Review',
-    description: 'All domains: security, performance, TypeScript, Tailwind, architecture',
+    description:
+      'All domains: security, performance, TypeScript, Tailwind, architecture',
     promptFile: '.claude/commands/review-full.md',
     icon: '🔍',
   },
@@ -88,7 +89,7 @@ interface Options {
 }
 
 function printHeader(): void {
-  SecureLogger.debug(`
+  console.log(`
 ${colors.cyan}╔═══════════════════════════════════════════════════════════╗
 ║  ${colors.bold}Clarity Chat - Code Review Generator${colors.reset}${colors.cyan}                    ║
 ║  Generate AI-ready prompts for code review                  ║
@@ -97,7 +98,7 @@ ${colors.cyan}╔═════════════════════
 }
 
 function printHelp(): void {
-  SecureLogger.debug(`
+  console.log(`
 ${colors.bold}Usage:${colors.reset}
   pnpm review [options]
 
@@ -125,10 +126,12 @@ ${colors.bold}Review Types:${colors.reset}
 `)
 
   for (const [key, config] of Object.entries(REVIEW_TYPES)) {
-    SecureLogger.debug(`  ${config.icon} ${colors.bold}${key}${colors.reset} - ${config.description}`)
+    console.log(
+      `  ${config.icon} ${colors.bold}${key}${colors.reset} - ${config.description}`
+    )
   }
 
-  SecureLogger.debug('')
+  console.log('')
 }
 
 function parseArgs(args: string[]): Options {
@@ -144,8 +147,10 @@ function parseArgs(args: string[]): Options {
       if (value && value in REVIEW_TYPES) {
         options.type = value as ReviewType
       } else {
-        SecureLogger.error(`${colors.red}Invalid review type: ${value}${colors.reset}`)
-        SecureLogger.error(`Valid types: ${Object.keys(REVIEW_TYPES).join(', ')}`)
+        console.error(
+          `${colors.red}Invalid review type: ${value}${colors.reset}`
+        )
+        console.error(`Valid types: ${Object.keys(REVIEW_TYPES).join(', ')}`)
         process.exit(1)
       }
     } else if (arg === '--file' || arg === '-f') {
@@ -170,35 +175,49 @@ function createReadline(): readline.Interface {
   })
 }
 
-async function prompt(rl: readline.Interface, question: string): Promise<string> {
+async function prompt(
+  rl: readline.Interface,
+  question: string
+): Promise<string> {
   return new Promise((resolve) => {
     rl.question(question, resolve)
   })
 }
 
 async function selectReviewType(rl: readline.Interface): Promise<ReviewType> {
-  SecureLogger.debug(`${colors.bold}Select review type:${colors.reset}\n`)
+  console.log(`${colors.bold}Select review type:${colors.reset}\n`)
 
   const types = Object.entries(REVIEW_TYPES)
-  types.forEach(([key, config], index) => {
-    SecureLogger.debug(`  ${colors.cyan}${index + 1}${colors.reset}) ${config.icon} ${config.name} - ${colors.dim}${config.description}${colors.reset}`)
+  types.forEach(([_key, config], index) => {
+    console.log(
+      `  ${colors.cyan}${index + 1}${colors.reset}) ${config.icon} ${config.name} - ${colors.dim}${config.description}${colors.reset}`
+    )
   })
 
-  SecureLogger.debug('')
-  const answer = await prompt(rl, `${colors.yellow}Enter number (1-${types.length}):${colors.reset} `)
+  console.log('')
+  const answer = await prompt(
+    rl,
+    `${colors.yellow}Enter number (1-${types.length}):${colors.reset} `
+  )
   const index = parseInt(answer, 10) - 1
 
   if (index >= 0 && index < types.length) {
     return types[index][0] as ReviewType
   }
 
-  SecureLogger.debug(`${colors.yellow}Invalid selection, defaulting to 'full'${colors.reset}`)
+  console.log(
+    `${colors.yellow}Invalid selection, defaulting to 'full'${colors.reset}`
+  )
   return 'full'
 }
 
 async function selectFile(rl: readline.Interface): Promise<string> {
-  SecureLogger.debug(`\n${colors.bold}Enter file or directory to review:${colors.reset}`)
-  SecureLogger.debug(`${colors.dim}(Press Enter to review staged changes, or type a path)${colors.reset}\n`)
+  console.log(
+    `\n${colors.bold}Enter file or directory to review:${colors.reset}`
+  )
+  console.log(
+    `${colors.dim}(Press Enter to review staged changes, or type a path)${colors.reset}\n`
+  )
 
   const answer = await prompt(rl, `${colors.yellow}Path:${colors.reset} `)
 
@@ -208,7 +227,9 @@ async function selectFile(rl: readline.Interface): Promise<string> {
 
   // Validate path exists
   if (!fs.existsSync(answer)) {
-    SecureLogger.debug(`${colors.yellow}Warning: Path does not exist, will use as pattern${colors.reset}`)
+    console.log(
+      `${colors.yellow}Warning: Path does not exist, will use as pattern${colors.reset}`
+    )
   }
 
   return answer.trim()
@@ -249,7 +270,11 @@ function getFilesFromPath(filePath: string): string[] {
       const entries = fs.readdirSync(dir, { withFileTypes: true })
       for (const entry of entries) {
         const entryPath = path.join(dir, entry.name)
-        if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
+        if (
+          entry.isDirectory() &&
+          !entry.name.startsWith('.') &&
+          entry.name !== 'node_modules'
+        ) {
           walk(entryPath)
         } else if (entry.isFile() && /\.(tsx?|jsx?)$/.test(entry.name)) {
           files.push(entryPath)
@@ -272,7 +297,11 @@ function readFileContent(filePath: string): string {
   }
 }
 
-function generatePrompt(type: ReviewType, files: string[], fileContents: Record<string, string>): string {
+function generatePrompt(
+  type: ReviewType,
+  files: string[],
+  fileContents: Record<string, string>
+): string {
   const config = REVIEW_TYPES[type]
   const promptPath = path.join(process.cwd(), config.promptFile)
 
@@ -343,7 +372,9 @@ async function main(): Promise<void> {
     if (options.staged) {
       files = getStagedFiles()
       if (files.length === 0) {
-        SecureLogger.debug(`${colors.yellow}No staged TypeScript/JavaScript files found${colors.reset}`)
+        console.log(
+          `${colors.yellow}No staged TypeScript/JavaScript files found${colors.reset}`
+        )
         process.exit(0)
       }
     } else if (options.file) {
@@ -353,7 +384,9 @@ async function main(): Promise<void> {
       if (selectedPath === 'staged') {
         files = getStagedFiles()
         if (files.length === 0) {
-          SecureLogger.debug(`${colors.yellow}No staged TypeScript/JavaScript files found${colors.reset}`)
+          console.log(
+            `${colors.yellow}No staged TypeScript/JavaScript files found${colors.reset}`
+          )
           process.exit(0)
         }
       } else {
@@ -362,7 +395,7 @@ async function main(): Promise<void> {
     }
 
     if (files.length === 0) {
-      SecureLogger.debug(`${colors.red}No files to review${colors.reset}`)
+      console.log(`${colors.red}No files to review${colors.reset}`)
       process.exit(1)
     }
 
@@ -377,27 +410,39 @@ async function main(): Promise<void> {
 
     // Output
     const config = REVIEW_TYPES[reviewType]
-    SecureLogger.debug(`\n${config.icon} ${colors.bold}${config.name} Review${colors.reset}`)
-    SecureLogger.debug(`${colors.dim}Files: ${files.length}${colors.reset}\n`)
+    console.log(
+      `\n${config.icon} ${colors.bold}${config.name} Review${colors.reset}`
+    )
+    console.log(`${colors.dim}Files: ${files.length}${colors.reset}\n`)
 
     const outputMode = options.output || 'console'
 
     if (outputMode === 'clipboard') {
       if (copyToClipboard(prompt)) {
-        SecureLogger.debug(`${colors.green}✓ Prompt copied to clipboard!${colors.reset}`)
-        SecureLogger.debug(`${colors.dim}Paste into your AI assistant to start the review.${colors.reset}`)
+        console.log(
+          `${colors.green}✓ Prompt copied to clipboard!${colors.reset}`
+        )
+        console.log(
+          `${colors.dim}Paste into your AI assistant to start the review.${colors.reset}`
+        )
       } else {
-        SecureLogger.debug(`${colors.yellow}Could not copy to clipboard. Outputting to console:${colors.reset}\n`)
-        SecureLogger.debug(prompt)
+        console.log(
+          `${colors.yellow}Could not copy to clipboard. Outputting to console:${colors.reset}\n`
+        )
+        console.log(prompt)
       }
     } else if (outputMode === 'file') {
       const outputPath = writeToFile(prompt)
-      SecureLogger.debug(`${colors.green}✓ Prompt saved to ${outputPath}${colors.reset}`)
+      console.log(
+        `${colors.green}✓ Prompt saved to ${outputPath}${colors.reset}`
+      )
     } else {
-      SecureLogger.debug(`${colors.cyan}${'─'.repeat(60)}${colors.reset}`)
-      SecureLogger.debug(prompt)
-      SecureLogger.debug(`${colors.cyan}${'─'.repeat(60)}${colors.reset}`)
-      SecureLogger.debug(`\n${colors.dim}Copy the above prompt to your AI assistant.${colors.reset}`)
+      console.log(`${colors.cyan}${'─'.repeat(60)}${colors.reset}`)
+      console.log(prompt)
+      console.log(`${colors.cyan}${'─'.repeat(60)}${colors.reset}`)
+      console.log(
+        `\n${colors.dim}Copy the above prompt to your AI assistant.${colors.reset}`
+      )
     }
   } finally {
     rl.close()
@@ -405,6 +450,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  SecureLogger.error(`${colors.red}Error: ${error.message}${colors.reset}`)
+  console.error(`${colors.red}Error: ${error.message}${colors.reset}`)
   process.exit(1)
 })

@@ -126,11 +126,11 @@ export const WithActions: Story = {
     checks: mockChecks,
     lastReviewedAt: new Date(),
     onReviewPolicy: () => {
-      SecureLogger.debug('Reviewing policy')
+      console.log('Reviewing policy')
       alert('Opening policy review...')
     },
     onAcknowledge: (check) => {
-      SecureLogger.debug('Acknowledging check:', check.id)
+      console.log('Acknowledging check:', check.id)
       alert(`Acknowledged: ${check.label}`)
     },
   },

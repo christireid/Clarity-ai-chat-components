@@ -4,10 +4,10 @@ import type { ConversationTimelineEvent } from '@clarity-chat/react'
 
 /**
  * **ConversationTimeline Component**
- * 
+ *
  * Visual timeline showing conversation events including user messages,
  * assistant responses, tool calls, and system events.
- * 
+ *
  * **Key Features:**
  * - Multiple event types (user, assistant, tool, system)
  * - Timestamp display
@@ -15,7 +15,7 @@ import type { ConversationTimelineEvent } from '@clarity-chat/react'
  * - Status indicators
  * - Expandable details
  * - Accessible with keyboard navigation
- * 
+ *
  * **Use Cases:**
  * - Conversation history
  * - Debugging and monitoring
@@ -49,7 +49,7 @@ assistant responses, tool calls, and system events.
 <ConversationTimeline
   events={events}
   onEventClick={(event) => {
-    SecureLogger.debug('Event clicked:', event)
+    console.log('Event clicked:', event)
   }}
 />
 \`\`\`
@@ -196,7 +196,7 @@ export const WithJumpTo: Story = {
   args: {
     events: mockEvents,
     onJumpToEvent: (event) => {
-      SecureLogger.debug('Jumping to event:', event.id)
+      console.log('Jumping to event:', event.id)
       alert(`Jumping to: ${event.title}`)
     },
   },

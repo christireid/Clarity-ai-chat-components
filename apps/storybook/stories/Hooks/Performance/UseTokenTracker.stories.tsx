@@ -109,17 +109,17 @@ export const BasicUsage: Story = {
 
     const addUserMessage = () => {
       if (!inputText.trim()) return
-      
+
       const newMessage: MessageWithTokens = {
         role: 'user',
         content: inputText,
         tokens: Math.ceil(inputText.split(' ').length * 1.3), // Rough estimate
       }
-      
+
       setMessages([...messages, newMessage])
       tracker.addMessage(newMessage)
       setInputText('')
-      
+
       // Simulate AI response
       setTimeout(() => {
         const aiMessage: MessageWithTokens = {
@@ -136,14 +136,22 @@ export const BasicUsage: Story = {
       <div className="space-y-6 max-w-2xl">
         {/* Token Stats */}
         <div className="grid grid-cols-3 gap-4">
-          <div className={`p-4 border rounded-lg ${tracker.isCritical ? 'border-red-500 bg-red-50' : tracker.isNearLimit ? 'border-yellow-500 bg-yellow-50' : 'border-border'}`}>
-            <div className="text-2xl font-bold">{tracker.tokens.toLocaleString()}</div>
+          <div
+            className={`p-4 border rounded-lg ${tracker.isCritical ? 'border-red-500 bg-red-50' : tracker.isNearLimit ? 'border-yellow-500 bg-yellow-50' : 'border-border'}`}
+          >
+            <div className="text-2xl font-bold">
+              {tracker.tokens.toLocaleString()}
+            </div>
             <div className="text-sm text-muted-foreground">Total Tokens</div>
-            <div className="text-xs mt-1">{tracker.percentage.toFixed(1)}% of limit</div>
+            <div className="text-xs mt-1">
+              {tracker.percentage.toFixed(1)}% of limit
+            </div>
           </div>
 
           <div className="p-4 border rounded-lg">
-            <div className="text-2xl font-bold">${tracker.estimatedCost.toFixed(4)}</div>
+            <div className="text-2xl font-bold">
+              ${tracker.estimatedCost.toFixed(4)}
+            </div>
             <div className="text-sm text-muted-foreground">Estimated Cost</div>
           </div>
 
@@ -162,9 +170,11 @@ export const BasicUsage: Story = {
           <div className="h-2 bg-muted rounded-full overflow-hidden">
             <div
               className={`h-full transition-all ${
-                tracker.isCritical ? 'bg-red-500' :
-                tracker.isNearLimit ? 'bg-yellow-500' :
-                'bg-green-500'
+                tracker.isCritical
+                  ? 'bg-red-500'
+                  : tracker.isNearLimit
+                    ? 'bg-yellow-500'
+                    : 'bg-green-500'
               }`}
               style={{ width: `${Math.min(100, tracker.percentage)}%` }}
             />
@@ -174,18 +184,24 @@ export const BasicUsage: Story = {
         {/* Warnings */}
         {tracker.suggestPruning && (
           <div className="p-4 border border-yellow-500 bg-yellow-50 rounded-lg">
-            <div className="font-semibold text-yellow-800">⚠️ Consider Pruning Messages</div>
+            <div className="font-semibold text-yellow-800">
+              ⚠️ Consider Pruning Messages
+            </div>
             <div className="text-sm text-yellow-700 mt-1">
-              You're using {tracker.percentage.toFixed(1)}% of the token limit. Consider removing older messages.
+              You're using {tracker.percentage.toFixed(1)}% of the token limit.
+              Consider removing older messages.
             </div>
           </div>
         )}
 
         {tracker.isCritical && (
           <div className="p-4 border border-red-500 bg-red-50 rounded-lg">
-            <div className="font-semibold text-red-800">🚨 Critical Token Limit</div>
+            <div className="font-semibold text-red-800">
+              🚨 Critical Token Limit
+            </div>
             <div className="text-sm text-red-700 mt-1">
-              You're at {tracker.percentage.toFixed(1)}% of the limit! Remove messages to continue.
+              You're at {tracker.percentage.toFixed(1)}% of the limit! Remove
+              messages to continue.
             </div>
           </div>
         )}
@@ -203,10 +219,13 @@ export const BasicUsage: Story = {
             <Button onClick={addUserMessage} disabled={!inputText.trim()}>
               Send Message
             </Button>
-            <Button variant="outline" onClick={() => {
-              setMessages([])
-              tracker.reset()
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setMessages([])
+                tracker.reset()
+              }}
+            >
               Clear All
             </Button>
           </div>
@@ -221,11 +240,15 @@ export const BasicUsage: Story = {
               <div
                 key={index}
                 className={`p-3 rounded-lg ${
-                  msg.role === 'user' ? 'bg-primary text-primary-foreground ml-12' : 'bg-muted mr-12'
+                  msg.role === 'user'
+                    ? 'bg-primary text-primary-foreground ml-12'
+                    : 'bg-muted mr-12'
                 }`}
               >
                 <div className="text-sm">{msg.content}</div>
-                <div className="text-xs mt-1 opacity-70">{msg.tokens} tokens</div>
+                <div className="text-xs mt-1 opacity-70">
+                  {msg.tokens} tokens
+                </div>
               </div>
             ))
           )}
@@ -241,7 +264,12 @@ export const BasicUsage: Story = {
 
 export const ModelComparison: Story = {
   render: () => {
-    const models = ['gpt-4-turbo', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-haiku']
+    const models = [
+      'gpt-4-turbo',
+      'gpt-3.5-turbo',
+      'claude-3-opus',
+      'claude-3-haiku',
+    ]
     const [selectedModel, setSelectedModel] = React.useState('gpt-4-turbo')
     const [messageCount, setMessageCount] = React.useState(0)
 
@@ -252,12 +280,20 @@ export const ModelComparison: Story = {
     const addSampleMessages = () => {
       const samples: MessageWithTokens[] = [
         { role: 'user', content: 'What is machine learning?', tokens: 50 },
-        { role: 'assistant', content: 'Machine learning is a subset of artificial intelligence...', tokens: 150 },
+        {
+          role: 'assistant',
+          content: 'Machine learning is a subset of artificial intelligence...',
+          tokens: 150,
+        },
         { role: 'user', content: 'Can you explain deep learning?', tokens: 45 },
-        { role: 'assistant', content: 'Deep learning uses neural networks with multiple layers...', tokens: 200 },
+        {
+          role: 'assistant',
+          content: 'Deep learning uses neural networks with multiple layers...',
+          tokens: 200,
+        },
       ]
-      
-      samples.forEach(msg => tracker.addMessage(msg))
+
+      samples.forEach((msg) => tracker.addMessage(msg))
       setMessageCount((prev) => prev + samples.length)
     }
 
@@ -275,16 +311,22 @@ export const ModelComparison: Story = {
             className="px-3 py-1.5 border rounded"
           >
             {models.map((model) => (
-              <option key={model} value={model}>{model}</option>
+              <option key={model} value={model}>
+                {model}
+              </option>
             ))}
           </select>
           <Button onClick={addSampleMessages} size="sm">
             Add Sample Messages
           </Button>
-          <Button onClick={() => {
-            tracker.reset()
-            setMessageCount(0)
-          }} variant="outline" size="sm">
+          <Button
+            onClick={() => {
+              tracker.reset()
+              setMessageCount(0)
+            }}
+            variant="outline"
+            size="sm"
+          >
             Reset
           </Button>
         </div>
@@ -295,7 +337,9 @@ export const ModelComparison: Story = {
             <div className="text-sm text-muted-foreground">Tokens</div>
           </div>
           <div className="p-4 border rounded-lg">
-            <div className="text-xl font-bold">${tracker.estimatedCost.toFixed(4)}</div>
+            <div className="text-xl font-bold">
+              ${tracker.estimatedCost.toFixed(4)}
+            </div>
             <div className="text-sm text-muted-foreground">Cost</div>
           </div>
           <div className="p-4 border rounded-lg">
@@ -314,7 +358,9 @@ export const ModelComparison: Story = {
             <div>Messages: {messageCount}</div>
             <div>Near Limit: {tracker.isNearLimit ? '⚠️ Yes' : '✅ No'}</div>
             <div>Critical: {tracker.isCritical ? '🚨 Yes' : '✅ No'}</div>
-            <div>Suggest Pruning: {tracker.suggestPruning ? '⚠️ Yes' : '✅ No'}</div>
+            <div>
+              Suggest Pruning: {tracker.suggestPruning ? '⚠️ Yes' : '✅ No'}
+            </div>
           </div>
         </div>
       </div>
@@ -339,8 +385,8 @@ export const RealTimeMonitoring: Story = {
       modelName: 'gpt-4',
       warningThreshold: 0.6,
       criticalThreshold: 0.8,
-      onWarning: () => SecureLogger.debug('⚠️ Warning threshold reached!'),
-      onCritical: () => SecureLogger.debug('🚨 Critical threshold reached!'),
+      onWarning: () => console.log('⚠️ Warning threshold reached!'),
+      onCritical: () => console.log('🚨 Critical threshold reached!'),
     })
 
     const [isSimulating, setIsSimulating] = React.useState(false)
@@ -377,21 +423,31 @@ export const RealTimeMonitoring: Story = {
         <div className="p-6 border rounded-lg space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Token Usage Monitor</h3>
-            <span className={`px-3 py-1 rounded-full text-sm ${
-              tracker.isCritical ? 'bg-red-100 text-red-800' :
-              tracker.isNearLimit ? 'bg-yellow-100 text-yellow-800' :
-              'bg-green-100 text-green-800'
-            }`}>
-              {tracker.isCritical ? 'Critical' : tracker.isNearLimit ? 'Warning' : 'Normal'}
+            <span
+              className={`px-3 py-1 rounded-full text-sm ${
+                tracker.isCritical
+                  ? 'bg-red-100 text-red-800'
+                  : tracker.isNearLimit
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-green-100 text-green-800'
+              }`}
+            >
+              {tracker.isCritical
+                ? 'Critical'
+                : tracker.isNearLimit
+                  ? 'Warning'
+                  : 'Normal'}
             </span>
           </div>
 
           <div className="h-8 bg-muted rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-300 ${
-                tracker.isCritical ? 'bg-red-500' :
-                tracker.isNearLimit ? 'bg-yellow-500' :
-                'bg-green-500'
+                tracker.isCritical
+                  ? 'bg-red-500'
+                  : tracker.isNearLimit
+                    ? 'bg-yellow-500'
+                    : 'bg-green-500'
               }`}
               style={{ width: `${Math.min(100, tracker.percentage)}%` }}
             />
@@ -400,23 +456,33 @@ export const RealTimeMonitoring: Story = {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-muted-foreground">Total Tokens:</span>
-              <span className="ml-2 font-semibold">{tracker.tokens.toLocaleString()}</span>
+              <span className="ml-2 font-semibold">
+                {tracker.tokens.toLocaleString()}
+              </span>
             </div>
             <div>
               <span className="text-muted-foreground">Percentage:</span>
-              <span className="ml-2 font-semibold">{tracker.percentage.toFixed(1)}%</span>
+              <span className="ml-2 font-semibold">
+                {tracker.percentage.toFixed(1)}%
+              </span>
             </div>
             <div>
               <span className="text-muted-foreground">Input Tokens:</span>
-              <span className="ml-2 font-semibold">{tracker.inputTokens.toLocaleString()}</span>
+              <span className="ml-2 font-semibold">
+                {tracker.inputTokens.toLocaleString()}
+              </span>
             </div>
             <div>
               <span className="text-muted-foreground">Output Tokens:</span>
-              <span className="ml-2 font-semibold">{tracker.outputTokens.toLocaleString()}</span>
+              <span className="ml-2 font-semibold">
+                {tracker.outputTokens.toLocaleString()}
+              </span>
             </div>
             <div>
               <span className="text-muted-foreground">Est. Cost:</span>
-              <span className="ml-2 font-semibold">${tracker.estimatedCost.toFixed(4)}</span>
+              <span className="ml-2 font-semibold">
+                ${tracker.estimatedCost.toFixed(4)}
+              </span>
             </div>
             <div>
               <span className="text-muted-foreground">Model:</span>
@@ -438,7 +504,8 @@ export const RealTimeMonitoring: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Real-time monitoring with automatic warnings and cost tracking.',
+        story:
+          'Real-time monitoring with automatic warnings and cost tracking.',
       },
     },
   },
@@ -450,7 +517,9 @@ export const RealTimeMonitoring: Story = {
 
 export const CostTracking: Story = {
   render: () => {
-    const [model, setModel] = React.useState<'gpt-4' | 'gpt-3.5-turbo' | 'claude-3-opus'>('gpt-4')
+    const [model, setModel] = React.useState<
+      'gpt-4' | 'gpt-3.5-turbo' | 'claude-3-opus'
+    >('gpt-4')
     const tracker = useTokenTracker({ modelName: model })
 
     const addExpensiveMessage = () => {
@@ -504,15 +573,21 @@ export const CostTracking: Story = {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span>Input tokens ({tracker.inputTokens}):</span>
-              <span className="font-mono">${(tracker.inputTokens * 0.00003).toFixed(6)}</span>
+              <span className="font-mono">
+                ${(tracker.inputTokens * 0.00003).toFixed(6)}
+              </span>
             </div>
             <div className="flex justify-between">
               <span>Output tokens ({tracker.outputTokens}):</span>
-              <span className="font-mono">${(tracker.outputTokens * 0.00006).toFixed(6)}</span>
+              <span className="font-mono">
+                ${(tracker.outputTokens * 0.00006).toFixed(6)}
+              </span>
             </div>
             <div className="border-t pt-3 flex justify-between font-semibold">
               <span>Total Cost:</span>
-              <span className="font-mono text-lg">${tracker.estimatedCost.toFixed(6)}</span>
+              <span className="font-mono text-lg">
+                ${tracker.estimatedCost.toFixed(6)}
+              </span>
             </div>
           </div>
         </div>

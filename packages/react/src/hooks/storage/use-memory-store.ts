@@ -1,13 +1,13 @@
 /**
  * useMemoryStore - Top-level hook for memory management
- * 
+ *
  * Drop-in ready hook for conversation memory with sensible defaults.
  * Wraps the memory system with a simple, ergonomic API.
- * 
+ *
  * @example
  * ```tsx
  * const memory = useMemoryStore({ enabled: true })
- * 
+ *
  * // Memory is automatically integrated with chat
  * <ClarityChat api="/api/chat" memory={memory.config} />
  * ```
@@ -16,7 +16,10 @@
 'use client'
 
 import * as React from 'react'
-import { useMemory, type MemoryContextValue } from '../memory/memory-provider'
+import {
+  useMemory,
+  type MemoryContextValue,
+} from '../../memory/memory-provider'
 import type { MemoryType, MemoryScope } from '@clarity-chat/memory'
 
 /**
@@ -61,18 +64,27 @@ export interface UseMemoryStoreReturn {
 
 /**
  * useMemoryStore - Top-level memory hook
- * 
+ *
  * Provides a simple API for memory management that integrates
  * seamlessly with ClarityChat.
  */
 export function useMemoryStore(
   options: UseMemoryStoreOptions = {}
 ): UseMemoryStoreReturn {
-  const { enabled = false, strategy = 'sliding-window', maxTokens, scope = 'session' } = options
+  const {
+    enabled = false,
+    strategy = 'sliding-window',
+    maxTokens,
+    scope = 'session',
+  } = options
   const memoryContext = useMemory()
 
   const addMemory = React.useCallback(
-    async (content: string, type: MemoryType = 'episodic', metadata?: Record<string, any>) => {
+    async (
+      content: string,
+      type: MemoryType = 'episodic',
+      metadata?: Record<string, any>
+    ) => {
       if (!enabled || !memoryContext) return
       await memoryContext.addMemory(content, type, scope, metadata)
     },

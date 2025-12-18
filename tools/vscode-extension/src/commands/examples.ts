@@ -5,60 +5,65 @@
 import * as vscode from 'vscode'
 
 export async function showExamplesCommand() {
-  const example = await vscode.window.showQuickPick([
-    { 
-      label: '💬 Basic Chat', 
-      description: 'Simple chat completion',
-      value: 'basic-chat'
-    },
-    { 
-      label: '🌊 Streaming Chat', 
-      description: 'Real-time streaming responses',
-      value: 'streaming'
-    },
-    { 
-      label: '⚡ Next.js API Route', 
-      description: 'API route for Next.js',
-      value: 'nextjs-api'
-    },
-    { 
-      label: '🎣 React Hook', 
-      description: 'Custom React hook for chat',
-      value: 'react-hook'
-    },
-    { 
-      label: '🔄 Multi-turn Conversation', 
-      description: 'Maintain conversation history',
-      value: 'conversation'
-    },
-    { 
-      label: '📝 Function Calling', 
-      description: 'Use function calling/tools',
-      value: 'functions'
-    },
-    { 
-      label: '💰 Cost Tracking', 
-      description: 'Track token usage and costs',
-      value: 'cost-tracking'
-    },
-    { 
-      label: '🔍 RAG Pattern', 
-      description: 'Retrieval Augmented Generation',
-      value: 'rag'
+  const example = await vscode.window.showQuickPick(
+    [
+      {
+        label: '💬 Basic Chat',
+        description: 'Simple chat completion',
+        value: 'basic-chat',
+      },
+      {
+        label: '🌊 Streaming Chat',
+        description: 'Real-time streaming responses',
+        value: 'streaming',
+      },
+      {
+        label: '⚡ Next.js API Route',
+        description: 'API route for Next.js',
+        value: 'nextjs-api',
+      },
+      {
+        label: '🎣 React Hook',
+        description: 'Custom React hook for chat',
+        value: 'react-hook',
+      },
+      {
+        label: '🔄 Multi-turn Conversation',
+        description: 'Maintain conversation history',
+        value: 'conversation',
+      },
+      {
+        label: '📝 Function Calling',
+        description: 'Use function calling/tools',
+        value: 'functions',
+      },
+      {
+        label: '💰 Cost Tracking',
+        description: 'Track token usage and costs',
+        value: 'cost-tracking',
+      },
+      {
+        label: '🔍 RAG Pattern',
+        description: 'Retrieval Augmented Generation',
+        value: 'rag',
+      },
+    ],
+    {
+      placeHolder: 'Select an example to view',
     }
-  ], {
-    placeHolder: 'Select an example to view'
-  })
+  )
 
   if (!example) return
 
   const code = getExampleCode(example.value)
-  const language = example.value.includes('react') ? 'typescriptreact' : 'typescript'
+  const language = example.value.includes('react')
+    ? 'typescriptreact'
+    : 'typescript'
 
   // Create new untitled document with the example
   const document = await vscode.workspace.openTextDocument({
     content: code,
-    language
+    language,
   })
 
   await vscode.window.showTextDocument(document)
@@ -88,9 +93,9 @@ async function chat(message: string) {
 
 // Usage
 const answer = await chat('What is the capital of France?')
-SecureLogger.debug(answer)`,
+console.log(answer)`,
 
-    'streaming': `import { OpenAI } from 'openai'
+    streaming: `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -139,7 +144,7 @@ export async function POST(req: NextRequest) {
       usage: response.usage
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return NextResponse.json(
       { error: 'Failed to generate response' },
       { status: 500 }
@@ -200,7 +205,7 @@ export function useChat() {
   return { messages, loading, error, sendMessage, clearMessages }
 }`,
 
-    'conversation': `import { OpenAI } from 'openai'
+    conversation: `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -246,7 +251,7 @@ const conversation = new ConversationManager('You are a helpful coding assistant
 const answer1 = await conversation.chat('What is TypeScript?')
 const answer2 = await conversation.chat('Give me an example')`,
 
-    'functions': `import { OpenAI } from 'openai'
+    functions: `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -279,8 +284,8 @@ async function chat(message: string) {
 
   if (toolCall) {
     const args = JSON.parse(toolCall.function.arguments)
-    SecureLogger.debug(\`Calling function: \${toolCall.function.name}\`)
-    SecureLogger.debug('Arguments:', args)
+    console.log(\`Calling function: \${toolCall.function.name}\`)
+    console.log('Arguments:', args)
     // Call your actual function here
   }
 
@@ -315,14 +320,14 @@ async function chatWithCostTracking(message: string) {
 
   const cost = calculateCost(response.usage!, 'gpt-4-turbo')
 
-  SecureLogger.debug('Response:', response.choices[0].message.content)
-  SecureLogger.debug('Tokens:', response.usage!.total_tokens)
-  SecureLogger.debug(\`Cost: $\${cost.toFixed(4)}\`)
+  console.log('Response:', response.choices[0].message.content)
+  console.log('Tokens:', response.usage!.total_tokens)
+  console.log(\`Cost: $\${cost.toFixed(4)}\`)
 
   return { content: response.choices[0].message.content, cost }
 }`,
 
-    'rag': `import { OpenAI } from 'openai'
+    rag: `import { OpenAI } from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -366,7 +371,7 @@ Answer based on the context provided. If the answer is not in the context, say s
   })
 
   return response.choices[0].message.content
-}`
+}`,
   }
 
   return examples[exampleType] || '// Example not found'

@@ -219,7 +219,7 @@ function CompleteOfflineChat() {
           body: JSON.stringify(message),
         })
       } catch (error) {
-        logger.logger.error('Failed to send message:', error)
+        logger.error('Failed to send message:', error)
       }
     }
   }

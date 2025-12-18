@@ -50,7 +50,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      SecureLogger.error('Error reading localStorage:', error);
+      console.error('Error reading localStorage:', error);
       return initialValue;
     }
   });
@@ -59,7 +59,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
     try {
       window.localStorage.setItem(key, JSON.stringify(storedValue));
     } catch (error) {
-      SecureLogger.error('Error writing to localStorage:', error);
+      console.error('Error writing to localStorage:', error);
     }
   }, [key, storedValue]);
 

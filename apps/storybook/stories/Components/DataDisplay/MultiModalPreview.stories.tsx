@@ -104,15 +104,15 @@ export const WithActions: Story = {
   args: {
     attachments: mockAttachments,
     onOpen: (attachment) => {
-      SecureLogger.debug('Opening:', attachment.id)
+      console.log('Opening:', attachment.id)
       alert(`Opening: ${attachment.title}`)
     },
     onRetry: (attachment) => {
-      SecureLogger.debug('Retrying:', attachment.id)
+      console.log('Retrying:', attachment.id)
       alert(`Retrying: ${attachment.title}`)
     },
     onRemove: (attachment) => {
-      SecureLogger.debug('Removing:', attachment.id)
+      console.log('Removing:', attachment.id)
       alert(`Removed: ${attachment.title}`)
     },
   },

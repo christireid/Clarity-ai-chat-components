@@ -329,7 +329,7 @@ async function removeKey(provider: string, envPath: string) {
   const providerConfig = PROVIDERS[provider as keyof typeof PROVIDERS]
 
   if (!providerConfig) {
-    logger.error(`Unknown provider: ${provider}`)
+    console.error(`Unknown provider: ${provider}`)
     return
   }
 

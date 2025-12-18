@@ -10,6 +10,7 @@ import type {
   MemoryServiceConfig,
   MemoryEventListener,
   MemoryBuffer,
+  MemoryContext,
   VectorStore,
   EmbeddingProvider,
   ContextOptions,
@@ -18,7 +19,7 @@ import type {
 
 // Enhanced imports with new token optimization
 import { ContextOptimizer } from './token-optimizer'
-import {
+import { 
   AccurateTokenCounter,
   TokenSecurityManager,
   ToonOptimizer,
@@ -29,9 +30,7 @@ import {
   AdvancedSecurityManager
 } from '@clarity-chat/token-optimization'
 
-import {
-  DecayManager,
-} from './utils/decay-manager'
+import { DecayManager } from './utils/decay-manager'
 
 /**
  * Enhanced Memory Service with Advanced Token Optimization
@@ -163,7 +162,7 @@ export class EnhancedMemoryService {
     security: any
   }> {
     const maxTokens = options?.maxTokens || 1000
-    const _context = options?.context
+    const context = options?.context
     const _securityLevel = options?.securityLevel || 'enterprise'
 
     // Apply security measures
@@ -369,7 +368,7 @@ export class EnhancedMemoryService {
     }
   }> {
     const maxTokens = options?.maxTokens || 4096
-    const securityLevel = options?.securityLevel || 'enterprise'
+    const _securityLevel = options?.securityLevel || 'enterprise'
 
     // Get base context
     const baseContext = await this.context(options)
@@ -403,9 +402,9 @@ export class EnhancedMemoryService {
    * Get token optimization statistics
    */
   getTokenOptimizationStats(): {
-    tokenCounter: ReturnType<typeof this.tokenCounter.getMonitoringStats>
-    cache: ReturnType<SemanticCache['getCacheStats']> | undefined
-    security: ReturnType<typeof this.securityManager.generateComplianceReport>
+    tokenCounter: unknown
+    cache: unknown
+    security: unknown
   } {
     return {
       tokenCounter: this.tokenCounter.getMonitoringStats(),

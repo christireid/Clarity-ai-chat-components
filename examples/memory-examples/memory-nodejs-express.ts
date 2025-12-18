@@ -9,7 +9,10 @@
  */
 
 import express, { type Request, type Response } from 'express'
-import { MemoryService, type MemoryServiceConfig } from '../../packages/memory/src/index'
+import {
+  MemoryService,
+  type MemoryServiceConfig,
+} from '../../packages/memory/src/index'
 
 // 💡 Type for memory query options (used in GET /api/memories/:userId)
 interface MemoryQueryOptions {
@@ -23,32 +26,32 @@ const memoryConfig: MemoryServiceConfig = {
   tokenOptimization: {
     maxContextWindow: 4096,
     allocation: {
-      systemPrompt: 0.10,
+      systemPrompt: 0.1,
       userPreferences: 0.15,
-      recentContext: 0.30,
+      recentContext: 0.3,
       semanticMemory: 0.25,
       episodicMemory: 0.15,
-      responseReserve: 0.05
+      responseReserve: 0.05,
     },
     dynamicAllocation: true,
     enableCompression: true,
-    enableChunking: true
+    enableChunking: true,
   },
   persistence: {
     useVectorStore: false,
     useCache: true,
-    useDatabase: false
+    useDatabase: false,
   },
   enableAutoSummarization: false,
   enableAutoCleanup: true,
   cleanupInterval: 3600000, // 1 hour
   retentionPolicy: {
-    shortTerm: 3600,    // 1 hour
-    session: 86400,     // 24 hours
-    thread: 604800,     // 7 days
-    global: 0           // Never expires
+    shortTerm: 3600, // 1 hour
+    session: 86400, // 24 hours
+    thread: 604800, // 7 days
+    global: 0, // Never expires
   },
-  debug: true
+  debug: true,
 }
 
 const memory = new MemoryService(memoryConfig)
@@ -78,12 +81,12 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       query: message,
       limit: 5,
       minConfidence: 0.7,
-      metadata: { userId, sessionId }
+      metadata: { userId, sessionId },
     })
 
     // Get optimized context bundle for LLM
     const contextBundle = await memory.context({
-      maxTokens: 1000
+      maxTokens: 1000,
     })
 
     // Call your LLM with the context
@@ -94,7 +97,7 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       type: 'episodic',
       scope: 'session',
       importance: 0.5,
-      tags: ['user-message', userId, sessionId].filter(Boolean)
+      tags: ['user-message', userId, sessionId].filter(Boolean),
     })
 
     // Store assistant response
@@ -102,17 +105,17 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       type: 'episodic',
       scope: 'session',
       importance: 0.6,
-      tags: ['assistant-response', userId, sessionId].filter(Boolean)
+      tags: ['assistant-response', userId, sessionId].filter(Boolean),
     })
 
     res.json({
       response: llmResponse,
       memoriesUsed: relevantMemories.length,
       tokensUsed: contextBundle.tokenBreakdown.total,
-      context: (contextBundle.formatted || '').substring(0, 200) + '...'
+      context: (contextBundle.formatted || '').substring(0, 200) + '...',
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -129,19 +132,19 @@ app.get('/api/preferences/:userId', async (req: Request, res: Response) => {
       types: ['semantic'],
       scopes: ['user', 'global'],
       metadata: { userId, category: 'preference' },
-      limit: 20
+      limit: 20,
     })
 
     res.json({
-      preferences: preferences.map(result => ({
+      preferences: preferences.map((result) => ({
         content: result.memory.content,
         score: result.score ?? result.relevance,
         tags: result.memory.tags,
-        createdAt: result.memory.createdAt
-      }))
+        createdAt: result.memory.createdAt,
+      })),
     })
   } catch (error) {
-    SecureLogger.error('Preferences error:', error)
+    console.error('Preferences error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -164,12 +167,12 @@ app.post('/api/preferences/:userId', async (req: Request, res: Response) => {
       type: 'semantic',
       scope: 'user',
       importance: 0.9,
-      tags: ['preference', key, userId]
+      tags: ['preference', key, userId],
     })
 
     res.json({ success: true, memoryId })
   } catch (error) {
-    SecureLogger.error('Set preference error:', error)
+    console.error('Set preference error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -183,7 +186,7 @@ app.get('/api/stats', async (_req: Request, res: Response) => {
     const stats = memory.getStats()
     res.json(stats)
   } catch (error) {
-    SecureLogger.error('Stats error:', error)
+    console.error('Stats error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -199,7 +202,7 @@ app.get('/api/memories/:userId', async (req: Request, res: Response) => {
 
     const query: MemoryQueryOptions = {
       metadata: { userId },
-      limit: Number(limit)
+      limit: Number(limit),
     }
 
     if (type) {
@@ -209,17 +212,17 @@ app.get('/api/memories/:userId', async (req: Request, res: Response) => {
     const memories = await memory.query(query)
 
     res.json({
-      memories: memories.map(r => ({
+      memories: memories.map((r) => ({
         id: r.memory.id,
         content: r.memory.content,
         type: r.memory.type,
         importance: r.memory.importance,
         timestamp: r.memory.timestamp,
-        tags: r.memory.tags
-      }))
+        tags: r.memory.tags,
+      })),
     })
   } catch (error) {
-    SecureLogger.error('Memories error:', error)
+    console.error('Memories error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -238,7 +241,7 @@ app.delete('/api/memories/:memoryId', async (req: Request, res: Response) => {
     const success = await memory.forget(memoryId)
     res.json({ success })
   } catch (error) {
-    SecureLogger.error('Delete memory error:', error)
+    console.error('Delete memory error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -276,23 +279,25 @@ app.get('/health', (_req: Request, res: Response) => {
  */
 async function callLLM(message: string, context: string): Promise<string> {
   // Mock response for demonstration
-  const contextPreview = context ? context.substring(0, 50) + '...' : 'no context'
+  const contextPreview = context
+    ? context.substring(0, 50) + '...'
+    : 'no context'
   return `Echo: ${message} (with context: ${contextPreview})`
 }
 
 // Start server
 const PORT = process.env['PORT'] || 3000
 app.listen(PORT, () => {
-  SecureLogger.debug(`\n✨ Clarity Memory API Server`)
-  SecureLogger.debug(`📡 Listening on port ${PORT}`)
-  SecureLogger.debug(`\nAvailable endpoints:`)
-  SecureLogger.debug(`  POST   http://localhost:${PORT}/api/chat`)
-  SecureLogger.debug(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
-  SecureLogger.debug(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
-  SecureLogger.debug(`  GET    http://localhost:${PORT}/api/memories/:userId`)
-  SecureLogger.debug(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
-  SecureLogger.debug(`  GET    http://localhost:${PORT}/api/stats`)
-  SecureLogger.debug(`  GET    http://localhost:${PORT}/health\n`)
+  console.log(`\n✨ Clarity Memory API Server`)
+  console.log(`📡 Listening on port ${PORT}`)
+  console.log(`\nAvailable endpoints:`)
+  console.log(`  POST   http://localhost:${PORT}/api/chat`)
+  console.log(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
+  console.log(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
+  console.log(`  GET    http://localhost:${PORT}/api/memories/:userId`)
+  console.log(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
+  console.log(`  GET    http://localhost:${PORT}/api/stats`)
+  console.log(`  GET    http://localhost:${PORT}/health\n`)
 })
 
 export default app

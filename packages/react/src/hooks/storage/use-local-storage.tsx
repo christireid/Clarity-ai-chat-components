@@ -62,7 +62,7 @@ export function useLocalStorage<T>(
       }
       return initialRef.current
     } catch (error) {
-      logger.warn(`Error reading localStorage key "${key}":`, error)
+      console.warn(`Error reading localStorage key "${key}":`, error)
       return initialRef.current
     }
   }, [key, deserializer])
@@ -80,7 +80,7 @@ export function useLocalStorage<T>(
   const setValue: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
     (value) => {
       if (typeof window === 'undefined') {
-        logger.warn(`Tried setting localStorage key "${key}" even though environment is not a client`)
+        console.warn(`Tried setting localStorage key "${key}" even though environment is not a client`)
         return
       }
 
@@ -99,7 +99,7 @@ export function useLocalStorage<T>(
           return newValue
         })
       } catch (error) {
-        logger.warn(`Error setting localStorage key "${key}":`, error)
+        console.warn(`Error setting localStorage key "${key}":`, error)
       }
     },
     [key, serializer]
@@ -108,7 +108,7 @@ export function useLocalStorage<T>(
   // Remove value from localStorage
   const removeValue = React.useCallback(() => {
     if (typeof window === 'undefined') {
-      logger.warn(`Tried removing localStorage key "${key}" even though environment is not a client`)
+      console.warn(`Tried removing localStorage key "${key}" even though environment is not a client`)
       return
     }
 
@@ -117,7 +117,7 @@ export function useLocalStorage<T>(
       setStoredValue(initialRef.current)
       window.dispatchEvent(new Event('local-storage'))
     } catch (error) {
-      logger.warn(`Error removing localStorage key "${key}":`, error)
+      console.warn(`Error removing localStorage key "${key}":`, error)
     }
   }, [key])
 
@@ -141,7 +141,7 @@ export function useLocalStorage<T>(
           setStoredValue(initialRef.current)
         }
       } catch (error) {
-        logger.warn(`Error reading localStorage key "${key}":`, error)
+        console.warn(`Error reading localStorage key "${key}":`, error)
       }
     }
 

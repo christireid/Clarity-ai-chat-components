@@ -16,8 +16,8 @@ import { clarityMemory } from '../../packages/memory/src/factory'
 const memory = clarityMemory({
   debug: true,
   storage: {
-    type: 'memory' // Use 'file' for persistence
-  }
+    type: 'memory', // Use 'file' for persistence
+  },
 })
 
 // Must initialize before use
@@ -25,7 +25,7 @@ await memory.initialize()
 
 // Create Fastify app
 const fastify = Fastify({
-  logger: true
+  logger: true,
 })
 
 // =============================================================================
@@ -69,12 +69,12 @@ fastify.post<{ Body: ChatBody }>('/api/chat', async (request, reply) => {
     const relevantMemories = await memory.recall(message, {
       limit: 5,
       minConfidence: 0.7,
-      metadata: { userId, sessionId }
+      metadata: { userId, sessionId },
     })
 
     // Get optimized context bundle
     const contextBundle = await memory.context({
-      maxTokens: 1000
+      maxTokens: 1000,
     })
 
     // Call your LLM with the context
@@ -86,21 +86,21 @@ fastify.post<{ Body: ChatBody }>('/api/chat', async (request, reply) => {
         type: 'episodic',
         scope: 'session',
         importance: 0.5,
-        tags: ['user-message', userId, sessionId].filter(Boolean)
+        tags: ['user-message', userId, sessionId].filter(Boolean),
       }),
       memory.add(llmResponse, {
         type: 'episodic',
         scope: 'session',
         importance: 0.6,
-        tags: ['assistant-response', userId, sessionId].filter(Boolean)
-      })
+        tags: ['assistant-response', userId, sessionId].filter(Boolean),
+      }),
     ])
 
     return {
       response: llmResponse,
       memoriesUsed: relevantMemories.length,
       tokensUsed: contextBundle.tokenBreakdown.total,
-      context: (contextBundle.formatted || '').substring(0, 200) + '...'
+      context: (contextBundle.formatted || '').substring(0, 200) + '...',
     }
   } catch (error) {
     request.log.error(error)
@@ -112,30 +112,33 @@ fastify.post<{ Body: ChatBody }>('/api/chat', async (request, reply) => {
  * GET /api/preferences/:userId
  * Get user preferences from semantic memory
  */
-fastify.get<{ Params: { userId: string } }>('/api/preferences/:userId', async (request, reply) => {
-  const { userId } = request.params
+fastify.get<{ Params: { userId: string } }>(
+  '/api/preferences/:userId',
+  async (request, reply) => {
+    const { userId } = request.params
 
-  try {
-    const preferences = await memory.query({
-      types: ['semantic'],
-      scopes: ['user', 'global'],
-      metadata: { userId, category: 'preference' },
-      limit: 20
-    })
+    try {
+      const preferences = await memory.query({
+        types: ['semantic'],
+        scopes: ['user', 'global'],
+        metadata: { userId, category: 'preference' },
+        limit: 20,
+      })
 
-    return {
-      preferences: preferences.map(result => ({
-        content: result.memory.content,
-        score: result.score ?? result.relevance,
-        tags: result.memory.tags,
-        createdAt: result.memory.createdAt
-      }))
+      return {
+        preferences: preferences.map((result) => ({
+          content: result.memory.content,
+          score: result.score ?? result.relevance,
+          tags: result.memory.tags,
+          createdAt: result.memory.createdAt,
+        })),
+      }
+    } catch (error) {
+      request.log.error(error)
+      return reply.code(500).send({ error: 'Internal server error' })
     }
-  } catch (error) {
-    request.log.error(error)
-    return reply.code(500).send({ error: 'Internal server error' })
   }
-})
+)
 
 /**
  * POST /api/preferences/:userId
@@ -156,7 +159,7 @@ fastify.post<{ Params: { userId: string }; Body: PreferenceBody }>(
         type: 'semantic',
         scope: 'user',
         importance: 0.9,
-        tags: ['preference', key, userId]
+        tags: ['preference', key, userId],
       })
 
       return { success: true, memoryId }
@@ -185,58 +188,61 @@ fastify.get('/api/stats', async (request, reply) => {
  * GET /api/memories/:userId
  * Get all memories for a user
  */
-fastify.get<{ Params: { userId: string }; Querystring: { type?: string; limit?: string } }>(
-  '/api/memories/:userId',
+fastify.get<{
+  Params: { userId: string }
+  Querystring: { type?: string; limit?: string }
+}>('/api/memories/:userId', async (request, reply) => {
+  const { userId } = request.params
+  const { type, limit = '50' } = request.query
+
+  try {
+    // 💡 Using MemoryQuery interface for type safety
+    const query: MemoryQuery = {
+      metadata: { userId },
+      limit: Number(limit),
+      ...(type && { types: [type] }),
+    }
+
+    const memories = await memory.query(query)
+
+    return {
+      memories: memories.map((r) => ({
+        id: r.memory.id,
+        content: r.memory.content,
+        type: r.memory.type,
+        importance: r.memory.importance,
+        timestamp: r.memory.timestamp,
+        tags: r.memory.tags,
+      })),
+    }
+  } catch (error) {
+    request.log.error(error)
+    return reply.code(500).send({ error: 'Internal server error' })
+  }
+})
+
+/**
+ * DELETE /api/memories/:memoryId
+ * Delete a specific memory
+ */
+fastify.delete<{ Params: { memoryId: string } }>(
+  '/api/memories/:memoryId',
   async (request, reply) => {
-    const { userId } = request.params
-    const { type, limit = '50' } = request.query
+    const { memoryId } = request.params
+
+    if (!memoryId) {
+      return reply.code(400).send({ error: 'memoryId required' })
+    }
 
     try {
-      // 💡 Using MemoryQuery interface for type safety
-      const query: MemoryQuery = {
-        metadata: { userId },
-        limit: Number(limit),
-        ...(type && { types: [type] })
-      }
-
-      const memories = await memory.query(query)
-
-      return {
-        memories: memories.map(r => ({
-          id: r.memory.id,
-          content: r.memory.content,
-          type: r.memory.type,
-          importance: r.memory.importance,
-          timestamp: r.memory.timestamp,
-          tags: r.memory.tags
-        }))
-      }
+      const success = await memory.forget(memoryId)
+      return { success }
     } catch (error) {
       request.log.error(error)
       return reply.code(500).send({ error: 'Internal server error' })
     }
   }
 )
-
-/**
- * DELETE /api/memories/:memoryId
- * Delete a specific memory
- */
-fastify.delete<{ Params: { memoryId: string } }>('/api/memories/:memoryId', async (request, reply) => {
-  const { memoryId } = request.params
-
-  if (!memoryId) {
-    return reply.code(400).send({ error: 'memoryId required' })
-  }
-
-  try {
-    const success = await memory.forget(memoryId)
-    return { success }
-  } catch (error) {
-    request.log.error(error)
-    return reply.code(500).send({ error: 'Internal server error' })
-  }
-})
 
 /**
  * GET /health
@@ -251,7 +257,9 @@ fastify.get('/health', async () => {
  */
 async function callLLM(message: string, context: string): Promise<string> {
   // Mock response for demonstration
-  const contextPreview = context ? context.substring(0, 50) + '...' : 'no context'
+  const contextPreview = context
+    ? context.substring(0, 50) + '...'
+    : 'no context'
   return `Echo: ${message} (with context: ${contextPreview})`
 }
 
@@ -263,16 +271,16 @@ const start = async () => {
 
     await fastify.listen({ port: PORT, host: HOST })
 
-    SecureLogger.debug(`\n✨ Clarity Memory Fastify API Server`)
-    SecureLogger.debug(`📡 Listening on http://${HOST}:${PORT}`)
-    SecureLogger.debug(`\nAvailable endpoints:`)
-    SecureLogger.debug(`  POST   http://localhost:${PORT}/api/chat`)
-    SecureLogger.debug(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
-    SecureLogger.debug(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
-    SecureLogger.debug(`  GET    http://localhost:${PORT}/api/memories/:userId`)
-    SecureLogger.debug(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
-    SecureLogger.debug(`  GET    http://localhost:${PORT}/api/stats`)
-    SecureLogger.debug(`  GET    http://localhost:${PORT}/health\n`)
+    console.log(`\n✨ Clarity Memory Fastify API Server`)
+    console.log(`📡 Listening on http://${HOST}:${PORT}`)
+    console.log(`\nAvailable endpoints:`)
+    console.log(`  POST   http://localhost:${PORT}/api/chat`)
+    console.log(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
+    console.log(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
+    console.log(`  GET    http://localhost:${PORT}/api/memories/:userId`)
+    console.log(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
+    console.log(`  GET    http://localhost:${PORT}/api/stats`)
+    console.log(`  GET    http://localhost:${PORT}/health\n`)
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)

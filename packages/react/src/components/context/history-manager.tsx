@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '../utils/cn'
-import { estimateTokens } from '../utils/tokenization/estimator'
+import { cn } from '../../utils/cn'
+import { estimateTokens } from '../../utils/tokenization/estimator'
 
 /**
  * Individual message in conversation history
@@ -108,11 +108,22 @@ function truncateText(text: string, maxLength: number): string {
 function getRoleInfo(role: HistoryMessage['role']) {
   switch (role) {
     case 'user':
-      return { label: 'User', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' }
+      return {
+        label: 'User',
+        color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      }
     case 'assistant':
-      return { label: 'AI', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }
+      return {
+        label: 'AI',
+        color:
+          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      }
     case 'system':
-      return { label: 'System', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' }
+      return {
+        label: 'System',
+        color:
+          'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+      }
   }
 }
 
@@ -198,7 +209,9 @@ export function HistoryMessageRow({
     <div
       className={cn(
         'group flex items-start gap-3 p-3 rounded-lg border transition-colors',
-        selected ? 'bg-accent border-accent-foreground/20' : 'bg-background border-border hover:bg-muted/50'
+        selected
+          ? 'bg-accent border-accent-foreground/20'
+          : 'bg-background border-border hover:bg-muted/50'
       )}
     >
       {/* Checkbox */}
@@ -214,7 +227,12 @@ export function HistoryMessageRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           {/* Role badge */}
-          <span className={cn('px-2 py-0.5 text-xs font-medium rounded', roleInfo.color)}>
+          <span
+            className={cn(
+              'px-2 py-0.5 text-xs font-medium rounded',
+              roleInfo.color
+            )}
+          >
             {roleInfo.label}
           </span>
 
@@ -223,9 +241,10 @@ export function HistoryMessageRow({
             <span className="text-xs text-muted-foreground">
               {(() => {
                 // Handle both Date objects and ISO strings (from JSON)
-                const date = message.timestamp instanceof Date
-                  ? message.timestamp
-                  : new Date(message.timestamp)
+                const date =
+                  message.timestamp instanceof Date
+                    ? message.timestamp
+                    : new Date(message.timestamp)
                 return isNaN(date.getTime()) ? '' : date.toLocaleTimeString()
               })()}
             </span>
@@ -256,8 +275,18 @@ export function HistoryMessageRow({
           )}
           aria-label={`Delete message from ${message.role}`}
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
           </svg>
         </button>
       )}
@@ -287,7 +316,10 @@ export function HistoryToolbar({
     if (!showKeepLastOptions) return
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowKeepLastOptions(false)
       }
     }
@@ -434,7 +466,7 @@ export function HistoryToolbar({
  *   maxTokens={4096}
  *   compact={true}
  *   onPrune={(count, tokens) => {
- *     logger.debug(`Pruned ${count} messages, saved ${tokens} tokens`)
+ *     console.log(`Pruned ${count} messages, saved ${tokens} tokens`)
  *   }}
  * />
  * ```
@@ -462,9 +494,9 @@ export function HistoryManager({
       const uniqueIds = new Set(ids)
       if (uniqueIds.size !== ids.length) {
         const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
-        logger.warn(
+        console.warn(
           `[HistoryManager] Duplicate message IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
-          'Each message must have a unique id for correct behavior.'
+            'Each message must have a unique id for correct behavior.'
         )
       }
     }
@@ -514,17 +546,20 @@ export function HistoryManager({
   }, [])
 
   // Handle individual delete
-  const handleDelete = React.useCallback((id: string) => {
-    const tokensSaved = messageTokenCounts.get(id) ?? 0
-    const newMessages = messages.filter((m) => m.id !== id)
-    onMessagesChange(newMessages)
-    onPrune?.(1, tokensSaved)
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      next.delete(id)
-      return next
-    })
-  }, [messages, messageTokenCounts, onMessagesChange, onPrune])
+  const handleDelete = React.useCallback(
+    (id: string) => {
+      const tokensSaved = messageTokenCounts.get(id) ?? 0
+      const newMessages = messages.filter((m) => m.id !== id)
+      onMessagesChange(newMessages)
+      onPrune?.(1, tokensSaved)
+      setSelectedIds((prev) => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
+      })
+    },
+    [messages, messageTokenCounts, onMessagesChange, onPrune]
+  )
 
   // Handle bulk delete selected
   const handleDeleteSelected = React.useCallback(() => {
@@ -545,25 +580,28 @@ export function HistoryManager({
   }, [messages, selectedIds, messageTokenCounts, onMessagesChange, onPrune])
 
   // Handle keep last N messages
-  const handleKeepLast = React.useCallback((count: number) => {
-    if (messages.length <= count) return
+  const handleKeepLast = React.useCallback(
+    (count: number) => {
+      if (messages.length <= count) return
 
-    const removedCount = messages.length - count
-    let tokensSaved = 0
+      const removedCount = messages.length - count
+      let tokensSaved = 0
 
-    // Calculate tokens being removed
-    for (let i = 0; i < removedCount; i++) {
-      const msg = messages[i]
-      if (msg) {
-        tokensSaved += messageTokenCounts.get(msg.id) ?? 0
+      // Calculate tokens being removed
+      for (let i = 0; i < removedCount; i++) {
+        const msg = messages[i]
+        if (msg) {
+          tokensSaved += messageTokenCounts.get(msg.id) ?? 0
+        }
       }
-    }
 
-    const newMessages = messages.slice(-count)
-    onMessagesChange(newMessages)
-    onPrune?.(removedCount, tokensSaved)
-    setSelectedIds(new Set())
-  }, [messages, messageTokenCounts, onMessagesChange, onPrune])
+      const newMessages = messages.slice(-count)
+      onMessagesChange(newMessages)
+      onPrune?.(removedCount, tokensSaved)
+      setSelectedIds(new Set())
+    },
+    [messages, messageTokenCounts, onMessagesChange, onPrune]
+  )
 
   // Handle clear all
   const handleClear = React.useCallback(() => {
@@ -608,14 +646,14 @@ export function HistoryManager({
         <div className="flex items-center gap-2 px-3">
           <input
             type="checkbox"
-            checked={selectedIds.size === messages.length && messages.length > 0}
+            checked={
+              selectedIds.size === messages.length && messages.length > 0
+            }
             onChange={handleSelectAll}
             className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
             aria-label="Select all messages"
           />
-          <span className="text-sm text-muted-foreground">
-            Select all
-          </span>
+          <span className="text-sm text-muted-foreground">Select all</span>
         </div>
       )}
 
@@ -645,7 +683,8 @@ export function HistoryManager({
       {/* Summary */}
       {messages.length > 0 && (
         <div className="text-xs text-muted-foreground text-center">
-          {messages.length} message{messages.length !== 1 ? 's' : ''} • {formatNumber(totalTokens)} total tokens
+          {messages.length} message{messages.length !== 1 ? 's' : ''} •{' '}
+          {formatNumber(totalTokens)} total tokens
         </div>
       )}
     </div>

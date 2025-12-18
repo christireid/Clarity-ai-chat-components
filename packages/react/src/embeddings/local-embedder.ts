@@ -159,7 +159,7 @@ function generateFallbackEmbedding(text: string, dimensions: number): number[] {
  *
  * // Generate single embedding
  * const result = await embedder.embed('What is React?')
- * logger.debug(result.embedding) // [0.1, 0.2, ...]
+ * console.log(result.embedding) // [0.1, 0.2, ...]
  *
  * // Batch embed for efficiency
  * const results = await embedder.embedBatch([

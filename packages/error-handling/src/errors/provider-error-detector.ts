@@ -425,7 +425,7 @@ export function logDetectionResult(
   result: DetectionResult
 ): void {
   if (result.confidence === 'low') {
-    logger.warn(
+    console.warn(
       `[ProviderErrorDetector] Low confidence detection for ${provider} (${statusCode}):`,
       {
         code: result.code,

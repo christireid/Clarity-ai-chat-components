@@ -10,7 +10,7 @@ import {
   needsOptimization,
   getRecommendedTargetTokens,
 } from '../core/utils'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import { estimatePromptTokens } from '../core/tokenizer'
 import type { ModelMetadata } from '../core/types'
 
@@ -77,9 +77,7 @@ describe('needsOptimization', () => {
   })
 
   it('should return false when under budget', () => {
-    const messages: CoreMessage[] = [
-      { role: 'user', content: 'Hello' },
-    ]
+    const messages: CoreMessage[] = [{ role: 'user', content: 'Hello' }]
 
     const needs = needsOptimization(messages, 1000, mockModel)
     expect(needs).toBe(false)

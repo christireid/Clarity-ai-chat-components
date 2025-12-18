@@ -167,7 +167,7 @@ describe('safeEvaluate', () => {
     it('should reject code injection attempts', () => {
       expect(() => safeEvaluate('process.exit()')).toThrow('Invalid character')
       expect(() => safeEvaluate('require("fs")')).toThrow('Invalid character')
-      expect(() => safeEvaluate('SecureLogger.debug(1)')).toThrow('Invalid character')
+      expect(() => safeEvaluate('console.log(1)')).toThrow('Invalid character')
     })
 
     it('should reject function calls', () => {

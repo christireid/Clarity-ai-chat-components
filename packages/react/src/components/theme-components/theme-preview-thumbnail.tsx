@@ -5,8 +5,8 @@ import { cn } from '@clarity-chat/primitives'
 import {
   modernThemes,
   type ModernThemePresetName,
-} from '../theme/modern-presets'
-import type { CompleteThemeConfig } from '../theme/theme-config'
+} from '../../theme/modern-presets'
+import type { CompleteThemeConfig } from '../../theme/theme-config'
 
 /**
  * ThemePreviewThumbnail - Visual thumbnail preview of a theme

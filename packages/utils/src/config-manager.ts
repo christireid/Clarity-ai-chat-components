@@ -1,21 +1,20 @@
-
 /**
  * Configuration Manager
- * 
+ *
  * Unified configuration validation and management utility
- * 
+ *
  * @module @clarity-chat/utils/config-manager
- * 
+ *
  * @example
  * ```ts
  * import { createConfigManager } from '@clarity-chat/utils/config-manager'
- * 
+ *
  * const configManager = createConfigManager({
  *   apiKey: { type: 'string', required: true },
  *   timeout: { type: 'number', default: 5000 },
  *   retries: { type: 'number', min: 0, max: 10, default: 3 }
  * })
- * 
+ *
  * const result = configManager.validate(userConfig)
  * if (!result.success) {
  *   console.error('Invalid config:', result.errors)
@@ -68,13 +67,18 @@ export function createConfigManager<T extends Record<string, any>>(
       try {
         processedValue = fieldSchema.transform(value)
       } catch (error) {
-        errors.push(`Error transforming field '${key}': ${error instanceof Error ? error.message : String(error)}`)
+        errors.push(
+          `Error transforming field '${key}': ${error instanceof Error ? error.message : String(error)}`
+        )
         return { success: false, errors }
       }
     }
 
     // Check if field is required
-    if (fieldSchema.required && (processedValue === undefined || processedValue === null)) {
+    if (
+      fieldSchema.required &&
+      (processedValue === undefined || processedValue === null)
+    ) {
       errors.push(`Field '${key}' is required`)
       return { success: false, errors }
     }
@@ -102,7 +106,9 @@ export function createConfigManager<T extends Record<string, any>>(
         break
 
       case 'number': {
-        const numValue = isString(processedValue) ? parseFloat(processedValue) : processedValue
+        const numValue = isString(processedValue)
+          ? parseFloat(processedValue)
+          : processedValue
         if (!isNumber(numValue)) {
           errors.push(`Field '${key}' must be a number`)
           return { success: false, errors }
@@ -143,7 +149,9 @@ export function createConfigManager<T extends Record<string, any>>(
 
     // Enum validation
     if (fieldSchema.enum && !fieldSchema.enum.includes(processedValue)) {
-      errors.push(`Field '${key}' must be one of: ${fieldSchema.enum.join(', ')}`)
+      errors.push(
+        `Field '${key}' must be one of: ${fieldSchema.enum.join(', ')}`
+      )
     }
 
     // Custom validation
@@ -240,9 +248,7 @@ export function validateConfig<T>(
 /**
  * Get default values from a configuration schema
  */
-export function getConfigDefaults<T>(
-  schema: ConfigSchema<T>
-): Partial<T> {
+export function getConfigDefaults<T>(schema: ConfigSchema<T>): Partial<T> {
   return createConfigManager(schema).getDefaults() as Partial<T>
 }
 

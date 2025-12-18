@@ -891,7 +891,7 @@ async function startWatchMode(): Promise<void> {
       try {
         await generateLlmsDocs()
       } catch (error) {
-        logger.logger.error('❌ Regeneration failed:', error)
+        logger.error('❌ Regeneration failed:', error)
       }
     }, DEBOUNCE_MS)
   }
@@ -910,7 +910,7 @@ async function startWatchMode(): Promise<void> {
       regenerate()
     })
     .on('error', (error) => {
-      logger.logger.error('Watch error:', error)
+      logger.error('Watch error:', error)
     })
 
   // Keep process alive
@@ -925,7 +925,7 @@ async function startWatchMode(): Promise<void> {
 if (process.argv[1]?.includes('generate-llms')) {
   if (WATCH_MODE) {
     startWatchMode().catch((error) => {
-      logger.logger.error('❌ Watch mode failed:', error)
+      logger.error('❌ Watch mode failed:', error)
       process.exit(1)
     })
   } else {
@@ -934,7 +934,7 @@ if (process.argv[1]?.includes('generate-llms')) {
         process.exit(0)
       })
       .catch((error) => {
-        logger.logger.error('❌ Generation failed:', error)
+        logger.error('❌ Generation failed:', error)
         process.exit(1)
       })
   }

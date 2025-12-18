@@ -10,7 +10,7 @@
  *   text={inputValue}
  *   model="gpt-4"
  *   showTokenCount
- *   onCostChange={(cost) => logger.debug(`Est. cost: $${cost.toFixed(4)}`)}
+ *   onCostChange={(cost) => console.log(`Est. cost: $${cost.toFixed(4)}`)}
  * />
  * ```
  */
@@ -18,9 +18,9 @@
 'use client'
 
 import * as React from 'react'
-import { estimateTokens } from '../utils/tokenization/estimator'
-import { calculateCost } from '../utils/tokenization/model-pricing'
-import type { ModelName } from '../utils/tokenization/accurate-counter'
+import { estimateTokens } from '../../utils/tokenization/estimator'
+import { calculateCost } from '../../utils/tokenization/model-pricing'
+import type { ModelName } from '../../utils/tokenization/accurate-counter'
 
 // =============================================================================
 // useTokenEstimate Hook

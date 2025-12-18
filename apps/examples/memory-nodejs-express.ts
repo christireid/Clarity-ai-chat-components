@@ -1,6 +1,6 @@
 /**
  * Node.js Express Example - Framework-Agnostic Memory Usage
- * 
+ *
  * This example shows how to use @clarity-chat/memory in a Node.js backend
  */
 
@@ -12,9 +12,9 @@ const memoryConfig: MemoryServiceConfig = {
   tokenOptimization: {
     maxContextWindow: 4096,
     allocation: {
-      systemPrompt: 0.10,
+      systemPrompt: 0.1,
       userPreferences: 0.15,
-      recentContext: 0.30,
+      recentContext: 0.3,
       semanticMemory: 0.25,
       episodicMemory: 0.15,
       responseReserve: 0.05,
@@ -62,7 +62,7 @@ app.post('/api/chat', async (req, res) => {
     })
 
     // Build context for LLM
-    const context = memories.map(r => r.memory.content).join('\n\n')
+    const context = memories.map((r) => r.memory.content).join('\n\n')
 
     // Call your LLM (OpenAI, Anthropic, etc.)
     const llmResponse = await callLLM(message, context)
@@ -101,7 +101,7 @@ app.post('/api/chat', async (req, res) => {
       tokensUsed: memories.reduce((sum, m) => sum + m.memory.tokens, 0),
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -119,14 +119,14 @@ app.get('/api/preferences/:userId', async (req, res) => {
     })
 
     res.json({
-      preferences: preferences.map(r => ({
+      preferences: preferences.map((r) => ({
         key: r.memory.metadata.preferenceKey,
         value: r.memory.metadata.preferenceValue,
         confidence: r.memory.confidence,
       })),
     })
   } catch (error) {
-    SecureLogger.error('Preferences error:', error)
+    console.error('Preferences error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -151,7 +151,7 @@ app.post('/api/preferences/:userId', async (req, res) => {
 
     res.json({ success: true })
   } catch (error) {
-    SecureLogger.error('Set preference error:', error)
+    console.error('Set preference error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -162,7 +162,7 @@ app.get('/api/stats', async (req, res) => {
     const stats = memoryService.getStats()
     res.json(stats)
   } catch (error) {
-    SecureLogger.error('Stats error:', error)
+    console.error('Stats error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
@@ -197,8 +197,8 @@ async function callLLM(message: string, context: string): Promise<string> {
 // Start server
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
-  SecureLogger.debug(`Memory-enabled API server listening on port ${PORT}`)
-  SecureLogger.debug(`Try: POST http://localhost:${PORT}/api/chat`)
+  console.log(`Memory-enabled API server listening on port ${PORT}`)
+  console.log(`Try: POST http://localhost:${PORT}/api/chat`)
 })
 
 export default app

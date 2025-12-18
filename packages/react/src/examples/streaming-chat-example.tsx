@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import { useStreamingSSE } from '../hooks/use-streaming-sse'
 import { useStreamingWebSocket } from '../hooks/use-streaming-websocket'

@@ -40,7 +40,7 @@ export default function Home() {
       setLeftError(null)
     },
     onError: (error) => {
-      SecureLogger.error('Left model error:', error)
+      console.error('Left model error:', error)
       setLeftError(error)
       setIsLeftStreaming(false)
     },
@@ -55,7 +55,7 @@ export default function Home() {
       setRightError(null)
     },
     onError: (error) => {
-      SecureLogger.error('Right model error:', error)
+      console.error('Right model error:', error)
       setRightError(error)
       setIsRightStreaming(false)
     },
@@ -88,7 +88,7 @@ export default function Home() {
     const rightModelData = getModelMetadata(rightModel)
 
     if (!leftModelData || !rightModelData) {
-      SecureLogger.error('Model metadata not found')
+      console.error('Model metadata not found')
       setIsLeftStreaming(false)
       setIsRightStreaming(false)
       return
@@ -115,7 +115,7 @@ export default function Home() {
         }),
       ])
     } catch (error) {
-      SecureLogger.error('Comparison error:', error)
+      console.error('Comparison error:', error)
       setIsLeftStreaming(false)
       setIsRightStreaming(false)
     }

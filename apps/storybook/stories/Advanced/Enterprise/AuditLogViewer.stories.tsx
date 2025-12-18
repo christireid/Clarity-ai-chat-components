@@ -8,7 +8,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Component for displaying audit logs with filtering, search, and detailed entry views.',
+        component:
+          'Component for displaying audit logs with filtering, search, and detailed entry views.',
       },
     },
   },
@@ -68,7 +69,10 @@ const sampleLogs = [
     action: 'security.alert',
     actor: { type: 'system', id: 'system-1', name: 'Security System' },
     target: { type: 'user', id: 'user-999' },
-    metadata: { alertType: 'suspicious_activity', details: 'Multiple failed login attempts' },
+    metadata: {
+      alertType: 'suspicious_activity',
+      details: 'Multiple failed login attempts',
+    },
     severity: 'error' as const,
   },
 ]
@@ -117,7 +121,7 @@ export const WithClickHandler: Story = {
   args: {
     logs: sampleLogs,
     onEntryClick: (entry) => {
-      SecureLogger.debug('Clicked entry:', entry)
+      console.log('Clicked entry:', entry)
       alert(`Clicked: ${entry.action} by ${entry.actor.name}`)
     },
   },
@@ -128,7 +132,12 @@ export const ManyEntries: Story = {
     logs: Array.from({ length: 50 }, (_, i) => ({
       id: `log-${i}`,
       timestamp: new Date(Date.now() - i * 60000),
-      action: ['user.login', 'message.sent', 'permission.denied', 'api.key.created'][i % 4],
+      action: [
+        'user.login',
+        'message.sent',
+        'permission.denied',
+        'api.key.created',
+      ][i % 4],
       actor: {
         type: 'user' as const,
         id: `user-${i}`,

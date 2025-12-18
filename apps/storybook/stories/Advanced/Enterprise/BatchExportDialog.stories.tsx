@@ -65,14 +65,16 @@ const InteractiveWrapper = (args: any) => {
     includeImages: boolean
     includeAttachments: boolean
   }) => {
-    SecureLogger.debug('Exporting:', options)
-    
+    console.log('Exporting:', options)
+
     // Simulate progress
-    const newProgress: BatchExportProgress[] = options.resourceIds.map((id) => ({
-      resourceId: id,
-      status: 'pending',
-      progress: 0,
-    }))
+    const newProgress: BatchExportProgress[] = options.resourceIds.map(
+      (id) => ({
+        resourceId: id,
+        status: 'pending',
+        progress: 0,
+      })
+    )
     setProgress(newProgress)
 
     // Simulate export progress

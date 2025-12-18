@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Button, cn } from '@clarity-chat/primitives'

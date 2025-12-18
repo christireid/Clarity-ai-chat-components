@@ -13,7 +13,7 @@ export function registerChatParticipant(
 ): void {
   // Check if chat API is available (VS Code 1.90+)
   if (!vscode.chat) {
-    SecureLogger.debug('Chat API not available - Copilot features disabled')
+    console.log('Chat API not available - Copilot features disabled')
     return
   }
 

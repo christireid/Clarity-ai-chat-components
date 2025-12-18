@@ -22,7 +22,7 @@
  * @module utils/llmlingua-compressor
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 import { compressPromptSemantic } from './prompt-compression-advanced'
 
 /**
@@ -107,11 +107,48 @@ const DEFAULT_CONFIG: Required<LLMLinguaConfig> = {
  * Common stop words with extremely low importance (can almost always be removed)
  */
 const ULTRA_LOW_IMPORTANCE = new Set([
-  'the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were',
-  'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
-  'will', 'would', 'could', 'should', 'may', 'might', 'shall',
-  'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as',
-  'this', 'that', 'these', 'those', 'it', 'its',
+  'the',
+  'a',
+  'an',
+  'and',
+  'or',
+  'but',
+  'is',
+  'are',
+  'was',
+  'were',
+  'be',
+  'been',
+  'being',
+  'have',
+  'has',
+  'had',
+  'do',
+  'does',
+  'did',
+  'will',
+  'would',
+  'could',
+  'should',
+  'may',
+  'might',
+  'shall',
+  'to',
+  'of',
+  'in',
+  'for',
+  'on',
+  'with',
+  'at',
+  'by',
+  'from',
+  'as',
+  'this',
+  'that',
+  'these',
+  'those',
+  'it',
+  'its',
 ])
 
 /**
@@ -119,19 +156,44 @@ const ULTRA_LOW_IMPORTANCE = new Set([
  */
 const HIGH_IMPORTANCE_MARKERS = new Set([
   // Instructions
-  'must', 'required', 'important', 'critical', 'essential', 'always', 'never',
+  'must',
+  'required',
+  'important',
+  'critical',
+  'essential',
+  'always',
+  'never',
   // Questions
-  'what', 'who', 'where', 'when', 'why', 'how', 'which',
+  'what',
+  'who',
+  'where',
+  'when',
+  'why',
+  'how',
+  'which',
   // Actions
-  'create', 'implement', 'define', 'explain', 'describe', 'analyze', 'return',
+  'create',
+  'implement',
+  'define',
+  'explain',
+  'describe',
+  'analyze',
+  'return',
   // Negations (changing meaning)
-  'not', 'no', 'none', 'without', 'except', 'unless',
+  'not',
+  'no',
+  'none',
+  'without',
+  'except',
+  'unless',
 ])
 
 /**
  * Tokenize text preserving original word boundaries
  */
-function tokenizeWithPositions(text: string): Array<{ word: string; start: number; end: number }> {
+function tokenizeWithPositions(
+  text: string
+): Array<{ word: string; start: number; end: number }> {
   const tokens: Array<{ word: string; start: number; end: number }> = []
   const regex = /\S+/g
   let match: RegExpExecArray | null
@@ -198,9 +260,11 @@ function calculatePerplexityScore(
   // Context frequency (rare words more important - inverse frequency)
   // Guard against division by zero
   const wordLower = lower
-  const frequency = context.length > 0
-    ? context.filter(w => w.toLowerCase() === wordLower).length / context.length
-    : 0
+  const frequency =
+    context.length > 0
+      ? context.filter((w) => w.toLowerCase() === wordLower).length /
+        context.length
+      : 0
   if (frequency < 0.01) {
     score += 0.2 // Very rare
   } else if (frequency < 0.05) {
@@ -225,7 +289,7 @@ function compressWithPerplexity(
   preserveLast: number
 ): { compressed: string; preservedSegments: string[] } {
   const tokens = tokenizeWithPositions(text)
-  const contextWords = tokens.map(t => t.word)
+  const contextWords = tokens.map((t) => t.word)
   const preservedSegments: string[] = []
 
   if (tokens.length === 0) {
@@ -235,7 +299,12 @@ function compressWithPerplexity(
   // Calculate importance for each token
   const scoredTokens = tokens.map((token, idx) => ({
     ...token,
-    importance: calculatePerplexityScore(token.word, contextWords, idx, tokens.length),
+    importance: calculatePerplexityScore(
+      token.word,
+      contextWords,
+      idx,
+      tokens.length
+    ),
   }))
 
   // Determine which tokens to preserve
@@ -245,37 +314,47 @@ function compressWithPerplexity(
   )
 
   // Always preserve first N and last N tokens
-  const firstPreserved = scoredTokens.slice(0, Math.min(preserveFirst, tokens.length))
-  const lastPreserved = scoredTokens.slice(Math.max(tokens.length - preserveLast, preserveFirst))
+  const firstPreserved = scoredTokens.slice(
+    0,
+    Math.min(preserveFirst, tokens.length)
+  )
+  const lastPreserved = scoredTokens.slice(
+    Math.max(tokens.length - preserveLast, preserveFirst)
+  )
 
   if (firstPreserved.length > 0) {
-    preservedSegments.push(firstPreserved.map(t => t.word).join(' '))
+    preservedSegments.push(firstPreserved.map((t) => t.word).join(' '))
   }
-  if (lastPreserved.length > 0 && lastPreserved[0] !== firstPreserved[firstPreserved.length - 1]) {
-    preservedSegments.push(lastPreserved.map(t => t.word).join(' '))
+  if (
+    lastPreserved.length > 0 &&
+    lastPreserved[0] !== firstPreserved[firstPreserved.length - 1]
+  ) {
+    preservedSegments.push(lastPreserved.map((t) => t.word).join(' '))
   }
 
   // For middle tokens, select by importance
-  const middleTokens = scoredTokens.slice(preserveFirst, Math.max(tokens.length - preserveLast, preserveFirst))
-  const middleTargetCount = targetTokenCount - firstPreserved.length - lastPreserved.length
+  const middleTokens = scoredTokens.slice(
+    preserveFirst,
+    Math.max(tokens.length - preserveLast, preserveFirst)
+  )
+  const middleTargetCount =
+    targetTokenCount - firstPreserved.length - lastPreserved.length
 
   // Sort by importance and select top N
-  const sortedMiddle = [...middleTokens].sort((a, b) => b.importance - a.importance)
+  const sortedMiddle = [...middleTokens].sort(
+    (a, b) => b.importance - a.importance
+  )
   const selectedMiddle = sortedMiddle.slice(0, Math.max(0, middleTargetCount))
 
   // Restore original order
   selectedMiddle.sort((a, b) => a.start - b.start)
 
   // Reconstruct compressed text
-  const allSelected = [
-    ...firstPreserved,
-    ...selectedMiddle,
-    ...lastPreserved,
-  ]
+  const allSelected = [...firstPreserved, ...selectedMiddle, ...lastPreserved]
 
   // Remove duplicates (in case preserve ranges overlap)
   const seen = new Set<number>()
-  const uniqueSelected = allSelected.filter(t => {
+  const uniqueSelected = allSelected.filter((t) => {
     if (seen.has(t.start)) return false
     seen.add(t.start)
     return true
@@ -283,7 +362,7 @@ function compressWithPerplexity(
 
   uniqueSelected.sort((a, b) => a.start - b.start)
 
-  const compressed = uniqueSelected.map(t => t.word).join(' ')
+  const compressed = uniqueSelected.map((t) => t.word).join(' ')
 
   return { compressed, preservedSegments }
 }
@@ -336,8 +415,8 @@ function iterativeCompress(
  * await compressor.initialize()
  *
  * const result = await compressor.compress(ragContext)
- * logger.debug(`Compressed from ${result.originalTokens} to ${result.compressedTokens}`)
- * logger.debug(`Ratio: ${result.compressionRatio}`) // ~0.5-0.7 with statistical method
+ * console.log(`Compressed from ${result.originalTokens} to ${result.compressedTokens}`)
+ * console.log(`Ratio: ${result.compressionRatio}`) // ~0.5-0.7 with statistical method
  *
  * // Compress with preserved segments
  * const result2 = await compressor.compressWithSegments(text, [
@@ -359,7 +438,10 @@ export class LLMLinguaCompressor {
 
   constructor(config: LLMLinguaConfig = {}) {
     // Validate config
-    if (config.targetRatio !== undefined && (config.targetRatio <= 0 || config.targetRatio > 1)) {
+    if (
+      config.targetRatio !== undefined &&
+      (config.targetRatio <= 0 || config.targetRatio > 1)
+    ) {
       throw new Error('targetRatio must be between 0 and 1')
     }
     if (config.preserveFirst !== undefined && config.preserveFirst < 0) {
@@ -495,7 +577,8 @@ export class LLMLinguaCompressor {
 
     const compressedTokens = estimateTokens(compressed)
     // Guard against division by zero
-    const compressionRatio = originalTokens > 0 ? compressedTokens / originalTokens : 1.0
+    const compressionRatio =
+      originalTokens > 0 ? compressedTokens / originalTokens : 1.0
     const processingTimeMs = performance.now() - startTime
 
     // Update stats (cap array size to prevent memory leak)
@@ -552,15 +635,17 @@ export class LLMLinguaCompressor {
 
     // Validate and clamp segments to valid bounds
     const validatedSegments = segments
-      .map(seg => ({
+      .map((seg) => ({
         start: Math.max(0, Math.min(seg.start, text.length)),
         end: Math.max(0, Math.min(seg.end, text.length)),
         preserve: seg.preserve,
       }))
-      .filter(seg => seg.start < seg.end) // Remove invalid segments
+      .filter((seg) => seg.start < seg.end) // Remove invalid segments
 
     // Sort segments by start position
-    const sortedSegments = [...validatedSegments].sort((a, b) => a.start - b.start)
+    const sortedSegments = [...validatedSegments].sort(
+      (a, b) => a.start - b.start
+    )
 
     // Extract preserved and compressible parts
     const parts: Array<{ text: string; preserve: boolean; start: number }> = []
@@ -631,7 +716,8 @@ export class LLMLinguaCompressor {
     const compressed = processedParts.join('')
     const compressedTokens = estimateTokens(compressed)
     // Guard against division by zero
-    const compressionRatio = originalTokens > 0 ? compressedTokens / originalTokens : 1.0
+    const compressionRatio =
+      originalTokens > 0 ? compressedTokens / originalTokens : 1.0
     const processingTimeMs = performance.now() - startTime
 
     // Update stats (cap array size to prevent memory leak)
@@ -708,7 +794,7 @@ export class LLMLinguaCompressor {
  * const compressor = new LLMLinguaCompressor({ targetRatio: 0.25 })
  * const batch1 = await compressRAGContext(docs1, {}, compressor)
  * const batch2 = await compressRAGContext(docs2, {}, compressor)
- * logger.debug(compressor.getStats()) // Shows combined stats
+ * console.log(compressor.getStats()) // Shows combined stats
  * ```
  */
 export async function compressRAGContext(
@@ -753,7 +839,8 @@ export async function intelligentCompress(
 
   // If text contains significant code, use TF-IDF which handles structure better
   const codeBlockCount = (text.match(/```[\s\S]*?```/g) || []).length
-  const hasSignificantCode = codeBlockCount > 0 || text.includes('function ') || text.includes('class ')
+  const hasSignificantCode =
+    codeBlockCount > 0 || text.includes('function ') || text.includes('class ')
 
   if (hasSignificantCode && preserveCode) {
     // Use TF-IDF semantic compression for code-heavy content
@@ -788,6 +875,8 @@ export async function intelligentCompress(
 /**
  * Create a LLMLingua compressor with the given configuration
  */
-export function createLLMLinguaCompressor(config?: LLMLinguaConfig): LLMLinguaCompressor {
+export function createLLMLinguaCompressor(
+  config?: LLMLinguaConfig
+): LLMLinguaCompressor {
   return new LLMLinguaCompressor(config)
 }

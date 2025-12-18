@@ -281,7 +281,7 @@ function ThemeBuilder() {
         setSaveEnabled(false)
       }
     } catch (error) {
-      logger.logger.error('Failed to save theme:', error)
+      logger.error('Failed to save theme:', error)
       alert('Failed to save theme')
     }
   }
@@ -525,7 +525,7 @@ function ThemeImporter() {
         setError(null)
       } catch (err) {
         setError('Failed to parse theme file')
-        logger.logger.error(err)
+        logger.error(err)
       }
     }
     reader.readAsText(file)

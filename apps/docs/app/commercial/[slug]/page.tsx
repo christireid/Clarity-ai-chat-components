@@ -105,7 +105,7 @@ export default async function CommercialPage({ params }: CommercialPageProps) {
 
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error(`Failed to read commercial page: ${slug}`, error)
+    logger.error(`Failed to read commercial page: ${slug}`, error)
     notFound()
   }
 

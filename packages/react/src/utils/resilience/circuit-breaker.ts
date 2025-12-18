@@ -16,7 +16,7 @@
  *   name: 'openai-api',
  *   failureThreshold: 5,
  *   resetTimeout: 30000,
- *   onStateChange: (state) => logger.debug(`Circuit ${state}`)
+ *   onStateChange: (state) => console.log(`Circuit ${state}`)
  * })
  *
  * try {

@@ -157,7 +157,7 @@ export function handleError(error: string | Error | unknown): never {
 
   if (normalizedError instanceof DocsSyncError) {
     if (isJsonMode) {
-      SecureLogger.error(
+      console.error(
         JSON.stringify({
           error: normalizedError.message,
           code: normalizedError.code,
@@ -166,27 +166,27 @@ export function handleError(error: string | Error | unknown): never {
         })
       )
     } else {
-      SecureLogger.error('')
-      SecureLogger.error(
+      console.error('')
+      console.error(
         pc.bold(pc.red(`✖ ${normalizedError.name}: ${normalizedError.message}`))
       )
 
       if (normalizedError.suggestions.length > 0) {
-        SecureLogger.error('')
-        SecureLogger.error(pc.bold(pc.yellow('💡 Suggestions:')))
+        console.error('')
+        console.error(pc.bold(pc.yellow('💡 Suggestions:')))
         for (const suggestion of normalizedError.suggestions) {
-          SecureLogger.error(pc.gray(`   • ${suggestion}`))
+          console.error(pc.gray(`   • ${suggestion}`))
         }
       }
 
       if (normalizedError.docs) {
-        SecureLogger.error('')
-        SecureLogger.error(
+        console.error('')
+        console.error(
           pc.bold(pc.blue('📚 Documentation: ')) +
             pc.underline(pc.cyan(normalizedError.docs))
         )
       }
-      SecureLogger.error('')
+      console.error('')
     }
 
     process.exit(normalizedError.code)
@@ -194,25 +194,25 @@ export function handleError(error: string | Error | unknown): never {
 
   // Generic error
   if (isJsonMode) {
-    SecureLogger.error(
+    console.error(
       JSON.stringify({
         error: normalizedError.message,
         stack: normalizedError.stack,
       })
     )
   } else {
-    SecureLogger.error('')
-    SecureLogger.error(pc.bold(pc.red(`✖ Error: ${normalizedError.message}`)))
+    console.error('')
+    console.error(pc.bold(pc.red(`✖ Error: ${normalizedError.message}`)))
 
     if (process.env.DEBUG || process.env.VERBOSE) {
       if (normalizedError.stack) {
-        SecureLogger.error('')
-        SecureLogger.error(pc.gray(normalizedError.stack))
+        console.error('')
+        console.error(pc.gray(normalizedError.stack))
       }
     } else {
-      SecureLogger.error(pc.gray('   Run with --verbose for more details'))
+      console.error(pc.gray('   Run with --verbose for more details'))
     }
-    SecureLogger.error('')
+    console.error('')
   }
 
   process.exit(ExitCode.GENERAL_ERROR)

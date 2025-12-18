@@ -95,7 +95,7 @@ const systemPrompt = renderMasterSystemPrompt({
 // Or use the workflow hook
 const workflow = useArchitectWorkflow({
   onPhaseComplete: (phase, result) => {
-    SecureLogger.debug(\`Phase \${phase} complete\`)
+    console.log(\`Phase \${phase} complete\`)
   },
 })
 \`\`\`
@@ -528,7 +528,7 @@ function OWASPCatalogDemo() {
 function WorkflowDemo() {
   const workflow = useArchitectWorkflow({
     onPhaseComplete: (phase, result) => {
-      SecureLogger.debug(`Phase ${phase} complete:`, result)
+      console.log(`Phase ${phase} complete:`, result)
     },
   })
 

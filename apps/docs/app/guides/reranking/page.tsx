@@ -26,7 +26,7 @@ export default async function RerankingGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read reranking guide', error)
+    logger.error('Failed to read reranking guide', error)
     content = '# Reranking\n\nContent not available.'
   }
 

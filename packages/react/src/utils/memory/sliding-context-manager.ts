@@ -128,7 +128,7 @@ export class SlidingContextManager {
           }
         )
       } catch (error) {
-        logger.warn('Vector store retrieval failed:', error)
+        console.warn('Vector store retrieval failed:', error)
         // Fallback to empty historical context
       }
     }

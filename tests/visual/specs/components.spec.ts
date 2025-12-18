@@ -10,12 +10,12 @@ function attachPageDiagnostics(page: any) {
   // Helps debug cases where Storybook keeps #storybook-root hidden due to runtime errors.
   page.on('pageerror', (err: any) => {
     // eslint-disable-next-line no-console
-    SecureLogger.error('[playwright-visual][pageerror]', err)
+    console.error('[playwright-visual][pageerror]', err)
   })
   page.on('console', (msg: any) => {
     if (msg.type?.() === 'error') {
       // eslint-disable-next-line no-console
-      SecureLogger.error('[playwright-visual][console.error]', msg.text?.())
+      console.error('[playwright-visual][console.error]', msg.text?.())
     }
   })
 }

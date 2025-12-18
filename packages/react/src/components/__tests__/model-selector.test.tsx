@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeAll } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { ModelSelector, type ModelSelectorProps } from '../model-selector'
+import { ModelSelector, type ModelSelectorProps } from '../ai/model-selector'
 import type { ModelInfo } from '../../adapters/types'
 
 const buildModels = (): ModelInfo[] => [

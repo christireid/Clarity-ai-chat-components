@@ -1,6 +1,6 @@
 /**
  * Simplified Token Counter Implementation
- * 
+ *
  * Basic token counting without external dependencies for testing
  */
 
@@ -11,13 +11,16 @@ export class SimpleTokenCounter {
   private misses = 0
   private totalCalls = 0
 
-  constructor(private enableCaching = true, private config: any = {}) {
+  constructor(
+    private enableCaching = true,
+    private config: any = {}
+  ) {
     this.config = {
       model: 'gpt-4',
       cacheSize: 10000,
       enableCaching: true,
       enableMonitoring: true,
-      ...config
+      ...config,
     }
   }
 
@@ -28,9 +31,9 @@ export class SimpleTokenCounter {
 
   count(text: string): number {
     if (!text) return 0
-    
+
     this.totalCalls++
-    
+
     // Check cache
     if (this.enableCaching && this.cache.has(text)) {
       this.hits++
@@ -40,8 +43,10 @@ export class SimpleTokenCounter {
     this.misses++
 
     // Simple token estimation
-    const tokens = Math.ceil(text.length / SimpleTokenCounter.AVG_CHARS_PER_TOKEN)
-    
+    const tokens = Math.ceil(
+      text.length / SimpleTokenCounter.AVG_CHARS_PER_TOKEN
+    )
+
     // Cache result with size limit - enforce strict limit by removing oldest entries
     if (this.enableCaching) {
       // If cache is full, remove oldest entry
@@ -51,7 +56,7 @@ export class SimpleTokenCounter {
       }
       this.cache.set(text, tokens)
     }
-    
+
     return tokens
   }
 
@@ -69,16 +74,18 @@ export class SimpleTokenCounter {
     ratio: number
     estimated: boolean
   } {
-    const tokens = Math.ceil(text.length / SimpleTokenCounter.AVG_CHARS_PER_TOKEN)
+    const tokens = Math.ceil(
+      text.length / SimpleTokenCounter.AVG_CHARS_PER_TOKEN
+    )
     const chars = text.length
-    const words = text.split(/\s+/).filter(w => w.length > 0).length
-    
+    const words = text.split(/\s+/).filter((w) => w.length > 0).length
+
     return {
       tokens,
       characters: chars,
       words,
       ratio: chars > 0 ? chars / tokens : 0,
-      estimated: false // This is accurate calculation, not estimated
+      estimated: false, // This is accurate calculation, not estimated
     }
   }
 
@@ -89,7 +96,7 @@ export class SimpleTokenCounter {
     // More conservative truncation
     const ratio = (maxTokens - 1) / tokens // Leave room for ellipsis
     const targetLength = Math.floor(text.length * ratio)
-    
+
     // Ensure we don't exceed token budget
     const truncated = text.slice(0, Math.max(1, targetLength))
     return truncated + '...'
@@ -104,13 +111,8 @@ export class SimpleTokenCounter {
       misses: this.misses,
       hitRate: totalAccesses > 0 ? this.hits / totalAccesses : 0,
       totalCalls: this.totalCalls,
-      totalTokens: this.totalCalls * 3 // Approximate
+      totalTokens: this.totalCalls * 3, // Approximate
     }
-  }
-
-  // Instance method for compatibility with tests
-  get enabled() {
-    return this.config.enableMonitoring
   }
 
   getMonitoringStats() {
@@ -120,7 +122,10 @@ export class SimpleTokenCounter {
       totalTokens: this.totalCalls * 3, // Approximate
       averageTokens: this.totalCalls > 0 ? 3 : 0,
       runtime: this.totalCalls * 5, // Mock runtime
-      tokensPerSecond: this.totalCalls > 0 ? (this.totalCalls * 3) / (this.totalCalls * 5) * 1000 : 0
+      tokensPerSecond:
+        this.totalCalls > 0
+          ? ((this.totalCalls * 3) / (this.totalCalls * 5)) * 1000
+          : 0,
     }
   }
 
@@ -128,25 +133,11 @@ export class SimpleTokenCounter {
     this.cache.clear()
   }
 
-  // Additional methods required by tests
+  // Additional static method for tests
   static estimate(text: string): number {
     if (!text) return 0
     // Use actual token counting for better accuracy
     return Math.ceil(text.length / SimpleTokenCounter.AVG_CHARS_PER_TOKEN)
-  }
-
-  static getTokenInfo(text: string) {
-    const tokens = Math.ceil(text.length / SimpleTokenCounter.AVG_CHARS_PER_TOKEN)
-    const chars = text.length
-    const words = text.split(/\s+/).filter(w => w.length > 0).length
-    
-    return {
-      tokens,
-      characters: chars,
-      words,
-      ratio: chars > 0 ? chars / tokens : 0,
-      estimated: false // This is accurate, not estimated
-    }
   }
 
   // Instance methods that match the test expectations
@@ -154,7 +145,7 @@ export class SimpleTokenCounter {
     return SimpleTokenCounter.estimate(text)
   }
 
-  getTokenInfo(text: string) {
+  getTokenInfoInstance(text: string) {
     return SimpleTokenCounter.getTokenInfo(text)
   }
 }

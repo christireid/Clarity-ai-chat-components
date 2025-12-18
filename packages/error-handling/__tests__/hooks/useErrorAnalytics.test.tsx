@@ -370,7 +370,7 @@ describe('ErrorAnalyticsProvider', () => {
       // Need to set both global and instance levels to ensure log is not filtered
       setGlobalLogLevel(LogLevel.DEBUG)
       logger.setLevel(LogLevel.DEBUG)
-      
+
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
       const customWrapper = ({ children }: { children: React.ReactNode }) => (

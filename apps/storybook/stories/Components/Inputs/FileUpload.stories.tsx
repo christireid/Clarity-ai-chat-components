@@ -4,10 +4,10 @@ import { expect, within } from 'storybook/test'
 
 /**
  * **FileUpload Component**
- * 
+ *
  * Drag and drop file upload component with progress tracking,
  * file validation, and multiple file support.
- * 
+ *
  * **Key Features:**
  * - Drag and drop interface
  * - Click to browse files
@@ -17,7 +17,7 @@ import { expect, within } from 'storybook/test'
  * - Progress tracking
  * - Error handling
  * - Accessible with keyboard navigation
- * 
+ *
  * **Use Cases:**
  * - Document uploads
  * - Image uploads
@@ -53,7 +53,7 @@ file validation, and multiple file support.
 \`\`\`tsx
 <FileUpload
   onFilesSelected={(files) => {
-    SecureLogger.debug('Files selected:', files)
+    console.log('Files selected:', files)
   }}
   maxFiles={5}
   maxSize={10 * 1024 * 1024} // 10MB
@@ -110,7 +110,7 @@ type Story = StoryObj<typeof FileUpload>
 export const Default: Story = {
   args: {
     onFilesSelected: (files) => {
-      SecureLogger.debug('Files selected:', files)
+      console.log('Files selected:', files)
     },
     maxFiles: 5,
     maxSize: 10 * 1024 * 1024, // 10MB
@@ -135,7 +135,7 @@ export const Default: Story = {
 export const ImageOnly: Story = {
   args: {
     onFilesSelected: (files) => {
-      SecureLogger.debug('Images selected:', files)
+      console.log('Images selected:', files)
     },
     accept: 'image/*',
     maxFiles: 3,
@@ -157,7 +157,7 @@ export const ImageOnly: Story = {
 export const SingleFile: Story = {
   args: {
     onFilesSelected: (files) => {
-      SecureLogger.debug('File selected:', files)
+      console.log('File selected:', files)
     },
     maxFiles: 1,
   },
@@ -175,7 +175,7 @@ export const SingleFile: Story = {
 export const WithValidation: Story = {
   args: {
     onFilesSelected: (files) => {
-      SecureLogger.debug('Valid files:', files)
+      console.log('Valid files:', files)
     },
     maxSize: 5 * 1024 * 1024, // 5MB
     accept: '.pdf,.doc,.docx',

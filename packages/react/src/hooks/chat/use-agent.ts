@@ -1,3 +1,6 @@
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useAgent - Top-level hook for AI agents
  *
@@ -14,12 +17,13 @@
  * ```
  */
 
-'use client'
-
 import * as React from 'react'
 import { ReactAgent } from '../agents/react-agent'
 import type { Tool, AgentConfig } from '../agents/types'
-import { validateModel, validateTools } from '../utils/runtime-validation'
+import {
+  validateModel,
+  validateTools,
+} from '../../utils/config/runtime-validation'
 
 /**
  * Options for useAgent

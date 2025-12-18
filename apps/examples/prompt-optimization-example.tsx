@@ -1,6 +1,6 @@
 /**
  * Prompt Optimization Example
- * 
+ *
  * Demonstrates how to use the prompt & token optimization layer
  * with useClarityChat and standalone hooks.
  */
@@ -35,7 +35,9 @@ export function BasicOptimizedChat() {
       <div className="messages">
         {chat.messages.map((msg) => (
           <div key={msg.id} className={`message message-${msg.role}`}>
-            {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+            {typeof msg.content === 'string'
+              ? msg.content
+              : JSON.stringify(msg.content)}
           </div>
         ))}
       </div>
@@ -46,7 +48,9 @@ export function BasicOptimizedChat() {
             Tokens: {chat.tokenStats.inputTokens} /{' '}
             {chat.tokenStats.remainingBudget + chat.tokenStats.inputTokens}
           </div>
-          <div>Utilization: {(chat.tokenStats.utilization * 100).toFixed(1)}%</div>
+          <div>
+            Utilization: {(chat.tokenStats.utilization * 100).toFixed(1)}%
+          </div>
           {chat.tokenStats.wasOptimized && (
             <div className="optimization-info">
               Optimized: {chat.tokenStats.lastOptimizationReason}
@@ -58,7 +62,9 @@ export function BasicOptimizedChat() {
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          const input = e.currentTarget.elements.namedItem('input') as HTMLInputElement
+          const input = e.currentTarget.elements.namedItem(
+            'input'
+          ) as HTMLInputElement
           chat.append({ role: 'user', content: input.value })
           input.value = ''
         }}
@@ -84,7 +90,8 @@ export function RecipeBasedChat() {
     () =>
       createPromptRecipe('greeting-chatbot', 'Greeting Chatbot', {
         systemPrompt: (b) =>
-          b.text('You are a friendly assistant.')
+          b
+            .text('You are a friendly assistant.')
             .conditional('userName', (b) =>
               b.text(' You are talking to {{userName}}.').build()
             )
@@ -107,13 +114,19 @@ export function RecipeBasedChat() {
       <div>
         <label>
           Your name:
-          <input value={userName} onChange={(e) => setUserName(e.target.value)} />
+          <input
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          />
         </label>
       </div>
       <div>
         <label>
           Message:
-          <input value={userInput} onChange={(e) => setUserInput(e.target.value)} />
+          <input
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+          />
         </label>
       </div>
       <div>
@@ -146,7 +159,7 @@ export function TokenBudgetExample() {
   const handleOptimize = React.useCallback(async () => {
     const result = await budget.optimize('hybrid')
     setMessages(result.optimizedMessages)
-    SecureLogger.debug('Optimization diagnostics:', result.diagnostics)
+    console.log('Optimization diagnostics:', result.diagnostics)
   }, [budget])
 
   return (
@@ -165,7 +178,8 @@ export function TokenBudgetExample() {
       )}
       {budget.estimatedCost && (
         <div>
-          <strong>Estimated cost:</strong> ${budget.estimatedCost.totalCost.toFixed(4)}
+          <strong>Estimated cost:</strong> $
+          {budget.estimatedCost.totalCost.toFixed(4)}
         </div>
       )}
       <button onClick={handleOptimize} disabled={!budget.isExceeded}>
@@ -200,7 +214,8 @@ export function PromptInspectorExample() {
         <h4>Breakdown by Role</h4>
         {Object.entries(inspector.byRole).map(([role, stats]) => (
           <div key={role}>
-            {role}: {stats.tokens} tokens ({stats.count} messages, {stats.percentage.toFixed(1)}%)
+            {role}: {stats.tokens} tokens ({stats.count} messages,{' '}
+            {stats.percentage.toFixed(1)}%)
           </div>
         ))}
       </div>
@@ -235,7 +250,9 @@ export function CompleteOptimizedChat() {
         <div className="messages">
           {chat.messages.map((msg) => (
             <div key={msg.id} className={`message message-${msg.role}`}>
-              {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+              {typeof msg.content === 'string'
+                ? msg.content
+                : JSON.stringify(msg.content)}
             </div>
           ))}
         </div>
@@ -243,7 +260,9 @@ export function CompleteOptimizedChat() {
         <form
           onSubmit={(e) => {
             e.preventDefault()
-            const input = e.currentTarget.elements.namedItem('input') as HTMLInputElement
+            const input = e.currentTarget.elements.namedItem(
+              'input'
+            ) as HTMLInputElement
             chat.append({ role: 'user', content: input.value })
             input.value = ''
           }}
@@ -261,7 +280,9 @@ export function CompleteOptimizedChat() {
             <h3>Token Stats</h3>
             <div>Input: {chat.tokenStats.inputTokens} tokens</div>
             <div>Remaining: {chat.tokenStats.remainingBudget} tokens</div>
-            <div>Utilization: {(chat.tokenStats.utilization * 100).toFixed(1)}%</div>
+            <div>
+              Utilization: {(chat.tokenStats.utilization * 100).toFixed(1)}%
+            </div>
             {chat.tokenStats.wasOptimized && (
               <div className="optimization-note">
                 ✓ Optimized: {chat.tokenStats.lastOptimizationReason}
@@ -278,7 +299,9 @@ export function CompleteOptimizedChat() {
               <div key={role} className="role-stat">
                 <span className="role-name">{role}</span>
                 <span className="role-tokens">{stats.tokens} tokens</span>
-                <span className="role-percentage">{stats.percentage.toFixed(1)}%</span>
+                <span className="role-percentage">
+                  {stats.percentage.toFixed(1)}%
+                </span>
               </div>
             ))}
           </div>

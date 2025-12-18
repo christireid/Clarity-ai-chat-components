@@ -3,10 +3,19 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { AlertCircleIcon, AlertTriangleIcon, RefreshIcon, InfoIcon } from './icons'
+import {
+  AlertCircleIcon,
+  AlertTriangleIcon,
+  RefreshIcon,
+  InfoIcon,
+} from '../ui/icons'
 import { RetryButton, type RetryErrorType } from './retry-button'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
+import { useReducedMotion } from '@clarity-chat/primitives'
+import {
+  getMotionSafeDuration,
+  getMotionSafeValue,
+} from '../../animations/motion-safe'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /**
  * Error severity levels
@@ -58,10 +67,14 @@ export interface ErrorMessageProps {
 /**
  * Default error details for common error types
  */
-const DEFAULT_ERROR_DETAILS: Record<RetryErrorType, Omit<ErrorDetails, 'type'>> = {
+const DEFAULT_ERROR_DETAILS: Record<
+  RetryErrorType,
+  Omit<ErrorDetails, 'type'>
+> = {
   network: {
     title: 'Connection Lost',
-    message: 'Unable to connect to the server. Please check your internet connection.',
+    message:
+      'Unable to connect to the server. Please check your internet connection.',
     severity: 'error',
     suggestions: [
       'Check your internet connection',
@@ -72,7 +85,8 @@ const DEFAULT_ERROR_DETAILS: Record<RetryErrorType, Omit<ErrorDetails, 'type'>> 
   },
   ratelimit: {
     title: 'Too Many Requests',
-    message: 'You\'ve sent too many requests. Please wait a moment before trying again.',
+    message:
+      "You've sent too many requests. Please wait a moment before trying again.",
     severity: 'warning',
     suggestions: [
       'Wait a few seconds before retrying',
@@ -83,7 +97,8 @@ const DEFAULT_ERROR_DETAILS: Record<RetryErrorType, Omit<ErrorDetails, 'type'>> 
   },
   server: {
     title: 'Server Error',
-    message: 'The server encountered an error. This is temporary and will be resolved shortly.',
+    message:
+      'The server encountered an error. This is temporary and will be resolved shortly.',
     severity: 'error',
     suggestions: [
       'Wait a moment and try again',
@@ -208,10 +223,15 @@ export function ErrorMessage({
   if (compact) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, -10, 0) }}
+        initial={{
+          opacity: 0,
+          y: getMotionSafeValue(prefersReducedMotion, -10, 0),
+        }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: getMotionSafeDuration(prefersReducedMotion, 0.2) }}
+        transition={{
+          duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
+        }}
         className={cn(
           'flex items-center gap-2.5 p-2.5 rounded-lg border shadow-sm',
           config.bgColor,
@@ -220,7 +240,9 @@ export function ErrorMessage({
         )}
       >
         <IconComponent size={16} className={cn(config.iconColor, 'shrink-0')} />
-        <span className="text-sm text-foreground/90 flex-1">{errorDetails.message}</span>
+        <span className="text-sm text-foreground/90 flex-1">
+          {errorDetails.message}
+        </span>
         {errorDetails.canRetry && onRetry && (
           <button
             onClick={onRetry}
@@ -236,10 +258,14 @@ export function ErrorMessage({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0), scale: 0.98 }}
+      initial={{
+        opacity: 0,
+        y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+        scale: 0.98,
+      }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ 
+      transition={{
         // Framer Motion 12: Spring entrance for full error displays
         type: 'spring',
         damping: 25,
@@ -271,7 +297,9 @@ export function ErrorMessage({
 
         <div className="flex-1 space-y-1.5">
           <h4 className="font-bold text-foreground">{errorDetails.title}</h4>
-          <p className="text-sm text-muted-foreground/90">{errorDetails.message}</p>
+          <p className="text-sm text-muted-foreground/90">
+            {errorDetails.message}
+          </p>
         </div>
 
         {onDismiss && (
@@ -302,7 +330,9 @@ export function ErrorMessage({
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
-          transition={{ delay: getMotionSafeDuration(prefersReducedMotion, 0.1) }}
+          transition={{
+            delay: getMotionSafeDuration(prefersReducedMotion, 0.1),
+          }}
           className="space-y-2.5"
         >
           <p className="text-xs font-semibold text-foreground/90 uppercase tracking-wide">
@@ -312,10 +342,16 @@ export function ErrorMessage({
             {errorDetails.suggestions.map((suggestion, index) => (
               <motion.li
                 key={index}
-                initial={{ opacity: 0, x: getMotionSafeValue(prefersReducedMotion, -10, 0) }}
+                initial={{
+                  opacity: 0,
+                  x: getMotionSafeValue(prefersReducedMotion, -10, 0),
+                }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
-                  delay: getMotionSafeDuration(prefersReducedMotion, 0.1 + index * 0.05),
+                  delay: getMotionSafeDuration(
+                    prefersReducedMotion,
+                    0.1 + index * 0.05
+                  ),
                   duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
                 }}
                 className="flex items-start gap-2.5 text-sm text-foreground/90"
@@ -341,7 +377,7 @@ export function ErrorMessage({
               viewBox="0 0 24 24"
               stroke="currentColor"
               animate={{ rotate: showDetails ? 90 : 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: durations.normal }}
             >
               <path
                 strokeLinecap="round"
@@ -371,9 +407,14 @@ export function ErrorMessage({
       {/* Retry Button */}
       {errorDetails.canRetry && onRetry && (
         <motion.div
-          initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
+          initial={{
+            opacity: 0,
+            y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+          }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: getMotionSafeDuration(prefersReducedMotion, 0.2) }}
+          transition={{
+            delay: getMotionSafeDuration(prefersReducedMotion, 0.2),
+          }}
         >
           <RetryButton
             onRetry={onRetry}

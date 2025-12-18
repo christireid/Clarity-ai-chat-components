@@ -118,7 +118,7 @@ export function SessionSummaryCard({
     <motion.div
       initial={{ opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ 
+      transition={{
         // Framer Motion 12: Spring entrance for summary card
         type: 'spring',
         damping: 22,
@@ -193,7 +193,7 @@ export function SessionSummaryCard({
                   key={highlight}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ 
+                  transition={{
                     // Framer Motion 12: Spring staggered list items
                     type: 'spring',
                     damping: 25,
@@ -217,7 +217,7 @@ export function SessionSummaryCard({
                 key={metric.label}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.2, delay: index * 0.05 }}
+                transition={{ duration: durations.normal, delay: index * 0.05 }}
                 className="flex flex-col gap-2 rounded-lg border bg-muted/50 px-4 py-3 text-sm shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px transition-all duration-150 ease-out"
               >
                 <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -274,7 +274,10 @@ export function SessionSummaryCard({
                     key={action}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.15, delay: index * 0.05 }}
+                    transition={{
+                      duration: durations.fast,
+                      delay: index * 0.05,
+                    }}
                   >
                     <Button
                       variant="secondary"

@@ -222,7 +222,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unknown provider' }, { status: 400 })
     }
   } catch (error) {
-    SecureLogger.error('API error:', error)
+    console.error('API error:', error)
     return NextResponse.json(
       { error: 'Failed to generate response' },
       { status: 500 }
@@ -349,7 +349,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return Response.json({ error: 'Failed to generate response' }, { status: 500 })
   }
 }
@@ -383,7 +383,7 @@ export async function POST(req: NextRequest) {
       usage: response.usage,
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return NextResponse.json({ error: 'Failed to generate response' }, { status: 500 })
   }
 }
@@ -441,7 +441,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return Response.json({ error: 'Failed to generate response' }, { status: 500 })
   }
 }
@@ -476,7 +476,7 @@ export async function POST(req: NextRequest) {
       content: response.text(),
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return NextResponse.json({ error: 'Failed to generate response' }, { status: 500 })
   }
 }
@@ -527,7 +527,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return Response.json({ error: 'Failed to generate response' }, { status: 500 })
   }
 }
@@ -554,7 +554,7 @@ export async function POST(req: NextRequest) {
       usage: response.usage,
     })
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return NextResponse.json({ error: 'Failed to generate response' }, { status: 500 })
   }
 }
@@ -615,7 +615,7 @@ ${
     })`
 }
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     res.status(500).json({ error: 'Failed to generate response' })
   }
 }
@@ -669,7 +669,7 @@ ${
     })`
 }
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     res.status(500).json({ error: 'Failed to generate response' })
   }
 })
@@ -722,7 +722,7 @@ ${
     })`
 }
   } catch (error) {
-    SecureLogger.error('Chat error:', error)
+    console.error('Chat error:', error)
     return c.json({ error: 'Failed to generate response' }, 500)
   }
 })

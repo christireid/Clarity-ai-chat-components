@@ -11,7 +11,7 @@
  * @returns {(...args: Parameters<T>) => void} Throttled function
  * @example
  * ```ts
- * const throttledScroll = throttle(() => logger.debug('scrolled'), 100)
+ * const throttledScroll = throttle(() => console.log('scrolled'), 100)
  * window.addEventListener('scroll', throttledScroll)
  * ```
  */
@@ -149,7 +149,7 @@ export function measurePerformance<T>(
   const duration = end - start
   
   if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
-    logger.debug(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
+    console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
   }
   
   return result
@@ -180,7 +180,7 @@ export async function measurePerformanceAsync<T>(
     const duration = end - start
     
     if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
-      logger.debug(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
     }
     
     return result
@@ -189,7 +189,7 @@ export async function measurePerformanceAsync<T>(
     const duration = end - start
     
     if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
-      logger.debug(`[Performance] ${name}: ${duration.toFixed(2)}ms (failed)`)
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms (failed)`)
     }
     
     throw error
@@ -209,7 +209,7 @@ export async function measurePerformanceAsync<T>(
  * })
  * 
  * if (duration > 1000) {
- *   logger.warn('Slow query detected')
+ *   console.warn('Slow query detected')
  * }
  * ```
  */
@@ -224,7 +224,7 @@ export async function measureWithResult<T>(
     const duration = performance.now() - start
     
     if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
-      logger.debug(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
     }
     
     return { result, duration }
@@ -232,7 +232,7 @@ export async function measureWithResult<T>(
     const duration = performance.now() - start
     
     if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
-      logger.debug(`[Performance] ${name}: ${duration.toFixed(2)}ms (failed)`)
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms (failed)`)
     }
     
     throw error

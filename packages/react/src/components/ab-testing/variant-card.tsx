@@ -12,7 +12,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { type SignificanceResult } from './use-statistical-significance'
-import { DashboardProgress } from '../dashboard-progress'
+import { DashboardProgress } from '../ui/dashboard-progress'
 
 /**
  * Variant metrics data

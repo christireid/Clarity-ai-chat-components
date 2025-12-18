@@ -550,7 +550,7 @@ const { error } = useChat()
 // Clarity Chat (enhanced)
 const { error, retry, resetError } = useChat({
   onError: (error) => {
-    logger.logger.error('Chat error:', error)
+    logger.error('Chat error:', error)
     // Custom error handling
   }
 })`}</code>

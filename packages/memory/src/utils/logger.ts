@@ -49,7 +49,7 @@ class ClarityLogger implements Logger {
 
   debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog('debug')) {
-      console.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
+      console.log(`${this.prefix} [DEBUG] ${message}`, ...args)
     }
   }
 
@@ -59,7 +59,7 @@ class ClarityLogger implements Logger {
 }
 
 // Default logger instance
-export const memoryLogger = new ClarityLogger()
+export const logger = new ClarityLogger()
 
 /**
  * Create a logger instance

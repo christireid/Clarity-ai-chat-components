@@ -61,7 +61,7 @@ export const WithSelection: Story = {
     personas: mockPersonas,
     activePersonaId: '1',
     onSelect: (persona) => {
-      SecureLogger.debug('Selected persona:', persona.name)
+      console.log('Selected persona:', persona.name)
       alert(`Selected: ${persona.name}`)
     },
   },
@@ -71,9 +71,9 @@ export const WithConfiguration: Story = {
   args: {
     personas: mockPersonas,
     activePersonaId: '2',
-    onSelect: (persona) => SecureLogger.debug('Selected:', persona),
+    onSelect: (persona) => console.log('Selected:', persona),
     onConfigure: (persona) => {
-      SecureLogger.debug('Configuring persona:', persona.name)
+      console.log('Configuring persona:', persona.name)
       alert(`Configure: ${persona.name}`)
     },
   },

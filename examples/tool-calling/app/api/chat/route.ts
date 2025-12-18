@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    SecureLogger.error('Chat API error:', error)
+    console.error('Chat API error:', error)
     return Response.json(
       { error: 'Failed to process chat request' },
       { status: 500 }

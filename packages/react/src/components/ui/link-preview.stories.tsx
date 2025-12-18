@@ -168,7 +168,7 @@ const longDescriptionMetadata: LinkMetadata = {
 export const Default: Story = {
   args: {
     metadata: githubMetadata,
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -198,8 +198,8 @@ export const CardVariant: Story = {
 export const WithRemoveButton: Story = {
   args: {
     metadata: githubMetadata,
-    onClick: () => logger.debug('Link clicked'),
-    onRemove: () => logger.debug('Remove clicked'),
+    onClick: () => console.log('Link clicked'),
+    onRemove: () => console.log('Remove clicked'),
   },
   parameters: {
     docs: {
@@ -218,7 +218,7 @@ export const CompactVariant: Story = {
   args: {
     metadata: githubMetadata,
     variant: 'compact',
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -233,7 +233,7 @@ export const CompactWithoutImage: Story = {
   args: {
     metadata: minimalMetadata,
     variant: 'compact',
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -253,7 +253,7 @@ export const InlineVariant: Story = {
   args: {
     metadata: githubMetadata,
     variant: 'inline',
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -321,7 +321,7 @@ export const Error: Story = {
     <LinkPreviewError
       url="https://broken-link.example.com/page"
       error="Failed to fetch metadata: Network error"
-      onRetry={() => logger.debug('Retry clicked')}
+      onRetry={() => console.log('Retry clicked')}
     />
   ),
   parameters: {
@@ -359,7 +359,7 @@ export const NoImage: Story = {
       ...githubMetadata,
       image: undefined,
     },
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -373,7 +373,7 @@ export const NoImage: Story = {
 export const LongTitle: Story = {
   args: {
     metadata: longTitleMetadata,
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -387,7 +387,7 @@ export const LongTitle: Story = {
 export const LongDescription: Story = {
   args: {
     metadata: longDescriptionMetadata,
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -401,7 +401,7 @@ export const LongDescription: Story = {
 export const MinimalMetadata: Story = {
   args: {
     metadata: minimalMetadata,
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -420,7 +420,7 @@ export const WithoutDescription: Story = {
   args: {
     metadata: githubMetadata,
     showDescription: false,
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -435,7 +435,7 @@ export const WithoutImage: Story = {
   args: {
     metadata: githubMetadata,
     showImage: false,
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -452,7 +452,7 @@ export const MinimalDisplay: Story = {
     showImage: false,
     showDescription: false,
     showDomain: false,
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     docs: {
@@ -470,7 +470,7 @@ export const MinimalDisplay: Story = {
 export const DarkMode: Story = {
   args: {
     metadata: videoMetadata,
-    onClick: () => logger.debug('Link clicked'),
+    onClick: () => console.log('Link clicked'),
   },
   parameters: {
     backgrounds: { default: 'dark' },
@@ -657,8 +657,8 @@ export const SmartPreview: Story = {
     <div className="max-w-md">
       <SmartLinkPreview
         url="https://github.com/anthropics/claude-code"
-        onLoad={(data) => logger.debug('Loaded:', data)}
-        onError={(err) => logger.debug('Error:', err)}
+        onLoad={(data) => console.log('Loaded:', data)}
+        onError={(err) => console.log('Error:', err)}
       />
     </div>
   ),
@@ -792,18 +792,18 @@ export const AccessibilityDemo: Story = {
       </p>
       <LinkPreview
         metadata={githubMetadata}
-        onClick={() => logger.debug('First link')}
+        onClick={() => console.log('First link')}
         aria-label="GitHub repository for Claude Code CLI tool"
       />
       <LinkPreview
         metadata={articleMetadata}
         variant="compact"
-        onClick={() => logger.debug('Second link')}
+        onClick={() => console.log('Second link')}
       />
       <LinkPreview
         metadata={videoMetadata}
         variant="compact"
-        onClick={() => logger.debug('Third link')}
+        onClick={() => console.log('Third link')}
       />
     </div>
   ),
@@ -824,7 +824,7 @@ export const WithCustomStyling: Story = {
   args: {
     metadata: githubMetadata,
     className: 'border-2 border-primary/30 bg-primary/5',
-    onClick: () => logger.debug('Clicked'),
+    onClick: () => console.log('Clicked'),
   },
   parameters: {
     docs: {

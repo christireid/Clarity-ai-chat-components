@@ -53,7 +53,7 @@ export async function POST(request: Request) {
 
     // Log security events (in production, send to monitoring service)
     if (!result.allowed) {
-      SecureLogger.warn('[SECURITY] Blocked input:', {
+      console.warn('[SECURITY] Blocked input:', {
         timestamp: new Date().toISOString(),
         action: result.action,
         reason: result.reason,

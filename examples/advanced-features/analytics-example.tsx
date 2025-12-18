@@ -19,11 +19,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@clarity-chat/react'
-import type {
-  ExperimentResult,
-  ExperimentVariant,
-} from '@clarity-chat/react'
-import { ErrorBoundary, LoadingSpinner, ErrorState } from '../utils/error-boundary'
+import type { ExperimentResult, ExperimentVariant } from '@clarity-chat/react'
+import {
+  ErrorBoundary,
+  LoadingSpinner,
+  ErrorState,
+} from '../utils/error-boundary'
 
 // 💡 Type definitions for this example
 interface ChatMessage {
@@ -55,11 +56,11 @@ export function BasicInteractionExample() {
         updateInterval={5000}
         detailed
         onEventTracked={(event) => {
-          SecureLogger.debug('Event tracked:', event)
+          console.log('Event tracked:', event)
         }}
         onAnalyticsGenerated={(metrics) => {
-          SecureLogger.debug('Engagement score:', metrics.engagementScore)
-          SecureLogger.debug('Bounce rate:', metrics.bounceRate)
+          console.log('Engagement score:', metrics.engagementScore)
+          console.log('Bounce rate:', metrics.bounceRate)
         }}
       />
     </div>
@@ -86,15 +87,15 @@ export function FeatureDiscoveryExample() {
 
   const handleFeatureClick = (featureId: string, featureName: string) => {
     trackFeatureDiscovery(featureName, featureId)
-    SecureLogger.debug(`Feature discovered: ${featureName}`)
+    console.log(`Feature discovered: ${featureName}`)
   }
 
   // Count discoveries per feature
   const discoveries = React.useMemo(() => {
     const counts = new Map<string, number>()
     events
-      .filter(e => e.type === 'feature_discovery')
-      .forEach(e => {
+      .filter((e) => e.type === 'feature_discovery')
+      .forEach((e) => {
         const name = e.metadata?.featureName || 'unknown'
         counts.set(name, (counts.get(name) || 0) + 1)
       })
@@ -111,7 +112,7 @@ export function FeatureDiscoveryExample() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-3">
-            {features.map(feature => (
+            {features.map((feature) => (
               <Button
                 key={feature.id}
                 variant="outline"
@@ -168,7 +169,9 @@ export function ABTestingExample() {
     recordMetric,
   } = useABTesting()
 
-  const [userId] = React.useState(`user-${Math.random().toString(36).substr(2, 9)}`)
+  const [userId] = React.useState(
+    `user-${Math.random().toString(36).substr(2, 9)}`
+  )
 
   // Track if demo data has been initialized (intentionally runs once)
   const hasInitialized = React.useRef(false)
@@ -234,11 +237,11 @@ export function ABTestingExample() {
   }, [])
 
   const simulateMetrics = (expId: string, variants: ExperimentVariant[]) => {
-    variants.forEach(variant => {
+    variants.forEach((variant) => {
       const impressions = Math.floor(Math.random() * 500) + 100
       const conversionRate = variant.isControl
-        ? 0.10
-        : 0.10 + (Math.random() * 0.08) // Variants have 0-8% lift
+        ? 0.1
+        : 0.1 + Math.random() * 0.08 // Variants have 0-8% lift
 
       recordMetric(expId, variant.id, {
         variantId: variant.id,
@@ -265,10 +268,10 @@ export function ABTestingExample() {
         }}
         showStatistics
         onSelectExperiment={(exp) => {
-          SecureLogger.debug('Selected experiment:', exp.experimentName)
+          console.log('Selected experiment:', exp.experimentName)
         }}
         onDeclareWinner={(expId, winnerId) => {
-          SecureLogger.debug(`Winner declared for ${expId}: ${winnerId}`)
+          console.log(`Winner declared for ${expId}: ${winnerId}`)
           alert(`Winner declared! Variant ${winnerId} wins.`)
         }}
       />
@@ -284,7 +287,13 @@ export function ABTestingExample() {
  * Chat application with A/B testing for UI variants
  */
 export function ChatWithABTestExample() {
-  const { getVariant, recordMetric, experiments, createExperiment, startExperiment } = useABTesting()
+  const {
+    getVariant,
+    recordMetric,
+    experiments,
+    createExperiment,
+    startExperiment,
+  } = useABTesting()
   const [messages, setMessages] = React.useState<ChatMessage[]>([])
   const [userId] = React.useState(`user-${Date.now()}`)
   const [variant, setVariant] = React.useState<ExperimentVariant | null>(null)
@@ -302,9 +311,24 @@ export function ChatWithABTestExample() {
     const exp = createExperiment(
       'Chat Theme Test',
       [
-        { id: 'control', name: 'Default Theme', isControl: true, config: { theme: 'default' } },
-        { id: 'variant-dark', name: 'Dark Theme', isControl: false, config: { theme: 'dark' } },
-        { id: 'variant-minimal', name: 'Minimal Theme', isControl: false, config: { theme: 'minimal' } },
+        {
+          id: 'control',
+          name: 'Default Theme',
+          isControl: true,
+          config: { theme: 'default' },
+        },
+        {
+          id: 'variant-dark',
+          name: 'Dark Theme',
+          isControl: false,
+          config: { theme: 'dark' },
+        },
+        {
+          id: 'variant-minimal',
+          name: 'Minimal Theme',
+          isControl: false,
+          config: { theme: 'minimal' },
+        },
       ],
       'Testing chat theme impact on engagement'
     )
@@ -329,12 +353,15 @@ export function ChatWithABTestExample() {
   }, [])
 
   const handleSendMessage = (content: string) => {
-    setMessages(prev => [...prev, {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      timestamp: Date.now(),
-    }])
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        role: 'user',
+        content,
+        timestamp: Date.now(),
+      },
+    ])
 
     // Record conversion (message sent)
     if (variant && experiments.length > 0) {
@@ -350,13 +377,11 @@ export function ChatWithABTestExample() {
       <div className="col-span-2">
         <Card className="h-full">
           <CardHeader>
-            <CardTitle>
-              Chat (Theme: {variant?.name || 'Loading...'})
-            </CardTitle>
+            <CardTitle>Chat (Theme: {variant?.name || 'Loading...'})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2 mb-4">
-              {messages.map(msg => (
+              {messages.map((msg) => (
                 <div key={msg.id} className="p-2 border rounded">
                   {msg.content}
                 </div>
@@ -386,10 +411,7 @@ export function ChatWithABTestExample() {
       {/* A/B test results */}
       <div>
         {experiments.length > 0 && (
-          <ABTestingDashboard
-            experiments={experiments}
-            showStatistics
-          />
+          <ABTestingDashboard experiments={experiments} showStatistics />
         )}
       </div>
     </div>
@@ -419,8 +441,10 @@ export function ProductionAnalyticsExample() {
         const data = await response.json()
         setExperiments(data.experiments)
       } catch (err) {
-        SecureLogger.error('Failed to load experiments:', err)
-        setError(err instanceof Error ? err : new Error('Failed to load experiments'))
+        console.error('Failed to load experiments:', err)
+        setError(
+          err instanceof Error ? err : new Error('Failed to load experiments')
+        )
       } finally {
         setIsLoading(false)
       }
@@ -429,7 +453,10 @@ export function ProductionAnalyticsExample() {
     loadExperiments()
   }, [])
 
-  const handleDeclareWinner = async (experimentId: string, winnerId: string) => {
+  const handleDeclareWinner = async (
+    experimentId: string,
+    winnerId: string
+  ) => {
     try {
       await fetch(`/api/experiments/${experimentId}/winner`, {
         method: 'POST',
@@ -444,7 +471,7 @@ export function ProductionAnalyticsExample() {
       const data = await response.json()
       setExperiments(data.experiments)
     } catch (err) {
-      SecureLogger.error('Failed to declare winner:', err)
+      console.error('Failed to declare winner:', err)
       alert('Failed to declare winner')
     }
   }
@@ -487,7 +514,7 @@ export function ProductionAnalyticsExample() {
                 body: JSON.stringify(event),
               })
             } catch (err) {
-              SecureLogger.error('Failed to send event:', err)
+              console.error('Failed to send event:', err)
             }
           }}
           onAnalyticsGenerated={async (metrics) => {
@@ -499,7 +526,7 @@ export function ProductionAnalyticsExample() {
                 body: JSON.stringify(metrics),
               })
             } catch (err) {
-              SecureLogger.error('Failed to send metrics:', err)
+              console.error('Failed to send metrics:', err)
             }
           }}
         />
@@ -542,11 +569,14 @@ export function CompleteAnalyticsSuiteExample() {
           updateInterval={5000}
           detailed
           onEventTracked={(event) => {
-            SecureLogger.debug('[Analytics] Event:', event.type, event.target)
+            console.log('[Analytics] Event:', event.type, event.target)
           }}
           onAnalyticsGenerated={(metrics) => {
-            SecureLogger.debug('[Analytics] Engagement score:', metrics.engagementScore)
-            SecureLogger.debug('[Analytics] Top features:', metrics.topFeatures)
+            console.log(
+              '[Analytics] Engagement score:',
+              metrics.engagementScore
+            )
+            console.log('[Analytics] Top features:', metrics.topFeatures)
           }}
         />
       </div>
@@ -563,10 +593,10 @@ export function CompleteAnalyticsSuiteExample() {
           }}
           showStatistics
           onSelectExperiment={(exp) => {
-            SecureLogger.debug('[A/B Test] Selected:', exp.experimentName)
+            console.log('[A/B Test] Selected:', exp.experimentName)
           }}
           onDeclareWinner={(expId, winnerId) => {
-            SecureLogger.debug('[A/B Test] Winner:', winnerId)
+            console.log('[A/B Test] Winner:', winnerId)
             // Track winner declaration as feature discovery
             trackFeatureDiscovery('ab-test-winner-declared')
           }}

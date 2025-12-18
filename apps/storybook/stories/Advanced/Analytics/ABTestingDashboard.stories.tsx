@@ -250,7 +250,7 @@ function ExperimentsPage() {
       isLoading={isLoading}
       error={error}
       onRefresh={refetch}
-      onSelectExperiment={(exp) => SecureLogger.debug('Selected:', exp.experimentName)}
+      onSelectExperiment={(exp) => console.log('Selected:', exp.experimentName)}
       onDeclareWinner={(expId, winnerId) => declareWinner(expId, winnerId)}
     />
   )
@@ -315,7 +315,7 @@ export const WithRefresh: Story = {
   name: 'With Refresh Button',
   args: {
     experiments: sampleExperiments,
-    onRefresh: () => SecureLogger.debug('Refreshing data...'),
+    onRefresh: () => console.log('Refreshing data...'),
   },
   parameters: {
     docs: {
@@ -495,7 +495,7 @@ export const KeyboardNavigation: Story = {
   args: {
     experiments: sampleExperiments,
     enableKeyboardShortcuts: true,
-    onRefresh: () => SecureLogger.debug('Refreshing...'),
+    onRefresh: () => console.log('Refreshing...'),
   },
   parameters: {
     docs: {

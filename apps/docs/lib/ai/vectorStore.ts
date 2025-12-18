@@ -119,7 +119,7 @@ export class PineconeVectorStore implements VectorStore {
 
       logger.debug(`Pinecone index ready: ${this.indexName}`)
     } catch (error) {
-      logger.logger.error('Error initializing Pinecone:', error)
+      logger.error('Error initializing Pinecone:', error)
       throw error
     }
   }

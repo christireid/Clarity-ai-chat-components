@@ -114,7 +114,7 @@ const ALL_PATTERNS = Object.keys(DESIGN_PATTERN_CATALOG) as DesignPattern[]
  * ```typescript
  * const patterns = useDesignPatterns({
  *   onPatternSelected: (pattern) => {
- *     logger.debug('Selected:', pattern)
+ *     console.log('Selected:', pattern)
  *   },
  * })
  *

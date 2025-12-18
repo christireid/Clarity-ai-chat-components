@@ -1,23 +1,23 @@
 /**
  * Security Module Index
- * 
+ *
  * Comprehensive security implementations for token optimization
  */
 
 export { TokenSecurityManager } from './token-security'
-export type { 
-  SecurityConfig, 
-  SecurityEvent, 
+export type {
+  SecurityConfig,
+  SecurityEvent,
   SanitizationResult,
   ProtectionResult,
   ProtectedMetrics,
   Threat,
-  ComplianceReport
+  ComplianceReport,
 } from './token-security'
 
-export { EnhancedSecurityManager } from './enhanced-security-simple'
-export type { 
+export { EnhancedSecurityManager } from './enhanced-security'
+export type {
   EnhancedSecurityConfig,
   SecurityContext,
-  EnhancedValidationResult
-} from './enhanced-security-simple'
+  EnhancedValidationResult,
+} from './enhanced-security'

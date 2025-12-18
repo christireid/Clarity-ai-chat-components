@@ -26,7 +26,7 @@ import {
   type SecurityContext,
   type SecurityMetrics,
   type SecurityEvent,
-} from '../security/security-manager'
+} from '../../security/security-manager'
 import type {
   SafetyMessage,
   OutputValidationResult,

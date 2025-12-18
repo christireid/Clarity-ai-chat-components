@@ -52,7 +52,7 @@ export interface FallbackResult<T> {
  *       { provider: 'openai', model: 'gpt-3.5', priority: 3 },
  *     ],
  *     onFallback: (from, to, error) => {
- *       logger.debug(`Falling back from ${from.model} to ${to.model}`)
+ *       console.log(`Falling back from ${from.model} to ${to.model}`)
  *     },
  *   }
  * )
@@ -225,7 +225,7 @@ function calculateDelay(
  *   await sleep(5000, controller.signal)
  * } catch (error) {
  *   if (error.name === 'AbortError') {
- *     logger.debug('Sleep was cancelled')
+ *     console.log('Sleep was cancelled')
  *   }
  * }
  * ```

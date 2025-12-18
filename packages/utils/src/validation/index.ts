@@ -1,12 +1,11 @@
-
 /**
  * Validation Utilities
  *
  * Type guards, assertions, and validation helpers.
- * 
+ *
  * This module has been enhanced to include strict TypeScript validation utilities
  * that were previously duplicated in /apps/docs/lib/typescript/strict.ts
- * 
+ *
  * @module @clarity-chat/utils/validation
  *
  * @example
@@ -33,14 +32,14 @@
  * assertDefined(user, 'User is required')
  * // user is now non-nullable
  * console.log(user.name)
- * 
+ *
  * // Strict runtime type checking
  * const str = strictTypeOf(value, isString, 'Expected string')
  * ```
  */
 
 // Re-export everything from the enhanced validation module
-export * from './enhanced';
+export * from './enhanced'
 
 // Re-export specific types and interfaces for backward compatibility
 export type {
@@ -49,4 +48,4 @@ export type {
   StrictValidation as ValidationResultType,
   StringValidationOptions,
   NumberValidationOptions,
-} from './enhanced';
+} from './enhanced'

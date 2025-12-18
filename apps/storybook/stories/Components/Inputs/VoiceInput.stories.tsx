@@ -10,7 +10,8 @@ const meta: Meta<typeof VoiceInput> = {
   parameters: {
     docs: {
       description: {
-        component: 'Voice input component with Web Speech API support. Enables voice-to-text functionality with real-time transcription.',
+        component:
+          'Voice input component with Web Speech API support. Enables voice-to-text functionality with real-time transcription.',
       },
     },
     status: {
@@ -26,7 +27,7 @@ type Story = StoryObj<typeof VoiceInput>
 export const Default: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript:', transcript)
+      console.log('Transcript:', transcript)
       alert(`You said: ${transcript}`)
     },
   },
@@ -45,7 +46,7 @@ export const Default: Story = {
 export const WithInterimResults: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript:', transcript)
+      console.log('Transcript:', transcript)
     },
     showInterim: true,
     autoSubmit: true,
@@ -62,7 +63,7 @@ export const WithInterimResults: Story = {
 export const ManualSubmit: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript:', transcript)
+      console.log('Transcript:', transcript)
       alert(`Submitted: ${transcript}`)
     },
     showInterim: true,
@@ -73,7 +74,7 @@ export const ManualSubmit: Story = {
 export const SmallSize: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript:', transcript)
+      console.log('Transcript:', transcript)
     },
     size: 'sm',
   },
@@ -82,7 +83,7 @@ export const SmallSize: Story = {
 export const LargeSize: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript:', transcript)
+      console.log('Transcript:', transcript)
     },
     size: 'lg',
   },
@@ -91,7 +92,7 @@ export const LargeSize: Story = {
 export const PrimaryVariant: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript:', transcript)
+      console.log('Transcript:', transcript)
     },
     variant: 'primary',
     size: 'lg',
@@ -101,7 +102,7 @@ export const PrimaryVariant: Story = {
 export const SecondaryVariant: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript:', transcript)
+      console.log('Transcript:', transcript)
     },
     variant: 'secondary',
     size: 'lg',
@@ -111,7 +112,7 @@ export const SecondaryVariant: Story = {
 export const SpanishLanguage: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript (es-ES):', transcript)
+      console.log('Transcript (es-ES):', transcript)
       alert(`Dijiste: ${transcript}`)
     },
     lang: 'es-ES',
@@ -122,16 +123,16 @@ export const SpanishLanguage: Story = {
 export const WithCallbacks: Story = {
   args: {
     onTranscript: (transcript) => {
-      SecureLogger.debug('Transcript:', transcript)
+      console.log('Transcript:', transcript)
     },
     onStart: () => {
-      SecureLogger.debug('Started listening')
+      console.log('Started listening')
     },
     onStop: () => {
-      SecureLogger.debug('Stopped listening')
+      console.log('Stopped listening')
     },
     onError: (error) => {
-      SecureLogger.error('Voice error:', error)
+      console.error('Voice error:', error)
     },
   },
 }
@@ -156,7 +157,7 @@ export const InlineExample: Story = {
             position="inside"
           />
         </div>
-        
+
         <div className="p-4 bg-gray-100 rounded-lg">
           <h4 className="font-semibold mb-2">Current Value:</h4>
           <p>{value || '(empty)'}</p>
@@ -187,7 +188,7 @@ export const ChatIntegrationExample: Story = {
             </div>
           ))}
         </div>
-        
+
         <div className="flex gap-2">
           <input
             type="text"
@@ -199,7 +200,7 @@ export const ChatIntegrationExample: Story = {
           />
           <VoiceInput
             onTranscript={(transcript) => {
-              setInput((prev) => prev ? `${prev} ${transcript}` : transcript)
+              setInput((prev) => (prev ? `${prev} ${transcript}` : transcript))
             }}
             size="lg"
             variant="primary"
