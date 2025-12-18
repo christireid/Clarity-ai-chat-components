@@ -141,6 +141,7 @@ export type HookCategory =
   | 'streaming'
   | 'optimization'
   | 'persistence'
+  | 'enterprise'
   | 'general'
 
 export interface HooksAPIResponse {

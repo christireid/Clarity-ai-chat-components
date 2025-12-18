@@ -1175,6 +1175,164 @@ const curatedComponents: ComponentInfo[] = [
     accessibility: ['Status announced to screen readers', 'ARIA live region'],
     version: '0.1.0',
   },
+  // Enterprise Components
+  {
+    name: 'AuthTenantDashboard',
+    description:
+      'Multi-tenant authentication dashboard for managing users, roles, and tenant settings in enterprise applications.',
+    category: 'enterprise',
+    props: [
+      {
+        name: 'tenantId',
+        type: 'string',
+        required: true,
+        description: 'Current tenant identifier',
+      },
+      {
+        name: 'onUserInvite',
+        type: '(email: string, role: string) => Promise<void>',
+        required: false,
+        description: 'Callback when inviting a new user',
+      },
+      {
+        name: 'onRoleChange',
+        type: '(userId: string, newRole: string) => Promise<void>',
+        required: false,
+        description: 'Callback when changing user role',
+      },
+      {
+        name: 'showUsageStats',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Display tenant usage statistics',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/auth-tenant-dashboard',
+    examples: [
+      'import { AuthTenantDashboard } from "@clarity-chat/react";\n\n<AuthTenantDashboard\n  tenantId="acme-corp"\n  onUserInvite={handleInvite}\n  onRoleChange={handleRoleChange}\n/>',
+    ],
+    relatedComponents: ['RBACProvider', 'SSOConfigWizard'],
+    accessibility: ['Keyboard accessible tables', 'ARIA labels for actions'],
+    version: '0.1.0',
+  },
+  {
+    name: 'SSOConfigWizard',
+    description:
+      'Step-by-step wizard for configuring Single Sign-On (SSO) with SAML or OIDC providers.',
+    category: 'enterprise',
+    props: [
+      {
+        name: 'provider',
+        type: "'saml' | 'oidc' | 'auto'",
+        required: false,
+        default: 'auto',
+        description: 'SSO protocol to configure',
+      },
+      {
+        name: 'onComplete',
+        type: '(config: SSOConfig) => Promise<void>',
+        required: true,
+        description: 'Callback when SSO configuration is complete',
+      },
+      {
+        name: 'onCancel',
+        type: '() => void',
+        required: false,
+        description: 'Callback when wizard is cancelled',
+      },
+      {
+        name: 'existingConfig',
+        type: 'Partial<SSOConfig>',
+        required: false,
+        description: 'Pre-fill wizard with existing configuration',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/components/sso-config-wizard',
+    examples: [
+      'import { SSOConfigWizard } from "@clarity-chat/react";\n\n<SSOConfigWizard\n  provider="saml"\n  onComplete={async (config) => {\n    await saveSSOConfig(config);\n  }}\n/>',
+    ],
+    relatedComponents: ['AuthTenantDashboard', 'RBACProvider'],
+    accessibility: ['Step indicators', 'Focus management between steps'],
+    version: '0.1.0',
+  },
+  {
+    name: 'AuditLogViewer',
+    description:
+      'Interactive viewer for audit logs with filtering, search, and export capabilities for compliance.',
+    category: 'enterprise',
+    props: [
+      {
+        name: 'logs',
+        type: 'AuditLogEntry[]',
+        required: true,
+        description: 'Array of audit log entries to display',
+      },
+      {
+        name: 'onFilter',
+        type: '(filters: AuditFilters) => void',
+        required: false,
+        description: 'Callback when filters change',
+      },
+      {
+        name: 'onExport',
+        type: '(format: "csv" | "json") => void',
+        required: false,
+        description: 'Callback to export logs',
+      },
+      {
+        name: 'showUserInfo',
+        type: 'boolean',
+        required: false,
+        default: 'true',
+        description: 'Display user information in log entries',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/guides/audit-logging',
+    examples: [
+      'import { AuditLogViewer } from "@clarity-chat/react";\n\n<AuditLogViewer\n  logs={auditLogs}\n  onFilter={handleFilter}\n  onExport={(format) => exportLogs(format)}\n/>',
+    ],
+    relatedComponents: ['AuditLogger', 'AuthTenantDashboard'],
+    accessibility: ['Sortable tables', 'Screen reader announcements'],
+    version: '0.1.0',
+  },
+  {
+    name: 'RBACProvider',
+    description:
+      'Context provider for Role-Based Access Control. Wraps your app to enable permission checks throughout.',
+    category: 'enterprise',
+    props: [
+      {
+        name: 'storage',
+        type: 'RBACStorage',
+        required: true,
+        description: 'Storage backend for roles and permissions',
+      },
+      {
+        name: 'userId',
+        type: 'string',
+        required: true,
+        description: 'Current user identifier for permission checks',
+      },
+      {
+        name: 'children',
+        type: 'ReactNode',
+        required: true,
+        description: 'Child components that need RBAC context',
+      },
+    ],
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/guides/rbac',
+    examples: [
+      'import { RBACProvider, MemoryRBACStorage, CommonRoles } from "@clarity-chat/react";\n\nconst storage = new MemoryRBACStorage();\nstorage.addRole(CommonRoles.ADMIN);\nstorage.addRole(CommonRoles.USER);\n\n<RBACProvider storage={storage} userId={currentUser.id}>\n  <App />\n</RBACProvider>',
+    ],
+    relatedComponents: ['useRBAC', 'AuthTenantDashboard'],
+    accessibility: ['Provides context for permission-based UI'],
+    version: '0.1.0',
+  },
 ]
 
 /**

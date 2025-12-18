@@ -1337,6 +1337,171 @@ function Modal({ isOpen, onClose }) {
     relatedHooks: ['useKeyboardShortcuts', 'useAutoFocus'],
     version: '0.1.0',
   },
+  // Enterprise Hooks
+  {
+    name: 'useRBAC',
+    description:
+      'Access RBAC context for permission checks. Use within RBACProvider to check user permissions and roles.',
+    category: 'enterprise',
+    signature: 'useRBAC(): RBACProviderValue',
+    parameters: [],
+    returns: {
+      type: 'RBACProviderValue',
+      properties: [
+        {
+          name: 'hasPermission',
+          type: '(permission: string) => boolean',
+          description: 'Check if user has specific permission',
+        },
+        {
+          name: 'hasRole',
+          type: '(role: string) => boolean',
+          description: 'Check if user has specific role',
+        },
+        {
+          name: 'roles',
+          type: 'string[]',
+          description: 'Array of user roles',
+        },
+        {
+          name: 'permissions',
+          type: 'string[]',
+          description: 'Array of user permissions',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/guides/rbac',
+    examples: [
+      `import { useRBAC } from "@clarity-chat/react";
+
+function AdminPanel() {
+  const { hasPermission, hasRole } = useRBAC();
+
+  if (!hasRole('admin')) {
+    return <div>Access denied</div>;
+  }
+
+  return (
+    <div>
+      <h1>Admin Panel</h1>
+      {hasPermission('users:delete') && (
+        <button>Delete Users</button>
+      )}
+    </div>
+  );
+}`,
+    ],
+    relatedHooks: ['useTenant'],
+    version: '0.1.0',
+  },
+  {
+    name: 'useTenant',
+    description:
+      'Access current tenant context in multi-tenant applications. Provides tenant info and isolation utilities.',
+    category: 'enterprise',
+    signature: 'useTenant(): TenantContextValue',
+    parameters: [],
+    returns: {
+      type: 'TenantContextValue',
+      properties: [
+        {
+          name: 'tenant',
+          type: 'Tenant | null',
+          description: 'Current tenant object',
+        },
+        {
+          name: 'tenantId',
+          type: 'string | null',
+          description: 'Current tenant ID',
+        },
+        {
+          name: 'quotas',
+          type: 'TenantQuotas',
+          description: 'Tenant usage quotas',
+        },
+        {
+          name: 'switchTenant',
+          type: '(tenantId: string) => Promise<void>',
+          description: 'Switch to different tenant',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/guides/multi-tenancy',
+    examples: [
+      `import { useTenant } from "@clarity-chat/react";
+
+function TenantHeader() {
+  const { tenant, quotas } = useTenant();
+
+  return (
+    <header>
+      <h1>{tenant?.name}</h1>
+      <span>
+        {quotas.tokensUsed} / {quotas.tokensLimit} tokens
+      </span>
+    </header>
+  );
+}`,
+    ],
+    relatedHooks: ['useRBAC', 'useQuotas'],
+    version: '0.1.0',
+  },
+  {
+    name: 'useAuditLog',
+    description:
+      'Hook for logging audit events. Automatically captures user context and timestamps.',
+    category: 'enterprise',
+    signature: 'useAuditLog(options?: AuditLogOptions): UseAuditLogReturn',
+    parameters: [
+      {
+        name: 'category',
+        type: 'string',
+        required: false,
+        description: 'Default category for audit events',
+      },
+      {
+        name: 'autoCapture',
+        type: 'boolean',
+        required: false,
+        description: 'Auto-capture certain events like navigation',
+      },
+    ],
+    returns: {
+      type: 'UseAuditLogReturn',
+      properties: [
+        {
+          name: 'log',
+          type: '(action: string, data?: object) => Promise<void>',
+          description: 'Log an audit event',
+        },
+        {
+          name: 'query',
+          type: '(filters: AuditFilters) => Promise<AuditEntry[]>',
+          description: 'Query audit logs',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/guides/audit-logging',
+    examples: [
+      `import { useAuditLog } from "@clarity-chat/react";
+
+function ChatActions() {
+  const { log } = useAuditLog({ category: 'chat' });
+
+  const handleDelete = async (messageId: string) => {
+    await deleteMessage(messageId);
+    await log('message.deleted', { messageId });
+  };
+
+  return <button onClick={() => handleDelete(id)}>Delete</button>;
+}`,
+    ],
+    relatedHooks: ['useRBAC', 'useTenant'],
+    version: '0.1.0',
+  },
 ]
 
 /**
