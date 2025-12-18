@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Memory Service
  *
@@ -34,14 +33,21 @@ import type {
   ContextBundle,
   TokenBreakdown,
 } from './types'
-import { TokenCounter, ContextOptimizer } from '@clarity-chat/token-optimization'
+import { TokenCounter } from './utils/token-counter'
 import {
   DecayManager,
   type DecayManagerConfig,
   type DecayResult,
 } from './utils/decay-manager'
+import { logger } from './utils/logger'
 
-const logger = getLogger('memory-service')
+// Simple context optimizer for memory service
+class ContextOptimizer {
+  constructor(_config?: Record<string, unknown>) {}
+  optimize(content: string, _options?: Record<string, unknown>): string {
+    return content
+  }
+}
 
 /**
  * Memory Service

@@ -1,11 +1,11 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Basic Usage Example
- * 
+ *
  * Demonstrates the core Clarity Memory API
  */
 
 import { clarityMemory } from '../factory'
+import { logger } from '../utils/logger'
 
 async function basicExample() {
   // Zero-config usage
@@ -29,8 +29,10 @@ async function basicExample() {
   // Recall memories
   const results = await memory.recall('user preferences')
   logger.debug('Found memories:', results.length)
-  results.forEach(result => {
-    logger.debug(`- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`)
+  results.forEach((result) => {
+    logger.debug(
+      `- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`
+    )
   })
 
   // Get optimized context
@@ -85,11 +87,14 @@ async function withEmbeddingsExample() {
     minConfidence: 0.5,
   })
 
-  logger.debug('Semantic search results:', results.map(r => ({
-    content: r.memory.content,
-    score: r.score,
-    relevance: r.relevance,
-  })))
+  logger.debug(
+    'Semantic search results:',
+    results.map((r) => ({
+      content: r.memory.content,
+      score: r.score,
+      relevance: r.relevance,
+    }))
+  )
 
   await memory.close()
 }

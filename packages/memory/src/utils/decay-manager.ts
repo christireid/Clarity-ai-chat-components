@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Memory Decay Manager
  *
@@ -15,8 +14,6 @@ import { logger } from '@clarity-chat/utils/logger';
  */
 
 import type { Memory, MemoryType, MemoryScope } from '../types'
-
-
 /**
  * Decay curve types
  */

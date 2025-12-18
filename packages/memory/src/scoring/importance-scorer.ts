@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Importance Scorer
  *
@@ -16,8 +15,6 @@ import { logger } from '@clarity-chat/utils/logger';
  */
 
 import type { Memory, MemoryScore } from '../types'
-
-
 /**
  * Weight configuration for scoring components
  */
