@@ -9,14 +9,14 @@
  * - Dynamic compression with quality preservation
  */
 
-// Security exports
-export { EnhancedSecurityManager } from './security/enhanced-security'
-export type {
-  EnhancedSecurityConfig,
-  SecurityContext,
-  ThreatIntelligence,
-  EnhancedValidationResult,
-} from './security/enhanced-security'
+// Security exports (Node.js only - uses events module via security-dashboard)
+// export { EnhancedSecurityManager } from './security/enhanced-security'
+// export type {
+//   EnhancedSecurityConfig,
+//   SecurityContext,
+//   ThreatIntelligence,
+//   EnhancedValidationResult,
+// } from './security/enhanced-security'
 
 export { TokenSecurityManager } from './security/token-security'
 export type {
@@ -27,22 +27,22 @@ export type {
   ComplianceReport,
 } from './security/token-security'
 
-// Security configuration builder
-export {
-  createSecurityConfig,
-  SecurityProfiles,
-} from './security/security-config-builder'
-export type { SecurityConfigBuilder } from './security/security-config-builder'
+// Security configuration builder (depends on enhanced-security)
+// export {
+//   createSecurityConfig,
+//   SecurityProfiles,
+// } from './security/security-config-builder'
+// export type { SecurityConfigBuilder } from './security/security-config-builder'
 
-// Security testing playground
-export {
-  createSecurityTestingPlayground,
-  runSecurityTests,
-} from './security/security-testing-playground'
-export type {
-  SecurityTestCase,
-  SecurityTestResult,
-} from './security/security-testing-playground'
+// Security testing playground (depends on enhanced-security)
+// export {
+//   createSecurityTestingPlayground,
+//   runSecurityTests,
+// } from './security/security-testing-playground'
+// export type {
+//   SecurityTestCase,
+//   SecurityTestResult,
+// } from './security/security-testing-playground'
 
 // Security event streaming (Node.js only - uses events module)
 // export { createSecurityEventStreamer, SecurityStreamSubscribers } from './security/security-event-streaming'
