@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Error Boundary Component
  * Catches JavaScript errors in child component trees
@@ -56,7 +55,7 @@ export class ErrorBoundary extends React.Component<
 
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
-      logger.logger.error(
+      console.error(
         `[ErrorBoundary${this.props.componentName ? `: ${this.props.componentName}` : ''}]`,
         error,
         errorInfo

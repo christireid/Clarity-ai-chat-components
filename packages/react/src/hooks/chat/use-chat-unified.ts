@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useChat - Unified chat hook with sensible defaults
  *

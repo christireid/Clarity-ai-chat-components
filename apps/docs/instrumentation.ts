@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Next.js 16 Instrumentation Hook
  *
@@ -56,7 +55,7 @@ export function onRequestError(
   }
 ) {
   // Log errors for monitoring
-  logger.logger.error('[Request Error]', {
+  console.error('[Request Error]', {
     digest: error.digest,
     message: error.message,
     path: request.path,

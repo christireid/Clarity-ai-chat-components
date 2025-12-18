@@ -1,5 +1,4 @@
 #!/usr/bin/env tsx
-import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * Generate Search Index
@@ -142,7 +141,7 @@ async function generateSearchIndex() {
         category,
       })
     } catch (error) {
-      logger.logger.error(`Error processing ${filePath}:`, error)
+      console.error(`Error processing ${filePath}:`, error)
     }
   }
 

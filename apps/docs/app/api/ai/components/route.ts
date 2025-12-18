@@ -14,7 +14,6 @@ import {
   mergeComponentData,
   getDataSourceInfo,
 } from '@/lib/ai/merge-component-data'
-import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * AI-Optimized Components API

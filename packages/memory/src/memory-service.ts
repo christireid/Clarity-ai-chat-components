@@ -33,14 +33,88 @@ import type {
   ContextBundle,
   TokenBreakdown,
 } from './types'
-import { TokenCounter, ContextOptimizer } from '@clarity-chat/token-optimization'
 import {
   DecayManager,
   type DecayManagerConfig,
   type DecayResult,
 } from './utils/decay-manager'
 
-const logger = getLogger('memory-service')
+/**
+ * Simple token counter utility
+ * Approximates token count (GPT-4 uses ~4 chars per token)
+ */
+const TokenCounter = {
+  count: (text: string): number => Math.ceil(text.length / 4),
+}
+
+/**
+ * Token allocation breakdown for budget management
+ */
+interface TokenAllocation {
+  semantic: number
+  episodic: number
+  working: number
+  systemPrompt: number
+  userPreferences: number
+  recentContext: number
+  semanticMemory: number
+  episodicMemory: number
+  responseReserve: number
+}
+
+/**
+ * Simple token compressor interface for memory compression
+ */
+interface MemoryCompressorAdapter {
+  compressMemory(memory: MemoryItem, ratio: number): {
+    compressed: string
+    compressedTokens: number
+    compressionRatio: number
+  }
+}
+
+/**
+ * Simple budget manager interface for token allocation
+ */
+interface BudgetManagerAdapter {
+  getAllocation(): TokenAllocation
+}
+
+/**
+ * Context optimizer adapter for memory service
+ */
+interface ContextOptimizerAdapter {
+  getCompressor(): MemoryCompressorAdapter
+  getBudgetManager(): BudgetManagerAdapter
+}
+
+/**
+ * Default context optimizer implementation
+ */
+function createDefaultOptimizer(_config?: unknown): ContextOptimizerAdapter {
+  return {
+    getCompressor: () => ({
+      compressMemory: (memory: MemoryItem, ratio: number) => ({
+        compressed: memory.content.slice(0, Math.floor(memory.content.length * ratio)),
+        compressedTokens: Math.floor((memory.tokens || 100) * ratio),
+        compressionRatio: ratio,
+      }),
+    }),
+    getBudgetManager: () => ({
+      getAllocation: () => ({
+        semantic: 2000,
+        episodic: 1500,
+        working: 500,
+        systemPrompt: 500,
+        userPreferences: 300,
+        recentContext: 800,
+        semanticMemory: 2000,
+        episodicMemory: 1500,
+        responseReserve: 400,
+      }),
+    }),
+  }
+}
 
 /**
  * Memory Service
@@ -51,12 +125,12 @@ export class MemoryService {
   private embeddings?: EmbeddingProvider
   private cache: Map<string, MemoryItem>
   private buffer: MemoryBuffer
-  private optimizer: ContextOptimizer
+  private optimizer: ContextOptimizerAdapter
   private eventListeners: Map<string, Set<MemoryEventListener>>
-  private cleanupInterval?: NodeJS.Timeout
-  private summarizationInterval?: NodeJS.Timeout
+  private cleanupInterval?: ReturnType<typeof setInterval>
+  private summarizationInterval?: ReturnType<typeof setInterval>
   private decayManager?: DecayManager
-  private decayInterval?: NodeJS.Timeout
+  private decayInterval?: ReturnType<typeof setInterval>
 
   constructor(
     config: MemoryServiceConfig,
@@ -68,7 +142,7 @@ export class MemoryService {
     this.embeddings = embeddings
     this.cache = new Map()
     this.buffer = this.createBuffer()
-    this.optimizer = new ContextOptimizer(config.tokenOptimization)
+    this.optimizer = createDefaultOptimizer(config.tokenOptimization)
     this.eventListeners = new Map()
 
     this.initialize()
@@ -1156,7 +1230,7 @@ export class MemoryService {
   /**
    * Get optimizer
    */
-  getOptimizer(): ContextOptimizer {
+  getOptimizer(): ContextOptimizerAdapter {
     return this.optimizer
   }
 

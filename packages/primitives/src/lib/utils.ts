@@ -634,7 +634,8 @@ export function isBoolean(value: any): value is boolean {
 /**
  * Check if value is function
  */
-export function isFunction(value: any): value is Function {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
   return typeof value === 'function'
 }
 

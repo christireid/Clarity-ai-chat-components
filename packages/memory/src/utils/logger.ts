@@ -7,7 +7,7 @@
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug'
 
 export interface Logger {
-  console.error(message: string, ...args: any[]): void
+  error(message: string, ...args: any[]): void
   warn(message: string, ...args: any[]): void
   info(message: string, ...args: any[]): void
   debug(message: string, ...args: any[]): void
@@ -29,7 +29,7 @@ class ClarityLogger implements Logger {
     return messageLevelIndex <= currentLevelIndex
   }
 
-  console.error(message: string, ...args: any[]): void {
+  error(message: string, ...args: any[]): void {
     if (this.shouldLog('error')) {
       console.error(`${this.prefix} [ERROR] ${message}`, ...args)
     }

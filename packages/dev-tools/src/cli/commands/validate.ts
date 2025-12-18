@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Validate command
  *
@@ -31,14 +30,14 @@ export const validateCommand = new Command('validate')
     }
 
     if (options.all || options.env) {
-      logger.debug()
-      logger.debug(chalk.bold.blue('Validating environment variables...'))
-      logger.debug()
+      console.debug()
+      console.debug(chalk.bold.blue('Validating environment variables...'))
+      console.debug()
 
       const result = validateEnv()
 
       if (options.json) {
-        logger.debug(JSON.stringify(result, null, 2))
+        console.debug(JSON.stringify(result, null, 2))
       } else {
         printValidationResults(result, 'Environment Variables')
       }
@@ -47,21 +46,21 @@ export const validateCommand = new Command('validate')
     }
 
     if (options.apiKey) {
-      logger.debug()
-      logger.debug(chalk.bold.blue(`Validating ${options.apiKey} API key...`))
-      logger.debug()
+      console.debug()
+      console.debug(chalk.bold.blue(`Validating ${options.apiKey} API key...`))
+      console.debug()
 
       const provider = options.apiKey.toLowerCase() as 'openai' | 'anthropic' | 'google'
 
       if (!['openai', 'anthropic', 'google'].includes(provider)) {
-        logger.debug(errorBox(`Invalid provider: ${options.apiKey}. Use: openai, anthropic, or google`))
+        console.debug(errorBox(`Invalid provider: ${options.apiKey}. Use: openai, anthropic, or google`))
         process.exit(1)
       }
 
       const result = validateAPIKey(provider)
 
       if (options.json) {
-        logger.debug(JSON.stringify(result, null, 2))
+        console.debug(JSON.stringify(result, null, 2))
       } else {
         printValidationResults(result, `${options.apiKey.toUpperCase()} API Key`)
       }
@@ -70,16 +69,16 @@ export const validateCommand = new Command('validate')
     }
 
     if (options.config) {
-      logger.debug()
-      logger.debug(chalk.bold.blue('Validating chat configuration...'))
-      logger.debug()
+      console.debug()
+      console.debug(chalk.bold.blue('Validating chat configuration...'))
+      console.debug()
 
       try {
         const config = JSON.parse(options.config)
         const result = validateChatConfig(config)
 
         if (options.json) {
-          logger.debug(JSON.stringify(result, null, 2))
+          console.debug(JSON.stringify(result, null, 2))
         } else {
           printValidationResults(result, 'Chat Configuration')
         }
@@ -87,20 +86,20 @@ export const validateCommand = new Command('validate')
         if (!result.valid) hasErrors = true
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error'
-        logger.debug(errorBox(`Failed to parse configuration JSON: ${message}`))
+        console.debug(errorBox(`Failed to parse configuration JSON: ${message}`))
         hasErrors = true
       }
     }
 
     // Summary
     if (!options.json) {
-      logger.debug()
+      console.debug()
       if (hasErrors) {
-        logger.debug(errorBox('Validation completed with errors', 'Summary'))
+        console.debug(errorBox('Validation completed with errors', 'Summary'))
       } else {
-        logger.debug(successBox('All validations passed!', 'Summary'))
+        console.debug(successBox('All validations passed!', 'Summary'))
       }
-      logger.debug()
+      console.debug()
     }
 
     process.exit(hasErrors ? 1 : 0)

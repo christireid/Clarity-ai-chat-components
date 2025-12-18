@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * StreamableValue utilities - Vercel AI SDK compatible
  * 

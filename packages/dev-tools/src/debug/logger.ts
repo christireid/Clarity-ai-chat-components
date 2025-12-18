@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced logger with multiple levels and formatting
  * 
@@ -61,26 +60,25 @@ const ICONS: Record<LogLevel, string> = {
 let globalLogLevel: LogLevel = 'info'
 let globalContext: Record<string, any> = {}
 
-// Map our log levels to utils logger levels
+// Map our log levels (already string-compatible)
 const mapToUtilsLevel = (level: LogLevel): LogLevel => {
   switch (level) {
     case 'trace':
     case 'debug':
-      return LogLevel.DEBUG
+      return 'debug'
     case 'info':
-      return LogLevel.INFO
+      return 'info'
     case 'warn':
-      return LogLevel.WARN
+      return 'warn'
     case 'error':
-      return LogLevel.ERROR
+      return 'error'
     default:
-      return LogLevel.INFO
+      return 'info'
   }
 }
 
 // Compatibility wrapper for legacy code
 export class Logger {
-  private logger: ReturnType<typeof getLogger>
   private namespace: string
   private level: LogLevel
   private colors: boolean
@@ -93,10 +91,6 @@ export class Logger {
     this.colors = options.colors ?? true
     this.timestamps = options.timestamps ?? true
     this.context = { ...globalContext, ...options.context }
-    
-    // Create the standard utils logger
-    this.logger = getLogger(namespace)
-    this.logger.setLevel(mapToUtilsLevel(this.level))
   }
 
   private shouldLog(level: LogLevel): boolean {
@@ -105,19 +99,19 @@ export class Logger {
 
   private formatPrefix(level: LogLevel): string {
     const parts: string[] = []
-    
+
     if (this.timestamps) {
       parts.push(chalk.gray(`[${new Date().toISOString()}]`))
     }
-    
+
     parts.push(chalk.gray(`[${this.namespace}]`))
-    
+
     if (this.colors) {
       parts.push(`${LEVEL_COLORS[level]}${ICONS[level]}\x1b[0m`)
     } else {
       parts.push(`[${level.toUpperCase()}]`)
     }
-    
+
     return parts.join(' ')
   }
 
@@ -130,16 +124,16 @@ export class Logger {
     switch (level) {
       case 'trace':
       case 'debug':
-        this.logger.debug(fullMessage, logContext)
+        console.debug(fullMessage, logContext)
         break
       case 'info':
-        this.logger.info(fullMessage, logContext)
+        console.info(fullMessage, logContext)
         break
       case 'warn':
-        this.logger.warn(fullMessage, logContext)
+        console.warn(fullMessage, logContext)
         break
       case 'error':
-        this.logger.error(fullMessage, logContext)
+        console.error(fullMessage, logContext)
         break
     }
   }
@@ -160,13 +154,12 @@ export class Logger {
     this.log('warn', message, context)
   }
 
-  logger.error(message: string, context?: Record<string, any>): void {
+  error(message: string, context?: Record<string, any>): void {
     this.log('error', message, context)
   }
 
   setLevel(level: LogLevel): void {
     this.level = level
-    this.logger.setLevel(mapToUtilsLevel(level))
   }
 
   getLevel(): LogLevel {
@@ -235,35 +228,30 @@ export function setGlobalContext(context: Record<string, any>): void {
 
 // UI helpers
 export function logInfoBox(message: string, context?: Record<string, any>): void {
-  const logger = getLogger('ui')
-  logger.info(message, context)
+  console.info(message, context)
   if (context) {
-    console.log(infoBox(message, context))
+    console.log(infoBox(message, JSON.stringify(context)))
   }
 }
 
 export function logWarningBox(message: string, context?: Record<string, any>): void {
-  const logger = getLogger('ui')
-  logger.warn(message, context)
-  console.log(warningBox(message, context))
+  console.warn(message, context)
+  console.log(warningBox(message, context ? JSON.stringify(context) : undefined))
 }
 
 export function logErrorBox(message: string, context?: Record<string, any>): void {
-  const logger = getLogger('ui')
-  logger.error(message, context)
-  console.log(errorBox(message, context))
+  console.error(message, context)
+  console.log(errorBox(message, context ? JSON.stringify(context) : undefined))
 }
 
 export function logSuccessBox(message: string, context?: Record<string, any>): void {
-  const logger = getLogger('ui')
-  logger.info(message, context)
-  console.log(successBox(message, context))
+  console.info(message, context)
+  console.log(successBox(message, context ? JSON.stringify(context) : undefined))
 }
 
 export function logKeyValue(data: Record<string, any>, title?: string): void {
-  const logger = getLogger('ui')
-  logger.info(title || 'Key-Value Data', data)
-  console.log(keyValueTable(data, title))
+  console.info(title || 'Key-Value Data', data)
+  console.log(keyValueTable(data))
 }
 
 // Re-export the standard utils logger for new code
@@ -274,5 +262,4 @@ export default {
   getLogger,
   setGlobalLogLevel,
   setGlobalContext,
-  LogLevel
 }

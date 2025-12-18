@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * createEnterpriseShell - Top-level API for enterprise setup
  *

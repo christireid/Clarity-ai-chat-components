@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * File Storage Example
  * Demonstrates using file-based persistence

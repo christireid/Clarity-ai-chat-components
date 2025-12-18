@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * IndexedDB Storage Example
  * Demonstrates using browser-native IndexedDB storage

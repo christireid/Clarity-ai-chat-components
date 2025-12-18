@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * KV Cache-Aligned Prompt Builder
  *

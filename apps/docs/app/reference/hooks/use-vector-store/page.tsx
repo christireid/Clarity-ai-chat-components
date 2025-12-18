@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -359,7 +358,7 @@ function RobustVectorStore() {
       const results = await vectorStore.search(query)
       return results
     } catch (error) {
-      logger.logger.error('Search failed:', error)
+      console.error('Search failed:', error)
       return []
     }
   }

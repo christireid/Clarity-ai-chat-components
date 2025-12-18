@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useMergedRef - Utility hook for merging multiple refs
  *

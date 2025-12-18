@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Persistent Semantic Cache with IndexedDB
  *

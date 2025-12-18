@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Quick Start Example
  * The simplest possible usage of Clarity Memory

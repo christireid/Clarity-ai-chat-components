@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Basic Usage Example
  * Demonstrates the zero-config clarityMemory() API
