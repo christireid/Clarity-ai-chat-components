@@ -839,6 +839,504 @@ function ReliableChat() {
     relatedHooks: ['useChat', 'useStreaming'],
     version: '0.1.0',
   },
+  // Memory & Context Hooks
+  {
+    name: 'useMemoryContext',
+    description:
+      'Access and manage AI conversation memory within the MemoryProvider context. Add, query, update, and delete memories.',
+    category: 'memory',
+    signature:
+      'useMemoryContext(): UseMemoryContextReturn',
+    parameters: [],
+    returns: {
+      type: 'UseMemoryContextReturn',
+      properties: [
+        {
+          name: 'addMemory',
+          type: '(content: string, metadata?: object) => Promise<string>',
+          description: 'Add a new memory entry',
+        },
+        {
+          name: 'queryMemories',
+          type: '(query: string, limit?: number) => Promise<Memory[]>',
+          description: 'Search memories by semantic similarity',
+        },
+        {
+          name: 'deleteMemory',
+          type: '(id: string) => Promise<void>',
+          description: 'Remove a memory entry',
+        },
+        {
+          name: 'clearAllMemories',
+          type: '() => Promise<void>',
+          description: 'Clear all memories',
+        },
+        {
+          name: 'memories',
+          type: 'Memory[]',
+          description: 'Current memory entries',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-memory-context',
+    examples: [
+      `import { useMemoryContext, MemoryProvider } from "@clarity-chat/react";
+
+function ChatWithMemory() {
+  const { addMemory, queryMemories, memories } = useMemoryContext();
+
+  const handleImportantInfo = async (text: string) => {
+    await addMemory(text, { type: 'user-preference' });
+  };
+
+  const getRelevantContext = async (query: string) => {
+    const relevant = await queryMemories(query, 5);
+    return relevant.map(m => m.content).join("\\n");
+  };
+
+  return (
+    <ChatWindow onSendMessage={handleSend}>
+      <MemoryPanel memories={memories} />
+    </ChatWindow>
+  );
+}`,
+    ],
+    relatedHooks: ['useClarityChat', 'useVectorStore'],
+    version: '0.1.0',
+  },
+  {
+    name: 'useClarityChatWithTools',
+    description:
+      'Chat hook with integrated tool/function calling support. Automatically handles tool execution and renders tool results with custom UI components.',
+    category: 'core',
+    signature:
+      'useClarityChatWithTools(options: UseClarityChatWithToolsOptions): UseClarityChatWithToolsReturn',
+    parameters: [
+      {
+        name: 'api',
+        type: 'string',
+        required: true,
+        description: 'API endpoint for chat completions',
+      },
+      {
+        name: 'tools',
+        type: 'Tool[]',
+        required: true,
+        description: 'Array of tool definitions with execute functions',
+      },
+      {
+        name: 'toolUIRegistry',
+        type: 'Record<string, React.ComponentType>',
+        required: false,
+        description: 'Map tool names to React components for rendering results',
+      },
+    ],
+    returns: {
+      type: 'UseClarityChatWithToolsReturn',
+      properties: [
+        {
+          name: 'messages',
+          type: 'Message[]',
+          description: 'Array of messages including tool calls',
+        },
+        {
+          name: 'isToolExecuting',
+          type: 'boolean',
+          description: 'Whether a tool is currently running',
+        },
+        {
+          name: 'toolResults',
+          type: 'ToolResult[]',
+          description: 'Results from executed tools',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-clarity-chat-with-tools',
+    examples: [
+      `import { useClarityChatWithTools } from "@clarity-chat/react";
+
+const tools = [
+  {
+    name: 'get_weather',
+    description: 'Get current weather for a location',
+    parameters: { type: 'object', properties: { city: { type: 'string' } } },
+    execute: async ({ city }) => fetchWeather(city),
+  },
+];
+
+function ChatWithTools() {
+  const { messages, handleSubmit, isToolExecuting } = useClarityChatWithTools({
+    api: '/api/chat',
+    tools,
+    toolUIRegistry: {
+      get_weather: WeatherCard,
+    },
+  });
+
+  return <ChatWindow messages={messages} isLoading={isToolExecuting} />;
+}`,
+    ],
+    relatedHooks: ['useClarityChat', 'useAssistant'],
+    version: '0.1.0',
+  },
+  // Structured Output Hooks
+  {
+    name: 'useClarityObject',
+    description:
+      'Generate structured JSON objects from AI responses using Zod schemas. Perfect for extracting typed data from natural language.',
+    category: 'core',
+    signature:
+      'useClarityObject<T>(options: UseClarityObjectOptions<T>): UseClarityObjectReturn<T>',
+    parameters: [
+      {
+        name: 'api',
+        type: 'string',
+        required: true,
+        description: 'API endpoint for structured generation',
+      },
+      {
+        name: 'schema',
+        type: 'ZodSchema<T>',
+        required: true,
+        description: 'Zod schema defining expected output structure',
+      },
+      {
+        name: 'prompt',
+        type: 'string',
+        required: false,
+        description: 'System prompt for extraction guidance',
+      },
+    ],
+    returns: {
+      type: 'UseClarityObjectReturn<T>',
+      properties: [
+        {
+          name: 'object',
+          type: 'T | undefined',
+          description: 'The extracted structured object',
+        },
+        {
+          name: 'submit',
+          type: '(input: string) => Promise<void>',
+          description: 'Submit input for structured extraction',
+        },
+        {
+          name: 'isLoading',
+          type: 'boolean',
+          description: 'Whether extraction is in progress',
+        },
+        {
+          name: 'error',
+          type: 'Error | null',
+          description: 'Any extraction or validation error',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-clarity-object',
+    examples: [
+      `import { useClarityObject } from "@clarity-chat/react";
+import { z } from "zod";
+
+const ContactSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  phone: z.string().optional(),
+  company: z.string().optional(),
+});
+
+function ContactExtractor() {
+  const { object, submit, isLoading } = useClarityObject({
+    api: '/api/extract',
+    schema: ContactSchema,
+  });
+
+  const handleExtract = async (text: string) => {
+    await submit(text);
+    // object is now typed as { name, email, phone?, company? }
+  };
+
+  return (
+    <div>
+      <button onClick={() => handleExtract("John at john@example.com")}>
+        Extract Contact
+      </button>
+      {object && <ContactCard contact={object} />}
+    </div>
+  );
+}`,
+    ],
+    relatedHooks: ['useClarityChat', 'useCompletion'],
+    version: '0.1.0',
+  },
+  // RAG & Vector Hooks
+  {
+    name: 'useVectorStore',
+    description:
+      'Manage vector store operations for RAG applications. Supports adding, querying, and deleting embeddings.',
+    category: 'rag',
+    signature:
+      'useVectorStore(config: VectorStoreConfig): UseVectorStoreReturn',
+    parameters: [
+      {
+        name: 'provider',
+        type: "'pinecone' | 'supabase' | 'custom'",
+        required: true,
+        description: 'Vector store provider',
+      },
+      {
+        name: 'namespace',
+        type: 'string',
+        required: false,
+        description: 'Namespace for vector isolation',
+      },
+    ],
+    returns: {
+      type: 'UseVectorStoreReturn',
+      properties: [
+        {
+          name: 'addDocuments',
+          type: '(docs: Document[]) => Promise<string[]>',
+          description: 'Add documents with auto-embedding',
+        },
+        {
+          name: 'query',
+          type: '(text: string, k?: number) => Promise<Document[]>',
+          description: 'Query similar documents',
+        },
+        {
+          name: 'deleteByIds',
+          type: '(ids: string[]) => Promise<void>',
+          description: 'Delete documents by ID',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-vector-store',
+    examples: [
+      `import { useVectorStore } from "@clarity-chat/react";
+
+function RAGChat() {
+  const { addDocuments, query } = useVectorStore({
+    provider: 'pinecone',
+    namespace: 'user-docs',
+  });
+
+  const handleUpload = async (file: File) => {
+    const text = await file.text();
+    await addDocuments([{ content: text, metadata: { filename: file.name } }]);
+  };
+
+  const getContext = async (question: string) => {
+    const relevant = await query(question, 5);
+    return relevant.map(d => d.content).join("\\n\\n");
+  };
+
+  return <ChatWindow onFileUpload={handleUpload} />;
+}`,
+    ],
+    relatedHooks: ['useEmbeddings', 'useRAGPipeline'],
+    version: '0.1.0',
+  },
+  // Analytics & Token Hooks
+  {
+    name: 'useTokenOptimization',
+    description:
+      'Optimize token usage through context compression, message pruning, and intelligent caching strategies.',
+    category: 'analytics',
+    signature:
+      'useTokenOptimization(options: UseTokenOptimizationOptions): UseTokenOptimizationReturn',
+    parameters: [
+      {
+        name: 'messages',
+        type: 'Message[]',
+        required: true,
+        description: 'Messages to optimize',
+      },
+      {
+        name: 'targetTokens',
+        type: 'number',
+        required: false,
+        description: 'Target token budget',
+      },
+      {
+        name: 'strategy',
+        type: "'prune' | 'compress' | 'summarize'",
+        required: false,
+        description: 'Optimization strategy',
+      },
+    ],
+    returns: {
+      type: 'UseTokenOptimizationReturn',
+      properties: [
+        {
+          name: 'optimizedMessages',
+          type: 'Message[]',
+          description: 'Token-optimized messages',
+        },
+        {
+          name: 'savings',
+          type: 'number',
+          description: 'Percentage of tokens saved',
+        },
+        {
+          name: 'originalTokens',
+          type: 'number',
+          description: 'Original token count',
+        },
+        {
+          name: 'optimizedTokens',
+          type: 'number',
+          description: 'Optimized token count',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-token-optimization',
+    examples: [
+      `import { useTokenOptimization } from "@clarity-chat/react";
+
+function OptimizedChat({ messages }) {
+  const { optimizedMessages, savings, optimizedTokens } = useTokenOptimization({
+    messages,
+    targetTokens: 4000,
+    strategy: 'compress',
+  });
+
+  console.log(\`Saved \${savings}% - \${optimizedTokens} tokens remaining\`);
+
+  return <ChatWindow messages={optimizedMessages} />;
+}`,
+    ],
+    relatedHooks: ['useTokenTracker', 'useChat'],
+    version: '0.1.0',
+  },
+  // Theme Hooks
+  {
+    name: 'useTheme',
+    description:
+      'Access and control the current theme. Supports light, dark, and system preference detection.',
+    category: 'ui',
+    signature: 'useTheme(): UseThemeReturn',
+    parameters: [],
+    returns: {
+      type: 'UseThemeReturn',
+      properties: [
+        {
+          name: 'theme',
+          type: "'light' | 'dark' | 'system'",
+          description: 'Current theme setting',
+        },
+        {
+          name: 'setTheme',
+          type: "(theme: 'light' | 'dark' | 'system') => void",
+          description: 'Update theme',
+        },
+        {
+          name: 'resolvedTheme',
+          type: "'light' | 'dark'",
+          description: 'Actual applied theme (resolves system)',
+        },
+        {
+          name: 'systemTheme',
+          type: "'light' | 'dark'",
+          description: 'System preference',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-theme',
+    examples: [
+      `import { useTheme, ThemeProvider } from "@clarity-chat/react";
+
+function ThemeToggle() {
+  const { theme, setTheme, resolvedTheme } = useTheme();
+
+  return (
+    <button onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
+      {resolvedTheme === 'dark' ? '☀️' : '🌙'}
+    </button>
+  );
+}
+
+// Wrap app in ThemeProvider
+function App() {
+  return (
+    <ThemeProvider defaultTheme="system">
+      <ChatApp />
+    </ThemeProvider>
+  );
+}`,
+    ],
+    relatedHooks: ['useDesignTokens'],
+    version: '0.1.0',
+  },
+  // Accessibility Hooks
+  {
+    name: 'useFocusTrap',
+    description:
+      'Trap keyboard focus within a container element. Essential for modals and dialogs.',
+    category: 'accessibility',
+    signature:
+      'useFocusTrap(options?: UseFocusTrapOptions): UseFocusTrapReturn',
+    parameters: [
+      {
+        name: 'enabled',
+        type: 'boolean',
+        required: false,
+        description: 'Whether trap is active',
+      },
+      {
+        name: 'returnFocusOnDeactivate',
+        type: 'boolean',
+        required: false,
+        description: 'Return focus to trigger element',
+      },
+    ],
+    returns: {
+      type: 'UseFocusTrapReturn',
+      properties: [
+        {
+          name: 'ref',
+          type: 'RefObject<HTMLElement>',
+          description: 'Ref to attach to container',
+        },
+        {
+          name: 'activate',
+          type: '() => void',
+          description: 'Manually activate trap',
+        },
+        {
+          name: 'deactivate',
+          type: '() => void',
+          description: 'Manually deactivate trap',
+        },
+      ],
+    },
+    importPath: '@clarity-chat/react',
+    docsUrl: 'https://clarity-chat.dev/reference/hooks/use-focus-trap',
+    examples: [
+      `import { useFocusTrap } from "@clarity-chat/react";
+
+function Modal({ isOpen, onClose }) {
+  const { ref } = useFocusTrap({ enabled: isOpen });
+
+  if (!isOpen) return null;
+
+  return (
+    <div ref={ref} role="dialog" aria-modal="true">
+      <h2>Modal Title</h2>
+      <input placeholder="Focus is trapped here" />
+      <button onClick={onClose}>Close</button>
+    </div>
+  );
+}`,
+    ],
+    relatedHooks: ['useKeyboardShortcuts', 'useAutoFocus'],
+    version: '0.1.0',
+  },
 ]
 
 /**
