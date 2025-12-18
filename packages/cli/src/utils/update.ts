@@ -28,15 +28,13 @@ export interface UpdateInfo {
 export async function checkForUpdates(): Promise<UpdateInfo | null> {
   try {
     // Check npm registry for latest version
-    const { stdout } = await execa('npm', [
-      'view',
-      PACKAGE_NAME,
-      'version',
-      '--registry',
-      NPM_REGISTRY,
-    ], {
-      timeout: 5000,
-    })
+    const { stdout } = await execa(
+      'npm',
+      ['view', PACKAGE_NAME, 'version', '--registry', NPM_REGISTRY],
+      {
+        timeout: 5000,
+      }
+    )
 
     const latestVersion = stdout.trim()
     const updateAvailable = compareVersions(CURRENT_VERSION, latestVersion) < 0
@@ -83,7 +81,10 @@ function compareVersions(v1: string, v2: string): number {
 /**
  * Get version difference type
  */
-function getVersionDiff(current: string, latest: string): 'major' | 'minor' | 'patch' {
+function getVersionDiff(
+  current: string,
+  latest: string
+): 'major' | 'minor' | 'patch' {
   const currentParts = current.split('.').map(Number)
   const latestParts = latest.split('.').map(Number)
 
@@ -96,10 +97,20 @@ function getVersionDiff(current: string, latest: string): 'major' | 'minor' | 'p
  * Notify user about available update
  */
 export async function notifyUpdate(updateInfo: UpdateInfo): Promise<void> {
-  const updateType = updateInfo.isMajor ? 'major' : updateInfo.isMinor ? 'minor' : 'patch'
-  const updateEmoji = updateInfo.isMajor ? '🚀' : updateInfo.isMinor ? '✨' : '🔧'
+  const updateType = updateInfo.isMajor
+    ? 'major'
+    : updateInfo.isMinor
+      ? 'minor'
+      : 'patch'
+  const updateEmoji = updateInfo.isMajor
+    ? '🚀'
+    : updateInfo.isMinor
+      ? '✨'
+      : '🔧'
 
-  warn(`${updateEmoji} Update available: ${updateInfo.current} → ${updateInfo.latest} (${updateType})`)
+  warn(
+    `${updateEmoji} Update available: ${updateInfo.current} → ${updateInfo.latest} (${updateType})`
+  )
   info(`Run: npm install -g ${PACKAGE_NAME}@latest`)
 }
 

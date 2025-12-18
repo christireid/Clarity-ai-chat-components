@@ -7,30 +7,30 @@
 
 import type {
   MemoryItem,
-  MemoryQuery,
-  MemorySearchResult,
+  MemoryQuery as _MemoryQuery,
+  MemorySearchResult as _MemorySearchResult,
   MemoryServiceConfig,
-  MemoryStats,
-  MemoryType,
-  MemoryScope,
-  MemoryPriority,
-  MemoryEvent,
+  MemoryStats as _MemoryStats,
+  MemoryType as _MemoryType,
+  MemoryScope as _MemoryScope,
+  MemoryPriority as _MemoryPriority,
+  MemoryEvent as _MemoryEvent,
   MemoryEventListener,
   MemoryBuffer,
   MemoryContext,
   VectorStore,
-  VectorStoreMatch,
-  VectorStoreVector,
-  VectorStoreQuery,
+  VectorStoreMatch as _VectorStoreMatch,
+  VectorStoreVector as _VectorStoreVector,
+  VectorStoreQuery as _VectorStoreQuery,
   EmbeddingProvider,
-  AddOptions,
+  AddOptions as _AddOptions,
   ContextOptions,
   ContextBundle,
-  TokenBreakdown,
+  TokenBreakdown as _TokenBreakdown,
 } from './types'
 
 // Enhanced imports with new token optimization
-import { TokenCounter, ContextOptimizer } from './token-optimizer'
+import { TokenCounter as _TokenCounter, ContextOptimizer } from './token-optimizer'
 import { 
   AccurateTokenCounter,
   TokenSecurityManager,
@@ -44,8 +44,8 @@ import {
 
 import {
   DecayManager,
-  type DecayManagerConfig,
-  type DecayResult,
+  type DecayManagerConfig as _DecayManagerConfig,
+  type DecayResult as _DecayResult,
 } from './utils/decay-manager'
 
 /**
@@ -179,7 +179,7 @@ export class EnhancedMemoryService {
   }> {
     const maxTokens = options?.maxTokens || 1000
     const context = options?.context
-    const securityLevel = options?.securityLevel || 'enterprise'
+    const _securityLevel = options?.securityLevel || 'enterprise'
 
     // Apply security measures
     const secured = this.securityManager.sanitizeInput(content)

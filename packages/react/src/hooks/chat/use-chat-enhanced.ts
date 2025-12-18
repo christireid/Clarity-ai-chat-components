@@ -26,13 +26,14 @@ import { logger } from '@clarity-chat/utils/logger'
  * const { messages, append, isLoading } = useChatEnhanced({
  *   api: '/api/chat',
  *   initialMessages: [{ role: 'user', content: 'Hello' }],
- *   onFinish: (message) => logger.debug('Finished:', message),
+ *   onFinish: (message) => console.log('Finished:', message),
  * })
  *
  * await append({ role: 'user', content: 'Tell me a joke' })
  * ```
  *
  * @throws {Error} If API endpoint is invalid or missing
+ * @module
  */
 
 import * as React from 'react'

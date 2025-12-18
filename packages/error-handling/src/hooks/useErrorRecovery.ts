@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 import { useCallback, useState, useRef, useLayoutEffect } from 'react'
 
 /**
@@ -64,7 +63,7 @@ export function useErrorRecovery() {
       const strategy = strategiesRef.current.get(errorType)
 
       if (!strategy) {
-        logger.warn(`No recovery strategy found for error type: ${errorType}`)
+        console.warn(`No recovery strategy found for error type: ${errorType}`)
         return false
       }
 
@@ -79,7 +78,7 @@ export function useErrorRecovery() {
         const error = err instanceof Error ? err : new Error(String(err))
         setLastRecoveryError(error)
         setIsRecovering(false)
-        logger.error('Recovery strategy failed:', error)
+        console.error('Recovery strategy failed:', error)
         return false
       }
     },

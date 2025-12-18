@@ -11,13 +11,13 @@
  * } catch (error) {
  *   if (isApiError(error)) {
  *     // error is typed as ApiError
- *     logger.debug(error.statusCode)
+ *     console.debug(error.statusCode)
  *   } else if (isStreamingError(error)) {
  *     // error is typed as StreamingError
- *     logger.debug(error.transport)
+ *     console.debug(error.transport)
  *   } else if (isProviderError(error)) {
  *     // error is typed as ProviderError
- *     logger.debug(error.provider)
+ *     console.debug(error.provider)
  *   }
  * }
  * ```

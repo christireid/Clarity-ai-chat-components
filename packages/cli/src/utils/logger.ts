@@ -1,7 +1,7 @@
 /**
  * Enhanced structured logging utility
  * Supports log levels, structured output, and request tracking
- * 
+ *
  */
 
 import pc from 'picocolors'
@@ -76,7 +76,7 @@ function formatLogEntry(entry: LogEntry): string {
 
 /**
  * Create logger instance
- * 
+ *
  */
 export function getLogger(
   namespace: string,

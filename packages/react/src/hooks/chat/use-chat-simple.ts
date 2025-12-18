@@ -4,6 +4,20 @@ import { logger } from '@clarity-chat/utils/logger'
 /**
  * useChatSimple - Simplified chat hook
  *
+ * @deprecated This hook will be merged into `useChat` (from use-chat-unified.ts) in v3.0.
+ * The unified `useChat` hook provides the same simplified API.
+ *
+ * **Migration:**
+ * ```tsx
+ * // Before (deprecated)
+ * import { useChatSimple } from '@clarity-chat/react'
+ * const { messages, sendMessage } = useChatSimple({ api: '/api/chat' })
+ *
+ * // After (recommended)
+ * import { useChat } from '@clarity-chat/react'
+ * const { messages, sendMessage } = useChat({ api: '/api/chat' })
+ * ```
+ *
  * A simplified version of useClarityChat that returns messages in the correct format
  * without needing manual conversion. Perfect for when you want more control than
  * ClarityChat component but don't need all the advanced features.
@@ -24,6 +38,7 @@ import { logger } from '@clarity-chat/utils/logger'
  *   )
  * }
  * ```
+ * @module
  */
 
 import * as React from 'react'
@@ -67,8 +82,8 @@ export interface UseChatSimpleReturn {
   sendMessage: (content: string) => Promise<void>
   /** Whether a message is currently being sent */
   isLoading: boolean
-  /** Current error, if any */
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
   /** Clear all messages */
   clearMessages: () => void
 }

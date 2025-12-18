@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 import React, { Component, type ReactNode } from 'react'
 import { ClarityChatError } from '../errors'
 
@@ -121,15 +120,15 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryProps, ErrorState> {
 
     // Log error details in development
     if (process.env['NODE_ENV'] === 'development') {
-      logger.debug('🚨 Clarity Chat Error')
-      logger.error('Error:', error)
+      console.debug('🚨 Clarity Chat Error')
+      console.error('Error:', error)
 
       if (error instanceof ClarityChatError) {
-        logger.error('\n' + error.toString())
+        console.error('\n' + error.toString())
       }
 
-      logger.error('Component Stack:', errorInfo.componentStack)
-      logger.debug('--- End Error Report ---')
+      console.error('Component Stack:', errorInfo.componentStack)
+      console.debug()
     }
   }
 

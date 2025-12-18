@@ -1,10 +1,10 @@
+'use client'
+
 /**
  * Performance Monitoring Dashboard
  *
  * Visual dashboard for performance metrics
  */
-
-'use client'
 
 import * as React from 'react'
 import { useRenderPerformance } from '../../hooks/performance/use-performance'
@@ -449,7 +449,7 @@ export function PerformanceDashboard({
 }
 
 /**
- * Format bytes to human-readable string
+ * Performance Badge - shows current render performance status
  */
 function formatBytes(bytes: number): string {
   if (bytes <= 0 || !Number.isFinite(bytes)) return '0 B'

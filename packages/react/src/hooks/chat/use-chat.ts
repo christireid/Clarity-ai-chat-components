@@ -1,31 +1,30 @@
 /**
  * useChat - Legacy chat hook (DEPRECATED)
- * 
+ *
  * ⚠️ **DEPRECATED**: This hook is deprecated in favor of `useClarityChat`.
- * 
+ *
  * **Migration Guide:**
- * 
+ *
  * ```tsx
  * // Old (deprecated)
  * import { useChat } from '@clarity-chat/react'
  * const { messages, sendMessage, isLoading } = useChat({ ... })
- * 
+ *
  * // New (recommended)
  * import { useClarityChat } from '@clarity-chat/react'
  * const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
  * ```
- * 
+ *
  * **Why deprecated:**
  * - `useClarityChat` provides better TypeScript support
  * - `useClarityChat` includes memory integration, error handling, and more features
  * - `useClarityChat` follows the new API shape conventions
- * 
+ *
  * This hook will be removed in v3.0. Please migrate to `useClarityChat`.
- * 
+ *
  * @deprecated Use `useClarityChat` instead. This will be removed in v3.0.
+ * @module
  */
-
-'use client'
 
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
@@ -33,7 +32,10 @@ import { generateId } from '@clarity-chat/primitives'
 
 export interface UseChatOptions {
   initialMessages?: Message[]
-  onSendMessage?: (message: Message, options?: { signal?: AbortSignal }) => Promise<void>
+  onSendMessage?: (
+    message: Message,
+    options?: { signal?: AbortSignal }
+  ) => Promise<void>
   api?: string
   persistMessages?: boolean
   memory?: boolean | Record<string, any>
@@ -44,7 +46,7 @@ export interface UseChatOptions {
 
 /**
  * Return type for useChat hook (low-level primitive)
- * 
+ *
  * Follows the standard hook return pattern:
  * - Data: `messages` (array of messages)
  * - State: `isLoading`, `error`
@@ -53,19 +55,25 @@ export interface UseChatOptions {
 export interface UseChatReturn {
   /** Current messages (data) */
   messages: Message[]
-  
+
   /** Whether currently loading (state) */
   isLoading: boolean
-  
-  /** Current error, if any (state) */
-  error: Error | null
-  
+
+  /** Current error (undefined when no error) */
+  error: Error | undefined
+
   /** Send a message (action) */
-  sendMessage: (content: string, options?: { signal?: AbortSignal }) => Promise<void>
-  
+  sendMessage: (
+    content: string,
+    options?: { signal?: AbortSignal }
+  ) => Promise<void>
+
   /** Retry a failed message (action) */
-  retry: (messageId: string, options?: { signal?: AbortSignal }) => Promise<void>
-  
+  retry: (
+    messageId: string,
+    options?: { signal?: AbortSignal }
+  ) => Promise<void>
+
   /** Clear all messages (action) */
   clear: () => void
 }
@@ -78,7 +86,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   if (process.env['NODE_ENV'] === 'development') {
     console.warn(
       '[useChat] This hook is deprecated. Please migrate to `useClarityChat` from @clarity-chat/react. ' +
-      'See migration guide: https://github.com/clarity-chat/clarity-chat/blob/main/MIGRATION_GUIDE.md'
+        'See migration guide: https://github.com/clarity-chat/clarity-chat/blob/main/MIGRATION_GUIDE.md'
     )
   }
 
@@ -113,7 +121,8 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       try {
         await onSendMessage(userMessage, options)
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Failed to send message')
+        const error =
+          err instanceof Error ? err : new Error('Failed to send message')
         setError(error)
         setMessages((prev) => prev.filter((m) => m.id !== userMessage.id))
         throw error

@@ -110,8 +110,8 @@ export interface UseStreamingSSEReturn {
   /** Accumulated data from streaming events */
   data: string
 
-  /** Current error if any */
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
 
   /** Connect to SSE endpoint */
   connect: () => void

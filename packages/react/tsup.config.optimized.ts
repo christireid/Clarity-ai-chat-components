@@ -25,7 +25,7 @@ const external = [
   'react-window',
   'jszip',
   'katex',
-  'framer-motion'
+  'framer-motion',
 ]
 
 const commonConfig = {
@@ -45,7 +45,7 @@ const commonConfig = {
       'src/memory/index.ts': 'dist/memory/index.d.ts',
       'src/adapters/index.ts': 'dist/adapters/index.d.ts',
       'src/test-utils.tsx': 'dist/test-utils.d.ts',
-    }
+    },
   },
   external,
   sourcemap: true,
@@ -90,11 +90,17 @@ export default defineConfig([
     ...commonConfig,
     clean: false,
     // Optimize core bundle
-    external: [...external, 'react-markdown', 'rehype-highlight', 'rehype-katex', 'rehype-raw'],
+    external: [
+      ...external,
+      'react-markdown',
+      'rehype-highlight',
+      'rehype-katex',
+      'rehype-raw',
+    ],
   },
   // Core minimal entry - Ultra-light (~30KB actual)
   {
-    entry: { 'core-minimal': 'src/core-minimal-fixed.ts' },
+    entry: { 'core-minimal': 'src/core-minimal.ts' },
     ...commonConfig,
     clean: false,
     splitting: true,
@@ -107,14 +113,14 @@ export default defineConfig([
       '@clarity-chat/types',
       'class-variance-authority',
       'clsx',
-      'tailwind-merge'
+      'tailwind-merge',
     ],
     // Tree shake aggressively
     treeshake: {
       moduleSideEffects: false,
       propertyReadSideEffects: false,
       tryCatchDeoptimization: false,
-      unknownGlobalSideEffects: false
+      unknownGlobalSideEffects: false,
     },
     // Optimize for size
     minify: 'terser',
@@ -122,14 +128,14 @@ export default defineConfig([
       compress: {
         drop_console: true,
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug']
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
       },
       mangle: {
         properties: {
-          regex: /^_/
-        }
-      }
-    }
+          regex: /^_/,
+        },
+      },
+    },
   },
   // Utils entry - Tree-shakeable utilities
   {

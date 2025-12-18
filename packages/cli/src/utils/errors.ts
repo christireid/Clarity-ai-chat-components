@@ -7,7 +7,6 @@ import pc from 'picocolors'
 import boxen from 'boxen'
 import { getLogger } from './logger.js'
 
-
 const logger = getLogger('errors')
 
 export enum ExitCode {

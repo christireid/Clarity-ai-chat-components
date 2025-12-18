@@ -12,9 +12,8 @@
  *
  * await chat.send('Hello')
  * ```
+ * @module
  */
-
-'use client'
 
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from '../use-clarity-chat'
@@ -47,8 +46,8 @@ export interface UseStreamingChatReturn {
   send: (content: string) => Promise<void>
   /** Whether streaming is active */
   isStreaming: boolean
-  /** Current error */
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
 }
 
 /**

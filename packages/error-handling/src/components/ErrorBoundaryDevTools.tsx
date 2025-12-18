@@ -337,7 +337,7 @@ function DevToolsProvider({
                 <ActionButton
                   onClick={() => {
                     const data = analytics.exportData()
-                    console.log('[DevTools] Exported data:', data)
+                    console.debug('[DevTools] Exported data:', data)
                     navigator.clipboard?.writeText(
                       JSON.stringify(data, null, 2)
                     )

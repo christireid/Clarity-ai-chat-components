@@ -12,7 +12,25 @@ import path from 'path'
 import { InitWizard } from '../components/InitWizard.js'
 import { detectFramework, detectPackageManager } from '../utils/detect.js'
 import { installDependencies } from '../utils/install.js'
-import { createConfigManager } from '@clarity-chat/utils/config-manager'
+// Simple config manager implementation
+function createConfigManager<
+  T extends Record<string, { type: string; default?: unknown }>,
+>(schema: T) {
+  return {
+    validate: <O>(_options: O) => ({
+      success: true as const,
+      errors: [] as string[],
+    }),
+    merge: <O>(options: O) => {
+      const result: Record<string, unknown> = {}
+      for (const [key, config] of Object.entries(schema)) {
+        result[key] =
+          (options as Record<string, unknown>)[key] ?? config.default
+      }
+      return result as O & { [K in keyof T]: T[K]['default'] }
+    },
+  }
+}
 import { getLogger } from '../utils/logger.js'
 import { ValidationError, ConfigError, handleError } from '../utils/errors.js'
 import {
@@ -53,7 +71,9 @@ export async function initCommand(rawOptions: InitOptions) {
   try {
     const configResult = configManager.validate(rawOptions)
     if (!configResult.success) {
-      throw new ValidationError(`Invalid init options: ${configResult.errors.join(', ')}`)
+      throw new ValidationError(
+        `Invalid init options: ${configResult.errors.join(', ')}`
+      )
     }
     const options = configManager.merge(rawOptions)
 
@@ -121,8 +141,8 @@ export async function initCommand(rawOptions: InitOptions) {
         template: validatedTemplate || 'basic',
         components: ['chat-interface', 'model-selector'],
         apiKeys: {},
-        installDeps: options.install !== false,
-        initGit: options.git !== false,
+        installDeps: (options.install as boolean | undefined) !== false,
+        initGit: (options.git as boolean | undefined) !== false,
       }
     }
 

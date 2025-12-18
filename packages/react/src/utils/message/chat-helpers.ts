@@ -1,7 +1,12 @@
 /**
  * Chat helper utilities for Vercel AI SDK compatible hooks
  *
- * Provides utilities for message transformation, formatting, and manipulation
+ * Provides utilities for CoreMessage transformation, formatting, and manipulation.
+ * These utilities work with the Vercel AI SDK CoreMessage type specifically.
+ *
+ * For Message type conversion (Clarity internal format), see message-conversion.ts
+ *
+ * @see {@link ./message-conversion.ts} for Message ↔ CoreMessage conversion
  */
 
 import type {
