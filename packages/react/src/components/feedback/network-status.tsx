@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 
@@ -200,16 +201,20 @@ export function NetworkStatus({
    */
   const updateConnectionInfo = React.useCallback(() => {
     if ('connection' in navigator) {
-      const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
+      const connection = (
+        navigator as Navigator & { connection?: NetworkInformation }
+      ).connection
       if (connection) {
         setDownlinkSpeed(connection.downlink ?? null)
 
         // Check effective connection type
-        const effectiveType = connection.effectiveType as '2g' | '3g' | '4g' | 'slow-2g' | undefined
-        if (
-          effectiveType === 'slow-2g' ||
-          effectiveType === '2g'
-        ) {
+        const effectiveType = connection.effectiveType as
+          | '2g'
+          | '3g'
+          | '4g'
+          | 'slow-2g'
+          | undefined
+        if (effectiveType === 'slow-2g' || effectiveType === '2g') {
           setInternalStatus('slow')
         } else if (effectiveType === '3g') {
           setInternalStatus('unstable')
@@ -232,9 +237,11 @@ export function NetworkStatus({
 
     // Listen to connection changes (if supported)
     if ('connection' in navigator) {
-      const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
+      const connection = (
+        navigator as Navigator & { connection?: NetworkInformation }
+      ).connection
       if (connection && 'addEventListener' in connection) {
-        (connection as any).addEventListener('change', updateConnectionInfo)
+        ;(connection as any).addEventListener('change', updateConnectionInfo)
       }
     }
 
@@ -246,9 +253,14 @@ export function NetworkStatus({
       window.removeEventListener('offline', handleOffline)
 
       if ('connection' in navigator) {
-        const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
+        const connection = (
+          navigator as Navigator & { connection?: NetworkInformation }
+        ).connection
         if (connection && 'removeEventListener' in connection) {
-          (connection as any).removeEventListener('change', updateConnectionInfo)
+          ;(connection as any).removeEventListener(
+            'change',
+            updateConnectionInfo
+          )
         }
       }
 

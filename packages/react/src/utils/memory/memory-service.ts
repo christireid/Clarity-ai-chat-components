@@ -1,7 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Production-Ready Memory Service
- * 
+ *
  * Implements 4-layer hybrid memory architecture:
  * - Layer 1: Real-time Context Buffer (Redis/In-Memory, 50-100 tokens)
  * - Layer 2: Session Memory (Compressed summaries, 200-500 tokens)
@@ -39,28 +39,42 @@ export interface MemoryServiceConfig {
  * Memory Service - Production-ready memory management
  */
 export class MemoryService {
-  private config: Required<Pick<MemoryServiceConfig, 'maxRealTimeTokens' | 'maxSessionTokens' | 'enableCompression' | 'compressionThreshold' | 'countTokens'>> & {
+  private config: Required<
+    Pick<
+      MemoryServiceConfig,
+      | 'maxRealTimeTokens'
+      | 'maxSessionTokens'
+      | 'enableCompression'
+      | 'compressionThreshold'
+      | 'countTokens'
+    >
+  > & {
     vectorStore?: MemoryVectorStore
   }
-  
+
   // Layer 1: Real-time context buffer (in-memory)
   private realTimeBuffers: Map<string, MemoryBuffer> = new Map()
-  
+
   // Layer 2: Session memory (compressed summaries)
   private sessionMemories: Map<string, MemoryItem[]> = new Map()
-  
+
   // Layer 3 & 4: Handled by vector store (if available)
 
   constructor(config: MemoryServiceConfig) {
     // Convert VectorStoreAdapter to MemoryVectorStore if needed
     let vectorStore: MemoryVectorStore | undefined
     if (config.vectorStore) {
-      if ('similaritySearch' in config.vectorStore && typeof config.vectorStore.similaritySearch === 'function') {
+      if (
+        'similaritySearch' in config.vectorStore &&
+        typeof config.vectorStore.similaritySearch === 'function'
+      ) {
         // Already a MemoryVectorStore
         vectorStore = config.vectorStore as MemoryVectorStore
       } else {
         // It's a VectorStoreAdapter, wrap it
-        vectorStore = new VectorStoreAdapterWrapper(config.vectorStore as VectorStoreAdapter)
+        vectorStore = new VectorStoreAdapterWrapper(
+          config.vectorStore as VectorStoreAdapter
+        )
       }
     }
 
@@ -112,7 +126,7 @@ export class MemoryService {
    */
   private async storeRealTimeMemory(memory: MemoryItem): Promise<void> {
     const buffer = this.getOrCreateBuffer(memory.userId)
-    
+
     buffer.addMessage({
       role: 'system',
       content: `[${memory.label}] ${memory.value}`,
@@ -158,7 +172,10 @@ export class MemoryService {
       // Store in vector database with retry logic
       await this.storeWithRetry(memory, 3)
     } catch (error) {
-      logger.error('Failed to store in vector database, falling back to session memory:', error)
+      logger.error(
+        'Failed to store in vector database, falling back to session memory:',
+        error
+      )
       // Fallback to session memory on failure
       await this.storeSessionMemory(memory)
     }
@@ -172,7 +189,10 @@ export class MemoryService {
   /**
    * Store memory with retry logic
    */
-  private async storeWithRetry(memory: MemoryItem, maxRetries: number): Promise<void> {
+  private async storeWithRetry(
+    memory: MemoryItem,
+    maxRetries: number
+  ): Promise<void> {
     let lastError: Error | null = null
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -181,7 +201,7 @@ export class MemoryService {
         return
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error))
-        
+
         if (attempt < maxRetries) {
           // Exponential backoff: 100ms, 200ms, 400ms
           const delay = 100 * Math.pow(2, attempt - 1)
@@ -196,7 +216,9 @@ export class MemoryService {
   /**
    * Retrieve memories based on options
    */
-  async retrieveMemories(options: MemoryRetrievalOptions): Promise<MemoryItem[]> {
+  async retrieveMemories(
+    options: MemoryRetrievalOptions
+  ): Promise<MemoryItem[]> {
     const results: MemoryItem[] = []
 
     // Retrieve from each layer based on options
@@ -211,7 +233,9 @@ export class MemoryService {
     }
 
     if (
-      (!options.layer || options.layer.includes('semantic') || options.layer.includes('episodic')) &&
+      (!options.layer ||
+        options.layer.includes('semantic') ||
+        options.layer.includes('episodic')) &&
       this.config.vectorStore &&
       options.query
     ) {
@@ -226,12 +250,14 @@ export class MemoryService {
   /**
    * Retrieve from real-time buffer
    */
-  private retrieveRealTimeMemories(options: MemoryRetrievalOptions): MemoryItem[] {
+  private retrieveRealTimeMemories(
+    options: MemoryRetrievalOptions
+  ): MemoryItem[] {
     const buffer = this.realTimeBuffers.get(options.userId)
     if (!buffer) return []
 
     const context = buffer.getContext(this.config.maxRealTimeTokens)
-    
+
     // Convert buffer messages to memory items
     return context.messages.map((msg, idx) => ({
       id: `realtime_${options.userId}_${idx}`,
@@ -249,13 +275,16 @@ export class MemoryService {
   /**
    * Retrieve from session memory
    */
-  private retrieveSessionMemories(options: MemoryRetrievalOptions): MemoryItem[] {
+  private retrieveSessionMemories(
+    options: MemoryRetrievalOptions
+  ): MemoryItem[] {
     const memories = this.sessionMemories.get(options.userId) || []
-    
+
     return memories.filter((m) => {
       if (options.scope && !options.scope.includes(m.scope)) return false
       if (options.type && !options.type.includes(m.type)) return false
-      if (options.minConfidence && (m.confidence ?? 0) < options.minConfidence) return false
+      if (options.minConfidence && (m.confidence ?? 0) < options.minConfidence)
+        return false
       return true
     })
   }
@@ -345,7 +374,7 @@ export class MemoryService {
 
     // Group by type and compress
     const grouped = new Map<MemoryType, MemoryItem[]>()
-    
+
     memories.forEach((m) => {
       if (!grouped.has(m.type)) {
         grouped.set(m.type, [])
@@ -360,7 +389,7 @@ export class MemoryService {
       if (items.length >= 3) {
         // Create semantic summary
         const summary = this.createSemanticSummary(items, type)
-        
+
         compressed.push({
           id: `compressed_${userId}_${type}_${Date.now()}`,
           userId,
@@ -372,7 +401,9 @@ export class MemoryService {
           confidence: this.calculateAverageConfidence(items),
           lastUpdated: new Date(),
           tokens: this.config.countTokens(summary),
-          importanceScore: Math.max(...items.map((i) => i.importanceScore ?? 0)),
+          importanceScore: Math.max(
+            ...items.map((i) => i.importanceScore ?? 0)
+          ),
         })
       } else {
         // Keep individual items if too few to compress
@@ -398,12 +429,12 @@ export class MemoryService {
    */
   private createSemanticSummary(items: MemoryItem[], type: MemoryType): string {
     const values = items.map((i) => i.value).join('. ')
-    
+
     // Simple summarization (would use LLM in production)
     if (values.length > 500) {
       return values.substring(0, 500) + '...'
     }
-    
+
     return values
   }
 
@@ -412,7 +443,7 @@ export class MemoryService {
    */
   private calculateAverageConfidence(items: MemoryItem[]): number {
     if (items.length === 0) return 0
-    
+
     const sum = items.reduce((acc, item) => acc + (item.confidence ?? 0), 0)
     return sum / items.length
   }
@@ -424,15 +455,15 @@ export class MemoryService {
     if (scope === 'session') {
       return 'real-time'
     }
-    
+
     if (scope === 'thread') {
       return 'session'
     }
-    
+
     if (type === 'semantic' || type === 'preference') {
       return 'semantic'
     }
-    
+
     return 'episodic'
   }
 
@@ -449,7 +480,7 @@ export class MemoryService {
         })
       )
     }
-    
+
     return this.realTimeBuffers.get(userId)!
   }
 
@@ -496,7 +527,7 @@ export class MemoryService {
       byType[m.type] = (byType[m.type] || 0) + 1
       byLayer[m.layer] = (byLayer[m.layer] || 0) + 1
       totalTokens += m.tokens || 0
-      
+
       if (m.confidence !== undefined) {
         confidenceSum += m.confidence
         confidenceCount++
@@ -513,9 +544,16 @@ export class MemoryService {
       byType,
       byLayer,
       totalTokens,
-      averageConfidence: confidenceCount > 0 ? confidenceSum / confidenceCount : 0,
-      oldestMemory: dates.length > 0 ? new Date(Math.min(...dates.map((d) => d.getTime()))) : undefined,
-      newestMemory: dates.length > 0 ? new Date(Math.max(...dates.map((d) => d.getTime()))) : undefined,
+      averageConfidence:
+        confidenceCount > 0 ? confidenceSum / confidenceCount : 0,
+      oldestMemory:
+        dates.length > 0
+          ? new Date(Math.min(...dates.map((d) => d.getTime())))
+          : undefined,
+      newestMemory:
+        dates.length > 0
+          ? new Date(Math.max(...dates.map((d) => d.getTime())))
+          : undefined,
     }
   }
 

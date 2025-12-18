@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EnhancedCodeBlock } from '@clarity-chat/react'
 
@@ -31,7 +30,7 @@ function createUser(name: string, email: string): User {
 }
 
 const user = createUser('John Doe', 'john@example.com')
-SecureLogger.debug(user)`
+console.log(user)`
 
 const pythonCode = `def fibonacci(n: int) -> list[int]:
     """Generate Fibonacci sequence up to n terms."""
@@ -50,7 +49,11 @@ const pythonCode = `def fibonacci(n: int) -> list[int]:
 result = fibonacci(10)
 print(f"Fibonacci sequence: {result}")`
 
-const longCode = Array.from({ length: 50 }, (_, i) => `// Line ${i + 1}: This is a long code block that will demonstrate folding`).join('\n')
+const longCode = Array.from(
+  { length: 50 },
+  (_, i) =>
+    `// Line ${i + 1}: This is a long code block that will demonstrate folding`
+).join('\n')
 
 export const Default: Story = {
   args: {

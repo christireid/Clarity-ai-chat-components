@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 import { ChatWindow } from '../components/chat/chat-window'
 import { useMessageOperations } from '../hooks/message/use-message-operations'
@@ -203,10 +202,10 @@ export function CodeAssistant({
       return [welcomeMessage]
     })(),
     onEdit: (messageId, newContent) => {
-      logger.debug('Message edited:', messageId, newContent)
+      console.log('Message edited:', messageId, newContent)
     },
     onDelete: (messageId) => {
-      logger.debug('Message deleted:', messageId)
+      console.log('Message deleted:', messageId)
     },
   })
 
@@ -290,7 +289,7 @@ export function CodeAssistant({
       content.toLowerCase().includes('error')
     ) {
       botResponse =
-        "I found a potential issue in your code:\n\n```javascript\n// Before (has bug):\nif (x = 5) { // Using assignment instead of comparison\n  logger.debug('x is 5')\n}\n\n// After (fixed):\nif (x === 5) { // Using strict equality\n  logger.debug('x is 5')\n}\n```\n\nThe issue was using `=` (assignment) instead of `===` (comparison). Would you like me to check for other issues?"
+        "I found a potential issue in your code:\n\n```javascript\n// Before (has bug):\nif (x = 5) { // Using assignment instead of comparison\n  console.log('x is 5')\n}\n\n// After (fixed):\nif (x === 5) { // Using strict equality\n  console.log('x is 5')\n}\n```\n\nThe issue was using `=` (assignment) instead of `===` (comparison). Would you like me to check for other issues?"
     } else if (content.toLowerCase().includes('optimize')) {
       botResponse =
         "Here's an optimized version:\n\n```javascript\n// Original: O(n²)\nfor (let i = 0; i < arr.length; i++) {\n  for (let j = 0; j < arr.length; j++) {\n    // ...\n  }\n}\n\n// Optimized: O(n)\nconst set = new Set(arr)\nfor (const item of arr) {\n  if (set.has(item)) {\n    // ...\n  }\n}\n```\n\n**Improvements:**\n- Reduced time complexity from O(n²) to O(n)\n- Used Set for O(1) lookups\n- More memory efficient\n\nThis should run significantly faster on large datasets!"

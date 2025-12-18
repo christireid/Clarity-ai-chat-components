@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Storage Provider Extensions
  *
@@ -164,12 +163,12 @@ export function createS3Extension(
     } as S3Config,
 
     initialize: async (ctx) => {
-      ctx.logger.info('AWS S3 extension initialized')
+      ctx.console.info('AWS S3 extension initialized')
 
       // Would use @aws-sdk/client-s3 and @aws-sdk/s3-request-presigner
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
-          ctx.logger.debug(`Uploading to S3: ${path}`)
+          ctx.console.log(`Uploading to S3: ${path}`)
           const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
             url: `https://${ctx.config.bucket}.s3.${ctx.config.region}.amazonaws.com/${encodedPath}`,
@@ -179,19 +178,19 @@ export function createS3Extension(
           }
         },
         async download(path) {
-          ctx.logger.debug(`Downloading from S3: ${path}`)
+          ctx.console.log(`Downloading from S3: ${path}`)
           return new Blob()
         },
         async delete(path) {
-          ctx.logger.debug(`Deleting from S3: ${path}`)
+          ctx.console.log(`Deleting from S3: ${path}`)
         },
         async getSignedUrl(path, expiresIn = ctx.config.signedUrlExpiration) {
-          ctx.logger.debug(`Generating signed URL for: ${path}`)
+          ctx.console.log(`Generating signed URL for: ${path}`)
           const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return `https://${ctx.config.bucket}.s3.${ctx.config.region}.amazonaws.com/${encodedPath}?signed=true`
         },
         async list(prefix) {
-          ctx.logger.debug(`Listing S3 objects with prefix: ${prefix}`)
+          ctx.console.log(`Listing S3 objects with prefix: ${prefix}`)
           return []
         },
       }
@@ -248,12 +247,12 @@ export function createCloudflareR2Extension(
     defaultConfig: config as CloudflareR2Config,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Cloudflare R2 extension initialized')
+      ctx.console.info('Cloudflare R2 extension initialized')
 
       // R2 is S3-compatible, would use @aws-sdk/client-s3 with custom endpoint
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
-          ctx.logger.debug(`Uploading to R2: ${path}`)
+          ctx.console.log(`Uploading to R2: ${path}`)
           const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
             url: `${ctx.config.publicUrl || `https://${ctx.config.bucket}.${ctx.config.accountId}.r2.cloudflarestorage.com`}/${encodedPath}`,
@@ -266,7 +265,7 @@ export function createCloudflareR2Extension(
           return new Blob()
         },
         async delete(path) {
-          ctx.logger.debug(`Deleting from R2: ${path}`)
+          ctx.console.log(`Deleting from R2: ${path}`)
         },
         async getSignedUrl(path) {
           return ''
@@ -321,12 +320,12 @@ export function createSupabaseStorageExtension(
     } as SupabaseStorageConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Supabase Storage extension initialized')
+      ctx.console.info('Supabase Storage extension initialized')
 
       // Would use @supabase/supabase-js
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
-          ctx.logger.debug(`Uploading to Supabase Storage: ${path}`)
+          ctx.console.log(`Uploading to Supabase Storage: ${path}`)
           const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
             url: `${ctx.config.supabaseUrl}/storage/v1/object/public/${encodeURIComponent(ctx.config.bucket)}/${encodedPath}`,
@@ -339,7 +338,7 @@ export function createSupabaseStorageExtension(
           return new Blob()
         },
         async delete(path) {
-          ctx.logger.debug(`Deleting from Supabase Storage: ${path}`)
+          ctx.console.log(`Deleting from Supabase Storage: ${path}`)
         },
         async getSignedUrl(path, expiresIn = 3600) {
           return ''
@@ -386,11 +385,11 @@ export function createFirebaseStorageExtension(
     defaultConfig: config as FirebaseStorageConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Firebase Storage extension initialized')
+      ctx.console.info('Firebase Storage extension initialized')
 
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
-          ctx.logger.debug(`Uploading to Firebase Storage: ${path}`)
+          ctx.console.log(`Uploading to Firebase Storage: ${path}`)
           return {
             url: `https://firebasestorage.googleapis.com/v0/b/${ctx.config.storageBucket}/o/${encodeURIComponent(path)}?alt=media`,
             path,
@@ -450,11 +449,11 @@ export function createUploadThingExtension(
     defaultConfig: config as UploadThingConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('UploadThing extension initialized')
+      ctx.console.info('UploadThing extension initialized')
 
       const adapter: StorageAdapter = {
         async upload(file, path) {
-          ctx.logger.debug(`Uploading to UploadThing: ${path}`)
+          ctx.console.log(`Uploading to UploadThing: ${path}`)
           const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
             url: `https://utfs.io/f/${encodedPath}`,
@@ -521,11 +520,11 @@ export function createCloudinaryExtension(
     defaultConfig: config as CloudinaryConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Cloudinary extension initialized')
+      ctx.console.info('Cloudinary extension initialized')
 
       const adapter: StorageAdapter = {
         async upload(file, path, options) {
-          ctx.logger.debug(`Uploading to Cloudinary: ${path}`)
+          ctx.console.log(`Uploading to Cloudinary: ${path}`)
           const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
             url: `https://res.cloudinary.com/${encodeURIComponent(ctx.config.cloudName)}/image/upload/${encodedPath}`,
@@ -582,12 +581,12 @@ export function createVercelBlobExtension(
     defaultConfig: config as VercelBlobConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Vercel Blob extension initialized')
+      ctx.console.info('Vercel Blob extension initialized')
 
       // Would use @vercel/blob
       const adapter: StorageAdapter = {
         async upload(file, path) {
-          ctx.logger.debug(`Uploading to Vercel Blob: ${path}`)
+          ctx.console.log(`Uploading to Vercel Blob: ${path}`)
           const encodedPath = path.split('/').map(encodeURIComponent).join('/')
           return {
             url: `https://${encodeURIComponent(ctx.config.storeId || 'default')}.public.blob.vercel-storage.com/${encodedPath}`,

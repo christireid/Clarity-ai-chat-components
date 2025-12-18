@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced structured logging utility
  * Supports log levels, structured output, and request tracking

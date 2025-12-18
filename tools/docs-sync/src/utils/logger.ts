@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Logger and Progress Indicator Utilities
  *
@@ -71,7 +70,7 @@ export function log(message: string, level: LogLevel = 'info'): void {
     currentSpinner.stop()
   }
 
-  SecureLogger.debug(formatMessage(message, level))
+  console.log(formatMessage(message, level))
 
   // Resume spinner if it was active
   if (currentSpinner) {
@@ -252,17 +251,17 @@ export function printSummary(
   const width = 50
   const line = '═'.repeat(width)
 
-  SecureLogger.debug('')
-  SecureLogger.debug(line)
-  SecureLogger.debug(pc.bold(title))
-  SecureLogger.debug(line)
+  console.log('')
+  console.log(line)
+  console.log(pc.bold(title))
+  console.log(line)
 
   for (const item of items) {
     const colorFn = item.color ? pc[item.color] : (s: string) => s
-    SecureLogger.debug(`${item.label}: ${colorFn(String(item.value))}`)
+    console.log(`${item.label}: ${colorFn(String(item.value))}`)
   }
 
-  SecureLogger.debug(line)
+  console.log(line)
 }
 
 /** Format duration for display */

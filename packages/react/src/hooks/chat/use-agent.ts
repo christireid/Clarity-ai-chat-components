@@ -1,4 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useAgent - Top-level hook for AI agents
  *
@@ -14,8 +16,6 @@ import { logger } from '@clarity-chat/utils/logger';
  * const response = await agent.run({ query: 'What is 2+2?' })
  * ```
  */
-
-'use client'
 
 import * as React from 'react'
 import { ReactAgent } from '../agents/react-agent'

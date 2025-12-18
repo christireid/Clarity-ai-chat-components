@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useCircuitBreaker - React Hook for Circuit Breaker Pattern
  *

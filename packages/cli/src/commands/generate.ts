@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * generate command - Generate code (component, hook, context, adapter, test)
  *

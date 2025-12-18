@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * init command - Initialize a new Clarity Chat project
  */
@@ -79,8 +78,8 @@ export async function initCommand(rawOptions: InitOptions) {
     const detectedFramework = await detectFramework(cwd)
     const packageManager = await detectPackageManager(cwd)
 
-    logger.info(`Detected framework: ${detectedFramework || 'none'}`)
-    logger.info(`Package manager: ${packageManager}`)
+    console.info(`Detected framework: ${detectedFramework || 'none'}`)
+    console.info(`Package manager: ${packageManager}`)
 
     // Validate options if provided
     let validatedFramework: string | undefined
@@ -171,9 +170,9 @@ export async function initCommand(rawOptions: InitOptions) {
         },
         cwd
       )
-      logger.debug('Config file saved')
+      console.log('Config file saved')
     } catch (error) {
-      logger.warn(
+      console.warn(
         'Failed to save config file',
         error instanceof Error ? error : String(error)
       )
@@ -196,7 +195,7 @@ export async function initCommand(rawOptions: InitOptions) {
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
-        logger.error(error instanceof Error ? error : new Error(String(error)))
+        console.error(error instanceof Error ? error : new Error(String(error)))
         throw new ConfigError('Failed to install dependencies', [
           'Check your internet connection',
           'Verify package manager is installed',
@@ -236,7 +235,7 @@ GOOGLE_API_KEY=your_google_key_here
 `,
         'utf-8'
       )
-      logger.info('Created .env.local with placeholder keys')
+      console.info('Created .env.local with placeholder keys')
     }
 
     // Ensure .env.local is in .gitignore

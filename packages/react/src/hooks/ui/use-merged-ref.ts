@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useMergedRef - Utility hook for merging multiple refs
  *
@@ -54,7 +53,7 @@ function validateRef<T>(ref: unknown, index: number): ref is ReactRef<T> {
 
   // Invalid ref type - warn in development
   if (process.env.NODE_ENV !== 'production') {
-    logger.warn(
+    console.warn(
       `[useMergedRef] Invalid ref at index ${index}. Expected a callback function, ` +
         `an object with a 'current' property, null, or undefined. ` +
         `Received: ${typeof ref}`,
@@ -106,7 +105,7 @@ function setRef<T>(ref: ReactRef<T>, value: T | null): void {
  * // Usage with multiple refs
  * const ref1 = useRef<HTMLDivElement>(null)
  * const ref2 = useRef<HTMLDivElement>(null)
- * const ref3 = useCallback((el) => logger.debug(el), [])
+ * const ref3 = useCallback((el) => console.log(el), [])
  * const merged = useMergedRef(ref1, ref2, ref3)
  * ```
  */

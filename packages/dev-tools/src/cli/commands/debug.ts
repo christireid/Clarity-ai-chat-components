@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Debug command
  *
@@ -60,11 +59,11 @@ debugCommand
         hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
         hasGoogleKey: !!process.env.GOOGLE_API_KEY,
       }
-      logger.debug(JSON.stringify(jsonOutput, null, 2))
+      console.log(JSON.stringify(jsonOutput, null, 2))
     } else {
-      logger.debug()
-      logger.debug(infoBox(keyValueTable(envInfo), 'Environment Information'))
-      logger.debug()
+      console.log()
+      console.log(infoBox(keyValueTable(envInfo), 'Environment Information'))
+      console.log()
     }
   })
 

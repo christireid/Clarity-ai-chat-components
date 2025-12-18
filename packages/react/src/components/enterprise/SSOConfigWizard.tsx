@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import {
   Badge,

@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Basic Memory System Example
  *
@@ -14,7 +11,6 @@ import { ErrorBoundary, LoadingSpinner } from '../utils/error-boundary'
 // The library uses a flat export structure for simpler imports.
 import {
   MemoryProvider,
-import { SecureLogger } from '@/lib/security/secureLogger';
   useMemoryContext,
   QdrantVectorStore,
   OpenAIEmbeddings,
@@ -67,9 +63,9 @@ const memoryConfig: MemoryServiceConfig = {
   tokenOptimization: {
     maxContextWindow: 4096,
     allocation: {
-      systemPrompt: 0.10,
+      systemPrompt: 0.1,
       userPreferences: 0.15,
-      recentContext: 0.30,
+      recentContext: 0.3,
       semanticMemory: 0.25,
       episodicMemory: 0.15,
       responseReserve: 0.05,
@@ -93,10 +89,10 @@ const memoryConfig: MemoryServiceConfig = {
   enableAutoCleanup: true,
   cleanupInterval: 3600000, // 1 hour
   retentionPolicy: {
-    shortTerm: 3600,      // 1 hour
-    session: 86400,       // 24 hours
-    thread: 604800,       // 7 days
-    global: 0,            // Never expires
+    shortTerm: 3600, // 1 hour
+    session: 86400, // 24 hours
+    thread: 604800, // 7 days
+    global: 0, // Never expires
   },
   debug: true,
 }
@@ -126,10 +122,12 @@ const embeddings = new OpenAIEmbeddings({
  * conversation history and user preferences.
  */
 function ChatWithMemory() {
-  const [messages, setMessages] = React.useState<Array<{
-    role: 'user' | 'assistant'
-    content: string
-  }>>([])
+  const [messages, setMessages] = React.useState<
+    Array<{
+      role: 'user' | 'assistant'
+      content: string
+    }>
+  >([])
   const [input, setInput] = React.useState('')
 
   // 🎯 useMemoryContext provides access to the memory system
@@ -153,9 +151,12 @@ function ChatWithMemory() {
   // ============================================================================
 
   // DEMO ONLY: Remove console.log in production
-  const captureMessage = async (content: string, role: 'user' | 'assistant') => {
+  const captureMessage = async (
+    content: string,
+    role: 'user' | 'assistant'
+  ) => {
     // DEMO: Logs to console for demonstration purposes
-    SecureLogger.debug(`[Memory] Capturing ${role} message:`, content.substring(0, 50))
+    console.log(`[Memory] Capturing ${role} message:`, content.substring(0, 50))
     // PRODUCTION: Uncomment and use the real API:
     // await memoryContext.addMemory({ content, type: 'episodic', metadata: { role } })
   }
@@ -163,7 +164,7 @@ function ChatWithMemory() {
   // DEMO ONLY: Remove console.log in production
   const capturePreference = async (key: string, value: string) => {
     // DEMO: Logs to console for demonstration purposes
-    SecureLogger.debug(`[Memory] Capturing preference: ${key} = ${value}`)
+    console.log(`[Memory] Capturing preference: ${key} = ${value}`)
     // PRODUCTION: Uncomment and use the real API:
     // await memoryContext.addMemory({ content: `${key}: ${value}`, type: 'semantic' })
   }
@@ -171,7 +172,10 @@ function ChatWithMemory() {
   // DEMO ONLY: Remove console.log in production
   const getRelevantMemories = async (query: string) => {
     // DEMO: Logs to console for demonstration purposes
-    SecureLogger.debug(`[Memory] Searching for memories related to:`, query.substring(0, 50))
+    console.log(
+      `[Memory] Searching for memories related to:`,
+      query.substring(0, 50)
+    )
     // PRODUCTION: Uncomment and use the real API:
     // return await memoryContext.searchMemories(query)
     return []
@@ -180,7 +184,7 @@ function ChatWithMemory() {
   // DEMO ONLY: Remove console.log in production
   const getRecentHistory = async () => {
     // DEMO: Logs to console for demonstration purposes
-    SecureLogger.debug(`[Memory] Fetching recent history`)
+    console.log(`[Memory] Fetching recent history`)
     // PRODUCTION: Uncomment and use the real API:
     // return await memoryContext.getRecentMemories()
     return messages
@@ -206,19 +210,22 @@ function ChatWithMemory() {
 
     // Add user message
     const userMessage = { role: 'user' as const, content: input }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
 
     // Capture in memory
     await captureMessage(input, 'user')
 
     // Get relevant memories for context
     const relevantMemories = await getRelevantMemories(input)
-    
+
     // Simulate AI response (in real app, call your LLM here)
     const assistantResponse = `I understand you said: "${input}". I found ${relevantMemories.length} relevant memories.`
-    
-    const assistantMessage = { role: 'assistant' as const, content: assistantResponse }
-    setMessages(prev => [...prev, assistantMessage])
+
+    const assistantMessage = {
+      role: 'assistant' as const,
+      content: assistantResponse,
+    }
+    setMessages((prev) => [...prev, assistantMessage])
 
     // Capture assistant response
     await captureMessage(assistantResponse, 'assistant')
@@ -263,8 +270,8 @@ function ChatWithMemory() {
         <input
           type="text"
           value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -289,7 +296,7 @@ function ChatWithMemory() {
         <button
           onClick={async () => {
             const history = await getRecentHistory()
-            SecureLogger.debug('Recent history:', history)
+            console.log('Recent history:', history)
             alert(`Found ${history.length} recent messages`)
           }}
           className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
@@ -307,7 +314,7 @@ function ChatWithMemory() {
 export function App() {
   return (
     <ErrorBoundary
-      onError={(error) => SecureLogger.error('Memory system error:', error)}
+      onError={(error) => console.error('Memory system error:', error)}
       showReset
     >
       <MemoryProvider

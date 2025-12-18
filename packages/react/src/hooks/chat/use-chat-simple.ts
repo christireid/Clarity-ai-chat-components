@@ -1,4 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useChatSimple - Simplified chat hook
  *
@@ -23,8 +25,6 @@ import { logger } from '@clarity-chat/utils/logger';
  * }
  * ```
  */
-
-'use client'
 
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'

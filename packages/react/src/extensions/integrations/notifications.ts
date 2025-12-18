@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Notification Service Extensions
  *
@@ -129,11 +128,11 @@ export function createTwilioExtension(
     defaultConfig: config as TwilioConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Twilio extension initialized')
+      ctx.console.info('Twilio extension initialized')
 
       const adapter: NotificationAdapter = {
         async send(notification) {
-          ctx.logger.debug('Sending SMS via Twilio')
+          ctx.console.log('Sending SMS via Twilio')
           // Would use twilio SDK
           return { success: true, messageId: `msg_${Date.now()}` }
         },
@@ -184,11 +183,11 @@ export function createSendGridExtension(
     defaultConfig: config as SendGridConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('SendGrid extension initialized')
+      ctx.console.info('SendGrid extension initialized')
 
       const adapter: NotificationAdapter = {
         async send(notification) {
-          ctx.logger.debug('Sending email via SendGrid')
+          ctx.console.log('Sending email via SendGrid')
           // Would use @sendgrid/mail
           const response = await fetch(
             'https://api.sendgrid.com/v3/mail/send',
@@ -257,11 +256,11 @@ export function createResendExtension(
     defaultConfig: config as ResendConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Resend extension initialized')
+      ctx.console.info('Resend extension initialized')
 
       const adapter: NotificationAdapter = {
         async send(notification) {
-          ctx.logger.debug('Sending email via Resend')
+          ctx.console.log('Sending email via Resend')
           const response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -330,11 +329,11 @@ export function createPostmarkExtension(
     } as PostmarkConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Postmark extension initialized')
+      ctx.console.info('Postmark extension initialized')
 
       const adapter: NotificationAdapter = {
         async send(notification) {
-          ctx.logger.debug('Sending email via Postmark')
+          ctx.console.log('Sending email via Postmark')
           const response = await fetch('https://api.postmarkapp.com/email', {
             method: 'POST',
             headers: {
@@ -397,11 +396,11 @@ export function createOneSignalExtension(
     defaultConfig: config as OneSignalConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('OneSignal extension initialized')
+      ctx.console.info('OneSignal extension initialized')
 
       const adapter: NotificationAdapter = {
         async send(notification) {
-          ctx.logger.debug('Sending push via OneSignal')
+          ctx.console.log('Sending push via OneSignal')
           const response = await fetch(
             'https://onesignal.com/api/v1/notifications',
             {
@@ -467,11 +466,11 @@ export function createKnockExtension(
     defaultConfig: config as KnockConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Knock extension initialized')
+      ctx.console.info('Knock extension initialized')
 
       const adapter: NotificationAdapter = {
         async send(notification) {
-          ctx.logger.debug('Sending notification via Knock')
+          ctx.console.log('Sending notification via Knock')
           // Would use @knocklabs/node
           return { success: true, messageId: `knock_${Date.now()}` }
         },
@@ -517,11 +516,11 @@ export function createNovuExtension(
     defaultConfig: config as NovuConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Novu extension initialized')
+      ctx.console.info('Novu extension initialized')
 
       const adapter: NotificationAdapter = {
         async send(notification) {
-          ctx.logger.debug('Sending notification via Novu')
+          ctx.console.log('Sending notification via Novu')
           // Would use @novu/node
           return { success: true, messageId: `novu_${Date.now()}` }
         },

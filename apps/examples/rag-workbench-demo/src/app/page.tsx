@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * RAG Workbench - Main UI
  * Document Q&A with Retrieval Augmented Generation
@@ -43,7 +42,9 @@ export default function RAGWorkbenchPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [model, setModel] = useState('gpt-3.5-turbo')
-  const [provider, setProvider] = useState<'openai' | 'anthropic' | 'google'>('openai')
+  const [provider, setProvider] = useState<'openai' | 'anthropic' | 'google'>(
+    'openai'
+  )
   const [topK, setTopK] = useState(3)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -58,7 +59,7 @@ export default function RAGWorkbenchPage() {
       const data = await response.json()
       setDocuments(data.documents || [])
     } catch (error) {
-      SecureLogger.error('Failed to load documents:', error)
+      console.error('Failed to load documents:', error)
     }
   }
 
@@ -74,7 +75,7 @@ export default function RAGWorkbenchPage() {
 
       const response = await fetch('/api/documents', {
         method: 'POST',
-        body: formData
+        body: formData,
       })
 
       if (!response.ok) {
@@ -85,16 +86,16 @@ export default function RAGWorkbenchPage() {
 
       const result = await response.json()
       alert(`Document uploaded: ${result.chunks} chunks created`)
-      
+
       // Reload documents
       loadDocuments()
-      
+
       // Clear file input
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
     } catch (error) {
-      SecureLogger.error('Upload error:', error)
+      console.error('Upload error:', error)
       alert('Upload failed')
     } finally {
       setIsUploading(false)
@@ -106,14 +107,14 @@ export default function RAGWorkbenchPage() {
 
     try {
       const response = await fetch(`/api/documents?id=${documentId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       if (response.ok) {
         loadDocuments()
       }
     } catch (error) {
-      SecureLogger.error('Delete error:', error)
+      console.error('Delete error:', error)
     }
   }
 
@@ -128,10 +129,10 @@ export default function RAGWorkbenchPage() {
     const userMessage: Message = {
       id: `msg-${Date.now()}`,
       role: 'user',
-      content: query
+      content: query,
     }
 
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setQuery('')
     setIsLoading(true)
 
@@ -143,8 +144,8 @@ export default function RAGWorkbenchPage() {
           query,
           topK,
           model,
-          provider
-        })
+          provider,
+        }),
       })
 
       if (!response.ok) {
@@ -162,10 +163,10 @@ export default function RAGWorkbenchPage() {
         sources: [],
         tokens: null,
         cost: 0,
-        responseTime: 0
+        responseTime: 0,
       }
 
-      setMessages(prev => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, assistantMessage])
 
       if (!reader) throw new Error('No response body')
 
@@ -187,15 +188,24 @@ export default function RAGWorkbenchPage() {
 
               if (parsed.type === 'metadata') {
                 assistantMessage.sources = parsed.sources
-                setMessages(prev => [...prev.slice(0, -1), { ...assistantMessage }])
+                setMessages((prev) => [
+                  ...prev.slice(0, -1),
+                  { ...assistantMessage },
+                ])
               } else if (parsed.type === 'content') {
                 assistantMessage.content += parsed.content
-                setMessages(prev => [...prev.slice(0, -1), { ...assistantMessage }])
+                setMessages((prev) => [
+                  ...prev.slice(0, -1),
+                  { ...assistantMessage },
+                ])
               } else if (parsed.type === 'done') {
                 assistantMessage.tokens = parsed.tokens
                 assistantMessage.cost = parsed.cost
                 assistantMessage.responseTime = parsed.responseTime
-                setMessages(prev => [...prev.slice(0, -1), { ...assistantMessage }])
+                setMessages((prev) => [
+                  ...prev.slice(0, -1),
+                  { ...assistantMessage },
+                ])
               } else if (parsed.type === 'error') {
                 throw new Error(parsed.error)
               }
@@ -206,7 +216,7 @@ export default function RAGWorkbenchPage() {
         }
       }
     } catch (error) {
-      SecureLogger.error('Query error:', error)
+      console.error('Query error:', error)
       alert('Query failed: ' + (error as Error).message)
     } finally {
       setIsLoading(false)
@@ -218,9 +228,7 @@ export default function RAGWorkbenchPage() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            📚 RAG Workbench
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">📚 RAG Workbench</h1>
           <p className="mt-1 text-sm text-gray-600">
             Document Q&A with Retrieval Augmented Generation
           </p>
@@ -233,7 +241,7 @@ export default function RAGWorkbenchPage() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-lg font-semibold mb-4">Documents</h2>
-              
+
               {/* Upload Button */}
               <div className="mb-4">
                 <input
@@ -271,10 +279,12 @@ export default function RAGWorkbenchPage() {
                 {documents.length === 0 ? (
                   <div className="text-center py-8 text-gray-400">
                     <p>No documents yet</p>
-                    <p className="text-sm mt-1">Upload a document to get started</p>
+                    <p className="text-sm mt-1">
+                      Upload a document to get started
+                    </p>
                   </div>
                 ) : (
-                  documents.map(doc => (
+                  documents.map((doc) => (
                     <div
                       key={doc.id}
                       className="p-3 bg-gray-50 rounded border border-gray-200 hover:border-gray-300 transition-colors"
@@ -285,7 +295,8 @@ export default function RAGWorkbenchPage() {
                             {doc.name}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
-                            {doc.chunks} chunks • {doc.tokens.toLocaleString()} tokens
+                            {doc.chunks} chunks • {doc.tokens.toLocaleString()}{' '}
+                            tokens
                           </p>
                         </div>
                         <button
@@ -304,7 +315,7 @@ export default function RAGWorkbenchPage() {
               {/* Settings */}
               <div className="mt-6 pt-6 border-t">
                 <h3 className="text-sm font-semibold mb-3">Settings</h3>
-                
+
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs text-gray-600 mb-1">
@@ -314,9 +325,12 @@ export default function RAGWorkbenchPage() {
                       value={provider}
                       onChange={(e) => {
                         setProvider(e.target.value as any)
-                        if (e.target.value === 'openai') setModel('gpt-3.5-turbo')
-                        else if (e.target.value === 'anthropic') setModel('claude-3-haiku')
-                        else if (e.target.value === 'google') setModel('gemini-pro')
+                        if (e.target.value === 'openai')
+                          setModel('gpt-3.5-turbo')
+                        else if (e.target.value === 'anthropic')
+                          setModel('claude-3-haiku')
+                        else if (e.target.value === 'google')
+                          setModel('gemini-pro')
                       }}
                       className="w-full px-3 py-2 border rounded-lg text-sm"
                     >
@@ -344,7 +358,9 @@ export default function RAGWorkbenchPage() {
                       {provider === 'anthropic' && (
                         <>
                           <option value="claude-3-opus">Claude 3 Opus</option>
-                          <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                          <option value="claude-3-sonnet">
+                            Claude 3 Sonnet
+                          </option>
                           <option value="claude-3-haiku">Claude 3 Haiku</option>
                         </>
                       )}
@@ -380,37 +396,54 @@ export default function RAGWorkbenchPage() {
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full text-gray-400">
                     <div className="text-center">
-                      <p className="text-lg">💬 Ask a question about your documents</p>
-                      <p className="text-sm mt-2">Upload a document first, then ask away!</p>
+                      <p className="text-lg">
+                        💬 Ask a question about your documents
+                      </p>
+                      <p className="text-sm mt-2">
+                        Upload a document first, then ask away!
+                      </p>
                     </div>
                   </div>
                 ) : (
-                  messages.map(message => (
-                    <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[80%] ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'} rounded-lg px-4 py-3`}>
+                  messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[80%] ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'} rounded-lg px-4 py-3`}
+                      >
                         <p className="whitespace-pre-wrap">{message.content}</p>
-                        
-                        {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
-                          <div className="mt-3 pt-3 border-t border-gray-300">
-                            <p className="text-xs font-semibold mb-2">📚 Sources:</p>
-                            {message.sources.map((source, idx) => (
-                              <details key={idx} className="text-xs mb-1">
-                                <summary className="cursor-pointer hover:underline">
-                                  {source.documentName} (score: {source.relevanceScore.toFixed(1)})
-                                </summary>
-                                <p className="mt-1 pl-3 text-gray-600">{source.text}</p>
-                              </details>
-                            ))}
-                          </div>
-                        )}
-                        
+
+                        {message.role === 'assistant' &&
+                          message.sources &&
+                          message.sources.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-gray-300">
+                              <p className="text-xs font-semibold mb-2">
+                                📚 Sources:
+                              </p>
+                              {message.sources.map((source, idx) => (
+                                <details key={idx} className="text-xs mb-1">
+                                  <summary className="cursor-pointer hover:underline">
+                                    {source.documentName} (score:{' '}
+                                    {source.relevanceScore.toFixed(1)})
+                                  </summary>
+                                  <p className="mt-1 pl-3 text-gray-600">
+                                    {source.text}
+                                  </p>
+                                </details>
+                              ))}
+                            </div>
+                          )}
+
                         {message.role === 'assistant' && message.tokens && (
                           <div className="mt-2 text-xs text-gray-600">
                             <p>
-                              📊 {message.tokens.total.toLocaleString()} tokens 
-                              ({message.tokens.context} context + {message.tokens.completion} response)
-                              • 💰 ${message.cost?.toFixed(6)}
-                              • ⏱️ {(message.responseTime! / 1000).toFixed(1)}s
+                              📊 {message.tokens.total.toLocaleString()} tokens
+                              ({message.tokens.context} context +{' '}
+                              {message.tokens.completion} response) • 💰 $
+                              {message.cost?.toFixed(6)}• ⏱️{' '}
+                              {(message.responseTime! / 1000).toFixed(1)}s
                             </p>
                           </div>
                         )}
@@ -428,13 +461,19 @@ export default function RAGWorkbenchPage() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendQuery()}
-                    placeholder={documents.length === 0 ? "Upload a document first..." : "Ask a question..."}
+                    placeholder={
+                      documents.length === 0
+                        ? 'Upload a document first...'
+                        : 'Ask a question...'
+                    }
                     disabled={isLoading || documents.length === 0}
                     className="flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
                   />
                   <button
                     onClick={handleSendQuery}
-                    disabled={isLoading || !query.trim() || documents.length === 0}
+                    disabled={
+                      isLoading || !query.trim() || documents.length === 0
+                    }
                     className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                   >
                     {isLoading ? 'Thinking...' : 'Send'}

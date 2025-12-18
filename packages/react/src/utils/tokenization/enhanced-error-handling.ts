@@ -1,17 +1,17 @@
 /**
  * Enhanced Error Handling for Token Optimization
- * 
+ *
  * Provides structured error handling with recovery strategies
  */
 
-import { InputValidator } from './input-validator.js';
-import { smartCountTokens } from './smart-fallback.js';
+import { InputValidator } from './input-validator.js'
+import { smartCountTokens } from './smart-fallback.js'
 
 export enum ErrorSeverity {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 export enum ErrorCategory {
@@ -20,48 +20,48 @@ export enum ErrorCategory {
   RESOURCE = 'resource',
   DEPENDENCY = 'dependency',
   CONFIGURATION = 'configuration',
-  UNKNOWN = 'unknown'
+  UNKNOWN = 'unknown',
 }
 
 export interface TokenOptimizationError extends Error {
-  code: string;
-  severity: ErrorSeverity;
-  category: ErrorCategory;
-  context?: ErrorContext;
-  recoverable: boolean;
-  suggestedActions: string[];
-  fallbackUsed?: boolean;
-  originalError?: Error;
+  code: string
+  severity: ErrorSeverity
+  category: ErrorCategory
+  context?: ErrorContext
+  recoverable: boolean
+  suggestedActions: string[]
+  fallbackUsed?: boolean
+  originalError?: Error
 }
 
 export interface ErrorContext {
-  operation: string;
-  input?: any;
-  config?: any;
-  timestamp: number;
-  metadata?: Record<string, any>;
+  operation: string
+  input?: any
+  config?: any
+  timestamp: number
+  metadata?: Record<string, any>
   environment?: {
-    userAgent?: string;
-    platform?: string;
-    timestamp: number;
-  };
+    userAgent?: string
+    platform?: string
+    timestamp: number
+  }
 }
 
 export interface ErrorRecoveryStrategy {
-  name: string;
-  description: string;
-  applicable: (error: TokenOptimizationError) => boolean;
-  execute: (error: TokenOptimizationError) => Promise<any>;
-  priority: number;
+  name: string
+  description: string
+  applicable: (error: TokenOptimizationError) => boolean
+  execute: (error: TokenOptimizationError) => Promise<any>
+  priority: number
 }
 
 export class TokenOptimizationErrorHandler {
-  private recoveryStrategies: Map<string, ErrorRecoveryStrategy> = new Map();
-  private errorHistory: TokenOptimizationError[] = [];
-  private maxHistorySize = 50;
+  private recoveryStrategies: Map<string, ErrorRecoveryStrategy> = new Map()
+  private errorHistory: TokenOptimizationError[] = []
+  private maxHistorySize = 50
 
   constructor() {
-    this.initializeRecoveryStrategies();
+    this.initializeRecoveryStrategies()
   }
 
   private initializeRecoveryStrategies() {
@@ -73,14 +73,16 @@ export class TokenOptimizationErrorHandler {
       priority: 1,
       execute: async (error) => {
         if (error.context?.input) {
-          const validation = InputValidator.validateTextInput(error.context.input);
+          const validation = InputValidator.validateTextInput(
+            error.context.input
+          )
           if (validation.valid) {
-            return smartCountTokens(validation.sanitized);
+            return smartCountTokens(validation.sanitized)
           }
         }
-        throw error;
-      }
-    });
+        throw error
+      },
+    })
 
     // Timeout recovery
     this.recoveryStrategies.set('timeout-retry', {
@@ -91,11 +93,11 @@ export class TokenOptimizationErrorHandler {
       execute: async (error) => {
         if (error.context?.input) {
           // Retry with 2x timeout and simpler approach
-          return smartCountTokens(error.context.input);
+          return smartCountTokens(error.context.input)
         }
-        throw error;
-      }
-    });
+        throw error
+      },
+    })
 
     // Resource recovery
     this.recoveryStrategies.set('resource-cleanup', {
@@ -106,11 +108,11 @@ export class TokenOptimizationErrorHandler {
       execute: async (error) => {
         // Clear caches and retry with simpler approach
         if (error.context?.input) {
-          return smartCountTokens(error.context.input);
+          return smartCountTokens(error.context.input)
         }
-        throw error;
-      }
-    });
+        throw error
+      },
+    })
 
     // Dependency recovery
     this.recoveryStrategies.set('dependency-fallback', {
@@ -121,12 +123,12 @@ export class TokenOptimizationErrorHandler {
       execute: async (error) => {
         if (error.context?.input) {
           // Use basic character-based estimation
-          const text = String(error.context.input);
-          return Math.ceil(text.length / 4); // Basic estimation
+          const text = String(error.context.input)
+          return Math.ceil(text.length / 4) // Basic estimation
         }
-        throw error;
-      }
-    });
+        throw error
+      },
+    })
   }
 
   /**
@@ -139,11 +141,11 @@ export class TokenOptimizationErrorHandler {
     severity: ErrorSeverity,
     context?: Partial<ErrorContext>
   ): TokenOptimizationError {
-    const error = new Error(message) as TokenOptimizationError;
-    error.name = 'TokenOptimizationError';
-    error.code = code;
-    error.category = category;
-    error.severity = severity;
+    const error = new Error(message) as TokenOptimizationError
+    error.name = 'TokenOptimizationError'
+    error.code = code
+    error.category = category
+    error.severity = severity
     error.context = {
       operation: context?.operation || 'unknown',
       input: context?.input,
@@ -151,22 +153,24 @@ export class TokenOptimizationErrorHandler {
       timestamp: Date.now(),
       metadata: context?.metadata,
       environment: {
-        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-        platform: typeof navigator !== 'undefined' ? navigator.platform : undefined,
-        timestamp: Date.now()
-      }
-    };
+        userAgent:
+          typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+        platform:
+          typeof navigator !== 'undefined' ? navigator.platform : undefined,
+        timestamp: Date.now(),
+      },
+    }
 
     // Determine recoverability
-    error.recoverable = this.isRecoverable(error);
+    error.recoverable = this.isRecoverable(error)
 
     // Generate suggested actions
-    error.suggestedActions = this.generateSuggestedActions(error);
+    error.suggestedActions = this.generateSuggestedActions(error)
 
     // Add to history
-    this.addToHistory(error);
+    this.addToHistory(error)
 
-    return error;
+    return error
   }
 
   /**
@@ -176,51 +180,54 @@ export class TokenOptimizationErrorHandler {
     error: Error | TokenOptimizationError,
     context: ErrorContext,
     recoveryOptions?: {
-      attemptRecovery?: boolean;
-      maxRecoveryAttempts?: number;
-      fallbackValue?: T;
+      attemptRecovery?: boolean
+      maxRecoveryAttempts?: number
+      fallbackValue?: T
     }
   ): Promise<T> {
     const options = {
       attemptRecovery: true,
       maxRecoveryAttempts: 3,
-      ...recoveryOptions
-    };
+      ...recoveryOptions,
+    }
 
     // Convert to TokenOptimizationError if needed
-    const tokenError = this.normalizeError(error, context);
+    const tokenError = this.normalizeError(error, context)
 
     // Log error for monitoring
-    this.logError(tokenError);
+    this.logError(tokenError)
 
     // Attempt recovery if applicable
     if (options.attemptRecovery && tokenError.recoverable) {
-      const recoveryResult = await this.attemptRecovery(tokenError, options);
+      const recoveryResult = await this.attemptRecovery(tokenError, options)
       if (recoveryResult.success) {
-        return recoveryResult.value;
+        return recoveryResult.value
       }
     }
 
     // Use fallback value if provided
     if (options.fallbackValue !== undefined) {
-      return options.fallbackValue;
+      return options.fallbackValue
     }
 
     // Re-throw if no recovery possible
-    throw tokenError;
+    throw tokenError
   }
 
   /**
    * Normalize different error types to TokenOptimizationError
    */
-  private normalizeError(error: Error | TokenOptimizationError, context: ErrorContext): TokenOptimizationError {
+  private normalizeError(
+    error: Error | TokenOptimizationError,
+    context: ErrorContext
+  ): TokenOptimizationError {
     if (this.isTokenOptimizationError(error)) {
-      return { ...error, context: { ...error.context, ...context } };
+      return { ...error, context: { ...error.context, ...context } }
     }
 
     // Categorize based on error message
-    const category = this.categorizeError(error);
-    const severity = this.determineSeverity(error, category);
+    const category = this.categorizeError(error)
+    const severity = this.determineSeverity(error, category)
 
     return this.createError(
       error.message,
@@ -228,108 +235,126 @@ export class TokenOptimizationErrorHandler {
       category,
       severity,
       context
-    );
+    )
   }
 
   /**
    * Categorize errors based on patterns
    */
   private categorizeError(error: Error): ErrorCategory {
-    const message = error.message.toLowerCase();
-    
+    const message = error.message.toLowerCase()
+
     if (message.includes('timeout') || message.includes('time')) {
-      return ErrorCategory.TIMEOUT;
+      return ErrorCategory.TIMEOUT
     }
     if (message.includes('memory') || message.includes('resource')) {
-      return ErrorCategory.RESOURCE;
+      return ErrorCategory.RESOURCE
     }
     if (message.includes('validation') || message.includes('invalid')) {
-      return ErrorCategory.VALIDATION;
+      return ErrorCategory.VALIDATION
     }
     if (message.includes('dependency') || message.includes('module')) {
-      return ErrorCategory.DEPENDENCY;
+      return ErrorCategory.DEPENDENCY
     }
     if (message.includes('config') || message.includes('configuration')) {
-      return ErrorCategory.CONFIGURATION;
+      return ErrorCategory.CONFIGURATION
     }
-    
-    return ErrorCategory.UNKNOWN;
+
+    return ErrorCategory.UNKNOWN
   }
 
   /**
    * Determine error severity
    */
-  private determineSeverity(error: Error, category: ErrorCategory): ErrorSeverity {
+  private determineSeverity(
+    error: Error,
+    category: ErrorCategory
+  ): ErrorSeverity {
     // Critical errors
-    if (error.message.includes('out of memory') || error.message.includes('stack overflow')) {
-      return ErrorSeverity.CRITICAL;
+    if (
+      error.message.includes('out of memory') ||
+      error.message.includes('stack overflow')
+    ) {
+      return ErrorSeverity.CRITICAL
     }
-    
+
     // High severity
-    if (category === ErrorCategory.RESOURCE || category === ErrorCategory.DEPENDENCY) {
-      return ErrorSeverity.HIGH;
+    if (
+      category === ErrorCategory.RESOURCE ||
+      category === ErrorCategory.DEPENDENCY
+    ) {
+      return ErrorSeverity.HIGH
     }
-    
+
     // Medium severity
-    if (category === ErrorCategory.TIMEOUT || category === ErrorCategory.CONFIGURATION) {
-      return ErrorSeverity.MEDIUM;
+    if (
+      category === ErrorCategory.TIMEOUT ||
+      category === ErrorCategory.CONFIGURATION
+    ) {
+      return ErrorSeverity.MEDIUM
     }
-    
+
     // Low severity for validation errors
-    return ErrorSeverity.LOW;
+    return ErrorSeverity.LOW
   }
 
   /**
    * Generate error code
    */
   private generateErrorCode(error: Error): string {
-    const category = this.categorizeError(error);
-    const message = error.message.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '-');
-    return `${category}-${message}-${Date.now() % 1000}`;
+    const category = this.categorizeError(error)
+    const message = error.message.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '-')
+    return `${category}-${message}-${Date.now() % 1000}`
   }
 
   /**
    * Determine if error is recoverable
    */
   private isRecoverable(error: TokenOptimizationError): boolean {
-    return error.severity !== ErrorSeverity.CRITICAL && 
-           [ErrorCategory.VALIDATION, ErrorCategory.TIMEOUT, ErrorCategory.DEPENDENCY].includes(error.category);
+    return (
+      error.severity !== ErrorSeverity.CRITICAL &&
+      [
+        ErrorCategory.VALIDATION,
+        ErrorCategory.TIMEOUT,
+        ErrorCategory.DEPENDENCY,
+      ].includes(error.category)
+    )
   }
 
   /**
    * Generate suggested actions
    */
   private generateSuggestedActions(error: TokenOptimizationError): string[] {
-    const actions: string[] = [];
+    const actions: string[] = []
 
     switch (error.category) {
       case ErrorCategory.VALIDATION:
-        actions.push('Check input format and constraints');
-        actions.push('Use InputValidator to sanitize input');
-        actions.push('Consider using fallback token counting');
-        break;
+        actions.push('Check input format and constraints')
+        actions.push('Use InputValidator to sanitize input')
+        actions.push('Consider using fallback token counting')
+        break
       case ErrorCategory.TIMEOUT:
-        actions.push('Increase timeout for large texts');
-        actions.push('Use character-based estimation for quick results');
-        actions.push('Split large texts into smaller chunks');
-        break;
+        actions.push('Increase timeout for large texts')
+        actions.push('Use character-based estimation for quick results')
+        actions.push('Split large texts into smaller chunks')
+        break
       case ErrorCategory.RESOURCE:
-        actions.push('Clear caches and retry');
-        actions.push('Reduce input size if possible');
-        actions.push('Use simpler token counting method');
-        break;
+        actions.push('Clear caches and retry')
+        actions.push('Reduce input size if possible')
+        actions.push('Use simpler token counting method')
+        break
       case ErrorCategory.DEPENDENCY:
-        actions.push('Check if @clarity-chat/token-optimization is installed');
-        actions.push('Use built-in fallback tokenizers');
-        actions.push('Verify model encoding support');
-        break;
+        actions.push('Check if @clarity-chat/token-optimization is installed')
+        actions.push('Use built-in fallback tokenizers')
+        actions.push('Verify model encoding support')
+        break
       default:
-        actions.push('Check error logs for details');
-        actions.push('Try simplified input or configuration');
-        actions.push('Contact support if issue persists');
+        actions.push('Check error logs for details')
+        actions.push('Try simplified input or configuration')
+        actions.push('Contact support if issue persists')
     }
 
-    return actions;
+    return actions
   }
 
   /**
@@ -339,39 +364,38 @@ export class TokenOptimizationErrorHandler {
     error: TokenOptimizationError,
     options: { maxRecoveryAttempts?: number }
   ): Promise<{ success: boolean; value?: any; attempts: number }> {
-    const maxAttempts = options.maxRecoveryAttempts || 3;
-    let attempts = 0;
+    const maxAttempts = options.maxRecoveryAttempts || 3
+    let attempts = 0
 
     // Get applicable strategies
     const strategies = Array.from(this.recoveryStrategies.values())
-      .filter(strategy => strategy.applicable(error))
-      .sort((a, b) => a.priority - b.priority);
+      .filter((strategy) => strategy.applicable(error))
+      .sort((a, b) => a.priority - b.priority)
 
     for (const strategy of strategies) {
-      attempts++;
+      attempts++
       try {
-        const result = await strategy.execute(error);
-        return { success: true, value: result, attempts };
+        const result = await strategy.execute(error)
+        return { success: true, value: result, attempts }
       } catch (recoveryError) {
-        // Try next strategy
-        continue;
-      }
-
-      if (attempts >= maxAttempts) {
-        break;
+        // Try next strategy - check if max attempts reached
+        if (attempts >= maxAttempts) {
+          break
+        }
+        continue
       }
     }
 
-    return { success: false, attempts };
+    return { success: false, attempts }
   }
 
   /**
    * Add error to history
    */
   private addToHistory(error: TokenOptimizationError): void {
-    this.errorHistory.push(error);
+    this.errorHistory.push(error)
     if (this.errorHistory.length > this.maxHistorySize) {
-      this.errorHistory.shift();
+      this.errorHistory.shift()
     }
   }
 
@@ -385,62 +409,76 @@ export class TokenOptimizationErrorHandler {
       severity: error.severity,
       category: error.category,
       message: error.message,
-      recoverable: error.recoverable
-    };
+      recoverable: error.recoverable,
+    }
 
     // In production, this would send to monitoring service
-    console.error('[TokenOptimization]', logEntry);
+    console.error('[TokenOptimization]', logEntry)
   }
 
   /**
    * Check if error is TokenOptimizationError
    */
-  private isTokenOptimizationError(error: any): error is TokenOptimizationError {
-    return error && typeof error === 'object' && 'code' in error && 'category' in error;
+  private isTokenOptimizationError(
+    error: any
+  ): error is TokenOptimizationError {
+    return (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      'category' in error
+    )
   }
 
   /**
    * Get error statistics
    */
   getErrorStats(): {
-    totalErrors: number;
-    byCategory: Record<ErrorCategory, number>;
-    bySeverity: Record<ErrorSeverity, number>;
-    recoverableRate: number;
-    recentErrors: TokenOptimizationError[];
+    totalErrors: number
+    byCategory: Record<ErrorCategory, number>
+    bySeverity: Record<ErrorSeverity, number>
+    recoverableRate: number
+    recentErrors: TokenOptimizationError[]
   } {
     const stats = {
       totalErrors: this.errorHistory.length,
       byCategory: {} as Record<ErrorCategory, number>,
       bySeverity: {} as Record<ErrorSeverity, number>,
       recoverableRate: 0,
-      recentErrors: this.errorHistory.slice(-10)
-    };
+      recentErrors: this.errorHistory.slice(-10),
+    }
 
     // Count by category
-    Object.values(ErrorCategory).forEach(category => {
-      stats.byCategory[category] = this.errorHistory.filter(e => e.category === category).length;
-    });
+    Object.values(ErrorCategory).forEach((category) => {
+      stats.byCategory[category] = this.errorHistory.filter(
+        (e) => e.category === category
+      ).length
+    })
 
     // Count by severity
-    Object.values(ErrorSeverity).forEach(severity => {
-      stats.bySeverity[severity] = this.errorHistory.filter(e => e.severity === severity).length;
-    });
+    Object.values(ErrorSeverity).forEach((severity) => {
+      stats.bySeverity[severity] = this.errorHistory.filter(
+        (e) => e.severity === severity
+      ).length
+    })
 
     // Calculate recoverable rate
-    const recoverableCount = this.errorHistory.filter(e => e.recoverable).length;
-    stats.recoverableRate = stats.totalErrors > 0 ? recoverableCount / stats.totalErrors : 0;
+    const recoverableCount = this.errorHistory.filter(
+      (e) => e.recoverable
+    ).length
+    stats.recoverableRate =
+      stats.totalErrors > 0 ? recoverableCount / stats.totalErrors : 0
 
-    return stats;
+    return stats
   }
 
   /**
    * Clear error history
    */
   clearHistory(): void {
-    this.errorHistory = [];
+    this.errorHistory = []
   }
 }
 
 // Export singleton instance
-export const errorHandler = new TokenOptimizationErrorHandler();
+export const errorHandler = new TokenOptimizationErrorHandler()

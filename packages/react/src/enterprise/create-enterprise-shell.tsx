@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * createEnterpriseShell - Top-level API for enterprise setup
  *
@@ -23,7 +22,10 @@ import { logger } from '@clarity-chat/utils/logger';
  */
 
 import * as React from 'react'
-import { ClarityChat, type ClarityChatProps } from '../components/clarity-chat'
+import {
+  ClarityChat,
+  type ClarityChatProps,
+} from '../components/chat/clarity-chat'
 import { MultiTenancyProvider } from '../multi-tenancy/react'
 import { RBACProvider } from '../rbac/react'
 import { AnalyticsProvider } from '../analytics/AnalyticsProvider'
@@ -169,7 +171,7 @@ export function createEnterpriseShell(
     logEvent: (event: string, data?: any) => {
       if (!audit.enabled) return
       // Audit logging logic would go here
-      logger.debug('[Audit]', event, data)
+      console.log('[Audit]', event, data)
     },
   }
 

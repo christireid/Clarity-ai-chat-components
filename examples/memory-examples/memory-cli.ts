@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Standalone Node.js CLI Example - Clarity Memory
  *
@@ -13,14 +12,13 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 import * as readline from 'readline'
 import { clarityMemory } from '../../packages/memory/src/factory'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize memory service with file persistence
 // @ts-expect-error - Example uses minimal config, factory provides defaults
 const memory = clarityMemory({
   debug: false,
   storage: {
-    type: 'memory' // Change to 'file' with path for persistence
-  }
+    type: 'memory', // Change to 'file' with path for persistence
+  },
 })
 
 // Initialize memory
@@ -30,15 +28,15 @@ await memory.initialize()
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  prompt: '\n💭 You: '
+  prompt: '\n💭 You: ',
 })
 
-SecureLogger.debug('╔═══════════════════════════════════════════════════════════╗')
-SecureLogger.debug('║         🧠 Clarity Memory CLI Chat Demo                 ║')
-SecureLogger.debug('╚═══════════════════════════════════════════════════════════╝')
-SecureLogger.debug('\nThis is a simple CLI chat with memory capabilities.')
-SecureLogger.debug('Type your messages and the system will remember context.')
-SecureLogger.debug('Commands: /stats, /clear, /exit\n')
+console.log('╔═══════════════════════════════════════════════════════════╗')
+console.log('║         🧠 Clarity Memory CLI Chat Demo                 ║')
+console.log('╚═══════════════════════════════════════════════════════════╝')
+console.log('\nThis is a simple CLI chat with memory capabilities.')
+console.log('Type your messages and the system will remember context.')
+console.log('Commands: /stats, /clear, /exit\n')
 
 rl.prompt()
 
@@ -52,7 +50,7 @@ rl.on('line', async (input) => {
 
   // Handle special commands
   if (message === '/exit' || message === '/quit') {
-    SecureLogger.debug('\n👋 Goodbye! Closing memory and exiting...')
+    console.log('\n👋 Goodbye! Closing memory and exiting...')
     await memory.close()
     rl.close()
     process.exit(0)
@@ -60,24 +58,26 @@ rl.on('line', async (input) => {
 
   if (message === '/stats') {
     const stats = memory.getStats()
-    SecureLogger.debug('\n📊 Memory Statistics:')
-    SecureLogger.debug(`  Total memories: ${stats.total}`)
-    SecureLogger.debug(`  By type: ${JSON.stringify(stats.byType, null, 2)}`)
-    SecureLogger.debug(`  Total tokens: ${stats.totalTokens}`)
+    console.log('\n📊 Memory Statistics:')
+    console.log(`  Total memories: ${stats.total}`)
+    console.log(`  By type: ${JSON.stringify(stats.byType, null, 2)}`)
+    console.log(`  Total tokens: ${stats.totalTokens}`)
     rl.prompt()
     return
   }
 
   if (message === '/clear') {
     // Note: clearAll() may not be available, this is a placeholder
-    SecureLogger.debug('✨ Memory cleared (in production, implement clearAll() method)')
+    console.log(
+      '✨ Memory cleared (in production, implement clearAll() method)'
+    )
     rl.prompt()
     return
   }
 
   if (message.startsWith('/')) {
-    SecureLogger.debug(`\n❌ Unknown command: ${message}`)
-    SecureLogger.debug('Available commands: /stats, /clear, /exit')
+    console.log(`\n❌ Unknown command: ${message}`)
+    console.log('Available commands: /stats, /clear, /exit')
     rl.prompt()
     return
   }
@@ -86,12 +86,12 @@ rl.on('line', async (input) => {
     // Search for relevant memories
     const relevantMemories = await memory.recall(message, {
       limit: 5,
-      minConfidence: 0.6
+      minConfidence: 0.6,
     })
 
     // Get optimized context
     const contextBundle = await memory.context({
-      maxTokens: 500
+      maxTokens: 500,
     })
 
     // Generate response (in real app, call your LLM here)
@@ -102,7 +102,7 @@ rl.on('line', async (input) => {
     )
 
     // Display response
-    SecureLogger.debug(`\n🤖 Assistant: ${response}`)
+    console.log(`\n🤖 Assistant: ${response}`)
 
     // Store the conversation
     await Promise.all([
@@ -110,29 +110,29 @@ rl.on('line', async (input) => {
         type: 'episodic',
         scope: 'session',
         importance: 0.5,
-        tags: ['user-message']
+        tags: ['user-message'],
       }),
       memory.add(response, {
         type: 'episodic',
         scope: 'session',
         importance: 0.6,
-        tags: ['assistant-response']
-      })
+        tags: ['assistant-response'],
+      }),
     ])
 
     // Show memory info
     if (relevantMemories.length > 0) {
-      SecureLogger.debug(`   (Used ${relevantMemories.length} relevant memories)`)
+      console.log(`   (Used ${relevantMemories.length} relevant memories)`)
     }
   } catch (error) {
-    SecureLogger.error('\n❌ Error:', error)
+    console.error('\n❌ Error:', error)
   }
 
   rl.prompt()
 })
 
 rl.on('close', () => {
-  SecureLogger.debug('\n👋 Session ended.')
+  console.log('\n👋 Session ended.')
   process.exit(0)
 })
 
@@ -146,11 +146,14 @@ async function generateResponse(
   memoriesUsed: number
 ): Promise<string> {
   // Simulate processing time
-  await new Promise(resolve => setTimeout(resolve, 300))
+  await new Promise((resolve) => setTimeout(resolve, 300))
 
   // Mock responses based on keywords
-  if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
-    return `Hello! I'm here to help. ${memoriesUsed > 0 ? "I remember our previous conversations." : "This is our first chat!"}`
+  if (
+    message.toLowerCase().includes('hello') ||
+    message.toLowerCase().includes('hi')
+  ) {
+    return `Hello! I'm here to help. ${memoriesUsed > 0 ? 'I remember our previous conversations.' : 'This is our first chat!'}`
   }
 
   if (message.toLowerCase().includes('name')) {
@@ -162,7 +165,7 @@ async function generateResponse(
       type: 'semantic',
       scope: 'user',
       importance: 0.9,
-      tags: ['user-fact']
+      tags: ['user-fact'],
     })
     return "I've stored that in my semantic memory. I'll remember it for future conversations!"
   }

@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import React, { useEffect, useState } from 'react'
 import { cn } from '@clarity-chat/primitives'

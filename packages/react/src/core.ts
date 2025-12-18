@@ -27,7 +27,7 @@ export {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './hooks/use-clarity-chat'
+} from './hooks/chat/use-clarity-chat'
 
 // Core components
 export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'

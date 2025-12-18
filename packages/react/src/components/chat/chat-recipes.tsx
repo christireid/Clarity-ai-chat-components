@@ -1,12 +1,12 @@
-import { logger } from '@clarity-chat/utils/logger';
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Chat Recipe Components - Pre-built combinations for common patterns
  *
  * These components combine multiple features for common use cases,
  * making it even easier to get started.
  */
-
-'use client'
 
 import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'

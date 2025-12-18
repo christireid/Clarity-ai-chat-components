@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useCompletion - Mid-Level Completion Hook
  *
@@ -30,7 +29,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * ```tsx
  * const { completion, complete, isLoading } = useCompletion({
  *   api: '/api/completion',
- *   onFinish: (prompt, completion) => logger.debug('Done:', completion),
+ *   onFinish: (prompt, completion) => console.log('Done:', completion),
  * })
  *
  * await complete('Write a story about')
@@ -229,7 +228,7 @@ class CompletionCache {
  * const { completion, complete, isLoading } = useCompletion({
  *   api: '/api/completion',
  *   onFinish: (prompt, completion) => {
- *     logger.debug('Completed:', completion)
+ *     console.log('Completed:', completion)
  *   },
  * })
  *

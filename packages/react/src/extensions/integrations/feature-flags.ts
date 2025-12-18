@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Feature Flags & Experimentation Extensions
  *
@@ -111,7 +110,7 @@ export function createLaunchDarklyExtension(
     defaultConfig: config as LaunchDarklyConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('LaunchDarkly extension initialized')
+      ctx.console.info('LaunchDarkly extension initialized')
 
       let flags: Record<string, unknown> = {}
       const changeCallbacks = new Set<() => void>()
@@ -119,14 +118,14 @@ export function createLaunchDarklyExtension(
       // Would use launchdarkly-js-client-sdk
       const adapter: FeatureFlagsAdapter = {
         async initialize(user) {
-          ctx.logger.debug('Initializing LaunchDarkly client')
+          ctx.console.log('Initializing LaunchDarkly client')
           if (user) {
             await this.identify(user)
           }
         },
 
         async identify(user) {
-          ctx.logger.debug(`Identifying user: ${user.key}`)
+          ctx.console.log(`Identifying user: ${user.key}`)
           // Would call ldClient.identify()
           changeCallbacks.forEach((cb) => cb())
         },
@@ -146,7 +145,7 @@ export function createLaunchDarklyExtension(
         },
 
         track(eventKey, data) {
-          ctx.logger.debug(`Tracking event: ${eventKey}`)
+          ctx.console.log(`Tracking event: ${eventKey}`)
           // Would call ldClient.track()
         },
 
@@ -201,7 +200,7 @@ export function createPostHogFlagsExtension(
     } as PostHogFlagsConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('PostHog Feature Flags extension initialized')
+      ctx.console.info('PostHog Feature Flags extension initialized')
 
       // PostHog instance with type-safe API subset
       interface PostHogAPI {
@@ -222,7 +221,7 @@ export function createPostHogFlagsExtension(
           posthog = ph
           posthog.identify('', {}) // Initialize with anonymous user
         } catch {
-          ctx.logger.warn('PostHog not available')
+          ctx.console.warn('PostHog not available')
         }
       }
 
@@ -318,7 +317,7 @@ export function createUnleashExtension(
     } as UnleashConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Unleash extension initialized')
+      ctx.console.info('Unleash extension initialized')
 
       let flags: Record<string, unknown> = {}
       const changeCallbacks = new Set<() => void>()
@@ -326,12 +325,12 @@ export function createUnleashExtension(
       // Would use @unleash/proxy-client-react
       const adapter: FeatureFlagsAdapter = {
         async initialize(user) {
-          ctx.logger.debug('Initializing Unleash client')
+          ctx.console.log('Initializing Unleash client')
           // Would connect to Unleash proxy
         },
 
         async identify(user) {
-          ctx.logger.debug(`Identifying user: ${user.key}`)
+          ctx.console.log(`Identifying user: ${user.key}`)
           // Would update context
           changeCallbacks.forEach((cb) => cb())
         },
@@ -351,7 +350,7 @@ export function createUnleashExtension(
         },
 
         track(eventKey, data) {
-          ctx.logger.debug(`Tracking event: ${eventKey}`)
+          ctx.console.log(`Tracking event: ${eventKey}`)
         },
 
         onFlagsChanged(callback) {
@@ -409,7 +408,7 @@ export function createFlagsmithExtension(
     } as FlagsmithConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Flagsmith extension initialized')
+      ctx.console.info('Flagsmith extension initialized')
 
       let flags: Record<string, { enabled: boolean; value?: unknown }> = {}
       const changeCallbacks = new Set<() => void>()
@@ -528,7 +527,7 @@ export function createGrowthBookExtension(
     } as GrowthBookConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('GrowthBook extension initialized')
+      ctx.console.info('GrowthBook extension initialized')
 
       let features: Record<
         string,
@@ -545,11 +544,11 @@ export function createGrowthBookExtension(
 
       const adapter: FeatureFlagsAdapter = {
         async initialize() {
-          ctx.logger.debug('GrowthBook initialized')
+          ctx.console.log('GrowthBook initialized')
         },
 
         async identify(user) {
-          ctx.logger.debug(`GrowthBook identify: ${user.key}`)
+          ctx.console.log(`GrowthBook identify: ${user.key}`)
           changeCallbacks.forEach((cb) => cb())
         },
 

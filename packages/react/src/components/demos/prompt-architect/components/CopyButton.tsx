@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 /**
  * CopyButton Component (PromptArchitect)
  *

@@ -3,7 +3,6 @@ import OpenAI from 'openai'
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize clients
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
@@ -190,7 +189,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    SecureLogger.error('Chat API error:', error)
+    console.error('Chat API error:', error)
     return Response.json(
       { error: 'Failed to process chat request' },
       { status: 500 }

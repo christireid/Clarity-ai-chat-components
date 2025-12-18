@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * TokenCostPreview - Real-time Token Cost Estimation Component
  *
@@ -11,7 +10,7 @@ import { logger } from '@clarity-chat/utils/logger';
  *   text={inputValue}
  *   model="gpt-4"
  *   showTokenCount
- *   onCostChange={(cost) => logger.debug(`Est. cost: $${cost.toFixed(4)}`)}
+ *   onCostChange={(cost) => console.log(`Est. cost: $${cost.toFixed(4)}`)}
  * />
  * ```
  */

@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const lastMessage = messages[messages.length - 1]
     const kb = getKnowledgeBase()
     let retrievedContext = ''
-    
+
     if (kb) {
       const start = Date.now()
       retrievedContext = retrieveContext(lastMessage.content, kb)
@@ -45,10 +45,8 @@ export async function POST(req: Request) {
 
     const data = new StreamData()
     data.append({ status: 'streaming_started' })
-    
-    // @ts-expect-error - 'toDataStreamResponse' signature mismatch in some versions but valid here
-    return result.toDataStreamResponse({ data })
 
+    return result.toDataStreamResponse({ data })
   } catch (error) {
     console.error('[Aura] API Error:', error)
     return new Response('Internal Server Error', { status: 500 })

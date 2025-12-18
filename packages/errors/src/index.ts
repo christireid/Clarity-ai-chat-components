@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils';
+import { logger } from '@clarity-chat/utils'
 /**
  * @clarity-chat/errors
  *

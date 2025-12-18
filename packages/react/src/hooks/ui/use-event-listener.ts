@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -11,7 +10,7 @@ import * as React from 'react'
  * const buttonRef = useRef<HTMLButtonElement>(null)
  * 
  * useEventListener('click', (e) => {
- *   logger.debug('Button clicked!', e)
+ *   console.log('Button clicked!', e)
  * }, buttonRef)
  * 
  * // Or listen to window/document

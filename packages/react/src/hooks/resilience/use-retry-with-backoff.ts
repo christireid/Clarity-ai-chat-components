@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useRetryWithBackoff - React Hook for Retry with Exponential Backoff
  *

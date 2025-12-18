@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * TOON (Token-Oriented Object Notation) Decoder
  *
@@ -63,7 +62,7 @@ export function toonToJson(toon: string, options: ToonDecodeOptions = {}): any {
     if (strict) {
       throw error
     }
-    logger.warn('TOON parse error:', error)
+    console.warn('TOON parse error:', error)
     return null
   }
 }

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Secure Message Actions Component
  *
@@ -21,7 +20,7 @@ import { logger } from '@clarity-chat/utils/logger';
  *     threats: [],
  *     sanitized: false
  *   }}
- *   onReport={(reason) => logger.debug('Reported:', reason)}
+ *   onReport={(reason) => console.log('Reported:', reason)}
  * />
  * ```
  */

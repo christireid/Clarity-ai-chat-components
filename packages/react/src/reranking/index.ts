@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Reranking System
  *
@@ -17,7 +16,7 @@ import { logger } from '@clarity-chat/utils/logger';
  *   topK: 5,
  * })
  *
- * logger.debug(reranked.results) // Top 5 most relevant
+ * console.log(reranked.results) // Top 5 most relevant
  * ```
  *
  * @example

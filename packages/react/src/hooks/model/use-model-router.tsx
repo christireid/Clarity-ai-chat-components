@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -63,9 +62,9 @@ export interface UseModelRouterReturn {
  *       { id: 'gpt-4', tier: 'advanced', ... },
  *     ],
  *     onRoute: (decision) => {
- *       logger.debug(`Using ${decision.model.name}`)
- *       logger.debug(`Estimated cost: $${decision.estimatedCost.toFixed(4)}`)
- *       logger.debug(`Savings: ${decision.savingsPercent.toFixed(1)}%`)
+ *       console.log(`Using ${decision.model.name}`)
+ *       console.log(`Estimated cost: $${decision.estimatedCost.toFixed(4)}`)
+ *       console.log(`Savings: ${decision.savingsPercent.toFixed(1)}%`)
  *     }
  *   })
  *

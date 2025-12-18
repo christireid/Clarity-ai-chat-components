@@ -6,7 +6,7 @@
  */
 
 import type { CompleteThemeConfig, ThemeMetadata } from '../theme-config'
-import { createPreset } from '../base'
+import { createPreset } from './base'
 
 /**
  * Aurora light theme
@@ -413,7 +413,4 @@ export const auroraPreset = createPreset({
   metadata: auroraThemeMetadata,
 })
 
-/**
- * Export individual themes
- */
-export { auroraLightTheme, auroraDarkTheme, auroraThemeMetadata }
+// Themes are already exported with 'export const' declarations above

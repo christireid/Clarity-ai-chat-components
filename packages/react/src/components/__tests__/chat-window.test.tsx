@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ChatWindow } from '../chat-window'
+import { ChatWindow } from '../chat/chat-window'
 import type { Message } from '@clarity-chat/types'
 
 describe('ChatWindow Component', () => {

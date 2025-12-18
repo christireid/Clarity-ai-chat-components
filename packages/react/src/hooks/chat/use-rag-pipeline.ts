@@ -1,4 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useRAGPipeline - Top-level hook for RAG pipeline
  *
@@ -14,8 +16,6 @@ import { logger } from '@clarity-chat/utils/logger';
  * const results = await rag.retrieve('What is React?')
  * ```
  */
-
-'use client'
 
 import * as React from 'react'
 import { useVectorStore } from '../vector-stores/react'

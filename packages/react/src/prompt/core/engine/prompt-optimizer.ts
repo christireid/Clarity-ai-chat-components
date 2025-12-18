@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Prompt Optimization Engine
  *
@@ -157,7 +156,7 @@ export async function optimizePrompt(
   let currentTokens = originalTokens
 
   if (debug) {
-    logger.debug(`[OptimizePrompt] Initial tokens: ${originalTokens}, target: ${targetTokens}`)
+    console.log(`[OptimizePrompt] Initial tokens: ${originalTokens}, target: ${targetTokens}`)
   }
 
   // Check if optimization is needed
@@ -182,7 +181,7 @@ export async function optimizePrompt(
   )
 
   if (debug) {
-    logger.debug(`[OptimizePrompt] Selected strategy: ${strategySelection.strategy}`)
+    console.log(`[OptimizePrompt] Selected strategy: ${strategySelection.strategy}`)
   }
 
   // Stage 2: Structuring - Apply style transformation

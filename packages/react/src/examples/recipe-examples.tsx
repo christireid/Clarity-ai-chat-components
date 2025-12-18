@@ -1,7 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Recipe Component Examples
- * 
+ *
  * Demonstrates the pre-built recipe components for common patterns
  */
 
@@ -135,7 +135,7 @@ export function CompleteChatExample() {
  */
 export function PresetUsageExample() {
   const { applyChatPreset } = require('../presets/chat-presets')
-  
+
   // Apply preset to custom options
   const options = applyChatPreset('enterprise', {
     api: '/api/chat',

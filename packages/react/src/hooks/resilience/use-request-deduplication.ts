@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useRequestDeduplication - React Hook for Request Deduplication
  *
