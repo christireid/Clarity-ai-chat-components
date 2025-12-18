@@ -132,6 +132,7 @@ Three bundle options for different needs:
 - [Deployment - Docker](https://clarity-chat.dev/learn/deployment/docker): Deploy with Docker and docker-compose
 - [Troubleshooting](https://clarity-chat.dev/learn/troubleshooting): Common issues and solutions
 - [CLI Tools](https://clarity-chat.dev/tools/cli): Command-line utilities
+- [Dev Tools](https://clarity-chat.dev/tools/dev-tools): API inspector, mock providers, performance profiler
 - [Testing Toolkit](https://clarity-chat.dev/tools/testing): Testing utilities and mocks
 
 ## AI-Optimized APIs
