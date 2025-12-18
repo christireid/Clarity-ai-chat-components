@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -9,12 +10,12 @@ import {
   cn,
   type ButtonState,
 } from '@clarity-chat/primitives'
-import { SendIcon } from './icons'
+import { SendIcon } from '../ui/icons'
 import {
   useRequestDeduplication,
   isDebouncedError,
-} from '../hooks/use-request-deduplication'
-import { DURATION_SECONDS } from '../animations/constants'
+} from '../../hooks/resilience/use-request-deduplication'
+import { DURATION_SECONDS } from '../../animations/constants'
 
 export interface ChatInputProps {
   value: string

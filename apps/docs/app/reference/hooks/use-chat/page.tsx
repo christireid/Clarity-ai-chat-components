@@ -52,7 +52,7 @@ function ChatComponent() {
   } = useChat({
     apiEndpoint: '/api/chat',
     model: 'gpt-4',
-    onError: (error) => logger.logger.error(error)
+    onError: (error) => logger.error(error)
   })
 
   return (

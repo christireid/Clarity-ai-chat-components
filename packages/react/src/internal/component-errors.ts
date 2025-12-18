@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Component-Specific Error Utilities
  *

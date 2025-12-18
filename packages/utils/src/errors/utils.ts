@@ -1,4 +1,4 @@
-import { logger } from '../logger';
+import { logger } from '../logger'
 /**
  * Error Handling Utilities
  *
@@ -6,8 +6,6 @@ import { logger } from '../logger';
  */
 
 import { ClarityError } from './base.js'
-
-
 
 /**
  * Format any error for display

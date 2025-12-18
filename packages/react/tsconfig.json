@@ -29,6 +29,8 @@
     "src/utils/memory/examples/**",
     "src/**/*.example.tsx",
     "src/**/*.example.ts",
-    "src/prompt/**/*"
+    "src/prompt/**/*",
+    "src/utils/tokenization/**/*",
+    "src/enterprise/**/*"
   ]
 }

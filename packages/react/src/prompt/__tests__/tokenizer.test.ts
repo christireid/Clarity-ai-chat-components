@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import { estimatePromptTokens } from '../core/tokenizer'
 import type { ModelMetadata } from '../core/types'
 
@@ -45,9 +45,7 @@ describe('estimatePromptTokens', () => {
   })
 
   it('should handle different tokenizers', () => {
-    const messages: CoreMessage[] = [
-      { role: 'user', content: 'Test message' },
-    ]
+    const messages: CoreMessage[] = [{ role: 'user', content: 'Test message' }]
 
     const openaiModel: ModelMetadata = {
       ...mockModel,
@@ -75,9 +73,7 @@ describe('estimatePromptTokens', () => {
       inputPricePer1K: 0.03,
     }
 
-    const messages: CoreMessage[] = [
-      { role: 'user', content: 'Test' },
-    ]
+    const messages: CoreMessage[] = [{ role: 'user', content: 'Test' }]
 
     const estimate = estimatePromptTokens(messages, modelWithPricing)
 

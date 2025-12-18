@@ -5,27 +5,36 @@
 
 import '@testing-library/jest-dom'
 import { cleanup } from '@testing-library/react'
-import { vi } from 'vitest'
+import { vi, afterEach } from 'vitest'
+
+// Guard for DOM environment
+const hasWindow = typeof window !== 'undefined'
+const hasDocument = typeof document !== 'undefined'
 
 // Mock window.matchMedia for responsive components
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-})
+if (hasWindow) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // deprecated
+      removeListener: vi.fn(), // deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  })
+}
 
 // Mock IntersectionObserver for lazy loading components
-class IntersectionObserver {
+class MockIntersectionObserver {
   callback: IntersectionObserverCallback
   elements: Element[] = []
+  root: Element | Document | null = null
+  rootMargin: string = '0px'
+  thresholds: number[] = [0]
 
   constructor(callback: IntersectionObserverCallback) {
     this.callback = callback
@@ -61,19 +70,20 @@ class IntersectionObserver {
   takeRecords(): IntersectionObserverEntry[] {
     return []
   }
-
-  root: Element | Document | null = null
-  rootMargin: string = '0px'
-  thresholds: number[] = [0]
 }
 
-Object.defineProperty(window, 'IntersectionObserver', {
-  writable: true,
-  value: IntersectionObserver,
-})
+if (hasWindow) {
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    value: MockIntersectionObserver,
+  })
+}
+
+// Also set on global for environments that use global
+global.IntersectionObserver = MockIntersectionObserver as any
 
 // Mock ResizeObserver for responsive components
-global.ResizeObserver = class ResizeObserver {
+class MockResizeObserver {
   callback: ResizeObserverCallback
 
   constructor(callback: ResizeObserverCallback) {
@@ -93,8 +103,10 @@ global.ResizeObserver = class ResizeObserver {
   }
 }
 
+global.ResizeObserver = MockResizeObserver as any
+
 // Mock WebSocket for real-time features
-global.WebSocket = class WebSocket {
+class MockWebSocket {
   static CONNECTING = 0
   static OPEN = 1
   static CLOSING = 2
@@ -105,6 +117,15 @@ global.WebSocket = class WebSocket {
   OPEN = 1
   CLOSING = 2
   CLOSED = 3
+  url: string = ''
+  binaryType: BinaryType = 'blob'
+  bufferedAmount = 0
+  extensions = ''
+  protocol = ''
+  onopen: ((event: Event) => void) | null = null
+  onclose: ((event: CloseEvent) => void) | null = null
+  onerror: ((event: Event) => void) | null = null
+  onmessage: ((event: MessageEvent) => void) | null = null
 
   constructor(url: string) {
     this.url = url
@@ -125,53 +146,50 @@ global.WebSocket = class WebSocket {
   dispatchEvent() {
     return true
   }
-
-  onopen: ((event: Event) => void) | null = null
-  onclose: ((event: CloseEvent) => void) | null = null
-  onerror: ((event: Event) => void) | null = null
-  onmessage: ((event: MessageEvent) => void) | null = null
-  url: string = ''
-  binaryType: BinaryType = 'blob'
-  bufferedAmount = 0
-  extensions = ''
-  protocol = ''
 }
+
+global.WebSocket = MockWebSocket as any
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: vi.fn((key: string) => {
-    const storage: Record<string, string> = {}
-    return storage[key] || null
+  store: {} as Record<string, string>,
+  getItem: vi.fn(function (this: typeof localStorageMock, key: string) {
+    return this.store[key] || null
   }),
-  setItem: vi.fn((key: string, value: string) => {
-    const storage: Record<string, string> = {}
-    storage[key] = value
+  setItem: vi.fn(function (
+    this: typeof localStorageMock,
+    key: string,
+    value: string
+  ) {
+    this.store[key] = value
   }),
-  removeItem: vi.fn((key: string) => {
-    const storage: Record<string, string> = {}
-    delete storage[key]
+  removeItem: vi.fn(function (this: typeof localStorageMock, key: string) {
+    delete this.store[key]
   }),
-  clear: vi.fn(() => {
-    const storage: Record<string, string> = {}
-    Object.keys(storage).forEach((key) => delete storage[key])
+  clear: vi.fn(function (this: typeof localStorageMock) {
+    this.store = {}
   }),
   length: 0,
-  key: vi.fn((index: number) => {
-    const storage: Record<string, string> = {}
-    return Object.keys(storage)[index] || null
+  key: vi.fn(function (this: typeof localStorageMock, index: number) {
+    return Object.keys(this.store)[index] || null
   }),
 }
 
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-  writable: true,
-})
+if (hasWindow) {
+  Object.defineProperty(window, 'localStorage', {
+    value: localStorageMock,
+    writable: true,
+  })
 
-// Mock sessionStorage
-Object.defineProperty(window, 'sessionStorage', {
-  value: localStorageMock,
-  writable: true,
-})
+  Object.defineProperty(window, 'sessionStorage', {
+    value: localStorageMock,
+    writable: true,
+  })
+}
+
+// Also set on global
+global.localStorage = localStorageMock as any
+global.sessionStorage = localStorageMock as any
 
 // Mock crypto for security components
 Object.defineProperty(global, 'crypto', {
@@ -215,7 +233,9 @@ global.fetch = vi.fn(() =>
     json: () => Promise.resolve({}),
     text: () => Promise.resolve(''),
     blob: () => Promise.resolve(new Blob()),
-    clone: () => global.fetch(),
+    clone: function () {
+      return this
+    },
     redirected: false,
     type: 'basic',
     url: '',
@@ -225,57 +245,76 @@ global.fetch = vi.fn(() =>
 )
 
 // Mock navigator APIs
-global.navigator = {
-  clipboard: {
-    writeText: vi.fn(() => Promise.resolve()),
-    readText: vi.fn(() => Promise.resolve('')),
+Object.defineProperty(global, 'navigator', {
+  value: {
+    clipboard: {
+      writeText: vi.fn(() => Promise.resolve()),
+      readText: vi.fn(() => Promise.resolve('')),
+    },
+    userAgent: 'node.js',
+    language: 'en-US',
+    languages: ['en-US'],
+    onLine: true,
+    connection: {
+      effectiveType: '4g',
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    },
+    mediaDevices: {
+      getUserMedia: vi.fn(() => Promise.resolve(new MediaStream())),
+      enumerateDevices: vi.fn(() => Promise.resolve([])),
+    },
+    serviceWorker: {
+      register: vi.fn(() => Promise.resolve({ scope: '' })),
+      controller: null,
+      ready: Promise.resolve({}),
+    },
   },
-  userAgent: 'node.js',
-  language: 'en-US',
-  languages: ['en-US'],
-  onLine: true,
-  connection: {
-    effectiveType: '4g',
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  },
-  mediaDevices: {
-    getUserMedia: vi.fn(() => Promise.resolve(new MediaStream())),
-    enumerateDevices: vi.fn(() => Promise.resolve([])),
-  },
-  serviceWorker: {
-    register: vi.fn(() => Promise.resolve({ scope: '' })),
-    controller: null,
-    ready: Promise.resolve({}),
-  },
-} as any
+  writable: true,
+})
 
-// Mock document.elementFromPoint for accessibility tests
-document.elementFromPoint = vi.fn(() => null)
+// Mock document APIs only if document exists
+if (hasDocument) {
+  document.elementFromPoint = vi.fn(() => null)
+}
 
-// Mock scrollIntoView for infinite scroll components
-Element.prototype.scrollIntoView = vi.fn()
+// Mock Element prototype methods only if Element exists
+if (typeof Element !== 'undefined') {
+  Element.prototype.scrollIntoView = vi.fn()
 
-// Mock getBoundingClientRect for layout calculations
-Element.prototype.getBoundingClientRect = vi.fn(() => ({
-  x: 0,
-  y: 0,
-  width: 800,
-  height: 600,
-  top: 0,
-  right: 800,
-  bottom: 600,
-  left: 0,
-  toJSON: () => ({}),
-}))
+  // Only mock if not already defined
+  if (!Element.prototype.getBoundingClientRect) {
+    Element.prototype.getBoundingClientRect = vi.fn(() => ({
+      x: 0,
+      y: 0,
+      width: 800,
+      height: 600,
+      top: 0,
+      right: 800,
+      bottom: 600,
+      left: 0,
+      toJSON: () => ({}),
+    })) as any
+  }
+}
 
 // Cleanup after each test
 afterEach(() => {
   cleanup()
   vi.clearAllMocks()
+  // Reset localStorage mock
+  localStorageMock.store = {}
 })
 
 // Global test utilities
+declare global {
+  var testUtils: {
+    wait: (ms: number) => Promise<void>
+    flushPromises: () => Promise<void>
+    mockConsole: (method?: 'log' | 'warn' | 'error') => () => void
+  }
+}
+
 global.testUtils = {
   wait: (ms: number) => new Promise((resolve) => setTimeout(resolve, ms)),
   flushPromises: () => new Promise((resolve) => setImmediate(resolve)),

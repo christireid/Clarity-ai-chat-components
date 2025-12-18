@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 
@@ -9,25 +10,25 @@ import * as React from 'react'
 export interface UseErrorRecoveryOptions<T> {
   /** The async operation to execute and retry */
   operation: (...args: unknown[]) => Promise<T>
-  
+
   /** Maximum retry attempts (default: 3) */
   maxAttempts?: number
-  
+
   /** Backoff delays in milliseconds (default: [1000, 3000, 10000]) */
   backoffMs?: number[]
-  
+
   /** Function to determine if error is retryable (default: all errors retryable) */
   shouldRetry?: (error: Error, attempt: number) => boolean
-  
+
   /** Callback when retry starts */
   onRetryStart?: (attempt: number) => void
-  
+
   /** Callback when retry succeeds */
   onRetrySuccess?: (result: T, attempt: number) => void
-  
+
   /** Callback when retry fails */
   onRetryFail?: (error: Error, attempt: number) => void
-  
+
   /** Callback when max attempts reached */
   onMaxAttemptsReached?: (error: Error) => void
 }
@@ -38,34 +39,34 @@ export interface UseErrorRecoveryOptions<T> {
 export interface UseErrorRecoveryReturn<T> {
   /** Execute operation with retry logic */
   execute: (...args: unknown[]) => Promise<T | null>
-  
+
   /** Manually retry last failed operation */
   retry: () => Promise<T | null>
-  
+
   /** Current error if any */
   error: Error | null
-  
+
   /** Whether operation is currently executing */
   isLoading: boolean
-  
+
   /** Whether operation is retrying */
   isRetrying: boolean
-  
+
   /** Current attempt number (0 = not started, 1 = first attempt, etc.) */
   attemptNumber: number
-  
+
   /** Whether can retry (haven't reached max attempts) */
   canRetry: boolean
-  
+
   /** User-friendly error message */
   errorMessage: string | null
-  
+
   /** Error type classification */
   errorType: 'network' | 'ratelimit' | 'server' | 'auth' | 'unknown' | null
-  
+
   /** Last successful result */
   data: T | null
-  
+
   /** Reset state */
   reset: () => void
 }
@@ -73,25 +74,45 @@ export interface UseErrorRecoveryReturn<T> {
 /**
  * Classify error type
  */
-function classifyError(error: Error): 'network' | 'ratelimit' | 'server' | 'auth' | 'unknown' {
+function classifyError(
+  error: Error
+): 'network' | 'ratelimit' | 'server' | 'auth' | 'unknown' {
   const message = error.message.toLowerCase()
-  
-  if (message.includes('network') || message.includes('fetch') || message.includes('connection')) {
+
+  if (
+    message.includes('network') ||
+    message.includes('fetch') ||
+    message.includes('connection')
+  ) {
     return 'network'
   }
-  
-  if (message.includes('rate limit') || message.includes('too many requests') || message.includes('429')) {
+
+  if (
+    message.includes('rate limit') ||
+    message.includes('too many requests') ||
+    message.includes('429')
+  ) {
     return 'ratelimit'
   }
-  
-  if (message.includes('500') || message.includes('502') || message.includes('503') || message.includes('504')) {
+
+  if (
+    message.includes('500') ||
+    message.includes('502') ||
+    message.includes('503') ||
+    message.includes('504')
+  ) {
     return 'server'
   }
-  
-  if (message.includes('401') || message.includes('403') || message.includes('unauthorized') || message.includes('forbidden')) {
+
+  if (
+    message.includes('401') ||
+    message.includes('403') ||
+    message.includes('unauthorized') ||
+    message.includes('forbidden')
+  ) {
     return 'auth'
   }
-  
+
   return 'unknown'
 }
 
@@ -115,7 +136,7 @@ function getUserFriendlyMessage(errorType: string): string {
 
 /**
  * Production-ready error recovery hook with intelligent retry logic.
- * 
+ *
  * **Features:**
  * - Automatic retry with exponential backoff
  * - Configurable retry logic (max attempts, delays, conditions)
@@ -124,14 +145,14 @@ function getUserFriendlyMessage(errorType: string): string {
  * - Retry state tracking
  * - Manual retry capability
  * - Success/failure callbacks for analytics
- * 
+ *
  * **Use Cases:**
  * - API request error handling
  * - Network failure recovery
  * - Rate limit handling
  * - Server error retry
  * - Authentication refresh
- * 
+ *
  * @example
  * ```tsx
  * // Basic API retry
@@ -145,14 +166,14 @@ function getUserFriendlyMessage(errorType: string): string {
  *   },
  *   maxAttempts: 3,
  * })
- * 
+ *
  * const handleSend = async () => {
  *   const result = await execute('Hello!')
  *   if (result) {
  *     logger.debug('Success:', result)
  *   }
  * }
- * 
+ *
  * // Custom retry logic
  * const { execute } = useErrorRecovery({
  *   operation: sendMessage,
@@ -178,13 +199,13 @@ function getUserFriendlyMessage(errorType: string): string {
  *     showSupportDialog()
  *   },
  * })
- * 
+ *
  * // With manual retry UI
  * function ChatMessage() {
  *   const { execute, error, errorMessage, errorType, retry, canRetry, isRetrying } = useErrorRecovery({
  *     operation: sendMessage,
  *   })
- * 
+ *
  *   return (
  *     <div>
  *       {error && (
@@ -222,7 +243,7 @@ export function useErrorRecovery<T = any>(
   const [attemptNumber, setAttemptNumber] = React.useState(0)
   const [data, setData] = React.useState<T | null>(null)
   const lastArgsRef = React.useRef<unknown[]>([])
-  
+
   // Store callbacks in refs to avoid recreating execute function
   const operationRef = React.useRef(operation)
   const shouldRetryRef = React.useRef(shouldRetry)
@@ -230,7 +251,7 @@ export function useErrorRecovery<T = any>(
   const onRetrySuccessRef = React.useRef(onRetrySuccess)
   const onRetryFailRef = React.useRef(onRetryFail)
   const onMaxAttemptsReachedRef = React.useRef(onMaxAttemptsReached)
-  
+
   React.useLayoutEffect(() => {
     operationRef.current = operation
     shouldRetryRef.current = shouldRetry
@@ -238,7 +259,14 @@ export function useErrorRecovery<T = any>(
     onRetrySuccessRef.current = onRetrySuccess
     onRetryFailRef.current = onRetryFail
     onMaxAttemptsReachedRef.current = onMaxAttemptsReached
-  }, [operation, shouldRetry, onRetryStart, onRetrySuccess, onRetryFail, onMaxAttemptsReached])
+  }, [
+    operation,
+    shouldRetry,
+    onRetryStart,
+    onRetrySuccess,
+    onRetryFail,
+    onMaxAttemptsReached,
+  ])
 
   const canRetry = attemptNumber < maxAttempts && error !== null
   const errorType = error ? classifyError(error) : null
@@ -287,25 +315,30 @@ export function useErrorRecovery<T = any>(
 
           // Execute operation
           const result = await operationRef.current(...args)
-          
+
           // Success
           setData(result)
           setError(null)
           setIsLoading(false)
           setIsRetrying(false)
-          
+
           if (currentAttempt > 1) {
             onRetrySuccessRef.current?.(result, currentAttempt)
           }
-          
+
           return result
         } catch (err) {
           lastError = err as Error
-          logger.error(`[useErrorRecovery] Attempt ${currentAttempt} failed:`, err)
+          logger.error(
+            `[useErrorRecovery] Attempt ${currentAttempt} failed:`,
+            err
+          )
 
           // Check if should retry
           if (!shouldRetryRef.current(lastError, currentAttempt)) {
-            logger.debug('[useErrorRecovery] shouldRetry returned false - stopping retries')
+            logger.debug(
+              '[useErrorRecovery] shouldRetry returned false - stopping retries'
+            )
             break
           }
 
@@ -341,7 +374,9 @@ export function useErrorRecovery<T = any>(
    */
   const retry = React.useCallback(async (): Promise<T | null> => {
     if (!canRetry) {
-      logger.warn('[useErrorRecovery] Cannot retry - max attempts reached or no error')
+      logger.warn(
+        '[useErrorRecovery] Cannot retry - max attempts reached or no error'
+      )
       return null
     }
 

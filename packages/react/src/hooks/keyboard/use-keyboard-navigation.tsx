@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -408,7 +407,7 @@ export function KeyboardNavigationProvider({
   // Warn about conflicts in development
   React.useEffect(() => {
     if (warnOnConflicts && state.conflicts.length > 0) {
-      logger.warn(
+      console.warn(
         '[KeyboardNavigation] Shortcut conflicts detected:',
         state.conflicts.map((c) => ({
           key: c.key,

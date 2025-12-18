@@ -9,6 +9,73 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+#### Public API Enhancements
+
+- `ClarityChatProps` type is now exported for TypeScript consumers
+- `useChat` hook now returns `stop()` and `reload()` methods for generation control
+- `sendMessage()` in `useChat` now returns message ID (`string | null`) instead of `void`
+- `useChatHandlers` now includes `onStopGeneration` handler
+- Runtime development warnings for unimplemented props (`showTokenCounter`, `showNetworkStatus`,
+  `enableMessageOperations`)
+
+### Changed
+
+#### Breaking Changes - API Consistency
+
+- **BREAKING**: `FeedbackAnimation` component renamed to `FeedbackAnimationOverlay` to resolve
+  export conflict
+
+  ```tsx
+  // Before
+  import { FeedbackAnimation } from '@clarity-chat/react'
+  // After
+  import { FeedbackAnimationOverlay } from '@clarity-chat/react'
+  ```
+
+- **BREAKING**: `onMessageFeedback` callback signature changed to include optional comment
+
+  ```tsx
+  // Before
+  onMessageFeedback?: (messageId: string, feedbackType: 'positive' | 'negative') => void
+  // After
+  onMessageFeedback?: (messageId: string, type: 'up' | 'down', comment?: string) => void
+  ```
+
+- **BREAKING**: `useChat.sendMessage()` return type changed from `Promise<void>` to
+  `Promise<string | null>`
+  ```tsx
+  // Before
+  await sendMessage('Hello')
+  // After
+  const messageId = await sendMessage('Hello')
+  ```
+
+#### Handler Naming Consistency
+
+- `useChatHandlers` return properties now match `ChatWindow` props exactly for spread usage:
+  - `sendMessage` → `onSendMessage`
+  - `clear` → `onClear`
+  - `messageRetry` → `onMessageRetry`
+  - `editMessage` → `onEditMessage`
+  - `regenerateMessage` → `onRegenerateMessage`
+  - `deleteMessage` → `onDeleteMessage`
+
+### Fixed
+
+- `ClarityChat` now properly passes all declared props to `ChatWindow` (previously props were
+  declared but not used)
+- Fixed `useChatHandlers` content type safety - now preserves `CoreMessageContent` (string or
+  multi-part array) instead of coercing to string
+- Fixed potential data loss in regenerate/edit operations with proper rollback on failure
+
+### Deprecated
+
+- Props `autoScroll`, `theme`, `showTokenCounter`, `showNetworkStatus`, `enableMessageOperations` on
+  `ClarityChat` are accepted but log warnings in development mode as they are not yet fully
+  implemented
+
+### Added
+
 #### React 19 Ref Utilities
 
 - `useMergedRef` hook for merging multiple refs (internal + external)

@@ -26,7 +26,7 @@ export default async function UsageQuotasGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read usage-quotas guide', error)
+    logger.error('Failed to read usage-quotas guide', error)
     content = '# Usage-quotas\n\nContent not available.'
   }
 

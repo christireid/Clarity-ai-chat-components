@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -72,7 +71,7 @@ export function HeroChatStorageIndicator({
           }
         }
       } catch {
-        logger.logger.error('Failed to import conversations')
+        logger.error('Failed to import conversations')
       }
     }
     input.click()

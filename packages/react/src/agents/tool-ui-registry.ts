@@ -1,16 +1,16 @@
 /**
  * Tool UI Registry
- * 
+ *
  * Registry pattern for mapping tool names to React components that render
  * tool results in a user-friendly way.
- * 
+ *
  * @example
  * ```tsx
  * const registry = createToolUIRegistry({
  *   weather: WeatherResult,
  *   search: SearchResults,
  * })
- * 
+ *
  * <ClarityToolResult
  *   registry={registry}
  *   toolCall={toolCall}
@@ -21,7 +21,7 @@
  */
 
 import * as React from 'react'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
 
 /**
  * Props for tool result components
@@ -29,10 +29,10 @@ import type { CoreMessage } from '../hooks/use-chat-enhanced'
 export interface ToolComponentProps<TData = any> {
   /** Tool execution result data */
   data: TData
-  
+
   /** All messages in the conversation */
   messages: CoreMessage[]
-  
+
   /** Tool call metadata (optional) */
   toolCall?: {
     name: string
@@ -49,7 +49,7 @@ export type ToolComponentRegistry = {
 
 /**
  * Create a type-safe tool UI registry
- * 
+ *
  * @param registry - Object mapping tool names to components
  * @returns The registry (for type inference)
  */
@@ -82,13 +82,11 @@ export function hasToolComponent(
 /**
  * Validate registry components at runtime
  * Checks that all registered components are valid React components
- * 
+ *
  * @param registry - Tool component registry to validate
  * @returns Validation result with any errors found
  */
-export function validateToolRegistry(
-  registry: ToolComponentRegistry
-): {
+export function validateToolRegistry(registry: ToolComponentRegistry): {
   valid: boolean
   errors: Array<{ toolName: string; error: string }>
   warnings: Array<{ toolName: string; warning: string }>
@@ -119,7 +117,8 @@ export function validateToolRegistry(
       if (!componentName || componentName === 'Anonymous') {
         warnings.push({
           toolName,
-          warning: 'Component has no display name (consider adding displayName)',
+          warning:
+            'Component has no display name (consider adding displayName)',
         })
       }
     }
@@ -134,13 +133,11 @@ export function validateToolRegistry(
 
 /**
  * Get registry statistics
- * 
+ *
  * @param registry - Tool component registry
  * @returns Statistics about the registry
  */
-export function getRegistryStats(
-  registry: ToolComponentRegistry
-): {
+export function getRegistryStats(registry: ToolComponentRegistry): {
   totalTools: number
   toolNames: string[]
   hasComponents: boolean

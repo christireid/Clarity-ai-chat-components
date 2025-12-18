@@ -1,10 +1,10 @@
 /**
  * ClarityChat Presets Example
- * 
+ *
  * Shows how to use pre-configured chat setups for common use cases.
  */
 
-import { ClarityChatPresets } from '../components/clarity-chat-presets'
+import { ClarityChatPresets } from '../components/chat/clarity-chat-presets'
 import '@clarity-chat/react/styles.css'
 
 /**
@@ -19,7 +19,7 @@ export function SimpleChatExample() {
  */
 export function MemoryChatExample() {
   return (
-    <ClarityChatPresets.WithMemory 
+    <ClarityChatPresets.WithMemory
       api="/api/chat"
       memoryStrategy="sliding-window"
     />
@@ -31,7 +31,7 @@ export function MemoryChatExample() {
  */
 export function EnterpriseChatExample() {
   return (
-    <ClarityChatPresets.Enterprise 
+    <ClarityChatPresets.Enterprise
       api="/api/chat"
       sessionTitle="Enterprise Assistant"
       showHeader
@@ -44,7 +44,7 @@ export function EnterpriseChatExample() {
  */
 export function StreamingChatExample() {
   return (
-    <ClarityChatPresets.Streaming 
+    <ClarityChatPresets.Streaming
       api="/api/chat"
       useWebSocket={false} // Use SSE (default) or true for WebSocket
     />
@@ -57,10 +57,10 @@ export function StreamingChatExample() {
 export function CustomChatExample() {
   const { createMemoryChatConfig } = require('../utils/clarity-chat-helpers')
   const { useClarityChat, ChatWindow } = require('../hooks/use-clarity-chat')
-  
+
   const config = createMemoryChatConfig('/api/chat', 'semantic-chunks', 6000)
   const chat = useClarityChat(config)
-  
+
   return (
     <ChatWindow
       messages={chat.messages}

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -154,7 +153,7 @@ describe('Message Component', () => {
     it('should render inline code', () => {
       const inlineCodeMessage: MessageType = {
         ...mockAssistantMessage,
-        content: 'Use `logger.debug()` to debug',
+        content: 'Use `console.log()` to debug',
       }
       const { container } = renderWithProviders(
         <Message message={inlineCodeMessage} />

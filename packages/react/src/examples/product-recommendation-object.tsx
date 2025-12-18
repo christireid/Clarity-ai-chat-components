@@ -1,14 +1,20 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Product Recommendation Object Example
- * 
+ *
  * Demonstrates useClarityObject for structured output generation.
  * Given a query, the model returns a structured Product[] object.
  */
 
 import * as React from 'react'
 import { useClarityObject } from '../hooks/use-clarity-object'
-import { Card, CardContent, CardHeader, Button, Badge } from '@clarity-chat/primitives'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Button,
+  Badge,
+} from '@clarity-chat/primitives'
 
 export interface Product {
   name: string
@@ -91,9 +97,7 @@ export function ProductRecommendationExample() {
             <input
               type="text"
               value={input.query}
-              onChange={(e) =>
-                setInput({ ...input, query: e.target.value })
-              }
+              onChange={(e) => setInput({ ...input, query: e.target.value })}
               placeholder="e.g., gaming laptops, wireless mice..."
               className="flex-1 px-4 py-2 border rounded-lg"
               onKeyDown={(e) => {
@@ -103,7 +107,10 @@ export function ProductRecommendationExample() {
               }}
               disabled={isLoading}
             />
-            <Button onClick={handleSearch} disabled={isLoading || !input.query.trim()}>
+            <Button
+              onClick={handleSearch}
+              disabled={isLoading || !input.query.trim()}
+            >
               {isLoading ? 'Generating...' : 'Search'}
             </Button>
             {products && (
@@ -186,9 +193,7 @@ export function ProductRecommendationExample() {
                       ${product.price.toFixed(2)}
                     </span>
                     {product.rating && (
-                      <Badge variant="secondary">
-                        ⭐ {product.rating}
-                      </Badge>
+                      <Badge variant="secondary">⭐ {product.rating}</Badge>
                     )}
                   </div>
                 </CardHeader>

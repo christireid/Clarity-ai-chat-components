@@ -26,7 +26,7 @@ export default async function InteractiveGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read interactive guide', error)
+    logger.error('Failed to read interactive guide', error)
     content = '# Interactive\n\nContent not available.'
   }
 

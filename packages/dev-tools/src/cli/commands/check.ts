@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Check command
  *
@@ -26,9 +25,9 @@ export const checkCommand = new Command('check')
     const dir = options.dir
     const results: CheckResult[] = []
 
-    logger.debug()
-    logger.debug(chalk.bold.blue(`Checking project: ${dir}`))
-    logger.debug()
+    console.log()
+    console.log(chalk.bold.blue(`Checking project: ${dir}`))
+    console.log()
 
     // Check package.json exists
     const packageJsonPath = join(dir, 'package.json')
@@ -183,7 +182,7 @@ export const checkCommand = new Command('check')
 
     // Output results
     if (options.json) {
-      logger.debug(JSON.stringify(results, null, 2))
+      console.log(JSON.stringify(results, null, 2))
     } else {
       const columns: TableColumn[] = [
         { header: 'Check', width: 25 },
@@ -201,8 +200,8 @@ export const checkCommand = new Command('check')
         r.message,
       ])
 
-      logger.debug(table(data, columns))
-      logger.debug()
+      console.log(table(data, columns))
+      console.log()
 
       // Summary
       const passCount = results.filter((r) => r.status === 'pass').length
@@ -212,13 +211,13 @@ export const checkCommand = new Command('check')
       const summary = `Passed: ${passCount}, Warnings: ${warnCount}, Failed: ${failCount}`
 
       if (failCount > 0) {
-        logger.debug(errorBox(summary, 'Check Results'))
+        console.log(errorBox(summary, 'Check Results'))
       } else if (warnCount > 0) {
-        logger.debug(warningBox(summary, 'Check Results'))
+        console.log(warningBox(summary, 'Check Results'))
       } else {
-        logger.debug(successBox(summary, 'Check Results'))
+        console.log(successBox(summary, 'Check Results'))
       }
-      logger.debug()
+      console.log()
     }
 
     process.exit(results.some((r) => r.status === 'fail') ? 1 : 0)

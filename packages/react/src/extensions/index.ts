@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Clarity Chat Extensions System
  *
@@ -22,7 +21,7 @@ import { logger } from '@clarity-chat/utils/logger';
  *   category: 'utility',
  *   description: 'A custom extension',
  *   initialize: (ctx) => {
- *     ctx.logger.info('Extension initialized!')
+ *     ctx.console.info('Extension initialized!')
  *   },
  * })
  *

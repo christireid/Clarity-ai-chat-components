@@ -40,7 +40,7 @@ class ShowcaseErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryS
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    logger.logger.error('ShowcaseErrorBoundary caught error:', error, errorInfo)
+    logger.error('ShowcaseErrorBoundary caught error:', error, errorInfo)
   }
 
   handleRetry = () => {

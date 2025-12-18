@@ -1,12 +1,16 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Simple Chat with Handlers Example
- * 
+ *
  * Demonstrates using useChatHandlers to reduce boilerplate.
  * This is the recommended pattern when you need more control than ClarityChat.
  */
 
-import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
+import {
+  useClarityChat,
+  ChatWindow,
+  useChatHandlers,
+} from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 export function SimpleChatWithHandlers() {

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ErrorBoundary } from '@clarity-chat/error-handling'
 import { ConfigurationError, APIError } from '@clarity-chat/error-handling'
@@ -47,7 +46,13 @@ export const CustomFallback: Story = {
   args: {
     children: <ThrowError />,
     fallback: ({ error, resetError }) => (
-      <div style={{ padding: '2rem', border: '2px solid red', borderRadius: '8px' }}>
+      <div
+        style={{
+          padding: '2rem',
+          border: '2px solid red',
+          borderRadius: '8px',
+        }}
+      >
         <h2>Custom Error UI</h2>
         <p>{error.message}</p>
         <button onClick={resetError}>Reset</button>
@@ -97,8 +102,8 @@ export const WithErrorCallback: Story = {
   args: {
     children: <ThrowError />,
     onError: (error, errorInfo) => {
-      SecureLogger.debug('Error caught:', error)
-      SecureLogger.debug('Error info:', errorInfo)
+      console.log('Error caught:', error)
+      console.log('Error info:', errorInfo)
     },
   },
 }

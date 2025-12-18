@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Batch operation utilities
  * Process multiple items in parallel or sequentially
@@ -64,7 +63,7 @@ export async function processBatch<T>(options: BatchOptions<T>): Promise<BatchRe
           if (onError) {
             onError(item, err)
           } else {
-            logger.error(`Failed to process item: ${item}`, err)
+            console.error(`Failed to process item: ${item}`, err)
           }
         }
 
@@ -86,7 +85,7 @@ export async function processBatch<T>(options: BatchOptions<T>): Promise<BatchRe
         if (onError) {
           onError(item, error)
         } else {
-          logger.error(`Failed to process item: ${item}`, error)
+          console.error(`Failed to process item: ${item}`, error)
         }
       }
 
@@ -124,7 +123,7 @@ export async function batchAddComponents(
       info(`Progress: ${completed}/${total} components added`)
     },
     onError: (component, err) => {
-      logger.error(`Failed to add component: ${component}`)
+      console.error(`Failed to add component: ${component}`)
     },
   })
 }

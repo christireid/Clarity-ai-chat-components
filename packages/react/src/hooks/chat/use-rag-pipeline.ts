@@ -1,4 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useRAGPipeline - Top-level hook for RAG pipeline
  *
@@ -15,15 +17,13 @@ import { logger } from '@clarity-chat/utils/logger';
  * ```
  */
 
-'use client'
-
 import * as React from 'react'
 import { useVectorStore } from '../vector-stores/react'
 import { useEmbeddings } from '../embeddings/react'
 import {
   validateVectorStoreProvider,
   validateEmbeddingProvider,
-} from '../utils/runtime-validation'
+} from '../../utils/config/runtime-validation'
 
 /**
  * Options for useRAGPipeline

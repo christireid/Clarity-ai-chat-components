@@ -2,19 +2,18 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Button,
-  Card,
-  CardContent,
-  Badge,
-  cn,
-} from '@clarity-chat/primitives'
+import { Button, Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
+import { Skeleton } from '../ui/skeleton'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 /**
  * Types of prompt suggestions based on context
  */
-export type PromptSuggestionType = 
+export type PromptSuggestionType =
   | 'starter' // Initial prompts for new conversations
   | 'follow-up' // Context-aware follow-ups
   | 'quick-reply' // Quick reply chips
@@ -66,17 +65,17 @@ export interface PromptSuggestionsProps {
 
 /**
  * PromptSuggestions Component
- * 
+ *
  * Displays context-aware prompt suggestions based on conversation state.
  * Supports starter prompts, follow-ups, quick replies, and templates.
- * 
+ *
  * Features:
  * - Context-aware suggestions based on conversation history
  * - Animated, accessible UI
  * - Multiple layout options
  * - Category grouping
  * - Confidence-based sorting
- * 
+ *
  * @example
  * ```tsx
  * <PromptSuggestions
@@ -100,7 +99,9 @@ export function PromptSuggestions({
   showCategories = false,
   className,
 }: PromptSuggestionsProps) {
-  const [selectedCategory, setSelectedCategory] = React.useState<string | 'all'>('all')
+  const [selectedCategory, setSelectedCategory] = React.useState<
+    string | 'all'
+  >('all')
 
   // Filter and sort suggestions
   const processedSuggestions = React.useMemo(() => {
@@ -145,10 +146,7 @@ export function PromptSuggestions({
     return (
       <div className={cn('flex flex-wrap gap-2.5', className)}>
         {Array.from({ length: maxSuggestions }).map((_, i) => (
-          <div
-            key={i}
-            className="h-9 w-28 animate-pulse rounded-full bg-muted/60"
-          />
+          <Skeleton key={i} width={112} height={36} rounded="full" />
         ))}
       </div>
     )
@@ -225,10 +223,7 @@ export function PromptSuggestions({
                   )}
                   <span>{suggestion.label || suggestion.text}</span>
                   {suggestion.confidence !== undefined && (
-                    <Badge
-                      variant="secondary"
-                      className="ml-2 text-xs"
-                    >
+                    <Badge variant="secondary" className="ml-2 text-xs">
                       {Math.round(suggestion.confidence * 100)}%
                     </Badge>
                   )}
@@ -283,7 +278,11 @@ export function PromptSuggestions({
                       <motion.div
                         className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200"
                         whileHover={{ scale: 1.05, rotate: 3 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 25,
+                        }}
                       >
                         {suggestion.icon}
                       </motion.div>
@@ -298,15 +297,28 @@ export function PromptSuggestions({
                         </p>
                       )}
                       {suggestion.confidence !== undefined && (
-                        <Badge variant="secondary" className="mt-2.5 text-xs bg-primary/10 text-primary border-0">
+                        <Badge
+                          variant="secondary"
+                          className="mt-2.5 text-xs bg-primary/10 text-primary border-0"
+                        >
                           {Math.round(suggestion.confidence * 100)}% match
                         </Badge>
                       )}
                     </div>
                     {/* Arrow indicator */}
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-muted/50 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-200">
-                      <svg className="w-3.5 h-3.5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-3.5 h-3.5 text-muted-foreground"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -330,9 +342,9 @@ export function PromptSuggestions({
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 10, scale: 0.98 }}
             transition={{
-              duration: 0.2,
+              duration: durations.normal,
               delay: index * 0.03,
-              ease: [0.25, 0.1, 0.25, 1],
+              ease: EASING_FRAMER.sharp,
             }}
           >
             <Button
@@ -347,7 +359,9 @@ export function PromptSuggestions({
                 <span className="mr-2.5">{suggestion.icon}</span>
               )}
               <div className="flex-1 text-left">
-                <div className="font-semibold text-sm">{suggestion.label || suggestion.text}</div>
+                <div className="font-semibold text-sm">
+                  {suggestion.label || suggestion.text}
+                </div>
                 {suggestion.description && (
                   <div className="text-xs text-muted-foreground/90 mt-0.5">
                     {suggestion.description}

@@ -4,7 +4,7 @@ import * as React from 'react'
 import ReactMarkdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { cn } from '@clarity-chat/primitives'
-import { CopyButton } from '../copy-button'
+import { CopyButton } from './copy-button'
 import { MarkdownCodeBlock } from './markdown-code-block'
 import { CodeWindowHeader } from '../code/CodeWindowHeader'
 

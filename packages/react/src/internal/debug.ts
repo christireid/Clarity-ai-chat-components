@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Browser Debug Mode Utility
  *
@@ -118,7 +117,7 @@ function ensureInitialized(): void {
       const parsed = JSON.parse(saved) as Partial<DebugConfig>
       config = { ...defaultConfig, ...parsed }
       if (config.enabled) {
-        logger.debug(
+        console.log(
           '%c[Clarity Chat Debug]%c Loaded from localStorage',
           'background: #7c3aed; color: white; padding: 2px 6px; border-radius: 3px',
           'color: #7c3aed'
@@ -152,7 +151,7 @@ export function enableDebug(options: Partial<DebugConfig> = {}): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
   }
 
-  logger.debug(
+  console.log(
     '%c[Clarity Chat Debug]%c Enabled',
     'background: #7c3aed; color: white; padding: 2px 6px; border-radius: 3px',
     'color: #22c55e; font-weight: bold',
@@ -170,7 +169,7 @@ export function disableDebug(): void {
     localStorage.removeItem(STORAGE_KEY)
   }
 
-  logger.debug(
+  console.log(
     '%c[Clarity Chat Debug]%c Disabled',
     'background: #7c3aed; color: white; padding: 2px 6px; border-radius: 3px',
     'color: #ef4444; font-weight: bold'
@@ -197,7 +196,7 @@ export function getDebugLogs(): DebugLogEntry[] {
  */
 export function clearDebugLogs(): void {
   logs.length = 0
-  logger.debug(
+  console.log(
     '%c[Clarity Chat Debug]%c Logs cleared',
     'background: #7c3aed; color: white; padding: 2px 6px; border-radius: 3px',
     'color: #888'
@@ -271,17 +270,17 @@ export function debugLog(
   const timestamp = entry.timestamp.toISOString().split('T')[1]?.slice(0, 12)
 
   if (data !== undefined) {
-    logger.debug(
+    console.log(
       `%c${level.toUpperCase()}%c [${timestamp}] %c${source}%c ${message}`,
       LOG_BADGES[level],
       'color: #888',
       'color: #7c3aed; font-weight: bold',
       LOG_STYLES[level]
     )
-    logger.debug(data)
-    logger.debug()
+    console.log(data)
+    console.log()
   } else {
-    logger.debug(
+    console.log(
       `%c${level.toUpperCase()}%c [${timestamp}] %c${source}%c ${message}`,
       LOG_BADGES[level],
       'color: #888',
@@ -427,7 +426,7 @@ function exposeGlobalDebug(): void {
 
   // Show help message in development
   if (process.env.NODE_ENV !== 'production' && !config.enabled) {
-    logger.debug(
+    console.log(
       '%c[Clarity Chat]%c Debug mode available. Type %cClarityDebug.enable()%c in console to start.',
       'background: #7c3aed; color: white; padding: 2px 6px; border-radius: 3px',
       'color: #888',

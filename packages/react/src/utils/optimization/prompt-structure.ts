@@ -13,7 +13,7 @@
  * @module utils/prompt-structure
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface PromptSection {
   /** Section content */
@@ -21,7 +21,13 @@ export interface PromptSection {
   /** Priority level (higher = more important) */
   priority: 'critical' | 'high' | 'medium' | 'low'
   /** Section type for optimal placement */
-  type: 'instruction' | 'context' | 'reference' | 'question' | 'example' | 'constraint'
+  type:
+    | 'instruction'
+    | 'context'
+    | 'reference'
+    | 'question'
+    | 'example'
+    | 'constraint'
   /** Optional label for the section */
   label?: string
 }
@@ -61,7 +67,10 @@ export interface PromptStructureOptions {
  * Optimal placement rules for different section types
  * Based on LLM attention pattern research
  */
-const PLACEMENT_RULES: Record<PromptSection['type'], 'beginning' | 'middle' | 'end'> = {
+const PLACEMENT_RULES: Record<
+  PromptSection['type'],
+  'beginning' | 'middle' | 'end'
+> = {
   // Instructions go at the end for better attention
   instruction: 'end',
   // Questions MUST go at the end
@@ -111,9 +120,10 @@ export function buildStructuredPrompt(
   const end: PromptSection[] = []
 
   for (const section of sections) {
-    const placement = forceQuestionAtEnd && section.type === 'question'
-      ? 'end'
-      : PLACEMENT_RULES[section.type]
+    const placement =
+      forceQuestionAtEnd && section.type === 'question'
+        ? 'end'
+        : PLACEMENT_RULES[section.type]
 
     switch (placement) {
       case 'beginning':
@@ -205,11 +215,14 @@ function buildTruncatedPrompt(
 
   // Always keep critical and high priority, plus any questions
   const mustKeep = sorted.filter(
-    s => s.priority === 'critical' || s.priority === 'high' || s.type === 'question'
+    (s) =>
+      s.priority === 'critical' ||
+      s.priority === 'high' ||
+      s.type === 'question'
   )
 
   // Try to fit remaining sections
-  const remaining = sorted.filter(s => !mustKeep.includes(s))
+  const remaining = sorted.filter((s) => !mustKeep.includes(s))
 
   let currentSections = [...mustKeep]
   let currentTokens = currentSections.reduce(
@@ -226,7 +239,10 @@ function buildTruncatedPrompt(
   }
 
   // Rebuild with remaining sections
-  return buildStructuredPrompt(currentSections, { ...options, maxTokens: undefined })
+  return buildStructuredPrompt(currentSections, {
+    ...options,
+    maxTokens: undefined,
+  })
 }
 
 /**
@@ -386,7 +402,8 @@ export function createRAGPrompt(params: {
   userQuestion: string
   maxDocumentTokens?: number
 }): StructuredPrompt {
-  const { systemContext, retrievedDocuments, userQuestion, maxDocumentTokens } = params
+  const { systemContext, retrievedDocuments, userQuestion, maxDocumentTokens } =
+    params
 
   const sections: PromptSection[] = []
 
@@ -512,9 +529,9 @@ export function estimateAttentionDistribution(prompt: StructuredPrompt): {
   middle: { tokens: number; attention: number; sections: string[] }
   end: { tokens: number; attention: number; sections: string[] }
 } {
-  const beginning = prompt.sections.filter(s => s.position === 'beginning')
-  const middle = prompt.sections.filter(s => s.position === 'middle')
-  const end = prompt.sections.filter(s => s.position === 'end')
+  const beginning = prompt.sections.filter((s) => s.position === 'beginning')
+  const middle = prompt.sections.filter((s) => s.position === 'middle')
+  const end = prompt.sections.filter((s) => s.position === 'end')
 
   const beginningTokens = beginning.reduce((sum, s) => sum + s.tokens, 0)
   const middleTokens = middle.reduce((sum, s) => sum + s.tokens, 0)
@@ -529,18 +546,23 @@ export function estimateAttentionDistribution(prompt: StructuredPrompt): {
   return {
     beginning: {
       tokens: beginningTokens,
-      attention: totalTokens > 0 ? BEGINNING_ATTENTION * (beginningTokens / totalTokens) : 0,
-      sections: beginning.map(s => s.label || s.type),
+      attention:
+        totalTokens > 0
+          ? BEGINNING_ATTENTION * (beginningTokens / totalTokens)
+          : 0,
+      sections: beginning.map((s) => s.label || s.type),
     },
     middle: {
       tokens: middleTokens,
-      attention: totalTokens > 0 ? MIDDLE_ATTENTION * (middleTokens / totalTokens) : 0,
-      sections: middle.map(s => s.label || s.type),
+      attention:
+        totalTokens > 0 ? MIDDLE_ATTENTION * (middleTokens / totalTokens) : 0,
+      sections: middle.map((s) => s.label || s.type),
     },
     end: {
       tokens: endTokens,
-      attention: totalTokens > 0 ? END_ATTENTION * (endTokens / totalTokens) : 0,
-      sections: end.map(s => s.label || s.type),
+      attention:
+        totalTokens > 0 ? END_ATTENTION * (endTokens / totalTokens) : 0,
+      sections: end.map((s) => s.label || s.type),
     },
   }
 }

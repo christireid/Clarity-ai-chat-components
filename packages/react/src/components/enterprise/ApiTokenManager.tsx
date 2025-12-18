@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import {
   Badge,
@@ -16,7 +16,7 @@ import {
   DialogTitle,
   cn,
 } from '@clarity-chat/primitives'
-import { Skeleton } from '../skeleton'
+import { Skeleton } from '../ui/skeleton'
 
 export type TokenStatus = 'active' | 'expired' | 'revoked'
 

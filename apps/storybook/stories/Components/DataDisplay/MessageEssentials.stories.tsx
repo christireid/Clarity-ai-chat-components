@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { Message } from '@clarity-chat/react'
@@ -6,10 +5,10 @@ import type { Message as MessageType } from '@clarity-chat/types'
 
 /**
  * **Message Component - Essentials Track**
- * 
+ *
  * This track focuses on the most common use cases for the Message component.
  * These examples are production-ready and can be copied directly into your app.
- * 
+ *
  * For advanced patterns, see the "Enterprise" and "Composability" tracks.
  */
 const meta: Meta<typeof Message> = {
@@ -100,7 +99,7 @@ const createMessage = (
 
 /**
  * **Essential Pattern 1: Basic User Message**
- * 
+ *
  * The simplest use case - displaying a user message.
  * This is what you'll use most often.
  */
@@ -130,7 +129,7 @@ pattern you'll use.
 
 /**
  * **Essential Pattern 2: Basic Assistant Message**
- * 
+ *
  * Display an assistant response with markdown support.
  * This handles most AI responses.
  */
@@ -143,7 +142,7 @@ export const AssistantMessage: Story = {
     showAvatar: true,
     showTimestamp: false,
     enableMarkdown: true,
-    onFeedback: (type) => SecureLogger.debug('Feedback:', type),
+    onFeedback: (type) => console.log('Feedback:', type),
   },
   parameters: {
     docs: {
@@ -165,7 +164,7 @@ pattern for AI responses.
 
 /**
  * **Essential Pattern 3: Conversation Flow**
- * 
+ *
  * Show multiple messages in a conversation.
  * This demonstrates the typical chat pattern.
  */
@@ -192,7 +191,7 @@ export const Conversation: Story = {
             message={msg}
             showAvatar={true}
             enableMarkdown={msg.role === 'assistant'}
-            onFeedback={(type) => SecureLogger.debug(`Feedback for ${msg.id}:`, type)}
+            onFeedback={(type) => console.log(`Feedback for ${msg.id}:`, type)}
           />
         ))}
       </div>
@@ -218,7 +217,7 @@ This is the pattern you'll use in production.
 
 /**
  * **Essential Pattern 4: Loading State**
- * 
+ *
  * Show a message that's still being generated.
  * Essential for streaming responses.
  */
@@ -249,7 +248,7 @@ streaming AI responses.
 
 /**
  * **Essential Pattern 5: Error State**
- * 
+ *
  * Show an error message with retry option.
  * Important for handling failures gracefully.
  */
@@ -261,7 +260,7 @@ export const ErrorState: Story = {
     showAvatar: true,
     enableMarkdown: false,
     onRetry: (id) => {
-      SecureLogger.debug('Retrying message:', id)
+      console.log('Retrying message:', id)
       alert('Retrying...')
     },
   },
@@ -284,7 +283,7 @@ experience when things go wrong.
 
 /**
  * **Essential Pattern 6: With Timestamps**
- * 
+ *
  * Show messages with timestamps.
  * Useful for longer conversations.
  */

@@ -1,25 +1,24 @@
-
 /**
  * Performance Monitor
- * 
+ *
  * Unified performance monitoring and metrics collection
- * 
+ *
  * @module @clarity-chat/utils/performance
- * 
+ *
  * @example
  * ```ts
  * import { PerformanceMonitor } from '@clarity-chat/utils/performance'
- * 
+ *
  * // Track function execution
  * const result = PerformanceMonitor.track('api-call', () => {
  *   return expensiveOperation()
  * })
- * 
+ *
  * // Manual timing
  * PerformanceMonitor.time('database-query')
  * await queryDatabase()
  * PerformanceMonitor.timeEnd('database-query')
- * 
+ *
  * // Get metrics
  * const metrics = PerformanceMonitor.getMetrics()
  * console.log(`Average time: ${metrics.averageTime}ms`)
@@ -81,10 +80,10 @@ export class PerformanceMonitor {
    */
   static track<T>(name: string, fn: () => T): T {
     const startTime = performance.now()
-    
+
     try {
       const result = fn()
-      
+
       // Handle both sync and async results
       if (result && typeof result === 'object' && 'then' in result) {
         return (async () => {
@@ -116,7 +115,7 @@ export class PerformanceMonitor {
    */
   static async trackAsync<T>(name: string, fn: () => Promise<T>): Promise<T> {
     const startTime = performance.now()
-    
+
     try {
       const result = await fn()
       const endTime = performance.now()
@@ -137,7 +136,7 @@ export class PerformanceMonitor {
       this.logger.warn(`Timer '${name}' already started`)
       return
     }
-    
+
     this.activeTimers.set(name, performance.now())
   }
 
@@ -146,34 +145,43 @@ export class PerformanceMonitor {
    */
   static timeEnd(name: string): number | undefined {
     const startTime = this.activeTimers.get(name)
-    
+
     if (!startTime) {
       this.logger.warn(`Timer '${name}' was not started`)
       return undefined
     }
-    
+
     const endTime = performance.now()
     const duration = endTime - startTime
-    
+
     this.activeTimers.delete(name)
     this.recordTiming(name, startTime, endTime)
-    
+
     return duration
   }
 
   /**
    * Record timing information
    */
-  private static recordTiming(name: string, startTime: number, endTime: number): void {
+  private static recordTiming(
+    name: string,
+    startTime: number,
+    endTime: number
+  ): void {
     const duration = endTime - startTime
-    
+
     // Check if we should warn about slow operations
-    if (this.options.enableWarnings && duration > this.options.warningThreshold) {
-      this.logger.warn(`Slow operation detected: ${name} took ${formatDuration(duration)}`)
+    if (
+      this.options.enableWarnings &&
+      duration > this.options.warningThreshold
+    ) {
+      this.logger.warn(
+        `Slow operation detected: ${name} took ${formatDuration(duration)}`
+      )
     }
-    
+
     const existing = this.operations.get(name)
-    
+
     if (existing) {
       existing.count++
       existing.totalTime += duration
@@ -189,7 +197,7 @@ export class PerformanceMonitor {
           this.operations.delete(firstKey)
         }
       }
-      
+
       this.operations.set(name, {
         name,
         startTime,
@@ -202,10 +210,12 @@ export class PerformanceMonitor {
         maxTime: duration,
       })
     }
-    
+
     // Log based on configured level
     if (this.shouldLog()) {
-      this.logger.info(`Operation '${name}' completed in ${formatDuration(duration)}`)
+      this.logger.info(
+        `Operation '${name}' completed in ${formatDuration(duration)}`
+      )
     }
   }
 
@@ -225,14 +235,14 @@ export class PerformanceMonitor {
   static getMetrics(): PerformanceMetrics {
     let totalTime = 0
     let operationCount = 0
-    
+
     for (const operation of this.operations.values()) {
       totalTime += operation.totalTime
       operationCount += operation.count
     }
-    
+
     const averageTime = operationCount > 0 ? totalTime / operationCount : 0
-    
+
     return {
       operations: new Map(this.operations),
       totalTime,
@@ -284,16 +294,16 @@ export class PerformanceMonitor {
   } {
     const metrics = this.getMetrics()
     const operations = Array.from(metrics.operations.values())
-    
+
     operations.sort((a, b) => b.averageTime - a.averageTime)
     const slowestOperations = operations.slice(0, 10)
-    
+
     operations.sort((a, b) => a.averageTime - b.averageTime)
     const fastestOperations = operations.slice(0, 10)
-    
+
     operations.sort((a, b) => b.count - a.count)
     const mostFrequentOperations = operations.slice(0, 10)
-    
+
     return {
       totalOperations: operations.length,
       totalTime: metrics.totalTime,
@@ -310,11 +320,11 @@ export class PerformanceMonitor {
   static formatMetrics(metrics?: PerformanceMetrics): string {
     const data = metrics || this.getMetrics()
     const operations = Array.from(data.operations.values())
-    
+
     if (operations.length === 0) {
       return 'No performance data available'
     }
-    
+
     const lines = [
       'Performance Metrics:',
       `Total operations: ${data.operationCount}`,
@@ -323,14 +333,16 @@ export class PerformanceMonitor {
       '',
       'Top 5 operations by average time:',
     ]
-    
+
     operations
       .sort((a, b) => b.averageTime - a.averageTime)
       .slice(0, 5)
       .forEach((op, index) => {
-        lines.push(`${index + 1}. ${op.name}: ${formatDuration(op.averageTime)} (avg), ${op.count} calls`)
+        lines.push(
+          `${index + 1}. ${op.name}: ${formatDuration(op.averageTime)} (avg), ${op.count} calls`
+        )
       })
-    
+
     return lines.join('\n')
   }
 
@@ -341,7 +353,7 @@ export class PerformanceMonitor {
     if (typeof process !== 'undefined' && process.memoryUsage) {
       return process.memoryUsage()
     }
-    
+
     // Fallback for browser environments
     return {
       rss: 0,
@@ -357,7 +369,7 @@ export class PerformanceMonitor {
    */
   static formatMemoryUsage(usage?: NodeJS.MemoryUsage): string {
     const data = usage || this.measureMemory()
-    
+
     return [
       `RSS: ${formatBytes(data.rss)}`,
       `Heap Total: ${formatBytes(data.heapTotal)}`,
@@ -373,7 +385,10 @@ export function measurePerformance<T>(name: string, fn: () => T): T {
   return PerformanceMonitor.track(name, fn)
 }
 
-export function measureAsyncPerformance<T>(name: string, fn: () => Promise<T>): Promise<T> {
+export function measureAsyncPerformance<T>(
+  name: string,
+  fn: () => Promise<T>
+): Promise<T> {
   return PerformanceMonitor.trackAsync(name, fn)
 }
 

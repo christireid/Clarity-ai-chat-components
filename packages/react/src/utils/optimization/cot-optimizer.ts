@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Chain-of-Thought (CoT) Optimization
  *
@@ -16,7 +15,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * @module utils/cot-optimizer
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface CoTOptimizationOptions {
   /** Prefer Zero-Shot CoT for strong models (default true) */
@@ -210,7 +209,7 @@ export function analyzeCoTPrompt(prompt: string): CoTAnalysis {
  *   preferZeroShot: true,
  *   modelStrength: 'strong'
  * })
- * logger.debug(`Saved ${result.tokensSaved} tokens (${result.savingsPercent.toFixed(1)}%)`)
+ * console.log(`Saved ${result.tokensSaved} tokens (${result.savingsPercent.toFixed(1)}%)`)
  * ```
  */
 export function optimizeCoTPrompt(

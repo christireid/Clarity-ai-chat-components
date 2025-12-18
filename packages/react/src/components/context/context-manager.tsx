@@ -15,7 +15,7 @@ import {
 } from '@clarity-chat/primitives'
 import type { Context, ContextType } from '@clarity-chat/types'
 import { ContextCard } from './context-card'
-import { FileUpload } from './file-upload'
+import { FileUpload } from '../input/file-upload'
 
 export interface ContextManagerProps {
   contexts: Context[]

@@ -3,7 +3,11 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Badge, cn } from '@clarity-chat/primitives'
-import { useBatteryAware, type BatteryAwareConfig } from '../hooks/use-battery-aware'
+import {
+  useBatteryAware,
+  type BatteryAwareConfig,
+} from '../../hooks/performance/use-battery-aware'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface BatteryIndicatorProps {
   /** Battery-aware configuration */
@@ -11,7 +15,12 @@ export interface BatteryIndicatorProps {
   /** Show detailed tooltip on hover */
   showTooltip?: boolean
   /** Position of the indicator */
-  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'inline'
+  position?:
+    | 'top-left'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-right'
+    | 'inline'
   /** Show text label */
   showLabel?: boolean
   /** Compact mode (icon only) */
@@ -80,7 +89,15 @@ export function BatteryIndicator({
         stroke="currentColor"
       >
         {/* Battery outline */}
-        <rect x="2" y="7" width="18" height="10" rx="2" strokeWidth="2" fill="none" />
+        <rect
+          x="2"
+          y="7"
+          width="18"
+          height="10"
+          rx="2"
+          strokeWidth="2"
+          fill="none"
+        />
         {/* Battery terminal */}
         <path d="M22 10v4" strokeWidth="2" strokeLinecap="round" />
         {/* Battery fill level */}
@@ -104,7 +121,7 @@ export function BatteryIndicator({
             stroke="currentColor"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            transition={{ duration: durations.slower, repeat: Infinity }}
           />
         )}
       </svg>
@@ -130,7 +147,7 @@ export function BatteryIndicator({
       )}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: durations.normal }}
       onMouseEnter={() => showTooltip && setShowDetails(true)}
       onMouseLeave={() => showTooltip && setShowDetails(false)}
     >
@@ -138,7 +155,9 @@ export function BatteryIndicator({
 
       {!compact && showLabel && (
         <div className="flex items-center gap-2">
-          <span className={cn('text-sm font-medium', getColor())}>{percentage}%</span>
+          <span className={cn('text-sm font-medium', getColor())}>
+            {percentage}%
+          </span>
 
           {shouldEnableBatterySaver && (
             <Badge variant="warning" className="text-xs">
@@ -186,7 +205,7 @@ export function BatteryIndicator({
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: durations.normal }}
             className={cn(
               'absolute z-50 min-w-[200px] rounded-lg border bg-popover p-3 shadow-lg',
               position.includes('right') ? 'right-0' : 'left-0',
@@ -200,7 +219,8 @@ export function BatteryIndicator({
                 batteryStatus.dischargingTime !== Infinity &&
                 !charging && (
                   <div className="text-xs text-muted-foreground">
-                    ~{Math.round(batteryStatus.dischargingTime / 3600)} hours remaining
+                    ~{Math.round(batteryStatus.dischargingTime / 3600)} hours
+                    remaining
                   </div>
                 )}
 
@@ -208,18 +228,23 @@ export function BatteryIndicator({
                 batteryStatus.chargingTime !== Infinity &&
                 charging && (
                   <div className="text-xs text-muted-foreground">
-                    ~{Math.round(batteryStatus.chargingTime / 3600)} hours to full
+                    ~{Math.round(batteryStatus.chargingTime / 3600)} hours to
+                    full
                   </div>
                 )}
 
               {recommendations.level !== 'none' && (
                 <div className="border-t pt-2 space-y-1">
-                  <div className="text-xs font-medium">Optimizations Active:</div>
+                  <div className="text-xs font-medium">
+                    Optimizations Active:
+                  </div>
                   <ul className="text-xs text-muted-foreground space-y-0.5">
                     {recommendations.disableAnimations && (
                       <li>• Animations reduced</li>
                     )}
-                    {recommendations.throttleUpdates && <li>• Updates throttled</li>}
+                    {recommendations.throttleUpdates && (
+                      <li>• Updates throttled</li>
+                    )}
                     {recommendations.deferNonCritical && (
                       <li>• Non-critical tasks deferred</li>
                     )}

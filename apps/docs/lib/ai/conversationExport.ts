@@ -264,7 +264,7 @@ export async function copyToClipboard(content: string): Promise<boolean> {
     await navigator.clipboard.writeText(content)
     return true
   } catch (error) {
-    logger.logger.error('Failed to copy to clipboard:', error)
+    logger.error('Failed to copy to clipboard:', error)
 
     // Fallback method
     try {
@@ -278,7 +278,7 @@ export async function copyToClipboard(content: string): Promise<boolean> {
       document.body.removeChild(textarea)
       return success
     } catch (fallbackError) {
-      logger.logger.error('Fallback copy failed:', fallbackError)
+      logger.error('Fallback copy failed:', fallbackError)
       return false
     }
   }

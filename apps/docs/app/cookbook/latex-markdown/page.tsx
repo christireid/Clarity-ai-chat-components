@@ -106,7 +106,7 @@ def quadratic(a, b, c, x):
           code={`<MarkdownRendererEnhanced
   content={content}
   onMathError={(error, latex) => {
-    toast.logger.error('Math failed to render')
+    toast.error('Math failed to render')
     logger.warn('Invalid LaTeX', { error, latex })
   }}
 />`}

@@ -1,6 +1,6 @@
 /**
  * Hello World Examples - Simplest Possible Usage
- * 
+ *
  * These examples demonstrate the absolute simplest way to use each major API.
  * Each example is 10-20 lines of code and requires minimal configuration.
  */
@@ -11,7 +11,7 @@ import { ClarityChat, ClarityChatPresets } from '../components/clarity-chat'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { useClarityObject } from '../hooks/use-clarity-object'
 import { useChatHandlers } from '../hooks/use-chat-handlers'
-import { ChatWindow } from '../components/chat-window'
+import { ChatWindow } from '../components/chat/chat-window'
 import { MemoryProvider } from '../memory/memory-provider'
 
 // ============================================================================
@@ -101,7 +101,7 @@ export function HelloWorldPresets() {
     <div>
       {/* Simple chat */}
       <ClarityChatPresets.Simple api="/api/chat" />
-      
+
       {/* Chat with memory */}
       <ClarityChatPresets.WithMemory api="/api/chat" />
     </div>

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -618,7 +617,7 @@ function CompleteAgentExample() {
       logger.debug('Answer:', answer)
     },
     onError: (error) => {
-      logger.logger.error('Agent error:', error)
+      logger.error('Agent error:', error)
       setSteps(prev => prev.map(step =>
         step.status === 'running'
           ? { ...step, status: 'failed', completedAt: new Date() }

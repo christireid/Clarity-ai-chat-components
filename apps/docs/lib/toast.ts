@@ -21,7 +21,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * toast.success('Settings saved!')
  *
  * // Error with action
- * toast.logger.error('Failed to load', {
+ * toast.error('Failed to load', {
  *   action: {
  *     label: 'Retry',
  *     onClick: () => refetch()

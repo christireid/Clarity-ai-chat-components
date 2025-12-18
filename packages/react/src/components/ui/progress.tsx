@@ -10,9 +10,14 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../animations'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { getSpring } from '../animations/spring-presets'
+import {
+  ANIMATION_DURATION,
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations'
+import { useReducedMotion } from '@clarity-chat/primitives'
+import { getSpring } from '../../animations/spring-presets'
+import { Skeleton } from './skeleton'
 
 /**
  * Linear Progress Bar
@@ -92,7 +97,7 @@ export const Progress: React.FC<ProgressProps> = ({
               x: prefersReducedMotion ? '0%' : ['-100%', '250%'],
             }}
             transition={{
-              duration: 1.5,
+              duration: durations.slower,
               repeat: prefersReducedMotion ? 0 : Infinity,
               ease: 'linear',
             }}
@@ -180,7 +185,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
             className={colorClasses[variant]}
             animate={{ rotate: prefersReducedMotion ? 0 : 360 }}
             transition={{
-              duration: 1,
+              duration: durations.slower,
               repeat: prefersReducedMotion ? 0 : Infinity,
               ease: 'linear',
             }}
@@ -201,7 +206,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
             animate={{ strokeDashoffset: offset }}
             transition={
               prefersReducedMotion
-                ? { duration: 0.01, ease: 'linear' }
+                ? { duration: durations.fast, ease: 'linear' }
                 : {
                     duration: ANIMATION_DURATION.slow / 1000,
                     ease: EASING_FRAMER.out,
@@ -273,7 +278,7 @@ export const StreamingProgress: React.FC<StreamingProgressProps> = ({
                   }
             }
             transition={{
-              duration: 1.5,
+              duration: durations.slower,
               repeat: prefersReducedMotion ? 0 : Infinity,
               delay: i * 0.2,
               ease: EASING_FRAMER.inOut,
@@ -381,8 +386,8 @@ export const SkeletonProgress: React.FC<{ className?: string }> = ({
   return (
     <div className={cn('space-y-2.5', className)}>
       <div className="flex items-center justify-between">
-        <div className="h-4 w-32 bg-muted/60 rounded animate-pulse" />
-        <div className="h-4 w-12 bg-muted/60 rounded animate-pulse" />
+        <Skeleton width={128} height={16} rounded="md" />
+        <Skeleton width={48} height={16} rounded="md" />
       </div>
       <Progress />
     </div>

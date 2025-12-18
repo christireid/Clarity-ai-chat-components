@@ -26,7 +26,7 @@ export default async function MessageOperationsGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read message-operations guide', error)
+    logger.error('Failed to read message-operations guide', error)
     content = '# Message-operations\n\nContent not available.'
   }
 

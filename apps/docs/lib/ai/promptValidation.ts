@@ -343,9 +343,9 @@ export function validatePromptDevMode(
   const report = validatePrompt(prompt)
 
   if (!report.isValid) {
-    logger.logger.error(`[Prompt Validation] ${promptName} has errors:`)
+    logger.error(`[Prompt Validation] ${promptName} has errors:`)
     for (const error of report.errors) {
-      logger.logger.error(`  ❌ ${error.ruleName}: ${error.message}`)
+      logger.error(`  ❌ ${error.ruleName}: ${error.message}`)
     }
   }
 

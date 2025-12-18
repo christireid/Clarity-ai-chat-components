@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { ChatErrorBoundary } from './ChatErrorBoundary'
@@ -137,7 +136,7 @@ export const StreamingConnectionError: Story = {
     chatId: 'chat-456',
     provider: 'openai',
     children: <ThrowError error={StreamingError.connectionLost('sse')} />,
-    onError: (error) => logger.debug('Chat error:', error),
+    onError: (error) => console.log('Chat error:', error),
   },
 }
 
@@ -153,7 +152,7 @@ export const StreamingErrorWithPartialContent: Story = {
         })}
       />
     ),
-    onError: (error) => logger.debug('Chat error with partial content:', error),
+    onError: (error) => console.log('Chat error with partial content:', error),
   },
 }
 
@@ -166,7 +165,7 @@ export const ProviderRateLimitError: Story = {
         error={ProviderError.rateLimit('openai', 30, 'gpt-4-turbo')}
       />
     ),
-    onRetry: () => logger.debug('Retrying after rate limit...'),
+    onRetry: () => console.log('Retrying after rate limit...'),
   },
 }
 
@@ -222,7 +221,7 @@ export const GenericApiError: Story = {
         }
       />
     ),
-    onRetry: () => logger.debug('Retrying API call...'),
+    onRetry: () => console.log('Retrying API call...'),
   },
 }
 
@@ -235,8 +234,8 @@ export const InteractiveDemo: Story = {
         errorFactory={() => StreamingError.connectionLost('sse')}
       />
     ),
-    onError: (error) => logger.debug('Demo error:', error),
-    onRetry: () => logger.debug('Demo retry triggered'),
+    onError: (error) => console.log('Demo error:', error),
+    onRetry: () => console.log('Demo retry triggered'),
   },
 }
 
@@ -251,8 +250,8 @@ export const InteractiveProviderError: Story = {
         }
       />
     ),
-    onError: (error) => logger.debug('Provider error:', error),
-    onRetry: () => logger.debug('Provider retry triggered'),
+    onError: (error) => console.log('Provider error:', error),
+    onRetry: () => console.log('Provider retry triggered'),
   },
 }
 
@@ -262,10 +261,10 @@ export const WithCallbacks: Story = {
     provider: 'openai',
     children: <ThrowError error={StreamingError.connectionLost('sse')} />,
     onError: (error) => {
-      logger.debug('Error logged to analytics:', error.message)
+      console.log('Error logged to analytics:', error.message)
     },
     onRetry: () => {
-      logger.debug('User initiated retry - reconnecting...')
+      console.log('User initiated retry - reconnecting...')
     },
   },
 }

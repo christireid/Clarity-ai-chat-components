@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { ChatWindow } from '../chat-window'
+import { ChatWindow } from '../chat/chat-window'
 import { ThemeProvider } from '../../theme'
 import type { Message } from '@clarity-chat/types'
 
@@ -56,7 +56,9 @@ describe('ChatWindow - Enhanced Tests', () => {
       expect(screen.getByText('Hello! How can I help you?')).toBeInTheDocument()
       expect(screen.getByText('I need help with React')).toBeInTheDocument()
       expect(
-        screen.getByText('I can help with React! What specifically do you need?')
+        screen.getByText(
+          'I can help with React! What specifically do you need?'
+        )
       ).toBeInTheDocument()
     })
 
@@ -154,7 +156,11 @@ describe('ChatWindow - Enhanced Tests', () => {
 
       render(
         <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
-          <ChatWindow {...defaultProps} isLoading onSendMessage={onSendMessage} />
+          <ChatWindow
+            {...defaultProps}
+            isLoading
+            onSendMessage={onSendMessage}
+          />
         </ThemeProvider>
       )
 
@@ -201,7 +207,9 @@ describe('ChatWindow - Enhanced Tests', () => {
 
       // Find user message (id: '2')
       const userMessage = screen.getByText('I need help with React')
-      const editButton = within(userMessage.closest('div')!).getByLabelText(/edit/i)
+      const editButton = within(userMessage.closest('div')!).getByLabelText(
+        /edit/i
+      )
 
       await user.click(editButton)
 
@@ -210,7 +218,10 @@ describe('ChatWindow - Enhanced Tests', () => {
       await user.type(editInput, 'I need help with TypeScript')
       await user.keyboard('{Enter}')
 
-      expect(onEditMessage).toHaveBeenCalledWith('2', 'I need help with TypeScript')
+      expect(onEditMessage).toHaveBeenCalledWith(
+        '2',
+        'I need help with TypeScript'
+      )
     })
 
     it('allows regenerating AI messages', async () => {
@@ -266,7 +277,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       )
 
       const input = screen.getByPlaceholderText(/type a message/i)
-      
+
       // Focus elsewhere
       await user.click(document.body)
       expect(input).not.toHaveFocus()
@@ -420,7 +431,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       )
 
       const firstRender = screen.getAllByTestId('message')
-      
+
       // Re-render with same messages
       rerender(
         <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
@@ -429,7 +440,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       )
 
       const secondRender = screen.getAllByTestId('message')
-      
+
       // Should be same instances (memoized)
       expect(firstRender[0]).toBe(secondRender[0])
     })
@@ -494,10 +505,7 @@ describe('ChatWindow - Enhanced Tests', () => {
 
       render(
         <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
-          <ChatWindow
-            {...defaultProps}
-            onSendMessage={onSendMessage}
-          />
+          <ChatWindow {...defaultProps} onSendMessage={onSendMessage} />
         </ThemeProvider>
       )
 

@@ -26,7 +26,7 @@ export default async function HooksGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read hooks guide', error)
+    logger.error('Failed to read hooks guide', error)
     content = '# Hooks\n\nContent not available.'
   }
 

@@ -1,17 +1,17 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Clarity Chat Recipes - Common Patterns & Examples
- * 
+ *
  * This file contains copy-pasteable examples of common patterns.
  * These are not exported components, but rather documentation examples
  * that show how to use the library in different scenarios.
- * 
+ *
  * @fileoverview Common usage patterns and recipes
  */
 
 /**
  * Recipe 1: Minimal Chat (5 lines)
- * 
+ *
  * The absolute simplest way to add AI chat to your app.
  */
 export const RecipeMinimal = `
@@ -25,7 +25,7 @@ export default function App() {
 
 /**
  * Recipe 2: Customized Chat (10 lines)
- * 
+ *
  * Add customization while keeping it simple.
  */
 export const RecipeCustomized = `
@@ -47,7 +47,7 @@ export default function App() {
 
 /**
  * Recipe 3: Chat with Message Operations
- * 
+ *
  * Use the composed hook for edit/regenerate/delete functionality.
  */
 export const RecipeWithOperations = `
@@ -83,7 +83,7 @@ function App() {
 
 /**
  * Recipe 4: Chat with Analytics
- * 
+ *
  * Track user interactions automatically.
  */
 export const RecipeWithAnalytics = `
@@ -123,7 +123,7 @@ function App() {
 
 /**
  * Recipe 5: Chat with Memory
- * 
+ *
  * Enable conversation memory for context-aware responses.
  */
 export const RecipeWithMemory = `
@@ -143,7 +143,7 @@ export default function App() {
 
 /**
  * Recipe 6: Chat with Custom Styling
- * 
+ *
  * Customize the appearance while keeping functionality.
  */
 export const RecipeCustomStyling = `
@@ -167,7 +167,7 @@ export default function App() {
 
 /**
  * Recipe 7: Advanced Chat with Full Control
- * 
+ *
  * Use individual hooks for maximum customization.
  */
 export const RecipeAdvanced = `
@@ -211,7 +211,7 @@ function App() {
 
 /**
  * Recipe 8: Multi-User Chat
- * 
+ *
  * Handle multiple users with user identification.
  */
 export const RecipeMultiUser = `
@@ -232,7 +232,7 @@ function App({ userId }: { userId: string }) {
 
 /**
  * Recipe 9: Chat with Streaming
- * 
+ *
  * Handle streaming responses with real-time updates.
  */
 export const RecipeStreaming = `
@@ -261,7 +261,7 @@ function App() {
 
 /**
  * Recipe 10: Chat with Error Recovery
- * 
+ *
  * Automatic retry and error handling.
  */
 export const RecipeErrorRecovery = `
@@ -276,7 +276,7 @@ function App() {
         // Custom error handling
         logger.error('Chat error:', error)
         // Show user-friendly message
-        toast.logger.error('Failed to send message. Please try again.')
+        toast.error('Failed to send message. Please try again.')
       }}
     />
   )

@@ -133,7 +133,7 @@ export function APIInspectorPanel({
       setCopiedId(log.id)
       setTimeout(() => setCopiedId(null), 2000)
     } catch (err) {
-      logger.logger.error('Failed to copy:', err)
+      logger.error('Failed to copy:', err)
     }
   }, [])
 

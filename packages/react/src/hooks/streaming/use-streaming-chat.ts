@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useStreamingChat - Top-level hook for streaming chat
  *
@@ -18,12 +17,12 @@ import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { useClarityChat, type UseClarityChatOptions } from '../use-clarity-chat'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import {
   validateApiEndpoint,
   validateStreamingProtocol,
-} from '../utils/runtime-validation'
+} from '../../utils/config/runtime-validation'
 import type { Message } from '@clarity-chat/types'
 
 /**

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Secure Message Actions Component
  *
@@ -21,7 +20,7 @@ import { logger } from '@clarity-chat/utils/logger';
  *     threats: [],
  *     sanitized: false
  *   }}
- *   onReport={(reason) => logger.debug('Reported:', reason)}
+ *   onReport={(reason) => console.log('Reported:', reason)}
  * />
  * ```
  */
@@ -29,7 +28,7 @@ import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, cn } from '@clarity-chat/primitives'
-import { CopyButton } from '../copy-button'
+import { CopyButton } from './copy-button'
 import {
   ThumbsUpIcon,
   ThumbsDownIcon,
@@ -40,14 +39,15 @@ import {
   AlertTriangleIcon,
   FlagIcon,
   InfoIcon,
-} from '../icons'
+} from '../ui/icons'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   INTERACTION_VARIANTS,
+  DURATION_SECONDS as durations,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
-import { useToast } from '../toast'
+import { useToast } from '../ui/toast'
 
 export interface SecurityInfo {
   /** Whether message passed security validation */
@@ -162,7 +162,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0, duration: 0.2 }}
+              transition={{ delay: 0, duration: durations.normal }}
               className="relative"
               onMouseEnter={() => setShowSecurityDetails(true)}
               onMouseLeave={() => setShowSecurityDetails(false)}
@@ -299,7 +299,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.05, duration: 0.2 }}
+              transition={{ delay: 0.05, duration: durations.normal }}
               title={`${securityInfo.piiCount || 1} PII item(s) redacted`}
             >
               <div className="h-7 px-2 flex items-center gap-1 bg-blue-50 dark:bg-blue-900/20 rounded-md text-blue-600 dark:text-blue-400">
@@ -313,7 +313,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1, duration: 0.2 }}
+            transition={{ delay: 0.1, duration: durations.normal }}
           >
             <CopyButton
               text={messageContent}
@@ -328,7 +328,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             className="relative"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15, duration: 0.2 }}
+            transition={{ delay: 0.15, duration: durations.normal }}
           >
             <motion.div
               whileHover={{
@@ -344,7 +344,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                     }
                   : {}
               }
-              transition={{ duration: 0.5 }}
+              transition={{ duration: durations.slow }}
             >
               <Button
                 variant="ghost"
@@ -367,7 +367,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.2 }}
+            transition={{ delay: 0.2, duration: durations.normal }}
             whileHover={{
               scale: 1.15,
               rotate: feedbackGiven === 'down' ? 0 : 12,
@@ -383,7 +383,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                     }
                   : {}
               }
-              transition={{ duration: 0.5 }}
+              transition={{ duration: durations.slow }}
             >
               <Button
                 variant="ghost"
@@ -406,7 +406,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.25, duration: 0.2 }}
+              transition={{ delay: 0.25, duration: durations.normal }}
               className="relative"
             >
               <Button
@@ -472,7 +472,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.2 }}
+              transition={{ delay: 0.3, duration: durations.normal }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -493,7 +493,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.35, duration: 0.2 }}
+              transition={{ delay: 0.35, duration: durations.normal }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -514,7 +514,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.2 }}
+              transition={{ delay: 0.4, duration: durations.normal }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -536,7 +536,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ delay: 0.45, duration: 0.2 }}
+              transition={{ delay: 0.45, duration: durations.normal }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -560,7 +560,7 @@ export const MessageActionsSecure = React.memo<MessageActionsSecureProps>(
                         }
                       : {}
                   }
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: durations.moderate }}
                 >
                   <TrashIcon size={14} />
                 </motion.div>

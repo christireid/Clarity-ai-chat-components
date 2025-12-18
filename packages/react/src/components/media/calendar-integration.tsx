@@ -1,17 +1,12 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Card,
-  CardContent,
-  Badge,
-  Button,
-  cn,
-} from '@clarity-chat/primitives'
-import { ClockIcon, RefreshIcon, CloseIcon } from './icons'
-import { useIsMounted } from '../hooks/use-is-mounted'
+import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
+import { ClockIcon, RefreshIcon, CloseIcon } from '../ui/icons'
+import { useIsMounted } from '../../hooks/ui/use-is-mounted'
 
 /**
  * Calendar event
@@ -102,7 +97,10 @@ interface CalendarIntegrationState {
 /**
  * Props for CalendarIntegration
  */
-export interface CalendarIntegrationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+export interface CalendarIntegrationProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'onSelect'
+> {
   /** Initial events */
   initialEvents?: CalendarEvent[]
   /** Action items from conversation */
@@ -236,7 +234,7 @@ export function CalendarIntegration({
 
   // Clear error helper
   const clearError = React.useCallback(() => {
-    setState(prev => ({ ...prev, error: null }))
+    setState((prev) => ({ ...prev, error: null }))
   }, [])
 
   // Calculate date range
@@ -256,18 +254,19 @@ export function CalendarIntegration({
   const loadEvents = React.useCallback(async () => {
     if (!fetchEvents) return
 
-    setState(prev => ({ ...prev, loading: true, error: null }))
+    setState((prev) => ({ ...prev, loading: true, error: null }))
 
     try {
       const events = await fetchEvents(range.start, range.end)
       if (isMounted.current) {
-        setState(prev => ({ ...prev, events, loading: false }))
+        setState((prev) => ({ ...prev, events, loading: false }))
       }
     } catch (error) {
       if (isMounted.current) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          error: error instanceof Error ? error.message : 'Failed to load events',
+          error:
+            error instanceof Error ? error.message : 'Failed to load events',
           loading: false,
         }))
       }
@@ -281,7 +280,7 @@ export function CalendarIntegration({
     try {
       const availability = await fetchAvailability(range.start, range.end)
       if (isMounted.current) {
-        setState(prev => ({ ...prev, availability }))
+        setState((prev) => ({ ...prev, availability }))
       }
     } catch (error) {
       // Silently fail for availability (non-critical)
@@ -292,68 +291,78 @@ export function CalendarIntegration({
   }, [fetchAvailability, range, isMounted])
 
   // Create event from action item
-  const convertActionToEvent = React.useCallback(async (actionItem: ActionItem) => {
-    if (!onActionToEvent) return
+  const convertActionToEvent = React.useCallback(
+    async (actionItem: ActionItem) => {
+      if (!onActionToEvent) return
 
-    setState(prev => ({ ...prev, loading: true }))
+      setState((prev) => ({ ...prev, loading: true }))
 
-    try {
-      const event = await onActionToEvent(actionItem)
-      if (isMounted.current) {
-        setState(prev => ({
-          ...prev,
-          events: [...prev.events, event],
-          actionItems: prev.actionItems.map(a =>
-            a.id === actionItem.id ? { ...a, status: 'completed' as const } : a
-          ),
-          loading: false,
-        }))
+      try {
+        const event = await onActionToEvent(actionItem)
+        if (isMounted.current) {
+          setState((prev) => ({
+            ...prev,
+            events: [...prev.events, event],
+            actionItems: prev.actionItems.map((a) =>
+              a.id === actionItem.id
+                ? { ...a, status: 'completed' as const }
+                : a
+            ),
+            loading: false,
+          }))
+        }
+      } catch (error) {
+        if (isMounted.current) {
+          setState((prev) => ({
+            ...prev,
+            error:
+              error instanceof Error ? error.message : 'Failed to create event',
+            loading: false,
+          }))
+        }
       }
-    } catch (error) {
-      if (isMounted.current) {
-        setState(prev => ({
-          ...prev,
-          error: error instanceof Error ? error.message : 'Failed to create event',
-          loading: false,
-        }))
-      }
-    }
-  }, [onActionToEvent, isMounted])
+    },
+    [onActionToEvent, isMounted]
+  )
 
   // Delete event
-  const deleteEvent = React.useCallback(async (eventId: string) => {
-    if (!onEventDelete) return
+  const deleteEvent = React.useCallback(
+    async (eventId: string) => {
+      if (!onEventDelete) return
 
-    setState(prev => ({ ...prev, loading: true }))
+      setState((prev) => ({ ...prev, loading: true }))
 
-    try {
-      await onEventDelete(eventId)
-      if (isMounted.current) {
-        setState(prev => ({
-          ...prev,
-          events: prev.events.filter(e => e.id !== eventId),
-          loading: false,
-        }))
+      try {
+        await onEventDelete(eventId)
+        if (isMounted.current) {
+          setState((prev) => ({
+            ...prev,
+            events: prev.events.filter((e) => e.id !== eventId),
+            loading: false,
+          }))
+        }
+      } catch (error) {
+        if (isMounted.current) {
+          setState((prev) => ({
+            ...prev,
+            error:
+              error instanceof Error ? error.message : 'Failed to delete event',
+            loading: false,
+          }))
+        }
       }
-    } catch (error) {
-      if (isMounted.current) {
-        setState(prev => ({
-          ...prev,
-          error: error instanceof Error ? error.message : 'Failed to delete event',
-          loading: false,
-        }))
-      }
-    }
-  }, [onEventDelete, isMounted])
+    },
+    [onEventDelete, isMounted]
+  )
 
   // Group events by date
   const eventsByDate = React.useMemo(() => {
     const grouped = new Map<string, CalendarEvent[]>()
 
     state.events
-      .filter(e => e.status !== 'cancelled')
+      .filter((e) => e.status !== 'cancelled')
       .sort((a, b) => a.start.getTime() - b.start.getTime())
-      .forEach(event => {
+      .forEach((event) => {
         const dateKey = formatDate(event.start)
         const existing = grouped.get(dateKey) || []
         grouped.set(dateKey, [...existing, event])
@@ -371,7 +380,13 @@ export function CalendarIntegration({
   }, [loadEvents, loadAvailability, showAvailability])
 
   return (
-    <div ref={ref} className={cn('space-y-4', className)} role="region" aria-label="Calendar integration" {...props}>
+    <div
+      ref={ref}
+      className={cn('space-y-4', className)}
+      role="region"
+      aria-label="Calendar integration"
+      {...props}
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">Calendar</h3>
@@ -384,7 +399,9 @@ export function CalendarIntegration({
               disabled={state.loading}
               aria-label="Refresh calendar"
             >
-              <RefreshIcon className={cn('w-4 h-4', state.loading && 'animate-spin')} />
+              <RefreshIcon
+                className={cn('w-4 h-4', state.loading && 'animate-spin')}
+              />
             </Button>
           )}
           {onEventCreate && (
@@ -424,12 +441,17 @@ export function CalendarIntegration({
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium">Action Items</span>
-              <Badge variant="secondary">{state.actionItems.filter(a => a.status !== 'completed').length}</Badge>
+              <Badge variant="secondary">
+                {
+                  state.actionItems.filter((a) => a.status !== 'completed')
+                    .length
+                }
+              </Badge>
             </div>
             <div className="space-y-2">
               <AnimatePresence>
                 {state.actionItems
-                  .filter(a => a.status !== 'completed')
+                  .filter((a) => a.status !== 'completed')
                   .map((item, index) => (
                     <motion.div
                       key={item.id}
@@ -440,7 +462,9 @@ export function CalendarIntegration({
                       className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
                     >
                       <div className="flex items-center gap-2">
-                        <Badge variant={getPriorityColor(item.priority) as 'default'}>
+                        <Badge
+                          variant={getPriorityColor(item.priority) as 'default'}
+                        >
                           {item.priority}
                         </Badge>
                         <span className="text-sm">{item.title}</span>
@@ -492,15 +516,20 @@ export function CalendarIntegration({
 
                       {/* Event details */}
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{event.title}</div>
+                        <div className="font-medium truncate">
+                          {event.title}
+                        </div>
                         <div className="text-xs text-muted-foreground flex items-center gap-2">
                           <ClockIcon className="w-3 h-3" />
                           {event.isAllDay ? (
                             'All day'
                           ) : (
                             <>
-                              {formatTime(event.start)} - {formatTime(event.end)}
-                              <span>({formatDuration(event.start, event.end)})</span>
+                              {formatTime(event.start)} -{' '}
+                              {formatTime(event.end)}
+                              <span>
+                                ({formatDuration(event.start, event.end)})
+                              </span>
                             </>
                           )}
                         </div>
@@ -517,7 +546,8 @@ export function CalendarIntegration({
                                 className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs"
                                 title={attendee.name || attendee.email}
                               >
-                                {(attendee.name || attendee.email)[0].toUpperCase()}
+                                {(attendee.name ||
+                                  attendee.email)[0].toUpperCase()}
                               </div>
                             ))}
                             {event.attendees.length > 3 && (
@@ -570,9 +600,13 @@ export function CalendarIntegration({
         <Card>
           <CardContent className="p-4">
             <div className="text-sm font-medium mb-3">Availability</div>
-            <div className="flex flex-wrap gap-2" role="list" aria-label="Available time slots">
+            <div
+              className="flex flex-wrap gap-2"
+              role="list"
+              aria-label="Available time slots"
+            >
               {state.availability
-                .filter(slot => slot.status === 'free')
+                .filter((slot) => slot.status === 'free')
                 .slice(0, 6)
                 .map((slot, index) => (
                   <Badge
@@ -608,88 +642,107 @@ export function useCalendarIntegration(options: {
   const [error, setError] = React.useState<string | null>(null)
 
   // Fetch events
-  const fetchEvents = React.useCallback(async (start: Date, end: Date): Promise<CalendarEvent[]> => {
-    if (!options.apiEndpoint) return []
+  const fetchEvents = React.useCallback(
+    async (start: Date, end: Date): Promise<CalendarEvent[]> => {
+      if (!options.apiEndpoint) return []
 
-    setLoading(true)
-    setError(null)
+      setLoading(true)
+      setError(null)
 
-    try {
-      const params = new URLSearchParams({
-        start: start.toISOString(),
-        end: end.toISOString(),
-        ...(options.calendarId && { calendarId: options.calendarId }),
-      })
+      try {
+        const params = new URLSearchParams({
+          start: start.toISOString(),
+          end: end.toISOString(),
+          ...(options.calendarId && { calendarId: options.calendarId }),
+        })
 
-      const response = await fetch(`${options.apiEndpoint}/events?${params}`, {
-        headers: options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {},
+        const response = await fetch(
+          `${options.apiEndpoint}/events?${params}`,
+          {
+            headers: options.apiKey
+              ? { Authorization: `Bearer ${options.apiKey}` }
+              : {},
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
+
+        const data = await response.json()
+        const fetchedEvents = (data.events || []).map(
+          (e: Record<string, unknown>) => ({
+            ...e,
+            start: new Date(e.start as string),
+            end: new Date(e.end as string),
+          })
+        )
+
+        setEvents(fetchedEvents)
+        return fetchedEvents
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Failed to fetch events'
+        setError(message)
+        throw err
+      } finally {
+        setLoading(false)
+      }
+    },
+    [options.apiEndpoint, options.apiKey, options.calendarId]
+  )
+
+  // Create event
+  const createEvent = React.useCallback(
+    async (event: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent> => {
+      if (!options.apiEndpoint) {
+        throw new Error('No API endpoint configured')
+      }
+
+      const response = await fetch(`${options.apiEndpoint}/events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.apiKey
+            ? { Authorization: `Bearer ${options.apiKey}` }
+            : {}),
+        },
+        body: JSON.stringify(event),
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
+        throw new Error(`Failed to create event: HTTP ${response.status}`)
       }
 
-      const data = await response.json()
-      const fetchedEvents = (data.events || []).map((e: Record<string, unknown>) => ({
-        ...e,
-        start: new Date(e.start as string),
-        end: new Date(e.end as string),
-      }))
-
-      setEvents(fetchedEvents)
-      return fetchedEvents
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch events'
-      setError(message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [options.apiEndpoint, options.apiKey, options.calendarId])
-
-  // Create event
-  const createEvent = React.useCallback(async (
-    event: Omit<CalendarEvent, 'id'>
-  ): Promise<CalendarEvent> => {
-    if (!options.apiEndpoint) {
-      throw new Error('No API endpoint configured')
-    }
-
-    const response = await fetch(`${options.apiEndpoint}/events`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {}),
-      },
-      body: JSON.stringify(event),
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to create event: HTTP ${response.status}`)
-    }
-
-    const created = await response.json()
-    setEvents(prev => [...prev, created])
-    return created
-  }, [options.apiEndpoint, options.apiKey])
+      const created = await response.json()
+      setEvents((prev) => [...prev, created])
+      return created
+    },
+    [options.apiEndpoint, options.apiKey]
+  )
 
   // Delete event
-  const deleteEvent = React.useCallback(async (eventId: string): Promise<void> => {
-    if (!options.apiEndpoint) {
-      throw new Error('No API endpoint configured')
-    }
+  const deleteEvent = React.useCallback(
+    async (eventId: string): Promise<void> => {
+      if (!options.apiEndpoint) {
+        throw new Error('No API endpoint configured')
+      }
 
-    const response = await fetch(`${options.apiEndpoint}/events/${eventId}`, {
-      method: 'DELETE',
-      headers: options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {},
-    })
+      const response = await fetch(`${options.apiEndpoint}/events/${eventId}`, {
+        method: 'DELETE',
+        headers: options.apiKey
+          ? { Authorization: `Bearer ${options.apiKey}` }
+          : {},
+      })
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete event: HTTP ${response.status}`)
-    }
+      if (!response.ok) {
+        throw new Error(`Failed to delete event: HTTP ${response.status}`)
+      }
 
-    setEvents(prev => prev.filter(e => e.id !== eventId))
-  }, [options.apiEndpoint, options.apiKey])
+      setEvents((prev) => prev.filter((e) => e.id !== eventId))
+    },
+    [options.apiEndpoint, options.apiKey]
+  )
 
   return {
     events,
@@ -714,79 +767,88 @@ export function useAvailabilityCheck(options: {
   const [error, setError] = React.useState<string | null>(null)
 
   // Check availability
-  const checkAvailability = React.useCallback(async (
-    start: Date,
-    end: Date,
-    attendees?: string[]
-  ): Promise<AvailabilitySlot[]> => {
-    if (!options.apiEndpoint) return []
+  const checkAvailability = React.useCallback(
+    async (
+      start: Date,
+      end: Date,
+      attendees?: string[]
+    ): Promise<AvailabilitySlot[]> => {
+      if (!options.apiEndpoint) return []
 
-    const targetAttendees = attendees || options.attendees || []
-    setLoading(true)
-    setError(null)
+      const targetAttendees = attendees || options.attendees || []
+      setLoading(true)
+      setError(null)
 
-    try {
-      const response = await fetch(`${options.apiEndpoint}/availability`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options.apiKey ? { Authorization: `Bearer ${options.apiKey}` } : {}),
-        },
-        body: JSON.stringify({
-          start: start.toISOString(),
-          end: end.toISOString(),
-          attendees: targetAttendees,
-        }),
-      })
+      try {
+        const response = await fetch(`${options.apiEndpoint}/availability`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(options.apiKey
+              ? { Authorization: `Bearer ${options.apiKey}` }
+              : {}),
+          },
+          body: JSON.stringify({
+            start: start.toISOString(),
+            end: end.toISOString(),
+            attendees: targetAttendees,
+          }),
+        })
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
+
+        const data = await response.json()
+        const slots = (data.slots || []).map((s: Record<string, unknown>) => ({
+          ...s,
+          start: new Date(s.start as string),
+          end: new Date(s.end as string),
+        }))
+
+        setAvailability(slots)
+        return slots
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Failed to check availability'
+        setError(message)
+        throw err
+      } finally {
+        setLoading(false)
       }
-
-      const data = await response.json()
-      const slots = (data.slots || []).map((s: Record<string, unknown>) => ({
-        ...s,
-        start: new Date(s.start as string),
-        end: new Date(s.end as string),
-      }))
-
-      setAvailability(slots)
-      return slots
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to check availability'
-      setError(message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [options.apiEndpoint, options.apiKey, options.attendees])
+    },
+    [options.apiEndpoint, options.apiKey, options.attendees]
+  )
 
   // Find next available slot
-  const findNextAvailable = React.useCallback((
-    duration: number = 60 // minutes
-  ): AvailabilitySlot | null => {
-    const durationMs = duration * 60 * 1000
+  const findNextAvailable = React.useCallback(
+    (
+      duration: number = 60 // minutes
+    ): AvailabilitySlot | null => {
+      const durationMs = duration * 60 * 1000
 
-    for (const slot of availability) {
-      if (slot.status === 'free') {
-        const slotDuration = slot.end.getTime() - slot.start.getTime()
-        if (slotDuration >= durationMs) {
-          return slot
+      for (const slot of availability) {
+        if (slot.status === 'free') {
+          const slotDuration = slot.end.getTime() - slot.start.getTime()
+          if (slotDuration >= durationMs) {
+            return slot
+          }
         }
       }
-    }
 
-    return null
-  }, [availability])
+      return null
+    },
+    [availability]
+  )
 
   // Get busy times
   const getBusyTimes = React.useCallback((): AvailabilitySlot[] => {
-    return availability.filter(slot => slot.status === 'busy')
+    return availability.filter((slot) => slot.status === 'busy')
   }, [availability])
 
   // Get free times
   const getFreeTimes = React.useCallback((): AvailabilitySlot[] => {
-    return availability.filter(slot => slot.status === 'free')
+    return availability.filter((slot) => slot.status === 'free')
   }, [availability])
 
   return {

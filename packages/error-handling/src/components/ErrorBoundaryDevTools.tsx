@@ -1,7 +1,5 @@
 'use client'
 
-import { logger } from '@clarity-chat/utils/logger';
-
 import * as React from 'react'
 import { useErrorAnalyticsOptional } from '../hooks/useErrorAnalytics'
 
@@ -339,7 +337,7 @@ function DevToolsProvider({
                 <ActionButton
                   onClick={() => {
                     const data = analytics.exportData()
-                    logger.debug('[DevTools] Exported data:', data)
+                    console.log('[DevTools] Exported data:', data)
                     navigator.clipboard?.writeText(
                       JSON.stringify(data, null, 2)
                     )

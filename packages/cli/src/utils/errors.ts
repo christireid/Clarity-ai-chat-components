@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced error handling utilities for CLI
  * Provides actionable error messages and proper exit codes
@@ -85,7 +84,7 @@ export function handleError(error: string | Error | unknown): never {
 
   if (normalizedError instanceof CLIError) {
     if (!isJsonMode) {
-      logger.error('\n')
+      console.error('\n')
       const errorBox = boxen(
         pc.bold(pc.red(normalizedError.message)) +
           (normalizedError.suggestions.length > 0
@@ -109,9 +108,9 @@ export function handleError(error: string | Error | unknown): never {
           titleAlignment: 'center',
         }
       )
-      logger.error(errorBox)
+      console.error(errorBox)
     } else {
-      logger.error(
+      console.error(
         JSON.stringify({
           error: normalizedError.message,
           code: normalizedError.code,
@@ -121,13 +120,13 @@ export function handleError(error: string | Error | unknown): never {
       )
     }
 
-    logger.error(normalizedError)
+    console.error(normalizedError)
     process.exit(normalizedError.code)
   }
 
   if (normalizedError instanceof Error) {
     if (!isJsonMode) {
-      logger.error('\n')
+      console.error('\n')
       const errorBox = boxen(
         pc.bold(pc.red('Unexpected Error:')) +
           '\n\n' +
@@ -144,9 +143,9 @@ export function handleError(error: string | Error | unknown): never {
           titleAlignment: 'center',
         }
       )
-      logger.error(errorBox)
+      console.error(errorBox)
     } else {
-      logger.error(
+      console.error(
         JSON.stringify({
           error: normalizedError.message,
           stack: normalizedError.stack,
@@ -154,13 +153,13 @@ export function handleError(error: string | Error | unknown): never {
       )
     }
 
-    logger.error(normalizedError)
+    console.error(normalizedError)
     process.exit(ExitCode.GENERAL_ERROR)
   }
 
   if (!isJsonMode) {
-    logger.error('\n')
-    logger.error(
+    console.error('\n')
+    console.error(
       boxen(pc.bold(pc.red('Unknown Error')), {
         padding: 1,
         margin: 1,
@@ -172,7 +171,7 @@ export function handleError(error: string | Error | unknown): never {
     )
   }
 
-  logger.error('Unknown error', normalizedError)
+  console.error('Unknown error', normalizedError)
   process.exit(ExitCode.GENERAL_ERROR)
 }
 

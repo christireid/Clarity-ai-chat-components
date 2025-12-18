@@ -72,6 +72,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  logger.logger.error('❌ Error:', error)
+  logger.error('❌ Error:', error)
   process.exit(1)
 })

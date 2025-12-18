@@ -12,7 +12,8 @@ export default defineConfig({
   external: [
     '@dqbd/tiktoken',
     'crypto-js',
-    '@tensorflow/tfjs'
+    '@tensorflow/tfjs',
+    'events'
   ],
   noExternal: [
     '@clarity-chat/types'

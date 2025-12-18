@@ -23,17 +23,6 @@ import * as path from 'path'
 import { execSync } from 'child_process'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Simple logger shim (standalone script doesn't have access to SecureLogger)
-// ─────────────────────────────────────────────────────────────────────────────
-
-const SecureLogger = {
-  debug: (...args: unknown[]) => console.log(...args),
-  info: (...args: unknown[]) => console.info(...args),
-  warn: (...args: unknown[]) => console.warn(...args),
-  error: (...args: unknown[]) => console.error(...args),
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -503,31 +492,27 @@ async function checkFiles(
 
 function printConsoleResults(result: CheckResult): void {
   if (result.issues.length === 0 && result.fixed.length === 0) {
-    SecureLogger.debug(
-      `${colors.green}✓ All review checks passed${colors.reset}`
-    )
-    SecureLogger.debug(
+    console.log(`${colors.green}✓ All review checks passed${colors.reset}`)
+    console.log(
       `${colors.dim}  Checked ${result.filesChecked} file(s) in ${result.duration}ms${colors.reset}`
     )
     return
   }
 
-  SecureLogger.debug(
-    `\n${colors.cyan}━━━ Review Check Results ━━━${colors.reset}\n`
-  )
+  console.log(`\n${colors.cyan}━━━ Review Check Results ━━━${colors.reset}\n`)
 
   // Show fixed issues first
   if (result.fixed.length > 0) {
-    SecureLogger.debug(
+    console.log(
       `${colors.green}✓ Auto-fixed ${result.fixed.length} issue(s):${colors.reset}`
     )
     for (const issue of result.fixed) {
       const relativePath = path.relative(process.cwd(), issue.file)
-      SecureLogger.debug(
+      console.log(
         `  ${colors.dim}${relativePath}:${issue.line} - ${issue.rule}${colors.reset}`
       )
     }
-    SecureLogger.debug('')
+    console.log('')
   }
 
   // Group remaining issues by file
@@ -540,7 +525,7 @@ function printConsoleResults(result: CheckResult): void {
 
   for (const [file, fileIssues] of byFile) {
     const relativePath = path.relative(process.cwd(), file)
-    SecureLogger.debug(`${colors.bold}${relativePath}${colors.reset}`)
+    console.log(`${colors.bold}${relativePath}${colors.reset}`)
 
     for (const issue of fileIssues) {
       const icon = issue.severity === 'error' ? '✗' : '⚠'
@@ -548,48 +533,46 @@ function printConsoleResults(result: CheckResult): void {
       const fixableHint = issue.fixable
         ? ` ${colors.dim}(--fix available)${colors.reset}`
         : ''
-      SecureLogger.debug(
+      console.log(
         `  ${color}${icon}${colors.reset} Line ${issue.line}: ${issue.message}${fixableHint}`
       )
-      SecureLogger.debug(`    ${colors.dim}Rule: ${issue.rule}${colors.reset}`)
+      console.log(`    ${colors.dim}Rule: ${issue.rule}${colors.reset}`)
     }
-    SecureLogger.debug('')
+    console.log('')
   }
 
   // Summary
   const errors = result.issues.filter((i) => i.severity === 'error')
   const warnings = result.issues.filter((i) => i.severity === 'warning')
 
-  SecureLogger.debug(`${colors.cyan}━━━ Summary ━━━${colors.reset}`)
-  SecureLogger.debug(
+  console.log(`${colors.cyan}━━━ Summary ━━━${colors.reset}`)
+  console.log(
     `${colors.dim}Checked ${result.filesChecked} file(s) in ${result.duration}ms${colors.reset}`
   )
   if (errors.length > 0) {
-    SecureLogger.debug(
-      `${colors.red}✗ ${errors.length} error(s)${colors.reset}`
-    )
+    console.log(`${colors.red}✗ ${errors.length} error(s)${colors.reset}`)
   }
   if (warnings.length > 0) {
-    SecureLogger.debug(
+    console.log(
       `${colors.yellow}⚠ ${warnings.length} warning(s)${colors.reset}`
     )
   }
   if (result.fixed.length > 0) {
-    SecureLogger.debug(
+    console.log(
       `${colors.green}✓ ${result.fixed.length} auto-fixed${colors.reset}`
     )
   }
-  SecureLogger.debug('')
+  console.log('')
 
   // Suppression hint
   if (result.issues.length > 0) {
-    SecureLogger.debug(
+    console.log(
       `${colors.dim}Suppress with: // review-ignore: ruleName${colors.reset}`
     )
-    SecureLogger.debug(
+    console.log(
       `${colors.dim}Suppress next line: // review-ignore-next-line: ruleName${colors.reset}`
     )
-    SecureLogger.debug('')
+    console.log('')
   }
 }
 
@@ -618,7 +601,7 @@ function printJsonResults(result: CheckResult): void {
     })),
   }
 
-  SecureLogger.debug(JSON.stringify(output, null, 2))
+  console.log(JSON.stringify(output, null, 2))
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -669,7 +652,7 @@ function parseArgs(args: string[]): Options {
 }
 
 function printHelp(): void {
-  SecureLogger.debug(`
+  console.log(`
 ${colors.cyan}${colors.bold}Review Checks${colors.reset} - Pre-commit code quality checks
 
 ${colors.bold}Usage:${colors.reset}
@@ -722,11 +705,11 @@ async function main(): Promise<void> {
     files = getStagedFiles()
     if (files.length === 0) {
       if (options.output === 'json') {
-        SecureLogger.debug(
+        console.log(
           JSON.stringify({ passed: true, filesChecked: 0, issues: [] })
         )
       } else {
-        SecureLogger.debug(
+        console.log(
           `${colors.dim}No staged TypeScript/JavaScript files to check${colors.reset}`
         )
       }
@@ -754,10 +737,10 @@ async function main(): Promise<void> {
   // Exit code
   if (!result.passed) {
     if (options.output !== 'json') {
-      SecureLogger.debug(
+      console.log(
         `${colors.red}Review checks failed. Please fix errors before committing.${colors.reset}`
       )
-      SecureLogger.debug(
+      console.log(
         `${colors.dim}Tip: Run 'pnpm review' for detailed AI-powered suggestions.${colors.reset}\n`
       )
     }
@@ -765,17 +748,17 @@ async function main(): Promise<void> {
   }
 
   if (result.issues.length > 0 && options.output !== 'json') {
-    SecureLogger.debug(
+    console.log(
       `${colors.yellow}Review checks passed with warnings.${colors.reset}`
     )
-    SecureLogger.debug(
+    console.log(
       `${colors.dim}Consider running 'pnpm review' for detailed suggestions.${colors.reset}\n`
     )
   }
 }
 
 main().catch((error) => {
-  SecureLogger.error(`${colors.red}Error: ${error.message}${colors.reset}`)
+  console.error(`${colors.red}Error: ${error.message}${colors.reset}`)
   process.exit(1)
 })
 

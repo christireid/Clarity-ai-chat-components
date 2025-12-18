@@ -1,9 +1,8 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { estimateTokens } from '../utils/tokenization/estimator'
-import { MODEL_REGISTRY } from '../utils/tokenization/model-registry'
+import { estimateTokens } from '../../utils/tokenization/estimator'
+import { MODEL_REGISTRY } from '../../utils/tokenization/model-registry'
 
 // =============================================================================
 // Lazy-initialized pricing and limits for performance
@@ -53,7 +52,7 @@ function computeModelLimits(): Record<string, number> {
  *
  * **Performance**: Lazy-initialized on first access, not at import time.
  *
- * @deprecated Import from '../utils/tokenization/model-pricing' for full pricing utilities.
+ * @deprecated Import from '../../utils/tokenization/model-pricing' for full pricing utilities.
  * Use `calculateCost()` for accurate cost calculations.
  * @see {@link ../utils/tokenization/model-pricing.ts} for the recommended API
  * @see {@link MODEL_REGISTRY} for the source of truth
@@ -96,7 +95,7 @@ export const MODEL_PRICING: Record<string, { input: number; output: number }> =
  * @see {@link MODEL_REGISTRY} for the complete model configuration
  * @example
  * ```ts
- * import { MODEL_REGISTRY } from '../utils/tokenization/model-registry'
+ * import { MODEL_REGISTRY } from '../../utils/tokenization/model-registry'
  * const gpt4Limit = MODEL_REGISTRY['gpt-4'].contextWindow // 8192
  * ```
  */
@@ -271,7 +270,7 @@ function estimateTokensFromText(text: string): number {
  *   outputCostPerToken: 0.00004,
  *   warningThreshold: 0.7,
  *   onWarning: () => {
- *     logger.debug('Approaching token limit')
+ *     console.log('Approaching token limit')
  *   },
  *   onCritical: () => {
  *     showPruneDialog()

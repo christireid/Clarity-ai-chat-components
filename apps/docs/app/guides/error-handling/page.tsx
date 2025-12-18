@@ -27,7 +27,7 @@ export default async function ErrorHandlingGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read error-handling guide', error)
+    logger.error('Failed to read error-handling guide', error)
     content = '# Error Handling\n\nContent not available.'
   }
 

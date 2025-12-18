@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 
@@ -406,7 +407,11 @@ export function useStreamingWebSocket(
 
       // Handle connection close
       ws.addEventListener('close', (event) => {
-        logger.debug('[useStreamingWebSocket] Closed:', event.code, event.reason)
+        logger.debug(
+          '[useStreamingWebSocket] Closed:',
+          event.code,
+          event.reason
+        )
         setStatus('closed')
         setReadyState(ws.readyState)
 
@@ -509,9 +514,7 @@ export function useStreamingWebSocket(
   const send = React.useCallback(
     (data: string | object | ArrayBuffer | Blob): boolean => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        logger.warn(
-          '[useStreamingWebSocket] Cannot send - connection not open'
-        )
+        logger.warn('[useStreamingWebSocket] Cannot send - connection not open')
         return false
       }
 

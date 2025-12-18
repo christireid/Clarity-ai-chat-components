@@ -2,6 +2,11 @@
 
 import { useState, useMemo, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { formatRelativeTime } from '@clarity-chat/primitives'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 /**
  * Folder for organizing conversations
@@ -118,19 +123,7 @@ export interface ConversationListProps {
   className?: string
 }
 
-/**
- * Format timestamp to relative time
- */
-function formatRelativeTime(timestamp: number): string {
-  const now = Date.now()
-  const diff = now - timestamp
-
-  if (diff < 60000) return 'Just now'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`
-  if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`
-  return new Date(timestamp).toLocaleDateString()
-}
+// formatRelativeTime imported from @clarity-chat/primitives
 
 /**
  * Production-ready Conversation List component.
@@ -348,16 +341,19 @@ export function ConversationList({
   /**
    * Handle conversation selection
    */
-  const handleSelect = useCallback((id: string) => {
-    if (multiSelect && onSelectionChange) {
-      const newSelection = selectedIds.includes(id)
-        ? selectedIds.filter((sid) => sid !== id)
-        : [...selectedIds, id]
-      onSelectionChange(newSelection)
-    } else {
-      onSelect(id)
-    }
-  }, [multiSelect, onSelectionChange, selectedIds, onSelect])
+  const handleSelect = useCallback(
+    (id: string) => {
+      if (multiSelect && onSelectionChange) {
+        const newSelection = selectedIds.includes(id)
+          ? selectedIds.filter((sid) => sid !== id)
+          : [...selectedIds, id]
+        onSelectionChange(newSelection)
+      } else {
+        onSelect(id)
+      }
+    },
+    [multiSelect, onSelectionChange, selectedIds, onSelect]
+  )
 
   /**
    * Get all unique tags (currently unused but available for tag filtering UI)
@@ -504,12 +500,16 @@ export function ConversationList({
 
           {/* Folders */}
           {folders.map((folder) => {
-            const folderConversations = conversationsByFolder.grouped[folder.id] || []
+            const folderConversations =
+              conversationsByFolder.grouped[folder.id] || []
             const isExpanded = expandedFolders.has(folder.id)
             const isActive = activeFolderId === folder.id
 
             return (
-              <div key={folder.id} className="border-b border-border/50 last:border-b-0">
+              <div
+                key={folder.id}
+                className="border-b border-border/50 last:border-b-0"
+              >
                 <button
                   onClick={() => {
                     if (showFolders) {
@@ -524,19 +524,19 @@ export function ConversationList({
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                  <motion.svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    animate={{ rotate: isExpanded ? 90 : 0 }}
-                    transition={{ 
-                      // Framer Motion 12: Spring folder icon rotation
-                      type: 'spring',
-                      damping: 20,
-                      stiffness: 300,
-                    }}
-                  >
+                    <motion.svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      animate={{ rotate: isExpanded ? 90 : 0 }}
+                      transition={{
+                        // Framer Motion 12: Spring folder icon rotation
+                        type: 'spring',
+                        damping: 20,
+                        stiffness: 300,
+                      }}
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -712,13 +712,13 @@ export function ConversationList({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -100, height: 0 }}
                     transition={{
-                      duration: 0.2,
+                      duration: durations.normal,
                       delay: index * 0.05, // Stagger: 50ms between items
-                      ease: [0.4, 0, 0.2, 1],
+                      ease: EASING_FRAMER.default,
                     }}
                     whileHover={{
                       y: -2,
-                      transition: { duration: 0.15 },
+                      transition: { duration: durations.fast },
                     }}
                     layout
                     onClick={() => handleSelect(conversation.id)}
@@ -811,7 +811,9 @@ export function ConversationList({
                             onClick={() => {
                               // Simple implementation: move to first folder or remove from folder
                               const currentFolderId = conversation.folderId
-                              const newFolderId = currentFolderId ? null : folders[0]?.id || null
+                              const newFolderId = currentFolderId
+                                ? null
+                                : folders[0]?.id || null
                               onMoveToFolder(conversation.id, newFolderId)
                             }}
                             whileHover={{ scale: 1.1 }}
@@ -870,7 +872,7 @@ export function ConversationList({
                                   ? { rotate: [0, -10, 10, -10, 0] }
                                   : {}
                               }
-                              transition={{ duration: 0.5 }}
+                              transition={{ duration: durations.slow }}
                             >
                               {conversation.isPinned ? '📌' : '📍'}
                             </motion.span>
@@ -896,7 +898,7 @@ export function ConversationList({
                                   ? { scale: [1, 1.3, 1] }
                                   : {}
                               }
-                              transition={{ duration: 0.3 }}
+                              transition={{ duration: durations.moderate }}
                             >
                               {conversation.isFavorite ? '⭐' : '☆'}
                             </motion.span>

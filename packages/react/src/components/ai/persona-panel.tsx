@@ -11,6 +11,10 @@ import {
   CardTitle,
   cn,
 } from '@clarity-chat/primitives'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 export type PersonaRole =
   | 'strategist'
@@ -101,7 +105,10 @@ export function PersonaPanel({
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                  transition={{
+                    duration: durations.normal,
+                    ease: EASING_FRAMER.default,
+                  }}
                 >
                   <Button
                     variant={isActive ? 'surface' : 'outline'}

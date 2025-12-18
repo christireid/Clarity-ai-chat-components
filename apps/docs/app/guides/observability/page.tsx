@@ -26,7 +26,7 @@ export default async function ObservabilityGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read observability guide', error)
+    logger.error('Failed to read observability guide', error)
     content = '# Observability\n\nContent not available.'
   }
 

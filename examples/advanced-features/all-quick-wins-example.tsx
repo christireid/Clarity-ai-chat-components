@@ -11,7 +11,6 @@
 import * as React from 'react'
 import {
   useChatEnhanced,
-import { SecureLogger } from '@/lib/security/secureLogger';
   PromptSuggestionsEnhanced,
   ConversationSummarizer,
   BatteryIndicator,
@@ -21,7 +20,6 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 } from '@clarity-chat/react'
 import { useFocusTrap, useEscapeKey } from '../utils/accessibility'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type definitions for this example
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
@@ -83,7 +81,10 @@ export function AdvancedChatApplication() {
 
   // Custom summarization with your LLM API
   const handleGenerateSummary = React.useCallback(
-    async (messages: ChatMessage[], level: 'brief' | 'detailed' | 'comprehensive') => {
+    async (
+      messages: ChatMessage[],
+      level: 'brief' | 'detailed' | 'comprehensive'
+    ) => {
       const response = await fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -103,7 +104,7 @@ export function AdvancedChatApplication() {
   const handlePerformanceUpdate = React.useCallback((data: PerformanceData) => {
     // Send to your analytics service
     if (data.webVitals?.length > 0) {
-      SecureLogger.debug('Web Vitals:', data.webVitals)
+      console.log('Web Vitals:', data.webVitals)
 
       // Example: Track to analytics
       // analytics.track('web_vitals', {
@@ -114,20 +115,27 @@ export function AdvancedChatApplication() {
     }
 
     // Monitor memory usage
-    if (data.memoryUsage && data.memoryUsage.used / data.memoryUsage.limit > 0.8) {
-      SecureLogger.warn('High memory usage detected:', data.memoryUsage)
+    if (
+      data.memoryUsage &&
+      data.memoryUsage.used / data.memoryUsage.limit > 0.8
+    ) {
+      console.warn('High memory usage detected:', data.memoryUsage)
     }
 
     // Monitor FPS
     if (data.fps && data.fps < 30) {
-      SecureLogger.warn('Low FPS detected:', data.fps)
+      console.warn('Low FPS detected:', data.fps)
     }
   }, [])
 
   return (
     <div className="relative flex h-screen">
       {/* Battery indicator (fixed position) */}
-      <BatteryIndicator position="top-right" showTooltip showLabel={!shouldEnableBatterySaver} />
+      <BatteryIndicator
+        position="top-right"
+        showTooltip
+        showLabel={!shouldEnableBatterySaver}
+      />
 
       {/* Main chat area */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -218,7 +226,7 @@ export function AdvancedChatApplication() {
                 includeCodeSnippets: true,
               }}
               onSummaryGenerated={(summary) => {
-                SecureLogger.debug('Summary generated:', summary)
+                console.log('Summary generated:', summary)
 
                 // Track to analytics
                 // analytics.track('summary_generated', {
@@ -261,20 +269,17 @@ export function AdvancedChatApplication() {
  * Demonstrates aggressive battery optimization for mobile devices
  */
 export function MobileAdvancedChat() {
-  const {
-    recommendations,
-    shouldEnableBatterySaver,
-    batteryDescription,
-  } = useBatteryAware({
-    batterySaverThreshold: 0.3, // More aggressive on mobile
-    optimizations: {
-      reduceAnimations: true,
-      throttleUpdates: true,
-      deferNonCritical: true,
-      reduceStreamingQuality: true,
-    },
-    autoOptimize: true,
-  })
+  const { recommendations, shouldEnableBatterySaver, batteryDescription } =
+    useBatteryAware({
+      batterySaverThreshold: 0.3, // More aggressive on mobile
+      optimizations: {
+        reduceAnimations: true,
+        throttleUpdates: true,
+        deferNonCritical: true,
+        reduceStreamingQuality: true,
+      },
+      autoOptimize: true,
+    })
 
   const { messages, sendMessage, isLoading } = useChatEnhanced({
     api: '/api/chat',
@@ -363,7 +368,9 @@ export function MobileAdvancedChat() {
           >
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 id="summary-title" className="text-lg font-bold">Summary</h2>
+                <h2 id="summary-title" className="text-lg font-bold">
+                  Summary
+                </h2>
                 <button
                   onClick={() => setShowSummary(false)}
                   aria-label="Close summary panel"
@@ -401,9 +408,9 @@ export function MobileAdvancedChat() {
  * Includes all features with enhanced debugging and monitoring
  */
 export function DeveloperDashboard() {
-  const [selectedTab, setSelectedTab] = React.useState<'chat' | 'performance' | 'analytics'>(
-    'chat'
-  )
+  const [selectedTab, setSelectedTab] = React.useState<
+    'chat' | 'performance' | 'analytics'
+  >('chat')
 
   const {
     recommendations,
@@ -418,8 +425,10 @@ export function DeveloperDashboard() {
     api: '/api/chat',
   })
 
-  const [performanceData, setPerformanceData] = React.useState<PerformanceData | null>(null)
-  const [suggestionStats, setSuggestionStats] = React.useState<SuggestionStats | null>(null)
+  const [performanceData, setPerformanceData] =
+    React.useState<PerformanceData | null>(null)
+  const [suggestionStats, setSuggestionStats] =
+    React.useState<SuggestionStats | null>(null)
 
   return (
     <div className="flex h-screen">
@@ -523,19 +532,26 @@ export function DeveloperDashboard() {
             <div className="h-full overflow-y-auto p-6">
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold mb-4">Suggestion Analytics</h2>
+                  <h2 className="text-2xl font-bold mb-4">
+                    Suggestion Analytics
+                  </h2>
                   {suggestionStats && (
                     <div className="grid grid-cols-2 gap-4">
                       <div className="border rounded-lg p-4">
-                        <div className="text-sm text-muted-foreground">Click-Through Rate</div>
+                        <div className="text-sm text-muted-foreground">
+                          Click-Through Rate
+                        </div>
                         <div className="text-3xl font-bold">
                           {(suggestionStats.clickThroughRate * 100).toFixed(1)}%
                         </div>
                       </div>
                       <div className="border rounded-lg p-4">
-                        <div className="text-sm text-muted-foreground">Avg Confidence</div>
+                        <div className="text-sm text-muted-foreground">
+                          Avg Confidence
+                        </div>
                         <div className="text-3xl font-bold">
-                          {(suggestionStats.averageConfidence * 100).toFixed(0)}%
+                          {(suggestionStats.averageConfidence * 100).toFixed(0)}
+                          %
                         </div>
                       </div>
                     </div>
@@ -547,13 +563,17 @@ export function DeveloperDashboard() {
                   {batterySupported && batteryStatus && (
                     <div className="grid grid-cols-2 gap-4">
                       <div className="border rounded-lg p-4">
-                        <div className="text-sm text-muted-foreground">Battery Level</div>
+                        <div className="text-sm text-muted-foreground">
+                          Battery Level
+                        </div>
                         <div className="text-3xl font-bold">
                           {Math.round(batteryStatus.level * 100)}%
                         </div>
                       </div>
                       <div className="border rounded-lg p-4">
-                        <div className="text-sm text-muted-foreground">Optimization Level</div>
+                        <div className="text-sm text-muted-foreground">
+                          Optimization Level
+                        </div>
                         <div className="text-3xl font-bold capitalize">
                           {recommendations.level}
                         </div>
@@ -563,13 +583,17 @@ export function DeveloperDashboard() {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold mb-4">Performance Snapshot</h2>
+                  <h2 className="text-2xl font-bold mb-4">
+                    Performance Snapshot
+                  </h2>
                   {performanceData && (
                     <div className="space-y-2">
                       {performanceData.fps && (
                         <div className="flex justify-between border-b pb-2">
                           <span>FPS:</span>
-                          <span className="font-bold">{performanceData.fps}</span>
+                          <span className="font-bold">
+                            {performanceData.fps}
+                          </span>
                         </div>
                       )}
                       {performanceData.memoryUsage && (

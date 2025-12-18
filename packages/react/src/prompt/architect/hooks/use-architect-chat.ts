@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useArchitectChat Hook
  *
@@ -9,9 +8,19 @@ import { logger } from '@clarity-chat/utils/logger';
  */
 
 import { useCallback, useMemo, useState } from 'react'
-import { useClarityChat, type UseClarityChatOptions } from '../../../hooks/use-clarity-chat'
-import { useArchitectWorkflow, type UseArchitectWorkflowOptions } from './use-architect-workflow'
-import { renderMasterSystemPrompt, ARCHITECT_RECIPES, getArchitectRecipe } from '../master-prompt'
+import {
+  useClarityChat,
+  type UseClarityChatOptions,
+} from '../../../hooks/chat/use-clarity-chat'
+import {
+  useArchitectWorkflow,
+  type UseArchitectWorkflowOptions,
+} from './use-architect-workflow'
+import {
+  renderMasterSystemPrompt,
+  ARCHITECT_RECIPES,
+  getArchitectRecipe,
+} from '../master-prompt'
 import type {
   ArchitectConfig,
   ArchitectPhase,
@@ -145,7 +154,9 @@ export function parseResponseBlocks(content: string): ParsedResponseBlock[] {
   const markdownCodeRegex = /```(\w+)?\n([\s\S]*?)```/g
   while ((match = markdownCodeRegex.exec(content)) !== null) {
     // Skip if already captured by CODE tags
-    if (!blocks.some((b) => b.type === 'code' && b.content === match![2].trim())) {
+    if (
+      !blocks.some((b) => b.type === 'code' && b.content === match![2].trim())
+    ) {
       blocks.push({
         type: 'code',
         content: match[2].trim(),
@@ -199,7 +210,7 @@ export function parseResponseBlocks(content: string): ParsedResponseBlock[] {
  *   recipe: 'masterArchitect',
  *   onBlocksParsed: (blocks) => {
  *     const codeBlocks = blocks.filter(b => b.type === 'code')
- *     logger.debug('Generated code:', codeBlocks)
+ *     console.log('Generated code:', codeBlocks)
  *   },
  * })
  *
@@ -207,7 +218,7 @@ export function parseResponseBlocks(content: string): ParsedResponseBlock[] {
  * await architect.sendMessage('Review this code for security issues: ...')
  *
  * // Check workflow progress
- * logger.debug(`Phase: ${architect.currentPhase}, Progress: ${architect.progress}%`)
+ * console.log(`Phase: ${architect.currentPhase}, Progress: ${architect.progress}%`)
  *
  * // Get parsed content
  * const code = architect.getCodeBlocks()
@@ -229,8 +240,11 @@ export function useArchitectChat(
   } = options
 
   // State
-  const [currentRecipe, setCurrentRecipe] = useState<ArchitectRecipeType>(initialRecipe)
-  const [lastParsedBlocks, setLastParsedBlocks] = useState<ParsedResponseBlock[]>([])
+  const [currentRecipe, setCurrentRecipe] =
+    useState<ArchitectRecipeType>(initialRecipe)
+  const [lastParsedBlocks, setLastParsedBlocks] = useState<
+    ParsedResponseBlock[]
+  >([])
 
   // Build system prompt
   const systemPrompt = useMemo(() => {
@@ -280,7 +294,10 @@ export function useArchitectChat(
       // Parse blocks from the latest assistant message after response completes
       if (autoParseBlocks && chat.messages.length > 0) {
         const lastMessage = chat.messages[chat.messages.length - 1]
-        if (lastMessage?.role === 'assistant' && typeof lastMessage.content === 'string') {
+        if (
+          lastMessage?.role === 'assistant' &&
+          typeof lastMessage.content === 'string'
+        ) {
           const blocks = parseResponseBlocks(lastMessage.content)
           setLastParsedBlocks(blocks)
           onBlocksParsed?.(blocks)
@@ -393,7 +410,11 @@ export function useArchitectChat(
     const blocks: ParsedResponseBlock[] = []
     for (const message of chat.messages) {
       if (message.role === 'assistant' && typeof message.content === 'string') {
-        blocks.push(...parseResponseBlocks(message.content).filter((b) => b.type === 'planning'))
+        blocks.push(
+          ...parseResponseBlocks(message.content).filter(
+            (b) => b.type === 'planning'
+          )
+        )
       }
     }
     return blocks
@@ -406,7 +427,11 @@ export function useArchitectChat(
     const blocks: ParsedResponseBlock[] = []
     for (const message of chat.messages) {
       if (message.role === 'assistant' && typeof message.content === 'string') {
-        blocks.push(...parseResponseBlocks(message.content).filter((b) => b.type === 'code'))
+        blocks.push(
+          ...parseResponseBlocks(message.content).filter(
+            (b) => b.type === 'code'
+          )
+        )
       }
     }
     return blocks
@@ -419,7 +444,11 @@ export function useArchitectChat(
     const blocks: ParsedResponseBlock[] = []
     for (const message of chat.messages) {
       if (message.role === 'assistant' && typeof message.content === 'string') {
-        blocks.push(...parseResponseBlocks(message.content).filter((b) => b.type === 'review'))
+        blocks.push(
+          ...parseResponseBlocks(message.content).filter(
+            (b) => b.type === 'review'
+          )
+        )
       }
     }
     return blocks
