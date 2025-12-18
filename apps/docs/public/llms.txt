@@ -123,6 +123,29 @@ Three bundle options for different needs:
 - [createMemoryStore](https://clarity-chat.dev/reference/utilities/create-memory-store): Factory for memory stores (non-React contexts)
 - [Type Definitions](https://clarity-chat.dev/reference/api/types): TypeScript type reference
 
+## Enterprise
+
+Enterprise features for production applications with compliance requirements:
+
+### Authentication & Access Control
+- [RBAC Guide](https://clarity-chat.dev/guides/rbac): Role-based access control with RBACManager and RBACProvider
+- [SSO Configuration](https://clarity-chat.dev/guides/sso-configuration): SAML/OIDC single sign-on setup
+- [SSOConfigWizard](https://clarity-chat.dev/reference/components/sso-config-wizard): Step-by-step SSO configuration wizard
+
+### Multi-Tenancy
+- [Multi-Tenancy Guide](https://clarity-chat.dev/guides/multi-tenancy): Tenant isolation with TenantManager
+- [AuthTenantDashboard](https://clarity-chat.dev/reference/components/auth-tenant-dashboard): Tenant management dashboard
+- [Usage Quotas](https://clarity-chat.dev/guides/multi-tenancy#quotas): Per-tenant token and request limits
+
+### Compliance & Auditing
+- [Audit Logging Guide](https://clarity-chat.dev/guides/audit-logging): Compliance logging with AuditLogger
+- [AuditLogViewer](https://clarity-chat.dev/reference/components/audit-log-viewer): Interactive audit log viewer with export
+
+### Enterprise Hooks
+- `useRBAC`: Permission and role checking within RBACProvider
+- `useTenant`: Access current tenant context and quotas
+- `useAuditLog`: Log audit events with automatic context capture
+
 ## Optional
 
 - [Enterprise Features](https://clarity-chat.dev/enterprise): SSO, RBAC, multi-tenancy, audit logs
