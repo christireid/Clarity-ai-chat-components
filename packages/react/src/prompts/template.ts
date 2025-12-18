@@ -12,6 +12,17 @@ import type {
   PromptRenderResult,
 } from './types'
 
+/** Maximum template length to prevent DoS */
+const MAX_TEMPLATE_LENGTH = 100_000
+
+/** Maximum number of variables to prevent abuse */
+const MAX_VARIABLES = 100
+
+/** Validate a string is safe for use as an ID */
+function isValidId(id: string): boolean {
+  return /^[\w-]+$/.test(id) && id.length <= 128
+}
+
 export class PromptTemplateEngine {
   private delimiter = {
     start: '{{',
@@ -20,6 +31,10 @@ export class PromptTemplateEngine {
 
   constructor(delimiter?: { start: string; end: string }) {
     if (delimiter) {
+      // Validate delimiter to prevent regex injection
+      if (delimiter.start.length > 10 || delimiter.end.length > 10) {
+        throw new Error('Delimiter must be 10 characters or less')
+      }
       this.delimiter = delimiter
     }
   }
@@ -35,6 +50,31 @@ export class PromptTemplateEngine {
       typeof template === 'string' ? template : template.template
     const templateObj = typeof template === 'object' ? template : undefined
     const delimiter = options.delimiter || this.delimiter
+
+    // Validate template length to prevent DoS
+    if (templateStr.length > MAX_TEMPLATE_LENGTH) {
+      return {
+        prompt: '',
+        usedVariables: [],
+        errors: [
+          `Template exceeds maximum length of ${MAX_TEMPLATE_LENGTH} characters`,
+        ],
+        success: false,
+      }
+    }
+
+    // Validate variable count to prevent abuse
+    const variableCount = Object.keys(options.variables).length
+    if (variableCount > MAX_VARIABLES) {
+      return {
+        prompt: '',
+        usedVariables: [],
+        errors: [
+          `Too many variables: ${variableCount} exceeds maximum of ${MAX_VARIABLES}`,
+        ],
+        success: false,
+      }
+    }
 
     const result: PromptRenderResult = {
       prompt: templateStr,

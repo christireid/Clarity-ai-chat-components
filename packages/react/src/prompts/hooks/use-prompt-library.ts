@@ -649,6 +649,11 @@ export function usePromptLibrary(
   const importLibrary = React.useCallback(
     (json: string): boolean => {
       try {
+        // Validate JSON size to prevent DoS
+        if (json.length > 10_000_000) {
+          return false
+        }
+
         const data = JSON.parse(json)
 
         // Validate required structure
@@ -656,14 +661,33 @@ export function usePromptLibrary(
           return false
         }
 
-        // Validate each template has required fields
+        // Validate template count limit
+        if (data.templates.length > 1000) {
+          return false
+        }
+
+        // Validate ID format (alphanumeric, dashes, underscores only)
+        const isValidId = (id: string): boolean =>
+          typeof id === 'string' && /^[\w-]+$/.test(id) && id.length <= 128
+
+        // Validate each template has required fields with proper types
         const isValidTemplate = (t: unknown): t is PromptTemplate => {
           if (!t || typeof t !== 'object') return false
           const template = t as Record<string, unknown>
           return (
             typeof template.id === 'string' &&
+            isValidId(template.id) &&
             typeof template.name === 'string' &&
-            typeof template.template === 'string'
+            template.name.length <= 256 &&
+            typeof template.template === 'string' &&
+            template.template.length <= 100_000 &&
+            (template.description === undefined ||
+              typeof template.description === 'string') &&
+            (template.tags === undefined ||
+              (Array.isArray(template.tags) &&
+                template.tags.every(
+                  (tag) => typeof tag === 'string' && tag.length <= 64
+                )))
           )
         }
 
@@ -672,8 +696,35 @@ export function usePromptLibrary(
         }
 
         // Validate versions structure if present
-        if (data.versions && typeof data.versions !== 'object') {
-          return false
+        if (data.versions) {
+          if (typeof data.versions !== 'object' || data.versions === null) {
+            return false
+          }
+
+          // Validate each version entry
+          const isValidVersion = (v: unknown): v is PromptVersion => {
+            if (!v || typeof v !== 'object') return false
+            const version = v as Record<string, unknown>
+            return (
+              typeof version.id === 'string' &&
+              isValidId(version.id) &&
+              typeof version.templateId === 'string' &&
+              isValidId(version.templateId) &&
+              typeof version.version === 'string' &&
+              /^\d+\.\d+\.\d+$/.test(version.version) &&
+              typeof version.template === 'string' &&
+              version.template.length <= 100_000 &&
+              typeof version.createdAt === 'number' &&
+              version.createdAt > 0 &&
+              version.createdAt <= Date.now() + 86400000 // Allow 1 day future tolerance
+            )
+          }
+
+          for (const [templateId, versions] of Object.entries(data.versions)) {
+            if (!isValidId(templateId)) return false
+            if (!Array.isArray(versions)) return false
+            if (!versions.every(isValidVersion)) return false
+          }
         }
 
         // Validate deployments structure if present
@@ -683,6 +734,36 @@ export function usePromptLibrary(
           if (!deploymentKeys.every((key) => validEnvs.includes(key))) {
             return false
           }
+
+          // Validate each deployment entry
+          const isValidDeployment = (d: unknown): d is PromptDeployment => {
+            if (!d || typeof d !== 'object') return false
+            const deployment = d as Record<string, unknown>
+            return (
+              typeof deployment.id === 'string' &&
+              isValidId(deployment.id) &&
+              typeof deployment.templateId === 'string' &&
+              isValidId(deployment.templateId) &&
+              typeof deployment.versionId === 'string' &&
+              isValidId(deployment.versionId) &&
+              typeof deployment.environment === 'string' &&
+              validEnvs.includes(deployment.environment)
+            )
+          }
+
+          for (const env of validEnvs) {
+            const envDeployments = data.deployments[env]
+            if (envDeployments !== undefined) {
+              if (!Array.isArray(envDeployments)) return false
+              if (!envDeployments.every(isValidDeployment)) return false
+            }
+          }
+        }
+
+        // Validate history if present
+        if (data.history !== undefined) {
+          if (!Array.isArray(data.history)) return false
+          if (data.history.length > 10000) return false
         }
 
         setState((prev) => ({

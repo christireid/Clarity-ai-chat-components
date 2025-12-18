@@ -139,6 +139,12 @@ export interface UsePromptPlaygroundReturn {
   setModel: (modelId: string) => void
 }
 
+/** Maximum template length to prevent DoS */
+const MAX_TEMPLATE_LENGTH = 100_000
+
+/** Maximum variable value length */
+const MAX_VARIABLE_VALUE_LENGTH = 50_000
+
 /**
  * Estimate token count (simple approximation)
  * Real implementation should use tiktoken or similar
@@ -146,6 +152,19 @@ export interface UsePromptPlaygroundReturn {
 function estimateTokens(text: string): number {
   // Rough estimate: ~4 characters per token for English text
   return Math.ceil(text.length / 4)
+}
+
+/**
+ * Validate and truncate string if necessary
+ */
+function validateStringLength(
+  value: string,
+  maxLength: number
+): { value: string; truncated: boolean } {
+  if (value.length <= maxLength) {
+    return { value, truncated: false }
+  }
+  return { value: value.slice(0, maxLength), truncated: true }
 }
 
 /**
@@ -199,7 +218,8 @@ export function usePromptPlayground(
   // Current model pricing
   const [currentModel, setCurrentModel] = React.useState(model)
   const pricing = React.useMemo(
-    () => customPricing || MODEL_PRICING[currentModel] || MODEL_PRICING['gpt-4o']!,
+    () =>
+      customPricing || MODEL_PRICING[currentModel] || MODEL_PRICING['gpt-4o']!,
     [customPricing, currentModel]
   )
 
@@ -245,7 +265,8 @@ export function usePromptPlayground(
   const performRender = React.useCallback((): PromptRenderResult => {
     const currentState = stateRef.current
     const currentPricing = pricingRef.current
-    const { onRender: renderCallback, onError: errorCallback } = callbacksRef.current
+    const { onRender: renderCallback, onError: errorCallback } =
+      callbacksRef.current
 
     setState((prev) => ({ ...prev, isRendering: true }))
 
@@ -312,32 +333,69 @@ export function usePromptPlayground(
     }
   }, [state.template, state.variables, autoRender, debounceMs, performRender])
 
-  // Set template
+  // Set template with length validation
   const setTemplate = React.useCallback((template: string) => {
-    setState((prev) => ({
-      ...prev,
+    const { value: validatedTemplate, truncated } = validateStringLength(
       template,
-      tokenCount: estimateTokens(template),
-    }))
-  }, [])
-
-  // Set single variable
-  const setVariable = React.useCallback((name: string, value: unknown) => {
+      MAX_TEMPLATE_LENGTH
+    )
     setState((prev) => ({
       ...prev,
-      variables: { ...prev.variables, [name]: value },
+      template: validatedTemplate,
+      tokenCount: estimateTokens(validatedTemplate),
+      errors: truncated
+        ? [
+            ...prev.errors.filter((e) => !e.includes('truncated')),
+            'Template was truncated to maximum length',
+          ]
+        : prev.errors.filter((e) => !e.includes('truncated')),
     }))
   }, [])
 
-  // Set multiple variables
-  const setVariables = React.useCallback(
-    (variables: Record<string, unknown>) => {
+  // Validate variable value (truncate strings if too long)
+  const validateVariableValue = React.useCallback((value: unknown): unknown => {
+    if (typeof value === 'string') {
+      const { value: validated } = validateStringLength(
+        value,
+        MAX_VARIABLE_VALUE_LENGTH
+      )
+      return validated
+    }
+    return value
+  }, [])
+
+  // Set single variable with validation
+  const setVariable = React.useCallback(
+    (name: string, value: unknown) => {
+      // Validate variable name (alphanumeric, dots for nested paths)
+      if (!/^[\w.]+$/.test(name) || name.length > 128) {
+        return // Silently reject invalid variable names
+      }
+      const validatedValue = validateVariableValue(value)
       setState((prev) => ({
         ...prev,
-        variables: { ...prev.variables, ...variables },
+        variables: { ...prev.variables, [name]: validatedValue },
       }))
     },
-    []
+    [validateVariableValue]
+  )
+
+  // Set multiple variables with validation
+  const setVariables = React.useCallback(
+    (variables: Record<string, unknown>) => {
+      // Filter and validate each variable
+      const validatedVars: Record<string, unknown> = {}
+      for (const [name, value] of Object.entries(variables)) {
+        if (/^[\w.]+$/.test(name) && name.length <= 128) {
+          validatedVars[name] = validateVariableValue(value)
+        }
+      }
+      setState((prev) => ({
+        ...prev,
+        variables: { ...prev.variables, ...validatedVars },
+      }))
+    },
+    [validateVariableValue]
   )
 
   // Extract variables from template

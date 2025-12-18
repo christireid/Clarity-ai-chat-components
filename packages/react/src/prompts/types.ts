@@ -22,38 +22,38 @@ export interface PromptVariable {
 
 export interface PromptTemplate {
   /** Template ID */
-  id: string
+  readonly id: string
   /** Template name */
-  name: string
+  readonly name: string
   /** Template description */
-  description?: string
+  readonly description?: string
   /** Template content with variables */
-  template: string
+  readonly template: string
   /** Variables used in template */
-  variables?: PromptVariable[]
+  readonly variables?: readonly PromptVariable[]
   /** Template version */
-  version?: string
+  readonly version?: string
   /** Template category/tags */
-  tags?: string[]
+  readonly tags?: readonly string[]
   /** Metadata */
-  metadata?: Record<string, unknown>
+  readonly metadata?: Readonly<Record<string, unknown>>
 }
 
 export interface PromptVersion {
   /** Version ID */
-  id: string
+  readonly id: string
   /** Template ID */
-  templateId: string
+  readonly templateId: string
   /** Version number */
-  version: string
+  readonly version: string
   /** Template content */
-  template: string
+  readonly template: string
   /** When this version was created */
-  createdAt: number
+  readonly createdAt: number
   /** Version notes/changelog */
-  notes?: string
+  readonly notes?: string
   /** Whether this is the active version */
-  isActive?: boolean
+  readonly isActive?: boolean
 }
 
 export interface PromptVariant {
@@ -88,15 +88,15 @@ export interface RenderPromptOptions {
 
 export interface PromptRenderResult {
   /** Rendered prompt */
-  prompt: string
+  readonly prompt: string
   /** Variables that were used */
-  usedVariables: string[]
+  readonly usedVariables: readonly string[]
   /** Missing required variables */
-  missingVariables?: string[]
+  readonly missingVariables?: readonly string[]
   /** Validation errors */
-  errors?: string[]
+  readonly errors?: readonly string[]
   /** Whether render was successful */
-  success: boolean
+  readonly success: boolean
 }
 
 /**
