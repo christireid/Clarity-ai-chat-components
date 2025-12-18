@@ -21,6 +21,8 @@
     "**/*.stories.ts",
     "**/*.stories.tsx",
     "vitest.d.ts",
-    "vitest.setup.ts"
+    "vitest.setup.ts",
+    "src/lib/enterprise-utils.ts",
+    "src/lib/utils.ts"
   ]
 }
