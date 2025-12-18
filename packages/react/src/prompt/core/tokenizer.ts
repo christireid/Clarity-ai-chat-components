@@ -5,7 +5,7 @@
  * Uses approximate tokenization by default, with pluggable tokenizers.
  */
 
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type { ToonNode } from './toon'
 
 /**

@@ -8,6 +8,16 @@
 import { type Variants } from 'framer-motion'
 import { ANIMATION_DURATION, EASING_FRAMER } from './constants'
 
+// Duration values in seconds (converted from ms)
+const durations = {
+  instant: ANIMATION_DURATION.instant / 1000,
+  faster: ANIMATION_DURATION.faster / 1000,
+  fast: ANIMATION_DURATION.fast / 1000,
+  normal: ANIMATION_DURATION.normal / 1000,
+  slow: ANIMATION_DURATION.slow / 1000,
+  slower: ANIMATION_DURATION.slower / 1000,
+}
+
 /**
  * Feedback Animations
  * Provide immediate visual feedback for user actions

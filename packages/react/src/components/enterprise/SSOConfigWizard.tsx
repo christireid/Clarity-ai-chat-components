@@ -11,7 +11,7 @@ import {
   Textarea,
   cn,
 } from '@clarity-chat/primitives'
-import { Skeleton } from '../skeleton'
+import { Skeleton } from '../ui/skeleton'
 
 export interface SSOConfigStep {
   id: string

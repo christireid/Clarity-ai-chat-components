@@ -213,7 +213,7 @@ export const openAIAdapter: ModelAdapter = {
               }
             }
           } catch (e) {
-            logger.logger.error('Failed to parse streaming chunk:', e)
+            console.error('Failed to parse streaming chunk:', e)
           }
         }
       }

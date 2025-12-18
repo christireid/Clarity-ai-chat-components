@@ -335,7 +335,7 @@ export function createErrorAnimation(): Variants {
     animate: {
       x: [-10, 10, -10, 10, 0],
       transition: {
-        duration: durations.slow,
+        duration: ANIMATION_DURATION.slow / 1000,
       },
     },
   }
