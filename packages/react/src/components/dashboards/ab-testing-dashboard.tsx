@@ -17,9 +17,10 @@ import {
   useShortcutDisplay,
   KeyboardShortcutsHelp,
   type KeyboardShortcut,
-} from '../hooks/use-keyboard-shortcuts'
-import { DashboardProgress } from './dashboard-progress'
-import { KeyboardShortcutHint } from './keyboard-shortcut-hint'
+} from '../../hooks/keyboard/use-keyboard-shortcuts'
+import { DashboardProgress } from '../ui/dashboard-progress'
+import { KeyboardShortcutHint } from '../navigation/keyboard-shortcut-hint'
+import { Skeleton } from '../ui/skeleton'
 
 /**
  * Experiment variant
@@ -773,28 +774,28 @@ export function ABTestingDashboard({
       >
         <Card>
           <CardHeader>
-            <div className="animate-pulse">
-              <div className="h-6 w-48 bg-muted rounded mb-2" />
-              <div className="h-4 w-64 bg-muted/60 rounded" />
+            <div className="space-y-2">
+              <Skeleton width={192} height={24} rounded="md" />
+              <Skeleton width={256} height={16} rounded="md" />
             </div>
           </CardHeader>
         </Card>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card className="lg:col-span-1">
             <CardHeader>
-              <div className="h-5 w-24 bg-muted rounded animate-pulse" />
+              <Skeleton width={96} height={20} rounded="md" />
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 animate-pulse">
+              <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-20 bg-muted/30 rounded-lg" />
+                  <Skeleton key={i} height={80} rounded="lg" />
                 ))}
               </div>
             </CardContent>
           </Card>
           <Card className="lg:col-span-2">
             <CardContent className="flex items-center justify-center h-64">
-              <div className="h-4 w-48 bg-muted rounded animate-pulse" />
+              <Skeleton width={192} height={16} rounded="md" />
             </CardContent>
           </Card>
         </div>

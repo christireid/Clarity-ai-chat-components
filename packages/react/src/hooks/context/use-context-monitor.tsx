@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { estimateTokens } from '../utils/tokenization/estimator'
+import { estimateTokens } from '../../utils/tokenization/estimator'
 
 /**
  * Context utilization breakdown by category

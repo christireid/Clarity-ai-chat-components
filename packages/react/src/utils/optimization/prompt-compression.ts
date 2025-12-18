@@ -5,7 +5,7 @@
  * Can save 20-35% on input tokens.
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface CompressionOptions {
   /** Remove redundant whitespace */
@@ -47,51 +47,69 @@ export interface CompressionResult {
  * Common filler words to remove
  */
 const FILLER_WORDS = new Set([
-  'actually', 'basically', 'really', 'very', 'quite', 'just',
-  'literally', 'definitely', 'certainly', 'absolutely',
-  'honestly', 'frankly', 'truly', 'indeed', 'surely',
-  'perhaps', 'maybe', 'possibly', 'probably',
-  'kind of', 'sort of', 'a bit', 'a little',
+  'actually',
+  'basically',
+  'really',
+  'very',
+  'quite',
+  'just',
+  'literally',
+  'definitely',
+  'certainly',
+  'absolutely',
+  'honestly',
+  'frankly',
+  'truly',
+  'indeed',
+  'surely',
+  'perhaps',
+  'maybe',
+  'possibly',
+  'probably',
+  'kind of',
+  'sort of',
+  'a bit',
+  'a little',
 ])
 
 /**
  * Common abbreviations to use
  */
 const ABBREVIATIONS: Record<string, string> = {
-  'and': '&',
-  'with': 'w/',
-  'without': 'w/o',
-  'between': 'btwn',
-  'because': 'bc',
-  'before': 'b4',
-  'please': 'pls',
-  'thanks': 'thx',
-  'example': 'ex',
-  'examples': 'exs',
-  'information': 'info',
-  'application': 'app',
-  'applications': 'apps',
-  'development': 'dev',
-  'production': 'prod',
-  'configuration': 'config',
-  'environment': 'env',
-  'repository': 'repo',
-  'documentation': 'docs',
-  'implementation': 'impl',
-  'function': 'fn',
-  'functions': 'fns',
-  'database': 'db',
-  'databases': 'dbs',
-  'administrator': 'admin',
-  'administrators': 'admins',
-  'organization': 'org',
-  'organizations': 'orgs',
-  'message': 'msg',
-  'messages': 'msgs',
-  'parameter': 'param',
-  'parameters': 'params',
-  'argument': 'arg',
-  'arguments': 'args',
+  and: '&',
+  with: 'w/',
+  without: 'w/o',
+  between: 'btwn',
+  because: 'bc',
+  before: 'b4',
+  please: 'pls',
+  thanks: 'thx',
+  example: 'ex',
+  examples: 'exs',
+  information: 'info',
+  application: 'app',
+  applications: 'apps',
+  development: 'dev',
+  production: 'prod',
+  configuration: 'config',
+  environment: 'env',
+  repository: 'repo',
+  documentation: 'docs',
+  implementation: 'impl',
+  function: 'fn',
+  functions: 'fns',
+  database: 'db',
+  databases: 'dbs',
+  administrator: 'admin',
+  administrators: 'admins',
+  organization: 'org',
+  organizations: 'orgs',
+  message: 'msg',
+  messages: 'msgs',
+  parameter: 'param',
+  parameters: 'params',
+  argument: 'arg',
+  arguments: 'args',
 }
 
 // Token estimation imported from centralized module: estimateTokens
@@ -99,7 +117,11 @@ const ABBREVIATIONS: Record<string, string> = {
 /**
  * Preserve code blocks and markdown
  */
-function extractPreservedSections(text: string, preserveCode: boolean, preserveMarkdown: boolean): {
+function extractPreservedSections(
+  text: string,
+  preserveCode: boolean,
+  preserveMarkdown: boolean
+): {
   text: string
   preserved: Map<string, string>
 } {
@@ -138,7 +160,10 @@ function extractPreservedSections(text: string, preserveCode: boolean, preserveM
 /**
  * Restore preserved sections
  */
-function restorePreservedSections(text: string, preserved: Map<string, string>): string {
+function restorePreservedSections(
+  text: string,
+  preserved: Map<string, string>
+): string {
   let result = text
   for (const [placeholder, original] of preserved.entries()) {
     result = result.replace(placeholder, original)
@@ -151,7 +176,7 @@ function restorePreservedSections(text: string, preserved: Map<string, string>):
  */
 function removeFillerWords(text: string): string {
   const words = text.split(/\s+/)
-  const filtered = words.filter(word => {
+  const filtered = words.filter((word) => {
     const lower = word.toLowerCase().replace(/[.,!?;:]$/, '')
     return !FILLER_WORDS.has(lower)
   })
@@ -175,15 +200,17 @@ function applyAbbreviations(text: string): string {
  * Reduce excessive punctuation
  */
 function reducePunctuation(text: string): string {
-  return text
-    // Multiple spaces to single space
-    .replace(/\s{2,}/g, ' ')
-    // Multiple punctuation to single
-    .replace(/([!?.]){2,}/g, '$1')
-    // Remove trailing commas before punctuation
-    .replace(/,\s*([.!?])/g, '$1')
-    // Remove space before punctuation
-    .replace(/\s+([.,!?;:])/g, '$1')
+  return (
+    text
+      // Multiple spaces to single space
+      .replace(/\s{2,}/g, ' ')
+      // Multiple punctuation to single
+      .replace(/([!?.]){2,}/g, '$1')
+      // Remove trailing commas before punctuation
+      .replace(/,\s*([.!?])/g, '$1')
+      // Remove space before punctuation
+      .replace(/\s+([.,!?;:])/g, '$1')
+  )
 }
 
 /**
@@ -197,7 +224,7 @@ function trimToMaxLength(text: string, maxLength: number): string {
   // Try to cut at sentence boundary
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [text]
   let result = ''
-  
+
   for (const sentence of sentences) {
     if ((result + sentence).length <= maxLength) {
       result += sentence
@@ -227,7 +254,7 @@ function reducePunctuationHelper(text: string): string {
 
 /**
  * Compress prompt with configurable strategies
- * 
+ *
  * @example
  * ```tsx
  * const result = compressPrompt(
@@ -238,9 +265,9 @@ function reducePunctuationHelper(text: string): string {
  *     trimWhitespace: true
  *   }
  * )
- * 
- * logger.debug(result.compressed) // "Pls help me understand how I can improve my code quality."
- * logger.debug(result.savingsPercent) // ~15%
+ *
+ * console.log(result.compressed) // "Pls help me understand how I can improve my code quality."
+ * console.log(result.savingsPercent) // ~15%
  * ```
  */
 export function compressPrompt(
@@ -299,7 +326,8 @@ export function compressPrompt(
 
   const compressedLength = compressed.length
   const compressedTokens = estimateTokens(compressed)
-  const savingsPercent = ((originalLength - compressedLength) / originalLength) * 100
+  const savingsPercent =
+    ((originalLength - compressedLength) / originalLength) * 100
   const tokenSavings = originalTokens - compressedTokens
 
   return {
@@ -317,7 +345,10 @@ export function compressPrompt(
 /**
  * Aggressive compression preset for maximum savings
  */
-export function aggressiveCompress(text: string, maxLength = 0): CompressionResult {
+export function aggressiveCompress(
+  text: string,
+  maxLength = 0
+): CompressionResult {
   return compressPrompt(text, {
     trimWhitespace: true,
     removeFillers: true,
@@ -381,16 +412,17 @@ export function compressConversation(
     const result = compressPrompt(msg.content, options)
     originalTokens += result.originalTokens
     compressedTokens += result.compressedTokens
-    
+
     return {
       ...msg,
       content: result.compressed,
     }
   })
 
-  const savingsPercent = originalTokens > 0
-    ? ((originalTokens - compressedTokens) / originalTokens) * 100
-    : 0
+  const savingsPercent =
+    originalTokens > 0
+      ? ((originalTokens - compressedTokens) / originalTokens) * 100
+      : 0
 
   return {
     compressed,

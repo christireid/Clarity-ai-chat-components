@@ -12,17 +12,16 @@
  *
  * await chat.send('Hello')
  * ```
+ * @module
  */
 
-'use client'
-
 import * as React from 'react'
-import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { useClarityChat, type UseClarityChatOptions } from '../use-clarity-chat'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import {
   validateApiEndpoint,
   validateStreamingProtocol,
-} from '../utils/runtime-validation'
+} from '../../utils/config/runtime-validation'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -47,8 +46,8 @@ export interface UseStreamingChatReturn {
   send: (content: string) => Promise<void>
   /** Whether streaming is active */
   isStreaming: boolean
-  /** Current error */
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
 }
 
 /**
@@ -89,7 +88,7 @@ export function useStreamingChat(
       validateStreamingProtocol(protocol)
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        logger.logger.error('[useStreamingChat] Validation error:', error)
+        logger.error('[useStreamingChat] Validation error:', error)
         throw error
       }
     }

@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -14,7 +16,7 @@ import {
   Badge,
   cn,
 } from '@clarity-chat/primitives'
-import { Progress } from './progress'
+import { Progress } from '../ui/progress'
 import type { ExportFormat } from '@clarity-chat/types'
 import { formatBytes } from '@clarity-chat/primitives'
 
@@ -135,7 +137,7 @@ export function BatchExportDialog({
         ...options,
       })
     } catch (error) {
-      logger.logger.error('Batch export failed:', error)
+      logger.error('Batch export failed:', error)
     } finally {
       setIsExporting(false)
     }

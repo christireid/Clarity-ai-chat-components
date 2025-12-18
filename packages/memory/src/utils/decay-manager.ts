@@ -14,8 +14,6 @@
  */
 
 import type { Memory, MemoryType, MemoryScope } from '../types'
-
-
 /**
  * Decay curve types
  */

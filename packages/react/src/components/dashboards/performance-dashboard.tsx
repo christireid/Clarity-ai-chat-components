@@ -1,14 +1,13 @@
+'use client'
+
 /**
  * Performance Monitoring Dashboard
  *
  * Visual dashboard for performance metrics
  */
 
-'use client'
-
 import * as React from 'react'
-import { useRenderPerformance } from '../hooks/use-performance'
-import { formatBytes } from '@clarity-chat/primitives'
+import { useRenderPerformance } from '../../hooks/performance/use-performance'
 
 // Stub hook for memory usage (not available in all browsers)
 function useMemoryUsage() {
@@ -450,9 +449,31 @@ export function PerformanceDashboard({
 }
 
 /**
- * Format bytes to human-readable string
+ * Performance Badge - shows current render performance status
  */
-o = useMemoryUsage()
+function formatBytes(bytes: number): string {
+  if (bytes <= 0 || !Number.isFinite(bytes)) return '0 B'
+
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(k)),
+    sizes.length - 1
+  )
+
+  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`
+}
+
+/**
+ * Compact Performance Badge
+ *
+ * Small performance indicator for corners
+ */
+PerformanceDashboard.displayName = 'PerformanceDashboard'
+
+export function PerformanceBadge({ className }: { className?: string }) {
+  const performanceMetrics = useRenderPerformance('PerformanceBadge')
+  const memoryInfo = useMemoryUsage()
 
   const status = React.useMemo(() => {
     if (performanceMetrics.lastRenderTime > 50) return 'poor'

@@ -679,7 +679,7 @@ export class ThemeBuilder {
       }
     } catch {
       // If contrast fixing fails, return original colors
-      logger.warn(
+      console.warn(
         '[ThemeBuilder] Auto-contrast adjustment failed, using original colors'
       )
     }

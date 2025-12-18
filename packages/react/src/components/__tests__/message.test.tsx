@@ -153,7 +153,7 @@ describe('Message Component', () => {
     it('should render inline code', () => {
       const inlineCodeMessage: MessageType = {
         ...mockAssistantMessage,
-        content: 'Use `logger.debug()` to debug',
+        content: 'Use `console.log()` to debug',
       }
       const { container } = renderWithProviders(
         <Message message={inlineCodeMessage} />

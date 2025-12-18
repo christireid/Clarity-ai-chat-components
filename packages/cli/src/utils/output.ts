@@ -6,7 +6,6 @@
 import pc from 'picocolors'
 import { getLogger } from './logger.js'
 
-
 const logger = getLogger('output')
 
 export enum OutputMode {
@@ -219,7 +218,7 @@ export function debug(message: string, data?: any): void {
     if (isJson) {
       outputJson({ level: 'debug', message, data })
     } else {
-      logger.debug(message, data)
+      console.log(message, data)
     }
   }
 }

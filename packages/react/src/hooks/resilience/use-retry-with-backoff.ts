@@ -19,7 +19,7 @@
  *     const { result } = await execute(() => submitForm(data))
  *     toast.success('Submitted!')
  *   } catch (error) {
- *     toast.logger.error('Failed after all retries')
+ *     toast.error('Failed after all retries')
  *   }
  * }
  * ```
@@ -32,7 +32,7 @@ import {
   retryWithBackoff,
   type RetryOptions,
   type RetryResult,
-} from '../utils/retry-with-backoff'
+} from '../../utils/resilience/retry-with-backoff'
 
 export interface UseRetryWithBackoffOptions extends Omit<
   RetryOptions,

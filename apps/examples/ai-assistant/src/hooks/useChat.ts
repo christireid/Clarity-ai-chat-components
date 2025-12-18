@@ -25,21 +25,28 @@ export function useChat() {
       }
 
       const messages = [...conversation.messages, userMessage]
-      
+
       // Optimistically update the conversation
       updateConversation(conversation.id, messages)
 
       // Send to API
       const response = await sendChatMessage(messages)
 
-      return { userMessage, aiMessage: response.message, conversationId: conversation.id }
+      return {
+        userMessage,
+        aiMessage: response.message,
+        conversationId: conversation.id,
+      }
     },
     onSuccess: ({ userMessage, aiMessage, conversationId }) => {
       const conversation = getCurrentConversation()
       if (conversation && conversation.id === conversationId) {
-        updateConversation(conversationId, [...conversation.messages, aiMessage])
+        updateConversation(conversationId, [
+          ...conversation.messages,
+          aiMessage,
+        ])
       }
-      
+
       queryClient.invalidateQueries({ queryKey: ['conversations'] })
     },
     onError: (error, content) => {

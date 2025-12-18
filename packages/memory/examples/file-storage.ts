@@ -1,7 +1,7 @@
 /**
  * File Storage Example
  * Demonstrates using file-based persistence
- * 
+ *
  * Run: npm run example:file
  * or: npx tsx examples/file-storage.ts
  */
@@ -9,7 +9,7 @@
 import { clarityMemory } from '../src/core/memory'
 
 async function main() {
-  logger.debug('📁 File Storage Example\n')
+  console.log('📁 File Storage Example\n')
 
   // Create memory instance with file storage
   const mem = clarityMemory({
@@ -19,10 +19,10 @@ async function main() {
     },
   })
 
-  logger.debug('✅ Memory instance created with file storage')
+  console.log('✅ Memory instance created with file storage')
 
   // Add some memories
-  logger.debug('\n📝 Adding memories...')
+  console.log('\n📝 Adding memories...')
   await mem.add("User prefers TypeScript", {
     type: 'semantic',
     importance: 0.9,
@@ -38,11 +38,11 @@ async function main() {
     type: 'episodic',
   })
 
-  logger.debug('✅ Memories added and persisted to file')
+  console.log('✅ Memories added and persisted to file')
 
   // Close and recreate to test persistence
   await mem.close()
-  logger.debug('\n🔄 Closed memory instance')
+  console.log('\n🔄 Closed memory instance')
 
   // Recreate with same file path
   const mem2 = clarityMemory({
@@ -52,26 +52,26 @@ async function main() {
     },
   })
 
-  logger.debug('✅ Recreated memory instance')
+  console.log('✅ Recreated memory instance')
 
   // Verify memories persisted
   const stats = await mem2.getStats()
-  logger.debug(`\n📊 Loaded ${stats.total} memories from file`)
-  logger.debug(`   By type:`, stats.byType)
+  console.log(`\n📊 Loaded ${stats.total} memories from file`)
+  console.log(`   By type:`, stats.byType)
 
   // Search for memories
   const results = await mem2.search("user preferences", {
     limit: 5,
   })
 
-  logger.debug(`\n🔍 Found ${results.length} relevant memories:`)
+  console.log(`\n🔍 Found ${results.length} relevant memories:`)
   results.forEach((result, i) => {
-    logger.debug(`   ${i + 1}. [${result.score.toFixed(2)}] ${result.memory.content}`)
+    console.log(`   ${i + 1}. [${result.score.toFixed(2)}] ${result.memory.content}`)
   })
 
   await mem2.close()
-  logger.debug('\n✅ Example complete!')
-  logger.debug('   Check ./example-memories.json to see persisted data')
+  console.log('\n✅ Example complete!')
+  console.log('   Check ./example-memories.json to see persisted data')
 }
 
 main().catch(console.error)

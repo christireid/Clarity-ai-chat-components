@@ -5,10 +5,10 @@ import type { Message as MessageType } from '@clarity-chat/types'
 
 /**
  * **Message Component - Essentials Track**
- * 
+ *
  * This track focuses on the most common use cases for the Message component.
  * These examples are production-ready and can be copied directly into your app.
- * 
+ *
  * For advanced patterns, see the "Enterprise" and "Composability" tracks.
  */
 const meta: Meta<typeof Message> = {
@@ -99,7 +99,7 @@ const createMessage = (
 
 /**
  * **Essential Pattern 1: Basic User Message**
- * 
+ *
  * The simplest use case - displaying a user message.
  * This is what you'll use most often.
  */
@@ -129,7 +129,7 @@ pattern you'll use.
 
 /**
  * **Essential Pattern 2: Basic Assistant Message**
- * 
+ *
  * Display an assistant response with markdown support.
  * This handles most AI responses.
  */
@@ -164,7 +164,7 @@ pattern for AI responses.
 
 /**
  * **Essential Pattern 3: Conversation Flow**
- * 
+ *
  * Show multiple messages in a conversation.
  * This demonstrates the typical chat pattern.
  */
@@ -217,7 +217,7 @@ This is the pattern you'll use in production.
 
 /**
  * **Essential Pattern 4: Loading State**
- * 
+ *
  * Show a message that's still being generated.
  * Essential for streaming responses.
  */
@@ -248,7 +248,7 @@ streaming AI responses.
 
 /**
  * **Essential Pattern 5: Error State**
- * 
+ *
  * Show an error message with retry option.
  * Important for handling failures gracefully.
  */
@@ -283,7 +283,7 @@ experience when things go wrong.
 
 /**
  * **Essential Pattern 6: With Timestamps**
- * 
+ *
  * Show messages with timestamps.
  * Useful for longer conversations.
  */

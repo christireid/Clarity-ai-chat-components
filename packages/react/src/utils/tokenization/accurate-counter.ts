@@ -315,8 +315,8 @@ const MODEL_CONFIGS: Record<
  * @example
  * ```ts
  * const count = await countTokens("Hello, world!", { model: 'gpt-4' })
- * logger.debug(count.total) // 4
- * logger.debug(count.method) // 'accurate' or 'estimated'
+ * console.log(count.total) // 4
+ * console.log(count.method) // 'accurate' or 'estimated'
  * ```
  */
 export async function countTokens(
@@ -588,8 +588,8 @@ export async function chunkByTokens(
  * @example
  * ```typescript
  * const stats = getTokenizerStats()
- * logger.debug(`Cache hit rate: ${stats.cacheHitRate}`)
- * logger.debug(`Cache size: ${stats.cacheSize}/${stats.cacheMaxSize}`)
+ * console.log(`Cache hit rate: ${stats.cacheHitRate}`)
+ * console.log(`Cache size: ${stats.cacheSize}/${stats.cacheMaxSize}`)
  * ```
  */
 export function getTokenizerStats(): {

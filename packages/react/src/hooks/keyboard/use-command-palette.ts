@@ -115,8 +115,8 @@ export interface UseCommandPaletteReturn {
  * ```tsx
  * // With callbacks
  * const { isOpen, close } = useCommandPalette({
- *   onOpen: () => logger.debug('Opened'),
- *   onClose: () => logger.debug('Closed'),
+ *   onOpen: () => console.log('Opened'),
+ *   onClose: () => console.log('Closed'),
  *   shortcut: 'mod+p', // Use Cmd+P instead of Cmd+K
  * })
  * ```

@@ -507,7 +507,7 @@ export async function exportConversation(
       // For now, export as HTML and let user print to PDF
       content = exportToHTML(messages, options)
       mimeType = 'text/html'
-      logger.warn('PDF export: Please use browser "Print to PDF" feature')
+      console.warn('PDF export: Please use browser "Print to PDF" feature')
       break
 
     default:

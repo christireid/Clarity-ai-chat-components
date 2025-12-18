@@ -123,7 +123,7 @@ export function extractJsonFromResponse(rawResponse: string): string | null {
  * ```ts
  * const result = parseStructuredOutput('{"result": "Hello", "confidence": 0.95}')
  * if (result.success) {
- *   logger.debug(result.data.result) // "Hello"
+ *   console.log(result.data.result) // "Hello"
  * }
  * ```
  */

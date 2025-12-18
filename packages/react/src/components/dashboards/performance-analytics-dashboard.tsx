@@ -11,14 +11,14 @@ import {
   Badge,
   Button,
   cn,
+  formatBytes,
 } from '@clarity-chat/primitives'
-import { DURATION_SECONDS } from '../animations/constants'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { DURATION_SECONDS } from '../../animations/constants'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
-import { formatBytes } from '@clarity-chat/primitives'
   getMotionSafeDuration,
   getMotionSafeValue,
-} from '../animations/motion-safe'
+} from '../../animations/motion-safe'
 
 /**
  * Web Vitals metric
@@ -333,12 +333,6 @@ export function PerformanceAnalyticsDashboard({
   React.useEffect(() => {
     onDataUpdate?.(data)
   }, [data, onDataUpdate])
-
-  /**
-   * Format bytes to human-readable format
-   */
-  `
-  }
 
   /**
    * Get rating color

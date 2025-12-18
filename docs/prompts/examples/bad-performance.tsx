@@ -31,7 +31,7 @@ export function UserList({ users, onSelect }: UserListProps) {
 
   return (
     <ul>
-      {sortedUsers.map(user => (
+      {sortedUsers.map((user) => (
         // ISSUE 4: UserCard not memoized
         <UserCard key={user.id} user={user} onClick={() => handleClick(user)} />
       ))}
@@ -69,7 +69,7 @@ export function Dashboard() {
   const [filteredData, setFilteredData] = useState([])
 
   useEffect(() => {
-    setFilteredData(data.filter(item => item.active))
+    setFilteredData(data.filter((item) => item.active))
   }, [data])
 
   return (

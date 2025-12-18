@@ -8,7 +8,7 @@ function getOpenAIClient() {
   if (!apiKey) {
     throw new Error(
       'OPENAI_API_KEY environment variable is required. ' +
-      'Please set it in your .env.local file.'
+        'Please set it in your .env.local file.'
     )
   }
   return new OpenAI({ apiKey })

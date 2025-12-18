@@ -10,7 +10,7 @@ import {
   type BudgetMonitorModel,
   createModelBudgetMonitor,
   isValidBudgetMonitorModel,
-} from '../hooks/use-token-budget-monitor'
+} from '../hooks/token/use-token-budget-monitor'
 
 /**
  * Context value for the TokenBudget provider
@@ -102,7 +102,7 @@ export function TokenBudgetProvider({
   const setModel = React.useCallback(
     (newModel: BudgetMonitorModel) => {
       if (!isValidBudgetMonitorModel(newModel)) {
-        logger.warn(
+        console.warn(
           `[TokenBudgetProvider] Invalid model: "${newModel}". Ignoring.`
         )
         return

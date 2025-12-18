@@ -5,10 +5,10 @@ import { expect, within } from 'storybook/test'
 
 /**
  * **FollowUpSuggestions Component**
- * 
+ *
  * Display contextual follow-up suggestions to keep conversations flowing.
  * Supports grid and list layouts with loading states.
- * 
+ *
  * **Key Features:**
  * - Contextual suggestions based on conversation
  * - Grid and list layouts
@@ -16,7 +16,7 @@ import { expect, within } from 'storybook/test'
  * - Confidence scores
  * - Keyword matching
  * - Accessible with keyboard navigation
- * 
+ *
  * **Use Cases:**
  * - Chat interfaces
  * - AI assistants
@@ -135,9 +135,13 @@ export const Default: Story = {
     const canvas = within(canvasElement)
 
     // Test suggestions render
-    await expect(canvas.getByText('How do I use React hooks?')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('How do I use React hooks?')
+    ).toBeInTheDocument()
     await expect(canvas.getByText('Show me code examples')).toBeInTheDocument()
-    await expect(canvas.getByText('Explain TypeScript types')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('Explain TypeScript types')
+    ).toBeInTheDocument()
 
     // Test descriptions render
     await expect(canvas.getByText(/Learn about useState/)).toBeInTheDocument()
@@ -154,7 +158,9 @@ export const GridLayout: Story = {
     const canvas = within(canvasElement)
 
     // Test suggestions render in grid layout
-    await expect(canvas.getByText('How do I use React hooks?')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('How do I use React hooks?')
+    ).toBeInTheDocument()
     await expect(canvas.getByText('Best practices guide')).toBeInTheDocument()
 
     // Test all 4 suggestions are visible

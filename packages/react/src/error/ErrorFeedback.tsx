@@ -43,7 +43,7 @@ export interface ErrorFeedbackProps {
  *   const [error, setError] = useState<Error | null>(null)
  *
  *   const handleFeedbackSubmit = (feedback) => {
- *     logger.debug('User feedback:', feedback)
+ *     console.log('User feedback:', feedback)
  *     // Report to error tracking service
  *     setShowFeedback(false)
  *   }

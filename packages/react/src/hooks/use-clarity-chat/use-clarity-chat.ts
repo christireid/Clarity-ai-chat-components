@@ -40,7 +40,7 @@ import * as React from 'react'
 import {
   useChat as useChatEnhanced,
   type CoreMessage,
-} from '../use-chat-enhanced'
+} from '../chat/use-chat-enhanced'
 
 // Prompt optimization imports
 import { buildModelPrompt } from '../../prompt/core/builder'
@@ -216,7 +216,7 @@ export function useClarityChat(
 
           setMemoryError({ error: err, operation: 'store', errorType })
           memory.onMemoryError?.(err, 'store')
-          logger.warn(
+          console.warn(
             `[Clarity Chat] Memory storage failed (${errorType}):`,
             err.message
           )
@@ -296,7 +296,7 @@ export function useClarityChat(
 
               setMemoryError({ error: err, operation: 'query', errorType })
               memory.onMemoryError?.(err, 'query')
-              logger.warn(
+              console.warn(
                 `[Clarity Chat] Memory query failed (${errorType}):`,
                 err.message
               )
@@ -310,7 +310,7 @@ export function useClarityChat(
           const err = error as Error
           const errorType = classifyError(err)
           memory.onMemoryError?.(err, 'query')
-          logger.warn(
+          console.warn(
             `[Clarity Chat] Memory operation failed (${errorType}):`,
             err.message
           )
@@ -385,7 +385,7 @@ export function useClarityChat(
             },
           })
         } catch (error) {
-          logger.warn('[useClarityChat] Prompt optimization failed:', error)
+          console.warn('[useClarityChat] Prompt optimization failed:', error)
         }
       }
 

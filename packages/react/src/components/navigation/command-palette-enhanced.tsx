@@ -22,9 +22,10 @@ import { cn, Kbd, useBodyScrollLock } from '@clarity-chat/primitives'
 import {
   useFocusTrap,
   useFocusRestoration,
-} from '../accessibility/focus-management'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { formatShortcutDisplay } from '../hooks/use-keyboard-navigation'
+} from '../../accessibility/focus-management'
+import { useReducedMotion } from '@clarity-chat/primitives'
+import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
+import { EASING_FRAMER } from '../../animations/constants'
 
 // ============================================================================
 // Types
@@ -79,10 +80,7 @@ interface FuzzyMatch {
   matches: Array<[number, number]>
 }
 
-function fuzzySearch(
-  query: string,
-  items: CommandAction[]
-): FuzzyMatch[] {
+function fuzzySearch(query: string, items: CommandAction[]): FuzzyMatch[] {
   if (!query.trim()) {
     return items.map((item) => ({ item, score: 0, matches: [] }))
   }
@@ -102,7 +100,12 @@ function fuzzySearch(
     const keywordsMatch = fuzzyMatch(queryLower, keywordsLower)
     const categoryMatch = fuzzyMatch(queryLower, categoryLower)
 
-    const bestMatch = [labelMatch, descMatch, keywordsMatch, categoryMatch].reduce(
+    const bestMatch = [
+      labelMatch,
+      descMatch,
+      keywordsMatch,
+      categoryMatch,
+    ].reduce(
       (best, current) =>
         current && (!best || current.score > best.score) ? current : best,
       null as { score: number; matches: Array<[number, number]> } | null
@@ -145,7 +148,12 @@ function fuzzyMatch(
       }
 
       // Start of word bonus
-      if (i === 0 || text[i - 1] === ' ' || text[i - 1] === '-' || text[i - 1] === '_') {
+      if (
+        i === 0 ||
+        text[i - 1] === ' ' ||
+        text[i - 1] === '-' ||
+        text[i - 1] === '_'
+      ) {
         score += 10
       }
 
@@ -274,9 +282,7 @@ function HighlightedText({
   matches.forEach(([start, end], i) => {
     // Add non-matching part
     if (start > lastIndex) {
-      parts.push(
-        <span key={`text-${i}`}>{text.slice(lastIndex, start)}</span>
-      )
+      parts.push(<span key={`text-${i}`}>{text.slice(lastIndex, start)}</span>)
     }
     // Add matching part
     parts.push(
@@ -316,7 +322,8 @@ export function CommandPaletteEnhanced({
 }: CommandPaletteEnhancedProps) {
   const [search, setSearch] = React.useState('')
   const [selectedIndex, setSelectedIndex] = React.useState(0)
-  const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null)
+  const [portalContainer, setPortalContainer] =
+    React.useState<HTMLElement | null>(null)
   const [commandStack, setCommandStack] = React.useState<CommandAction[]>([])
   const inputRef = React.useRef<HTMLInputElement>(null)
   const listRef = React.useRef<HTMLDivElement>(null)
@@ -330,9 +337,10 @@ export function CommandPaletteEnhanced({
   const [recents, addRecent] = useRecentCommands(storageKey, maxRecents)
 
   // Current commands (support nested navigation)
-  const currentCommands = commandStack.length > 0
-    ? commandStack[commandStack.length - 1].children || []
-    : commands
+  const currentCommands =
+    commandStack.length > 0
+      ? commandStack[commandStack.length - 1].children || []
+      : commands
 
   // Fuzzy search results
   const searchResults = React.useMemo(
@@ -367,7 +375,14 @@ export function CommandPaletteEnhanced({
     }
 
     return currentCommands.map((item) => ({ item, score: 0, matches: [] }))
-  }, [search, searchResults, currentCommands, recents, enableRecents, commandStack.length])
+  }, [
+    search,
+    searchResults,
+    currentCommands,
+    recents,
+    enableRecents,
+    commandStack.length,
+  ])
 
   // Group by category
   const groupedItems = React.useMemo(() => {
@@ -564,7 +579,9 @@ export function CommandPaletteEnhanced({
       <div className="flex items-center gap-1 flex-shrink-0">
         {shortcuts.map((s, i) => (
           <React.Fragment key={i}>
-            {i > 0 && <span className="text-muted-foreground/50 text-xs">or</span>}
+            {i > 0 && (
+              <span className="text-muted-foreground/50 text-xs">or</span>
+            )}
             <Kbd shortcut={formatShortcutDisplay(s)} size="sm" />
           </React.Fragment>
         ))}
@@ -606,7 +623,7 @@ export function CommandPaletteEnhanced({
               }}
               transition={{
                 duration: prefersReducedMotion ? 0 : 0.2,
-                ease: [0.25, 0.1, 0.25, 1],
+                ease: EASING_FRAMER.sharp,
               }}
               role="dialog"
               aria-modal="true"
@@ -803,7 +820,9 @@ export function CommandPaletteEnhanced({
                                   id={`command-option-${result.item.id}`}
                                   data-selected={isSelected}
                                   onClick={() => handleSelect(result.item)}
-                                  onMouseEnter={() => setSelectedIndex(globalIndex)}
+                                  onMouseEnter={() =>
+                                    setSelectedIndex(globalIndex)
+                                  }
                                   role="option"
                                   aria-selected={isSelected}
                                   disabled={result.item.disabled}
@@ -816,8 +835,12 @@ export function CommandPaletteEnhanced({
                                     result.item.disabled &&
                                       'opacity-50 cursor-not-allowed'
                                   )}
-                                  whileHover={prefersReducedMotion ? {} : { x: 2 }}
-                                  whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                                  whileHover={
+                                    prefersReducedMotion ? {} : { x: 2 }
+                                  }
+                                  whileTap={
+                                    prefersReducedMotion ? {} : { scale: 0.98 }
+                                  }
                                 >
                                   {/* Icon */}
                                   {result.item.icon && (
@@ -931,7 +954,8 @@ export function CommandPaletteEnhanced({
                       )}
                     </div>
                     <div className="font-medium">
-                      {flatItems.length} command{flatItems.length !== 1 ? 's' : ''}
+                      {flatItems.length} command
+                      {flatItems.length !== 1 ? 's' : ''}
                     </div>
                   </div>
                 )}

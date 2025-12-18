@@ -44,7 +44,7 @@ function ChatInput() {
         model="gpt-4"
         onCostChange={(cost, tokens) => {
           if (cost > 0.10) {
-            logger.debug('Warning: message is expensive!')
+            console.log('Warning: message is expensive!')
           }
         }}
       />

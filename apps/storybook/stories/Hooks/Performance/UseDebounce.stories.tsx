@@ -5,16 +5,16 @@ import { useState, useEffect } from 'react'
 
 /**
  * **useDebounce Hook**
- * 
+ *
  * Hook for debouncing values - only updates after delay has passed
  * since last change. Useful for reducing API calls during rapid input.
- * 
+ *
  * **Key Features:**
  * - Debounce value updates
  * - Configurable delay
  * - Prevents excessive updates
  * - Automatic cleanup
- * 
+ *
  * **Use Cases:**
  * - Search input with API calls
  * - Form validation
@@ -123,7 +123,8 @@ export const SearchInput: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Debouncing search input to reduce API calls while user is typing.',
+        story:
+          'Debouncing search input to reduce API calls while user is typing.',
       },
     },
   },
@@ -176,7 +177,8 @@ function AutoSaveDemo() {
           <strong>Current Content Length:</strong> {content.length} characters
         </div>
         <div className="text-sm">
-          <strong>Debounced Content Length:</strong> {debouncedContent.length} characters
+          <strong>Debounced Content Length:</strong> {debouncedContent.length}{' '}
+          characters
         </div>
         <div className="text-sm">
           <strong>Auto-saves Completed:</strong> {saves}
@@ -199,7 +201,8 @@ export const AutoSave: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Using debounce for auto-save functionality that saves after user stops typing.',
+        story:
+          'Using debounce for auto-save functionality that saves after user stops typing.',
       },
     },
   },
@@ -211,13 +214,27 @@ function FilterDemo() {
   const debouncedFilter = useDebounce(filter, delay)
 
   const items = [
-    'Apple', 'Banana', 'Cherry', 'Date', 'Elderberry',
-    'Fig', 'Grape', 'Honeydew', 'Kiwi', 'Lemon',
-    'Mango', 'Orange', 'Papaya', 'Quince', 'Raspberry',
+    'Apple',
+    'Banana',
+    'Cherry',
+    'Date',
+    'Elderberry',
+    'Fig',
+    'Grape',
+    'Honeydew',
+    'Kiwi',
+    'Lemon',
+    'Mango',
+    'Orange',
+    'Papaya',
+    'Quince',
+    'Raspberry',
   ]
 
   const filteredItems = debouncedFilter
-    ? items.filter((item) => item.toLowerCase().includes(debouncedFilter.toLowerCase()))
+    ? items.filter((item) =>
+        item.toLowerCase().includes(debouncedFilter.toLowerCase())
+      )
     : items
 
   return (
@@ -258,7 +275,10 @@ function FilterDemo() {
         </div>
         <div className="flex flex-wrap gap-2">
           {filteredItems.map((item) => (
-            <span key={item} className="px-2 py-1 bg-white dark:bg-gray-800 rounded text-sm">
+            <span
+              key={item}
+              className="px-2 py-1 bg-white dark:bg-gray-800 rounded text-sm"
+            >
               {item}
             </span>
           ))}
@@ -273,7 +293,8 @@ export const Filtering: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Debouncing filter input to reduce re-renders while user is typing.',
+        story:
+          'Debouncing filter input to reduce re-renders while user is typing.',
       },
     },
   },

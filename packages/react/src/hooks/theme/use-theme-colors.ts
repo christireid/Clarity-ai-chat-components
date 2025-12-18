@@ -22,9 +22,9 @@
  */
 
 import * as React from 'react'
-import { useTheme } from '../theme/ThemeProvider'
-import { hslStringToHex } from '../theme/color-utils'
-import type { ColorConfig } from '../theme/theme-config'
+import { useTheme } from '../../theme/ThemeProvider'
+import { hslStringToHex } from '../../theme/color-utils'
+import type { ColorConfig } from '../../theme/theme-config'
 
 /**
  * Color values in both HSL string and hex formats

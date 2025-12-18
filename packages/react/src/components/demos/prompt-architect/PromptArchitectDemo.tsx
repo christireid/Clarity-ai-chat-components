@@ -187,7 +187,7 @@ async function callGeminiAPI(
         // Check if we should retry
         if (isRetryableError(response.status) && attempt < maxRetries) {
           const delay = baseDelay * Math.pow(2, attempt) // Exponential backoff
-          logger.warn(
+          console.warn(
             `[PromptArchitect] API error (${response.status}), retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`
           )
           await sleep(delay)
@@ -257,7 +257,7 @@ async function callGeminiAPI(
         attempt < maxRetries
       ) {
         const delay = baseDelay * Math.pow(2, attempt)
-        logger.warn(
+        console.warn(
           `[PromptArchitect] Network error, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`
         )
         await sleep(delay)

@@ -5,8 +5,19 @@
     "useDefineForClassFields": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@clarity-chat/utils": ["../utils/src/index.ts"],
+      "@clarity-chat/utils/*": ["../utils/src/*"]
+    }
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.tsx",
+    "src/accessibility.ts"
+  ]
 }

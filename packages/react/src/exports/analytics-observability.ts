@@ -25,7 +25,7 @@ export * from '../analytics/providers'
 export * from '../analytics/hooks'
 
 // Performance monitoring
-export { useRenderPerformance as usePerformance } from '../hooks/use-performance'
+export { useRenderPerformance as usePerformance } from '../hooks/performance/use-performance'
 
 // Error tracking
 export * from '../error'

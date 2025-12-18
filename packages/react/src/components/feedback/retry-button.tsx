@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Button, cn } from '@clarity-chat/primitives'
@@ -237,7 +239,7 @@ export function RetryButton({
       // Reset on success
       setCurrentAttempt(0)
     } catch (error) {
-      logger.logger.error('[RetryButton] Retry failed:', error)
+      logger.error('[RetryButton] Retry failed:', error)
       onRetryFail?.(nextAttempt, error as Error)
     } finally {
       setIsRetrying(false)

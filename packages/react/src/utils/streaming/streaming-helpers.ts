@@ -230,7 +230,7 @@ export function extractStreamContent(chunk: unknown): string {
  *   format: 'sse',
  *   signal: controller.signal,
  *   onChunk: (chunk) => setContent(prev => prev + chunk),
- *   onComplete: (full) => logger.debug('Done:', full),
+ *   onComplete: (full) => console.log('Done:', full),
  * })
  * ```
  */
@@ -379,7 +379,7 @@ export async function processStream(
           typeof process !== 'undefined' &&
           process.env?.NODE_ENV !== 'production'
         ) {
-          logger.warn('[processStream] Buffer size exceeded, flushing...')
+          console.warn('[processStream] Buffer size exceeded, flushing...')
         }
         handleLine(buffer)
         buffer = ''
@@ -449,7 +449,7 @@ function processChunkByFormat(chunk: string, format: StreamFormat): string {
  * @example
  * ```ts
  * for await (const chunk of createStreamReader(response.body)) {
- *   logger.debug('Chunk:', chunk)
+ *   console.log('Chunk:', chunk)
  * }
  * ```
  */

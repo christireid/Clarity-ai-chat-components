@@ -15,8 +15,6 @@
  */
 
 import type { Memory, MemoryScore } from '../types'
-
-
 /**
  * Weight configuration for scoring components
  */

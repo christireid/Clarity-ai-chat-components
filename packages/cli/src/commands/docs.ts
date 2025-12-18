@@ -107,7 +107,7 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
     console.log(pc.gray(`Opened in browser: ${url}`))
     console.log()
   } catch (error) {
-    logger.error('Failed to open browser')
+    console.error('Failed to open browser')
     console.log()
     console.log(
       warningBox(

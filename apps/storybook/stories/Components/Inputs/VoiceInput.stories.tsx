@@ -10,7 +10,8 @@ const meta: Meta<typeof VoiceInput> = {
   parameters: {
     docs: {
       description: {
-        component: 'Voice input component with Web Speech API support. Enables voice-to-text functionality with real-time transcription.',
+        component:
+          'Voice input component with Web Speech API support. Enables voice-to-text functionality with real-time transcription.',
       },
     },
     status: {
@@ -156,7 +157,7 @@ export const InlineExample: Story = {
             position="inside"
           />
         </div>
-        
+
         <div className="p-4 bg-gray-100 rounded-lg">
           <h4 className="font-semibold mb-2">Current Value:</h4>
           <p>{value || '(empty)'}</p>
@@ -187,7 +188,7 @@ export const ChatIntegrationExample: Story = {
             </div>
           ))}
         </div>
-        
+
         <div className="flex gap-2">
           <input
             type="text"
@@ -199,7 +200,7 @@ export const ChatIntegrationExample: Story = {
           />
           <VoiceInput
             onTranscript={(transcript) => {
-              setInput((prev) => prev ? `${prev} ${transcript}` : transcript)
+              setInput((prev) => (prev ? `${prev} ${transcript}` : transcript))
             }}
             size="lg"
             variant="primary"

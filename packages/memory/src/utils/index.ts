@@ -14,3 +14,4 @@ export * from './token-counter'
 // Note: validation-helpers not exported to avoid conflicts with validation.ts
 export * from './logger'
 export * from './decay-manager'
+export * from './context-optimizer'

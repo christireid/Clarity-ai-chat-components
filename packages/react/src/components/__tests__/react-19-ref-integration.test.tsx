@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event'
 // Import refactored components
 import { KeyboardHint } from '../keyboard-hint'
 import { ThemeSwitcher } from '../theme-switcher'
-import { DashboardProgress } from '../dashboard-progress'
+import { DashboardProgress } from '../ui/dashboard-progress'
 import { InteractiveCard, InteractiveButton } from '../interactive-card'
 import { AdvancedChatInput } from '../advanced-chat-input'
 
@@ -39,7 +39,9 @@ describe('React 19 Ref Integration Tests', () => {
     it('should call callback ref with DOM element when visible', () => {
       const callbackRef = vi.fn()
 
-      render(<KeyboardHint shortcuts={shortcuts} visible={true} ref={callbackRef} />)
+      render(
+        <KeyboardHint shortcuts={shortcuts} visible={true} ref={callbackRef} />
+      )
 
       expect(callbackRef).toHaveBeenCalledTimes(1)
       expect(callbackRef).toHaveBeenCalledWith(expect.any(HTMLDivElement))
@@ -84,11 +86,7 @@ describe('React 19 Ref Integration Tests', () => {
       const ref = React.createRef<HTMLDivElement>()
 
       render(
-        <ThemeSwitcher
-          currentTheme="light"
-          onThemeChange={vi.fn()}
-          ref={ref}
-        />
+        <ThemeSwitcher currentTheme="light" onThemeChange={vi.fn()} ref={ref} />
       )
 
       expect(ref.current).toBeInstanceOf(HTMLDivElement)
@@ -114,12 +112,7 @@ describe('React 19 Ref Integration Tests', () => {
       const ref = React.createRef<HTMLDivElement>()
 
       render(
-        <DashboardProgress
-          value={50}
-          max={100}
-          label="Progress"
-          ref={ref}
-        />
+        <DashboardProgress value={50} max={100} label="Progress" ref={ref} />
       )
 
       expect(ref.current).toBeInstanceOf(HTMLDivElement)
@@ -239,7 +232,9 @@ describe('React 19 Ref Integration Tests', () => {
 
         return (
           <>
-            <button onClick={() => inputRef.current?.focus()}>Focus Input</button>
+            <button onClick={() => inputRef.current?.focus()}>
+              Focus Input
+            </button>
             <AdvancedChatInput
               value=""
               onChange={vi.fn()}
@@ -265,12 +260,7 @@ describe('React 19 Ref Integration Tests', () => {
       const ref = React.createRef<HTMLDivElement>()
 
       const { unmount } = render(
-        <DashboardProgress
-          value={50}
-          max={100}
-          label="Test"
-          ref={ref}
-        />
+        <DashboardProgress value={50} max={100} label="Test" ref={ref} />
       )
 
       expect(ref.current).toBeInstanceOf(HTMLDivElement)

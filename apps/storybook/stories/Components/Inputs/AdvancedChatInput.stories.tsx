@@ -5,10 +5,10 @@ import type { SavedPrompt } from '@clarity-chat/types'
 
 /**
  * **AdvancedChatInput Component**
- * 
+ *
  * Advanced chat input component with prompt library integration,
  * file attachments, suggestions, and rich text editing.
- * 
+ *
  * **Key Features:**
  * - Prompt library integration (@ mentions)
  * - Command palette (/ commands)
@@ -17,7 +17,7 @@ import type { SavedPrompt } from '@clarity-chat/types'
  * - Auto-suggestions
  * - Variable substitution
  * - Keyboard shortcuts
- * 
+ *
  * **Use Cases:**
  * - AI chat interfaces with prompts
  * - Command-based interfaces
@@ -101,7 +101,8 @@ const mockPrompts: SavedPrompt[] = [
     id: '1',
     userId: 'user1',
     name: 'code-review',
-    content: 'Please review this code and provide feedback on: 1) Code quality, 2) Best practices, 3) Potential bugs',
+    content:
+      'Please review this code and provide feedback on: 1) Code quality, 2) Best practices, 3) Potential bugs',
     description: 'Request a thorough code review',
     category: 'Development',
     tags: ['code', 'review'],
@@ -129,7 +130,8 @@ const mockPrompts: SavedPrompt[] = [
     id: '3',
     userId: 'user1',
     name: 'debug',
-    content: 'Help me debug this issue: {{description}}. Provide step-by-step troubleshooting',
+    content:
+      'Help me debug this issue: {{description}}. Provide step-by-step troubleshooting',
     description: 'Debug assistance',
     category: 'Development',
     tags: ['debug', 'help'],
@@ -150,7 +152,10 @@ const InteractiveStory = () => {
     console.log('Message submitted:', content, attachments)
   }
 
-  const handleSuggestionRequest = async (query: string, trigger: '@' | '/'): Promise<Suggestion[]> => {
+  const handleSuggestionRequest = async (
+    query: string,
+    trigger: '@' | '/'
+  ): Promise<Suggestion[]> => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 100))
 
@@ -169,11 +174,46 @@ const InteractiveStory = () => {
 
     // Commands
     const commands: Suggestion[] = [
-      { id: '1', type: 'command', label: 'help', description: 'Show available commands', value: '/help', icon: '❓' },
-      { id: '2', type: 'command', label: 'clear', description: 'Clear conversation', value: '/clear', icon: '🧹' },
-      { id: '3', type: 'command', label: 'export', description: 'Export chat history', value: '/export', icon: '📥' },
-      { id: '4', type: 'command', label: 'model', description: 'Switch AI model', value: '/model', icon: '🤖' },
-      { id: '5', type: 'command', label: 'summarize', description: 'Summarize conversation', value: '/summarize', icon: '📝' },
+      {
+        id: '1',
+        type: 'command',
+        label: 'help',
+        description: 'Show available commands',
+        value: '/help',
+        icon: '❓',
+      },
+      {
+        id: '2',
+        type: 'command',
+        label: 'clear',
+        description: 'Clear conversation',
+        value: '/clear',
+        icon: '🧹',
+      },
+      {
+        id: '3',
+        type: 'command',
+        label: 'export',
+        description: 'Export chat history',
+        value: '/export',
+        icon: '📥',
+      },
+      {
+        id: '4',
+        type: 'command',
+        label: 'model',
+        description: 'Switch AI model',
+        value: '/model',
+        icon: '🤖',
+      },
+      {
+        id: '5',
+        type: 'command',
+        label: 'summarize',
+        description: 'Summarize conversation',
+        value: '/summarize',
+        icon: '📝',
+      },
     ]
 
     return commands.filter((c) => c.label.includes(query.toLowerCase()))
@@ -196,11 +236,29 @@ const InteractiveStory = () => {
       <div className="p-4 bg-muted rounded-lg">
         <p className="text-sm font-medium mb-2">Try these features:</p>
         <ul className="text-sm space-y-1 text-muted-foreground">
-          <li>• Type <kbd className="px-1 py-0.5 text-xs border rounded">@</kbd> to see prompt suggestions</li>
-          <li>• Type <kbd className="px-1 py-0.5 text-xs border rounded">/</kbd> to see available commands</li>
-          <li>• Use <kbd className="px-1 py-0.5 text-xs border rounded">Tab</kbd> or <kbd className="px-1 py-0.5 text-xs border rounded">Enter</kbd> to autocomplete</li>
+          <li>
+            • Type <kbd className="px-1 py-0.5 text-xs border rounded">@</kbd>{' '}
+            to see prompt suggestions
+          </li>
+          <li>
+            • Type <kbd className="px-1 py-0.5 text-xs border rounded">/</kbd>{' '}
+            to see available commands
+          </li>
+          <li>
+            • Use <kbd className="px-1 py-0.5 text-xs border rounded">Tab</kbd>{' '}
+            or <kbd className="px-1 py-0.5 text-xs border rounded">Enter</kbd>{' '}
+            to autocomplete
+          </li>
           <li>• Click the 📎 button or drag & drop files</li>
-          <li>• Press <kbd className="px-1 py-0.5 text-xs border rounded">Enter</kbd> to send, <kbd className="px-1 py-0.5 text-xs border rounded">Shift+Enter</kbd> for new line</li>
+          <li>
+            • Press{' '}
+            <kbd className="px-1 py-0.5 text-xs border rounded">Enter</kbd> to
+            send,{' '}
+            <kbd className="px-1 py-0.5 text-xs border rounded">
+              Shift+Enter
+            </kbd>{' '}
+            for new line
+          </li>
         </ul>
       </div>
 

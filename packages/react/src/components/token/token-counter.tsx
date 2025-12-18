@@ -109,10 +109,10 @@ function formatCost(cost: number): string {
  *   criticalThreshold={0.95}
  *   suggestPruning={true}
  *   onWarning={() => {
- *     logger.debug('Approaching token limit')
+ *     console.log('Approaching token limit')
  *   }}
  *   onCritical={() => {
- *     logger.debug('Critical token limit!')
+ *     console.log('Critical token limit!')
  *     showPruneDialog()
  *   }}
  *   onPruneSuggested={() => {

@@ -30,7 +30,7 @@
  * const result = await safety.check(userInput)
  *
  * if (!result.safe) {
- *   logger.debug('Issues:', result.issues)
+ *   console.log('Issues:', result.issues)
  *   // Handle unsafe content
  * }
  * ```

@@ -285,7 +285,11 @@ export {
 // Utils
 // ============================================================================
 
-export * from './lib/utils'
+// Core utility - cn function for Tailwind class merging
+export { cn } from './lib/cn'
+
+// Full utils module commented out due to Node.js type issues
+// export * from './lib/utils'
 
 // ARIA Utilities
 export {

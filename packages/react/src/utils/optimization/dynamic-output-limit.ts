@@ -134,8 +134,8 @@ const BREVITY_INSTRUCTIONS: Array<{ maxTokens: number; instruction: string }> = 
  *   taskType: 'chat',
  * })
  *
- * logger.debug(result.recommendedMaxTokens) // e.g., 500
- * logger.debug(result.brevityInstruction)   // "Be concise..."
+ * console.log(result.recommendedMaxTokens) // e.g., 500
+ * console.log(result.brevityInstruction)   // "Be concise..."
  *
  * // Use in API call
  * const response = await api.chat({

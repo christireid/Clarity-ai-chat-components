@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 
@@ -86,7 +88,7 @@ export class DashboardErrorBoundary extends React.Component<
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log to error reporting service
-    logger.logger.error(
+    logger.error(
       `[DashboardErrorBoundary] Error in ${this.props.widgetName || 'widget'}:`,
       error,
       errorInfo

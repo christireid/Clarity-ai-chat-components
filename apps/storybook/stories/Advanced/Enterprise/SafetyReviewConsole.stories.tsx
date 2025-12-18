@@ -8,7 +8,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Console for reviewing and managing safety highlights in AI-generated content.',
+        component:
+          'Console for reviewing and managing safety highlights in AI-generated content.',
       },
     },
   },

@@ -136,7 +136,7 @@ export class LocalStorageEmbeddingCache implements EmbeddingCache {
       localStorage.setItem(this.storageKey, JSON.stringify(data))
     } catch (error) {
       // Handle quota exceeded
-      logger.warn('LocalStorage cache write failed:', error)
+      console.warn('LocalStorage cache write failed:', error)
     }
   }
   

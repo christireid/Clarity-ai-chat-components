@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 
 /**
@@ -395,7 +397,7 @@ export function useStreamingWebSocket(
 
       // Handle errors
       ws.addEventListener('error', (event) => {
-        logger.logger.error('[useStreamingWebSocket] Error:', event)
+        logger.error('[useStreamingWebSocket] Error:', event)
         setError(event)
         setStatus('error')
         setReadyState(ws.readyState)
@@ -405,7 +407,11 @@ export function useStreamingWebSocket(
 
       // Handle connection close
       ws.addEventListener('close', (event) => {
-        logger.debug('[useStreamingWebSocket] Closed:', event.code, event.reason)
+        logger.debug(
+          '[useStreamingWebSocket] Closed:',
+          event.code,
+          event.reason
+        )
         setStatus('closed')
         setReadyState(ws.readyState)
 
@@ -436,7 +442,7 @@ export function useStreamingWebSocket(
             connect()
           }, delay)
         } else if (reconnectAttempt >= maxReconnectAttempts) {
-          logger.logger.error(
+          logger.error(
             '[useStreamingWebSocket] Max reconnection attempts reached'
           )
           onMaxReconnectAttemptsReached?.()
@@ -444,7 +450,7 @@ export function useStreamingWebSocket(
         }
       })
     } catch (err) {
-      logger.logger.error('[useStreamingWebSocket] Connection error:', err)
+      logger.error('[useStreamingWebSocket] Connection error:', err)
       setStatus('error')
       setError(err as Event)
     }
@@ -508,9 +514,7 @@ export function useStreamingWebSocket(
   const send = React.useCallback(
     (data: string | object | ArrayBuffer | Blob): boolean => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        logger.warn(
-          '[useStreamingWebSocket] Cannot send - connection not open'
-        )
+        logger.warn('[useStreamingWebSocket] Cannot send - connection not open')
         return false
       }
 
@@ -526,7 +530,7 @@ export function useStreamingWebSocket(
         wsRef.current.send(payload as string | ArrayBuffer | Blob)
         return true
       } catch (err) {
-        logger.logger.error('[useStreamingWebSocket] Send error:', err)
+        logger.error('[useStreamingWebSocket] Send error:', err)
         return false
       }
     },

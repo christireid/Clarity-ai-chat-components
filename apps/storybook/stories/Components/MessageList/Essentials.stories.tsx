@@ -69,7 +69,14 @@ patterns you'll use in 90% of cases.
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '600px', height: '500px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+      <div
+        style={{
+          width: '600px',
+          height: '500px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+        }}
+      >
         <Story />
       </div>
     ),
@@ -96,9 +103,13 @@ const mockMessages: Message[] = [
   createMessage('user', 'Hello! Can you help me with React?', {
     createdAt: Date.now() - 60000,
   }),
-  createMessage('assistant', 'Of course! I\'d be happy to help you with React. What specific topic would you like to discuss?', {
-    createdAt: Date.now() - 30000,
-  }),
+  createMessage(
+    'assistant',
+    "Of course! I'd be happy to help you with React. What specific topic would you like to discuss?",
+    {
+      createdAt: Date.now() - 30000,
+    }
+  ),
   createMessage('user', 'How do I use hooks?', {
     createdAt: Date.now() - 10000,
   }),
@@ -157,7 +168,7 @@ export const LongConversation: Story = {
       const isUser = i % 2 === 0
       return createMessage(
         isUser ? 'user' : 'assistant',
-        isUser 
+        isUser
           ? `Message ${i + 1} from user`
           : `This is response ${i + 1} from the assistant. It contains some content to demonstrate how the list handles longer conversations.`,
         {

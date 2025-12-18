@@ -27,12 +27,10 @@ import { setGlobalLogLevel, LogLevel } from './utils/logger.js'
 import { checkAndNotifyUpdate } from './utils/update.js'
 import { createBanner } from './ui/banner.js'
 
-
 const program = new Command()
 
 // Beautiful gradient banner - create synchronously for main entry
 import gradient from 'gradient-string'
-
 
 const banner = gradient.pastel.multiline(
   [

@@ -35,12 +35,12 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   // createSlideVariant, // Reserved for future use
-} from '../animations'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+} from '../../animations'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
-} from '../animations/motion-safe'
+} from '../../animations/motion-safe'
 import type { ReactNode } from 'react'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
@@ -421,7 +421,7 @@ export function useToast(): ToastContextValue {
         return ''
       },
       error: (description: string, title?: string) => {
-        toast.logger.error(description, title)
+        toast.error(description, title)
         return ''
       },
       info: (description: string, title?: string) => {

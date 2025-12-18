@@ -280,7 +280,7 @@ export function useDashboardComposer<T extends Record<string, unknown>>(
   const log = React.useCallback(
     (message: string, ...args: unknown[]) => {
       if (debug) {
-        logger.debug(`[useDashboardComposer] ${message}`, ...args)
+        console.log(`[useDashboardComposer] ${message}`, ...args)
       }
     },
     [debug]

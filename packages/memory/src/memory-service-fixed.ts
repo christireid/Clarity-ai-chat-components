@@ -11,26 +11,19 @@ import type {
   MemoryStats,
   MemoryType,
   MemoryScope,
-  MemoryPriority,
   MemoryEvent,
   MemoryEventListener,
   MemoryBuffer,
-  MemoryContext,
   VectorStore,
   VectorStoreMatch,
-  VectorStoreVector,
   VectorStoreQuery,
   EmbeddingProvider,
   AddOptions,
-  ContextOptions,
-  ContextBundle,
-  TokenBreakdown,
 } from './types'
 import { TokenCounter, ContextOptimizer } from './token-optimizer'
 import {
   DecayManager,
   type DecayManagerConfig,
-  type DecayResult,
 } from './utils/decay-manager'
 
 /**

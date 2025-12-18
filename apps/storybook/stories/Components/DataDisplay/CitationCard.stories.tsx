@@ -51,7 +51,8 @@ type Story = StoryObj<typeof meta>
 const highConfidenceCitation: Citation = {
   id: 'cite_1',
   source: 'React Official Documentation - Hooks API Reference',
-  chunkText: 'useState is a React Hook that lets you add a state variable to your component. Call useState at the top level of your component to declare a state variable. The convention is to name state variables like [something, setSomething] using array destructuring.',
+  chunkText:
+    'useState is a React Hook that lets you add a state variable to your component. Call useState at the top level of your component to declare a state variable. The convention is to name state variables like [something, setSomething] using array destructuring.',
   confidence: 0.95,
   url: 'https://react.dev/reference/react/useState',
   metadata: {
@@ -64,7 +65,8 @@ const highConfidenceCitation: Citation = {
 const mediumConfidenceCitation: Citation = {
   id: 'cite_2',
   source: 'MDN Web Docs - JavaScript Array Methods',
-  chunkText: 'The map() method creates a new array populated with the results of calling a provided function on every element in the calling array. It is often used to transform arrays of data.',
+  chunkText:
+    'The map() method creates a new array populated with the results of calling a provided function on every element in the calling array. It is often used to transform arrays of data.',
   confidence: 0.72,
   url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map',
   metadata: {
@@ -76,7 +78,8 @@ const mediumConfidenceCitation: Citation = {
 const lowConfidenceCitation: Citation = {
   id: 'cite_3',
   source: 'Stack Overflow Discussion - React Performance',
-  chunkText: 'According to some developers, memoization can help with performance but should only be used when you have measured performance bottlenecks. Premature optimization is often discouraged.',
+  chunkText:
+    'According to some developers, memoization can help with performance but should only be used when you have measured performance bottlenecks. Premature optimization is often discouraged.',
   confidence: 0.58,
   url: 'https://stackoverflow.com/questions/12345/react-performance',
   metadata: {
@@ -88,7 +91,8 @@ const lowConfidenceCitation: Citation = {
 const veryLowConfidenceCitation: Citation = {
   id: 'cite_4',
   source: 'Blog Post - Web Development Tips',
-  chunkText: 'There are many ways to approach this problem, and different developers have different opinions on what works best.',
+  chunkText:
+    'There are many ways to approach this problem, and different developers have different opinions on what works best.',
   confidence: 0.35,
   url: 'https://example.com/blog/web-dev-tips',
 }
@@ -110,14 +114,16 @@ const longCitation: Citation = {
 const noCitationfidence: Citation = {
   id: 'cite_6',
   source: 'Tutorial - Getting Started with React',
-  chunkText: 'React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes.',
+  chunkText:
+    'React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes.',
   url: 'https://react.dev/learn',
 }
 
 const withoutURL: Citation = {
   id: 'cite_7',
   source: 'Internal Knowledge Base - React Best Practices',
-  chunkText: 'Always lift state up to the nearest common ancestor when multiple components need to share state. This makes data flow more predictable and easier to debug.',
+  chunkText:
+    'Always lift state up to the nearest common ancestor when multiple components need to share state. This makes data flow more predictable and easier to debug.',
   confidence: 0.91,
   metadata: {
     section: 'State Management',
@@ -200,7 +206,8 @@ export const RichMetadata: Story = {
     citation: {
       id: 'cite_9',
       source: 'Research Paper - AI in Healthcare',
-      chunkText: 'Machine learning models have shown promising results in early disease detection, with accuracy rates exceeding 95% in some studies.',
+      chunkText:
+        'Machine learning models have shown promising results in early disease detection, with accuracy rates exceeding 95% in some studies.',
       confidence: 0.94,
       url: 'https://example.com/research/ai-healthcare.pdf',
       metadata: {
@@ -229,16 +236,17 @@ const InteractiveExample = () => {
     <div className="space-y-4">
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <p className="text-sm text-blue-900 dark:text-blue-100">
-          💡 Click on the citation card or the external link icon to trigger callbacks
+          💡 Click on the citation card or the external link icon to trigger
+          callbacks
         </p>
       </div>
-      
+
       <CitationCard
         citation={highConfidenceCitation}
         onClick={handleClick}
         onSourceClick={handleSourceClick}
       />
-      
+
       {clicked && (
         <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
           <p className="text-sm font-medium text-green-900 dark:text-green-100">
@@ -270,7 +278,7 @@ const MultipleCitations = () => {
           References used to generate this response, sorted by relevance
         </p>
       </div>
-      
+
       {citations.map((citation, index) => (
         <CitationCard
           key={citation.id}
@@ -288,10 +296,29 @@ export const MultipleInList: Story = {
 
 const ConfidenceComparison = () => {
   const citations = [
-    { ...highConfidenceCitation, id: 'high', source: 'High Confidence Source (95%)' },
-    { ...mediumConfidenceCitation, id: 'medium', source: 'Medium Confidence Source (72%)', confidence: 0.72 },
-    { ...lowConfidenceCitation, id: 'low', source: 'Low Confidence Source (58%)', confidence: 0.58 },
-    { ...veryLowConfidenceCitation, id: 'verylow', source: 'Very Low Confidence Source (35%)', confidence: 0.35 },
+    {
+      ...highConfidenceCitation,
+      id: 'high',
+      source: 'High Confidence Source (95%)',
+    },
+    {
+      ...mediumConfidenceCitation,
+      id: 'medium',
+      source: 'Medium Confidence Source (72%)',
+      confidence: 0.72,
+    },
+    {
+      ...lowConfidenceCitation,
+      id: 'low',
+      source: 'Low Confidence Source (58%)',
+      confidence: 0.58,
+    },
+    {
+      ...veryLowConfidenceCitation,
+      id: 'verylow',
+      source: 'Very Low Confidence Source (35%)',
+      confidence: 0.35,
+    },
   ]
 
   return (
@@ -304,18 +331,25 @@ const ConfidenceComparison = () => {
           Citations are color-coded by confidence:
         </p>
         <ul className="mt-2 text-sm text-blue-800 dark:text-blue-200 space-y-1">
-          <li>🟢 <strong>High (90-100%):</strong> Green - Highly relevant and trustworthy</li>
-          <li>🔵 <strong>Medium (70-89%):</strong> Blue - Reasonably relevant</li>
-          <li>🟡 <strong>Low (50-69%):</strong> Yellow - Marginally relevant</li>
-          <li>🔴 <strong>Very Low (&lt;50%):</strong> Red - Potentially not relevant</li>
+          <li>
+            🟢 <strong>High (90-100%):</strong> Green - Highly relevant and
+            trustworthy
+          </li>
+          <li>
+            🔵 <strong>Medium (70-89%):</strong> Blue - Reasonably relevant
+          </li>
+          <li>
+            🟡 <strong>Low (50-69%):</strong> Yellow - Marginally relevant
+          </li>
+          <li>
+            🔴 <strong>Very Low (&lt;50%):</strong> Red - Potentially not
+            relevant
+          </li>
         </ul>
       </div>
-      
+
       {citations.map((citation) => (
-        <CitationCard
-          key={citation.id}
-          citation={citation}
-        />
+        <CitationCard key={citation.id} citation={citation} />
       ))}
     </div>
   )
@@ -343,8 +377,9 @@ export const NoSpacesLongWord: Story = {
     citation: {
       id: 'cite_long_word',
       source: 'Technical Documentation',
-      chunkText: 'The method name is: supercalifragilisticexpialidociousMethodNameThatIsVeryLongAndHasNoSpacesWhatsoever',
-      confidence: 0.80,
+      chunkText:
+        'The method name is: supercalifragilisticexpialidociousMethodNameThatIsVeryLongAndHasNoSpacesWhatsoever',
+      confidence: 0.8,
     },
   },
 }
@@ -354,7 +389,8 @@ export const SpecialCharacters: Story = {
     citation: {
       id: 'cite_special',
       source: 'Code Example with Special Characters',
-      chunkText: 'Here\'s a regex pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/ and some symbols: <>&"\'',
+      chunkText:
+        "Here's a regex pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/ and some symbols: <>&\"'",
       confidence: 0.87,
       url: 'https://example.com',
       metadata: {
@@ -369,7 +405,8 @@ export const UnicodeEmoji: Story = {
     citation: {
       id: 'cite_emoji',
       source: 'Modern Documentation 🚀',
-      chunkText: 'React Hooks make components more ✨ powerful and 💪 expressive. You can use emojis in documentation 🎉',
+      chunkText:
+        'React Hooks make components more ✨ powerful and 💪 expressive. You can use emojis in documentation 🎉',
       confidence: 0.91,
       metadata: {
         author: 'Emoji Lover 😄',

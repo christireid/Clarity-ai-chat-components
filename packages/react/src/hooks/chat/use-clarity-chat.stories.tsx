@@ -1,15 +1,21 @@
 /**
  * useClarityChat Storybook Stories
- * 
+ *
  * Demonstrates the flagship chat hook with memory and transport options
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
 import React, { useMemo } from 'react'
 import { useClarityChat, coreMessagesToMessages } from './use-clarity-chat'
-import { ChatWindow } from '../components/chat-window'
-import { Card, CardContent, CardHeader, Badge, Button } from '@clarity-chat/primitives'
-import { MemoryProvider } from '../memory/memory-provider'
+import { ChatWindow } from '../../components/chat/chat-window'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Badge,
+  Button,
+} from '@clarity-chat/primitives'
+import { MemoryProvider } from '../../memory/memory-provider'
 
 const meta = {
   title: 'Hooks/useClarityChat',
@@ -54,10 +60,10 @@ const messages = useMemo(
   }}
 />
 \`\`\`
-        `
-      }
-    }
-  }
+        `,
+      },
+    },
+  },
 } satisfies Meta
 
 export default meta
@@ -65,22 +71,22 @@ type Story = StoryObj<typeof meta>
 
 // Mock API handler for Storybook
 const mockChatAPI = async (messages: any[]): Promise<Response> => {
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
   const lastMessage = messages[messages.length - 1]
   const response = `This is a mock response to: "${lastMessage.content}". In a real implementation, this would call your AI API.`
-  
+
   return new Response(
     JSON.stringify({
       choices: [
         {
           delta: { content: response },
-          finish_reason: 'stop'
-        }
-      ]
+          finish_reason: 'stop',
+        },
+      ],
     }),
     {
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     }
   )
 }
@@ -90,16 +96,16 @@ export const BasicChat: Story = {
     const chat = useClarityChat({
       api: '/api/chat',
       fetch: async (url, options) => {
-        const body = JSON.parse(options?.body as string || '{}')
+        const body = JSON.parse((options?.body as string) || '{}')
         return mockChatAPI(body.messages || [])
-      }
+      },
     })
-    
+
     const messages = useMemo(
       () => coreMessagesToMessages(chat.messages),
       [chat.messages]
     )
-    
+
     return (
       <div className="space-y-4">
         <div>
@@ -108,7 +114,7 @@ export const BasicChat: Story = {
             Simple chat interface using useClarityChat
           </p>
         </div>
-        
+
         <div className="border rounded-lg" style={{ height: '500px' }}>
           <ChatWindow
             messages={messages}
@@ -118,17 +124,19 @@ export const BasicChat: Story = {
             }}
           />
         </div>
-        
+
         {chat.error && (
           <Card className="border-destructive">
             <CardContent className="pt-6">
-              <div className="text-destructive">Error: {chat.error.message}</div>
+              <div className="text-destructive">
+                Error: {chat.error.message}
+              </div>
             </CardContent>
           </Card>
         )}
       </div>
     )
-  }
+  },
 }
 
 export const WithMemory: Story = {
@@ -138,19 +146,19 @@ export const WithMemory: Story = {
       memory: {
         enabled: true,
         strategy: 'sliding-window',
-        maxTokens: 1000
+        maxTokens: 1000,
       },
       fetch: async (url, options) => {
-        const body = JSON.parse(options?.body as string || '{}')
+        const body = JSON.parse((options?.body as string) || '{}')
         return mockChatAPI(body.messages || [])
-      }
+      },
     })
-    
+
     const messages = useMemo(
       () => coreMessagesToMessages(chat.messages),
       [chat.messages]
     )
-    
+
     return (
       <MemoryProvider>
         <div className="space-y-4">
@@ -160,18 +168,19 @@ export const WithMemory: Story = {
               Chat with memory integration enabled (sliding-window strategy)
             </p>
           </div>
-          
+
           <div className="flex gap-2 mb-2">
             <Badge variant={chat.memoryInfo.enabled ? 'default' : 'secondary'}>
               Memory: {chat.memoryInfo.enabled ? 'Enabled' : 'Disabled'}
             </Badge>
             {chat.memoryInfo.lastContextSummary && (
               <Badge variant="outline">
-                Context: {chat.memoryInfo.lastContextSummary.substring(0, 50)}...
+                Context: {chat.memoryInfo.lastContextSummary.substring(0, 50)}
+                ...
               </Badge>
             )}
           </div>
-          
+
           <div className="border rounded-lg" style={{ height: '500px' }}>
             <ChatWindow
               messages={messages}
@@ -181,7 +190,7 @@ export const WithMemory: Story = {
               }}
             />
           </div>
-          
+
           {chat.memoryErrorInfo.hasError && (
             <Card className="border-yellow-500">
               <CardContent className="pt-6">
@@ -194,36 +203,38 @@ export const WithMemory: Story = {
         </div>
       </MemoryProvider>
     )
-  }
+  },
 }
 
 export const WithTransport: Story = {
   render: () => {
     const [transport, setTransport] = React.useState<'sse' | 'websocket'>('sse')
-    
+
     const chat = useClarityChat({
       api: '/api/chat',
       transport,
       fetch: async (url, options) => {
-        const body = JSON.parse(options?.body as string || '{}')
+        const body = JSON.parse((options?.body as string) || '{}')
         return mockChatAPI(body.messages || [])
-      }
+      },
     })
-    
+
     const messages = useMemo(
       () => coreMessagesToMessages(chat.messages),
       [chat.messages]
     )
-    
+
     return (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-2">Chat with Transport Selection</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            Chat with Transport Selection
+          </h3>
           <p className="text-sm text-muted-foreground mb-4">
             Choose between SSE and WebSocket transport protocols
           </p>
         </div>
-        
+
         <div className="flex gap-2 mb-2">
           <Button
             variant={transport === 'sse' ? 'default' : 'outline'}
@@ -239,11 +250,9 @@ export const WithTransport: Story = {
           >
             WebSocket
           </Button>
-          <Badge variant="outline">
-            Current: {transport.toUpperCase()}
-          </Badge>
+          <Badge variant="outline">Current: {transport.toUpperCase()}</Badge>
         </div>
-        
+
         <div className="border rounded-lg" style={{ height: '500px' }}>
           <ChatWindow
             messages={messages}
@@ -255,7 +264,7 @@ export const WithTransport: Story = {
         </div>
       </div>
     )
-  }
+  },
 }
 
 export const AdvancedFeatures: Story = {
@@ -265,25 +274,25 @@ export const AdvancedFeatures: Story = {
       memory: {
         enabled: true,
         strategy: 'semantic-chunks',
-        maxTokens: 2000
+        maxTokens: 2000,
       },
       transport: 'sse',
       userId: 'user-123',
       threadId: 'thread-456',
       onFinish: (message) => {
-        logger.debug('Message finished:', message)
+        console.log('Message finished:', message)
       },
       fetch: async (url, options) => {
-        const body = JSON.parse(options?.body as string || '{}')
+        const body = JSON.parse((options?.body as string) || '{}')
         return mockChatAPI(body.messages || [])
-      }
+      },
     })
-    
+
     const messages = useMemo(
       () => coreMessagesToMessages(chat.messages),
       [chat.messages]
     )
-    
+
     return (
       <MemoryProvider>
         <div className="space-y-4">
@@ -293,7 +302,7 @@ export const AdvancedFeatures: Story = {
               Chat with memory, user/thread IDs, and callbacks
             </p>
           </div>
-          
+
           <Card>
             <CardHeader>
               <h4 className="font-semibold">Configuration</h4>
@@ -301,8 +310,9 @@ export const AdvancedFeatures: Story = {
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div>
-                  <strong>Memory:</strong> {chat.memoryInfo.enabled ? 'Enabled' : 'Disabled'} 
-                  ({chat.memoryInfo.strategy || 'none'})
+                  <strong>Memory:</strong>{' '}
+                  {chat.memoryInfo.enabled ? 'Enabled' : 'Disabled'}(
+                  {chat.memoryInfo.strategy || 'none'})
                 </div>
                 <div>
                   <strong>Transport:</strong> SSE
@@ -319,7 +329,7 @@ export const AdvancedFeatures: Story = {
               </div>
             </CardContent>
           </Card>
-          
+
           <div className="border rounded-lg" style={{ height: '500px' }}>
             <ChatWindow
               messages={messages}
@@ -329,16 +339,18 @@ export const AdvancedFeatures: Story = {
               }}
             />
           </div>
-          
+
           {chat.error && (
             <Card className="border-destructive">
               <CardContent className="pt-6">
-                <div className="text-destructive">Error: {chat.error.message}</div>
+                <div className="text-destructive">
+                  Error: {chat.error.message}
+                </div>
               </CardContent>
             </Card>
           )}
         </div>
       </MemoryProvider>
     )
-  }
+  },
 }

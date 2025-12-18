@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import {
   Card,
@@ -15,12 +17,22 @@ import type { Message } from '@clarity-chat/types'
 /**
  * Share visibility level
  */
-export type ShareVisibility = 'public' | 'private' | 'password-protected' | 'team-only'
+export type ShareVisibility =
+  | 'public'
+  | 'private'
+  | 'password-protected'
+  | 'team-only'
 
 /**
  * Share expiration
  */
-export type ShareExpiration = 'never' | '1hour' | '24hours' | '7days' | '30days' | 'custom'
+export type ShareExpiration =
+  | 'never'
+  | '1hour'
+  | '24hours'
+  | '7days'
+  | '30days'
+  | 'custom'
 
 /**
  * Share link configuration
@@ -131,7 +143,10 @@ function generateQRCode(text: string): string {
 /**
  * Calculate expiration timestamp
  */
-function calculateExpiration(expiration: ShareExpiration, customDate?: number): number | undefined {
+function calculateExpiration(
+  expiration: ShareExpiration,
+  customDate?: number
+): number | undefined {
   const now = Date.now()
   switch (expiration) {
     case 'never':
@@ -176,10 +191,12 @@ export function ConversationSharing({
 }: ConversationSharingProps) {
   const [shares, setShares] = React.useState<ShareLinkConfig[]>(existingShares)
   const [isCreating, setIsCreating] = React.useState(false)
-  const [selectedShare, setSelectedShare] = React.useState<ShareLinkConfig | null>(null)
+  const [selectedShare, setSelectedShare] =
+    React.useState<ShareLinkConfig | null>(null)
 
   // New share configuration
-  const [visibility, setVisibility] = React.useState<ShareVisibility>(defaultVisibility)
+  const [visibility, setVisibility] =
+    React.useState<ShareVisibility>(defaultVisibility)
   const [expiration, setExpiration] = React.useState<ShareExpiration>('7days')
   const [password, setPassword] = React.useState('')
   const [maxViews, setMaxViews] = React.useState<number | undefined>()
@@ -202,7 +219,7 @@ export function ConversationSharing({
       trackAnalytics: true,
     }
 
-    setShares(prev => [...prev, config])
+    setShares((prev) => [...prev, config])
     onShareCreated?.(config)
     setIsCreating(false)
 
@@ -217,12 +234,12 @@ export function ConversationSharing({
       await navigator.clipboard.writeText(link)
       onLinkCopied?.(link)
     } catch (error) {
-      logger.logger.error('Failed to copy link:', error)
+      logger.error('Failed to copy link:', error)
     }
   }
 
   const revokeShare = (shareId: string) => {
-    setShares(prev => prev.filter(s => s.id !== shareId))
+    setShares((prev) => prev.filter((s) => s.id !== shareId))
     onShareRevoked?.(shareId)
     if (selectedShare?.id === shareId) {
       setSelectedShare(null)
@@ -280,10 +297,7 @@ export function ConversationSharing({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Share Conversation</CardTitle>
-            <Button
-              onClick={() => setIsCreating(!isCreating)}
-              size="sm"
-            >
+            <Button onClick={() => setIsCreating(!isCreating)} size="sm">
               {isCreating ? 'Cancel' : '+ Create Share Link'}
             </Button>
           </div>
@@ -293,9 +307,18 @@ export function ConversationSharing({
         {isCreating && (
           <CardContent className="space-y-4 border-t pt-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Visibility</label>
+              <label className="text-sm font-medium mb-2 block">
+                Visibility
+              </label>
               <div className="grid grid-cols-2 gap-2">
-                {(['public', 'private', 'password-protected', 'team-only'] as ShareVisibility[]).map(vis => (
+                {(
+                  [
+                    'public',
+                    'private',
+                    'password-protected',
+                    'team-only',
+                  ] as ShareVisibility[]
+                ).map((vis) => (
                   <Button
                     key={vis}
                     variant={visibility === vis ? 'default' : 'outline'}
@@ -312,11 +335,13 @@ export function ConversationSharing({
 
             {visibility === 'password-protected' && (
               <div>
-                <label className="text-sm font-medium mb-2 block">Password</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Password
+                </label>
                 <input
                   type="password"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
                   className="w-full px-3 py-2 border rounded"
                 />
@@ -324,27 +349,45 @@ export function ConversationSharing({
             )}
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Expiration</label>
+              <label className="text-sm font-medium mb-2 block">
+                Expiration
+              </label>
               <div className="grid grid-cols-3 gap-2">
-                {(['never', '1hour', '24hours', '7days', '30days'] as ShareExpiration[]).map(exp => (
+                {(
+                  [
+                    'never',
+                    '1hour',
+                    '24hours',
+                    '7days',
+                    '30days',
+                  ] as ShareExpiration[]
+                ).map((exp) => (
                   <Button
                     key={exp}
                     variant={expiration === exp ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setExpiration(exp)}
                   >
-                    {exp === 'never' ? 'Never' : exp.replace('hour', 'h').replace('days', 'd')}
+                    {exp === 'never'
+                      ? 'Never'
+                      : exp.replace('hour', 'h').replace('days', 'd')}
                   </Button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Max Views (optional)</label>
+              <label className="text-sm font-medium mb-2 block">
+                Max Views (optional)
+              </label>
               <input
                 type="number"
                 value={maxViews || ''}
-                onChange={e => setMaxViews(e.target.value ? parseInt(e.target.value) : undefined)}
+                onChange={(e) =>
+                  setMaxViews(
+                    e.target.value ? parseInt(e.target.value) : undefined
+                  )
+                }
                 placeholder="Unlimited"
                 className="w-full px-3 py-2 border rounded"
               />
@@ -355,7 +398,7 @@ export function ConversationSharing({
                 <input
                   type="checkbox"
                   checked={allowComments}
-                  onChange={e => setAllowComments(e.target.checked)}
+                  onChange={(e) => setAllowComments(e.target.checked)}
                 />
                 Allow comments
               </label>
@@ -363,7 +406,7 @@ export function ConversationSharing({
                 <input
                   type="checkbox"
                   checked={allowDownload}
-                  onChange={e => setAllowDownload(e.target.checked)}
+                  onChange={(e) => setAllowDownload(e.target.checked)}
                 />
                 Allow download
               </label>
@@ -371,7 +414,7 @@ export function ConversationSharing({
                 <input
                   type="checkbox"
                   checked={showMetadata}
-                  onChange={e => setShowMetadata(e.target.checked)}
+                  onChange={(e) => setShowMetadata(e.target.checked)}
                 />
                 Show metadata
               </label>
@@ -391,7 +434,7 @@ export function ConversationSharing({
             <CardTitle>Active Share Links ({shares.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {shares.map(share => {
+            {shares.map((share) => {
               const link = generateShareLink(share)
               const isExpired = share.expiresAt && share.expiresAt < Date.now()
 
@@ -406,24 +449,31 @@ export function ConversationSharing({
                   {/* Share header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">{getVisibilityIcon(share.visibility)}</span>
+                      <span className="text-xl">
+                        {getVisibilityIcon(share.visibility)}
+                      </span>
                       <div>
                         <div className="text-sm font-medium">
                           {share.visibility.replace('-', ' ')}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {getExpirationLabel(share.expiration, share.expiresAt)}
+                          {getExpirationLabel(
+                            share.expiration,
+                            share.expiresAt
+                          )}
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {isExpired && (
-                        <Badge variant="secondary">Expired</Badge>
-                      )}
+                      {isExpired && <Badge variant="secondary">Expired</Badge>}
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setSelectedShare(selectedShare?.id === share.id ? null : share)}
+                        onClick={() =>
+                          setSelectedShare(
+                            selectedShare?.id === share.id ? null : share
+                          )
+                        }
                       >
                         {selectedShare?.id === share.id ? 'Hide' : 'Details'}
                       </Button>
@@ -438,10 +488,7 @@ export function ConversationSharing({
                       readOnly
                       className="flex-1 px-3 py-1.5 text-sm border rounded bg-muted"
                     />
-                    <Button
-                      size="sm"
-                      onClick={() => copyToClipboard(share)}
-                    >
+                    <Button size="sm" onClick={() => copyToClipboard(share)}>
                       📋 Copy
                     </Button>
                   </div>
@@ -451,19 +498,33 @@ export function ConversationSharing({
                     <div className="pt-2 border-t space-y-3">
                       {/* Permissions */}
                       <div>
-                        <div className="text-xs font-medium mb-1">Permissions</div>
+                        <div className="text-xs font-medium mb-1">
+                          Permissions
+                        </div>
                         <div className="flex gap-2">
-                          {share.allowComments && <Badge variant="outline">Comments</Badge>}
-                          {share.allowDownload && <Badge variant="outline">Download</Badge>}
-                          {share.showMetadata && <Badge variant="outline">Metadata</Badge>}
-                          {share.maxViews && <Badge variant="outline">{share.maxViews} max views</Badge>}
+                          {share.allowComments && (
+                            <Badge variant="outline">Comments</Badge>
+                          )}
+                          {share.allowDownload && (
+                            <Badge variant="outline">Download</Badge>
+                          )}
+                          {share.showMetadata && (
+                            <Badge variant="outline">Metadata</Badge>
+                          )}
+                          {share.maxViews && (
+                            <Badge variant="outline">
+                              {share.maxViews} max views
+                            </Badge>
+                          )}
                         </div>
                       </div>
 
                       {/* QR Code */}
                       {enableQRCode && (
                         <div>
-                          <div className="text-xs font-medium mb-2">QR Code</div>
+                          <div className="text-xs font-medium mb-2">
+                            QR Code
+                          </div>
                           <img
                             src={generateQRCode(link)}
                             alt="QR Code"
@@ -475,7 +536,9 @@ export function ConversationSharing({
                       {/* Social sharing */}
                       {enableSocialSharing && (
                         <div>
-                          <div className="text-xs font-medium mb-2">Share to</div>
+                          <div className="text-xs font-medium mb-2">
+                            Share to
+                          </div>
                           <div className="flex gap-2">
                             <Button
                               variant="outline"
@@ -550,35 +613,44 @@ export function ConversationSharing({
  * Hook for managing conversation sharing
  */
 export function useConversationSharing(conversationId: string) {
-  const [shares, setShares] = React.useState<Map<string, ShareLinkConfig>>(new Map())
-  const [analytics, setAnalytics] = React.useState<Map<string, ShareAnalytics>>(new Map())
+  const [shares, setShares] = React.useState<Map<string, ShareLinkConfig>>(
+    new Map()
+  )
+  const [analytics, setAnalytics] = React.useState<Map<string, ShareAnalytics>>(
+    new Map()
+  )
 
-  const createShare = React.useCallback((config: Omit<ShareLinkConfig, 'id' | 'conversationId'>) => {
-    const shareConfig: ShareLinkConfig = {
-      ...config,
-      id: `share-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      conversationId,
-    }
+  const createShare = React.useCallback(
+    (config: Omit<ShareLinkConfig, 'id' | 'conversationId'>) => {
+      const shareConfig: ShareLinkConfig = {
+        ...config,
+        id: `share-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        conversationId,
+      }
 
-    setShares(prev => new Map(prev).set(shareConfig.id, shareConfig))
+      setShares((prev) => new Map(prev).set(shareConfig.id, shareConfig))
 
-    // Initialize analytics
-    setAnalytics(prev => new Map(prev).set(shareConfig.id, {
-      shareId: shareConfig.id,
-      views: 0,
-      uniqueVisitors: 0,
-      avgTimeOnPage: 0,
-      referrers: new Map(),
-      devices: new Map(),
-      locations: new Map(),
-      timeline: [],
-    }))
+      // Initialize analytics
+      setAnalytics((prev) =>
+        new Map(prev).set(shareConfig.id, {
+          shareId: shareConfig.id,
+          views: 0,
+          uniqueVisitors: 0,
+          avgTimeOnPage: 0,
+          referrers: new Map(),
+          devices: new Map(),
+          locations: new Map(),
+          timeline: [],
+        })
+      )
 
-    return shareConfig
-  }, [conversationId])
+      return shareConfig
+    },
+    [conversationId]
+  )
 
   const revokeShare = React.useCallback((shareId: string) => {
-    setShares(prev => {
+    setShares((prev) => {
       const newShares = new Map(prev)
       newShares.delete(shareId)
       return newShares
@@ -586,7 +658,7 @@ export function useConversationSharing(conversationId: string) {
   }, [])
 
   const trackView = React.useCallback((shareId: string, metadata?: any) => {
-    setAnalytics(prev => {
+    setAnalytics((prev) => {
       const newAnalytics = new Map(prev)
       const current = newAnalytics.get(shareId)
 
@@ -609,29 +681,35 @@ export function useConversationSharing(conversationId: string) {
     })
   }, [])
 
-  const getShareAnalytics = React.useCallback((shareId: string): ShareAnalytics | undefined => {
-    return analytics.get(shareId)
-  }, [analytics])
+  const getShareAnalytics = React.useCallback(
+    (shareId: string): ShareAnalytics | undefined => {
+      return analytics.get(shareId)
+    },
+    [analytics]
+  )
 
-  const isShareValid = React.useCallback((shareId: string): boolean => {
-    const share = shares.get(shareId)
-    if (!share) return false
+  const isShareValid = React.useCallback(
+    (shareId: string): boolean => {
+      const share = shares.get(shareId)
+      if (!share) return false
 
-    // Check expiration
-    if (share.expiresAt && share.expiresAt < Date.now()) {
-      return false
-    }
-
-    // Check max views
-    if (share.maxViews) {
-      const stats = analytics.get(shareId)
-      if (stats && stats.views >= share.maxViews) {
+      // Check expiration
+      if (share.expiresAt && share.expiresAt < Date.now()) {
         return false
       }
-    }
 
-    return true
-  }, [shares, analytics])
+      // Check max views
+      if (share.maxViews) {
+        const stats = analytics.get(shareId)
+        if (stats && stats.views >= share.maxViews) {
+          return false
+        }
+      }
+
+      return true
+    },
+    [shares, analytics]
+  )
 
   return {
     shares: Array.from(shares.values()),
@@ -675,8 +753,7 @@ export function ShareAnalyticsDashboard({
   }, [analytics.referrers])
 
   const topDevices = React.useMemo(() => {
-    return Array.from(analytics.devices.entries())
-      .sort((a, b) => b[1] - a[1])
+    return Array.from(analytics.devices.entries()).sort((a, b) => b[1] - a[1])
   }, [analytics.devices])
 
   return (
@@ -693,8 +770,12 @@ export function ShareAnalyticsDashboard({
               <div className="text-xs text-muted-foreground">Total Views</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">{analytics.uniqueVisitors}</div>
-              <div className="text-xs text-muted-foreground">Unique Visitors</div>
+              <div className="text-2xl font-bold">
+                {analytics.uniqueVisitors}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Unique Visitors
+              </div>
             </div>
             <div>
               <div className="text-2xl font-bold">
@@ -709,12 +790,16 @@ export function ShareAnalyticsDashboard({
             <div>
               <div className="flex justify-between text-xs mb-1">
                 <span>View Limit</span>
-                <span>{analytics.views} / {shareConfig.maxViews}</span>
+                <span>
+                  {analytics.views} / {shareConfig.maxViews}
+                </span>
               </div>
               <div className="h-2 bg-accent rounded-full overflow-hidden">
                 <div
                   className="h-full bg-primary"
-                  style={{ width: `${(analytics.views / shareConfig.maxViews) * 100}%` }}
+                  style={{
+                    width: `${(analytics.views / shareConfig.maxViews) * 100}%`,
+                  }}
                 />
               </div>
             </div>
@@ -754,14 +839,17 @@ export function ShareAnalyticsDashboard({
             <div>
               <div className="text-sm font-medium mb-2">Recent Activity</div>
               <div className="space-y-1 max-h-32 overflow-y-auto">
-                {analytics.timeline.slice(-10).reverse().map((event, idx) => (
-                  <div key={idx} className="text-xs flex justify-between">
-                    <span>{event.event}</span>
-                    <span className="text-muted-foreground">
-                      {new Date(event.timestamp).toLocaleString()}
-                    </span>
-                  </div>
-                ))}
+                {analytics.timeline
+                  .slice(-10)
+                  .reverse()
+                  .map((event, idx) => (
+                    <div key={idx} className="text-xs flex justify-between">
+                      <span>{event.event}</span>
+                      <span className="text-muted-foreground">
+                        {new Date(event.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
               </div>
             </div>
           )}

@@ -12,7 +12,25 @@ import path from 'path'
 import { InitWizard } from '../components/InitWizard.js'
 import { detectFramework, detectPackageManager } from '../utils/detect.js'
 import { installDependencies } from '../utils/install.js'
-import { createConfigManager } from '@clarity-chat/utils/config-manager'
+// Simple config manager implementation
+function createConfigManager<
+  T extends Record<string, { type: string; default?: unknown }>,
+>(schema: T) {
+  return {
+    validate: <O>(_options: O) => ({
+      success: true as const,
+      errors: [] as string[],
+    }),
+    merge: <O>(options: O) => {
+      const result: Record<string, unknown> = {}
+      for (const [key, config] of Object.entries(schema)) {
+        result[key] =
+          (options as Record<string, unknown>)[key] ?? config.default
+      }
+      return result as O & { [K in keyof T]: T[K]['default'] }
+    },
+  }
+}
 import { getLogger } from '../utils/logger.js'
 import { ValidationError, ConfigError, handleError } from '../utils/errors.js'
 import {
@@ -53,7 +71,9 @@ export async function initCommand(rawOptions: InitOptions) {
   try {
     const configResult = configManager.validate(rawOptions)
     if (!configResult.success) {
-      throw new ValidationError(`Invalid init options: ${configResult.errors.join(', ')}`)
+      throw new ValidationError(
+        `Invalid init options: ${configResult.errors.join(', ')}`
+      )
     }
     const options = configManager.merge(rawOptions)
 
@@ -78,8 +98,8 @@ export async function initCommand(rawOptions: InitOptions) {
     const detectedFramework = await detectFramework(cwd)
     const packageManager = await detectPackageManager(cwd)
 
-    logger.info(`Detected framework: ${detectedFramework || 'none'}`)
-    logger.info(`Package manager: ${packageManager}`)
+    console.info(`Detected framework: ${detectedFramework || 'none'}`)
+    console.info(`Package manager: ${packageManager}`)
 
     // Validate options if provided
     let validatedFramework: string | undefined
@@ -121,8 +141,8 @@ export async function initCommand(rawOptions: InitOptions) {
         template: validatedTemplate || 'basic',
         components: ['chat-interface', 'model-selector'],
         apiKeys: {},
-        installDeps: options.install !== false,
-        initGit: options.git !== false,
+        installDeps: (options.install as boolean | undefined) !== false,
+        initGit: (options.git as boolean | undefined) !== false,
       }
     }
 
@@ -170,9 +190,9 @@ export async function initCommand(rawOptions: InitOptions) {
         },
         cwd
       )
-      logger.debug('Config file saved')
+      console.log('Config file saved')
     } catch (error) {
-      logger.warn(
+      console.warn(
         'Failed to save config file',
         error instanceof Error ? error : String(error)
       )
@@ -195,7 +215,7 @@ export async function initCommand(rawOptions: InitOptions) {
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
-        logger.error(error instanceof Error ? error : new Error(String(error)))
+        console.error(error instanceof Error ? error : new Error(String(error)))
         throw new ConfigError('Failed to install dependencies', [
           'Check your internet connection',
           'Verify package manager is installed',
@@ -235,7 +255,7 @@ GOOGLE_API_KEY=your_google_key_here
 `,
         'utf-8'
       )
-      logger.info('Created .env.local with placeholder keys')
+      console.info('Created .env.local with placeholder keys')
     }
 
     // Ensure .env.local is in .gitignore

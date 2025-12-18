@@ -75,7 +75,7 @@ const user: User = {
   createdAt: new Date(),
 };
 
-logger.debug(greetUser(user));`
+console.log(greetUser(user));`
 
 const pythonCode = `import asyncio
 from dataclasses import dataclass
@@ -179,8 +179,8 @@ export const WithHighlightedLines: Story = {
 export const DiffView: Story = {
   args: {
     children: `function greet(name) {
--  logger.debug('Hello ' + name);
-+  logger.debug(\`Hello, \${name}!\`);
+-  console.log('Hello ' + name);
++  console.log(\`Hello, \${name}!\`);
    return name;
 }`,
     language: 'javascript',

@@ -1,19 +1,25 @@
 /**
  * Chat UI Domain
- * 
+ *
  * Top-level APIs for chat user interface
  */
 
 // Top-level: Drop-in ready components
-export { ClarityChat, type ClarityChatProps } from '../../components/clarity-chat'
-export { ClarityChatSimple, type ClarityChatSimpleProps } from '../../components/clarity-chat-simple'
+export {
+  ClarityChat,
+  type ClarityChatProps,
+} from '../../components/clarity-chat'
+export {
+  ClarityChatSimple,
+  type ClarityChatSimpleProps,
+} from '../../components/clarity-chat-simple'
 
 // Top-level: Main hook
 export {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from '../../hooks/use-clarity-chat'
+} from '../../hooks/chat/use-clarity-chat'
 
 // Mid-level: Building blocks
 export { ChatWindow, type ChatWindowProps } from '../../components/chat-window'

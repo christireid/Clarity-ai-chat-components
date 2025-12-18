@@ -88,10 +88,10 @@ const INITIAL_STATE: ArchitectWorkflowState = {
  * ```typescript
  * const workflow = useArchitectWorkflow({
  *   onPhaseComplete: (phase, result) => {
- *     logger.debug(`Phase ${phase} complete`)
+ *     console.log(`Phase ${phase} complete`)
  *   },
  *   onWorkflowComplete: (state) => {
- *     logger.debug('Workflow complete!', state)
+ *     console.log('Workflow complete!', state)
  *   },
  * })
  *
