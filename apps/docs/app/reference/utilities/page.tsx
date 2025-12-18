@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -291,7 +290,7 @@ try {
     requireContent: true
   })
 } catch (error) {
-  logger.logger.error('Invalid message:', error.message)
+  console.error('Invalid message:', error.message)
 }`}</code></pre>
 
         <h3>sanitizeInput</h3>
@@ -347,7 +346,7 @@ try {
   )
 } catch (error) {
   if (error.name === 'TimeoutError') {
-    logger.logger.error('Request timed out')
+    console.error('Request timed out')
   }
 }`}</code></pre>
 

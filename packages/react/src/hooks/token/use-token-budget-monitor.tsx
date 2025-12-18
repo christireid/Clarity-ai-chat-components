@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -6,13 +5,13 @@ import {
   countTokens,
   countConversationTokens,
   type ModelName,
-} from '../utils/tokenization'
-import { estimateTokens } from '../utils/tokenization/estimator'
-import { MODEL_PRICING } from '../utils/tokenization/model-pricing'
+} from '../../utils/tokenization'
+import { estimateTokens } from '../../utils/tokenization/estimator'
+import { MODEL_PRICING } from '../../utils/tokenization/model-pricing'
 import {
   MODEL_REGISTRY,
   type ModelId,
-} from '../utils/tokenization/model-registry'
+} from '../../utils/tokenization/model-registry'
 
 /**
  * Token usage status levels
@@ -203,8 +202,8 @@ function createInitialUsage(config: TokenBudgetConfig): TokenUsage {
  *   const { usage, isWarning, isCritical, updateMessages } = useTokenBudgetMonitor({
  *     maxInputTokens: 128000,
  *     reservedForOutput: 4096,
- *     onWarning: (usage) => logger.debug('Warning:', usage.utilizationPercent),
- *     onCritical: (usage) => logger.debug('Critical:', usage.utilizationPercent),
+ *     onWarning: (usage) => console.log('Warning:', usage.utilizationPercent),
+ *     onCritical: (usage) => console.log('Critical:', usage.utilizationPercent),
  *     autoTrim: true,
  *   })
  *
@@ -228,12 +227,12 @@ export function useTokenBudgetMonitor(
   // Validate config in development
   if (process.env['NODE_ENV'] !== 'production') {
     if (config.maxInputTokens <= 0) {
-      logger.warn('[useTokenBudgetMonitor] maxInputTokens must be positive')
+      console.warn('[useTokenBudgetMonitor] maxInputTokens must be positive')
     }
     const reserved =
       config.reservedForOutput ?? DEFAULT_CONFIG.reservedForOutput
     if (reserved >= config.maxInputTokens) {
-      logger.warn(
+      console.warn(
         '[useTokenBudgetMonitor] reservedForOutput should be less than maxInputTokens'
       )
     }
@@ -241,12 +240,12 @@ export function useTokenBudgetMonitor(
     const critical =
       config.criticalThreshold ?? DEFAULT_CONFIG.criticalThreshold
     if (warning >= critical) {
-      logger.warn(
+      console.warn(
         '[useTokenBudgetMonitor] warningThreshold should be less than criticalThreshold'
       )
     }
     if (warning < 0 || warning > 1 || critical < 0 || critical > 1) {
-      logger.warn(
+      console.warn(
         '[useTokenBudgetMonitor] thresholds should be between 0 and 1'
       )
     }
@@ -863,7 +862,7 @@ export interface TokenCostEstimate {
  * ```typescript
  * const { usage } = useTokenBudgetMonitor(config)
  * const cost = estimateTokenCost(usage, 'gpt-4o')
- * logger.debug(cost?.formattedCost) // "$0.0125"
+ * console.log(cost?.formattedCost) // "$0.0125"
  * ```
  */
 export function estimateTokenCost(

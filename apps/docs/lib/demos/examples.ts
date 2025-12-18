@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Full working code examples for each demo
  * These are complete, copy-paste-ready examples that users can use as starters
@@ -19,7 +18,7 @@ export default function App() {
       showTimestamps
       enableMarkdown
       onMessageSent={(msg) => logger.debug('Sent:', msg)}
-      onError={(error) => logger.logger.error('Chat error:', error)}
+      onError={(error) => console.error('Chat error:', error)}
     />
   )
 }
@@ -469,7 +468,7 @@ export default function EnterpriseChat({ tenantId, userId }) {
 
         // Error handling
         onError={(error) => {
-          logger.logger.error('Chat error:', error)
+          console.error('Chat error:', error)
           // Send to error tracking service
         }}
 

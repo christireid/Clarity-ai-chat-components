@@ -73,6 +73,6 @@
     "vitest": "^4.0.15"
   },
   "dependencies": {
-    "@clarity-chat/token-optimization": "file:../token-optimization"
+    "@clarity-chat/token-optimization": "workspace:*"
   }
 }

@@ -1,5 +1,4 @@
 'use client'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { useState, useCallback } from 'react'
 import { Send } from 'lucide-react'
@@ -57,7 +56,7 @@ export function ChatInterface({ onProductsRecommended }: ChatInterfaceProps) {
       // Example: trigger product recommendations
       // onProductsRecommended(['prod-1', 'prod-2'])
     } catch (error) {
-      SecureLogger.error('Chat error:', error)
+      console.error('Chat error:', error)
     } finally {
       setIsLoading(false)
     }

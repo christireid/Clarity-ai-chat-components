@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2025-12-16T20:36:57.912Z",
+  "lastUpdated": "2025-12-17T13:12:29.312Z",
   "documentCount": 756,
-  "chunkCount": 6004,
+  "chunkCount": 5996,
   "chunks": [
     {
       "title": "@clarity-chat/memory > @clarity-chat/memory",
@@ -29802,46 +29802,6 @@
       "title": "Vite Integration > Performance Tips",
       "content": "## Performance Tips\n\n1. **Code Splitting:**\n\n```tsx\nimport { lazy, Suspense } from 'react'\n\nconst ChatWindow = lazy(() => import('@clarity-chat/react').then(m => ({ default: m.ChatWindow })))\n\n<Suspense fallback={<div>Loading...</div>}>\n  <ChatWindow />\n</Suspense>\n```\n\n2. **Bundle Analysis:**\n\n```bash\nnpm run build -- --analyze\n```\n\n3. **Optimize Dependencies:**\n\n```javascript\n// vite.config.ts\nexport default defineConfig({\n  build: {\n    rollupOptions: {\n      output: {\n        manualChunks: {\n          'clarity-chat': ['@clarity-chat/react'],\n        },\n      },\n    },\n  },\n})\n```",
       "sourcePath": "apps/docs/content/vitepress-migration/integrations/vite.md"
-    },
-    {
-      "title": "MARKETING_STRATEGY_AND_PLAN.md > Clarity AI Chat - Marketing & Go-To-Market Strategy",
-      "content": "# Clarity AI Chat - Marketing & Go-To-Market Strategy",
-      "sourcePath": "MARKETING_STRATEGY_AND_PLAN.md"
-    },
-    {
-      "title": "MARKETING_STRATEGY_AND_PLAN.md > Competitor Analysis",
-      "content": "### Competitor Analysis\nWe analyzed three major players in the paid component library space: **Ag Grid**, **Prime Components**, and **Highcharts**.\n\n| Feature | Ag Grid | Prime (React/Vue/NG) | Highcharts | **Clarity AI (Our Strategy)** |\n| :--- | :--- | :--- | :--- | :--- |\n| **Core Value Prop** | \"The Best JavaScript Grid in the World\" (Performance) | \"The Ultimate UI Component Library\" (Completeness) | \"Make your data come alive\" (Visualization) | **\"Build Production-Ready AI Chat Interfaces in Minutes\"** |\n| **Hero Section** | Dense, technical. Immediate interactive demo of a massive grid. | Visual carousel of beautiful templates. \"Download\" stats. | Clean, accessible charts with simple \"Edit in JSFiddle\" buttons. | **Split Screen: Live Chat vs. Code.** Show how easy it is to implement. |\n| **Monetization** | Community (Free) vs. Enterprise (Pivot, Excel Export). | Free Core + Paid Templates/LTS/Designer License. | Paid Commercial License (Developer seats). | **Hybrid:** Free Core (MIT) + Paid Pro (Themes, Advanced Logic, Figma Kit). |\n| **Design Style** | Technical, utilitarian, dense. | Material/Bootstrap polished. Modern but generic. | Friendly, open, accessible. | **Futuristic, \"AI-Native\", Dark Mode, Glassmorphism, Neon Accents.** |\n| **Social Proof** | \"Used by 80% of Fortune 500\". | \"Millions of Downloads\". | \"Standard for the web\". | **\"Built for LLMs.\" Logos of OpenAI, Anthropic, etc. (Integration support).** |",
-      "sourcePath": "MARKETING_STRATEGY_AND_PLAN.md"
-    },
-    {
-      "title": "MARKETING_STRATEGY_AND_PLAN.md > Target Audience",
-      "content": "### Target Audience\n1.  **Senior Frontend Engineers:** Care about API design, TypeScript support, and performance.\n2.  **Product Managers:** Care about \"time to market\" and \"looking like ChatGPT/Claude\".\n3.  **Indie Hackers/Founders:** Need a chat interface *yesterday*.",
-      "sourcePath": "MARKETING_STRATEGY_AND_PLAN.md"
-    },
-    {
-      "title": "MARKETING_STRATEGY_AND_PLAN.md > Design Direction: \"The Future of Interface\"",
-      "content": "### Design Direction: \"The Future of Interface\"\n*   **Palette:** Deep void blacks (`#0A0A0A`), crisp whites, and distinct AI-associated accent colors (Purple/Blue gradients).\n*   **Typography:** Inter or Geist (San Francisco style) for maximum readability and \"dev tool\" aesthetic.\n*   **Vibe:** Professional, fast, intelligent. Not \"playful\" but \"powerful\".",
-      "sourcePath": "MARKETING_STRATEGY_AND_PLAN.md"
-    },
-    {
-      "title": "MARKETING_STRATEGY_AND_PLAN.md > Page Structure (Landing Page)",
-      "content": "### Page Structure (Landing Page)\n1.  **Navbar:** Logo, Docs, Examples, **Pricing** (highlighted), GitHub Star count.\n2.  **Hero Section:**\n    *   **Headline:** \"The AI Chat UI for React.\"\n    *   **Subhead:** \"Streaming, accessible, and themeable chat components. Compatible with Vercel AI SDK, LangChain, and standard APIs.\"\n    *   **CTA:** \"Get Started\" (Primary) and \"View Storybook\" (Secondary).\n    *   **Visual:** A terminal window showing `npm install @clarity-chat/react` animating into a fully working chat window.\n3.  **Social Proof:** \"Powering AI experiences for...\" (or \"Compatible with\" logos).\n4.  **Value Props (The \"Why\"):**\n    *   *Streaming Native:* \"Built for the token economy.\"\n    *   *Fully Customizable:* \"Your brand, not ours.\"\n    *   *Accessibility:* \"WCAG 2.1 AA Compliant out of the box.\"\n5.  **Interactive Demo:** A \"Playground\" section where users can toggle themes (Dark/Light/Cyber) instantly.\n6.  **Pricing:**\n    *   **Open Source (Free):** Core components, standard styling.\n    *   **Pro (Paid):** Advanced templates (e.g., \"Code Interpreter\" lookalike), Figma Kit, Priority Support.\n7.  **Footer:** SEO-rich links.",
-      "sourcePath": "MARKETING_STRATEGY_AND_PLAN.md"
-    },
-    {
-      "title": "MARKETING_STRATEGY_AND_PLAN.md > 3. Implementation Plan (Round 1)",
-      "content": "## 3. Implementation Plan (Round 1)\n\n1.  **Tech Stack:** Next.js 14+ (App Router), Tailwind CSS, Framer Motion.\n2.  **Key Components to Build:**\n    *   `Hero.tsx`: The main attention grabber.\n    *   `CodeDemo.tsx`: A fake IDE window that types code.\n    *   `LiveChatPreview.tsx`: The visual output.\n    *   `FeatureGrid.tsx`: Bento-box style layout of features.\n    *   `PricingTable.tsx`: Clear comparison.",
-      "sourcePath": "MARKETING_STRATEGY_AND_PLAN.md"
-    },
-    {
-      "title": "MARKETING_STRATEGY_AND_PLAN.md > 4. SEO & Copy Strategy",
-      "content": "## 4. SEO & Copy Strategy\n*   **Keywords:** \"React Chat Component\", \"AI UI Library\", \"Chatbot UI React\", \"Vercel AI SDK UI\".\n*   **Tone:** Expert, confident, developer-to-developer. Avoid marketing fluff; focus on \"DX\" (Developer Experience).\n*   **Schema:** Implement `SoftwareApplication` JSON-LD.",
-      "sourcePath": "MARKETING_STRATEGY_AND_PLAN.md"
-    },
-    {
-      "title": "MARKETING_STRATEGY_AND_PLAN.md > 5. Licensing Model",
-      "content": "## 5. Licensing Model\n*   **Community:** MIT License (Growth engine).\n*   **Commercial:** Per-project or per-seat license for \"Pro\" features (Revenue engine).\n\nLet's build the \"Stripe for AI Chat\" of marketing sites.",
-      "sourcePath": "MARKETING_STRATEGY_AND_PLAN.md"
     },
     {
       "title": "README.md",

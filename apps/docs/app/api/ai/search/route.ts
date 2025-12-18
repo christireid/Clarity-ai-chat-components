@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { NextResponse } from 'next/server'
 import { searchData } from '@/lib/search-data'
 import { fuzzyScore } from '@/lib/fuzzy-search'

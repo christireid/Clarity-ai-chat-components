@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * React Example
  *
@@ -56,7 +55,7 @@ export function ChatApp() {
 
       setMessage('')
     } catch (err) {
-      logger.logger.error('Error:', err)
+      console.error('Error:', err)
     }
   }
 

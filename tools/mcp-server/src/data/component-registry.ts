@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Clarity Chat Component Registry
  *
@@ -271,7 +268,7 @@ function App() {
         code: `import { ChatInput } from '@clarity-chat/react'
 
 <ChatInput
-  onSend={(message) => SecureLogger.debug(message)}
+  onSend={(message) => console.log(message)}
   placeholder="Ask me anything..."
 />`,
       },
@@ -3140,7 +3137,7 @@ function TokenDisplay() {
 function StreamHandler() {
   const { isConnected, connect, disconnect } = useStreamingSSE({
     url: '/api/stream',
-    onMessage: (data) => SecureLogger.debug(data)
+    onMessage: (data) => console.log(data)
   })
 
   return <button onClick={connect}>Connect</button>
@@ -4220,7 +4217,7 @@ function CodeRunner() {
 
   const runCode = async (code) => {
     const result = await execute(code)
-    SecureLogger.debug(result.output)
+    console.log(result.output)
   }
 }`,
       },

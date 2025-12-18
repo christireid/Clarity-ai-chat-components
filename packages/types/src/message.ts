@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Message-related type definitions
  *
@@ -61,7 +60,7 @@ export type FeedbackType = 'up' | 'down'
  *
  * // Accessing custom properties requires type narrowing
  * if (typeof metadata.customField === 'string') {
- *   logger.debug(metadata.customField)
+ *   console.log(metadata.customField)
  * }
  * ```
  */

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * IndexedDB Storage Example
  * Demonstrates using browser-native IndexedDB storage
@@ -12,7 +11,7 @@ import { clarityMemory } from '../src/core/memory'
 async function main() {
   // Check if we're in a browser environment
   if (typeof window === 'undefined' || !window.indexedDB) {
-    logger.logger.error('❌ IndexedDB is only available in browser environments')
+    logger.error('❌ IndexedDB is only available in browser environments')
     logger.debug('   This example should be run in a browser')
     return
   }

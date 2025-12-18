@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import { NextRequest } from 'next/server'
 import { getAdapter } from '@clarity-chat/react'
 import type { ModelConfig, ChatMessage } from '@clarity-chat/react'
@@ -95,7 +94,7 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
           controller.close()
         } catch (error: any) {
-          SecureLogger.error('Streaming error:', error)
+          console.error('Streaming error:', error)
           const errorData = JSON.stringify({ 
             type: 'error',
             error: error.message || 'Stream error' 
@@ -115,7 +114,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error: any) {
-    SecureLogger.error('Chat API error:', error)
+    console.error('Chat API error:', error)
     return new Response(
       JSON.stringify({ error: error.message || 'Internal server error' }), 
       { 

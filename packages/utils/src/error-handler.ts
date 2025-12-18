@@ -1,30 +1,27 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Unified Error Handler
- * 
+ *
  * Centralized error handling with consistent formatting, retry logic, and reporting
- * 
+ *
  * @module @clarity-chat/utils/error-handler
- * 
+ *
  * @example
  * ```ts
  * import { UnifiedErrorHandler } from '@clarity-chat/utils/error-handler'
- * 
+ *
  * // Handle errors consistently
  * try {
  *   await riskyOperation()
  * } catch (error) {
  *   UnifiedErrorHandler.handle(error, { userId, operation: 'api-call' })
  * }
- * 
+ *
  * // Check if error is retryable
  * if (UnifiedErrorHandler.isRetryable(error)) {
  *   // Retry the operation
  * }
  * ```
  */
-
-
 
 import { GenericClarityError } from './errors/base.js'
 import { getLogger } from './logger/index.js'
@@ -102,27 +99,32 @@ export class UnifiedErrorHandler {
    */
   static handle(error: unknown, context?: ErrorContext): ProcessedError {
     const processedError = this.processError(error, context)
-    
+
     // Log the error based on severity
     this.logError(processedError)
-    
+
     // Store in history
     this.addToHistory(processedError)
-    
+
     // Handle based on severity
     this.handleBySeverity(processedError)
-    
+
     return processedError
   }
 
   /**
    * Process raw error into standardized format
    */
-  private static processError(error: unknown, context?: ErrorContext): ProcessedError {
+  private static processError(
+    error: unknown,
+    context?: ErrorContext
+  ): ProcessedError {
     const timestamp = new Date()
-    const errorObj = isError(error) ? error : new GenericClarityError(String(error))
+    const errorObj = isError(error)
+      ? error
+      : new GenericClarityError(String(error))
     const errorType = errorObj.constructor.name
-    
+
     const processedError: ProcessedError = {
       id: this.generateErrorId(),
       timestamp,
@@ -137,7 +139,7 @@ export class UnifiedErrorHandler {
       severity: this.determineSeverity(errorObj),
       formattedMessage: this.formatForDisplay(errorObj),
     }
-    
+
     return processedError
   }
 
@@ -147,12 +149,12 @@ export class UnifiedErrorHandler {
   static isRetryable(error: Error): boolean {
     const errorType = error.constructor.name
     const errorMessage = error.message.toLowerCase()
-    
+
     // Check if error type is in retryable list
     if (this.retryConfig.retryableErrors.includes(errorType)) {
       return true
     }
-    
+
     // Check error message for retryable patterns
     const retryablePatterns = [
       'network',
@@ -164,34 +166,53 @@ export class UnifiedErrorHandler {
       'enotfound',
       'etimedout',
     ]
-    
-    return retryablePatterns.some(pattern => errorMessage.includes(pattern))
+
+    return retryablePatterns.some((pattern) => errorMessage.includes(pattern))
   }
 
   /**
    * Determine error severity
    */
-  private static determineSeverity(error: Error): 'low' | 'medium' | 'high' | 'critical' {
+  private static determineSeverity(
+    error: Error
+  ): 'low' | 'medium' | 'high' | 'critical' {
     const errorType = error.constructor.name
     const errorMessage = error.message.toLowerCase()
-    
+
     // Critical errors
-    if (errorType.includes('OutOfMemoryError') || errorMessage.includes('out of memory')) {
+    if (
+      errorType.includes('OutOfMemoryError') ||
+      errorMessage.includes('out of memory')
+    ) {
       return 'critical'
     }
-    
+
     // High severity errors
-    const highSeverityPatterns = ['unauthorized', 'forbidden', 'authentication', 'permission']
-    if (highSeverityPatterns.some(pattern => errorMessage.includes(pattern))) {
+    const highSeverityPatterns = [
+      'unauthorized',
+      'forbidden',
+      'authentication',
+      'permission',
+    ]
+    if (
+      highSeverityPatterns.some((pattern) => errorMessage.includes(pattern))
+    ) {
       return 'high'
     }
-    
+
     // Medium severity errors
-    const mediumSeverityPatterns = ['validation', 'parsing', 'format', 'invalid']
-    if (mediumSeverityPatterns.some(pattern => errorMessage.includes(pattern))) {
+    const mediumSeverityPatterns = [
+      'validation',
+      'parsing',
+      'format',
+      'invalid',
+    ]
+    if (
+      mediumSeverityPatterns.some((pattern) => errorMessage.includes(pattern))
+    ) {
       return 'medium'
     }
-    
+
     // Low severity errors (default)
     return 'low'
   }
@@ -209,7 +230,7 @@ export class UnifiedErrorHandler {
   private static logError(processedError: ProcessedError): void {
     const { severity, type, message, context } = processedError
     const logMessage = `[${type}] ${message}`
-    
+
     switch (severity) {
       case 'critical':
         this.logger.error(logMessage, { context, severity, type })
@@ -231,24 +252,27 @@ export class UnifiedErrorHandler {
    */
   private static handleBySeverity(processedError: ProcessedError): void {
     const { severity, isRetryable } = processedError
-    
+
     switch (severity) {
       case 'critical':
         // Critical errors might require immediate attention
-        this.logger.error('Critical error detected - may require immediate attention', processedError)
+        this.logger.error(
+          'Critical error detected - may require immediate attention',
+          processedError
+        )
         break
-        
+
       case 'high':
         // High severity errors should be logged and potentially alerted
         if (isRetryable) {
           this.logger.info('High severity error is retryable', processedError)
         }
         break
-        
+
       case 'medium':
         // Medium severity errors are logged for monitoring
         break
-        
+
       case 'low':
         // Low severity errors are informational
         break
@@ -260,7 +284,7 @@ export class UnifiedErrorHandler {
    */
   private static addToHistory(processedError: ProcessedError): void {
     this.errorHistory.push(processedError)
-    
+
     // Limit history size
     if (this.errorHistory.length > this.maxHistorySize) {
       this.errorHistory = this.errorHistory.slice(-this.maxHistorySize)
@@ -340,7 +364,7 @@ export class UnifiedErrorHandler {
         return await operation()
       } catch (error) {
         lastError = isError(error) ? error : new Error(String(error))
-        
+
         if (!this.isRetryable(lastError) || attempt === config.maxRetries) {
           throw lastError
         }
@@ -355,7 +379,7 @@ export class UnifiedErrorHandler {
           { error: lastError.message }
         )
 
-        await new Promise(resolve => setTimeout(resolve, delay))
+        await new Promise((resolve) => setTimeout(resolve, delay))
       }
     }
 
@@ -418,7 +442,8 @@ export class UnifiedErrorHandler {
 
     const averageSeverity = totalSeverity / this.errorHistory.length
     const oldestError = this.errorHistory[0].timestamp
-    const newestError = this.errorHistory[this.errorHistory.length - 1].timestamp
+    const newestError =
+      this.errorHistory[this.errorHistory.length - 1].timestamp
 
     return {
       totalErrors: this.errorHistory.length,
@@ -431,7 +456,10 @@ export class UnifiedErrorHandler {
 }
 
 // Convenience functions for backward compatibility
-export function handleError(error: unknown, context?: ErrorContext): ProcessedError {
+export function handleError(
+  error: unknown,
+  context?: ErrorContext
+): ProcessedError {
   return UnifiedErrorHandler.handle(error, context)
 }
 

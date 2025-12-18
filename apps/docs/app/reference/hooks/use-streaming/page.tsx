@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 import { FeedbackWidget } from '@/components/FeedbackWidget'
 

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
@@ -50,7 +49,7 @@ export function EnhancedCodeBlock({
 
       timeoutRef.current = setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      logger.logger.error('Failed to copy:', error)
+      console.error('Failed to copy:', error)
       showError('Failed to copy code')
     }
   }, [code, success, showError])

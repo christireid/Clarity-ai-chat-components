@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React, { useState } from 'react'
 import {
@@ -388,7 +387,7 @@ const customTheme = createTheme({
       await navigator.clipboard.writeText(getActiveContent())
       onCopySuccess?.(`${activeTab.toUpperCase()} copied to clipboard!`)
     } catch {
-      SecureLogger.warn('Clipboard API not available')
+      console.warn('Clipboard API not available')
     }
   }
 

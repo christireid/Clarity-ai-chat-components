@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Ripple Effect Component
  *
@@ -12,7 +11,7 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { EASING_FRAMER } from '../animations/constants'
+import { EASING_FRAMER } from '../../animations/constants'
 
 interface RippleType {
   id: number
@@ -215,7 +214,7 @@ export const WithRipple: React.FC<WithRippleProps> = ({
  *
  * // With HOC
  * const MyButton = () => (
- *   <WithRipple onClick={() => logger.debug('clicked')}>
+ *   <WithRipple onClick={() => console.log('clicked')}>
  *     <button>Click me</button>
  *   </WithRipple>
  * )

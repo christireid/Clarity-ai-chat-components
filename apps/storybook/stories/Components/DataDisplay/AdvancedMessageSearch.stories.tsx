@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AdvancedMessageSearch } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -97,7 +96,7 @@ export const Default: Story = {
   args: {
     messages: sampleMessages,
     onResultsChange: (filtered) => {
-      SecureLogger.debug('Filtered messages:', filtered.length)
+      console.log('Filtered messages:', filtered.length)
     },
     placeholder: 'Search messages...',
   },
@@ -107,7 +106,7 @@ export const WithAdvancedFilters: Story = {
   args: {
     messages: sampleMessages,
     onResultsChange: (filtered) => {
-      SecureLogger.debug('Filtered messages:', filtered.length)
+      console.log('Filtered messages:', filtered.length)
     },
     enableAdvancedFilters: true,
     showFilterCount: true,
@@ -118,7 +117,7 @@ export const WithFuzzySearch: Story = {
   args: {
     messages: sampleMessages,
     onResultsChange: (filtered) => {
-      SecureLogger.debug('Filtered messages:', filtered.length)
+      console.log('Filtered messages:', filtered.length)
     },
     enableFuzzySearch: true,
     enableAdvancedFilters: true,
@@ -141,7 +140,7 @@ export const LargeDataset: Story = {
       },
     })),
     onResultsChange: (filtered) => {
-      SecureLogger.debug('Filtered messages:', filtered.length)
+      console.log('Filtered messages:', filtered.length)
     },
     enableAdvancedFilters: true,
   },

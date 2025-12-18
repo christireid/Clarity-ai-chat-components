@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -118,7 +117,7 @@ function InstallCommand({ command }: { command: string }) {
       }
 
       toast.success('Copied to clipboard!', {
-        description: 'Installation command ready to paste',
+        description: 'Install command ready to paste',
         duration: durations.slower,
       })
 
@@ -127,7 +126,7 @@ function InstallCommand({ command }: { command: string }) {
         setShowConfetti(false)
       }, 2000)
     } catch (error) {
-      toast.logger.error('Failed to copy', {
+      toast.error('Failed to copy', {
         description: 'Please try selecting and copying manually',
         action: { label: 'Try again', onClick: copyToClipboard },
       })

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Beautiful prompts using @clack/prompts
  * Provides graceful cancellation, cleanup handling, and consistent UX
@@ -133,7 +132,7 @@ export function showInfo(message: string, title?: string): void {
  */
 export const log = {
   success: (message: string) => p.log.success(pc.green(message)),
-  error: (message: string) => p.log.logger.error(pc.red(message)),
+  error: (message: string) => p.log.error(pc.red(message)),
   warning: (message: string) => p.log.warn(pc.yellow(message)),
   info: (message: string) => p.log.info(message),
   step: (message: string) => p.log.step(message),

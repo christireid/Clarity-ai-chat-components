@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -451,7 +450,7 @@ export function usePromptSuggestionsEnhanced(
         }))
         return ranked.sort((a, b) => (b.confidence || 0) - (a.confidence || 0))
       } catch (error) {
-        logger.warn('ML ranking failed, falling back to rule-based', error)
+        console.warn('ML ranking failed, falling back to rule-based', error)
         setStats((prev) => ({ ...prev, ruleBasedCount: prev.ruleBasedCount + 1 }))
         return baseSuggestions
       }

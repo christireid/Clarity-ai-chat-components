@@ -11,7 +11,8 @@ import {
   getStatusColor,
   formatTokenUsage,
   estimateTokenCost,
-} from '../hooks/use-token-budget-monitor'
+} from '../../hooks/token/use-token-budget-monitor'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface TokenBudgetBarProps {
   /** Current token usage from useTokenBudgetMonitor */
@@ -230,7 +231,7 @@ export function TokenBudgetBar({
           )}
           initial={{ width: 0 }}
           animate={{ width: `${barWidthPercent}%` }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
+          transition={{ duration: durations.moderate, ease: 'easeOut' }}
           aria-hidden="true"
         />
       ) : (
@@ -250,7 +251,11 @@ export function TokenBudgetBar({
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
           animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          transition={{
+            duration: durations.slower,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
           aria-hidden="true"
         />
       )}
@@ -408,7 +413,7 @@ export function TokenBudgetBar({
             initial={{ opacity: 0, y: 4, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: durations.fast }}
             className="absolute left-0 right-0 z-50 mt-2 rounded-lg border bg-popover p-3 shadow-lg"
           >
             <div className="space-y-2 text-sm">

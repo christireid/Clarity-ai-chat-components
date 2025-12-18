@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Chat Analytics Service
  *
@@ -143,7 +142,7 @@ export function flushAnalytics(): void {
   // Send batch to analytics service
   sendBatchToAnalyticsService(config.serviceEndpoint, eventsToSend).catch(
     (error) => {
-      logger.logger.error('[Analytics] Failed to send batch:', error)
+      console.error('[Analytics] Failed to send batch:', error)
     }
   )
 }
@@ -205,7 +204,7 @@ export function trackApiError(error: {
   }
 
   if (config.logToConsole) {
-    logger.logger.error('[Analytics] API error:', enrichedError)
+    console.error('[Analytics] API error:', enrichedError)
   }
 
   // Errors are queued with type marker for batching

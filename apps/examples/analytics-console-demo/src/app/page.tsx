@@ -1,5 +1,4 @@
 'use client'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 import React, { useState, useEffect } from 'react'
 import {
@@ -108,7 +107,7 @@ export default function AnalyticsConsolePage() {
       const recentJson = await recentRes.json()
       setRecentEntries(recentJson.entries || [])
     } catch (error) {
-      SecureLogger.error('Failed to load analytics:', error)
+      console.error('Failed to load analytics:', error)
     } finally {
       setIsLoading(false)
     }

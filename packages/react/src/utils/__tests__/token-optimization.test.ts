@@ -22,14 +22,17 @@ import {
   calculateSimilarity,
   findSimilarCached,
 } from '../token-optimization'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 
 describe('Token Optimization Utilities', () => {
   describe('shortenPrompt', () => {
     it('should remove filler words', () => {
-      const result = shortenPrompt('I really, really want to know, um, you know, what the weather is', {
-        removeFillers: true,
-      })
+      const result = shortenPrompt(
+        'I really, really want to know, um, you know, what the weather is',
+        {
+          removeFillers: true,
+        }
+      )
       expect(result).not.toContain('really, really')
       expect(result).not.toContain('um')
       expect(result).not.toContain('you know')
@@ -39,7 +42,7 @@ describe('Token Optimization Utilities', () => {
       const result = shortenPrompt('Hello. Hello. How are you?', {
         removeDuplicates: true,
       })
-      const sentences = result.split(/[.!?]+/).filter(s => s.trim())
+      const sentences = result.split(/[.!?]+/).filter((s) => s.trim())
       expect(sentences.length).toBeLessThanOrEqual(2)
     })
 
@@ -57,7 +60,7 @@ describe('Token Optimization Utilities', () => {
       const original = 'This is a very long prompt with many words'
       const shortened = 'This is a prompt with words'
       const savings = calculateTokenSavings(original, shortened)
-      
+
       expect(savings.tokensSaved).toBeGreaterThan(0)
       expect(savings.percentage).toBeGreaterThan(0)
       expect(savings.originalTokens).toBeGreaterThan(savings.shortenedTokens)
@@ -95,7 +98,9 @@ describe('Token Optimization Utilities', () => {
         })),
       ]
 
-      const limited = limitHistorySlidingWindow(messages, { keepSystemMessage: true })
+      const limited = limitHistorySlidingWindow(messages, {
+        keepSystemMessage: true,
+      })
       expect(limited[0].role).toBe('system')
     })
   })
@@ -110,7 +115,13 @@ describe('Token Optimization Utilities', () => {
 
       const limited = limitHistoryFIFO(messages, { maxTokens: 100 })
       const totalTokens = limited.reduce(
-        (sum, msg) => sum + estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)),
+        (sum, msg) =>
+          sum +
+          estimateTokens(
+            typeof msg.content === 'string'
+              ? msg.content
+              : JSON.stringify(msg.content)
+          ),
         0
       )
       expect(totalTokens).toBeLessThanOrEqual(100)
@@ -142,7 +153,7 @@ describe('Token Optimization Utilities', () => {
     it('should expire values after TTL', async () => {
       const cache = createCache()
       cache.set('key1', 'value1', 100)
-      await new Promise(resolve => setTimeout(resolve, 150))
+      await new Promise((resolve) => setTimeout(resolve, 150))
       expect(cache.get('key1')).toBeNull()
     })
 
@@ -305,11 +316,21 @@ describe('Token Optimization Utilities', () => {
   describe('findSimilarCached', () => {
     it('should find similar cached responses', () => {
       const cache = new Map([
-        ['key1', { query: 'What is the weather?', response: 'Sunny', timestamp: Date.now() }],
-        ['key2', { query: 'How are you?', response: 'Good', timestamp: Date.now() }],
+        [
+          'key1',
+          {
+            query: 'What is the weather?',
+            response: 'Sunny',
+            timestamp: Date.now(),
+          },
+        ],
+        [
+          'key2',
+          { query: 'How are you?', response: 'Good', timestamp: Date.now() },
+        ],
       ])
 
-      const cached = findSimilarCached('What\'s the weather like?', cache, 0.7)
+      const cached = findSimilarCached("What's the weather like?", cache, 0.7)
       expect(cached).toBe('Sunny')
     })
 

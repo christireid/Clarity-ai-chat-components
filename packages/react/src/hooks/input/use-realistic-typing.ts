@@ -18,28 +18,28 @@ export interface TypingStage {
 export interface UseRealisticTypingOptions {
   /** Minimum delay before showing response (ms, default: 800) */
   minDelay?: number
-  
+
   /** Maximum delay before showing response (ms, default: 2000) */
   maxDelay?: number
-  
+
   /** Words per minute reading speed (default: 400) */
   wordsPerMinute?: number
-  
+
   /** Characters per minute typing speed (default: 200) */
   charactersPerMinute?: number
-  
+
   /** Custom typing stages */
   stages?: TypingStage[]
-  
+
   /** Show typing indicator after this delay (ms, default: 1000) */
   showIndicatorAfter?: number
-  
+
   /** Callback when typing starts */
   onTypingStart?: () => void
-  
+
   /** Callback when typing stage changes */
   onStageChange?: (stage: TypingStage) => void
-  
+
   /** Callback when typing ends */
   onTypingEnd?: () => void
 }
@@ -50,25 +50,25 @@ export interface UseRealisticTypingOptions {
 export interface UseRealisticTypingReturn {
   /** Whether currently simulating typing */
   isTyping: boolean
-  
+
   /** Current typing stage */
   currentStage: TypingStage | null
-  
+
   /** Progress through current stage (0-1) */
   stageProgress: number
-  
+
   /** Total elapsed time */
   elapsedTime: number
-  
+
   /** Start typing simulation */
   startTyping: (inputText?: string, responseLength?: number) => void
-  
+
   /** Stop typing simulation */
   stopTyping: () => void
-  
+
   /** Calculate realistic delay for input */
   calculateDelay: (inputText: string, responseLength?: number) => number
-  
+
   /** Apply delay before showing response */
   delayResponse: <T>(response: T, inputText?: string) => Promise<T>
 }
@@ -77,14 +77,14 @@ export interface UseRealisticTypingReturn {
  * Default typing stages
  */
 const DEFAULT_STAGES: TypingStage[] = [
-  { duration: 1000, label: 'Reading your message...' },
-  { duration: 2000, label: 'Thinking...' },
-  { duration: 1500, label: 'Crafting response...' },
+  { duration: durations.slower, label: 'Reading your message...' },
+  { duration: durations.slower, label: 'Thinking...' },
+  { duration: durations.slower, label: 'Crafting response...' },
 ]
 
 /**
  * Production-ready Realistic Typing hook for natural AI responses.
- * 
+ *
  * **Features:**
  * - Simulates human reading/thinking time
  * - Adjusts delay based on input length
@@ -92,13 +92,13 @@ const DEFAULT_STAGES: TypingStage[] = [
  * - Progress tracking through stages
  * - Prevents instant responses (uncanny valley)
  * - Prevents overly long waits
- * 
+ *
  * **Use Cases:**
  * - Make AI responses feel more natural
  * - Show realistic "thinking" indicators
  * - Adjust timing based on message complexity
  * - Improve perceived response quality
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage
@@ -106,16 +106,16 @@ const DEFAULT_STAGES: TypingStage[] = [
  *   minDelay: 800,
  *   maxDelay: 2000,
  * })
- * 
+ *
  * const handleSendMessage = async (message: string) => {
  *   startTyping(message)
- *   
+ *
  *   const response = await sendToAI(message)
- *   
+ *
  *   stopTyping()
  *   displayResponse(response)
  * }
- * 
+ *
  * // With custom stages
  * const { currentStage, stageProgress } = useRealisticTyping({
  *   stages: [
@@ -124,24 +124,24 @@ const DEFAULT_STAGES: TypingStage[] = [
  *     { duration: 2000, label: 'Generating response...' },
  *   ],
  * })
- * 
+ *
  * // Delayed response
  * const { delayResponse } = useRealisticTyping({
  *   wordsPerMinute: 400,
  * })
- * 
+ *
  * const handleSend = async (message: string) => {
  *   const response = await sendToAI(message)
- *   
+ *
  *   // Add realistic delay based on input length
  *   const delayedResponse = await delayResponse(response, message)
- *   
+ *
  *   displayResponse(delayedResponse)
  * }
- * 
+ *
  * // Calculate delay for manual control
  * const { calculateDelay } = useRealisticTyping()
- * 
+ *
  * const delay = calculateDelay('Long user message here...', 500) // Expected response length
  * await new Promise(resolve => setTimeout(resolve, delay))
  * ```
@@ -162,7 +162,9 @@ export function useRealisticTyping(
   } = options
 
   const [isTyping, setIsTyping] = React.useState(false)
-  const [currentStage, setCurrentStage] = React.useState<TypingStage | null>(null)
+  const [currentStage, setCurrentStage] = React.useState<TypingStage | null>(
+    null
+  )
   const [stageProgress, setStageProgress] = React.useState(0)
   const [elapsedTime, setElapsedTime] = React.useState(0)
 
@@ -237,7 +239,11 @@ export function useRealisticTyping(
         setElapsedTime(elapsed)
 
         if (currentStage) {
-          const stageElapsed = elapsed - (stages.slice(0, currentStageIndex).reduce((sum, s) => sum + s.duration, 0))
+          const stageElapsed =
+            elapsed -
+            stages
+              .slice(0, currentStageIndex)
+              .reduce((sum, s) => sum + s.duration, 0)
           const progress = Math.min(stageElapsed / currentStage.duration, 1)
           setStageProgress(progress)
         }
@@ -291,7 +297,7 @@ export function useRealisticTyping(
    * Apply delay before returning response
    */
   const delayResponse = React.useCallback(
-    async <T,>(response: T, inputText?: string): Promise<T> => {
+    async <T>(response: T, inputText?: string): Promise<T> => {
       const delay = inputText ? calculateDelay(inputText) : minDelay
 
       if (delay >= showIndicatorAfter) {
@@ -306,7 +312,14 @@ export function useRealisticTyping(
 
       return response
     },
-    [calculateDelay, minDelay, showIndicatorAfter, startTyping, stopTyping, isTyping]
+    [
+      calculateDelay,
+      minDelay,
+      showIndicatorAfter,
+      startTyping,
+      stopTyping,
+      isTyping,
+    ]
   )
 
   /**

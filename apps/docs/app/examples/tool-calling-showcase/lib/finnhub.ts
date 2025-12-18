@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Finnhub API Service
  *
@@ -256,7 +255,7 @@ export async function searchTickerReal(query: string, limit = 5): Promise<Ticker
       timestamp: new Date().toISOString(),
     }
   } catch (error) {
-    logger.logger.error('Finnhub search error:', error)
+    console.error('Finnhub search error:', error)
     throw error
   }
 }
@@ -302,7 +301,7 @@ export async function getFinancialsReal(symbol: string): Promise<FinancialData> 
       analystCount: 0,
     }
   } catch (error) {
-    logger.logger.error('Finnhub financials error:', error)
+    console.error('Finnhub financials error:', error)
     throw error
   }
 }
@@ -344,7 +343,7 @@ export async function getChartReal(
       dataPoints,
     }
   } catch (error) {
-    logger.logger.error('Finnhub chart error:', error)
+    console.error('Finnhub chart error:', error)
     throw error
   }
 }

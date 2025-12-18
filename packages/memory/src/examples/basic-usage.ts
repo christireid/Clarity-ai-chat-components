@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Basic Usage Example
  * 
@@ -28,23 +27,23 @@ async function basicExample() {
 
   // Recall memories
   const results = await memory.recall('user preferences')
-  logger.debug('Found memories:', results.length)
+  console.log('Found memories:', results.length)
   results.forEach(result => {
-    logger.debug(`- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`)
+    console.log(`- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`)
   })
 
   // Get optimized context
   const context = await memory.context({ maxTokens: 1000 })
-  logger.debug('\nContext bundle:')
-  logger.debug(`Total tokens: ${context.tokenBreakdown.total}`)
-  logger.debug(`Semantic memories: ${context.semanticMemories?.length ?? 0}`)
-  logger.debug(`Episodic memories: ${context.episodicMemories?.length ?? 0}`)
-  logger.debug('\nFormatted context:')
-  logger.debug(context.formatted)
+  console.log('\nContext bundle:')
+  console.log(`Total tokens: ${context.tokenBreakdown.total}`)
+  console.log(`Semantic memories: ${context.semanticMemories?.length ?? 0}`)
+  console.log(`Episodic memories: ${context.episodicMemories?.length ?? 0}`)
+  console.log('\nFormatted context:')
+  console.log(context.formatted)
 
   // Get stats
   const stats = await memory.getStats()
-  logger.debug('\nMemory stats:', stats)
+  console.log('\nMemory stats:', stats)
 
   await memory.close()
 }
@@ -85,7 +84,7 @@ async function withEmbeddingsExample() {
     minConfidence: 0.5,
   })
 
-  logger.debug('Semantic search results:', results.map(r => ({
+  console.log('Semantic search results:', results.map(r => ({
     content: r.memory.content,
     score: r.score,
     relevance: r.relevance,

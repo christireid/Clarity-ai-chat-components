@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * API Key Manager Webview
  * A secure, beautifully designed UI for managing AI provider API keys
@@ -96,7 +93,7 @@ export class ApiKeyManager {
             this.update(context)
             break
 
-          case 'validateKey':
+          case 'validateKey': {
             const validationResult = await this.validateApiKey(
               message.provider,
               message.key
@@ -107,20 +104,25 @@ export class ApiKeyManager {
               ...validationResult,
             })
             break
+          }
 
-          case 'openDashboard':
+          case 'openDashboard': {
             const provider = PROVIDERS.find((p) => p.id === message.provider)
             if (provider) {
               vscode.env.openExternal(vscode.Uri.parse(provider.dashboardUrl))
             }
             break
+          }
 
-          case 'openDocs':
-            const providerDocs = PROVIDERS.find((p) => p.id === message.provider)
+          case 'openDocs': {
+            const providerDocs = PROVIDERS.find(
+              (p) => p.id === message.provider
+            )
             if (providerDocs) {
               vscode.env.openExternal(vscode.Uri.parse(providerDocs.docsUrl))
             }
             break
+          }
         }
       },
       null,
@@ -235,7 +237,8 @@ export class ApiKeyManager {
         if (!/^sk-[a-zA-Z0-9_-]{20,}$/.test(key)) {
           return {
             valid: false,
-            error: 'Invalid format. OpenAI keys start with "sk-" followed by alphanumeric characters',
+            error:
+              'Invalid format. OpenAI keys start with "sk-" followed by alphanumeric characters',
             errorType: 'format',
           }
         }
@@ -312,12 +315,24 @@ export class ApiKeyManager {
         }
       }
 
-      return { valid: false, error: `API error (${status})`, errorType: 'invalid' }
+      return {
+        valid: false,
+        error: `API error (${status})`,
+        errorType: 'invalid',
+      }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        return { valid: false, error: 'Request timed out - check your connection', errorType: 'network' }
+        return {
+          valid: false,
+          error: 'Request timed out - check your connection',
+          errorType: 'network',
+        }
       }
-      return { valid: false, error: 'Network error - check your connection', errorType: 'network' }
+      return {
+        valid: false,
+        error: 'Network error - check your connection',
+        errorType: 'network',
+      }
     }
   }
 
@@ -376,9 +391,17 @@ export class ApiKeyManager {
       return { valid: true }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        return { valid: false, error: 'Request timed out - check your connection', errorType: 'network' }
+        return {
+          valid: false,
+          error: 'Request timed out - check your connection',
+          errorType: 'network',
+        }
       }
-      return { valid: false, error: 'Network error - check your connection', errorType: 'network' }
+      return {
+        valid: false,
+        error: 'Network error - check your connection',
+        errorType: 'network',
+      }
     }
   }
 
@@ -422,12 +445,24 @@ export class ApiKeyManager {
         }
       }
 
-      return { valid: false, error: `API error (${status})`, errorType: 'invalid' }
+      return {
+        valid: false,
+        error: `API error (${status})`,
+        errorType: 'invalid',
+      }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        return { valid: false, error: 'Request timed out - check your connection', errorType: 'network' }
+        return {
+          valid: false,
+          error: 'Request timed out - check your connection',
+          errorType: 'network',
+        }
       }
-      return { valid: false, error: 'Network error - check your connection', errorType: 'network' }
+      return {
+        valid: false,
+        error: 'Network error - check your connection',
+        errorType: 'network',
+      }
     }
   }
 

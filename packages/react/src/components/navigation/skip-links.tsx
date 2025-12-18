@@ -16,6 +16,10 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 export interface SkipLink {
   /** Target element ID (without #) */
@@ -143,7 +147,10 @@ export function SkipLinks({
               opacity: focusedIndex === index ? 1 : 0,
             }}
             exit={{ y: -100, opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{
+              duration: durations.normal,
+              ease: EASING_FRAMER.sharp,
+            }}
             tabIndex={0}
           >
             {link.label}

@@ -1,6 +1,5 @@
 /**
  * Complex Chat Example - Enterprise-Grade Usage
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * This example demonstrates advanced usage of Clarity Chat with:
  * - Custom layout with sidebar
@@ -117,13 +116,13 @@ export default function App() {
               sessionTitle="Enterprise Chat"
               sessionSubtitle="AI Assistant with Memory & Analytics"
               onMessageSent={(msg) => {
-                SecureLogger.debug('[Analytics] Message sent:', msg.id)
+                console.log('[Analytics] Message sent:', msg.id)
               }}
               onMessageReceived={(msg) => {
-                SecureLogger.debug('[Analytics] Message received:', msg.id)
+                console.log('[Analytics] Message received:', msg.id)
               }}
               onError={(error) => {
-                SecureLogger.error('[Error] Chat error:', error)
+                console.error('[Error] Chat error:', error)
                 // Analytics would track this automatically
               }}
             />

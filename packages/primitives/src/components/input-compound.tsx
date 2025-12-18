@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 import { durations } from '../lib/animation-presets'
 import { getErrorAriaAttributes } from '../lib/aria'
 import { useComposedRefs } from '../hooks/use-composed-refs'

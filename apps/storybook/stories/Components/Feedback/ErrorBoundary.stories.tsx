@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
 import {
@@ -207,7 +206,7 @@ export const EnhancedWithTelemetry: Story = {
           enableFeedback
           severity="error"
           errorContext={{ surface: 'SessionSummaryCard' }}
-          onError={(error) => SecureLogger.info('[Storybook] Error captured', error.message)}
+          onError={(error) => console.info('[Storybook] Error captured', error.message)}
           fallback={(error, reset, showFeedback) => (
             <div className="flex max-w-lg flex-col gap-3 rounded-xl border border-destructive bg-destructive/10 p-6 shadow-sm">
               <div>

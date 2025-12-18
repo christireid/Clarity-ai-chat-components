@@ -16,6 +16,7 @@ const commonConfig = {
     'mermaid',
     'highlight.js/styles/github-dark.css',
     'katex/dist/katex.min.css',
+    'dompurify',
   ],
   sourcemap: false,
   minify: false, // Set to boolean false instead of string
@@ -102,6 +103,20 @@ export default defineConfig([
   // Test utilities entry
   {
     entry: { 'test-utils': 'src/test-utils.tsx' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
+  // Slim entry (minimal bundle ~200KB)
+  {
+    entry: { slim: 'src/slim.ts' },
+    outDir: 'dist',
+    ...commonConfig,
+    clean: false,
+  },
+  // Namespaced entry (Clarity.Chat pattern)
+  {
+    entry: { namespaced: 'src/namespaced.ts' },
     outDir: 'dist',
     ...commonConfig,
     clean: false,

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { SecurityManager, ConsoleAlertHandler } from '@clarity-chat/react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Server-side Security Validation API
  *
@@ -54,7 +53,7 @@ export async function POST(request: Request) {
 
     // Log security events (in production, send to monitoring service)
     if (!result.allowed) {
-      SecureLogger.warn('[SECURITY] Blocked input:', {
+      console.warn('[SECURITY] Blocked input:', {
         timestamp: new Date().toISOString(),
         action: result.action,
         reason: result.reason,

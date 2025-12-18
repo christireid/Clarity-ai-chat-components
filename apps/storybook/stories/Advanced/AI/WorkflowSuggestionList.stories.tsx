@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { WorkflowSuggestionList } from '@clarity-chat/react'
 import type { WorkflowSuggestion } from '@clarity-chat/react'
@@ -77,11 +76,11 @@ export const WithActions: Story = {
   args: {
     workflows: mockWorkflows,
     onSelect: (workflow) => {
-      SecureLogger.debug('Selected workflow:', workflow.name)
+      console.log('Selected workflow:', workflow.name)
       alert(`Starting workflow: ${workflow.name}`)
     },
     onPreview: (workflow) => {
-      SecureLogger.debug('Preview workflow:', workflow.name)
+      console.log('Preview workflow:', workflow.name)
       alert(`Previewing: ${workflow.name}\n\nSteps:\n${workflow.steps.join('\n')}`)
     },
   },

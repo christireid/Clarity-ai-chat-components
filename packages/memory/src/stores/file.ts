@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * File-Based Vector Store
  * Simple JSON file persistence for single-instance applications
@@ -51,7 +50,7 @@ export class FileStore implements VectorStore {
       } catch (error: any) {
         // File doesn't exist or is invalid - start fresh
         if (error.code !== 'ENOENT') {
-          logger.warn('Failed to load memory file:', error.message)
+          console.warn('Failed to load memory file:', error.message)
         }
       }
 
@@ -233,12 +232,12 @@ export class FileStore implements VectorStore {
       try {
         await fs.access(backupPath)
         await fs.rename(backupPath, this.filePath)
-        logger.warn('Restored from backup after persist failure')
+        console.warn('Restored from backup after persist failure')
       } catch {
         // No backup to restore from
       }
 
-      logger.logger.error('Failed to persist memories:', error)
+      console.error('Failed to persist memories:', error)
       throw error
     }
   }

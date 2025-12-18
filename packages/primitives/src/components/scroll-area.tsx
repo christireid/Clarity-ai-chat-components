@@ -1,14 +1,15 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 import {
   ScrollArea as ShadcnScrollArea,
   ScrollBar as ShadcnScrollBar,
 } from './ui/scroll-area'
 
-export interface ScrollAreaProps
-  extends React.ComponentPropsWithoutRef<typeof ShadcnScrollArea> {
+export interface ScrollAreaProps extends React.ComponentPropsWithoutRef<
+  typeof ShadcnScrollArea
+> {
   /** Show horizontal scrollbar */
   showHorizontalScrollbar?: boolean
   /** Custom scrollbar styling - preserves original thin scrollbar style as fallback */

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * License UI Components
  *
@@ -250,7 +249,7 @@ export interface LicenseExpiryWarningProps {
  * <LicenseExpiryWarning
  *   daysThreshold={30}
  *   renewUrl="https://claritychat.dev/renew"
- *   onDismiss={() => logger.debug('dismissed')}
+ *   onDismiss={() => console.log('dismissed')}
  * />
  * ```
  */

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow, useClarityChat } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -74,7 +73,14 @@ the essential patterns you'll use in 90% of cases.
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '600px', height: '600px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+      <div
+        style={{
+          width: '600px',
+          height: '600px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+        }}
+      >
         <Story />
       </div>
     ),
@@ -101,9 +107,13 @@ const mockMessages: Message[] = [
   createMessage('user', 'Hello! Can you help me with React?', {
     createdAt: Date.now() - 60000,
   }),
-  createMessage('assistant', 'Of course! I\'d be happy to help you with React. What specific topic would you like to discuss?', {
-    createdAt: Date.now() - 30000,
-  }),
+  createMessage(
+    'assistant',
+    "Of course! I'd be happy to help you with React. What specific topic would you like to discuss?",
+    {
+      createdAt: Date.now() - 30000,
+    }
+  ),
   createMessage('user', 'How do I use hooks?', {
     createdAt: Date.now() - 10000,
   }),
@@ -114,7 +124,7 @@ export const BasicChat: Story = {
     messages: mockMessages,
     isLoading: false,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {
@@ -140,7 +150,7 @@ export const WithLoadingState: Story = {
     messages: mockMessages,
     isLoading: true,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {
@@ -165,7 +175,7 @@ export const EmptyChat: Story = {
     messages: [],
     isLoading: false,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {
@@ -191,7 +201,7 @@ export const WithTokenCounter: Story = {
     isLoading: false,
     showTokenCounter: true,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {
@@ -268,20 +278,26 @@ export const LongConversation: Story = {
   args: {
     messages: [
       ...mockMessages,
-      createMessage('assistant', `Hooks are functions that let you "hook into" React state and lifecycle features from function components. Here are the main hooks:
+      createMessage(
+        'assistant',
+        `Hooks are functions that let you "hook into" React state and lifecycle features from function components. Here are the main hooks:
 
 1. **useState** - Manages component state
 2. **useEffect** - Handles side effects
 3. **useContext** - Accesses context values
 4. **useReducer** - Complex state management
 5. **useMemo** - Memoizes expensive calculations
-6. **useCallback** - Memoizes callback functions`, {
-        createdAt: Date.now() - 5000,
-      }),
+6. **useCallback** - Memoizes callback functions`,
+        {
+          createdAt: Date.now() - 5000,
+        }
+      ),
       createMessage('user', 'Can you show me an example of useState?', {
         createdAt: Date.now() - 2000,
       }),
-      createMessage('assistant', `Here's a simple useState example:
+      createMessage(
+        'assistant',
+        `Here's a simple useState example:
 
 \`\`\`tsx
 import { useState } from 'react'
@@ -300,13 +316,15 @@ function Counter() {
 }
 \`\`\`
 
-The \`useState\` hook returns an array with the current state value and a function to update it.`, {
-        createdAt: Date.now() - 1000,
-      }),
+The \`useState\` hook returns an array with the current state value and a function to update it.`,
+        {
+          createdAt: Date.now() - 1000,
+        }
+      ),
     ],
     isLoading: false,
     onSendMessage: async (content: string) => {
-      SecureLogger.debug('Message sent:', content)
+      console.log('Message sent:', content)
     },
   },
   parameters: {

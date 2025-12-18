@@ -1,6 +1,6 @@
 /**
  * Prompt Template Engine
- * 
+ *
  * Simple, flexible templating system for AI prompts.
  * No dependencies, fully customizable.
  */
@@ -12,18 +12,33 @@ import type {
   PromptRenderResult,
 } from './types'
 
+/** Maximum template length to prevent DoS */
+const MAX_TEMPLATE_LENGTH = 100_000
+
+/** Maximum number of variables to prevent abuse */
+const MAX_VARIABLES = 100
+
+/** Validate a string is safe for use as an ID */
+function isValidId(id: string): boolean {
+  return /^[\w-]+$/.test(id) && id.length <= 128
+}
+
 export class PromptTemplateEngine {
   private delimiter = {
     start: '{{',
     end: '}}',
   }
-  
+
   constructor(delimiter?: { start: string; end: string }) {
     if (delimiter) {
+      // Validate delimiter to prevent regex injection
+      if (delimiter.start.length > 10 || delimiter.end.length > 10) {
+        throw new Error('Delimiter must be 10 characters or less')
+      }
       this.delimiter = delimiter
     }
   }
-  
+
   /**
    * Render a prompt template with variables
    */
@@ -31,22 +46,48 @@ export class PromptTemplateEngine {
     template: string | PromptTemplate,
     options: RenderPromptOptions
   ): PromptRenderResult {
-    const templateStr = typeof template === 'string' ? template : template.template
+    const templateStr =
+      typeof template === 'string' ? template : template.template
     const templateObj = typeof template === 'object' ? template : undefined
     const delimiter = options.delimiter || this.delimiter
-    
+
+    // Validate template length to prevent DoS
+    if (templateStr.length > MAX_TEMPLATE_LENGTH) {
+      return {
+        prompt: '',
+        usedVariables: [],
+        errors: [
+          `Template exceeds maximum length of ${MAX_TEMPLATE_LENGTH} characters`,
+        ],
+        success: false,
+      }
+    }
+
+    // Validate variable count to prevent abuse
+    const variableCount = Object.keys(options.variables).length
+    if (variableCount > MAX_VARIABLES) {
+      return {
+        prompt: '',
+        usedVariables: [],
+        errors: [
+          `Too many variables: ${variableCount} exceeds maximum of ${MAX_VARIABLES}`,
+        ],
+        success: false,
+      }
+    }
+
     const result: PromptRenderResult = {
       prompt: templateStr,
       usedVariables: [],
       success: true,
     }
-    
+
     // Extract all variables from template
     const variablePattern = new RegExp(
       `${this.escapeRegExp(delimiter.start)}\\s*([\\w.]+)\\s*${this.escapeRegExp(delimiter.end)}`,
       'g'
     )
-    
+
     const foundVariablesSet = new Set<string>()
     let match: RegExpExecArray | null
 
@@ -54,22 +95,24 @@ export class PromptTemplateEngine {
       const varName = match[1]
       if (varName) foundVariablesSet.add(varName)
     }
-    
+
     const foundVariables = Array.from(foundVariablesSet)
-    
+
     // Validate required variables if template object provided
     if (options.validate && templateObj?.variables) {
       const errors: string[] = []
       const missing: string[] = []
-      
+
       for (const variable of templateObj.variables) {
         if (variable.required && !(variable.name in options.variables)) {
           missing.push(variable.name)
           errors.push(`Missing required variable: ${variable.name}`)
         }
-        
+
         if (variable.name in options.variables && variable.validate) {
-          const validationResult = variable.validate(options.variables[variable.name])
+          const validationResult = variable.validate(
+            options.variables[variable.name]
+          )
           if (validationResult !== true) {
             errors.push(
               typeof validationResult === 'string'
@@ -79,7 +122,7 @@ export class PromptTemplateEngine {
           }
         }
       }
-      
+
       if (errors.length > 0) {
         result.errors = errors
         result.missingVariables = missing
@@ -87,35 +130,35 @@ export class PromptTemplateEngine {
         return result
       }
     }
-    
+
     // Replace variables
     let rendered = templateStr
-    
+
     for (const varName of foundVariables) {
       const value = this.resolveVariable(varName, options.variables)
-      
+
       if (value !== undefined) {
         result.usedVariables.push(varName)
-        
+
         const varPattern = new RegExp(
           `${this.escapeRegExp(delimiter.start)}\\s*${this.escapeRegExp(varName)}\\s*${this.escapeRegExp(delimiter.end)}`,
           'g'
         )
-        
+
         const stringValue = this.valueToString(value, options.escape)
         rendered = rendered.replace(varPattern, stringValue)
       }
     }
-    
+
     // Post-processing
     if (options.trim) {
       rendered = rendered.trim()
     }
-    
+
     result.prompt = rendered
     return result
   }
-  
+
   /**
    * Extract variables from a template
    */
@@ -124,7 +167,7 @@ export class PromptTemplateEngine {
       `${this.escapeRegExp(this.delimiter.start)}\\s*([\\w.]+)\\s*${this.escapeRegExp(this.delimiter.end)}`,
       'g'
     )
-    
+
     const variablesSet = new Set<string>()
     let match: RegExpExecArray | null
 
@@ -132,50 +175,65 @@ export class PromptTemplateEngine {
       const varName = match[1]
       if (varName) variablesSet.add(varName)
     }
-    
+
     return Array.from(variablesSet)
   }
-  
+
   /**
    * Check if template is valid
    */
-  validate(template: string | PromptTemplate): { valid: boolean; errors?: string[] } {
-    const templateStr = typeof template === 'string' ? template : template.template
+  validate(template: string | PromptTemplate): {
+    valid: boolean
+    errors?: string[]
+  } {
+    const templateStr =
+      typeof template === 'string' ? template : template.template
     const errors: string[] = []
-    
+
     // Check for unclosed variables
-    const openCount = (templateStr.match(new RegExp(this.escapeRegExp(this.delimiter.start), 'g')) || []).length
-    const closeCount = (templateStr.match(new RegExp(this.escapeRegExp(this.delimiter.end), 'g')) || []).length
-    
+    const openCount = (
+      templateStr.match(
+        new RegExp(this.escapeRegExp(this.delimiter.start), 'g')
+      ) || []
+    ).length
+    const closeCount = (
+      templateStr.match(
+        new RegExp(this.escapeRegExp(this.delimiter.end), 'g')
+      ) || []
+    ).length
+
     if (openCount !== closeCount) {
       errors.push('Mismatched variable delimiters')
     }
-    
+
     return {
       valid: errors.length === 0,
       errors: errors.length > 0 ? errors : undefined,
     }
   }
-  
-  private resolveVariable(path: string, variables: Record<string, any>): any {
+
+  private resolveVariable(
+    path: string,
+    variables: Record<string, unknown>
+  ): unknown {
     // Support nested paths like "user.name"
     const parts = path.split('.')
-    let value: any = variables
-    
+    let value: unknown = variables
+
     for (const part of parts) {
       if (value && typeof value === 'object' && part in value) {
-        value = value[part]
+        value = (value as Record<string, unknown>)[part]
       } else {
         return undefined
       }
     }
-    
+
     return value
   }
-  
-  private valueToString(value: any, escape?: boolean): string {
+
+  private valueToString(value: unknown, escape?: boolean): string {
     let str: string
-    
+
     if (typeof value === 'string') {
       str = value
     } else if (typeof value === 'number' || typeof value === 'boolean') {
@@ -187,18 +245,18 @@ export class PromptTemplateEngine {
     } else {
       str = ''
     }
-    
+
     if (escape) {
       str = this.escapeHtml(str)
     }
-    
+
     return str
   }
-  
+
   private escapeRegExp(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   }
-  
+
   private escapeHtml(str: string): string {
     return str
       .replace(/&/g, '&amp;')
@@ -214,7 +272,7 @@ export class PromptTemplateEngine {
  */
 export function renderPrompt(
   template: string | PromptTemplate,
-  variables: Record<string, any>,
+  variables: Record<string, unknown>,
   options?: Partial<RenderPromptOptions>
 ): string {
   const engine = new PromptTemplateEngine()
@@ -223,11 +281,10 @@ export function renderPrompt(
     trim: true,
     ...options,
   })
-  
+
   if (!result.success) {
     throw new Error(`Prompt render failed: ${result.errors?.join(', ')}`)
   }
-  
+
   return result.prompt
 }
-

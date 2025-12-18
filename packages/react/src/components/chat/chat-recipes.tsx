@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Chat Recipe Components - Pre-built combinations for common patterns
  * 

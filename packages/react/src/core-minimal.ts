@@ -11,12 +11,12 @@
 export { ChatWindow } from './components/chat/chat-window'
 export { MessageList } from './components/message/message-list'
 export { Message } from './components/message/message'
-export { ChatInput } from './components/input/chat-input'
+export { ChatInput } from './components/chat/chat-input'
 
 // Core Hooks (Essential)
-export { useClarityChat } from './hooks/use-clarity-chat'
-export { useChat } from './hooks/use-chat'
-export { useAutoScroll } from './hooks/use-auto-scroll'
+export { useClarityChat } from './hooks/chat/use-clarity-chat'
+export { useChat } from './hooks/chat/use-chat'
+export { useAutoScroll } from './hooks/ui/use-auto-scroll'
 
 // Essential Types
 export type {

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback } from 'react'
@@ -313,7 +312,7 @@ function ChatWithAsyncSubmit() {
       setValue('')
     } catch (error) {
       // Error - button shows error icon for 2 seconds
-      logger.logger.error('Failed to send:', error)
+      console.error('Failed to send:', error)
       // Error state is handled automatically
     }
   }

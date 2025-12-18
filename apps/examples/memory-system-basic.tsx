@@ -1,6 +1,5 @@
 /**
  * Basic Memory System Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates how to set up and use the AI Memory & Context system
  */
@@ -182,7 +181,7 @@ function ChatWithMemory() {
         <button
           onClick={async () => {
             const history = await getRecentHistory()
-            SecureLogger.debug('Recent history:', history)
+            console.log('Recent history:', history)
             alert(`Found ${history.length} recent messages`)
           }}
           className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
