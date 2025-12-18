@@ -1,8 +1,17 @@
 # Clarity Chat
 
-> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 70+ production-ready components, 35+ custom hooks, 11+ themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
+> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 200+ production-ready components, 140+ custom hooks, 11+ themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
 
 Clarity Chat is the most complete open-source solution for building AI chat interfaces in React. It provides everything you need from basic chat windows to enterprise features like SSO, multi-tenancy, and advanced analytics.
+
+## Entry Points
+
+Three bundle options for different needs:
+
+- `@clarity-chat/react` (~120KB gzipped): Full library with all 200+ components
+- `@clarity-chat/react/core` (~60KB gzipped): Core chat components without dashboards/analytics
+- `@clarity-chat/react/core-minimal` (~30KB gzipped): Minimal bundle with lazy loading for features
+- `@clarity-chat/react/test-utils`: Testing utilities (not for production builds)
 
 ## Quick Start
 
@@ -68,10 +77,12 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 - [Streaming](https://clarity-chat.dev/guides/streaming): Implement real-time streaming responses
 - [State Management](https://clarity-chat.dev/guides/state-management): Manage chat state effectively
 - [Performance](https://clarity-chat.dev/learn/guides/performance): Optimize for large conversations
+- [Bundle Size Optimization](https://clarity-chat.dev/learn/guides/bundle-size): Reduce bundle size with core-minimal entry point and lazy loading
 - [Accessibility](https://clarity-chat.dev/learn/guides/accessibility): WCAG AAA compliance
 - [Styling](https://clarity-chat.dev/learn/guides/styling): Customizing component styles
 - [TypeScript](https://clarity-chat.dev/learn/guides/typescript): TypeScript best practices
-- [Testing](https://clarity-chat.dev/learn/guides/testing): Testing your chat components
+- [Testing](https://clarity-chat.dev/learn/guides/testing): Test utilities and component testing patterns
+- [FAQ](https://clarity-chat.dev/learn/faq): Frequently asked questions and troubleshooting
 
 ## Examples
 

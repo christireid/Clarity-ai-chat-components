@@ -74,6 +74,8 @@ export const learnNavigation: NavItem[] = [
       { title: 'Token Optimization', href: '/guides/token-optimization' },
       { title: 'Accessibility', href: '/guides/accessibility' },
       { title: 'Performance', href: '/guides/performance' },
+      { title: 'Bundle Size', href: '/learn/guides/bundle-size' },
+      { title: 'Testing', href: '/learn/guides/testing' },
       { title: 'RAG', href: '/guides/rag' },
       { title: 'Agents', href: '/guides/agents' },
       { title: 'Plugins', href: '/guides/plugins' },
@@ -115,7 +117,10 @@ export const learnNavigation: NavItem[] = [
   },
   {
     title: 'Help',
-    items: [{ title: 'Troubleshooting', href: '/learn/troubleshooting' }],
+    items: [
+      { title: 'FAQ', href: '/learn/faq' },
+      { title: 'Troubleshooting', href: '/learn/troubleshooting' },
+    ],
   },
 ]
 
