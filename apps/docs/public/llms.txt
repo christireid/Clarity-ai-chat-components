@@ -69,6 +69,7 @@ Three bundle options for different needs:
 ## Token Optimization
 
 - [Token Optimization Guide](https://clarity-chat.dev/guides/token-optimization): Reduce API costs by up to 70%
+- [Prompt Caching Guide](https://clarity-chat.dev/guides/prompt-caching): Save 50-90% on repeated prompts with provider caching
 - [TokenOptimizationDashboard](https://clarity-chat.dev/reference/components/token-optimization-dashboard): Visual optimization controls
 - [ContextVisualizer](https://clarity-chat.dev/reference/components/context-visualizer): See what's in your context window
 

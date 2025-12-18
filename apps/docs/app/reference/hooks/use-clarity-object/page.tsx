@@ -639,14 +639,105 @@ export async function POST(req: Request) {
             for better UX when generation takes time.
           </li>
           <li>
-            <strong>Validate responses:</strong> Consider adding runtime
-            validation (e.g., with Zod) for extra safety.
+            <strong>Validate responses:</strong> Add runtime validation with Zod
+            for extra safety (see example below).
           </li>
           <li>
             <strong>Reset state when needed:</strong> Use the <code>reset</code>{' '}
             function to clear state between generations.
           </li>
         </ul>
+
+        <h3>Runtime Validation with Zod</h3>
+
+        <p>
+          While TypeScript provides compile-time type safety, Zod adds runtime
+          validation to ensure AI-generated data matches your schema:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`import { useClarityObject } from '@clarity-chat/react'
+import { z } from 'zod'
+
+// Define Zod schema for runtime validation
+const ProductSchema = z.object({
+  name: z.string().min(1),
+  price: z.number().positive(),
+  description: z.string(),
+  category: z.enum(['electronics', 'clothing', 'home', 'other']),
+  inStock: z.boolean(),
+})
+
+// Array schema
+const ProductListSchema = z.array(ProductSchema)
+
+// Infer TypeScript type from Zod schema
+type Product = z.infer<typeof ProductSchema>
+
+function ValidatedProductGenerator() {
+  const { object, run, isLoading, error } = useClarityObject<Product[]>({
+    api: '/api/generate-products',
+    onFinish: (data) => {
+      // Validate the AI response at runtime
+      const result = ProductListSchema.safeParse(data)
+
+      if (!result.success) {
+        console.error('Validation failed:', result.error.format())
+        // Handle invalid data - maybe retry or show error
+        return
+      }
+
+      // result.data is now fully validated
+      logger.debug('Valid products:', result.data)
+    },
+    onError: (error) => {
+      console.error('Generation error:', error)
+    },
+  })
+
+  // You can also validate inline
+  const validatedProducts = object ? ProductListSchema.safeParse(object) : null
+
+  return (
+    <div>
+      <button onClick={() => run({ query: 'electronics' })} disabled={isLoading}>
+        Generate Products
+      </button>
+
+      {validatedProducts?.success && (
+        <div>
+          {validatedProducts.data.map((product) => (
+            <div key={product.name}>
+              <h3>{product.name}</h3>
+              <p>{product.category} - \${product.price}</p>
+              <p>{product.inStock ? 'In Stock' : 'Out of Stock'}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {validatedProducts && !validatedProducts.success && (
+        <div className="text-red-600">
+          Invalid response from AI. Please try again.
+        </div>
+      )}
+    </div>
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <Callout type="tip">
+          <p>
+            <strong>Zod + TypeScript = Maximum Safety</strong>
+            <br />
+            Using Zod provides both compile-time AND runtime type safety. This
+            is especially important for AI-generated content which may not
+            always match your expected schema. Install with:{' '}
+            <code>npm install zod</code>
+          </p>
+        </Callout>
 
         <h2 id="related">Related</h2>
 

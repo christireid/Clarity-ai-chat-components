@@ -72,6 +72,7 @@ export const learnNavigation: NavItem[] = [
       { title: 'File Upload', href: '/guides/file-upload' },
       { title: 'Streaming', href: '/guides/streaming' },
       { title: 'Token Optimization', href: '/guides/token-optimization' },
+      { title: 'Prompt Caching', href: '/guides/prompt-caching' },
       { title: 'Accessibility', href: '/guides/accessibility' },
       { title: 'Performance', href: '/guides/performance' },
       { title: 'Bundle Size', href: '/learn/guides/bundle-size' },
