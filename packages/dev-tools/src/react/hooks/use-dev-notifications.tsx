@@ -1,7 +1,35 @@
 /**
  * React hook for Developer Notifications
  *
- * Real-time developer feedback and notifications
+ * Real-time developer feedback and notifications for build events,
+ * performance warnings, errors, and custom alerts.
+ *
+ * @module useDevNotifications
+ *
+ * @example
+ * ```tsx
+ * import { useDevNotifications } from '@clarity-chat/dev-tools'
+ *
+ * function DevPanel() {
+ *   const { notifications, active, info, error, dismiss } = useDevNotifications({
+ *     channel: 'build'
+ *   })
+ *
+ *   // Show build status
+ *   const handleBuildStart = () => info('Build', 'Compilation started...')
+ *   const handleBuildError = (err) => error('Build Failed', err.message)
+ *
+ *   return (
+ *     <div>
+ *       {active.map(n => (
+ *         <div key={n.id} onClick={() => dismiss(n.id)}>
+ *           {n.title}: {n.message}
+ *         </div>
+ *       ))}
+ *     </div>
+ *   )
+ * }
+ * ```
  */
 
 'use client'
@@ -54,7 +82,12 @@ export interface UseDevNotificationsReturn {
 }
 
 /**
- * Hook to use developer notifications
+ * Hook to use developer notifications with channel filtering and auto-dismiss
+ *
+ * @param options - Configuration for notification channel and behavior
+ * @returns Object with notifications list, helper methods, and stats
+ *
+ * @see {@link DevNotifications} for the underlying implementation
  */
 export function useDevNotifications(
   options: UseDevNotificationsOptions = {}
@@ -68,7 +101,9 @@ export function useDevNotifications(
     return getDevNotifications()
   }, [config])
 
-  const [notifications, setNotifications] = React.useState<DevNotification[]>([])
+  const [notifications, setNotifications] = React.useState<DevNotification[]>(
+    []
+  )
   const [active, setActive] = React.useState<DevNotification[]>([])
 
   // Subscribe to notifications
@@ -85,50 +120,80 @@ export function useDevNotifications(
     return unsubscribe
   }, [notifier, channel])
 
-  const notify = React.useCallback((notifyOptions: {
-    type: NotificationType
-    title: string
-    message: string
-    priority?: NotificationPriority
-    duration?: number
-    actions?: NotificationAction[]
-    data?: Record<string, unknown>
-  }) => {
-    const notification = notifier.notify(notifyOptions)
-    setNotifications(notifier.getAll())
-    setActive(notifier.getActive(channel))
-    return notification
-  }, [notifier, channel])
+  const notify = React.useCallback(
+    (notifyOptions: {
+      type: NotificationType
+      title: string
+      message: string
+      priority?: NotificationPriority
+      duration?: number
+      actions?: NotificationAction[]
+      data?: Record<string, unknown>
+    }) => {
+      const notification = notifier.notify(notifyOptions)
+      setNotifications(notifier.getAll())
+      setActive(notifier.getActive(channel))
+      return notification
+    },
+    [notifier, channel]
+  )
 
-  const info = React.useCallback((title: string, message: string) => {
-    return notify({ type: 'info', title, message })
-  }, [notify])
+  const info = React.useCallback(
+    (title: string, message: string) => {
+      return notify({ type: 'info', title, message })
+    },
+    [notify]
+  )
 
-  const success = React.useCallback((title: string, message: string) => {
-    return notify({ type: 'success', title, message })
-  }, [notify])
+  const success = React.useCallback(
+    (title: string, message: string) => {
+      return notify({ type: 'success', title, message })
+    },
+    [notify]
+  )
 
-  const warning = React.useCallback((title: string, message: string) => {
-    return notify({ type: 'warning', title, message, priority: 'high' })
-  }, [notify])
+  const warning = React.useCallback(
+    (title: string, message: string) => {
+      return notify({ type: 'warning', title, message, priority: 'high' })
+    },
+    [notify]
+  )
 
-  const error = React.useCallback((title: string, message: string) => {
-    return notify({ type: 'error', title, message, priority: 'urgent', duration: 0 })
-  }, [notify])
+  const error = React.useCallback(
+    (title: string, message: string) => {
+      return notify({
+        type: 'error',
+        title,
+        message,
+        priority: 'urgent',
+        duration: 0,
+      })
+    },
+    [notify]
+  )
 
-  const performance = React.useCallback((title: string, message: string) => {
-    return notify({ type: 'performance', title, message })
-  }, [notify])
+  const performance = React.useCallback(
+    (title: string, message: string) => {
+      return notify({ type: 'performance', title, message })
+    },
+    [notify]
+  )
 
-  const build = React.useCallback((title: string, message: string) => {
-    return notify({ type: 'build', title, message })
-  }, [notify])
+  const build = React.useCallback(
+    (title: string, message: string) => {
+      return notify({ type: 'build', title, message })
+    },
+    [notify]
+  )
 
-  const dismiss = React.useCallback((id: string) => {
-    notifier.dismiss(id)
-    setNotifications(notifier.getAll())
-    setActive(notifier.getActive(channel))
-  }, [notifier, channel])
+  const dismiss = React.useCallback(
+    (id: string) => {
+      notifier.dismiss(id)
+      setNotifications(notifier.getAll())
+      setActive(notifier.getActive(channel))
+    },
+    [notifier, channel]
+  )
 
   const dismissAll = React.useCallback(() => {
     notifier.dismissAll()
@@ -164,12 +229,22 @@ export function useDevNotifications(
 }
 
 /**
- * Context for global notifications
+ * Context for global notifications across components
  */
-const DevNotificationsContext = React.createContext<UseDevNotificationsReturn | null>(null)
+const DevNotificationsContext =
+  React.createContext<UseDevNotificationsReturn | null>(null)
 
 /**
- * Provider for developer notifications
+ * Provider for developer notifications context
+ *
+ * Wrap your app or component tree to enable useNotifications() hook access.
+ *
+ * @example
+ * ```tsx
+ * <DevNotificationsProvider config={{ maxNotifications: 10 }}>
+ *   <App />
+ * </DevNotificationsProvider>
+ * ```
  */
 export function DevNotificationsProvider({
   children,
@@ -188,12 +263,25 @@ export function DevNotificationsProvider({
 }
 
 /**
- * Hook to access notifications from context
+ * Hook to access notifications from DevNotificationsProvider context
+ *
+ * @throws {Error} When used outside of DevNotificationsProvider
+ * @returns The notification state and methods from the provider
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const { info, error } = useNotifications()
+ *   return <button onClick={() => info('Hello', 'World!')}>Notify</button>
+ * }
+ * ```
  */
 export function useNotifications(): UseDevNotificationsReturn {
   const context = React.useContext(DevNotificationsContext)
   if (!context) {
-    throw new Error('useNotifications must be used within DevNotificationsProvider')
+    throw new Error(
+      'useNotifications must be used within DevNotificationsProvider'
+    )
   }
   return context
 }

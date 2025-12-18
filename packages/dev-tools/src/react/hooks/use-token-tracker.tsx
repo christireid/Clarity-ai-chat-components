@@ -1,7 +1,32 @@
 /**
  * React hook for AI Token Usage Tracking
  *
- * Track and monitor AI token usage and costs
+ * Track and monitor AI token usage, costs, and receive optimization recommendations.
+ * Supports multiple providers (OpenAI, Anthropic, Google, Mistral) with accurate pricing.
+ *
+ * @module useTokenTracker
+ *
+ * @example
+ * ```tsx
+ * import { useTokenTracker } from '@clarity-chat/dev-tools'
+ *
+ * function ChatComponent() {
+ *   const { stats, track, estimateCost } = useTokenTracker({
+ *     budget: { daily: 10.00, warningThreshold: 0.8 },
+ *     onBudgetWarning: (msg) => console.warn(msg)
+ *   })
+ *
+ *   const handleResponse = (response) => {
+ *     track({
+ *       provider: 'openai',
+ *       model: 'gpt-4o-mini',
+ *       usage: response.usage
+ *     })
+ *   }
+ *
+ *   return <div>Total cost: ${stats.totalCost.toFixed(4)}</div>
+ * }
+ * ```
  */
 
 'use client'
@@ -34,7 +59,11 @@ export interface UseTokenTrackerReturn {
     usage: TokenUsage
     conversationId?: string
   }) => TokenEvent
-  estimateCost: (model: string, promptTokens: number, completionTokens: number) => {
+  estimateCost: (
+    model: string,
+    promptTokens: number,
+    completionTokens: number
+  ) => {
     promptCost: number
     completionCost: number
     totalCost: number
@@ -45,7 +74,12 @@ export interface UseTokenTrackerReturn {
 }
 
 /**
- * Hook to track AI token usage
+ * Hook to track AI token usage across multiple providers
+ *
+ * @param options - Configuration for token tracking and budget alerts
+ * @returns Object with stats, tracking functions, and cost estimation
+ *
+ * @see {@link TokenTracker} for the underlying implementation
  */
 export function useTokenTracker(
   options: UseTokenTrackerOptions = {}
@@ -81,27 +115,29 @@ export function useTokenTracker(
     return unsubscribe
   }, [tracker])
 
-  const track = React.useCallback((trackOptions: {
-    provider: string
-    model: string
-    usage: TokenUsage
-    conversationId?: string
-  }) => {
-    return tracker.track(trackOptions)
-  }, [tracker])
+  const track = React.useCallback(
+    (trackOptions: {
+      provider: string
+      model: string
+      usage: TokenUsage
+      conversationId?: string
+    }) => {
+      return tracker.track(trackOptions)
+    },
+    [tracker]
+  )
 
-  const estimateCost = React.useCallback((
-    model: string,
-    promptTokens: number,
-    completionTokens: number
-  ) => {
-    const cost = tracker.estimateCost(model, promptTokens, completionTokens)
-    return {
-      promptCost: cost.promptCost,
-      completionCost: cost.completionCost,
-      totalCost: cost.totalCost,
-    }
-  }, [tracker])
+  const estimateCost = React.useCallback(
+    (model: string, promptTokens: number, completionTokens: number) => {
+      const cost = tracker.estimateCost(model, promptTokens, completionTokens)
+      return {
+        promptCost: cost.promptCost,
+        completionCost: cost.completionCost,
+        totalCost: cost.totalCost,
+      }
+    },
+    [tracker]
+  )
 
   const getRecommendations = React.useCallback(() => {
     return tracker.getOptimizationRecommendations()

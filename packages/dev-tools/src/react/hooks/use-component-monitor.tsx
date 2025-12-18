@@ -1,7 +1,29 @@
 /**
  * React hook for Component Performance Monitor
  *
- * Tracks component renders and performance metrics
+ * Tracks component renders and provides performance metrics, warnings,
+ * and optimization recommendations.
+ *
+ * @module useComponentMonitor
+ *
+ * @example
+ * ```tsx
+ * import { useComponentMonitor } from '@clarity-chat/dev-tools'
+ *
+ * function MyComponent() {
+ *   const { metrics, renderCount, warnings, onRender } = useComponentMonitor({
+ *     componentName: 'MyComponent',
+ *     trackProps: true,
+ *     thresholds: { maxRenderTime: 16 }
+ *   })
+ *
+ *   useEffect(() => {
+ *     onRender() // Call at end of render
+ *   })
+ *
+ *   return <div>{renderCount} renders</div>
+ * }
+ * ```
  */
 
 'use client'
@@ -33,7 +55,12 @@ export interface UseComponentMonitorReturn {
 }
 
 /**
- * Hook to monitor component performance
+ * Hook to monitor component render performance and detect optimization opportunities
+ *
+ * @param options - Configuration options for the monitor
+ * @returns Object containing metrics, warnings, and control functions
+ *
+ * @see {@link ComponentMonitor} for the underlying implementation
  */
 export function useComponentMonitor(
   options: UseComponentMonitorOptions = {}
@@ -128,7 +155,8 @@ export function withComponentMonitor<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   options?: UseComponentMonitorOptions
 ): React.ComponentType<P> {
-  const displayName = WrappedComponent.displayName ?? WrappedComponent.name ?? 'Unknown'
+  const displayName =
+    WrappedComponent.displayName ?? WrappedComponent.name ?? 'Unknown'
 
   function MonitoredComponent(props: P) {
     useComponentMonitor({
