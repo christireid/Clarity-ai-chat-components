@@ -174,10 +174,7 @@ export async function logAccessibilityViolations(): Promise<void> {
       return
     }
 
-    console.log(
-      `%c⚠️ ${violations.length} accessibility violations`,
-      'color: orange'
-    )
+    console.log(`%c⚠️ ${violations.length} accessibility violations`, 'color: orange')
 
     violations.forEach((v) => {
       const impactColor = {
@@ -192,10 +189,7 @@ export async function logAccessibilityViolations(): Promise<void> {
       console.log('Description:', v.description)
       console.log('Help:', v.help)
       console.log('Docs:', v.helpUrl)
-      console.log(
-        'Affected elements:',
-        v.nodes.map((n) => n.target.join(', '))
-      )
+      console.log('Affected elements:', v.nodes.map((n) => n.target.join(', ')))
       console.log()
     })
 
@@ -244,9 +238,7 @@ interface UseAccessibilityCheckOptions {
  * }
  * ```
  */
-export function useAccessibilityCheck(
-  options: UseAccessibilityCheckOptions = {}
-) {
+export function useAccessibilityCheck(options: UseAccessibilityCheckOptions = {}) {
   const { autoRun = false, runOnChange = [], debounce = 0 } = options
 
   const [violations, setViolations] = useState<AccessibilityViolation[]>([])

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
 /**

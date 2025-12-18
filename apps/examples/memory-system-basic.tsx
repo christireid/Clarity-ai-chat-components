@@ -1,6 +1,6 @@
 /**
  * Basic Memory System Example
- *
+ * 
  * Demonstrates how to set up and use the AI Memory & Context system
  */
 
@@ -19,9 +19,9 @@ const memoryConfig: MemoryServiceConfig = {
   tokenOptimization: {
     maxContextWindow: 4096,
     allocation: {
-      systemPrompt: 0.1,
+      systemPrompt: 0.10,
       userPreferences: 0.15,
-      recentContext: 0.3,
+      recentContext: 0.30,
       semanticMemory: 0.25,
       episodicMemory: 0.15,
       responseReserve: 0.05,
@@ -45,10 +45,10 @@ const memoryConfig: MemoryServiceConfig = {
   enableAutoCleanup: true,
   cleanupInterval: 3600000, // 1 hour
   retentionPolicy: {
-    shortTerm: 3600, // 1 hour
-    session: 86400, // 24 hours
-    thread: 604800, // 7 days
-    global: 0, // Never expires
+    shortTerm: 3600,      // 1 hour
+    session: 86400,       // 24 hours
+    thread: 604800,       // 7 days
+    global: 0,            // Never expires
   },
   debug: true,
 }
@@ -73,12 +73,10 @@ const embeddings = new OpenAIEmbeddings({
  * Chat component with memory
  */
 function ChatWithMemory() {
-  const [messages, setMessages] = React.useState<
-    Array<{
-      role: 'user' | 'assistant'
-      content: string
-    }>
-  >([])
+  const [messages, setMessages] = React.useState<Array<{
+    role: 'user' | 'assistant'
+    content: string
+  }>>([])
   const [input, setInput] = React.useState('')
 
   // Use conversation memory hook
@@ -100,22 +98,19 @@ function ChatWithMemory() {
 
     // Add user message
     const userMessage = { role: 'user' as const, content: input }
-    setMessages((prev) => [...prev, userMessage])
+    setMessages(prev => [...prev, userMessage])
 
     // Capture in memory
     await captureMessage(input, 'user')
 
     // Get relevant memories for context
     const relevantMemories = await getRelevantMemories(input)
-
+    
     // Simulate AI response (in real app, call your LLM here)
     const assistantResponse = `I understand you said: "${input}". I found ${relevantMemories.length} relevant memories.`
-
-    const assistantMessage = {
-      role: 'assistant' as const,
-      content: assistantResponse,
-    }
-    setMessages((prev) => [...prev, assistantMessage])
+    
+    const assistantMessage = { role: 'assistant' as const, content: assistantResponse }
+    setMessages(prev => [...prev, assistantMessage])
 
     // Capture assistant response
     await captureMessage(assistantResponse, 'assistant')
@@ -160,8 +155,8 @@ function ChatWithMemory() {
         <input
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onChange={e => setInput(e.target.value)}
+          onKeyPress={e => e.key === 'Enter' && handleSend()}
           placeholder="Type a message..."
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

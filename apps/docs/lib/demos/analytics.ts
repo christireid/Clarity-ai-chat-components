@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Demo analytics utilities
  * Track user engagement with demos for conversion insights

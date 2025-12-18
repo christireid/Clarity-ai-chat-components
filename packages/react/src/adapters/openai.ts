@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * OpenAI Model Adapter
  *
@@ -10,8 +9,8 @@ import { logger } from '@clarity-chat/utils/logger'
  */
 
 import type { ModelAdapter, ToolCall } from './types'
-import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
-import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
+import { fetchWithTimeout } from '../utils/fetch-with-timeout'
+import { parseRateLimitHeaders } from '../utils/rate-limit-headers'
 import {
   validateApiKey,
   createRateLimitError,
@@ -214,7 +213,7 @@ export const openAIAdapter: ModelAdapter = {
               }
             }
           } catch (e) {
-            logger.error('Failed to parse streaming chunk:', e)
+            logger.logger.error('Failed to parse streaming chunk:', e)
           }
         }
       }

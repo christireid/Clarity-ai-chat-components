@@ -14,12 +14,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import matter from 'gray-matter'
-import {
-  generateEmbeddingsBatch,
-  chunkText,
-  estimateTokenCount,
-  estimateEmbeddingCost,
-} from '../apps/docs/lib/ai/embeddings'
+import { generateEmbeddingsBatch, chunkText, estimateTokenCount, estimateEmbeddingCost } from '../apps/docs/lib/ai/embeddings'
 import { getVectorStore, type DocChunk } from '../apps/docs/lib/ai/vectorStore'
 
 interface DocFile {
@@ -90,16 +85,12 @@ async function findDocFiles(
         await findDocFiles(fullPath, category, files)
       } else if (entry.isFile() && /\.(mdx?|tsx?)$/i.test(entry.name)) {
         // Only process MDX, MD, and TSX files (for page.tsx content)
-        if (
-          entry.name === 'page.tsx' ||
-          entry.name.endsWith('.md') ||
-          entry.name.endsWith('.mdx')
-        ) {
+        if (entry.name === 'page.tsx' || entry.name.endsWith('.md') || entry.name.endsWith('.mdx')) {
           files.push({ path: fullPath, category })
         }
       }
     }
-  } catch {
+  } catch (error) {
     console.warn(`Warning: Could not read directory ${dirPath}:`, error)
   }
 
@@ -128,9 +119,7 @@ async function processDocFile(file: DocFile): Promise<DocChunk[]> {
   } else if (file.path.endsWith('page.tsx')) {
     // Extract content from TSX page files
     // Look for metadata export
-    const metadataMatch = content.match(
-      /export const metadata[^{]*{\s*title:\s*['"]([^'"]+)['"]/s
-    )
+    const metadataMatch = content.match(/export const metadata[^{]*{\s*title:\s*['"]([^'"]+)['"]/s)
     if (metadataMatch) {
       title = metadataMatch[1]
     }
@@ -232,7 +221,7 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
       const files = await findDocFiles(dirPath, dir.category)
       console.log(`  ✓ ${dir.path}: ${files.length} files`)
       allFiles.push(...files)
-    } catch {
+    } catch (error) {
       console.log(`  ⚠ ${dir.path}: Not found (skipping)`)
     }
   }
@@ -248,13 +237,9 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
     try {
       const chunks = await processDocFile(file)
       allChunks.push(...chunks)
-      console.log(
-        `  ✓ ${path.relative(process.cwd(), file.path)}: ${chunks.length} chunks`
-      )
-    } catch {
-      console.error(
-        `  ✗ ${path.relative(process.cwd(), file.path)}: ${error instanceof Error ? error.message : 'Error'}`
-      )
+      console.log(`  ✓ ${path.relative(process.cwd(), file.path)}: ${chunks.length} chunks`)
+    } catch (error) {
+      console.error(`  ✗ ${path.relative(process.cwd(), file.path)}: ${error instanceof Error ? error.message : 'Error'}`)
     }
   }
 
@@ -263,15 +248,10 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
 
   // Calculate token count and cost
   const texts = allChunks.map((c) => c.content)
-  stats.totalTokens = texts.reduce(
-    (sum, text) => sum + estimateTokenCount(text),
-    0
-  )
+  stats.totalTokens = texts.reduce((sum, text) => sum + estimateTokenCount(text), 0)
   stats.estimatedCost = estimateEmbeddingCost(stats.totalTokens)
 
-  console.log(
-    `💰 Estimated cost: $${stats.estimatedCost.toFixed(4)} (${stats.totalTokens.toLocaleString()} tokens)\n`
-  )
+  console.log(`💰 Estimated cost: $${stats.estimatedCost.toFixed(4)} (${stats.totalTokens.toLocaleString()} tokens)\n`)
 
   if (options.dryRun) {
     console.log('🏃 Dry run complete - no embeddings generated\n')
@@ -286,9 +266,7 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
     const batch = allChunks.slice(i, i + batchSize)
     const batchTexts = batch.map((c) => c.content)
 
-    console.log(
-      `  Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allChunks.length / batchSize)}...`
-    )
+    console.log(`  Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allChunks.length / batchSize)}...`)
 
     try {
       const embeddings = await generateEmbeddingsBatch(batchTexts)
@@ -302,7 +280,7 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
       await vectorStore.upsertBatch(batch)
 
       console.log(`  ✓ Batch ${Math.floor(i / batchSize) + 1} complete`)
-    } catch {
+    } catch (error) {
       console.error(`  ✗ Batch ${Math.floor(i / batchSize) + 1} failed:`, error)
     }
   }
@@ -316,9 +294,7 @@ async function indexDocs(options: { clear?: boolean; dryRun?: boolean } = {}) {
   console.log(`  Chunks created: ${stats.totalChunks}`)
   console.log(`  Total tokens: ${stats.totalTokens.toLocaleString()}`)
   console.log(`  Estimated cost: $${stats.estimatedCost.toFixed(4)}`)
-  console.log(
-    `  Time elapsed: ${((stats.endTime - stats.startTime) / 1000).toFixed(2)}s`
-  )
+  console.log(`  Time elapsed: ${((stats.endTime - stats.startTime) / 1000).toFixed(2)}s`)
 
   const storeStats = await vectorStore.getStats()
   console.log(`\n📚 Vector store stats:`)

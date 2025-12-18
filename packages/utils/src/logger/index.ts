@@ -4,11 +4,9 @@
  * Structured logging utility with log levels, namespaces, and request tracking.
  * Supports both pretty-printed and JSON output formats.
  *
- * @module @clarity-chat/utils/logger
  *
  * @example
  * ```ts
- * import { getLogger, LogLevel } from '@clarity-chat/utils/logger'
  *
  * const logger = getLogger('my-module')
  * logger.info('Starting process')
@@ -80,7 +78,7 @@ const DEFAULT_OPTIONS: LoggerOptions = {
 
 let globalOptions: LoggerOptions = { ...DEFAULT_OPTIONS }
 let globalLogLevel: LogLevel =
-  typeof process !== 'undefined' && process.env?.['DEBUG']
+  typeof process !== 'undefined' && process.env?.DEBUG
     ? LogLevel.DEBUG
     : LogLevel.INFO
 let requestId: string | null = null
@@ -226,7 +224,7 @@ export function getLogger(
 
     const isJsonMode =
       globalOptions.jsonOutput ||
-      (typeof process !== 'undefined' && process.env?.['JSON_LOGS'])
+      (typeof process !== 'undefined' && process.env?.JSON_LOGS)
 
     if (isJsonMode) {
       consoleFn(formatLogEntry(entry))
@@ -281,13 +279,7 @@ export function getLogger(
 const defaultLogger = getLogger('app')
 
 /**
- * Default logger instance for direct use
- * @example
- * ```ts
- * import { logger } from '@clarity-chat/utils/logger'
- * logger.info('Hello')
- * logger.error('Something went wrong')
- * ```
+ * Default logger instance - convenience export for simple usage
  */
 export const logger = defaultLogger
 

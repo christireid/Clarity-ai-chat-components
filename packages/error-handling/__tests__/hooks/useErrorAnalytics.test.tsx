@@ -367,10 +367,6 @@ describe('ErrorAnalyticsProvider', () => {
 
   describe('enableLogging', () => {
     it('should log when enableLogging is true', () => {
-      // Need to set both global and instance levels to ensure log is not filtered
-      setGlobalLogLevel(LogLevel.DEBUG)
-      logger.setLevel(LogLevel.DEBUG)
-
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
       const customWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -394,9 +390,6 @@ describe('ErrorAnalyticsProvider', () => {
       )
 
       consoleSpy.mockRestore()
-      // Reset levels
-      setGlobalLogLevel(LogLevel.INFO)
-      logger.setLevel(LogLevel.INFO)
     })
   })
 })

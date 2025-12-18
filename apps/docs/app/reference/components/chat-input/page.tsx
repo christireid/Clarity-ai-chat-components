@@ -312,7 +312,7 @@ function ChatWithAsyncSubmit() {
       setValue('')
     } catch (error) {
       // Error - button shows error icon for 2 seconds
-      logger.error('Failed to send:', error)
+      console.error('Failed to send:', error)
       // Error state is handled automatically
     }
   }

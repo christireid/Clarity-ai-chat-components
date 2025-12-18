@@ -110,8 +110,8 @@ function calculateDelayWithJitter(
  *     maxRetries: 3,
  *     jitterFactor: 0.3,
  *     circuitBreakerThreshold: 5,
- *     onRetry: (attempt) => console.debug(`Retry attempt ${attempt}`),
- *     onCircuitOpen: () => console.debug('Circuit breaker opened'),
+ *     onRetry: (attempt) => console.log(`Retry attempt ${attempt}`),
+ *     onCircuitOpen: () => console.log('Circuit breaker opened'),
  *   });
  *
  *   const startStream = useCallback(async (resumePayload?: ResumePayload) => {

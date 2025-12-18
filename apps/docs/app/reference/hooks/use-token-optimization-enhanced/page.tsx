@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -177,7 +176,7 @@ function OptimizedChat() {
         logger.debug('Savings: $', stats.overall.totalCostSaved)
       }
     } catch (error) {
-      logger.error('Optimization failed:', error)
+      console.error('Optimization failed:', error)
     }
   }
 
@@ -295,7 +294,7 @@ function ToonOptimized() {
       logger.debug('Tokens:', optimized.tokens.total)
       logger.debug('Savings:', optimized.optimizations.toon?.savingsPercent)
     } catch (error) {
-      logger.error('TOON optimization failed:', error)
+      console.error('TOON optimization failed:', error)
     }
   }
 
@@ -331,7 +330,7 @@ function CachedChat() {
         logger.debug('Used cached prompt - 50-90% cost savings!')
       }
     } catch (error) {
-      logger.error('Caching failed:', error)
+      console.error('Caching failed:', error)
     }
   }
 
@@ -365,7 +364,7 @@ function SemanticCachedChat() {
         logger.debug('Tokens Saved:', stats.semanticCache.tokensSaved)
       }
     } catch (error) {
-      logger.error('Semantic caching failed:', error)
+      console.error('Semantic caching failed:', error)
     }
   }
 
@@ -409,7 +408,7 @@ function CostTrackedChat() {
         logger.debug('Savings: $', stats.costs.savingsFromOptimization)
       }
     } catch (error) {
-      logger.error('Cost tracking failed:', error)
+      console.error('Cost tracking failed:', error)
     }
   }
 

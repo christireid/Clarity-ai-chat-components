@@ -44,26 +44,6 @@
       "import": "./dist/core.mjs",
       "require": "./dist/core.js"
     },
-    "./hooks": {
-      "types": "./dist/hooks.d.ts",
-      "import": "./dist/hooks.mjs",
-      "require": "./dist/hooks.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.mjs",
-      "require": "./dist/types.js"
-    },
-    "./components": {
-      "types": "./dist/components/index.d.ts",
-      "import": "./dist/components/index.mjs",
-      "require": "./dist/components/index.js"
-    },
-    "./exports": {
-      "types": "./dist/exports.d.ts",
-      "import": "./dist/exports.mjs",
-      "require": "./dist/exports.js"
-    },
     "./core-minimal": {
       "types": "./dist/core-minimal.d.ts",
       "import": "./dist/core-minimal.mjs",
@@ -104,16 +84,6 @@
       "import": "./dist/test-utils.mjs",
       "require": "./dist/test-utils.js"
     },
-    "./slim": {
-      "types": "./dist/slim.d.ts",
-      "import": "./dist/slim.mjs",
-      "require": "./dist/slim.js"
-    },
-    "./namespaced": {
-      "types": "./dist/namespaced.d.ts",
-      "import": "./dist/namespaced.mjs",
-      "require": "./dist/namespaced.js"
-    },
     "./styles.css": "./dist/styles/index.css",
     "./dist/styles/index.css": "./dist/styles/index.css"
   },
@@ -136,9 +106,8 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "tsup",
-    "build:production": "node scripts/build-production.cjs",
-    "build:sequential": "node scripts/build-sequential.cjs",
+    "build": "node scripts/build-production.cjs",
+    "build:sequential": "node scripts/build-sequential.js",
     "build:parallel": "tsup",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "dev": "tsup --watch",
@@ -154,9 +123,8 @@
     "test:memory": "NODE_OPTIONS='--max-old-space-size=2048' vitest run",
     "size": "size-limit",
     "size:why": "size-limit --why",
-    "verify-exports": "tsx scripts/verify-exports.ts",
     "prepublishOnly": "npm run clean && npm run build && npm run test",
-    "postbuild": "echo 'Skipping type declarations - tokenization utils need fixes'"
+    "postbuild": "npm run build:types"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -281,7 +280,7 @@ function ThemeBuilder() {
         setSaveEnabled(false)
       }
     } catch (error) {
-      logger.error('Failed to save theme:', error)
+      console.error('Failed to save theme:', error)
       alert('Failed to save theme')
     }
   }
@@ -525,7 +524,7 @@ function ThemeImporter() {
         setError(null)
       } catch (err) {
         setError('Failed to parse theme file')
-        logger.error(err)
+        console.error(err)
       }
     }
     reader.readAsText(file)

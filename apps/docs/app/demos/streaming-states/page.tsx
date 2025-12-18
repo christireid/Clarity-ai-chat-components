@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {
   Play,
   ChevronLeft,
-  RotateCcw,
+  RotateCw,
   Sparkles,
   Bot,
   User,
@@ -13,14 +13,19 @@ import {
   Copy,
   Check,
   Loader2,
-  ImageIcon,
-  ArrowRight
+  Image,
+  ArrowRight,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
 import { sleep } from '@/lib/demos/utils'
 import { useMountedRef, useCopyToClipboard } from '@/lib/demos/hooks'
-import { trackDemoViewed, trackDemoStarted, trackDemoCompleted, trackCodeCopied } from '@/lib/demos/analytics'
+import {
+  trackDemoViewed,
+  trackDemoStarted,
+  trackDemoCompleted,
+  trackCodeCopied,
+} from '@/lib/demos/analytics'
 
 type StreamingPhase =
   | 'idle'
@@ -201,8 +206,9 @@ export default function StreamingStatesDemo() {
               </span>
             </h1>
             <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-              Watch the complete streaming lifecycle: thinking indicators, character-by-character text,
-              live syntax highlighting, and polished transitions.
+              Watch the complete streaming lifecycle: thinking indicators,
+              character-by-character text, live syntax highlighting, and
+              polished transitions.
             </p>
           </div>
         </ScrollReveal>
@@ -223,12 +229,16 @@ export default function StreamingStatesDemo() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${info.color} ${
-                        phase === key ? 'animate-pulse' : ''
-                      }`} />
+                      <div
+                        className={`w-3 h-3 rounded-full ${info.color} ${
+                          phase === key ? 'animate-pulse' : ''
+                        }`}
+                      />
                       <div>
                         <div className="font-medium text-sm">{info.label}</div>
-                        <div className="text-xs text-text-secondary">{info.description}</div>
+                        <div className="text-xs text-text-secondary">
+                          {info.description}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -257,7 +267,7 @@ export default function StreamingStatesDemo() {
                     onClick={resetDemo}
                     className="w-full py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-text-primary rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   >
-                    <RotateCcw className="w-4 h-4" />
+                    <RotateCw className="w-4 h-4" />
                     Reset
                   </button>
                 </div>
@@ -283,7 +293,9 @@ export default function StreamingStatesDemo() {
                         </div>
                       </div>
                     </div>
-                    <div className={`w-3 h-3 rounded-full ${phases[phase].color} animate-pulse`} />
+                    <div
+                      className={`w-3 h-3 rounded-full ${phases[phase].color} animate-pulse`}
+                    />
                   </div>
                 </div>
 
@@ -295,7 +307,9 @@ export default function StreamingStatesDemo() {
                       <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div className="max-w-[75%] rounded-2xl rounded-tr-sm px-4 py-3 bg-brand-500 text-white">
-                      <p className="text-sm">Show me how streaming works with code and images!</p>
+                      <p className="text-sm">
+                        Show me how streaming works with code and images!
+                      </p>
                     </div>
                   </div>
 
@@ -340,14 +354,16 @@ export default function StreamingStatesDemo() {
                                         y: [0, -6, 0],
                                       }}
                                       transition={{
-                                        duration: 0.6,
+                                        duration: durations.slower,
                                         repeat: Infinity,
                                         delay: i * 0.1,
                                       }}
                                     />
                                   ))}
                                 </div>
-                                <span className="text-sm text-text-secondary ml-1">Thinking...</span>
+                                <span className="text-sm text-text-secondary ml-1">
+                                  Thinking...
+                                </span>
                               </div>
                             </motion.div>
                           )}
@@ -379,7 +395,9 @@ export default function StreamingStatesDemo() {
                             <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
                               <div className="flex items-center gap-2">
                                 <Code2 className="w-4 h-4 text-gray-400" />
-                                <span className="text-xs text-gray-400 font-mono">typescript</span>
+                                <span className="text-xs text-gray-400 font-mono">
+                                  typescript
+                                </span>
                               </div>
                               {showActions && (
                                 <button
@@ -415,8 +433,10 @@ export default function StreamingStatesDemo() {
                             {!showImage ? (
                               <div className="h-48 bg-bg-secondary animate-pulse flex items-center justify-center">
                                 <div className="text-center">
-                                  <ImageIcon className="w-8 h-8 text-text-secondary mx-auto mb-2" />
-                                  <span className="text-sm text-text-secondary">Loading image...</span>
+                                  <Image className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                                  <span className="text-sm text-text-secondary">
+                                    Loading image...
+                                  </span>
                                 </div>
                               </div>
                             ) : (
@@ -445,7 +465,7 @@ export default function StreamingStatesDemo() {
                                 Copy
                               </button>
                               <button className="px-3 py-1.5 text-xs bg-bg-secondary hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1">
-                                <RotateCcw className="w-3 h-3" />
+                                <RotateCw className="w-3 h-3" />
                                 Regenerate
                               </button>
                               <button className="px-3 py-1.5 text-xs bg-bg-secondary hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors">
@@ -482,15 +502,18 @@ export default function StreamingStatesDemo() {
             {[
               {
                 title: 'Character-by-Character',
-                description: 'Text streams smoothly with natural timing, not chunky blocks',
+                description:
+                  'Text streams smoothly with natural timing, not chunky blocks',
               },
               {
                 title: 'Live Syntax Highlighting',
-                description: 'Code is highlighted as it streams, not after completion',
+                description:
+                  'Code is highlighted as it streams, not after completion',
               },
               {
                 title: 'Skeleton States',
-                description: 'Images and media show loading states that feel native',
+                description:
+                  'Images and media show loading states that feel native',
               },
             ].map((feature) => (
               <div
@@ -498,7 +521,9 @@ export default function StreamingStatesDemo() {
                 className="p-6 rounded-xl border border-border bg-bg-secondary"
               >
                 <h3 className="font-bold mb-2">{feature.title}</h3>
-                <p className="text-sm text-text-secondary">{feature.description}</p>
+                <p className="text-sm text-text-secondary">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>

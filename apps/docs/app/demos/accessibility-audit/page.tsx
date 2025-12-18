@@ -6,7 +6,7 @@ import {
   Accessibility,
   ChevronLeft,
   Check,
-  Keyboard,
+  Command,
   Eye,
   Volume2,
   Moon,
@@ -14,7 +14,7 @@ import {
   ArrowRight,
   Play,
   Pause,
-  SkipForward
+  SkipForward,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
@@ -24,7 +24,7 @@ interface AccessibilityFeature {
   id: string
   title: string
   description: string
-  icon: typeof Keyboard
+  icon: typeof Command
   demo: string
   keyboardShortcut?: string
 }
@@ -33,29 +33,33 @@ const features: AccessibilityFeature[] = [
   {
     id: 'keyboard-nav',
     title: 'Full Keyboard Navigation',
-    description: 'Navigate the entire chat interface without a mouse. Tab through elements, Enter to send, Escape to cancel.',
-    icon: Keyboard,
+    description:
+      'Navigate the entire chat interface without a mouse. Tab through elements, Enter to send, Escape to cancel.',
+    icon: Command,
     demo: 'keyboard',
     keyboardShortcut: 'Tab, Enter, Esc',
   },
   {
     id: 'screen-reader',
     title: 'Screen Reader Support',
-    description: 'ARIA labels, live regions, and semantic HTML ensure screen readers announce messages correctly.',
+    description:
+      'ARIA labels, live regions, and semantic HTML ensure screen readers announce messages correctly.',
     icon: Volume2,
     demo: 'screenreader',
   },
   {
     id: 'focus-management',
     title: 'Focus Management',
-    description: 'Focus automatically moves to new messages and returns to input after actions.',
+    description:
+      'Focus automatically moves to new messages and returns to input after actions.',
     icon: Eye,
     demo: 'focus',
   },
   {
     id: 'high-contrast',
     title: 'High Contrast Mode',
-    description: 'WCAG 2.1 AA compliant colors with support for system high contrast preferences.',
+    description:
+      'WCAG 2.1 AA compliant colors with support for system high contrast preferences.',
     icon: Moon,
     demo: 'contrast',
   },
@@ -83,7 +87,8 @@ export default function AccessibilityAuditDemo() {
   const [currentStep, setCurrentStep] = useState(0)
   const [highContrast, setHighContrast] = useState(false)
   const [focusedElement, setFocusedElement] = useState<string | null>(null)
-  const [screenReaderAnnouncement, setScreenReaderAnnouncement] = useState<string>('')
+  const [screenReaderAnnouncement, setScreenReaderAnnouncement] =
+    useState<string>('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Track demo view
@@ -96,7 +101,7 @@ export default function AccessibilityAuditDemo() {
     if (!isPlaying || activeFeature !== 'keyboard-nav') return
 
     const interval = setInterval(() => {
-      setCurrentStep(prev => {
+      setCurrentStep((prev) => {
         if (prev >= keyboardDemo.length - 1) {
           setIsPlaying(false)
           return 0
@@ -126,7 +131,9 @@ export default function AccessibilityAuditDemo() {
   }
 
   return (
-    <div className={`container-docs py-12 ${highContrast ? 'contrast-more' : ''}`}>
+    <div
+      className={`container-docs py-12 ${highContrast ? 'contrast-more' : ''}`}
+    >
       <Link
         href="/demos"
         className="inline-flex items-center gap-2 text-text-secondary hover:text-brand-600 dark:hover:text-brand-400 mb-8 transition-colors"
@@ -179,11 +186,13 @@ export default function AccessibilityAuditDemo() {
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        isActive
-                          ? 'bg-teal-500 text-white'
-                          : 'bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-400'
-                      }`}>
+                      <div
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          isActive
+                            ? 'bg-teal-500 text-white'
+                            : 'bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-400'
+                        }`}
+                      >
                         <Icon className="w-5 h-5" />
                       </div>
                       <div>
@@ -214,11 +223,13 @@ export default function AccessibilityAuditDemo() {
           {/* Demo Area */}
           <ScrollReveal delay={0.2}>
             <div className="lg:col-span-2">
-              <div className={`rounded-2xl border-2 shadow-xl overflow-hidden ${
-                highContrast
-                  ? 'border-black dark:border-white bg-white dark:bg-black'
-                  : 'border-border bg-bg-primary'
-              }`}>
+              <div
+                className={`rounded-2xl border-2 shadow-xl overflow-hidden ${
+                  highContrast
+                    ? 'border-black dark:border-white bg-white dark:bg-black'
+                    : 'border-border bg-bg-primary'
+                }`}
+              >
                 {/* Demo Header */}
                 <div className="bg-gradient-to-r from-teal-500 to-green-600 px-6 py-4 text-white flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -227,7 +238,7 @@ export default function AccessibilityAuditDemo() {
                     </div>
                     <div>
                       <div className="font-semibold">
-                        {features.find(f => f.id === activeFeature)?.title}
+                        {features.find((f) => f.id === activeFeature)?.title}
                       </div>
                       <div className="text-xs opacity-90">Interactive Demo</div>
                     </div>
@@ -238,7 +249,11 @@ export default function AccessibilityAuditDemo() {
                       className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                       aria-label="Toggle high contrast mode"
                     >
-                      {highContrast ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                      {highContrast ? (
+                        <Sun className="w-5 h-5" />
+                      ) : (
+                        <Moon className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -251,10 +266,16 @@ export default function AccessibilityAuditDemo() {
                       {/* Controls */}
                       <div className="flex items-center gap-4">
                         <button
-                          onClick={isPlaying ? () => setIsPlaying(false) : startDemo}
+                          onClick={
+                            isPlaying ? () => setIsPlaying(false) : startDemo
+                          }
                           className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg font-medium flex items-center gap-2"
                         >
-                          {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                          {isPlaying ? (
+                            <Pause className="w-4 h-4" />
+                          ) : (
+                            <Play className="w-4 h-4" />
+                          )}
                           {isPlaying ? 'Pause' : 'Play Demo'}
                         </button>
                         <div className="text-sm text-text-secondary">
@@ -275,7 +296,9 @@ export default function AccessibilityAuditDemo() {
                             <kbd className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg shadow text-sm font-mono">
                               {keyboardDemo[currentStep].key}
                             </kbd>
-                            <span className="text-sm">{keyboardDemo[currentStep].action}</span>
+                            <span className="text-sm">
+                              {keyboardDemo[currentStep].action}
+                            </span>
                           </div>
                         </motion.div>
                       </AnimatePresence>
@@ -284,18 +307,25 @@ export default function AccessibilityAuditDemo() {
                       <div className="border border-border rounded-xl overflow-hidden">
                         {/* Messages */}
                         <div className="p-4 space-y-3 bg-bg-secondary">
-                          <div className={`p-3 rounded-lg bg-bg-primary border-2 transition-all ${
-                            focusedElement === 'actions' || focusedElement === 'copy'
-                              ? 'border-teal-500 ring-2 ring-teal-500/50'
-                              : 'border-transparent'
-                          }`}>
-                            <p className="text-sm">Here's a response with accessible actions.</p>
+                          <div
+                            className={`p-3 rounded-lg bg-bg-primary border-2 transition-all ${
+                              focusedElement === 'actions' ||
+                              focusedElement === 'copy'
+                                ? 'border-teal-500 ring-2 ring-teal-500/50'
+                                : 'border-transparent'
+                            }`}
+                          >
+                            <p className="text-sm">
+                              Here's a response with accessible actions.
+                            </p>
                             <div className="flex gap-2 mt-2">
-                              <button className={`px-3 py-1 text-xs rounded transition-all ${
-                                focusedElement === 'copy'
-                                  ? 'bg-teal-500 text-white ring-2 ring-teal-500/50'
-                                  : 'bg-gray-100 dark:bg-gray-800'
-                              }`}>
+                              <button
+                                className={`px-3 py-1 text-xs rounded transition-all ${
+                                  focusedElement === 'copy'
+                                    ? 'bg-teal-500 text-white ring-2 ring-teal-500/50'
+                                    : 'bg-gray-100 dark:bg-gray-800'
+                                }`}
+                              >
                                 Copy
                               </button>
                               <button className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-800 rounded">
@@ -337,24 +367,41 @@ export default function AccessibilityAuditDemo() {
                   {activeFeature === 'screen-reader' && (
                     <div className="space-y-6">
                       <p className="text-text-secondary">
-                        Screen reader users hear announcements as new messages arrive.
-                        Click the buttons below to simulate announcements.
+                        Screen reader users hear announcements as new messages
+                        arrive. Click the buttons below to simulate
+                        announcements.
                       </p>
 
                       <div className="grid grid-cols-2 gap-3">
                         {[
-                          { label: 'New Message', text: 'New message from Assistant: Hello! How can I help you today?' },
-                          { label: 'Typing Indicator', text: 'Assistant is typing...' },
-                          { label: 'Error State', text: 'Error: Message failed to send. Retry button available.' },
-                          { label: 'Message Sent', text: 'Your message was sent successfully.' },
+                          {
+                            label: 'New Message',
+                            text: 'New message from Assistant: Hello! How can I help you today?',
+                          },
+                          {
+                            label: 'Typing Indicator',
+                            text: 'Assistant is typing...',
+                          },
+                          {
+                            label: 'Error State',
+                            text: 'Error: Message failed to send. Retry button available.',
+                          },
+                          {
+                            label: 'Message Sent',
+                            text: 'Your message was sent successfully.',
+                          },
                         ].map((item) => (
                           <button
                             key={item.label}
                             onClick={() => announceToScreenReader(item.text)}
                             className="p-4 text-left rounded-lg bg-bg-secondary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border border-border"
                           >
-                            <div className="font-medium text-sm">{item.label}</div>
-                            <div className="text-xs text-text-secondary mt-1">Click to announce</div>
+                            <div className="font-medium text-sm">
+                              {item.label}
+                            </div>
+                            <div className="text-xs text-text-secondary mt-1">
+                              Click to announce
+                            </div>
                           </button>
                         ))}
                       </div>
@@ -381,12 +428,23 @@ export default function AccessibilityAuditDemo() {
                       </AnimatePresence>
 
                       <div className="p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
-                        <h4 className="font-medium mb-2">ARIA Attributes Used</h4>
+                        <h4 className="font-medium mb-2">
+                          ARIA Attributes Used
+                        </h4>
                         <ul className="text-sm text-text-secondary space-y-1">
-                          <li>• <code>role="log"</code> on message list</li>
-                          <li>• <code>aria-live="polite"</code> for new messages</li>
-                          <li>• <code>aria-label</code> on all interactive elements</li>
-                          <li>• <code>aria-busy</code> during loading states</li>
+                          <li>
+                            • <code>role="log"</code> on message list
+                          </li>
+                          <li>
+                            • <code>aria-live="polite"</code> for new messages
+                          </li>
+                          <li>
+                            • <code>aria-label</code> on all interactive
+                            elements
+                          </li>
+                          <li>
+                            • <code>aria-busy</code> during loading states
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -396,16 +454,31 @@ export default function AccessibilityAuditDemo() {
                   {activeFeature === 'focus-management' && (
                     <div className="space-y-6">
                       <p className="text-text-secondary">
-                        Focus automatically moves to relevant elements, ensuring users
-                        always know where they are in the interface.
+                        Focus automatically moves to relevant elements, ensuring
+                        users always know where they are in the interface.
                       </p>
 
                       <div className="space-y-4">
                         {[
-                          { scenario: 'New message arrives', behavior: 'Focus moves to message, then returns to input' },
-                          { scenario: 'Modal opens', behavior: 'Focus trapped inside modal until closed' },
-                          { scenario: 'Error occurs', behavior: 'Focus moves to error message with retry option' },
-                          { scenario: 'Dialog closes', behavior: 'Focus returns to the element that opened it' },
+                          {
+                            scenario: 'New message arrives',
+                            behavior:
+                              'Focus moves to message, then returns to input',
+                          },
+                          {
+                            scenario: 'Modal opens',
+                            behavior: 'Focus trapped inside modal until closed',
+                          },
+                          {
+                            scenario: 'Error occurs',
+                            behavior:
+                              'Focus moves to error message with retry option',
+                          },
+                          {
+                            scenario: 'Dialog closes',
+                            behavior:
+                              'Focus returns to the element that opened it',
+                          },
                         ].map((item, idx) => (
                           <div
                             key={idx}
@@ -416,8 +489,12 @@ export default function AccessibilityAuditDemo() {
                                 {idx + 1}
                               </div>
                               <div>
-                                <div className="font-medium">{item.scenario}</div>
-                                <div className="text-sm text-text-secondary mt-1">{item.behavior}</div>
+                                <div className="font-medium">
+                                  {item.scenario}
+                                </div>
+                                <div className="text-sm text-text-secondary mt-1">
+                                  {item.behavior}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -430,32 +507,55 @@ export default function AccessibilityAuditDemo() {
                   {activeFeature === 'high-contrast' && (
                     <div className="space-y-6">
                       <p className="text-text-secondary">
-                        All colors meet WCAG 2.1 AA contrast requirements. Toggle high contrast
-                        mode to see enhanced visibility.
+                        All colors meet WCAG 2.1 AA contrast requirements.
+                        Toggle high contrast mode to see enhanced visibility.
                       </p>
 
                       <button
                         onClick={() => setHighContrast(!highContrast)}
                         className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg font-medium flex items-center gap-2"
                       >
-                        {highContrast ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        {highContrast ? (
+                          <Sun className="w-4 h-4" />
+                        ) : (
+                          <Moon className="w-4 h-4" />
+                        )}
                         {highContrast ? 'Disable' : 'Enable'} High Contrast
                       </button>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <div className="font-medium">Color Contrast Ratios</div>
+                          <div className="font-medium">
+                            Color Contrast Ratios
+                          </div>
                           <div className="space-y-2 text-sm">
                             {[
-                              { label: 'Primary Text', ratio: '15.8:1', status: 'AAA' },
-                              { label: 'Secondary Text', ratio: '7.2:1', status: 'AA' },
+                              {
+                                label: 'Primary Text',
+                                ratio: '15.8:1',
+                                status: 'AAA',
+                              },
+                              {
+                                label: 'Secondary Text',
+                                ratio: '7.2:1',
+                                status: 'AA',
+                              },
                               { label: 'Links', ratio: '4.6:1', status: 'AA' },
-                              { label: 'Buttons', ratio: '5.1:1', status: 'AA' },
+                              {
+                                label: 'Buttons',
+                                ratio: '5.1:1',
+                                status: 'AA',
+                              },
                             ].map((item) => (
-                              <div key={item.label} className="flex items-center justify-between">
+                              <div
+                                key={item.label}
+                                className="flex items-center justify-between"
+                              >
                                 <span>{item.label}</span>
                                 <span className="flex items-center gap-2">
-                                  <span className="text-text-secondary">{item.ratio}</span>
+                                  <span className="text-text-secondary">
+                                    {item.ratio}
+                                  </span>
                                   <span className="px-1.5 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded text-xs">
                                     {item.status}
                                   </span>

@@ -1,7 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * useQuickOptimize Hook
- *
+ * 
  * Simplest possible hook for prompt optimization - zero configuration needed
  */
 
@@ -18,12 +17,7 @@ export interface UseQuickOptimizeOptions {
   /** Target tokens (defaults to 80% of model max) */
   targetTokens?: number
   /** Preset to use (defaults to 'balanced') */
-  preset?:
-    | 'conservative'
-    | 'balanced'
-    | 'aggressive'
-    | 'costOptimized'
-    | 'qualityFirst'
+  preset?: 'conservative' | 'balanced' | 'aggressive' | 'costOptimized' | 'qualityFirst'
   /** Whether to auto-optimize (defaults to true) */
   autoOptimize?: boolean
   /** Summarization function (optional) */
@@ -51,7 +45,7 @@ export interface UseQuickOptimizeReturn {
 
 /**
  * Simplest hook for prompt optimization
- *
+ * 
  * @example
  * ```tsx
  * const { optimizedMessages } = useQuickOptimize({
@@ -72,8 +66,7 @@ export function useQuickOptimize(
     summarizeFn,
   } = options
 
-  const [optimizedMessages, setOptimizedMessages] =
-    useState<CoreMessage[]>(messages)
+  const [optimizedMessages, setOptimizedMessages] = useState<CoreMessage[]>(messages)
   const [wasOptimized, setWasOptimized] = useState(false)
   const [tokenStats, setTokenStats] = useState({
     original: 0,
@@ -125,7 +118,7 @@ export function useQuickOptimize(
       setError(error)
       // Only log in development
       if (process.env.NODE_ENV === 'development') {
-        logger.error('[useQuickOptimize] Optimization failed:', error)
+        logger.logger.error('[useQuickOptimize] Optimization failed:', error)
       }
       // Fallback to original messages
       setOptimizedMessages(messages)

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * AI Assistant Template
  *
@@ -6,16 +5,16 @@ import { logger } from '@clarity-chat/utils/logger'
  */
 
 import { useState, useCallback } from 'react'
-import { ChatWindow } from '../components/chat/chat-window'
-import { ContextManager } from '../components/context/context-manager'
-import { ModelSelector } from '../components/ai/model-selector'
+import { ChatWindow } from '../components/chat-window'
+import { ContextManager } from '../components/context-manager'
+import { ModelSelector } from '../components/model-selector'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { aiAssistantTheme } from '../theme/modern-presets'
 import { openAIAdapter } from '../adapters/openai'
 import { anthropicAdapter } from '../adapters/anthropic'
 import { googleAdapter } from '../adapters/google'
-import { useLocalStorage } from '../hooks/storage/use-local-storage'
-import { useMessageOperations } from '../hooks/message/use-message-operations'
+import { useLocalStorage } from '../hooks/use-local-storage'
+import { useMessageOperations } from '../hooks/use-message-operations'
 import type { Message, Context } from '@clarity-chat/types'
 
 export interface AIAssistantTemplateProps {
@@ -271,7 +270,7 @@ export function AIAssistantTemplate({
               content: responseContent,
             })
           } catch (error) {
-            logger.error('AI Assistant error:', error)
+            logger.logger.error('AI Assistant error:', error)
             addOperationMessage({
               chatId,
               role: 'assistant',
@@ -401,7 +400,7 @@ export function AIAssistantTemplate({
           content: responseContent,
         })
       } catch (error) {
-        logger.error('AI Assistant error:', error)
+        logger.logger.error('AI Assistant error:', error)
         addOperationMessage({
           chatId,
           role: 'assistant',

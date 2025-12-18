@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -409,7 +408,7 @@ const apiKey = response.SecretString`}</code>
         <pre>
           <code>{`// Lambda function logging
 logger.debug('Request received:', JSON.stringify(event))
-logger.error('Error:', error.message)
+console.error('Error:', error.message)
 
 // Query logs with CloudWatch Insights
 fields @timestamp, @message

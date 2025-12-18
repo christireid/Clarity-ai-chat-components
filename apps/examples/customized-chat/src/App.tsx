@@ -1,6 +1,6 @@
 /**
  * Customized Chat Example
- *
+ * 
  * Shows how to customize ClarityChat with different options.
  */
 
@@ -11,7 +11,7 @@ export default function App() {
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <h1>Customized Chat Example</h1>
-
+      
       <ClarityChat
         api="/api/chat"
         theme="dark"

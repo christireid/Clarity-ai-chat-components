@@ -1,7 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * Intermediate Examples - Real-World Usage Patterns
- *
+ * 
  * These examples show slightly customized usage with basic real-world
  * features. Each example is 30-50 lines of code.
  */
@@ -18,16 +17,16 @@ import {
 
 /**
  * Example 1: Custom Chat with Header (35 lines)
- *
+ * 
  * Chat with custom header, session info, and message actions.
- *
+ * 
  * LOC: 35
  */
 export function Intermediate_CustomChat() {
   const { messages, sendMessage, isLoading, clearMessages } = useChat({
     api: '/api/chat',
   })
-
+  
   return (
     <ChatWindow
       messages={messages}
@@ -51,9 +50,9 @@ export function Intermediate_CustomChat() {
 
 /**
  * Example 2: Chat with Analytics (40 lines)
- *
+ * 
  * Chat with analytics tracking integrated.
- *
+ * 
  * LOC: 40
  */
 export function Intermediate_ChatWithAnalytics() {
@@ -74,9 +73,9 @@ export function Intermediate_ChatWithAnalytics() {
 
 /**
  * Example 3: Chat with Memory and Customization (45 lines)
- *
+ * 
  * Chat with memory enabled and custom styling.
- *
+ * 
  * LOC: 45
  */
 export function Intermediate_ChatWithMemoryCustom() {
@@ -102,23 +101,23 @@ export function Intermediate_ChatWithMemoryCustom() {
 
 /**
  * Example 4: Chat with Error Handling (50 lines)
- *
+ * 
  * Chat with custom error handling and retry logic.
- *
+ * 
  * LOC: 50
  */
 export function Intermediate_ChatWithErrorHandling() {
   const { messages, sendMessage, isLoading, error, chat } = useChat({
     api: '/api/chat',
   })
-
+  
   React.useEffect(() => {
     if (error) {
-      logger.error('Chat error:', error)
+      logger.logger.error('Chat error:', error)
       // Could integrate with error tracking service
     }
   }, [error])
-
+  
   return (
     <div className="h-screen flex flex-col">
       {error && (

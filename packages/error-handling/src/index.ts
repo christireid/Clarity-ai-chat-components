@@ -94,14 +94,6 @@ export {
   useIdLegacy as useIdLegacy,
 } from './accessibility'
 
-// Re-export legacy hooks with their original names for backward compatibility
-export {
-  useFocusTrap,
-  useAnnounce,
-  usePrefersReducedMotion,
-  useId,
-} from './hooks/useAccessibility'
-
 // Analytics hooks
 export {
   ErrorAnalyticsProvider,

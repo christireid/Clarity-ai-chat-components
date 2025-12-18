@@ -1,18 +1,17 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * Advanced Clarity Chat Example
- *
+ * 
  * Demonstrates advanced features of useClarityChat including:
  * - Custom message handlers
  * - Performance monitoring
  * - Analytics integration
  * - Error recovery
  * - Memory optimization
- *
+ * 
  * @example
  * ```tsx
  * import { ClarityChatAdvancedExample } from '@clarity-chat/react/examples'
- *
+ * 
  * function App() {
  *   return <ClarityChatAdvancedExample />
  * }
@@ -52,9 +51,7 @@ function PerformanceMetrics({
       <div className="grid grid-cols-2 gap-2 text-xs">
         <div>
           <span className="text-muted-foreground">Avg Response:</span>
-          <span className="ml-1 font-medium">
-            {metrics.averageResponseTime}ms
-          </span>
+          <span className="ml-1 font-medium">{metrics.averageResponseTime}ms</span>
         </div>
         <div>
           <span className="text-muted-foreground">Sent:</span>
@@ -70,9 +67,7 @@ function PerformanceMetrics({
         </div>
         <div className="col-span-2">
           <span className="text-muted-foreground">Errors:</span>
-          <span
-            className={`ml-1 font-medium ${metrics.errorCount > 0 ? 'text-destructive' : ''}`}
-          >
+          <span className={`ml-1 font-medium ${metrics.errorCount > 0 ? 'text-destructive' : ''}`}>
             {metrics.errorCount}
           </span>
         </div>
@@ -122,7 +117,7 @@ export function ClarityChatAdvancedExample() {
           memoryOperations: prev.memoryOperations + 1,
         }))
 
-        logger.error(`Memory ${operation} error:`, error)
+        logger.logger.error(`Memory ${operation} error:`, error)
       },
     },
     onFinish: async (message) => {
@@ -136,12 +131,12 @@ export function ClarityChatAdvancedExample() {
       if (requestStartTimeRef.current) {
         const responseTime = Date.now() - requestStartTimeRef.current
         setResponseTimes((prev) => [...prev, responseTime])
-
+        
         const avgResponseTime = Math.round(
           [...responseTimes, responseTime].reduce((a, b) => a + b, 0) /
-            (responseTimes.length + 1)
+          (responseTimes.length + 1)
         )
-
+        
         setMetrics((prev) => ({
           ...prev,
           averageResponseTime: avgResponseTime,
@@ -242,7 +237,7 @@ export function ClarityChatAdvancedExample() {
       {memoryErrorInfo.memoryError && (
         <div className="border-t bg-destructive/10 px-4 py-2">
           <p className="text-sm text-destructive">
-            Memory {memoryErrorInfo.memoryErrorOperation} error:
+            Memory {memoryErrorInfo.memoryErrorOperation} error: 
             {memoryErrorInfo.memoryError.message}
           </p>
         </div>

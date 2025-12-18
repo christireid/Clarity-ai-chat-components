@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * RAG (Retrieval-Augmented Generation)
  *
@@ -90,7 +89,7 @@ export async function retrieveRelevantDocs(
 
     return filteredResults
   } catch (error) {
-    logger.error('Error in retrieveRelevantDocs:', error)
+    console.error('Error in retrieveRelevantDocs:', error)
 
     // Last resort: try keyword search with very low threshold
     const keywordResults = searchDocumentation(query, {

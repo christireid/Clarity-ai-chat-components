@@ -1,6 +1,6 @@
 /**
  * Next.js API Route Example - Framework-Agnostic Memory Usage
- *
+ * 
  * File: app/api/chat/route.ts
  */
 
@@ -16,9 +16,9 @@ function getMemoryService(): MemoryService {
       tokenOptimization: {
         maxContextWindow: 8192,
         allocation: {
-          systemPrompt: 0.1,
+          systemPrompt: 0.10,
           userPreferences: 0.15,
-          recentContext: 0.3,
+          recentContext: 0.30,
           semanticMemory: 0.25,
           episodicMemory: 0.15,
           responseReserve: 0.05,
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Build context
-    const context = memories.map((r) => r.memory.content).join('\n\n')
+    const context = memories.map(r => r.memory.content).join('\n\n')
 
     // Call LLM (OpenAI, Anthropic, etc.)
     const response = await generateResponse(message, context)
@@ -130,13 +130,10 @@ export async function GET() {
   }
 }
 
-async function generateResponse(
-  message: string,
-  context: string
-): Promise<string> {
+async function generateResponse(message: string, context: string): Promise<string> {
   // Your LLM call here
   // const openai = new OpenAI()
   // const completion = await openai.chat.completions.create({...})
-
+  
   return `Response to: ${message}`
 }

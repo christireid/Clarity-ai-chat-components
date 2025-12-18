@@ -1,6 +1,6 @@
 /**
  * Node.js Express Example - Framework-Agnostic Memory Usage
- *
+ * 
  * This example shows how to use @clarity-chat/memory in a Node.js backend
  */
 
@@ -12,9 +12,9 @@ const memoryConfig: MemoryServiceConfig = {
   tokenOptimization: {
     maxContextWindow: 4096,
     allocation: {
-      systemPrompt: 0.1,
+      systemPrompt: 0.10,
       userPreferences: 0.15,
-      recentContext: 0.3,
+      recentContext: 0.30,
       semanticMemory: 0.25,
       episodicMemory: 0.15,
       responseReserve: 0.05,
@@ -62,7 +62,7 @@ app.post('/api/chat', async (req, res) => {
     })
 
     // Build context for LLM
-    const context = memories.map((r) => r.memory.content).join('\n\n')
+    const context = memories.map(r => r.memory.content).join('\n\n')
 
     // Call your LLM (OpenAI, Anthropic, etc.)
     const llmResponse = await callLLM(message, context)
@@ -119,7 +119,7 @@ app.get('/api/preferences/:userId', async (req, res) => {
     })
 
     res.json({
-      preferences: preferences.map((r) => ({
+      preferences: preferences.map(r => ({
         key: r.memory.metadata.preferenceKey,
         value: r.memory.metadata.preferenceValue,
         confidence: r.memory.confidence,

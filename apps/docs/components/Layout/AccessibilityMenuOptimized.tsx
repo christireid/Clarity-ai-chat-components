@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Accessibility, Settings, Palette, Eye, Volume2, X } from 'lucide-react';

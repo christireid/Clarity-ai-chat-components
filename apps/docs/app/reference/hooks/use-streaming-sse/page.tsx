@@ -23,7 +23,7 @@ function BasicSSEDemo() {
       logger.debug('Received event:', event)
     },
     onError: (err) => {
-      logger.error('SSE Error:', err)
+      console.error('SSE Error:', err)
     },
   })
 
@@ -419,7 +419,7 @@ function SSEWithAuth() {
     onError: (error) => {
       if (error.message.includes('401')) {
         // Handle authentication error
-        logger.error('Authentication failed')
+        console.error('Authentication failed')
       }
     },
   })
@@ -458,7 +458,7 @@ function SSEWithReconnect() {
       logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
-      logger.error('Max reconnection attempts reached')
+      console.error('Max reconnection attempts reached')
     },
   })
 
@@ -504,7 +504,7 @@ function SSEWithEventHandling() {
           logger.debug('Message:', event.data)
           break
         case 'error':
-          logger.error('Error event:', event.data)
+          console.error('Error event:', event.data)
           break
         case 'done':
           logger.debug('Stream complete')
@@ -631,7 +631,7 @@ function CompleteSSEExample() {
       }
     },
     onError: (err) => {
-      logger.error('SSE Error:', err)
+      console.error('SSE Error:', err)
     },
     onReconnecting: (attempt, delay) => {
       logger.debug(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)

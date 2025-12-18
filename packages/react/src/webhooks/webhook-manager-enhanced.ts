@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * Enhanced Webhook Manager (SECURITY FIXED)
  *
@@ -100,7 +99,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
       verifySignatures: config?.verifySignatures ?? true,
       maxTimestampAge: config?.maxTimestampAge ?? 5 * 60 * 1000, // 5 minutes
       persistDeliveries: config?.persistDeliveries ?? false,
-      deliveryStorage: config?.deliveryStorage ?? (undefined as any),
+      deliveryStorage: config?.deliveryStorage ?? undefined as any,
       enableHealthMonitoring: config?.enableHealthMonitoring ?? true,
       rateLimitPerEndpoint: config?.rateLimitPerEndpoint ?? 60,
     }
@@ -130,7 +129,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
         }
       }
     } catch (error) {
-      logger.error('Failed to load pending deliveries:', error)
+      logger.logger.error('Failed to load pending deliveries:', error)
     }
   }
 
@@ -138,10 +137,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
    * Register a webhook endpoint
    */
   register(endpoint: WebhookEndpoint): void {
-    this.endpoints.set(endpoint.id, {
-      ...endpoint,
-      enabled: endpoint.enabled ?? true,
-    })
+    this.endpoints.set(endpoint.id, { ...endpoint, enabled: endpoint.enabled ?? true })
 
     // Initialize health monitoring
     if (this.config.enableHealthMonitoring) {
@@ -205,7 +201,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
     let requests = this.rateLimiters.get(endpointId) || []
 
     // Remove old requests outside window
-    requests = requests.filter((timestamp) => now - timestamp < windowMs)
+    requests = requests.filter(timestamp => now - timestamp < windowMs)
 
     // Check if rate limit exceeded
     if (requests.length >= this.config.rateLimitPerEndpoint) {
@@ -228,10 +224,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
     const endpoints = Array.from(this.endpoints.values())
     for (const endpoint of endpoints) {
       if (!endpoint.enabled) continue
-      if (
-        !endpoint.events.includes(event.type) &&
-        !endpoint.events.includes('*')
-      ) {
+      if (!endpoint.events.includes(event.type) && !endpoint.events.includes('*')) {
         continue
       }
 
@@ -251,10 +244,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
   /**
    * Deliver event to specific endpoint
    */
-  async deliver(
-    event: WebhookEvent,
-    endpoint: WebhookEndpoint
-  ): Promise<WebhookDelivery> {
+  async deliver(event: WebhookEvent, endpoint: WebhookEndpoint): Promise<WebhookDelivery> {
     const delivery: WebhookDelivery = {
       id: this.generateId(),
       eventId: event.id,
@@ -276,10 +266,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
 
       try {
         const controller = new AbortController()
-        const timeout = setTimeout(
-          () => controller.abort(),
-          this.config.timeout
-        )
+        const timeout = setTimeout(() => controller.abort(), this.config.timeout)
 
         // Add timestamp to prevent replay attacks
         const eventWithTimestamp = {
@@ -370,10 +357,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
   /**
    * Retry failed delivery
    */
-  private async retryDelivery(
-    delivery: WebhookDelivery,
-    endpoint: WebhookEndpoint
-  ): Promise<void> {
+  private async retryDelivery(delivery: WebhookDelivery, endpoint: WebhookEndpoint): Promise<void> {
     // Implementation similar to deliver but using existing delivery
     // This would be called for pending deliveries on restart
   }
@@ -401,9 +385,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
 
     // Convert to hex string
     const hashArray = Array.from(new Uint8Array(signatureBuffer))
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
     return `sha256=${hashHex}`
   }
@@ -446,7 +428,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
 
       return result === 0
     } catch (error) {
-      logger.error('Signature verification error:', error)
+      logger.logger.error('Signature verification error:', error)
       return false
     }
   }
@@ -454,11 +436,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
   /**
    * Update endpoint health metrics
    */
-  private updateEndpointHealth(
-    endpointId: string,
-    success: boolean,
-    responseTime: number
-  ): void {
+  private updateEndpointHealth(endpointId: string, success: boolean, responseTime: number): void {
     if (!this.config.enableHealthMonitoring) return
 
     const health = this.endpointHealth.get(endpointId)
@@ -476,13 +454,11 @@ export class EnhancedWebhookManager implements WebhookHandler {
 
     // Update average response time (running average)
     health.averageResponseTime =
-      (health.averageResponseTime * (health.totalDeliveries - 1) +
-        responseTime) /
+      (health.averageResponseTime * (health.totalDeliveries - 1) + responseTime) /
       health.totalDeliveries
 
     // Update success rate
-    health.successRate =
-      (health.successfulDeliveries / health.totalDeliveries) * 100
+    health.successRate = (health.successfulDeliveries / health.totalDeliveries) * 100
 
     // Determine health status (healthy if >95% success rate)
     health.isHealthy = health.successRate >= 95
@@ -509,20 +485,14 @@ export class EnhancedWebhookManager implements WebhookHandler {
     healthyEndpoints: number
     unhealthyEndpoints: number
   } {
-    const healthyEndpoints = Array.from(this.endpointHealth.values()).filter(
-      (h) => h.isHealthy
-    ).length
+    const healthyEndpoints = Array.from(this.endpointHealth.values()).filter(h => h.isHealthy).length
     const unhealthyEndpoints = this.endpointHealth.size - healthyEndpoints
 
     return {
       totalEndpoints: this.endpoints.size,
-      activeEndpoints: Array.from(this.endpoints.values()).filter(
-        (e) => e.enabled
-      ).length,
+      activeEndpoints: Array.from(this.endpoints.values()).filter((e) => e.enabled).length,
       totalDeliveries: this.deliveryQueue.length,
-      failedDeliveries: this.deliveryQueue.filter(
-        (d) => d.deliveryStatus === 'failed'
-      ).length,
+      failedDeliveries: this.deliveryQueue.filter((d) => d.deliveryStatus === 'failed').length,
       healthyEndpoints,
       unhealthyEndpoints,
     }
@@ -550,13 +520,13 @@ export class MemoryWebhookDeliveryStorage implements WebhookDeliveryStorage {
   }
 
   async getPendingDeliveries(): Promise<WebhookDelivery[]> {
-    return this.deliveries.filter(
-      (d) => d.deliveryStatus === 'pending' || d.deliveryStatus === 'retrying'
+    return this.deliveries.filter(d =>
+      d.deliveryStatus === 'pending' || d.deliveryStatus === 'retrying'
     )
   }
 
   async updateDelivery(delivery: WebhookDelivery): Promise<void> {
-    const index = this.deliveries.findIndex((d) => d.id === delivery.id)
+    const index = this.deliveries.findIndex(d => d.id === delivery.id)
     if (index >= 0) {
       this.deliveries[index] = delivery
     }
@@ -564,7 +534,7 @@ export class MemoryWebhookDeliveryStorage implements WebhookDeliveryStorage {
 
   async deleteOlderThan(timestamp: number): Promise<number> {
     const before = this.deliveries.length
-    this.deliveries = this.deliveries.filter((d) => d.timestamp >= timestamp)
+    this.deliveries = this.deliveries.filter(d => d.timestamp >= timestamp)
     return before - this.deliveries.length
   }
 

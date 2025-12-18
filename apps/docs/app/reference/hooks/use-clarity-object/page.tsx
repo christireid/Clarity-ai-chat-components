@@ -414,7 +414,7 @@ function UserGenerator() {
           code={`const { object, run, isLoading, error, reset } = useClarityObject<Product[]>({
   api: '/api/generate-products',
   onError: (error) => {
-    logger.error('Generation error:', error)
+    console.error('Generation error:', error)
     // Send to error tracking service
     if (typeof errorTrackingService !== 'undefined') {
       errorTrackingService.captureException(error)
@@ -485,7 +485,7 @@ function BlogPostGenerator() {
       // Save to database, etc.
     },
     onError: (error) => {
-      logger.error('Error:', error)
+      console.error('Error:', error)
     },
   })
 
@@ -598,7 +598,7 @@ export async function POST(req: Request) {
     // Return the products array
     return NextResponse.json(content.products || [])
   } catch (error) {
-    logger.error('Product generation error:', error)
+    console.error('Product generation error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

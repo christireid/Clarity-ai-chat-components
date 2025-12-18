@@ -10,7 +10,7 @@ import {
   Sparkles,
   Download,
   Zap,
-  TreePine,
+  Trees,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
@@ -45,8 +45,8 @@ const competitors: BundleInfo[] = [
     gzipped: 8.5,
     color: 'bg-green-500',
     features: [
-      '200+ components',
-      '140+ hooks',
+      '70+ components',
+      '35+ hooks',
       'Memory',
       'Streaming',
       'Full theming',
@@ -325,7 +325,7 @@ export default function BundleComparisonDemo() {
           <div className="p-8 rounded-2xl bg-bg-secondary border border-border">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900 flex items-center justify-center">
-                <TreePine className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+                <Trees className="w-5 h-5 text-sky-600 dark:text-sky-400" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold">Tree Shaking in Action</h2>

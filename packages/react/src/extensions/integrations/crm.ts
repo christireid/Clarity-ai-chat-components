@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * CRM & Customer Support Extensions
  *
@@ -731,7 +730,7 @@ export function createDriftExtension(
             win.driftt || ([] as unknown as DriftStub))
         if (!t.load) {
           if (t.invoked) {
-            logger.error('Drift snippet included twice.')
+            logger.logger.error('Drift snippet included twice.')
           } else {
             t.invoked = true
             t.methods = [

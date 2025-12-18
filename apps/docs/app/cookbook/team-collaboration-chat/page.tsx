@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'

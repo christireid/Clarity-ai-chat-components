@@ -5,17 +5,17 @@ import { useState } from 'react'
 
 /**
  * **useStreaming Hook**
- *
+ * 
  * Generic streaming hook for handling ReadableStream data with automatic
  * text decoding and state management.
- *
+ * 
  * **Key Features:**
  * - Automatic text decoding from Uint8Array
  * - Chunk-by-chunk processing with callbacks
  * - AbortController support for cancellation
  * - Complete content accumulation
  * - Error handling
- *
+ * 
  * **Use Cases:**
  * - Streaming API responses (OpenAI, Anthropic, etc.)
  * - Large file processing
@@ -64,13 +64,10 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 // Helper to create a mock stream
-function createMockStream(
-  text: string,
-  delay = 50
-): ReadableStream<Uint8Array> {
+function createMockStream(text: string, delay = 50): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()
   const chunks = text.split('')
-
+  
   return new ReadableStream({
     async start(controller) {
       for (const char of chunks) {
@@ -83,24 +80,23 @@ function createMockStream(
 }
 
 function BasicStreamingDemo() {
-  const { content, isStreaming, startStreaming, stopStreaming, reset } =
-    useStreaming({
-      onChunk: (chunk) => {
-        console.log('Chunk received:', chunk)
-      },
-      onComplete: (full) => {
-        console.log('Streaming complete:', full)
-      },
-      onError: (error) => {
-        console.error('Streaming error:', error)
-      },
-    })
+  const { content, isStreaming, startStreaming, stopStreaming, reset } = useStreaming({
+    onChunk: (chunk) => {
+      console.log('Chunk received:', chunk)
+    },
+    onComplete: (full) => {
+      console.log('Streaming complete:', full)
+    },
+    onError: (error) => {
+      console.error('Streaming error:', error)
+    },
+  })
 
   const handleStart = async () => {
     const stream = createMockStream(
       'This is a streaming response that appears character by character. ' +
-        'Each character is streamed individually to demonstrate the progressive ' +
-        'rendering capability of the useStreaming hook.'
+      'Each character is streamed individually to demonstrate the progressive ' +
+      'rendering capability of the useStreaming hook.'
     )
     await startStreaming(stream)
   }
@@ -111,9 +107,7 @@ function BasicStreamingDemo() {
         <div className="text-sm font-medium mb-2">Streamed Content:</div>
         <div className="text-sm whitespace-pre-wrap min-h-[150px]">
           {content || (
-            <span className="text-muted-foreground">
-              No content yet. Click "Start Streaming" to begin.
-            </span>
+            <span className="text-muted-foreground">No content yet. Click "Start Streaming" to begin.</span>
           )}
           {isStreaming && (
             <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse" />
@@ -125,11 +119,7 @@ function BasicStreamingDemo() {
         <Button onClick={handleStart} disabled={isStreaming}>
           Start Streaming
         </Button>
-        <Button
-          variant="outline"
-          onClick={stopStreaming}
-          disabled={!isStreaming}
-        >
+        <Button variant="outline" onClick={stopStreaming} disabled={!isStreaming}>
           Stop Streaming
         </Button>
         <Button variant="outline" onClick={reset} disabled={isStreaming}>
@@ -184,7 +174,7 @@ function StreamingWithCallbacks() {
     setChunks([])
     setCompleted(false)
     setError(null)
-
+    
     const stream = createMockStream('Hello, World! This is a test stream.', 100)
     await startStreaming(stream)
   }
@@ -195,16 +185,12 @@ function StreamingWithCallbacks() {
         <div>
           <div className="text-sm font-medium mb-2">Accumulated Content:</div>
           <div className="text-sm p-3 bg-muted rounded min-h-[100px]">
-            {content || (
-              <span className="text-muted-foreground">No content</span>
-            )}
+            {content || <span className="text-muted-foreground">No content</span>}
           </div>
         </div>
 
         <div>
-          <div className="text-sm font-medium mb-2">
-            Chunks Received ({chunks.length}):
-          </div>
+          <div className="text-sm font-medium mb-2">Chunks Received ({chunks.length}):</div>
           <div className="text-xs space-y-1 max-h-[150px] overflow-y-auto">
             {chunks.length === 0 ? (
               <span className="text-muted-foreground">No chunks yet</span>
@@ -267,22 +253,19 @@ export const WithCallbacks: Story = {
 }
 
 function StreamingWithCancellation() {
-  const { content, isStreaming, startStreaming, stopStreaming, reset } =
-    useStreaming()
+  const { content, isStreaming, startStreaming, stopStreaming, reset } = useStreaming()
 
   const handleStart = async () => {
     // Create a long stream that can be cancelled
     const stream = createMockStream(
       'This is a very long stream that will take a while to complete. ' +
-        'You can cancel it at any time by clicking the Stop button. ' +
-        'The stream will be interrupted and the content will stop accumulating. '.repeat(
-          5
-        ),
+      'You can cancel it at any time by clicking the Stop button. ' +
+      'The stream will be interrupted and the content will stop accumulating. '.repeat(5),
       30
     )
-
+    
     const controller = new AbortController()
-
+    
     try {
       await startStreaming(stream, { signal: controller.signal })
     } catch (error: any) {
@@ -314,11 +297,7 @@ function StreamingWithCancellation() {
         <Button onClick={handleStart} disabled={isStreaming}>
           Start Long Stream
         </Button>
-        <Button
-          variant="destructive"
-          onClick={handleStop}
-          disabled={!isStreaming}
-        >
+        <Button variant="destructive" onClick={handleStop} disabled={!isStreaming}>
           Stop Streaming
         </Button>
         <Button variant="outline" onClick={reset} disabled={isStreaming}>
@@ -327,9 +306,8 @@ function StreamingWithCancellation() {
       </div>
 
       <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-xs">
-        <strong>Cancellation:</strong> Start a long stream and click "Stop
-        Streaming" to cancel it mid-flight. The content will stop accumulating
-        immediately.
+        <strong>Cancellation:</strong> Start a long stream and click "Stop Streaming" 
+        to cancel it mid-flight. The content will stop accumulating immediately.
       </div>
 
       <div className="p-3 bg-muted rounded-lg text-xs space-y-1">
@@ -369,8 +347,8 @@ function StreamingFromAPI() {
       return {
         body: createMockStream(
           'This simulates streaming from an API endpoint. ' +
-            'In a real application, this would be the response body from fetch(). ' +
-            'The useStreaming hook automatically decodes the stream and accumulates the content.'
+          'In a real application, this would be the response body from fetch(). ' +
+          'The useStreaming hook automatically decodes the stream and accumulates the content.'
         ),
       } as Response
     })
@@ -415,9 +393,8 @@ function StreamingFromAPI() {
       </div>
 
       <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-xs">
-        <strong>Note:</strong> This demo uses a mock stream since the API
-        endpoint doesn't exist. In production, replace with your actual API
-        endpoint that returns a ReadableStream.
+        <strong>Note:</strong> This demo uses a mock stream since the API endpoint doesn't exist.
+        In production, replace with your actual API endpoint that returns a ReadableStream.
       </div>
     </div>
   )

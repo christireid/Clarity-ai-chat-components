@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -105,7 +104,7 @@ export default async function CommercialPage({ params }: CommercialPageProps) {
 
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.error(`Failed to read commercial page: ${slug}`, error)
+    console.error(`Failed to read commercial page: ${slug}`, error)
     notFound()
   }
 

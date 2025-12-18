@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * Built-in error tracking providers
  *
@@ -22,7 +21,7 @@ function safeDevLog(...args: unknown[]): void {
 
 function safeDevError(...args: unknown[]): void {
   if (!isDev()) return
-  logger.error(...args)
+  logger.logger.error(...args)
 }
 
 function hasLocalStorage(): boolean {
@@ -419,11 +418,11 @@ export function createConsoleErrorProvider(): ErrorProvider {
       logger.debug(`%c${report.severity.toUpperCase()}`, style, report.message)
 
       if (report.stack) {
-        logger.error('Stack:', report.stack)
+        logger.logger.error('Stack:', report.stack)
       }
 
       if (report.componentStack) {
-        logger.error('Component Stack:', report.componentStack)
+        logger.logger.error('Component Stack:', report.componentStack)
       }
 
       if (report.context) {

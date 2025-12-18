@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * Extension Registry
  *
@@ -91,7 +90,7 @@ class StateManagerImpl implements ExtensionStateManager {
       try {
         cb(value)
       } catch (e) {
-        logger.error('State subscriber error:', e)
+        logger.logger.error('State subscriber error:', e)
       }
     })
   }
@@ -145,7 +144,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
       try {
         handler(data)
       } catch (e) {
-        logger.error(`Event handler error for ${event}:`, e)
+        logger.logger.error(`Event handler error for ${event}:`, e)
       }
     })
 
@@ -156,7 +155,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
         try {
           handler(data)
         } catch (e) {
-          logger.error(`Once handler error for ${event}:`, e)
+          logger.logger.error(`Once handler error for ${event}:`, e)
         }
       })
       this.onceHandlers.delete(event)
@@ -818,7 +817,7 @@ export class ExtensionRegistryImpl implements ExtensionRegistry {
       try {
         handler(eventData)
       } catch (e) {
-        logger.error('Registry event handler error:', e)
+        logger.logger.error('Registry event handler error:', e)
       }
     })
   }

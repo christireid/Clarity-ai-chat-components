@@ -1,4 +1,3 @@
-import { logger } from '../logger'
 /**
  * Progress Tracking Utilities
  *
@@ -27,7 +26,7 @@ import { logger } from '../logger'
 
 import { formatDuration } from '../format/index.js'
 
-import { debug, warn } from '../logger'
+import { debug, error, warn } from '../logger';
 
 // Spinner interface matching ora's API
 interface Spinner {
@@ -45,6 +44,8 @@ type OraFactory = (options: {
   spinner?: string
   isSilent?: boolean
 }) => Spinner
+
+
 
 let oraFactory: OraFactory | null | undefined = undefined // undefined = not loaded yet
 let currentSpinner: Spinner | null = null
@@ -118,7 +119,7 @@ function createFallbackSpinner(initialText: string): Spinner {
     },
     fail: (msg?: string) => {
       isActive = false
-      logger.error(`✗ ${msg ?? currentText}`)
+      error(`✗ ${msg ?? currentText}`)
       return fallback
     },
     warn: (msg?: string) => {

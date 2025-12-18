@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils'
 /**
  * Utility functions for error handling
  */
@@ -12,7 +11,7 @@ export function formatError(error: Error | ClarityError): string {
   if (error instanceof ClarityError) {
     return error.toTerminalString()
   }
-
+  
   return `\n❌ Error: ${error.message}\n\n${error.stack}\n`
 }
 
@@ -21,12 +20,12 @@ export function formatError(error: Error | ClarityError): string {
  */
 export function logError(error: Error | ClarityError): void {
   if (error instanceof ClarityError) {
-    logger.error(error.toTerminalString())
+    logger.logger.error(error.toTerminalString())
   } else {
-    logger.error('\n❌ Unexpected Error:', error.message)
-    logger.error('\nStack trace:')
-    logger.error(error.stack)
-    logger.error('')
+    logger.logger.error('\n❌ Unexpected Error:', error.message)
+    logger.logger.error('\nStack trace:')
+    logger.logger.error(error.stack)
+    logger.logger.error('')
   }
 }
 
@@ -41,7 +40,7 @@ export function handleError(error: Error | ClarityError): {
     const statusCode = getStatusCode(error.code)
     return {
       statusCode,
-      body: error.toJSON(),
+      body: error.toJSON()
     }
   }
 
@@ -51,8 +50,8 @@ export function handleError(error: Error | ClarityError): {
     body: {
       code: 'INTERNAL_ERROR',
       message: 'An unexpected error occurred',
-      technicalMessage: error.message,
-    },
+      technicalMessage: error.message
+    }
   }
 }
 
@@ -62,28 +61,28 @@ export function handleError(error: Error | ClarityError): {
 function getStatusCode(errorCode: string): number {
   const statusCodes: Record<string, number> = {
     // Client errors (400-499)
-    VALIDATION_ERROR: 400,
-    INVALID_INPUT: 400,
-    MISSING_FIELD: 400,
-    TYPE_MISMATCH: 400,
-    INVALID_CONFIG: 400,
-
+    'VALIDATION_ERROR': 400,
+    'INVALID_INPUT': 400,
+    'MISSING_FIELD': 400,
+    'TYPE_MISMATCH': 400,
+    'INVALID_CONFIG': 400,
+    
     // Authentication/Authorization (401-403)
-    API_KEY_MISSING: 401,
-    API_AUTHENTICATION_FAILED: 401,
-
+    'API_KEY_MISSING': 401,
+    'API_AUTHENTICATION_FAILED': 401,
+    
     // Not found (404)
-    FILE_NOT_FOUND: 404,
-    DEPENDENCY_MISSING: 404,
-
+    'FILE_NOT_FOUND': 404,
+    'DEPENDENCY_MISSING': 404,
+    
     // Rate limiting (429)
-    API_RATE_LIMIT: 429,
-
+    'API_RATE_LIMIT': 429,
+    
     // Server errors (500-599)
-    API_NETWORK_ERROR: 503,
-    API_RESPONSE_ERROR: 502,
-    PORT_IN_USE: 500,
-    ENV_VAR_MISSING: 500,
+    'API_NETWORK_ERROR': 503,
+    'API_RESPONSE_ERROR': 502,
+    'PORT_IN_USE': 500,
+    'ENV_VAR_MISSING': 500
   }
 
   return statusCodes[errorCode] || 500
@@ -93,16 +92,18 @@ function getStatusCode(errorCode: string): number {
  * Create error handler middleware for Next.js API routes
  */
 export function createErrorHandler() {
-  return function errorHandler(handler: (req: any, res: any) => Promise<any>) {
+  return function errorHandler(
+    handler: (req: any, res: any) => Promise<any>
+  ) {
     return async (req: any, res: any) => {
       try {
         return await handler(req, res)
       } catch (error) {
         const { statusCode, body } = handleError(error as Error)
-
+        
         // Log error for debugging
         logError(error as Error)
-
+        
         // Send error response
         res.status(statusCode).json(body)
       }

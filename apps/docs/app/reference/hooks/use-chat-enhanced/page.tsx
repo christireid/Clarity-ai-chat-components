@@ -304,7 +304,7 @@ function Chat() {
   const { messages, append, error, isLoading } = useChatEnhanced({
     api: '/api/chat',
     onError: (error) => {
-      logger.error('Chat error:', error)
+      console.error('Chat error:', error)
       // Send to error tracking service
     },
   })

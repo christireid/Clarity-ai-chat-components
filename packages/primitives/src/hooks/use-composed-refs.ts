@@ -72,7 +72,7 @@ export function composeRefs<T>(
  *
  *     React.useEffect(() => {
  *       // Can access via internalRef.current
- *       logger.debug(internalRef.current?.offsetWidth)
+ *       console.log(internalRef.current?.offsetWidth)
  *     }, [])
  *
  *     return <button ref={composedRef} {...props} />

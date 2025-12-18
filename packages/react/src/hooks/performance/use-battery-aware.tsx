@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 
 /**
@@ -217,7 +216,7 @@ export function useBatteryAware(config?: Partial<BatteryAwareConfig>) {
         setError(
           err instanceof Error ? err : new Error('Failed to access battery API')
         )
-        logger.error('Battery API error:', err)
+        logger.logger.error('Battery API error:', err)
         return undefined
       }
     }

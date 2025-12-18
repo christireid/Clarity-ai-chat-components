@@ -1,6 +1,6 @@
 /**
  * Complex Chat Example - Enterprise-Grade Usage
- *
+ * 
  * This example demonstrates advanced usage of Clarity Chat with:
  * - Custom layout with sidebar
  * - Memory integration
@@ -8,7 +8,7 @@
  * - Error handling
  * - Custom styling
  * - Analytics integration
- *
+ * 
  * This shows how to build a production-ready chat application
  * with enterprise features while maintaining simplicity.
  */
@@ -58,9 +58,7 @@ function ChatHeader() {
     <div className="p-4 border-b flex items-center justify-between">
       <div>
         <h1 className="font-semibold">Enterprise Chat</h1>
-        <p className="text-sm text-muted-foreground">
-          AI Assistant with Memory
-        </p>
+        <p className="text-sm text-muted-foreground">AI Assistant with Memory</p>
       </div>
       <div className="flex gap-2">
         <button className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded">

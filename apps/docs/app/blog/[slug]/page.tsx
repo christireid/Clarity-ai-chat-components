@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -84,7 +83,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const filePath = join(process.cwd(), 'content', 'blog', `${slug}.md`)
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.error(`Failed to read blog post: ${slug}`, error)
+    console.error(`Failed to read blog post: ${slug}`, error)
     notFound()
   }
 

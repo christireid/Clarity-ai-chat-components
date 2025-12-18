@@ -6,7 +6,6 @@ import {
   staggerItem,
   cardAnimation,
   iconHover,
-  springs,
   durations,
 } from '@/lib/animations'
 

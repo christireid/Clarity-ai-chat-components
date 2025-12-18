@@ -1,7 +1,3 @@
-import { getLogger } from '../debug/logger'
-
-const logger = getLogger('profiler')
-
 /**
  * Performance profiler for AI chat applications
  * 
@@ -16,20 +12,7 @@ import type { TableColumn } from '../ui/table'
 import { table, keyValueTable } from '../ui/table'
 import { infoBox } from '../ui/box'
 import chalk from 'chalk'
-// Helper functions for formatting
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-function formatDuration(ms: number): string {
-  if (ms < 1) return `${(ms * 1000).toFixed(2)}µs`
-  if (ms < 1000) return `${ms.toFixed(2)}ms`
-  return `${(ms / 1000).toFixed(2)}s`
-}
+import { formatBytes, formatDuration } from '@clarity-chat/utils/format'
 export interface PerformanceMetrics {
   name: string
   startTime: number
@@ -264,9 +247,9 @@ class Profiler {
       `Average Duration: ${chalk.cyan(summary.avgDuration.toFixed(2) + 'ms')}`,
     ].join('\n')
 
-    logger.debug()
-    logger.debug(infoBox(summaryContent, '📊 Performance Summary'))
-    logger.debug()
+    console.debug()
+    console.debug(infoBox(summaryContent, '📊 Performance Summary'))
+    console.debug()
 
     // Operations table
     const operations = this.getAllMetrics()
@@ -298,8 +281,8 @@ class Profiler {
         ]
       })
 
-      logger.debug(table(tableData, columns))
-      logger.debug()
+      console.debug(table(tableData, columns))
+      console.debug()
 
       // Highlight slowest/fastest
       if (summary.slowestOperation && summary.fastestOperation) {
@@ -309,8 +292,8 @@ class Profiler {
           chalk.yellow('🐌 Slowest: ') + chalk.red(summary.slowestOperation.name) + 
             chalk.gray(` (${summary.slowestOperation.duration?.toFixed(2)}ms)`),
         ].join('\n')
-        logger.debug(infoBox(highlight, '⚡ Highlights'))
-        logger.debug()
+        console.debug(infoBox(highlight, '⚡ Highlights'))
+        console.debug()
       }
     }
   }
@@ -334,11 +317,11 @@ class Profiler {
       'Max': chalk.yellow(metrics.maxChunkTime.toFixed(2) + 'ms'),
     }
 
-    logger.debug()
-    logger.debug(infoBox(keyValueTable(metricsData), '📡 Streaming Performance'))
-    logger.debug()
-    logger.debug(infoBox(keyValueTable(timingData), '⏱️  Chunk Timing'))
-    logger.debug()
+    console.debug()
+    console.debug(infoBox(keyValueTable(metricsData), '📡 Streaming Performance'))
+    console.debug()
+    console.debug(infoBox(keyValueTable(timingData), '⏱️  Chunk Timing'))
+    console.debug()
   }
 
   /**
