@@ -1,8 +1,1 @@
-export {
-  CloseIcon,
-  CharacterCount,
-  LoadingIcon,
-  SuccessIcon,
-  ErrorIcon,
-  Icons,
-} from './components/icons'
+export { useMagnetic, type UseMagneticOptions } from './hooks/use-magnetic'
