@@ -12,7 +12,7 @@
 import type {
   CoreMessage,
   CoreMessageContent,
-} from '../hooks/use-chat-enhanced'
+} from '../../hooks/chat/use-chat-enhanced'
 import { estimateTokens } from '../tokenization/estimator'
 
 /**

@@ -5,24 +5,24 @@
  * Each preset includes light and dark variants.
  *
  * Available themes (30 total):
- * 
+ *
  * Core Themes:
  * - Default: Clean professional with indigo accents
  * - Neutral: Minimal monochrome (Linear-inspired)
  * - Vibrant: Bold purple/pink theme
  * - High Contrast: WCAG AAA accessible
- * 
+ *
  * 2025 Trending Themes:
  * - Glassmorphism: Modern glass effects with transparency
  * - Aurora: Dynamic flowing gradients
  * - Neumorphism: Soft extruded UI with tactile realism
- * 
+ *
  * Nature-Inspired Themes:
  * - Ocean: Calming blue-teal inspired by the sea
  * - Sunset: Warm orange/amber theme
  * - Forest: Natural green nature theme
  * - Rose: Elegant pink-rose theme
- * 
+ *
  * Professional Themes:
  * - Midnight: Deep purple night theme
  * - Slate: Sophisticated professional gray
@@ -121,7 +121,11 @@ export {
   glassmorphismThemeMetadata,
 }
 
-import { auroraLightTheme, auroraDarkTheme, auroraThemeMetadata } from './aurora'
+import {
+  auroraLightTheme,
+  auroraDarkTheme,
+  auroraThemeMetadata,
+} from './aurora'
 export { auroraLightTheme, auroraDarkTheme, auroraThemeMetadata }
 
 import {
@@ -129,11 +133,7 @@ import {
   neumorphismDarkTheme,
   neumorphismThemeMetadata,
 } from './neumorphism'
-export {
-  neumorphismLightTheme,
-  neumorphismDarkTheme,
-  neumorphismThemeMetadata,
-}
+export { neumorphismLightTheme, neumorphismDarkTheme, neumorphismThemeMetadata }
 
 /**
  * All available theme presets (30 themes)
@@ -206,371 +206,370 @@ export type ModernThemePresetName = keyof typeof modernThemes
 /**
  * Theme metadata for modern presets
  */
-export const modernThemeMetadata: Record<ModernThemePresetName, ThemeMetadata> =
-  {
-    default: {
-      name: 'default',
-      displayName: 'Default',
-      description: 'Clean, professional theme with indigo accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#6366f1',
-        secondaryColor: '#f4f4f5',
-        backgroundColor: '#ffffff',
-      },
+export const modernThemeMetadata: Record<string, ThemeMetadata> = {
+  default: {
+    name: 'default',
+    displayName: 'Default',
+    description: 'Clean, professional theme with indigo accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#6366f1',
+      secondaryColor: '#f4f4f5',
+      backgroundColor: '#ffffff',
     },
-    'default-dark': {
-      name: 'default-dark',
-      displayName: 'Default Dark',
-      description: 'Sleek dark theme with indigo accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#818cf8',
-        secondaryColor: '#27272a',
-        backgroundColor: '#18181b',
-      },
+  },
+  'default-dark': {
+    name: 'default-dark',
+    displayName: 'Default Dark',
+    description: 'Sleek dark theme with indigo accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#818cf8',
+      secondaryColor: '#27272a',
+      backgroundColor: '#18181b',
     },
-    neutral: {
-      name: 'neutral',
-      displayName: 'Neutral',
-      description: 'Minimal, monochrome design inspired by Linear',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#171717',
-        secondaryColor: '#f5f5f5',
-        backgroundColor: '#ffffff',
-      },
+  },
+  neutral: {
+    name: 'neutral',
+    displayName: 'Neutral',
+    description: 'Minimal, monochrome design inspired by Linear',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#171717',
+      secondaryColor: '#f5f5f5',
+      backgroundColor: '#ffffff',
     },
-    'neutral-dark': {
-      name: 'neutral-dark',
-      displayName: 'Neutral Dark',
-      description: 'True dark mode with white accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#f5f5f5',
-        secondaryColor: '#262626',
-        backgroundColor: '#0a0a0a',
-      },
+  },
+  'neutral-dark': {
+    name: 'neutral-dark',
+    displayName: 'Neutral Dark',
+    description: 'True dark mode with white accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#f5f5f5',
+      secondaryColor: '#262626',
+      backgroundColor: '#0a0a0a',
     },
-    vibrant: {
-      name: 'vibrant',
-      displayName: 'Vibrant',
-      description: 'Bold purple theme with pink accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#a855f7',
-        secondaryColor: '#f5d0fe',
-        backgroundColor: '#ffffff',
-      },
+  },
+  vibrant: {
+    name: 'vibrant',
+    displayName: 'Vibrant',
+    description: 'Bold purple theme with pink accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#a855f7',
+      secondaryColor: '#f5d0fe',
+      backgroundColor: '#ffffff',
     },
-    'vibrant-dark': {
-      name: 'vibrant-dark',
-      displayName: 'Vibrant Dark',
-      description: 'Deep purple dark theme with bright accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#c084fc',
-        secondaryColor: '#3b2d4d',
-        backgroundColor: '#0f0a14',
-      },
+  },
+  'vibrant-dark': {
+    name: 'vibrant-dark',
+    displayName: 'Vibrant Dark',
+    description: 'Deep purple dark theme with bright accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#c084fc',
+      secondaryColor: '#3b2d4d',
+      backgroundColor: '#0f0a14',
     },
-    'high-contrast': {
-      name: 'high-contrast',
-      displayName: 'High Contrast',
-      description: 'WCAG AAA compliant, maximum accessibility',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#1d4ed8',
-        secondaryColor: '#f0f0f0',
-        backgroundColor: '#ffffff',
-      },
+  },
+  'high-contrast': {
+    name: 'high-contrast',
+    displayName: 'High Contrast',
+    description: 'WCAG AAA compliant, maximum accessibility',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#1d4ed8',
+      secondaryColor: '#f0f0f0',
+      backgroundColor: '#ffffff',
     },
-    'high-contrast-dark': {
-      name: 'high-contrast-dark',
-      displayName: 'High Contrast Dark',
-      description: 'WCAG AAA compliant dark theme',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#93c5fd',
-        secondaryColor: '#262626',
-        backgroundColor: '#000000',
-      },
+  },
+  'high-contrast-dark': {
+    name: 'high-contrast-dark',
+    displayName: 'High Contrast Dark',
+    description: 'WCAG AAA compliant dark theme',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#93c5fd',
+      secondaryColor: '#262626',
+      backgroundColor: '#000000',
     },
-    // New themes
-    ocean: {
-      name: 'ocean',
-      displayName: 'Ocean',
-      description: 'Calming blue-teal theme inspired by the sea',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#0ea5e9',
-        secondaryColor: '#ecfeff',
-        backgroundColor: '#ffffff',
-      },
+  },
+  // New themes
+  ocean: {
+    name: 'ocean',
+    displayName: 'Ocean',
+    description: 'Calming blue-teal theme inspired by the sea',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#0ea5e9',
+      secondaryColor: '#ecfeff',
+      backgroundColor: '#ffffff',
     },
-    'ocean-dark': {
-      name: 'ocean-dark',
-      displayName: 'Ocean Dark',
-      description: 'Deep sea colors with bright blue accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#38bdf8',
-        secondaryColor: '#164e63',
-        backgroundColor: '#0c1929',
-      },
+  },
+  'ocean-dark': {
+    name: 'ocean-dark',
+    displayName: 'Ocean Dark',
+    description: 'Deep sea colors with bright blue accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#38bdf8',
+      secondaryColor: '#164e63',
+      backgroundColor: '#0c1929',
     },
-    sunset: {
-      name: 'sunset',
-      displayName: 'Sunset',
-      description: 'Warm, energetic orange theme with golden accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#f97316',
-        secondaryColor: '#fef3c7',
-        backgroundColor: '#fffbf5',
-      },
+  },
+  sunset: {
+    name: 'sunset',
+    displayName: 'Sunset',
+    description: 'Warm, energetic orange theme with golden accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#f97316',
+      secondaryColor: '#fef3c7',
+      backgroundColor: '#fffbf5',
     },
-    'sunset-dark': {
-      name: 'sunset-dark',
-      displayName: 'Sunset Dark',
-      description: 'Rich amber depths with glowing orange accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#fb923c',
-        secondaryColor: '#422006',
-        backgroundColor: '#1a1410',
-      },
+  },
+  'sunset-dark': {
+    name: 'sunset-dark',
+    displayName: 'Sunset Dark',
+    description: 'Rich amber depths with glowing orange accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#fb923c',
+      secondaryColor: '#422006',
+      backgroundColor: '#1a1410',
     },
-    forest: {
-      name: 'forest',
-      displayName: 'Forest',
-      description: 'Natural green theme inspired by lush forests',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#16a34a',
-        secondaryColor: '#dcfce7',
-        backgroundColor: '#fbfefb',
-      },
+  },
+  forest: {
+    name: 'forest',
+    displayName: 'Forest',
+    description: 'Natural green theme inspired by lush forests',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#16a34a',
+      secondaryColor: '#dcfce7',
+      backgroundColor: '#fbfefb',
     },
-    'forest-dark': {
-      name: 'forest-dark',
-      displayName: 'Forest Dark',
-      description: 'Deep woodland with luminous green accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#22c55e',
-        secondaryColor: '#14532d',
-        backgroundColor: '#0a1a0e',
-      },
+  },
+  'forest-dark': {
+    name: 'forest-dark',
+    displayName: 'Forest Dark',
+    description: 'Deep woodland with luminous green accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#22c55e',
+      secondaryColor: '#14532d',
+      backgroundColor: '#0a1a0e',
     },
-    rose: {
-      name: 'rose',
-      displayName: 'Rose',
-      description: 'Elegant pink-rose theme for creative applications',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#e11d48',
-        secondaryColor: '#fce7f3',
-        backgroundColor: '#fffbfc',
-      },
+  },
+  rose: {
+    name: 'rose',
+    displayName: 'Rose',
+    description: 'Elegant pink-rose theme for creative applications',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#e11d48',
+      secondaryColor: '#fce7f3',
+      backgroundColor: '#fffbfc',
     },
-    'rose-dark': {
-      name: 'rose-dark',
-      displayName: 'Rose Dark',
-      description: 'Deep burgundy with vibrant rose accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#fb7185',
-        secondaryColor: '#4c0519',
-        backgroundColor: '#1a0a10',
-      },
+  },
+  'rose-dark': {
+    name: 'rose-dark',
+    displayName: 'Rose Dark',
+    description: 'Deep burgundy with vibrant rose accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#fb7185',
+      secondaryColor: '#4c0519',
+      backgroundColor: '#1a0a10',
     },
-    midnight: {
-      name: 'midnight',
-      displayName: 'Midnight',
-      description: 'Deep purple theme for immersive experiences',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#7c3aed',
-        secondaryColor: '#ede9fe',
-        backgroundColor: '#fcfbff',
-      },
+  },
+  midnight: {
+    name: 'midnight',
+    displayName: 'Midnight',
+    description: 'Deep purple theme for immersive experiences',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#7c3aed',
+      secondaryColor: '#ede9fe',
+      backgroundColor: '#fcfbff',
     },
-    'midnight-dark': {
-      name: 'midnight-dark',
-      displayName: 'Midnight Dark',
-      description: 'Deep night sky with luminous purple accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#a78bfa',
-        secondaryColor: '#2e1065',
-        backgroundColor: '#0d0712',
-      },
+  },
+  'midnight-dark': {
+    name: 'midnight-dark',
+    displayName: 'Midnight Dark',
+    description: 'Deep night sky with luminous purple accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#a78bfa',
+      secondaryColor: '#2e1065',
+      backgroundColor: '#0d0712',
     },
-    slate: {
-      name: 'slate',
-      displayName: 'Slate',
-      description: 'Sophisticated professional gray theme',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#475569',
-        secondaryColor: '#e2e8f0',
-        backgroundColor: '#fcfdfe',
-      },
+  },
+  slate: {
+    name: 'slate',
+    displayName: 'Slate',
+    description: 'Sophisticated professional gray theme',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#475569',
+      secondaryColor: '#e2e8f0',
+      backgroundColor: '#fcfdfe',
     },
-    'slate-dark': {
-      name: 'slate-dark',
-      displayName: 'Slate Dark',
-      description: 'Deep slate with refined gray accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#94a3b8',
-        secondaryColor: '#1e293b',
-        backgroundColor: '#0f172a',
-      },
+  },
+  'slate-dark': {
+    name: 'slate-dark',
+    displayName: 'Slate Dark',
+    description: 'Deep slate with refined gray accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#94a3b8',
+      secondaryColor: '#1e293b',
+      backgroundColor: '#0f172a',
     },
-    emerald: {
-      name: 'emerald',
-      displayName: 'Emerald',
-      description: 'Rich, luxurious green theme for premium apps',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#059669',
-        secondaryColor: '#d1fae5',
-        backgroundColor: '#f9fefc',
-      },
+  },
+  emerald: {
+    name: 'emerald',
+    displayName: 'Emerald',
+    description: 'Rich, luxurious green theme for premium apps',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#059669',
+      secondaryColor: '#d1fae5',
+      backgroundColor: '#f9fefc',
     },
-    'emerald-dark': {
-      name: 'emerald-dark',
-      displayName: 'Emerald Dark',
-      description: 'Deep jade with luminous emerald accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#34d399',
-        secondaryColor: '#064e3b',
-        backgroundColor: '#0a1a14',
-      },
+  },
+  'emerald-dark': {
+    name: 'emerald-dark',
+    displayName: 'Emerald Dark',
+    description: 'Deep jade with luminous emerald accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#34d399',
+      secondaryColor: '#064e3b',
+      backgroundColor: '#0a1a14',
     },
-    amber: {
-      name: 'amber',
-      displayName: 'Amber',
-      description: 'Warm golden theme inspired by honey and amber',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#d97706',
-        secondaryColor: '#fef3c7',
-        backgroundColor: '#fffdf7',
-      },
+  },
+  amber: {
+    name: 'amber',
+    displayName: 'Amber',
+    description: 'Warm golden theme inspired by honey and amber',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#d97706',
+      secondaryColor: '#fef3c7',
+      backgroundColor: '#fffdf7',
     },
-    'amber-dark': {
-      name: 'amber-dark',
-      displayName: 'Amber Dark',
-      description: 'Deep bronze with glowing amber accents',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#f59e0b',
-        secondaryColor: '#451a03',
-        backgroundColor: '#1a1308',
-      },
+  },
+  'amber-dark': {
+    name: 'amber-dark',
+    displayName: 'Amber Dark',
+    description: 'Deep bronze with glowing amber accents',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#f59e0b',
+      secondaryColor: '#451a03',
+      backgroundColor: '#1a1308',
     },
-    // 2025 Trending Themes
-    glassmorphism: {
-      name: 'glassmorphism',
-      displayName: 'Glassmorphism',
-      description: 'Modern glass effects with transparency and depth',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#3b82f6',
-        secondaryColor: '#f0f9ff',
-        backgroundColor: '#ffffff',
-      },
+  },
+  // 2025 Trending Themes
+  glassmorphism: {
+    name: 'glassmorphism',
+    displayName: 'Glassmorphism',
+    description: 'Modern glass effects with transparency and depth',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#3b82f6',
+      secondaryColor: '#f0f9ff',
+      backgroundColor: '#ffffff',
     },
-    'glassmorphism-dark': {
-      name: 'glassmorphism-dark',
-      displayName: 'Glassmorphism Dark',
-      description: 'Frosted glass effects with dark transparency',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#60a5fa',
-        secondaryColor: '#1e3a8a',
-        backgroundColor: '#0a0a0a',
-      },
+  },
+  'glassmorphism-dark': {
+    name: 'glassmorphism-dark',
+    displayName: 'Glassmorphism Dark',
+    description: 'Frosted glass effects with dark transparency',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#60a5fa',
+      secondaryColor: '#1e3a8a',
+      backgroundColor: '#0a0a0a',
     },
-    aurora: {
-      name: 'aurora',
-      displayName: 'Aurora',
-      description: 'Dynamic flowing gradients inspired by northern lights',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#8b5cf6',
-        secondaryColor: '#f3e8ff',
-        backgroundColor: '#ffffff',
-      },
+  },
+  aurora: {
+    name: 'aurora',
+    displayName: 'Aurora',
+    description: 'Dynamic flowing gradients inspired by northern lights',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#8b5cf6',
+      secondaryColor: '#f3e8ff',
+      backgroundColor: '#ffffff',
     },
-    'aurora-dark': {
-      name: 'aurora-dark',
-      displayName: 'Aurora Dark',
-      description: 'Deep cosmic gradients with luminous aurora effects',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#a78bfa',
-        secondaryColor: '#581c87',
-        backgroundColor: '#0a0a0a',
-      },
+  },
+  'aurora-dark': {
+    name: 'aurora-dark',
+    displayName: 'Aurora Dark',
+    description: 'Deep cosmic gradients with luminous aurora effects',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#a78bfa',
+      secondaryColor: '#581c87',
+      backgroundColor: '#0a0a0a',
     },
-    neumorphism: {
-      name: 'neumorphism',
-      displayName: 'Neumorphism',
-      description: 'Soft extruded UI with tactile realism and depth',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#6366f1',
-        secondaryColor: '#f4f4f5',
-        backgroundColor: '#f8fafc',
-      },
+  },
+  neumorphism: {
+    name: 'neumorphism',
+    displayName: 'Neumorphism',
+    description: 'Soft extruded UI with tactile realism and depth',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#6366f1',
+      secondaryColor: '#f4f4f5',
+      backgroundColor: '#f8fafc',
     },
-    'neumorphism-dark': {
-      name: 'neumorphism-dark',
-      displayName: 'Neumorphism Dark',
-      description: 'Dark neumorphic design with soft shadows and highlights',
-      author: 'Clarity Chat',
-      version: '2.0.0',
-      preview: {
-        primaryColor: '#818cf8',
-        secondaryColor: '#1e293b',
-        backgroundColor: '#0f172a',
-      },
+  },
+  'neumorphism-dark': {
+    name: 'neumorphism-dark',
+    displayName: 'Neumorphism Dark',
+    description: 'Dark neumorphic design with soft shadows and highlights',
+    author: 'Clarity Chat',
+    version: '2.0.0',
+    preview: {
+      primaryColor: '#818cf8',
+      secondaryColor: '#1e293b',
+      backgroundColor: '#0f172a',
     },
-  }
+  },
+}
 
 /**
  * Get all modern theme names
@@ -628,7 +627,7 @@ export function getModernLightVariant(
 /**
  * Get themes by category
  */
-export function getThemesByCategory(): Record<string, ModernThemePresetName[]> {
+export function getThemesByCategory(): Record<string, string[]> {
   return {
     professional: [
       'default',

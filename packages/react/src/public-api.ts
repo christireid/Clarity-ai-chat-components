@@ -132,12 +132,11 @@ export type {
 // ESSENTIAL TYPES
 // ============================================================================
 
-export type {
-  // Message types
-  MessageContent,
-  MessageRole,
-  CoreMessage,
-} from './types/chat-types'
+// Message types - MessageContent and MessageRole are generic types that need CoreMessage
+export type { MessageContent, MessageRole } from './types/chat-types'
+
+// Core message type from the source
+export type { CoreMessage } from './hooks/chat/use-chat-enhanced'
 
 export type {
   // Configuration types

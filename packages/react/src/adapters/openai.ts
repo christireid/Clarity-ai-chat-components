@@ -9,8 +9,8 @@
  */
 
 import type { ModelAdapter, ToolCall } from './types'
-import { fetchWithTimeout } from '../utils/fetch-with-timeout'
-import { parseRateLimitHeaders } from '../utils/rate-limit-headers'
+import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
+import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import {
   validateApiKey,
   createRateLimitError,
