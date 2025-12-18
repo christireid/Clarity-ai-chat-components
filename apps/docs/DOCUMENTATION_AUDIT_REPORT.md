@@ -343,15 +343,6 @@ The documentation site has been remediated and is ready for commercial launch:
 | Add FAQ page | ✅ Done | Created in Phase 2 |
 | Improve search | ⏳ Future | Search infrastructure already in place |
 
-### Phase 5.5: AI Assistant Enhancement ✅ COMPLETE
-
-| Task | Status | Notes |
-|------|--------|-------|
-| Curated components | ✅ Done | 28 curated components in AI API |
-| Curated hooks | ✅ Done | 23+ curated hooks in AI API |
-| Add llms.txt | ✅ Done | Comprehensive llms.txt exists |
-| Enterprise docs in API | ✅ Done | 4 components + 3 hooks added (RBAC, SSO, Tenant, Audit) |
-
 ### Phase 5.4: Example Validation ✅ VERIFIED
 
 **Scope**: Ensure all examples are copy-paste runnable
