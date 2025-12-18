@@ -218,7 +218,7 @@ export function ConversationSharing({
       await navigator.clipboard.writeText(link)
       onLinkCopied?.(link)
     } catch (error) {
-      logger.logger.error('Failed to copy link:', error)
+      logger.error('Failed to copy link:', error)
     }
   }
 

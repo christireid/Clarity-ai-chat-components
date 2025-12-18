@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from './logger';
 /**
  * Enhanced TypeScript Strict Mode Utilities
  * 
@@ -29,7 +29,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * ```
  */
 
-import { error, debug } from './logger';
+import { debug } from './logger';
 
 // ============================================================================
 // Core Strict Types

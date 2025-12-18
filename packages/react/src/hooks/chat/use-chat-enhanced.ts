@@ -201,7 +201,7 @@ export interface UseChatReturn {
  *   api: '/api/chat',
  *   initialMessages: [],
  *   onFinish: (message) => logger.debug('Finished:', message),
- *   onError: (error) => logger.logger.error('Error:', error),
+ *   onError: (error) => logger.error('Error:', error),
  * })
  * ```
  */

@@ -87,7 +87,7 @@ export class DashboardErrorBoundary extends React.Component<
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log to error reporting service
-    logger.logger.error(
+    logger.error(
       `[DashboardErrorBoundary] Error in ${this.props.widgetName || 'widget'}:`,
       error,
       errorInfo

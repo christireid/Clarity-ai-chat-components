@@ -130,7 +130,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
         }
       }
     } catch (error) {
-      logger.logger.error('Failed to load pending deliveries:', error)
+      logger.error('Failed to load pending deliveries:', error)
     }
   }
 
@@ -429,7 +429,7 @@ export class EnhancedWebhookManager implements WebhookHandler {
 
       return result === 0
     } catch (error) {
-      logger.logger.error('Signature verification error:', error)
+      logger.error('Signature verification error:', error)
       return false
     }
   }

@@ -312,7 +312,7 @@ export function CustomChatWithToolsWorkflow() {
       logger.debug('Message sent:', content)
     },
     onMessageError: (error) => {
-      logger.logger.error('Failed to send message:', error)
+      logger.error('Failed to send message:', error)
     },
   })
 

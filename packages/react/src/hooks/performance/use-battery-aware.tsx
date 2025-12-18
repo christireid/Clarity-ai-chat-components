@@ -217,7 +217,7 @@ export function useBatteryAware(config?: Partial<BatteryAwareConfig>) {
         setError(
           err instanceof Error ? err : new Error('Failed to access battery API')
         )
-        logger.logger.error('Battery API error:', err)
+        logger.error('Battery API error:', err)
         return undefined
       }
     }

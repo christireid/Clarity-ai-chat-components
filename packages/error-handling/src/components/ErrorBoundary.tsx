@@ -122,14 +122,14 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryProps, ErrorState> {
     // Log error details in development
     if (process.env['NODE_ENV'] === 'development') {
       logger.debug('🚨 Clarity Chat Error')
-      logger.logger.error('Error:', error)
+      logger.error('Error:', error)
 
       if (error instanceof ClarityChatError) {
-        logger.logger.error('\n' + error.toString())
+        logger.error('\n' + error.toString())
       }
 
-      logger.logger.error('Component Stack:', errorInfo.componentStack)
-      logger.debug()
+      logger.error('Component Stack:', errorInfo.componentStack)
+      logger.debug('--- End Error Report ---')
     }
   }
 

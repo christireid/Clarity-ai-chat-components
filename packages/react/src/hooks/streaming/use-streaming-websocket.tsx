@@ -396,7 +396,7 @@ export function useStreamingWebSocket(
 
       // Handle errors
       ws.addEventListener('error', (event) => {
-        logger.logger.error('[useStreamingWebSocket] Error:', event)
+        logger.error('[useStreamingWebSocket] Error:', event)
         setError(event)
         setStatus('error')
         setReadyState(ws.readyState)
@@ -437,7 +437,7 @@ export function useStreamingWebSocket(
             connect()
           }, delay)
         } else if (reconnectAttempt >= maxReconnectAttempts) {
-          logger.logger.error(
+          logger.error(
             '[useStreamingWebSocket] Max reconnection attempts reached'
           )
           onMaxReconnectAttemptsReached?.()
@@ -445,7 +445,7 @@ export function useStreamingWebSocket(
         }
       })
     } catch (err) {
-      logger.logger.error('[useStreamingWebSocket] Connection error:', err)
+      logger.error('[useStreamingWebSocket] Connection error:', err)
       setStatus('error')
       setError(err as Event)
     }
@@ -527,7 +527,7 @@ export function useStreamingWebSocket(
         wsRef.current.send(payload as string | ArrayBuffer | Blob)
         return true
       } catch (err) {
-        logger.logger.error('[useStreamingWebSocket] Send error:', err)
+        logger.error('[useStreamingWebSocket] Send error:', err)
         return false
       }
     },

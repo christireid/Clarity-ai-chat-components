@@ -143,7 +143,7 @@ export function useChatSimple(
         onError?.(error)
         // Log error for debugging
         if (process.env['NODE_ENV'] === 'development') {
-          logger.logger.error('[useChatSimple] Send failed:', error)
+          logger.error('[useChatSimple] Send failed:', error)
         }
         throw error
       }

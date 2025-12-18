@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '../logger';
 /**
  * Error Handling Utilities
  *
@@ -7,7 +7,7 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import { ClarityError } from './base.js'
 
-import { error } from '../logger';
+
 
 /**
  * Format any error for display

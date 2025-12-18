@@ -57,7 +57,7 @@ function EnterpriseChatInner() {
       }
     },
     onMessageError: (error) => {
-      logger.logger.error('Message error:', error)
+      logger.error('Message error:', error)
     },
   })
 
@@ -273,7 +273,7 @@ export function CustomStreamingChat() {
       reset()
     },
     onError: (error) => {
-      logger.logger.error('Streaming error:', error)
+      logger.error('Streaming error:', error)
       setIsLoading(false)
     },
   })
@@ -295,7 +295,7 @@ export function CustomStreamingChat() {
 
       await startStreaming(response.body)
     } catch (error) {
-      logger.logger.error('Streaming error:', error)
+      logger.error('Streaming error:', error)
       setIsLoading(false)
     }
   }, [startStreaming])

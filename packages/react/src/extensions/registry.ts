@@ -91,7 +91,7 @@ class StateManagerImpl implements ExtensionStateManager {
       try {
         cb(value)
       } catch (e) {
-        logger.logger.error('State subscriber error:', e)
+        logger.error('State subscriber error:', e)
       }
     })
   }
@@ -123,7 +123,7 @@ class LoggerImpl implements ExtensionLogger {
   }
 
   logger.error(message: string, ...args: unknown[]): void {
-    logger.logger.error(`[${this.prefix}]`, message, ...args)
+    logger.error(`[${this.prefix}]`, message, ...args)
   }
 
   child(childPrefix: string): ExtensionLogger {
@@ -145,7 +145,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
       try {
         handler(data)
       } catch (e) {
-        logger.logger.error(`Event handler error for ${event}:`, e)
+        logger.error(`Event handler error for ${event}:`, e)
       }
     })
 
@@ -156,7 +156,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
         try {
           handler(data)
         } catch (e) {
-          logger.logger.error(`Once handler error for ${event}:`, e)
+          logger.error(`Once handler error for ${event}:`, e)
         }
       })
       this.onceHandlers.delete(event)
@@ -818,7 +818,7 @@ export class ExtensionRegistryImpl implements ExtensionRegistry {
       try {
         handler(eventData)
       } catch (e) {
-        logger.logger.error('Registry event handler error:', e)
+        logger.error('Registry event handler error:', e)
       }
     })
   }

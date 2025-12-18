@@ -145,7 +145,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
                 )
                 setHighlightedCode(highlighted)
               } catch (error) {
-                logger.logger.error('Prism highlighting error:', error)
+                logger.error('Prism highlighting error:', error)
                 setHighlightedCode(codeString)
               }
             } else {

@@ -587,7 +587,7 @@ Respond with JSON:
         explanation: result.explanation,
       }
     } catch (error) {
-      logger.logger.error('LLM-as-judge detection failed:', error)
+      logger.error('LLM-as-judge detection failed:', error)
       return {
         safe: true,
         confidence: 0,

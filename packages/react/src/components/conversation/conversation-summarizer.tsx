@@ -318,7 +318,7 @@ export function ConversationSummarizer({
 
         onSummaryGenerated?.(summary)
       } catch (err) {
-        logger.logger.error('Failed to generate summary:', err)
+        logger.error('Failed to generate summary:', err)
         setError(err instanceof Error ? err.message : 'Failed to generate summary')
       } finally {
         setIsGenerating(false)
