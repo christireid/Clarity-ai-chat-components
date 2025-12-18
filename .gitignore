@@ -163,3 +163,11 @@ core
 # Temporary documentation files (archived)
 archive/documentation-overhaul/
 .docs-sync/
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
