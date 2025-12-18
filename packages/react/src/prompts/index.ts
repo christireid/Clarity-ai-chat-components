@@ -42,6 +42,7 @@
 export * from './types'
 export * from './template'
 export * from './library'
+export * from './hooks'
 
 import type { PromptTemplate } from './types'
 

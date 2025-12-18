@@ -1,4 +1,3 @@
-import { logger as utilsLogger } from '@clarity-chat/utils/logger'
 /**
  * Logger Utility
  *
@@ -32,25 +31,25 @@ class ClarityLogger implements Logger {
 
   error(message: string, ...args: unknown[]): void {
     if (this.shouldLog('error')) {
-      utilsLogger.error(`${this.prefix} [ERROR] ${message}`, ...args)
+      console.error(`${this.prefix} [ERROR] ${message}`, ...args)
     }
   }
 
   warn(message: string, ...args: unknown[]): void {
     if (this.shouldLog('warn')) {
-      utilsLogger.warn(`${this.prefix} [WARN] ${message}`, ...args)
+      console.warn(`${this.prefix} [WARN] ${message}`, ...args)
     }
   }
 
   info(message: string, ...args: unknown[]): void {
     if (this.shouldLog('info')) {
-      utilsLogger.info(`${this.prefix} [INFO] ${message}`, ...args)
+      console.info(`${this.prefix} [INFO] ${message}`, ...args)
     }
   }
 
   debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog('debug')) {
-      utilsLogger.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
+      console.log(`${this.prefix} [DEBUG] ${message}`, ...args)
     }
   }
 
