@@ -8,7 +8,7 @@ import {
   Zap,
   Package,
   ArrowRight,
-  GitCommit,
+  GitBranch,
   Calendar,
 } from 'lucide-react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -194,7 +194,7 @@ function getChangeTypeIcon(type: string) {
     case 'breaking':
       return <Package className="w-4 h-4 text-orange-500" />
     default:
-      return <GitCommit className="w-4 h-4 text-gray-500" />
+      return <GitBranch className="w-4 h-4 text-gray-500" />
   }
 }
 

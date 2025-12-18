@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Type guards for all Clarity Chat error types
  * Use these for type-safe error handling in catch blocks
@@ -12,13 +11,13 @@ import { logger } from '@clarity-chat/utils/logger';
  * } catch (error) {
  *   if (isApiError(error)) {
  *     // error is typed as ApiError
- *     logger.debug(error.statusCode)
+ *     console.log(error.statusCode)
  *   } else if (isStreamingError(error)) {
  *     // error is typed as StreamingError
- *     logger.debug(error.transport)
+ *     console.log(error.transport)
  *   } else if (isProviderError(error)) {
  *     // error is typed as ProviderError
- *     logger.debug(error.provider)
+ *     console.log(error.provider)
  *   }
  * }
  * ```

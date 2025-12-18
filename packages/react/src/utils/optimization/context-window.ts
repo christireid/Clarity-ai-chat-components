@@ -5,7 +5,6 @@
  * Works with any tokenizer or estimation function.
  */
 
-
 export interface ContextMessage {
   role: 'system' | 'user' | 'assistant' | 'function'
   content: string
@@ -301,5 +300,5 @@ export class ContextWindowManager {
   }
 }
 
-// Note: estimateTokens is available from './tokenization/estimator'
+// Note: estimateTokens is available from '../tokenization/estimator'
 // It was previously re-exported here but removed to avoid duplicate exports

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
-  Building2,
+  Building,
   ChevronLeft,
   Users,
   Shield,
@@ -17,7 +17,7 @@ import {
   TrendingUp,
   Lock,
   FileText,
-  Zap
+  Zap,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
@@ -74,12 +74,37 @@ export default function EnterpriseProductionDemo() {
     if (!isLive) return
 
     const interval = setInterval(() => {
-      setMetrics(prev => ({
-        connections: Math.max(9000, prev.connections + Math.floor(Math.random() * 200 - 100)),
-        requestsPerSecond: Math.max(500, prev.requestsPerSecond + Math.floor(Math.random() * 100 - 50)),
-        avgLatency: Math.max(20, Math.min(100, prev.avgLatency + Math.floor(Math.random() * 10 - 5))),
-        errorRate: Math.max(0, Math.min(1, parseFloat((prev.errorRate + (Math.random() * 0.02 - 0.01)).toFixed(2)))),
-        cacheHitRate: Math.max(85, Math.min(99, parseFloat((prev.cacheHitRate + (Math.random() * 1 - 0.5)).toFixed(1)))),
+      setMetrics((prev) => ({
+        connections: Math.max(
+          9000,
+          prev.connections + Math.floor(Math.random() * 200 - 100)
+        ),
+        requestsPerSecond: Math.max(
+          500,
+          prev.requestsPerSecond + Math.floor(Math.random() * 100 - 50)
+        ),
+        avgLatency: Math.max(
+          20,
+          Math.min(100, prev.avgLatency + Math.floor(Math.random() * 10 - 5))
+        ),
+        errorRate: Math.max(
+          0,
+          Math.min(
+            1,
+            parseFloat(
+              (prev.errorRate + (Math.random() * 0.02 - 0.01)).toFixed(2)
+            )
+          )
+        ),
+        cacheHitRate: Math.max(
+          85,
+          Math.min(
+            99,
+            parseFloat(
+              (prev.cacheHitRate + (Math.random() * 1 - 0.5)).toFixed(1)
+            )
+          )
+        ),
         uptime: 99.99,
       }))
     }, 2000)
@@ -92,16 +117,50 @@ export default function EnterpriseProductionDemo() {
     if (!isLive) return
 
     const actions = [
-      { level: 'info', action: 'Message sent', details: 'Chat message processed successfully' },
-      { level: 'info', action: 'Session started', details: 'New chat session initiated' },
-      { level: 'success', action: 'API response', details: 'Streaming response completed' },
-      { level: 'info', action: 'Token validation', details: 'API token validated' },
-      { level: 'warn', action: 'Rate limit warning', details: 'Approaching rate limit threshold' },
-      { level: 'info', action: 'Cache hit', details: 'Response served from cache' },
-      { level: 'success', action: 'Error recovery', details: 'Connection automatically recovered' },
+      {
+        level: 'info',
+        action: 'Message sent',
+        details: 'Chat message processed successfully',
+      },
+      {
+        level: 'info',
+        action: 'Session started',
+        details: 'New chat session initiated',
+      },
+      {
+        level: 'success',
+        action: 'API response',
+        details: 'Streaming response completed',
+      },
+      {
+        level: 'info',
+        action: 'Token validation',
+        details: 'API token validated',
+      },
+      {
+        level: 'warn',
+        action: 'Rate limit warning',
+        details: 'Approaching rate limit threshold',
+      },
+      {
+        level: 'info',
+        action: 'Cache hit',
+        details: 'Response served from cache',
+      },
+      {
+        level: 'success',
+        action: 'Error recovery',
+        details: 'Connection automatically recovered',
+      },
     ]
 
-    const users = ['user_12345', 'user_67890', 'user_24680', 'user_13579', 'admin_001']
+    const users = [
+      'user_12345',
+      'user_67890',
+      'user_24680',
+      'user_13579',
+      'admin_001',
+    ]
     const tenantIds = ['acme', 'globex', 'stark', 'wayne']
 
     const interval = setInterval(() => {
@@ -116,7 +175,7 @@ export default function EnterpriseProductionDemo() {
         details: randomAction.details,
       }
 
-      setLogs(prev => [newLog, ...prev].slice(0, 50))
+      setLogs((prev) => [newLog, ...prev].slice(0, 50))
     }, 1500)
 
     return () => clearInterval(interval)
@@ -135,10 +194,11 @@ export default function EnterpriseProductionDemo() {
         level: 'error',
         action: 'Connection error',
         user: 'system',
-        tenant: currentTenants[Math.floor(Math.random() * currentTenants.length)].id,
+        tenant:
+          currentTenants[Math.floor(Math.random() * currentTenants.length)].id,
         details: 'WebSocket connection dropped',
       }
-      setLogs(prev => [errorLog, ...prev].slice(0, 50))
+      setLogs((prev) => [errorLog, ...prev].slice(0, 50))
 
       // Recovery after 500ms
       setTimeout(() => {
@@ -151,7 +211,7 @@ export default function EnterpriseProductionDemo() {
           tenant: errorLog.tenant,
           details: 'Connection restored via error boundary',
         }
-        setLogs(prev => [recoveryLog, ...prev].slice(0, 50))
+        setLogs((prev) => [recoveryLog, ...prev].slice(0, 50))
       }, 500)
     }, 15000)
 
@@ -159,12 +219,44 @@ export default function EnterpriseProductionDemo() {
   }, [isLive])
 
   const metricCards: MetricCard[] = [
-    { label: 'Active Connections', value: metrics.connections.toLocaleString(), change: '+12%', icon: Users, color: 'text-blue-600' },
-    { label: 'Requests/Second', value: metrics.requestsPerSecond.toLocaleString(), change: '+8%', icon: Zap, color: 'text-green-600' },
-    { label: 'Avg Latency', value: `${metrics.avgLatency}ms`, icon: Clock, color: 'text-yellow-600' },
-    { label: 'Error Rate', value: `${metrics.errorRate}%`, icon: AlertTriangle, color: 'text-red-600' },
-    { label: 'Cache Hit Rate', value: `${metrics.cacheHitRate}%`, icon: Database, color: 'text-purple-600' },
-    { label: 'Uptime', value: `${metrics.uptime}%`, icon: Activity, color: 'text-emerald-600' },
+    {
+      label: 'Active Connections',
+      value: metrics.connections.toLocaleString(),
+      change: '+12%',
+      icon: Users,
+      color: 'text-blue-600',
+    },
+    {
+      label: 'Requests/Second',
+      value: metrics.requestsPerSecond.toLocaleString(),
+      change: '+8%',
+      icon: Zap,
+      color: 'text-green-600',
+    },
+    {
+      label: 'Avg Latency',
+      value: `${metrics.avgLatency}ms`,
+      icon: Clock,
+      color: 'text-yellow-600',
+    },
+    {
+      label: 'Error Rate',
+      value: `${metrics.errorRate}%`,
+      icon: AlertTriangle,
+      color: 'text-red-600',
+    },
+    {
+      label: 'Cache Hit Rate',
+      value: `${metrics.cacheHitRate}%`,
+      icon: Database,
+      color: 'text-purple-600',
+    },
+    {
+      label: 'Uptime',
+      value: `${metrics.uptime}%`,
+      icon: Activity,
+      color: 'text-emerald-600',
+    },
   ]
 
   const logLevelColors = {
@@ -188,7 +280,7 @@ export default function EnterpriseProductionDemo() {
         <ScrollReveal>
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-900/30 text-slate-700 dark:text-slate-300 rounded-full text-sm font-medium mb-6">
-              <Building2 className="w-4 h-4" />
+              <Building className="w-4 h-4" />
               Enterprise Scale
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -198,8 +290,8 @@ export default function EnterpriseProductionDemo() {
               </span>
             </h1>
             <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-              Real-time dashboard showing 10K+ concurrent connections, error recovery,
-              multi-tenancy, and audit logging.
+              Real-time dashboard showing 10K+ concurrent connections, error
+              recovery, multi-tenancy, and audit logging.
             </p>
           </div>
         </ScrollReveal>
@@ -215,7 +307,9 @@ export default function EnterpriseProductionDemo() {
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+              <span
+                className={`w-2 h-2 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}
+              />
               {isLive ? 'Live Simulation' : 'Paused'}
             </button>
           </div>
@@ -236,7 +330,9 @@ export default function EnterpriseProductionDemo() {
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <Icon className={`w-4 h-4 ${metric.color}`} />
-                    <span className="text-xs text-text-secondary truncate">{metric.label}</span>
+                    <span className="text-xs text-text-secondary truncate">
+                      {metric.label}
+                    </span>
                   </div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-bold">{metric.value}</span>
@@ -263,7 +359,9 @@ export default function EnterpriseProductionDemo() {
                 </div>
                 <div>
                   <h3 className="font-bold text-lg">Multi-Tenant Isolation</h3>
-                  <p className="text-sm text-text-secondary">Real-time tenant activity</p>
+                  <p className="text-sm text-text-secondary">
+                    Real-time tenant activity
+                  </p>
                 </div>
               </div>
 
@@ -283,7 +381,9 @@ export default function EnterpriseProductionDemo() {
                         </div>
                         <div>
                           <div className="font-medium">{tenant.name}</div>
-                          <div className="text-xs text-text-secondary">{tenant.id}</div>
+                          <div className="text-xs text-text-secondary">
+                            {tenant.id}
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-1 text-green-600 dark:text-green-400 text-xs">
@@ -293,12 +393,20 @@ export default function EnterpriseProductionDemo() {
                     </div>
                     <div className="grid grid-cols-2 gap-4 mt-3">
                       <div>
-                        <div className="text-xs text-text-secondary">Active Users</div>
-                        <div className="font-medium">{tenant.users.toLocaleString()}</div>
+                        <div className="text-xs text-text-secondary">
+                          Active Users
+                        </div>
+                        <div className="font-medium">
+                          {tenant.users.toLocaleString()}
+                        </div>
                       </div>
                       <div>
-                        <div className="text-xs text-text-secondary">Requests/hr</div>
-                        <div className="font-medium">{tenant.requests.toLocaleString()}</div>
+                        <div className="text-xs text-text-secondary">
+                          Requests/hr
+                        </div>
+                        <div className="font-medium">
+                          {tenant.requests.toLocaleString()}
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -317,7 +425,9 @@ export default function EnterpriseProductionDemo() {
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">Audit Log</h3>
-                    <p className="text-sm text-text-secondary">Live activity stream</p>
+                    <p className="text-sm text-text-secondary">
+                      Live activity stream
+                    </p>
                   </div>
                 </div>
                 <span className="text-xs text-text-secondary">
@@ -339,7 +449,9 @@ export default function EnterpriseProductionDemo() {
                       className="p-3 rounded-lg bg-bg-primary border border-border text-sm"
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${logLevelColors[log.level]}`}>
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs font-medium ${logLevelColors[log.level]}`}
+                        >
                           {log.level.toUpperCase()}
                         </span>
                         <span className="font-medium">{log.action}</span>
@@ -351,7 +463,9 @@ export default function EnterpriseProductionDemo() {
                         <span>User: {log.user}</span>
                         <span>Tenant: {log.tenant}</span>
                       </div>
-                      <div className="text-xs text-text-secondary mt-1">{log.details}</div>
+                      <div className="text-xs text-text-secondary mt-1">
+                        {log.details}
+                      </div>
                     </motion.div>
                   ))}
                 </AnimatePresence>
@@ -373,18 +487,27 @@ export default function EnterpriseProductionDemo() {
                     Automatic Error Recovery
                   </h3>
                   <p className="text-green-600 dark:text-green-400">
-                    Watch the audit log - errors are automatically caught and recovered
+                    Watch the audit log - errors are automatically caught and
+                    recovered
                   </p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-4">
                 <div className="p-4 bg-white dark:bg-gray-800 rounded-xl text-center">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">100%</div>
-                  <div className="text-xs text-text-secondary">Auto-Recovery</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    100%
+                  </div>
+                  <div className="text-xs text-text-secondary">
+                    Auto-Recovery
+                  </div>
                 </div>
                 <div className="p-4 bg-white dark:bg-gray-800 rounded-xl text-center">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">&lt;500ms</div>
-                  <div className="text-xs text-text-secondary">Recovery Time</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    &lt;500ms
+                  </div>
+                  <div className="text-xs text-text-secondary">
+                    Recovery Time
+                  </div>
                 </div>
               </div>
             </div>
@@ -395,10 +518,26 @@ export default function EnterpriseProductionDemo() {
         <ScrollReveal delay={0.5}>
           <div className="mt-12 grid md:grid-cols-4 gap-6">
             {[
-              { icon: Users, title: '10K+ Concurrent', description: 'Handle massive scale with WebSocket pooling' },
-              { icon: Shield, title: 'Multi-Tenant', description: 'Complete data isolation between organizations' },
-              { icon: RefreshCw, title: 'Error Recovery', description: 'Automatic reconnection and state restoration' },
-              { icon: FileText, title: 'Audit Logging', description: 'Complete activity trail for compliance' },
+              {
+                icon: Users,
+                title: '10K+ Concurrent',
+                description: 'Handle massive scale with WebSocket pooling',
+              },
+              {
+                icon: Shield,
+                title: 'Multi-Tenant',
+                description: 'Complete data isolation between organizations',
+              },
+              {
+                icon: RefreshCw,
+                title: 'Error Recovery',
+                description: 'Automatic reconnection and state restoration',
+              },
+              {
+                icon: FileText,
+                title: 'Audit Logging',
+                description: 'Complete activity trail for compliance',
+              },
             ].map((feature) => {
               const Icon = feature.icon
               return (
@@ -410,7 +549,9 @@ export default function EnterpriseProductionDemo() {
                     <Icon className="w-6 h-6 text-slate-600 dark:text-slate-400" />
                   </div>
                   <h4 className="font-bold mb-1">{feature.title}</h4>
-                  <p className="text-sm text-text-secondary">{feature.description}</p>
+                  <p className="text-sm text-text-secondary">
+                    {feature.description}
+                  </p>
                 </div>
               )
             })}

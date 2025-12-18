@@ -41,22 +41,26 @@ export interface UseStreamableUIState<T> {
   latest: T | null
   status: 'idle' | 'streaming' | 'complete' | 'error'
   isStreaming: boolean
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
   reset: () => void
 }
 
 const identityTransform: TransformFn<any> = (value) => value as any
 
-const isAsyncIterable = <T,>(value: unknown): value is AsyncIterable<T> =>
+const isAsyncIterable = <T>(value: unknown): value is AsyncIterable<T> =>
   Boolean(value) && typeof (value as any)[Symbol.asyncIterator] === 'function'
 
-const isPromiseLike = <T,>(value: unknown): value is PromiseLike<T> =>
+const isPromiseLike = <T>(value: unknown): value is PromiseLike<T> =>
   Boolean(value) && typeof (value as any).then === 'function'
 
 const isReadableStream = (value: unknown): value is ReadableStream<any> =>
-  Boolean(value) && typeof (value as ReadableStream<any>).getReader === 'function'
+  Boolean(value) &&
+  typeof (value as ReadableStream<any>).getReader === 'function'
 
-const toAsyncIterableFromReadable = (stream: ReadableStream<any>): AsyncIterable<any> => ({
+const toAsyncIterableFromReadable = (
+  stream: ReadableStream<any>
+): AsyncIterable<any> => ({
   [Symbol.asyncIterator]() {
     const reader = stream.getReader()
     return {
@@ -97,7 +101,9 @@ export function useStreamableUI<T>(
   const transformRef = React.useRef<TransformFn<T>>(transform)
   const completeWhenRef = React.useRef<CompleteWhenFn | undefined>(completeWhen)
   const onUpdateRef = React.useRef<((value: T) => void) | undefined>(onUpdate)
-  const onCompleteRef = React.useRef<((value: T | null) => void) | undefined>(onComplete)
+  const onCompleteRef = React.useRef<((value: T | null) => void) | undefined>(
+    onComplete
+  )
   const onErrorRef = React.useRef<((error: Error) => void) | undefined>(onError)
 
   React.useEffect(() => {
@@ -122,7 +128,9 @@ export function useStreamableUI<T>(
 
   const [values, setValues] = React.useState<T[]>([])
   const [latest, setLatest] = React.useState<T | null>(null)
-  const [status, setStatus] = React.useState<'idle' | 'streaming' | 'complete' | 'error'>('idle')
+  const [status, setStatus] = React.useState<
+    'idle' | 'streaming' | 'complete' | 'error'
+  >('idle')
   const [error, setError] = React.useState<Error | null>(null)
   const latestRef = React.useRef<T | null>(null)
 
@@ -179,7 +187,9 @@ export function useStreamableUI<T>(
 
       latestRef.current = transformed
       setLatest(transformed)
-      setValues((prev) => (mode === 'append' ? [...prev, transformed] : [transformed]))
+      setValues((prev) =>
+        mode === 'append' ? [...prev, transformed] : [transformed]
+      )
       onUpdateRef.current?.(transformed)
 
       if (shouldComplete) {
@@ -317,4 +327,3 @@ export function useStreamableUI<T>(
     reset,
   }
 }
-

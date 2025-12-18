@@ -1,6 +1,5 @@
 /**
  * Prompt Optimization Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates how to use the prompt & token optimization layer
  * with useClarityChat and standalone hooks.
@@ -147,7 +146,7 @@ export function TokenBudgetExample() {
   const handleOptimize = React.useCallback(async () => {
     const result = await budget.optimize('hybrid')
     setMessages(result.optimizedMessages)
-    SecureLogger.debug('Optimization diagnostics:', result.diagnostics)
+    console.log('Optimization diagnostics:', result.diagnostics)
   }, [budget])
 
   return (

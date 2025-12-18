@@ -1,10 +1,7 @@
-'use client'
-
-import { useMediaQuery } from './use-media-query'
-
 /**
  * Detect if user prefers reduced motion
  *
+ * Re-exports the canonical implementation from @clarity-chat/primitives.
  * Returns true if the user has enabled "reduce motion" in their OS settings.
  * Use this to disable or simplify animations for better accessibility.
  *
@@ -38,6 +35,7 @@ import { useMediaQuery } from './use-media-query'
  *     }
  * ```
  */
-export function useReducedMotion(): boolean {
-  return useMediaQuery('(prefers-reduced-motion: reduce)')
-}
+export {
+  useReducedMotion,
+  getReducedMotionPreference,
+} from '@clarity-chat/primitives'

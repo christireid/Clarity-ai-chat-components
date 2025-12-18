@@ -6,7 +6,7 @@
  */
 
 import type { Message } from '@clarity-chat/types'
-import type { ToolCall } from '../adapters/types'
+import type { ToolCall } from '../../adapters/types'
 
 /**
  * Extract tool calls and results from messages

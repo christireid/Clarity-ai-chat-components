@@ -2,12 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Card,
-  CardContent,
-  Badge,
-  cn,
-} from '@clarity-chat/primitives'
+import { Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
 
 /**
  * Mentionable user
@@ -152,7 +147,7 @@ export function MentionInput({
 
       while ((match = regex.exec(text)) !== null) {
         const username = match[1]
-        const user = users.find(u => u.username === username)
+        const user = users.find((u) => u.username === username)
 
         if (user) {
           mentions.push({
@@ -194,11 +189,10 @@ export function MentionInput({
 
         // Filter users
         const query = textAfterMention.toLowerCase()
-        const filtered = users.filter(user => {
+        const filtered = users.filter((user) => {
           if (enableFuzzySearch) {
             return (
-              fuzzySearch(query, user.name) ||
-              fuzzySearch(query, user.username)
+              fuzzySearch(query, user.name) || fuzzySearch(query, user.username)
             )
           }
           return (
@@ -248,7 +242,14 @@ export function MentionInput({
         }
       }, 0)
     },
-    [value, mentionStartPos, cursorPosition, mentionTrigger, extractMentions, onChange]
+    [
+      value,
+      mentionStartPos,
+      cursorPosition,
+      mentionTrigger,
+      extractMentions,
+      onChange,
+    ]
   )
 
   /**
@@ -266,11 +267,11 @@ export function MentionInput({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault()
-        setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1))
+        setSelectedIndex((prev) => Math.min(prev + 1, suggestions.length - 1))
         break
       case 'ArrowUp':
         e.preventDefault()
-        setSelectedIndex(prev => Math.max(prev - 1, 0))
+        setSelectedIndex((prev) => Math.max(prev - 1, 0))
         break
       case 'Enter':
       case 'Tab':
@@ -289,7 +290,9 @@ export function MentionInput({
   // Scroll selected suggestion into view
   React.useEffect(() => {
     if (suggestionsRef.current) {
-      const selected = suggestionsRef.current.children[selectedIndex] as HTMLElement
+      const selected = suggestionsRef.current.children[
+        selectedIndex
+      ] as HTMLElement
       if (selected) {
         selected.scrollIntoView({ block: 'nearest' })
       }
@@ -317,7 +320,7 @@ export function MentionInput({
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: durations.fast }}
             className="absolute bottom-full mb-2 left-0 right-0 max-h-64 overflow-y-auto bg-background border rounded-lg shadow-lg z-50"
           >
             {suggestions.map((user, index) => (
@@ -339,11 +342,15 @@ export function MentionInput({
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm">{user.name}</span>
                     {user.isOnline && (
-                      <span className="w-2 h-2 rounded-full bg-green-500" title="Online" />
+                      <span
+                        className="w-2 h-2 rounded-full bg-green-500"
+                        title="Online"
+                      />
                     )}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {mentionTrigger}{user.username}
+                    {mentionTrigger}
+                    {user.username}
                     {user.role && ` • ${user.role}`}
                   </div>
                 </div>
@@ -401,20 +408,22 @@ export function MentionList({
 
   // Filter mentions for current user
   const userMentions = React.useMemo(() => {
-    let filtered = mentions.filter(m => {
+    let filtered = mentions.filter((m) => {
       // Check if mention is for current user
       return m.userId === currentUserId
     })
 
     if (filter === 'unread' || showOnlyUnread) {
-      filtered = filtered.filter(m => !m.isRead)
+      filtered = filtered.filter((m) => !m.isRead)
     }
 
     // Sort by timestamp (newest first)
     return filtered.sort((a, b) => b.timestamp - a.timestamp)
   }, [mentions, currentUserId, filter, showOnlyUnread])
 
-  const unreadCount = mentions.filter(m => m.userId === currentUserId && !m.isRead).length
+  const unreadCount = mentions.filter(
+    (m) => m.userId === currentUserId && !m.isRead
+  ).length
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -426,7 +435,8 @@ export function MentionList({
               <h3 className="font-semibold text-sm">Mentions</h3>
               {unreadCount > 0 && (
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {unreadCount} unread {unreadCount === 1 ? 'mention' : 'mentions'}
+                  {unreadCount} unread{' '}
+                  {unreadCount === 1 ? 'mention' : 'mentions'}
                 </p>
               )}
             </div>
@@ -480,7 +490,8 @@ export function MentionList({
                 <Card
                   className={cn(
                     'cursor-pointer transition-all hover:shadow-md',
-                    !mention.isRead && 'border-l-4 border-l-primary bg-accent/20'
+                    !mention.isRead &&
+                      'border-l-4 border-l-primary bg-accent/20'
                   )}
                   onClick={() => onMentionClick?.(mention)}
                 >
@@ -494,7 +505,9 @@ export function MentionList({
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">{mentioner.name}</span>
+                          <span className="font-medium text-sm">
+                            {mentioner.name}
+                          </span>
                           <span className="text-xs text-muted-foreground">
                             mentioned you
                           </span>
@@ -558,25 +571,25 @@ export function useMentions() {
   const [mentions, setMentions] = React.useState<Mention[]>([])
 
   const addMention = React.useCallback((mention: Mention) => {
-    setMentions(prev => [...prev, mention])
+    setMentions((prev) => [...prev, mention])
   }, [])
 
   const markAsRead = React.useCallback((mentionId: string) => {
-    setMentions(prev =>
-      prev.map(m => (m.id === mentionId ? { ...m, isRead: true } : m))
+    setMentions((prev) =>
+      prev.map((m) => (m.id === mentionId ? { ...m, isRead: true } : m))
     )
   }, [])
 
   const getUnreadCount = React.useCallback(
     (userId: string) => {
-      return mentions.filter(m => m.userId === userId && !m.isRead).length
+      return mentions.filter((m) => m.userId === userId && !m.isRead).length
     },
     [mentions]
   )
 
   const getMentionsForUser = React.useCallback(
     (userId: string) => {
-      return mentions.filter(m => m.userId === userId)
+      return mentions.filter((m) => m.userId === userId)
     },
     [mentions]
   )

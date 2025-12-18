@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatInput } from '@clarity-chat/react'
 import { useState } from 'react'
@@ -97,7 +96,7 @@ export const BasicInput: Story = {
         value={value}
         onChange={setValue}
         onSubmit={(val) => {
-          SecureLogger.debug('Submitted:', val)
+          console.log('Submitted:', val)
           setValue('')
         }}
         placeholder="Type a message..."
@@ -131,7 +130,7 @@ export const WithPlaceholder: Story = {
         value={value}
         onChange={setValue}
         onSubmit={(val) => {
-          SecureLogger.debug('Submitted:', val)
+          console.log('Submitted:', val)
           setValue('')
         }}
         placeholder="Ask me anything..."
@@ -159,7 +158,7 @@ export const DisabledState: Story = {
       setIsLoading(true)
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
-      SecureLogger.debug('Submitted:', val)
+      console.log('Submitted:', val)
       setValue('')
       setIsLoading(false)
     }
@@ -198,7 +197,7 @@ export const WithMaxLength: Story = {
         value={value}
         onChange={setValue}
         onSubmit={(val) => {
-          SecureLogger.debug('Submitted:', val)
+          console.log('Submitted:', val)
           setValue('')
         }}
         maxLength={100}
@@ -225,7 +224,7 @@ export const WithFileUpload: Story = {
     const [value, setValue] = useState('')
     
     const handleFileUpload = (file: File) => {
-      SecureLogger.debug('File uploaded:', file.name, file.size)
+      console.log('File uploaded:', file.name, file.size)
       // Handle file upload
     }
     
@@ -234,7 +233,7 @@ export const WithFileUpload: Story = {
         value={value}
         onChange={setValue}
         onSubmit={(val) => {
-          SecureLogger.debug('Submitted:', val)
+          console.log('Submitted:', val)
           setValue('')
         }}
         allowFileUpload={true}

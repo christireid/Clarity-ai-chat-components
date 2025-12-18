@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import Link from 'next/link'
 import {
@@ -40,7 +39,7 @@ class ShowcaseErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryS
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    logger.logger.error('ShowcaseErrorBoundary caught error:', error, errorInfo)
+    console.error('ShowcaseErrorBoundary caught error:', error, errorInfo)
   }
 
   handleRetry = () => {

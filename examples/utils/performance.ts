@@ -66,7 +66,7 @@ type MetricsCallback = (metrics: Partial<PerformanceMetrics>) => void
  * ```tsx
  * useEffect(() => {
  *   return observeWebVitals((metrics) => {
- *     SecureLogger.debug('Web Vitals:', metrics)
+ *     console.log('Web Vitals:', metrics)
  *   })
  * }, [])
  * ```
@@ -94,7 +94,9 @@ export function observeWebVitals(callback: MetricsCallback): () => void {
     const fidObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries() as PerformanceEventTiming[]
       const firstEntry = entries[0]
-      metrics.fid = firstEntry?.processingStart - firstEntry?.startTime ?? null
+      metrics.fid = firstEntry
+        ? firstEntry.processingStart - firstEntry.startTime
+        : null
       callback(metrics)
     })
     fidObserver.observe({ type: 'first-input', buffered: true })
@@ -141,17 +143,20 @@ export function observeWebVitals(callback: MetricsCallback): () => void {
 
   // Get navigation timing
   if (typeof window !== 'undefined' && window.performance) {
-    const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+    const navEntry = performance.getEntriesByType('navigation')[0] as
+      | PerformanceNavigationTiming
+      | undefined
     if (navEntry) {
       metrics.ttfb = navEntry.responseStart - navEntry.requestStart
-      metrics.domContentLoaded = navEntry.domContentLoadedEventEnd - navEntry.startTime
+      metrics.domContentLoaded =
+        navEntry.domContentLoadedEventEnd - navEntry.startTime
       metrics.loadTime = navEntry.loadEventEnd - navEntry.startTime
       callback(metrics)
     }
   }
 
   return () => {
-    observers.forEach(observer => observer.disconnect())
+    observers.forEach((observer) => observer.disconnect())
   }
 }
 
@@ -199,7 +204,8 @@ export function trackRender(componentName: string) {
       }
 
       const newCount = existing.renderCount + 1
-      const newAvg = (existing.avgRenderTime * existing.renderCount + renderTime) / newCount
+      const newAvg =
+        (existing.avgRenderTime * existing.renderCount + renderTime) / newCount
 
       renderMetricsMap.set(componentName, {
         componentName,
@@ -260,7 +266,6 @@ export function getMemoryMetrics(): MemoryMetrics | null {
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 interface UsePerformanceOptions {
   /** Update interval in milliseconds */
   updateInterval?: number
@@ -313,7 +318,9 @@ interface UsePerformanceResult {
  * }
  * ```
  */
-export function usePerformance(options: UsePerformanceOptions = {}): UsePerformanceResult {
+export function usePerformance(
+  options: UsePerformanceOptions = {}
+): UsePerformanceResult {
   const {
     updateInterval = 1000,
     trackWebVitals = true,
@@ -325,7 +332,9 @@ export function usePerformance(options: UsePerformanceOptions = {}): UsePerforma
   const [memory, setMemory] = useState<MemoryMetrics | null>(null)
   const [fps, setFps] = useState(0)
 
-  const renderTracker = useRef(componentName ? trackRender(componentName) : null)
+  const renderTracker = useRef(
+    componentName ? trackRender(componentName) : null
+  )
 
   // Track Web Vitals
   useEffect(() => {

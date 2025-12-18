@@ -1,6 +1,6 @@
 /**
  * AI Infrastructure Domain Exports
- * 
+ *
  * Top-level: High-level AI operations
  * Mid-level: Composable AI primitives
  * Low-level: Internal utilities
@@ -15,9 +15,9 @@ export { createAgent } from '../agents'
 export type { Agent, AgentConfig, AgentCallbacks } from '../agents/types'
 
 // Streaming hooks
-export { useStreaming } from '../hooks/use-streaming'
-export { useAssistant } from '../hooks/use-assistant'
-export { useCompletion } from '../hooks/use-completion'
+export { useStreaming } from '../hooks/streaming/use-streaming'
+export { useAssistant } from '../hooks/chat/use-assistant'
+export { useCompletion } from '../hooks/chat/use-completion'
 
 // ============================================================================
 // MID-LEVEL: Composable AI Primitives
@@ -28,9 +28,9 @@ export { ReactAgent } from '../agents/react-agent'
 export { AgentUtils } from '../agents'
 
 // Streaming transports
-export { useStreamingSSE } from '../hooks/use-streaming-sse'
-export { useStreamingWebSocket } from '../hooks/use-streaming-websocket'
-export { useStreamableUI } from '../hooks/use-streamable-ui'
+export { useStreamingSSE } from '../hooks/streaming/use-streaming-sse'
+export { useStreamingWebSocket } from '../hooks/streaming/use-streaming-websocket'
+export { useStreamableUI } from '../hooks/streaming/use-streamable-ui'
 
 // Model adapters
 export * from '../adapters'

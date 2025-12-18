@@ -15,7 +15,7 @@
 
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
-import { announceToScreenReader } from '../accessibility/a11y-utils'
+import { announceToScreenReader } from '../../accessibility'
 
 export interface OptimisticMessage extends Message {
   /** Whether this is an optimistic (not yet confirmed) message */
@@ -118,7 +118,7 @@ export function useOptimisticMessage(
   // Track sending state with ref for cleanup safety
   const [sending, setSending] = React.useState<Set<string>>(new Set())
   const isSending = sending.size > 0
-  
+
   // Track mounted state to prevent state updates after unmount
   const isMountedRef = React.useRef(true)
   React.useEffect(() => {
@@ -172,8 +172,9 @@ export function useOptimisticMessage(
       } catch (error) {
         // Only update state if still mounted
         if (isMountedRef.current) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to send'
-          
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to send'
+
           // Mark as error in confirmed state
           setConfirmedMessages((prev) => [
             ...prev,
@@ -185,7 +186,10 @@ export function useOptimisticMessage(
           ])
 
           // Announce error to screen readers with assertive priority
-          announceToScreenReader(`Failed to send message: ${errorMessage}`, 'assertive')
+          announceToScreenReader(
+            `Failed to send message: ${errorMessage}`,
+            'assertive'
+          )
 
           onError?.(error as Error, optimisticMessage)
         }
@@ -234,8 +238,9 @@ export function useOptimisticMessage(
         }
       } catch (error) {
         if (isMountedRef.current) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to send'
-          
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to send'
+
           setConfirmedMessages((prev) =>
             prev.map((msg) =>
               msg.id === messageId
@@ -249,7 +254,10 @@ export function useOptimisticMessage(
           )
 
           // Announce retry failure to screen readers
-          announceToScreenReader(`Message retry failed: ${errorMessage}`, 'assertive')
+          announceToScreenReader(
+            `Message retry failed: ${errorMessage}`,
+            'assertive'
+          )
 
           onError?.(error as Error, message)
         }
@@ -263,7 +271,14 @@ export function useOptimisticMessage(
         }
       }
     },
-    [confirmedMessages, onSend, onConfirm, onError, addOptimisticMessage, startTransition]
+    [
+      confirmedMessages,
+      onSend,
+      onConfirm,
+      onError,
+      addOptimisticMessage,
+      startTransition,
+    ]
   )
 
   // Cancel optimistic message
@@ -285,7 +300,7 @@ export function useOptimisticMessage(
   // Set messages from server
   const setMessages = React.useCallback((messages: Message[]) => {
     setConfirmedMessages(
-      messages.map((m) => ({ ...m, isOptimistic: false } as OptimisticMessage))
+      messages.map((m) => ({ ...m, isOptimistic: false }) as OptimisticMessage)
     )
   }, [])
 

@@ -17,10 +17,10 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   AlertTriangle,
-  ShieldCheck,
+  Shield,
   X,
   TrendingUp,
-  TrendingDown,
+  ChevronDown,
   Check,
   Loader2,
 } from 'lucide-react'
@@ -48,7 +48,8 @@ export function TradeConfirmationModal({
   const { action, symbol, quantity, orderType, limitPrice } = toolCall.args
 
   const isBuy = action === 'buy'
-  const effectivePrice = orderType === 'limit' && limitPrice ? limitPrice : currentPrice
+  const effectivePrice =
+    orderType === 'limit' && limitPrice ? limitPrice : currentPrice
   const estimatedTotal = effectivePrice * quantity
   const estimatedFees = estimatedTotal * 0.001
 
@@ -108,7 +109,10 @@ export function TradeConfirmationModal({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isProcessing) return
-      if (e.key === 'Enter' && document.activeElement === confirmButtonRef.current) {
+      if (
+        e.key === 'Enter' &&
+        document.activeElement === confirmButtonRef.current
+      ) {
         // Only trigger on Enter if confirm button is focused (natural behavior)
         // Let the button's onClick handle it
       } else if (e.key === 'Escape') {
@@ -147,14 +151,15 @@ export function TradeConfirmationModal({
         >
           {/* Screen reader announcement */}
           <div className="sr-only" role="status" aria-live="assertive">
-            Trade confirmation required for {action}ing {quantity} shares of {symbol}
+            Trade confirmation required for {action}ing {quantity} shares of{' '}
+            {symbol}
           </div>
 
           {/* Header */}
           <div className="px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5" aria-hidden="true" />
+                <Shield className="w-5 h-5" aria-hidden="true" />
                 <span id="trade-confirmation-title" className="font-semibold">
                   Trade Confirmation Required
                 </span>
@@ -185,7 +190,11 @@ export function TradeConfirmationModal({
                     : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'
                 }`}
               >
-                {isBuy ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                {isBuy ? (
+                  <TrendingUp className="w-5 h-5" />
+                ) : (
+                  <ChevronDown className="w-5 h-5" />
+                )}
                 {action.toUpperCase()} {symbol}
               </motion.div>
             </div>
@@ -202,18 +211,28 @@ export function TradeConfirmationModal({
                 <span className="font-semibold">{quantity} shares</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-amber-200/50 dark:border-amber-500/20">
-                <span className="text-sm text-muted-foreground">Order Type</span>
-                <span className="font-semibold capitalize">{orderType.replace('_', ' ')}</span>
+                <span className="text-sm text-muted-foreground">
+                  Order Type
+                </span>
+                <span className="font-semibold capitalize">
+                  {orderType.replace('_', ' ')}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-amber-200/50 dark:border-amber-500/20">
                 <span className="text-sm text-muted-foreground">
                   {orderType === 'limit' ? 'Limit Price' : 'Current Price'}
                 </span>
-                <span className="font-semibold">${effectivePrice.toFixed(2)}</span>
+                <span className="font-semibold">
+                  ${effectivePrice.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-amber-200/50 dark:border-amber-500/20">
-                <span className="text-sm text-muted-foreground">Est. Fees (0.1%)</span>
-                <span className="font-semibold">${estimatedFees.toFixed(2)}</span>
+                <span className="text-sm text-muted-foreground">
+                  Est. Fees (0.1%)
+                </span>
+                <span className="font-semibold">
+                  ${estimatedFees.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between items-center py-3 bg-amber-100/50 dark:bg-amber-900/20 rounded-lg px-3 -mx-3">
                 <span className="font-medium">Estimated Total</span>
@@ -231,13 +250,17 @@ export function TradeConfirmationModal({
               transition={{ delay: 0.2 }}
               className="flex items-start gap-2 p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg mb-5"
             >
-              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <AlertTriangle
+                className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
               <div className="text-xs text-amber-800 dark:text-amber-200">
-                <strong>This action cannot be undone.</strong> By approving, you confirm this trade.
+                <strong>This action cannot be undone.</strong> By approving, you
+                confirm this trade.
                 {orderType === 'market' && (
                   <span className="block mt-1">
-                    Market orders execute at the best available price, which may differ from the
-                    displayed price.
+                    Market orders execute at the best available price, which may
+                    differ from the displayed price.
                   </span>
                 )}
               </div>
@@ -263,7 +286,10 @@ export function TradeConfirmationModal({
               >
                 <X className="w-4 h-4" aria-hidden="true" />
                 Cancel
-                <kbd className="ml-1 px-1.5 py-0.5 text-[10px] bg-gray-200 dark:bg-gray-700 rounded" aria-hidden="true">
+                <kbd
+                  className="ml-1 px-1.5 py-0.5 text-[10px] bg-gray-200 dark:bg-gray-700 rounded"
+                  aria-hidden="true"
+                >
                   ESC
                 </kbd>
               </button>
@@ -302,7 +328,8 @@ export function TradeConfirmationModal({
           {/* Footer */}
           <div className="px-4 py-2 bg-amber-500/10 border-t border-amber-200/50 dark:border-amber-500/20">
             <p className="text-[10px] text-center text-muted-foreground">
-              This is a simulated trade for demonstration purposes only. No real transactions will occur.
+              This is a simulated trade for demonstration purposes only. No real
+              transactions will occur.
             </p>
           </div>
         </motion.div>

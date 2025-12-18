@@ -1,9 +1,10 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
-import { useConversationStorage } from './use-indexed-db'
+import { useConversationStorage } from '../storage/use-indexed-db'
 
 /**
  * Message history navigation options
@@ -71,20 +72,20 @@ export interface UseMessageHistoryReturn {
 
 /**
  * Message History Hook
- * 
+ *
  * Provides comprehensive message history management with:
  * - Persistence (IndexedDB/localStorage)
  * - Pagination for large conversations
  * - Search and filtering
  * - Date range queries
  * - Session restoration
- * 
+ *
  * Features from blueprint:
  * - Message History & Persistence
  * - Session restoration after browser restart
  * - Cross-device synchronization capabilities
  * - Automatic cleanup of old conversations
- * 
+ *
  * @example
  * ```tsx
  * const {
@@ -128,14 +129,17 @@ export function useMessageHistory(
     }
   }, [])
 
-  const { saveConversation, loadConversation, isAvailable } = useConversationStorage({
-    maxMessages: maxHistorySize,
-    autoCleanup: true,
-  })
+  const { saveConversation, loadConversation, isAvailable } =
+    useConversationStorage({
+      maxMessages: maxHistorySize,
+      autoCleanup: true,
+    })
 
   // Calculate pagination (ensure pageSize >= 1 to prevent division by zero)
   const safePageSize = Math.max(1, pageSize)
-  const totalPages = enablePagination ? Math.ceil(messages.length / safePageSize) : 1
+  const totalPages = enablePagination
+    ? Math.ceil(messages.length / safePageSize)
+    : 1
   const paginatedMessages = React.useMemo(() => {
     if (!enablePagination) return messages
     const start = (currentPage - 1) * safePageSize
@@ -159,7 +163,7 @@ export function useMessageHistory(
     const interval = setInterval(() => {
       // Use ref to get latest messages without re-creating interval
       saveConversation(conversationId, messagesRef.current).catch((err) => {
-        logger.logger.error('Auto-save failed:', err)
+        logger.error('Auto-save failed:', err)
       })
     }, saveInterval)
 
@@ -169,11 +173,14 @@ export function useMessageHistory(
   // Load function will be defined later, use ref for early effect
   const loadRef = React.useRef<(() => Promise<void>) | null>(null)
 
-  const goToPage = React.useCallback((page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page)
-    }
-  }, [totalPages])
+  const goToPage = React.useCallback(
+    (page: number) => {
+      if (page >= 1 && page <= totalPages) {
+        setCurrentPage(page)
+      }
+    },
+    [totalPages]
+  )
 
   const nextPage = React.useCallback(() => {
     if (hasNextPage) {
@@ -218,29 +225,38 @@ export function useMessageHistory(
     }
   }, [])
 
-  const search = React.useCallback((query: string): Message[] => {
-    if (!query.trim()) return messages
+  const search = React.useCallback(
+    (query: string): Message[] => {
+      if (!query.trim()) return messages
 
-    const lowerQuery = query.toLowerCase()
-    return messages.filter((msg) => {
-      return (
-        msg.content.toLowerCase().includes(lowerQuery) ||
-        msg.id.toLowerCase().includes(lowerQuery) ||
-        (msg.role && msg.role.toLowerCase().includes(lowerQuery))
-      )
-    })
-  }, [messages])
+      const lowerQuery = query.toLowerCase()
+      return messages.filter((msg) => {
+        return (
+          msg.content.toLowerCase().includes(lowerQuery) ||
+          msg.id.toLowerCase().includes(lowerQuery) ||
+          (msg.role && msg.role.toLowerCase().includes(lowerQuery))
+        )
+      })
+    },
+    [messages]
+  )
 
-  const filter = React.useCallback((predicate: (msg: Message) => boolean): Message[] => {
-    return messages.filter(predicate)
-  }, [messages])
+  const filter = React.useCallback(
+    (predicate: (msg: Message) => boolean): Message[] => {
+      return messages.filter(predicate)
+    },
+    [messages]
+  )
 
-  const getByDateRange = React.useCallback((start: Date, end: Date): Message[] => {
-    return messages.filter((msg) => {
-      const msgDate = new Date(msg.createdAt)
-      return msgDate >= start && msgDate <= end
-    })
-  }, [messages])
+  const getByDateRange = React.useCallback(
+    (start: Date, end: Date): Message[] => {
+      return messages.filter((msg) => {
+        const msgDate = new Date(msg.createdAt)
+        return msgDate >= start && msgDate <= end
+      })
+    },
+    [messages]
+  )
 
   const save = React.useCallback(async () => {
     setIsLoading(true)
@@ -286,7 +302,6 @@ export function useMessageHistory(
     if (isAvailable && conversationId && loadRef.current) {
       loadRef.current()
     }
-     
   }, [conversationId, isAvailable]) // load accessed via ref
 
   const clear = React.useCallback(async () => {

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 
 /**
  * Key mapping for platform-specific display.
@@ -108,8 +108,7 @@ const sizeClasses: Record<KbdSize, string> = {
 }
 
 const variantClasses: Record<KbdVariant, string> = {
-  default:
-    'bg-muted border border-border/60 shadow-xs',
+  default: 'bg-muted border border-border/60 shadow-xs',
   outline: 'border border-border/80 bg-transparent',
   ghost: 'bg-transparent',
 }

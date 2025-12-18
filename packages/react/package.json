@@ -106,7 +106,7 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "node scripts/build-production.js",
+    "build": "node scripts/build-production.cjs",
     "build:sequential": "node scripts/build-sequential.js",
     "build:parallel": "tsup",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
@@ -128,7 +128,8 @@
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "framer-motion": "^12.23.25"
   },
   "peerDependenciesMeta": {
     "react-dom": {

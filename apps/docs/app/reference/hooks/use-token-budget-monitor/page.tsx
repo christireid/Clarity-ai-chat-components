@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -713,7 +712,7 @@ function CompleteBudgetMonitorExample() {
       logger.debug('Critical:', usage.utilizationPercent)
     },
     onExceeded: (usage) => {
-      logger.logger.error('Exceeded:', usage.utilizationPercent)
+      console.error('Exceeded:', usage.utilizationPercent)
     },
     autoTrim: false, // Manual trimming
   })

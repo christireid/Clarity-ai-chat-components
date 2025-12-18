@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Security Playground
  *
@@ -151,7 +150,7 @@ export default function SecurityPlayground() {
       const newMetrics = security.getMetrics()
       setMetrics(newMetrics)
     } catch (error) {
-      logger.logger.error('Validation error:', error)
+      console.error('Validation error:', error)
     } finally {
       setIsValidating(false)
     }

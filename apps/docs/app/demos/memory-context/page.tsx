@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
-  Brain,
+  BrainCircuit,
   ChevronLeft,
   User,
   Bot,
@@ -15,7 +15,7 @@ import {
   ArrowRight,
   RefreshCw,
   Eye,
-  EyeOff
+  EyeOff,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ScrollReveal } from '@/components/UI/ScrollReveal'
@@ -82,7 +82,11 @@ export default function MemoryContextDemo() {
   const [isTyping, setIsTyping] = useState(false)
   const [memory, setMemory] = useState<MemoryItem[]>(initialMemory)
   const [showMemoryPanel, setShowMemoryPanel] = useState(true)
-  const [activeMemoryIds, setActiveMemoryIds] = useState<string[]>(['1', '2', '3'])
+  const [activeMemoryIds, setActiveMemoryIds] = useState<string[]>([
+    '1',
+    '2',
+    '3',
+  ])
   const isMountedRef = useMountedRef()
 
   useEffect(() => {
@@ -94,10 +98,16 @@ export default function MemoryContextDemo() {
     threshold: 100,
   })
 
-  const getMemoryResponse = (input: string): { text: string; memoryIds: string[]; newMemory?: MemoryItem } => {
+  const getMemoryResponse = (
+    input: string
+  ): { text: string; memoryIds: string[]; newMemory?: MemoryItem } => {
     const lower = input.toLowerCase()
 
-    if (lower.includes('color') || lower.includes('theme') || lower.includes('dark')) {
+    if (
+      lower.includes('color') ||
+      lower.includes('theme') ||
+      lower.includes('dark')
+    ) {
       const newMem: MemoryItem = {
         id: generateId(),
         type: 'preference',
@@ -113,13 +123,25 @@ export default function MemoryContextDemo() {
       }
     }
 
-    if (lower.includes('name') || lower.includes('call me') || lower.includes("i'm ")) {
+    if (
+      lower.includes('name') ||
+      lower.includes('call me') ||
+      lower.includes("i'm ")
+    ) {
       const nameMatch = input.match(/(?:call me|i'm |my name is )\s*(\w+)/i)
       if (nameMatch) {
         const newName = nameMatch[1]
-        setMemory(prev => prev.map(m =>
-          m.id === '1' ? { ...m, content: `User name is ${newName}`, timestamp: new Date() } : m
-        ))
+        setMemory((prev) =>
+          prev.map((m) =>
+            m.id === '1'
+              ? {
+                  ...m,
+                  content: `User name is ${newName}`,
+                  timestamp: new Date(),
+                }
+              : m
+          )
+        )
         return {
           text: `Got it, ${newName}! I've updated my memory. I'll remember your name across all our future conversations.`,
           memoryIds: ['1'],
@@ -127,7 +149,11 @@ export default function MemoryContextDemo() {
       }
     }
 
-    if (lower.includes('project') || lower.includes('app') || lower.includes('working on')) {
+    if (
+      lower.includes('project') ||
+      lower.includes('app') ||
+      lower.includes('working on')
+    ) {
       return {
         text: "Based on the README you uploaded, I see you're building an e-commerce app with React and TypeScript. The product catalog feature we discussed would integrate well with your existing component structure. Should I help with that?",
         memoryIds: ['2', '3'],
@@ -160,7 +186,7 @@ export default function MemoryContextDemo() {
     }
 
     const userInput = input
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsTyping(true)
     scrollToBottom()
@@ -171,7 +197,7 @@ export default function MemoryContextDemo() {
     const { text, memoryIds, newMemory } = getMemoryResponse(userInput)
 
     if (newMemory) {
-      setMemory(prev => [...prev, newMemory])
+      setMemory((prev) => [...prev, newMemory])
     }
 
     setActiveMemoryIds(memoryIds)
@@ -184,7 +210,7 @@ export default function MemoryContextDemo() {
       memoryUsed: memoryIds,
     }
 
-    setMessages(prev => [...prev, botMessage])
+    setMessages((prev) => [...prev, botMessage])
     setIsTyping(false)
 
     // Clear active memory highlight after a delay
@@ -192,13 +218,15 @@ export default function MemoryContextDemo() {
   }
 
   const resetDemo = () => {
-    setMessages([{
-      id: '1',
-      text: "Welcome back, Alex! I remember you're working on that e-commerce app with React and TypeScript. How's the project going?",
-      sender: 'bot',
-      timestamp: new Date(),
-      memoryUsed: ['1', '2', '3'],
-    }])
+    setMessages([
+      {
+        id: '1',
+        text: "Welcome back, Alex! I remember you're working on that e-commerce app with React and TypeScript. How's the project going?",
+        sender: 'bot',
+        timestamp: new Date(),
+        memoryUsed: ['1', '2', '3'],
+      },
+    ])
     setMemory(initialMemory)
     setActiveMemoryIds(['1', '2', '3'])
   }
@@ -212,9 +240,12 @@ export default function MemoryContextDemo() {
 
   const memoryTypeColor = {
     fact: 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400',
-    preference: 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400',
-    context: 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400',
-    document: 'bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400',
+    preference:
+      'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400',
+    context:
+      'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400',
+    document:
+      'bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400',
   }
 
   return (
@@ -231,7 +262,7 @@ export default function MemoryContextDemo() {
         <ScrollReveal>
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 rounded-full text-sm font-medium mb-6">
-              <Brain className="w-4 h-4" />
+              <BrainCircuit className="w-4 h-4" />
               Long-Term Memory
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -241,8 +272,9 @@ export default function MemoryContextDemo() {
               </span>
             </h1>
             <p className="text-xl text-text-secondary max-w-2xl mx-auto">
-              See how the AI remembers your name, preferences, and context across sessions.
-              The memory panel shows what's being retained and used.
+              See how the AI remembers your name, preferences, and context
+              across sessions. The memory panel shows what's being retained and
+              used.
             </p>
           </div>
         </ScrollReveal>
@@ -255,7 +287,7 @@ export default function MemoryContextDemo() {
               <div className="bg-gradient-to-r from-rose-500 to-red-600 px-6 py-4 text-white flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                    <Brain className="w-6 h-6" />
+                    <BrainCircuit className="w-6 h-6" />
                   </div>
                   <div>
                     <div className="font-semibold">Memory-Enhanced Chat</div>
@@ -268,9 +300,17 @@ export default function MemoryContextDemo() {
                   <button
                     onClick={() => setShowMemoryPanel(!showMemoryPanel)}
                     className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                    title={showMemoryPanel ? 'Hide memory panel' : 'Show memory panel'}
+                    title={
+                      showMemoryPanel
+                        ? 'Hide memory panel'
+                        : 'Show memory panel'
+                    }
                   >
-                    {showMemoryPanel ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showMemoryPanel ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                   <button
                     onClick={resetDemo}
@@ -295,28 +335,34 @@ export default function MemoryContextDemo() {
                       message.sender === 'user' ? 'flex-row-reverse' : ''
                     }`}
                   >
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.sender === 'bot'
-                        ? 'bg-rose-100 dark:bg-rose-900 text-rose-600 dark:text-rose-400'
-                        : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
-                    }`}>
+                    <div
+                      className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.sender === 'bot'
+                          ? 'bg-rose-100 dark:bg-rose-900 text-rose-600 dark:text-rose-400'
+                          : 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
+                      }`}
+                    >
                       {message.sender === 'bot' ? (
-                        <Brain className="w-5 h-5" />
+                        <BrainCircuit className="w-5 h-5" />
                       ) : (
                         <User className="w-5 h-5" />
                       )}
                     </div>
                     <div className="max-w-[75%]">
-                      <div className={`rounded-2xl px-4 py-3 ${
-                        message.sender === 'bot'
-                          ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
-                          : 'bg-brand-500 text-white rounded-tr-sm'
-                      }`}>
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                      <div
+                        className={`rounded-2xl px-4 py-3 ${
+                          message.sender === 'bot'
+                            ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
+                            : 'bg-brand-500 text-white rounded-tr-sm'
+                        }`}
+                      >
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                          {message.text}
+                        </p>
                       </div>
                       {message.memoryUsed && message.memoryUsed.length > 0 && (
                         <div className="mt-1 flex items-center gap-1 text-xs text-text-secondary">
-                          <Brain className="w-3 h-3" />
+                          <BrainCircuit className="w-3 h-3" />
                           Used {message.memoryUsed.length} memory items
                         </div>
                       )}
@@ -332,7 +378,11 @@ export default function MemoryContextDemo() {
                           key={i}
                           className="w-2 h-2 rounded-full bg-rose-500"
                           animate={{ y: [0, -4, 0] }}
-                          transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1 }}
+                          transition={{
+                            duration: durations.slower,
+                            repeat: Infinity,
+                            delay: i * 0.1,
+                          }}
                         />
                       ))}
                     </div>
@@ -381,7 +431,7 @@ export default function MemoryContextDemo() {
                 >
                   <div className="p-6 rounded-xl bg-bg-secondary border border-border">
                     <h3 className="font-bold mb-4 flex items-center gap-2">
-                      <Brain className="w-5 h-5 text-rose-500" />
+                      <BrainCircuit className="w-5 h-5 text-rose-500" />
                       Memory Store
                     </h3>
                     <div className="space-y-3">
@@ -394,7 +444,9 @@ export default function MemoryContextDemo() {
                             key={item.id}
                             animate={{
                               scale: isActive ? 1.02 : 1,
-                              borderColor: isActive ? 'rgb(244, 63, 94)' : 'transparent',
+                              borderColor: isActive
+                                ? 'rgb(244, 63, 94)'
+                                : 'transparent',
                             }}
                             className={`p-3 rounded-lg border-2 transition-all ${
                               isActive
@@ -403,11 +455,15 @@ export default function MemoryContextDemo() {
                             }`}
                           >
                             <div className="flex items-start gap-3">
-                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${memoryTypeColor[item.type]}`}>
+                              <div
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${memoryTypeColor[item.type]}`}
+                              >
                                 <Icon className="w-4 h-4" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium">{item.content}</div>
+                                <div className="text-sm font-medium">
+                                  {item.content}
+                                </div>
                                 <div className="flex items-center gap-2 mt-1 text-xs text-text-secondary">
                                   <Clock className="w-3 h-3" />
                                   {item.source}

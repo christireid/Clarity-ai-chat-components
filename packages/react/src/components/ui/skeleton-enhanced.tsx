@@ -334,8 +334,10 @@ class LoadingPredictor {
     if (this.history.length === 0) return 2000 // Default 2 seconds
 
     const recentHistory = this.history.slice(-this.maxHistory)
-    const averageDuration = recentHistory.reduce((sum, item) => sum + item.duration, 0) / recentHistory.length
-    
+    const averageDuration =
+      recentHistory.reduce((sum, item) => sum + item.duration, 0) /
+      recentHistory.length
+
     // Add some variance based on recent trends
     const trend = this.getTrend()
     return Math.max(500, averageDuration + trend * 200)
@@ -361,8 +363,10 @@ class LoadingPredictor {
 
     if (recent.length === 0 || older.length === 0) return 0
 
-    const recentAverage = recent.reduce((sum, item) => sum + item.duration, 0) / recent.length
-    const olderAverage = older.reduce((sum, item) => sum + item.duration, 0) / older.length
+    const recentAverage =
+      recent.reduce((sum, item) => sum + item.duration, 0) / recent.length
+    const olderAverage =
+      older.reduce((sum, item) => sum + item.duration, 0) / older.length
 
     return (recentAverage - olderAverage) / olderAverage
   }
@@ -483,14 +487,14 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
   React.useEffect(() => {
     if (monitorPerformance && typeof window !== 'undefined') {
       const monitor = PerformanceMonitor.getInstance()
-      
+
       if (isLoading) {
         loadingStartTime.current = Date.now()
         monitor.startMonitoring('skeleton-transition')
       } else if (loadingStartTime.current > 0) {
         const loadingDuration = Date.now() - loadingStartTime.current
         monitor.endMonitoring('skeleton-transition')
-        
+
         if (enablePrediction) {
           LoadingPredictor.getInstance().recordLoadingDuration(loadingDuration)
         }
@@ -507,7 +511,7 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
       loadingStartTime.current = Date.now()
     } else {
       setIsTransitioning(true)
-      
+
       // Start transition
       setTimeout(() => {
         setShowContent(true)
@@ -522,10 +526,10 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
   // Accessibility announcements
   React.useEffect(() => {
     if (accessibilityMode !== 'off' && containerRef.current) {
-      const announcement = isLoading 
-        ? 'Loading content, please wait...' 
+      const announcement = isLoading
+        ? 'Loading content, please wait...'
         : 'Content loaded successfully'
-      
+
       const liveRegion = document.createElement('div')
       liveRegion.setAttribute('aria-live', accessibilityMode)
       liveRegion.setAttribute('aria-atomic', 'true')
@@ -535,9 +539,9 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
       liveRegion.style.width = '1px'
       liveRegion.style.height = '1px'
       liveRegion.style.overflow = 'hidden'
-      
+
       document.body.appendChild(liveRegion)
-      
+
       setTimeout(() => {
         document.body.removeChild(liveRegion)
       }, 1000)
@@ -570,10 +574,14 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
     }
   }
 
-  const { skeletonExit, contentEnter, duration: effectiveDuration } = getTransitionStyles()
+  const {
+    skeletonExit,
+    contentEnter,
+    duration: effectiveDuration,
+  } = getTransitionStyles()
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="relative overflow-hidden"
       style={{ minHeight: showSkeleton ? '100px' : 'auto' }}
@@ -586,7 +594,9 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
             isTransitioning && skeletonExit
           )}
           style={{
-            animationDuration: isTransitioning ? `${effectiveDuration}ms` : undefined,
+            animationDuration: isTransitioning
+              ? `${effectiveDuration}ms`
+              : undefined,
           }}
         >
           {skeleton}
@@ -601,7 +611,9 @@ export const SkeletonTransition: React.FC<SkeletonTransitionProps> = ({
             isTransitioning && contentEnter
           )}
           style={{
-            animationDuration: isTransitioning ? `${effectiveDuration}ms` : undefined,
+            animationDuration: isTransitioning
+              ? `${effectiveDuration}ms`
+              : undefined,
           }}
         >
           {children}
@@ -652,7 +664,7 @@ export const EnhancedSkeletonText: React.FC<EnhancedSkeletonTextProps> = ({
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640)
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
@@ -661,10 +673,7 @@ export const EnhancedSkeletonText: React.FC<EnhancedSkeletonTextProps> = ({
   const effectiveLines = responsive && isMobile ? Math.min(lines, 2) : lines
 
   return (
-    <div 
-      className={cn('space-y-2.5', className)} 
-      style={{ gap: `${gap}px` }}
-    >
+    <div className={cn('space-y-2.5', className)} style={{ gap: `${gap}px` }}>
       {Array.from({ length: effectiveLines }).map((_, index) => (
         <EnhancedSkeleton
           key={index}
@@ -757,13 +766,7 @@ export const SkeletonComposer: React.FC<SkeletonComposerProps> = ({
 
     switch (type) {
       case 'skeleton':
-        return (
-          <EnhancedSkeleton
-            key={index}
-            {...baseProps}
-            style={style}
-          />
-        )
+        return <EnhancedSkeleton key={index} {...baseProps} style={style} />
       case 'text':
         return (
           <EnhancedSkeletonText
@@ -774,11 +777,7 @@ export const SkeletonComposer: React.FC<SkeletonComposerProps> = ({
         )
       case 'avatar':
         return (
-          <EnhancedSkeletonAvatar
-            key={index}
-            {...baseProps}
-            style={style}
-          />
+          <EnhancedSkeletonAvatar key={index} {...baseProps} style={style} />
         )
       case 'button':
         return (
@@ -828,7 +827,7 @@ export const SkeletonComposer: React.FC<SkeletonComposerProps> = ({
 
   return (
     <div className={cn(getLayoutStyles(), className)}>
-      {composition.components.map((component, index) => 
+      {composition.components.map((component, index) =>
         renderComponent(component, index)
       )}
     </div>
@@ -850,18 +849,24 @@ export const SkeletonThemeProvider: React.FC<SkeletonThemeProviderProps> = ({
   theme = {},
   children,
 }) => {
-  const effectiveTheme = React.useMemo(() => ({
-    primaryColor: '#f1f5f9',
-    secondaryColor: '#e2e8f0',
-    animationSpeed: 1500,
-    borderRadius: 4,
-    reducedMotion: false,
-    ...theme,
-  }), [theme])
+  const effectiveTheme = React.useMemo(
+    () => ({
+      primaryColor: '#f1f5f9',
+      secondaryColor: '#e2e8f0',
+      animationSpeed: 1500,
+      borderRadius: 4,
+      reducedMotion: false,
+      ...theme,
+    }),
+    [theme]
+  )
 
   React.useEffect(() => {
     if (theme.reducedMotion && typeof window !== 'undefined') {
-      document.documentElement.style.setProperty('--skeleton-reduced-motion', '1')
+      document.documentElement.style.setProperty(
+        '--skeleton-reduced-motion',
+        '1'
+      )
     }
   }, [theme.reducedMotion])
 
@@ -905,7 +910,7 @@ export const AccessibleSkeleton: React.FC<AccessibleSkeletonProps> = ({
     if (isLoading) {
       startTime.current = Date.now()
       setAnnouncement(loadingMessage)
-      
+
       if (showProgress && estimatedTime) {
         const interval = setInterval(() => {
           const elapsed = Date.now() - startTime.current
@@ -918,7 +923,7 @@ export const AccessibleSkeleton: React.FC<AccessibleSkeletonProps> = ({
     } else {
       setProgress(100)
       setAnnouncement(loadedMessage)
-      
+
       setTimeout(() => setAnnouncement(''), 3000)
     }
   }, [isLoading, estimatedTime, loadingMessage, loadedMessage, showProgress])
@@ -929,7 +934,7 @@ export const AccessibleSkeleton: React.FC<AccessibleSkeletonProps> = ({
     switch (progressIndicator) {
       case 'linear':
         return (
-          <div 
+          <div
             role="progressbar"
             aria-valuenow={progress}
             aria-valuemin={0}
@@ -937,7 +942,7 @@ export const AccessibleSkeleton: React.FC<AccessibleSkeletonProps> = ({
             aria-label="Loading progress"
             className="w-full h-2 bg-gray-200 rounded-full overflow-hidden"
           >
-            <div 
+            <div
               className="h-full bg-blue-500 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
@@ -981,27 +986,25 @@ export const AccessibleSkeleton: React.FC<AccessibleSkeletonProps> = ({
   return (
     <div className="relative">
       {/* Screen reader announcements */}
-      <div 
-        className="sr-only" 
-        role="status" 
-        aria-live="polite" 
+      <div
+        className="sr-only"
+        role="status"
+        aria-live="polite"
         aria-atomic="true"
       >
         {announcement}
       </div>
 
       {/* Progress indicator */}
-      {isLoading && (
-        <div className="mb-4">
-          {renderProgressIndicator()}
-        </div>
-      )}
+      {isLoading && <div className="mb-4">{renderProgressIndicator()}</div>}
 
       {/* Content with skeleton overlay */}
-      <div className={cn(
-        'transition-opacity',
-        isLoading ? 'opacity-30' : 'opacity-100'
-      )}>
+      <div
+        className={cn(
+          'transition-opacity',
+          isLoading ? 'opacity-30' : 'opacity-100'
+        )}
+      >
         {children}
       </div>
 
@@ -1010,9 +1013,7 @@ export const AccessibleSkeleton: React.FC<AccessibleSkeletonProps> = ({
         <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
           <div className="text-center">
             {renderProgressIndicator()}
-            <p className="mt-2 text-sm text-gray-600">
-              {loadingMessage}
-            </p>
+            <p className="mt-2 text-sm text-gray-600">{loadingMessage}</p>
           </div>
         </div>
       )}
@@ -1045,14 +1046,19 @@ export const PerformanceSkeleton: React.FC<PerformanceSkeletonProps> = ({
 
     return () => {
       const metrics = monitor.endMonitoring(performanceId)
-      
+
       if (enableDetailedMetrics) {
         console.log(`Performance metrics for ${performanceId}:`, {
           metrics,
           summary: {
             totalEntries: metrics.length,
-            averageDuration: metrics.reduce((sum, entry) => sum + entry.duration, 0) / metrics.length,
-            totalDuration: metrics.reduce((sum, entry) => sum + entry.duration, 0),
+            averageDuration:
+              metrics.reduce((sum, entry) => sum + entry.duration, 0) /
+              metrics.length,
+            totalDuration: metrics.reduce(
+              (sum, entry) => sum + entry.duration,
+              0
+            ),
           },
         })
       }
@@ -1092,10 +1098,10 @@ export const SmartSkeleton: React.FC<SmartSkeletonProps> = ({
   React.useEffect(() => {
     if (isLoading) {
       startTime.current = Date.now()
-      
+
       const predictor = LoadingPredictor.getInstance()
       const predicted = predictor.predictDuration()
-      
+
       // Adjust based on prediction mode
       let adjustedPrediction = predicted
       switch (predictionMode) {
@@ -1109,16 +1115,16 @@ export const SmartSkeleton: React.FC<SmartSkeletonProps> = ({
         default:
           adjustedPrediction = predicted
       }
-      
+
       setPredictedDuration(adjustedPrediction)
-      
+
       if (onPredictionUpdate) {
         onPredictionUpdate(adjustedPrediction)
       }
     } else if (startTime.current > 0) {
       const duration = Date.now() - startTime.current
       setActualDuration(duration)
-      
+
       if (enableLearning) {
         LoadingPredictor.getInstance().recordLoadingDuration(duration)
       }
@@ -1153,11 +1159,13 @@ export interface MicroInteractionSkeletonProps {
   enableHaptics?: boolean
 }
 
-export const MicroInteractionSkeleton: React.FC<MicroInteractionSkeletonProps> = ({
+export const MicroInteractionSkeleton: React.FC<
+  MicroInteractionSkeletonProps
+> = ({
   children,
   interactions = [
-    { type: 'hover', effect: 'pulse', duration: 200 },
-    { type: 'focus', effect: 'glow', duration: 300 },
+    { type: 'hover', effect: 'pulse', duration: durations.slower },
+    { type: 'focus', effect: 'glow', duration: durations.slower },
   ],
   enableSound = false,
   enableHaptics = false,
@@ -1174,17 +1182,17 @@ export const MicroInteractionSkeleton: React.FC<MicroInteractionSkeletonProps> =
       const handler = () => {
         // Apply visual effect
         element.classList.add(`skeleton-micro-${effect}`)
-        
+
         // Apply sound effect
         if (enableSound) {
           playInteractionSound(effect)
         }
-        
+
         // Apply haptic feedback
         if (enableHaptics && navigator.vibrate) {
           navigator.vibrate(duration)
         }
-        
+
         // Remove effect after duration
         setTimeout(() => {
           element.classList.remove(`skeleton-micro-${effect}`)
@@ -1205,14 +1213,16 @@ export const MicroInteractionSkeleton: React.FC<MicroInteractionSkeletonProps> =
 
   const playInteractionSound = (effect: string) => {
     if (!enableSound) return
-    
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+
+    const audioContext = new (
+      window.AudioContext || (window as any).webkitAudioContext
+    )()
     const oscillator = audioContext.createOscillator()
     const gainNode = audioContext.createGain()
-    
+
     oscillator.connect(gainNode)
     gainNode.connect(audioContext.destination)
-    
+
     // Different frequencies for different effects
     const frequencies = {
       pulse: 440,
@@ -1220,13 +1230,19 @@ export const MicroInteractionSkeleton: React.FC<MicroInteractionSkeletonProps> =
       scale: 659,
       shake: 294,
     }
-    
-    oscillator.frequency.setValueAtTime(frequencies[effect as keyof typeof frequencies] || 440, audioContext.currentTime)
+
+    oscillator.frequency.setValueAtTime(
+      frequencies[effect as keyof typeof frequencies] || 440,
+      audioContext.currentTime
+    )
     oscillator.type = 'sine'
-    
+
     gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2)
-    
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.2
+    )
+
     oscillator.start(audioContext.currentTime)
     oscillator.stop(audioContext.currentTime + 0.2)
   }

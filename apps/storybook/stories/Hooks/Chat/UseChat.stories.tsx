@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useChat } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -7,16 +6,16 @@ import type { Message } from '@clarity-chat/types'
 
 /**
  * **useChat Hook**
- * 
+ *
  * The core hook for managing chat state, messages, and async operations.
- * 
+ *
  * **Key Features:**
  * - Message state management
  * - Async message sending with AbortController support
  * - Error handling and retry logic
  * - Loading states
  * - Message history
- * 
+ *
  * **Use Cases:**
  * - Chat applications
  * - Messaging interfaces
@@ -71,7 +70,7 @@ type Story = StoryObj<typeof meta>
 const mockSendMessage = async (message: Message): Promise<Message> => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1000))
-  
+
   return {
     id: `msg-${Date.now()}`,
     role: 'assistant',
@@ -182,7 +181,8 @@ export const BasicUsage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic chat interface using useChat hook with message sending and display.',
+        story:
+          'Basic chat interface using useChat hook with message sending and display.',
       },
     },
   },
@@ -285,7 +285,7 @@ function ChatWithErrorHandling() {
       if (Math.random() > 0.7) {
         throw new Error('Failed to send message. Please try again.')
       }
-      
+
       await new Promise((resolve) => setTimeout(resolve, 1000))
       return {
         id: `msg-${Date.now()}`,
@@ -309,9 +309,7 @@ function ChatWithErrorHandling() {
               msg.role === 'user'
                 ? 'bg-primary text-primary-foreground ml-auto max-w-[80%]'
                 : 'bg-muted mr-auto max-w-[80%]'
-            } ${
-              msg.status === 'error' ? 'border-2 border-destructive' : ''
-            }`}
+            } ${msg.status === 'error' ? 'border-2 border-destructive' : ''}`}
           >
             <div className="text-sm">{msg.content}</div>
             {msg.status === 'error' && (
@@ -362,8 +360,9 @@ function ChatWithErrorHandling() {
       </div>
 
       <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-xs">
-        <strong>Note:</strong> This demo randomly fails ~30% of messages to demonstrate error handling.
-        Click "Retry Message" on failed messages to resend them.
+        <strong>Note:</strong> This demo randomly fails ~30% of messages to
+        demonstrate error handling. Click "Retry Message" on failed messages to
+        resend them.
       </div>
     </div>
   )
@@ -374,7 +373,8 @@ export const ErrorHandling: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates error handling and retry functionality when messages fail to send.',
+        story:
+          'Demonstrates error handling and retry functionality when messages fail to send.',
       },
     },
   },
@@ -391,7 +391,7 @@ function ChatWithCancellation() {
         }
         await new Promise((resolve) => setTimeout(resolve, 500))
       }
-      
+
       return {
         id: `msg-${Date.now()}`,
         role: 'assistant',
@@ -403,18 +403,19 @@ function ChatWithCancellation() {
   })
 
   const [input, setInput] = useState('')
-  const [abortController, setAbortController] = useState<AbortController | null>(null)
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null)
 
   const handleSend = async () => {
     const controller = new AbortController()
     setAbortController(controller)
-    
+
     try {
       await sendMessage(input, { signal: controller.signal })
       setInput('')
     } catch (error: any) {
       if (error.message !== 'Request cancelled') {
-        SecureLogger.error('Send error:', error)
+        console.error('Send error:', error)
       }
     } finally {
       setAbortController(null)
@@ -474,8 +475,9 @@ function ChatWithCancellation() {
       </div>
 
       <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-xs">
-        <strong>AbortController Support:</strong> Long-running requests can be cancelled
-        mid-flight. Click "Cancel" while a message is processing to abort it.
+        <strong>AbortController Support:</strong> Long-running requests can be
+        cancelled mid-flight. Click "Cancel" while a message is processing to
+        abort it.
       </div>
     </div>
   )
@@ -486,7 +488,8 @@ export const Cancellation: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Demonstrates AbortController support for cancelling in-flight requests.',
+        story:
+          'Demonstrates AbortController support for cancelling in-flight requests.',
       },
     },
   },

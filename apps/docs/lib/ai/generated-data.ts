@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Auto-generated Component and Hook Data
  *
@@ -5637,7 +5636,7 @@ export const generatedComponents: GeneratedComponent[] = [
       },
     ],
     examples: [
-      '// Basic usage\n<VoiceInput\n  onTranscript={(text) => {\n    logger.debug(\'Voice input:\', text)\n    sendMessage(text)\n  }}\n/>\n\n// With custom styling\n<VoiceInput\n  onTranscript={handleVoiceInput}\n  size="lg"\n  variant="primary"\n  showInterim={true}\n  autoSubmit={true}\n/>\n\n// Multi-language\n<VoiceInput\n  onTranscript={handleInput}\n  lang="es-ES"\n  tooltipText="Habla en español"\n/>\n\n// With callbacks\n<VoiceInput\n  onTranscript={handleInput}\n  onStart={() => logger.debug(\'Started listening\')}\n  onStop={() => logger.debug(\'Stopped listening\')}\n  onError={(err) => logger.logger.error(\'Voice error:\', err)}\n/>',
+      '// Basic usage\n<VoiceInput\n  onTranscript={(text) => {\n    logger.debug(\'Voice input:\', text)\n    sendMessage(text)\n  }}\n/>\n\n// With custom styling\n<VoiceInput\n  onTranscript={handleVoiceInput}\n  size="lg"\n  variant="primary"\n  showInterim={true}\n  autoSubmit={true}\n/>\n\n// Multi-language\n<VoiceInput\n  onTranscript={handleInput}\n  lang="es-ES"\n  tooltipText="Habla en español"\n/>\n\n// With callbacks\n<VoiceInput\n  onTranscript={handleInput}\n  onStart={() => logger.debug(\'Started listening\')}\n  onStop={() => logger.debug(\'Stopped listening\')}\n  onError={(err) => console.error(\'Voice error:\', err)}\n/>',
     ],
     importPath: '@clarity-chat/react',
   },
@@ -6230,7 +6229,7 @@ export const generatedHooks: GeneratedHook[] = [
     returns: [],
     examples: [
       "const chat = useClarityChat({ api: '/api/chat' })\nconst handlers = useChatHandlers({ chat })\n\n<ChatWindow\n  messages={chat.messages}\n  onSendMessage={handlers.onSendMessage}\n  onClear={handlers.onClear}\n  onMessageRetry={handlers.onRetry}\n/>",
-      "// With callbacks\nconst handlers = useChatHandlers({\n  chat,\n  onMessageSent: (content) => logger.debug('Sent:', content),\n  onMessageError: (error) => logger.logger.error('Error:', error),\n})",
+      "// With callbacks\nconst handlers = useChatHandlers({\n  chat,\n  onMessageSent: (content) => logger.debug('Sent:', content),\n  onMessageError: (error) => console.error('Error:', error),\n})",
       "const chat = useClarityChat({ api: '/api/chat' })\nconst handlers = useChatHandlers({ chat })\n\nreturn (\n  <ChatWindow\n    messages={chat.messages}\n    isLoading={chat.isLoading}\n    onSendMessage={handlers.onSendMessage}\n    onClear={handlers.onClear}\n  />\n)",
     ],
     importPath: '@clarity-chat/react',

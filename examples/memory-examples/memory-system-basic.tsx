@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Basic Memory System Example
  *
@@ -14,7 +11,6 @@ import { ErrorBoundary, LoadingSpinner } from '../utils/error-boundary'
 // The library uses a flat export structure for simpler imports.
 import {
   MemoryProvider,
-import { SecureLogger } from '@/lib/security/secureLogger';
   useMemoryContext,
   QdrantVectorStore,
   OpenAIEmbeddings,
@@ -155,7 +151,7 @@ function ChatWithMemory() {
   // DEMO ONLY: Remove console.log in production
   const captureMessage = async (content: string, role: 'user' | 'assistant') => {
     // DEMO: Logs to console for demonstration purposes
-    SecureLogger.debug(`[Memory] Capturing ${role} message:`, content.substring(0, 50))
+    console.log(`[Memory] Capturing ${role} message:`, content.substring(0, 50))
     // PRODUCTION: Uncomment and use the real API:
     // await memoryContext.addMemory({ content, type: 'episodic', metadata: { role } })
   }
@@ -163,7 +159,7 @@ function ChatWithMemory() {
   // DEMO ONLY: Remove console.log in production
   const capturePreference = async (key: string, value: string) => {
     // DEMO: Logs to console for demonstration purposes
-    SecureLogger.debug(`[Memory] Capturing preference: ${key} = ${value}`)
+    console.log(`[Memory] Capturing preference: ${key} = ${value}`)
     // PRODUCTION: Uncomment and use the real API:
     // await memoryContext.addMemory({ content: `${key}: ${value}`, type: 'semantic' })
   }
@@ -171,7 +167,7 @@ function ChatWithMemory() {
   // DEMO ONLY: Remove console.log in production
   const getRelevantMemories = async (query: string) => {
     // DEMO: Logs to console for demonstration purposes
-    SecureLogger.debug(`[Memory] Searching for memories related to:`, query.substring(0, 50))
+    console.log(`[Memory] Searching for memories related to:`, query.substring(0, 50))
     // PRODUCTION: Uncomment and use the real API:
     // return await memoryContext.searchMemories(query)
     return []
@@ -180,7 +176,7 @@ function ChatWithMemory() {
   // DEMO ONLY: Remove console.log in production
   const getRecentHistory = async () => {
     // DEMO: Logs to console for demonstration purposes
-    SecureLogger.debug(`[Memory] Fetching recent history`)
+    console.log(`[Memory] Fetching recent history`)
     // PRODUCTION: Uncomment and use the real API:
     // return await memoryContext.getRecentMemories()
     return messages
@@ -289,7 +285,7 @@ function ChatWithMemory() {
         <button
           onClick={async () => {
             const history = await getRecentHistory()
-            SecureLogger.debug('Recent history:', history)
+            console.log('Recent history:', history)
             alert(`Found ${history.length} recent messages`)
           }}
           className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
@@ -307,7 +303,7 @@ function ChatWithMemory() {
 export function App() {
   return (
     <ErrorBoundary
-      onError={(error) => SecureLogger.error('Memory system error:', error)}
+      onError={(error) => console.error('Memory system error:', error)}
       showReset
     >
       <MemoryProvider

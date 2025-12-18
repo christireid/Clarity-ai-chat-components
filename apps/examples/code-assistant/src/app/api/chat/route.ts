@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-import { SecureLogger } from '@/lib/security/secureLogger';
 import OpenAI from 'openai'
 
 export const runtime = 'edge'
@@ -25,10 +24,13 @@ export async function POST(req: NextRequest) {
     const { messages } = await req.json()
 
     if (!messages || !Array.isArray(messages)) {
-      return new Response(JSON.stringify({ error: 'Invalid request: messages required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return new Response(
+        JSON.stringify({ error: 'Invalid request: messages required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
     }
 
     const apiKey = process.env.OPENAI_API_KEY
@@ -79,7 +81,7 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
           controller.close()
         } catch (err) {
-          SecureLogger.error('Stream error:', err)
+          console.error('Stream error:', err)
           controller.error(err)
         }
       },
@@ -93,7 +95,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (err: any) {
-    SecureLogger.error('Chat API error:', err)
+    console.error('Chat API error:', err)
 
     if (err?.status === 401) {
       return new Response(

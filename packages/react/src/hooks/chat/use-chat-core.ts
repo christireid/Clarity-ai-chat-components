@@ -1,6 +1,21 @@
 /**
  * useChatCore - Mid-level hook for chat functionality
  *
+ * @deprecated This hook will be merged into `useChatUnified` in v3.0.
+ * Please migrate to `useChatUnified` or `useClarityChat` which provide
+ * the same functionality with a cleaner API.
+ *
+ * **Migration:**
+ * ```tsx
+ * // Before (deprecated)
+ * import { useChatCore } from '@clarity-chat/react'
+ * const { messages, sendMessage } = useChatCore({ api: '/api/chat' })
+ *
+ * // After (recommended)
+ * import { useChat } from '@clarity-chat/react'
+ * const { messages, sendMessage } = useChat({ api: '/api/chat' })
+ * ```
+ *
  * Building block hook that provides core chat functionality without
  * the high-level conveniences. Use this when you need more control
  * than useClarityChat but don't want to wire everything manually.
@@ -23,7 +38,7 @@
 
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -46,8 +61,8 @@ export interface UseChatCoreReturn {
   sendMessage: (content: string) => Promise<void>
   /** Whether a message is being sent */
   isLoading: boolean
-  /** Current error */
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
   /** All other useClarityChat returns */
   chat: ReturnType<typeof useClarityChat>
 }

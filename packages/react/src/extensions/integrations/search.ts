@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Search Provider Extensions
  *
@@ -148,12 +147,12 @@ export function createAlgoliaExtension(
     defaultConfig: config as AlgoliaConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Algolia extension initialized')
+      ctx.console.info('Algolia extension initialized')
 
       // Would use algoliasearch
       const adapter: SearchAdapter = {
         async index(documents) {
-          ctx.logger.debug(`Indexing ${documents.length} documents to Algolia`)
+          ctx.console.log(`Indexing ${documents.length} documents to Algolia`)
           const response = await fetch(
             `https://${ctx.config.appId}-dsn.algolia.net/1/indexes/${ctx.config.indexName}/batch`,
             {
@@ -177,7 +176,7 @@ export function createAlgoliaExtension(
         },
 
         async search(query, options = {}) {
-          ctx.logger.debug(`Searching Algolia for: ${query}`)
+          ctx.console.log(`Searching Algolia for: ${query}`)
           const response = await fetch(
             `https://${ctx.config.appId}-dsn.algolia.net/1/indexes/${ctx.config.indexName}/query`,
             {
@@ -219,7 +218,7 @@ export function createAlgoliaExtension(
         },
 
         async delete(ids) {
-          ctx.logger.debug(`Deleting ${ids.length} documents from Algolia`)
+          ctx.console.log(`Deleting ${ids.length} documents from Algolia`)
         },
 
         async update(documents) {
@@ -292,18 +291,18 @@ export function createTypesenseExtension(
     } as TypesenseConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Typesense extension initialized')
+      ctx.console.info('Typesense extension initialized')
 
       // Would use typesense
       const adapter: SearchAdapter = {
         async index(documents) {
-          ctx.logger.debug(
+          ctx.console.log(
             `Indexing ${documents.length} documents to Typesense`
           )
         },
 
         async search(query, options = {}) {
-          ctx.logger.debug(`Searching Typesense for: ${query}`)
+          ctx.console.log(`Searching Typesense for: ${query}`)
           const node = ctx.config.nodes[0]
           const response = await fetch(
             `${node.protocol}://${node.host}:${node.port}/collections/${ctx.config.collectionName}/documents/search?q=${encodeURIComponent(query)}&query_by=*`,
@@ -330,7 +329,7 @@ export function createTypesenseExtension(
         },
 
         async delete(ids) {
-          ctx.logger.debug(`Deleting ${ids.length} documents from Typesense`)
+          ctx.console.log(`Deleting ${ids.length} documents from Typesense`)
         },
 
         async update(documents) {
@@ -383,12 +382,12 @@ export function createMeilisearchExtension(
     } as MeilisearchConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Meilisearch extension initialized')
+      ctx.console.info('Meilisearch extension initialized')
 
       // Would use meilisearch
       const adapter: SearchAdapter = {
         async index(documents) {
-          ctx.logger.debug(
+          ctx.console.log(
             `Indexing ${documents.length} documents to Meilisearch`
           )
           await fetch(
@@ -407,7 +406,7 @@ export function createMeilisearchExtension(
         },
 
         async search(query, options = {}) {
-          ctx.logger.debug(`Searching Meilisearch for: ${query}`)
+          ctx.console.log(`Searching Meilisearch for: ${query}`)
           const response = await fetch(
             `${ctx.config.host}/indexes/${ctx.config.indexName}/search`,
             {
@@ -446,7 +445,7 @@ export function createMeilisearchExtension(
         },
 
         async delete(ids) {
-          ctx.logger.debug(`Deleting ${ids.length} documents from Meilisearch`)
+          ctx.console.log(`Deleting ${ids.length} documents from Meilisearch`)
           await fetch(
             `${ctx.config.host}/indexes/${ctx.config.indexName}/documents/delete-batch`,
             {
@@ -519,7 +518,7 @@ export function createElasticSearchExtension(
     } as ElasticSearchConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Elasticsearch extension initialized')
+      ctx.console.info('Elasticsearch extension initialized')
 
       const getHeaders = () => {
         const headers: Record<string, string> = {
@@ -535,7 +534,7 @@ export function createElasticSearchExtension(
 
       const adapter: SearchAdapter = {
         async index(documents) {
-          ctx.logger.debug(
+          ctx.console.log(
             `Indexing ${documents.length} documents to Elasticsearch`
           )
           const body = documents.flatMap((doc) => [
@@ -553,7 +552,7 @@ export function createElasticSearchExtension(
         },
 
         async search(query, options = {}) {
-          ctx.logger.debug(`Searching Elasticsearch for: ${query}`)
+          ctx.console.log(`Searching Elasticsearch for: ${query}`)
           const response = await fetch(
             `${ctx.config.node}/${ctx.config.indexName}/_search`,
             {
@@ -605,7 +604,7 @@ export function createElasticSearchExtension(
         },
 
         async delete(ids) {
-          ctx.logger.debug(
+          ctx.console.log(
             `Deleting ${ids.length} documents from Elasticsearch`
           )
         },
@@ -654,7 +653,7 @@ export function createOramaExtension(
     } as OramaConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Orama extension initialized')
+      ctx.console.info('Orama extension initialized')
 
       // In-memory documents for client-side search
       let documents: SearchDocument[] = []
@@ -662,12 +661,12 @@ export function createOramaExtension(
       // Would use @orama/orama
       const adapter: SearchAdapter = {
         async index(docs) {
-          ctx.logger.debug(`Indexing ${docs.length} documents to Orama`)
+          ctx.console.log(`Indexing ${docs.length} documents to Orama`)
           documents = [...documents, ...docs]
         },
 
         async search(query, options = {}) {
-          ctx.logger.debug(`Searching Orama for: ${query}`)
+          ctx.console.log(`Searching Orama for: ${query}`)
           const queryLower = query.toLowerCase()
           const hits = documents
             .filter((doc) =>
@@ -695,7 +694,7 @@ export function createOramaExtension(
         },
 
         async delete(ids) {
-          ctx.logger.debug(`Deleting ${ids.length} documents from Orama`)
+          ctx.console.log(`Deleting ${ids.length} documents from Orama`)
           documents = documents.filter((d) => !ids.includes(d.id))
         },
 

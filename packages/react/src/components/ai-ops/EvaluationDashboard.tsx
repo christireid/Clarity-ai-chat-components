@@ -12,8 +12,8 @@ import {
 import {
   ResponseQualityMeter,
   type ResponseQualityMeterProps,
-} from '../response-quality-meter'
-import { Skeleton } from '../skeleton'
+} from '../dashboards/response-quality-meter'
+import { Skeleton } from '../ui/skeleton'
 
 export interface EvaluationMetricItem {
   id: string

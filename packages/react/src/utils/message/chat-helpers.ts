@@ -1,11 +1,19 @@
 /**
  * Chat helper utilities for Vercel AI SDK compatible hooks
  *
- * Provides utilities for message transformation, formatting, and manipulation
+ * Provides utilities for CoreMessage transformation, formatting, and manipulation.
+ * These utilities work with the Vercel AI SDK CoreMessage type specifically.
+ *
+ * For Message type conversion (Clarity internal format), see message-conversion.ts
+ *
+ * @see {@link ./message-conversion.ts} for Message ↔ CoreMessage conversion
  */
 
-import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced'
-import { estimateTokens } from './tokenization/estimator'
+import type {
+  CoreMessage,
+  CoreMessageContent,
+} from '../hooks/use-chat-enhanced'
+import { estimateTokens } from '../tokenization/estimator'
 
 /**
  * Convert CoreMessage to plain text
@@ -116,9 +124,7 @@ export function extractToolCalls(message: CoreMessage): Array<{
 /**
  * Format messages for API request
  */
-export function formatMessagesForAPI(
-  messages: CoreMessage[]
-): Array<{
+export function formatMessagesForAPI(messages: CoreMessage[]): Array<{
   role: string
   content: string | Array<Record<string, any>>
   name?: string
@@ -230,7 +236,10 @@ export function mergeStreamingChunks(
 /**
  * Create a user message
  */
-export function createUserMessage(content: string, options?: { id?: string }): CoreMessage {
+export function createUserMessage(
+  content: string,
+  options?: { id?: string }
+): CoreMessage {
   return {
     id: options?.id,
     role: 'user',
@@ -256,7 +265,10 @@ export function createAssistantMessage(
 /**
  * Create a system message
  */
-export function createSystemMessage(content: string, options?: { id?: string }): CoreMessage {
+export function createSystemMessage(
+  content: string,
+  options?: { id?: string }
+): CoreMessage {
   return {
     id: options?.id,
     role: 'system',
@@ -291,14 +303,19 @@ export function createToolResultMessage(
 /**
  * Validate message structure
  */
-export function validateMessage(message: CoreMessage): { valid: boolean; errors: string[] } {
+export function validateMessage(message: CoreMessage): {
+  valid: boolean
+  errors: string[]
+} {
   const errors: string[] = []
 
   if (!message.role) {
     errors.push('Message must have a role')
   }
 
-  if (!['user', 'assistant', 'system', 'function', 'tool'].includes(message.role)) {
+  if (
+    !['user', 'assistant', 'system', 'function', 'tool'].includes(message.role)
+  ) {
     errors.push(`Invalid role: ${message.role}`)
   }
 

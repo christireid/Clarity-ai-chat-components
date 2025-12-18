@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
@@ -235,7 +234,7 @@ export default function AgentChatPage() {
       })))
 
     } catch (error) {
-      logger.logger.error('Agent error:', error)
+      console.error('Agent error:', error)
     } finally {
       setIsLoading(false)
     }

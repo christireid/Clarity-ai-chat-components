@@ -9,10 +9,12 @@ export {
   convertMessageToCoreMessage,
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
+  // Backward compatibility aliases (deprecated)
+  coreMessageToMessage,
+  coreMessagesToMessages,
+  messageToCoreMessage,
+  messagesToCoreMessages,
 } from './message-conversion'
-
-// Legacy exports for backward compatibility
-export * from './message-converter'
 
 export * from './message-grouping'
 

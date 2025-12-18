@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -227,13 +226,13 @@ function VoiceChat() {
       onTranscript={handleTranscript}
       onError={(error) => {
         if (error.includes('not supported')) {
-          toast.logger.error('Voice input is not supported in this browser')
+          toast.error('Voice input is not supported in this browser')
         } else if (error.includes('permission')) {
-          toast.logger.error('Microphone permission denied. Please enable it in your browser settings.')
+          toast.error('Microphone permission denied. Please enable it in your browser settings.')
         } else if (error.includes('no-speech')) {
-          toast.logger.error('No speech detected. Please try again.')
+          toast.error('No speech detected. Please try again.')
         } else {
-          toast.logger.error('Voice input error: ' + error)
+          toast.error('Voice input error: ' + error)
         }
       }}
       autoSubmit

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -94,7 +93,7 @@ export const EnhancedMarkdownRenderer = React.memo(
             })
           }
         }).catch((err) => {
-          logger.warn('Failed to load Mermaid:', err)
+          console.warn('Failed to load Mermaid:', err)
         })
       }
     }, [enableMermaid, codeTheme])
@@ -114,7 +113,7 @@ export const EnhancedMarkdownRenderer = React.memo(
             } catch (error) {
               // With suppressErrorRendering: true, errors won't be inserted into DOM
               // We can handle them gracefully here
-              logger.warn('Mermaid rendering error (handled gracefully):', error)
+              console.warn('Mermaid rendering error (handled gracefully):', error)
             }
           }
         }).catch(() => {

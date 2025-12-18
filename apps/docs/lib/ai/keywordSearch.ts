@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Keyword-Based Search for Documentation
  *
@@ -51,7 +50,7 @@ function loadDocumentationIndex(): DocChunk[] {
     const indexData = fs.readFileSync(indexPath, 'utf-8')
     return JSON.parse(indexData)
   } catch (error) {
-    logger.logger.error('Failed to load documentation index:', error)
+    console.error('Failed to load documentation index:', error)
     return []
   }
 }

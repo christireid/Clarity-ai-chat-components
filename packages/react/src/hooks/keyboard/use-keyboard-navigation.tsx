@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -402,13 +401,17 @@ export function KeyboardNavigationProvider({
 
   // Screen reader live region ref
   const liveRegionRef = React.useRef<HTMLDivElement>(null)
-  const sequenceTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
-  const announceTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const sequenceTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
+  const announceTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
 
   // Warn about conflicts in development
   React.useEffect(() => {
     if (warnOnConflicts && state.conflicts.length > 0) {
-      logger.warn(
+      console.warn(
         '[KeyboardNavigation] Shortcut conflicts detected:',
         state.conflicts.map((c) => ({
           key: c.key,
@@ -811,10 +814,7 @@ export function useVimNavigation<T>({
       setFocusedIndex(newIndex)
       callbacksRef.current.onFocus?.(items[newIndex], newIndex)
       itemRefs.current[newIndex]?.focus()
-      announceToScreenReader(
-        `Item ${newIndex + 1} of ${items.length}`,
-        false
-      )
+      announceToScreenReader(`Item ${newIndex + 1} of ${items.length}`, false)
     },
     [items, focusedIndex, loop, announceToScreenReader]
   )
@@ -914,7 +914,15 @@ export function useVimNavigation<T>({
     const unsubscribes = shortcuts.map((s) => registerShortcut(s))
     return () => unsubscribes.forEach((u) => u())
     // Note: onSelect is accessed via callbacksRef.current to prevent unnecessary re-registrations
-  }, [enabled, scope, orientation, navigate, focusedIndex, items, registerShortcut])
+  }, [
+    enabled,
+    scope,
+    orientation,
+    navigate,
+    focusedIndex,
+    items,
+    registerShortcut,
+  ])
 
   // Set scope when this navigation is active
   React.useEffect(() => {
@@ -922,6 +930,7 @@ export function useVimNavigation<T>({
       setScope(scope)
       return () => setScope(null)
     }
+    return undefined
   }, [enabled, scope, setScope])
 
   const getItemProps = React.useCallback(
@@ -992,7 +1001,7 @@ export function useKeyboardHintsOnModifier(
   delay = 500
 ) {
   const { dispatch, state } = useKeyboardNavigation()
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

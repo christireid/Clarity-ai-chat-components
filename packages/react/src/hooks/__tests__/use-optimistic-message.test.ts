@@ -1,21 +1,24 @@
 /**
  * Tests for useOptimisticMessage hook
- * 
+ *
  * Tests React 19's useOptimistic integration with proper transition handling
  * and accessibility announcements.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { useOptimisticMessage, type UseOptimisticMessageOptions } from '../use-optimistic-message'
+import {
+  useOptimisticMessage,
+  type UseOptimisticMessageOptions,
+} from '../use-optimistic-message'
 import type { Message } from '@clarity-chat/types'
 
 // Mock the accessibility utilities
-vi.mock('../../accessibility/a11y-utils', () => ({
+vi.mock('../../accessibility', () => ({
   announceToScreenReader: vi.fn(),
 }))
 
-import { announceToScreenReader } from '../../accessibility/a11y-utils'
+import { announceToScreenReader } from '../../accessibility'
 
 const mockAnnounce = vi.mocked(announceToScreenReader)
 
@@ -30,7 +33,9 @@ describe('useOptimisticMessage', () => {
     status: 'sent',
   }
 
-  const createOptions = (overrides?: Partial<UseOptimisticMessageOptions>): UseOptimisticMessageOptions => ({
+  const createOptions = (
+    overrides?: Partial<UseOptimisticMessageOptions>
+  ): UseOptimisticMessageOptions => ({
     onSend: vi.fn().mockResolvedValue(mockMessage),
     onConfirm: vi.fn(),
     onError: vi.fn(),
@@ -59,12 +64,14 @@ describe('useOptimisticMessage', () => {
     it('should add optimistic message immediately', async () => {
       const options = createOptions()
       const onSend = options.onSend as ReturnType<typeof vi.fn>
-      
+
       // Make onSend return a promise that doesn't resolve immediately
       let resolvePromise: (value: Message) => void
-      onSend.mockReturnValue(new Promise<Message>((resolve) => {
-        resolvePromise = resolve
-      }))
+      onSend.mockReturnValue(
+        new Promise<Message>((resolve) => {
+          resolvePromise = resolve
+        })
+      )
 
       const { result } = renderHook(() => useOptimisticMessage(options))
 
@@ -80,7 +87,7 @@ describe('useOptimisticMessage', () => {
 
       // Should show as sending
       expect(result.current.isSending).toBe(true)
-      
+
       // Resolve the promise
       await act(async () => {
         resolvePromise!(mockMessage)
@@ -124,7 +131,10 @@ describe('useOptimisticMessage', () => {
         await vi.runAllTimersAsync()
       })
 
-      expect(mockAnnounce).toHaveBeenCalledWith('Message sent successfully', 'polite')
+      expect(mockAnnounce).toHaveBeenCalledWith(
+        'Message sent successfully',
+        'polite'
+      )
     })
 
     it('should handle errors and call onError', async () => {
@@ -181,7 +191,7 @@ describe('useOptimisticMessage', () => {
       act(() => {
         result.current.sendOptimistic('Hello world')
       })
-      
+
       await act(async () => {
         await vi.runAllTimersAsync()
       })
@@ -200,7 +210,7 @@ describe('useOptimisticMessage', () => {
     it('should generate unique IDs for messages', async () => {
       const options = createOptions()
       const onSend = options.onSend as ReturnType<typeof vi.fn>
-      
+
       // Track the message IDs
       const sentMessages: Message[] = []
       onSend.mockImplementation(async () => {
@@ -223,7 +233,9 @@ describe('useOptimisticMessage', () => {
 
       // Both messages should be in the list with different IDs
       expect(result.current.messages).toHaveLength(2)
-      expect(result.current.messages[0].id).not.toBe(result.current.messages[1].id)
+      expect(result.current.messages[0].id).not.toBe(
+        result.current.messages[1].id
+      )
     })
   })
 
@@ -231,7 +243,8 @@ describe('useOptimisticMessage', () => {
     it('should retry failed messages', async () => {
       const error = new Error('Network error')
       const options = createOptions({
-        onSend: vi.fn()
+        onSend: vi
+          .fn()
           .mockRejectedValueOnce(error)
           .mockResolvedValueOnce(mockMessage),
       })
@@ -244,7 +257,9 @@ describe('useOptimisticMessage', () => {
       })
 
       // Find the failed message
-      const failedMessage = result.current.messages.find(m => m.status === 'error')
+      const failedMessage = result.current.messages.find(
+        (m) => m.status === 'error'
+      )
       expect(failedMessage).toBeDefined()
 
       // Retry
@@ -258,7 +273,8 @@ describe('useOptimisticMessage', () => {
 
     it('should announce retry success to screen readers', async () => {
       const options = createOptions({
-        onSend: vi.fn()
+        onSend: vi
+          .fn()
           .mockRejectedValueOnce(new Error('Network error'))
           .mockResolvedValueOnce(mockMessage),
       })
@@ -273,14 +289,19 @@ describe('useOptimisticMessage', () => {
       mockAnnounce.mockClear()
 
       // Find the failed message and retry
-      const failedMessage = result.current.messages.find(m => m.status === 'error')
-      
+      const failedMessage = result.current.messages.find(
+        (m) => m.status === 'error'
+      )
+
       await act(async () => {
         await result.current.retry(failedMessage!.id)
         await vi.runAllTimersAsync()
       })
 
-      expect(mockAnnounce).toHaveBeenCalledWith('Message retry successful', 'polite')
+      expect(mockAnnounce).toHaveBeenCalledWith(
+        'Message retry successful',
+        'polite'
+      )
     })
 
     it('should ignore retry for non-error messages', async () => {
@@ -293,7 +314,8 @@ describe('useOptimisticMessage', () => {
         await vi.runAllTimersAsync()
       })
 
-      const onSendCallCount = (options.onSend as ReturnType<typeof vi.fn>).mock.calls.length
+      const onSendCallCount = (options.onSend as ReturnType<typeof vi.fn>).mock
+        .calls.length
 
       // Try to retry the successful message
       await act(async () => {
@@ -390,7 +412,9 @@ describe('useOptimisticMessage', () => {
           })
         ),
       })
-      const { result, unmount } = renderHook(() => useOptimisticMessage(options))
+      const { result, unmount } = renderHook(() =>
+        useOptimisticMessage(options)
+      )
 
       // Start sending
       act(() => {

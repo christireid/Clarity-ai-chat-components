@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -510,7 +509,7 @@ export function usePromptArchitect(
         localStorage.setItem(storageKey, JSON.stringify(toSave))
         dispatch({ type: 'MARK_SAVED' })
       } catch (e) {
-        logger.warn('[PromptArchitect] Failed to save to localStorage:', e)
+        console.warn('[PromptArchitect] Failed to save to localStorage:', e)
       }
     }, autoSaveDelay)
 
@@ -739,7 +738,7 @@ export function usePromptArchitect(
       localStorage.setItem(storageKey, JSON.stringify(toSave))
       dispatch({ type: 'MARK_SAVED' })
     } catch (e) {
-      logger.warn('[PromptArchitect] Failed to save to localStorage:', e)
+      console.warn('[PromptArchitect] Failed to save to localStorage:', e)
     }
   }, [
     storageKey,
@@ -771,7 +770,7 @@ export function usePromptArchitect(
         return true
       }
     } catch (e) {
-      logger.warn('[PromptArchitect] Failed to load from localStorage:', e)
+      console.warn('[PromptArchitect] Failed to load from localStorage:', e)
     }
     return false
   }, [storageKey])

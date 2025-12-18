@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import type { Meta, StoryObj } from '@storybook/react'
 import { ErrorBoundary } from './ErrorBoundary'
 import { ConfigurationError, APIError } from '../errors'
@@ -47,7 +46,13 @@ export const CustomFallback: Story = {
   args: {
     children: <ThrowError />,
     fallback: ({ error, resetError }) => (
-      <div style={{ padding: '2rem', border: '2px solid red', borderRadius: '8px' }}>
+      <div
+        style={{
+          padding: '2rem',
+          border: '2px solid red',
+          borderRadius: '8px',
+        }}
+      >
         <h2>Custom Error UI</h2>
         <p>{error.message}</p>
         <button onClick={resetError}>Reset</button>
@@ -97,8 +102,8 @@ export const WithErrorCallback: Story = {
   args: {
     children: <ThrowError />,
     onError: (error, errorInfo) => {
-      logger.debug('Error caught:', error)
-      logger.debug('Error info:', errorInfo)
+      console.log('Error caught:', error)
+      console.log('Error info:', errorInfo)
     },
   },
 }

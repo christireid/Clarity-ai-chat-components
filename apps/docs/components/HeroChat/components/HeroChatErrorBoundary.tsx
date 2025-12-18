@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Component, ErrorInfo, ReactNode } from 'react'
@@ -33,7 +32,7 @@ export class HeroChatErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ errorInfo })
     // Log error to console in development
-    logger.logger.error('Hero Chat Error:', error, errorInfo)
+    console.error('Hero Chat Error:', error, errorInfo)
   }
 
   handleReset = () => {

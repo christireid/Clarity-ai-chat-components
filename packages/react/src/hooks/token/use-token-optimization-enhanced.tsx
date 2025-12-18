@@ -1,6 +1,19 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Token Optimization Hook (Unified)
+ *
+ * @deprecated This hook will be consolidated into `useTokenOptimization` in v3.0.
+ * All enhanced features will be available in the primary hook via options.
+ *
+ * **Migration:**
+ * ```tsx
+ * // Before (deprecated)
+ * import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+ * const optimization = useTokenOptimizationEnhanced({ ... })
+ *
+ * // After (recommended in v3)
+ * import { useTokenOptimization } from '@clarity-chat/react'
+ * const optimization = useTokenOptimization({ enhanced: true, ... })
+ * ```
  *
  * Comprehensive token optimization with all features:
  * - TOON support (30-60% savings on structured data)
@@ -15,16 +28,12 @@ import { logger } from '@clarity-chat/utils/logger';
  * - Response prefilling
  * - Context ordering
  *
- * This is the unified hook that combines all features from
- * useTokenOptimization (basic) and useTokenOptimizationEnhanced.
- *
  * @since 2.0.0
+ * @module
  */
 
-'use client'
-
 import * as React from 'react'
-import type { CoreMessage } from './use-chat-enhanced'
+import type { CoreMessage } from '../chat/use-chat-enhanced'
 
 // Import new utilities
 import {
@@ -33,40 +42,40 @@ import {
   formatForLLM,
   parseFlexible,
   type ToonOptimizationResult,
-} from '../utils/toon'
+} from '../../utils/toon'
 import {
   countTokens,
   countConversationTokens,
   type TokenCount,
   type ModelName,
-} from '../utils/tokenization'
+} from '../../utils/tokenization'
 import {
   calculateCost,
   type CostCalculation,
-} from '../utils/tokenization/model-pricing'
+} from '../../utils/tokenization/model-pricing'
 import {
   PromptCacheManager,
   createAnthropicCachedMessages,
   type CacheStats,
-} from '../utils/prompt-caching'
+} from '../../utils/prompt-caching'
 
 // Import existing utilities
-import { type CompressionResult } from '../utils/prompt-compression'
+import { type CompressionResult } from '../../utils/optimization/prompt-compression'
 import {
   intelligentCompress,
   type LLMLinguaConfig,
-} from '../utils/llmlingua-compressor'
-import { SmartCache } from '../utils/smart-cache'
+} from '../../utils/optimization/llmlingua-compressor'
+import { SmartCache } from '../../utils/optimization/smart-cache'
 
 // Import persistent cache utilities
 import {
   createPersistentSemanticCache,
   type SemanticCacheConfig,
-} from '../utils/semantic-cache-persistent'
+} from '../../utils/optimization/semantic-cache-persistent'
 import {
   MODEL_REGISTRY,
   type ModelId,
-} from '../utils/tokenization/model-registry'
+} from '../../utils/tokenization/model-registry'
 
 // Import utilities from token-optimization for unified API
 import {
@@ -83,18 +92,18 @@ import {
   type ReferenceOptions,
   type OutputLimitOptions,
   type BatchingOptions,
-} from '../utils/token-optimization'
+} from '../../utils/optimization/token-optimization'
 
 // Import new optimization utilities
 import {
   PREFILL_TEMPLATES,
   type PrefillConfig,
   type PrefillTemplate,
-} from '../utils/response-prefilling'
+} from '../../utils/optimization/response-prefilling'
 import {
   restructurePrompt as restructurePromptUtil,
   type PromptStructureOptions,
-} from '../utils/prompt-structure'
+} from '../../utils/optimization/prompt-structure'
 
 export interface EnhancedTokenOptimizationOptions {
   /** Model to use */
@@ -392,7 +401,7 @@ function getPresetConfig(
  *
  * // Optimize structured data (uses TOON if beneficial)
  * const optimized = await optimizeData(myData)
- * logger.debug(`Saved ${optimized.optimizations.toon?.savingsPercent}%`)
+ * console.log(`Saved ${optimized.optimizations.toon?.savingsPercent}%`)
  *
  * // Prepare messages with cache control
  * const messages = prepareMessages(conversationMessages)
@@ -404,7 +413,7 @@ function getPresetConfig(
  * const prefill = getPrefill('json') // returns '{'
  *
  * // Track total savings
- * logger.debug(`Total saved: $${stats.overall.totalCostSaved.toFixed(4)}`)
+ * console.log(`Total saved: $${stats.overall.totalCostSaved.toFixed(4)}`)
  * ```
  */
 export function useTokenOptimizationEnhanced(
@@ -1090,7 +1099,7 @@ export function useTokenOptimizationEnhanced(
 
       // Handle summarization strategy
       if (historyLimiting.strategy === 'summarize' && !summarizeMessage) {
-        logger.warn(
+        console.warn(
           'Summarization strategy selected but no summarizeMessage callback provided. Falling back to default.'
         )
         return limitHistory(messages, {
@@ -1143,7 +1152,7 @@ export function useTokenOptimizationEnhanced(
             ...recentMessages,
           ]
         } catch (error) {
-          logger.warn(
+          console.warn(
             'Summarization failed, falling back to sliding window',
             error
           )
@@ -1299,7 +1308,7 @@ export function useTokenOptimizationEnhanced(
             ...recentMessages,
           ]
         } catch (error) {
-          logger.warn(
+          console.warn(
             'Smart history optimization failed, falling back to default',
             error
           )

@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { CodeWindowHeader } from './code/CodeWindowHeader'
-import { MarkdownCodeBlock } from './message/markdown-code-block'
+import { CodeWindowHeader } from '../code/CodeWindowHeader'
+import { MarkdownCodeBlock } from '../message/markdown-code-block'
 
 /**
  * Enhanced Code Block Component

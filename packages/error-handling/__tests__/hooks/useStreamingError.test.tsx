@@ -177,6 +177,7 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.any(String),
         expect.stringContaining('no retry callback registered')
       )
       consoleWarnSpy.mockRestore()
@@ -202,6 +203,7 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.any(String),
         expect.stringContaining('Cannot retry')
       )
       expect(retryCallback).not.toHaveBeenCalled()
@@ -551,6 +553,7 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.any(String),
         expect.stringContaining('circuit breaker is open')
       )
       expect(retryCallback).not.toHaveBeenCalled()
@@ -608,6 +611,11 @@ describe('useStreamingError', () => {
         .mockImplementation(() => {})
       const { result } = renderHook(() => useStreamingError(), { wrapper })
 
+      // Register callback to bypass "no retry callback" check
+      act(() => {
+        result.current.setRetryCallback(vi.fn())
+      })
+
       act(() => {
         result.current.handleStreamError(
           StreamingError.connectionLost('sse') // No partial content
@@ -619,6 +627,7 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.any(String),
         expect.stringContaining('no partial content available')
       )
 
@@ -642,6 +651,7 @@ describe('useStreamingError', () => {
       })
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.any(String),
         expect.stringContaining('no retry callback registered')
       )
 

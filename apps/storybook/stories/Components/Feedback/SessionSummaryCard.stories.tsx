@@ -1,7 +1,9 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SessionSummaryCard } from '@clarity-chat/react'
-import type { SessionSummaryHighlights, SessionMetric } from '@clarity-chat/react'
+import type {
+  SessionSummaryHighlights,
+  SessionMetric,
+} from '@clarity-chat/react'
 
 const meta: Meta<typeof SessionSummaryCard> = {
   title: 'Components/Feedback/SessionSummaryCard',
@@ -65,11 +67,11 @@ export const WithActions: Story = {
     summary: mockSummary,
     metrics: mockMetrics,
     onAction: (action) => {
-      SecureLogger.debug('Action selected:', action)
+      console.log('Action selected:', action)
       alert(`Selected: ${action}`)
     },
     onExport: () => {
-      SecureLogger.debug('Exporting session')
+      console.log('Exporting session')
       alert('Exporting session summary...')
     },
   },
@@ -95,7 +97,10 @@ export const ManyHighlights: Story = {
   args: {
     summary: {
       title: 'Components/Feedback/SessionSummaryCard',
-      highlights: Array.from({ length: 10 }, (_, i) => `Highlight ${i + 1}: Important point about topic ${i + 1}`),
+      highlights: Array.from(
+        { length: 10 },
+        (_, i) => `Highlight ${i + 1}: Important point about topic ${i + 1}`
+      ),
       nextActions: ['Action 1', 'Action 2', 'Action 3'],
     },
     metrics: mockMetrics,

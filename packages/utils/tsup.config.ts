@@ -19,7 +19,7 @@ export default defineConfig({
     fs: 'src/fs.ts',
   },
   format: ['esm', 'cjs'],
-  dts: true,
+  dts: false,
   splitting: true,
   sourcemap: true,
   clean: true,

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Output formatting utilities
  * Supports multiple output modes: human-readable, JSON, quiet, verbose
@@ -6,7 +5,6 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import pc from 'picocolors'
 import { getLogger } from './logger.js'
-
 
 const logger = getLogger('output')
 
@@ -220,7 +218,7 @@ export function debug(message: string, data?: any): void {
     if (isJson) {
       outputJson({ level: 'debug', message, data })
     } else {
-      logger.debug(message, data)
+      console.log(message, data)
     }
   }
 }

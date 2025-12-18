@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * @clarity-chat/errors
  *
@@ -27,7 +26,7 @@ if (
   typeof process !== 'undefined' &&
   process.env?.['NODE_ENV'] !== 'production'
 ) {
-  logger.warn(
+  console.warn(
     '\x1b[33m[@clarity-chat/errors] DEPRECATION WARNING\x1b[0m\n' +
       '\n' +
       'This package has been consolidated into @clarity-chat/utils.\n' +

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Watch mode utilities for CLI
  * Enables auto-execution of commands on file changes
@@ -53,19 +52,26 @@ export function watchFiles(options: WatchOptions): () => void {
 
   // Watch common directories
   const watchDirs = ['src', 'components', 'lib', 'app']
-  
-  watchDirs.forEach(dir => {
+
+  watchDirs.forEach((dir) => {
     const dirPath = path.join(cwd, dir)
     try {
-      const watcher = watch(dirPath, { recursive: true }, (eventType, filename) => {
-        if (filename && !ignore.some(pattern => filename.includes(pattern))) {
-          const filePath = path.join(dirPath, filename)
-          if (!watchedFiles.has(filePath)) {
-            watchedFiles.add(filePath)
-            debouncedOnChange(filePath)
+      const watcher = watch(
+        dirPath,
+        { recursive: true },
+        (eventType, filename) => {
+          if (
+            filename &&
+            !ignore.some((pattern) => filename.includes(pattern))
+          ) {
+            const filePath = path.join(dirPath, filename)
+            if (!watchedFiles.has(filePath)) {
+              watchedFiles.add(filePath)
+              debouncedOnChange(filePath)
+            }
           }
         }
-      })
+      )
       watchers.push(watcher)
       logger.info(`Watching: ${dirPath}`)
     } catch (error) {
@@ -78,7 +84,7 @@ export function watchFiles(options: WatchOptions): () => void {
     if (timeout) {
       clearTimeout(timeout)
     }
-    watchers.forEach(watcher => watcher.close())
+    watchers.forEach((watcher) => watcher.close())
     logger.info('Stopped watching files')
   }
 }

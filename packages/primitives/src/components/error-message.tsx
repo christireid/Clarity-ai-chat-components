@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 
 export interface ErrorMessageProps {
   error?: string
@@ -10,7 +10,7 @@ export interface ErrorMessageProps {
 
 /**
  * Reusable error message component for form inputs
- * 
+ *
  * @example
  * ```tsx
  * <ErrorMessage error="This field is required" />

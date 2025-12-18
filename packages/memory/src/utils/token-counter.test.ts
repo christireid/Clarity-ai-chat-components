@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Token Counter Tests
  */
@@ -200,7 +199,7 @@ describe('TokenCounter - Enhanced Features', () => {
       const code = `
         function hello() {
           const message = 'Hello';
-          logger.debug(message);
+          console.log(message);
           return message;
         }
       `

@@ -8,14 +8,16 @@
 
 import { memo, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Receipt, Clock, TrendingUp, TrendingDown } from 'lucide-react'
+import { Check, Receipt, Clock, TrendingUp, ChevronDown } from 'lucide-react'
 import type { TradeResult } from '../../lib/types'
 
 interface TradeResultCardProps {
   data: TradeResult
 }
 
-export const TradeResultCard = memo(function TradeResultCard({ data }: TradeResultCardProps) {
+export const TradeResultCard = memo(function TradeResultCard({
+  data,
+}: TradeResultCardProps) {
   const isBuy = data.action === 'buy'
   const formattedDate = new Date(data.timestamp).toLocaleString()
 
@@ -33,7 +35,9 @@ export const TradeResultCard = memo(function TradeResultCard({ data }: TradeResu
       {/* Success Header */}
       <div
         className={`px-4 py-3 ${
-          isBuy ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-red-500 to-orange-500'
+          isBuy
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500'
+            : 'bg-gradient-to-r from-red-500 to-orange-500'
         } text-white`}
       >
         <div className="flex items-center justify-between">
@@ -48,7 +52,9 @@ export const TradeResultCard = memo(function TradeResultCard({ data }: TradeResu
             </motion.div>
             <div>
               <div className="font-semibold">Trade Executed</div>
-              <div className="text-xs text-white/80">Order #{data.orderId.slice(-8)}</div>
+              <div className="text-xs text-white/80">
+                Order #{data.orderId.slice(-8)}
+              </div>
             </div>
           </div>
           <div
@@ -81,7 +87,11 @@ export const TradeResultCard = memo(function TradeResultCard({ data }: TradeResu
                 : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'
             }`}
           >
-            {isBuy ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+            {isBuy ? (
+              <TrendingUp className="w-5 h-5" />
+            ) : (
+              <ChevronDown className="w-5 h-5" />
+            )}
             {data.action.toUpperCase()} {data.symbol}
           </div>
         </motion.div>
@@ -98,8 +108,12 @@ export const TradeResultCard = memo(function TradeResultCard({ data }: TradeResu
             <span className="font-semibold">{data.quantity}</span>
           </div>
           <div className="flex justify-between items-center py-2 border-b border-current/10">
-            <span className="text-sm text-muted-foreground">Executed Price</span>
-            <span className="font-semibold">${data.executedPrice.toFixed(2)}</span>
+            <span className="text-sm text-muted-foreground">
+              Executed Price
+            </span>
+            <span className="font-semibold">
+              ${data.executedPrice.toFixed(2)}
+            </span>
           </div>
           <div className="flex justify-between items-center py-2 border-b border-current/10">
             <span className="text-sm text-muted-foreground">Fees</span>
@@ -107,11 +121,15 @@ export const TradeResultCard = memo(function TradeResultCard({ data }: TradeResu
           </div>
           <div
             className={`flex justify-between items-center py-3 px-3 -mx-3 rounded-lg ${
-              isBuy ? 'bg-green-100/50 dark:bg-green-900/20' : 'bg-red-100/50 dark:bg-red-900/20'
+              isBuy
+                ? 'bg-green-100/50 dark:bg-green-900/20'
+                : 'bg-red-100/50 dark:bg-red-900/20'
             }`}
           >
             <span className="font-medium">Total Value</span>
-            <span className={`text-xl font-bold ${isBuy ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+            <span
+              className={`text-xl font-bold ${isBuy ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}
+            >
               ${(data.totalValue + data.fees).toFixed(2)}
             </span>
           </div>
@@ -121,7 +139,9 @@ export const TradeResultCard = memo(function TradeResultCard({ data }: TradeResu
       {/* Footer */}
       <div
         className={`px-4 py-2 border-t flex items-center justify-between text-xs text-muted-foreground ${
-          isBuy ? 'border-green-200/50 dark:border-green-500/20 bg-green-500/5' : 'border-red-200/50 dark:border-red-500/20 bg-red-500/5'
+          isBuy
+            ? 'border-green-200/50 dark:border-green-500/20 bg-green-500/5'
+            : 'border-red-200/50 dark:border-red-500/20 bg-red-500/5'
         }`}
       >
         <div className="flex items-center gap-1">

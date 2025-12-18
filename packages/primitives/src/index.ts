@@ -281,11 +281,18 @@ export {
   useForwardedRef,
 } from './hooks/use-composed-refs'
 
+export { useMagnetic } from './hooks/use-magnetic'
+export type { UseMagneticOptions } from './hooks/use-magnetic'
+
 // ============================================================================
 // Utils
 // ============================================================================
 
-export * from './lib/utils'
+// Core utility - cn function for Tailwind class merging
+export { cn } from './lib/cn'
+
+// Full utils module commented out due to Node.js type issues
+// export * from './lib/utils'
 
 // ARIA Utilities
 export {

@@ -1,5 +1,4 @@
 #!/usr/bin/env tsx
-import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * Documentation Indexer for AI Assistant
@@ -308,7 +307,7 @@ async function indexDocumentation() {
 
       logger.debug(`✅ ${meta.title} → ${chunks.length} chunks`)
     } catch (error) {
-      logger.logger.error(`❌ Error processing ${filePath}:`, error)
+      console.error(`❌ Error processing ${filePath}:`, error)
     }
   }
 

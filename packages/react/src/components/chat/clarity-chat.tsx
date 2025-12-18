@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * ClarityChat - Top-Level Drop-in Component
  *
@@ -37,11 +36,11 @@ import * as React from 'react'
 import {
   useClarityChat,
   type UseClarityChatOptions,
-} from '../hooks/use-clarity-chat'
+} from '../../hooks/chat/use-clarity-chat'
 import { ChatWindow } from './chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import { useToast } from './toast'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
+import { useToast } from '../ui/toast'
 
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** API endpoint URL - the only required prop */
@@ -192,7 +191,7 @@ export function ClarityChat({
       } catch (error) {
         // Only show error if not aborted - aborts are intentional
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to send message:', error)
+          logger.error('Failed to send message:', error)
           toast?.logger.error('Failed to send message. Please try again.')
         }
       }
@@ -326,7 +325,7 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to update message:', error)
+          logger.error('Failed to update message:', error)
           toast?.logger.error('Failed to update message. Please try again.')
         }
       }
@@ -403,7 +402,7 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to regenerate message:', error)
+          logger.error('Failed to regenerate message:', error)
           toast?.logger.error('Failed to regenerate response. Please try again.')
         }
       }

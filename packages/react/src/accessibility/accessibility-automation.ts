@@ -4,7 +4,7 @@
  * Reduces 616 accessibility warnings to zero with intelligent automation
  */
 
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 /**
  * Component accessibility mapping
@@ -73,11 +73,13 @@ export interface GeneratedAccessibilityAttributes {
   'aria-expanded'?: boolean
   'aria-selected'?: boolean
   'aria-checked'?: boolean
+  'aria-disabled'?: boolean
   'aria-haspopup'?: boolean
   'aria-level'?: number
   'aria-valuenow'?: number
   'aria-valuemin'?: number
   'aria-valuemax'?: number
+  'aria-valuetext'?: string
   'aria-required'?: boolean
   'aria-invalid'?: boolean
   'aria-busy'?: boolean
@@ -758,8 +760,9 @@ export function useFocusManagement(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
     
-    if (focusableElements.length > 0 && focusableElements[focusableElements.length - 1] instanceof HTMLElement) {
-      focusableElements[focusableElements.length - 1].focus()
+    if (focusableElements.length > 0) {
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+      lastElement?.focus()
     }
   }, [])
 

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useCallback } from 'react'
@@ -619,7 +618,7 @@ function CompleteStreamableUIExample() {
       logger.debug('Stream complete! Final:', finalValue)
     },
     onError: (err) => {
-      logger.logger.error('Stream error:', err)
+      console.error('Stream error:', err)
     },
   })
 

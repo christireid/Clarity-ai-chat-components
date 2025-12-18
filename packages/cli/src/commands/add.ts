@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * add command - Add a component to your project
  * Enhanced with beautiful UI components
@@ -49,7 +48,7 @@ export async function addCommand(component: string, options: AddOptions) {
   const componentConfig = getComponent(component)
 
   if (!componentConfig) {
-    logger.error(`Component "${component}" not found`)
+    console.error(`Component "${component}" not found`)
 
     // Display available components in a beautiful table using registry
     const columns: TableColumn[] = [
@@ -162,7 +161,7 @@ export async function addCommand(component: string, options: AddOptions) {
         if (await fs.pathExists(sourcePath)) {
           await fs.copy(sourcePath, destPath)
           copiedFiles.push(file)
-          logger.info(`Copied ${file}`)
+          console.info(`Copied ${file}`)
         }
       }
     } else {
@@ -221,7 +220,7 @@ export async function addCommand(component: string, options: AddOptions) {
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
-        logger.error(error instanceof Error ? error : new Error(String(error)))
+        console.error(error instanceof Error ? error : new Error(String(error)))
       }
     }
 
@@ -256,7 +255,7 @@ export async function addCommand(component: string, options: AddOptions) {
     }
   } catch (error) {
     spinner.fail('Failed to add component')
-    logger.error(error instanceof Error ? error : new Error(String(error)))
+    console.error(error instanceof Error ? error : new Error(String(error)))
     console.log()
     console.log(
       errorBox('Failed to add component. Check the error above.', '✗ Error')

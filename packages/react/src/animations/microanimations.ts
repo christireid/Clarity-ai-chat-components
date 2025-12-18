@@ -17,7 +17,7 @@ export const FeedbackAnimations = {
   shake: {
     x: [-10, 10, -10, 10, -5, 5, 0],
     transition: {
-      duration: 0.5,
+      duration: durations.slow,
       ease: EASING_FRAMER.sharp,
     },
   },
@@ -26,7 +26,7 @@ export const FeedbackAnimations = {
   bounce: {
     y: [0, -10, 0, -5, 0],
     transition: {
-      duration: 0.6,
+      duration: durations.slower,
       ease: EASING_FRAMER.out,
     },
   },
@@ -35,7 +35,7 @@ export const FeedbackAnimations = {
   heartbeat: {
     scale: [1, 1.1, 1, 1.05, 1],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       repeat: Infinity,
       ease: EASING_FRAMER.inOut,
     },
@@ -45,7 +45,7 @@ export const FeedbackAnimations = {
   pulse: {
     scale: [1, 1.05, 1],
     transition: {
-      duration: 1.5,
+      duration: durations.slower,
       repeat: Infinity,
       ease: EASING_FRAMER.inOut,
     },
@@ -55,7 +55,7 @@ export const FeedbackAnimations = {
   wiggle: {
     rotate: [-3, 3, -3, 3, -2, 2, 0],
     transition: {
-      duration: 0.5,
+      duration: durations.slow,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -65,7 +65,7 @@ export const FeedbackAnimations = {
     scale: [1, 0.9, 1.1, 1.1, 1.05, 1],
     rotate: [-3, 3, -3, 3, -2, 2, 0],
     transition: {
-      duration: 0.8,
+      duration: durations.slower,
       ease: EASING_FRAMER.spring,
     },
   },
@@ -74,7 +74,7 @@ export const FeedbackAnimations = {
   flash: {
     opacity: [1, 0, 1, 0, 1],
     transition: {
-      duration: 0.75,
+      duration: durations.slower,
       ease: 'linear',
     },
   },
@@ -84,7 +84,7 @@ export const FeedbackAnimations = {
     scaleX: [1, 1.25, 0.75, 1.15, 0.95, 1.05, 1],
     scaleY: [1, 0.75, 1.25, 0.85, 1.05, 0.95, 1],
     transition: {
-      duration: 0.8,
+      duration: durations.slower,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -100,7 +100,7 @@ export const StateAnimations = {
     rotate: [0, 5, 0],
     opacity: [0, 1, 1],
     transition: {
-      duration: 0.5,
+      duration: durations.slow,
       ease: EASING_FRAMER.spring,
     },
   },
@@ -109,7 +109,7 @@ export const StateAnimations = {
   errorShake: {
     x: [-8, 8, -8, 8, -4, 4, 0],
     transition: {
-      duration: 0.4,
+      duration: durations.slow,
       ease: EASING_FRAMER.sharp,
     },
   },
@@ -122,7 +122,7 @@ export const StateAnimations = {
       '0 0 0 20px rgba(34, 197, 94, 0)',
     ],
     transition: {
-      duration: 0.6,
+      duration: durations.slower,
       ease: EASING_FRAMER.out,
     },
   },
@@ -135,7 +135,7 @@ export const StateAnimations = {
       '0 0 0 20px rgba(239, 68, 68, 0)',
     ],
     transition: {
-      duration: 0.6,
+      duration: durations.slower,
       ease: EASING_FRAMER.out,
     },
   },
@@ -149,7 +149,7 @@ export const StateAnimations = {
       'hsl(var(--warning))',
     ],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       repeat: 3,
       ease: EASING_FRAMER.inOut,
     },
@@ -164,7 +164,7 @@ export const LoadingAnimations = {
   spinner: {
     rotate: 360,
     transition: {
-      duration: 1,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -175,7 +175,7 @@ export const LoadingAnimations = {
     opacity: [0.5, 1, 0.5],
     scale: [0.95, 1, 0.95],
     transition: {
-      duration: 1.5,
+      duration: durations.slower,
       repeat: Infinity,
       ease: EASING_FRAMER.inOut,
     },
@@ -185,7 +185,7 @@ export const LoadingAnimations = {
   shimmer: {
     backgroundPosition: ['200% 0', '-200% 0'],
     transition: {
-      duration: 2,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -195,7 +195,7 @@ export const LoadingAnimations = {
   dotsWave: (index: number) => ({
     y: [-10, 10, -10],
     transition: {
-      duration: 1.5,
+      duration: durations.slower,
       repeat: Infinity,
       ease: EASING_FRAMER.inOut,
       delay: index * 0.15,
@@ -207,7 +207,7 @@ export const LoadingAnimations = {
     scale: [0.8, 1.2, 0.8],
     opacity: [0.5, 1, 0.5],
     transition: {
-      duration: 1.2,
+      duration: durations.slower,
       repeat: Infinity,
       ease: EASING_FRAMER.spring,
       delay: index * 0.15,
@@ -218,7 +218,7 @@ export const LoadingAnimations = {
   progressFill: {
     scaleX: [0, 1],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       ease: EASING_FRAMER.out,
     },
   },
@@ -227,7 +227,7 @@ export const LoadingAnimations = {
   skeletonShimmer: {
     backgroundPosition: ['200% 0', '-200% 0'],
     transition: {
-      duration: 2,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -282,7 +282,7 @@ export const InteractionAnimations = {
       '0 0 0 4px rgba(var(--primary-rgb), 0)',
     ],
     transition: {
-      duration: 0.6,
+      duration: durations.slower,
       ease: EASING_FRAMER.out,
     },
   },
@@ -461,7 +461,7 @@ export const AttentionAnimations = {
   bounce: {
     y: [0, -20, 0, -10, 0, -5, 0],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       ease: EASING_FRAMER.out,
     },
   },
@@ -470,7 +470,7 @@ export const AttentionAnimations = {
   swing: {
     rotate: [0, 15, -15, 10, -10, 5, -5, 0],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -480,7 +480,7 @@ export const AttentionAnimations = {
     skewX: [0, -12.5, 6.25, -3.125, 1.5625, -0.78125, 0],
     skewY: [0, -12.5, 6.25, -3.125, 1.5625, -0.78125, 0],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -490,7 +490,7 @@ export const AttentionAnimations = {
     x: [0, -8, 8, -6, 6, -4, 4, 0],
     rotate: [0, -5, 5, -3, 3, -2, 2, 0],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       ease: EASING_FRAMER.inOut,
     },
   },
@@ -506,7 +506,7 @@ export const TypographyAnimations = {
     y: [10, 0],
     transition: {
       delay: index * 0.03,
-      duration: 0.3,
+      duration: durations.moderate,
       ease: EASING_FRAMER.out,
     },
   }),
@@ -515,7 +515,7 @@ export const TypographyAnimations = {
   typingCursor: {
     opacity: [1, 1, 0, 0],
     transition: {
-      duration: 1,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'step-end',
     },
@@ -525,7 +525,7 @@ export const TypographyAnimations = {
   textShimmer: {
     backgroundPosition: ['200% 0', '-200% 0'],
     transition: {
-      duration: 3,
+      duration: durations.slower,
       repeat: Infinity,
       ease: 'linear',
     },
@@ -552,7 +552,7 @@ export const createRipple = (x: number, y: number, size: number) => ({
     opacity: [0.3, 0],
   },
   transition: {
-    duration: 0.6,
+    duration: durations.slower,
     ease: EASING_FRAMER.out,
   },
 })
@@ -560,7 +560,7 @@ export const createRipple = (x: number, y: number, size: number) => ({
 /**
  * Type exports
  */
-export type FeedbackAnimation = keyof typeof FeedbackAnimations
+export type FeedbackAnimationKey = keyof typeof FeedbackAnimations
 export type StateAnimation = keyof typeof StateAnimations
 export type LoadingAnimation = keyof typeof LoadingAnimations
 export type InteractionAnimation = keyof typeof InteractionAnimations

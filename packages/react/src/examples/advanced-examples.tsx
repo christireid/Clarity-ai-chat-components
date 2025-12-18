@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Advanced / Enterprise Examples - Full Power Demonstrations
  *
