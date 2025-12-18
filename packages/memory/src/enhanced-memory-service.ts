@@ -418,9 +418,9 @@ export class EnhancedMemoryService {
    * Get token optimization statistics
    */
   getTokenOptimizationStats(): {
-    tokenCounter: ReturnType<typeof this.tokenCounter.getMonitoringStats>
-    cache: ReturnType<typeof this.semanticCache?.getCacheStats>
-    security: ReturnType<typeof this.securityManager.generateComplianceReport>
+    tokenCounter: unknown
+    cache: unknown
+    security: unknown
   } {
     return {
       tokenCounter: this.tokenCounter.getMonitoringStats(),
