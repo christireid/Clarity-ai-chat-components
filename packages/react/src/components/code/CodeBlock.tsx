@@ -12,12 +12,12 @@ import {
   detectLanguage,
   countLines,
 } from './utils'
-import { sanitizeCodeHtml } from '../../utils/sanitize-html'
+import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
 import { CODE_THEMES, type CodeThemeName, DEFAULT_DARK_THEME } from './themes'
 import { LineNumbers } from './LineNumbers'
 import { CodeBlockHeader } from './CodeBlockHeader'
 import { CodeBlockCopyButton } from './CodeBlockCopyButton'
-import { ChevronDownIcon, ChevronUpIcon } from '../icons'
+import { ChevronDownIcon, ChevronUpIcon } from '../ui/icons'
 
 /**
  * Font family options

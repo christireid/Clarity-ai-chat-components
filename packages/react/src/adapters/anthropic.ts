@@ -10,8 +10,8 @@ import { logger } from '@clarity-chat/utils/logger'
  */
 
 import type { ModelAdapter } from './types'
-import { fetchWithTimeout } from '../utils/fetch-with-timeout'
-import { parseRateLimitHeaders } from '../utils/rate-limit-headers'
+import { fetchWithTimeout } from '../utils/api/fetch-with-timeout'
+import { parseRateLimitHeaders } from '../utils/api/rate-limit-headers'
 import {
   validateApiKey,
   extractSystemMessage,

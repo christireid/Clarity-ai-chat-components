@@ -16,7 +16,7 @@ import {
   Badge,
   cn,
 } from '@clarity-chat/primitives'
-import { Progress } from './progress'
+import { Progress } from '../ui/progress'
 import type { ExportFormat } from '@clarity-chat/types'
 import { formatBytes } from '@clarity-chat/primitives'
 

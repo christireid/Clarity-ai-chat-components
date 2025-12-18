@@ -16,9 +16,9 @@ import { logger } from '@clarity-chat/utils/logger'
  */
 
 import * as React from 'react'
-import { useClarityChat } from '../hooks/use-clarity-chat'
+import { useClarityChat } from '../hooks/chat/use-clarity-chat'
 import { ChatWindow } from '../components/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { convertCoreMessagesToMessages } from '../utils/message/message-conversion'
 import { ErrorBoundary } from '../components/error-boundary'
 import { Badge, Alert, Button } from '@clarity-chat/primitives'
 

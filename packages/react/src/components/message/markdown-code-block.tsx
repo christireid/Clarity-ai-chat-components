@@ -4,7 +4,7 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import React, { useEffect, useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { sanitizeCodeHtml } from '../../utils/sanitize-html'
+import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
 
 // Dynamic import of Prism to handle cases where it's not available
 let Prism: typeof import('prismjs') | null = null

@@ -5,11 +5,11 @@ import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
-import { useVoiceInput } from '../hooks/use-voice-input'
+import { useVoiceInput } from '../../hooks/input/use-voice-input'
 import {
   useQuantumVoice,
   type QuantumVoiceState,
-} from '../hooks/use-quantum-voice'
+} from '../../hooks/use-quantum-voice'
 import type { ReactNode } from 'react'
 
 /**

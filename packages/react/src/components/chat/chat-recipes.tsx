@@ -10,9 +10,12 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
-import { ErrorBoundary } from './error-boundary'
-import { applyChatPreset, type ChatPreset } from '../presets/chat-presets'
-import { validateApiEndpoint, validateEnum } from '../utils/runtime-validation'
+import { ErrorBoundary } from '../feedback/error-boundary'
+import { applyChatPreset, type ChatPreset } from '../../presets/chat-presets'
+import {
+  validateApiEndpoint,
+  validateEnum,
+} from '../../utils/config/runtime-validation'
 
 /**
  * ChatWithMemory - Chat component with memory enabled

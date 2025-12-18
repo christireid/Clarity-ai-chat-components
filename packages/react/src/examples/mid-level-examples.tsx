@@ -8,7 +8,7 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
-import { useClarityChat } from '../hooks/use-clarity-chat'
+import { useClarityChat } from '../hooks/chat/use-clarity-chat'
 import { useChatHandlers } from '../hooks/use-chat-handlers'
 import { ChatWindow } from '../components/chat-window'
 import { ChatInput } from '../components/chat-input'

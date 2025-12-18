@@ -37,11 +37,11 @@ import * as React from 'react'
 import {
   useClarityChat,
   type UseClarityChatOptions,
-} from '../hooks/use-clarity-chat'
+} from '../../hooks/chat/use-clarity-chat'
 import { ChatWindow } from './chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import { useToast } from './toast'
+import { useToast } from '../ui/toast'
 
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** API endpoint URL - the only required prop */

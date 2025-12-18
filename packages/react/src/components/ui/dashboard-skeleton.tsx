@@ -101,7 +101,7 @@ const stateTransitionConfig = {
   animate: 'animate',
   exit: 'exit',
   variants: stateTransitionVariants,
-  transition: { duration: 0.2, ease: 'easeOut' },
+  transition: { duration: durations.normal, ease: 'easeOut' },
 }
 
 export interface DashboardStateTransitionProps {

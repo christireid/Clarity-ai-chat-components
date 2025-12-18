@@ -15,7 +15,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { Skeleton, SkeletonText } from './skeleton'
+import { Skeleton, SkeletonText } from '../ui/skeleton'
 
 /**
  * Summary detail level
