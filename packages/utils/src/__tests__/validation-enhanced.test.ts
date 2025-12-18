@@ -59,6 +59,7 @@ import {
   isValidUuid as isValidUuidEnhanced,
   isValidJson as isValidJsonEnhanced,
   parseJson as parseJsonEnhanced,
+  StrictValidation,
 } from '../validation/enhanced';
 
 describe('Enhanced Validation Utilities', () => {

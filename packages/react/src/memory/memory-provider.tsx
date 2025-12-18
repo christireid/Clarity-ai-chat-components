@@ -671,7 +671,7 @@ export function useMemoryOptimization(options: {
 
       setOptimizedContext(result)
     } catch (err) {
-      logger.logger.error('Optimization failed:', err)
+      logger.error('Optimization failed:', err)
     } finally {
       setIsOptimizing(false)
     }

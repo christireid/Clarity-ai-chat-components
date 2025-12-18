@@ -306,7 +306,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(payload),
         })
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to send event to custom API:', error)
+        logger.error('[Analytics] Failed to send event to custom API:', error)
       }
     },
     identify: async (user) => {
@@ -320,7 +320,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(user),
         })
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to identify user:', error)
+        logger.error('[Analytics] Failed to identify user:', error)
       }
     },
     page: async (pageView) => {
@@ -334,7 +334,7 @@ export function createCustomApiProvider(config: {
           body: JSON.stringify(pageView),
         })
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to track page view:', error)
+        logger.error('[Analytics] Failed to track page view:', error)
       }
     },
   }
@@ -362,7 +362,7 @@ export function createLocalStorageProvider(storageKey: string = 'analytics_event
         
         localStorage.setItem(storageKey, JSON.stringify(events))
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to store event:', error)
+        logger.error('[Analytics] Failed to store event:', error)
       }
     },
     identify: (user) => {
@@ -371,7 +371,7 @@ export function createLocalStorageProvider(storageKey: string = 'analytics_event
       try {
         localStorage.setItem(`${storageKey}_user`, JSON.stringify(user))
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to store user:', error)
+        logger.error('[Analytics] Failed to store user:', error)
       }
     },
     reset: () => {
@@ -381,7 +381,7 @@ export function createLocalStorageProvider(storageKey: string = 'analytics_event
         localStorage.removeItem(storageKey)
         localStorage.removeItem(`${storageKey}_user`)
       } catch (error) {
-        logger.logger.error('[Analytics] Failed to reset:', error)
+        logger.error('[Analytics] Failed to reset:', error)
       }
     },
   }

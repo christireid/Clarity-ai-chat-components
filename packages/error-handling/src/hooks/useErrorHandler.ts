@@ -49,14 +49,14 @@ export function useErrorHandler(options?: UseErrorHandlerOptions) {
       // Log to console in development
       if (logErrors) {
         logger.debug('🚨 Clarity Chat Error')
-        logger.logger.error('Error:', err)
+        logger.error('Error:', err)
 
         // If it's our custom error, log the full details
         if (err instanceof ClarityChatError) {
-          logger.logger.error('\n' + err.toString())
+          logger.error('\n' + err.toString())
         }
 
-        logger.debug()
+        logger.debug('--- End Error Report ---')
       }
 
       // Show toast notification if enabled

@@ -174,7 +174,7 @@ function getUserFriendlyMessage(errorType: string): string {
  *     analytics.track('retry_succeeded', { attempt })
  *   },
  *   onMaxAttemptsReached: (error) => {
- *     logger.logger.error('Max retries reached:', error)
+ *     logger.error('Max retries reached:', error)
  *     showSupportDialog()
  *   },
  * })
@@ -301,7 +301,7 @@ export function useErrorRecovery<T = any>(
           return result
         } catch (err) {
           lastError = err as Error
-          logger.logger.error(`[useErrorRecovery] Attempt ${currentAttempt} failed:`, err)
+          logger.error(`[useErrorRecovery] Attempt ${currentAttempt} failed:`, err)
 
           // Check if should retry
           if (!shouldRetryRef.current(lastError, currentAttempt)) {

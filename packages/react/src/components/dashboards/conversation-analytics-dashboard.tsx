@@ -580,7 +580,7 @@ export function ConversationAnalyticsDashboard({
       setAnalytics(result)
       onAnalyticsGenerated?.(result)
     } catch (err) {
-      logger.logger.error('Analytics generation error:', err)
+      logger.error('Analytics generation error:', err)
       setError(
         err instanceof Error ? err.message : 'Failed to generate analytics'
       )

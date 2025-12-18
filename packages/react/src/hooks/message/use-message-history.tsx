@@ -159,7 +159,7 @@ export function useMessageHistory(
     const interval = setInterval(() => {
       // Use ref to get latest messages without re-creating interval
       saveConversation(conversationId, messagesRef.current).catch((err) => {
-        logger.logger.error('Auto-save failed:', err)
+        logger.error('Auto-save failed:', err)
       })
     }, saveInterval)
 

@@ -68,7 +68,7 @@ export function useSubmitButtonState({
       }, 1000)
     } catch (error) {
       setButtonState('error')
-      logger.logger.error('[ChatInput] Submit error:', error)
+      logger.error('[ChatInput] Submit error:', error)
       // Auto-reset after showing error
       timeoutRef.current = setTimeout(() => {
         setButtonState('idle')

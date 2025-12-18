@@ -73,7 +73,7 @@ export function useSuggestions(
         setSuggestions(results)
       } catch (error) {
         if (config.debug) {
-          logger.logger.error('[AI] Failed to get suggestions:', error)
+          logger.error('[AI] Failed to get suggestions:', error)
         }
         setSuggestions([])
       } finally {
@@ -206,7 +206,7 @@ export function useSentimentAnalysis(options?: { debounceMs?: number }) {
           setSentiment(result)
         } catch (error) {
           if (config.debug) {
-            logger.logger.error('[AI] Failed to analyze sentiment:', error)
+            logger.error('[AI] Failed to analyze sentiment:', error)
           }
           setSentiment(null)
         } finally {

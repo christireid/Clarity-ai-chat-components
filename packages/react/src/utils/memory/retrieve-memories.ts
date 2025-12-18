@@ -48,7 +48,7 @@ export async function retrieveMemories(
     const results = await memoryService.query(memoryQuery)
     return results.map((r: any) => r.memory)
   } catch (error) {
-    logger.logger.error('Failed to retrieve memories:', error)
+    logger.error('Failed to retrieve memories:', error)
     return []
   }
 }

@@ -33,7 +33,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * const handlers = useChatHandlers({
  *   chat,
  *   onMessageSent: (content) => logger.debug('Sent:', content),
- *   onMessageError: (error) => logger.logger.error('Error:', error),
+ *   onMessageError: (error) => logger.error('Error:', error),
  * })
  * ```
  */

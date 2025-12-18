@@ -203,7 +203,7 @@ function validateContrast(
  *
  * const result = validateThemeConfig(myTheme)
  * if (!result.valid) {
- *   logger.logger.error('Theme validation failed:', result.errors)
+ *   logger.error('Theme validation failed:', result.errors)
  * }
  * if (result.warnings.length > 0) {
  *   logger.warn('Theme warnings:', result.warnings)
@@ -401,7 +401,7 @@ export function validateThemeWithWarnings(
 
     // Log errors
     if (result.errors.length > 0) {
-      logger.logger.error(
+      logger.error(
         '[Clarity Chat] Theme validation errors:\n' +
           result.errors
             .map(

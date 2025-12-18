@@ -131,7 +131,7 @@ export class PluginManager implements PluginManagerInterface {
             results.push(result as T)
           }
         } catch (error) {
-          logger.logger.error(`Plugin ${config.plugin.name} hook ${hookName} failed:`, error)
+          logger.error(`Plugin ${config.plugin.name} hook ${hookName} failed:`, error)
         }
       }
     }
@@ -149,7 +149,7 @@ export class PluginManager implements PluginManagerInterface {
         try {
           handler(data)
         } catch (error) {
-          logger.logger.error(`Event handler for ${event} failed:`, error)
+          logger.error(`Event handler for ${event} failed:`, error)
         }
       })
     }

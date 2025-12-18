@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '../logger';
 /**
  * Enhanced Validation Utilities
  * 
@@ -35,7 +35,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * ```
  */
 
-import { error } from '../logger';
+
 
 // ============================================================================
 // Type Guards (from existing validation/index.ts)
@@ -369,7 +369,7 @@ export function assertArray(value: unknown, message?: string): asserts value is 
 /**
  * Assert that value is a function
  */
-export function assertFunction(value: unknown, message?: string): asserts value is Function {
+export function assertFunction(value: unknown, message?: string): asserts value is (...args: any[]) => any {
   if (!isFunction(value)) {
     throw new TypeError(message || `Expected function, got ${typeof value}`);
   }

@@ -132,7 +132,7 @@ const variantMap = {
  *   onTranscript={handleInput}
  *   onStart={() => logger.debug('Started listening')}
  *   onStop={() => logger.debug('Stopped listening')}
- *   onError={(err) => logger.logger.error('Voice error:', err)}
+ *   onError={(err) => logger.error('Voice error:', err)}
  * />
  * ```
  */

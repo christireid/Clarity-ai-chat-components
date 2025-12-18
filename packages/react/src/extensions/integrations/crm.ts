@@ -728,7 +728,7 @@ export function createDriftExtension(
         const t: DriftStub = (win.driftt = win.drift = win.driftt || [])
         if (!t.load) {
           if (t.invoked) {
-            logger.logger.error('Drift snippet included twice.')
+            logger.error('Drift snippet included twice.')
           } else {
             t.invoked = true
             t.methods = [
