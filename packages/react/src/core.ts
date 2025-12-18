@@ -53,14 +53,7 @@ export {
   type ClarityChatSimpleProps,
 } from './components/chat/clarity-chat-simple'
 
-/**
- * Main chat component - drop-in ready
- */
-export { ClarityChat, ClarityChatSimple } from './components/chat'
-
-export type { ClarityChatProps } from './components/chat/clarity-chat'
-
-export type { ClarityChatSimpleProps } from './components/chat/clarity-chat-simple'
+// Types are exported above with their components
 
 // =============================================================================
 // PRIMARY HOOK
@@ -79,13 +72,6 @@ export {
 export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
 export { ChatInput } from './components/chat/chat-input'
 export { MessageList } from './components/message/message-list'
-
-/**
- * Core building blocks for custom chat interfaces
- */
-export { ChatWindow, ChatInput, MessageList } from './components/chat'
-
-export type { ChatWindowProps } from './components/chat/chat-window'
 
 // =============================================================================
 // CORE TYPES

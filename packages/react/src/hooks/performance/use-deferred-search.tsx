@@ -1,6 +1,13 @@
 'use client'
 
-import { useDeferredValue, useMemo, useCallback, useRef, useEffect, useState } from 'react'
+import {
+  useDeferredValue,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+  useState,
+} from 'react'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -157,7 +164,11 @@ function fuzzyScore(query: string, text: string): number {
 /**
  * Find all match indices in text
  */
-function findMatchIndices(text: string, query: string, options: DeferredSearchOptions): [number, number][] {
+function findMatchIndices(
+  text: string,
+  query: string,
+  options: DeferredSearchOptions
+): [number, number][] {
   const indices: [number, number][] = []
   const searchText = options.caseSensitive ? text : text.toLowerCase()
   const searchQuery = options.caseSensitive ? query : query.toLowerCase()
@@ -195,14 +206,20 @@ function findMatchIndices(text: string, query: string, options: DeferredSearchOp
       )
       let match
       let iterations = 0
-      while ((match = wordRegex.exec(text)) !== null && iterations < maxMatches) {
+      while (
+        (match = wordRegex.exec(text)) !== null &&
+        iterations < maxMatches
+      ) {
         indices.push([match.index, match.index + match[0].length])
         iterations++
       }
     } else {
       let pos = 0
       let iterations = 0
-      while ((pos = searchText.indexOf(searchQuery, pos)) !== -1 && iterations < maxMatches) {
+      while (
+        (pos = searchText.indexOf(searchQuery, pos)) !== -1 &&
+        iterations < maxMatches
+      ) {
         indices.push([pos, pos + searchQuery.length])
         pos += 1
         iterations++
@@ -278,6 +295,7 @@ export function useDeferredSearch(
       }
     } else {
       setDebouncedQuery(searchQuery)
+      return undefined
     }
   }, [searchQuery, opts.debounceMs])
 
@@ -292,7 +310,10 @@ export function useDeferredSearch(
     const matchInfo = new Map<string, SearchMatch>()
 
     // Check minimum query length
-    if (!reactDeferredQuery.trim() || reactDeferredQuery.length < opts.minQueryLength!) {
+    if (
+      !reactDeferredQuery.trim() ||
+      reactDeferredQuery.length < opts.minQueryLength!
+    ) {
       return {
         filtered: messages,
         matchInfo,
@@ -301,7 +322,8 @@ export function useDeferredSearch(
     }
 
     const query = reactDeferredQuery.trim()
-    const results: { message: Message; score: number; match: SearchMatch }[] = []
+    const results: { message: Message; score: number; match: SearchMatch }[] =
+      []
 
     for (const message of messages) {
       let totalScore = 0
@@ -478,7 +500,11 @@ export function highlightText<T>(
 /**
  * Simple string highlight utility with HTML mark tags
  */
-export function highlightSearchText(text: string, query: string, className?: string): string {
+export function highlightSearchText(
+  text: string,
+  query: string,
+  className?: string
+): string {
   if (!query.trim()) return text
 
   const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

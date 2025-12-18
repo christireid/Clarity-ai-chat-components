@@ -8,7 +8,7 @@ import { CopyIcon, CheckIcon } from '../ui/icons'
 import { useToast } from '../ui/toast'
 import { useReducedMotion } from '@clarity-chat/primitives'
 import { getSpring } from '../../animations/spring-presets'
-import { DURATION_SECONDS } from '../../animations/constants'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface CopyButtonProps extends Omit<
   ButtonProps,

@@ -216,7 +216,7 @@ export function useKeyboardHintsOverlay(
 ) {
   const { modifierKey = 'alt', delay = 400, enabled = true } = options || {}
   const [visible, setVisible] = React.useState(false)
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   React.useEffect(() => {
     if (!enabled) {
@@ -290,7 +290,7 @@ export function ContextualKeyboardHints({
 }: ContextualKeyboardHintsProps) {
   const [visible, setVisible] = React.useState(false)
   const [hints, setHints] = React.useState<KeyboardHint[]>([])
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Discover elements with keyboard shortcuts
   const discoverHints = React.useCallback(() => {

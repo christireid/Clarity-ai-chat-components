@@ -560,7 +560,7 @@ export const createRipple = (x: number, y: number, size: number) => ({
 /**
  * Type exports
  */
-export type FeedbackAnimation = keyof typeof FeedbackAnimations
+export type FeedbackAnimationKey = keyof typeof FeedbackAnimations
 export type StateAnimation = keyof typeof StateAnimations
 export type LoadingAnimation = keyof typeof LoadingAnimations
 export type InteractionAnimation = keyof typeof InteractionAnimations

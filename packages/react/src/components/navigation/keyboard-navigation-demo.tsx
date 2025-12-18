@@ -346,6 +346,7 @@ function KeyboardNavigationDemoInner() {
       const timeout = setTimeout(() => setNotification(null), 3000)
       return () => clearTimeout(timeout)
     }
+    return undefined
   }, [notification])
 
   const commands = createDemoCommands({

@@ -414,6 +414,7 @@ export function CommandPaletteEnhanced({
       const unlock = lock()
       return unlock
     }
+    return undefined
   }, [open, lock])
 
   // Focus management
