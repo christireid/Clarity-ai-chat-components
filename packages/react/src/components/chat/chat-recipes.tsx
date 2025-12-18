@@ -1,3 +1,6 @@
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Chat Recipe Components - Pre-built combinations for common patterns
  *
@@ -5,16 +8,11 @@
  * making it even easier to get started.
  */
 
-'use client'
-
 import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
-import { ErrorBoundary } from '../feedback/error-boundary'
-import { applyChatPreset, type ChatPreset } from '../../presets/chat-presets'
-import {
-  validateApiEndpoint,
-  validateEnum,
-} from '../../utils/config/runtime-validation'
+import { ErrorBoundary } from './error-boundary'
+import { applyChatPreset, type ChatPreset } from '../presets/chat-presets'
+import { validateApiEndpoint, validateEnum } from '../utils/runtime-validation'
 
 /**
  * ChatWithMemory - Chat component with memory enabled
@@ -257,7 +255,7 @@ export function ChatComplete({
     <ErrorBoundary
       onError={(error, errorInfo) => {
         onError?.(error)
-        console.error('[ChatComplete] Error:', error, errorInfo)
+        logger.error('[ChatComplete] Error:', error, errorInfo)
       }}
     >
       {chatComponent}

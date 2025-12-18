@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * CRM & Customer Support Extensions
  *
@@ -148,7 +149,7 @@ export function createIntercomExtension(
     defaultConfig: config as IntercomConfig,
 
     initialize: async (ctx) => {
-      ctx.console.info('Intercom extension initialized')
+      ctx.logger.info('Intercom extension initialized')
 
       // Validate appId to prevent script injection
       const safeAppId = validateSafeId(ctx.config.appId, 'Intercom App ID')
@@ -178,7 +179,7 @@ export function createIntercomExtension(
 
       const adapter: CRMAdapter = {
         async identify(user) {
-          ctx.console.log('Identifying user in Intercom')
+          ctx.logger.debug('Identifying user in Intercom')
           getIntercom()?.('update', {
             user_id: user.id,
             email: user.email,
@@ -190,18 +191,18 @@ export function createIntercomExtension(
         },
 
         async track(event, properties) {
-          ctx.console.log(`Tracking event: ${event}`)
+          ctx.logger.debug(`Tracking event: ${event}`)
           getIntercom()?.('trackEvent', event, properties)
         },
 
         async createTicket(ticket) {
-          ctx.console.log('Creating ticket in Intercom')
+          ctx.logger.debug('Creating ticket in Intercom')
           // Would use Intercom API
           return { id: `intercom_${Date.now()}` }
         },
 
         async updateTicket(ticketId, updates) {
-          ctx.console.log(`Updating ticket: ${ticketId}`)
+          ctx.logger.debug(`Updating ticket: ${ticketId}`)
         },
 
         async getTicket(ticketId) {
@@ -209,11 +210,11 @@ export function createIntercomExtension(
         },
 
         async sendMessage(conversationId, message) {
-          ctx.console.log(`Sending message to conversation: ${conversationId}`)
+          ctx.logger.debug(`Sending message to conversation: ${conversationId}`)
         },
 
         async startConversation(userId, initialMessage) {
-          ctx.console.log('Starting Intercom conversation')
+          ctx.logger.debug('Starting Intercom conversation')
           getIntercom()?.('showNewMessage', initialMessage)
           return `conv_${Date.now()}`
         },
@@ -271,7 +272,7 @@ export function createZendeskExtension(
     defaultConfig: config as ZendeskConfig,
 
     initialize: async (ctx) => {
-      ctx.console.info('Zendesk extension initialized')
+      ctx.logger.info('Zendesk extension initialized')
 
       // Load Zendesk Chat widget if chatKey provided
       if (typeof window !== 'undefined' && ctx.config.chatKey) {
@@ -288,15 +289,15 @@ export function createZendeskExtension(
 
       const adapter: CRMAdapter = {
         async identify(user) {
-          ctx.console.log('Identifying user in Zendesk')
+          ctx.logger.debug('Identifying user in Zendesk')
         },
 
         async track(event, properties) {
-          ctx.console.log(`Tracking event: ${event}`)
+          ctx.logger.debug(`Tracking event: ${event}`)
         },
 
         async createTicket(ticket) {
-          ctx.console.log('Creating ticket in Zendesk')
+          ctx.logger.debug('Creating ticket in Zendesk')
           const response = await fetch(
             `https://${ctx.config.subdomain}.zendesk.com/api/v2/tickets.json`,
             {
@@ -329,7 +330,7 @@ export function createZendeskExtension(
         },
 
         async updateTicket(ticketId, updates) {
-          ctx.console.log(`Updating ticket: ${ticketId}`)
+          ctx.logger.debug(`Updating ticket: ${ticketId}`)
           await fetch(
             `https://${ctx.config.subdomain}.zendesk.com/api/v2/tickets/${ticketId}.json`,
             {
@@ -365,7 +366,7 @@ export function createZendeskExtension(
         },
 
         async sendMessage(conversationId, message) {
-          ctx.console.log(`Sending message to conversation: ${conversationId}`)
+          ctx.logger.debug(`Sending message to conversation: ${conversationId}`)
         },
 
         async startConversation(userId, initialMessage) {
@@ -414,7 +415,7 @@ export function createHubSpotExtension(
     defaultConfig: config as HubSpotConfig,
 
     initialize: async (ctx) => {
-      ctx.console.info('HubSpot extension initialized')
+      ctx.logger.info('HubSpot extension initialized')
 
       // Validate portalId to prevent script injection
       const safePortalId = validateSafeId(
@@ -436,7 +437,7 @@ export function createHubSpotExtension(
 
       const adapter: CRMAdapter = {
         async identify(user) {
-          ctx.console.log('Identifying user in HubSpot')
+          ctx.logger.debug('Identifying user in HubSpot')
           if (typeof window !== 'undefined') {
             const _hsq = ((window as { _hsq?: unknown[][] })._hsq =
               (window as { _hsq?: unknown[][] })._hsq || [])
@@ -448,7 +449,7 @@ export function createHubSpotExtension(
         },
 
         async track(event, properties) {
-          ctx.console.log(`Tracking event: ${event}`)
+          ctx.logger.debug(`Tracking event: ${event}`)
           if (typeof window !== 'undefined') {
             const _hsq = ((window as { _hsq?: unknown[][] })._hsq =
               (window as { _hsq?: unknown[][] })._hsq || [])
@@ -460,7 +461,7 @@ export function createHubSpotExtension(
         },
 
         async createTicket(ticket) {
-          ctx.console.log('Creating ticket in HubSpot')
+          ctx.logger.debug('Creating ticket in HubSpot')
           const response = await fetch(
             'https://api.hubapi.com/crm/v3/objects/tickets',
             {
@@ -483,7 +484,7 @@ export function createHubSpotExtension(
         },
 
         async updateTicket(ticketId, updates) {
-          ctx.console.log(`Updating ticket: ${ticketId}`)
+          ctx.logger.debug(`Updating ticket: ${ticketId}`)
         },
 
         async getTicket(ticketId) {
@@ -533,14 +534,14 @@ export function createFreshDeskExtension(
     defaultConfig: config as FreshDeskConfig,
 
     initialize: async (ctx) => {
-      ctx.console.info('Freshdesk extension initialized')
+      ctx.logger.info('Freshdesk extension initialized')
 
       const adapter: CRMAdapter = {
         async identify(user) {},
         async track(event, properties) {},
 
         async createTicket(ticket) {
-          ctx.console.log('Creating ticket in Freshdesk')
+          ctx.logger.debug('Creating ticket in Freshdesk')
           const response = await fetch(
             `https://${ctx.config.domain}.freshdesk.com/api/v2/tickets`,
             {
@@ -614,7 +615,7 @@ export function createCrispExtension(
     defaultConfig: config as CrispConfig,
 
     initialize: async (ctx) => {
-      ctx.console.info('Crisp extension initialized')
+      ctx.logger.info('Crisp extension initialized')
 
       // Type-safe helper for Crisp global
       type CrispWindow = { $crisp?: unknown[]; CRISP_WEBSITE_ID?: string }
@@ -703,7 +704,7 @@ export function createDriftExtension(
     defaultConfig: config as DriftConfig,
 
     initialize: async (ctx) => {
-      ctx.console.info('Drift extension initialized')
+      ctx.logger.info('Drift extension initialized')
 
       // Validate embedId to prevent script injection
       const safeEmbedId = validateSafeId(ctx.config.embedId, 'Drift Embed ID')
@@ -727,7 +728,7 @@ export function createDriftExtension(
         const t: DriftStub = (win.driftt = win.drift = win.driftt || [])
         if (!t.load) {
           if (t.invoked) {
-            console.error('Drift snippet included twice.')
+            logger.error('Drift snippet included twice.')
           } else {
             t.invoked = true
             t.methods = [

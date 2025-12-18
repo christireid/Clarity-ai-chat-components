@@ -1,10 +1,12 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, Badge, Button, cn } from '@clarity-chat/primitives'
-import { ClockIcon, RefreshIcon, CloseIcon } from '../ui/icons'
-import { useIsMounted } from '../../hooks/ui/use-is-mounted'
+import { ClockIcon, RefreshIcon, CloseIcon } from './icons'
+import { useIsMounted } from '../hooks/use-is-mounted'
 
 /**
  * Calendar event
@@ -283,7 +285,7 @@ export function CalendarIntegration({
     } catch (error) {
       // Silently fail for availability (non-critical)
       if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to load availability:', error)
+        logger.error('Failed to load availability:', error)
       }
     }
   }, [fetchAvailability, range, isMounted])

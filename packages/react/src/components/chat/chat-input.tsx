@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -8,12 +10,12 @@ import {
   cn,
   type ButtonState,
 } from '@clarity-chat/primitives'
-import { SendIcon } from '../ui/icons'
+import { SendIcon } from './icons'
 import {
   useRequestDeduplication,
   isDebouncedError,
-} from '../../hooks/resilience/use-request-deduplication'
-import { DURATION_SECONDS } from '../../animations/constants'
+} from '../hooks/use-request-deduplication'
+import { DURATION_SECONDS } from '../animations/constants'
 
 export interface ChatInputProps {
   value: string
@@ -31,10 +33,6 @@ export interface ChatInputProps {
   animateHeight?: boolean
   /** Enable focus ring glow animation */
   glowOnFocus?: boolean
-  /** Auto-focus the input on mount */
-  autoFocus?: boolean
-  /** Accessible label for the input (default: 'Message') */
-  'aria-label'?: string
   className?: string
 }
 
@@ -149,14 +147,12 @@ export function ChatInput({
   warningThreshold = 0.8,
   animateHeight = true,
   glowOnFocus = true,
-  autoFocus = false,
-  'aria-label': ariaLabel = 'Message',
   className,
 }: ChatInputProps) {
   // Development-only runtime validation (removed from production for performance)
   if (process.env.NODE_ENV === 'development') {
     if (typeof value !== 'string') {
-      console.error(
+      logger.error(
         'ChatInput: "value" prop must be a string.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
@@ -165,7 +161,7 @@ export function ChatInput({
     }
 
     if (typeof onChange !== 'function') {
-      console.error(
+      logger.error(
         'ChatInput: "onChange" prop must be a function.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
@@ -174,7 +170,7 @@ export function ChatInput({
     }
 
     if (typeof onSubmit !== 'function') {
-      console.error(
+      logger.error(
         'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
@@ -264,7 +260,7 @@ export function ChatInput({
         return
       }
       setButtonState('error')
-      console.error('[ChatInput] Submit error:', error)
+      logger.error('[ChatInput] Submit error:', error)
       // Auto-reset after showing error
       setTimeout(() => setButtonState('idle'), 2000)
     }
@@ -339,8 +335,7 @@ export function ChatInput({
             placeholder={placeholder}
             disabled={disabled}
             maxLength={validMaxLength}
-            autoFocus={autoFocus}
-            aria-label={ariaLabel}
+            aria-label="Message"
             aria-disabled={disabled}
             aria-invalid={isOverLimit}
             aria-errormessage={isOverLimit ? 'char-limit-error' : undefined}

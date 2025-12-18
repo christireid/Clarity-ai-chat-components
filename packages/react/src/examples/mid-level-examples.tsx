@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Mid-Level Examples - Composable Building Blocks
  *
@@ -7,12 +8,12 @@
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
-import { useClarityChat } from '../hooks/chat/use-clarity-chat'
-import { useChatHandlers } from '../hooks/chat/use-chat-handlers'
-import { ChatWindow } from '../components/chat/chat-window'
-import { ChatInput } from '../components/chat/chat-input'
-import { useChatEnhanced } from '../hooks/chat/use-chat-enhanced'
-import { useClarityChatWithTools } from '../hooks/chat/use-clarity-chat-with-tools'
+import { useClarityChat } from '../hooks/use-clarity-chat'
+import { useChatHandlers } from '../hooks/use-chat-handlers'
+import { ChatWindow } from '../components/chat-window'
+import { ChatInput } from '../components/chat-input'
+import { useChatEnhanced } from '../hooks/use-chat-enhanced'
+import { useClarityChatWithTools } from '../hooks/use-clarity-chat-with-tools'
 import { createToolUIRegistry } from '../agents/tool-ui-registry'
 import { MemoryProvider, useMemoryContext } from '../memory/memory-provider'
 
@@ -36,11 +37,11 @@ export function CustomChatWithHandlers() {
   const handlers = useChatHandlers({
     chat,
     onMessageSent: (content) => {
-      console.log('Message sent:', content)
+      logger.debug('Message sent:', content)
       // Analytics tracking, etc.
     },
     onMessageError: (error) => {
-      console.error('Failed to send:', error)
+      logger.error('Failed to send:', error)
       // Error reporting, etc.
     },
   })
@@ -75,10 +76,10 @@ export function VercelCompatibleChat() {
       { role: 'system', content: 'You are a helpful assistant.' },
     ],
     onFinish: (message) => {
-      console.log('Message finished:', message)
+      logger.debug('Message finished:', message)
     },
     onError: (error) => {
-      console.error('Chat error:', error)
+      logger.error('Chat error:', error)
     },
   })
 

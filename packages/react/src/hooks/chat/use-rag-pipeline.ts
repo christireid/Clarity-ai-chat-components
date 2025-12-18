@@ -1,3 +1,6 @@
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useRAGPipeline - Top-level hook for RAG pipeline
  *
@@ -14,15 +17,13 @@
  * ```
  */
 
-'use client'
-
 import * as React from 'react'
 import { useVectorStore } from '../vector-stores/react'
 import { useEmbeddings } from '../embeddings/react'
 import {
   validateVectorStoreProvider,
   validateEmbeddingProvider,
-} from '../../utils/config/runtime-validation'
+} from '../utils/runtime-validation'
 
 /**
  * Options for useRAGPipeline
@@ -98,7 +99,7 @@ export function useRAGPipeline(
       validateEmbeddingProvider(embeddingProvider)
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        console.error('[useRAGPipeline] Validation error:', error)
+        logger.error('[useRAGPipeline] Validation error:', error)
         throw error
       }
     }
@@ -136,7 +137,7 @@ export function useRAGPipeline(
       } catch (err) {
         const error =
           err instanceof Error ? err : new Error('RAG retrieval failed')
-        console.error('[useRAGPipeline] Retrieval failed:', error)
+        logger.error('[useRAGPipeline] Retrieval failed:', error)
         // Return empty array on error (fail gracefully)
         return []
       }

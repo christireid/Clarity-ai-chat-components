@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 /**
  * CopyButton Component
  *
@@ -43,7 +45,7 @@ export function CopyButton({
       // Reset after 2 seconds
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      logger.error('Failed to copy:', err)
     }
   }, [text, onCopy])
 

@@ -1,38 +1,39 @@
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useChatEnhanced - Mid-Level Enhanced Chat Hook
- * 
+ *
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Chat & Completions
- * 
+ *
  * Enhanced chat hook with Vercel AI SDK compatibility.
  * Provides a complete chat interface with streaming support, message management,
  * and all features found in Vercel AI SDK's useChat, plus additional enterprise features.
- * 
+ *
  * For simpler use cases, use top-level `useClarityChat` instead.
  * For basic chat, use `useChat` (low-level) instead.
- * 
+ *
  * @param options - Chat configuration options
  * @param options.api - API endpoint URL (required)
  * @param options.initialMessages - Initial messages array
  * @param options.onFinish - Callback when stream finishes
  * @param options.onError - Callback on error
  * @returns Chat state and controls
- * 
+ *
  * @example
  * ```tsx
  * const { messages, append, isLoading } = useChatEnhanced({
  *   api: '/api/chat',
  *   initialMessages: [{ role: 'user', content: 'Hello' }],
- *   onFinish: (message) => console.log('Finished:', message),
+ *   onFinish: (message) => logger.debug('Finished:', message),
  * })
- * 
+ *
  * await append({ role: 'user', content: 'Tell me a joke' })
  * ```
- * 
+ *
  * @throws {Error} If API endpoint is invalid or missing
  */
-
-'use client'
 
 import * as React from 'react'
 import type { MessageRole } from '@clarity-chat/types'
@@ -41,25 +42,30 @@ import { generateId } from '@clarity-chat/primitives'
 /**
  * Core message content type - supports text and multi-modal content
  */
-export type CoreMessageContent = 
+export type CoreMessageContent =
   | string
-  | Array<{
-      type: 'text'
-      text: string
-    } | {
-      type: 'image'
-      image: string | ArrayBuffer
-    } | {
-      type: 'tool-call'
-      toolCallId: string
-      toolName: string
-      args: Record<string, any>
-    } | {
-      type: 'tool-result'
-      toolCallId: string
-      toolName: string
-      result: any
-    }>
+  | Array<
+      | {
+          type: 'text'
+          text: string
+        }
+      | {
+          type: 'image'
+          image: string | ArrayBuffer
+        }
+      | {
+          type: 'tool-call'
+          toolCallId: string
+          toolName: string
+          args: Record<string, any>
+        }
+      | {
+          type: 'tool-result'
+          toolCallId: string
+          toolName: string
+          result: any
+        }
+    >
 
 /**
  * Core message format compatible with Vercel AI SDK
@@ -85,46 +91,46 @@ export interface CoreMessage {
 export interface UseChatOptions {
   /** API endpoint URL */
   api?: string
-  
+
   /** Initial messages */
   initialMessages?: CoreMessage[]
-  
+
   /** Additional body data to send with requests */
   body?: Record<string, any>
-  
+
   /** Custom headers */
   headers?: Record<string, string>
-  
+
   /** Fetch credentials mode */
   credentials?: RequestCredentials
-  
+
   /** Custom fetch implementation */
   fetch?: typeof fetch
-  
+
   /** Maximum number of steps for agentic workflows */
   maxSteps?: number
-  
+
   /** Stream protocol: 'sse' | 'data' */
   streamProtocol?: 'sse' | 'data'
-  
+
   /** Generate unique ID for each message */
   id?: () => string
-  
+
   /** Callback when response is received */
   onResponse?: (response: Response) => void | Promise<void>
-  
+
   /** Callback when stream finishes */
   onFinish?: (message: CoreMessage) => void | Promise<void>
-  
+
   /** Callback on error */
   onError?: (error: Error) => void
-  
+
   /** Callback when message is appended */
   onMessageAppend?: (message: CoreMessage) => void
-  
+
   /** Transform messages before sending */
   transform?: (messages: CoreMessage[]) => CoreMessage[]
-  
+
   /** Experimental features */
   experimental?: {
     /** Custom streaming implementation */
@@ -132,75 +138,81 @@ export interface UseChatOptions {
     /** Additional options */
     [key: string]: any
   }
-  
+
   /** Enable streaming (default: true) */
   stream?: boolean
-  
+
   /** Keep previous messages when error occurs */
   keepLastMessageOnError?: boolean
-  
+
   /** Send extra message fields */
   sendExtraMessageFields?: boolean
 }
 
 /**
  * Return type for useChat hook (mid-level API)
- * 
+ *
  * Follows the standard hook return pattern:
  * - Data: `messages`, `input`, `data` (current state)
  * - State: `isLoading`, `error`
  * - Actions: `append`, `reload`, `stop`, `handleSubmit`, `abort`, `setMessages`, `setInput`
- * 
+ *
  * This is Vercel AI SDK compatible and provides enhanced features.
  */
 export interface UseChatReturn {
   /** Current messages (data) */
   messages: CoreMessage[]
-  
+
   /** Set messages directly (action) */
   setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>
-  
+
   /** Append a message (action) */
-  append: (message: CoreMessage | Pick<CoreMessage, 'role' | 'content'>, options?: { data?: Record<string, any> }) => Promise<string | null>
-  
+  append: (
+    message: CoreMessage | Pick<CoreMessage, 'role' | 'content'>,
+    options?: { data?: Record<string, any> }
+  ) => Promise<string | null>
+
   /** Reload/retry the last assistant message (action) */
   reload: (options?: { data?: Record<string, any> }) => Promise<string | null>
-  
+
   /** Stop the current stream (action) */
   stop: () => void
-  
+
   /** Submit a user message (creates user message and triggers assistant response) (action) */
-  handleSubmit: (event?: React.FormEvent<HTMLFormElement>, options?: { data?: Record<string, any> }) => void
-  
+  handleSubmit: (
+    event?: React.FormEvent<HTMLFormElement>,
+    options?: { data?: Record<string, any> }
+  ) => void
+
   /** Input value (data) */
   input: string
-  
+
   /** Set input value (action) */
   setInput: React.Dispatch<React.SetStateAction<string>>
-  
+
   /** Whether currently loading (state) */
   isLoading: boolean
-  
+
   /** Current error (state) */
   error: Error | undefined
-  
+
   /** Current assistant message being streamed (data) */
   data: CoreMessage | undefined
-  
+
   /** Abort controller for current request (action) */
   abort: () => void
 }
 
 /**
  * Enhanced useChat hook with full Vercel AI SDK compatibility
- * 
+ *
  * @example
  * ```tsx
  * const { messages, append, isLoading, handleSubmit, input, setInput } = useChat({
  *   api: '/api/chat',
  *   initialMessages: [],
- *   onFinish: (message) => console.log('Finished:', message),
- *   onError: (error) => console.error('Error:', error),
+ *   onFinish: (message) => logger.debug('Finished:', message),
+ *   onError: (error) => logger.error('Error:', error),
  * })
  * ```
  */
@@ -231,7 +243,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | undefined>()
   const [data, setData] = React.useState<CoreMessage | undefined>()
-  
+
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const currentAssistantMessageRef = React.useRef<CoreMessage | null>(null)
   const messageIdRef = React.useRef<string | null>(null)
@@ -265,7 +277,10 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === messageIdRef.current
-            ? { ...currentAssistantMessageRef.current!, id: messageIdRef.current }
+            ? {
+                ...currentAssistantMessageRef.current!,
+                id: messageIdRef.current,
+              }
             : msg
         )
       )
@@ -361,7 +376,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
               role: 'assistant',
               content: result.content || result.text || '',
             }
-            
+
             if (mountedRef.current) {
               setMessages((prev) =>
                 prev.map((msg) =>
@@ -371,7 +386,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
               setData(finalMessage)
               await onFinish?.(finalMessage)
             }
-            
+
             return assistantMessageId
           }
 
@@ -401,10 +416,10 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
                 try {
                   const parsed = JSON.parse(data)
-                  
+
                   // Handle different streaming formats
                   let contentDelta = ''
-                  
+
                   if (parsed.choices?.[0]?.delta?.content) {
                     // OpenAI chat completions format
                     contentDelta = parsed.choices[0].delta.content
@@ -413,13 +428,15 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                     contentDelta = parsed.choices[0].text
                   } else if (parsed.content) {
                     // Direct content field
-                    contentDelta = typeof parsed.content === 'string' ? parsed.content : ''
+                    contentDelta =
+                      typeof parsed.content === 'string' ? parsed.content : ''
                   } else if (parsed.text) {
                     // Text field
                     contentDelta = parsed.text
                   } else if (parsed.delta) {
                     // Delta format
-                    contentDelta = typeof parsed.delta === 'string' ? parsed.delta : ''
+                    contentDelta =
+                      typeof parsed.delta === 'string' ? parsed.delta : ''
                   } else if (parsed.message?.content) {
                     // Message wrapper format
                     contentDelta = parsed.message.content
@@ -430,7 +447,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
                   if (contentDelta) {
                     accumulatedContent += contentDelta
-                    
+
                     if (mountedRef.current) {
                       currentMessage = {
                         ...currentMessage,
@@ -510,7 +527,9 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           onError?.(error)
 
           if (!keepLastMessageOnError && mountedRef.current) {
-            setMessages((prev) => prev.filter((msg) => msg.id !== assistantMessageId))
+            setMessages((prev) =>
+              prev.filter((msg) => msg.id !== assistantMessageId)
+            )
           }
 
           throw error
@@ -549,7 +568,9 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
    * Reload/retry the last assistant message
    */
   const reload = React.useCallback(
-    async (options?: { data?: Record<string, any> }): Promise<string | null> => {
+    async (options?: {
+      data?: Record<string, any>
+    }): Promise<string | null> => {
       // Find last user message (manual implementation for ES2022 compatibility)
       let lastUserMessageIndex = -1
       for (let i = messages.length - 1; i >= 0; i--) {
@@ -576,9 +597,12 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
    * Handle form submission
    */
   const handleSubmit = React.useCallback(
-    (event?: React.FormEvent<HTMLFormElement>, options?: { data?: Record<string, any> }) => {
+    (
+      event?: React.FormEvent<HTMLFormElement>,
+      options?: { data?: Record<string, any> }
+    ) => {
       event?.preventDefault()
-      
+
       if (!input.trim() || isLoading) return
 
       const userMessage: CoreMessage = {
@@ -586,11 +610,13 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
         content: input.trim(),
       }
 
-      append(userMessage, options).then(() => {
-        setInput('')
-      }).catch(() => {
-        // Error already handled in append
-      })
+      append(userMessage, options)
+        .then(() => {
+          setInput('')
+        })
+        .catch(() => {
+          // Error already handled in append
+        })
     },
     [input, isLoading, append]
   )

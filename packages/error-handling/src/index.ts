@@ -96,7 +96,6 @@ export {
 
 // Re-export legacy hooks with their original names for backward compatibility
 export {
-  useFocusManagementLegacy as useFocusManagement,
   useFocusTrap,
   useAnnounce,
   usePrefersReducedMotion,

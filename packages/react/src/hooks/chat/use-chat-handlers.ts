@@ -1,3 +1,6 @@
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useChatHandlers - Mid-Level Handler Hook
  *
@@ -10,35 +13,32 @@
  * This hook wraps common patterns like sending messages, clearing chat,
  * retrying messages, and editing messages with proper error handling.
  *
- * Handler names match ChatWindow props exactly, enabling spread usage.
- *
  * For drop-in usage, use top-level `ClarityChat` component instead.
  * For custom handlers, use low-level `useClarityChat` directly.
  *
- * @example Spread all handlers directly to ChatWindow
+ * @example
  * ```tsx
  * const chat = useClarityChat({ api: '/api/chat' })
  * const handlers = useChatHandlers({ chat })
  *
- * // All handlers spread directly - no mapping needed!
  * <ChatWindow
  *   messages={chat.messages}
- *   isLoading={chat.isLoading}
- *   {...handlers}
+ *   onSendMessage={handlers.onSendMessage}
+ *   onClear={handlers.onClear}
+ *   onMessageRetry={handlers.onRetry}
  * />
  * ```
  *
- * @example With callbacks for analytics/logging
+ * @example
  * ```tsx
+ * // With callbacks
  * const handlers = useChatHandlers({
  *   chat,
- *   onMessageSent: (content) => console.log('Sent:', content),
- *   onMessageError: (error) => console.error('Error:', error),
+ *   onMessageSent: (content) => logger.debug('Sent:', content),
+ *   onMessageError: (error) => logger.error('Error:', error),
  * })
  * ```
  */
-
-'use client'
 
 import * as React from 'react'
 import type { UseClarityChatReturn } from './use-clarity-chat'
@@ -60,35 +60,19 @@ export interface UseChatHandlersOptions {
  * Pre-configured handlers for ChatWindow
  *
  * All handlers follow consistent patterns with built-in error handling.
- * Property names match ChatWindow props for seamless spread usage:
- *
- * @example
- * ```tsx
- * const handlers = useChatHandlers({ chat })
- * <ChatWindow {...handlers} messages={chat.messages} />
- * ```
  */
 export interface ChatHandlers {
-  /** Handler for sending messages - wraps chat.append with error handling */
+  /** Handler for sending messages - wraps chat.append with error handling (action) */
   onSendMessage: (content: string) => Promise<void>
 
-  /** Handler for clearing messages */
+  /** Handler for clearing messages (action) */
   onClear: () => void
 
-  /** Handler for stopping the current generation */
-  onStopGeneration: () => void
+  /** Handler for retrying a message (action) */
+  onRetry: (messageId: string) => Promise<void>
 
-  /** Handler for retrying a message */
-  onMessageRetry: (messageId: string) => Promise<void>
-
-  /** Handler for editing a message */
-  onEditMessage: (messageId: string, newContent: string) => Promise<void>
-
-  /** Handler for regenerating a message */
-  onRegenerateMessage: (messageId: string) => Promise<void>
-
-  /** Handler for deleting a message */
-  onDeleteMessage: (messageId: string) => void
+  /** Handler for editing a message (action) */
+  onEdit: (messageId: string, newContent: string) => Promise<void>
 }
 
 /**
@@ -132,18 +116,13 @@ export function useChatHandlers({
     chat.setMessages([])
   }, [chat])
 
-  const handleStopGeneration = React.useCallback(() => {
-    chat.stop()
-  }, [chat])
-
-  const handleMessageRetry = React.useCallback(
+  const handleRetry = React.useCallback(
     async (messageId: string) => {
       try {
         // Find the message and resend
         const message = chat.messages.find((m) => m.id === messageId)
         if (message && message.role === 'user') {
-          // Pass content directly - it may be string or multi-part array (CoreMessageContent)
-          await chat.append({ role: 'user', content: message.content })
+          await chat.append({ role: 'user', content: String(message.content) })
         }
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error))
@@ -154,7 +133,7 @@ export function useChatHandlers({
     [chat, onMessageError]
   )
 
-  const handleEditMessage = React.useCallback(
+  const handleEdit = React.useCallback(
     async (messageId: string, newContent: string) => {
       try {
         // Remove messages after the edited one
@@ -174,53 +153,10 @@ export function useChatHandlers({
     [chat, onMessageError]
   )
 
-  const handleRegenerateMessage = React.useCallback(
-    async (messageId: string) => {
-      try {
-        // Find the assistant message and the preceding user message
-        const messageIndex = chat.messages.findIndex((m) => m.id === messageId)
-        if (messageIndex > 0) {
-          // Get the user message before this assistant message
-          const userMessage = chat.messages
-            .slice(0, messageIndex)
-            .reverse()
-            .find((m) => m.role === 'user')
-
-          if (userMessage) {
-            // Remove the assistant message and resend the user message
-            const newMessages = chat.messages.slice(0, messageIndex)
-            chat.setMessages(newMessages)
-            // Pass content directly - it may be string or multi-part array (CoreMessageContent)
-            await chat.append({
-              role: 'user',
-              content: userMessage.content,
-            })
-          }
-        }
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error))
-        onMessageError?.(err)
-        throw err
-      }
-    },
-    [chat, onMessageError]
-  )
-
-  const handleDeleteMessage = React.useCallback(
-    (messageId: string) => {
-      const newMessages = chat.messages.filter((m) => m.id !== messageId)
-      chat.setMessages(newMessages)
-    },
-    [chat]
-  )
-
   return {
     onSendMessage: handleSendMessage,
     onClear: handleClear,
-    onStopGeneration: handleStopGeneration,
-    onMessageRetry: handleMessageRetry,
-    onEditMessage: handleEditMessage,
-    onRegenerateMessage: handleRegenerateMessage,
-    onDeleteMessage: handleDeleteMessage,
+    onRetry: handleRetry,
+    onEdit: handleEdit,
   }
 }

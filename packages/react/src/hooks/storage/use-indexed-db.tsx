@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 
 /**
@@ -47,18 +49,18 @@ export interface UseIndexedDBReturn<T> {
 
 /**
  * IndexedDB hook for large data persistence
- * 
+ *
  * Use this hook for storing large conversations (>5MB) or when you need
  * structured queries. Falls back to localStorage for smaller data or
  * when IndexedDB is unavailable.
- * 
+ *
  * Features:
  * - Automatic database initialization
  * - Type-safe operations
  * - Error handling
  * - Loading states
  * - Fallback to localStorage
- * 
+ *
  * @example
  * ```tsx
  * const { data, save, load, isLoading } = useIndexedDB<Message[]>({
@@ -87,8 +89,8 @@ export function useIndexedDB<T>(
   React.useEffect(() => {
     setIsAvailable(
       typeof window !== 'undefined' &&
-      'indexedDB' in window &&
-      window.indexedDB !== null
+        'indexedDB' in window &&
+        window.indexedDB !== null
     )
   }, [])
 
@@ -102,7 +104,7 @@ export function useIndexedDB<T>(
         dbRef.current = db
       } catch (err) {
         setError(err as Error)
-        console.error('Failed to initialize IndexedDB:', err)
+        logger.error('Failed to initialize IndexedDB:', err)
       }
     }
 
@@ -174,7 +176,11 @@ export function useIndexedDB<T>(
         const store = transaction.objectStore(storeName)
 
         await new Promise<void>((resolve, reject) => {
-          const request = store.put({ id: key, data: value, updatedAt: new Date() })
+          const request = store.put({
+            id: key,
+            data: value,
+            updatedAt: new Date(),
+          })
           request.onsuccess = () => resolve()
           request.onerror = () => reject(request.error)
         })
@@ -321,13 +327,13 @@ export function useIndexedDB<T>(
 
 /**
  * Hook for managing large conversation histories with IndexedDB
- * 
+ *
  * Optimized for conversations with 1000+ messages. Automatically handles:
  * - Chunking large conversations
  * - Lazy loading
  * - Efficient queries
  * - Automatic cleanup
- * 
+ *
  * @example
  * ```tsx
  * const { conversations, saveConversation, loadConversation } = useConversationStorage({
@@ -407,8 +413,8 @@ export function useConversationStorage(
   React.useEffect(() => {
     setIsAvailable(
       typeof window !== 'undefined' &&
-      'indexedDB' in window &&
-      window.indexedDB !== null
+        'indexedDB' in window &&
+        window.indexedDB !== null
     )
   }, [])
 
@@ -424,7 +430,9 @@ export function useConversationStorage(
 
           // Create conversations store
           if (!db.objectStoreNames.contains('conversations')) {
-            const store = db.createObjectStore('conversations', { keyPath: 'id' })
+            const store = db.createObjectStore('conversations', {
+              keyPath: 'id',
+            })
             store.createIndex('createdAt', 'createdAt')
             store.createIndex('updatedAt', 'updatedAt')
             store.createIndex('messageCount', 'messageCount')
@@ -442,7 +450,7 @@ export function useConversationStorage(
           dbRef.current = request.result
         }
       } catch (err) {
-        console.error('Failed to initialize conversation storage:', err)
+        logger.error('Failed to initialize conversation storage:', err)
       }
     }
 
@@ -465,14 +473,20 @@ export function useConversationStorage(
       if (!dbRef.current) {
         // Fallback to localStorage
         try {
-          localStorage.setItem(`conversation-${conversationId}`, JSON.stringify(messages))
+          localStorage.setItem(
+            `conversation-${conversationId}`,
+            JSON.stringify(messages)
+          )
         } catch (err) {
           throw new Error('Storage quota exceeded. Consider using IndexedDB.')
         }
         return
       }
 
-      const transaction = dbRef.current.transaction(['conversations', 'messages'], 'readwrite')
+      const transaction = dbRef.current.transaction(
+        ['conversations', 'messages'],
+        'readwrite'
+      )
       const convStore = transaction.objectStore('conversations')
       const msgStore = transaction.objectStore('messages')
 
@@ -546,7 +560,11 @@ export function useConversationStorage(
           const messages = request.result
           // Sort by createdAt and remove chunk metadata
           const sorted = messages
-            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+            .sort(
+              (a, b) =>
+                new Date(a.createdAt).getTime() -
+                new Date(b.createdAt).getTime()
+            )
             .map(({ chunkIndex, conversationId: _, ...msg }) => msg)
           resolve(sorted)
         }
@@ -563,7 +581,10 @@ export function useConversationStorage(
         return
       }
 
-      const transaction = dbRef.current.transaction(['conversations', 'messages'], 'readwrite')
+      const transaction = dbRef.current.transaction(
+        ['conversations', 'messages'],
+        'readwrite'
+      )
       const convStore = transaction.objectStore('conversations')
       const msgStore = transaction.objectStore('messages')
       const index = msgStore.index('conversationId')
@@ -626,7 +647,10 @@ export function useConversationStorage(
     async (conversationId: string): Promise<any | null> => {
       if (!dbRef.current) return null
 
-      const transaction = dbRef.current.transaction(['conversations'], 'readonly')
+      const transaction = dbRef.current.transaction(
+        ['conversations'],
+        'readonly'
+      )
       const store = transaction.objectStore('conversations')
 
       return new Promise((resolve, reject) => {
@@ -644,7 +668,10 @@ export function useConversationStorage(
       return
     }
 
-    const transaction = dbRef.current.transaction(['conversations', 'messages'], 'readwrite')
+    const transaction = dbRef.current.transaction(
+      ['conversations', 'messages'],
+      'readwrite'
+    )
     const convStore = transaction.objectStore('conversations')
     const msgStore = transaction.objectStore('messages')
 
@@ -669,7 +696,10 @@ export function useConversationStorage(
       const cutoffDate = new Date()
       cutoffDate.setDate(cutoffDate.getDate() - maxAgeDays)
 
-      const transaction = dbRef.current.transaction(['conversations'], 'readonly')
+      const transaction = dbRef.current.transaction(
+        ['conversations'],
+        'readonly'
+      )
       const store = transaction.objectStore('conversations')
       const index = store.index('updatedAt')
 
@@ -682,7 +712,9 @@ export function useConversationStorage(
       })
 
       // Delete old conversations
-      await Promise.all(conversations.map((conv) => deleteConversation(conv.id)))
+      await Promise.all(
+        conversations.map((conv) => deleteConversation(conv.id))
+      )
     },
     []
   )

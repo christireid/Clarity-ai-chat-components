@@ -1,3 +1,6 @@
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * useChatSimple - Simplified chat hook
  *
@@ -23,11 +26,9 @@
  * ```
  */
 
-'use client'
-
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import type { Message } from '@clarity-chat/types'
 
 /** Request body data for chat API */
@@ -145,7 +146,7 @@ export function useChatSimple(
         onError?.(error)
         // Log error for debugging
         if (process.env['NODE_ENV'] === 'development') {
-          console.error('[useChatSimple] Send failed:', error)
+          logger.error('[useChatSimple] Send failed:', error)
         }
         throw error
       }

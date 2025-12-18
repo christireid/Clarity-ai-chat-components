@@ -1,13 +1,15 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
-import { useVoiceInput } from '../../hooks/input/use-voice-input'
+import { useVoiceInput } from '../hooks/use-voice-input'
 import {
   useQuantumVoice,
   type QuantumVoiceState,
-} from '../../hooks/use-quantum-voice'
+} from '../hooks/use-quantum-voice'
 import type { ReactNode } from 'react'
 
 /**
@@ -108,7 +110,7 @@ const variantMap = {
  * // Basic usage
  * <VoiceInput
  *   onTranscript={(text) => {
- *     console.log('Voice input:', text)
+ *     logger.debug('Voice input:', text)
  *     sendMessage(text)
  *   }}
  * />
@@ -132,9 +134,9 @@ const variantMap = {
  * // With callbacks
  * <VoiceInput
  *   onTranscript={handleInput}
- *   onStart={() => console.log('Started listening')}
- *   onStop={() => console.log('Stopped listening')}
- *   onError={(err) => console.error('Voice error:', err)}
+ *   onStart={() => logger.debug('Started listening')}
+ *   onStop={() => logger.debug('Stopped listening')}
+ *   onError={(err) => logger.error('Voice error:', err)}
  * />
  * ```
  */

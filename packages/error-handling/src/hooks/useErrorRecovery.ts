@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 import { useCallback, useState, useRef, useLayoutEffect } from 'react'
 
 /**
@@ -7,20 +8,20 @@ export type RecoveryStrategy = () => void | Promise<void>
 
 /**
  * Hook for managing custom error recovery strategies
- * 
+ *
  * @example
  * ```tsx
  * const { registerStrategy, recover, isRecovering } = useErrorRecovery()
- * 
+ *
  * // Register recovery strategies
  * registerStrategy('API_ERROR', async () => {
  *   await reconnectToAPI()
  * })
- * 
+ *
  * registerStrategy('AUTH_ERROR', async () => {
  *   await refreshToken()
  * })
- * 
+ *
  * // Trigger recovery
  * await recover('API_ERROR')
  * ```
@@ -30,9 +31,7 @@ export function useErrorRecovery() {
     new Map()
   )
   const [isRecovering, setIsRecovering] = useState(false)
-  const [lastRecoveryError, setLastRecoveryError] = useState<Error | null>(
-    null
-  )
+  const [lastRecoveryError, setLastRecoveryError] = useState<Error | null>(null)
 
   const registerStrategy = useCallback(
     (errorType: string, strategy: RecoveryStrategy) => {
@@ -55,7 +54,7 @@ export function useErrorRecovery() {
 
   // Store strategies in ref to avoid dependency issues
   const strategiesRef = useRef(strategies)
-  
+
   useLayoutEffect(() => {
     strategiesRef.current = strategies
   }, [strategies])
@@ -65,7 +64,7 @@ export function useErrorRecovery() {
       const strategy = strategiesRef.current.get(errorType)
 
       if (!strategy) {
-        console.warn(`No recovery strategy found for error type: ${errorType}`)
+        logger.warn(`No recovery strategy found for error type: ${errorType}`)
         return false
       }
 
@@ -80,7 +79,7 @@ export function useErrorRecovery() {
         const error = err instanceof Error ? err : new Error(String(err))
         setLastRecoveryError(error)
         setIsRecovering(false)
-        console.error('Recovery strategy failed:', error)
+        logger.error('Recovery strategy failed:', error)
         return false
       }
     },

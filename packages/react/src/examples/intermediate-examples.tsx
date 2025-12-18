@@ -1,6 +1,7 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Intermediate Examples - Real-World Usage Patterns
- * 
+ *
  * These examples show slightly customized usage with basic real-world
  * features. Each example is 30-50 lines of code.
  */
@@ -17,16 +18,16 @@ import {
 
 /**
  * Example 1: Custom Chat with Header (35 lines)
- * 
+ *
  * Chat with custom header, session info, and message actions.
- * 
+ *
  * LOC: 35
  */
 export function Intermediate_CustomChat() {
   const { messages, sendMessage, isLoading, clearMessages } = useChat({
     api: '/api/chat',
   })
-  
+
   return (
     <ChatWindow
       messages={messages}
@@ -39,10 +40,10 @@ export function Intermediate_CustomChat() {
       onClear={clearMessages}
       onMessageCopy={(id, content) => {
         navigator.clipboard.writeText(content)
-        console.log('Message copied:', id)
+        logger.debug('Message copied:', id)
       }}
       onMessageFeedback={(id, type) => {
-        console.log('Feedback:', { id, type })
+        logger.debug('Feedback:', { id, type })
       }}
     />
   )
@@ -50,9 +51,9 @@ export function Intermediate_CustomChat() {
 
 /**
  * Example 2: Chat with Analytics (40 lines)
- * 
+ *
  * Chat with analytics tracking integrated.
- * 
+ *
  * LOC: 40
  */
 export function Intermediate_ChatWithAnalytics() {
@@ -64,7 +65,7 @@ export function Intermediate_ChatWithAnalytics() {
         sessionTitle="Analytics Chat"
         onMessageFeedback={(id, type) => {
           // Analytics tracked automatically via provider
-          console.log('Feedback tracked:', { id, type })
+          logger.debug('Feedback tracked:', { id, type })
         }}
       />
     </AnalyticsProvider>
@@ -73,9 +74,9 @@ export function Intermediate_ChatWithAnalytics() {
 
 /**
  * Example 3: Chat with Memory and Customization (45 lines)
- * 
+ *
  * Chat with memory enabled and custom styling.
- * 
+ *
  * LOC: 45
  */
 export function Intermediate_ChatWithMemoryCustom() {
@@ -101,23 +102,23 @@ export function Intermediate_ChatWithMemoryCustom() {
 
 /**
  * Example 4: Chat with Error Handling (50 lines)
- * 
+ *
  * Chat with custom error handling and retry logic.
- * 
+ *
  * LOC: 50
  */
 export function Intermediate_ChatWithErrorHandling() {
   const { messages, sendMessage, isLoading, error, chat } = useChat({
     api: '/api/chat',
   })
-  
+
   React.useEffect(() => {
     if (error) {
-      console.error('Chat error:', error)
+      logger.error('Chat error:', error)
       // Could integrate with error tracking service
     }
   }, [error])
-  
+
   return (
     <div className="h-screen flex flex-col">
       {error && (
@@ -137,7 +138,7 @@ export function Intermediate_ChatWithErrorHandling() {
         onSendMessage={sendMessage}
         onMessageRetry={(id) => {
           // Custom retry logic
-          console.log('Retrying message:', id)
+          logger.debug('Retrying message:', id)
         }}
       />
     </div>

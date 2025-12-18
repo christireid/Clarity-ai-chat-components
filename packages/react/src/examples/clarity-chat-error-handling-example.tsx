@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Clarity Chat Error Handling Example
  *
@@ -15,10 +16,10 @@
  */
 
 import * as React from 'react'
-import { useClarityChat } from '../hooks/chat/use-clarity-chat'
-import { ChatWindow } from '../components/chat/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message/message-conversion'
-import { ErrorBoundary } from '../components/feedback/error-boundary'
+import { useClarityChat } from '../hooks/use-clarity-chat'
+import { ChatWindow } from '../components/chat-window'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { ErrorBoundary } from '../components/error-boundary'
 import { Badge, Alert, Button } from '@clarity-chat/primitives'
 
 /**
@@ -125,7 +126,7 @@ export function ClarityChatErrorHandlingExample() {
       maxRetryAttempts: 3,
       onMemoryError: (error, operation) => {
         // Custom error handling
-        console.error(`Memory ${operation} failed:`, error)
+        logger.error(`Memory ${operation} failed:`, error)
 
         // You could send to error tracking service here
         // trackError('memory_operation_failed', { operation, error: error.message })

@@ -1,5 +1,7 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 
 /**
@@ -167,7 +169,7 @@ export interface UseStreamingWebSocketReturn {
  * ```tsx
  * const { messages, status, connect, send } = useStreamingWebSocket({
  *   url: 'wss://api.example.com/ws',
- *   onMessage: (msg) => console.log('Message:', msg),
+ *   onMessage: (msg) => logger.debug('Message:', msg),
  * })
  *
  * React.useEffect(() => {
@@ -283,7 +285,7 @@ export function useStreamingWebSocket(
           const timeSinceLastPong = Date.now() - lastPongRef.current
 
           if (timeSinceLastPong > heartbeatTimeout) {
-            console.warn(
+            logger.warn(
               '[useStreamingWebSocket] Heartbeat timeout - connection may be stale'
             )
             onHeartbeatFailed?.()
@@ -346,7 +348,7 @@ export function useStreamingWebSocket(
 
       // Handle connection open
       ws.addEventListener('open', (event) => {
-        console.log('[useStreamingWebSocket] Connected')
+        logger.debug('[useStreamingWebSocket] Connected')
         setStatus('connected')
         setReadyState(ws.readyState)
         setReconnectAttempt(0)
@@ -395,7 +397,7 @@ export function useStreamingWebSocket(
 
       // Handle errors
       ws.addEventListener('error', (event) => {
-        console.error('[useStreamingWebSocket] Error:', event)
+        logger.error('[useStreamingWebSocket] Error:', event)
         setError(event)
         setStatus('error')
         setReadyState(ws.readyState)
@@ -405,7 +407,11 @@ export function useStreamingWebSocket(
 
       // Handle connection close
       ws.addEventListener('close', (event) => {
-        console.log('[useStreamingWebSocket] Closed:', event.code, event.reason)
+        logger.debug(
+          '[useStreamingWebSocket] Closed:',
+          event.code,
+          event.reason
+        )
         setStatus('closed')
         setReadyState(ws.readyState)
 
@@ -436,7 +442,7 @@ export function useStreamingWebSocket(
             connect()
           }, delay)
         } else if (reconnectAttempt >= maxReconnectAttempts) {
-          console.error(
+          logger.error(
             '[useStreamingWebSocket] Max reconnection attempts reached'
           )
           onMaxReconnectAttemptsReached?.()
@@ -444,7 +450,7 @@ export function useStreamingWebSocket(
         }
       })
     } catch (err) {
-      console.error('[useStreamingWebSocket] Connection error:', err)
+      logger.error('[useStreamingWebSocket] Connection error:', err)
       setStatus('error')
       setError(err as Event)
     }
@@ -508,9 +514,7 @@ export function useStreamingWebSocket(
   const send = React.useCallback(
     (data: string | object | ArrayBuffer | Blob): boolean => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        console.warn(
-          '[useStreamingWebSocket] Cannot send - connection not open'
-        )
+        logger.warn('[useStreamingWebSocket] Cannot send - connection not open')
         return false
       }
 
@@ -526,7 +530,7 @@ export function useStreamingWebSocket(
         wsRef.current.send(payload as string | ArrayBuffer | Blob)
         return true
       } catch (err) {
-        console.error('[useStreamingWebSocket] Send error:', err)
+        logger.error('[useStreamingWebSocket] Send error:', err)
         return false
       }
     },

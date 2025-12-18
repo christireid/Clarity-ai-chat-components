@@ -1,8 +1,10 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import React, { useEffect, useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
+import { sanitizeCodeHtml } from '../../utils/sanitize-html'
 
 // Dynamic import of Prism to handle cases where it's not available
 let Prism: typeof import('prismjs') | null = null
@@ -66,7 +68,7 @@ async function loadPrism(): Promise<typeof import('prismjs') | null> {
       prismLoaded = true
       return Prism
     } catch (error) {
-      console.warn(
+      logger.warn(
         'Prism.js not available, syntax highlighting disabled:',
         error
       )
@@ -144,7 +146,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
                 )
                 setHighlightedCode(highlighted)
               } catch (error) {
-                console.error('Prism highlighting error:', error)
+                logger.error('Prism highlighting error:', error)
                 setHighlightedCode(codeString)
               }
             } else {
@@ -153,7 +155,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
             }
           })
           .catch((error) => {
-            console.warn('Failed to load Prism:', error)
+            logger.warn('Failed to load Prism:', error)
             setHighlightedCode(codeString)
           })
       }

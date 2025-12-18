@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Advanced Clarity Chat Example
  *
@@ -17,9 +18,9 @@
  */
 
 import * as React from 'react'
-import { useClarityChat } from '../hooks/chat/use-clarity-chat'
-import { ChatWindow } from '../components/chat/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message/message-conversion'
+import { useClarityChat } from '../hooks/use-clarity-chat'
+import { ChatWindow } from '../components/chat-window'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import { Button, Badge, Card } from '@clarity-chat/primitives'
 
 export function AdvancedClarityChatExample() {
@@ -46,7 +47,7 @@ export function AdvancedClarityChatExample() {
     },
     transport,
     onError: (err) => {
-      console.error('Chat error:', err)
+      logger.error('Chat error:', err)
       // Custom error handling
     },
   })

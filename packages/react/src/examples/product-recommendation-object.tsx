@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Product Recommendation Object Example
  *
@@ -6,7 +7,7 @@
  */
 
 import * as React from 'react'
-import { useClarityObject } from '../hooks/chat/use-clarity-object'
+import { useClarityObject } from '../hooks/use-clarity-object'
 import {
   Card,
   CardContent,
@@ -46,10 +47,10 @@ export function ProductRecommendationExample() {
       maxResults: 5,
     },
     onFinish: (result) => {
-      console.log('Generated products:', result)
+      logger.debug('Generated products:', result)
     },
     onError: (err) => {
-      console.error('Error generating products:', err)
+      logger.error('Error generating products:', err)
     },
   })
 

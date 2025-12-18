@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Complex Examples - Full Workflow Compositions
  *
@@ -7,16 +8,16 @@
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
-import { useClarityChat } from '../hooks/chat/use-clarity-chat'
-import { useChatHandlers } from '../hooks/chat/use-chat-handlers'
-import { ChatWindow } from '../components/chat/chat-window'
+import { useClarityChat } from '../hooks/use-clarity-chat'
+import { useChatHandlers } from '../hooks/use-chat-handlers'
+import { ChatWindow } from '../components/chat-window'
 import { MemoryProvider, useMemoryContext } from '../memory/memory-provider'
 import {
   useClarityChatWithTools,
   createToolUIRegistry,
-} from '../hooks/chat/use-clarity-chat-with-tools'
+} from '../hooks/use-clarity-chat-with-tools'
 import { createAgent } from '../agents'
-import { useStreaming } from '../hooks/streaming/use-streaming'
+import { useStreaming } from '../hooks/use-streaming'
 
 // ============================================================================
 // Example 1: Enterprise Chat with Memory and Advanced Features (100 lines)
@@ -59,7 +60,7 @@ function EnterpriseChatInner() {
       }
     },
     onMessageError: (error) => {
-      console.error('Message error:', error)
+      logger.error('Message error:', error)
     },
   })
 
@@ -157,7 +158,7 @@ export function AgentPoweredChat() {
       // Use agent for complex multi-step queries
       const execution = await agent.execute(query)
       // Agent results can be integrated into chat
-      console.log('Agent execution:', execution)
+      logger.debug('Agent execution:', execution)
     },
     [agent]
   )
@@ -279,7 +280,7 @@ export function CustomStreamingChat() {
       reset()
     },
     onError: (error) => {
-      console.error('Streaming error:', error)
+      logger.error('Streaming error:', error)
       setIsLoading(false)
     },
   })
@@ -302,7 +303,7 @@ export function CustomStreamingChat() {
 
         await startStreaming(response.body)
       } catch (error) {
-        console.error('Streaming error:', error)
+        logger.error('Streaming error:', error)
         setIsLoading(false)
       }
     },

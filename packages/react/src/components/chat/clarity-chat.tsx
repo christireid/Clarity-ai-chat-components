@@ -1,3 +1,6 @@
+'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * ClarityChat - Top-Level Drop-in Component
  *
@@ -30,22 +33,20 @@
  * ```
  */
 
-'use client'
-
 import * as React from 'react'
 import {
   useClarityChat,
   type UseClarityChatOptions,
-} from '../../hooks/chat/use-clarity-chat'
+} from '../hooks/use-clarity-chat'
 import { ChatWindow } from './chat-window'
-import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
-import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
-import { useToast } from '../ui/toast'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import { useToast } from './toast'
 
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** API endpoint URL - the only required prop */
   api: string
-  /** Optional chat ID for persistence and message grouping */
+  /** Optional chat ID for persistence */
   chatId?: string
   /** Optional className for the chat container */
   className?: string
@@ -65,81 +66,34 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   onExport?: () => void
   /** Enable clear chat functionality */
   onClear?: () => void
+  /** Auto-scroll to bottom on new messages */
+  autoScroll?: boolean
   /** Callback when a message is copied */
-  onMessageCopy?: (messageId: string, content: string) => void
+  onMessageCopy?: (id: string, content: string) => void
   /** Callback when message feedback is provided */
   onMessageFeedback?: (
     messageId: string,
     type: 'up' | 'down',
     comment?: string
   ) => void
-  /** Callback when retry is requested */
-  onMessageRetry?: (messageId: string) => void
-  /** Callback when message is edited */
+  /** Callback when a message is edited */
   onEditMessage?: (messageId: string) => void
-  /** Callback when message is regenerated */
+  /** Callback when a message is regenerated */
   onRegenerateMessage?: (messageId: string) => void
-  /** Callback when message is deleted */
+  /** Callback when a message is deleted */
   onDeleteMessage?: (messageId: string) => void
-  /**
-   * Error message to display (e.g., network errors).
-   * Shows a banner above the chat when set.
-   */
-  error?: string | null
-  /**
-   * Callback to retry after an error.
-   * When provided along with `error`, shows a "Retry" button.
-   */
-  onRetry?: () => void
-  /**
-   * Callback to dismiss the error banner.
-   */
-  onDismissError?: () => void
-  /** AI processing status for thinking indicator */
-  aiStatus?: import('@clarity-chat/types').AIStatus
-  /**
-   * Starter prompts to show in empty state.
-   * Helps users discover what the chat can do.
-   */
-  starterPrompts?: import('./prompt-suggestions').PromptSuggestion[]
-  /**
-   * Suggested follow-up prompts shown after assistant messages.
-   */
-  followUpSuggestions?: import('./prompt-suggestions').PromptSuggestion[]
-  /** Whether to show starter prompts in empty state (default: true) */
-  showStarterPrompts?: boolean
-  /** Whether to show follow-up suggestions (default: true) */
-  showFollowUpSuggestions?: boolean
-  /**
-   * Callback to stop/cancel the current AI generation.
-   * When provided, shows a "Stop" button during loading state.
-   */
-  onStopGeneration?: () => void
-  /**
-   * Auto-scroll to bottom on new messages.
-   * Handled internally by ChatWindow - this prop is accepted for preset compatibility.
-   */
-  autoScroll?: boolean
-  /**
-   * Theme name to apply to the chat interface.
-   * Use with ThemeProvider for full theming support.
-   */
+  /** Theme for the chat interface */
   theme?: string
-  /**
-   * Show token counter in the input area.
-   * Displays token usage for the current message.
-   */
+  /** Show token counter in input */
   showTokenCounter?: boolean
-  /**
-   * Show network connection status indicator.
-   * Displays online/offline status.
-   */
+  /** Show network status indicator */
   showNetworkStatus?: boolean
-  /**
-   * Enable message operations (edit, delete, regenerate).
-   * When true, shows action buttons on messages.
-   */
+  /** Enable message operations (edit, delete, branch) */
   enableMessageOperations?: boolean
+  /** Memory strategy for conversation context */
+  memoryStrategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
+  /** Error handler with error info */
+  onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
 }
 
 /**
@@ -181,7 +135,6 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
  */
 export function ClarityChat({
   api,
-  chatId,
   className,
   emptyState,
   showHeader,
@@ -193,57 +146,11 @@ export function ClarityChat({
   onClear,
   onMessageCopy,
   onMessageFeedback,
-  onMessageRetry,
   onEditMessage,
   onRegenerateMessage,
   onDeleteMessage,
-  error,
-  onRetry,
-  onDismissError,
-  aiStatus,
-  starterPrompts,
-  followUpSuggestions,
-  showStarterPrompts,
-  showFollowUpSuggestions,
-  onStopGeneration,
-  // Destructure these to prevent passing to hookOptions
-  // They are accepted for API compatibility but handled differently
-  autoScroll: _autoScroll,
-  theme: _theme,
-  showTokenCounter: _showTokenCounter,
-  showNetworkStatus: _showNetworkStatus,
-  enableMessageOperations: _enableMessageOperations,
   ...hookOptions
 }: ClarityChatProps) {
-  // Runtime validation: warn about props that are accepted but not yet fully implemented
-  if (process.env.NODE_ENV === 'development') {
-    if (_autoScroll !== undefined) {
-      console.warn(
-        '[ClarityChat] autoScroll prop is accepted for API compatibility but scroll behavior is managed internally by ChatWindow.'
-      )
-    }
-    if (_theme !== undefined) {
-      console.warn(
-        '[ClarityChat] theme prop is accepted but not yet passed to ChatWindow. Use ThemeProvider to wrap your app instead.'
-      )
-    }
-    if (_showTokenCounter !== undefined) {
-      console.warn(
-        '[ClarityChat] showTokenCounter prop is not yet implemented. Token counting requires additional setup.'
-      )
-    }
-    if (_showNetworkStatus !== undefined) {
-      console.warn(
-        '[ClarityChat] showNetworkStatus prop is not yet implemented.'
-      )
-    }
-    if (_enableMessageOperations !== undefined) {
-      console.warn(
-        '[ClarityChat] enableMessageOperations prop is not yet implemented. Message operations are always enabled.'
-      )
-    }
-  }
-
   // Validate required prop with helpful error message
   if (!api || typeof api !== 'string' || api.trim().length === 0) {
     throw new Error(
@@ -285,8 +192,8 @@ export function ClarityChat({
       } catch (error) {
         // Only show error if not aborted - aborts are intentional
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Failed to send message:', error)
-          toast?.error('Failed to send message. Please try again.')
+          logger.error('Failed to send message:', error)
+          toast?.logger.error('Failed to send message. Please try again.')
         }
       }
     },
@@ -366,7 +273,7 @@ export function ClarityChat({
       // Validate content - reject empty or whitespace-only
       const trimmedContent = newContent.trim()
       if (!trimmedContent) {
-        toast?.error('Message cannot be empty')
+        toast?.logger.error('Message cannot be empty')
         return
       }
 
@@ -382,7 +289,7 @@ export function ClarityChat({
           (m) => m.id === messageId
         )
         if (messageIndex === -1) {
-          toast?.error('Message not found')
+          toast?.logger.error('Message not found')
           return
         }
 
@@ -419,8 +326,8 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Failed to update message:', error)
-          toast?.error('Failed to update message. Please try again.')
+          logger.error('Failed to update message:', error)
+          toast?.logger.error('Failed to update message. Please try again.')
         }
       }
     },
@@ -449,8 +356,8 @@ export function ClarityChat({
           (m) => m.id === messageId
         )
         if (messageIndex === -1) {
-          console.warn('Cannot regenerate: message not found')
-          toast?.error('Cannot regenerate: message not found')
+          logger.warn('Cannot regenerate: message not found')
+          toast?.logger.error('Cannot regenerate: message not found')
           return
         }
 
@@ -465,8 +372,10 @@ export function ClarityChat({
         }
 
         if (userMessageIndex === -1) {
-          console.warn('Cannot regenerate: no preceding user message found')
-          toast?.error('Cannot regenerate: no previous message to resend')
+          logger.warn('Cannot regenerate: no preceding user message found')
+          toast?.logger.error(
+            'Cannot regenerate: no previous message to resend'
+          )
           return
         }
 
@@ -496,8 +405,10 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Failed to regenerate message:', error)
-          toast?.error('Failed to regenerate response. Please try again.')
+          logger.error('Failed to regenerate message:', error)
+          toast?.logger.error(
+            'Failed to regenerate response. Please try again.'
+          )
         }
       }
     },
@@ -509,7 +420,7 @@ export function ClarityChat({
       messages={messages}
       isLoading={chat.isLoading || isRegenerating}
       onSendMessage={handleSendMessage}
-      onStopGeneration={onStopGeneration || handleStopGeneration}
+      onStopGeneration={handleStopGeneration}
       onMessageCopy={onMessageCopy}
       onMessageFeedback={onMessageFeedback}
       onEditMessage={handleEditMessage}
@@ -527,15 +438,6 @@ export function ClarityChat({
       showMessageCount={showMessageCount}
       onExport={onExport}
       onClear={onClear ? handleClear : undefined}
-      onMessageRetry={onMessageRetry}
-      error={error}
-      onRetry={onRetry}
-      onDismissError={onDismissError}
-      aiStatus={aiStatus}
-      starterPrompts={starterPrompts}
-      followUpSuggestions={followUpSuggestions}
-      showStarterPrompts={showStarterPrompts}
-      showFollowUpSuggestions={showFollowUpSuggestions}
     />
   )
 }
