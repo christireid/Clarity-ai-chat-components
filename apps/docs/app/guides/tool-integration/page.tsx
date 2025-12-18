@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
@@ -343,7 +342,7 @@ function ApprovalWorkflow() {
       const result = await callToolAPI(toolCall)
       setExecutedTools(prev => new Map(prev).set(toolCall.id, result))
     } catch (error) {
-      logger.logger.error('Tool execution failed:', error)
+      console.error('Tool execution failed:', error)
     }
   }
 
@@ -478,7 +477,7 @@ function ChatWithTools() {
       setToolResults(prev => new Map(prev).set(toolCall.id, result))
       return result
     } catch (error) {
-      logger.logger.error('Tool execution failed:', error)
+      console.error('Tool execution failed:', error)
       throw error
     }
   }

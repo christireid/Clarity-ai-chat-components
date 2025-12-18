@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -14,7 +13,8 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { Skeleton, SkeletonText } from './skeleton'
+import { Skeleton, SkeletonText } from '../ui/skeleton'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /**
  * Summary detail level
@@ -143,7 +143,7 @@ const defaultConfig: SummarizationConfig = {
  *     includeKeyTopics: true,
  *   }}
  *   onSummaryGenerated={(summary) => {
- *     logger.debug('Summary:', summary.content)
+ *     console.log('Summary:', summary.content)
  *   }}
  * />
  * ```
@@ -160,9 +160,13 @@ export function ConversationSummarizer({
 }: ConversationSummarizerProps) {
   const config = { ...defaultConfig, ...userConfig }
 
-  const [currentSummary, setCurrentSummary] = React.useState<ConversationSummary | null>(null)
-  const [summaryHistory, setSummaryHistory] = React.useState<ConversationSummary[]>([])
-  const [selectedLevel, setSelectedLevel] = React.useState<SummaryLevel>(defaultLevel)
+  const [currentSummary, setCurrentSummary] =
+    React.useState<ConversationSummary | null>(null)
+  const [summaryHistory, setSummaryHistory] = React.useState<
+    ConversationSummary[]
+  >([])
+  const [selectedLevel, setSelectedLevel] =
+    React.useState<SummaryLevel>(defaultLevel)
   const [isGenerating, setIsGenerating] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
 
@@ -170,7 +174,10 @@ export function ConversationSummarizer({
    * Generate summary using built-in logic (fallback)
    */
   const generateSummaryFallback = React.useCallback(
-    async (msgs: Message[], level: SummaryLevel): Promise<ConversationSummary> => {
+    async (
+      msgs: Message[],
+      level: SummaryLevel
+    ): Promise<ConversationSummary> => {
       // Simple rule-based summarization as fallback
       // In production, this would call an LLM API
 
@@ -271,8 +278,12 @@ export function ConversationSummarizer({
         level,
         content: summaryContent,
         keyTopics: config.includeKeyTopics ? keyTopics : undefined,
-        actionItems: config.includeActionItems ? actionItems.slice(0, 5) : undefined,
-        codeSnippets: config.includeCodeSnippets ? codeSnippets.slice(0, 3) : undefined,
+        actionItems: config.includeActionItems
+          ? actionItems.slice(0, 5)
+          : undefined,
+        codeSnippets: config.includeCodeSnippets
+          ? codeSnippets.slice(0, 3)
+          : undefined,
         messageRange: {
           start: 0,
           end: msgs.length - 1,
@@ -282,7 +293,12 @@ export function ConversationSummarizer({
         generationTime: 500,
       }
     },
-    [config.maxLength, config.includeActionItems, config.includeKeyTopics, config.includeCodeSnippets]
+    [
+      config.maxLength,
+      config.includeActionItems,
+      config.includeKeyTopics,
+      config.includeCodeSnippets,
+    ]
   )
 
   /**
@@ -318,7 +334,7 @@ export function ConversationSummarizer({
 
         onSummaryGenerated?.(summary)
       } catch (err) {
-        logger.logger.error('Failed to generate summary:', err)
+        logger.error('Failed to generate summary:', err)
         setError(err instanceof Error ? err.message : 'Failed to generate summary')
       } finally {
         setIsGenerating(false)
@@ -333,13 +349,20 @@ export function ConversationSummarizer({
   React.useEffect(() => {
     if (config.trigger === 'auto' || config.trigger === 'interval') {
       const interval = config.interval || 10
-      const shouldGenerate = messages.length > 0 && messages.length % interval === 0
+      const shouldGenerate =
+        messages.length > 0 && messages.length % interval === 0
 
       if (shouldGenerate) {
         generateSummary(selectedLevel)
       }
     }
-  }, [messages.length, config.trigger, config.interval, selectedLevel, generateSummary])
+  }, [
+    messages.length,
+    config.trigger,
+    config.interval,
+    selectedLevel,
+    generateSummary,
+  ])
 
   /**
    * Export summary
@@ -420,7 +443,9 @@ Generation Time: ${summary.generationTime}ms
                 </svg>
               </div>
               <div>
-                <CardTitle className="text-base">Conversation Summary</CardTitle>
+                <CardTitle className="text-base">
+                  Conversation Summary
+                </CardTitle>
                 <CardDescription className="text-xs">
                   {messages.length} messages • Generate AI-powered summaries
                 </CardDescription>
@@ -456,7 +481,11 @@ Generation Time: ${summary.generationTime}ms
                 <motion.div
                   className="mr-2 h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  transition={{
+                    duration: durations.slower,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
                 />
                 Generating...
               </>
@@ -485,7 +514,7 @@ Generation Time: ${summary.generationTime}ms
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: durations.moderate }}
           >
             <Card className="shadow-md">
               <CardHeader>
@@ -494,10 +523,14 @@ Generation Time: ${summary.generationTime}ms
                     <div className="flex items-center gap-2">
                       <Badge variant="default">{currentSummary.level}</Badge>
                       <Badge variant="outline">
-                        {new Date(currentSummary.timestamp).toLocaleTimeString()}
+                        {new Date(
+                          currentSummary.timestamp
+                        ).toLocaleTimeString()}
                       </Badge>
                       {currentSummary.generationTime && (
-                        <Badge variant="secondary">{currentSummary.generationTime}ms</Badge>
+                        <Badge variant="secondary">
+                          {currentSummary.generationTime}ms
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -532,45 +565,52 @@ Generation Time: ${summary.generationTime}ms
                 </div>
 
                 {/* Key Topics */}
-                {currentSummary.keyTopics && currentSummary.keyTopics.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold mb-2 text-foreground">Key Topics</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {currentSummary.keyTopics.map((topic, i) => (
-                        <Badge key={i} variant="secondary">
-                          {topic}
-                        </Badge>
-                      ))}
+                {currentSummary.keyTopics &&
+                  currentSummary.keyTopics.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2 text-foreground">
+                        Key Topics
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {currentSummary.keyTopics.map((topic, i) => (
+                          <Badge key={i} variant="secondary">
+                            {topic}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Action Items */}
-                {currentSummary.actionItems && currentSummary.actionItems.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold mb-2 text-foreground">Action Items</h4>
-                    <ul className="space-y-1 text-sm text-muted-foreground">
-                      {currentSummary.actionItems.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <span className="text-primary">•</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {currentSummary.actionItems &&
+                  currentSummary.actionItems.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2 text-foreground">
+                        Action Items
+                      </h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground">
+                        {currentSummary.actionItems.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="text-primary">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                 {/* Code Snippets */}
-                {currentSummary.codeSnippets && currentSummary.codeSnippets.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold mb-2 text-foreground">
-                      Code Snippets ({currentSummary.codeSnippets.length})
-                    </h4>
-                    <div className="text-xs text-muted-foreground">
-                      View code examples in the conversation above
+                {currentSummary.codeSnippets &&
+                  currentSummary.codeSnippets.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2 text-foreground">
+                        Code Snippets ({currentSummary.codeSnippets.length})
+                      </h4>
+                      <div className="text-xs text-muted-foreground">
+                        View code examples in the conversation above
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Message range */}
                 <div className="text-xs text-muted-foreground border-t pt-3">

@@ -4,11 +4,9 @@
  * Structured logging utility with log levels, namespaces, and request tracking.
  * Supports both pretty-printed and JSON output formats.
  *
- * @module @clarity-chat/utils/logger
  *
  * @example
  * ```ts
- * import { getLogger, LogLevel } from '@clarity-chat/utils/logger'
  *
  * const logger = getLogger('my-module')
  * logger.info('Starting process')
@@ -279,6 +277,11 @@ export function getLogger(
 
 // Create default logger instance
 const defaultLogger = getLogger('app')
+
+/**
+ * Default logger instance - convenience export for simple usage
+ */
+export const logger = defaultLogger
 
 /**
  * Log an info message using the default logger

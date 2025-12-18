@@ -93,7 +93,7 @@ describe('useErrorHandler', () => {
   })
 
   it('should handle showToast option', () => {
-    const consoleInfoSpy = vi.spyOn(console, 'info')
+    const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
     const { result } = renderHook(() =>
       useErrorHandler({
         logErrors: true,
@@ -106,7 +106,8 @@ describe('useErrorHandler', () => {
     })
 
     // In current implementation, it logs that toast would be shown
-    expect(consoleInfoSpy).toHaveBeenCalled()
+    expect(consoleLogSpy).toHaveBeenCalled()
+    consoleLogSpy.mockRestore()
   })
 
   it('should handle different error types', () => {

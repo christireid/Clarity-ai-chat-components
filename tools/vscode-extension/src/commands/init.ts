@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Initialize Project Command
  */
@@ -19,9 +16,17 @@ export async function initProjectCommand() {
   const provider = await vscode.window.showQuickPick(
     [
       { label: 'OpenAI', description: 'GPT-4, GPT-3.5 Turbo', value: 'openai' },
-      { label: 'Anthropic', description: 'Claude 3 Opus, Sonnet, Haiku', value: 'anthropic' },
+      {
+        label: 'Anthropic',
+        description: 'Claude 3 Opus, Sonnet, Haiku',
+        value: 'anthropic',
+      },
       { label: 'Google AI', description: 'Gemini Pro', value: 'google' },
-      { label: 'All Providers', description: 'Include all AI providers', value: 'all' }
+      {
+        label: 'All Providers',
+        description: 'Include all AI providers',
+        value: 'all',
+      },
     ],
     { placeHolder: 'Select AI provider(s) to use' }
   )
@@ -31,10 +36,26 @@ export async function initProjectCommand() {
   // Select framework
   const framework = await vscode.window.showQuickPick(
     [
-      { label: 'Next.js', description: 'React framework with API routes', value: 'nextjs' },
-      { label: 'Express', description: 'Node.js web framework', value: 'express' },
-      { label: 'Hono', description: 'Lightweight web framework', value: 'hono' },
-      { label: 'Standalone', description: 'No framework, just the SDK', value: 'standalone' }
+      {
+        label: 'Next.js',
+        description: 'React framework with API routes',
+        value: 'nextjs',
+      },
+      {
+        label: 'Express',
+        description: 'Node.js web framework',
+        value: 'express',
+      },
+      {
+        label: 'Hono',
+        description: 'Lightweight web framework',
+        value: 'hono',
+      },
+      {
+        label: 'Standalone',
+        description: 'No framework, just the SDK',
+        value: 'standalone',
+      },
     ],
     { placeHolder: 'Select framework' }
   )
@@ -42,50 +63,59 @@ export async function initProjectCommand() {
   if (!framework) return
 
   // Show progress
-  await vscode.window.withProgress({
-    location: vscode.ProgressLocation.Notification,
-    title: 'Initializing Clarity Chat project...',
-    cancellable: false
-  }, async (progress) => {
-    progress.report({ increment: 0, message: 'Creating files...' })
+  await vscode.window.withProgress(
+    {
+      location: vscode.ProgressLocation.Notification,
+      title: 'Initializing Clarity Chat project...',
+      cancellable: false,
+    },
+    async (progress) => {
+      progress.report({ increment: 0, message: 'Creating files...' })
 
-    // Create .env.local template
-    const envContent = generateEnvTemplate(provider.value)
-    await createFile('.env.local', envContent)
+      // Create .env.local template
+      const envContent = generateEnvTemplate(provider.value)
+      await createFile('.env.local', envContent)
 
-    progress.report({ increment: 33, message: 'Installing dependencies...' })
+      progress.report({ increment: 33, message: 'Installing dependencies...' })
 
-    // Create package.json snippet or show installation instructions
-    const installInstructions = generateInstallInstructions(provider.value, framework.value)
-    
-    progress.report({ increment: 66, message: 'Creating example code...' })
+      // Create package.json snippet or show installation instructions
+      const installInstructions = generateInstallInstructions(
+        provider.value,
+        framework.value
+      )
 
-    // Create example file
-    const exampleCode = generateExampleCode(provider.value, framework.value)
-    const fileName = framework.value === 'nextjs' ? 'app/api/chat/route.ts' : 'src/index.ts'
-    await createFile(fileName, exampleCode)
+      progress.report({ increment: 66, message: 'Creating example code...' })
 
-    progress.report({ increment: 100, message: 'Done!' })
+      // Create example file
+      const exampleCode = generateExampleCode(provider.value, framework.value)
+      const fileName =
+        framework.value === 'nextjs' ? 'app/api/chat/route.ts' : 'src/index.ts'
+      await createFile(fileName, exampleCode)
 
-    vscode.window.showInformationMessage(
-      'Clarity Chat project initialized!',
-      'View Files',
-      'Install Dependencies'
-    ).then(selection => {
-      if (selection === 'View Files') {
-        vscode.commands.executeCommand('workbench.view.explorer')
-      } else if (selection === 'Install Dependencies') {
-        vscode.window.showInformationMessage(installInstructions)
-      }
-    })
-  })
+      progress.report({ increment: 100, message: 'Done!' })
+
+      vscode.window
+        .showInformationMessage(
+          'Clarity Chat project initialized!',
+          'View Files',
+          'Install Dependencies'
+        )
+        .then((selection) => {
+          if (selection === 'View Files') {
+            vscode.commands.executeCommand('workbench.view.explorer')
+          } else if (selection === 'Install Dependencies') {
+            vscode.window.showInformationMessage(installInstructions)
+          }
+        })
+    }
+  )
 }
 
 function generateEnvTemplate(provider: string): string {
   const lines: string[] = [
     '# Clarity Chat Environment Variables',
     '# Add your API keys below',
-    ''
+    '',
   ]
 
   if (provider === 'openai' || provider === 'all') {
@@ -118,7 +148,10 @@ function generateEnvTemplate(provider: string): string {
   return lines.join('\n')
 }
 
-function generateInstallInstructions(provider: string, framework: string): string {
+function generateInstallInstructions(
+  provider: string,
+  framework: string
+): string {
   const packages: string[] = []
 
   if (provider === 'openai' || provider === 'all') {
@@ -143,7 +176,7 @@ function generateInstallInstructions(provider: string, framework: string): strin
 function generateExampleCode(provider: string, framework: string): string {
   // Generate different example based on provider and framework
   // This is a simplified version - full implementation would have more variations
-  
+
   if (framework === 'nextjs') {
     return `import { NextRequest, NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
@@ -188,7 +221,7 @@ async function main() {
     ]
   })
 
-  SecureLogger.debug(response.choices[0].message.content)
+  console.log(response.choices[0].message.content)
 }
 
 main()
@@ -200,10 +233,10 @@ async function createFile(relativePath: string, content: string) {
   if (!workspaceFolders) return
 
   const uri = vscode.Uri.joinPath(workspaceFolders[0].uri, relativePath)
-  
+
   try {
     await vscode.workspace.fs.writeFile(uri, Buffer.from(content, 'utf8'))
   } catch (error) {
-    SecureLogger.error(`Failed to create file ${relativePath}:`, error)
+    console.error(`Failed to create file ${relativePath}:`, error)
   }
 }

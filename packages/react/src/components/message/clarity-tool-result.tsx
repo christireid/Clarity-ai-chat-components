@@ -21,13 +21,13 @@
  */
 
 import * as React from 'react'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type {
   ToolComponentRegistry,
   ToolComponentProps,
 } from '../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader } from '@clarity-chat/primitives'
-import { ErrorBoundary } from './error-boundary'
+import { ErrorBoundary } from '../feedback/error-boundary'
 
 /**
  * Tool call interface for ClarityToolResult

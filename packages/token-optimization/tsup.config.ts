@@ -12,15 +12,16 @@ export default defineConfig({
   external: [
     '@dqbd/tiktoken',
     'crypto-js',
-    '@tensorflow/tfjs'
+    '@tensorflow/tfjs',
+    'events'  // Node.js built-in - consumers should polyfill for browser
   ],
   noExternal: [
     '@clarity-chat/types'
   ],
   target: 'es2020',
   platform: 'neutral',
-  esbuildOptions: (options) => {
-    // options.drop = ['console', 'debugger']
+  esbuildOptions: (_options) => {
+    // _options.drop = ['console', 'debugger']
   },
   banner: {
     js: `/**

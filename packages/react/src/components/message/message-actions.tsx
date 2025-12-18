@@ -3,14 +3,14 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, cn, Tooltip } from '@clarity-chat/primitives'
-import { CopyButton } from '../copy-button'
+import { CopyButton } from './copy-button'
 import {
   ThumbsUpIcon,
   ThumbsDownIcon,
   RefreshIcon,
   EditIcon,
   StopIcon,
-} from '../icons'
+} from '../ui/icons'
 import {
   ANIMATION_DURATION,
   DURATION_SECONDS as durations,

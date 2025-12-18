@@ -1,10 +1,12 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import * as fs from 'fs'
 import * as path from 'path'
-import { CHECKS, checkFile, parseSuppressions, isSuppressed } from '../review-checks'
+import {
+  CHECKS,
+  checkFile,
+  parseSuppressions,
+  isSuppressed,
+} from '../review-checks'
 import type { Options } from '../review-checks'
 
 const fixturesDir = path.join(__dirname, 'fixtures')
@@ -57,7 +59,7 @@ describe('review-checks', () => {
       const content = `
 const x = 1
 // review-ignore: consoleLog
-SecureLogger.debug('test')
+console.log('test')
 `
       const result = parseSuppressions(content)
 
@@ -105,7 +107,7 @@ const x = 1
     it('should return true for suppressed rules', () => {
       const suppressions = parseSuppressions(`
 // review-ignore: consoleLog
-SecureLogger.debug('test')
+console.log('test')
 `)
 
       expect(isSuppressed(suppressions, 'consoleLog', 2)).toBe(true)
@@ -116,7 +118,7 @@ SecureLogger.debug('test')
       const suppressions = parseSuppressions(`
 // review-ignore: all
 const data: any = {}
-SecureLogger.debug('test')
+console.log('test')
 `)
 
       expect(isSuppressed(suppressions, 'consoleLog', 2)).toBe(true)
@@ -139,7 +141,9 @@ const data: any = {}
       const filePath = path.join(fixturesDir, 'bad-tailwind.tsx')
       const result = await checkFile(filePath, defaultOptions)
 
-      const tailwindIssues = result.issues.filter((i) => i.rule === 'arbitraryTailwind')
+      const tailwindIssues = result.issues.filter(
+        (i) => i.rule === 'arbitraryTailwind'
+      )
       expect(tailwindIssues.length).toBeGreaterThan(0)
     })
 
@@ -147,7 +151,9 @@ const data: any = {}
       const filePath = path.join(fixturesDir, 'bad-tailwind.tsx')
       const result = await checkFile(filePath, defaultOptions)
 
-      const colorIssues = result.issues.filter((i) => i.rule === 'hardcodedColors')
+      const colorIssues = result.issues.filter(
+        (i) => i.rule === 'hardcodedColors'
+      )
       expect(colorIssues.length).toBeGreaterThan(0)
     })
 
@@ -218,9 +224,9 @@ const data: any = {}
         tempFile,
         `
 // Test file for auto-fix
-SecureLogger.debug('should be removed')
+console.log('should be removed')
 const x = 1
-SecureLogger.debug('also removed')
+console.log('also removed')
 `
       )
     })

@@ -1,11 +1,11 @@
 /**
  * Tool Result Helper Utilities
- * 
+ *
  * Utility functions for processing and working with tool results.
  */
 
-import type { ExtractedToolResult } from '../hooks/use-clarity-chat-with-tools'
-import type { ToolCall } from '../adapters/types'
+import type { ExtractedToolResult } from '../../hooks/chat/use-clarity-chat-with-tools'
+import type { ToolCall } from '../../adapters/types'
 
 /**
  * Group tool results by tool name
@@ -14,13 +14,13 @@ export function groupToolResultsByToolName(
   toolResults: ExtractedToolResult[]
 ): Map<string, ExtractedToolResult[]> {
   const grouped = new Map<string, ExtractedToolResult[]>()
-  
+
   toolResults.forEach((result) => {
     const toolName = result.toolCall.function.name
     const existing = grouped.get(toolName) || []
     grouped.set(toolName, [...existing, result])
   })
-  
+
   return grouped
 }
 
@@ -31,12 +31,12 @@ export function groupToolResultsByMessage(
   toolResults: ExtractedToolResult[]
 ): Map<string, ExtractedToolResult[]> {
   const grouped = new Map<string, ExtractedToolResult[]>()
-  
+
   toolResults.forEach((result) => {
     const existing = grouped.get(result.messageId) || []
     grouped.set(result.messageId, [...existing, result])
   })
-  
+
   return grouped
 }
 
@@ -50,7 +50,7 @@ export function getLatestToolResult(
   const toolResultsForTool = toolResults
     .filter((tr) => tr.toolCall.function.name === toolName)
     .sort((a, b) => b.index - a.index)
-  
+
   return toolResultsForTool[0]
 }
 
@@ -77,7 +77,9 @@ export function hasToolBeenCalled(
 /**
  * Get unique tool names from results
  */
-export function getUniqueToolNames(toolResults: ExtractedToolResult[]): string[] {
+export function getUniqueToolNames(
+  toolResults: ExtractedToolResult[]
+): string[] {
   const toolNames = new Set<string>()
   toolResults.forEach((tr) => {
     toolNames.add(tr.toolCall.function.name)
@@ -92,12 +94,12 @@ export function countToolCallsByTool(
   toolResults: ExtractedToolResult[]
 ): Map<string, number> {
   const counts = new Map<string, number>()
-  
+
   toolResults.forEach((result) => {
     const toolName = result.toolCall.function.name
     counts.set(toolName, (counts.get(toolName) || 0) + 1)
   })
-  
+
   return counts
 }
 
@@ -131,7 +133,7 @@ export function getToolError(result: ExtractedToolResult): string | null {
   if (!hasToolError(result)) {
     return null
   }
-  
+
   const error = result.result.error
   return typeof error === 'string' ? error : String(error)
 }
@@ -155,7 +157,7 @@ export function formatToolCall(toolCall: ToolCall): string {
   const argsStr = Object.entries(args)
     .map(([key, value]) => `${key}=${JSON.stringify(value)}`)
     .join(', ')
-  
+
   return `${toolCall.function.name}(${argsStr})`
 }
 
@@ -165,12 +167,12 @@ export function formatToolCall(toolCall: ToolCall): string {
 export function getToolResultSummary(result: ExtractedToolResult): string {
   const toolName = result.toolCall.function.name
   const hasError = hasToolError(result)
-  
+
   if (hasError) {
     const error = getToolError(result)
     return `${toolName} failed: ${error}`
   }
-  
+
   if (result.result && typeof result.result === 'object') {
     // Try to extract a summary from common fields
     if ('summary' in result.result) {
@@ -183,6 +185,6 @@ export function getToolResultSummary(result: ExtractedToolResult): string {
       return String(result.result.output)
     }
   }
-  
+
   return `${toolName} completed successfully`
 }

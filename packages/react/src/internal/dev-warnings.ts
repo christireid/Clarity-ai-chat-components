@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Development Warnings Utility
  *
@@ -115,7 +114,7 @@ export function warn(options: WarningOptions): void {
     fullMessage += `\n\nDocs: ${DOCS_BASE}${docsPath}`
   }
 
-  logger.warn(fullMessage)
+  console.warn(fullMessage)
 }
 
 /**
@@ -146,7 +145,7 @@ export function devWarning(
   if (shownWarnings.has(warningKey)) return
   markWarningShown(warningKey)
 
-  logger.warn(`[Clarity Chat] ${component}: ${message}`)
+  console.warn(`[Clarity Chat] ${component}: ${message}`)
 }
 
 /**

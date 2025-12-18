@@ -11,26 +11,17 @@ import type {
   MemoryStats,
   MemoryType,
   MemoryScope,
-  MemoryPriority,
   MemoryEvent,
   MemoryEventListener,
   MemoryBuffer,
-  MemoryContext,
   VectorStore,
   VectorStoreMatch,
-  VectorStoreVector,
-  VectorStoreQuery,
   EmbeddingProvider,
   AddOptions,
-  ContextOptions,
-  ContextBundle,
-  TokenBreakdown,
 } from './types'
 import { TokenCounter, ContextOptimizer } from './token-optimizer'
 import {
   DecayManager,
-  type DecayManagerConfig,
-  type DecayResult,
 } from './utils/decay-manager'
 
 /**
@@ -170,7 +161,7 @@ export class TypedMemoryService<TMetadata = Record<string, any>> {
   /**
    * Type-safe memory retrieval with optional default value
    */
-  async getMemory<TContent extends string>(
+  async getMemory<_TContent extends string>(
     id: string,
     defaultValue?: TypedMemoryItem<TMetadata>
   ): Promise<TypedMemoryItem<TMetadata> | null> {
@@ -352,7 +343,7 @@ export class TypedMemoryService<TMetadata = Record<string, any>> {
     }
   }
 
-  private query(query: MemoryQuery): MemorySearchResult[] {
+  private query(_query: MemoryQuery): MemorySearchResult[] {
     // Implementation from MemoryServiceFixed
     return []
   }

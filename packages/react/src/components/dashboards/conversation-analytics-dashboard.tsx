@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -580,7 +581,7 @@ export function ConversationAnalyticsDashboard({
       setAnalytics(result)
       onAnalyticsGenerated?.(result)
     } catch (err) {
-      logger.logger.error('Analytics generation error:', err)
+      logger.error('Analytics generation error:', err)
       setError(
         err instanceof Error ? err.message : 'Failed to generate analytics'
       )
@@ -676,7 +677,11 @@ export function ConversationAnalyticsDashboard({
             <motion.div
               className="inline-block h-8 w-8 rounded-full border-2 border-primary border-t-transparent"
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              transition={{
+                duration: durations.slower,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
             />
             <div className="mt-3 text-sm text-muted-foreground">
               Analyzing conversation...
@@ -715,7 +720,10 @@ export function ConversationAnalyticsDashboard({
                         className="h-full bg-primary"
                         initial={{ width: 0 }}
                         animate={{ width: `${analytics.quality.score}%` }}
-                        transition={{ duration: 1, ease: 'easeOut' }}
+                        transition={{
+                          duration: durations.slower,
+                          ease: 'easeOut',
+                        }}
                       />
                     </div>
                     <div className="grid grid-cols-4 gap-2 mt-3 text-xs">

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Authentication Provider Extensions
  *
@@ -156,7 +155,7 @@ export function createAuth0Extension(
     } as Auth0Config,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Auth0 extension initialized')
+      ctx.console.info('Auth0 extension initialized')
 
       const adapter: AuthAdapter = {
         async getUser() {
@@ -167,10 +166,10 @@ export function createAuth0Extension(
           return null
         },
         async signIn() {
-          ctx.logger.info('Auth0 sign in initiated')
+          ctx.console.info('Auth0 sign in initiated')
         },
         async signOut() {
-          ctx.logger.info('Auth0 sign out initiated')
+          ctx.console.info('Auth0 sign out initiated')
         },
         onAuthStateChange(callback) {
           return () => {}
@@ -244,7 +243,7 @@ export function createClerkExtension(
     } as ClerkConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Clerk extension initialized')
+      ctx.console.info('Clerk extension initialized')
 
       const adapter: AuthAdapter = {
         async getUser() {
@@ -255,10 +254,10 @@ export function createClerkExtension(
           return null
         },
         async signIn() {
-          ctx.logger.info('Clerk sign in initiated')
+          ctx.console.info('Clerk sign in initiated')
         },
         async signOut() {
-          ctx.logger.info('Clerk sign out initiated')
+          ctx.console.info('Clerk sign out initiated')
         },
         onAuthStateChange(callback) {
           return () => {}
@@ -305,7 +304,7 @@ export function createNextAuthExtension(
     } as NextAuthConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('NextAuth extension initialized')
+      ctx.console.info('NextAuth extension initialized')
 
       const adapter: AuthAdapter = {
         async getUser() {
@@ -316,10 +315,10 @@ export function createNextAuthExtension(
           return null
         },
         async signIn() {
-          ctx.logger.info('NextAuth sign in initiated')
+          ctx.console.info('NextAuth sign in initiated')
         },
         async signOut() {
-          ctx.logger.info('NextAuth sign out initiated')
+          ctx.console.info('NextAuth sign out initiated')
         },
         onAuthStateChange(callback) {
           return () => {}
@@ -380,7 +379,7 @@ export function createSupabaseAuthExtension(
     } as SupabaseAuthConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Supabase Auth extension initialized')
+      ctx.console.info('Supabase Auth extension initialized')
 
       const adapter: AuthAdapter = {
         async getUser() {
@@ -391,10 +390,10 @@ export function createSupabaseAuthExtension(
           return null
         },
         async signIn() {
-          ctx.logger.info('Supabase sign in initiated')
+          ctx.console.info('Supabase sign in initiated')
         },
         async signOut() {
-          ctx.logger.info('Supabase sign out initiated')
+          ctx.console.info('Supabase sign out initiated')
         },
         onAuthStateChange(callback) {
           return () => {}
@@ -441,7 +440,7 @@ export function createFirebaseAuthExtension(
     defaultConfig: config as FirebaseAuthConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Firebase Auth extension initialized')
+      ctx.console.info('Firebase Auth extension initialized')
 
       const adapter: AuthAdapter = {
         async getUser() {
@@ -451,10 +450,10 @@ export function createFirebaseAuthExtension(
           return null
         },
         async signIn() {
-          ctx.logger.info('Firebase sign in initiated')
+          ctx.console.info('Firebase sign in initiated')
         },
         async signOut() {
-          ctx.logger.info('Firebase sign out initiated')
+          ctx.console.info('Firebase sign out initiated')
         },
         onAuthStateChange(callback) {
           return () => {}
@@ -495,7 +494,7 @@ export function createKeycloakExtension(
     defaultConfig: config as KeycloakConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Keycloak extension initialized')
+      ctx.console.info('Keycloak extension initialized')
 
       const adapter: AuthAdapter = {
         async getUser() {
@@ -505,10 +504,10 @@ export function createKeycloakExtension(
           return null
         },
         async signIn() {
-          ctx.logger.info('Keycloak sign in initiated')
+          ctx.console.info('Keycloak sign in initiated')
         },
         async signOut() {
-          ctx.logger.info('Keycloak sign out initiated')
+          ctx.console.info('Keycloak sign out initiated')
         },
         onAuthStateChange(callback) {
           return () => {}
@@ -557,7 +556,7 @@ export function createOktaExtension(
     defaultConfig: config as OktaConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Okta extension initialized')
+      ctx.console.info('Okta extension initialized')
 
       const adapter: AuthAdapter = {
         async getUser() {
@@ -567,10 +566,10 @@ export function createOktaExtension(
           return null
         },
         async signIn() {
-          ctx.logger.info('Okta sign in initiated')
+          ctx.console.info('Okta sign in initiated')
         },
         async signOut() {
-          ctx.logger.info('Okta sign out initiated')
+          ctx.console.info('Okta sign out initiated')
         },
         onAuthStateChange(callback) {
           return () => {}
@@ -622,7 +621,7 @@ export function createCognitoExtension(
     } as CognitoConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('AWS Cognito extension initialized')
+      ctx.console.info('AWS Cognito extension initialized')
 
       const adapter: AuthAdapter = {
         async getUser() {
@@ -632,10 +631,10 @@ export function createCognitoExtension(
           return null
         },
         async signIn() {
-          ctx.logger.info('Cognito sign in initiated')
+          ctx.console.info('Cognito sign in initiated')
         },
         async signOut() {
-          ctx.logger.info('Cognito sign out initiated')
+          ctx.console.info('Cognito sign out initiated')
         },
         onAuthStateChange(callback) {
           return () => {}

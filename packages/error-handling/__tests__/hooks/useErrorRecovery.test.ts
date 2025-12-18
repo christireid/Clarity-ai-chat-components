@@ -84,7 +84,9 @@ describe('useErrorRecovery', () => {
 
   it('should handle recovery strategy failure', async () => {
     const { result } = renderHook(() => useErrorRecovery())
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
     const strategy = vi.fn().mockRejectedValue(new Error('Recovery failed'))
 
     await act(async () => {
@@ -107,7 +109,9 @@ describe('useErrorRecovery', () => {
 
   it('should handle non-Error rejection in recovery strategy', async () => {
     const { result } = renderHook(() => useErrorRecovery())
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
     const strategy = vi.fn().mockRejectedValue('String error')
 
     await act(async () => {
@@ -128,7 +132,9 @@ describe('useErrorRecovery', () => {
 
   it('should return false for unregistered strategy', async () => {
     const { result } = renderHook(() => useErrorRecovery())
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const consoleWarnSpy = vi
+      .spyOn(console, 'warn')
+      .mockImplementation(() => {})
 
     let recoveryResult: boolean | undefined
     await act(async () => {
@@ -137,6 +143,7 @@ describe('useErrorRecovery', () => {
 
     expect(recoveryResult).toBe(false)
     expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.any(String),
       expect.stringContaining('No recovery strategy found')
     )
 
@@ -145,7 +152,9 @@ describe('useErrorRecovery', () => {
 
   it('should reset recovery state', async () => {
     const { result } = renderHook(() => useErrorRecovery())
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
     const strategy = vi.fn().mockRejectedValue(new Error('Test error'))
 
     // Set some state by triggering a recovery failure

@@ -34,7 +34,7 @@ export const ConfettiAnimation = React.memo<ConfettiAnimationProps>(
                   y: Math.sin((i * Math.PI * 2) / particleCount) * 30,
                 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
+                transition={{ duration: durations.slower, ease: 'easeOut' }}
                 className="absolute top-1/2 left-1/2 w-2 h-2 rounded-full pointer-events-none"
                 style={{
                   backgroundColor: CONFETTI_COLORS[i % CONFETTI_COLORS.length],

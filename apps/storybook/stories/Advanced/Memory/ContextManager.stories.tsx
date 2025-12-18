@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ContextManager } from '@clarity-chat/react'
 
@@ -18,5 +17,5 @@ const mockContexts = [
 ]
 
 export const Default: Story = {
-  args: { contexts: mockContexts, onRemove: (id) => SecureLogger.debug('Remove:', id) },
+  args: { contexts: mockContexts, onRemove: (id) => console.log('Remove:', id) },
 }

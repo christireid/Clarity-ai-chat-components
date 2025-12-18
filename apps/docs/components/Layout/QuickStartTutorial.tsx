@@ -31,7 +31,7 @@ const steps: Step[] = [
     description:
       'Add Clarity Chat to your React project with a single command.',
     icon: <Package className="w-5 h-5" />,
-    code: 'npm install @clarity-ai/chat-components',
+    code: 'npm install @clarity-chat/react',
     language: 'bash',
   },
   {
@@ -39,7 +39,8 @@ const steps: Step[] = [
     title: 'Import & Use',
     description: 'Import components and build your chat UI in minutes.',
     icon: <Code className="w-5 h-5" />,
-    code: `import { ChatWindow, useChat } from '@clarity-ai/chat-components'
+    code: `import { ChatWindow, useChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
 function App() {
   const chat = useChat({
@@ -270,7 +271,7 @@ export function QuickStartTutorial() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: durations.normal }}
                     >
                       <CodeBlock code={step.code} language={step.language} />
                     </motion.div>

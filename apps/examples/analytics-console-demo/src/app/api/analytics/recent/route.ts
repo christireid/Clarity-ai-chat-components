@@ -1,6 +1,5 @@
 /**
  * Recent Analytics API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * GET: Get recent entries
  */
 
@@ -11,16 +10,15 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const limit = Number(searchParams.get('limit')) || 50
-    
+
     const entries = getEntries(limit)
-    
+
     return NextResponse.json({
       entries,
-      count: entries.length
+      count: entries.length,
     })
-    
   } catch (error) {
-    SecureLogger.error('Recent analytics error:', error)
+    console.error('Recent analytics error:', error)
     return NextResponse.json(
       { error: 'Failed to get recent entries' },
       { status: 500 }

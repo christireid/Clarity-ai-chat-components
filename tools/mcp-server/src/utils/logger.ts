@@ -1,9 +1,6 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Structured logging utility for MCP server
- * 
+ *
  * Uses console.error for stdio transport compatibility
  */
 
@@ -11,7 +8,7 @@ export enum LogLevel {
   DEBUG = 'debug',
   INFO = 'info',
   WARN = 'warn',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 interface LogEntry {
@@ -35,18 +32,26 @@ class Logger {
     this.requestId = undefined
   }
 
-  private log(level: LogLevel, message: string, error?: Error, metadata?: Record<string, unknown>) {
+  private log(
+    level: LogLevel,
+    message: string,
+    error?: Error,
+    metadata?: Record<string, unknown>
+  ) {
     const entry: LogEntry = {
       level,
       message,
       timestamp: new Date().toISOString(),
       ...(this.requestId && { requestId: this.requestId }),
-      ...(error && { error: error.message, ...(error.stack && { stack: error.stack }) }),
-      ...(metadata && { metadata })
+      ...(error && {
+        error: error.message,
+        ...(error.stack && { stack: error.stack }),
+      }),
+      ...(metadata && { metadata }),
     }
 
     // Use console.error for stdio transport (stderr)
-    SecureLogger.error(JSON.stringify(entry))
+    console.error(JSON.stringify(entry))
   }
 
   debug(message: string, metadata?: Record<string, unknown>) {

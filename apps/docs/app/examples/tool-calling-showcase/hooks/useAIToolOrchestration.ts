@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -84,7 +83,7 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
       }
     },
     onError: (err) => {
-      logger.logger.error('AI Chat error:', err)
+      console.error('AI Chat error:', err)
       const errorObj = err instanceof Error ? err : new Error(String(err))
       setError(errorObj)
       debugEvents.addEvent('TOOL_ERROR', { error: errorObj.message })

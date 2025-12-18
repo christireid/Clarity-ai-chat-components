@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FollowUpSuggestions } from '@clarity-chat/react'
 import type { FollowUpSuggestion } from '@clarity-chat/react'
@@ -6,10 +5,10 @@ import { expect, within } from 'storybook/test'
 
 /**
  * **FollowUpSuggestions Component**
- * 
+ *
  * Display contextual follow-up suggestions to keep conversations flowing.
  * Supports grid and list layouts with loading states.
- * 
+ *
  * **Key Features:**
  * - Contextual suggestions based on conversation
  * - Grid and list layouts
@@ -17,7 +16,7 @@ import { expect, within } from 'storybook/test'
  * - Confidence scores
  * - Keyword matching
  * - Accessible with keyboard navigation
- * 
+ *
  * **Use Cases:**
  * - Chat interfaces
  * - AI assistants
@@ -51,7 +50,7 @@ Supports grid and list layouts with loading states.
 <FollowUpSuggestions
   suggestions={suggestions}
   onSelect={(suggestion) => {
-    SecureLogger.debug('Selected:', suggestion)
+    console.log('Selected:', suggestion)
   }}
   layout="grid"
 />
@@ -128,7 +127,7 @@ export const Default: Story = {
   args: {
     suggestions: mockSuggestions,
     onSelect: (suggestion) => {
-      SecureLogger.debug('Selected:', suggestion.title)
+      console.log('Selected:', suggestion.title)
       alert(`Selected: ${suggestion.title}`)
     },
   },
@@ -136,9 +135,13 @@ export const Default: Story = {
     const canvas = within(canvasElement)
 
     // Test suggestions render
-    await expect(canvas.getByText('How do I use React hooks?')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('How do I use React hooks?')
+    ).toBeInTheDocument()
     await expect(canvas.getByText('Show me code examples')).toBeInTheDocument()
-    await expect(canvas.getByText('Explain TypeScript types')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('Explain TypeScript types')
+    ).toBeInTheDocument()
 
     // Test descriptions render
     await expect(canvas.getByText(/Learn about useState/)).toBeInTheDocument()
@@ -149,13 +152,15 @@ export const GridLayout: Story = {
   args: {
     suggestions: mockSuggestions,
     layout: 'grid',
-    onSelect: (suggestion) => SecureLogger.debug('Selected:', suggestion),
+    onSelect: (suggestion) => console.log('Selected:', suggestion),
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
     // Test suggestions render in grid layout
-    await expect(canvas.getByText('How do I use React hooks?')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('How do I use React hooks?')
+    ).toBeInTheDocument()
     await expect(canvas.getByText('Best practices guide')).toBeInTheDocument()
 
     // Test all 4 suggestions are visible
@@ -168,7 +173,7 @@ export const ListLayout: Story = {
   args: {
     suggestions: mockSuggestions,
     layout: 'list',
-    onSelect: (suggestion) => SecureLogger.debug('Selected:', suggestion),
+    onSelect: (suggestion) => console.log('Selected:', suggestion),
   },
 }
 
@@ -186,7 +191,7 @@ export const CustomTitle: Story = {
     suggestions: mockSuggestions,
     title: 'Advanced/AI/FollowUpSuggestions',
     subtitle: 'Advanced/AI/FollowUpSuggestions',
-    onSelect: (suggestion) => SecureLogger.debug('Selected:', suggestion),
+    onSelect: (suggestion) => console.log('Selected:', suggestion),
   },
 }
 
@@ -212,6 +217,6 @@ export const ManySuggestions: Story = {
       confidence: 0.9 - i * 0.05,
     })),
     layout: 'grid',
-    onSelect: (suggestion) => SecureLogger.debug('Selected:', suggestion),
+    onSelect: (suggestion) => console.log('Selected:', suggestion),
   },
 }

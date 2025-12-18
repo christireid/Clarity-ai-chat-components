@@ -292,6 +292,7 @@ describe('logDetectionResult', () => {
     })
 
     expect(warnSpy).toHaveBeenCalledWith(
+      expect.any(String),
       expect.stringContaining('Low confidence detection'),
       expect.any(Object)
     )

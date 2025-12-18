@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Quick Start Example
  * The simplest possible usage of Clarity Memory
@@ -72,6 +71,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  logger.logger.error('❌ Error:', error)
+  logger.error('❌ Error:', error)
   process.exit(1)
 })

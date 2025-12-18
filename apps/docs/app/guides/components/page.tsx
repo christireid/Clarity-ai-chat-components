@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -26,7 +25,7 @@ export default async function ComponentsGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read components guide', error)
+    console.error('Failed to read components guide', error)
     content = '# Components\n\nContent not available.'
   }
 

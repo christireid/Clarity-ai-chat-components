@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -550,7 +549,7 @@ const { error } = useChat()
 // Clarity Chat (enhanced)
 const { error, retry, resetError } = useChat({
   onError: (error) => {
-    logger.logger.error('Chat error:', error)
+    console.error('Chat error:', error)
     // Custom error handling
   }
 })`}</code>

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -204,7 +203,7 @@ const result = await agent.run({
     fallbackStrategy: 'skip' // or 'retry', 'fail'
   },
   onError: (error, toolName, attempt) => {
-    logger.logger.error(\`Tool \${toolName} failed (attempt \${attempt}):\`, error)
+    console.error(\`Tool \${toolName} failed (attempt \${attempt}):\`, error)
   }
 })`}</code>
         </pre>

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   createErrorLogger,

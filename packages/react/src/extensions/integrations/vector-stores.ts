@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Vector Store Extensions
  *
@@ -139,19 +138,19 @@ export function createMilvusExtension(
     } as MilvusConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Milvus extension initialized')
+      ctx.console.info('Milvus extension initialized')
 
       const adapter: VectorStoreAdapter = {
         async upsert(vectors) {
           // Implementation would use @zilliz/milvus2-sdk-node
-          ctx.logger.debug(`Upserting ${vectors.length} vectors to Milvus`)
+          ctx.console.log(`Upserting ${vectors.length} vectors to Milvus`)
         },
         async query(vector, topK, filter) {
-          ctx.logger.debug(`Querying Milvus with top_k=${topK}`)
+          ctx.console.log(`Querying Milvus with top_k=${topK}`)
           return []
         },
         async delete(ids) {
-          ctx.logger.debug(`Deleting ${ids.length} vectors from Milvus`)
+          ctx.console.log(`Deleting ${ids.length} vectors from Milvus`)
         },
       }
 
@@ -206,19 +205,19 @@ export function createPgVectorExtension(
     } as PgVectorConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('pgvector extension initialized')
+      ctx.console.info('pgvector extension initialized')
 
       const adapter: VectorStoreAdapter = {
         async upsert(vectors) {
           // Implementation would use pg or postgres.js
-          ctx.logger.debug(`Upserting ${vectors.length} vectors to pgvector`)
+          ctx.console.log(`Upserting ${vectors.length} vectors to pgvector`)
         },
         async query(vector, topK, filter) {
-          ctx.logger.debug(`Querying pgvector with top_k=${topK}`)
+          ctx.console.log(`Querying pgvector with top_k=${topK}`)
           return []
         },
         async delete(ids) {
-          ctx.logger.debug(`Deleting ${ids.length} vectors from pgvector`)
+          ctx.console.log(`Deleting ${ids.length} vectors from pgvector`)
         },
       }
 
@@ -271,19 +270,19 @@ export function createSupabaseVectorExtension(
     } as SupabaseVectorConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Supabase Vector extension initialized')
+      ctx.console.info('Supabase Vector extension initialized')
 
       const adapter: VectorStoreAdapter = {
         async upsert(vectors) {
-          ctx.logger.debug(`Upserting ${vectors.length} vectors to Supabase`)
+          ctx.console.log(`Upserting ${vectors.length} vectors to Supabase`)
           // Use @supabase/supabase-js
         },
         async query(vector, topK) {
-          ctx.logger.debug(`Querying Supabase vectors`)
+          ctx.console.log(`Querying Supabase vectors`)
           return []
         },
         async delete(ids) {
-          ctx.logger.debug(`Deleting vectors from Supabase`)
+          ctx.console.log(`Deleting vectors from Supabase`)
         },
       }
 
@@ -329,20 +328,20 @@ export function createElasticsearchExtension(
     } as ElasticsearchConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Elasticsearch vector extension initialized')
+      ctx.console.info('Elasticsearch vector extension initialized')
 
       const adapter: VectorStoreAdapter = {
         async upsert(vectors) {
-          ctx.logger.debug(
+          ctx.console.log(
             `Upserting ${vectors.length} vectors to Elasticsearch`
           )
         },
         async query(vector, topK) {
-          ctx.logger.debug(`Querying Elasticsearch vectors`)
+          ctx.console.log(`Querying Elasticsearch vectors`)
           return []
         },
         async delete(ids) {
-          ctx.logger.debug(`Deleting vectors from Elasticsearch`)
+          ctx.console.log(`Deleting vectors from Elasticsearch`)
         },
       }
 
@@ -395,18 +394,18 @@ export function createRedisVectorExtension(
     } as RedisVectorConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Redis Vector extension initialized')
+      ctx.console.info('Redis Vector extension initialized')
 
       const adapter: VectorStoreAdapter = {
         async upsert(vectors) {
-          ctx.logger.debug(`Upserting ${vectors.length} vectors to Redis`)
+          ctx.console.log(`Upserting ${vectors.length} vectors to Redis`)
         },
         async query(vector, topK) {
-          ctx.logger.debug(`Querying Redis vectors`)
+          ctx.console.log(`Querying Redis vectors`)
           return []
         },
         async delete(ids) {
-          ctx.logger.debug(`Deleting vectors from Redis`)
+          ctx.console.log(`Deleting vectors from Redis`)
         },
       }
 
@@ -455,20 +454,20 @@ export function createMongoDBAtlasExtension(
     defaultConfig: config as MongoDBAtlasConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('MongoDB Atlas Vector extension initialized')
+      ctx.console.info('MongoDB Atlas Vector extension initialized')
 
       const adapter: VectorStoreAdapter = {
         async upsert(vectors) {
-          ctx.logger.debug(
+          ctx.console.log(
             `Upserting ${vectors.length} vectors to MongoDB Atlas`
           )
         },
         async query(vector, topK) {
-          ctx.logger.debug(`Querying MongoDB Atlas vectors`)
+          ctx.console.log(`Querying MongoDB Atlas vectors`)
           return []
         },
         async delete(ids) {
-          ctx.logger.debug(`Deleting vectors from MongoDB Atlas`)
+          ctx.console.log(`Deleting vectors from MongoDB Atlas`)
         },
       }
 
@@ -508,18 +507,18 @@ export function createLanceDBExtension(
     } as LanceDBConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('LanceDB extension initialized')
+      ctx.console.info('LanceDB extension initialized')
 
       const adapter: VectorStoreAdapter = {
         async upsert(vectors) {
-          ctx.logger.debug(`Upserting ${vectors.length} vectors to LanceDB`)
+          ctx.console.log(`Upserting ${vectors.length} vectors to LanceDB`)
         },
         async query(vector, topK) {
-          ctx.logger.debug(`Querying LanceDB vectors`)
+          ctx.console.log(`Querying LanceDB vectors`)
           return []
         },
         async delete(ids) {
-          ctx.logger.debug(`Deleting vectors from LanceDB`)
+          ctx.console.log(`Deleting vectors from LanceDB`)
         },
       }
 

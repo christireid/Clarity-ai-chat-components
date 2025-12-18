@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
@@ -75,7 +74,7 @@ export function useParticlesEngine() {
           setError(error)
         }
         if (process.env.NODE_ENV === 'development') {
-          logger.logger.error('[AnimatedBackground] Failed to initialize particles:', error)
+          console.error('[AnimatedBackground] Failed to initialize particles:', error)
         }
         throw error
       })

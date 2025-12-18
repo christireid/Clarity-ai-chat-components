@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Card, Badge, cn } from '@clarity-chat/primitives'
-import { duration } from '../animations/constants'
+import { duration } from '../../animations/constants'
 
 // ============================================================================
 // Types
@@ -1239,7 +1239,7 @@ export function useLinkPreview(
   const [metadata, setMetadata] = React.useState<LinkMetadata | null>(null)
   const [error, setError] = React.useState<string | null>(null)
 
-  const cacheRef = React.useRef<LRUCache<string, CacheEntry>>()
+  const cacheRef = React.useRef<LRUCache<string, CacheEntry> | null>(null)
   if (!cacheRef.current) {
     cacheRef.current = new LRUCache<string, CacheEntry>(maxCacheSize)
   }

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced TypeScript Strict Mode Utilities
  * 
@@ -28,8 +27,6 @@ import { logger } from '@clarity-chat/utils/logger';
  * const result = validateStrictUnion(value, [isString, isNumber]);
  * ```
  */
-
-import { error, debug } from './logger';
 
 // ============================================================================
 // Core Strict Types
@@ -296,7 +293,7 @@ export function strictAssertNever(
   message?: string
 ): never {
   const errorMessage = message ?? `Unexpected value: ${JSON.stringify(value)}`;
-  logger.error('Exhaustive check failed', { value, message: errorMessage });
+  console.error('Exhaustive check failed', { value, message: errorMessage });
   throw new TypeError(errorMessage);
 }
 
@@ -489,7 +486,7 @@ export function strictTypeOf<T>(
   if (!typeGuard(value)) {
     const typeName = typeGuard.name || 'unknown type';
     const errorMessage = message || `Expected ${typeName}, got ${typeof value}`;
-    logger.error('Strict type check failed', {
+    console.error('Strict type check failed', {
       expected: typeName,
       actual: typeof value,
       value,
@@ -719,7 +716,7 @@ export function parseStrictJson<T = unknown>(
     }
     return parsed as T;
   } catch (e) {
-    logger.error('JSON parsing failed', {
+    console.error('JSON parsing failed', {
       jsonString,
       error: e instanceof Error ? e.message : String(e)
     });
@@ -800,7 +797,7 @@ export function createStrictTypeGuard<T>(
   return (value: unknown): value is T => {
     const result = validator(value);
     if (!result) {
-      logger.error('Strict type guard failed', {
+      console.error('Strict type guard failed', {
         typeName,
         value,
         valueType: typeof value
@@ -897,7 +894,7 @@ export function strictMeasurePerformance<T>(
   const result = fn();
   const end = performance.now();
   
-  debug('Strict performance measurement', {
+  console.log('Strict performance measurement', {
     name,
     duration: end - start,
     functionName: fn.name || 'anonymous',

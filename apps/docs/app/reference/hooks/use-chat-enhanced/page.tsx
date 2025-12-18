@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -305,7 +304,7 @@ function Chat() {
   const { messages, append, error, isLoading } = useChatEnhanced({
     api: '/api/chat',
     onError: (error) => {
-      logger.logger.error('Chat error:', error)
+      console.error('Chat error:', error)
       // Send to error tracking service
     },
   })

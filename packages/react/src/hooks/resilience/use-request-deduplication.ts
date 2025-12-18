@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useRequestDeduplication - React Hook for Request Deduplication
  *
@@ -21,7 +20,7 @@ import { logger } from '@clarity-chat/utils/logger';
  *       // Request was debounced, ignore
  *       return
  *     }
- *     toast.logger.error('Failed to submit')
+ *     toast.error('Failed to submit')
  *   }
  * }
  * ```
@@ -37,7 +36,7 @@ import {
   createMessageKey,
   type DeduplicationOptions,
   type DeduplicationStats,
-} from '../utils/request-deduplication'
+} from '../../utils/api/request-deduplication'
 
 export interface UseRequestDeduplicationOptions extends DeduplicationOptions {}
 

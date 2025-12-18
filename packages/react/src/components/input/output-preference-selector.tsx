@@ -1,14 +1,13 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { cn } from '../utils/cn'
+import { cn } from '../../utils/cn'
 import {
   type OutputPreference,
   type TaskType,
   getPreferenceConfig,
   calculateDynamicOutputLimit,
-} from '../utils/dynamic-output-limit'
+} from '../../utils/optimization/dynamic-output-limit'
 
 /**
  * Full output preference with calculated values
@@ -63,7 +62,11 @@ interface PreferenceOption {
  * Icon component for preference options
  * Memoized to prevent re-renders
  */
-const PreferenceIcon = React.memo(function PreferenceIcon({ type }: { type: OutputPreference }) {
+const PreferenceIcon = React.memo(function PreferenceIcon({
+  type,
+}: {
+  type: OutputPreference
+}) {
   const paths: Record<OutputPreference, string> = {
     concise: 'M4 6h16M4 12h8',
     balanced: 'M4 6h16M4 12h16M4 18h12',
@@ -71,8 +74,18 @@ const PreferenceIcon = React.memo(function PreferenceIcon({ type }: { type: Outp
   }
 
   return (
-    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={paths[type]} />
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d={paths[type]}
+      />
     </svg>
   )
 })
@@ -104,7 +117,11 @@ const PREFERENCE_OPTIONS: Omit<PreferenceOption, 'icon'>[] = [
 /**
  * Valid preference values for validation
  */
-const VALID_PREFERENCES = new Set<OutputPreference>(['concise', 'balanced', 'detailed'])
+const VALID_PREFERENCES = new Set<OutputPreference>([
+  'concise',
+  'balanced',
+  'detailed',
+])
 
 /**
  * Format token count for display
@@ -180,8 +197,8 @@ function safeCalculateOutputLimit(
  *   value={preference}
  *   onChange={(pref) => {
  *     setPreference(pref.mode)
- *     logger.debug('Max tokens:', pref.maxTokens)
- *     logger.debug('Instruction:', pref.brevityInstruction)
+ *     console.log('Max tokens:', pref.maxTokens)
+ *     console.log('Instruction:', pref.brevityInstruction)
  *   }}
  * />
  *
@@ -216,17 +233,22 @@ export function OutputPreferenceSelector({
   size = 'md',
 }: OutputPreferenceSelectorProps) {
   // Refs for focus management
-  const buttonRefs = React.useRef<Map<OutputPreference, HTMLButtonElement>>(new Map())
+  const buttonRefs = React.useRef<Map<OutputPreference, HTMLButtonElement>>(
+    new Map()
+  )
 
   // Validate value prop and fall back to balanced if invalid
   const safeValue = VALID_PREFERENCES.has(value) ? value : 'balanced'
 
   // Warn in development if invalid value is passed
   React.useEffect(() => {
-    if (process.env['NODE_ENV'] === 'development' && !VALID_PREFERENCES.has(value)) {
-      logger.warn(
+    if (
+      process.env['NODE_ENV'] === 'development' &&
+      !VALID_PREFERENCES.has(value)
+    ) {
+      console.warn(
         `[OutputPreferenceSelector] Invalid value "${value}" passed. ` +
-        'Expected one of: concise, balanced, detailed. Falling back to "balanced".'
+          'Expected one of: concise, balanced, detailed. Falling back to "balanced".'
       )
     }
   }, [value])
@@ -236,7 +258,12 @@ export function OutputPreferenceSelector({
    */
   const calculateTokenEstimate = React.useCallback(
     (pref: OutputPreference): number => {
-      const result = safeCalculateOutputLimit(modelCapacity, inputTokens, pref, taskType)
+      const result = safeCalculateOutputLimit(
+        modelCapacity,
+        inputTokens,
+        pref,
+        taskType
+      )
       return result.recommendedMaxTokens
     },
     [modelCapacity, inputTokens, taskType]
@@ -246,10 +273,18 @@ export function OutputPreferenceSelector({
    * Handle option selection (with error handling)
    */
   const handleSelect = React.useCallback(
-    (selectedMode: OutputPreference, focusTarget?: HTMLButtonElement | null) => {
+    (
+      selectedMode: OutputPreference,
+      focusTarget?: HTMLButtonElement | null
+    ) => {
       if (disabled) return
 
-      const result = safeCalculateOutputLimit(modelCapacity, inputTokens, selectedMode, taskType)
+      const result = safeCalculateOutputLimit(
+        modelCapacity,
+        inputTokens,
+        selectedMode,
+        taskType
+      )
 
       onChange({
         mode: selectedMode,
@@ -283,7 +318,9 @@ export function OutputPreferenceSelector({
         case 'ArrowLeft':
         case 'ArrowUp':
           e.preventDefault()
-          newIndex = (currentIndex - 1 + PREFERENCE_OPTIONS.length) % PREFERENCE_OPTIONS.length
+          newIndex =
+            (currentIndex - 1 + PREFERENCE_OPTIONS.length) %
+            PREFERENCE_OPTIONS.length
           break
         case 'Home':
           e.preventDefault()
@@ -332,13 +369,18 @@ export function OutputPreferenceSelector({
   if (displayMode === 'compact') {
     return (
       <div
-        className={cn('inline-flex rounded-lg border border-border bg-muted/50 p-0.5', className)}
+        className={cn(
+          'inline-flex rounded-lg border border-border bg-muted/50 p-0.5',
+          className
+        )}
         role="radiogroup"
         aria-label="Response length preference"
       >
         {PREFERENCE_OPTIONS.map((option, index) => {
           const isSelected = safeValue === option.value
-          const tokenEstimate = showTokenEstimate ? calculateTokenEstimate(option.value) : null
+          const tokenEstimate = showTokenEstimate
+            ? calculateTokenEstimate(option.value)
+            : null
 
           return (
             <button
@@ -389,7 +431,9 @@ export function OutputPreferenceSelector({
       {PREFERENCE_OPTIONS.map((option, index) => {
         const isSelected = safeValue === option.value
         const config = getPreferenceConfig(option.value)
-        const tokenEstimate = showTokenEstimate ? calculateTokenEstimate(option.value) : null
+        const tokenEstimate = showTokenEstimate
+          ? calculateTokenEstimate(option.value)
+          : null
 
         return (
           <button
@@ -427,10 +471,17 @@ export function OutputPreferenceSelector({
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className={cn('text-muted-foreground', isSelected && 'text-primary')}>
+                <span
+                  className={cn(
+                    'text-muted-foreground',
+                    isSelected && 'text-primary'
+                  )}
+                >
                   <PreferenceIcon type={option.value} />
                 </span>
-                <span className={cn('font-medium', isSelected && 'text-primary')}>
+                <span
+                  className={cn('font-medium', isSelected && 'text-primary')}
+                >
                   {option.label}
                 </span>
               </div>
@@ -445,10 +496,12 @@ export function OutputPreferenceSelector({
             {/* Token estimate */}
             {tokenEstimate !== null && (
               <div className="flex flex-col items-end text-right flex-shrink-0">
-                <span className={cn(
-                  'text-sm font-mono font-medium',
-                  isSelected ? 'text-primary' : 'text-muted-foreground'
-                )}>
+                <span
+                  className={cn(
+                    'text-sm font-mono font-medium',
+                    isSelected ? 'text-primary' : 'text-muted-foreground'
+                  )}
+                >
                   {formatTokens(tokenEstimate)}
                 </span>
                 <span className="text-xs text-muted-foreground">tokens</span>
@@ -505,12 +558,19 @@ export function useOutputPreference(
   } = config ?? {}
 
   // Validate initial mode
-  const safeInitial = VALID_PREFERENCES.has(initialMode) ? initialMode : 'balanced'
+  const safeInitial = VALID_PREFERENCES.has(initialMode)
+    ? initialMode
+    : 'balanced'
   const [mode, setMode] = React.useState<OutputPreference>(safeInitial)
 
   // Calculate derived values (with error handling)
   const result = React.useMemo(() => {
-    const safeResult = safeCalculateOutputLimit(modelCapacity, inputTokens, mode, taskType)
+    const safeResult = safeCalculateOutputLimit(
+      modelCapacity,
+      inputTokens,
+      mode,
+      taskType
+    )
     return {
       recommendedMaxTokens: safeResult.recommendedMaxTokens,
       brevityInstruction: safeResult.brevityInstruction,
@@ -518,13 +578,17 @@ export function useOutputPreference(
       absoluteMaxTokens: Math.max(0, modelCapacity - inputTokens),
       reasoning: '',
       inputConstrained: false,
-      inputUtilization: modelCapacity > 0 ? (inputTokens / modelCapacity) * 100 : 0,
+      inputUtilization:
+        modelCapacity > 0 ? (inputTokens / modelCapacity) * 100 : 0,
     }
   }, [modelCapacity, inputTokens, mode, taskType])
 
-  const handlePreferenceChange = React.useCallback((pref: OutputPreferenceValue) => {
-    setMode(pref.mode)
-  }, [])
+  const handlePreferenceChange = React.useCallback(
+    (pref: OutputPreferenceValue) => {
+      setMode(pref.mode)
+    },
+    []
+  )
 
   return {
     /** Current preference mode */
@@ -555,15 +619,17 @@ export function useOutputPreference(
  * <UncontrolledOutputPreferenceSelector
  *   ref={selectorRef}
  *   defaultValue="balanced"
- *   onValueChange={(pref) => logger.debug('Changed:', pref)}
+ *   onValueChange={(pref) => console.log('Changed:', pref)}
  * />
  *
  * // Later, read current value
  * const current = selectorRef.current?.getValue()
  * ```
  */
-export interface UncontrolledOutputPreferenceSelectorProps
-  extends Omit<OutputPreferenceSelectorProps, 'value' | 'onChange'> {
+export interface UncontrolledOutputPreferenceSelectorProps extends Omit<
+  OutputPreferenceSelectorProps,
+  'value' | 'onChange'
+> {
   /** Default preference mode */
   defaultValue?: OutputPreference
   /** Optional callback when value changes */
@@ -589,11 +655,18 @@ export function UncontrolledOutputPreferenceSelector({
   ...props
 }: UncontrolledOutputPreferenceSelectorProps) {
   // Validate default value
-  const safeDefault = VALID_PREFERENCES.has(defaultValue) ? defaultValue : 'balanced'
+  const safeDefault = VALID_PREFERENCES.has(defaultValue)
+    ? defaultValue
+    : 'balanced'
   const [mode, setMode] = React.useState<OutputPreference>(safeDefault)
 
   const getCurrentValue = React.useCallback((): OutputPreferenceValue => {
-    const result = safeCalculateOutputLimit(modelCapacity, inputTokens, mode, taskType)
+    const result = safeCalculateOutputLimit(
+      modelCapacity,
+      inputTokens,
+      mode,
+      taskType
+    )
 
     return {
       mode,
@@ -602,10 +675,14 @@ export function UncontrolledOutputPreferenceSelector({
     }
   }, [mode, modelCapacity, inputTokens, taskType])
 
-  React.useImperativeHandle(ref, () => ({
-    getValue: getCurrentValue,
-    setValue: setMode,
-  }), [getCurrentValue])
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      getValue: getCurrentValue,
+      setValue: setMode,
+    }),
+    [getCurrentValue]
+  )
 
   const handleChange = React.useCallback(
     (pref: OutputPreferenceValue) => {

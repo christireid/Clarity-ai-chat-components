@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 import {
   Tooltip as ShadcnTooltip,
   TooltipTrigger as ShadcnTooltipTrigger,
@@ -59,7 +59,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
   )
 
   // Map align to Radix UI align prop
-  const radixAlign = align === 'start' ? 'start' : align === 'end' ? 'end' : 'center'
+  const radixAlign =
+    align === 'start' ? 'start' : align === 'end' ? 'end' : 'center'
 
   if (disabled) {
     return <div className={cn('inline-block', className)}>{children}</div>
@@ -69,7 +70,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   // Remove custom delay handlers to avoid double-delay
   // Validate delay to prevent negative values
   const validDelay = Math.max(0, delay || 200)
-  
+
   return (
     <ShadcnTooltipProvider delayDuration={validDelay}>
       <ShadcnTooltip open={open} onOpenChange={setOpen}>

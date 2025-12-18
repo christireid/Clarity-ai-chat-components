@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow, ChatInput, Button } from '@clarity-chat/react'
 import { StatusBadge } from '../../../.storybook/blocks'
@@ -79,33 +78,57 @@ export const BasicMultiStepForm: Story = {
     const [errors, setErrors] = useState<Record<string, string>>({})
 
     const steps = [
-      { id: 'personal', title: 'Personal Info', description: 'Basic information about you' },
-      { id: 'preferences', title: 'Preferences', description: 'Customize your experience' },
-      { id: 'subscription', title: 'Subscription', description: 'Choose your plan' },
-      { id: 'review', title: 'Review', description: 'Confirm your information' },
+      {
+        id: 'personal',
+        title: 'Personal Info',
+        description: 'Basic information about you',
+      },
+      {
+        id: 'preferences',
+        title: 'Preferences',
+        description: 'Customize your experience',
+      },
+      {
+        id: 'subscription',
+        title: 'Subscription',
+        description: 'Choose your plan',
+      },
+      {
+        id: 'review',
+        title: 'Review',
+        description: 'Confirm your information',
+      },
     ]
 
     const validateStep = (step: number): boolean => {
       const newErrors: Record<string, string> = {}
 
       if (step === 0) {
-        if (!formData.personal?.firstName) newErrors.firstName = 'First name is required'
-        if (!formData.personal?.lastName) newErrors.lastName = 'Last name is required'
+        if (!formData.personal?.firstName)
+          newErrors.firstName = 'First name is required'
+        if (!formData.personal?.lastName)
+          newErrors.lastName = 'Last name is required'
         if (!formData.personal?.email) {
           newErrors.email = 'Email is required'
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.personal.email)) {
+        } else if (
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.personal.email)
+        ) {
           newErrors.email = 'Invalid email format'
         }
       }
 
       if (step === 1) {
-        if (!formData.preferences?.theme) newErrors.theme = 'Please select a theme'
-        if (!formData.preferences?.language) newErrors.language = 'Please select a language'
+        if (!formData.preferences?.theme)
+          newErrors.theme = 'Please select a theme'
+        if (!formData.preferences?.language)
+          newErrors.language = 'Please select a language'
       }
 
       if (step === 2) {
-        if (!formData.subscription?.plan) newErrors.plan = 'Please select a plan'
-        if (!formData.subscription?.billing) newErrors.billing = 'Please select billing period'
+        if (!formData.subscription?.plan)
+          newErrors.plan = 'Please select a plan'
+        if (!formData.subscription?.billing)
+          newErrors.billing = 'Please select billing period'
       }
 
       setErrors(newErrors)
@@ -124,7 +147,7 @@ export const BasicMultiStepForm: Story = {
     }
 
     const handleSubmit = () => {
-      SecureLogger.debug('Form submitted:', formData)
+      console.log('Form submitted:', formData)
       alert('Form submitted successfully! Check console for data.')
     }
 
@@ -136,7 +159,8 @@ export const BasicMultiStepForm: Story = {
             <StatusBadge status="stable" />
           </div>
           <p className="text-gray-600 dark:text-gray-400">
-            Complete the form step by step. Your progress is saved as you navigate between steps.
+            Complete the form step by step. Your progress is saved as you
+            navigate between steps.
           </p>
         </div>
 
@@ -151,8 +175,8 @@ export const BasicMultiStepForm: Story = {
                       index < currentStep
                         ? 'bg-green-500 text-white'
                         : index === currentStep
-                        ? 'bg-brand-500 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
+                          ? 'bg-brand-500 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
                     }`}
                   >
                     {index < currentStep ? '✓' : index + 1}
@@ -164,7 +188,9 @@ export const BasicMultiStepForm: Story = {
                 {index < steps.length - 1 && (
                   <div
                     className={`h-1 flex-1 transition-colors ${
-                      index < currentStep ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
+                      index < currentStep
+                        ? 'bg-green-500'
+                        : 'bg-gray-200 dark:bg-gray-700'
                     }`}
                   />
                 )}
@@ -179,7 +205,9 @@ export const BasicMultiStepForm: Story = {
           {currentStep === 0 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-semibold mb-2">Personal Information</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Personal Information
+                </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Let's start with some basic information about you.
                 </p>
@@ -187,60 +215,91 @@ export const BasicMultiStepForm: Story = {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">First Name *</label>
+                  <label className="block text-sm font-medium mb-2">
+                    First Name *
+                  </label>
                   <input
                     type="text"
                     value={formData.personal?.firstName || ''}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        personal: { ...formData.personal!, firstName: e.target.value },
+                        personal: {
+                          ...formData.personal!,
+                          firstName: e.target.value,
+                        },
                       })
                     }
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 ${
-                      errors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      errors.firstName
+                        ? 'border-red-500'
+                        : 'border-gray-300 dark:border-gray-600'
                     }`}
                     placeholder="John"
                   />
-                  {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
+                  {errors.firstName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.firstName}
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Last Name *</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Last Name *
+                  </label>
                   <input
                     type="text"
                     value={formData.personal?.lastName || ''}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        personal: { ...formData.personal!, lastName: e.target.value },
+                        personal: {
+                          ...formData.personal!,
+                          lastName: e.target.value,
+                        },
                       })
                     }
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 ${
-                      errors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      errors.lastName
+                        ? 'border-red-500'
+                        : 'border-gray-300 dark:border-gray-600'
                     }`}
                     placeholder="Doe"
                   />
-                  {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
+                  {errors.lastName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.lastName}
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Email *</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Email *
+                  </label>
                   <input
                     type="email"
                     value={formData.personal?.email || ''}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        personal: { ...formData.personal!, email: e.target.value },
+                        personal: {
+                          ...formData.personal!,
+                          email: e.target.value,
+                        },
                       })
                     }
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 ${
-                      errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      errors.email
+                        ? 'border-red-500'
+                        : 'border-gray-300 dark:border-gray-600'
                     }`}
                     placeholder="john@example.com"
                   />
-                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -258,17 +317,24 @@ export const BasicMultiStepForm: Story = {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Theme *</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Theme *
+                  </label>
                   <select
                     value={formData.preferences?.theme || ''}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        preferences: { ...formData.preferences!, theme: e.target.value },
+                        preferences: {
+                          ...formData.preferences!,
+                          theme: e.target.value,
+                        },
                       })
                     }
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 ${
-                      errors.theme ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      errors.theme
+                        ? 'border-red-500'
+                        : 'border-gray-300 dark:border-gray-600'
                     }`}
                   >
                     <option value="">Select a theme</option>
@@ -276,21 +342,30 @@ export const BasicMultiStepForm: Story = {
                     <option value="dark">Dark</option>
                     <option value="system">System</option>
                   </select>
-                  {errors.theme && <p className="text-red-500 text-sm mt-1">{errors.theme}</p>}
+                  {errors.theme && (
+                    <p className="text-red-500 text-sm mt-1">{errors.theme}</p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Language *</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Language *
+                  </label>
                   <select
                     value={formData.preferences?.language || ''}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        preferences: { ...formData.preferences!, language: e.target.value },
+                        preferences: {
+                          ...formData.preferences!,
+                          language: e.target.value,
+                        },
                       })
                     }
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 ${
-                      errors.language ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      errors.language
+                        ? 'border-red-500'
+                        : 'border-gray-300 dark:border-gray-600'
                     }`}
                   >
                     <option value="">Select a language</option>
@@ -299,7 +374,11 @@ export const BasicMultiStepForm: Story = {
                     <option value="fr">French</option>
                     <option value="de">German</option>
                   </select>
-                  {errors.language && <p className="text-red-500 text-sm mt-1">{errors.language}</p>}
+                  {errors.language && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.language}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -310,12 +389,18 @@ export const BasicMultiStepForm: Story = {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        preferences: { ...formData.preferences!, notifications: e.target.checked },
+                        preferences: {
+                          ...formData.preferences!,
+                          notifications: e.target.checked,
+                        },
                       })
                     }
                     className="w-4 h-4 text-brand-500 border-gray-300 rounded focus:ring-brand-500"
                   />
-                  <label htmlFor="notifications" className="text-sm font-medium">
+                  <label
+                    htmlFor="notifications"
+                    className="text-sm font-medium"
+                  >
                     Enable email notifications
                   </label>
                 </div>
@@ -335,7 +420,9 @@ export const BasicMultiStepForm: Story = {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-3">Plan *</label>
+                  <label className="block text-sm font-medium mb-3">
+                    Plan *
+                  </label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {['free', 'pro', 'enterprise'].map((plan) => (
                       <label
@@ -354,12 +441,17 @@ export const BasicMultiStepForm: Story = {
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              subscription: { ...formData.subscription!, plan: e.target.value },
+                              subscription: {
+                                ...formData.subscription!,
+                                plan: e.target.value,
+                              },
                             })
                           }
                           className="sr-only"
                         />
-                        <div className="font-semibold capitalize mb-1">{plan}</div>
+                        <div className="font-semibold capitalize mb-1">
+                          {plan}
+                        </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
                           {plan === 'free' && 'Basic features'}
                           {plan === 'pro' && '$29/month'}
@@ -368,11 +460,15 @@ export const BasicMultiStepForm: Story = {
                       </label>
                     ))}
                   </div>
-                  {errors.plan && <p className="text-red-500 text-sm mt-2">{errors.plan}</p>}
+                  {errors.plan && (
+                    <p className="text-red-500 text-sm mt-2">{errors.plan}</p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-3">Billing Period *</label>
+                  <label className="block text-sm font-medium mb-3">
+                    Billing Period *
+                  </label>
                   <div className="flex gap-4">
                     {['monthly', 'annually'].map((billing) => (
                       <label
@@ -391,19 +487,30 @@ export const BasicMultiStepForm: Story = {
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              subscription: { ...formData.subscription!, billing: e.target.value },
+                              subscription: {
+                                ...formData.subscription!,
+                                billing: e.target.value,
+                              },
                             })
                           }
                           className="sr-only"
                         />
-                        <div className="font-semibold capitalize">{billing}</div>
+                        <div className="font-semibold capitalize">
+                          {billing}
+                        </div>
                         {billing === 'annually' && (
-                          <div className="text-sm text-green-600 dark:text-green-400">Save 20%</div>
+                          <div className="text-sm text-green-600 dark:text-green-400">
+                            Save 20%
+                          </div>
                         )}
                       </label>
                     ))}
                   </div>
-                  {errors.billing && <p className="text-red-500 text-sm mt-2">{errors.billing}</p>}
+                  {errors.billing && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {errors.billing}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -413,7 +520,9 @@ export const BasicMultiStepForm: Story = {
           {currentStep === 3 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-semibold mb-2">Review Your Information</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Review Your Information
+                </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Please review your information before submitting.
                 </p>
@@ -424,14 +533,21 @@ export const BasicMultiStepForm: Story = {
                   <h4 className="font-semibold mb-3">Personal Information</h4>
                   <dl className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <dt className="text-gray-600 dark:text-gray-400">Name:</dt>
+                      <dt className="text-gray-600 dark:text-gray-400">
+                        Name:
+                      </dt>
                       <dd className="font-medium">
-                        {formData.personal?.firstName} {formData.personal?.lastName}
+                        {formData.personal?.firstName}{' '}
+                        {formData.personal?.lastName}
                       </dd>
                     </div>
                     <div className="flex justify-between">
-                      <dt className="text-gray-600 dark:text-gray-400">Email:</dt>
-                      <dd className="font-medium">{formData.personal?.email}</dd>
+                      <dt className="text-gray-600 dark:text-gray-400">
+                        Email:
+                      </dt>
+                      <dd className="font-medium">
+                        {formData.personal?.email}
+                      </dd>
                     </div>
                   </dl>
                 </div>
@@ -440,17 +556,29 @@ export const BasicMultiStepForm: Story = {
                   <h4 className="font-semibold mb-3">Preferences</h4>
                   <dl className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <dt className="text-gray-600 dark:text-gray-400">Theme:</dt>
-                      <dd className="font-medium capitalize">{formData.preferences?.theme}</dd>
+                      <dt className="text-gray-600 dark:text-gray-400">
+                        Theme:
+                      </dt>
+                      <dd className="font-medium capitalize">
+                        {formData.preferences?.theme}
+                      </dd>
                     </div>
                     <div className="flex justify-between">
-                      <dt className="text-gray-600 dark:text-gray-400">Language:</dt>
-                      <dd className="font-medium uppercase">{formData.preferences?.language}</dd>
+                      <dt className="text-gray-600 dark:text-gray-400">
+                        Language:
+                      </dt>
+                      <dd className="font-medium uppercase">
+                        {formData.preferences?.language}
+                      </dd>
                     </div>
                     <div className="flex justify-between">
-                      <dt className="text-gray-600 dark:text-gray-400">Notifications:</dt>
+                      <dt className="text-gray-600 dark:text-gray-400">
+                        Notifications:
+                      </dt>
                       <dd className="font-medium">
-                        {formData.preferences?.notifications ? 'Enabled' : 'Disabled'}
+                        {formData.preferences?.notifications
+                          ? 'Enabled'
+                          : 'Disabled'}
                       </dd>
                     </div>
                   </dl>
@@ -460,12 +588,20 @@ export const BasicMultiStepForm: Story = {
                   <h4 className="font-semibold mb-3">Subscription</h4>
                   <dl className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <dt className="text-gray-600 dark:text-gray-400">Plan:</dt>
-                      <dd className="font-medium capitalize">{formData.subscription?.plan}</dd>
+                      <dt className="text-gray-600 dark:text-gray-400">
+                        Plan:
+                      </dt>
+                      <dd className="font-medium capitalize">
+                        {formData.subscription?.plan}
+                      </dd>
                     </div>
                     <div className="flex justify-between">
-                      <dt className="text-gray-600 dark:text-gray-400">Billing:</dt>
-                      <dd className="font-medium capitalize">{formData.subscription?.billing}</dd>
+                      <dt className="text-gray-600 dark:text-gray-400">
+                        Billing:
+                      </dt>
+                      <dd className="font-medium capitalize">
+                        {formData.subscription?.billing}
+                      </dd>
                     </div>
                   </dl>
                 </div>
@@ -540,7 +676,8 @@ export const BasicMultiStepForm: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Complete multi-step form with validation, progress tracking, and review step.',
+        story:
+          'Complete multi-step form with validation, progress tracking, and review step.',
       },
     },
   },

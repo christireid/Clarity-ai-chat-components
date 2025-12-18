@@ -1,6 +1,24 @@
 /**
  * useChatWithOperations - Composed hook combining chat + message operations
  *
+ * @deprecated This hook will be merged into `useClarityChat` in v3.0.
+ * The message operations functionality will be available as options
+ * on `useClarityChat`.
+ *
+ * **Migration:**
+ * ```tsx
+ * // Before (deprecated)
+ * import { useChatWithOperations } from '@clarity-chat/react'
+ * const { messages, editMessage } = useChatWithOperations({ api: '/api/chat' })
+ *
+ * // After (recommended)
+ * import { useClarityChat } from '@clarity-chat/react'
+ * const { messages, editMessage } = useClarityChat({
+ *   api: '/api/chat',
+ *   enableOperations: true
+ * })
+ * ```
+ *
  * This hook combines useClarityChat with useMessageOperations to provide
  * a complete chat experience with edit/regenerate/delete functionality.
  *
@@ -25,11 +43,11 @@
 
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { useMessageOperations } from './use-message-operations'
+import { useMessageOperations } from '../message/use-message-operations'
 import {
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
-} from '../utils/message-conversion'
+} from '../../utils/message/message-conversion'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -51,7 +69,8 @@ export interface UseChatWithOperationsReturn {
     content: string
   }) => Promise<void>
   isLoading: boolean
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
 
   // From useMessageOperations
   editMessage: (messageId: string, newContent: string) => void

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -152,7 +151,7 @@ function generateId(): string {
  *   canUndo,
  * } = useMessageOperations({
  *   onEdit: (id, content) => {
- *     logger.debug('Message edited:', id, content)
+ *     console.log('Message edited:', id, content)
  *   },
  * })
  * 
@@ -189,7 +188,7 @@ function generateId(): string {
  *   switchToBranch,
  * } = useMessageOperations({
  *   onBranch: (branchId, parentId) => {
- *     logger.debug('Created branch:', branchId)
+ *     console.log('Created branch:', branchId)
  *   },
  * })
  * 

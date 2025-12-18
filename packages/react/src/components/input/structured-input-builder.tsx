@@ -1,9 +1,8 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { cn } from '../utils/cn'
-import { estimateTokens } from '../utils/tokenization/estimator'
+import { cn } from '../../utils/cn'
+import { estimateTokens } from '../../utils/tokenization/estimator'
 
 /**
  * Field priority for token optimization
@@ -14,7 +13,13 @@ export type FieldPriority = 'critical' | 'high' | 'medium' | 'low'
 /**
  * Section type for prompt structure optimization
  */
-export type FieldSection = 'instruction' | 'context' | 'reference' | 'question' | 'constraint' | 'example'
+export type FieldSection =
+  | 'instruction'
+  | 'context'
+  | 'reference'
+  | 'question'
+  | 'constraint'
+  | 'example'
 
 /**
  * Field types supported by the builder
@@ -113,7 +118,10 @@ export interface StructuredInputBuilderProps {
   /** Show total token count */
   showTotalTokens?: boolean
   /** Custom prompt formatter */
-  formatPrompt?: (values: Record<string, string>, fields: StructuredInputField[]) => string
+  formatPrompt?: (
+    values: Record<string, string>,
+    fields: StructuredInputField[]
+  ) => string
   /** Display mode */
   displayMode?: 'form' | 'compact' | 'inline'
   /** Size variant */
@@ -182,7 +190,7 @@ function defaultFormatPrompt(
   return parts.join('\n\n')
 }
 
-// Note: estimateTokens is imported from '../utils/tokenization/estimator'
+// Note: estimateTokens is imported from '../../utils/tokenization/estimator'
 // for consistent token estimation across the codebase
 
 /**
@@ -192,7 +200,7 @@ function defaultFormatPrompt(
 function simpleHash(str: string): string {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i)
+    hash = (hash << 5) - hash + str.charCodeAt(i)
     hash = hash & hash // Convert to 32bit integer
   }
   return Math.abs(hash).toString(36).slice(0, 4)
@@ -283,7 +291,8 @@ const FieldInput = React.memo(function FieldInput({
   const descriptionId = field.description ? `${inputId}-description` : undefined
   const errorId = error ? `${inputId}-error` : undefined
   // Combine description and error IDs for aria-describedby (both should be announced)
-  const describedBy = [descriptionId, errorId].filter(Boolean).join(' ') || undefined
+  const describedBy =
+    [descriptionId, errorId].filter(Boolean).join(' ') || undefined
   const isDisabled = disabled || field.disabled
 
   const sizeClasses = {
@@ -331,7 +340,9 @@ const FieldInput = React.memo(function FieldInput({
             aria-required={field.required}
             aria-describedby={describedBy}
           >
-            <option value="">{field.placeholder ?? 'Select an option...'}</option>
+            <option value="">
+              {field.placeholder ?? 'Select an option...'}
+            </option>
             {field.options?.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -421,7 +432,9 @@ const FieldInput = React.memo(function FieldInput({
       </div>
 
       {field.description && (
-        <p id={descriptionId} className="text-xs text-muted-foreground">{field.description}</p>
+        <p id={descriptionId} className="text-xs text-muted-foreground">
+          {field.description}
+        </p>
       )}
 
       {renderInput()}
@@ -446,7 +459,8 @@ const PriorityBadge = React.memo(function PriorityBadge({
   const colors: Record<FieldPriority, string> = {
     critical: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
     high: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-    medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+    medium:
+      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
     low: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
   }
 
@@ -480,7 +494,11 @@ const TokenUsageBar = React.memo(function TokenUsageBar({
         <span
           className={cn(
             'font-mono font-medium',
-            isCritical ? 'text-destructive' : isWarning ? 'text-warning' : 'text-foreground'
+            isCritical
+              ? 'text-destructive'
+              : isWarning
+                ? 'text-warning'
+                : 'text-foreground'
           )}
         >
           {current.toLocaleString()} / {max.toLocaleString()}
@@ -491,7 +509,11 @@ const TokenUsageBar = React.memo(function TokenUsageBar({
         <div
           className={cn(
             'h-full transition-all duration-300',
-            isCritical ? 'bg-destructive' : isWarning ? 'bg-warning' : 'bg-primary'
+            isCritical
+              ? 'bg-destructive'
+              : isWarning
+                ? 'bg-warning'
+                : 'bg-primary'
           )}
           style={{ width: `${percentage}%` }}
         />
@@ -598,9 +620,9 @@ export function StructuredInputBuilder({
       const ids = fields.map((f) => f.id)
       const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
       if (duplicates.length > 0) {
-        logger.warn(
+        console.warn(
           `[StructuredInputBuilder] Duplicate field IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
-          `Each field must have a unique ID to avoid accessibility and rendering issues.`
+            `Each field must have a unique ID to avoid accessibility and rendering issues.`
         )
       }
     }
@@ -687,7 +709,16 @@ export function StructuredInputBuilder({
 
       onSubmit(result)
     },
-    [isValid, onSubmit, values, formatPrompt, fields, breakdownWithPercentages, totalTokens, errors]
+    [
+      isValid,
+      onSubmit,
+      values,
+      formatPrompt,
+      fields,
+      breakdownWithPercentages,
+      totalTokens,
+      errors,
+    ]
   )
 
   // Group fields by section for organized display
@@ -706,7 +737,14 @@ export function StructuredInputBuilder({
   }, [fields])
 
   // Section display order
-  const sectionOrder: FieldSection[] = ['instruction', 'context', 'reference', 'example', 'constraint', 'question']
+  const sectionOrder: FieldSection[] = [
+    'instruction',
+    'context',
+    'reference',
+    'example',
+    'constraint',
+    'question',
+  ]
 
   // Size classes for the container
   const containerClasses = {
@@ -760,7 +798,10 @@ export function StructuredInputBuilder({
 
   if (displayMode === 'inline') {
     return (
-      <form onSubmit={handleSubmit} className={cn('flex flex-wrap gap-3 items-end', className)}>
+      <form
+        onSubmit={handleSubmit}
+        className={cn('flex flex-wrap gap-3 items-end', className)}
+      >
         {fields.map((field) => (
           <div key={field.id} className="flex-1 min-w-[150px]">
             <FieldInput
@@ -796,12 +837,20 @@ export function StructuredInputBuilder({
 
   // Default: form mode
   return (
-    <form onSubmit={handleSubmit} className={cn(containerClasses[size], className)}>
+    <form
+      onSubmit={handleSubmit}
+      className={cn(containerClasses[size], className)}
+    >
       {/* Header */}
       {(title || description) && (
         <div className="space-y-1">
           {title && (
-            <h3 className={cn('font-semibold', size === 'lg' ? 'text-lg' : 'text-base')}>
+            <h3
+              className={cn(
+                'font-semibold',
+                size === 'lg' ? 'text-lg' : 'text-base'
+              )}
+            >
               {title}
             </h3>
           )}
@@ -887,7 +936,11 @@ export function StructuredInputBuilder({
           disabled={disabled || !isValid}
           className={cn(
             'w-full font-medium rounded-lg transition-colors',
-            size === 'sm' ? 'px-3 py-1.5 text-sm' : size === 'lg' ? 'px-6 py-3 text-base' : 'px-4 py-2 text-sm',
+            size === 'sm'
+              ? 'px-3 py-1.5 text-sm'
+              : size === 'lg'
+                ? 'px-6 py-3 text-base'
+                : 'px-4 py-2 text-sm',
             'bg-primary text-primary-foreground',
             'hover:bg-primary/90',
             'disabled:opacity-50 disabled:cursor-not-allowed'
@@ -920,15 +973,18 @@ export function StructuredInputBuilder({
  * />
  *
  * // Access computed result
- * logger.debug(result.totalTokens)
- * logger.debug(result.isValid)
+ * console.log(result.totalTokens)
+ * console.log(result.isValid)
  * ```
  */
 export function useStructuredInput(
   fields: StructuredInputField[],
   options?: {
     maxTokens?: number
-    formatPrompt?: (values: Record<string, string>, fields: StructuredInputField[]) => string
+    formatPrompt?: (
+      values: Record<string, string>,
+      fields: StructuredInputField[]
+    ) => string
     initialValues?: Record<string, string>
   }
 ) {
@@ -942,14 +998,18 @@ export function useStructuredInput(
   const getInitialValues = React.useCallback((): Record<string, string> => {
     const result: Record<string, string> = { ...initialValues }
     for (const field of fields) {
-      if (result[field.name] === undefined && field.defaultValue !== undefined) {
+      if (
+        result[field.name] === undefined &&
+        field.defaultValue !== undefined
+      ) {
         result[field.name] = field.defaultValue
       }
     }
     return result
   }, [fields, initialValues])
 
-  const [values, setValues] = React.useState<Record<string, string>>(getInitialValues)
+  const [values, setValues] =
+    React.useState<Record<string, string>>(getInitialValues)
 
   // Calculate result
   const result = React.useMemo((): StructuredInputResult => {
@@ -1052,7 +1112,9 @@ export const PRESET_FIELDS = {
   }),
 
   /** Background context field */
-  context: (overrides?: Partial<StructuredInputField>): StructuredInputField => ({
+  context: (
+    overrides?: Partial<StructuredInputField>
+  ): StructuredInputField => ({
     id: 'context',
     name: 'context',
     label: 'Context',
@@ -1066,7 +1128,9 @@ export const PRESET_FIELDS = {
   }),
 
   /** Constraints field */
-  constraints: (overrides?: Partial<StructuredInputField>): StructuredInputField => ({
+  constraints: (
+    overrides?: Partial<StructuredInputField>
+  ): StructuredInputField => ({
     id: 'constraints',
     name: 'constraints',
     label: 'Constraints',
@@ -1080,7 +1144,9 @@ export const PRESET_FIELDS = {
   }),
 
   /** Output format field */
-  format: (overrides?: Partial<StructuredInputField>): StructuredInputField => ({
+  format: (
+    overrides?: Partial<StructuredInputField>
+  ): StructuredInputField => ({
     id: 'format',
     name: 'format',
     label: 'Output Format',
@@ -1118,7 +1184,9 @@ export const PRESET_FIELDS = {
   }),
 
   /** Examples field */
-  examples: (overrides?: Partial<StructuredInputField>): StructuredInputField => ({
+  examples: (
+    overrides?: Partial<StructuredInputField>
+  ): StructuredInputField => ({
     id: 'examples',
     name: 'examples',
     label: 'Examples',
@@ -1132,7 +1200,9 @@ export const PRESET_FIELDS = {
   }),
 
   /** Question field */
-  question: (overrides?: Partial<StructuredInputField>): StructuredInputField => ({
+  question: (
+    overrides?: Partial<StructuredInputField>
+  ): StructuredInputField => ({
     id: 'question',
     name: 'question',
     label: 'Question',

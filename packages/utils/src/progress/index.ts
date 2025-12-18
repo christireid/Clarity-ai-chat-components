@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Progress Tracking Utilities
  *
@@ -120,7 +119,7 @@ function createFallbackSpinner(initialText: string): Spinner {
     },
     fail: (msg?: string) => {
       isActive = false
-      logger.error(`✗ ${msg ?? currentText}`)
+      error(`✗ ${msg ?? currentText}`)
       return fallback
     },
     warn: (msg?: string) => {

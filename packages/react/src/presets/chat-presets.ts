@@ -1,12 +1,12 @@
 /**
  * Chat Presets - Pre-configured setups for common use cases
- * 
+ *
  * These presets provide sensible defaults for different scenarios,
  * making it easy to get started without configuration.
  */
 
-import type { UseClarityChatOptions } from '../hooks/use-clarity-chat'
-import type { ClarityChatProps } from '../components/clarity-chat'
+import type { UseClarityChatOptions } from '../hooks/chat/use-clarity-chat'
+import type { ClarityChatProps } from '../components/chat/clarity-chat'
 
 /**
  * Preset configurations for common chat scenarios

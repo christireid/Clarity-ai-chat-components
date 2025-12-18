@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertCircle, RefreshCw, Home, Bug } from 'lucide-react';
 
@@ -48,14 +47,14 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error details for debugging
-    logger.logger.error('EnhancedErrorBoundary caught an error:', error, errorInfo);
+    console.error('EnhancedErrorBoundary caught an error:', error, errorInfo);
     
     // Call user-provided error handler
     if (this.props.onError) {
       try {
         this.props.onError(error, errorInfo);
       } catch (handlerError) {
-        logger.logger.error('Error in error handler:', handlerError);
+        console.error('Error in error handler:', handlerError);
       }
     }
 
@@ -223,7 +222,7 @@ export function initializeGlobalErrorHandler() {
   if (typeof window !== 'undefined') {
     // Handle uncaught errors
     window.addEventListener('error', (event) => {
-      logger.logger.error('Global error caught:', event.error);
+      console.error('Global error caught:', event.error);
       
       // Prevent default error handling
       event.preventDefault();
@@ -239,7 +238,7 @@ export function initializeGlobalErrorHandler() {
 
     // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
-      logger.logger.error('Unhandled promise rejection:', event.reason);
+      console.error('Unhandled promise rejection:', event.reason);
       
       // Prevent default handling
       event.preventDefault();
@@ -264,7 +263,7 @@ export function useErrorHandler() {
   const handleError = React.useCallback((error: Error | string) => {
     const errorObject = error instanceof Error ? error : new Error(error);
     setError(errorObject);
-    logger.logger.error('Component error:', errorObject);
+    console.error('Component error:', errorObject);
   }, []);
 
   const clearError = React.useCallback(() => {

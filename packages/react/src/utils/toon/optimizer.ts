@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * TOON Optimization Utilities
  *
@@ -43,7 +42,7 @@ export interface AutoToonOptions {
  * @example
  * ```ts
  * const result = autoOptimize(data)
- * logger.debug(`Using ${result.format}, saved ${result.savingsPercent}%`)
+ * console.log(`Using ${result.format}, saved ${result.savingsPercent}%`)
  * // Send result.data to LLM
  * ```
  */

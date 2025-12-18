@@ -20,7 +20,6 @@
 import { useState } from 'react'
 import {
   useSecureChat,
-import { SecureLogger } from '@/lib/security/secureLogger';
   useSecurityMonitor,
   useSecurityEvents,
   SecurityManager,
@@ -75,11 +74,11 @@ export function SimpleSecureChat() {
     },
     userId: 'demo-user',
     onSecurityBlock: (reason, details) => {
-      SecureLogger.error('Security block:', reason, details)
+      console.error('Security block:', reason, details)
       alert(`Message blocked: ${reason}`)
     },
     onSecurityWarning: (warning, details) => {
-      SecureLogger.warn('Security warning:', warning, details)
+      console.warn('Security warning:', warning, details)
     },
   })
 
@@ -133,7 +132,8 @@ export function SimpleSecureChat() {
 
       <div className="security-info">
         <small>
-          🔒 Protected by: Prompt injection detection, PII redaction, Jailbreak prevention
+          🔒 Protected by: Prompt injection detection, PII redaction, Jailbreak
+          prevention
         </small>
       </div>
     </div>
@@ -154,7 +154,7 @@ export function AdvancedSecureChat() {
   const { events: criticalEvents } = useSecurityEvents({
     filter: { severity: 'critical' },
     onEvent: (event) => {
-      SecureLogger.error('Critical security event:', event)
+      console.error('Critical security event:', event)
       // Could trigger alerts, notifications, etc.
     },
   })
@@ -271,7 +271,8 @@ export function AdvancedSecureChat() {
               {metrics.eventsByType.prompt_injection_detected || 0}
             </div>
             <div className="metric">
-              <strong>PII Redacted:</strong> {metrics.eventsByType.pii_detected || 0}
+              <strong>PII Redacted:</strong>{' '}
+              {metrics.eventsByType.pii_detected || 0}
             </div>
             <div className="metric">
               <strong>Injection Rate:</strong>{' '}
@@ -290,7 +291,9 @@ export function AdvancedSecureChat() {
               </div>
             </div>
           ))}
-          {criticalEvents.length === 0 && <div className="no-events">No critical events</div>}
+          {criticalEvents.length === 0 && (
+            <div className="no-events">No critical events</div>
+          )}
         </div>
       </div>
     </div>
@@ -345,7 +348,9 @@ export function CustomSecurityChat() {
 
     try {
       // Step 1: Validate input
-      const validation = await security.validateInput(input, { userId: 'demo-user' })
+      const validation = await security.validateInput(input, {
+        userId: 'demo-user',
+      })
 
       if (!validation.allowed) {
         setError(`Message blocked: ${validation.reason}`)
@@ -361,9 +366,15 @@ export function CustomSecurityChat() {
       setMessages(newMessages)
 
       // Step 3: Prepare messages with security
-      const systemMessage = { role: 'system', content: 'You are a helpful assistant.' }
+      const systemMessage = {
+        role: 'system',
+        content: 'You are a helpful assistant.',
+      }
       // 🎯 Type assertion for security prepareMessages API
-      const secureMessages = security.prepareMessages([systemMessage, ...newMessages] as ChatMessage[])
+      const secureMessages = security.prepareMessages([
+        systemMessage,
+        ...newMessages,
+      ] as ChatMessage[])
 
       // Step 4: Call LLM
       const response = await fetch('/api/chat', {
@@ -482,7 +493,9 @@ export function SecurityTestBench() {
 
   const testMessage = async (text: string) => {
     setTestInput(text)
-    const validation = await security.validateInput(text, { userId: 'test-user' })
+    const validation = await security.validateInput(text, {
+      userId: 'test-user',
+    })
     setResult(validation)
   }
 
@@ -518,7 +531,9 @@ export function SecurityTestBench() {
       {result && (
         <div className="test-result">
           <h3>Validation Result</h3>
-          <div className={`result-status ${result.allowed ? 'allowed' : 'blocked'}`}>
+          <div
+            className={`result-status ${result.allowed ? 'allowed' : 'blocked'}`}
+          >
             {result.allowed ? '✅ ALLOWED' : '🚫 BLOCKED'}
           </div>
           <pre>{JSON.stringify(result, null, 2)}</pre>

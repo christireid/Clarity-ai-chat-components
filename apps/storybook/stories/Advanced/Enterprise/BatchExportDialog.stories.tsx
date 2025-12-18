@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import {
@@ -66,7 +65,7 @@ const InteractiveWrapper = (args: any) => {
     includeImages: boolean
     includeAttachments: boolean
   }) => {
-    SecureLogger.debug('Exporting:', options)
+    console.log('Exporting:', options)
     
     // Simulate progress
     const newProgress: BatchExportProgress[] = options.resourceIds.map((id) => ({

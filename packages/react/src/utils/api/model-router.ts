@@ -5,7 +5,7 @@
  * Can save 40-60% on costs by using cheaper models for simple queries.
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface RouteModelConfig {
   /** Model identifier */
@@ -115,18 +115,59 @@ export const COMMON_MODELS: RouteModelConfig[] = [
  */
 const COMPLEXITY_PATTERNS = {
   simple: [
-    { pattern: /^(what|who|when|where|which)\s/i, weight: -0.3, reason: 'Simple question' },
-    { pattern: /^(yes|no|true|false|ok|okay)\b/i, weight: -0.4, reason: 'Binary response' },
-    { pattern: /^(hi|hello|hey|thanks|thank you)\b/i, weight: -0.5, reason: 'Greeting/courtesy' },
-    { pattern: /\b(define|meaning|translate)\b/i, weight: -0.2, reason: 'Definition request' },
-    { pattern: /\b(list|name|show)\b/i, weight: -0.2, reason: 'Simple enumeration' },
+    {
+      pattern: /^(what|who|when|where|which)\s/i,
+      weight: -0.3,
+      reason: 'Simple question',
+    },
+    {
+      pattern: /^(yes|no|true|false|ok|okay)\b/i,
+      weight: -0.4,
+      reason: 'Binary response',
+    },
+    {
+      pattern: /^(hi|hello|hey|thanks|thank you)\b/i,
+      weight: -0.5,
+      reason: 'Greeting/courtesy',
+    },
+    {
+      pattern: /\b(define|meaning|translate)\b/i,
+      weight: -0.2,
+      reason: 'Definition request',
+    },
+    {
+      pattern: /\b(list|name|show)\b/i,
+      weight: -0.2,
+      reason: 'Simple enumeration',
+    },
   ],
   complex: [
-    { pattern: /\b(analyze|evaluate|compare|contrast|critique)\b/i, weight: 0.3, reason: 'Analytical request' },
-    { pattern: /\b(explain|describe|elaborate)\b.*\b(detail|depth|comprehensive)\b/i, weight: 0.3, reason: 'Detailed explanation' },
-    { pattern: /\b(code|program|implement|algorithm)\b/i, weight: 0.2, reason: 'Programming task' },
-    { pattern: /\b(strategy|plan|design|architect)\b/i, weight: 0.3, reason: 'Complex planning' },
-    { pattern: /\b(why|how come|reasoning|rationale)\b/i, weight: 0.2, reason: 'Deep reasoning' },
+    {
+      pattern: /\b(analyze|evaluate|compare|contrast|critique)\b/i,
+      weight: 0.3,
+      reason: 'Analytical request',
+    },
+    {
+      pattern:
+        /\b(explain|describe|elaborate)\b.*\b(detail|depth|comprehensive)\b/i,
+      weight: 0.3,
+      reason: 'Detailed explanation',
+    },
+    {
+      pattern: /\b(code|program|implement|algorithm)\b/i,
+      weight: 0.2,
+      reason: 'Programming task',
+    },
+    {
+      pattern: /\b(strategy|plan|design|architect)\b/i,
+      weight: 0.3,
+      reason: 'Complex planning',
+    },
+    {
+      pattern: /\b(why|how come|reasoning|rationale)\b/i,
+      weight: 0.2,
+      reason: 'Deep reasoning',
+    },
     { pattern: /\?.*\?/g, weight: 0.1, reason: 'Multiple questions' },
   ],
 }
@@ -136,14 +177,17 @@ const COMPLEXITY_PATTERNS = {
 /**
  * Analyze query complexity
  */
-export function analyzeComplexity(query: string, context?: string[]): QueryComplexity {
+export function analyzeComplexity(
+  query: string,
+  context?: string[]
+): QueryComplexity {
   let score = 0.5 // Start neutral
   const reasons: string[] = []
 
   // Length analysis
   const length = query.length
   const tokens = estimateTokens(query)
-  
+
   if (length < 50) {
     score -= 0.1
     reasons.push('Short query')
@@ -240,8 +284,8 @@ export function routeQuery(
     const forced = models.find((m) => m.id === forceModel)
     if (forced) {
       const estimatedCost =
-        (complexity.estimatedTokens * forced.inputCost) +
-        (complexity.estimatedTokens * 2 * forced.outputCost) // Assume 2x output
+        complexity.estimatedTokens * forced.inputCost +
+        complexity.estimatedTokens * 2 * forced.outputCost // Assume 2x output
 
       return {
         model: forced,
@@ -254,10 +298,12 @@ export function routeQuery(
   }
 
   // Select model based on complexity
-  const targetTier = 
-    complexity.level === 'simple' ? 'simple' :
-    complexity.level === 'medium' ? 'standard' :
-    'advanced'
+  const targetTier =
+    complexity.level === 'simple'
+      ? 'simple'
+      : complexity.level === 'medium'
+        ? 'standard'
+        : 'advanced'
 
   // Find best model in target tier
   let selectedModel = models
@@ -274,7 +320,7 @@ export function routeQuery(
     const cheaperModels = models
       .filter((m) => m.inputCost <= maxCost)
       .sort((a, b) => b.tier.localeCompare(a.tier)) // Prefer higher tier within budget
-    
+
     if (cheaperModels.length > 0 && cheaperModels[0]) {
       selectedModel = cheaperModels[0]
     }
@@ -286,8 +332,10 @@ export function routeQuery(
   }
 
   // Calculate cost
-  const estimatedInputCost = complexity.estimatedTokens * selectedModel.inputCost
-  const estimatedOutputCost = (complexity.estimatedTokens * 2) * selectedModel.outputCost // Assume 2x output
+  const estimatedInputCost =
+    complexity.estimatedTokens * selectedModel.inputCost
+  const estimatedOutputCost =
+    complexity.estimatedTokens * 2 * selectedModel.outputCost // Assume 2x output
   const estimatedCost = estimatedInputCost + estimatedOutputCost
 
   // Calculate savings vs most expensive model
@@ -296,16 +344,19 @@ export function routeQuery(
     throw new Error('No models available')
   }
   const maxCostEstimate =
-    (complexity.estimatedTokens * mostExpensive.inputCost) +
-    (complexity.estimatedTokens * 2 * mostExpensive.outputCost)
-  const savingsPercent = ((maxCostEstimate - estimatedCost) / maxCostEstimate) * 100
+    complexity.estimatedTokens * mostExpensive.inputCost +
+    complexity.estimatedTokens * 2 * mostExpensive.outputCost
+  const savingsPercent =
+    ((maxCostEstimate - estimatedCost) / maxCostEstimate) * 100
 
   // Generate reasoning
   const reasoning = [
     `Query classified as ${complexity.level} complexity (score: ${complexity.score.toFixed(2)})`,
     `Selected ${selectedModel.name} (${selectedModel.tier} tier)`,
     complexity.reasons[0] || 'Standard routing',
-    savingsPercent > 0 ? `Saving ${savingsPercent.toFixed(1)}% vs premium model` : 'Using best available model',
+    savingsPercent > 0
+      ? `Saving ${savingsPercent.toFixed(1)}% vs premium model`
+      : 'Using best available model',
   ].join('. ')
 
   return {
@@ -359,7 +410,11 @@ export class ModelRouter {
   /**
    * Record actual cost and satisfaction for learning
    */
-  recordFeedback(index: number, actualCost: number, userSatisfaction: number): void {
+  recordFeedback(
+    index: number,
+    actualCost: number,
+    userSatisfaction: number
+  ): void {
     if (this.history[index]) {
       this.history[index].actualCost = actualCost
       this.history[index].userSatisfaction = userSatisfaction
@@ -379,16 +434,18 @@ export class ModelRouter {
       (sum, h) => sum + (h.actualCost || 0),
       0
     )
-    const averageSavings = this.history.reduce(
-      (sum, h) => sum + h.decision.savingsPercent,
-      0
-    ) / Math.max(totalQueries, 1)
+    const averageSavings =
+      this.history.reduce((sum, h) => sum + h.decision.savingsPercent, 0) /
+      Math.max(totalQueries, 1)
 
-    const modelUsage = this.history.reduce((acc, h) => {
-      const modelId = h.decision.model.id
-      acc[modelId] = (acc[modelId] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const modelUsage = this.history.reduce(
+      (acc, h) => {
+        const modelId = h.decision.model.id
+        acc[modelId] = (acc[modelId] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     return {
       totalQueries,

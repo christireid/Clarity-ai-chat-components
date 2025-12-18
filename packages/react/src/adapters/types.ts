@@ -5,7 +5,7 @@
  * Enables model-agnostic configuration and easy provider switching.
  */
 
-import type { RateLimitInfo } from '../utils/rate-limit-headers'
+import type { RateLimitInfo } from '../utils/api/rate-limit-headers'
 
 export interface ModelConfig {
   /** Provider name */

@@ -4,9 +4,10 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message } from '@clarity-chat/types'
 import { Input, Badge, Button, cn } from '@clarity-chat/primitives'
-import { useDeferredSearch } from '../hooks/use-deferred-search'
-import { SearchIcon } from './icons'
+import { useDeferredSearch } from '../../hooks/performance/use-deferred-search'
+import { SearchIcon } from '../ui/icons'
 import { X, Command, ArrowUp, ArrowDown, CornerDownLeft } from 'lucide-react'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 const { Suspense, useCallback, useEffect, useRef, useState, useMemo } = React
 
@@ -238,10 +239,7 @@ export function MessageSearch({
         break
 
       case 'Tab':
-        if (
-          selectedHistoryIndex >= 0 &&
-          searchHistory[selectedHistoryIndex]
-        ) {
+        if (selectedHistoryIndex >= 0 && searchHistory[selectedHistoryIndex]) {
           e.preventDefault()
           setSearchQuery(searchHistory[selectedHistoryIndex])
           setShowHistory(false)
@@ -336,7 +334,7 @@ export function MessageSearch({
             scale: isPending ? [1, 1.1, 1] : 1,
           }}
           transition={{
-            duration: 0.6,
+            duration: durations.slower,
             repeat: isPending ? Infinity : 0,
           }}
         >
@@ -389,7 +387,11 @@ export function MessageSearch({
                 <div
                   className={cn(
                     'rounded-full border-2 border-primary/30 border-t-primary animate-spin',
-                    size === 'sm' ? 'h-3.5 w-3.5' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4'
+                    size === 'sm'
+                      ? 'h-3.5 w-3.5'
+                      : size === 'lg'
+                        ? 'h-5 w-5'
+                        : 'h-4 w-4'
                   )}
                 />
               </motion.div>
@@ -451,7 +453,7 @@ export function MessageSearch({
                 initial={{ x: '-100%' }}
                 animate={{ x: '100%' }}
                 transition={{
-                  duration: 1,
+                  duration: durations.slower,
                   repeat: Infinity,
                   ease: 'linear',
                 }}
@@ -468,7 +470,7 @@ export function MessageSearch({
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: durations.fast }}
             className="absolute z-50 top-full mt-1 w-full bg-popover border rounded-lg shadow-lg overflow-hidden"
             role="listbox"
             aria-label="Search history"
@@ -520,7 +522,9 @@ export function MessageSearch({
                 select
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1 bg-background rounded border text-[8px]">esc</kbd>
+                <kbd className="px-1 bg-background rounded border text-[8px]">
+                  esc
+                </kbd>
                 close
               </span>
             </div>
@@ -535,7 +539,7 @@ export function MessageSearch({
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: durations.normal }}
             className="mt-2 flex items-center justify-between text-sm"
           >
             <div className="flex items-center gap-2">
@@ -576,7 +580,10 @@ export function MessageSearch({
 
             <div className="flex items-center gap-2">
               {isPending && (
-                <Badge variant="secondary" className={cn('animate-pulse', currentSize.badge)}>
+                <Badge
+                  variant="secondary"
+                  className={cn('animate-pulse', currentSize.badge)}
+                >
                   Searching...
                 </Badge>
               )}

@@ -1,4 +1,3 @@
-import { getLogger } from '@clarity-chat/utils/logger';
 
 const logger = getLogger('secure');
 

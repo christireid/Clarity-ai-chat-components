@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Theme Preview Component
  *
@@ -8,14 +7,14 @@ import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { useTheme, type ThemePresetName } from '../theme/ThemeProvider'
+import { useTheme, type ThemePresetName } from '../../theme/ThemeProvider'
 import {
   getAllThemes,
   hexToHsl,
   hslToHex,
   validateTheme,
-} from '../theme/theme-builder'
-import type { CompleteThemeConfig } from '../theme/theme-config'
+} from '../../theme/theme-builder'
+import type { CompleteThemeConfig } from '../../theme/theme-config'
 
 export interface ThemePreviewProps {
   /**
@@ -43,7 +42,7 @@ export interface ThemePreviewProps {
  * ```tsx
  * <ThemePreview
  *   showEditor
- *   onThemeChange={theme => logger.debug('Theme changed:', theme)}
+ *   onThemeChange={theme => console.log('Theme changed:', theme)}
  * />
  * ```
  */

@@ -10,7 +10,7 @@ import {
   CardDescription,
   cn,
 } from '@clarity-chat/primitives'
-import { Skeleton, SkeletonText } from '../skeleton'
+import { Skeleton, SkeletonText } from '../ui/skeleton'
 
 export type PromptTestStatus = 'pending' | 'running' | 'pass' | 'fail'
 

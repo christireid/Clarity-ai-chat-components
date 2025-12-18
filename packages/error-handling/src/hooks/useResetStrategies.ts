@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Reset strategies for error boundaries
  *
@@ -49,7 +48,7 @@ interface UseResetStrategiesReturn {
  *   const { reset, registerError } = useResetStrategies({
  *     resetAfterTimeout: 30000,
  *     resetOnNetworkRestore: true,
- *     onReset: (reason) => logger.debug('Reset:', reason),
+ *     onReset: (reason) => console.log('Reset:', reason),
  *   });
  *
  *   // Use with error boundary

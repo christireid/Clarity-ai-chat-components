@@ -106,7 +106,7 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "node scripts/build-production.js",
+    "build": "node scripts/build-production.cjs",
     "build:sequential": "node scripts/build-sequential.js",
     "build:parallel": "tsup",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",

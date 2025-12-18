@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Batch operation utilities
  * Process multiple items in parallel or sequentially
@@ -27,7 +26,9 @@ export interface BatchResult<T> {
 /**
  * Process items in batch
  */
-export async function processBatch<T>(options: BatchOptions<T>): Promise<BatchResult<T>> {
+export async function processBatch<T>(
+  options: BatchOptions<T>
+): Promise<BatchResult<T>> {
   const {
     items,
     processor,
@@ -57,14 +58,15 @@ export async function processBatch<T>(options: BatchOptions<T>): Promise<BatchRe
         if (result.status === 'fulfilled') {
           successful.push(item)
         } else {
-          const err = result.reason instanceof Error 
-            ? result.reason 
-            : new Error(String(result.reason))
+          const err =
+            result.reason instanceof Error
+              ? result.reason
+              : new Error(String(result.reason))
           failed.push({ item, error: err })
           if (onError) {
             onError(item, err)
           } else {
-            logger.error(`Failed to process item: ${item}`, err)
+            console.error(`Failed to process item: ${item}`, err)
           }
         }
 
@@ -86,7 +88,7 @@ export async function processBatch<T>(options: BatchOptions<T>): Promise<BatchRe
         if (onError) {
           onError(item, error)
         } else {
-          logger.error(`Failed to process item: ${item}`, error)
+          console.error(`Failed to process item: ${item}`, error)
         }
       }
 
@@ -111,7 +113,7 @@ export async function batchAddComponents(
   options: { path?: string; deps?: boolean } = {}
 ): Promise<BatchResult<string>> {
   const { addCommand } = await import('../commands/add.js')
-  
+
   info(`Adding ${components.length} components...`)
 
   return processBatch({
@@ -124,7 +126,7 @@ export async function batchAddComponents(
       info(`Progress: ${completed}/${total} components added`)
     },
     onError: (component, err) => {
-      logger.error(`Failed to add component: ${component}`)
+      console.error(`Failed to add component: ${component}`)
     },
   })
 }

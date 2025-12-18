@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import {
@@ -160,8 +159,8 @@ class ParticleErrorBoundary extends Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error for debugging
-    logger.logger.error('[HeroParticles] WebGL Error:', error)
-    logger.logger.error('[HeroParticles] Error Info:', errorInfo)
+    console.error('[HeroParticles] WebGL Error:', error)
+    console.error('[HeroParticles] Error Info:', errorInfo)
 
     // Call optional error handler
     this.props.onError?.(error, errorInfo)
