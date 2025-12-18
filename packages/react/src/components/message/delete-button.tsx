@@ -6,14 +6,12 @@ import {
   Button,
   cn,
   Tooltip,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@clarity-chat/primitives'
 import { TrashIcon } from '../icons'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
@@ -117,27 +115,26 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
       </Tooltip>
 
       {/* Confirmation Dialog */}
-      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete message?</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete message?</DialogTitle>
+            <DialogDescription>
               {messageType === 'assistant'
                 ? 'This will remove the AI response. You can regenerate it if needed.'
                 : 'This will remove your message and any responses to it. This action cannot be undone.'}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirm}>
               Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

@@ -877,7 +877,7 @@ export {
   ContextualKeyboardHints,
   WithShortcut,
   useKeyboardHintsOverlay,
-  type KeyboardHint,
+  type KeyboardHint as KeyboardHintItem,
   type KeyboardHintsOverlayProps,
   type ContextualKeyboardHintsProps,
   type WithShortcutProps,

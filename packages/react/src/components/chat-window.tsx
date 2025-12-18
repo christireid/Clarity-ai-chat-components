@@ -4,7 +4,10 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
-import { duration } from '../animations/constants'
+import {
+  duration,
+  DURATION_SECONDS as durations,
+} from '../animations/constants'
 import { MessageList } from './message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from './thinking-indicator'

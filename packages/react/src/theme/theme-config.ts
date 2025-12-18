@@ -1,6 +1,6 @@
 /**
  * Theme Configuration Types
- * 
+ *
  * Complete theme customization API with support for:
  * - Full color palette customization
  * - Typography customization
@@ -22,19 +22,19 @@ export interface ColorConfig {
   // Base colors
   background: HSLColor
   foreground: HSLColor
-  
+
   // Component colors
   card: HSLColor
   cardForeground: HSLColor
   popover: HSLColor
   popoverForeground: HSLColor
-  
+
   // Brand colors
   primary: HSLColor
   primaryForeground: HSLColor
   secondary: HSLColor
   secondaryForeground: HSLColor
-  
+
   // State colors
   muted: HSLColor
   mutedForeground: HSLColor
@@ -48,11 +48,16 @@ export interface ColorConfig {
   warningForeground: HSLColor
   info: HSLColor
   infoForeground: HSLColor
-  
+
   // Borders & inputs
   border: HSLColor
   input: HSLColor
   ring: HSLColor
+
+  // Surface variants (optional - used for subtle backgrounds)
+  surfaceMuted?: HSLColor
+  surfaceElevated?: HSLColor
+  surfaceOverlay?: HSLColor
 }
 
 /**

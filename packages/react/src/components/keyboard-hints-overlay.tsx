@@ -215,7 +215,7 @@ export function useKeyboardHintsOverlay(
 ) {
   const { modifierKey = 'alt', delay = 400, enabled = true } = options || {}
   const [visible, setVisible] = React.useState(false)
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   React.useEffect(() => {
     if (!enabled) {
@@ -289,7 +289,7 @@ export function ContextualKeyboardHints({
 }: ContextualKeyboardHintsProps) {
   const [visible, setVisible] = React.useState(false)
   const [hints, setHints] = React.useState<KeyboardHint[]>([])
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Discover elements with keyboard shortcuts
   const discoverHints = React.useCallback(() => {
@@ -320,19 +320,21 @@ export function ContextualKeyboardHints({
     })
 
     // Find buttons with aria-keyshortcuts
-    document.querySelectorAll('[aria-keyshortcuts]').forEach((element, index) => {
-      const shortcut = element.getAttribute('aria-keyshortcuts')
-      const description = element.getAttribute('aria-label')
+    document
+      .querySelectorAll('[aria-keyshortcuts]')
+      .forEach((element, index) => {
+        const shortcut = element.getAttribute('aria-keyshortcuts')
+        const description = element.getAttribute('aria-label')
 
-      if (shortcut) {
-        newHints.push({
-          id: `aria-hint-${index}`,
-          target: `[aria-keyshortcuts="${shortcut}"]`,
-          shortcut,
-          description: description?.slice(0, 20),
-        })
-      }
-    })
+        if (shortcut) {
+          newHints.push({
+            id: `aria-hint-${index}`,
+            target: `[aria-keyshortcuts="${shortcut}"]`,
+            shortcut,
+            description: description?.slice(0, 20),
+          })
+        }
+      })
 
     setHints(newHints)
   }, [])
@@ -383,7 +385,13 @@ export function ContextualKeyboardHints({
     }
   }, [enabled, modifierKey, delay, discoverHints])
 
-  return <KeyboardHintsOverlay hints={hints} visible={visible} className={className} />
+  return (
+    <KeyboardHintsOverlay
+      hints={hints}
+      visible={visible}
+      className={className}
+    />
+  )
 }
 
 ContextualKeyboardHints.displayName = 'ContextualKeyboardHints'

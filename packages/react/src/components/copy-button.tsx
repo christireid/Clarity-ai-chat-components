@@ -8,6 +8,7 @@ import { CopyIcon, CheckIcon } from './icons'
 import { useToast } from './toast'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { getSpring } from '../animations/spring-presets'
+import { DURATION_SECONDS as durations } from '../animations/constants'
 
 export interface CopyButtonProps extends Omit<
   ButtonProps,
