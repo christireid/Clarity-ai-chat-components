@@ -27,7 +27,15 @@ export {
 // For sliding context management, use SlidingContextManager class from utils/memory
 
 // Low-level: Primitives
-export * from '../../utils/memory'
+// Note: ContextBundle is exported from @clarity-chat/memory below, so we exclude it here
+export {
+  buildContextBundle,
+  type BuildContextBundleOptions,
+  compressContext,
+  type CompressContextOptions,
+  retrieveMemories,
+  type RetrieveMemoriesOptions,
+} from '../../utils/memory'
 
-// Re-export from memory package
+// Re-export from memory package (authoritative source for types like ContextBundle)
 export * from '@clarity-chat/memory'

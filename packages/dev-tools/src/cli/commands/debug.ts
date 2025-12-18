@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Debug command
  *
@@ -60,11 +59,11 @@ debugCommand
         hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
         hasGoogleKey: !!process.env.GOOGLE_API_KEY,
       }
-      logger.debug(JSON.stringify(jsonOutput, null, 2))
+      console.debug(JSON.stringify(jsonOutput, null, 2))
     } else {
-      logger.debug()
-      logger.debug(infoBox(keyValueTable(envInfo), 'Environment Information'))
-      logger.debug()
+      console.debug()
+      console.debug(infoBox(keyValueTable(envInfo), 'Environment Information'))
+      console.debug()
     }
   })
 
@@ -89,23 +88,23 @@ debugCommand
       colors: true,
     })
 
-    logger.debug()
-    logger.debug(chalk.bold.blue('Testing logger at all levels...'))
-    logger.debug()
+    console.debug()
+    console.debug(chalk.bold.blue('Testing logger at all levels...'))
+    console.debug()
 
     logger.trace('This is a trace message', { detail: 'finest level' })
-    logger.debug('This is a debug message', { detail: 'debugging info' })
-    logger.info('This is an info message', { detail: 'general info' })
-    logger.warn('This is a warning message', { detail: 'something to watch' })
-    logger.error('This is an error message', { detail: 'something went wrong' })
+    console.debug('This is a debug message', { detail: 'debugging info' })
+    console.info('This is an info message', { detail: 'general info' })
+    console.warn('This is a warning message', { detail: 'something to watch' })
+    console.error('This is an error message', { detail: 'something went wrong' })
 
-    logger.debug()
-    logger.debug(chalk.bold.blue('Custom message:'))
-    logger.info(options.message, { level: options.level })
+    console.debug()
+    console.debug(chalk.bold.blue('Custom message:'))
+    console.info(options.message, { level: options.level })
 
-    logger.debug()
-    logger.debug(successBox(`Logger test complete at level: ${options.level}`))
-    logger.debug()
+    console.debug()
+    console.debug(successBox(`Logger test complete at level: ${options.level}`))
+    console.debug()
   })
 
 // Subcommand: timing - Test timing utilities
@@ -117,9 +116,9 @@ debugCommand
     const logger = createLogger({ level: 'debug' })
     const delay = parseInt(options.delay)
 
-    logger.debug()
-    logger.debug(chalk.bold.blue(`Testing timing with ${delay}ms delay...`))
-    logger.debug()
+    console.debug()
+    console.debug(chalk.bold.blue(`Testing timing with ${delay}ms delay...`))
+    console.debug()
 
     logger.time('Operation 1')
     await sleep(delay)
@@ -138,9 +137,9 @@ debugCommand
     logger.timeEnd('Sub-operation B')
     logger.timeEnd('Nested operations')
 
-    logger.debug()
-    logger.debug(successBox('Timing test complete'))
-    logger.debug()
+    console.debug()
+    console.debug(successBox('Timing test complete'))
+    console.debug()
   })
 
 // Subcommand: request - Simulate API request debugging
@@ -159,36 +158,36 @@ debugCommand
       prefix: `[${options.provider}]`,
     })
 
-    logger.debug()
-    logger.debug(chalk.bold.blue('Simulating API request debugging...'))
-    logger.debug()
+    console.debug()
+    console.debug(chalk.bold.blue('Simulating API request debugging...'))
+    console.debug()
 
     // Simulate request lifecycle
     logger.time('Total Request')
 
-    logger.info('Preparing request', {
+    console.info('Preparing request', {
       provider: options.provider,
       model: options.model,
     })
 
-    logger.debug('Request headers', {
+    console.debug('Request headers', {
       'Content-Type': 'application/json',
       Authorization: 'Bearer sk-***',
     })
 
-    logger.debug('Request body', {
+    console.debug('Request body', {
       model: options.model,
       messages: [{ role: 'user', content: 'Hello!' }],
       max_tokens: 100,
     })
 
     // Simulate response
-    logger.info('Received response', {
+    console.info('Received response', {
       status: 200,
       latency: '245ms',
     })
 
-    logger.debug('Response body', {
+    console.debug('Response body', {
       id: 'chatcmpl-abc123',
       model: options.model,
       usage: {
@@ -198,7 +197,7 @@ debugCommand
       },
     })
 
-    logger.timeEnd('Total Request', 'info')
+    logger.timeEnd('Total Request')
 
     // Summary
     const summary: Record<string, string> = {
@@ -209,9 +208,9 @@ debugCommand
       'Estimated Cost': '$0.001',
     }
 
-    logger.debug()
-    logger.debug(infoBox(keyValueTable(summary), 'Request Summary'))
-    logger.debug()
+    console.debug()
+    console.debug(infoBox(keyValueTable(summary), 'Request Summary'))
+    console.debug()
   })
 
 function sleep(ms: number): Promise<void> {

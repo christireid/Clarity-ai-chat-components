@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Example: Performance Issues
 // This file contains intentional performance problems for training purposes
 
@@ -26,13 +25,13 @@ export function UserList({ users, onSelect }: UserListProps) {
 
   // ISSUE 3: Creating new function on every render
   const handleClick = (user: User) => {
-    SecureLogger.debug('Selected:', user.name)
+    console.log('Selected:', user.name)
     onSelect(user)
   }
 
   return (
     <ul>
-      {sortedUsers.map(user => (
+      {sortedUsers.map((user) => (
         // ISSUE 4: UserCard not memoized
         <UserCard key={user.id} user={user} onClick={() => handleClick(user)} />
       ))}
@@ -70,7 +69,7 @@ export function Dashboard() {
   const [filteredData, setFilteredData] = useState([])
 
   useEffect(() => {
-    setFilteredData(data.filter(item => item.active))
+    setFilteredData(data.filter((item) => item.active))
   }, [data])
 
   return (

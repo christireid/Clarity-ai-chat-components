@@ -12,12 +12,22 @@ This package now includes React 19 components and hooks that leverage new React 
 
 ## ✨ Features
 
+### Core Tools
 - 🔍 **API Inspector** - Deep inspection of AI provider API calls with timing and token tracking
 - 📝 **Enhanced Logger** - Multi-level logging with colors, timestamps, and structured context
 - 🧪 **Mock Providers** - Fake AI providers for testing without API calls
 - ✅ **Test Helpers** - Utilities for assertions, validation, and test suites
 - 🔐 **Config Validator** - Validate environment variables, API keys, and configurations
 - ⚡ **Performance Profiler** - Track latency, throughput, memory usage, and streaming performance
+
+### New Enhanced Developer Tools 🆕
+- 🖥️ **Enhanced Console** - Advanced debug console with filtering, search, tags, and multiple export formats
+- ⚛️ **Component Monitor** - Track React component renders, performance, and get optimization recommendations
+- 🎯 **Token Tracker** - Real-time AI token usage tracking with cost estimation and budget alerts
+- 🔄 **State Diff** - Visual state change tracking with deep object comparison
+- 🌐 **Network Timeline** - Network request waterfall visualization with HAR export
+- 🛡️ **Error Tracker** - Error recovery monitoring with categorization and recommendations
+- 🔔 **Dev Notifications** - Real-time developer feedback with toast-style notifications
 
 ## 📦 Installation
 
@@ -652,6 +662,365 @@ profiler.printReport()
 inspector.printLogs()
 
 console.log(`\n✅ Tests: ${results.passed} passed, ${results.failed} failed`)
+```
+
+## New Enhanced Developer Tools
+
+### Enhanced Console
+
+Advanced debug console with filtering, search, context, and multiple export formats.
+
+```typescript
+import { getEnhancedConsole, createEnhancedConsole } from '@clarity-chat/dev-tools'
+
+const console_ = getEnhancedConsole()
+
+// Log at different levels
+console_.trace('Detailed trace info')
+console_.debug('Debug message')
+console_.info('Info message')
+console_.warn('Warning message')
+console_.error('Error message')
+console_.fatal('Critical error')
+
+// Log with context
+const authLogger = console_.withContext({ userId: '123', sessionId: 'abc' })
+authLogger.info('User logged in')
+
+// Log with tags for filtering
+const apiLogger = console_.withTags('api', 'fetch')
+apiLogger.info('API request made')
+
+// Filter and search logs
+const errors = console_.getEntries({ levels: ['error', 'fatal'] })
+const apiLogs = console_.getEntries({ tags: ['api'] })
+const searchResults = console_.getEntries({ search: 'login' })
+
+// Export logs
+const jsonExport = console_.export({ format: 'json', prettyPrint: true })
+const csvExport = console_.export({ format: 'csv' })
+const htmlExport = console_.export({ format: 'html' })
+
+// Get statistics
+const stats = console_.getStats()
+console.log(`Error rate: ${(stats.errorRate * 100).toFixed(1)}%`)
+
+// Replay logs for debugging
+await console_.replay({ levels: ['error'] }, 100) // 100ms delay between entries
+```
+
+### Component Performance Monitor
+
+Track React component renders and get performance recommendations.
+
+```typescript
+import { getComponentMonitor, createComponentMonitor } from '@clarity-chat/dev-tools'
+
+const monitor = getComponentMonitor()
+
+// Track component lifecycle
+monitor.onMount('UserProfile', 'instance-1', { userId: '123' })
+monitor.onRender('instance-1', 5.2, {
+  phase: 'update',
+  changedProps: ['avatar'],
+  trigger: 'props'
+})
+monitor.onUnmount('instance-1')
+
+// Get performance metrics
+const metrics = monitor.getMetrics('instance-1')
+console.log(`Render count: ${metrics.renderCount}`)
+console.log(`Avg render time: ${metrics.avgRenderTime}ms`)
+console.log(`Warnings: ${metrics.warnings.join(', ')}`)
+
+// Get slowest components
+const slowest = monitor.getSlowestComponents(5)
+
+// Get recommendations
+const recommendations = monitor.getRecommendations()
+recommendations.forEach(rec => console.log(`💡 ${rec}`))
+
+// Print formatted report
+monitor.printReport()
+```
+
+### Token Usage Tracker
+
+Real-time AI token usage tracking with cost estimation and budget alerts.
+
+```typescript
+import { getTokenTracker, createTokenTracker } from '@clarity-chat/dev-tools'
+
+const tracker = createTokenTracker({
+  budget: {
+    dailyLimit: 10.00,
+    monthlyLimit: 100.00,
+    warningThreshold: 0.8, // Warn at 80%
+    currency: 'USD'
+  }
+})
+
+// Track token usage
+tracker.track({
+  provider: 'openai',
+  model: 'gpt-4o-mini',
+  usage: {
+    promptTokens: 500,
+    completionTokens: 200,
+    totalTokens: 700,
+  },
+  conversationId: 'conv-123'
+})
+
+// Estimate cost before sending
+const estimate = tracker.estimateCost('gpt-4o-mini', 1000, 500)
+console.log(`Estimated cost: $${estimate.totalCost.toFixed(4)}`)
+
+// Get usage statistics
+const stats = tracker.getStats()
+console.log(`Total cost: $${stats.totalCost.toFixed(4)}`)
+console.log(`Avg tokens/request: ${stats.avgTokensPerRequest}`)
+
+// Get optimization recommendations
+const recommendations = tracker.getOptimizationRecommendations()
+
+// Get daily usage trend
+const dailyUsage = tracker.getDailyUsage(30) // Last 30 days
+
+// Print formatted report
+tracker.printReport()
+```
+
+### State Diff Visualizer
+
+Visual state change tracking with deep object comparison.
+
+```typescript
+import { getStateDiff, createStateDiff, quickDiff } from '@clarity-chat/dev-tools'
+
+const differ = createStateDiff()
+
+// Quick diff two values
+const diff = quickDiff(
+  { user: { name: 'John', age: 30 } },
+  { user: { name: 'John', age: 31 }, isActive: true }
+)
+
+console.log(`Added: ${diff.stats.added}`)     // 1 (isActive)
+console.log(`Changed: ${diff.stats.changed}`) // 1 (age)
+
+// Print formatted diff
+differ.printDiff(diff)
+
+// Track state changes over time
+differ.snapshot({ count: 0 }, 'Initial')
+differ.snapshot({ count: 1 }, 'After increment')
+differ.snapshot({ count: 2, items: ['a'] }, 'Added item')
+
+// View snapshot history
+differ.printHistory()
+
+// Get HTML diff for UI
+const htmlDiff = differ.formatDiffHTML(diff)
+```
+
+### Network Request Timeline
+
+Network request waterfall visualization with HAR export.
+
+```typescript
+import { getNetworkTimeline, createNetworkTimeline } from '@clarity-chat/dev-tools'
+
+const timeline = createNetworkTimeline({ autoIntercept: true })
+
+// Manually track requests
+const tracker = timeline.startRequest({
+  method: 'POST',
+  url: 'https://api.openai.com/v1/chat/completions',
+  requestHeaders: { 'Content-Type': 'application/json' },
+  type: 'fetch',
+  tags: ['ai', 'chat']
+})
+
+tracker.recordTTFB() // Call when first byte received
+
+tracker.complete({
+  status: 200,
+  statusText: 'OK',
+  responseHeaders: { 'content-type': 'application/json' },
+  responseSize: 1024,
+})
+
+// Get statistics
+const stats = timeline.getStats()
+console.log(`Avg response time: ${stats.avgDuration}ms`)
+console.log(`Avg TTFB: ${stats.avgTTFB}ms`)
+
+// Generate ASCII waterfall chart
+const waterfall = timeline.generateWaterfall()
+console.log(waterfall)
+
+// Export as HAR for browser dev tools
+const har = timeline.exportHAR()
+
+// Print formatted report
+timeline.printReport()
+```
+
+### Error Recovery Tracker
+
+Error recovery monitoring with categorization and recommendations.
+
+```typescript
+import { getErrorTracker, createErrorTracker } from '@clarity-chat/dev-tools'
+
+const tracker = getErrorTracker()
+
+// Track an error
+const event = tracker.track({
+  error: new Error('Network request failed'),
+  component: 'ChatProvider',
+  context: { userId: '123' }
+})
+
+// Track recovery attempt
+tracker.trackRecovery(event.id, {
+  strategy: 'retry',
+  successful: true,
+  duration: 150
+})
+
+// Mark as resolved
+tracker.resolve(event.id)
+
+// Get statistics
+const stats = tracker.getStats()
+console.log(`Recovery rate: ${(stats.recoveryRate * 100).toFixed(1)}%`)
+console.log(`Active errors: ${stats.activeErrors}`)
+
+// Get recommendations
+const recommendations = tracker.getRecommendations()
+recommendations.forEach(rec => console.log(`💡 ${rec}`))
+
+// View error groups (similar errors grouped together)
+const groups = tracker.getGroups()
+
+// Print formatted report
+tracker.printReport()
+```
+
+### Developer Notifications
+
+Real-time developer feedback with toast-style notifications.
+
+```typescript
+import { getDevNotifications, devNotify } from '@clarity-chat/dev-tools'
+
+const notifications = getDevNotifications()
+
+// Quick notifications
+devNotify.info('Build Started', 'Compiling TypeScript...')
+devNotify.success('Build Complete', 'No errors found!')
+devNotify.warning('Deprecation', 'useOldHook is deprecated')
+devNotify.error('Build Failed', 'TypeScript error in index.ts')
+devNotify.performance('Slow Render', 'ChatList took 250ms to render')
+devNotify.build('HMR Update', 'Module updated successfully')
+
+// Full notification API
+notifications.notify({
+  type: 'warning',
+  title: 'High Memory Usage',
+  message: 'Memory usage is at 85%',
+  priority: 'high',
+  duration: 10000, // 10 seconds, 0 = persistent
+  actions: [
+    { label: 'Clear Cache', handler: () => clearCache(), primary: true },
+    { label: 'Dismiss', handler: () => {} }
+  ]
+})
+
+// Subscribe to notifications
+notifications.subscribe((notification) => {
+  console.log(`[${notification.type}] ${notification.title}`)
+})
+
+// Filter by channel
+const errors = notifications.getActive('errors')
+const performance = notifications.getActive('performance')
+
+// Dismiss notifications
+notifications.dismiss(notificationId)
+notifications.dismissAll()
+
+// Print summary
+notifications.printSummary()
+```
+
+## React Hooks for Enhanced Tools
+
+```tsx
+import {
+  useComponentMonitor,
+  useTokenTracker,
+  useStateDiff,
+  useErrorTracker,
+  useDevNotifications,
+} from '@clarity-chat/dev-tools'
+
+// Component performance monitoring
+function MyComponent() {
+  const { metrics, renderCount, warnings } = useComponentMonitor({
+    componentName: 'MyComponent',
+    enabled: process.env.NODE_ENV === 'development'
+  })
+
+  return <div>Renders: {renderCount}</div>
+}
+
+// Token tracking
+function ChatProvider() {
+  const { stats, track, estimateCost } = useTokenTracker()
+
+  const handleResponse = (response) => {
+    track({
+      provider: 'openai',
+      model: 'gpt-4o-mini',
+      usage: response.usage
+    })
+  }
+
+  return <div>Total cost: ${stats.totalCost.toFixed(4)}</div>
+}
+
+// State diff tracking
+function StateDebugger({ state }) {
+  const { currentDiff, snapshots } = useStateDiff(state, {
+    label: 'App State',
+    autoTrack: true
+  })
+
+  return <div>Changes: {currentDiff?.stats.totalChanges ?? 0}</div>
+}
+
+// Error tracking
+function ErrorBoundary({ children }) {
+  const { track, activeErrors } = useErrorTracker({
+    component: 'ErrorBoundary'
+  })
+
+  return <div>{children}</div>
+}
+
+// Developer notifications
+function DevPanel() {
+  const { info, success, error, active } = useDevNotifications()
+
+  return (
+    <button onClick={() => info('Test', 'Test notification')}>
+      Notify ({active.length} active)
+    </button>
+  )
+}
 ```
 
 ## React 19 Components and Hooks

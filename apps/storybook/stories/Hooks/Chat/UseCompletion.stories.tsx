@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useCompletion } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -6,10 +5,10 @@ import { useState } from 'react'
 
 /**
  * **useCompletion Hook**
- * 
+ *
  * Hook for managing text completion state with streaming support.
  * Ideal for single-turn completions, autocomplete, and text generation.
- * 
+ *
  * **Key Features:**
  * - Streaming text completion
  * - Single-turn interactions
@@ -17,7 +16,7 @@ import { useState } from 'react'
  * - Request cancellation
  * - Custom API endpoints
  * - Callback support
- * 
+ *
  * **Use Cases:**
  * - Text autocomplete
  * - Single-turn AI completions
@@ -52,7 +51,7 @@ provide a prompt and receive a completion.
 const { completion, complete, isLoading, error, stop } = useCompletion({
   api: '/api/completion',
   onFinish: (prompt, completion) => {
-    SecureLogger.debug('Completed:', completion)
+    console.log('Completed:', completion)
   },
 })
 
@@ -72,10 +71,10 @@ type Story = StoryObj<typeof meta>
 function BasicCompletionDemo() {
   const { completion, complete, isLoading, error, stop } = useCompletion({
     onFinish: (prompt, completion) => {
-      SecureLogger.debug('Completion finished:', { prompt, completion })
+      console.log('Completion finished:', { prompt, completion })
     },
     onError: (error) => {
-      SecureLogger.error('Completion error:', error)
+      console.error('Completion error:', error)
     },
   })
 
@@ -138,7 +137,8 @@ export const BasicUsage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic completion example with prompt input and streaming output.',
+        story:
+          'Basic completion example with prompt input and streaming output.',
       },
     },
   },
@@ -149,7 +149,7 @@ function MockAPIDemo() {
     // Mock API endpoint
     api: '/api/completion',
     onFinish: (prompt, completion) => {
-      SecureLogger.debug('Mock completion finished')
+      console.log('Mock completion finished')
     },
   })
 
@@ -157,7 +157,7 @@ function MockAPIDemo() {
 
   const handleComplete = async () => {
     if (!prompt.trim()) return
-    
+
     // Simulate API call with streaming
     const mockStream = new ReadableStream({
       async start(controller) {
@@ -246,7 +246,7 @@ export const WithMockAPI: Story = {
 function ErrorHandlingDemo() {
   const { completion, complete, isLoading, error, stop } = useCompletion({
     onError: (error) => {
-      SecureLogger.error('Error caught:', error)
+      console.error('Error caught:', error)
     },
   })
 
@@ -254,23 +254,25 @@ function ErrorHandlingDemo() {
 
   const handleComplete = async () => {
     if (!prompt.trim()) return
-    
+
     try {
       // Simulate an error
       if (prompt.toLowerCase().includes('error')) {
         throw new Error('Simulated API error')
       }
-      
+
       await complete(prompt)
     } catch (err) {
-      SecureLogger.error('Completion failed:', err)
+      console.error('Completion failed:', err)
     }
   }
 
   return (
     <div className="space-y-4 max-w-2xl">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Prompt (try "error" to trigger error):</label>
+        <label className="text-sm font-medium">
+          Prompt (try "error" to trigger error):
+        </label>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -294,8 +296,12 @@ function ErrorHandlingDemo() {
 
       {error && (
         <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <div className="font-medium text-red-800 dark:text-red-200">Error:</div>
-          <div className="text-sm text-red-700 dark:text-red-300 mt-1">{error.message}</div>
+          <div className="font-medium text-red-800 dark:text-red-200">
+            Error:
+          </div>
+          <div className="text-sm text-red-700 dark:text-red-300 mt-1">
+            {error.message}
+          </div>
         </div>
       )}
 
@@ -325,7 +331,7 @@ export const ErrorHandling: Story = {
 function CancellationDemo() {
   const { completion, complete, isLoading, stop } = useCompletion({
     onFinish: (prompt, completion) => {
-      SecureLogger.debug('Completion finished (not cancelled)')
+      console.log('Completion finished (not cancelled)')
     },
   })
 
@@ -384,7 +390,8 @@ export const Cancellation: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Cancelling an in-progress completion request using the stop() function.',
+        story:
+          'Cancelling an in-progress completion request using the stop() function.',
       },
     },
   },

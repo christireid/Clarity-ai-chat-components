@@ -1,9 +1,7 @@
 'use client'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { useEffect } from 'react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Shared Error Page Component
  *
@@ -30,7 +28,7 @@ export function ErrorPage({
   description,
 }: ErrorPageProps) {
   useEffect(() => {
-    SecureLogger.error('Application error:', error)
+    console.error('Application error:', error)
   }, [error])
 
   return (

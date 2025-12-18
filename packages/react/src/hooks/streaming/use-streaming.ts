@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -62,8 +61,8 @@ export interface UseStreamingReturn {
  * @example
  * ```tsx
  * const { content, isStreaming, startStreaming, stopStreaming } = useStreaming({
- *   onChunk: (chunk) => logger.debug('Received:', chunk),
- *   onComplete: (full) => logger.debug('Done!', full)
+ *   onChunk: (chunk) => console.log('Received:', chunk),
+ *   onComplete: (full) => console.log('Done!', full)
  * })
  * 
  * // Start streaming with cancellation support

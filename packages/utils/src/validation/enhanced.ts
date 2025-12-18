@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Validation Utilities
  * 
@@ -35,7 +34,6 @@ import { logger } from '@clarity-chat/utils/logger';
  * ```
  */
 
-import { error } from '../logger';
 
 // ============================================================================
 // Type Guards (from existing validation/index.ts)
@@ -553,7 +551,7 @@ export function parseJson<T = unknown>(
     }
     return { success: true, data: parsed as T };
   } catch (parseError) {
-    logger.error('JSON parsing failed', { jsonString, error: parseError instanceof Error ? parseError.message : String(parseError) });
+    console.error('JSON parsing failed', { jsonString, error: parseError instanceof Error ? parseError.message : String(parseError) });
     return { success: false, errors: [parseError instanceof Error ? parseError.message : 'Invalid JSON'] };
   }
 }

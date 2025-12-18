@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -9,12 +10,12 @@ import {
   cn,
   type ButtonState,
 } from '@clarity-chat/primitives'
-import { SendIcon } from './icons'
+import { SendIcon } from '../ui/icons'
 import {
   useRequestDeduplication,
   isDebouncedError,
-} from '../hooks/use-request-deduplication'
-import { DURATION_SECONDS } from '../animations/constants'
+} from '../../hooks/resilience/use-request-deduplication'
+import { DURATION_SECONDS } from '../../animations/constants'
 
 export interface ChatInputProps {
   value: string
@@ -151,7 +152,7 @@ export function ChatInput({
   // Development-only runtime validation (removed from production for performance)
   if (process.env.NODE_ENV === 'development') {
     if (typeof value !== 'string') {
-      logger.logger.error(
+      logger.error(
         'ChatInput: "value" prop must be a string.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
@@ -160,7 +161,7 @@ export function ChatInput({
     }
 
     if (typeof onChange !== 'function') {
-      logger.logger.error(
+      logger.error(
         'ChatInput: "onChange" prop must be a function.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
@@ -169,7 +170,7 @@ export function ChatInput({
     }
 
     if (typeof onSubmit !== 'function') {
-      logger.logger.error(
+      logger.error(
         'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
           'Example:\n' +
           '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
@@ -259,7 +260,7 @@ export function ChatInput({
         return
       }
       setButtonState('error')
-      logger.logger.error('[ChatInput] Submit error:', error)
+      logger.error('[ChatInput] Submit error:', error)
       // Auto-reset after showing error
       setTimeout(() => setButtonState('idle'), 2000)
     }

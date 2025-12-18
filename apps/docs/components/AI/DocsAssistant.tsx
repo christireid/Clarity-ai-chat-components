@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -132,7 +131,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const { copy } = useClipboard({
     timeout: CLIPBOARD_TIMEOUT_MS,
     onSuccess: () => toast.success('Copied to clipboard'),
-    onError: () => toast.logger.error('Failed to copy'),
+    onError: () => toast.error('Failed to copy'),
   })
 
   // Focus trap for modal accessibility
@@ -233,7 +232,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     (branchId: string) => {
       const result = switchBranchInternal(branchId, messages)
       if (!result) {
-        toast.logger.error('Branch not found')
+        toast.error('Branch not found')
       }
     },
     [switchBranchInternal, messages, toast]
@@ -268,7 +267,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       if (result.success) {
         toast.success('Opening code in playground...')
       } else {
-        toast.logger.error(result.error || 'Failed to open playground')
+        toast.error(result.error || 'Failed to open playground')
         if (result.url) {
           navigator.clipboard?.writeText(result.url)
           toast.info('Playground URL copied to clipboard')
@@ -688,7 +687,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         </div>
       )}
       onError={(error, errorInfo) => {
-        logger.logger.error('[DocsAssistant] Error:', error, errorInfo)
+        console.error('[DocsAssistant] Error:', error, errorInfo)
       }}
       onReset={() => {
         toast.info('Documentation Assistant has been reset')

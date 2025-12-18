@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -17,7 +16,7 @@ import {
 } from './create-theme'
 import type { CompleteThemeConfig, PartialThemeConfig } from './theme-config'
 import type { ThemeContextValue } from './theme-types'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,

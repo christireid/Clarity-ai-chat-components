@@ -20,4 +20,4 @@ export {
   type ClarityChatMemoryInfo,
   type ClarityChatTokenStats,
   type ClarityChatErrorInfo,
-} from './use-clarity-chat/index'
+} from '../use-clarity-chat/index'

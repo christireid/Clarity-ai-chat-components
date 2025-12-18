@@ -1,6 +1,5 @@
 /**
  * Advanced Prompt Optimization Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  *
  * Demonstrates Phase 2 features:
  * - Automatic prompt optimization with compiler-like pipeline
@@ -73,7 +72,7 @@ export function AdvancedOptimizedChat() {
       routing.routingDecision.shouldSwitch &&
       routing.routingDecision.recommendedModel
     ) {
-      SecureLogger.debug(
+      console.log(
         'Model switch recommended:',
         routing.routingDecision.reasoning
       )

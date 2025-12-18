@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Cpu, Workflow, Zap } from 'lucide-react'

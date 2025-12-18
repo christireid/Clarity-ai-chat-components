@@ -11,12 +11,12 @@ import { useState, useMemo, useCallback, useEffect, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   TrendingUp,
-  TrendingDown,
+  ChevronDown,
   Activity,
   Clock,
   BarChart2,
   LineChart,
-  CandlestickChart,
+  BarChart3,
   Minus,
 } from 'lucide-react'
 import type { ChartData, ChartDataPoint } from '../../lib/types'
@@ -30,9 +30,13 @@ interface InteractiveStockChartProps {
 type ChartType = 'line' | 'candlestick' | 'area'
 
 const TIMEFRAMES = ['1D', '1W', '1M', '3M', '1Y', '5Y']
-const CHART_TYPES: { type: ChartType; icon: React.ElementType; label: string }[] = [
+const CHART_TYPES: {
+  type: ChartType
+  icon: React.ElementType
+  label: string
+}[] = [
   { type: 'line', icon: LineChart, label: 'Line' },
-  { type: 'candlestick', icon: CandlestickChart, label: 'Candlestick' },
+  { type: 'candlestick', icon: BarChart3, label: 'Candlestick' },
   { type: 'area', icon: BarChart2, label: 'Area' },
 ]
 
@@ -48,7 +52,10 @@ function formatPrice(price: number): string {
 function formatDate(timestamp: string, timeframe: string): string {
   const date = new Date(timestamp)
   if (timeframe === '1D') {
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
   }
   if (timeframe === '1W' || timeframe === '1M') {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -142,13 +149,25 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
   const width = isMobile ? 400 : 600
   const chartHeight = height - (isMobile ? 100 : 80)
   const volumeHeight = showVolume ? 50 : 0
-  const padding = { top: 20, right: isMobile ? 10 : 20, bottom: 30 + volumeHeight, left: isMobile ? 45 : 60 }
+  const padding = {
+    top: 20,
+    right: isMobile ? 10 : 20,
+    bottom: 30 + volumeHeight,
+    left: isMobile ? 45 : 60,
+  }
   const chartWidth = width - padding.left - padding.right
-  const chartInnerHeight = chartHeight - padding.top - padding.bottom - volumeHeight
+  const chartInnerHeight =
+    chartHeight - padding.top - padding.bottom - volumeHeight
 
   // Calculate SMA indicators
-  const sma20 = useMemo(() => calculateSMA(data.dataPoints, 20), [data.dataPoints])
-  const sma50 = useMemo(() => calculateSMA(data.dataPoints, 50), [data.dataPoints])
+  const sma20 = useMemo(
+    () => calculateSMA(data.dataPoints, 20),
+    [data.dataPoints]
+  )
+  const sma50 = useMemo(
+    () => calculateSMA(data.dataPoints, 50),
+    [data.dataPoints]
+  )
 
   // Calculate scales
   const {
@@ -171,12 +190,19 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
 
     const pts = data.dataPoints.map((point, i) => {
       const x = padding.left + (i / (data.dataPoints.length - 1)) * chartWidth
-      const y = padding.top + (1 - (point.close - min) / range) * chartInnerHeight
-      const yOpen = padding.top + (1 - (point.open - min) / range) * chartInnerHeight
-      const yHigh = padding.top + (1 - (point.high - min) / range) * chartInnerHeight
-      const yLow = padding.top + (1 - (point.low - min) / range) * chartInnerHeight
+      const y =
+        padding.top + (1 - (point.close - min) / range) * chartInnerHeight
+      const yOpen =
+        padding.top + (1 - (point.open - min) / range) * chartInnerHeight
+      const yHigh =
+        padding.top + (1 - (point.high - min) / range) * chartInnerHeight
+      const yLow =
+        padding.top + (1 - (point.low - min) / range) * chartInnerHeight
       const volumeY =
-        chartHeight - padding.bottom + 5 + (1 - point.volume / maxVol) * (volumeHeight - 10)
+        chartHeight -
+        padding.bottom +
+        5 +
+        (1 - point.volume / maxVol) * (volumeHeight - 10)
       const volumeBarHeight = (point.volume / maxVol) * (volumeHeight - 10)
       return { x, y, yOpen, yHigh, yLow, volumeY, volumeBarHeight, data: point }
     })
@@ -195,7 +221,9 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
       return { x, y }
     })
 
-    const linePathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+    const linePathD = pts
+      .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+      .join(' ')
 
     const areaPathD = `${linePathD} L ${pts[pts.length - 1].x} ${chartHeight - padding.bottom - volumeHeight} L ${pts[0].x} ${chartHeight - padding.bottom - volumeHeight} Z`
 
@@ -209,7 +237,16 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
       linePath: linePathD,
       areaPath: areaPathD,
     }
-  }, [data.dataPoints, chartWidth, chartInnerHeight, chartHeight, padding, volumeHeight, sma20, sma50])
+  }, [
+    data.dataPoints,
+    chartWidth,
+    chartInnerHeight,
+    chartHeight,
+    padding,
+    volumeHeight,
+    sma20,
+    sma50,
+  ])
 
   // Y-axis labels
   const yLabels = useMemo(() => {
@@ -245,7 +282,10 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
   const hoveredPoint = hoveredIndex !== null ? points[hoveredIndex] : null
 
   // Candlestick bar width
-  const candleWidth = Math.max(3, Math.min(12, chartWidth / data.dataPoints.length - 2))
+  const candleWidth = Math.max(
+    3,
+    Math.min(12, chartWidth / data.dataPoints.length - 2)
+  )
 
   return (
     <motion.div
@@ -270,7 +310,9 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg sm:text-xl font-bold text-foreground">{data.symbol}</span>
+                <span className="text-lg sm:text-xl font-bold text-foreground">
+                  {data.symbol}
+                </span>
                 <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">
                   {data.name}
                 </span>
@@ -285,7 +327,7 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
                   {isPositive ? (
                     <TrendingUp className="w-3 h-3" aria-hidden="true" />
                   ) : (
-                    <TrendingDown className="w-3 h-3" aria-hidden="true" />
+                    <ChevronDown className="w-3 h-3" aria-hidden="true" />
                   )}
                   {isPositive ? '+' : ''}
                   {data.change.toFixed(2)} ({isPositive ? '+' : ''}
@@ -443,7 +485,7 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
               <motion.path
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
+                transition={{ delay: 0.3, duration: durations.slow }}
                 d={areaPath}
                 fill={`url(#${gradientId})`}
               />
@@ -454,7 +496,11 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
               <motion.path
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ delay: 0.2, duration: 1, ease: 'easeOut' }}
+                transition={{
+                  delay: 0.2,
+                  duration: durations.slower,
+                  ease: 'easeOut',
+                }}
                 d={linePath}
                 fill="none"
                 stroke={primaryColor}
@@ -500,7 +546,7 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
               <motion.path
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
+                transition={{ delay: 0.4, duration: durations.slower }}
                 d={
                   sma20Points
                     .filter((p) => p !== null)
@@ -520,7 +566,7 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
               <motion.path
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
+                transition={{ delay: 0.5, duration: durations.slower }}
                 d={
                   sma50Points
                     .filter((p) => p !== null)
@@ -543,7 +589,12 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
                   <rect
                     key={`vol-${i}`}
                     x={point.x - candleWidth / 2}
-                    y={chartHeight - padding.bottom + 5 + (volumeHeight - 10 - point.volumeBarHeight)}
+                    y={
+                      chartHeight -
+                      padding.bottom +
+                      5 +
+                      (volumeHeight - 10 - point.volumeBarHeight)
+                    }
                     width={candleWidth}
                     height={point.volumeBarHeight}
                     fill={isBullish ? '#22c55e' : '#ef4444'}
@@ -570,7 +621,11 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
             {/* Hover indicator */}
             <AnimatePresence>
               {hoveredPoint && (
-                <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <motion.g
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
                   {/* Vertical line */}
                   <line
                     x1={hoveredPoint.x}
@@ -583,8 +638,18 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
                     opacity="0.5"
                   />
                   {/* Dot */}
-                  <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r="6" fill={primaryColor} />
-                  <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r="3" fill="white" />
+                  <circle
+                    cx={hoveredPoint.x}
+                    cy={hoveredPoint.y}
+                    r="6"
+                    fill={primaryColor}
+                  />
+                  <circle
+                    cx={hoveredPoint.x}
+                    cy={hoveredPoint.y}
+                    r="3"
+                    fill="white"
+                  />
                 </motion.g>
               )}
             </AnimatePresence>
@@ -599,7 +664,9 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
                 exit={{ opacity: 0 }}
                 className="absolute bg-white dark:bg-gray-800 shadow-lg rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 pointer-events-none z-10 text-xs sm:text-sm"
                 style={{
-                  left: Math.min(Math.max(10, (hoveredPoint.x / width) * 100), 70) + '%',
+                  left:
+                    Math.min(Math.max(10, (hoveredPoint.x / width) * 100), 70) +
+                    '%',
                   top: Math.max(10, hoveredPoint.y - 90),
                 }}
               >
@@ -609,16 +676,26 @@ export const InteractiveStockChart = memo(function InteractiveStockChart({
                 {chartType === 'candlestick' ? (
                   <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] sm:text-xs">
                     <span className="text-muted-foreground">O:</span>
-                    <span className="font-medium">{formatPrice(hoveredPoint.data.open)}</span>
+                    <span className="font-medium">
+                      {formatPrice(hoveredPoint.data.open)}
+                    </span>
                     <span className="text-muted-foreground">H:</span>
-                    <span className="font-medium">{formatPrice(hoveredPoint.data.high)}</span>
+                    <span className="font-medium">
+                      {formatPrice(hoveredPoint.data.high)}
+                    </span>
                     <span className="text-muted-foreground">L:</span>
-                    <span className="font-medium">{formatPrice(hoveredPoint.data.low)}</span>
+                    <span className="font-medium">
+                      {formatPrice(hoveredPoint.data.low)}
+                    </span>
                     <span className="text-muted-foreground">C:</span>
-                    <span className="font-medium">{formatPrice(hoveredPoint.data.close)}</span>
+                    <span className="font-medium">
+                      {formatPrice(hoveredPoint.data.close)}
+                    </span>
                   </div>
                 ) : (
-                  <div className="font-semibold">{formatPrice(hoveredPoint.data.close)}</div>
+                  <div className="font-semibold">
+                    {formatPrice(hoveredPoint.data.close)}
+                  </div>
                 )}
                 <div className="text-[9px] sm:text-[10px] text-muted-foreground mt-1">
                   Vol: {formatVolume(hoveredPoint.data.volume)}

@@ -1,5 +1,4 @@
 #!/usr/bin/env npx ts-node
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Batch Add FeedbackWidget to Hook Pages
  *

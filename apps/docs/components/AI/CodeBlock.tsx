@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
@@ -100,7 +99,7 @@ export function CodeBlock({
       const highlighted = Prism.highlight(code, grammar, language)
       setHighlightedCode(highlighted)
     } catch (error) {
-      logger.logger.error('Prism highlighting error:', error)
+      console.error('Prism highlighting error:', error)
       setHighlightedCode(code)
     }
   }, [code, language])
@@ -132,8 +131,8 @@ export function CodeBlock({
 
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      logger.logger.error('Failed to copy code:', error)
-      toast.logger.error(toastMessages.copyFailed, {
+      console.error('Failed to copy code:', error)
+      toast.error(toastMessages.copyFailed, {
         action: {
           label: 'Try again',
           onClick: () => handleCopy(),
@@ -155,8 +154,8 @@ export function CodeBlock({
       URL.revokeObjectURL(url)
       toast.success(`Downloaded ${filename || `code.${language}`}`)
     } catch (error) {
-      logger.logger.error('Failed to download code:', error)
-      toast.logger.error('Failed to download code', {
+      console.error('Failed to download code:', error)
+      toast.error('Failed to download code', {
         action: {
           label: 'Retry',
           onClick: () => handleDownload(),

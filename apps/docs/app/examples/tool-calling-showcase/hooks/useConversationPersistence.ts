@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -110,7 +109,7 @@ export function useConversationPersistence(
         }
       }
     } catch (error) {
-      logger.logger.error('Failed to load conversations:', error)
+      console.error('Failed to load conversations:', error)
     }
     setIsLoaded(true)
   }, [storageKey])
@@ -128,7 +127,7 @@ export function useConversationPersistence(
         }))
         localStorage.setItem(storageKey, JSON.stringify(serialized))
       } catch (error) {
-        logger.logger.error('Failed to persist conversations:', error)
+        console.error('Failed to persist conversations:', error)
       }
     },
     [storageKey]
@@ -305,7 +304,7 @@ export function useConversationPersistence(
 
         return deserialized.length
       } catch (error) {
-        logger.logger.error('Failed to import sessions:', error)
+        console.error('Failed to import sessions:', error)
         return 0
       }
     },

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Persistent Semantic Cache with IndexedDB
  *
@@ -286,7 +285,7 @@ export class PersistentSemanticCache {
       this.stats.misses++
       return null
     } catch (error) {
-      logger.warn('[PersistentSemanticCache] Cache check failed:', error)
+      console.warn('[PersistentSemanticCache] Cache check failed:', error)
       this.stats.misses++
       return null
     }
@@ -302,11 +301,11 @@ export class PersistentSemanticCache {
   ): Promise<void> {
     // Validate inputs
     if (!query || typeof query !== 'string') {
-      logger.warn('[PersistentSemanticCache] Invalid query - skipping store')
+      console.warn('[PersistentSemanticCache] Invalid query - skipping store')
       return
     }
     if (!response || typeof response !== 'string') {
-      logger.warn('[PersistentSemanticCache] Invalid response - skipping store')
+      console.warn('[PersistentSemanticCache] Invalid response - skipping store')
       return
     }
 
@@ -331,7 +330,7 @@ export class PersistentSemanticCache {
       // Enforce max entries (LRU eviction)
       await this.enforceMaxEntries(db)
     } catch (error) {
-      logger.warn('[PersistentSemanticCache] Store failed:', error)
+      console.warn('[PersistentSemanticCache] Store failed:', error)
     }
   }
 
@@ -363,7 +362,7 @@ export class PersistentSemanticCache {
 
       return matches.map((m) => m.entry)
     } catch (error) {
-      logger.warn('[PersistentSemanticCache] findSimilar failed:', error)
+      console.warn('[PersistentSemanticCache] findSimilar failed:', error)
       return []
     }
   }
@@ -386,7 +385,7 @@ export class PersistentSemanticCache {
 
       return pruned
     } catch (error) {
-      logger.warn('[PersistentSemanticCache] Prune failed:', error)
+      console.warn('[PersistentSemanticCache] Prune failed:', error)
       return 0
     }
   }
@@ -408,7 +407,7 @@ export class PersistentSemanticCache {
 
       this.stats = { hits: 0, misses: 0, tokensSaved: 0 }
     } catch (error) {
-      logger.warn('[PersistentSemanticCache] Clear failed:', error)
+      console.warn('[PersistentSemanticCache] Clear failed:', error)
     }
   }
 
@@ -445,7 +444,7 @@ export class PersistentSemanticCache {
         dbSizeBytes,
       }
     } catch (error) {
-      logger.warn('[PersistentSemanticCache] getStats failed:', error)
+      console.warn('[PersistentSemanticCache] getStats failed:', error)
       return {
         size: 0,
         hits: this.stats.hits,

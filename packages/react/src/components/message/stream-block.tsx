@@ -2,11 +2,20 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
-import { useStreamableUI, type StreamableValueLike, type UseStreamableUIOptions } from '../hooks/use-streamable-ui'
+import {
+  useStreamableUI,
+  type StreamableValueLike,
+  type UseStreamableUIOptions,
+} from '../../hooks/streaming/use-streamable-ui'
 
 export interface StreamBlockProps<T = React.ReactNode> {
   /** Source stream (StreamableValue, async iterable, promise, or readable stream) */
-  source?: StreamableValueLike<T> | AsyncIterable<T> | PromiseLike<T> | ReadableStream<T | Uint8Array | string> | null
+  source?:
+    | StreamableValueLike<T>
+    | AsyncIterable<T>
+    | PromiseLike<T>
+    | ReadableStream<T | Uint8Array | string>
+    | null
   /** How incoming fragments should be accumulated */
   mode?: 'append' | 'replace'
   /** Render function for each streamed fragment */
@@ -93,7 +102,9 @@ export function StreamBlock<T = React.ReactNode>({
     >
       {hasContent
         ? items.map((item, index) => (
-            <React.Fragment key={index}>{renderFragment(item, index)}</React.Fragment>
+            <React.Fragment key={index}>
+              {renderFragment(item, index)}
+            </React.Fragment>
           ))
         : fallback}
       {showIndicator && status === 'streaming' && (
@@ -102,4 +113,3 @@ export function StreamBlock<T = React.ReactNode>({
     </Component>
   )
 }
-

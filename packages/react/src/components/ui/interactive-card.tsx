@@ -10,10 +10,12 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { INTERACTION_VARIANTS } from '../animations'
+import {
+  INTERACTION_VARIANTS,
+  DURATION_SECONDS as durations,
+} from '../../animations'
 
-export interface InteractiveCardProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Whether card is clickable */
   interactive?: boolean
   /** Whether card is selected */
@@ -50,163 +52,161 @@ export const InteractiveCard = React.memo(function InteractiveCard({
   ref,
   ...props
 }: InteractiveCardProps) {
-    const [isHovered, setIsHovered] = React.useState(false)
-    const [ripples, setRipples] = React.useState<
-      { x: number; y: number; id: number }[]
-    >([])
+  const [isHovered, setIsHovered] = React.useState(false)
+  const [ripples, setRipples] = React.useState<
+    { x: number; y: number; id: number }[]
+  >([])
 
-    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-      if (disabled) return
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled) return
 
-      if (showRipple) {
-        const rect = e.currentTarget.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
-        const id = Date.now()
+    if (showRipple) {
+      const rect = e.currentTarget.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      const id = Date.now()
 
-        setRipples((prev) => [...prev, { x, y, id }])
-        setTimeout(() => {
-          setRipples((prev) => prev.filter((r) => r.id !== id))
-        }, 600)
-      }
-
-      onCardClick?.()
+      setRipples((prev) => [...prev, { x, y, id }])
+      setTimeout(() => {
+        setRipples((prev) => prev.filter((r) => r.id !== id))
+      }, 600)
     }
 
-    const hoverVariants = {
-      none: {},
-      subtle: {
-        y: -2,
-        boxShadow:
-          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
-      },
-      medium: {
-        y: -4,
-        boxShadow:
-          '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
-      },
-      strong: {
-        y: -8,
-        boxShadow:
-          '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
-      },
-    }
+    onCardClick?.()
+  }
 
-    // Extract HTML event handlers that conflict with Framer Motion props
-    const { 
-      onDrag: _onDrag, 
-      onDragStart: _onDragStart, 
-      onDragEnd: _onDragEnd, 
-      onDragOver: _onDragOver, 
-      onDragEnter: _onDragEnter, 
-      onDragLeave: _onDragLeave, 
-      onDrop: _onDrop,
-      animate: _animate,
-      onAnimationStart: _onAnimationStart,
-      onAnimationEnd: _onAnimationEnd,
-      onAnimationIteration: _onAnimationIteration,
-      ...motionProps 
-    } = props as InteractiveCardProps & {
-      onDrag?: React.DragEventHandler<HTMLDivElement>
-      onDragStart?: React.DragEventHandler<HTMLDivElement>
-      onDragEnd?: React.DragEventHandler<HTMLDivElement>
-      onDragOver?: React.DragEventHandler<HTMLDivElement>
-      onDragEnter?: React.DragEventHandler<HTMLDivElement>
-      onDragLeave?: React.DragEventHandler<HTMLDivElement>
-      onDrop?: React.DragEventHandler<HTMLDivElement>
-      animate?: unknown
-      onAnimationStart?: React.AnimationEventHandler<HTMLDivElement>
-      onAnimationEnd?: React.AnimationEventHandler<HTMLDivElement>
-      onAnimationIteration?: React.AnimationEventHandler<HTMLDivElement>
-    }
+  const hoverVariants = {
+    none: {},
+    subtle: {
+      y: -2,
+      boxShadow:
+        '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
+    },
+    medium: {
+      y: -4,
+      boxShadow:
+        '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
+    },
+    strong: {
+      y: -8,
+      boxShadow:
+        '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+      transition: { duration: durations.normal, ease: [0.4, 0, 0.2, 1] },
+    },
+  }
 
-    // Leveraging Framer Motion v12's improved type inference
-    // Determine animate prop - use custom hover animation if hovered, otherwise use prop or undefined
-    const animateValue: import('framer-motion').TargetAndTransition | undefined = isHovered && !disabled && interactive
-      ? {
+  // Extract HTML event handlers that conflict with Framer Motion props
+  const {
+    onDrag: _onDrag,
+    onDragStart: _onDragStart,
+    onDragEnd: _onDragEnd,
+    onDragOver: _onDragOver,
+    onDragEnter: _onDragEnter,
+    onDragLeave: _onDragLeave,
+    onDrop: _onDrop,
+    animate: _animate,
+    onAnimationStart: _onAnimationStart,
+    onAnimationEnd: _onAnimationEnd,
+    onAnimationIteration: _onAnimationIteration,
+    ...motionProps
+  } = props as InteractiveCardProps & {
+    onDrag?: React.DragEventHandler<HTMLDivElement>
+    onDragStart?: React.DragEventHandler<HTMLDivElement>
+    onDragEnd?: React.DragEventHandler<HTMLDivElement>
+    onDragOver?: React.DragEventHandler<HTMLDivElement>
+    onDragEnter?: React.DragEventHandler<HTMLDivElement>
+    onDragLeave?: React.DragEventHandler<HTMLDivElement>
+    onDrop?: React.DragEventHandler<HTMLDivElement>
+    animate?: unknown
+    onAnimationStart?: React.AnimationEventHandler<HTMLDivElement>
+    onAnimationEnd?: React.AnimationEventHandler<HTMLDivElement>
+    onAnimationIteration?: React.AnimationEventHandler<HTMLDivElement>
+  }
+
+  // Leveraging Framer Motion v12's improved type inference
+  // Determine animate prop - use custom hover animation if hovered, otherwise use prop or undefined
+  const animateValue: import('framer-motion').TargetAndTransition | undefined =
+    isHovered && !disabled && interactive
+      ? ({
           ...hoverVariants[hoverIntensity],
           scale: hoverIntensity !== 'none' ? 1.02 : 1,
-        } as import('framer-motion').TargetAndTransition
+        } as import('framer-motion').TargetAndTransition)
       : (_animate as import('framer-motion').TargetAndTransition | undefined)
 
-    return (
-      <motion.div
-        ref={ref}
-        className={cn(
-          'relative overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
-          interactive && 'cursor-pointer hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
-          disabled && 'opacity-50 cursor-not-allowed',
-          selected && 'ring-2 ring-primary/50 ring-offset-2 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
-          showFocusRing &&
-            'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
-          className
-        )}
-        tabIndex={interactive && !disabled ? 0 : undefined}
-        role={interactive ? 'button' : undefined}
-        aria-disabled={disabled}
-        aria-pressed={selected}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={handleClick}
-        onKeyDown={(e) => {
-          if (
-            interactive &&
-            !disabled &&
-            (e.key === 'Enter' || e.key === ' ')
-          ) {
-            e.preventDefault()
-            onCardClick?.()
-          }
-        }}
-        animate={animateValue}
-        whileTap={
-          !disabled && interactive
-            ? { scale: 0.98, transition: { duration: 0.1 } }
-            : undefined
+  return (
+    <motion.div
+      ref={ref}
+      className={cn(
+        'relative overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+        interactive &&
+          'cursor-pointer hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+        disabled && 'opacity-50 cursor-not-allowed',
+        selected &&
+          'ring-2 ring-primary/50 ring-offset-2 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+        showFocusRing &&
+          'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
+        className
+      )}
+      tabIndex={interactive && !disabled ? 0 : undefined}
+      role={interactive ? 'button' : undefined}
+      aria-disabled={disabled}
+      aria-pressed={selected}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (interactive && !disabled && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onCardClick?.()
         }
-        {...motionProps}
-      >
-        {/* Ripple effects */}
-        {showRipple && (
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {ripples.map((ripple) => (
-              <motion.div
-                key={ripple.id}
-                initial={{ scale: 0, opacity: 0.5 }}
-                animate={{ scale: 4, opacity: 0 }}
-                transition={{ duration: 0.6 }}
-                className="absolute w-20 h-20 -ml-10 -mt-10 rounded-full bg-primary/20"
-                style={{ left: ripple.x, top: ripple.y }}
-              />
-            ))}
-          </div>
-        )}
+      }}
+      animate={animateValue}
+      whileTap={
+        !disabled && interactive
+          ? { scale: 0.98, transition: { duration: durations.fast } }
+          : undefined
+      }
+      {...motionProps}
+    >
+      {/* Ripple effects */}
+      {showRipple && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {ripples.map((ripple) => (
+            <motion.div
+              key={ripple.id}
+              initial={{ scale: 0, opacity: 0.5 }}
+              animate={{ scale: 4, opacity: 0 }}
+              transition={{ duration: durations.slower }}
+              className="absolute w-20 h-20 -ml-10 -mt-10 rounded-full bg-primary/20"
+              style={{ left: ripple.x, top: ripple.y }}
+            />
+          ))}
+        </div>
+      )}
 
-        {/* Content */}
-        {children}
+      {/* Content */}
+      {children}
 
-        {/* Selected indicator */}
-        {selected && (
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            className="absolute top-0 left-0 right-0 h-1 bg-primary origin-left"
-          />
-        )}
-      </motion.div>
-    )
-  })
+      {/* Selected indicator */}
+      {selected && (
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          className="absolute top-0 left-0 right-0 h-1 bg-primary origin-left"
+        />
+      )}
+    </motion.div>
+  )
+})
 
 InteractiveCard.displayName = 'InteractiveCard'
 
 /**
  * Interactive button with enhanced states
  */
-export interface InteractiveButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface InteractiveButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Visual variant */
   variant?: 'default' | 'primary' | 'success' | 'destructive' | 'ghost'
   /** Size variant */
@@ -235,75 +235,81 @@ export function InteractiveButton({
   ref,
   ...props
 }: InteractiveButtonProps) {
-    const variantClasses = {
-      default: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-      primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
-      success: 'bg-success text-success-foreground hover:bg-success/90',
-      destructive:
-        'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-      ghost: 'hover:bg-accent hover:text-accent-foreground',
-    }
-
-    const sizeClasses = {
-      sm: 'h-8 px-3 text-sm',
-      md: 'h-10 px-4',
-      lg: 'h-12 px-6 text-lg',
-    }
-
-    // Extract HTML drag event handlers to avoid conflicts with Framer Motion
-    const { 
-      onDrag: _onDrag, 
-      onDragStart: _onDragStart, 
-      onDragEnd: _onDragEnd, 
-      onDragOver: _onDragOver, 
-      onDragEnter: _onDragEnter, 
-      onDragLeave: _onDragLeave, 
-      onDrop: _onDrop, 
-      ...motionButtonProps 
-    } = props as React.ButtonHTMLAttributes<HTMLButtonElement> & {
-      onDrag?: React.DragEventHandler<HTMLButtonElement>
-      onDragStart?: React.DragEventHandler<HTMLButtonElement>
-      onDragEnd?: React.DragEventHandler<HTMLButtonElement>
-      onDragOver?: React.DragEventHandler<HTMLButtonElement>
-      onDragEnter?: React.DragEventHandler<HTMLButtonElement>
-      onDragLeave?: React.DragEventHandler<HTMLButtonElement>
-      onDrop?: React.DragEventHandler<HTMLButtonElement>
-    }
-
-    return (
-      // @ts-expect-error - framer-motion HTMLMotionProps type complexity issue
-      <motion.button
-        ref={ref}
-        whileHover={
-          !disabled && !loading ? INTERACTION_VARIANTS.button.hover : undefined
-        }
-        whileTap={!disabled && !loading ? INTERACTION_VARIANTS.button.tap : undefined}
-        transition={INTERACTION_VARIANTS.button.transition}
-        disabled={disabled || loading}
-        className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2',
-          'disabled:opacity-50 disabled:pointer-events-none',
-          'hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px',
-          variantClasses[variant],
-          sizeClasses[size],
-          className
-        )}
-        {...motionButtonProps}
-      >
-        {loading && (
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
-          />
-        )}
-        {!loading && icon}
-        {children}
-        {!loading && iconRight}
-      </motion.button>
-    )
+  const variantClasses = {
+    default: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+    primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
+    success: 'bg-success text-success-foreground hover:bg-success/90',
+    destructive:
+      'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+    ghost: 'hover:bg-accent hover:text-accent-foreground',
   }
+
+  const sizeClasses = {
+    sm: 'h-8 px-3 text-sm',
+    md: 'h-10 px-4',
+    lg: 'h-12 px-6 text-lg',
+  }
+
+  // Extract HTML drag event handlers to avoid conflicts with Framer Motion
+  const {
+    onDrag: _onDrag,
+    onDragStart: _onDragStart,
+    onDragEnd: _onDragEnd,
+    onDragOver: _onDragOver,
+    onDragEnter: _onDragEnter,
+    onDragLeave: _onDragLeave,
+    onDrop: _onDrop,
+    ...motionButtonProps
+  } = props as React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    onDrag?: React.DragEventHandler<HTMLButtonElement>
+    onDragStart?: React.DragEventHandler<HTMLButtonElement>
+    onDragEnd?: React.DragEventHandler<HTMLButtonElement>
+    onDragOver?: React.DragEventHandler<HTMLButtonElement>
+    onDragEnter?: React.DragEventHandler<HTMLButtonElement>
+    onDragLeave?: React.DragEventHandler<HTMLButtonElement>
+    onDrop?: React.DragEventHandler<HTMLButtonElement>
+  }
+
+  return (
+    // @ts-expect-error - framer-motion HTMLMotionProps type complexity issue
+    <motion.button
+      ref={ref}
+      whileHover={
+        !disabled && !loading ? INTERACTION_VARIANTS.button.hover : undefined
+      }
+      whileTap={
+        !disabled && !loading ? INTERACTION_VARIANTS.button.tap : undefined
+      }
+      transition={INTERACTION_VARIANTS.button.transition}
+      disabled={disabled || loading}
+      className={cn(
+        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2',
+        'disabled:opacity-50 disabled:pointer-events-none',
+        'hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px',
+        variantClasses[variant],
+        sizeClasses[size],
+        className
+      )}
+      {...motionButtonProps}
+    >
+      {loading && (
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: durations.slower,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+          className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+        />
+      )}
+      {!loading && icon}
+      {children}
+      {!loading && iconRight}
+    </motion.button>
+  )
+}
 
 InteractiveButton.displayName = 'InteractiveButton'
 

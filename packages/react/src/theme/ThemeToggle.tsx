@@ -12,11 +12,12 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { useTheme } from './use-theme'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../animations/motion-safe'
+import { DURATION_SECONDS as durations } from '../animations/constants'
 
 /**
  * Props for ThemeToggle component
@@ -181,7 +182,7 @@ export function ThemeToggle({
               rotate: prefersReducedMotion ? 0 : 360,
             }}
             transition={{
-              duration: 1,
+              duration: durations.slower,
               repeat: Infinity,
               ease: 'linear',
             }}

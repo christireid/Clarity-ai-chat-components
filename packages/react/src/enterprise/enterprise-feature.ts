@@ -6,7 +6,11 @@
 import { EventEmitter } from 'events'
 import { getLogger, LogLevel } from '../cli/src/utils/logger.js'
 import { EnterpriseError, ThresholdExceededError } from './enterprise-errors.js'
-import { formatBytes, formatTimestamp, ensureDirectories } from '../primitives/src/lib/enterprise-utils.js'
+import {
+  formatBytes,
+  formatTimestamp,
+  ensureDirectories,
+} from '../primitives/src/lib/enterprise-utils.js'
 
 /**
  * Base enterprise configuration
@@ -44,10 +48,13 @@ export interface EnterpriseEvent<T = any> {
 /**
  * Abstract base class for enterprise features
  */
-export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TData> 
-  extends EventEmitter 
-  implements EnterpriseFeatureInterface<TConfig, TData> {
-  
+export abstract class EnterpriseFeature<
+  TConfig extends BaseEnterpriseConfig,
+  TData,
+>
+  extends EventEmitter
+  implements EnterpriseFeatureInterface<TConfig, TData>
+{
   protected config: TConfig
   protected logger: ReturnType<typeof getLogger>
   protected metrics: any[] = []
@@ -55,20 +62,23 @@ export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TD
 
   constructor(config: Partial<TConfig> = {}, namespace: string) {
     super()
-    
+
     // Merge with default config
     this.config = { ...this.getDefaultConfig(), ...config }
-    
+
     // Initialize logger
     this.logger = getLogger(namespace)
-    
+
     // Ensure directories exist
     this.ensureDirectories()
-    
+
     // Setup event handlers
     this.setupEventHandlers()
-    
-    this.logger.info('Enterprise feature initialized', { namespace, enabled: this.config.enabled })
+
+    this.logger.info('Enterprise feature initialized', {
+      namespace,
+      enabled: this.config.enabled,
+    })
   }
 
   /**
@@ -91,10 +101,10 @@ export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TD
    */
   protected ensureDirectories(): void {
     if (!this.config.outputDir) return
-    
+
     const directories = [this.config.outputDir]
     ensureDirectories(directories)
-    
+
     this.logger.debug('Directories ensured', { directories })
   }
 
@@ -107,11 +117,11 @@ export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TD
       this.on('error', (error) => {
         this.logger.error('Feature error', error)
       })
-      
+
       this.on('threshold-exceeded', (data) => {
         this.logger.warn('Threshold exceeded', data)
       })
-      
+
       this.on('processing-complete', (data) => {
         this.logger.info('Processing complete', data)
       })
@@ -121,7 +131,11 @@ export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TD
   /**
    * Check thresholds
    */
-  protected checkThresholds(metric: string, value: number, threshold?: number): void {
+  protected checkThresholds(
+    metric: string,
+    value: number,
+    threshold?: number
+  ): void {
     const actualThreshold = threshold ?? this.config.thresholds[metric]
     if (actualThreshold && value > actualThreshold) {
       const error = new ThresholdExceededError(actualThreshold, value, metric)
@@ -129,9 +143,9 @@ export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TD
         metric,
         value,
         threshold: actualThreshold,
-        error: error.message
+        error: error.message,
       })
-      
+
       if (this.config.failOnThreshold) {
         throw error
       }
@@ -144,14 +158,14 @@ export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TD
   protected updateMetrics(metric: any): void {
     this.metrics.push({
       ...metric,
-      timestamp: new Date()
+      timestamp: new Date(),
     })
-    
+
     // Keep only recent metrics
     if (this.metrics.length > this.maxMetricsHistory) {
       this.metrics = this.metrics.slice(-this.maxMetricsHistory)
     }
-    
+
     this.emit('metrics-updated', metric)
   }
 
@@ -168,13 +182,15 @@ export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TD
   updateConfig(newConfig: Partial<TConfig>): void {
     const oldConfig = { ...this.config }
     this.config = { ...this.config, ...newConfig }
-    
+
     this.emit('config-updated', {
       oldConfig,
-      newConfig: this.config
+      newConfig: this.config,
     })
-    
-    this.logger.info('Configuration updated', { changes: Object.keys(newConfig) })
+
+    this.logger.info('Configuration updated', {
+      changes: Object.keys(newConfig),
+    })
   }
 
   /**
@@ -211,25 +227,39 @@ export abstract class EnterpriseFeature<TConfig extends BaseEnterpriseConfig, TD
 }
 
 /**
+ * Constructor type for enterprise features
+ */
+export type EnterpriseFeatureConstructor<
+  TConfig extends BaseEnterpriseConfig,
+  TData,
+> = new (
+  config?: Partial<TConfig>,
+  namespace?: string
+) => EnterpriseFeatureInterface<TConfig, TData>
+
+/**
  * Enterprise feature factory
  */
-export function createEnterpriseFeature<TConfig extends BaseEnterpriseConfig, TData>(
+export function createEnterpriseFeature<
+  TConfig extends BaseEnterpriseConfig,
+  TData,
+>(
   name: string,
   config: {
     defaultConfig: TConfig
     validator: (config: TConfig) => void
     processor: (data: TData, config: TConfig) => Promise<TData>
   }
-) {
+): EnterpriseFeatureConstructor<TConfig, TData> {
   return class extends EnterpriseFeature<TConfig, TData> {
     getDefaultConfig(): TConfig {
       return config.defaultConfig
     }
-    
+
     validateConfig(): void {
       config.validator(this.config)
     }
-    
+
     async process(data: TData): Promise<TData> {
       return config.processor(data, this.config)
     }

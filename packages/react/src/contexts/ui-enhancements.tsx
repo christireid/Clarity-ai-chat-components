@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '../utils/cn'
 
 export interface UIEnhancements {
   quantumAnimations?: boolean
@@ -28,7 +28,8 @@ const defaultContextValue: UIEnhancementsContextValue = {
   isEnhanced: false,
 }
 
-export const UIEnhancementsContext = React.createContext<UIEnhancementsContextValue>(defaultContextValue)
+export const UIEnhancementsContext =
+  React.createContext<UIEnhancementsContextValue>(defaultContextValue)
 
 export interface UIEnhancementsProviderProps {
   children: React.ReactNode
@@ -39,10 +40,13 @@ export const UIEnhancementsProvider: React.FC<UIEnhancementsProviderProps> = ({
   children,
   value,
 }) => {
-  const contextValue = React.useMemo(() => ({
-    ...value,
-    isEnhanced: Object.values(value).some(Boolean),
-  }), [value])
+  const contextValue = React.useMemo(
+    () => ({
+      ...value,
+      isEnhanced: Object.values(value).some(Boolean),
+    }),
+    [value]
+  )
 
   return (
     <UIEnhancementsContext.Provider value={contextValue}>
@@ -53,11 +57,13 @@ export const UIEnhancementsProvider: React.FC<UIEnhancementsProviderProps> = ({
 
 export const useUIEnhancements = (): UIEnhancementsContextValue => {
   const context = React.useContext(UIEnhancementsContext)
-  
+
   if (context === undefined) {
-    throw new Error('useUIEnhancements must be used within a UIEnhancementsProvider')
+    throw new Error(
+      'useUIEnhancements must be used within a UIEnhancementsProvider'
+    )
   }
-  
+
   return context
 }
 
@@ -109,13 +115,13 @@ export const getEnhancedClassName = ({
 }: EnhancedClassNameProps): string => {
   return cn(
     className,
-    quantumAnimations && "quantum-animations",
-    glassmorphism && "glassmorphism-enabled",
-    auroraGradients && "aurora-gradients-enabled",
-    neumorphism && "neumorphism-enabled",
-    voiceIntegration && "voice-integration-enabled",
-    adaptiveColors && "adaptive-colors-enabled",
-    wcagAAA && "wcag-aaa-compliant"
+    quantumAnimations && 'quantum-animations',
+    glassmorphism && 'glassmorphism-enabled',
+    auroraGradients && 'aurora-gradients-enabled',
+    neumorphism && 'neumorphism-enabled',
+    voiceIntegration && 'voice-integration-enabled',
+    adaptiveColors && 'adaptive-colors-enabled',
+    wcagAAA && 'wcag-aaa-compliant'
   )
 }
 

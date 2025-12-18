@@ -1,11 +1,15 @@
 /**
  * Prompt & Token Optimization Utilities
- * 
+ *
  * Helper functions and utilities for common tasks.
  */
 
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import { estimateMessageTokens, getTokenizerForModel, type ModelMetadata } from './core/tokenizer'
+import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
+import {
+  estimateMessageTokens,
+  getTokenizerForModel,
+  type ModelMetadata,
+} from './core/tokenizer'
 
 /**
  * Format token count for display
@@ -59,9 +63,11 @@ export function estimateConversationTokens(
   modelMetadata?: ModelMetadata | string
 ): number {
   const tokenizer = modelMetadata
-    ? getTokenizerForModel(typeof modelMetadata === 'string' ? modelMetadata : modelMetadata.model)
+    ? getTokenizerForModel(
+        typeof modelMetadata === 'string' ? modelMetadata : modelMetadata.model
+      )
     : getTokenizerForModel('gpt-4')
-  
+
   return estimateMessageTokens(messages, tokenizer)
 }
 
@@ -85,9 +91,11 @@ export function getTokenBreakdownByRole(
   modelMetadata?: ModelMetadata | string
 ): Record<string, { tokens: number; count: number; percentage: number }> {
   const tokenizer = modelMetadata
-    ? getTokenizerForModel(typeof modelMetadata === 'string' ? modelMetadata : modelMetadata.model)
+    ? getTokenizerForModel(
+        typeof modelMetadata === 'string' ? modelMetadata : modelMetadata.model
+      )
     : getTokenizerForModel('gpt-4')
-  
+
   const total = estimateMessageTokens(messages, tokenizer)
   const breakdown: Record<string, { tokens: number; count: number }> = {}
 
@@ -103,7 +111,10 @@ export function getTokenBreakdownByRole(
     breakdown[role].count += 1
   }
 
-  const result: Record<string, { tokens: number; count: number; percentage: number }> = {}
+  const result: Record<
+    string,
+    { tokens: number; count: number; percentage: number }
+  > = {}
   for (const [role, data] of Object.entries(breakdown)) {
     result[role] = {
       ...data,
@@ -154,7 +165,8 @@ export function getOptimizationRecommendation(
   return {
     recommended: true,
     strategy: 'summarize-old',
-    reason: 'Budget nearly exceeded, summarize old messages to preserve context',
+    reason:
+      'Budget nearly exceeded, summarize old messages to preserve context',
   }
 }
 
@@ -183,16 +195,18 @@ export function createSimpleSummarizer(
 
     // Fallback: simple extractive summarization
     const texts = messages
-      .map(m => (typeof m.content === 'string' ? m.content : JSON.stringify(m.content)))
+      .map((m) =>
+        typeof m.content === 'string' ? m.content : JSON.stringify(m.content)
+      )
       .filter(Boolean)
-    
+
     if (texts.length === 0) return 'No messages to summarize'
-    
+
     // Take first and last messages, and a sample from the middle
     const first = texts[0]
     const last = texts[texts.length - 1]
     const middle = texts.length > 2 ? texts[Math.floor(texts.length / 2)] : ''
-    
+
     return `Previous conversation summary: ${first}${middle ? ` ... ${middle} ... ` : ' ... '}${last}`
   }
 }

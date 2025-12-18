@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -219,7 +218,7 @@ function CompleteOfflineChat() {
           body: JSON.stringify(message),
         })
       } catch (error) {
-        logger.logger.error('Failed to send message:', error)
+        console.error('Failed to send message:', error)
       }
     }
   }

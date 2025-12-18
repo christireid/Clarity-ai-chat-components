@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Structured error logging service
  *
@@ -118,7 +117,7 @@ export interface LogOptions {
  * try {
  *   await riskyOperation();
  * } catch (error) {
- *   logger.error(error, {
+ *   console.error(error, {
  *     context: { operation: 'riskyOperation' },
  *     user: { id: userId },
  *   });
@@ -214,7 +213,7 @@ export function createErrorLogger(config: ErrorLoggerConfig = {}): ErrorLogger {
             onDropped?.(toSend.length, 'send-failed-queue-full')
           }
           // Also log to console as fallback
-          logger.logger.error(
+          console.error(
             '[ErrorLogger] Failed to send logs to endpoint:',
             fetchError
           )
@@ -318,7 +317,7 @@ let defaultLogger: ErrorLogger | null = null
  * import { getErrorLogger } from '@clarity-chat/error-handling'
  *
  * const logger = getErrorLogger()
- * logger.error(new Error('Something went wrong'))
+ * console.error(new Error('Something went wrong'))
  * ```
  */
 export function getErrorLogger(): ErrorLogger {
@@ -364,7 +363,7 @@ export function configureErrorLogger(config: ErrorLoggerConfig): void {
  * ```
  */
 export function logError(error: Error, options?: LogOptions): void {
-  getErrorLogger().logger.error(error, options)
+  getErrorLogger().error(error, options)
 }
 
 /**

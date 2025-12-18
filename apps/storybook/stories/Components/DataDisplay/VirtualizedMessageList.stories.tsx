@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
 import { VirtualizedMessageList } from '@clarity-chat/react'
@@ -63,8 +62,8 @@ export const LargeConversation: Story = {
   args: {
     messages: baseMessages,
     emptyState: <div className="text-sm text-muted-foreground">Start a conversation to see history.</div>,
-    onMessageCopy: (id, content) => SecureLogger.info('[Storybook] Copy message', id, content.slice(0, 40)),
-    onMessageFeedback: (id, type) => SecureLogger.info('[Storybook] Feedback', id, type),
+    onMessageCopy: (id, content) => console.info('[Storybook] Copy message', id, content.slice(0, 40)),
+    onMessageFeedback: (id, type) => console.info('[Storybook] Feedback', id, type),
   },
 }
 
@@ -117,7 +116,7 @@ export const WithError: Story = {
   args: {
     messages: baseMessages.slice(0, 10),
     error: 'Failed to load messages. Please try again.',
-    onRetry: () => SecureLogger.info('[Storybook] Retry clicked'),
+    onRetry: () => console.info('[Storybook] Retry clicked'),
   },
   parameters: {
     docs: {

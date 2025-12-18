@@ -20,6 +20,10 @@
     "dist",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "**/__tests__/**"
+    "**/__tests__/**",
+    "src/enhanced-memory-service.ts",
+    "src/memory-service-typed.ts",
+    "src/memory-service-fixed.ts",
+    "src/examples/**"
   ]
 }

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Clarity Memory Factory
  * 
@@ -73,7 +72,7 @@ export function clarityMemory(config?: MemoryConfig): ClarityMemory {
     }
     
     // In development, log warnings but continue
-    logger.warn(errorMessage)
+    console.warn(errorMessage)
   }
 
   // Log helpful setup information in debug mode
@@ -81,7 +80,7 @@ export function clarityMemory(config?: MemoryConfig): ClarityMemory {
     const env = detectEnvironment()
     const storageType = config?.storage?.type || getRecommendedStorageType()
     
-    logger.debug('[ClarityMemory] Setup Info:', {
+    console.log('[ClarityMemory] Setup Info:', {
       environment: env,
       recommendedStorage: storageType,
       configuredStorage: config?.storage?.type || 'auto',
@@ -90,7 +89,7 @@ export function clarityMemory(config?: MemoryConfig): ClarityMemory {
     })
     
     if (validation.warnings.length > 0 || validation.suggestions.length > 0) {
-      logger.debug('\n' + formatValidationResult(validation))
+      console.log('\n' + formatValidationResult(validation))
     }
   }
 

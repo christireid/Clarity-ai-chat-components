@@ -1,16 +1,16 @@
 /**
  * Simple Unified Token Optimizer
- * 
+ *
  * Basic implementation combining simple components
  */
 
-import { 
+import {
   AccurateTokenCounter,
   TokenSecurityManager,
   ToonOptimizer,
   DEFAULT_TOKENIZER_CONFIG,
   DEFAULT_SECURITY_CONFIG,
-  DEFAULT_TOON_CONFIG
+  DEFAULT_TOON_CONFIG,
 } from './simple-index'
 
 export interface SimpleOptimizationResult {
@@ -40,7 +40,10 @@ export class SimpleUnifiedOptimizer {
 
   constructor(enableCaching = true) {
     this.enableCaching = enableCaching
-    this.tokenCounter = new AccurateTokenCounter(DEFAULT_TOKENIZER_CONFIG)
+    this.tokenCounter = new AccurateTokenCounter(
+      DEFAULT_TOKENIZER_CONFIG.enableCaching,
+      DEFAULT_TOKENIZER_CONFIG
+    )
     this.securityManager = new TokenSecurityManager(DEFAULT_SECURITY_CONFIG)
     this.toonOptimizer = new ToonOptimizer(DEFAULT_TOON_CONFIG)
   }
@@ -48,17 +51,20 @@ export class SimpleUnifiedOptimizer {
   /**
    * Optimize text with basic token optimization
    */
-  async optimize(text: string, options: any = {}): Promise<SimpleOptimizationResult> {
+  async optimize(
+    text: string,
+    options: any = {}
+  ): Promise<SimpleOptimizationResult> {
     const strategy = options.strategy || 'basic'
     const maxTokens = options.maxTokens
-    
+
     // Check cache first
     const cacheKey = `${strategy}:${text}`
     if (this.enableCaching && this.cache.has(cacheKey)) {
       const cached = this.cache.get(cacheKey)!
       return {
         ...cached,
-        method: `cache-${cached.method}`
+        method: `cache-${cached.method}`,
       }
     }
 
@@ -71,7 +77,7 @@ export class SimpleUnifiedOptimizer {
     // Try TOON optimization if applicable
     let optimized = secured.sanitized
     let method = strategy
-    
+
     try {
       // Check if it's structured data
       let data: any
@@ -80,7 +86,7 @@ export class SimpleUnifiedOptimizer {
         const toonOptimized = this.toonOptimizer.convertToToon(data)
         const originalTokens = this.tokenCounter.count(secured.sanitized)
         const toonTokens = this.tokenCounter.count(toonOptimized)
-        
+
         if (toonTokens < originalTokens || strategy === 'toon') {
           optimized = toonOptimized
           method = 'toon'
@@ -90,7 +96,9 @@ export class SimpleUnifiedOptimizer {
         const words = secured.sanitized.split(' ')
         if (words.length > 10) {
           // Simple compression by removing less important words
-          const importantWords = words.filter((word, index) => index % 2 === 0)
+          const importantWords = words.filter(
+            (_word: string, index: number) => index % 2 === 0
+          )
           optimized = importantWords.join(' ')
           method = 'compression'
         }
@@ -126,8 +134,8 @@ export class SimpleUnifiedOptimizer {
       security: {
         sanitized: true,
         threats: secured.threats,
-        riskLevel: secured.riskLevel
-      }
+        riskLevel: secured.riskLevel,
+      },
     }
 
     // Cache result
@@ -147,9 +155,9 @@ export class SimpleUnifiedOptimizer {
       cache: this.getCacheStats(),
       predictive: {
         enabled: false, // Not implemented in simple version
-        accuracy: 0
+        accuracy: 0,
       },
-      method: 'simple'
+      method: 'simple',
     }
   }
 
@@ -168,7 +176,7 @@ export class SimpleUnifiedOptimizer {
     return {
       enabled: this.enableCaching,
       size: this.cache.size,
-      hitRate: this.cache.size > 0 ? 0.5 : 0 // Mock hit rate
+      hitRate: this.cache.size > 0 ? 0.5 : 0, // Mock hit rate
     }
   }
 }

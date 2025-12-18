@@ -1,6 +1,5 @@
 /**
  * Chat Showcase
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates chat-specific components
  */
@@ -100,7 +99,7 @@ export function ChatShowcase() {
             value={inputValue}
             onChange={(value) => setInputValue(value)}
             onSubmit={() => {
-              SecureLogger.debug('Submitted:', inputValue)
+              console.log('Submitted:', inputValue)
               setInputValue('')
             }}
             placeholder="Type your message..."
@@ -132,7 +131,7 @@ export function ChatShowcase() {
             description="Start a conversation to see messages appear here"
             action={{
               label: 'Start Chatting',
-              onClick: () => SecureLogger.debug('Start chatting clicked')
+              onClick: () => console.log('Start chatting clicked')
             }}
           />
         </div>
@@ -183,7 +182,7 @@ export function ChatShowcase() {
               value={inputValue}
               onChange={(value) => setInputValue(value)}
               onSubmit={() => {
-                SecureLogger.debug('Submitted:', inputValue)
+                console.log('Submitted:', inputValue)
                 setInputValue('')
               }}
               placeholder="Type your message..."

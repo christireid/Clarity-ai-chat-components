@@ -14,7 +14,7 @@
  * @module utils/structured-output-cache
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 /**
  * Generate a hash for a JSON schema
@@ -24,7 +24,7 @@ function hashSchema(schema: object): string {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
+    hash = (hash << 5) - hash + char
     hash = hash & hash // Convert to 32bit integer
   }
   return `schema_${Math.abs(hash).toString(36)}`
@@ -120,7 +120,10 @@ export class SchemaCache {
     }
 
     // Evict if at capacity
-    if (this.schemas.size >= this.options.maxSchemas && this.options.enableLRUEviction) {
+    if (
+      this.schemas.size >= this.options.maxSchemas &&
+      this.options.enableLRUEviction
+    ) {
       this.evictLRU()
     }
 
@@ -243,7 +246,7 @@ export class SchemaCache {
     for (let i = 0; i < hashes.length; i += concurrency) {
       const batch = hashes.slice(i, i + concurrency)
       const batchResults = await Promise.all(
-        batch.map(hash => this.warmSchema(hash, makeRequest))
+        batch.map((hash) => this.warmSchema(hash, makeRequest))
       )
       results.push(...batchResults)
     }
@@ -272,10 +275,10 @@ export class SchemaCache {
     mostUsedSchemas: Array<{ hash: string; name?: string; usageCount: number }>
   } {
     const entries = Array.from(this.schemas.values())
-    const warmed = entries.filter(e => e.isWarmed)
+    const warmed = entries.filter((e) => e.isWarmed)
     const warmupLatencies = warmed
-      .filter(e => e.warmupLatencyMs !== undefined)
-      .map(e => e.warmupLatencyMs!)
+      .filter((e) => e.warmupLatencyMs !== undefined)
+      .map((e) => e.warmupLatencyMs!)
 
     return {
       totalSchemas: entries.length,
@@ -289,7 +292,7 @@ export class SchemaCache {
       mostUsedSchemas: entries
         .sort((a, b) => b.usageCount - a.usageCount)
         .slice(0, 5)
-        .map(e => ({ hash: e.hash, name: e.name, usageCount: e.usageCount })),
+        .map((e) => ({ hash: e.hash, name: e.name, usageCount: e.usageCount })),
     }
   }
 
@@ -353,7 +356,7 @@ export function createOpenAIWarmingRequest(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model,
@@ -411,7 +414,8 @@ export function estimateSchemaLatency(schema: object): {
 
   let recommendation: string
   if (complexity === 'complex') {
-    recommendation = 'Consider simplifying schema or warming during app initialization'
+    recommendation =
+      'Consider simplifying schema or warming during app initialization'
   } else if (complexity === 'moderate') {
     recommendation = 'Recommend warming schema before production use'
   } else {

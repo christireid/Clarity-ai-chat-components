@@ -29,7 +29,7 @@
  * @module utils/batch-api
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 /**
  * Message format for batch requests

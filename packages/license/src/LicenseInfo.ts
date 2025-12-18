@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * LicenseInfo Static Class
  *
@@ -44,7 +43,7 @@ function notifyListeners(): void {
     } catch (error) {
       // Log errors in development mode to help debugging
       if (isDevelopment()) {
-        logger.logger.error(
+        console.error(
           '[Clarity Chat License] Error in subscription callback:',
           error
         )
@@ -65,7 +64,7 @@ function notifyListeners(): void {
  *
  * // Later, check license status
  * if (LicenseInfo.isValid()) {
- *   logger.debug('Licensed to:', LicenseInfo.getLicensee());
+ *   console.log('Licensed to:', LicenseInfo.getLicensee());
  * }
  * ```
  */
@@ -119,7 +118,7 @@ export const LicenseInfo = {
    * @example
    * ```typescript
    * const unsubscribe = LicenseInfo.subscribe(() => {
-   *   logger.debug('License changed:', LicenseInfo.isValid());
+   *   console.log('License changed:', LicenseInfo.isValid());
    * });
    *
    * // Later, to stop listening:

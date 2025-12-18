@@ -11,7 +11,7 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   minify: false,
-  external: ['react', 'react-dom'], // External peer dependencies
+  external: ['react', 'react-dom', '@clarity-chat/token-optimization'], // External dependencies
   esbuildOptions(options) {
     options.target = 'es2020'
     options.legalComments = 'none'

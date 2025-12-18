@@ -4,6 +4,14 @@
 
 /* CSS Custom Properties */
 :root {
+  /* Font Families - System fonts as fallback */
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
   /* Primary Colors */
   --clarity-50: #ecfeff;
   --clarity-100: #cffafe;

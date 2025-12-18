@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 export interface PlaygroundTemplate {
   id: string
   name: string

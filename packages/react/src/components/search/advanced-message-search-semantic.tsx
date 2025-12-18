@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -47,12 +48,16 @@ const BrainIcon = Brain as React.ComponentType<{ className?: string }>
 const ZapIcon = Zap as React.ComponentType<{ className?: string }>
 const ClockIcon = Clock as React.ComponentType<{ className?: string }>
 const XIcon = X as React.ComponentType<{ className?: string }>
-const ChevronDownIcon = ChevronDown as React.ComponentType<{ className?: string }>
+const ChevronDownIcon = ChevronDown as React.ComponentType<{
+  className?: string
+}>
 const ChevronUpIcon = ChevronUp as React.ComponentType<{ className?: string }>
 const RefreshIcon = RefreshCw as React.ComponentType<{ className?: string }>
 const CopyIcon = Copy as React.ComponentType<{ className?: string }>
 const CheckIcon = Check as React.ComponentType<{ className?: string }>
-const ExternalLinkIcon = ExternalLink as React.ComponentType<{ className?: string }>
+const ExternalLinkIcon = ExternalLink as React.ComponentType<{
+  className?: string
+}>
 const LightbulbIcon = Lightbulb as React.ComponentType<{ className?: string }>
 const TrendingIcon = TrendingUp as React.ComponentType<{ className?: string }>
 const EyeIcon = Eye as React.ComponentType<{ className?: string }>
@@ -127,7 +132,10 @@ export interface SemanticMessageSearchProps {
   /** Callback for custom embedding generation */
   onGenerateEmbedding?: (text: string) => Promise<number[]>
   /** Callback for custom reranking */
-  onRerank?: (query: string, results: SemanticSearchResult[]) => Promise<SemanticSearchResult[]>
+  onRerank?: (
+    query: string,
+    results: SemanticSearchResult[]
+  ) => Promise<SemanticSearchResult[]>
   /** Show search history */
   showHistory?: boolean
   /** Show configuration panel */
@@ -199,8 +207,14 @@ function escapeRegex(str: string): string {
 /**
  * Simple keyword search with TF-IDF-like scoring
  */
-function keywordSearch(query: string, messages: Message[]): Map<string, number> {
-  const queryTerms = query.toLowerCase().split(/\s+/).filter(t => t.length > 2)
+function keywordSearch(
+  query: string,
+  messages: Message[]
+): Map<string, number> {
+  const queryTerms = query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((t) => t.length > 2)
   const scores = new Map<string, number>()
   const queryLower = query.toLowerCase()
 
@@ -262,17 +276,41 @@ function expandQuery(query: string): string[] {
 /**
  * Get match quality label
  */
-function getMatchQuality(score: number): { label: string; color: string; icon: React.ReactNode } {
+function getMatchQuality(score: number): {
+  label: string
+  color: string
+  icon: React.ReactNode
+} {
   if (score >= 0.9) {
-    return { label: 'Excellent', color: 'bg-green-500', icon: <TargetIcon className="h-3 w-3" /> }
+    return {
+      label: 'Excellent',
+      color: 'bg-green-500',
+      icon: <TargetIcon className="h-3 w-3" />,
+    }
   } else if (score >= 0.8) {
-    return { label: 'Very Good', color: 'bg-emerald-500', icon: <TrendingIcon className="h-3 w-3" /> }
+    return {
+      label: 'Very Good',
+      color: 'bg-emerald-500',
+      icon: <TrendingIcon className="h-3 w-3" />,
+    }
   } else if (score >= 0.7) {
-    return { label: 'Good', color: 'bg-blue-500', icon: <CheckIcon className="h-3 w-3" /> }
+    return {
+      label: 'Good',
+      color: 'bg-blue-500',
+      icon: <CheckIcon className="h-3 w-3" />,
+    }
   } else if (score >= 0.6) {
-    return { label: 'Fair', color: 'bg-yellow-500', icon: <LightbulbIcon className="h-3 w-3" /> }
+    return {
+      label: 'Fair',
+      color: 'bg-yellow-500',
+      icon: <LightbulbIcon className="h-3 w-3" />,
+    }
   }
-  return { label: 'Partial', color: 'bg-orange-500', icon: <SearchIcon className="h-3 w-3" /> }
+  return {
+    label: 'Partial',
+    color: 'bg-orange-500',
+    icon: <SearchIcon className="h-3 w-3" />,
+  }
 }
 
 /**
@@ -326,16 +364,22 @@ export function SemanticMessageSearch({
   const [results, setResults] = React.useState<SemanticSearchResult[]>([])
   const [isSearching, setIsSearching] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
-  const [searchHistory, setSearchHistory] = React.useState<SearchHistoryEntry[]>([])
+  const [searchHistory, setSearchHistory] = React.useState<
+    SearchHistoryEntry[]
+  >([])
   const [expandedQueries, setExpandedQueries] = React.useState<string[]>([])
   const [showExpansions, setShowExpansions] = React.useState(false)
   const [showHistoryPanel, setShowHistoryPanel] = React.useState(false)
   const [showConfigPanel, setShowConfigPanel] = React.useState(false)
   const [copiedId, setCopiedId] = React.useState<string | null>(null)
-  const [expandedResults, setExpandedResults] = React.useState<Set<string>>(new Set())
+  const [expandedResults, setExpandedResults] = React.useState<Set<string>>(
+    new Set()
+  )
   const [localConfig, setLocalConfig] = React.useState(config)
   const inputRef = React.useRef<HTMLInputElement>(null)
-  const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
   const searchAbortRef = React.useRef<AbortController | null>(null)
   const isMountedRef = React.useRef(true)
   const onResultsFoundRef = React.useRef(onResultsFound)
@@ -370,13 +414,20 @@ export function SemanticMessageSearch({
       if (history) {
         const parsed = JSON.parse(history)
         // Validate history structure
-        if (Array.isArray(parsed) && parsed.every((h: unknown) =>
-          typeof h === 'object' && h !== null &&
-          'query' in h && 'timestamp' in h && 'resultCount' in h &&
-          typeof (h as SearchHistoryEntry).query === 'string' &&
-          typeof (h as SearchHistoryEntry).timestamp === 'number' &&
-          typeof (h as SearchHistoryEntry).resultCount === 'number'
-        )) {
+        if (
+          Array.isArray(parsed) &&
+          parsed.every(
+            (h: unknown) =>
+              typeof h === 'object' &&
+              h !== null &&
+              'query' in h &&
+              'timestamp' in h &&
+              'resultCount' in h &&
+              typeof (h as SearchHistoryEntry).query === 'string' &&
+              typeof (h as SearchHistoryEntry).timestamp === 'number' &&
+              typeof (h as SearchHistoryEntry).resultCount === 'number'
+          )
+        ) {
           setSearchHistory(parsed)
         }
       }
@@ -413,7 +464,7 @@ export function SemanticMessageSearch({
       })
 
       const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0))
-      const normalized = embedding.map(val => val / (norm || 1))
+      const normalized = embedding.map((val) => val / (norm || 1))
 
       embeddingsCache.current.set(text, normalized)
       return normalized
@@ -562,7 +613,7 @@ export function SemanticMessageSearch({
         if (!isMountedRef.current) return
         if (err instanceof Error && err.name === 'AbortError') return
 
-        logger.logger.error('Search error:', err)
+        logger.error('Search error:', err)
         setError(err instanceof Error ? err.message : 'Search failed')
       } finally {
         if (isMountedRef.current) {
@@ -630,7 +681,12 @@ export function SemanticMessageSearch({
   return (
     <div className={cn('space-y-4', className)}>
       {/* Search Header */}
-      <Card className={cn('shadow-sm overflow-hidden', compact && 'shadow-none border-0')}>
+      <Card
+        className={cn(
+          'shadow-sm overflow-hidden',
+          compact && 'shadow-none border-0'
+        )}
+      >
         {!compact && (
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
@@ -639,7 +695,9 @@ export function SemanticMessageSearch({
                   <BrainIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-semibold">Semantic Search</CardTitle>
+                  <CardTitle className="text-lg font-semibold">
+                    Semantic Search
+                  </CardTitle>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     AI-powered understanding of your queries
                   </p>
@@ -681,7 +739,10 @@ export function SemanticMessageSearch({
                   query && 'text-violet-500'
                 )}
                 animate={isSearching ? { scale: [1, 1.1, 1] } : {}}
-                transition={{ duration: 0.6, repeat: isSearching ? Infinity : 0 }}
+                transition={{
+                  duration: durations.slower,
+                  repeat: isSearching ? Infinity : 0,
+                }}
               >
                 <SearchIcon className="h-4 w-4" />
               </motion.div>
@@ -745,7 +806,10 @@ export function SemanticMessageSearch({
 
                 {/* History button */}
                 {showHistory && (
-                  <Popover open={showHistoryPanel} onOpenChange={setShowHistoryPanel}>
+                  <Popover
+                    open={showHistoryPanel}
+                    onOpenChange={setShowHistoryPanel}
+                  >
                     <PopoverTrigger asChild>
                       <Button
                         variant="ghost"
@@ -761,7 +825,9 @@ export function SemanticMessageSearch({
                     <PopoverContent className="w-72" align="end">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium">Recent Searches</h4>
+                          <h4 className="text-sm font-medium">
+                            Recent Searches
+                          </h4>
                           {searchHistory.length > 0 && (
                             <Button
                               variant="ghost"
@@ -787,7 +853,9 @@ export function SemanticMessageSearch({
                                 }}
                                 className="w-full text-left px-2 py-1.5 rounded hover:bg-accent flex items-center justify-between"
                               >
-                                <span className="text-sm truncate">{entry.query}</span>
+                                <span className="text-sm truncate">
+                                  {entry.query}
+                                </span>
                                 <Badge variant="secondary" className="text-xs">
                                   {entry.resultCount}
                                 </Badge>
@@ -806,7 +874,10 @@ export function SemanticMessageSearch({
 
                 {/* Config button */}
                 {showConfig && (
-                  <Popover open={showConfigPanel} onOpenChange={setShowConfigPanel}>
+                  <Popover
+                    open={showConfigPanel}
+                    onOpenChange={setShowConfigPanel}
+                  >
                     <PopoverTrigger asChild>
                       <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                         <SlidersIcon className="h-4 w-4" />
@@ -826,7 +897,10 @@ export function SemanticMessageSearch({
                               Semantic Weight
                             </label>
                             <span className="text-sm font-medium">
-                              {Math.round(localConfig.hybrid.semanticWeight * 100)}%
+                              {Math.round(
+                                localConfig.hybrid.semanticWeight * 100
+                              )}
+                              %
                             </span>
                           </div>
                           <input
@@ -839,7 +913,8 @@ export function SemanticMessageSearch({
                                 ...prev,
                                 hybrid: {
                                   ...prev.hybrid,
-                                  semanticWeight: parseInt(e.target.value) / 100,
+                                  semanticWeight:
+                                    parseInt(e.target.value) / 100,
                                 },
                               }))
                             }
@@ -858,18 +933,24 @@ export function SemanticMessageSearch({
                               Min Similarity
                             </label>
                             <span className="text-sm font-medium">
-                              {Math.round((localConfig.similarityThreshold || 0.6) * 100)}%
+                              {Math.round(
+                                (localConfig.similarityThreshold || 0.6) * 100
+                              )}
+                              %
                             </span>
                           </div>
                           <input
                             type="range"
                             min="0"
                             max="100"
-                            value={(localConfig.similarityThreshold || 0.6) * 100}
+                            value={
+                              (localConfig.similarityThreshold || 0.6) * 100
+                            }
                             onChange={(e) =>
                               setLocalConfig((prev) => ({
                                 ...prev,
-                                similarityThreshold: parseInt(e.target.value) / 100,
+                                similarityThreshold:
+                                  parseInt(e.target.value) / 100,
                               }))
                             }
                             className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-violet-500"
@@ -878,7 +959,9 @@ export function SemanticMessageSearch({
 
                         {/* Max results */}
                         <div className="space-y-2">
-                          <label className="text-sm text-muted-foreground">Max Results</label>
+                          <label className="text-sm text-muted-foreground">
+                            Max Results
+                          </label>
                           <Input
                             type="number"
                             min="1"
@@ -917,7 +1000,10 @@ export function SemanticMessageSearch({
                               onChange={(e) =>
                                 setLocalConfig((prev) => ({
                                   ...prev,
-                                  hybrid: { ...prev.hybrid, enabled: e.target.checked },
+                                  hybrid: {
+                                    ...prev.hybrid,
+                                    enabled: e.target.checked,
+                                  },
                                 }))
                               }
                               className="rounded"
@@ -945,7 +1031,11 @@ export function SemanticMessageSearch({
                     className="h-full bg-gradient-to-r from-violet-500 to-purple-500"
                     initial={{ x: '-100%' }}
                     animate={{ x: '100%' }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    transition={{
+                      duration: durations.slower,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
                   />
                 </motion.div>
               )}
@@ -954,42 +1044,45 @@ export function SemanticMessageSearch({
 
           {/* Query expansion preview */}
           <AnimatePresence>
-            {localConfig.queryExpansion && expandedQueries.length > 1 && query && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-              >
-                <button
-                  onClick={() => setShowExpansions(!showExpansions)}
-                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            {localConfig.queryExpansion &&
+              expandedQueries.length > 1 &&
+              query && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
                 >
-                  <WandIcon className="h-3 w-3" />
-                  {showExpansions ? 'Hide' : 'Show'} related terms ({expandedQueries.length - 1})
-                  {showExpansions ? (
-                    <ChevronUpIcon className="h-3 w-3" />
-                  ) : (
-                    <ChevronDownIcon className="h-3 w-3" />
-                  )}
-                </button>
-                <AnimatePresence>
-                  {showExpansions && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="mt-2 flex flex-wrap gap-1"
-                    >
-                      {expandedQueries.slice(1).map((term, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">
-                          {term}
-                        </Badge>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            )}
+                  <button
+                    onClick={() => setShowExpansions(!showExpansions)}
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <WandIcon className="h-3 w-3" />
+                    {showExpansions ? 'Hide' : 'Show'} related terms (
+                    {expandedQueries.length - 1})
+                    {showExpansions ? (
+                      <ChevronUpIcon className="h-3 w-3" />
+                    ) : (
+                      <ChevronDownIcon className="h-3 w-3" />
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {showExpansions && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-2 flex flex-wrap gap-1"
+                      >
+                        {expandedQueries.slice(1).map((term, i) => (
+                          <Badge key={i} variant="outline" className="text-xs">
+                            {term}
+                          </Badge>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
           </AnimatePresence>
 
           {error && (
@@ -1019,7 +1112,11 @@ export function SemanticMessageSearch({
                 <motion.div
                   className="h-12 w-12 rounded-full border-3 border-violet-500/30 border-t-violet-500"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  transition={{
+                    duration: durations.slower,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
                 />
                 <motion.p
                   className="mt-4 text-sm text-muted-foreground"
@@ -1046,10 +1143,12 @@ export function SemanticMessageSearch({
                 <motion.span
                   className="inline-block w-2 h-2 rounded-full bg-green-500"
                   animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: durations.slower, repeat: Infinity }}
                 />
                 Found{' '}
-                <span className="font-semibold text-foreground">{results.length}</span>{' '}
+                <span className="font-semibold text-foreground">
+                  {results.length}
+                </span>{' '}
                 semantically relevant messages
               </span>
             </div>
@@ -1099,9 +1198,15 @@ export function SemanticMessageSearch({
 
                           {/* Match type badge */}
                           <Badge variant="outline" className="text-xs gap-1">
-                            {result.matchType === 'semantic' && <BrainIcon className="h-3 w-3" />}
-                            {result.matchType === 'keyword' && <SearchIcon className="h-3 w-3" />}
-                            {result.matchType === 'hybrid' && <ZapIcon className="h-3 w-3" />}
+                            {result.matchType === 'semantic' && (
+                              <BrainIcon className="h-3 w-3" />
+                            )}
+                            {result.matchType === 'keyword' && (
+                              <SearchIcon className="h-3 w-3" />
+                            )}
+                            {result.matchType === 'hybrid' && (
+                              <ZapIcon className="h-3 w-3" />
+                            )}
                             {result.matchType}
                           </Badge>
 
@@ -1203,7 +1308,11 @@ export function SemanticMessageSearch({
                   No messages match your search "{query}"
                 </p>
                 <div className="flex justify-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setQuery('')}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setQuery('')}
+                  >
                     Clear Search
                   </Button>
                   <Button
@@ -1212,7 +1321,10 @@ export function SemanticMessageSearch({
                     onClick={() =>
                       setLocalConfig((prev) => ({
                         ...prev,
-                        similarityThreshold: Math.max(0.3, (prev.similarityThreshold || 0.6) - 0.1),
+                        similarityThreshold: Math.max(
+                          0.3,
+                          (prev.similarityThreshold || 0.6) - 0.1
+                        ),
                       }))
                     }
                   >

@@ -3,20 +3,20 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import type { AIStatus } from '@clarity-chat/types'
-import { cn } from '@clarity-chat/primitives'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import {
   BotIcon,
   SearchIcon,
   FileIcon,
   SparklesIcon,
   CheckCircleIcon,
-} from './icons'
+} from '../ui/icons'
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   duration,
-} from '../animations/constants'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+} from '../../animations/constants'
+import { AnimatedDots } from '../ui/animated-dots'
 
 export interface ThinkingIndicatorProps {
   status?: AIStatus
@@ -94,10 +94,6 @@ export function ThinkingIndicator({
   const iconAnimation = prefersReducedMotion
     ? {} // No animation for reduced motion
     : { scale: [1, 1.1, 1], rotate: [0, 2, -2, 0] }
-
-  const dotAnimation = prefersReducedMotion
-    ? { opacity: [0.5, 0.8, 0.5] } // Subtle opacity only
-    : { opacity: [0.3, 1, 0.3], scale: [0.85, 1, 0.85] }
 
   // Build descriptive aria-label for screen readers
   // Truncate topic for aria-label to prevent overly long announcements
@@ -191,21 +187,7 @@ export function ThinkingIndicator({
           </span>
 
           {/* Animated Dots - inline with text, properly spaced */}
-          <div className="flex items-center gap-[3px] ml-1.5">
-            {[0, 1, 2].map((i) => (
-              <motion.span
-                key={i}
-                animate={dotAnimation}
-                transition={{
-                  duration: prefersReducedMotion ? 2 : 1.4,
-                  repeat: Infinity,
-                  delay: i * 0.15,
-                  ease: 'easeInOut',
-                }}
-                className="w-[4px] h-[4px] rounded-full bg-current inline-block"
-              />
-            ))}
-          </div>
+          <AnimatedDots variant="fade" size="sm" className="ml-1.5" />
         </div>
 
         {/* Topic/Detail */}

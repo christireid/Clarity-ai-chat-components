@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Add Provider Command
  */
@@ -148,7 +145,7 @@ const response = await openai.chat.completions.create({
   messages: [{ role: 'user', content: 'Hello!' }]
 })
 
-SecureLogger.debug(response.choices[0].message.content)`,
+console.log(response.choices[0].message.content)`,
 
     anthropic: `import Anthropic from '@anthropic-ai/sdk'
 
@@ -162,7 +159,7 @@ const response = await anthropic.messages.create({
   messages: [{ role: 'user', content: 'Hello!' }]
 })
 
-SecureLogger.debug(response.content[0].text)`,
+console.log(response.content[0].text)`,
 
     google: `import { GoogleGenerativeAI } from '@google/generative-ai'
 
@@ -171,7 +168,7 @@ const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
 
 const result = await model.generateContent('Hello!')
 const response = await result.response
-SecureLogger.debug(response.text())`
+console.log(response.text())`
   }
 
   return examples[provider] || ''

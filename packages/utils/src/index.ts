@@ -68,6 +68,7 @@ export {
   setRequestId,
   getRequestId,
   getLogger,
+  logger,
   info,
   warn,
   error,

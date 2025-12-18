@@ -73,9 +73,9 @@ export interface ChatKeyboardNavigationReturn {
     onClick: () => void
   }
   /** Ref for the messages container */
-  messagesContainerRef: React.RefObject<HTMLElement>
+  messagesContainerRef: React.RefObject<HTMLElement | null>
   /** Ref for the chat input */
-  inputRef: React.RefObject<HTMLElement>
+  inputRef: React.RefObject<HTMLElement | null>
   /** Navigate to next message */
   navigateNext: () => void
   /** Navigate to previous message */
@@ -182,18 +182,14 @@ export function useChatKeyboardNavigation({
   )
 
   // Use vim navigation for messages
-  const {
-    focusedIndex,
-    setFocusedIndex,
-    getItemProps,
-    navigate,
-  } = useVimNavigation({
-    items: messages,
-    onSelect: handleMessageSelect,
-    onFocus: handleMessageFocus,
-    enabled,
-    scope: `${scope}-messages`,
-  })
+  const { focusedIndex, setFocusedIndex, getItemProps, navigate } =
+    useVimNavigation({
+      items: messages,
+      onSelect: handleMessageSelect,
+      onFocus: handleMessageFocus,
+      enabled,
+      scope: `${scope}-messages`,
+    })
 
   // Focus scope ref for messages container
   const messagesContainerRef = useFocusScope(`${scope}-messages`)
@@ -433,7 +429,7 @@ export function useChatKeyboardNavigation({
     focusedMessageIndex: focusedIndex,
     setFocusedMessageIndex: setFocusedIndex,
     getMessageProps,
-    messagesContainerRef: messagesContainerRef as React.RefObject<HTMLElement>,
+    messagesContainerRef,
     inputRef,
     navigateNext: () => navigate('next'),
     navigatePrev: () => navigate('prev'),
@@ -471,10 +467,7 @@ export function useFocusInputShortcut(
 // Utility Hook: Escape to Close/Blur
 // ============================================================================
 
-export function useEscapeToClose(
-  onClose: () => void,
-  enabled: boolean = true
-) {
+export function useEscapeToClose(onClose: () => void, enabled: boolean = true) {
   const { registerShortcut } = useKeyboardNavigation()
 
   React.useEffect(() => {

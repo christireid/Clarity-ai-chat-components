@@ -1,9 +1,8 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import type { ThemeMode } from '../theme/ThemeProvider'
-import type { ModernThemePresetName } from '../theme/modern-presets'
+import type { ThemeMode } from '../../theme/ThemeProvider'
+import type { ModernThemePresetName } from '../../theme/modern-presets'
 
 /**
  * Theme analytics event types
@@ -153,7 +152,7 @@ export interface ThemeAnalyticsSummary {
  *
  *   // Get summary for reporting:
  *   const summary = analytics.getSummary()
- *   logger.debug(`Most used theme: ${summary.mostUsedPreset}`)
+ *   console.log(`Most used theme: ${summary.mostUsedPreset}`)
  * }
  * ```
  */
@@ -181,7 +180,7 @@ export function useThemeAnalytics(
       setEvents((prev) => [...prev, event])
 
       if (debug && process.env.NODE_ENV !== 'production') {
-        logger.debug('[ThemeAnalytics]', event.type, event.data)
+        console.log('[ThemeAnalytics]', event.type, event.data)
       }
 
       onEvent?.(event)
