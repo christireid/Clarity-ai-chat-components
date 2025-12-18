@@ -1,6 +1,6 @@
 /**
  * Prompt Template System - Types
- * 
+ *
  * Flexible prompt management with variables, versioning, and A/B testing.
  * Fully optional and composable.
  */
@@ -13,11 +13,11 @@ export interface PromptVariable {
   /** Variable type */
   type?: 'string' | 'number' | 'boolean' | 'array' | 'object'
   /** Default value */
-  default?: any
+  default?: unknown
   /** Whether variable is required */
   required?: boolean
   /** Validation function */
-  validate?: (value: any) => boolean | string
+  validate?: (value: unknown) => boolean | string
 }
 
 export interface PromptTemplate {
@@ -36,7 +36,7 @@ export interface PromptTemplate {
   /** Template category/tags */
   tags?: string[]
   /** Metadata */
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface PromptVersion {
@@ -75,7 +75,7 @@ export interface PromptVariant {
 
 export interface RenderPromptOptions {
   /** Variable values */
-  variables: Record<string, any>
+  variables: Record<string, unknown>
   /** Escape HTML/special characters */
   escape?: boolean
   /** Trim whitespace */
@@ -199,7 +199,12 @@ export interface PromptABTest {
     /** Statistical significance threshold (0-1) */
     significanceThreshold: number
     /** Primary metric to optimize */
-    primaryMetric: 'success_rate' | 'latency' | 'cost' | 'satisfaction' | 'custom'
+    primaryMetric:
+      | 'success_rate'
+      | 'latency'
+      | 'cost'
+      | 'satisfaction'
+      | 'custom'
     /** Custom metric name if primaryMetric is 'custom' */
     customMetricName?: string
   }
@@ -244,14 +249,20 @@ export interface PromptABTestResults {
   /** Lift percentage of winner vs control */
   lift?: number
   /** Per-variant results */
-  variantResults: Record<string, {
-    sampleSize: number
-    conversionRate: number
-    averageMetric: number
-    confidenceInterval: [number, number]
-  }>
+  variantResults: Record<
+    string,
+    {
+      sampleSize: number
+      conversionRate: number
+      averageMetric: number
+      confidenceInterval: [number, number]
+    }
+  >
   /** Recommendation */
-  recommendation?: 'deploy-winner' | 'continue-testing' | 'no-significant-difference'
+  recommendation?:
+    | 'deploy-winner'
+    | 'continue-testing'
+    | 'no-significant-difference'
 }
 
 /**
@@ -291,7 +302,13 @@ export interface PromptChangeHistoryEntry {
   /** Template ID */
   templateId: string
   /** Type of change */
-  changeType: 'created' | 'updated' | 'version-created' | 'deployed' | 'rolled-back' | 'deleted'
+  changeType:
+    | 'created'
+    | 'updated'
+    | 'version-created'
+    | 'deployed'
+    | 'rolled-back'
+    | 'deleted'
   /** Change description */
   description: string
   /** Who made the change */
@@ -352,4 +369,3 @@ export interface PromptPlaygroundState {
   /** Is currently rendering */
   isRendering: boolean
 }
-
