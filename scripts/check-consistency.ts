@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 /**
  * Consistency Check Script
@@ -314,7 +311,7 @@ function formatResult(result: CheckResult): string {
 }
 
 async function main() {
-  SecureLogger.debug('\n📋 Running Consistency Checks...\n')
+  console.log('\n📋 Running Consistency Checks...\n')
 
   const allResults: CheckResult[] = []
 
@@ -336,26 +333,26 @@ async function main() {
   const warnings = allResults.filter((r) => !r.pass && r.severity === 'warning')
   const passed = allResults.filter((r) => r.pass)
 
-  SecureLogger.debug('Results:')
-  SecureLogger.debug('─'.repeat(60))
+  console.log('Results:')
+  console.log('─'.repeat(60))
 
   for (const result of allResults) {
-    SecureLogger.debug(formatResult(result))
+    console.log(formatResult(result))
   }
 
-  SecureLogger.debug('─'.repeat(60))
-  SecureLogger.debug(
+  console.log('─'.repeat(60))
+  console.log(
     `\n📊 Summary: ${passed.length} passed, ${warnings.length} warnings, ${errors.length} errors`
   )
 
   if (errors.length > 0) {
-    SecureLogger.debug('\n❌ Consistency check failed with errors')
+    console.log('\n❌ Consistency check failed with errors')
     process.exit(1)
   } else if (warnings.length > 0) {
-    SecureLogger.debug('\n⚠️  Consistency check passed with warnings')
+    console.log('\n⚠️  Consistency check passed with warnings')
     process.exit(0)
   } else {
-    SecureLogger.debug('\n✅ All consistency checks passed!')
+    console.log('\n✅ All consistency checks passed!')
     process.exit(0)
   }
 }

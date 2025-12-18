@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Docs-Sync CLI
  *
@@ -309,10 +308,10 @@ program
       // Output based on format
       switch (options.output) {
         case 'json':
-          SecureLogger.debug(formatAsJSON(filtered))
+          console.log(formatAsJSON(filtered))
           break
         case 'github': {
-          SecureLogger.debug(formatAsGitHubOutput(filtered))
+          console.log(formatAsGitHubOutput(filtered))
           // Write to file for GitHub Actions
           const outputPath = join(config.cacheDir, 'change-analysis.json')
           ensureDirectories(config)
@@ -320,7 +319,7 @@ program
           break
         }
         default:
-          SecureLogger.debug(formatAsText(filtered))
+          console.log(formatAsText(filtered))
       }
 
       // Exit with appropriate code
@@ -437,7 +436,7 @@ program
 
       // Output
       if (options.output === 'json') {
-        SecureLogger.debug(JSON.stringify(results, null, 2))
+        console.log(JSON.stringify(results, null, 2))
       } else {
         printSummary('API Extraction Results', [
           { label: 'Duration', value: formatDuration(Date.now() - startTime) },
@@ -527,7 +526,7 @@ program
         { description: 'documentation generation', maxRetries: 2 }
       )
 
-      SecureLogger.debug(formatGenerationResult(result))
+      console.log(formatGenerationResult(result))
 
       // Write files
       if (!options.dryRun) {
@@ -591,10 +590,10 @@ program
 
       succeedSpinner('Changelog generated')
 
-      SecureLogger.debug(formatChangelogResult(entry, hasBreakingChanges))
-      SecureLogger.debug('')
-      SecureLogger.debug('--- Generated Changelog ---')
-      SecureLogger.debug(markdown)
+      console.log(formatChangelogResult(entry, hasBreakingChanges))
+      console.log('')
+      console.log('--- Generated Changelog ---')
+      console.log(markdown)
 
       if (!options.dryRun) {
         updateChangelogFile(config.changelog.outputPath, markdown)
@@ -974,7 +973,7 @@ program
       ])
 
       if (issues.length > 0) {
-        SecureLogger.debug('')
+        console.log('')
         for (const issue of issues) {
           if (issue.type === 'error') {
             error(issue.message)
@@ -1061,13 +1060,13 @@ program
       // Output based on format
       switch (options.output) {
         case 'json':
-          SecureLogger.debug(formatDiffAsJSON(diffResult))
+          console.log(formatDiffAsJSON(diffResult))
           break
         case 'changelog':
-          SecureLogger.debug(formatDiffForChangelog(diffResult))
+          console.log(formatDiffForChangelog(diffResult))
           break
         default:
-          SecureLogger.debug(formatDiffAsText(diffResult))
+          console.log(formatDiffAsText(diffResult))
       }
 
       // Save current as new baseline if no baseline existed

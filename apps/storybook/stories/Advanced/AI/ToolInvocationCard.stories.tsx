@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ToolInvocationCard, type ToolStatus } from '@clarity-chat/react'
 import { useState } from 'react'
@@ -32,7 +31,14 @@ Perfect for AI agents, function calling, tool use, and human-in-the-loop workflo
   argTypes: {
     status: {
       control: 'select',
-      options: ['pending', 'approved', 'rejected', 'executing', 'success', 'error'],
+      options: [
+        'pending',
+        'approved',
+        'rejected',
+        'executing',
+        'success',
+        'error',
+      ],
       description: 'Current status of the tool invocation',
     },
     requiresApproval: {
@@ -124,8 +130,8 @@ export const PendingWithApproval: Story = {
     toolCall: searchTool,
     status: 'pending',
     requiresApproval: true,
-    onApprove: (tool) => SecureLogger.debug('Approved:', tool),
-    onReject: (tool) => SecureLogger.debug('Rejected:', tool),
+    onApprove: (tool) => console.log('Approved:', tool),
+    onReject: (tool) => console.log('Rejected:', tool),
   },
 }
 
@@ -174,7 +180,8 @@ export const SuccessWithString: Story = {
   args: {
     toolCall: searchTool,
     status: 'success',
-    result: 'Found 10 relevant documentation articles about React hooks best practices.',
+    result:
+      'Found 10 relevant documentation articles about React hooks best practices.',
   },
 }
 
@@ -182,8 +189,9 @@ export const Error: Story = {
   args: {
     toolCall: databaseTool,
     status: 'error',
-    error: 'Database connection timeout. Unable to execute query after 30 seconds.',
-    onRetry: (tool) => SecureLogger.debug('Retrying:', tool),
+    error:
+      'Database connection timeout. Unable to execute query after 30 seconds.',
+    onRetry: (tool) => console.log('Retrying:', tool),
   },
 }
 
@@ -197,7 +205,7 @@ export const ErrorWithStackTrace: Story = {
   at processToolCall (agent.ts:89)
   
 Caused by: Connection refused - ECONNREFUSED 127.0.0.1:5432`,
-    onRetry: (tool) => SecureLogger.debug('Retrying:', tool),
+    onRetry: (tool) => console.log('Retrying:', tool),
   },
 }
 
@@ -207,9 +215,21 @@ export const SearchTool: Story = {
     toolCall: searchTool,
     status: 'success',
     result: [
-      { title: 'Advanced/AI/ToolInvocationCard', url: 'https://react.dev/reference/react/useState', relevance: 0.95 },
-      { title: 'Advanced/AI/ToolInvocationCard', url: 'https://react.dev/reference/react/useEffect', relevance: 0.92 },
-      { title: 'Advanced/AI/ToolInvocationCard', url: 'https://react.dev/learn/reusing-logic-with-custom-hooks', relevance: 0.88 },
+      {
+        title: 'Advanced/AI/ToolInvocationCard',
+        url: 'https://react.dev/reference/react/useState',
+        relevance: 0.95,
+      },
+      {
+        title: 'Advanced/AI/ToolInvocationCard',
+        url: 'https://react.dev/reference/react/useEffect',
+        relevance: 0.92,
+      },
+      {
+        title: 'Advanced/AI/ToolInvocationCard',
+        url: 'https://react.dev/learn/reusing-logic-with-custom-hooks',
+        relevance: 0.88,
+      },
     ],
   },
 }
@@ -283,8 +303,20 @@ export const ExpandableResult: Story = {
       executionTime: '45ms',
       rowCount: 23,
       data: [
-        { id: 1, name: 'Alice', email: 'alice@example.com', role: 'admin', active: true },
-        { id: 2, name: 'Bob', email: 'bob@example.com', role: 'admin', active: true },
+        {
+          id: 1,
+          name: 'Alice',
+          email: 'alice@example.com',
+          role: 'admin',
+          active: true,
+        },
+        {
+          id: 2,
+          name: 'Bob',
+          email: 'bob@example.com',
+          role: 'admin',
+          active: true,
+        },
         // More rows...
       ],
     },
@@ -309,7 +341,7 @@ const ApprovalWorkflow = () => {
   const handleApprove = () => {
     setStatus('executing')
     setError(undefined)
-    
+
     // Simulate API call
     setTimeout(() => {
       const success = Math.random() > 0.3 // 70% success rate
@@ -325,7 +357,9 @@ const ApprovalWorkflow = () => {
         })
       } else {
         setStatus('error')
-        setError('Network request failed. Please check your connection and try again.')
+        setError(
+          'Network request failed. Please check your connection and try again.'
+        )
       }
     }, 2000)
   }
@@ -346,10 +380,11 @@ const ApprovalWorkflow = () => {
     <div className="space-y-4">
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <p className="text-sm text-blue-900 dark:text-blue-100">
-          💡 Try approving the tool call to see the complete workflow. There's a 30% chance it will fail (to demonstrate error handling).
+          💡 Try approving the tool call to see the complete workflow. There's a
+          30% chance it will fail (to demonstrate error handling).
         </p>
       </div>
-      
+
       <ToolInvocationCard
         toolCall={searchTool}
         status={status}
@@ -361,11 +396,13 @@ const ApprovalWorkflow = () => {
         onRetry={handleRetry}
         expandableResult
       />
-      
+
       <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
         <h4 className="font-medium mb-2">Current Status:</h4>
         <p className="text-sm">
-          <span className="font-mono bg-white dark:bg-gray-900 px-2 py-1 rounded">{status}</span>
+          <span className="font-mono bg-white dark:bg-gray-900 px-2 py-1 rounded">
+            {status}
+          </span>
         </p>
       </div>
     </div>
@@ -377,7 +414,9 @@ export const InteractiveApprovalWorkflow: Story = {
 }
 
 const MultipleTools = () => {
-  const [toolStates, setToolStates] = useState<Record<string, { status: ToolStatus; result?: any; error?: string }>>({
+  const [toolStates, setToolStates] = useState<
+    Record<string, { status: ToolStatus; result?: any; error?: string }>
+  >({
     [searchTool.id]: { status: 'pending' },
     [weatherTool.id]: { status: 'pending' },
     [databaseTool.id]: { status: 'pending' },
@@ -416,10 +455,11 @@ const MultipleTools = () => {
           Multiple Tool Invocations
         </h4>
         <p className="text-sm text-blue-800 dark:text-blue-200">
-          The AI wants to execute {tools.length} tools. Review and approve each one individually.
+          The AI wants to execute {tools.length} tools. Review and approve each
+          one individually.
         </p>
       </div>
-      
+
       {tools.map((tool) => (
         <ToolInvocationCard
           key={tool.id}
@@ -479,7 +519,7 @@ export const VeryLongArguments: Story = {
     },
     status: 'pending',
     requiresApproval: true,
-    onApprove: (tool) => SecureLogger.debug('Approved:', tool),
+    onApprove: (tool) => console.log('Approved:', tool),
   },
 }
 

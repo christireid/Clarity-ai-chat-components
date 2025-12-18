@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SupportBot,
@@ -55,7 +54,7 @@ export const SupportBotCustomized: StoryObj<typeof SupportBot> = {
         ]}
         escalationThreshold={3}
         onEscalate={() => {
-          SecureLogger.debug('Escalating to human agent')
+          console.log('Escalating to human agent')
           alert('A support specialist will be with you shortly...')
         }}
       />

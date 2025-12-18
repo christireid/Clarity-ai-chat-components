@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Copilot Chat Participant for Clarity Chat
  * Provides @clarity chat assistant for documentation, code generation, and migration help
@@ -14,7 +13,7 @@ export function registerChatParticipant(
 ): void {
   // Check if chat API is available (VS Code 1.90+)
   if (!vscode.chat) {
-    SecureLogger.debug('Chat API not available - Copilot features disabled')
+    console.log('Chat API not available - Copilot features disabled')
     return
   }
 

@@ -7,14 +7,12 @@
 import * as React from 'react'
 import {
   PromptSuggestionsEnhanced,
-import { SecureLogger } from '@/lib/security/secureLogger';
   usePromptSuggestionsEnhanced,
   useChatEnhanced,
 } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { accessibleClickHandler } from '../utils/accessibility'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type for prompt suggestions used throughout these examples
 interface PromptSuggestion {
   id: string
@@ -95,7 +93,9 @@ export function AdvancedHookExample() {
     trackEffectiveness: true,
   })
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<
+    PromptSuggestion[]
+  >([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)
@@ -158,16 +158,23 @@ export function AdvancedHookExample() {
               )}
 
               {/* Suggestion content */}
-              <div className="font-medium mb-1">{suggestion.label || suggestion.text}</div>
+              <div className="font-medium mb-1">
+                {suggestion.label || suggestion.text}
+              </div>
               {suggestion.description && (
-                <div className="text-sm text-muted-foreground">{suggestion.description}</div>
+                <div className="text-sm text-muted-foreground">
+                  {suggestion.description}
+                </div>
               )}
 
               {/* Keywords */}
               {suggestion.keywords && suggestion.keywords.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {suggestion.keywords.slice(0, 3).map((keyword) => (
-                    <span key={keyword} className="text-xs px-2 py-0.5 bg-muted rounded">
+                    <span
+                      key={keyword}
+                      className="text-xs px-2 py-0.5 bg-muted rounded"
+                    >
                       {keyword}
                     </span>
                   ))}
@@ -200,11 +207,15 @@ export function AdvancedHookExample() {
           </div>
           <div>
             <div className="text-muted-foreground">Click-Through Rate</div>
-            <div className="text-2xl font-bold">{(stats.clickThroughRate * 100).toFixed(1)}%</div>
+            <div className="text-2xl font-bold">
+              {(stats.clickThroughRate * 100).toFixed(1)}%
+            </div>
           </div>
           <div>
             <div className="text-muted-foreground">Avg Confidence</div>
-            <div className="text-2xl font-bold">{(stats.averageConfidence * 100).toFixed(0)}%</div>
+            <div className="text-2xl font-bold">
+              {(stats.averageConfidence * 100).toFixed(0)}%
+            </div>
           </div>
           <div>
             <div className="text-muted-foreground">ML vs Rule-based</div>
@@ -219,7 +230,8 @@ export function AdvancedHookExample() {
           <h5 className="font-medium mb-2">Your Preferences</h5>
           <div className="text-sm space-y-1">
             <div>
-              History: {userPreferences.suggestionHistory.length} interactions tracked
+              History: {userPreferences.suggestionHistory.length} interactions
+              tracked
             </div>
             <div>
               Top Keywords:{' '}
@@ -231,8 +243,9 @@ export function AdvancedHookExample() {
             </div>
             <div>
               Most Active Hour:{' '}
-              {Array.from(userPreferences.timePatterns.entries())
-                .sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A'}
+              {Array.from(userPreferences.timePatterns.entries()).sort(
+                ([, a], [, b]) => b - a
+              )[0]?.[0] || 'N/A'}
               :00
             </div>
           </div>
@@ -259,30 +272,26 @@ export function ABTestingExample() {
     api: '/api/chat',
   })
 
-  const {
-    suggestions,
-    trackInteraction,
-    stats,
-    abVariant,
-  } = usePromptSuggestionsEnhanced(messages, {
-    rankingModel: {
-      type: abVariant === 'experiment' ? 'ml' : 'rule-based',
-    },
-    features: {
-      conversationContext: true,
-      userHistory: abVariant === 'experiment',
-      timeOfDay: abVariant === 'experiment',
-      previousSelections: abVariant === 'experiment',
-    },
-    enableABTesting: true,
-    trackEffectiveness: true,
-  })
+  const { suggestions, trackInteraction, stats, abVariant } =
+    usePromptSuggestionsEnhanced(messages, {
+      rankingModel: {
+        type: abVariant === 'experiment' ? 'ml' : 'rule-based',
+      },
+      features: {
+        conversationContext: true,
+        userHistory: abVariant === 'experiment',
+        timeOfDay: abVariant === 'experiment',
+        previousSelections: abVariant === 'experiment',
+      },
+      enableABTesting: true,
+      trackEffectiveness: true,
+    })
 
   // Log A/B test results to analytics
   React.useEffect(() => {
     // Send to your analytics service
     if (stats.totalInteractions > 0) {
-      SecureLogger.debug('A/B Test Results:', {
+      console.log('A/B Test Results:', {
         variant: abVariant,
         ctr: stats.clickThroughRate,
         avgConfidence: stats.averageConfidence,
@@ -298,7 +307,9 @@ export function ABTestingExample() {
     }
   }, [abVariant, stats])
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<
+    PromptSuggestion[]
+  >([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)
@@ -349,11 +360,15 @@ export function ABTestingExample() {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span>Click-Through Rate:</span>
-            <span className="font-bold">{(stats.clickThroughRate * 100).toFixed(1)}%</span>
+            <span className="font-bold">
+              {(stats.clickThroughRate * 100).toFixed(1)}%
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Avg Confidence:</span>
-            <span className="font-bold">{(stats.averageConfidence * 100).toFixed(0)}%</span>
+            <span className="font-bold">
+              {(stats.averageConfidence * 100).toFixed(0)}%
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Total Interactions:</span>
@@ -384,25 +399,25 @@ export function CustomMLProviderExample() {
     api: '/api/chat',
   })
 
-  const {
-    suggestions,
-    trackInteraction,
-  } = usePromptSuggestionsEnhanced(messages, {
-    rankingModel: {
-      type: 'ml',
-      provider: 'custom',
-      endpoint: '/api/rank-suggestions',
-      // Note: API keys should be handled server-side in the /api/rank-suggestions route
-      // Never expose API keys with NEXT_PUBLIC_ prefix
-    },
-    features: {
-      conversationContext: true,
-      userHistory: true,
-      timeOfDay: true,
-      previousSelections: true,
-    },
-    trackEffectiveness: true,
-  })
+  const { suggestions, trackInteraction } = usePromptSuggestionsEnhanced(
+    messages,
+    {
+      rankingModel: {
+        type: 'ml',
+        provider: 'custom',
+        endpoint: '/api/rank-suggestions',
+        // Note: API keys should be handled server-side in the /api/rank-suggestions route
+        // Never expose API keys with NEXT_PUBLIC_ prefix
+      },
+      features: {
+        conversationContext: true,
+        userHistory: true,
+        timeOfDay: true,
+        previousSelections: true,
+      },
+      trackEffectiveness: true,
+    }
+  )
 
   // The hook will call your custom endpoint with:
   // POST /api/rank-suggestions
@@ -420,7 +435,9 @@ export function CustomMLProviderExample() {
   //   rankedSuggestions: PromptSuggestion[] // with updated confidence scores
   // }
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<
+    PromptSuggestion[]
+  >([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)

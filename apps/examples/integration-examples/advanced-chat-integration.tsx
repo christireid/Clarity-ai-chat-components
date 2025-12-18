@@ -1,10 +1,9 @@
 /**
  * Advanced Chat Integration Example
-import { SecureLogger } from '@/lib/security/secureLogger';
- * 
+ *
  * Demonstrates a full-featured chat implementation with all enhancements.
  * This example shows how to use all the blueprint features together.
- * 
+ *
  * Features:
  * - Enhanced markdown rendering (KaTeX, Mermaid)
  * - Prompt suggestions
@@ -72,18 +71,14 @@ export function AdvancedChatIntegration() {
   )
 
   // Message history with persistence
-  const {
-    messages,
-    paginatedMessages,
-    save,
-    load,
-    search,
-  } = useMessageHistory({
-    conversationId: 'advanced-chat-1',
-    enablePagination: true,
-    pageSize: 50,
-    autoSave: true,
-  })
+  const { messages, paginatedMessages, save, load, search } = useMessageHistory(
+    {
+      conversationId: 'advanced-chat-1',
+      enablePagination: true,
+      pageSize: 50,
+      autoSave: true,
+    }
+  )
 
   // Chat operations
   const { sendMessage, isLoading } = useChat({
@@ -118,7 +113,7 @@ export function AdvancedChatIntegration() {
     includeImages: boolean
     includeAttachments: boolean
   }) => {
-    SecureLogger.debug('Exporting:', options)
+    console.log('Exporting:', options)
     // Implement export logic
   }
 
