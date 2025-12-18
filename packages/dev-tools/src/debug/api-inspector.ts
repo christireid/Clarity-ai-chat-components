@@ -1,4 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { getLogger } from './logger'
+
+const logger = getLogger('api-inspector')
+
 /**
  * API Inspector for debugging AI provider API calls
  * 

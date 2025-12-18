@@ -1,4 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { getLogger } from '../../debug/logger'
+
+const logger = getLogger('cli-check')
+
 /**
  * Check command
  *

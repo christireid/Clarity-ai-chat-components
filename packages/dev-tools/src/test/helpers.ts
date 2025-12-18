@@ -1,4 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { getLogger } from '../debug/logger'
+
+const logger = getLogger('test-helpers')
+
 /**
  * Test helper utilities
  * 

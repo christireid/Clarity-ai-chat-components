@@ -12,14 +12,15 @@ export default defineConfig({
   external: [
     '@dqbd/tiktoken',
     'crypto-js',
-    '@tensorflow/tfjs'
+    '@tensorflow/tfjs',
+    'events'
   ],
   noExternal: [
     '@clarity-chat/types'
   ],
   target: 'es2020',
   platform: 'neutral',
-  esbuildOptions: (options) => {
+  esbuildOptions: (_options) => {
     // options.drop = ['console', 'debugger']
   },
   banner: {

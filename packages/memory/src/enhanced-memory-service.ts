@@ -7,31 +7,18 @@
 
 import type {
   MemoryItem,
-  MemoryQuery,
-  MemorySearchResult,
   MemoryServiceConfig,
-  MemoryStats,
-  MemoryType,
-  MemoryScope,
-  MemoryPriority,
-  MemoryEvent,
   MemoryEventListener,
   MemoryBuffer,
-  MemoryContext,
   VectorStore,
-  VectorStoreMatch,
-  VectorStoreVector,
-  VectorStoreQuery,
   EmbeddingProvider,
-  AddOptions,
   ContextOptions,
   ContextBundle,
-  TokenBreakdown,
 } from './types'
 
 // Enhanced imports with new token optimization
-import { TokenCounter, ContextOptimizer } from './token-optimizer'
-import { 
+import { ContextOptimizer } from './token-optimizer'
+import {
   AccurateTokenCounter,
   TokenSecurityManager,
   ToonOptimizer,
@@ -44,8 +31,6 @@ import {
 
 import {
   DecayManager,
-  type DecayManagerConfig,
-  type DecayResult,
 } from './utils/decay-manager'
 
 /**
@@ -178,8 +163,8 @@ export class EnhancedMemoryService {
     security: any
   }> {
     const maxTokens = options?.maxTokens || 1000
-    const context = options?.context
-    const securityLevel = options?.securityLevel || 'enterprise'
+    const _context = options?.context
+    const _securityLevel = options?.securityLevel || 'enterprise'
 
     // Apply security measures
     const secured = this.securityManager.sanitizeInput(content)
@@ -419,7 +404,7 @@ export class EnhancedMemoryService {
    */
   getTokenOptimizationStats(): {
     tokenCounter: ReturnType<typeof this.tokenCounter.getMonitoringStats>
-    cache: ReturnType<typeof this.semanticCache?.getCacheStats>
+    cache: ReturnType<SemanticCache['getCacheStats']> | undefined
     security: ReturnType<typeof this.securityManager.generateComplianceReport>
   } {
     return {

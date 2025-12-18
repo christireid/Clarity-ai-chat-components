@@ -1,4 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { getLogger } from '../debug/logger'
+
+const logger = getLogger('profiler')
+
 /**
  * Performance profiler for AI chat applications
  * 
@@ -13,7 +16,20 @@ import type { TableColumn } from '../ui/table'
 import { table, keyValueTable } from '../ui/table'
 import { infoBox } from '../ui/box'
 import chalk from 'chalk'
-import { formatBytes, formatDuration } from '@clarity-chat/utils/format'
+// Helper functions for formatting
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+function formatDuration(ms: number): string {
+  if (ms < 1) return `${(ms * 1000).toFixed(2)}µs`
+  if (ms < 1000) return `${ms.toFixed(2)}ms`
+  return `${(ms / 1000).toFixed(2)}s`
+}
 export interface PerformanceMetrics {
   name: string
   startTime: number

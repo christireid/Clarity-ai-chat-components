@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { getLogger } from '@clarity-chat/utils/logger';
 /**
  * Memory Service
  *
