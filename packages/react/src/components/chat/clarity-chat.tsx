@@ -192,7 +192,7 @@ export function ClarityChat({
       } catch (error) {
         // Only show error if not aborted - aborts are intentional
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to send message:', error)
+          logger.error('Failed to send message:', error)
           toast?.logger.error('Failed to send message. Please try again.')
         }
       }
@@ -326,7 +326,7 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to update message:', error)
+          logger.error('Failed to update message:', error)
           toast?.logger.error('Failed to update message. Please try again.')
         }
       }
@@ -403,7 +403,7 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to regenerate message:', error)
+          logger.error('Failed to regenerate message:', error)
           toast?.logger.error('Failed to regenerate response. Please try again.')
         }
       }

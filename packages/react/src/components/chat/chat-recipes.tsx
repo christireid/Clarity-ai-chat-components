@@ -249,7 +249,7 @@ export function ChatComplete({
     <ErrorBoundary
       onError={(error, errorInfo) => {
         onError?.(error)
-        logger.logger.error('[ChatComplete] Error:', error, errorInfo)
+        logger.error('[ChatComplete] Error:', error, errorInfo)
       }}
     >
       {chatComponent}

@@ -238,7 +238,7 @@ export function RetryButton({
       // Reset on success
       setCurrentAttempt(0)
     } catch (error) {
-      logger.logger.error('[RetryButton] Retry failed:', error)
+      logger.error('[RetryButton] Retry failed:', error)
       onRetryFail?.(nextAttempt, error as Error)
     } finally {
       setIsRetrying(false)

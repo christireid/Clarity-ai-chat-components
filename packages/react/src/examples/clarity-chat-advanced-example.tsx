@@ -118,7 +118,7 @@ export function ClarityChatAdvancedExample() {
           memoryOperations: prev.memoryOperations + 1,
         }))
 
-        logger.logger.error(`Memory ${operation} error:`, error)
+        logger.error(`Memory ${operation} error:`, error)
       },
     },
     onFinish: async (message) => {

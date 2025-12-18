@@ -92,7 +92,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
         })
       } catch (error) {
         if (config.debug) {
-          logger.logger.error('[AI] Failed to get suggestions:', error)
+          logger.error('[AI] Failed to get suggestions:', error)
         }
         return []
       }
@@ -115,7 +115,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
         return await config.moderationProvider(content, context)
       } catch (error) {
         if (config.debug) {
-          logger.logger.error('[AI] Failed to moderate content:', error)
+          logger.error('[AI] Failed to moderate content:', error)
         }
         // On error, default to allowing
         return {
@@ -147,7 +147,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
         return await config.sentimentAnalyzer(text)
       } catch (error) {
         if (config.debug) {
-          logger.logger.error('[AI] Failed to analyze sentiment:', error)
+          logger.error('[AI] Failed to analyze sentiment:', error)
         }
         return {
           sentiment: 'neutral',

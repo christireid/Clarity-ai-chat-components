@@ -158,7 +158,7 @@ export class MemoryService {
       // Store in vector database with retry logic
       await this.storeWithRetry(memory, 3)
     } catch (error) {
-      logger.logger.error('Failed to store in vector database, falling back to session memory:', error)
+      logger.error('Failed to store in vector database, falling back to session memory:', error)
       // Fallback to session memory on failure
       await this.storeSessionMemory(memory)
     }
@@ -288,7 +288,7 @@ export class MemoryService {
 
       return result as MemoryItem[]
     } catch (error) {
-      logger.logger.error('Long-term memory retrieval failed:', error)
+      logger.error('Long-term memory retrieval failed:', error)
       // Fallback: return empty array and continue with other layers
       return []
     }

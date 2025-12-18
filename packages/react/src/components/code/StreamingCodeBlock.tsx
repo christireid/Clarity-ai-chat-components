@@ -126,7 +126,7 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
           })
           setHighlightedHtml(html)
         } catch (err) {
-          logger.logger.error('Shiki streaming highlight failed:', err)
+          logger.error('Shiki streaming highlight failed:', err)
           setHighlightedHtml(`<code>${escapeHtml(codeToHighlight)}</code>`)
         } finally {
           setIsHighlighting(false)

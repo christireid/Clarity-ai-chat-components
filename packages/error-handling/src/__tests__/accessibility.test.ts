@@ -5,14 +5,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import {
-  // Enhanced accessibility hooks
   useFocusManagement,
   useScreenReaderAnnounce,
   useHighContrastMode,
   useReducedMotion,
   useColorContrast,
   useKeyboardNavigation,
-  // Legacy hooks for backward compatibility
   useFocusManagementLegacy,
   useFocusTrap,
   useAnnounce,
@@ -21,14 +19,18 @@ import {
 } from '../accessibility';
 
 // Mock SecureLogger
-vi.mock('@/lib/security/secureLogger', () => ({
-  SecureLogger: {
-    debug: vi.fn(),
-    error: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
-  },
-}));
+vi.mock('@clarity-chat/utils/logger', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual as object,
+    logger: {
+      debug: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    },
+  };
+});
 
 // Mock window.matchMedia
 const mockMatchMedia = (matches = false) => {
@@ -99,7 +101,22 @@ describe('Enhanced Accessibility Utilities', () => {
       const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
       const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
 
-      const { result } = renderHook(() => 
+      // Create real focusable elements attached to container
+      const button = document.createElement('button');
+      const input = document.createElement('input');
+      container.appendChild(button);
+      container.appendChild(input);
+
+      // Don't mock querySelectorAll, use real DOM
+      // const querySelectorSpy = vi.spyOn(container, 'querySelectorAll'); 
+      // We need to ensure querySelectorAll is NOT mocked if it was mocked in previous test or shared?
+      // It was mocked in "should manage focus within container". 
+      // But beforeEach creates NEW container.
+      // So spies on container are fresh.
+      // Wait, "should manage focus within container" mocked querySelectorAll on `container`.
+      // `container` is recreated in beforeEach. So spy is gone.
+      
+      const { result, unmount } = renderHook(() => 
         useFocusManagement({ current: container }, { trapFocus: true })
       );
 
@@ -111,7 +128,7 @@ describe('Enhanced Accessibility Utilities', () => {
       
       // Cleanup
       act(() => {
-        // Simulate component unmount
+        unmount();
       });
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
@@ -228,7 +245,7 @@ describe('Enhanced Accessibility Utilities', () => {
 
       const { result } = renderHook(() => useHighContrastMode());
 
-      expect(result.current).toBe(false); // Initially false
+      expect(result.current).toBe(true); // Should be true as mock returns true
     });
   });
 
@@ -308,7 +325,7 @@ describe('Enhanced Accessibility Utilities', () => {
       const onEnter = vi.fn();
       const onEscape = vi.fn();
 
-      const { result } = renderHook(() => 
+      const { result, unmount } = renderHook(() => 
         useKeyboardNavigation({
           onEnter,
           onEscape,
@@ -327,7 +344,7 @@ describe('Enhanced Accessibility Utilities', () => {
 
       // Cleanup
       act(() => {
-        // Simulate component unmount
+        unmount();
       });
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));

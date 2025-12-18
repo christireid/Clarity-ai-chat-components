@@ -169,7 +169,7 @@ export interface UseStreamingSSEReturn {
  *         disconnect()
  *       }
  *     },
- *     onError: (error) => logger.logger.error('SSE Error:', error),
+ *     onError: (error) => logger.error('SSE Error:', error),
  *   })
  *
  *   return (
@@ -490,7 +490,7 @@ export function useStreamingSSE(
         return
       }
 
-      logger.logger.error('[useStreamingSSE] Connection error:', error)
+      logger.error('[useStreamingSSE] Connection error:', error)
       setError(error)
       setStatus('error')
       onError?.(error)
@@ -520,7 +520,7 @@ export function useStreamingSSE(
           connect()
         }, delay)
       } else if (reconnectAttempt >= maxReconnectAttempts) {
-        logger.logger.error('[useStreamingSSE] Max reconnection attempts reached')
+        logger.error('[useStreamingSSE] Max reconnection attempts reached')
         onMaxReconnectAttemptsReached?.()
         shouldReconnectRef.current = false
       }

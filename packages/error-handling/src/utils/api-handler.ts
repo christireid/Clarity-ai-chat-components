@@ -120,7 +120,7 @@ export function apiHandler(
       return await handler(request, context)
     } catch (error) {
       // Log error
-      logger.logger.error('[API Error]', {
+      logger.error('[API Error]', {
         url: request.url,
         method: request.method,
         error: isClarityError(error) ? error.toJSON() : error,
@@ -205,7 +205,7 @@ export function streamingApiHandler(
     try {
       return await handler(request)
     } catch (error) {
-      logger.logger.error('[Streaming API Error]', error)
+      logger.error('[Streaming API Error]', error)
 
       // For streaming, we return an error in SSE format
       const encoder = new TextEncoder()

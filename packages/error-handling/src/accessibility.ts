@@ -106,7 +106,7 @@ export function useFocusManagement(
         initialElement.focus({ preventScroll: false });
         logger.debug('Focus set to initial element', { selector: initialFocus });
       }
-    } else if (focusableElementsRef.current.length > 0) {
+    } else if (focusableElementsRef.current.length > 0 && focusableElementsRef.current[0]) {
       focusableElementsRef.current[0].focus({ preventScroll: false });
       logger.debug('Focus set to first focusable element');
     }
@@ -124,13 +124,16 @@ export function useFocusManagement(
           ? (currentIndex - 1 + focusableElementsRef.current.length) % focusableElementsRef.current.length
           : (currentIndex + 1) % focusableElementsRef.current.length;
 
-        focusableElementsRef.current[nextIndex].focus();
-        logger.debug('Focus trapped to next element', { direction: event.shiftKey ? 'previous' : 'next' });
+        if (focusableElementsRef.current[nextIndex]) {
+          focusableElementsRef.current[nextIndex].focus();
+          logger.debug('Focus trapped to next element', { direction: event.shiftKey ? 'previous' : 'next' });
+        }
       };
 
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
+    return undefined;
   }, [containerRef, trapFocus, initialFocus]);
 
   // Restore focus on unmount
@@ -284,6 +287,9 @@ export function useHighContrastMode(): boolean {
   const [isHighContrast, setIsHighContrast] = useState(false);
 
   useEffect(() => {
+    // Safety check
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
     const checkHighContrast = () => {
       // Check for Windows high contrast mode
       const isWindowsHighContrast = window.matchMedia('(-ms-high-contrast: active)').matches;
@@ -308,12 +314,28 @@ export function useHighContrastMode(): boolean {
     const mediaQuery1 = window.matchMedia('(-ms-high-contrast: active)');
     const mediaQuery2 = window.matchMedia('(forced-colors: active)');
 
-    mediaQuery1.addEventListener('change', checkHighContrast);
-    mediaQuery2.addEventListener('change', checkHighContrast);
+    const addListener = (mq: MediaQueryList, handler: () => void) => {
+      if (mq.addEventListener) {
+        mq.addEventListener('change', handler);
+      } else if (mq.addListener) {
+        mq.addListener(handler);
+      }
+    };
+
+    const removeListener = (mq: MediaQueryList, handler: () => void) => {
+      if (mq.removeEventListener) {
+        mq.removeEventListener('change', handler);
+      } else if (mq.removeListener) {
+        mq.removeListener(handler);
+      }
+    };
+
+    addListener(mediaQuery1, checkHighContrast);
+    addListener(mediaQuery2, checkHighContrast);
 
     return () => {
-      mediaQuery1.removeEventListener('change', checkHighContrast);
-      mediaQuery2.removeEventListener('change', checkHighContrast);
+      removeListener(mediaQuery1, checkHighContrast);
+      removeListener(mediaQuery2, checkHighContrast);
     };
   }, []);
 
@@ -331,6 +353,9 @@ export function useReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
+    // Safety check
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches);
 
@@ -339,8 +364,14 @@ export function useReducedMotion(): boolean {
       logger.debug('Reduced motion preference changed', { prefersReducedMotion: event.matches });
     };
 
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleChange as any);
+      return () => mediaQuery.removeListener(handleChange as any);
+    }
+    return undefined;
   }, []);
 
   return prefersReducedMotion;
@@ -393,7 +424,7 @@ export function useColorContrast(
         wcag: result
       });
     } catch (error) {
-      logger.logger.error('Color contrast calculation failed', {
+      logger.error('Color contrast calculation failed', {
         foreground: foregroundColor,
         background: backgroundColor,
         error: error instanceof Error ? error.message : String(error)
@@ -436,7 +467,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   if (cleanHex.length !== 6) return null;
   
   const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex);
-  return result
+  return result && result[1] && result[2] && result[3]
     ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
@@ -457,7 +488,7 @@ function getRelativeLuminance(rgb: { r: number; g: number; b: number }): number 
       : Math.pow((value + 0.055) / 1.055, 2.4);
   });
 
-  return 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
+  return 0.2126 * (sRGB[0] ?? 0) + 0.7152 * (sRGB[1] ?? 0) + 0.0722 * (sRGB[2] ?? 0);
 }
 
 // ============================================================================
@@ -664,3 +695,6 @@ export function useIdLegacy(prefix: string): string {
   }
   return idRef.current;
 }
+
+// Export legacy name for backward compatibility
+export { usePrefersReducedMotionLegacy as usePrefersReducedMotion };

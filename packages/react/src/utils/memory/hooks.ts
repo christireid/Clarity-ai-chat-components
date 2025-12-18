@@ -157,7 +157,7 @@ export function useMemoryStats(userId: string) {
       const newStats = service.getStats(userId)
       setStats(newStats)
     } catch (err) {
-      logger.logger.error('Failed to get memory stats:', err)
+      logger.error('Failed to get memory stats:', err)
     } finally {
       setIsLoading(false)
     }
