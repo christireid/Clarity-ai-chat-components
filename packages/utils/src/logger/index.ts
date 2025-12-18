@@ -280,8 +280,6 @@ export function getLogger(
 // Create default logger instance
 const defaultLogger = getLogger('app')
 
-export const logger = defaultLogger
-
 /**
  * Default logger instance for direct use
  * @example
