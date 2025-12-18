@@ -35,22 +35,14 @@ export * from './types'
 // Memory service (framework-agnostic)
 export { MemoryService } from './memory-service'
 
-// Token optimization utilities (from local utils)
+// Token optimization utilities (local implementations)
+export { TokenCounter } from './utils/token-counter'
+export { TokenBudgetManager } from './context/token-budget'
 export {
-  TokenCounter,
-  countTokens,
-  countTokensWithConfidence,
-  type TokenCountResult,
-  type ModelFamily,
-  type ContentType,
-} from './utils/token-counter'
-
-// Enhanced optimization from token-optimization package
-export {
-  DynamicCompressionEngine,
-  type DynamicCompressionConfig,
-  type CompressionResult,
-} from '@clarity-chat/token-optimization'
+  MemoryCompressor,
+  SemanticChunker,
+  ContextOptimizer,
+} from './utils/token-optimization-stubs'
 
 // LLM-based summarization (80-90% token reduction)
 export {

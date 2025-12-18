@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 import { announce } from '../lib/aria'
 import { ErrorMessage } from './error-message'
 import { Checkbox as ShadcnCheckbox } from './ui/checkbox'

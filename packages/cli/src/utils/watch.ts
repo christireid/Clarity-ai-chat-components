@@ -39,10 +39,10 @@ export function watchFiles(options: WatchOptions): () => void {
 
     timeout = setTimeout(async () => {
       try {
-        console.log(`File changed: ${file}`)
+        logger.debug(`File changed: ${file}`)
         await onChange(file)
       } catch (error) {
-        console.error('Error in watch callback', error)
+        logger.error('Error in watch callback', error)
       }
     }, debounce)
   }
@@ -52,24 +52,31 @@ export function watchFiles(options: WatchOptions): () => void {
 
   // Watch common directories
   const watchDirs = ['src', 'components', 'lib', 'app']
-  
-  watchDirs.forEach(dir => {
+
+  watchDirs.forEach((dir) => {
     const dirPath = path.join(cwd, dir)
     try {
-      const watcher = watch(dirPath, { recursive: true }, (eventType, filename) => {
-        if (filename && !ignore.some(pattern => filename.includes(pattern))) {
-          const filePath = path.join(dirPath, filename)
-          if (!watchedFiles.has(filePath)) {
-            watchedFiles.add(filePath)
-            debouncedOnChange(filePath)
+      const watcher = watch(
+        dirPath,
+        { recursive: true },
+        (eventType, filename) => {
+          if (
+            filename &&
+            !ignore.some((pattern) => filename.includes(pattern))
+          ) {
+            const filePath = path.join(dirPath, filename)
+            if (!watchedFiles.has(filePath)) {
+              watchedFiles.add(filePath)
+              debouncedOnChange(filePath)
+            }
           }
         }
-      })
+      )
       watchers.push(watcher)
-      console.info(`Watching: ${dirPath}`)
+      logger.info(`Watching: ${dirPath}`)
     } catch (error) {
       // Directory might not exist, skip
-      console.log(`Skipping watch for ${dirPath}: ${error}`)
+      logger.debug(`Skipping watch for ${dirPath}: ${error}`)
     }
   })
 
@@ -77,8 +84,8 @@ export function watchFiles(options: WatchOptions): () => void {
     if (timeout) {
       clearTimeout(timeout)
     }
-    watchers.forEach(watcher => watcher.close())
-    console.info('Stopped watching files')
+    watchers.forEach((watcher) => watcher.close())
+    logger.info('Stopped watching files')
   }
 }
 
@@ -92,9 +99,9 @@ export function watchAndRebuild(
   return watchFiles({
     ...options,
     onChange: async () => {
-      console.info('Files changed, rebuilding...')
+      logger.info('Files changed, rebuilding...')
       await buildFn()
-      console.log('Rebuild complete')
+      logger.success('Rebuild complete')
     },
   })
 }

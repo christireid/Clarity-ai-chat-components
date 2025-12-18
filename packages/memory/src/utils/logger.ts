@@ -49,7 +49,7 @@ class ClarityLogger implements Logger {
 
   debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog('debug')) {
-      console.log(`${this.prefix} [DEBUG] ${message}`, ...args)
+      console.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
     }
   }
 
@@ -64,6 +64,9 @@ export const logger = new ClarityLogger()
 /**
  * Create a logger instance
  */
-export function createLogger(level: LogLevel = 'warn', prefix?: string): Logger {
+export function createLogger(
+  level: LogLevel = 'warn',
+  prefix?: string
+): Logger {
   return new ClarityLogger(level, prefix)
 }

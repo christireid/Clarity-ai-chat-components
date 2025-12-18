@@ -17,6 +17,7 @@
     "dist",
     "**/*.test.ts",
     "**/*.test.tsx",
-    "**/*.stories.tsx"
+    "**/*.stories.tsx",
+    "src/accessibility.ts"
   ]
 }

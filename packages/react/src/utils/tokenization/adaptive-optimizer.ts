@@ -8,6 +8,8 @@
  * - Real-time performance feedback
  * - Cost-performance trade-offs
  * - User preferences and constraints
+ *
+ * @module
  */
 
 import { TokenCounter } from '@clarity-chat/token-optimization'

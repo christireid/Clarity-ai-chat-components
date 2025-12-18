@@ -6,7 +6,6 @@
 import pc from 'picocolors'
 import { getLogger } from './logger.js'
 
-
 const logger = getLogger('output')
 
 export enum OutputMode {

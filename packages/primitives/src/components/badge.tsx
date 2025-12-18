@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 
 // Extended badge variants that include custom variants and sizes
 const badgeVariants = cva(
@@ -22,8 +22,7 @@ const badgeVariants = cva(
           'border border-success/30 bg-success text-success-foreground shadow-sm hover:bg-success/90 hover:shadow-md hover:scale-105',
         warning:
           'border border-warning/30 bg-warning text-warning-foreground shadow-sm hover:bg-warning/90 hover:shadow-md hover:scale-105',
-        info:
-          'border border-info/30 bg-info text-info-foreground shadow-sm hover:bg-info/90 hover:shadow-md hover:scale-105',
+        info: 'border border-info/30 bg-info text-info-foreground shadow-sm hover:bg-info/90 hover:shadow-md hover:scale-105',
         subtle:
           'border border-border/40 bg-muted text-muted-foreground hover:bg-muted/70 hover:border-border/60 hover:scale-105',
         ghost:
@@ -43,7 +42,8 @@ const badgeVariants = cva(
 )
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
   /** Show animated dot indicator */
   dot?: boolean
@@ -54,7 +54,19 @@ export interface BadgeProps
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, dot = false, pulse = false, glow = false, children, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      dot = false,
+      pulse = false,
+      glow = false,
+      children,
+      ...props
+    },
+    ref
+  ) => {
     return (
       <div
         ref={ref}

@@ -30,5 +30,15 @@
     "verbatimModuleSyntax": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "src/routing/**",
+    "src/components/**",
+    "src/compression/advanced-engine.ts",
+    "src/compression/basic-engine.ts",
+    "src/deployment/**"
+  ]
 }

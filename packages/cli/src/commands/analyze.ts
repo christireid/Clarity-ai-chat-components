@@ -21,7 +21,6 @@ import { successMessage, infoMessage } from '../ui/messages.js'
 import { createTable } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
 
-
 const logger = getLogger('analyze')
 
 interface AnalysisResult {

@@ -26,7 +26,9 @@ export interface BatchResult<T> {
 /**
  * Process items in batch
  */
-export async function processBatch<T>(options: BatchOptions<T>): Promise<BatchResult<T>> {
+export async function processBatch<T>(
+  options: BatchOptions<T>
+): Promise<BatchResult<T>> {
   const {
     items,
     processor,
@@ -56,9 +58,10 @@ export async function processBatch<T>(options: BatchOptions<T>): Promise<BatchRe
         if (result.status === 'fulfilled') {
           successful.push(item)
         } else {
-          const err = result.reason instanceof Error 
-            ? result.reason 
-            : new Error(String(result.reason))
+          const err =
+            result.reason instanceof Error
+              ? result.reason
+              : new Error(String(result.reason))
           failed.push({ item, error: err })
           if (onError) {
             onError(item, err)
@@ -110,7 +113,7 @@ export async function batchAddComponents(
   options: { path?: string; deps?: boolean } = {}
 ): Promise<BatchResult<string>> {
   const { addCommand } = await import('../commands/add.js')
-  
+
   info(`Adding ${components.length} components...`)
 
   return processBatch({

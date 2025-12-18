@@ -1,17 +1,58 @@
+'use client'
+
 /**
- * Structured Exports - Organized by Domain and Layer
+ * Structured API Reference - @clarity-chat/react
  *
- * This file defines the public API surface organized by:
- * 1. Domain (Chat UI, Chat State, Memory, etc.)
- * 2. Layer (Top-level, Mid-level, Low-level)
+ * This file documents and exports the public API surface organized by domain.
+ * It serves as both documentation and a complete re-export of the library.
  *
- * The main index.ts re-exports from here to maintain backward compatibility
- * while providing a clear structure for future development.
+ * ## API Architecture
+ *
+ * The library follows a 3-tier architecture:
+ *
+ * ```
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │  TIER 1: DROP-IN READY                                          │
+ * │  Complete solutions that work out of the box                    │
+ * │  <ClarityChat> useClarityChat() <ChatComplete>                 │
+ * └─────────────────────────────────────────────────────────────────┘
+ *                              ↓
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │  TIER 2: COMPOSABLE                                             │
+ * │  Building blocks for custom implementations                     │
+ * │  <ChatWindow> <ChatInput> useChatEnhanced() useStreamingSSE()  │
+ * └─────────────────────────────────────────────────────────────────┘
+ *                              ↓
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │  TIER 3: PRIMITIVES                                             │
+ * │  Low-level utilities, types, and helpers                        │
+ * │  convertMessages() createUserMessage() MessageRole             │
+ * └─────────────────────────────────────────────────────────────────┘
+ * ```
+ *
+ * ## Import Strategies
+ *
+ * ```tsx
+ * // Full library (everything)
+ * import { ClarityChat } from '@clarity-chat/react'
+ *
+ * // Core only (minimal bundle)
+ * import { ClarityChat } from '@clarity-chat/react/core'
+ *
+ * // Feature-specific (tree-shakeable)
+ * import { useStreamingSSE } from '@clarity-chat/react/hooks'
+ * import { ChatWindow } from '@clarity-chat/react/components'
+ * import { SecurityManager } from '@clarity-chat/react/enterprise'
+ * import type { Message } from '@clarity-chat/react/types'
+ * ```
+ *
+ * @packageDocumentation
  */
 
-// ============================================================================
+// =============================================================================
 // DOMAIN 1: CHAT UI
-// ============================================================================
+// Components for building chat interfaces
+// =============================================================================
 
 // Top-Level: Drop-in ready components
 export { ClarityChat } from './components/chat/clarity-chat'
@@ -41,11 +82,28 @@ export { CitationCard } from './components/message/citation-card'
 export { CopyButton } from './components/message/copy-button'
 export { FileUpload } from './components/input/file-upload'
 
-// ============================================================================
-// DOMAIN 2: CHAT STATE
-// ============================================================================
+// Tier 2: Composable
+export {
+  ChatWindow,
+  ChatInput,
+  ChatLayout,
+  ChatWithErrorBoundary,
+  VirtualizedMessageList,
+  MessageList,
+  MobileOptimizedMessage,
+  MobileChatWindow,
+  TouchFriendlyButton,
+  useMobileOptimization,
+  OfflineChatSync,
+  useOfflineChat,
+} from './components/chat'
 
-// Top-Level: Drop-in ready hooks
+// =============================================================================
+// DOMAIN 2: CHAT STATE
+// Hooks for managing chat state and interactions
+// =============================================================================
+
+// Tier 1: Drop-in Ready
 export {
   useClarityChat,
   type UseClarityChatOptions,
@@ -56,33 +114,36 @@ export {
   type ClarityChatErrorInfo,
   type ClarityPromptOptimizationOptions,
   type ClarityChatTokenStats,
-} from './hooks/use-clarity-chat'
+} from './hooks/chat/use-clarity-chat'
 
-// Mid-Level: Composable hooks
+export {
+  useChat,
+  type UseChatOptions,
+  type UseChatReturn,
+} from './hooks/chat/use-chat-unified'
+
+// Tier 2: Composable
 export {
   useChat as useChatEnhanced,
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
-} from './hooks/use-chat-enhanced'
+} from './hooks/chat/use-chat-enhanced'
+
 export {
   useChatHandlers,
   type UseChatHandlersOptions,
   type ChatHandlers,
-} from './hooks/use-chat-handlers'
+} from './hooks/chat/use-chat-handlers'
+
 export {
   useClarityChatWithTools,
   type UseClarityChatWithToolsOptions,
   type UseClarityChatWithToolsReturn,
   type ExtractedToolResult,
-} from './hooks/use-clarity-chat-with-tools'
+} from './hooks/chat/use-clarity-chat-with-tools'
 
-// Low-Level: Primitives
-export {
-  useChat,
-  type UseChatOptions as UseChatOptionsLegacy,
-  type UseChatReturn as UseChatReturnLegacy,
-} from './hooks/use-chat'
+// Tier 3: Primitives
 export {
   convertCoreMessageToMessage,
   convertMessageToCoreMessage,
@@ -90,23 +151,43 @@ export {
   convertMessagesToCoreMessages,
 } from './utils/message/message-conversion'
 
-// ============================================================================
+// =============================================================================
 // DOMAIN 3: MEMORY & CONTEXT
-// ============================================================================
+// Conversation memory and context management
+// =============================================================================
 
-// Top-Level: Drop-in ready providers
+// Tier 1: Drop-in Ready
 export {
   MemoryProvider,
   type MemoryProviderProps,
 } from './memory/memory-provider'
 
-// Mid-Level: Composable hooks
+export {
+  useMemoryStore,
+  type UseMemoryStoreOptions,
+  type UseMemoryStoreReturn,
+} from './hooks/storage/use-memory-store'
+
+export {
+  useRAGPipeline,
+  type UseRAGPipelineOptions,
+  type UseRAGPipelineReturn,
+} from './hooks/chat/use-rag-pipeline'
+
+export {
+  useChatHistory,
+  type ChatHistoryOptions,
+  type UseChatHistoryReturn,
+  type ChatMessage as ChatHistoryMessage,
+} from './hooks/chat/use-chat-history'
+
+// Tier 2: Composable
 export {
   useMemoryContext,
   type UseMemoryContextReturn,
 } from './memory/memory-provider'
 
-// Low-Level: Primitives
+// Tier 3: Primitives
 export type {
   MemoryItem,
   MemoryQuery,
@@ -124,42 +205,37 @@ export * from './vector-stores'
 // Embeddings
 export * from './embeddings'
 
-// ============================================================================
+// =============================================================================
 // DOMAIN 4: STREAMING & TRANSPORT
-// ============================================================================
+// Real-time streaming and transport protocols
+// =============================================================================
 
-// Top-Level: Abstracted via useClarityChat (transport option)
+// Tier 2: Composable
+export * from './hooks/streaming'
 
-// Mid-Level: Transport hooks
-export * from './hooks/use-streaming-sse'
-export * from './hooks/use-streaming-websocket'
-export * from './hooks/use-streaming'
-export * from './hooks/use-streamable-ui'
-
-// Low-Level: Primitives
+// Tier 3: Primitives
 export type { StreamChunk } from './adapters/types'
-export * from './utils/streaming-helpers'
-export * from './utils/streamable-value'
+export * from './utils/streaming'
 
-// ============================================================================
+// =============================================================================
 // DOMAIN 5: TOOLS & AGENTS
-// ============================================================================
+// AI agents and tool integrations
+// =============================================================================
 
-// Top-Level: Structured output
+// Tier 1: Drop-in Ready
 export {
   useClarityObject,
   type UseClarityObjectOptions,
   type UseClarityObjectReturn,
-} from './hooks/use-clarity-object'
+} from './hooks/chat/use-clarity-object'
 
-// Top-Level: Drop-in ready agent hook
 export {
   useAgent,
   type UseAgentOptions,
   type UseAgentReturn,
-} from './hooks/use-agent'
+} from './hooks/chat/use-agent'
 
-// Mid-Level: Tool integration
+// Tier 2: Composable
 export * from './agents/tool-ui-registry'
 export {
   createAgent,
@@ -168,7 +244,7 @@ export {
   type AgentExecution,
 } from './agents'
 
-// Low-Level: Primitives
+// Tier 3: Primitives
 export type {
   WeatherToolResult,
   SearchToolResult,
@@ -182,6 +258,7 @@ export type {
   FileReadToolResult,
   GenericToolResult,
 } from './types/tool-result-types'
+
 export {
   isWeatherToolResult,
   isSearchToolResult,
@@ -190,30 +267,98 @@ export {
   parseToolArguments as parseToolArgumentsType,
   validateToolResult,
 } from './types/tool-result-types'
-export * from './utils/tool-result-helpers'
 
-// ============================================================================
-// DOMAIN 6: ENTERPRISE INFRASTRUCTURE
-// ============================================================================
+export * from './utils/tools'
 
-// Top-Level: Providers
+// =============================================================================
+// DOMAIN 6: TOKEN OPTIMIZATION
+// Tools for reducing token usage and costs
+// =============================================================================
+
+// Tier 1: Drop-in Ready
+export {
+  TokenBudgetProvider,
+  useTokenBudget,
+  useTokenBudgetOptional,
+  type TokenBudgetContextValue,
+  type TokenBudgetProviderProps,
+} from './context/token-budget-context'
+
+// Tier 2: Composable
+export * from './hooks/token'
+
+// Tier 3: Primitives
+export * from './utils/tokenization'
+
+export {
+  calculateCost,
+  calculateCacheSavings,
+  estimateConversationCost,
+  compareModelCosts,
+  recommendModel,
+  MODEL_PRICING,
+  type ModelPricing,
+  type CostCalculation,
+} from './utils/tokenization/model-pricing'
+
+export * from './utils/optimization'
+
+export {
+  jsonToToon,
+  toonToJson,
+  autoOptimize,
+  formatForLLM,
+  parseFlexible,
+  estimateToonSavings,
+  isSuitableForToon,
+  type ToonOptions,
+  type ToonFormat,
+  type ToonMetadata,
+  type ToonStats,
+  type ToonOptimizationResult,
+  type AutoToonOptions,
+} from './utils/toon'
+
+// =============================================================================
+// DOMAIN 7: RESILIENCE & AI-OPS
+// Production reliability patterns
+// =============================================================================
+
+// Tier 2: Composable
+export * from './hooks/resilience'
+
+// AI-Ops Components
+export * from './components/ai-ops'
+
+// =============================================================================
+// DOMAIN 8: ENTERPRISE INFRASTRUCTURE
+// Enterprise-grade features for production
+// =============================================================================
+
+// Analytics & Observability
 export * from './analytics'
 export * from './observability'
+
+// Access Control & Security
 export * from './quotas'
 export * from './rbac'
 export * from './multi-tenancy'
+export * from './security'
+
+// Compliance & Audit
 export * from './audit'
 export * from './webhooks'
+export * from './safety'
 
-// Mid-Level: Hooks (exported via providers above)
+// Enterprise Components
+export * from './components/enterprise'
 
-// Low-Level: Services (exported via providers above)
+// =============================================================================
+// DOMAIN 9: DEVELOPER EXPERIENCE
+// Configuration helpers and utilities
+// =============================================================================
 
-// ============================================================================
-// DOMAIN 7: DEVELOPER EXPERIENCE
-// ============================================================================
-
-// Top-Level: Presets and config builders
+// Tier 1: Drop-in Ready
 export {
   createBasicChatConfig,
   createMemoryChatConfig,
@@ -221,17 +366,17 @@ export {
   createEnterpriseChatConfig,
   isValidApiEndpoint,
   getApiEndpoint,
-} from './utils/clarity-chat-helpers'
+} from './utils/message/clarity-chat-helpers'
 
-// Mid-Level: Helpers
+// Tier 2: Composable
 export {
   createUserMessage,
   createAssistantMessage,
   createSystemMessage,
   createToolResultMessage,
-} from './utils/chat-helpers'
+} from './utils/message/chat-helpers'
 
-// Low-Level: Utilities
+// Tier 3: Primitives
 export {
   isMemoryEnabled,
   isUserMessage,
@@ -240,28 +385,25 @@ export {
   extractTextContent,
 } from './types/clarity-chat-types'
 
-// ============================================================================
-// ADDITIONAL EXPORTS (Backward Compatibility)
-// ============================================================================
+// =============================================================================
+// DOMAIN 10: ADDITIONAL FEATURES
+// Supporting systems and utilities
+// =============================================================================
 
 // Model Adapters
 export * from './adapters'
 
-// Prompt Templates
+// Prompt Engineering
 export * from './prompts'
 export * from './prompt'
 
-// Document Loaders
+// Document Processing
 export * from './document-loaders'
-
-// AI Safety
-export * from './safety'
-
-// Reranking
 export * from './reranking'
 
-// Plugin Architecture
+// Plugin & Extension Systems
 export * from './plugins'
+export * from './extensions'
 
 // Theme System
 export * from './theme'
@@ -377,88 +519,95 @@ export { ConversationBranchVisualizer } from './components/conversation/conversa
 // Markdown & Rendering
 export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
 
-// Chat History with Undo/Redo
-export {
-  useChatHistory,
-  type ChatMessage as ChatHistoryMessage,
-  type ChatHistoryOptions,
-  type UseChatHistoryReturn,
-} from './hooks/use-chat-history'
+// Search Components
+export * from './components/search'
 
-// Integrations (Sentry, Analytics) - explicitly named to avoid conflicts
-export {
-  initSentry,
-  captureAIError,
-  addChatBreadcrumb,
-  useSentryChat,
-  withSentryErrorBoundary,
-  startAITransaction,
-  type SentryOptions,
-  type SentryScope,
-  type SentryBreadcrumb,
-} from './integrations/sentry'
-export {
-  AnalyticsProvider as IntegrationsAnalyticsProvider,
-  useAnalytics as useIntegrationsAnalytics,
-  useChatAnalytics,
-  useWebVitals,
-  type PostHogConfig,
-  type VercelAnalyticsConfig,
-  type AnalyticsProviderProps as IntegrationsAnalyticsProviderProps,
-  type AnalyticsContextValue as IntegrationsAnalyticsContextValue,
-  type ChatAnalyticsEvent,
-  type ChatEventProperties,
-} from './integrations/analytics'
+// Dashboard Components
+export * from './components/dashboards'
 
-// Additional Hooks
-export * from './hooks/use-completion'
-export * from './hooks/use-assistant'
-export * from './hooks/use-auto-scroll'
-export * from './hooks/use-clipboard'
-export * from './hooks/use-debounce'
-export * from './hooks/use-throttle'
-export * from './hooks/use-event-listener'
-export * from './hooks/use-intersection-observer'
-export * from './hooks/use-local-storage'
-export * from './hooks/use-indexed-db'
-export * from './hooks/use-media-query'
-export * from './hooks/use-mounted'
-export * from './hooks/use-previous'
-export * from './hooks/use-toggle'
-export * from './hooks/use-window-size'
-export * from './hooks/use-error-recovery'
-export * from './hooks/use-token-tracker'
-export * from './hooks/use-token-optimization'
-export * from './hooks/use-message-operations'
-export * from './hooks/use-message-history'
-export * from './hooks/use-realistic-typing'
-export * from './hooks/use-command-palette-commands'
-export * from './hooks/use-optimistic-message'
-export * from './hooks/use-performance'
-export * from './hooks/use-deferred-search'
-export * from './hooks/use-voice-input'
-export * from './hooks/use-model-router'
-export * from './hooks/use-smart-throttle'
-export * from './hooks/use-smart-cache'
-export * from './hooks/use-character-counter'
-export * from './hooks/use-submit-button-state'
-export * from './hooks/use-mobile-keyboard'
-export { useDesignTokens } from './hooks/use-design-tokens'
-export * from './hooks/use-theme-analytics'
-export {
-  useBatteryAware,
-  withBatteryOptimizations,
-  type BatteryStatus,
-  type BatteryAwareConfig,
-  type OptimizationRecommendations,
-} from './hooks/use-battery-aware'
+// Token Components
+export * from './components/token'
 
-// Additional Utilities
-// Note: Specific utils are exported above. Commenting out barrel export to avoid duplicates.
-// export * from './utils'
+// Theme UI Components
+export * from './components/theme-components'
 
-// Additional Types
+// Navigation Components
+export * from './components/navigation'
+
+// Conversation Components
+export * from './components/conversation'
+
+// Feedback Components
+export * from './components/feedback'
+
+// Media Components
+export * from './components/media'
+
+// UI Primitives
+export * from './components/ui'
+
+// AI Components
+export * from './components/ai'
+
+// Prompt Components
+export * from './components/prompt'
+
+// Context Components
+export * from './components/context'
+
+// Code Components
+export * from './components/code'
+
+// A/B Testing Components
+export * from './components/ab-testing'
+
+// Pro Components
+export * from './components/pro'
+
+// =============================================================================
+// HOOKS (All hook domains)
+// =============================================================================
+
+// UI Hooks
+export * from './hooks/ui'
+
+// Keyboard Hooks
+export * from './hooks/keyboard'
+
+// Storage Hooks
+export * from './hooks/storage'
+
+// Theme Hooks
+export * from './hooks/theme'
+
+// Performance Hooks
+export * from './hooks/performance'
+
+// Dashboard Hooks
+export * from './hooks/dashboard'
+
+// Input Hooks
+export * from './hooks/input'
+
+// Context Hooks
+export * from './hooks/context'
+
+// Model Hooks
+export * from './hooks/model'
+
+// Message Hooks
+export * from './hooks/message'
+
+// Security Hooks
+export * from './hooks/security'
+
+// =============================================================================
+// TYPES
+// TypeScript type definitions
+// =============================================================================
+
 export * from './types/chat-types'
+
 export type {
   MessageContent,
   MessageRole,

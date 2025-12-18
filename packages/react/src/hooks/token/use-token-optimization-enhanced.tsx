@@ -1,6 +1,20 @@
 /**
  * Enhanced Token Optimization Hook (Unified)
  *
+ * @deprecated This hook will be consolidated into `useTokenOptimization` in v3.0.
+ * All enhanced features will be available in the primary hook via options.
+ *
+ * **Migration:**
+ * ```tsx
+ * // Before (deprecated)
+ * import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+ * const optimization = useTokenOptimizationEnhanced({ ... })
+ *
+ * // After (recommended in v3)
+ * import { useTokenOptimization } from '@clarity-chat/react'
+ * const optimization = useTokenOptimization({ enhanced: true, ... })
+ * ```
+ *
  * Comprehensive token optimization with all features:
  * - TOON support (30-60% savings on structured data)
  * - Accurate tokenization (tiktoken)
@@ -14,13 +28,9 @@
  * - Response prefilling
  * - Context ordering
  *
- * This is the unified hook that combines all features from
- * useTokenOptimization (basic) and useTokenOptimizationEnhanced.
- *
  * @since 2.0.0
+ * @module
  */
-
-'use client'
 
 import * as React from 'react'
 import type { CoreMessage } from '../chat/use-chat-enhanced'

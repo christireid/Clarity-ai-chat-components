@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * Centralized API error handling utilities for Next.js 15 App Router
  *
@@ -120,7 +119,7 @@ export function apiHandler(
       return await handler(request, context)
     } catch (error) {
       // Log error
-      logger.error('[API Error]', {
+      console.error('[API Error]', {
         url: request.url,
         method: request.method,
         error: isClarityError(error) ? error.toJSON() : error,
@@ -205,7 +204,7 @@ export function streamingApiHandler(
     try {
       return await handler(request)
     } catch (error) {
-      logger.error('[Streaming API Error]', error)
+      console.error('[Streaming API Error]', error)
 
       // For streaming, we return an error in SSE format
       const encoder = new TextEncoder()
@@ -384,7 +383,7 @@ export function parseSSEError(data: string): {
   // Limit input size to prevent DoS
   const maxInputSize = 1024 * 1024 // 1MB
   if (data.length > maxInputSize) {
-    logger.warn('[parseSSEError] Input exceeds maximum size, truncating')
+    console.warn('[parseSSEError] Input exceeds maximum size, truncating')
     data = data.slice(0, maxInputSize)
   }
 

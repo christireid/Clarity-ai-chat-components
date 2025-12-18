@@ -12,7 +12,7 @@ export async function installDependencies(
   packageManager: string,
   packages: string[]
 ): Promise<void> {
-  console.info(`Installing ${packages.length} packages with ${packageManager}`)
+  logger.info(`Installing ${packages.length} packages with ${packageManager}`)
 
   const commands: Record<string, { cmd: string; args: string[] }> = {
     npm: { cmd: 'npm', args: ['install', ...packages] },
@@ -25,9 +25,9 @@ export async function installDependencies(
 
   try {
     await execa(cmd, args, { cwd })
-    console.info('Installation complete')
+    logger.info('Installation complete')
   } catch (error) {
-    console.error('Installation failed', error)
+    logger.error('Installation failed', error)
     throw error
   }
 }
@@ -37,7 +37,9 @@ export async function installDevDependencies(
   packageManager: string,
   packages: string[]
 ): Promise<void> {
-  console.info(`Installing ${packages.length} dev packages with ${packageManager}`)
+  logger.info(
+    `Installing ${packages.length} dev packages with ${packageManager}`
+  )
 
   const commands: Record<string, { cmd: string; args: string[] }> = {
     npm: { cmd: 'npm', args: ['install', '--save-dev', ...packages] },
@@ -50,9 +52,9 @@ export async function installDevDependencies(
 
   try {
     await execa(cmd, args, { cwd })
-    console.info('Dev dependencies installed')
+    logger.info('Dev dependencies installed')
   } catch (error) {
-    console.error('Dev dependencies installation failed', error)
+    logger.error('Dev dependencies installation failed', error)
     throw error
   }
 }

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 import { getErrorAriaAttributes } from '../lib/aria'
 import { useComposedRefs } from '../hooks/use-composed-refs'
 import { ErrorMessage } from './error-message'

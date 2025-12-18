@@ -190,7 +190,7 @@ function defaultFormatPrompt(
   return parts.join('\n\n')
 }
 
-// Note: estimateTokens is imported from '../utils/tokenization/estimator'
+// Note: estimateTokens is imported from '../../utils/tokenization/estimator'
 // for consistent token estimation across the codebase
 
 /**

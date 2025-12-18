@@ -7,6 +7,7 @@ import { promises as fs } from 'fs'
 import { dirname } from 'path'
 import type { MemoryItem, MemoryType } from '../types'
 import type { VectorStore, SearchOptions } from './base'
+import { logger } from '../utils/logger'
 
 interface FileStoreData {
   memories: MemoryItem[]
@@ -35,7 +36,7 @@ export class FileStore implements VectorStore {
       try {
         const data = await fs.readFile(this.filePath, 'utf-8')
         const parsed: FileStoreData = JSON.parse(data)
-        
+
         // Migrate old format if needed
         if (parsed.memories) {
           for (const memory of parsed.memories) {
@@ -90,7 +91,7 @@ export class FileStore implements VectorStore {
     options: SearchOptions
   ): Promise<Array<{ memory: MemoryItem; score: number }>> {
     await this.ensureInitialized()
-    
+
     const results: Array<{ memory: MemoryItem; score: number }> = []
 
     for (const memory of this.memories.values()) {
@@ -129,9 +130,10 @@ export class FileStore implements VectorStore {
         } else {
           const queryWords = new Set(queryLower.split(/\s+/))
           const contentWords = new Set(contentLower.split(/\s+/))
-          const overlap = [...queryWords].filter((w) => contentWords.has(w))
-            .length
-          score = overlap / Math.max(queryWords.size, 1) * 0.5
+          const overlap = [...queryWords].filter((w) =>
+            contentWords.has(w)
+          ).length
+          score = (overlap / Math.max(queryWords.size, 1)) * 0.5
         }
       }
 
@@ -258,5 +260,4 @@ export class FileStore implements VectorStore {
     if (normA === 0 || normB === 0) return 0
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
   }
-
 }

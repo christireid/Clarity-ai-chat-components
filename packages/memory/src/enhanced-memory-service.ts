@@ -7,18 +7,30 @@
 
 import type {
   MemoryItem,
+  MemoryQuery as _MemoryQuery,
+  MemorySearchResult as _MemorySearchResult,
   MemoryServiceConfig,
+  MemoryStats as _MemoryStats,
+  MemoryType as _MemoryType,
+  MemoryScope as _MemoryScope,
+  MemoryPriority as _MemoryPriority,
+  MemoryEvent as _MemoryEvent,
   MemoryEventListener,
   MemoryBuffer,
   MemoryContext,
   VectorStore,
+  VectorStoreMatch as _VectorStoreMatch,
+  VectorStoreVector as _VectorStoreVector,
+  VectorStoreQuery as _VectorStoreQuery,
   EmbeddingProvider,
+  AddOptions as _AddOptions,
   ContextOptions,
   ContextBundle,
+  TokenBreakdown as _TokenBreakdown,
 } from './types'
 
 // Enhanced imports with new token optimization
-import { ContextOptimizer } from './token-optimizer'
+import { TokenCounter as _TokenCounter, ContextOptimizer } from './token-optimizer'
 import { 
   AccurateTokenCounter,
   TokenSecurityManager,
@@ -30,7 +42,11 @@ import {
   AdvancedSecurityManager
 } from '@clarity-chat/token-optimization'
 
-import { DecayManager } from './utils/decay-manager'
+import {
+  DecayManager,
+  type DecayManagerConfig as _DecayManagerConfig,
+  type DecayResult as _DecayResult,
+} from './utils/decay-manager'
 
 /**
  * Enhanced Memory Service with Advanced Token Optimization
@@ -368,7 +384,7 @@ export class EnhancedMemoryService {
     }
   }> {
     const maxTokens = options?.maxTokens || 4096
-    const _securityLevel = options?.securityLevel || 'enterprise'
+    const securityLevel = options?.securityLevel || 'enterprise'
 
     // Get base context
     const baseContext = await this.context(options)

@@ -1,95 +1,119 @@
 /**
  * Simple Security Manager
  *
- * Minimal security implementation for testing without external dependencies
+ * Lightweight security implementation for basic token protection
  */
 
 export interface SimpleSecurityConfig {
-  enableSanitization?: boolean
-  enableRateLimit?: boolean
-  maxRequestsPerMinute?: number
+  enableSanitization: boolean
+  enableCompressionObfuscation: boolean
+  enableAuditLogging: boolean
+  enablePIIRedaction: boolean
+  noiseLevel?: number
+  complianceLevel?: 'basic' | 'enterprise' | 'government'
+  auditRetention?: number
 }
 
 export interface SimpleSanitizationResult {
   sanitized: string
-  threats: string[]
-  safe: boolean
+  originalLength: number
+  sanitizedLength: number
+  redactedPIICount: number
 }
 
-/**
- * Simple security manager for basic token security
- */
 export class SimpleSecurityManager {
   private config: SimpleSecurityConfig
 
-  constructor(config: SimpleSecurityConfig = {}) {
+  constructor(config: Partial<SimpleSecurityConfig> = {}) {
     this.config = {
-      enableSanitization: true,
-      enableRateLimit: false,
-      maxRequestsPerMinute: 60,
-      ...config,
+      enableSanitization: config.enableSanitization ?? true,
+      enableCompressionObfuscation: config.enableCompressionObfuscation ?? true,
+      enableAuditLogging: config.enableAuditLogging ?? true,
+      enablePIIRedaction: config.enablePIIRedaction ?? true,
+      noiseLevel: config.noiseLevel ?? 0.1,
+      complianceLevel: config.complianceLevel ?? 'basic',
+      auditRetention: config.auditRetention ?? 30,
     }
   }
 
-  /**
-   * Sanitize input text
-   */
   sanitize(text: string): SimpleSanitizationResult {
     if (!this.config.enableSanitization) {
-      return { sanitized: text, threats: [], safe: true }
+      return {
+        sanitized: text,
+        originalLength: text.length,
+        sanitizedLength: text.length,
+        redactedPIICount: 0,
+      }
     }
 
-    const threats: string[] = []
     let sanitized = text
+    let redactedCount = 0
 
-    // Basic XSS prevention
-    if (/<script/i.test(text)) {
-      threats.push('script_injection')
-      sanitized = sanitized.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-    }
+    if (this.config.enablePIIRedaction) {
+      // Simple PII patterns - email, phone, SSN
+      const emailPattern =
+        /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
+      const phonePattern = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g
+      const ssnPattern = /\b\d{3}-\d{2}-\d{4}\b/g
 
-    // Basic SQL injection prevention
-    if (/('|"|;|--|\bOR\b|\bAND\b)/i.test(text)) {
-      threats.push('potential_sql_injection')
-    }
+      const emailMatches = sanitized.match(emailPattern) || []
+      const phoneMatches = sanitized.match(phonePattern) || []
+      const ssnMatches = sanitized.match(ssnPattern) || []
 
-    // Basic prompt injection detection
-    if (/ignore.*previous|disregard.*instructions/i.test(text)) {
-      threats.push('prompt_injection_attempt')
+      sanitized = sanitized.replace(emailPattern, '[REDACTED_EMAIL]')
+      sanitized = sanitized.replace(phonePattern, '[REDACTED_PHONE]')
+      sanitized = sanitized.replace(ssnPattern, '[REDACTED_SSN]')
+
+      redactedCount =
+        emailMatches.length + phoneMatches.length + ssnMatches.length
     }
 
     return {
       sanitized,
-      threats,
-      safe: threats.length === 0,
+      originalLength: text.length,
+      sanitizedLength: sanitized.length,
+      redactedPIICount: redactedCount,
     }
+  }
+
+  logAudit(event: string, details?: Record<string, unknown>): void {
+    if (this.config.enableAuditLogging) {
+      console.debug('[SecurityAudit]', event, details)
+    }
+  }
+
+  getConfig(): SimpleSecurityConfig {
+    return { ...this.config }
   }
 
   /**
-   * Validate input
+   * Sanitize input text and assess security risk
    */
-  validate(text: string): { valid: boolean; reason?: string } {
-    if (!text || typeof text !== 'string') {
-      return {
-        valid: false,
-        reason: 'Invalid input: must be a non-empty string',
-      }
+  sanitizeInput(text: string): {
+    sanitized: string
+    threats: string[]
+    riskLevel: 'low' | 'medium' | 'high'
+  } {
+    const result = this.sanitize(text)
+    const threats: string[] = []
+
+    // Check for potential threats
+    if (result.redactedPIICount > 0) {
+      threats.push(`Detected ${result.redactedPIICount} PII items`)
     }
 
-    if (text.length > 100000) {
-      return { valid: false, reason: 'Input too long: max 100000 characters' }
+    // Assess risk level based on threats
+    let riskLevel: 'low' | 'medium' | 'high' = 'low'
+    if (result.redactedPIICount > 5) {
+      riskLevel = 'high'
+    } else if (result.redactedPIICount > 0) {
+      riskLevel = 'medium'
     }
 
-    const { safe, threats } = this.sanitize(text)
-    if (!safe) {
-      return {
-        valid: false,
-        reason: `Security threats detected: ${threats.join(', ')}`,
-      }
+    return {
+      sanitized: result.sanitized,
+      threats,
+      riskLevel,
     }
-
-    return { valid: true }
   }
 }
-
-export default SimpleSecurityManager

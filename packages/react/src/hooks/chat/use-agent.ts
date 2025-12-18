@@ -15,10 +15,11 @@ import { logger } from '@clarity-chat/utils/logger'
  *
  * const response = await agent.run({ query: 'What is 2+2?' })
  * ```
+ * @module
  */
 
 import * as React from 'react'
-import { ReactAgent } from '../agents/react-agent'
+import { ReactAgent } from '../../agents/react-agent'
 import type { Tool, AgentConfig } from '../agents/types'
 import {
   validateModel,
@@ -47,8 +48,8 @@ export interface UseAgentReturn {
   run: (input: { query: string; context?: any }) => Promise<string>
   /** Whether agent is running */
   isLoading: boolean
-  /** Current error, if any */
-  error: Error | null
+  /** Current error (undefined when no error) */
+  error: Error | undefined
   /** Agent state */
   state: {
     currentStep: number
