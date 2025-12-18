@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * retrieveMemories - Low-level utility for retrieving memories
  *
@@ -48,7 +47,7 @@ export async function retrieveMemories(
     const results = await memoryService.query(memoryQuery)
     return results.map((r: any) => r.memory)
   } catch (error) {
-    logger.error('Failed to retrieve memories:', error)
+    logger.logger.error('Failed to retrieve memories:', error)
     return []
   }
 }

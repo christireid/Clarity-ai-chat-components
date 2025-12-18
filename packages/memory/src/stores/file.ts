@@ -7,7 +7,6 @@ import { promises as fs } from 'fs'
 import { dirname } from 'path'
 import type { MemoryItem, MemoryType } from '../types'
 import type { VectorStore, SearchOptions } from './base'
-import { logger } from '../utils/logger'
 
 interface FileStoreData {
   memories: MemoryItem[]
@@ -36,7 +35,7 @@ export class FileStore implements VectorStore {
       try {
         const data = await fs.readFile(this.filePath, 'utf-8')
         const parsed: FileStoreData = JSON.parse(data)
-
+        
         // Migrate old format if needed
         if (parsed.memories) {
           for (const memory of parsed.memories) {
@@ -51,7 +50,7 @@ export class FileStore implements VectorStore {
       } catch (error: any) {
         // File doesn't exist or is invalid - start fresh
         if (error.code !== 'ENOENT') {
-          logger.warn('Failed to load memory file:', error.message)
+          console.warn('Failed to load memory file:', error.message)
         }
       }
 
@@ -91,7 +90,7 @@ export class FileStore implements VectorStore {
     options: SearchOptions
   ): Promise<Array<{ memory: MemoryItem; score: number }>> {
     await this.ensureInitialized()
-
+    
     const results: Array<{ memory: MemoryItem; score: number }> = []
 
     for (const memory of this.memories.values()) {
@@ -130,10 +129,9 @@ export class FileStore implements VectorStore {
         } else {
           const queryWords = new Set(queryLower.split(/\s+/))
           const contentWords = new Set(contentLower.split(/\s+/))
-          const overlap = [...queryWords].filter((w) =>
-            contentWords.has(w)
-          ).length
-          score = (overlap / Math.max(queryWords.size, 1)) * 0.5
+          const overlap = [...queryWords].filter((w) => contentWords.has(w))
+            .length
+          score = overlap / Math.max(queryWords.size, 1) * 0.5
         }
       }
 
@@ -234,12 +232,12 @@ export class FileStore implements VectorStore {
       try {
         await fs.access(backupPath)
         await fs.rename(backupPath, this.filePath)
-        logger.warn('Restored from backup after persist failure')
+        console.warn('Restored from backup after persist failure')
       } catch {
         // No backup to restore from
       }
 
-      logger.error('Failed to persist memories:', error)
+      console.error('Failed to persist memories:', error)
       throw error
     }
   }
@@ -260,4 +258,5 @@ export class FileStore implements VectorStore {
     if (normA === 0 || normB === 0) return 0
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
   }
+
 }

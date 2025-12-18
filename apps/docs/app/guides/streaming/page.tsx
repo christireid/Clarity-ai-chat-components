@@ -605,7 +605,7 @@ function ChatWithErrorHandling() {
     api: '/api/chat',
     transport: 'sse',
     onError: (error) => {
-      logger.error('Stream error:', error)
+      console.error('Stream error:', error)
       // Show user-friendly error message
       if (error.message.includes('network')) {
         alert('Network error. Please check your connection.')

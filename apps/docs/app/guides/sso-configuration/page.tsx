@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -164,7 +163,7 @@ function OAuthConfiguration({ tenantId }: { tenantId: string }) {
   if (response.ok) {
     logger.debug('SSO test successful')
   } else {
-    logger.error('SSO test failed:', await response.text())
+    console.error('SSO test failed:', await response.text())
   }
 }
 

@@ -1,7 +1,3 @@
-import { getLogger } from '../../debug/logger'
-
-const logger = getLogger('cli-check')
-
 /**
  * Check command
  *
@@ -29,9 +25,9 @@ export const checkCommand = new Command('check')
     const dir = options.dir
     const results: CheckResult[] = []
 
-    logger.debug()
-    logger.debug(chalk.bold.blue(`Checking project: ${dir}`))
-    logger.debug()
+    console.debug()
+    console.debug(chalk.bold.blue(`Checking project: ${dir}`))
+    console.debug()
 
     // Check package.json exists
     const packageJsonPath = join(dir, 'package.json')
@@ -186,7 +182,7 @@ export const checkCommand = new Command('check')
 
     // Output results
     if (options.json) {
-      logger.debug(JSON.stringify(results, null, 2))
+      console.debug(JSON.stringify(results, null, 2))
     } else {
       const columns: TableColumn[] = [
         { header: 'Check', width: 25 },
@@ -204,8 +200,8 @@ export const checkCommand = new Command('check')
         r.message,
       ])
 
-      logger.debug(table(data, columns))
-      logger.debug()
+      console.debug(table(data, columns))
+      console.debug()
 
       // Summary
       const passCount = results.filter((r) => r.status === 'pass').length
@@ -215,13 +211,13 @@ export const checkCommand = new Command('check')
       const summary = `Passed: ${passCount}, Warnings: ${warnCount}, Failed: ${failCount}`
 
       if (failCount > 0) {
-        logger.debug(errorBox(summary, 'Check Results'))
+        console.debug(errorBox(summary, 'Check Results'))
       } else if (warnCount > 0) {
-        logger.debug(warningBox(summary, 'Check Results'))
+        console.debug(warningBox(summary, 'Check Results'))
       } else {
-        logger.debug(successBox(summary, 'Check Results'))
+        console.debug(successBox(summary, 'Check Results'))
       }
-      logger.debug()
+      console.debug()
     }
 
     process.exit(results.some((r) => r.status === 'fail') ? 1 : 0)

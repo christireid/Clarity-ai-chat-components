@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * Validation Module
  *
@@ -16,7 +15,7 @@ import { logger } from '@clarity-chat/utils/logger'
  * if (result.success) {
  *   logger.debug(result.data)
  * } else {
- *   logger.error(result.error.getFormattedErrors())
+ *   logger.logger.error(result.error.getFormattedErrors())
  * }
  *
  * // Direct schema usage

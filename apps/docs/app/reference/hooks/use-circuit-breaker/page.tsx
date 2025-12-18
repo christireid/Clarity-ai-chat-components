@@ -99,7 +99,7 @@ const handleFetch = async () => {
       return getCachedData()
     }
     // Handle standard error
-    logger.error(error)
+    console.error(error)
   }
 }`}
         language="tsx"

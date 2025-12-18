@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * Advanced / Enterprise Examples - Full Power Demonstrations
  *
@@ -203,7 +202,7 @@ export function Advanced_CustomIntegrations() {
         body: JSON.stringify({ message: content }),
       })
     } catch (error) {
-      logger.error('External service error:', error)
+      logger.logger.error('External service error:', error)
     }
   }, [])
 

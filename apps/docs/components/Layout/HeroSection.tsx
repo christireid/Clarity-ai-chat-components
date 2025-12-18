@@ -117,7 +117,7 @@ function InstallCommand({ command }: { command: string }) {
       }
 
       toast.success('Copied to clipboard!', {
-        description: 'Installation command ready to paste',
+        description: 'Install command ready to paste',
         duration: durations.slower,
       })
 

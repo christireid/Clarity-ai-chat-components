@@ -1,6 +1,3 @@
-'use client'
-
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * useAgent - Top-level hook for AI agents
  *
@@ -15,16 +12,14 @@ import { logger } from '@clarity-chat/utils/logger'
  *
  * const response = await agent.run({ query: 'What is 2+2?' })
  * ```
- * @module
  */
 
+'use client'
+
 import * as React from 'react'
-import { ReactAgent } from '../../agents/react-agent'
+import { ReactAgent } from '../agents/react-agent'
 import type { Tool, AgentConfig } from '../agents/types'
-import {
-  validateModel,
-  validateTools,
-} from '../../utils/config/runtime-validation'
+import { validateModel, validateTools } from '../utils/runtime-validation'
 
 /**
  * Options for useAgent
@@ -48,8 +43,8 @@ export interface UseAgentReturn {
   run: (input: { query: string; context?: any }) => Promise<string>
   /** Whether agent is running */
   isLoading: boolean
-  /** Current error (undefined when no error) */
-  error: Error | undefined
+  /** Current error, if any */
+  error: Error | null
   /** Agent state */
   state: {
     currentStep: number
@@ -98,7 +93,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
       }
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        logger.error('[useAgent] Validation error:', error)
+        logger.logger.error('[useAgent] Validation error:', error)
         throw error
       }
     }
@@ -155,7 +150,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         setError(error)
         // Log error for debugging
         if (process.env['NODE_ENV'] === 'development') {
-          logger.error('[useAgent] Execution failed:', error)
+          logger.logger.error('[useAgent] Execution failed:', error)
         }
         throw error
       } finally {

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -166,7 +165,7 @@ function WithWarnings({ messages }: { messages: Message[] }) {
     maxTokens: 128000,
     onWarning: (warning) => {
       if (warning.level === 'critical') {
-        logger.error(warning.message)
+        console.error(warning.message)
         // Show critical alert
       } else if (warning.level === 'warning') {
         logger.warn(warning.message)

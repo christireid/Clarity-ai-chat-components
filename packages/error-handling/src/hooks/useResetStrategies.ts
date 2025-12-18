@@ -48,7 +48,7 @@ interface UseResetStrategiesReturn {
  *   const { reset, registerError } = useResetStrategies({
  *     resetAfterTimeout: 30000,
  *     resetOnNetworkRestore: true,
- *     onReset: (reason) => console.debug('Reset:', reason),
+ *     onReset: (reason) => console.log('Reset:', reason),
  *   });
  *
  *   // Use with error boundary

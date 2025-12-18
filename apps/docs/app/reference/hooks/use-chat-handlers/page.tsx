@@ -162,7 +162,7 @@ function Chat() {
       analytics.track('message_sent', { length: content.length })
     },
     onMessageError: (error) => {
-      logger.error('Failed to send message:', error)
+      console.error('Failed to send message:', error)
       // Show user-friendly error
       toast.error('Failed to send message. Please try again.')
     },

@@ -1,7 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * AI Provider
- *
+ * 
  * Context provider for AI features (suggestions, moderation, sentiment)
  */
 
@@ -20,20 +19,17 @@ interface AIContextValue {
    * Get suggestions based on context
    */
   getSuggestions: (context: SuggestionContext) => Promise<Suggestion[]>
-
+  
   /**
    * Moderate content
    */
-  moderateContent: (
-    content: string,
-    context?: ModerationContext
-  ) => Promise<ModerationResult>
-
+  moderateContent: (content: string, context?: ModerationContext) => Promise<ModerationResult>
+  
   /**
    * Analyze sentiment
    */
   analyzeSentiment: (text: string) => Promise<SentimentResult>
-
+  
   /**
    * Configuration
    */
@@ -49,14 +45,14 @@ export interface AIProviderProps {
 
 /**
  * AI Provider Component
- *
+ * 
  * Provides AI features to all child components
- *
+ * 
  * @example
  * ```tsx
  * import { AIProvider } from '@/ai'
  * import { quickReplyProvider } from '@/ai/providers'
- *
+ * 
  * <AIProvider
  *   config={{
  *     enableSuggestions: true,
@@ -74,19 +70,19 @@ export function AIProvider({ children, config }: AIProviderProps) {
       if (!config.enableSuggestions || !config.suggestionProviders?.length) {
         return []
       }
-
+      
       try {
         // Get suggestions from all providers
         const results = await Promise.all(
-          config.suggestionProviders.map((provider) => provider(context))
+          config.suggestionProviders.map(provider => provider(context))
         )
-
+        
         // Flatten and deduplicate
         const allSuggestions = results.flat()
         const uniqueSuggestions = Array.from(
-          new Map(allSuggestions.map((s) => [s.text, s])).values()
+          new Map(allSuggestions.map(s => [s.text, s])).values()
         )
-
+        
         // Sort by confidence
         return uniqueSuggestions.sort((a, b) => {
           const confidenceA = a.confidence || 0
@@ -95,19 +91,16 @@ export function AIProvider({ children, config }: AIProviderProps) {
         })
       } catch (error) {
         if (config.debug) {
-          logger.error('[AI] Failed to get suggestions:', error)
+          logger.logger.error('[AI] Failed to get suggestions:', error)
         }
         return []
       }
     },
     [config]
   )
-
+  
   const moderateContent = useCallback(
-    async (
-      content: string,
-      context?: ModerationContext
-    ): Promise<ModerationResult> => {
+    async (content: string, context?: ModerationContext): Promise<ModerationResult> => {
       if (!config.enableModeration || !config.moderationProvider) {
         // Default: allow everything
         return {
@@ -116,12 +109,12 @@ export function AIProvider({ children, config }: AIProviderProps) {
           action: 'allow',
         }
       }
-
+      
       try {
         return await config.moderationProvider(content, context)
       } catch (error) {
         if (config.debug) {
-          logger.error('[AI] Failed to moderate content:', error)
+          logger.logger.error('[AI] Failed to moderate content:', error)
         }
         // On error, default to allowing
         return {
@@ -133,7 +126,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
     },
     [config]
   )
-
+  
   const analyzeSentiment = useCallback(
     async (text: string): Promise<SentimentResult> => {
       if (!config.enableSentiment || !config.sentimentAnalyzer) {
@@ -148,12 +141,12 @@ export function AIProvider({ children, config }: AIProviderProps) {
           },
         }
       }
-
+      
       try {
         return await config.sentimentAnalyzer(text)
       } catch (error) {
         if (config.debug) {
-          logger.error('[AI] Failed to analyze sentiment:', error)
+          logger.logger.error('[AI] Failed to analyze sentiment:', error)
         }
         return {
           sentiment: 'neutral',
@@ -168,7 +161,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
     },
     [config]
   )
-
+  
   const value = useMemo<AIContextValue>(
     () => ({
       getSuggestions,
@@ -178,37 +171,41 @@ export function AIProvider({ children, config }: AIProviderProps) {
     }),
     [getSuggestions, moderateContent, analyzeSentiment, config]
   )
-
-  return <AIContext.Provider value={value}>{children}</AIContext.Provider>
+  
+  return (
+    <AIContext.Provider value={value}>
+      {children}
+    </AIContext.Provider>
+  )
 }
 
 /**
  * Hook to access AI context
- *
+ * 
  * @example
  * ```tsx
  * function ChatInput() {
  *   const { getSuggestions, moderateContent } = useAI()
- *
+ *   
  *   const handleInput = async (text: string) => {
  *     const suggestions = await getSuggestions({ input: text })
  *     const moderation = await moderateContent(text)
- *
+ *     
  *     if (moderation.action === 'block') {
  *       alert('Message blocked: ' + moderation.reasons.join(', '))
  *     }
  *   }
- *
+ *   
  *   return <input onChange={e => handleInput(e.target.value)} />
  * }
  * ```
  */
 export function useAI() {
   const context = useContext(AIContext)
-
+  
   if (!context) {
     throw new Error('useAI must be used within an AIProvider')
   }
-
+  
   return context
 }

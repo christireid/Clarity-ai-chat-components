@@ -162,39 +162,38 @@ export function generateUniqueFilename(prefix: string, extension: string): strin
  * Parse file size string (e.g., "1.5 MB") to bytes
  */
 export function parseFileSize(sizeStr: string): number {
-  const units: Record<string, number> = {
+  const units = {
     B: 1,
     KB: 1024,
     MB: 1024 * 1024,
     GB: 1024 * 1024 * 1024,
     TB: 1024 * 1024 * 1024 * 1024
   }
-
+  
   const match = sizeStr.trim().match(/^(\d+(?:\.\d+)?)\s*([KMGT]?B)$/i)
   if (!match) throw new Error(`Invalid file size format: ${sizeStr}`)
 
-  const [, size, unit] = match
+  const size = match[1]
+  const unit = match[2]
   if (!size || !unit) throw new Error(`Invalid file size format: ${sizeStr}`)
-  const multiplier = units[unit.toUpperCase()]
-  if (multiplier === undefined) throw new Error(`Invalid file size unit: ${unit}`)
-  return parseFloat(size) * multiplier
+  return parseFloat(size) * units[unit.toUpperCase() as keyof typeof units]
 }
 
 /**
  * Deep merge objects
  */
-export function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
-  const result = { ...target } as T
+export function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
+  const result = { ...target }
 
   for (const key in source) {
     const sourceValue = source[key]
     if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
-      const targetValue = result[key]
+      const targetValue = result[key] as Record<string, unknown> | undefined
       result[key] = deepMerge(
-        (targetValue && typeof targetValue === 'object' ? targetValue : {}) as Record<string, any>,
-        sourceValue as Record<string, any>
+        targetValue ?? ({} as Record<string, unknown>),
+        sourceValue as Record<string, unknown>
       ) as T[Extract<keyof T, string>]
-    } else if (sourceValue !== undefined) {
+    } else {
       result[key] = sourceValue as T[Extract<keyof T, string>]
     }
   }
@@ -246,9 +245,11 @@ export function isBrowser(): boolean {
  * Check if running in Node.js environment
  */
 export function isNode(): boolean {
-  return typeof globalThis !== 'undefined' &&
-    typeof (globalThis as any).process !== 'undefined' &&
-    (globalThis as any).process?.versions?.node !== undefined
+  // Check for Node.js environment without relying on @types/node
+  return (
+    typeof globalThis !== 'undefined' &&
+    typeof (globalThis as { process?: { versions?: { node?: string } } }).process?.versions?.node === 'string'
+  )
 }
 
 /**
@@ -343,11 +344,11 @@ export function throttle<T extends (...args: any[]) => any>(
 ): T {
   let timeout: ReturnType<typeof setTimeout> | null = null
   let previous = 0
-
+  
   return ((...args: Parameters<T>): ReturnType<T> | void => {
     const now = Date.now()
     const remaining = wait - (now - previous)
-
+    
     if (remaining <= 0 || remaining > wait) {
       if (timeout) {
         clearTimeout(timeout)
@@ -376,7 +377,7 @@ export function escapeHtml(text: string): string {
     '"': '&quot;',
     "'": '&#39;'
   }
-
+  
   return text.replace(/[&<>"']/g, (m) => map[m] ?? m)
 }
 
@@ -391,7 +392,7 @@ export function unescapeHtml(html: string): string {
     '&quot;': '"',
     '&#39;': "'"
   }
-
+  
   return html.replace(/&(?:amp|lt|gt|quot|#39);/g, (m) => map[m] ?? m)
 }
 
@@ -559,7 +560,7 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
 /**
  * Omit properties from object
  */
-export function omit<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
   const result = { ...obj }
   for (const key of keys) {
     delete result[key]
@@ -633,7 +634,8 @@ export function isBoolean(value: any): value is boolean {
 /**
  * Check if value is function
  */
-export function isFunction(value: any): value is Function {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
   return typeof value === 'function'
 }
 

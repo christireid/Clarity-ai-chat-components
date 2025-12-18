@@ -1,22 +1,16 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * AI Hooks
- *
+ * 
  * Convenience hooks for AI features
  */
 
 import * as React from 'react'
 import { useAI } from './AIProvider'
-import type {
-  Suggestion,
-  SuggestionContext,
-  ModerationResult,
-  SentimentResult,
-} from './types'
+import type { Suggestion, SuggestionContext, ModerationResult, SentimentResult } from './types'
 
 /**
  * Hook for getting suggestions with debouncing
- *
+ * 
  * @example
  * ```tsx
  * function ChatInput() {
@@ -25,7 +19,7 @@ import type {
  *     input,
  *     debounceMs: 300
  *   })
- *
+ *   
  *   return (
  *     <>
  *       <input value={input} onChange={e => setInput(e.target.value)} />
@@ -50,26 +44,26 @@ export function useSuggestions(
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
   const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
-
+  
   const debounceMs = options?.debounceMs ?? 300
   const minInputLength = options?.minInputLength ?? 0
-
+  
   React.useEffect(() => {
     if (!config.enableSuggestions) {
       setSuggestions([])
       return
     }
-
+    
     if (context.input.length < minInputLength) {
       setSuggestions([])
       return
     }
-
+    
     // Clear previous timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
-
+    
     // Debounce the suggestion fetch
     timeoutRef.current = setTimeout(async () => {
       setIsLoading(true)
@@ -78,56 +72,49 @@ export function useSuggestions(
         setSuggestions(results)
       } catch (error) {
         if (config.debug) {
-          logger.error('[AI] Failed to get suggestions:', error)
+          logger.logger.error('[AI] Failed to get suggestions:', error)
         }
         setSuggestions([])
       } finally {
         setIsLoading(false)
       }
     }, debounceMs)
-
+    
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
     }
-  }, [
-    context.input,
-    context.cursorPosition,
-    getSuggestions,
-    config,
-    debounceMs,
-    minInputLength,
-  ])
-
+  }, [context.input, context.cursorPosition, getSuggestions, config, debounceMs, minInputLength])
+  
   return { suggestions, isLoading }
 }
 
 /**
  * Hook for content moderation
- *
+ * 
  * @example
  * ```tsx
  * function MessageInput() {
  *   const { moderateMessage, isChecking, result } = useModeration()
- *
+ *   
  *   const handleSubmit = async (message: string) => {
  *     const moderation = await moderateMessage(message)
- *
+ *     
  *     if (moderation.action === 'block') {
  *       alert('Message blocked: ' + moderation.reasons.join(', '))
  *       return
  *     }
- *
+ *     
  *     if (moderation.action === 'warn') {
  *       if (!confirm('Message may contain inappropriate content. Send anyway?')) {
  *         return
  *       }
  *     }
- *
+ *     
  *     // Send message
  *   }
- *
+ *   
  *   return <form onSubmit={e => { e.preventDefault(); handleSubmit(input) }} />
  * }
  * ```
@@ -136,7 +123,7 @@ export function useModeration() {
   const { moderateContent, config } = useAI()
   const [isChecking, setIsChecking] = React.useState(false)
   const [result, setResult] = React.useState<ModerationResult | null>(null)
-
+  
   const moderateMessage = React.useCallback(
     async (content: string, context?: any): Promise<ModerationResult> => {
       if (!config.enableModeration) {
@@ -148,7 +135,7 @@ export function useModeration() {
         setResult(defaultResult)
         return defaultResult
       }
-
+      
       setIsChecking(true)
       try {
         const moderationResult = await moderateContent(content, context)
@@ -160,25 +147,25 @@ export function useModeration() {
     },
     [moderateContent, config.enableModeration]
   )
-
+  
   return { moderateMessage, isChecking, result }
 }
 
 /**
  * Hook for sentiment analysis
- *
+ * 
  * @example
  * ```tsx
  * function FeedbackForm() {
  *   const [feedback, setFeedback] = useState('')
  *   const { sentiment, isAnalyzing, analyzeFeedback } = useSentimentAnalysis()
- *
+ *   
  *   React.useEffect(() => {
  *     if (feedback) {
  *       analyzeFeedback(feedback)
  *     }
  *   }, [feedback, analyzeFeedback])
- *
+ *   
  *   return (
  *     <>
  *       <textarea value={feedback} onChange={e => setFeedback(e.target.value)} />
@@ -195,21 +182,21 @@ export function useSentimentAnalysis(options?: { debounceMs?: number }) {
   const [sentiment, setSentiment] = React.useState<SentimentResult | null>(null)
   const [isAnalyzing, setIsAnalyzing] = React.useState(false)
   const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
-
+  
   const debounceMs = options?.debounceMs ?? 500
-
+  
   const analyzeFeedback = React.useCallback(
     (text: string) => {
       if (!config.enableSentiment || !text) {
         setSentiment(null)
         return
       }
-
+      
       // Clear previous timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
-
+      
       // Debounce the analysis
       timeoutRef.current = setTimeout(async () => {
         setIsAnalyzing(true)
@@ -218,7 +205,7 @@ export function useSentimentAnalysis(options?: { debounceMs?: number }) {
           setSentiment(result)
         } catch (error) {
           if (config.debug) {
-            logger.error('[AI] Failed to analyze sentiment:', error)
+            logger.logger.error('[AI] Failed to analyze sentiment:', error)
           }
           setSentiment(null)
         } finally {
@@ -228,7 +215,7 @@ export function useSentimentAnalysis(options?: { debounceMs?: number }) {
     },
     [analyzeSentiment, config, debounceMs]
   )
-
+  
   React.useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -236,18 +223,18 @@ export function useSentimentAnalysis(options?: { debounceMs?: number }) {
       }
     }
   }, [])
-
+  
   return { sentiment, isAnalyzing, analyzeFeedback }
 }
 
 /**
  * Hook for auto-complete functionality
- *
+ * 
  * @example
  * ```tsx
  * function SearchBar() {
  *   const { input, setInput, completions, selectCompletion } = useAutoComplete()
- *
+ *   
  *   return (
  *     <>
  *       <input value={input} onChange={e => setInput(e.target.value)} />
@@ -274,13 +261,13 @@ export function useAutoComplete(options?: {
       minInputLength: options?.minInputLength,
     }
   )
-
+  
   // Filter to only completion suggestions
   const completions = React.useMemo(
-    () => suggestions.filter((s) => s.type === 'completion'),
+    () => suggestions.filter(s => s.type === 'completion'),
     [suggestions]
   )
-
+  
   const selectCompletion = React.useCallback(
     (suggestion: Suggestion) => {
       setInput(suggestion.text)
@@ -288,7 +275,7 @@ export function useAutoComplete(options?: {
     },
     [options]
   )
-
+  
   return {
     input,
     setInput,

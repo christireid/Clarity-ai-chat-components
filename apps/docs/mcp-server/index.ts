@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * Clarity Chat MCP Server
@@ -272,7 +271,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport()
   await server.connect(transport)
-  logger.error('Clarity Chat MCP Server running on stdio')
+  console.error('Clarity Chat MCP Server running on stdio')
 }
 
 main().catch(console.error)

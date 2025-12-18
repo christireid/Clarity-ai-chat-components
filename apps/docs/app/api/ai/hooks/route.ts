@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { NextResponse } from 'next/server'
 import {
   type HookInfo,

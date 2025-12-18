@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
@@ -74,7 +73,7 @@ export default function HooksAPIPage() {
     content: 'Hello!',
     timestamp: Date.now(),
   }],
-  onError: (error) => logger.error(error),
+  onError: (error) => console.error(error),
 })`}
         />
       </section>

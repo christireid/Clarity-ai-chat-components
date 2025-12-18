@@ -35,14 +35,15 @@ export * from './types'
 // Memory service (framework-agnostic)
 export { MemoryService } from './memory-service'
 
-// Token optimization utilities (local implementations)
-export { TokenCounter } from './utils/token-counter'
-export { TokenBudgetManager } from './context/token-budget'
-export {
-  MemoryCompressor,
-  SemanticChunker,
-  ContextOptimizer,
-} from './utils/token-optimization-stubs'
+// Token optimization utilities re-exported for convenience
+// Note: Import directly from @clarity-chat/token-optimization for full API access
+export type {
+  EnhancedSecurityConfig,
+  QualityGateConfig,
+  CostAwareConfig,
+  SemanticCacheConfig,
+  DynamicCompressionConfig,
+} from '@clarity-chat/token-optimization'
 
 // LLM-based summarization (80-90% token reduction)
 export {

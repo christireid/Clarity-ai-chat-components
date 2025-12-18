@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -26,7 +25,7 @@ export default async function MigrationGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.error('Failed to read migration guide', error)
+    console.error('Failed to read migration guide', error)
     content = '# Migration\n\nContent not available.'
   }
 

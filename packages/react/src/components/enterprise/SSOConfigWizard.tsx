@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import {
   Badge,
@@ -12,7 +11,7 @@ import {
   Textarea,
   cn,
 } from '@clarity-chat/primitives'
-import { Skeleton } from '../ui/skeleton'
+import { Skeleton } from '../skeleton'
 
 export interface SSOConfigStep {
   id: string
@@ -134,7 +133,7 @@ const CopyableInput: React.FC<{
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      logger.error('Failed to copy:', err)
+      logger.logger.error('Failed to copy:', err)
     }
   }
 

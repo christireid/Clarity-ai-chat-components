@@ -24,8 +24,7 @@ const mockWorkflows: WorkflowSuggestion[] = [
   {
     id: '1',
     name: 'Set Up New Project',
-    description:
-      'Initialize a new project with best practices and configuration',
+    description: 'Initialize a new project with best practices and configuration',
     steps: [
       'Create project structure',
       'Configure build tools',
@@ -82,9 +81,7 @@ export const WithActions: Story = {
     },
     onPreview: (workflow) => {
       console.log('Preview workflow:', workflow.name)
-      alert(
-        `Previewing: ${workflow.name}\n\nSteps:\n${workflow.steps.join('\n')}`
-      )
+      alert(`Previewing: ${workflow.name}\n\nSteps:\n${workflow.steps.join('\n')}`)
     },
   },
 }

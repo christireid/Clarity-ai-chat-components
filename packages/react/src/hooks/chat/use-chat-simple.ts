@@ -1,22 +1,5 @@
-'use client'
-
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * useChatSimple - Simplified chat hook
- *
- * @deprecated This hook will be merged into `useChat` (from use-chat-unified.ts) in v3.0.
- * The unified `useChat` hook provides the same simplified API.
- *
- * **Migration:**
- * ```tsx
- * // Before (deprecated)
- * import { useChatSimple } from '@clarity-chat/react'
- * const { messages, sendMessage } = useChatSimple({ api: '/api/chat' })
- *
- * // After (recommended)
- * import { useChat } from '@clarity-chat/react'
- * const { messages, sendMessage } = useChat({ api: '/api/chat' })
- * ```
  *
  * A simplified version of useClarityChat that returns messages in the correct format
  * without needing manual conversion. Perfect for when you want more control than
@@ -38,19 +21,17 @@ import { logger } from '@clarity-chat/utils/logger'
  *   )
  * }
  * ```
- * @module
  */
+
+'use client'
 
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import type { Message } from '@clarity-chat/types'
 
 /** Request body data for chat API */
-export type ChatRequestBody = Record<
-  string,
-  string | number | boolean | string[] | number[] | null
->
+export type ChatRequestBody = Record<string, string | number | boolean | string[] | number[] | null>
 
 /**
  * Simplified options - only the essentials
@@ -82,8 +63,8 @@ export interface UseChatSimpleReturn {
   sendMessage: (content: string) => Promise<void>
   /** Whether a message is currently being sent */
   isLoading: boolean
-  /** Current error (undefined when no error) */
-  error: Error | undefined
+  /** Current error, if any */
+  error: Error | null
   /** Clear all messages */
   clearMessages: () => void
 }
@@ -161,7 +142,7 @@ export function useChatSimple(
         onError?.(error)
         // Log error for debugging
         if (process.env['NODE_ENV'] === 'development') {
-          logger.error('[useChatSimple] Send failed:', error)
+          logger.logger.error('[useChatSimple] Send failed:', error)
         }
         throw error
       }

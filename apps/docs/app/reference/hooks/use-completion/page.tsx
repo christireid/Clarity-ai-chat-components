@@ -304,7 +304,7 @@ function Completion() {
   const { completion, complete, error, isLoading } = useCompletion({
     api: '/api/completion',
     onError: (error) => {
-      logger.error('Completion error:', error)
+      console.error('Completion error:', error)
       toast.error('Failed to generate completion')
     },
   })

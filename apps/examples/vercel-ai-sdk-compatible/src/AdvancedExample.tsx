@@ -1,6 +1,6 @@
 /**
  * Advanced Example: Multi-modal chat with tool calling
- *
+ * 
  * Demonstrates advanced features:
  * - Multi-modal content (text + images)
  * - Tool calling
@@ -28,7 +28,7 @@ function MultiModalChatExample() {
     },
     onFinish: (message) => {
       console.log('Message finished:', message)
-
+      
       // Check for tool calls
       const toolCalls = extractToolCalls(message)
       if (toolCalls.length > 0) {
@@ -63,7 +63,7 @@ function MultiModalChatExample() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Multi-Modal Chat</h2>
-
+      
       <div className="mb-4">
         <input
           type="file"
@@ -88,12 +88,9 @@ function MultiModalChatExample() {
           >
             <div className="text-sm font-semibold mb-1">{msg.role}</div>
             <div>{messageToText(msg)}</div>
-            {Array.isArray(msg.content) &&
-              msg.content.some((p) => p.type === 'image') && (
-                <div className="mt-2 text-sm text-gray-600">
-                  [Image attached]
-                </div>
-              )}
+            {Array.isArray(msg.content) && msg.content.some((p) => p.type === 'image') && (
+              <div className="mt-2 text-sm text-gray-600">[Image attached]</div>
+            )}
           </div>
         ))}
       </div>
@@ -117,7 +114,7 @@ function ToolCallingExample() {
     assistantId: 'tool-assistant',
     onToolCall: (toolCall) => {
       console.log('Tool called:', toolCall)
-
+      
       // Simulate tool execution
       if (toolCall.toolName === 'get_weather') {
         // In real app, this would call an actual API
@@ -137,23 +134,18 @@ function ToolCallingExample() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Tool Calling Assistant</h2>
-
+      
       <div className="mb-4 flex items-center gap-4">
-        <span
-          className={`px-3 py-1 rounded-full text-sm ${
-            status === 'idle'
-              ? 'bg-green-100 text-green-800'
-              : status === 'in_progress'
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-yellow-100 text-yellow-800'
-          }`}
-        >
+        <span className={`px-3 py-1 rounded-full text-sm ${
+          status === 'idle' ? 'bg-green-100 text-green-800' :
+          status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+          'bg-yellow-100 text-yellow-800'
+        }`}>
           {status}
         </span>
         {toolInvocations.length > 0 && (
           <span className="text-sm text-gray-600">
-            {toolInvocations.length} tool{toolInvocations.length > 1 ? 's' : ''}{' '}
-            invoked
+            {toolInvocations.length} tool{toolInvocations.length > 1 ? 's' : ''} invoked
           </span>
         )}
       </div>
@@ -172,9 +164,7 @@ function ToolCallingExample() {
               <div>{messageToText(msg)}</div>
               {toolCalls.length > 0 && (
                 <div className="mt-2 pt-2 border-t">
-                  <div className="text-xs font-semibold text-gray-600 mb-1">
-                    Tool Calls:
-                  </div>
+                  <div className="text-xs font-semibold text-gray-600 mb-1">Tool Calls:</div>
                   {toolCalls.map((tc, idx) => (
                     <div key={idx} className="text-xs text-gray-500">
                       • {tc.toolName}({JSON.stringify(tc.args)})
@@ -241,7 +231,7 @@ function MessageManagementExample() {
       })),
       exportedAt: new Date().toISOString(),
     }
-
+    
     const blob = new Blob([JSON.stringify(exportData, null, 2)], {
       type: 'application/json',
     })
@@ -256,7 +246,7 @@ function MessageManagementExample() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Message Management</h2>
-
+      
       <div className="mb-4 flex gap-2">
         <button
           onClick={handleClear}

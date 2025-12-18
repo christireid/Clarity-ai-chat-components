@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import { Button, cn } from '@clarity-chat/primitives'
 import { CopyButton } from '../message/copy-button'
@@ -63,7 +62,7 @@ export function CodeWindowHeader({
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     } catch (err) {
-      logger.error('Failed to download code:', err)
+      logger.logger.error('Failed to download code:', err)
     }
   }
 

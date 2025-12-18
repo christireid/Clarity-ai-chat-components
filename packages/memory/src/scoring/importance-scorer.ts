@@ -72,11 +72,11 @@ const DEFAULT_CONFIG: ResolvedConfig = {
  *
  * // Score a memory without query
  * const score = scorer.score(memory)
- * logger.debug(score.final) // 0.0 - 1.0
+ * console.log(score.final) // 0.0 - 1.0
  *
  * // Score a memory with query for semantic relevance
  * const scoreWithQuery = scorer.score(memory, "user preferences")
- * logger.debug(scoreWithQuery.semanticRelevance) // Higher if memory content matches query
+ * console.log(scoreWithQuery.semanticRelevance) // Higher if memory content matches query
  * ```
  */
 export class ImportanceScorer {

@@ -1,13 +1,13 @@
 /**
  * Enhanced logger with multiple levels and formatting
- *
+ * 
  * Provides:
  * - Multiple log levels (trace, debug, info, warn, error)
  * - Colored output for terminal
  * - Structured logging with context
  * - Performance timing
  * - Log filtering
- *
+ * 
  */
 
 import { infoBox, warningBox, errorBox, successBox } from '../ui/box'
@@ -20,7 +20,7 @@ export interface LogEntry {
   level: LogLevel
   timestamp: Date
   message: string
-  context?: Record<string, unknown>
+  context?: Record<string, any>
   duration?: number
   stack?: string
 }
@@ -30,7 +30,7 @@ export interface LoggerOptions {
   prefix?: string
   colors?: boolean
   timestamps?: boolean
-  context?: Record<string, unknown>
+  context?: Record<string, any>
 }
 
 const LOG_LEVELS: Record<LogLevel, number> = {
@@ -38,14 +38,14 @@ const LOG_LEVELS: Record<LogLevel, number> = {
   debug: 1,
   info: 2,
   warn: 3,
-  error: 4,
+  error: 4
 }
 
 const LEVEL_COLORS: Record<LogLevel, string> = {
   trace: '\x1b[90m', // Gray
   debug: '\x1b[36m', // Cyan
-  info: '\x1b[32m', // Green
-  warn: '\x1b[33m', // Yellow
+  info: '\x1b[32m',  // Green
+  warn: '\x1b[33m',  // Yellow
   error: '\x1b[31m', // Red
 }
 
@@ -58,17 +58,32 @@ const ICONS: Record<LogLevel, string> = {
 }
 
 let globalLogLevel: LogLevel = 'info'
-let globalContext: Record<string, unknown> = {}
+let globalContext: Record<string, any> = {}
 
-/**
- * Logger class for development tools
- */
+// Map our log levels (already string-compatible)
+const mapToUtilsLevel = (level: LogLevel): LogLevel => {
+  switch (level) {
+    case 'trace':
+    case 'debug':
+      return 'debug'
+    case 'info':
+      return 'info'
+    case 'warn':
+      return 'warn'
+    case 'error':
+      return 'error'
+    default:
+      return 'info'
+  }
+}
+
+// Compatibility wrapper for legacy code
 export class Logger {
   private namespace: string
   private level: LogLevel
   private colors: boolean
   private timestamps: boolean
-  private context: Record<string, unknown>
+  private context: Record<string, any>
 
   constructor(namespace = 'app', options: LoggerOptions = {}) {
     this.namespace = namespace
@@ -100,67 +115,46 @@ export class Logger {
     return parts.join(' ')
   }
 
-  private log(
-    level: LogLevel,
-    message: string,
-    context?: Record<string, unknown>
-  ): void {
+  private log(level: LogLevel, message: string, context?: Record<string, any>): void {
     if (!this.shouldLog(level)) return
 
     const logContext = { ...this.context, ...context }
     const fullMessage = this.formatPrefix(level) + ' ' + message
 
-    const consoleFn =
-      level === 'error'
-        ? console.error
-        : level === 'warn'
-          ? console.warn
-          : console.log
-
-    if (Object.keys(logContext).length > 0) {
-      consoleFn(fullMessage, logContext)
-    } else {
-      consoleFn(fullMessage)
+    switch (level) {
+      case 'trace':
+      case 'debug':
+        console.debug(fullMessage, logContext)
+        break
+      case 'info':
+        console.info(fullMessage, logContext)
+        break
+      case 'warn':
+        console.warn(fullMessage, logContext)
+        break
+      case 'error':
+        console.error(fullMessage, logContext)
+        break
     }
   }
 
-  trace(message?: string, context?: Record<string, unknown>): void {
-    if (!message) {
-      console.log()
-      return
-    }
+  trace(message: string, context?: Record<string, any>): void {
     this.log('trace', message, context)
   }
 
-  debug(message?: string, context?: Record<string, unknown>): void {
-    if (!message) {
-      console.log()
-      return
-    }
+  debug(message: string, context?: Record<string, any>): void {
     this.log('debug', message, context)
   }
 
-  info(message?: string, context?: Record<string, unknown>): void {
-    if (!message) {
-      console.log()
-      return
-    }
+  info(message: string, context?: Record<string, any>): void {
     this.log('info', message, context)
   }
 
-  warn(message?: string, context?: Record<string, unknown>): void {
-    if (!message) {
-      console.log()
-      return
-    }
+  warn(message: string, context?: Record<string, any>): void {
     this.log('warn', message, context)
   }
 
-  error(message?: string, context?: Record<string, unknown>): void {
-    if (!message) {
-      console.log()
-      return
-    }
+  error(message: string, context?: Record<string, any>): void {
     this.log('error', message, context)
   }
 
@@ -190,28 +184,31 @@ export class Logger {
     console.groupEnd()
   }
 
-  // Log filtering (no-op for compatibility)
-  filter(_predicate: (entry: LogEntry) => boolean): void {
-    console.warn('Log filtering is not supported in this logger')
+  // Log filtering
+  filter(predicate: (entry: LogEntry) => boolean): void {
+    // This is a no-op for compatibility - the new logger doesn't support filtering
+    console.warn('Log filtering is not supported in the new logger')
   }
 
-  // Get all logs (no-op for compatibility)
-  getLogs(_level?: LogLevel): LogEntry[] {
-    console.warn('Log retrieval is not supported in this logger')
+  // Get all logs
+  getLogs(level?: LogLevel): LogEntry[] {
+    // This is a no-op for compatibility - the new logger doesn't support log retrieval
+    console.warn('Log retrieval is not supported in the new logger')
     return []
   }
 
-  // Export logs (no-op for compatibility)
-  exportLogs(_options?: {
+  // Export logs
+  exportLogs(options?: {
     level?: LogLevel
     format?: 'json' | 'csv'
     filePath?: string
   }): void {
-    console.warn('Log export is not supported in this logger')
+    // This is a no-op for compatibility
+    console.warn('Log export is not supported in the new logger')
   }
 }
 
-// Factory functions
+// Factory functions for backward compatibility
 export function createLogger(options: LoggerOptions = {}): Logger {
   return new Logger('app', options)
 }
@@ -225,43 +222,39 @@ export function setGlobalLogLevel(level: LogLevel): void {
   globalLogLevel = level
 }
 
-export function setGlobalContext(context: Record<string, unknown>): void {
+export function setGlobalContext(context: Record<string, any>): void {
   globalContext = context
 }
 
 // UI helpers
-export function logInfoBox(message: string, title?: string): void {
-  const logger = getLogger('ui')
-  logger.info(message)
-  console.log(infoBox(message, title))
+export function logInfoBox(message: string, context?: Record<string, any>): void {
+  console.info(message, context)
+  if (context) {
+    console.log(infoBox(message, JSON.stringify(context)))
+  }
 }
 
-export function logWarningBox(message: string, title?: string): void {
-  const logger = getLogger('ui')
-  logger.warn(message)
-  console.log(warningBox(message, title))
+export function logWarningBox(message: string, context?: Record<string, any>): void {
+  console.warn(message, context)
+  console.log(warningBox(message, context ? JSON.stringify(context) : undefined))
 }
 
-export function logErrorBox(message: string, title?: string): void {
-  const logger = getLogger('ui')
-  logger.error(message)
-  console.log(errorBox(message, title))
+export function logErrorBox(message: string, context?: Record<string, any>): void {
+  console.error(message, context)
+  console.log(errorBox(message, context ? JSON.stringify(context) : undefined))
 }
 
-export function logSuccessBox(message: string, title?: string): void {
-  const logger = getLogger('ui')
-  logger.info(message)
-  console.log(successBox(message, title))
+export function logSuccessBox(message: string, context?: Record<string, any>): void {
+  console.info(message, context)
+  console.log(successBox(message, context ? JSON.stringify(context) : undefined))
 }
 
-export function logKeyValue(
-  data: Record<string, string | number | boolean>,
-  options?: { labelColor?: (text: string) => string; valueColor?: (text: string) => string }
-): void {
-  const logger = getLogger('ui')
-  logger.info('Key-Value Data')
-  console.log(keyValueTable(data, options))
+export function logKeyValue(data: Record<string, any>, title?: string): void {
+  console.info(title || 'Key-Value Data', data)
+  console.log(keyValueTable(data))
 }
+
+// Re-export the standard utils logger for new code
 
 export default {
   Logger,

@@ -243,8 +243,8 @@ export class DecayManager {
    *     break
    * }
    *
-   * logger.debug(`Decay score: ${result.decayScore}`)
-   * logger.debug(`Reason: ${result.reason}`)
+   * console.log(`Decay score: ${result.decayScore}`)
+   * console.log(`Reason: ${result.reason}`)
    * ```
    */
   evaluate(memory: Memory, now: Date = new Date()): DecayResult {
@@ -400,7 +400,7 @@ export class DecayManager {
    *
    * // Process in order of urgency (highest decay score first)
    * for (const candidate of candidates) {
-   *   logger.debug(`${candidate.id}: ${candidate.action} (score: ${candidate.decayScore})`)
+   *   console.log(`${candidate.id}: ${candidate.action} (score: ${candidate.decayScore})`)
    * }
    * ```
    */
@@ -484,15 +484,15 @@ export class DecayManager {
    * const stats = decayManager.getStats(memories)
    *
    * // Display in dashboard
-   * logger.debug(`Total: ${stats.total}`)
-   * logger.debug(`Healthy: ${stats.healthy} (${(stats.healthy/stats.total*100).toFixed(1)}%)`)
-   * logger.debug(`At Risk: ${stats.atRisk}`)
-   * logger.debug(`Expired: ${stats.expired}`)
-   * logger.debug(`Average Decay: ${(stats.averageDecayScore*100).toFixed(1)}%`)
+   * console.log(`Total: ${stats.total}`)
+   * console.log(`Healthy: ${stats.healthy} (${(stats.healthy/stats.total*100).toFixed(1)}%)`)
+   * console.log(`At Risk: ${stats.atRisk}`)
+   * console.log(`Expired: ${stats.expired}`)
+   * console.log(`Average Decay: ${(stats.averageDecayScore*100).toFixed(1)}%`)
    *
    * // Alert if too many at-risk
    * if (stats.atRisk > stats.total * 0.2) {
-   *   logger.warn('Warning: More than 20% of memories at risk!')
+   *   console.warn('Warning: More than 20% of memories at risk!')
    * }
    * ```
    */

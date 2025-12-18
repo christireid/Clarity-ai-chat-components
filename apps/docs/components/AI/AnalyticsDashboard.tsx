@@ -47,7 +47,7 @@ export function AnalyticsDashboard({
       setSummary(data.data)
       setLastUpdated(new Date())
     } catch (err) {
-      logger.error('Failed to fetch analytics:', err)
+      console.error('Failed to fetch analytics:', err)
       setError(err instanceof Error ? err.message : 'Failed to load analytics')
     } finally {
       setLoading(false)

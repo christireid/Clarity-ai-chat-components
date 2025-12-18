@@ -1,3 +1,6 @@
+
+
+
 /**
  * Template System
  *
@@ -19,6 +22,7 @@
 
 import Handlebars from 'handlebars'
 import { toPascalCase, toCamelCase, toKebabCase } from '../utils/case.js'
+
 
 // Register Handlebars helpers using shared utilities
 // All helpers include null-safety to prevent crashes from missing variables
@@ -1595,7 +1599,7 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode('data: [DONE]\\n\\n'))
           controller.close()
         } catch (error) {
-          controller.error(error)
+          controller.logger.error(error)
         }
       },
     })

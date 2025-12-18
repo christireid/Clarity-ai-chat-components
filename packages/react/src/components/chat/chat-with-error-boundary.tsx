@@ -1,19 +1,18 @@
-import { logger } from '@clarity-chat/utils/logger'
 /**
  * ChatWithErrorBoundary - Chat component with built-in error handling
- *
+ * 
  * Wraps ClarityChat with ErrorBoundary for production-ready error handling.
  * This is useful when you want error boundaries without manually wrapping.
- *
+ * 
  * @example
  * ```tsx
  * import { ChatWithErrorBoundary } from '@clarity-chat/react'
- *
+ * 
  * function App() {
  *   return (
  *     <ChatWithErrorBoundary
  *       api="/api/chat"
- *       onError={(error) => logger.error('Chat error:', error)}
+ *       onError={(error) => logger.logger.error('Chat error:', error)}
  *     />
  *   )
  * }
@@ -22,10 +21,7 @@ import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
-import {
-  ErrorBoundary,
-  type ErrorBoundaryProps,
-} from '../feedback/error-boundary'
+import { ErrorBoundary, type ErrorBoundaryProps } from './error-boundary'
 
 export interface ChatWithErrorBoundaryProps extends ClarityChatProps {
   /** Error boundary fallback UI */
@@ -38,15 +34,15 @@ export interface ChatWithErrorBoundaryProps extends ClarityChatProps {
 
 /**
  * ChatWithErrorBoundary - Chat component with automatic error handling
- *
+ * 
  * This component wraps ClarityChat with an ErrorBoundary to catch and handle
  * errors gracefully. Perfect for production applications.
- *
+ * 
  * @example
  * ```tsx
  * // Basic usage
  * <ChatWithErrorBoundary api="/api/chat" />
- *
+ * 
  * // With custom error handling
  * <ChatWithErrorBoundary
  *   api="/api/chat"

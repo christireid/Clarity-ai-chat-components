@@ -24,7 +24,7 @@ import {
   BarChart3,
   DollarSign,
   AlertTriangle,
-  RotateCcw,
+  RotateCw,
   Cpu,
   Play,
 } from 'lucide-react'
@@ -68,7 +68,10 @@ interface ErrorBoundaryState {
   error: Error | null
 }
 
-class ToolErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ToolErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -79,7 +82,7 @@ class ToolErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    logger.error('ToolErrorBoundary caught error:', error, errorInfo)
+    console.error('ToolErrorBoundary caught error:', error, errorInfo)
     this.props.onError?.(error, errorInfo)
   }
 
@@ -103,13 +106,17 @@ class ToolErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
           aria-live="assertive"
         >
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+            <AlertTriangle
+              className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"
+              aria-hidden="true"
+            />
             <div className="flex-1">
               <h4 className="font-medium text-red-700 dark:text-red-400">
                 Component Error
               </h4>
               <p className="text-sm text-red-600 dark:text-red-300 mt-1">
-                {this.state.error?.message || 'Something went wrong rendering this component.'}
+                {this.state.error?.message ||
+                  'Something went wrong rendering this component.'}
               </p>
               {this.props.onRetry && (
                 <button
@@ -119,7 +126,7 @@ class ToolErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
                              text-red-700 dark:text-red-300 rounded-lg transition-colors"
                   aria-label="Retry loading component"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                  <RotateCw className="w-3.5 h-3.5" aria-hidden="true" />
                   Retry
                 </button>
               )}
@@ -143,7 +150,11 @@ interface ToolResultRendererProps {
   onRetry?: (toolCall: ToolCallState) => void
 }
 
-function ToolResultRenderer({ toolCall, onAction, onRetry }: ToolResultRendererProps) {
+function ToolResultRenderer({
+  toolCall,
+  onAction,
+  onRetry,
+}: ToolResultRendererProps) {
   if (toolCall.status === 'executing' || toolCall.status === 'pending') {
     return <ToolSkeleton toolName={toolCall.name} />
   }
@@ -158,10 +169,17 @@ function ToolResultRenderer({ toolCall, onAction, onRetry }: ToolResultRendererP
         aria-live="polite"
       >
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertTriangle
+            className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"
+            aria-hidden="true"
+          />
           <div className="flex-1">
-            <h4 className="font-medium text-red-600 dark:text-red-400">Tool Error</h4>
-            <p className="text-sm text-red-500 dark:text-red-300 mt-1">{toolCall.error}</p>
+            <h4 className="font-medium text-red-600 dark:text-red-400">
+              Tool Error
+            </h4>
+            <p className="text-sm text-red-500 dark:text-red-300 mt-1">
+              {toolCall.error}
+            </p>
             {onRetry && (
               <button
                 onClick={() => onRetry(toolCall)}
@@ -170,7 +188,7 @@ function ToolResultRenderer({ toolCall, onAction, onRetry }: ToolResultRendererP
                            text-red-700 dark:text-red-300 rounded-lg transition-colors"
                 aria-label={`Retry ${toolCall.name} tool`}
               >
-                <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                <RotateCw className="w-3.5 h-3.5" aria-hidden="true" />
                 Retry
               </button>
             )}
@@ -197,9 +215,16 @@ function ToolResultRenderer({ toolCall, onAction, onRetry }: ToolResultRendererP
             return (
               <StockAnalysisCard
                 data={data as FinancialData}
-                onViewChart={() => onAction?.('chart', { symbol: (data as FinancialData).symbol })}
+                onViewChart={() =>
+                  onAction?.('chart', {
+                    symbol: (data as FinancialData).symbol,
+                  })
+                }
                 onTrade={(action) =>
-                  onAction?.('trade', { symbol: (data as FinancialData).symbol, action })
+                  onAction?.('trade', {
+                    symbol: (data as FinancialData).symbol,
+                    action,
+                  })
                 }
               />
             )
@@ -214,7 +239,9 @@ function ToolResultRenderer({ toolCall, onAction, onRetry }: ToolResultRendererP
                 role="region"
                 aria-label="Tool result"
               >
-                <pre className="text-xs overflow-auto">{JSON.stringify(data, null, 2)}</pre>
+                <pre className="text-xs overflow-auto">
+                  {JSON.stringify(data, null, 2)}
+                </pre>
               </div>
             )
         }
@@ -256,7 +283,9 @@ function MessageBubble({
       role="listitem"
       aria-label={`${isUser ? 'You' : 'AI Assistant'}: ${message.content || 'Tool call'}`}
     >
-      <div className={`flex gap-3 max-w-[85%] ${isUser ? 'flex-row-reverse' : ''}`}>
+      <div
+        className={`flex gap-3 max-w-[85%] ${isUser ? 'flex-row-reverse' : ''}`}
+      >
         {/* Avatar */}
         <div
           className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -286,7 +315,11 @@ function MessageBubble({
 
           {/* Tool Calls */}
           {message.toolCalls && message.toolCalls.length > 0 && (
-            <div className="space-y-3 w-full max-w-md" role="list" aria-label="Tool results">
+            <div
+              className="space-y-3 w-full max-w-md"
+              role="list"
+              aria-label="Tool results"
+            >
               {message.toolCalls.map((tc) => {
                 // Check if this tool needs approval
                 if (
@@ -295,7 +328,8 @@ function MessageBubble({
                   tc.status === 'awaiting_approval'
                 ) {
                   const financialData = message.toolCalls?.find(
-                    (t) => t.name === 'get_financials' && t.status === 'complete'
+                    (t) =>
+                      t.name === 'get_financials' && t.status === 'complete'
                   )?.result as FinancialData | undefined
 
                   return (
@@ -431,7 +465,9 @@ export function ToolCallingShowcase() {
         inputRef.current?.focus()
         break
       case 'trade':
-        setInput(`${data?.action === 'buy' ? 'Buy' : 'Sell'} 10 shares of ${data?.symbol}`)
+        setInput(
+          `${data?.action === 'buy' ? 'Buy' : 'Sell'} 10 shares of ${data?.symbol}`
+        )
         inputRef.current?.focus()
         break
     }
@@ -512,7 +548,7 @@ export function ToolCallingShowcase() {
               setIsSwitchingMode(true)
               clearMessages()
               // Small delay to let clearMessages complete
-              await new Promise(r => setTimeout(r, 100))
+              await new Promise((r) => setTimeout(r, 100))
               setUseAI(!useAI)
               setIsSwitchingMode(false)
             }}
@@ -525,12 +561,17 @@ export function ToolCallingShowcase() {
                   : 'bg-gray-100 dark:bg-gray-800 text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-700'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
             title={useAI ? 'Using Real AI + Live Data' : 'Using Mock Demo Mode'}
-            aria-label={useAI ? 'Switch to mock demo mode' : 'Switch to real AI mode'}
+            aria-label={
+              useAI ? 'Switch to mock demo mode' : 'Switch to real AI mode'
+            }
             aria-pressed={useAI}
           >
             {isSwitchingMode ? (
               <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                <Loader2
+                  className="w-3.5 h-3.5 animate-spin"
+                  aria-hidden="true"
+                />
                 <span>Switching...</span>
               </>
             ) : useAI ? (
@@ -558,13 +599,16 @@ export function ToolCallingShowcase() {
                   ? 'bg-gray-400'
                   : orchestratorState === 'awaiting_approval'
                     ? 'bg-amber-500 animate-pulse'
-                    : orchestratorState === 'streaming' || orchestratorState === 'executing_tool'
+                    : orchestratorState === 'streaming' ||
+                        orchestratorState === 'executing_tool'
                       ? 'bg-green-500 animate-pulse'
                       : 'bg-blue-500'
               }`}
               aria-hidden="true"
             />
-            <span className="capitalize">{orchestratorState.replace('_', ' ')}</span>
+            <span className="capitalize">
+              {orchestratorState.replace('_', ' ')}
+            </span>
           </div>
           <button
             onClick={handleClear}
@@ -597,7 +641,10 @@ export function ToolCallingShowcase() {
             aria-live="assertive"
           >
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <AlertTriangle
+                className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
               <div className="flex-1">
                 <h4 className="font-medium text-red-700 dark:text-red-400">
                   {useAI ? 'AI Connection Error' : 'Error'}
@@ -639,8 +686,10 @@ export function ToolCallingShowcase() {
             <p className="text-sm text-muted-foreground mb-4 max-w-md">
               {useAI ? (
                 <>
-                  <span className="text-green-600 dark:text-green-400 font-medium">Real AI + Live Market Data</span>
-                  {' '}— GPT-4o-mini with Finnhub integration. Ask about real stocks!
+                  <span className="text-green-600 dark:text-green-400 font-medium">
+                    Real AI + Live Market Data
+                  </span>{' '}
+                  — GPT-4o-mini with Finnhub integration. Ask about real stocks!
                 </>
               ) : (
                 'Watch the AI orchestrate multiple tools, render interactive UI components, and request approval for critical actions.'
@@ -648,7 +697,8 @@ export function ToolCallingShowcase() {
             </p>
             {!useAI && (
               <p className="text-xs text-muted-foreground mb-6 max-w-md">
-                Toggle <span className="font-medium">"Live AI"</span> in the header for real market data.
+                Toggle <span className="font-medium">"Live AI"</span> in the
+                header for real market data.
               </p>
             )}
             {useAI && <div className="mb-6" />}
@@ -709,8 +759,13 @@ export function ToolCallingShowcase() {
                 aria-label="AI is thinking"
               >
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-500" aria-hidden="true" />
-                  <span className="text-sm text-muted-foreground">AI is thinking...</span>
+                  <Loader2
+                    className="w-4 h-4 animate-spin text-purple-500"
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    AI is thinking...
+                  </span>
                 </div>
               </motion.div>
             )}

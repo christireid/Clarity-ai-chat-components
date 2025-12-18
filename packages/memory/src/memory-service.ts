@@ -33,63 +33,86 @@ import type {
   ContextBundle,
   TokenBreakdown,
 } from './types'
-import { TokenCounter } from './utils/token-counter'
 import {
   DecayManager,
   type DecayManagerConfig,
   type DecayResult,
 } from './utils/decay-manager'
-import { logger } from './utils/logger'
 
-// Simple context optimizer for memory service
-class ContextOptimizer {
-  constructor(_config?: unknown) {}
-  optimize(content: string, _options?: Record<string, unknown>): string {
-    return content
+/**
+ * Simple token counter utility
+ * Approximates token count (GPT-4 uses ~4 chars per token)
+ */
+const TokenCounter = {
+  count: (text: string): number => Math.ceil(text.length / 4),
+}
+
+/**
+ * Token allocation breakdown for budget management
+ */
+interface TokenAllocation {
+  semantic: number
+  episodic: number
+  working: number
+  systemPrompt: number
+  userPreferences: number
+  recentContext: number
+  semanticMemory: number
+  episodicMemory: number
+  responseReserve: number
+}
+
+/**
+ * Simple token compressor interface for memory compression
+ */
+interface MemoryCompressorAdapter {
+  compressMemory(memory: MemoryItem, ratio: number): {
+    compressed: string
+    compressedTokens: number
+    compressionRatio: number
   }
-  getCompressor() {
-    return {
-      compress: (text: string) => text,
-      decompress: (text: string) => text,
-      compressMemory: (memory: { content: string }, ratio?: number) => {
-        const targetRatio = ratio ?? 0.7
-        const originalTokens = TokenCounter.count(memory.content)
-        const targetTokens = Math.floor(originalTokens * targetRatio)
-        const compressed = TokenCounter.truncate(memory.content, targetTokens)
-        const compressedTokens = TokenCounter.count(compressed)
-        return {
-          compressed,
-          compressedTokens,
-          compressionRatio:
-            originalTokens > 0 ? compressedTokens / originalTokens : 1,
-        }
-      },
-    }
-  }
-  getBudgetManager() {
-    const maxTokens = 4096
-    const allocations = {
-      systemPrompt: 0.15,
-      userPreferences: 0.1,
-      recentContext: 0.25,
-      semanticMemory: 0.25,
-      episodicMemory: 0.15,
-      responseReserve: 0.1,
-    }
-    return {
-      getBudget: () => ({ maxTokens, used: 0, remaining: maxTokens }),
-      allocate: (_tokens: number) => true,
-      release: (_tokens: number) => {},
-      getAllocation: (): TokenBreakdown => ({
-        systemPrompt: Math.floor(maxTokens * allocations.systemPrompt),
-        userPreferences: Math.floor(maxTokens * allocations.userPreferences),
-        recentContext: Math.floor(maxTokens * allocations.recentContext),
-        semanticMemory: Math.floor(maxTokens * allocations.semanticMemory),
-        episodicMemory: Math.floor(maxTokens * allocations.episodicMemory),
-        responseReserve: Math.floor(maxTokens * allocations.responseReserve),
-        total: maxTokens,
+}
+
+/**
+ * Simple budget manager interface for token allocation
+ */
+interface BudgetManagerAdapter {
+  getAllocation(): TokenAllocation
+}
+
+/**
+ * Context optimizer adapter for memory service
+ */
+interface ContextOptimizerAdapter {
+  getCompressor(): MemoryCompressorAdapter
+  getBudgetManager(): BudgetManagerAdapter
+}
+
+/**
+ * Default context optimizer implementation
+ */
+function createDefaultOptimizer(_config?: unknown): ContextOptimizerAdapter {
+  return {
+    getCompressor: () => ({
+      compressMemory: (memory: MemoryItem, ratio: number) => ({
+        compressed: memory.content.slice(0, Math.floor(memory.content.length * ratio)),
+        compressedTokens: Math.floor((memory.tokens || 100) * ratio),
+        compressionRatio: ratio,
       }),
-    }
+    }),
+    getBudgetManager: () => ({
+      getAllocation: () => ({
+        semantic: 2000,
+        episodic: 1500,
+        working: 500,
+        systemPrompt: 500,
+        userPreferences: 300,
+        recentContext: 800,
+        semanticMemory: 2000,
+        episodicMemory: 1500,
+        responseReserve: 400,
+      }),
+    }),
   }
 }
 
@@ -102,12 +125,12 @@ export class MemoryService {
   private embeddings?: EmbeddingProvider
   private cache: Map<string, MemoryItem>
   private buffer: MemoryBuffer
-  private optimizer: ContextOptimizer
+  private optimizer: ContextOptimizerAdapter
   private eventListeners: Map<string, Set<MemoryEventListener>>
-  private cleanupInterval?: NodeJS.Timeout
-  private summarizationInterval?: NodeJS.Timeout
+  private cleanupInterval?: ReturnType<typeof setInterval>
+  private summarizationInterval?: ReturnType<typeof setInterval>
   private decayManager?: DecayManager
-  private decayInterval?: NodeJS.Timeout
+  private decayInterval?: ReturnType<typeof setInterval>
 
   constructor(
     config: MemoryServiceConfig,
@@ -119,7 +142,7 @@ export class MemoryService {
     this.embeddings = embeddings
     this.cache = new Map()
     this.buffer = this.createBuffer()
-    this.optimizer = new ContextOptimizer(config.tokenOptimization)
+    this.optimizer = createDefaultOptimizer(config.tokenOptimization)
     this.eventListeners = new Map()
 
     this.initialize()
@@ -207,7 +230,7 @@ export class MemoryService {
         memory.embedding = await this.embeddings.embedText(content)
       } catch (error) {
         if (this.config.debug) {
-          logger.error('Failed to generate embedding:', error)
+          console.error('Failed to generate embedding:', error)
         }
       }
     } else if (options.embedding) {
@@ -308,7 +331,7 @@ export class MemoryService {
       // Run decay in background (don't block recall)
       this.runDecay().catch((error) => {
         if (this.config.debug) {
-          logger.error('Auto-decay failed:', error)
+          console.error('Auto-decay failed:', error)
         }
       })
     }
@@ -343,7 +366,7 @@ export class MemoryService {
       }))
     } catch (error) {
       if (this.config.debug) {
-        logger.error('Vector search failed:', error)
+        console.error('Vector search failed:', error)
       }
       return []
     }
@@ -466,7 +489,7 @@ export class MemoryService {
           updated.embedding = await this.embeddings.embedText(updates.content)
         } catch (error) {
           if (this.config.debug) {
-            logger.error('Failed to regenerate embedding:', error)
+            console.error('Failed to regenerate embedding:', error)
           }
         }
       }
@@ -506,7 +529,7 @@ export class MemoryService {
         )
       } catch (error) {
         if (this.config.debug) {
-          logger.error('Failed to delete from vector store:', error)
+          console.error('Failed to delete from vector store:', error)
         }
       }
     }
@@ -648,7 +671,7 @@ export class MemoryService {
       })
     } catch (error) {
       if (this.config.debug) {
-        logger.error('Failed to update vector store:', error)
+        console.error('Failed to update vector store:', error)
       }
     }
   }
@@ -762,7 +785,7 @@ export class MemoryService {
     this.cleanupInterval = setInterval(() => {
       this.cleanup().catch((error) => {
         if (this.config.debug) {
-          logger.error('Cleanup task failed:', error)
+          console.error('Cleanup task failed:', error)
         }
       })
     }, this.config.cleanupInterval!)
@@ -775,7 +798,7 @@ export class MemoryService {
     this.summarizationInterval = setInterval(() => {
       this.runSummarizationCycle().catch((error) => {
         if (this.config.debug) {
-          logger.error('Summarization task failed:', error)
+          console.error('Summarization task failed:', error)
         }
       })
     }, this.config.summarizationInterval!)
@@ -788,7 +811,7 @@ export class MemoryService {
     this.decayInterval = setInterval(() => {
       this.runDecay().catch((error) => {
         if (this.config.debug) {
-          logger.error('Decay task failed:', error)
+          console.error('Decay task failed:', error)
         }
       })
     }, this.config.decay!.decayInterval!)
@@ -848,13 +871,13 @@ export class MemoryService {
         }
       } catch (error) {
         if (this.config.debug) {
-          logger.error(`Failed to process decay for ${result.id}:`, error)
+          console.error(`Failed to process decay for ${result.id}:`, error)
         }
       }
     }
 
     if (this.config.debug && candidates.length > 0) {
-      logger.debug(
+      console.log(
         `[MemoryService] Decay cycle complete: ` +
           `${deleted} deleted, ${compressed} compressed, ${kept} kept`
       )
@@ -959,7 +982,7 @@ export class MemoryService {
           bytesSaved += memory.content.length - summary.length
 
           if (this.config.debug) {
-            logger.debug(
+            console.log(
               `Summarized memory ${memory.id}: ${memory.content.length} -> ${summary.length} chars`
             )
           }
@@ -968,14 +991,14 @@ export class MemoryService {
         }
       } catch (error) {
         if (this.config.debug) {
-          logger.error(`Failed to summarize memory ${memory.id}:`, error)
+          console.error(`Failed to summarize memory ${memory.id}:`, error)
         }
       }
     }
 
     // Log cycle metrics
     if (this.config.debug && (summarizedCount > 0 || batch.length > 0)) {
-      logger.debug(
+      console.log(
         `[MemoryService] Summarization cycle complete: ` +
           `${summarizedCount}/${batch.length} memories compressed, ` +
           `${bytesSaved} bytes saved, ` +
@@ -1118,7 +1141,7 @@ export class MemoryService {
           listener(event)
         } catch (error) {
           if (this.config.debug) {
-            logger.error('Event listener error:', error)
+            console.error('Event listener error:', error)
           }
         }
       }
@@ -1207,7 +1230,7 @@ export class MemoryService {
   /**
    * Get optimizer
    */
-  getOptimizer(): ContextOptimizer {
+  getOptimizer(): ContextOptimizerAdapter {
     return this.optimizer
   }
 

@@ -32,7 +32,7 @@ export class HeroChatErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ errorInfo })
     // Log error to console in development
-    logger.error('Hero Chat Error:', error, errorInfo)
+    console.error('Hero Chat Error:', error, errorInfo)
   }
 
   handleReset = () => {

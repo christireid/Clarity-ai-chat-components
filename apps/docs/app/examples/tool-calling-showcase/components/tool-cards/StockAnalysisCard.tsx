@@ -11,7 +11,7 @@ import { memo, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
   TrendingUp,
-  TrendingDown,
+  ChevronDown,
   BarChart3,
   DollarSign,
   Activity,
@@ -42,7 +42,13 @@ const ratingLabels: Record<string, string> = {
   strong_sell: 'Strong Sell',
 }
 
-function Sparkline({ data, isPositive }: { data: number[]; isPositive: boolean }) {
+function Sparkline({
+  data,
+  isPositive,
+}: {
+  data: number[]
+  isPositive: boolean
+}) {
   if (data.length < 2) return null
 
   const min = Math.min(...data)
@@ -56,7 +62,8 @@ function Sparkline({ data, isPositive }: { data: number[]; isPositive: boolean }
   const points = data
     .map((value, i) => {
       const x = padding + (i / (data.length - 1)) * (width - padding * 2)
-      const y = height - padding - ((value - min) / range) * (height - padding * 2)
+      const y =
+        height - padding - ((value - min) / range) * (height - padding * 2)
       return `${x},${y}`
     })
     .join(' ')
@@ -67,15 +74,23 @@ function Sparkline({ data, isPositive }: { data: number[]; isPositive: boolean }
     <svg width={width} height={height} className="overflow-visible">
       <defs>
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor={isPositive ? '#22c55e' : '#ef4444'} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={isPositive ? '#22c55e' : '#ef4444'} stopOpacity="0" />
+          <stop
+            offset="0%"
+            stopColor={isPositive ? '#22c55e' : '#ef4444'}
+            stopOpacity="0.3"
+          />
+          <stop
+            offset="100%"
+            stopColor={isPositive ? '#22c55e' : '#ef4444'}
+            stopOpacity="0"
+          />
         </linearGradient>
       </defs>
       {/* Area fill */}
       <motion.path
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
+        transition={{ delay: 0.3, duration: durations.slow }}
         d={`M ${padding},${height - padding} ${points} ${width - padding},${height - padding} Z`}
         fill={`url(#${gradientId})`}
       />
@@ -83,7 +98,7 @@ function Sparkline({ data, isPositive }: { data: number[]; isPositive: boolean }
       <motion.polyline
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
-        transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
+        transition={{ delay: 0.2, duration: durations.slower, ease: 'easeOut' }}
         points={points}
         fill="none"
         stroke={isPositive ? '#22c55e' : '#ef4444'}
@@ -117,14 +132,20 @@ function MetricItem({
         <Icon className="w-4 h-4" />
       </div>
       <div>
-        <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</div>
+        <div className="text-[10px] text-muted-foreground uppercase tracking-wide">
+          {label}
+        </div>
         <div className="text-sm font-semibold text-foreground">{value}</div>
       </div>
     </motion.div>
   )
 }
 
-export const StockAnalysisCard = memo(function StockAnalysisCard({ data, onViewChart, onTrade }: StockAnalysisCardProps) {
+export const StockAnalysisCard = memo(function StockAnalysisCard({
+  data,
+  onViewChart,
+  onTrade,
+}: StockAnalysisCardProps) {
   const isPositive = data.change >= 0
 
   // Memoize price history values to prevent recalculation on re-renders
@@ -165,8 +186,14 @@ export const StockAnalysisCard = memo(function StockAnalysisCard({ data, onViewC
             >
               ${data.currentPrice.toFixed(2)}
             </motion.div>
-            <div className={`flex items-center gap-1 justify-end ${isPositive ? 'text-green-300' : 'text-red-300'}`}>
-              {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+            <div
+              className={`flex items-center gap-1 justify-end ${isPositive ? 'text-green-300' : 'text-red-300'}`}
+            >
+              {isPositive ? (
+                <TrendingUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
               <span className="font-medium">
                 {isPositive ? '+' : ''}
                 {data.change.toFixed(2)} ({isPositive ? '+' : ''}
@@ -193,9 +220,24 @@ export const StockAnalysisCard = memo(function StockAnalysisCard({ data, onViewC
             icon={BarChart3}
             delay={0.15}
           />
-          <MetricItem label="Market Cap" value={data.metrics.marketCap} icon={DollarSign} delay={0.2} />
-          <MetricItem label="Volume" value={data.metrics.volume} icon={Activity} delay={0.25} />
-          <MetricItem label="EPS" value={`$${data.metrics.eps.toFixed(2)}`} icon={Target} delay={0.3} />
+          <MetricItem
+            label="Market Cap"
+            value={data.metrics.marketCap}
+            icon={DollarSign}
+            delay={0.2}
+          />
+          <MetricItem
+            label="Volume"
+            value={data.metrics.volume}
+            icon={Activity}
+            delay={0.25}
+          />
+          <MetricItem
+            label="EPS"
+            value={`$${data.metrics.eps.toFixed(2)}`}
+            icon={Target}
+            delay={0.3}
+          />
         </div>
 
         {/* 52-Week Range */}

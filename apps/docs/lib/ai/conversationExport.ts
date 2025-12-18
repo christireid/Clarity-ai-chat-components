@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Conversation Export
  *
@@ -264,7 +263,7 @@ export async function copyToClipboard(content: string): Promise<boolean> {
     await navigator.clipboard.writeText(content)
     return true
   } catch (error) {
-    logger.error('Failed to copy to clipboard:', error)
+    console.error('Failed to copy to clipboard:', error)
 
     // Fallback method
     try {
@@ -278,7 +277,7 @@ export async function copyToClipboard(content: string): Promise<boolean> {
       document.body.removeChild(textarea)
       return success
     } catch (fallbackError) {
-      logger.error('Fallback copy failed:', fallbackError)
+      console.error('Fallback copy failed:', fallbackError)
       return false
     }
   }

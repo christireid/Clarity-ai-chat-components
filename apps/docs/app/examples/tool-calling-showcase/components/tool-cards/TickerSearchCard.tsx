@@ -10,7 +10,7 @@
 
 import { useRef, useState, useCallback, useEffect, memo } from 'react'
 import { motion } from 'framer-motion'
-import { Search, TrendingUp, Building2, Bitcoin } from 'lucide-react'
+import { Search, TrendingUp, Building, Bitcoin } from 'lucide-react'
 import type { TickerSearchResult, TickerMatch } from '../../lib/types'
 
 interface TickerSearchCardProps {
@@ -20,7 +20,7 @@ interface TickerSearchCardProps {
 }
 
 const typeIcons: Record<string, React.ReactNode> = {
-  stock: <Building2 className="w-4 h-4" />,
+  stock: <Building className="w-4 h-4" />,
   etf: <TrendingUp className="w-4 h-4" />,
   crypto: <Bitcoin className="w-4 h-4" />,
 }
@@ -33,7 +33,8 @@ const typeColors: Record<string, string> = {
 
 function MatchScoreBadge({ score }: { score: number }) {
   const getScoreColor = () => {
-    if (score >= 150) return 'bg-green-500/20 text-green-700 dark:text-green-400'
+    if (score >= 150)
+      return 'bg-green-500/20 text-green-700 dark:text-green-400'
     if (score >= 100) return 'bg-blue-500/20 text-blue-700 dark:text-blue-400'
     if (score >= 50) return 'bg-amber-500/20 text-amber-700 dark:text-amber-400'
     return 'bg-gray-500/20 text-gray-600 dark:text-gray-400'
@@ -47,7 +48,9 @@ function MatchScoreBadge({ score }: { score: number }) {
   }
 
   return (
-    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${getScoreColor()}`}>
+    <span
+      className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${getScoreColor()}`}
+    >
       {getScoreLabel()}
     </span>
   )
@@ -61,7 +64,13 @@ interface TickerItemProps {
   onFocus?: () => void
 }
 
-function TickerItem({ match, index, onSelect, isFocused, onFocus }: TickerItemProps) {
+function TickerItem({
+  match,
+  index,
+  onSelect,
+  isFocused,
+  onFocus,
+}: TickerItemProps) {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   // Auto-focus when isFocused changes (keyboard navigation)
@@ -111,19 +120,30 @@ function TickerItem({ match, index, onSelect, isFocused, onFocus }: TickerItemPr
           </span>
           <MatchScoreBadge score={match.matchScore} />
         </div>
-        <div className="text-sm text-muted-foreground truncate">{match.name}</div>
+        <div className="text-sm text-muted-foreground truncate">
+          {match.name}
+        </div>
         <div className="text-xs text-muted-foreground/70">{match.exchange}</div>
       </div>
 
       {/* Action Hint */}
-      <div className="opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity" aria-hidden="true">
-        <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">Analyze →</span>
+      <div
+        className="opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity"
+        aria-hidden="true"
+      >
+        <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+          Analyze →
+        </span>
       </div>
     </motion.button>
   )
 }
 
-export const TickerSearchCard = memo(function TickerSearchCard({ data, onSelect, isLoading }: TickerSearchCardProps) {
+export const TickerSearchCard = memo(function TickerSearchCard({
+  data,
+  onSelect,
+  isLoading,
+}: TickerSearchCardProps) {
   const [focusedIndex, setFocusedIndex] = useState<number>(-1)
   const listRef = useRef<HTMLDivElement>(null)
 
@@ -135,11 +155,15 @@ export const TickerSearchCard = memo(function TickerSearchCard({ data, onSelect,
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault()
-          setFocusedIndex((prev) => (prev < data.matches.length - 1 ? prev + 1 : 0))
+          setFocusedIndex((prev) =>
+            prev < data.matches.length - 1 ? prev + 1 : 0
+          )
           break
         case 'ArrowUp':
           e.preventDefault()
-          setFocusedIndex((prev) => (prev > 0 ? prev - 1 : data.matches.length - 1))
+          setFocusedIndex((prev) =>
+            prev > 0 ? prev - 1 : data.matches.length - 1
+          )
           break
         case 'Home':
           e.preventDefault()
@@ -174,14 +198,22 @@ export const TickerSearchCard = memo(function TickerSearchCard({ data, onSelect,
       {/* Header */}
       <div className="px-4 py-3 border-b border-blue-200/50 dark:border-blue-500/20 bg-white/50 dark:bg-white/5">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white shadow-sm" aria-hidden="true">
+          <div
+            className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white shadow-sm"
+            aria-hidden="true"
+          >
             <Search className="w-4 h-4" />
           </div>
           <div>
-            <h4 id="ticker-results-title" className="font-semibold text-sm text-foreground">Ticker Search Results</h4>
+            <h4
+              id="ticker-results-title"
+              className="font-semibold text-sm text-foreground"
+            >
+              Ticker Search Results
+            </h4>
             <p className="text-xs text-muted-foreground">
-              Found {data.matches.length} match{data.matches.length !== 1 ? 'es' : ''} for "
-              {data.query}"
+              Found {data.matches.length} match
+              {data.matches.length !== 1 ? 'es' : ''} for "{data.query}"
             </p>
           </div>
         </div>
@@ -193,7 +225,11 @@ export const TickerSearchCard = memo(function TickerSearchCard({ data, onSelect,
         className="p-3 space-y-2"
         role="listbox"
         aria-labelledby="ticker-results-title"
-        aria-activedescendant={focusedIndex >= 0 ? `ticker-option-${data.matches[focusedIndex]?.symbol}` : undefined}
+        aria-activedescendant={
+          focusedIndex >= 0
+            ? `ticker-option-${data.matches[focusedIndex]?.symbol}`
+            : undefined
+        }
         onKeyDown={handleKeyDown}
         tabIndex={data.matches.length > 0 ? 0 : -1}
       >
@@ -209,7 +245,10 @@ export const TickerSearchCard = memo(function TickerSearchCard({ data, onSelect,
             />
           ))
         ) : (
-          <div className="text-center py-6 text-muted-foreground text-sm" role="status">
+          <div
+            className="text-center py-6 text-muted-foreground text-sm"
+            role="status"
+          >
             No matches found. Try a different search term.
           </div>
         )}

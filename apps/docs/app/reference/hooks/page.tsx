@@ -357,7 +357,7 @@ function StreamingChat() {
   } = useStreamingChat({
     apiEndpoint: '/api/chat/stream',
     onError: (error) => {
-      logger.error('Streaming error:', error)
+      console.error('Streaming error:', error)
     },
   })
 

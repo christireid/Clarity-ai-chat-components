@@ -6,9 +6,9 @@ import { HeroParticles } from '@/components/hero'
 import type { InteractionMode } from '@/components/hero'
 import {
   Sparkles,
-  MousePointer,
-  Magnet,
-  Blend,
+  Pointer,
+  Navigation,
+  Layers,
   Moon,
   Sun,
   Smartphone,
@@ -324,7 +324,7 @@ export default function ParticlesDemoPage() {
                 <ModeButton
                   mode="repel"
                   currentMode={interactionMode}
-                  icon={<MousePointer className="w-4 h-4" />}
+                  icon={<Pointer className="w-4 h-4" />}
                   label="Repel"
                   onClick={() => {
                     setInteractionMode('repel')
@@ -334,7 +334,7 @@ export default function ParticlesDemoPage() {
                 <ModeButton
                   mode="attract"
                   currentMode={interactionMode}
-                  icon={<Magnet className="w-4 h-4" />}
+                  icon={<Navigation className="w-4 h-4" />}
                   label="Attract"
                   onClick={() => {
                     setInteractionMode('attract')
@@ -344,7 +344,7 @@ export default function ParticlesDemoPage() {
                 <ModeButton
                   mode="hybrid"
                   currentMode={interactionMode}
-                  icon={<Blend className="w-4 h-4" />}
+                  icon={<Layers className="w-4 h-4" />}
                   label="Hybrid"
                   onClick={() => {
                     setInteractionMode('hybrid')
@@ -449,7 +449,7 @@ export default function ParticlesDemoPage() {
           <div className="grid md:grid-cols-3 gap-4">
             {[
               {
-                icon: <MousePointer className="w-5 h-5" />,
+                icon: <Pointer className="w-5 h-5" />,
                 title: 'Mouse & Touch',
                 description: 'Interactive on all devices',
               },

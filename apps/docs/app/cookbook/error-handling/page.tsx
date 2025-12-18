@@ -49,7 +49,7 @@ function Chat() {
       api="/api/chat"
       onError={(error) => {
         // Custom error handling
-        logger.error('Chat error:', error)
+        console.error('Chat error:', error)
       }}
     />
   )
@@ -162,7 +162,7 @@ function Chat() {
         try {
           await append({ role: 'user', content })
         } catch (err) {
-          logger.error('Failed to send message:', err)
+          console.error('Failed to send message:', err)
           toast.error('Failed to send message. Please try again.')
         }
       }}
@@ -328,7 +328,7 @@ function Chat() {
 
         // Also log to console in development
         if (process.env.NODE_ENV === 'development') {
-          logger.error('Chat error:', error)
+          console.error('Chat error:', error)
         }
 
         // Show user-friendly message

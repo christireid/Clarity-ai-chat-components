@@ -5,10 +5,10 @@ import { useState } from 'react'
 
 /**
  * **useStreamableUI Hook**
- *
+ * 
  * Hook for handling streamable UI values from various sources
  * including StreamableValue, AsyncIterable, Promise, and ReadableStream.
- *
+ * 
  * **Key Features:**
  * - Support for multiple source types (StreamableValue, AsyncIterable, Promise, ReadableStream)
  * - Append or replace mode for value accumulation
@@ -16,7 +16,7 @@ import { useState } from 'react'
  * - Completion detection
  * - Error handling
  * - Status tracking (idle, streaming, complete, error)
- *
+ * 
  * **Use Cases:**
  * - Vercel AI SDK StreamableValue integration
  * - Progressive UI updates
@@ -68,19 +68,16 @@ type Story = StoryObj<typeof meta>
 
 function AsyncIterableDemo() {
   const [source, setSource] = useState<AsyncIterable<string> | null>(null)
-
-  const { values, latest, status, isStreaming, reset } = useStreamableUI(
-    source,
-    {
-      mode: 'append',
-      onUpdate: (value) => {
-        console.log('Value updated:', value)
-      },
-      onComplete: (finalValue) => {
-        console.log('Streaming complete:', finalValue)
-      },
-    }
-  )
+  
+  const { values, latest, status, isStreaming, reset } = useStreamableUI(source, {
+    mode: 'append',
+    onUpdate: (value) => {
+      console.log('Value updated:', value)
+    },
+    onComplete: (finalValue) => {
+      console.log('Streaming complete:', finalValue)
+    },
+  })
 
   const startStreaming = () => {
     const words = ['Hello', 'World', 'from', 'AsyncIterable', 'Stream']
@@ -106,13 +103,7 @@ function AsyncIterableDemo() {
           <Button onClick={startStreaming} disabled={isStreaming}>
             Start Streaming
           </Button>
-          <Button
-            onClick={() => {
-              reset()
-              setSource(null)
-            }}
-            variant="outline"
-          >
+          <Button onClick={() => { reset(); setSource(null) }} variant="outline">
             Reset
           </Button>
         </div>
@@ -122,17 +113,12 @@ function AsyncIterableDemo() {
         <div className="space-y-2 text-sm">
           <div>
             <strong>Status:</strong>{' '}
-            <span
-              className={`px-2 py-1 rounded ${
-                status === 'idle'
-                  ? 'bg-gray-200 dark:bg-gray-800'
-                  : status === 'streaming'
-                    ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
-                    : status === 'complete'
-                      ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
-                      : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
-              }`}
-            >
+            <span className={`px-2 py-1 rounded ${
+              status === 'idle' ? 'bg-gray-200 dark:bg-gray-800' :
+              status === 'streaming' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200' :
+              status === 'complete' ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200' :
+              'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
+            }`}>
               {status}
             </span>
           </div>
@@ -171,8 +157,7 @@ export const AsyncIterableSource: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Using useStreamableUI with an AsyncIterable source for progressive value updates.',
+        story: 'Using useStreamableUI with an AsyncIterable source for progressive value updates.',
       },
     },
   },
@@ -180,20 +165,17 @@ export const AsyncIterableSource: Story = {
 
 function ReadableStreamDemo() {
   const [source, setSource] = useState<ReadableStream<string> | null>(null)
-
-  const { values, latest, status, isStreaming, reset } = useStreamableUI(
-    source,
-    {
-      mode: 'append',
-      transform: (value) => {
-        // Transform Uint8Array to string if needed
-        if (value instanceof Uint8Array) {
-          return new TextDecoder().decode(value)
-        }
-        return String(value)
-      },
-    }
-  )
+  
+  const { values, latest, status, isStreaming, reset } = useStreamableUI(source, {
+    mode: 'append',
+    transform: (value) => {
+      // Transform Uint8Array to string if needed
+      if (value instanceof Uint8Array) {
+        return new TextDecoder().decode(value)
+      }
+      return String(value)
+    },
+  })
 
   const startStreaming = () => {
     const stream = new ReadableStream({
@@ -218,13 +200,7 @@ function ReadableStreamDemo() {
           <Button onClick={startStreaming} disabled={isStreaming}>
             Start Streaming
           </Button>
-          <Button
-            onClick={() => {
-              reset()
-              setSource(null)
-            }}
-            variant="outline"
-          >
+          <Button onClick={() => { reset(); setSource(null) }} variant="outline">
             Reset
           </Button>
         </div>
@@ -234,17 +210,12 @@ function ReadableStreamDemo() {
         <div className="space-y-2 text-sm">
           <div>
             <strong>Status:</strong>{' '}
-            <span
-              className={`px-2 py-1 rounded ${
-                status === 'idle'
-                  ? 'bg-gray-200 dark:bg-gray-800'
-                  : status === 'streaming'
-                    ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
-                    : status === 'complete'
-                      ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
-                      : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
-              }`}
-            >
+            <span className={`px-2 py-1 rounded ${
+              status === 'idle' ? 'bg-gray-200 dark:bg-gray-800' :
+              status === 'streaming' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200' :
+              status === 'complete' ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200' :
+              'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
+            }`}>
               {status}
             </span>
           </div>
@@ -265,8 +236,7 @@ export const ReadableStreamSource: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Using useStreamableUI with a ReadableStream source with automatic text decoding.',
+        story: 'Using useStreamableUI with a ReadableStream source with automatic text decoding.',
       },
     },
   },
@@ -274,16 +244,13 @@ export const ReadableStreamSource: Story = {
 
 function ReplaceModeDemo() {
   const [source, setSource] = useState<AsyncIterable<number> | null>(null)
-
-  const { values, latest, status, isStreaming, reset } = useStreamableUI(
-    source,
-    {
-      mode: 'replace', // Replace instead of append
-      onUpdate: (value) => {
-        console.log('Value replaced:', value)
-      },
-    }
-  )
+  
+  const { values, latest, status, isStreaming, reset } = useStreamableUI(source, {
+    mode: 'replace', // Replace instead of append
+    onUpdate: (value) => {
+      console.log('Value replaced:', value)
+    },
+  })
 
   const startStreaming = () => {
     const numbers = [1, 2, 3, 4, 5]
@@ -306,20 +273,13 @@ function ReplaceModeDemo() {
       <div className="space-y-2">
         <h3 className="font-medium">Replace Mode</h3>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          In replace mode, each new value replaces the previous one instead of
-          accumulating.
+          In replace mode, each new value replaces the previous one instead of accumulating.
         </p>
         <div className="flex gap-2">
           <Button onClick={startStreaming} disabled={isStreaming}>
             Start Streaming
           </Button>
-          <Button
-            onClick={() => {
-              reset()
-              setSource(null)
-            }}
-            variant="outline"
-          >
+          <Button onClick={() => { reset(); setSource(null) }} variant="outline">
             Reset
           </Button>
         </div>
@@ -329,15 +289,11 @@ function ReplaceModeDemo() {
         <div className="space-y-2 text-sm">
           <div>
             <strong>Status:</strong>{' '}
-            <span
-              className={`px-2 py-1 rounded ${
-                status === 'streaming'
-                  ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
-                  : status === 'complete'
-                    ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
-                    : 'bg-gray-200 dark:bg-gray-800'
-              }`}
-            >
+            <span className={`px-2 py-1 rounded ${
+              status === 'streaming' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200' :
+              status === 'complete' ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200' :
+              'bg-gray-200 dark:bg-gray-800'
+            }`}>
               {status}
             </span>
           </div>
@@ -345,8 +301,7 @@ function ReplaceModeDemo() {
             <strong>Latest Value:</strong> {latest !== null ? latest : 'None'}
           </div>
           <div>
-            <strong>Values Array:</strong>{' '}
-            {values.length > 0 ? `[${values.join(', ')}]` : '[]'}
+            <strong>Values Array:</strong> {values.length > 0 ? `[${values.join(', ')}]` : '[]'}
             <span className="text-gray-500 ml-2">
               (In replace mode, this will only contain the latest value)
             </span>
@@ -362,8 +317,7 @@ export const ReplaceMode: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Using replace mode where each new value replaces the previous one instead of accumulating.',
+        story: 'Using replace mode where each new value replaces the previous one instead of accumulating.',
       },
     },
   },
@@ -371,23 +325,20 @@ export const ReplaceMode: Story = {
 
 function TransformDemo() {
   const [source, setSource] = useState<AsyncIterable<number> | null>(null)
-
-  const { values, latest, status, isStreaming, reset } = useStreamableUI(
-    source,
-    {
-      mode: 'append',
-      transform: (value) => {
-        // Transform numbers to formatted strings
-        if (typeof value === 'number') {
-          return `Value: ${value} (${value * 2} doubled)`
-        }
-        return String(value)
-      },
-      onUpdate: (value) => {
-        console.log('Transformed value:', value)
-      },
-    }
-  )
+  
+  const { values, latest, status, isStreaming, reset } = useStreamableUI(source, {
+    mode: 'append',
+    transform: (value) => {
+      // Transform numbers to formatted strings
+      if (typeof value === 'number') {
+        return `Value: ${value} (${value * 2} doubled)`
+      }
+      return String(value)
+    },
+    onUpdate: (value) => {
+      console.log('Transformed value:', value)
+    },
+  })
 
   const startStreaming = () => {
     const numbers = [10, 20, 30, 40, 50]
@@ -415,13 +366,7 @@ function TransformDemo() {
           <Button onClick={startStreaming} disabled={isStreaming}>
             Start Streaming
           </Button>
-          <Button
-            onClick={() => {
-              reset()
-              setSource(null)
-            }}
-            variant="outline"
-          >
+          <Button onClick={() => { reset(); setSource(null) }} variant="outline">
             Reset
           </Button>
         </div>
@@ -431,15 +376,11 @@ function TransformDemo() {
         <div className="space-y-2 text-sm">
           <div>
             <strong>Status:</strong>{' '}
-            <span
-              className={`px-2 py-1 rounded ${
-                status === 'streaming'
-                  ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
-                  : status === 'complete'
-                    ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
-                    : 'bg-gray-200 dark:bg-gray-800'
-              }`}
-            >
+            <span className={`px-2 py-1 rounded ${
+              status === 'streaming' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200' :
+              status === 'complete' ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200' :
+              'bg-gray-200 dark:bg-gray-800'
+            }`}>
               {status}
             </span>
           </div>
@@ -450,10 +391,7 @@ function TransformDemo() {
             <strong>All Transformed Values:</strong>
             <div className="mt-2 space-y-1">
               {values.map((value, index) => (
-                <div
-                  key={index}
-                  className="text-xs bg-white dark:bg-gray-800 p-2 rounded"
-                >
+                <div key={index} className="text-xs bg-white dark:bg-gray-800 p-2 rounded">
                   {value}
                 </div>
               ))}
@@ -470,8 +408,7 @@ export const CustomTransform: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Using a custom transform function to modify incoming values before they are stored.',
+        story: 'Using a custom transform function to modify incoming values before they are stored.',
       },
     },
   },
@@ -479,16 +416,13 @@ export const CustomTransform: Story = {
 
 function ErrorHandlingDemo() {
   const [source, setSource] = useState<AsyncIterable<string> | null>(null)
-
-  const { values, latest, status, error, isStreaming, reset } = useStreamableUI(
-    source,
-    {
-      mode: 'append',
-      onError: (err) => {
-        console.error('Stream error:', err)
-      },
-    }
-  )
+  
+  const { values, latest, status, error, isStreaming, reset } = useStreamableUI(source, {
+    mode: 'append',
+    onError: (err) => {
+      console.error('Stream error:', err)
+    },
+  })
 
   const startStreamingWithError = () => {
     const asyncIterable: AsyncIterable<string> = {
@@ -513,13 +447,7 @@ function ErrorHandlingDemo() {
           <Button onClick={startStreamingWithError} disabled={isStreaming}>
             Start Streaming (Will Error)
           </Button>
-          <Button
-            onClick={() => {
-              reset()
-              setSource(null)
-            }}
-            variant="outline"
-          >
+          <Button onClick={() => { reset(); setSource(null) }} variant="outline">
             Reset
           </Button>
         </div>
@@ -529,15 +457,11 @@ function ErrorHandlingDemo() {
         <div className="space-y-2 text-sm">
           <div>
             <strong>Status:</strong>{' '}
-            <span
-              className={`px-2 py-1 rounded ${
-                status === 'error'
-                  ? 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
-                  : status === 'streaming'
-                    ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
-                    : 'bg-gray-200 dark:bg-gray-800'
-              }`}
-            >
+            <span className={`px-2 py-1 rounded ${
+              status === 'error' ? 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200' :
+              status === 'streaming' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200' :
+              'bg-gray-200 dark:bg-gray-800'
+            }`}>
               {status}
             </span>
           </div>
@@ -547,8 +471,7 @@ function ErrorHandlingDemo() {
             </div>
           )}
           <div>
-            <strong>Values Received:</strong>{' '}
-            {values.length > 0 ? values.join(', ') : 'None'}
+            <strong>Values Received:</strong> {values.length > 0 ? values.join(', ') : 'None'}
           </div>
         </div>
       </div>
