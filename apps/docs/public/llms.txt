@@ -30,6 +30,7 @@ Three bundle options for different needs:
 ## Main Components
 
 - [ClarityChat](https://clarity-chat.dev/reference/components/clarity-chat): All-in-one chat component with built-in features
+- [ClarityChatPresets](https://clarity-chat.dev/reference/components/clarity-chat-presets): Pre-configured presets for Simple, WithMemory, Enterprise, and Streaming chat
 - [ChatWindow](https://clarity-chat.dev/reference/components/chat-window): Container component for chat interfaces
 - [MessageList](https://clarity-chat.dev/reference/components/message-list): Display messages with virtualization support
 - [ChatInput](https://clarity-chat.dev/reference/components/chat-input): User input with attachments and voice support
@@ -83,6 +84,7 @@ Three bundle options for different needs:
 - [Styling](https://clarity-chat.dev/learn/guides/styling): Customizing component styles
 - [TypeScript](https://clarity-chat.dev/learn/guides/typescript): TypeScript best practices
 - [Testing](https://clarity-chat.dev/learn/guides/testing): Test utilities and component testing patterns
+- [Common Patterns](https://clarity-chat.dev/learn/guides/common-patterns): Provider composition, hook patterns, error boundaries, streaming
 - [FAQ](https://clarity-chat.dev/learn/faq): Frequently asked questions and troubleshooting
 
 ## Examples
@@ -118,6 +120,7 @@ Three bundle options for different needs:
 - [Components API](https://clarity-chat.dev/reference/components): All component props and types
 - [Hooks API](https://clarity-chat.dev/reference/hooks): Hook signatures and return types
 - [Utilities](https://clarity-chat.dev/reference/api/utilities): Helper functions and utilities
+- [createMemoryStore](https://clarity-chat.dev/reference/utilities/create-memory-store): Factory for memory stores (non-React contexts)
 - [Type Definitions](https://clarity-chat.dev/reference/api/types): TypeScript type reference
 
 ## Optional

@@ -77,6 +77,7 @@ export const learnNavigation: NavItem[] = [
       { title: 'Performance', href: '/guides/performance' },
       { title: 'Bundle Size', href: '/learn/guides/bundle-size' },
       { title: 'Testing', href: '/learn/guides/testing' },
+      { title: 'Common Patterns', href: '/learn/guides/common-patterns' },
       { title: 'RAG', href: '/guides/rag' },
       { title: 'Agents', href: '/guides/agents' },
       { title: 'Plugins', href: '/guides/plugins' },
@@ -130,6 +131,10 @@ export const referenceNavigation: NavItem[] = [
     title: 'Core Components',
     items: [
       { title: 'ClarityChat', href: '/reference/components/clarity-chat' },
+      {
+        title: 'ClarityChatPresets',
+        href: '/reference/components/clarity-chat-presets',
+      },
       { title: 'ChatRecipes', href: '/reference/components/chat-recipes' },
       { title: 'ChatLayout', href: '/reference/components/chat-layout' },
       { title: 'ChatWindow', href: '/reference/components/chat-window' },
@@ -376,6 +381,10 @@ export const referenceNavigation: NavItem[] = [
       { title: '🖨️ Printable Cheat Sheet', href: '/reference/cheat-sheet' },
       { title: 'Types', href: '/reference/api/types' },
       { title: 'Utilities', href: '/reference/utilities' },
+      {
+        title: 'createMemoryStore',
+        href: '/reference/utilities/create-memory-store',
+      },
       { title: 'Configuration', href: '/reference/api/configuration' },
     ],
   },
