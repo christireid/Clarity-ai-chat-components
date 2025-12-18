@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -111,8 +110,8 @@ function calculateDelayWithJitter(
  *     maxRetries: 3,
  *     jitterFactor: 0.3,
  *     circuitBreakerThreshold: 5,
- *     onRetry: (attempt) => logger.debug(`Retry attempt ${attempt}`),
- *     onCircuitOpen: () => logger.debug('Circuit breaker opened'),
+ *     onRetry: (attempt) => console.debug(`Retry attempt ${attempt}`),
+ *     onCircuitOpen: () => console.debug('Circuit breaker opened'),
  *   });
  *
  *   const startStream = useCallback(async (resumePayload?: ResumePayload) => {
@@ -281,19 +280,19 @@ export function useStreamingError(
 
   const retry = React.useCallback(() => {
     if (circuitState === 'open') {
-      logger.warn('[useStreamingError] Cannot retry: circuit breaker is open')
+      console.warn('[useStreamingError] Cannot retry: circuit breaker is open')
       return
     }
 
     if (!canRetry) {
-      logger.warn(
+      console.warn(
         '[useStreamingError] Cannot retry: max retries exceeded or error not recoverable'
       )
       return
     }
 
     if (!retryCallbackRef.current) {
-      logger.warn(
+      console.warn(
         '[useStreamingError] Cannot retry: no retry callback registered'
       )
       return
@@ -353,14 +352,14 @@ export function useStreamingError(
   const resumeStream = React.useCallback(
     async (customPayload?: ResumePayload) => {
       if (!error?.hasPartialContent && !customPayload) {
-        logger.warn(
+        console.warn(
           '[useStreamingError] Cannot resume: no partial content available'
         )
         return
       }
 
       if (!retryCallbackRef.current) {
-        logger.warn(
+        console.warn(
           '[useStreamingError] Cannot resume: no retry callback registered'
         )
         return

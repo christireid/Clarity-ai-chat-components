@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import { useCallback } from 'react'
 import { ClarityChatError } from '../errors'
 
@@ -16,7 +15,7 @@ export interface UseErrorHandlerOptions {
 
 /**
  * Hook for centralized error handling with logging and notifications
- * 
+ *
  * @example
  * ```tsx
  * const { handleError } = useErrorHandler({
@@ -27,7 +26,7 @@ export interface UseErrorHandlerOptions {
  *     Sentry.captureException(error)
  *   }
  * })
- * 
+ *
  * try {
  *   await riskyOperation()
  * } catch (error) {
@@ -48,15 +47,15 @@ export function useErrorHandler(options?: UseErrorHandlerOptions) {
 
       // Log to console in development
       if (logErrors) {
-        logger.debug('🚨 Clarity Chat Error')
-        logger.logger.error('Error:', err)
+        console.debug('🚨 Clarity Chat Error')
+        console.error('Error:', err)
 
         // If it's our custom error, log the full details
         if (err instanceof ClarityChatError) {
-          logger.logger.error('\n' + err.toString())
+          console.error('\n' + err.toString())
         }
 
-        logger.debug()
+        console.debug()
       }
 
       // Show toast notification if enabled
@@ -64,7 +63,7 @@ export function useErrorHandler(options?: UseErrorHandlerOptions) {
         // This would integrate with a toast system
         // For now, we'll just log that we would show a toast
         if (logErrors) {
-          logger.info('Toast would be shown:', err.message)
+          console.info('Toast would be shown:', err.message)
         }
       }
 

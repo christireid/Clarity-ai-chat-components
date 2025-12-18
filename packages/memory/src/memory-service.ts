@@ -43,9 +43,53 @@ import { logger } from './utils/logger'
 
 // Simple context optimizer for memory service
 class ContextOptimizer {
-  constructor(_config?: Record<string, unknown>) {}
+  constructor(_config?: unknown) {}
   optimize(content: string, _options?: Record<string, unknown>): string {
     return content
+  }
+  getCompressor() {
+    return {
+      compress: (text: string) => text,
+      decompress: (text: string) => text,
+      compressMemory: (memory: { content: string }, ratio?: number) => {
+        const targetRatio = ratio ?? 0.7
+        const originalTokens = TokenCounter.count(memory.content)
+        const targetTokens = Math.floor(originalTokens * targetRatio)
+        const compressed = TokenCounter.truncate(memory.content, targetTokens)
+        const compressedTokens = TokenCounter.count(compressed)
+        return {
+          compressed,
+          compressedTokens,
+          compressionRatio:
+            originalTokens > 0 ? compressedTokens / originalTokens : 1,
+        }
+      },
+    }
+  }
+  getBudgetManager() {
+    const maxTokens = 4096
+    const allocations = {
+      systemPrompt: 0.15,
+      userPreferences: 0.1,
+      recentContext: 0.25,
+      semanticMemory: 0.25,
+      episodicMemory: 0.15,
+      responseReserve: 0.1,
+    }
+    return {
+      getBudget: () => ({ maxTokens, used: 0, remaining: maxTokens }),
+      allocate: (_tokens: number) => true,
+      release: (_tokens: number) => {},
+      getAllocation: (): TokenBreakdown => ({
+        systemPrompt: Math.floor(maxTokens * allocations.systemPrompt),
+        userPreferences: Math.floor(maxTokens * allocations.userPreferences),
+        recentContext: Math.floor(maxTokens * allocations.recentContext),
+        semanticMemory: Math.floor(maxTokens * allocations.semanticMemory),
+        episodicMemory: Math.floor(maxTokens * allocations.episodicMemory),
+        responseReserve: Math.floor(maxTokens * allocations.responseReserve),
+        total: maxTokens,
+      }),
+    }
   }
 }
 

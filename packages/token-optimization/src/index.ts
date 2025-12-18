@@ -1,6 +1,6 @@
 /**
  * Token Optimization Package - Enhanced Implementation
- * 
+ *
  * This package provides advanced token optimization capabilities including:
  * - Enhanced security with comprehensive threat protection
  * - Quality gates with 85% minimum quality preservation
@@ -11,49 +11,58 @@
 
 // Security exports
 export { EnhancedSecurityManager } from './security/enhanced-security'
-export type { 
-  EnhancedSecurityConfig, 
-  SecurityContext, 
+export type {
+  EnhancedSecurityConfig,
+  SecurityContext,
   ThreatIntelligence,
-  EnhancedValidationResult 
+  EnhancedValidationResult,
 } from './security/enhanced-security'
 
 export { TokenSecurityManager } from './security/token-security'
-export type { 
-  SecurityConfig as TokenSecurityConfig, 
-  SecurityEvent, 
+export type {
+  SecurityConfig as TokenSecurityConfig,
+  SecurityEvent,
   SanitizationResult,
   ProtectionResult,
-  ComplianceReport 
+  ComplianceReport,
 } from './security/token-security'
 
 // Security configuration builder
-export { createSecurityConfig, SecurityProfiles } from './security/security-config-builder'
+export {
+  createSecurityConfig,
+  SecurityProfiles,
+} from './security/security-config-builder'
 export type { SecurityConfigBuilder } from './security/security-config-builder'
 
 // Security testing playground
-export { createSecurityTestingPlayground, runSecurityTests } from './security/security-testing-playground'
-export type { SecurityTestCase, SecurityTestResult } from './security/security-testing-playground'
+export {
+  createSecurityTestingPlayground,
+  runSecurityTests,
+} from './security/security-testing-playground'
+export type {
+  SecurityTestCase,
+  SecurityTestResult,
+} from './security/security-testing-playground'
 
-// Security event streaming
-export { createSecurityEventStreamer, SecurityStreamSubscribers } from './security/security-event-streaming'
-export type { SecurityStreamEvent, StreamSubscriber, StreamMetrics } from './security/security-event-streaming'
+// Security event streaming (Node.js only - uses events module)
+// export { createSecurityEventStreamer, SecurityStreamSubscribers } from './security/security-event-streaming'
+// export type { SecurityStreamEvent, StreamSubscriber, StreamMetrics } from './security/security-event-streaming'
 
-// Redis security store
-export { createSecurityStore } from './security/redis-security-store'
-export type { RedisSecurityStore } from './security/redis-security-store'
+// Redis security store (Node.js only - uses events module)
+// export { createSecurityStore } from './security/redis-security-store'
+// export type { RedisSecurityStore } from './security/redis-security-store'
 
-// Security dashboard
-export { createSecurityDashboard } from './security/security-dashboard'
-export type { SecurityDashboard } from './security/security-dashboard'
+// Security dashboard (Node.js only - uses events module)
+// export { createSecurityDashboard } from './security/security-dashboard'
+// export type { SecurityDashboard } from './security/security-dashboard'
 
 // Quality exports
 export { QualityGate } from './quality/quality-gate'
-export type { 
+export type {
   QualityGateConfig,
   QualityMetrics as QualityGateMetrics,
   QualityCheckResult,
-  QualityContext
+  QualityContext,
 } from './quality/quality-gate'
 
 // Cost exports
@@ -63,7 +72,7 @@ export type {
   CostEstimate,
   OptimizationStrategy as CostOptimizationStrategy,
   BudgetStatus,
-  ResourceRequirements
+  ResourceRequirements,
 } from './cost/cost-aware-optimizer'
 
 // Caching exports
@@ -74,7 +83,7 @@ export type {
   CacheMetadata,
   SemanticCacheResult,
   CacheContext,
-  CacheStats
+  CacheStats,
 } from './caching/advanced-semantic-cache'
 
 // Compression exports
@@ -84,5 +93,5 @@ export type {
   CompressionStrategy,
   CompressionResult,
   CompressionContext,
-  QualityMetrics as CompressionQualityMetrics
+  QualityMetrics as CompressionQualityMetrics,
 } from './compression/dynamic-compression'

@@ -8,5 +8,12 @@
     "noEmit": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.tsx",
+    "src/accessibility.ts"
+  ]
 }

@@ -1,6 +1,6 @@
 /**
  * Basic Compression Engine
- * 
+ *
  * Simple compression with 70% compression ratio
  */
 
@@ -29,7 +29,8 @@ export interface CompressionResult {
 export class BasicCompressionEngine {
   private strategies: Map<string, CompressionStrategy>
 
-  constructor(private config: CompressionConfig) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(_config: CompressionConfig) {
     this.strategies = new Map()
     this.initializeStrategies()
   }
@@ -46,11 +47,11 @@ export class BasicCompressionEngine {
       ratio,
       quality: strategy.quality,
       strategy: strategy.name,
-      tokensSaved
+      tokensSaved,
     }
   }
 
-  private selectStrategy(text: string): CompressionStrategy {
+  private selectStrategy(_text: string): CompressionStrategy {
     // Simple strategy selection based on text characteristics
     return this.strategies.get('basic')!
   }
@@ -66,7 +67,7 @@ export class BasicCompressionEngine {
           .trim()
       },
       quality: 0.95,
-      ratio: 0.7
+      ratio: 0.7,
     })
   }
 }
@@ -75,9 +76,9 @@ export async function compressText(text: string): Promise<string> {
   const engine = new BasicCompressionEngine({
     targetRatio: 0.7,
     qualityThreshold: 0.9,
-    enableFallback: true
+    enableFallback: true,
   })
-  
+
   const result = await engine.compress(text)
   return result.compressed
 }
@@ -86,12 +87,10 @@ export async function compressTextBatch(texts: string[]): Promise<string[]> {
   const engine = new BasicCompressionEngine({
     targetRatio: 0.7,
     qualityThreshold: 0.9,
-    enableFallback: true
+    enableFallback: true,
   })
-  
-  const results = await Promise.all(
-    texts.map(text => engine.compress(text))
-  )
-  
-  return results.map(result => result.compressed)
+
+  const results = await Promise.all(texts.map((text) => engine.compress(text)))
+
+  return results.map((result) => result.compressed)
 }

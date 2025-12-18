@@ -1,15 +1,14 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Accessibility Utilities
- * 
+ *
  * Consolidates accessibility utilities from:
  * - /apps/docs/lib/accessibility/accessibilityEnhanced.ts (405 lines)
  * - /packages/error-handling/src/hooks/useAccessibility.ts (139 lines)
- * 
+ *
  * Provides comprehensive WCAG AAA compliant accessibility utilities for React components
- * 
+ *
  * @module @clarity-chat/error-handling/accessibility
- * 
+ *
  * @example
  * ```tsx
  * import {
@@ -20,45 +19,45 @@ import { logger } from '@clarity-chat/utils/logger';
  *   useColorContrast,
  *   useKeyboardNavigation
  * } from '@clarity-chat/error-handling/accessibility'
- * 
+ *
  * function AccessibleComponent() {
  *   const containerRef = useRef<HTMLDivElement>(null);
- *   
+ *
  *   // Focus management with trapping and restoration
  *   useFocusManagement(containerRef, {
  *     trapFocus: true,
  *     restoreFocus: true,
  *     initialFocus: '#first-input'
  *   });
- *   
+ *
  *   // Screen reader announcements
  *   useScreenReaderAnnounce('Form submitted successfully', {
  *     priority: 'polite',
  *     delay: 500
  *   });
- *   
+ *
  *   // High contrast mode detection
  *   const isHighContrast = useHighContrastMode();
- *   
+ *
  *   // Reduced motion preference
  *   const prefersReducedMotion = useReducedMotion();
- *   
+ *
  *   return <div ref={containerRef}>...</div>;
  * }
  * ```
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react'
 
 // ============================================================================
 // Focus Management
 // ============================================================================
 
 export interface FocusManagementOptions {
-  trapFocus?: boolean;
-  restoreFocus?: boolean;
-  initialFocus?: string;
-  returnFocus?: string;
+  trapFocus?: boolean
+  restoreFocus?: boolean
+  initialFocus?: string
+  returnFocus?: string
 }
 
 /**
@@ -69,15 +68,20 @@ export function useFocusManagement(
   containerRef: React.RefObject<HTMLElement>,
   options: FocusManagementOptions = {}
 ) {
-  const { trapFocus = false, restoreFocus = true, initialFocus, returnFocus } = options;
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const focusableElementsRef = useRef<HTMLElement[]>([]);
+  const {
+    trapFocus = false,
+    restoreFocus = true,
+    initialFocus,
+    returnFocus,
+  } = options
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+  const focusableElementsRef = useRef<HTMLElement[]>([])
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+  useEffect((): void | (() => void) => {
+    if (!containerRef.current) return
 
     // Store current focus before managing
-    previousFocusRef.current = document.activeElement as HTMLElement;
+    previousFocusRef.current = document.activeElement as HTMLElement
 
     // Get all focusable elements using comprehensive selectors
     const focusableSelectors = [
@@ -92,46 +96,58 @@ export function useFocusManagement(
       'iframe',
       'object',
       'embed',
-      '[contenteditable]'
-    ].join(', ');
+      '[contenteditable]',
+    ].join(', ')
 
     focusableElementsRef.current = Array.from(
       containerRef.current.querySelectorAll(focusableSelectors)
-    ).filter((el): el is HTMLElement => el instanceof HTMLElement && isFocusable(el));
+    ).filter(
+      (el): el is HTMLElement => el instanceof HTMLElement && isFocusable(el)
+    )
 
     // Set initial focus if specified
     if (initialFocus) {
-      const initialElement = containerRef.current.querySelector(initialFocus) as HTMLElement;
-      if (initialElement && focusableElementsRef.current.includes(initialElement)) {
-        initialElement.focus({ preventScroll: false });
-        logger.debug('Focus set to initial element', { selector: initialFocus });
+      const initialElement = containerRef.current.querySelector(
+        initialFocus
+      ) as HTMLElement
+      if (
+        initialElement &&
+        focusableElementsRef.current.includes(initialElement)
+      ) {
+        initialElement.focus({ preventScroll: false })
+        console.debug('Focus set to initial element', {
+          selector: initialFocus,
+        })
       }
     } else if (focusableElementsRef.current.length > 0) {
-      focusableElementsRef.current[0].focus({ preventScroll: false });
-      logger.debug('Focus set to first focusable element');
+      focusableElementsRef.current[0]?.focus({ preventScroll: false })
+      console.debug('Focus set to first focusable element')
     }
 
     // Handle focus trapping
     if (trapFocus && focusableElementsRef.current.length > 0) {
       const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.key !== 'Tab') return;
+        if (event.key !== 'Tab') return
 
-        event.preventDefault();
+        event.preventDefault()
         const currentIndex = focusableElementsRef.current.indexOf(
           document.activeElement as HTMLElement
-        );
+        )
         const nextIndex = event.shiftKey
-          ? (currentIndex - 1 + focusableElementsRef.current.length) % focusableElementsRef.current.length
-          : (currentIndex + 1) % focusableElementsRef.current.length;
+          ? (currentIndex - 1 + focusableElementsRef.current.length) %
+            focusableElementsRef.current.length
+          : (currentIndex + 1) % focusableElementsRef.current.length
 
-        focusableElementsRef.current[nextIndex].focus();
-        logger.debug('Focus trapped to next element', { direction: event.shiftKey ? 'previous' : 'next' });
-      };
+        focusableElementsRef.current[nextIndex]?.focus()
+        console.debug('Focus trapped to next element', {
+          direction: event.shiftKey ? 'previous' : 'next',
+        })
+      }
 
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [containerRef, trapFocus, initialFocus]);
+  }, [containerRef, trapFocus, initialFocus])
 
   // Restore focus on unmount
   useEffect(() => {
@@ -139,54 +155,62 @@ export function useFocusManagement(
       if (restoreFocus && previousFocusRef.current) {
         const elementToFocus = returnFocus
           ? (document.querySelector(returnFocus) as HTMLElement)
-          : previousFocusRef.current;
+          : previousFocusRef.current
 
         if (elementToFocus && elementToFocus.focus) {
-          elementToFocus.focus({ preventScroll: true });
-          logger.debug('Focus restored to previous element');
+          elementToFocus.focus({ preventScroll: true })
+          console.debug('Focus restored to previous element')
         }
       }
-    };
-  }, [restoreFocus, returnFocus]);
+    }
+  }, [restoreFocus, returnFocus])
 
   return {
     previousFocusRef,
     focusableElementsRef,
     getFirstFocusable: () => focusableElementsRef.current[0] || null,
-    getLastFocusable: () => focusableElementsRef.current[focusableElementsRef.current.length - 1] || null,
+    getLastFocusable: () =>
+      focusableElementsRef.current[focusableElementsRef.current.length - 1] ||
+      null,
     focusNext: () => {
-      const currentIndex = focusableElementsRef.current.indexOf(document.activeElement as HTMLElement);
-      const nextIndex = (currentIndex + 1) % focusableElementsRef.current.length;
-      focusableElementsRef.current[nextIndex]?.focus();
+      const currentIndex = focusableElementsRef.current.indexOf(
+        document.activeElement as HTMLElement
+      )
+      const nextIndex = (currentIndex + 1) % focusableElementsRef.current.length
+      focusableElementsRef.current[nextIndex]?.focus()
     },
     focusPrevious: () => {
-      const currentIndex = focusableElementsRef.current.indexOf(document.activeElement as HTMLElement);
-      const prevIndex = (currentIndex - 1 + focusableElementsRef.current.length) % focusableElementsRef.current.length;
-      focusableElementsRef.current[prevIndex]?.focus();
-    }
-  };
+      const currentIndex = focusableElementsRef.current.indexOf(
+        document.activeElement as HTMLElement
+      )
+      const prevIndex =
+        (currentIndex - 1 + focusableElementsRef.current.length) %
+        focusableElementsRef.current.length
+      focusableElementsRef.current[prevIndex]?.focus()
+    },
+  }
 }
 
 /**
  * Check if an element is focusable
  */
 function isFocusable(element: Element): boolean {
-  if (!(element instanceof HTMLElement)) return false;
-  
+  if (!(element instanceof HTMLElement)) return false
+
   // Check if element is disabled
-  if (element.hasAttribute('disabled')) return false;
-  
+  if (element.hasAttribute('disabled')) return false
+
   // Check if element is hidden
-  if (element.hidden) return false;
-  
+  if (element.hidden) return false
+
   // Check if element has negative tabindex
-  if (element.getAttribute('tabindex') === '-1') return false;
-  
+  if (element.getAttribute('tabindex') === '-1') return false
+
   // Check visibility
-  const style = window.getComputedStyle(element);
-  if (style.display === 'none' || style.visibility === 'hidden') return false;
-  
-  return true;
+  const style = window.getComputedStyle(element)
+  if (style.display === 'none' || style.visibility === 'hidden') return false
+
+  return true
 }
 
 // ============================================================================
@@ -194,8 +218,8 @@ function isFocusable(element: Element): boolean {
 // ============================================================================
 
 export interface ScreenReaderAnnounceOptions {
-  priority?: 'polite' | 'assertive';
-  delay?: number;
+  priority?: 'polite' | 'assertive'
+  delay?: number
 }
 
 /**
@@ -206,70 +230,70 @@ export function useScreenReaderAnnounce(
   message: string,
   options: ScreenReaderAnnounceOptions = {}
 ) {
-  const { priority = 'polite', delay = 0 } = options;
-  const announcementRef = useRef<HTMLDivElement | null>(null);
-  const [isAnnouncing, setIsAnnouncing] = useState(false);
+  const { priority = 'polite', delay = 0 } = options
+  const announcementRef = useRef<HTMLDivElement | null>(null)
+  const [isAnnouncing, setIsAnnouncing] = useState(false)
 
   useEffect(() => {
-    if (!message) return;
+    if (!message) return
 
     // Create or get announcement region
     if (!announcementRef.current) {
-      const region = document.createElement('div');
-      region.setAttribute('aria-live', priority);
-      region.setAttribute('aria-atomic', 'true');
-      region.style.position = 'absolute';
-      region.style.left = '-10000px';
-      region.style.width = '1px';
-      region.style.height = '1px';
-      region.style.overflow = 'hidden';
-      document.body.appendChild(region);
-      announcementRef.current = region;
-      logger.debug('Created ARIA live region', { priority });
+      const region = document.createElement('div')
+      region.setAttribute('aria-live', priority)
+      region.setAttribute('aria-atomic', 'true')
+      region.style.position = 'absolute'
+      region.style.left = '-10000px'
+      region.style.width = '1px'
+      region.style.height = '1px'
+      region.style.overflow = 'hidden'
+      document.body.appendChild(region)
+      announcementRef.current = region
+      console.debug('Created ARIA live region', { priority })
     }
 
     const timeoutId = setTimeout(() => {
       if (announcementRef.current) {
         // Clear previous content first to ensure screen readers pick up the new content
-        announcementRef.current.textContent = '';
-        
+        announcementRef.current.textContent = ''
+
         // Use a small delay to ensure the clear is processed
         setTimeout(() => {
           if (announcementRef.current) {
-            announcementRef.current.textContent = message;
-            setIsAnnouncing(true);
-            
-            // Reset announcing state after a reasonable time
-            setTimeout(() => setIsAnnouncing(false), 1000);
-            logger.debug('Screen reader announcement', { message, priority });
-          }
-        }, 100);
-      }
-    }, delay);
+            announcementRef.current.textContent = message
+            setIsAnnouncing(true)
 
-    return () => clearTimeout(timeoutId);
-  }, [message, priority, delay]);
+            // Reset announcing state after a reasonable time
+            setTimeout(() => setIsAnnouncing(false), 1000)
+            console.debug('Screen reader announcement', { message, priority })
+          }
+        }, 100)
+      }
+    }, delay)
+
+    return () => clearTimeout(timeoutId)
+  }, [message, priority, delay])
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (announcementRef.current) {
-        document.body.removeChild(announcementRef.current);
-        announcementRef.current = null;
-        logger.debug('Removed ARIA live region');
+        document.body.removeChild(announcementRef.current)
+        announcementRef.current = null
+        console.debug('Removed ARIA live region')
       }
-    };
-  }, []);
+    }
+  }, [])
 
   return {
     isAnnouncing,
     clearAnnouncement: () => {
       if (announcementRef.current) {
-        announcementRef.current.textContent = '';
-        setIsAnnouncing(false);
+        announcementRef.current.textContent = ''
+        setIsAnnouncing(false)
       }
-    }
-  };
+    },
+  }
 }
 
 // ============================================================================
@@ -281,43 +305,47 @@ export function useScreenReaderAnnounce(
  * Supports Windows high contrast mode and CSS forced-colors
  */
 export function useHighContrastMode(): boolean {
-  const [isHighContrast, setIsHighContrast] = useState(false);
+  const [isHighContrast, setIsHighContrast] = useState(false)
 
   useEffect(() => {
     const checkHighContrast = () => {
       // Check for Windows high contrast mode
-      const isWindowsHighContrast = window.matchMedia('(-ms-high-contrast: active)').matches;
-      
-      // Check for forced colors (CSS media query)
-      const isForcedColors = window.matchMedia('(forced-colors: active)').matches;
-      
-      const highContrast = isWindowsHighContrast || isForcedColors;
-      setIsHighContrast(highContrast);
-      
-      if (highContrast) {
-        logger.debug('High contrast mode detected', {
-          windowsHighContrast: isWindowsHighContrast,
-          forcedColors: isForcedColors
-        });
-      }
-    };
+      const isWindowsHighContrast = window.matchMedia(
+        '(-ms-high-contrast: active)'
+      ).matches
 
-    checkHighContrast();
+      // Check for forced colors (CSS media query)
+      const isForcedColors = window.matchMedia(
+        '(forced-colors: active)'
+      ).matches
+
+      const highContrast = isWindowsHighContrast || isForcedColors
+      setIsHighContrast(highContrast)
+
+      if (highContrast) {
+        console.debug('High contrast mode detected', {
+          windowsHighContrast: isWindowsHighContrast,
+          forcedColors: isForcedColors,
+        })
+      }
+    }
+
+    checkHighContrast()
 
     // Listen for changes
-    const mediaQuery1 = window.matchMedia('(-ms-high-contrast: active)');
-    const mediaQuery2 = window.matchMedia('(forced-colors: active)');
+    const mediaQuery1 = window.matchMedia('(-ms-high-contrast: active)')
+    const mediaQuery2 = window.matchMedia('(forced-colors: active)')
 
-    mediaQuery1.addEventListener('change', checkHighContrast);
-    mediaQuery2.addEventListener('change', checkHighContrast);
+    mediaQuery1.addEventListener('change', checkHighContrast)
+    mediaQuery2.addEventListener('change', checkHighContrast)
 
     return () => {
-      mediaQuery1.removeEventListener('change', checkHighContrast);
-      mediaQuery2.removeEventListener('change', checkHighContrast);
-    };
-  }, []);
+      mediaQuery1.removeEventListener('change', checkHighContrast)
+      mediaQuery2.removeEventListener('change', checkHighContrast)
+    }
+  }, [])
 
-  return isHighContrast;
+  return isHighContrast
 }
 
 // ============================================================================
@@ -328,22 +356,24 @@ export function useHighContrastMode(): boolean {
  * Detects user preference for reduced motion
  */
 export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQuery.matches)
 
     const handleChange = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches);
-      logger.debug('Reduced motion preference changed', { prefersReducedMotion: event.matches });
-    };
+      setPrefersReducedMotion(event.matches)
+      console.debug('Reduced motion preference changed', {
+        prefersReducedMotion: event.matches,
+      })
+    }
 
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
 
-  return prefersReducedMotion;
+  return prefersReducedMotion
 }
 
 // ============================================================================
@@ -351,11 +381,11 @@ export function useReducedMotion(): boolean {
 // ============================================================================
 
 export interface ColorContrastResult {
-  ratio: number;
-  aa: boolean;
-  aaa: boolean;
-  largeAA: boolean;
-  largeAAA: boolean;
+  ratio: number
+  aa: boolean
+  aaa: boolean
+  largeAA: boolean
+  largeAAA: boolean
 }
 
 /**
@@ -371,37 +401,37 @@ export function useColorContrast(
     aa: false,
     aaa: false,
     largeAA: false,
-    largeAAA: false
-  });
+    largeAAA: false,
+  })
 
   useEffect(() => {
     try {
-      const ratio = calculateContrastRatio(foregroundColor, backgroundColor);
+      const ratio = calculateContrastRatio(foregroundColor, backgroundColor)
       const result = {
         ratio,
         aa: ratio >= 4.5,
         aaa: ratio >= 7,
         largeAA: ratio >= 3,
-        largeAAA: ratio >= 4.5
-      };
-      setContrast(result);
-      
-      logger.debug('Color contrast calculated', {
+        largeAAA: ratio >= 4.5,
+      }
+      setContrast(result)
+
+      console.debug('Color contrast calculated', {
         foreground: foregroundColor,
         background: backgroundColor,
         ratio,
-        wcag: result
-      });
+        wcag: result,
+      })
     } catch (error) {
-      logger.logger.error('Color contrast calculation failed', {
+      console.error('Color contrast calculation failed', {
         foreground: foregroundColor,
         background: backgroundColor,
-        error: error instanceof Error ? error.message : String(error)
-      });
+        error: error instanceof Error ? error.message : String(error),
+      })
     }
-  }, [foregroundColor, backgroundColor]);
+  }, [foregroundColor, backgroundColor])
 
-  return contrast;
+  return contrast
 }
 
 /**
@@ -409,22 +439,22 @@ export function useColorContrast(
  */
 function calculateContrastRatio(color1: string, color2: string): number {
   // Convert colors to RGB
-  const rgb1 = hexToRgb(color1);
-  const rgb2 = hexToRgb(color2);
+  const rgb1 = hexToRgb(color1)
+  const rgb2 = hexToRgb(color2)
 
   if (!rgb1 || !rgb2) {
-    throw new Error('Invalid color format');
+    throw new Error('Invalid color format')
   }
 
   // Calculate relative luminance
-  const l1 = getRelativeLuminance(rgb1);
-  const l2 = getRelativeLuminance(rgb2);
+  const l1 = getRelativeLuminance(rgb1)
+  const l2 = getRelativeLuminance(rgb2)
 
   // Calculate contrast ratio
-  const lighter = Math.max(l1, l2);
-  const darker = Math.min(l1, l2);
+  const lighter = Math.max(l1, l2)
+  const darker = Math.min(l1, l2)
 
-  return (lighter + 0.05) / (darker + 0.05);
+  return (lighter + 0.05) / (darker + 0.05)
 }
 
 /**
@@ -432,32 +462,36 @@ function calculateContrastRatio(color1: string, color2: string): number {
  */
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   // Handle both #ffffff and ffffff formats
-  const cleanHex = hex.replace('#', '');
-  if (cleanHex.length !== 6) return null;
-  
-  const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex);
+  const cleanHex = hex.replace('#', '')
+  if (cleanHex.length !== 6) return null
+
+  const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex)
   return result
     ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
+        r: parseInt(result[1]!, 16),
+        g: parseInt(result[2]!, 16),
+        b: parseInt(result[3]!, 16),
       }
-    : null;
+    : null
 }
 
 /**
  * Calculate relative luminance from RGB
  */
-function getRelativeLuminance(rgb: { r: number; g: number; b: number }): number {
-  const { r, g, b } = rgb;
-  const sRGB = [r, g, b].map(value => {
-    value = value / 255;
+function getRelativeLuminance(rgb: {
+  r: number
+  g: number
+  b: number
+}): number {
+  const { r, g, b } = rgb
+  const sRGB = [r, g, b].map((value) => {
+    value = value / 255
     return value <= 0.03928
       ? value / 12.92
-      : Math.pow((value + 0.055) / 1.055, 2.4);
-  });
+      : Math.pow((value + 0.055) / 1.055, 2.4)
+  })
 
-  return 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
+  return 0.2126 * sRGB[0]! + 0.7152 * sRGB[1]! + 0.0722 * sRGB[2]!
 }
 
 // ============================================================================
@@ -465,24 +499,22 @@ function getRelativeLuminance(rgb: { r: number; g: number; b: number }): number 
 // ============================================================================
 
 export interface KeyboardNavigationOptions {
-  onEnter?: (event: KeyboardEvent) => void;
-  onEscape?: (event: KeyboardEvent) => void;
-  onArrowUp?: (event: KeyboardEvent) => void;
-  onArrowDown?: (event: KeyboardEvent) => void;
-  onArrowLeft?: (event: KeyboardEvent) => void;
-  onArrowRight?: (event: KeyboardEvent) => void;
-  onTab?: (event: KeyboardEvent) => void;
-  preventDefault?: boolean;
+  onEnter?: (event: KeyboardEvent) => void
+  onEscape?: (event: KeyboardEvent) => void
+  onArrowUp?: (event: KeyboardEvent) => void
+  onArrowDown?: (event: KeyboardEvent) => void
+  onArrowLeft?: (event: KeyboardEvent) => void
+  onArrowRight?: (event: KeyboardEvent) => void
+  onTab?: (event: KeyboardEvent) => void
+  preventDefault?: boolean
 }
 
 /**
  * Enhanced keyboard navigation hook
  * Provides keyboard event handling with WCAG compliance
  */
-export function useKeyboardNavigation(
-  options: KeyboardNavigationOptions = {}
-) {
-  const { preventDefault = false } = options;
+export function useKeyboardNavigation(options: KeyboardNavigationOptions = {}) {
+  const { preventDefault = false } = options
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -493,23 +525,23 @@ export function useKeyboardNavigation(
         ArrowDown: options.onArrowDown,
         ArrowLeft: options.onArrowLeft,
         ArrowRight: options.onArrowRight,
-        Tab: options.onTab
-      };
+        Tab: options.onTab,
+      }
 
-      const handler = keyMap[event.key as keyof typeof keyMap];
-      
+      const handler = keyMap[event.key as keyof typeof keyMap]
+
       if (handler) {
         if (preventDefault) {
-          event.preventDefault();
+          event.preventDefault()
         }
-        handler(event);
-        logger.debug('Keyboard navigation event handled', { key: event.key });
+        handler(event)
+        console.debug('Keyboard navigation event handled', { key: event.key })
       }
-    };
+    }
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [options, preventDefault]);
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [options, preventDefault])
 }
 
 // ============================================================================
@@ -519,41 +551,41 @@ export function useKeyboardNavigation(
 /**
  * Hook to manage focus when errors occur
  * Returns focus to the previously focused element on recovery
- * 
+ *
  * @deprecated Use useFocusManagement instead for better WCAG compliance
  */
 export function useFocusManagementLegacy() {
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const errorContainerRef = useRef<HTMLDivElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+  const errorContainerRef = useRef<HTMLDivElement | null>(null)
 
   /**
    * Capture current focus before error
    */
   const captureFocus = useCallback(() => {
-    previousFocusRef.current = document.activeElement as HTMLElement;
-    logger.debug('Focus captured for error handling');
-  }, []);
+    previousFocusRef.current = document.activeElement as HTMLElement
+    console.debug('Focus captured for error handling')
+  }, [])
 
   /**
    * Move focus to error container
    */
   const focusError = useCallback(() => {
     if (errorContainerRef.current) {
-      errorContainerRef.current.focus({ preventScroll: false });
-      logger.debug('Focus moved to error container');
+      errorContainerRef.current.focus({ preventScroll: false })
+      console.debug('Focus moved to error container')
     }
-  }, []);
+  }, [])
 
   /**
    * Restore focus to previously focused element
    */
   const restoreFocus = useCallback(() => {
     if (previousFocusRef.current && previousFocusRef.current.focus) {
-      previousFocusRef.current.focus({ preventScroll: true });
-      previousFocusRef.current = null;
-      logger.debug('Focus restored to previous element');
+      previousFocusRef.current.focus({ preventScroll: true })
+      previousFocusRef.current = null
+      console.debug('Focus restored to previous element')
     }
-  }, []);
+  }, [])
 
   return {
     previousFocusRef,
@@ -561,106 +593,109 @@ export function useFocusManagementLegacy() {
     captureFocus,
     focusError,
     restoreFocus,
-  };
+  }
 }
 
 /**
  * Hook to trap focus within a container (for modal-like error displays)
- * 
+ *
  * @deprecated Use useFocusManagement with trapFocus option instead
  */
 export function useFocusTrap(
   containerRef: React.RefObject<HTMLElement | null>
 ) {
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const container = containerRef.current
+    if (!container) return
 
     const focusableElements = container.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0] as HTMLElement;
+    )
+    const firstElement = focusableElements[0] as HTMLElement
     const lastElement = focusableElements[
       focusableElements.length - 1
-    ] as HTMLElement;
+    ] as HTMLElement
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== 'Tab') return
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement?.focus();
+          e.preventDefault()
+          lastElement?.focus()
         }
       } else {
         if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement?.focus();
+          e.preventDefault()
+          firstElement?.focus()
         }
       }
-    };
+    }
 
-    container.addEventListener('keydown', handleKeyDown);
-    return () => container.removeEventListener('keydown', handleKeyDown);
-  }, [containerRef]);
+    container.addEventListener('keydown', handleKeyDown)
+    return () => container.removeEventListener('keydown', handleKeyDown)
+  }, [containerRef])
 }
 
 /**
  * Hook to announce messages to screen readers (legacy version)
- * 
+ *
  * @deprecated Use useScreenReaderAnnounce instead
  */
 export function useAnnounce() {
-  const announceRef = useRef<HTMLDivElement | null>(null);
+  const announceRef = useRef<HTMLDivElement | null>(null)
 
   const announce = useCallback(
     (message: string, priority: 'polite' | 'assertive' = 'polite') => {
-      if (!announceRef.current) return;
+      if (!announceRef.current) return
 
       // Clear previous announcement
-      announceRef.current.textContent = '';
+      announceRef.current.textContent = ''
 
       // Set aria-live attribute
-      announceRef.current.setAttribute('aria-live', priority);
+      announceRef.current.setAttribute('aria-live', priority)
 
       // Use setTimeout to ensure screen readers pick up the change
       setTimeout(() => {
         if (announceRef.current) {
-          announceRef.current.textContent = message;
+          announceRef.current.textContent = message
         }
-      }, 100);
-      
-      logger.debug('Screen reader announcement (legacy)', { message, priority });
+      }, 100)
+
+      console.debug('Screen reader announcement (legacy)', {
+        message,
+        priority,
+      })
     },
     []
-  );
+  )
 
-  return { announceRef, announce };
+  return { announceRef, announce }
 }
 
 /**
  * Check if user prefers reduced motion (legacy version)
- * 
+ *
  * @deprecated Use useReducedMotion instead
  */
 export function usePrefersReducedMotionLegacy(): boolean {
   const mediaQuery =
     typeof window !== 'undefined'
       ? window.matchMedia('(prefers-reduced-motion: reduce)')
-      : null;
+      : null
 
-  return mediaQuery?.matches ?? false;
+  return mediaQuery?.matches ?? false
 }
 
 /**
  * Generate unique IDs for ARIA relationships
- * 
+ *
  * @deprecated Use React's built-in useId hook instead
  */
 export function useIdLegacy(prefix: string): string {
-  const idRef = useRef<string | undefined>(undefined);
+  const idRef = useRef<string | undefined>(undefined)
   if (!idRef.current) {
-    idRef.current = `${prefix}-${Math.random().toString(36).substring(2, 9)}`;
+    idRef.current = `${prefix}-${Math.random().toString(36).substring(2, 9)}`
   }
-  return idRef.current;
+  return idRef.current
 }
