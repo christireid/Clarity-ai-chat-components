@@ -15,7 +15,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * @module utils/streaming-optimizer
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 /**
  * Streaming optimization configuration

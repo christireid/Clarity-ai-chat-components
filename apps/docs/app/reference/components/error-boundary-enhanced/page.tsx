@@ -37,7 +37,7 @@ export default function ErrorBoundaryEnhancedPage() {
   severity="error"
   errorContext={{ userId: '123', page: 'chat' }}
   onError={(error, errorInfo) => {
-    logger.logger.error('Error caught:', error)
+    logger.error('Error caught:', error)
   }}
 >
   <YourApp />

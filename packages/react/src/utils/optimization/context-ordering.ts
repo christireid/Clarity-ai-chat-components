@@ -16,7 +16,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * @module utils/context-ordering
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface ContextMessage {
   /** Message role */
@@ -87,7 +87,12 @@ export function calculateMessageImportance(
     recencyWeight?: number
   }
 ): number {
-  const { totalMessages, messageIndex, currentTimestamp = Date.now(), recencyWeight = 0.3 } = options
+  const {
+    totalMessages,
+    messageIndex,
+    currentTimestamp = Date.now(),
+    recencyWeight = 0.3,
+  } = options
   let score = 0.5 // Base score
 
   // Recency scoring (exponential decay)
@@ -105,13 +110,15 @@ export function calculateMessageImportance(
     /\?/,
     /^(what|who|where|when|why|how|which|can you|could you|would you|please)/im,
   ]
-  const hasQuestion = questionPatterns.some(p => p.test(message.content))
+  const hasQuestion = questionPatterns.some((p) => p.test(message.content))
   if (hasQuestion) {
     score += 0.3
   }
 
   // Code presence scoring
-  const hasCode = /```|`[^`]+`|\bfunction\b|\bclass\b|\bconst\b|\blet\b/.test(message.content)
+  const hasCode = /```|`[^`]+`|\bfunction\b|\bclass\b|\bconst\b|\blet\b/.test(
+    message.content
+  )
   if (hasCode) {
     score += 0.2
   }
@@ -131,7 +138,7 @@ export function calculateMessageImportance(
 
   // Entity density (rough heuristic: capitalized words)
   const words = message.content.split(/\s+/)
-  const capitalizedWords = words.filter(w => /^[A-Z][a-z]/.test(w))
+  const capitalizedWords = words.filter((w) => /^[A-Z][a-z]/.test(w))
   const entityDensity = capitalizedWords.length / words.length
   score += entityDensity * 0.15
 
@@ -171,8 +178,8 @@ export function reorderForAttention(
   const { strategy, customImportance, recencyWeight = 0.3, maxTokens } = options
 
   // Separate system messages (always first)
-  const systemMessages = messages.filter(m => m.role === 'system')
-  const nonSystemMessages = messages.filter(m => m.role !== 'system')
+  const systemMessages = messages.filter((m) => m.role === 'system')
+  const nonSystemMessages = messages.filter((m) => m.role !== 'system')
 
   // Calculate importance scores
   const importanceScores: number[] = []
@@ -197,11 +204,15 @@ export function reorderForAttention(
   }))
 
   // Sort by importance (descending)
-  const sorted = [...indexedMessages].sort((a, b) => b.importance - a.importance)
+  const sorted = [...indexedMessages].sort(
+    (a, b) => b.importance - a.importance
+  )
 
   // Apply ordering strategy
   let orderedNonSystem: typeof indexedMessages = []
-  const positions: Array<'beginning' | 'middle' | 'end'> = new Array(messages.length).fill('middle')
+  const positions: Array<'beginning' | 'middle' | 'end'> = new Array(
+    messages.length
+  ).fill('middle')
 
   // Mark system messages as 'beginning'
   for (const sysMsg of systemMessages) {
@@ -272,7 +283,7 @@ export function reorderForAttention(
   // Build final message array
   let finalMessages: ContextMessage[] = [
     ...systemMessages,
-    ...orderedNonSystem.map(m => m.message),
+    ...orderedNonSystem.map((m) => m.message),
   ]
 
   // Apply max tokens limit if specified
@@ -294,9 +305,11 @@ export function reorderForAttention(
   return {
     messages: finalMessages,
     metadata: {
-      originalIndices: finalMessages.map(m => messages.indexOf(m)),
-      importanceScores: finalMessages.map(m => importanceScores[messages.indexOf(m)]!),
-      positions: finalMessages.map(m => positions[messages.indexOf(m)]!),
+      originalIndices: finalMessages.map((m) => messages.indexOf(m)),
+      importanceScores: finalMessages.map(
+        (m) => importanceScores[messages.indexOf(m)]!
+      ),
+      positions: finalMessages.map((m) => positions[messages.indexOf(m)]!),
     },
   }
 }
@@ -325,11 +338,14 @@ export function addStructuralMarkers(
   const { sectionNames = [], addNumberedRefs = false } = options
 
   // Determine sections
-  const sections: Array<{ name: string; type: 'context' | 'history' | 'reference' | 'question' }> = []
+  const sections: Array<{
+    name: string
+    type: 'context' | 'history' | 'reference' | 'question'
+  }> = []
 
   if (sectionNames.length === 0) {
     // Auto-detect sections
-    const systemCount = messages.filter(m => m.role === 'system').length
+    const systemCount = messages.filter((m) => m.role === 'system').length
     const conversationCount = messages.length - systemCount
 
     if (systemCount > 0) {
@@ -352,8 +368,8 @@ export function addStructuralMarkers(
 
   // Assign messages to sections
   let sectionIndex = 0
-  const systemMessages = messages.filter(m => m.role === 'system')
-  const nonSystemMessages = messages.filter(m => m.role !== 'system')
+  const systemMessages = messages.filter((m) => m.role === 'system')
+  const nonSystemMessages = messages.filter((m) => m.role !== 'system')
 
   // Add system messages with markers
   for (const msg of systemMessages) {
@@ -372,12 +388,20 @@ export function addStructuralMarkers(
 
   // Add non-system messages
   const nonSystemSections = sections.slice(1)
-  const messagesPerSection = Math.ceil(nonSystemMessages.length / Math.max(nonSystemSections.length, 1))
+  const messagesPerSection = Math.ceil(
+    nonSystemMessages.length / Math.max(nonSystemSections.length, 1)
+  )
 
   for (let i = 0; i < nonSystemMessages.length; i++) {
     const msg = nonSystemMessages[i]!
-    const sectionIdx = Math.min(Math.floor(i / messagesPerSection), nonSystemSections.length - 1)
-    const section = nonSystemSections[sectionIdx] || { name: 'conversation', type: 'history' as const }
+    const sectionIdx = Math.min(
+      Math.floor(i / messagesPerSection),
+      nonSystemSections.length - 1
+    )
+    const section = nonSystemSections[sectionIdx] || {
+      name: 'conversation',
+      type: 'history' as const,
+    }
 
     let content = msg.content
 
@@ -385,7 +409,7 @@ export function addStructuralMarkers(
     if (addNumberedRefs) {
       // Find key facts (sentences with numbers, names, or technical terms)
       const sentences = content.match(/[^.!?]+[.!?]+/g) || []
-      const markedSentences = sentences.map(sentence => {
+      const markedSentences = sentences.map((sentence) => {
         const isKeyFact =
           /\d/.test(sentence) || // Contains numbers
           /[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/.test(sentence) || // Contains proper nouns
@@ -403,10 +427,21 @@ export function addStructuralMarkers(
     const isFirstInSection = i % messagesPerSection === 0
     if (isFirstInSection && nonSystemSections.length > 0) {
       // Find end of section
-      const sectionEnd = Math.min((sectionIdx + 1) * messagesPerSection - 1, nonSystemMessages.length - 1)
+      const sectionEnd = Math.min(
+        (sectionIdx + 1) * messagesPerSection - 1,
+        nonSystemMessages.length - 1
+      )
       const isLastInSection = i === sectionEnd
-      content = isLastInSection ? wrapInSection(content, section.name) : `<${section.name}>\n${content}`
-    } else if (i === Math.min((sectionIdx + 1) * messagesPerSection - 1, nonSystemMessages.length - 1)) {
+      content = isLastInSection
+        ? wrapInSection(content, section.name)
+        : `<${section.name}>\n${content}`
+    } else if (
+      i ===
+      Math.min(
+        (sectionIdx + 1) * messagesPerSection - 1,
+        nonSystemMessages.length - 1
+      )
+    ) {
       content = `${content}\n</${section?.name || 'section'}>`
     }
 
@@ -481,7 +516,9 @@ export function optimizeContextLayout(
   }
 
   // Calculate deprioritized messages
-  const deprioritizedMessages = messages.filter(m => !ordered.messages.includes(m))
+  const deprioritizedMessages = messages.filter(
+    (m) => !ordered.messages.includes(m)
+  )
 
   // Calculate total tokens
   const totalTokens = finalMessages.reduce(
@@ -522,12 +559,18 @@ export function estimateAttentionLoss(messages: ContextMessage[]): {
   attentionLossPercent: number
   recommendation: string
 } {
-  const totalTokens = messages.reduce((sum, m) => sum + estimateTokens(m.content), 0)
+  const totalTokens = messages.reduce(
+    (sum, m) => sum + estimateTokens(m.content),
+    0
+  )
 
   // Calculate middle section (roughly middle third)
   const third = messages.length / 3
   const middleMessages = messages.slice(Math.floor(third), Math.ceil(2 * third))
-  const middleTokens = middleMessages.reduce((sum, m) => sum + estimateTokens(m.content), 0)
+  const middleTokens = middleMessages.reduce(
+    (sum, m) => sum + estimateTokens(m.content),
+    0
+  )
 
   // Middle gets 20% attention vs 40% for beginning/end
   // Effective attention loss = (40% - 20%) / 40% = 50% for middle content
@@ -536,9 +579,11 @@ export function estimateAttentionLoss(messages: ContextMessage[]): {
 
   let recommendation = ''
   if (attentionLossPercent > 20) {
-    recommendation = 'Consider reordering context to move important information out of the middle'
+    recommendation =
+      'Consider reordering context to move important information out of the middle'
   } else if (attentionLossPercent > 10) {
-    recommendation = 'Moderate attention loss - consider adding structural markers'
+    recommendation =
+      'Moderate attention loss - consider adding structural markers'
   } else {
     recommendation = 'Context structure is acceptable'
   }

@@ -86,7 +86,7 @@ export default function UseCircuitBreakerPage() {
         code={`const { execute, state } = useCircuitBreaker({
   failureThreshold: 3,
   resetTimeout: 10000, // 10 seconds
-  onOpen: () => toast.logger.error('Service unavailable, trying alternatives...'),
+  onOpen: () => toast.error('Service unavailable, trying alternatives...'),
 })
 
 const handleFetch = async () => {
@@ -100,7 +100,7 @@ const handleFetch = async () => {
       return getCachedData()
     }
     // Handle standard error
-    logger.logger.error(error)
+    logger.error(error)
   }
 }`}
         language="tsx"

@@ -66,7 +66,7 @@ function loadQueueFromStorage(): QueuedMessage[] {
       }
     }
   } catch (e) {
-    logger.logger.error('Failed to load message queue:', e)
+    logger.error('Failed to load message queue:', e)
   }
   return []
 }
@@ -125,7 +125,7 @@ export function useOfflineQueue(
         localStorage.removeItem(MESSAGE_QUEUE_KEY)
       }
     } catch (e) {
-      logger.logger.error('Failed to save message queue:', e)
+      logger.error('Failed to save message queue:', e)
     }
   }, [messageQueue, isHydrated])
 

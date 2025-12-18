@@ -44,7 +44,7 @@ function notifyListeners(): void {
     } catch (error) {
       // Log errors in development mode to help debugging
       if (isDevelopment()) {
-        logger.logger.error(
+        logger.error(
           '[Clarity Chat License] Error in subscription callback:',
           error
         )

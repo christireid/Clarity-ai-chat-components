@@ -32,7 +32,7 @@ function BasicWebSocketDemo() {
       logger.debug('Received:', msg.data)
     },
     onError: (err) => {
-      logger.logger.error('WebSocket Error:', err)
+      logger.error('WebSocket Error:', err)
     },
   })
 
@@ -544,7 +544,7 @@ function WebSocketWithReconnect() {
       logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
-      logger.logger.error('Max reconnection attempts reached')
+      logger.error('Max reconnection attempts reached')
     },
   })
 
@@ -579,7 +579,7 @@ function WebSocketWithHeartbeat() {
     heartbeatTimeout: 5000, // Timeout after 5 seconds
     heartbeatMessage: 'ping',
     onHeartbeatFailed: () => {
-      logger.logger.error('Heartbeat failed - connection may be dead')
+      logger.error('Heartbeat failed - connection may be dead')
       // Hook will automatically attempt reconnection
     },
   })
@@ -732,7 +732,7 @@ function CompleteWebSocketExample() {
       logger.debug('Received:', msg.data)
     },
     onError: (err) => {
-      logger.logger.error('WebSocket Error:', err)
+      logger.error('WebSocket Error:', err)
     },
     onReconnecting: (attempt, delay) => {
       logger.debug(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)

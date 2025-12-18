@@ -308,7 +308,7 @@ async function indexDocumentation() {
 
       logger.debug(`✅ ${meta.title} → ${chunks.length} chunks`)
     } catch (error) {
-      logger.logger.error(`❌ Error processing ${filePath}:`, error)
+      logger.error(`❌ Error processing ${filePath}:`, error)
     }
   }
 

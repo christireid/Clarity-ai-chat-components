@@ -28,12 +28,12 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
 import type { Message } from '@clarity-chat/types'
 import {
   validateApiEndpoint,
   validateStorageKey,
-} from '../utils/runtime-validation'
+} from '../../utils/config/runtime-validation'
 
 export interface UseChatOptions extends UseClarityChatOptions {
   /** Enable automatic message persistence to localStorage (default: false) */

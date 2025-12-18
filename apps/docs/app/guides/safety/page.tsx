@@ -24,7 +24,7 @@ export default async function SafetyGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read safety guide', error)
+    logger.error('Failed to read safety guide', error)
     content = '# Safety\n\nContent not available.'
   }
 

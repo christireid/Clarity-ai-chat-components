@@ -26,7 +26,7 @@ export default async function ModelAdaptersGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read model-adapters guide', error)
+    logger.error('Failed to read model-adapters guide', error)
     content = '# Model-adapters\n\nContent not available.'
   }
 

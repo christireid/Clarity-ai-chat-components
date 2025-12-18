@@ -96,7 +96,7 @@ function App() {
         timestamp: Date.now(),
       }])
     } catch (error) {
-      logger.logger.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setIsLoading(false)
     }

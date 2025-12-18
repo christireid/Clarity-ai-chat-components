@@ -94,7 +94,7 @@ async function main() {
   if (command === 'generate') {
     const secret = process.env.CLARITY_LICENSE_SECRET
     if (!secret) {
-      logger.logger.error(
+      logger.error(
         'Error: CLARITY_LICENSE_SECRET environment variable is required'
       )
       process.exit(1)
@@ -103,7 +103,7 @@ async function main() {
     const options = parseArgs(args.slice(1))
 
     if (!options.licensee || !options.email || !options.plan) {
-      logger.logger.error('Error: --licensee, --email, and --plan are required')
+      logger.error('Error: --licensee, --email, and --plan are required')
       printUsage()
       process.exit(1)
     }
@@ -112,7 +112,7 @@ async function main() {
     const validScopes: LicenseScope[] = ['individual', 'team', 'organization']
 
     if (!validPlans.includes(options.plan as LicensePlan)) {
-      logger.logger.error(
+      logger.error(
         `Error: Invalid plan. Must be one of: ${validPlans.join(', ')}`
       )
       process.exit(1)
@@ -120,7 +120,7 @@ async function main() {
 
     const scope = (options.scope as LicenseScope) || 'individual'
     if (!validScopes.includes(scope)) {
-      logger.logger.error(
+      logger.error(
         `Error: Invalid scope. Must be one of: ${validScopes.join(', ')}`
       )
       process.exit(1)
@@ -156,13 +156,13 @@ async function main() {
       if (options.domains) logger.debug(`  Domains: ${options.domains}`)
       logger.debug()
     } catch (error) {
-      logger.logger.error('Error generating license:', error)
+      logger.error('Error generating license:', error)
       process.exit(1)
     }
   } else if (command === 'verify') {
     const key = args[1]
     if (!key) {
-      logger.logger.error('Error: License key is required')
+      logger.error('Error: License key is required')
       process.exit(1)
     }
 
@@ -187,13 +187,13 @@ async function main() {
   } else if (command === 'decode') {
     const key = args[1]
     if (!key) {
-      logger.logger.error('Error: License key is required')
+      logger.error('Error: License key is required')
       process.exit(1)
     }
 
     const parsed = parseLicenseKey(key)
     if (!parsed) {
-      logger.logger.error('Error: Invalid license key format')
+      logger.error('Error: Invalid license key format')
       process.exit(1)
     }
 
@@ -204,11 +204,11 @@ async function main() {
       logger.debug(JSON.stringify(payload, null, 2))
       logger.debug()
     } catch (error) {
-      logger.logger.error('Error decoding license payload:', error)
+      logger.error('Error decoding license payload:', error)
       process.exit(1)
     }
   } else {
-    logger.logger.error(`Unknown command: ${command}`)
+    logger.error(`Unknown command: ${command}`)
     printUsage()
     process.exit(1)
   }

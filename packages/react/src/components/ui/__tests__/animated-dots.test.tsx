@@ -1,0 +1,198 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import {
+  AnimatedDots,
+  BouncingDots,
+  PulsingDots,
+  WaveDots,
+  FadingDots,
+} from '../animated-dots'
+
+// Mock framer-motion to avoid animation complexity in tests
+vi.mock('framer-motion', () => ({
+  motion: {
+    span: ({ children, className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
+      <span className={className} {...props}>
+        {children}
+      </span>
+    ),
+  },
+}))
+
+// Mock useReducedMotion hook
+vi.mock('@clarity-chat/primitives', async () => {
+  const actual = await vi.importActual('@clarity-chat/primitives')
+  return {
+    ...actual,
+    useReducedMotion: vi.fn(() => false),
+  }
+})
+
+describe('AnimatedDots', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  describe('rendering', () => {
+    it('renders with default props', () => {
+      render(<AnimatedDots />)
+      const container = screen.getByRole('status')
+      expect(container).toBeInTheDocument()
+      expect(container).toHaveAttribute('aria-label', 'Loading')
+    })
+
+    it('renders correct number of dots by default (3)', () => {
+      render(<AnimatedDots />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(3)
+    })
+
+    it('renders specified number of dots', () => {
+      render(<AnimatedDots count={5} />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(5)
+    })
+  })
+
+  describe('accessibility', () => {
+    it('has role="status" on container', () => {
+      render(<AnimatedDots />)
+      expect(screen.getByRole('status')).toBeInTheDocument()
+    })
+
+    it('has aria-busy="true" on container', () => {
+      render(<AnimatedDots />)
+      expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true')
+    })
+
+    it('uses default aria-label "Loading"', () => {
+      render(<AnimatedDots />)
+      expect(screen.getByRole('status')).toHaveAttribute('aria-label', 'Loading')
+    })
+
+    it('accepts custom aria-label', () => {
+      render(<AnimatedDots ariaLabel="AI is typing" />)
+      expect(screen.getByRole('status')).toHaveAttribute('aria-label', 'AI is typing')
+    })
+
+    it('marks individual dots as aria-hidden', () => {
+      render(<AnimatedDots count={3} />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(3)
+      dots.forEach((dot) => {
+        expect(dot).toHaveAttribute('aria-hidden', 'true')
+      })
+    })
+  })
+
+  describe('edge cases - count validation', () => {
+    it('handles count=0 by clamping to 1', () => {
+      render(<AnimatedDots count={0} />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(1)
+    })
+
+    it('handles negative count by clamping to 1', () => {
+      render(<AnimatedDots count={-5} />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(1)
+    })
+
+    it('handles NaN count by using default (3)', () => {
+      render(<AnimatedDots count={NaN} />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(3)
+    })
+
+    it('handles Infinity count by clamping to 10', () => {
+      render(<AnimatedDots count={Infinity} />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(10)
+    })
+
+    it('handles very large count by clamping to 10', () => {
+      render(<AnimatedDots count={100} />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(10)
+    })
+
+    it('handles floating point count by flooring', () => {
+      render(<AnimatedDots count={4.7} />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(4)
+    })
+  })
+
+  describe('size variants', () => {
+    it('applies small size classes', () => {
+      render(<AnimatedDots size="sm" />)
+      const container = screen.getByRole('status')
+      expect(container).toHaveClass('gap-1')
+    })
+
+    it('applies medium size classes (default)', () => {
+      render(<AnimatedDots size="md" />)
+      const container = screen.getByRole('status')
+      expect(container).toHaveClass('gap-1.5')
+    })
+
+    it('applies large size classes', () => {
+      render(<AnimatedDots size="lg" />)
+      const container = screen.getByRole('status')
+      expect(container).toHaveClass('gap-2')
+    })
+
+    it('falls back to default size for invalid size', () => {
+      // @ts-expect-error - testing runtime validation
+      render(<AnimatedDots size="invalid" />)
+      const container = screen.getByRole('status')
+      expect(container).toHaveClass('gap-1.5') // md default
+    })
+  })
+
+  describe('className customization', () => {
+    it('applies custom className to container', () => {
+      render(<AnimatedDots className="custom-class" />)
+      expect(screen.getByRole('status')).toHaveClass('custom-class')
+    })
+
+    it('applies custom dotClassName to dots', () => {
+      render(<AnimatedDots dotClassName="dot-custom" />)
+      const dots = screen.getAllByRole('status')[0].querySelectorAll('span[aria-hidden="true"]')
+      dots.forEach((dot) => {
+        expect(dot).toHaveClass('dot-custom')
+      })
+    })
+  })
+
+  describe('variant-specific exports', () => {
+    it('BouncingDots renders with bounce variant', () => {
+      render(<BouncingDots />)
+      expect(screen.getByRole('status')).toBeInTheDocument()
+    })
+
+    it('PulsingDots renders with pulse variant', () => {
+      render(<PulsingDots />)
+      expect(screen.getByRole('status')).toBeInTheDocument()
+    })
+
+    it('WaveDots renders with wave variant', () => {
+      render(<WaveDots />)
+      expect(screen.getByRole('status')).toBeInTheDocument()
+    })
+
+    it('FadingDots renders with fade variant', () => {
+      render(<FadingDots />)
+      expect(screen.getByRole('status')).toBeInTheDocument()
+    })
+
+    it('variant exports accept all AnimatedDotsProps except variant', () => {
+      render(<BouncingDots count={5} size="lg" ariaLabel="Custom label" />)
+      const container = screen.getByRole('status')
+      expect(container).toHaveAttribute('aria-label', 'Custom label')
+      expect(container).toHaveClass('gap-2')
+      const dots = container.querySelectorAll('span[aria-hidden="true"]')
+      expect(dots).toHaveLength(5)
+    })
+  })
+})

@@ -16,7 +16,7 @@ import { logger } from '@clarity-chat/utils/logger';
  * @module utils/kv-cache-prompt-builder
  */
 
-import { estimateTokens } from './tokenization/estimator'
+import { estimateTokens } from '../tokenization/estimator'
 import type { ModelName } from './tokenization/accurate-counter'
 
 /**
@@ -27,7 +27,12 @@ export type SegmentPriority = 'must-have' | 'high' | 'normal' | 'low'
 /**
  * Types of prompt segments
  */
-export type SegmentType = 'system' | 'static-context' | 'rag' | 'history' | 'user'
+export type SegmentType =
+  | 'system'
+  | 'static-context'
+  | 'rag'
+  | 'history'
+  | 'user'
 
 /**
  * A segment of the prompt with metadata
@@ -136,21 +141,21 @@ export class PromptBudgetExceededError extends Error {
  * Segment type ordering (lower = earlier in prompt)
  */
 const SEGMENT_ORDER: Record<SegmentType, number> = {
-  'system': 0,
+  system: 0,
   'static-context': 1,
-  'rag': 2,
-  'history': 3,
-  'user': 4,
+  rag: 2,
+  history: 3,
+  user: 4,
 }
 
 /**
  * Priority ordering for trimming (higher = trim first)
  */
 const PRIORITY_TRIM_ORDER: Record<SegmentPriority, number> = {
-  'must-have': 0,  // Never trim
-  'high': 1,
-  'normal': 2,
-  'low': 3,        // Trim first
+  'must-have': 0, // Never trim
+  high: 1,
+  normal: 2,
+  low: 3, // Trim first
 }
 
 /**
@@ -180,10 +185,11 @@ function sortSegmentsByOrder(segments: PromptSegment[]): PromptSegment[] {
  */
 function getTrimmableSegments(segments: PromptSegment[]): PromptSegment[] {
   return segments
-    .filter(s => s.priority !== 'must-have')
+    .filter((s) => s.priority !== 'must-have')
     .sort((a, b) => {
       // First by priority (low priority first for trimming)
-      const priorityDiff = PRIORITY_TRIM_ORDER[b.priority] - PRIORITY_TRIM_ORDER[a.priority]
+      const priorityDiff =
+        PRIORITY_TRIM_ORDER[b.priority] - PRIORITY_TRIM_ORDER[a.priority]
       if (priorityDiff !== 0) return priorityDiff
       // Then by type (history before RAG before static)
       return SEGMENT_ORDER[b.type] - SEGMENT_ORDER[a.type]
@@ -250,27 +256,34 @@ export function buildKVCacheOptimizedPrompt(
   const effectiveBudget = maxInputTokens - reservedForOutput
 
   // Calculate tokens for all segments
-  const segmentsWithTokens = segments.map(segment => ({
+  const segmentsWithTokens = segments.map((segment) => ({
     ...segment,
     tokenCount: getSegmentTokens(segment, model),
   }))
 
   // Separate must-have and optional segments
-  const mustHaveSegments = segmentsWithTokens.filter(s => s.priority === 'must-have')
-  const optionalSegments = segmentsWithTokens.filter(s => s.priority !== 'must-have')
+  const mustHaveSegments = segmentsWithTokens.filter(
+    (s) => s.priority === 'must-have'
+  )
+  const optionalSegments = segmentsWithTokens.filter(
+    (s) => s.priority !== 'must-have'
+  )
 
   // Calculate must-have token total
-  const mustHaveTokens = mustHaveSegments.reduce((sum, s) => sum + s.tokenCount!, 0)
+  const mustHaveTokens = mustHaveSegments.reduce(
+    (sum, s) => sum + s.tokenCount!,
+    0
+  )
   const TOKENS_PER_MESSAGE = 4 // Overhead per message
   const mustHaveOverhead = mustHaveSegments.length * TOKENS_PER_MESSAGE + 2 // +2 for priming
 
   // Validate must-have content fits
   if (mustHaveTokens + mustHaveOverhead > effectiveBudget) {
     const systemTokens = mustHaveSegments
-      .filter(s => s.type === 'system')
+      .filter((s) => s.type === 'system')
       .reduce((sum, s) => sum + s.tokenCount!, 0)
     const userTokens = mustHaveSegments
-      .filter(s => s.type === 'user')
+      .filter((s) => s.type === 'user')
       .reduce((sum, s) => sum + s.tokenCount!, 0)
 
     const breakdown: Record<string, number> = {}
@@ -280,8 +293,8 @@ export function buildKVCacheOptimizedPrompt(
 
     throw new PromptBudgetExceededError(
       `Must-have content (${mustHaveTokens + mustHaveOverhead} tokens) exceeds available budget (${effectiveBudget} tokens). ` +
-      `System: ${systemTokens}, User: ${userTokens}. ` +
-      `Consider reducing system prompt or splitting the request.`,
+        `System: ${systemTokens}, User: ${userTokens}. ` +
+        `Consider reducing system prompt or splitting the request.`,
       {
         mustHaveTokens: mustHaveTokens + mustHaveOverhead,
         availableBudget: effectiveBudget,
@@ -300,8 +313,8 @@ export function buildKVCacheOptimizedPrompt(
   const sortedOptional = getTrimmableSegments(optionalSegments)
 
   // Separate history segments to enforce minHistoryTokens
-  const historySegments = sortedOptional.filter(s => s.type === 'history')
-  const nonHistoryOptional = sortedOptional.filter(s => s.type !== 'history')
+  const historySegments = sortedOptional.filter((s) => s.type === 'history')
+  const nonHistoryOptional = sortedOptional.filter((s) => s.type !== 'history')
 
   // Greedily include optional segments that fit
   const includedOptional: PromptSegment[] = []
@@ -318,7 +331,9 @@ export function buildKVCacheOptimizedPrompt(
       trimmedSegments.push({
         id: segment.id,
         type: segment.type,
-        preview: segment.content.substring(0, 50) + (segment.content.length > 50 ? '...' : ''),
+        preview:
+          segment.content.substring(0, 50) +
+          (segment.content.length > 50 ? '...' : ''),
         tokensRemoved: segment.tokenCount!,
         reason: 'budget',
       })
@@ -340,7 +355,9 @@ export function buildKVCacheOptimizedPrompt(
       trimmedSegments.push({
         id: segment.id,
         type: segment.type,
-        preview: segment.content.substring(0, 50) + (segment.content.length > 50 ? '...' : ''),
+        preview:
+          segment.content.substring(0, 50) +
+          (segment.content.length > 50 ? '...' : ''),
         tokensRemoved: segment.tokenCount!,
         reason: 'budget',
       })
@@ -348,20 +365,23 @@ export function buildKVCacheOptimizedPrompt(
   }
 
   // Check if minHistoryTokens requirement was met
-  const minHistoryTokensMet = minHistoryTokens === 0 || includedHistoryTokens >= minHistoryTokens
+  const minHistoryTokensMet =
+    minHistoryTokens === 0 || includedHistoryTokens >= minHistoryTokens
 
   // Combine and sort all included segments
   const allIncluded = [...mustHaveSegments, ...includedOptional]
-  const orderedSegments = strictOrdering ? sortSegmentsByOrder(allIncluded) : allIncluded
+  const orderedSegments = strictOrdering
+    ? sortSegmentsByOrder(allIncluded)
+    : allIncluded
 
   // Build messages array
   const messages: FormattedMessage[] = []
   const tokenBreakdown: Record<SegmentType, number> = {
-    'system': 0,
+    system: 0,
     'static-context': 0,
-    'rag': 0,
-    'history': 0,
-    'user': 0,
+    rag: 0,
+    history: 0,
+    user: 0,
   }
 
   let kvCacheablePrefix = 0
@@ -422,14 +442,23 @@ export function createSegment(
 /**
  * Create common segment types with appropriate defaults
  */
-export const createSystemSegment = (id: string, content: string, priority: SegmentPriority = 'must-have') =>
-  createSegment(id, 'system', content, priority, { role: 'system' })
+export const createSystemSegment = (
+  id: string,
+  content: string,
+  priority: SegmentPriority = 'must-have'
+) => createSegment(id, 'system', content, priority, { role: 'system' })
 
-export const createContextSegment = (id: string, content: string, priority: SegmentPriority = 'high') =>
-  createSegment(id, 'static-context', content, priority)
+export const createContextSegment = (
+  id: string,
+  content: string,
+  priority: SegmentPriority = 'high'
+) => createSegment(id, 'static-context', content, priority)
 
-export const createRAGSegment = (id: string, content: string, priority: SegmentPriority = 'normal') =>
-  createSegment(id, 'rag', content, priority)
+export const createRAGSegment = (
+  id: string,
+  content: string,
+  priority: SegmentPriority = 'normal'
+) => createSegment(id, 'rag', content, priority)
 
 export const createHistorySegment = (
   id: string,
@@ -484,8 +513,8 @@ export function validateSegments(segments: PromptSegment[]): {
   const warnings: string[] = []
 
   // Check for required segments
-  const hasSystem = segments.some(s => s.type === 'system')
-  const hasUser = segments.some(s => s.type === 'user')
+  const hasSystem = segments.some((s) => s.type === 'system')
+  const hasUser = segments.some((s) => s.type === 'user')
 
   if (!hasUser) {
     errors.push('Missing user segment - at least one user message is required')
@@ -496,25 +525,31 @@ export function validateSegments(segments: PromptSegment[]): {
   }
 
   // Check for must-have user segment
-  const userSegments = segments.filter(s => s.type === 'user')
-  const hasMustHaveUser = userSegments.some(s => s.priority === 'must-have')
+  const userSegments = segments.filter((s) => s.type === 'user')
+  const hasMustHaveUser = userSegments.some((s) => s.priority === 'must-have')
 
   if (!hasMustHaveUser && userSegments.length > 0) {
     warnings.push('User segment is not marked as must-have - it may be trimmed')
   }
 
   // Check for duplicate IDs
-  const ids = segments.map(s => s.id)
+  const ids = segments.map((s) => s.id)
   const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index)
 
   if (duplicateIds.length > 0) {
-    errors.push(`Duplicate segment IDs: ${[...new Set(duplicateIds)].join(', ')}`)
+    errors.push(
+      `Duplicate segment IDs: ${[...new Set(duplicateIds)].join(', ')}`
+    )
   }
 
   // Check for empty content
-  const emptySegments = segments.filter(s => !s.content || s.content.trim() === '')
+  const emptySegments = segments.filter(
+    (s) => !s.content || s.content.trim() === ''
+  )
   if (emptySegments.length > 0) {
-    warnings.push(`Empty segments: ${emptySegments.map(s => s.id).join(', ')}`)
+    warnings.push(
+      `Empty segments: ${emptySegments.map((s) => s.id).join(', ')}`
+    )
   }
 
   return {
@@ -550,10 +585,12 @@ export function estimateKVCacheSavings(
 
   // With caching: first request full, subsequent only dynamic
   // (In practice, cache reads are billed at 10% for Anthropic, 50% for OpenAI)
-  const cachedTotal = builtPrompt.tokenCount + dynamicTokens * (requestCount - 1)
+  const cachedTotal =
+    builtPrompt.tokenCount + dynamicTokens * (requestCount - 1)
 
   const tokensSaved = uncachedTotal - cachedTotal
-  const savingsPercent = uncachedTotal > 0 ? (tokensSaved / uncachedTotal) * 100 : 0
+  const savingsPercent =
+    uncachedTotal > 0 ? (tokensSaved / uncachedTotal) * 100 : 0
 
   return {
     cacheableTokens,

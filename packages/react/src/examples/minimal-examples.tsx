@@ -1,6 +1,6 @@
 /**
  * Minimal Examples - Top-Level APIs
- * 
+ *
  * These examples demonstrate the simplest usage of each top-level API.
  * Each example is 10-20 lines of code and shows the "happy path".
  */
@@ -11,7 +11,7 @@ import { ClarityChat, ClarityChatPresets } from '../components/clarity-chat'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { useClarityObject } from '../hooks/use-clarity-object'
 import { useChatHandlers } from '../hooks/use-chat-handlers'
-import { ChatWindow } from '../components/chat-window'
+import { ChatWindow } from '../components/chat/chat-window'
 
 // ============================================================================
 // Example 1: ClarityChat Component (3 lines)
@@ -57,7 +57,7 @@ export function MinimalUseClarityChat() {
  */
 export function MinimalChatWithMemory() {
   return (
-    <ClarityChatPresets.WithMemory 
+    <ClarityChatPresets.WithMemory
       api="/api/chat"
       memoryStrategy="sliding-window"
     />

@@ -2,8 +2,8 @@ import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { estimateTokens } from '../utils/tokenization/estimator'
-import { MODEL_REGISTRY } from '../utils/tokenization/model-registry'
+import { estimateTokens } from '../../utils/tokenization/estimator'
+import { MODEL_REGISTRY } from '../../utils/tokenization/model-registry'
 
 // =============================================================================
 // Lazy-initialized pricing and limits for performance

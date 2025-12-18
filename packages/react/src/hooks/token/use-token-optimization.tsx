@@ -37,7 +37,7 @@ import type {
   ReferenceOptions,
   OutputLimitOptions,
   BatchingOptions,
-} from '../utils/token-optimization'
+} from '../../utils/optimization/token-optimization'
 import {
   shortenPrompt,
   calculateTokenSavings,
@@ -54,34 +54,34 @@ import {
   findSimilarCached,
   calculateSimilarity,
   estimateTokens,
-} from '../utils/token-optimization'
+} from '../../utils/optimization/token-optimization'
 import type { CoreMessage } from './use-chat-enhanced'
 
 export interface UseTokenOptimizationOptions extends TokenOptimizationConfig {
   // Prompt shortening
   promptShortening?: PromptShorteningOptions
-  
+
   // History limiting
   historyLimiting?: HistoryLimitingOptions
-  
+
   // Caching
   caching?: CacheOptions
-  
+
   // Similarity caching
   similarityCaching?: SimilarityCacheOptions
-  
+
   // Throttling
   throttling?: ThrottlingOptions
-  
+
   // Model routing
   modelRouting?: ModelRoutingOptions
-  
+
   // References
   references?: ReferenceOptions
-  
+
   // Output limits
   outputLimits?: OutputLimitOptions
-  
+
   // Batching
   batching?: BatchingOptions
 }
@@ -107,38 +107,45 @@ export interface TokenOptimizationStats {
 
 export interface UseTokenOptimizationReturn {
   /** Optimize a prompt (shorten if enabled) */
-  optimizePrompt: (prompt: string) => { optimized: string; savings: ReturnType<typeof calculateTokenSavings> }
-  
+  optimizePrompt: (prompt: string) => {
+    optimized: string
+    savings: ReturnType<typeof calculateTokenSavings>
+  }
+
   /** Limit conversation history */
   optimizeHistory: (messages: CoreMessage[]) => CoreMessage[]
-  
+
   /** Get cached response if available */
   getCachedResponse: (query: string) => any | null
-  
+
   /** Set cached response */
   setCachedResponse: (query: string, response: any, ttl?: number) => void
-  
+
   /** Check if request can be made (throttling) */
   canMakeRequest: () => boolean
-  
+
   /** Record a request (for throttling) */
   recordRequest: () => void
-  
+
   /** Route query to appropriate model */
   routeQuery: (query: string) => string
-  
+
   /** Create reference for large data */
-  createDataReference: (data: string | object) => { type: 'reference'; id: string; originalSize: number } | { type: 'data'; data: string | object }
-  
+  createDataReference: (
+    data: string | object
+  ) =>
+    | { type: 'reference'; id: string; originalSize: number }
+    | { type: 'data'; data: string | object }
+
   /** Enforce output limits */
   limitOutput: (output: string) => string
-  
+
   /** Add request to batch */
   batchRequest: <T>(request: () => Promise<T>) => Promise<T>
-  
+
   /** Statistics */
   stats: TokenOptimizationStats
-  
+
   /** Reset statistics */
   resetStats: () => void
 }
@@ -223,7 +230,10 @@ export function useTokenOptimization(
 
   const similarityCache = React.useMemo(() => {
     if (!enableSimilarityCaching) return null
-    return new Map<string, { query: string; response: any; timestamp: number }>()
+    return new Map<
+      string,
+      { query: string; response: any; timestamp: number }
+    >()
   }, [enableSimilarityCaching])
 
   // Initialize throttler
@@ -254,20 +264,37 @@ export function useTokenOptimization(
    * Optimize prompt
    */
   const optimizePrompt = React.useCallback(
-    (prompt: string): { optimized: string; savings: ReturnType<typeof calculateTokenSavings> } => {
+    (
+      prompt: string
+    ): {
+      optimized: string
+      savings: ReturnType<typeof calculateTokenSavings>
+    } => {
       if (!enablePromptShortening) {
-        return { optimized: prompt, savings: { tokensSaved: 0, percentage: 0, originalTokens: estimateTokens(prompt), shortenedTokens: estimateTokens(prompt) } }
+        return {
+          optimized: prompt,
+          savings: {
+            tokensSaved: 0,
+            percentage: 0,
+            originalTokens: estimateTokens(prompt),
+            shortenedTokens: estimateTokens(prompt),
+          },
+        }
       }
 
       const optimized = shortenPrompt(prompt, promptShortening)
       const savings = calculateTokenSavings(prompt, optimized)
 
-      setStats(prev => ({
+      setStats((prev) => ({
         ...prev,
         tokensSaved: prev.tokensSaved + savings.tokensSaved,
-        percentageSaved: prev.tokensSaved > 0 
-          ? ((prev.tokensSaved + savings.tokensSaved) / (prev.tokensSaved / (prev.percentageSaved / 100) + savings.originalTokens)) * 100
-          : savings.percentage,
+        percentageSaved:
+          prev.tokensSaved > 0
+            ? ((prev.tokensSaved + savings.tokensSaved) /
+                (prev.tokensSaved / (prev.percentageSaved / 100) +
+                  savings.originalTokens)) *
+              100
+            : savings.percentage,
       }))
 
       return { optimized, savings }
@@ -303,7 +330,7 @@ export function useTokenOptimization(
         const key = generateCacheKey(query)
         const cached = cache.get(key)
         if (cached) {
-          setStats(prev => ({ ...prev, cacheHits: prev.cacheHits + 1 }))
+          setStats((prev) => ({ ...prev, cacheHits: prev.cacheHits + 1 }))
           return cached
         }
       }
@@ -313,12 +340,12 @@ export function useTokenOptimization(
         const threshold = similarityCaching.similarityThreshold ?? 0.7
         const cached = findSimilarCached(query, similarityCache, threshold)
         if (cached) {
-          setStats(prev => ({ ...prev, cacheHits: prev.cacheHits + 1 }))
+          setStats((prev) => ({ ...prev, cacheHits: prev.cacheHits + 1 }))
           return cached
         }
       }
 
-      setStats(prev => ({ ...prev, cacheMisses: prev.cacheMisses + 1 }))
+      setStats((prev) => ({ ...prev, cacheMisses: prev.cacheMisses + 1 }))
       return null
     },
     [enableCaching, enableSimilarityCaching, cache, similarityCache]
@@ -360,7 +387,10 @@ export function useTokenOptimization(
 
     const canMake = throttler.canMakeRequest()
     if (!canMake) {
-      setStats(prev => ({ ...prev, requestsThrottled: prev.requestsThrottled + 1 }))
+      setStats((prev) => ({
+        ...prev,
+        requestsThrottled: prev.requestsThrottled + 1,
+      }))
     }
 
     return canMake
@@ -387,10 +417,13 @@ export function useTokenOptimization(
       const model = routeToModel(query, modelRouting)
       const savings = estimateRoutingSavings(query, modelRouting)
 
-      setStats(prev => ({
+      setStats((prev) => ({
         ...prev,
-        simpleModelRoutes: prev.simpleModelRoutes + (model === modelRouting.simpleModel ? 1 : 0),
-        complexModelRoutes: prev.complexModelRoutes + (model === modelRouting.complexModel ? 1 : 0),
+        simpleModelRoutes:
+          prev.simpleModelRoutes + (model === modelRouting.simpleModel ? 1 : 0),
+        complexModelRoutes:
+          prev.complexModelRoutes +
+          (model === modelRouting.complexModel ? 1 : 0),
         costSavings: prev.costSavings + savings.saved,
       }))
 
@@ -403,7 +436,11 @@ export function useTokenOptimization(
    * Create data reference
    */
   const createDataReference = React.useCallback(
-    (data: string | object): { type: 'reference'; id: string; originalSize: number } | { type: 'data'; data: string | object } => {
+    (
+      data: string | object
+    ):
+      | { type: 'reference'; id: string; originalSize: number }
+      | { type: 'data'; data: string | object } => {
       if (!enableReferences) {
         return { type: 'data', data }
       }

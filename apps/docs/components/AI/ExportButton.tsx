@@ -59,7 +59,7 @@ export function ExportButton({
       setTimeout(() => setDownloading(false), 500)
       setTimeout(() => setShowMenu(false), 1000)
     } catch (error) {
-      logger.logger.error('Export failed:', error)
+      logger.error('Export failed:', error)
       setDownloading(false)
     }
   }

@@ -1,6 +1,6 @@
 /**
  * Chat UI Domain Exports
- * 
+ *
  * Top-level: Drop-in components
  * Mid-level: Composable building blocks
  * Low-level: Primitives and utilities
@@ -40,7 +40,11 @@ export {
 // ============================================================================
 
 // Simplified unified hook
-export { useChat, type UseChatOptions, type UseChatReturn } from '../hooks/use-chat-unified'
+export {
+  useChat,
+  type UseChatOptions,
+  type UseChatReturn,
+} from '../hooks/use-chat-unified'
 
 // Main chat hook
 export {
@@ -65,7 +69,10 @@ export {
 } from '../hooks/use-chat-composable'
 
 // Chat window component
-export { ChatWindow, type ChatWindowProps } from '../components/chat-window'
+export {
+  ChatWindow,
+  type ChatWindowProps,
+} from '../components/chat/chat-window'
 
 // Message components
 export { Message, type MessageProps } from '../components/message'
@@ -74,7 +81,10 @@ export { VirtualizedMessageList } from '../components/virtualized-message-list'
 
 // Input components
 export { ChatInput, type ChatInputProps } from '../components/chat-input'
-export { AdvancedChatInput, type AdvancedChatInputProps } from '../components/advanced-chat-input'
+export {
+  AdvancedChatInput,
+  type AdvancedChatInputProps,
+} from '../components/advanced-chat-input'
 
 // ============================================================================
 // LOW-LEVEL: Primitives and Utilities
@@ -105,7 +115,7 @@ export {
   // Deprecated but kept for backward compatibility
   coreMessagesToMessages,
   coreMessageToMessage,
-} from '../utils/message-conversion'
+} from '../utils/message/message-conversion'
 
 // Helper hooks
 export {

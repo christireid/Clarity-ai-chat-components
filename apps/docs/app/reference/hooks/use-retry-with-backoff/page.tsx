@@ -102,7 +102,7 @@ const sendMessage = async (text: string) => {
     await execute(() => api.post('/messages', { text }))
   } catch (error) {
     // Failed after all 5 retries
-    toast.logger.error('Could not send message. Please check your connection.')
+    toast.error('Could not send message. Please check your connection.')
   }
 }`}
         language="tsx"

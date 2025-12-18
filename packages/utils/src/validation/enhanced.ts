@@ -1,4 +1,4 @@
-import { logger } from '../logger';
+import { logger } from '../logger'
 /**
  * Enhanced Validation Utilities
  * 

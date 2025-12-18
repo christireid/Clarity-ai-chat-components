@@ -45,7 +45,7 @@ program
 
     const transform = availableTransforms.find((t) => t.name === transformName)
     if (!transform) {
-      logger.logger.error(chalk.red(`❌ Transform "${transformName}" not found`))
+      logger.error(chalk.red(`❌ Transform "${transformName}" not found`))
       logger.debug(
         chalk.gray('\nRun') +
           chalk.cyan(' clarity-codemod list ') +
@@ -95,7 +95,7 @@ program
       logger.debug()
     } catch (error) {
       spinner.fail('Transformation failed')
-      logger.logger.error(
+      logger.error(
         chalk.red(
           `\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`
         )
@@ -153,7 +153,7 @@ program
 
         logger.debug(chalk.green(`  ✓ ${result.ok} files transformed`))
       } catch (error) {
-        logger.logger.error(
+        logger.error(
           chalk.red(
             `  ✗ Failed: ${error instanceof Error ? error.message : 'Unknown error'}`
           )

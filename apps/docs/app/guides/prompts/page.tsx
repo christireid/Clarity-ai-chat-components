@@ -26,7 +26,7 @@ export default async function PromptsGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read prompts guide', error)
+    logger.error('Failed to read prompts guide', error)
     content = '# Prompts\n\nContent not available.'
   }
 

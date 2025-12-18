@@ -93,7 +93,7 @@ function OfflineChat({ messages }: { messages: Message[] }) {
         logger.debug(\`Synced \${synced} messages\`)
       }}
       onSyncError={(error) => {
-        logger.logger.error('Sync error:', error)
+        logger.error('Sync error:', error)
       }}
     />
   )

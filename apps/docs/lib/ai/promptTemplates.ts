@@ -328,7 +328,7 @@ const chat = useChat({ api: '/api/custom-chat' })
 
 // With error handling
 const chat = useChat({
-  onError: (error) => toast.logger.error(error.message)
+  onError: (error) => toast.error(error.message)
 })
 \`\`\`
 

@@ -149,7 +149,7 @@ export function useToolOrchestration(
       try {
         await executeToolCall(pendingApproval, message.id)
       } catch (error) {
-        logger.logger.error('Tool execution failed:', error)
+        logger.error('Tool execution failed:', error)
       }
     }
 
@@ -349,7 +349,7 @@ export function useToolOrchestration(
               setMessages((prev) => [...prev, chartOffer])
             }
           } catch (error) {
-            logger.logger.error('Tool execution failed:', error)
+            logger.error('Tool execution failed:', error)
           }
         }
       }

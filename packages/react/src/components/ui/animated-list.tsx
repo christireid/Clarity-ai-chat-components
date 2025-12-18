@@ -1,6 +1,6 @@
 /**
  * Animated List Components
- * 
+ *
  * Pre-configured AnimatePresence wrappers for common list animation patterns.
  */
 
@@ -13,8 +13,11 @@ import {
   createSlideVariant,
   createFadeVariant,
   createScaleVariant,
-} from '../animations/utils'
-import type { AnimationDuration, StaggerTiming } from '../animations/constants'
+} from '../../animations/utils'
+import type {
+  AnimationDuration,
+  StaggerTiming,
+} from '../../animations/constants'
 
 export interface AnimatedListProps {
   /** Children to animate */
@@ -83,11 +86,7 @@ export const AnimatedListItem: React.FC<AnimatedListItemProps> = ({
   const itemVariants = createStaggerChildVariant(variant, duration)
 
   return (
-    <motion.div
-      className={className}
-      variants={itemVariants}
-      layout={layout}
-    >
+    <motion.div className={className} variants={itemVariants} layout={layout}>
       {children}
     </motion.div>
   )
@@ -127,7 +126,13 @@ export const SlidePresence: React.FC<{
   distance?: number
   duration?: AnimationDuration
   className?: string
-}> = ({ children, direction = 'up', distance = 20, duration = 'normal', className }) => {
+}> = ({
+  children,
+  direction = 'up',
+  distance = 20,
+  duration = 'normal',
+  className,
+}) => {
   const variants = createSlideVariant(direction, distance, duration)
 
   return (
@@ -185,8 +190,8 @@ export const ConditionalPresence: React.FC<{
     variant === 'fade'
       ? createFadeVariant()
       : variant === 'slide'
-      ? createSlideVariant(direction)
-      : createScaleVariant()
+        ? createSlideVariant(direction)
+        : createScaleVariant()
 
   return (
     <AnimatePresence mode="wait">

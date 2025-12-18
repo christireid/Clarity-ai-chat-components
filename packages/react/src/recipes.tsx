@@ -276,7 +276,7 @@ function App() {
         // Custom error handling
         logger.error('Chat error:', error)
         // Show user-friendly message
-        toast.logger.error('Failed to send message. Please try again.')
+        toast.error('Failed to send message. Please try again.')
       }}
     />
   )

@@ -1,7 +1,7 @@
 import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
-import { ChatWindow } from '../components/chat-window'
-import { useMessageOperations } from '../hooks/use-message-operations'
+import { ChatWindow } from '../components/chat/chat-window'
+import { useMessageOperations } from '../hooks/message/use-message-operations'
 import type { Message } from '@clarity-chat/types'
 
 /**

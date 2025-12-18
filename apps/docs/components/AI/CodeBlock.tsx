@@ -100,7 +100,7 @@ export function CodeBlock({
       const highlighted = Prism.highlight(code, grammar, language)
       setHighlightedCode(highlighted)
     } catch (error) {
-      logger.logger.error('Prism highlighting error:', error)
+      logger.error('Prism highlighting error:', error)
       setHighlightedCode(code)
     }
   }, [code, language])
@@ -132,8 +132,8 @@ export function CodeBlock({
 
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      logger.logger.error('Failed to copy code:', error)
-      toast.logger.error(toastMessages.copyFailed, {
+      logger.error('Failed to copy code:', error)
+      toast.error(toastMessages.copyFailed, {
         action: {
           label: 'Try again',
           onClick: () => handleCopy(),
@@ -155,8 +155,8 @@ export function CodeBlock({
       URL.revokeObjectURL(url)
       toast.success(`Downloaded ${filename || `code.${language}`}`)
     } catch (error) {
-      logger.logger.error('Failed to download code:', error)
-      toast.logger.error('Failed to download code', {
+      logger.error('Failed to download code:', error)
+      toast.error('Failed to download code', {
         action: {
           label: 'Retry',
           onClick: () => handleDownload(),

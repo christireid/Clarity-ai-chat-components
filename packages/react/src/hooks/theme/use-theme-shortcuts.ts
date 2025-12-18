@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useTheme } from '../theme/ThemeProvider'
+import { useTheme } from '../../theme/ThemeProvider'
 
 /**
  * useThemeShortcuts - Enable keyboard shortcuts for theme switching

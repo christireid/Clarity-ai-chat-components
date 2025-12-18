@@ -1,17 +1,17 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger as utilsLogger } from '@clarity-chat/utils/logger'
 /**
  * Logger Utility
- * 
+ *
  * Centralized logging with levels and formatting
  */
 
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug'
 
 export interface Logger {
-  logger.error(message: string, ...args: any[]): void
-  warn(message: string, ...args: any[]): void
-  info(message: string, ...args: any[]): void
-  debug(message: string, ...args: any[]): void
+  error(message: string, ...args: unknown[]): void
+  warn(message: string, ...args: unknown[]): void
+  info(message: string, ...args: unknown[]): void
+  debug(message: string, ...args: unknown[]): void
 }
 
 class ClarityLogger implements Logger {
@@ -30,27 +30,27 @@ class ClarityLogger implements Logger {
     return messageLevelIndex <= currentLevelIndex
   }
 
-  logger.error(message: string, ...args: any[]): void {
+  error(message: string, ...args: unknown[]): void {
     if (this.shouldLog('error')) {
-      logger.logger.error(`${this.prefix} [ERROR] ${message}`, ...args)
+      utilsLogger.error(`${this.prefix} [ERROR] ${message}`, ...args)
     }
   }
 
-  warn(message: string, ...args: any[]): void {
+  warn(message: string, ...args: unknown[]): void {
     if (this.shouldLog('warn')) {
-      logger.warn(`${this.prefix} [WARN] ${message}`, ...args)
+      utilsLogger.warn(`${this.prefix} [WARN] ${message}`, ...args)
     }
   }
 
-  info(message: string, ...args: any[]): void {
+  info(message: string, ...args: unknown[]): void {
     if (this.shouldLog('info')) {
-      logger.info(`${this.prefix} [INFO] ${message}`, ...args)
+      utilsLogger.info(`${this.prefix} [INFO] ${message}`, ...args)
     }
   }
 
-  debug(message: string, ...args: any[]): void {
+  debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog('debug')) {
-      logger.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
+      utilsLogger.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
     }
   }
 

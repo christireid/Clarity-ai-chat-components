@@ -160,8 +160,8 @@ class ParticleErrorBoundary extends Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error for debugging
-    logger.logger.error('[HeroParticles] WebGL Error:', error)
-    logger.logger.error('[HeroParticles] Error Info:', errorInfo)
+    logger.error('[HeroParticles] WebGL Error:', error)
+    logger.error('[HeroParticles] Error Info:', errorInfo)
 
     // Call optional error handler
     this.props.onError?.(error, errorInfo)

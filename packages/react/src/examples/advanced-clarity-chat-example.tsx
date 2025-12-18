@@ -1,13 +1,13 @@
 import { logger } from '@clarity-chat/utils/logger';
 /**
  * Advanced Clarity Chat Example
- * 
+ *
  * Demonstrates advanced features of useClarityChat including:
  * - Memory integration with different strategies
  * - Transport selection
  * - Custom error handling
  * - Memory context display
- * 
+ *
  * @example
  * ```tsx
  * // With MemoryProvider
@@ -19,8 +19,8 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
-import { ChatWindow } from '../components/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { ChatWindow } from '../components/chat/chat-window'
+import { convertCoreMessagesToMessages } from '../utils/message/message-conversion'
 import { Button, Badge, Card } from '@clarity-chat/primitives'
 
 export function AdvancedClarityChatExample() {
@@ -79,7 +79,10 @@ export function AdvancedClarityChatExample() {
               value={memoryStrategy}
               onChange={(e) =>
                 setMemoryStrategy(
-                  e.target.value as 'sliding-window' | 'semantic-chunks' | 'vector-store'
+                  e.target.value as
+                    | 'sliding-window'
+                    | 'semantic-chunks'
+                    | 'vector-store'
                 )
               }
               className="rounded-lg border px-3 py-1 text-sm"
@@ -123,12 +126,14 @@ export function AdvancedClarityChatExample() {
             </p>
           </div>
         )}
-        
+
         {/* Memory Error Display */}
         {memoryErrorInfo.memoryError && (
           <div className="mt-2 rounded-lg border border-yellow-200 bg-yellow-50 p-2">
             <p className="text-xs text-yellow-800">
-              Memory {memoryErrorInfo.memoryErrorOperation} error ({memoryErrorInfo.memoryErrorType}): {memoryErrorInfo.memoryError.message}
+              Memory {memoryErrorInfo.memoryErrorOperation} error (
+              {memoryErrorInfo.memoryErrorType}):{' '}
+              {memoryErrorInfo.memoryError.message}
             </p>
           </div>
         )}

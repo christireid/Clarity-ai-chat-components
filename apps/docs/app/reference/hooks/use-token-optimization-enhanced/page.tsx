@@ -177,7 +177,7 @@ function OptimizedChat() {
         logger.debug('Savings: $', stats.overall.totalCostSaved)
       }
     } catch (error) {
-      logger.logger.error('Optimization failed:', error)
+      logger.error('Optimization failed:', error)
     }
   }
 
@@ -295,7 +295,7 @@ function ToonOptimized() {
       logger.debug('Tokens:', optimized.tokens.total)
       logger.debug('Savings:', optimized.optimizations.toon?.savingsPercent)
     } catch (error) {
-      logger.logger.error('TOON optimization failed:', error)
+      logger.error('TOON optimization failed:', error)
     }
   }
 
@@ -331,7 +331,7 @@ function CachedChat() {
         logger.debug('Used cached prompt - 50-90% cost savings!')
       }
     } catch (error) {
-      logger.logger.error('Caching failed:', error)
+      logger.error('Caching failed:', error)
     }
   }
 
@@ -365,7 +365,7 @@ function SemanticCachedChat() {
         logger.debug('Tokens Saved:', stats.semanticCache.tokensSaved)
       }
     } catch (error) {
-      logger.logger.error('Semantic caching failed:', error)
+      logger.error('Semantic caching failed:', error)
     }
   }
 
@@ -409,7 +409,7 @@ function CostTrackedChat() {
         logger.debug('Savings: $', stats.costs.savingsFromOptimization)
       }
     } catch (error) {
-      logger.logger.error('Cost tracking failed:', error)
+      logger.error('Cost tracking failed:', error)
     }
   }
 

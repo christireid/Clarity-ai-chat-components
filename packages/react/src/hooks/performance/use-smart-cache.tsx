@@ -2,9 +2,12 @@ import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
-import { SmartCache } from '../utils/smart-cache'
-import type { CacheOptions, CacheStats } from '../utils/smart-cache'
-import { estimateTokens } from '../utils/tokenization/estimator'
+import { SmartCache } from '../../utils/optimization/smart-cache'
+import type {
+  CacheOptions,
+  CacheStats,
+} from '../../utils/optimization/smart-cache'
+import { estimateTokens } from '../../utils/tokenization/estimator'
 
 export interface UseSmartCacheOptions<T = any> extends CacheOptions {
   /** Enable cache (default: true) */

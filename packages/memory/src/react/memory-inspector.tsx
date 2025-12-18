@@ -58,7 +58,7 @@ export function MemoryInspector({
       
       setMemories(mems)
     } catch (error) {
-      logger.logger.error('Failed to load memory data:', error)
+      logger.error('Failed to load memory data:', error)
     } finally {
       setLoading(false)
     }

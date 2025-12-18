@@ -84,7 +84,7 @@ export function useAIToolOrchestration(): UseAIToolOrchestrationReturn {
       }
     },
     onError: (err) => {
-      logger.logger.error('AI Chat error:', err)
+      logger.error('AI Chat error:', err)
       const errorObj = err instanceof Error ? err : new Error(String(err))
       setError(errorObj)
       debugEvents.addEvent('TOOL_ERROR', { error: errorObj.message })

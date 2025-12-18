@@ -50,7 +50,7 @@ export function EnhancedCodeBlock({
 
       timeoutRef.current = setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      logger.logger.error('Failed to copy:', error)
+      logger.error('Failed to copy:', error)
       showError('Failed to copy code')
     }
   }, [code, success, showError])

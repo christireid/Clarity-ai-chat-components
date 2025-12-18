@@ -7,6 +7,10 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../animations/constants'
 
 // SSR-safe platform detection
 function detectIsMac(): boolean {
@@ -38,9 +42,9 @@ interface KeyboardShortcutsContextValue {
   hideHelp: () => void
 }
 
-const KeyboardShortcutsContext = React.createContext<KeyboardShortcutsContextValue | undefined>(
-  undefined
-)
+const KeyboardShortcutsContext = React.createContext<
+  KeyboardShortcutsContextValue | undefined
+>(undefined)
 
 export interface KeyboardShortcutsProviderProps {
   children: React.ReactNode
@@ -49,60 +53,64 @@ export interface KeyboardShortcutsProviderProps {
 
 /**
  * Keyboard Shortcuts Provider
- * 
+ *
  * Manages global keyboard shortcuts
  */
 export function KeyboardShortcutsProvider({
   children,
   shortcuts: initialShortcuts = [],
 }: KeyboardShortcutsProviderProps) {
-  const [shortcuts, setShortcuts] = React.useState<KeyboardShortcut[]>(initialShortcuts)
+  const [shortcuts, setShortcuts] =
+    React.useState<KeyboardShortcut[]>(initialShortcuts)
   const [showHelpModal, setShowHelpModal] = React.useState(false)
-  
+
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = getKeyString(e)
-      
+
       // Check if ? is pressed to show help
       if (e.shiftKey && e.key === '?') {
         e.preventDefault()
         setShowHelpModal(true)
         return
       }
-      
+
       // Find matching shortcut
       const shortcut = shortcuts.find(
-        s => s.enabled !== false && s.keys.includes(key)
+        (s) => s.enabled !== false && s.keys.includes(key)
       )
-      
+
       if (shortcut) {
         e.preventDefault()
         shortcut.handler(e)
       }
     }
-    
+
     window.addEventListener('keydown', handleKeyDown)
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [shortcuts])
-  
+
   const registerShortcut = React.useCallback((shortcut: KeyboardShortcut) => {
-    setShortcuts(prev => [...prev.filter(s => s.id !== shortcut.id), shortcut])
-    
+    setShortcuts((prev) => [
+      ...prev.filter((s) => s.id !== shortcut.id),
+      shortcut,
+    ])
+
     return () => {
-      setShortcuts(prev => prev.filter(s => s.id !== shortcut.id))
+      setShortcuts((prev) => prev.filter((s) => s.id !== shortcut.id))
     }
   }, [])
-  
+
   const unregisterShortcut = React.useCallback((id: string) => {
-    setShortcuts(prev => prev.filter(s => s.id !== id))
+    setShortcuts((prev) => prev.filter((s) => s.id !== id))
   }, [])
-  
+
   const showHelp = React.useCallback(() => setShowHelpModal(true), [])
   const hideHelp = React.useCallback(() => setShowHelpModal(false), [])
-  
+
   const value = React.useMemo(
     () => ({
       shortcuts,
@@ -113,11 +121,13 @@ export function KeyboardShortcutsProvider({
     }),
     [shortcuts, registerShortcut, unregisterShortcut, showHelp, hideHelp]
   )
-  
+
   return (
     <KeyboardShortcutsContext.Provider value={value}>
       {children}
-      {showHelpModal && <KeyboardShortcutsHelp onClose={hideHelp} shortcuts={shortcuts} />}
+      {showHelpModal && (
+        <KeyboardShortcutsHelp onClose={hideHelp} shortcuts={shortcuts} />
+      )}
     </KeyboardShortcutsContext.Provider>
   )
 }
@@ -127,11 +137,13 @@ export function KeyboardShortcutsProvider({
  */
 export function useKeyboardShortcuts() {
   const context = React.useContext(KeyboardShortcutsContext)
-  
+
   if (!context) {
-    throw new Error('useKeyboardShortcuts must be used within KeyboardShortcutsProvider')
+    throw new Error(
+      'useKeyboardShortcuts must be used within KeyboardShortcutsProvider'
+    )
   }
-  
+
   return context
 }
 
@@ -149,7 +161,7 @@ export function useKeyboardShortcut(
   }
 ) {
   const { registerShortcut } = useKeyboardShortcuts()
-  
+
   React.useEffect(() => {
     const shortcut: KeyboardShortcut = {
       id: options?.id || `shortcut-${Math.random().toString(36).substring(7)}`,
@@ -159,9 +171,17 @@ export function useKeyboardShortcut(
       handler,
       enabled: options?.enabled !== false,
     }
-    
+
     return registerShortcut(shortcut)
-  }, [keys, handler, registerShortcut, options?.id, options?.description, options?.category, options?.enabled])
+  }, [
+    keys,
+    handler,
+    registerShortcut,
+    options?.id,
+    options?.description,
+    options?.category,
+    options?.enabled,
+  ])
 }
 
 /**
@@ -169,13 +189,13 @@ export function useKeyboardShortcut(
  */
 function getKeyString(e: KeyboardEvent): string {
   const parts: string[] = []
-  
+
   if (e.ctrlKey || e.metaKey) parts.push('Ctrl')
   if (e.altKey) parts.push('Alt')
   if (e.shiftKey) parts.push('Shift')
-  
+
   parts.push(e.key)
-  
+
   return parts.join('+')
 }
 
@@ -208,7 +228,10 @@ interface KeyboardShortcutsHelpProps {
   onClose: () => void
 }
 
-function KeyboardShortcutsHelp({ shortcuts, onClose }: KeyboardShortcutsHelpProps) {
+function KeyboardShortcutsHelp({
+  shortcuts,
+  onClose,
+}: KeyboardShortcutsHelpProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [isMac, setIsMac] = React.useState(false)
   const searchInputRef = React.useRef<HTMLInputElement>(null)
@@ -276,7 +299,7 @@ function KeyboardShortcutsHelp({ shortcuts, onClose }: KeyboardShortcutsHelpProp
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: durations.normal }}
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
         onClick={onClose}
         aria-hidden="true"
@@ -287,7 +310,7 @@ function KeyboardShortcutsHelp({ shortcuts, onClose }: KeyboardShortcutsHelpProp
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: durations.normal, ease: EASING_FRAMER.sharp }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
         role="dialog"
         aria-modal="true"
@@ -458,7 +481,10 @@ function KeyboardShortcutsHelp({ shortcuts, onClose }: KeyboardShortcutsHelpProp
                             transition={{
                               delay: categoryIndex * 0.05 + index * 0.02,
                             }}
-                            whileHover={{ x: 2, backgroundColor: 'var(--accent)' }}
+                            whileHover={{
+                              x: 2,
+                              backgroundColor: 'var(--accent)',
+                            }}
                             className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 transition-all duration-200 group"
                           >
                             <span className="text-sm group-hover:text-foreground transition-colors">

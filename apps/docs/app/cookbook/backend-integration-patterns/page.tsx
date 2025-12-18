@@ -88,7 +88,7 @@ app.post('/api/chat', async (req, res) => {
 
     res.end()
   } catch (error) {
-    logger.logger.error('Chat API error:', error)
+    logger.error('Chat API error:', error)
     if (!res.headersSent) {
       res.status(500).json({ error: 'Internal server error' })
     }
@@ -211,7 +211,7 @@ export class ChatController {
 
       res.end()
     } catch (error) {
-      logger.logger.error('Chat API error:', error)
+      logger.error('Chat API error:', error)
       if (!res.headersSent) {
         res.status(500).json({ error: 'Internal server error' })
       }
@@ -341,7 +341,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
     // Handle stream errors
     stream.on('error', (error) => {
-      logger.logger.error('Stream error:', error)
+      logger.error('Stream error:', error)
       if (!res.headersSent) {
         res.status(500).json({ error: 'Stream error occurred' })
       }
@@ -357,7 +357,7 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
 
     res.end()
   } catch (error) {
-    logger.logger.error('Chat API error:', error)
+    logger.error('Chat API error:', error)
 
     // Handle specific error types
     if (error.status === 429) {
