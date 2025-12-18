@@ -1,6 +1,5 @@
 /**
  * Basic Chat Integration Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates a simple chat implementation using Clarity Chat components.
  * This example shows the minimum setup required to get started.

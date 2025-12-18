@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useRAGPipeline - Top-level hook for RAG pipeline
  *

@@ -414,7 +414,7 @@ export class TestSuite {
           try {
             await hook()
           } catch (hookError) {
-            logger.logger.error('Error in afterEach hook:', hookError)
+            logger.error('Error in afterEach hook:', { error: hookError })
           }
         }
       }

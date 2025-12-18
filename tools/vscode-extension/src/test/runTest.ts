@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * VS Code Extension Test Runner
  *

@@ -1,6 +1,5 @@
 /**
  * Next.js API Route Example - Framework-Agnostic Memory Usage
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * File: app/api/chat/route.ts
  */

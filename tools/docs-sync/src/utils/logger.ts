@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Logger and Progress Indicator Utilities
  *

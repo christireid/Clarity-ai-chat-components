@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Show Examples Command
  */

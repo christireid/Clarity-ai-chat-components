@@ -323,7 +323,7 @@ export async function compareModels(
 
       comparator.addResponse(promptId, response)
     } catch (error) {
-      logger.logger.error(`Error calling ${config.provider}/${config.model}:`, error)
+      logger.error(`Error calling ${config.provider}/${config.model}:`, { error })
     }
   }
 

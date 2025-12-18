@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Prompt Injection Detection (2025)
  *

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useChatEnhanced - Mid-Level Enhanced Chat Hook
  * 

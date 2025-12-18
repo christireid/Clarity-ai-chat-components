@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Test fixture: Suppression comments
 // review-ignore-file: todoComments
 

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Copilot Chat Participant for Clarity Chat
  * Provides @clarity chat assistant for documentation, code generation, and migration help

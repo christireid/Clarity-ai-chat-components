@@ -1,9 +1,7 @@
 'use client'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { useEffect } from 'react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Shared Error Page Component
  *

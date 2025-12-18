@@ -10,7 +10,6 @@
 import * as React from 'react'
 import {
   MessageThreadView,
-import { SecureLogger } from '@/lib/security/secureLogger';
   ThreadList,
   ChatWindow,
   Message,
@@ -18,7 +17,6 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Thread, ThreadViewConfig } from '@clarity-chat/react'
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@clarity-chat/primitives'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // =============================================================================
 // Example 1: Basic Inline Threading
 // =============================================================================

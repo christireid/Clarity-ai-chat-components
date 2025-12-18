@@ -1,6 +1,5 @@
 /**
  * Clear Analytics API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * DELETE: Clear all analytics data (dev only)
  */
 

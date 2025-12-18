@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useStreamingChat - Top-level hook for streaming chat
  *

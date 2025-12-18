@@ -201,7 +201,7 @@ debugCommand
       },
     })
 
-    logger.timeEnd('Total Request', 'info')
+    logger.timeEnd('Total Request')
 
     // Summary
     const summary: Record<string, string> = {

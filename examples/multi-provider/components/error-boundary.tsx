@@ -1,5 +1,4 @@
 'use client'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 /**
  * Error Boundary Component
@@ -10,7 +9,6 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { Component, ReactNode } from 'react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 interface ErrorBoundaryProps {
   children: ReactNode
   fallback?: ReactNode

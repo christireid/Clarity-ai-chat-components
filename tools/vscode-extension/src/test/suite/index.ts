@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Test Suite Entry Point
  *

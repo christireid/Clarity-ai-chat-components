@@ -9,7 +9,6 @@
 import * as React from 'react'
 import {
   UserInteractionAnalytics,
-import { SecureLogger } from '@/lib/security/secureLogger';
   ABTestingDashboard,
   useInteractionTracking,
   useABTesting,
@@ -22,12 +21,10 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 } from '@clarity-chat/react'
 import type {
   ExperimentResult,
-import { SecureLogger } from '@/lib/security/secureLogger';
   ExperimentVariant,
 } from '@clarity-chat/react'
 import { ErrorBoundary, LoadingSpinner, ErrorState } from '../utils/error-boundary'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type definitions for this example
 interface ChatMessage {
   id: string

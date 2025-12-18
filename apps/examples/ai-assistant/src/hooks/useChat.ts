@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Message } from '@clarity-chat/types'
 import { sendChatMessage } from '@/api/chat'
 import { useAppStore } from '@/lib/store'

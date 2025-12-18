@@ -20,7 +20,6 @@
 import { useState } from 'react'
 import {
   useSecureChat,
-import { SecureLogger } from '@/lib/security/secureLogger';
   useSecurityMonitor,
   useSecurityEvents,
   SecurityManager,

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow, ChatInput, Button } from '@clarity-chat/react'
 import { StatusBadge } from '../../../.storybook/blocks'

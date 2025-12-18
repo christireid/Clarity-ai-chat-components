@@ -1,5 +1,4 @@
 import type { Message } from '@clarity-chat/types'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 export interface ChatResponse {
   message: Message

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { WorkflowSuggestionList } from '@clarity-chat/react'
 import type { WorkflowSuggestion } from '@clarity-chat/react'

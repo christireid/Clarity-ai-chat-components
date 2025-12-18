@@ -58,10 +58,9 @@ export class ErrorBoundary extends React.Component<
 
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
-      logger.logger.error(
+      logger.error(
         `[ErrorBoundary${this.props.componentName ? `: ${this.props.componentName}` : ''}]`,
-        error,
-        errorInfo
+        { error, errorInfo }
       )
     }
   }

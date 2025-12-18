@@ -11,7 +11,6 @@
 import Fastify from 'fastify'
 import { clarityMemory } from '../../packages/memory/src/factory'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize memory service
 // @ts-expect-error - Example uses minimal config, factory provides defaults
 const memory = clarityMemory({

@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 export const runtime = 'edge'
 

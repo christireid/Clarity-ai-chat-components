@@ -10,7 +10,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { clarityMemory } from '@clarity-chat/memory'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize memory service (singleton pattern for API routes)
 let memoryInstance: ReturnType<typeof clarityMemory> | null = null
 

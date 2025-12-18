@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import * as fs from 'fs'
 import * as path from 'path'

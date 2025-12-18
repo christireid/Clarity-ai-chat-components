@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-import { SecureLogger } from '@/lib/security/secureLogger';
 import OpenAI from 'openai'
 
 export const runtime = 'edge'

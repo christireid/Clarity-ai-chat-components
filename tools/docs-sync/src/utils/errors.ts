@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Structured error handling for docs-sync
  * Provides actionable error messages and proper exit codes

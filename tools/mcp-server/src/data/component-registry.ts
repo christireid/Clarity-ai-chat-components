@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Clarity Chat Component Registry
  *

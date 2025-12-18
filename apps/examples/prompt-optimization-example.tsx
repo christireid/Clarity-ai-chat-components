@@ -1,6 +1,5 @@
 /**
  * Prompt Optimization Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates how to use the prompt & token optimization layer
  * with useClarityChat and standalone hooks.

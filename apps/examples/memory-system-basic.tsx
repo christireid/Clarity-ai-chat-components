@@ -1,6 +1,5 @@
 /**
  * Basic Memory System Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates how to set up and use the AI Memory & Context system
  */

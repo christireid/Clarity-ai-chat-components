@@ -260,7 +260,6 @@ export function getMemoryMetrics(): MemoryMetrics | null {
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 interface UsePerformanceOptions {
   /** Update interval in milliseconds */
   updateInterval?: number

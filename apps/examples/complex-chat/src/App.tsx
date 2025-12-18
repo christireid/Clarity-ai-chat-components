@@ -1,6 +1,5 @@
 /**
  * Complex Chat Example - Enterprise-Grade Usage
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * This example demonstrates advanced usage of Clarity Chat with:
  * - Custom layout with sidebar

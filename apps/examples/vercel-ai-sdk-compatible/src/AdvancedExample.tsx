@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Advanced Example: Multi-modal chat with tool calling
  * 

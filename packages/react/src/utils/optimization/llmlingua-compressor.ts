@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * LLMLingua-2 Style Prompt Compressor
  *

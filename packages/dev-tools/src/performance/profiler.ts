@@ -92,7 +92,7 @@ class Profiler {
 
     const metrics = this.metrics.get(name)
     if (!metrics) {
-      warn(`No metrics found for operation: ${name}`)
+      console.warn(`No metrics found for operation: ${name}`)
       return
     }
 

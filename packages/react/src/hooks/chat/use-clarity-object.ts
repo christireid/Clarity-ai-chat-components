@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useClarityObject - Top-Level Structured Output Hook
  * 

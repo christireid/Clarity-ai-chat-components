@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import { logger } from '@clarity-chat/utils/logger';
-
 
 /**
  * Clarity Chat CLI

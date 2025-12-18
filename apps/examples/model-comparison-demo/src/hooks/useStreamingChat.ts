@@ -1,6 +1,5 @@
 // Type-safe streaming chat hook - Example hook needs type updates
 import { useState, useCallback } from 'react'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 // Local types for model comparison  
 export type ChatMessage = any

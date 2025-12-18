@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import React, { Component, type ReactNode } from 'react'
 import { ClarityChatError } from '../errors'
 

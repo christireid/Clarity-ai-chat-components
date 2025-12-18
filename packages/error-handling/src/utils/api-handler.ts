@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Centralized API error handling utilities for Next.js 15 App Router
  *

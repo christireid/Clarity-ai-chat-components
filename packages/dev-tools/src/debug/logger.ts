@@ -230,51 +230,37 @@ export function setGlobalContext(context: Record<string, unknown>): void {
 }
 
 // UI helpers
-export function logInfoBox(
-  message: string,
-  context?: Record<string, unknown>
-): void {
+export function logInfoBox(message: string, title?: string): void {
   const logger = getLogger('ui')
-  logger.info(message, context)
-  if (context) {
-    console.log(infoBox(message, context as Record<string, string>))
-  }
+  logger.info(message)
+  console.log(infoBox(message, title))
 }
 
-export function logWarningBox(
-  message: string,
-  context?: Record<string, unknown>
-): void {
+export function logWarningBox(message: string, title?: string): void {
   const logger = getLogger('ui')
-  logger.warn(message, context)
-  console.log(warningBox(message, context as Record<string, string>))
+  logger.warn(message)
+  console.log(warningBox(message, title))
 }
 
-export function logErrorBox(
-  message: string,
-  context?: Record<string, unknown>
-): void {
+export function logErrorBox(message: string, title?: string): void {
   const logger = getLogger('ui')
-  logger.error(message, context)
-  console.log(errorBox(message, context as Record<string, string>))
+  logger.error(message)
+  console.log(errorBox(message, title))
 }
 
-export function logSuccessBox(
-  message: string,
-  context?: Record<string, unknown>
-): void {
+export function logSuccessBox(message: string, title?: string): void {
   const logger = getLogger('ui')
-  logger.info(message, context)
-  console.log(successBox(message, context as Record<string, string>))
+  logger.info(message)
+  console.log(successBox(message, title))
 }
 
 export function logKeyValue(
-  data: Record<string, unknown>,
-  title?: string
+  data: Record<string, string | number | boolean>,
+  options?: { labelColor?: (text: string) => string; valueColor?: (text: string) => string }
 ): void {
   const logger = getLogger('ui')
-  logger.info(title || 'Key-Value Data', data)
-  console.log(keyValueTable(data as Record<string, string>, title))
+  logger.info('Key-Value Data')
+  console.log(keyValueTable(data, options))
 }
 
 export default {

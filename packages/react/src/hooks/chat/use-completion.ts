@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useCompletion - Mid-Level Completion Hook
  * 

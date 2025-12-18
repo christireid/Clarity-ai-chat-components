@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CommandPalette, CommandItem, useCommandPalette } from '@clarity-chat/react'
 import { useState } from 'react'

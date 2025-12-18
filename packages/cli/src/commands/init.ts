@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * init command - Initialize a new Clarity Chat project
  */

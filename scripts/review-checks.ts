@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 /**
  * Pre-commit Review Checks

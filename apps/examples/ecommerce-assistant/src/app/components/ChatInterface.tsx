@@ -1,5 +1,4 @@
 'use client'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { useState, useCallback } from 'react'
 import { Send } from 'lucide-react'

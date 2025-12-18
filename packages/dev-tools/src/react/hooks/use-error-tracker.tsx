@@ -88,7 +88,7 @@ export function useErrorTracker(
 
   // Auto-track global errors
   React.useEffect(() => {
-    if (!enabled || !autoTrack) return
+    if (!enabled || !autoTrack) return undefined
 
     const handleError = (event: ErrorEvent) => {
       tracker.track({
@@ -106,14 +106,16 @@ export function useErrorTracker(
     }
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('error', handleError as any)
+      window.addEventListener('error', handleError as unknown as EventListener)
       window.addEventListener('unhandledrejection', handleUnhandledRejection)
 
       return () => {
-        window.removeEventListener('error', handleError as any)
+        window.removeEventListener('error', handleError as unknown as EventListener)
         window.removeEventListener('unhandledrejection', handleUnhandledRejection)
       }
     }
+
+    return undefined
   }, [enabled, autoTrack, component, tracker])
 
   const track = React.useCallback((error: Error, trackOptions?: {

@@ -1,6 +1,5 @@
 /**
  * Basic Chat Demo - A complete example showcasing core Clarity Chat features
-import { SecureLogger } from '@/lib/security/secureLogger';
  *
  * This example demonstrates:
  * - Message operations (edit, regenerate, delete, undo/redo)

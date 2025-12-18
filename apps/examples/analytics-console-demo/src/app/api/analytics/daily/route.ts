@@ -1,6 +1,5 @@
 /**
  * Daily Analytics API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * GET: Get daily breakdown
  */
 

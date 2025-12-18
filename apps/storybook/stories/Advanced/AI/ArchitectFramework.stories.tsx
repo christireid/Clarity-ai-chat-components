@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState, useMemo } from 'react'
 import { Button, Card, Badge } from '@clarity-chat/primitives'

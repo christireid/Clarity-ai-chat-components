@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Add Hook Command
  * An enhanced experience for adding Clarity Chat hooks with pinning and history

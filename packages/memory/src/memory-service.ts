@@ -1,4 +1,3 @@
-import { getLogger } from '@clarity-chat/utils/logger';
 /**
  * Memory Service
  *
@@ -41,7 +40,8 @@ import {
   type DecayResult,
 } from './utils/decay-manager'
 
-const logger = getLogger('memory-service')
+import { createLogger } from './utils/logger'
+const logger = createLogger('debug', '[MemoryService]')
 
 /**
  * Memory Service

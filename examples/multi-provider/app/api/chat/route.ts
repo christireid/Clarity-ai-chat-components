@@ -3,7 +3,6 @@ import OpenAI from 'openai'
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize clients
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })

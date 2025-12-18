@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * POST /api/chat
  *

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {

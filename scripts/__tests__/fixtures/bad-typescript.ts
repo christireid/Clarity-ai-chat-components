@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Test fixture: TypeScript issues
 export function badFunction(data: any) {
   const result: any = data.value

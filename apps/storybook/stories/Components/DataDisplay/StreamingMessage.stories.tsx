@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { StreamingMessage } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'

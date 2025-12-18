@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MultiModalPreview } from '@clarity-chat/react'
 import type { AttachmentPreview } from '@clarity-chat/react'

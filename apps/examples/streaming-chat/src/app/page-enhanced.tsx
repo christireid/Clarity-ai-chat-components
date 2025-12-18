@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 'use client'
 
 import { useState, useRef } from 'react'

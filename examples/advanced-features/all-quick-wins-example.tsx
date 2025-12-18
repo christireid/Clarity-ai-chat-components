@@ -11,7 +11,6 @@
 import * as React from 'react'
 import {
   useChatEnhanced,
-import { SecureLogger } from '@/lib/security/secureLogger';
   PromptSuggestionsEnhanced,
   ConversationSummarizer,
   BatteryIndicator,
@@ -21,7 +20,6 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 } from '@clarity-chat/react'
 import { useFocusTrap, useEscapeKey } from '../utils/accessibility'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type definitions for this example
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system'

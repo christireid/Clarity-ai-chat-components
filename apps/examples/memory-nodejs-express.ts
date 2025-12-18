@@ -1,6 +1,5 @@
 /**
  * Node.js Express Example - Framework-Agnostic Memory Usage
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * This example shows how to use @clarity-chat/memory in a Node.js backend
  */

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SecureLogger } from '@/lib/security/secureLogger';
 import OpenAI from 'openai'
 import { searchProducts, getProduct, getRecommendations } from '@/lib/products'
 

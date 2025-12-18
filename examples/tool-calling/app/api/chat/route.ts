@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server'
 import OpenAI from 'openai'
 import { TOOLS, executeTool } from '@/lib/tools'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })

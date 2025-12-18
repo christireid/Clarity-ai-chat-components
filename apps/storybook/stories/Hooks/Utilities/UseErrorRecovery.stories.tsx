@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { useErrorRecovery } from '@clarity-chat/react'

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import { NextRequest } from 'next/server'
 import { getAdapter } from '@clarity-chat/react'
 import type { ModelConfig, ChatMessage } from '@clarity-chat/react'

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env npx tsx
 /**
  * Theme Generator CLI

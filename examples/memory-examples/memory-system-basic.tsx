@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Basic Memory System Example
  *
@@ -14,7 +11,6 @@ import { ErrorBoundary, LoadingSpinner } from '../utils/error-boundary'
 // The library uses a flat export structure for simpler imports.
 import {
   MemoryProvider,
-import { SecureLogger } from '@/lib/security/secureLogger';
   useMemoryContext,
   QdrantVectorStore,
   OpenAIEmbeddings,

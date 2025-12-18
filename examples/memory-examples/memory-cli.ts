@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Standalone Node.js CLI Example - Clarity Memory
  *
@@ -13,7 +12,6 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 import * as readline from 'readline'
 import { clarityMemory } from '../../packages/memory/src/factory'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Initialize memory service with file persistence
 // @ts-expect-error - Example uses minimal config, factory provides defaults
 const memory = clarityMemory({

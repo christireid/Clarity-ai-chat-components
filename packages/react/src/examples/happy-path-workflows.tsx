@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Happy Path Workflows - Real-World Usage Examples
  *

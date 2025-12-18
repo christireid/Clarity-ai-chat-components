@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * ChatWithErrorBoundary - Chat component with built-in error handling
  * 

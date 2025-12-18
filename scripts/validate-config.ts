@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env npx tsx
 /**
  * Configuration Validator CLI

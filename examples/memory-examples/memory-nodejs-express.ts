@@ -11,7 +11,6 @@
 import express, { type Request, type Response } from 'express'
 import { MemoryService, type MemoryServiceConfig } from '../../packages/memory/src/index'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type for memory query options (used in GET /api/memories/:userId)
 interface MemoryQueryOptions {
   metadata?: Record<string, string>

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 #!/usr/bin/env tsx
 /**
  * Interactive Code Review Script

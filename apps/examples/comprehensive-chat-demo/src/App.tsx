@@ -1,6 +1,5 @@
 /**
  * Comprehensive Chat Demo
-import { SecureLogger } from '@/lib/security/secureLogger';
  *
  * Demonstrates all modern AI chat features working together:
  * - Message operations (edit, regenerate, delete)

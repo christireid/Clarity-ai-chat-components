@@ -1,6 +1,5 @@
 /**
  * Analytics Logging API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * POST: Log a new analytics entry
  */
 

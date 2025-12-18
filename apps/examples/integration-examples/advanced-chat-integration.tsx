@@ -1,6 +1,5 @@
 /**
  * Advanced Chat Integration Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates a full-featured chat implementation with all enhancements.
  * This example shows how to use all the blueprint features together.

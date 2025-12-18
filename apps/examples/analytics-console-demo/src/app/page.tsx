@@ -1,5 +1,4 @@
 'use client'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 import React, { useState, useEffect } from 'react'
 import {

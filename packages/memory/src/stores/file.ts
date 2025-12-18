@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * File-Based Vector Store
  * Simple JSON file persistence for single-instance applications

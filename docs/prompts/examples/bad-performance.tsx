@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 // Example: Performance Issues
 // This file contains intentional performance problems for training purposes
 

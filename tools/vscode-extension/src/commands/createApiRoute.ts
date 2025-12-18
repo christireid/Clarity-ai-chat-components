@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Create API Route Command
  * Generates streaming API routes for different providers and frameworks

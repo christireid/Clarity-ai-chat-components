@@ -1,6 +1,5 @@
 /**
  * Advanced Chat Features Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  *
  * Demonstrates all modern AI chat features:
  * - Message operations (edit, regenerate, delete)

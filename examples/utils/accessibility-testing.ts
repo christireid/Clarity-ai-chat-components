@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Accessibility Testing Utilities
  *
@@ -209,7 +206,6 @@ export async function logAccessibilityViolations(): Promise<void> {
 
 import { useEffect, useState, useCallback } from 'react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 interface UseAccessibilityCheckOptions {
   /** Run checks automatically on mount */
   autoRun?: boolean

@@ -11,7 +11,6 @@ import { useState } from 'react'
 import { SecurityManager, type SecurityResult } from '@clarity-chat/react'
 import { MessageActionsSecure, type SecurityInfo } from '@clarity-chat/react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Example: Chat message with security-enhanced actions
  */

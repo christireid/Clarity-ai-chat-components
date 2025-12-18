@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * TOON (Token-Oriented Object Notation) Decoder
  *

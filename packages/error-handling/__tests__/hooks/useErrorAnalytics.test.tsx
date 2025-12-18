@@ -14,7 +14,6 @@ import {
   ProviderError,
   ProviderErrorCode,
 } from '../../src/errors/provider-error'
-import { logger, LogLevel, setGlobalLogLevel } from '@clarity-chat/utils/logger'
 
 describe('ErrorAnalyticsProvider', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (

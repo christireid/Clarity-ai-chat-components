@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import * as React from 'react'
 import { Button, cn } from '@clarity-chat/primitives'
 import { CopyButton } from '../message/copy-button'

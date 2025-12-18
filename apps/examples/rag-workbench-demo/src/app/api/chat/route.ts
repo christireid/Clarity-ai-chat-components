@@ -1,6 +1,5 @@
 /**
  * RAG Chat API - Retrieval Augmented Generation
-import { SecureLogger } from '@/lib/security/secureLogger';
  * Searches documents, builds context, and streams AI response
  */
 

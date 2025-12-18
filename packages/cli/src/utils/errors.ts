@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced error handling utilities for CLI
  * Provides actionable error messages and proper exit codes

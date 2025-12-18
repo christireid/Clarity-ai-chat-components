@@ -1,6 +1,5 @@
 /**
  * Customized Chat Example
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Shows how to customize ClarityChat with different options.
  */

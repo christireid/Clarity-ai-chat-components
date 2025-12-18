@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { SecurityManager, ConsoleAlertHandler } from '@clarity-chat/react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Server-side Security Validation API
  *

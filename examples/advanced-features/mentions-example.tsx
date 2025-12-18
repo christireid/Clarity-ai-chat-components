@@ -10,7 +10,6 @@
 import * as React from 'react'
 import {
   MentionInput,
-import { SecureLogger } from '@/lib/security/secureLogger';
   MentionList,
   useMentions,
   ChatWindow,
@@ -18,7 +17,6 @@ import { SecureLogger } from '@/lib/security/secureLogger';
 import type { MentionableUser, Mention } from '@clarity-chat/react'
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@clarity-chat/primitives'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 // 💡 Type for chat messages with mentions (used in Example 4)
 interface ChatMessageWithMentions {
   id: string

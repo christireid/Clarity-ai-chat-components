@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * RAG Workbench - Main UI
  * Document Q&A with Retrieval Augmented Generation

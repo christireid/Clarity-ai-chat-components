@@ -1,6 +1,5 @@
 /**
  * Chat Showcase
-import { SecureLogger } from '@/lib/security/secureLogger';
  * 
  * Demonstrates chat-specific components
  */

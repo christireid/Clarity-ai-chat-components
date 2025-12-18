@@ -1,6 +1,5 @@
 /**
  * Document management API
-import { SecureLogger } from '@/lib/security/secureLogger';
  * POST: Upload document
  * GET: List documents
  * DELETE: Delete document

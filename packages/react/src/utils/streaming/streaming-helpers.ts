@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Shared Streaming Utilities for Chat Hooks
  *

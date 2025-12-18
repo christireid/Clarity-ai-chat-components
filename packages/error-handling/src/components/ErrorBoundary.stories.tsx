@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import type { Meta, StoryObj } from '@storybook/react'
 import { ErrorBoundary } from './ErrorBoundary'
 import { ConfigurationError, APIError } from '../errors'

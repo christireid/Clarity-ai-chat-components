@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import React, { useState } from 'react'
 import {
   usePromptCompression,

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * dev command - Start development server with hot reload
  * Enhanced with beautiful UI components

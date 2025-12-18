@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FileUpload } from '@clarity-chat/react'
 import { expect, within } from 'storybook/test'

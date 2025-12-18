@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 import type { Meta, StoryObj } from '@storybook/react'
 import { CodeBlock } from './CodeBlock'
 import { CODE_THEMES, getDarkThemes, getLightThemes } from './themes'
