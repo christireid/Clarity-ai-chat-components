@@ -4,10 +4,10 @@ import { expect, within } from 'storybook/test'
 
 /**
  * **FileUpload Component**
- * 
+ *
  * Drag and drop file upload component with progress tracking,
  * file validation, and multiple file support.
- * 
+ *
  * **Key Features:**
  * - Drag and drop interface
  * - Click to browse files
@@ -17,7 +17,7 @@ import { expect, within } from 'storybook/test'
  * - Progress tracking
  * - Error handling
  * - Accessible with keyboard navigation
- * 
+ *
  * **Use Cases:**
  * - Document uploads
  * - Image uploads

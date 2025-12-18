@@ -199,7 +199,7 @@ describe('TokenCounter - Enhanced Features', () => {
       const code = `
         function hello() {
           const message = 'Hello';
-          console.log(message);
+          logger.debug(message);
           return message;
         }
       `

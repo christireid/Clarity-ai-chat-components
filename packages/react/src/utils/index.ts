@@ -1,246 +1,82 @@
 /**
- * Utility Functions Export
+ * Utilities Index
  *
- * Re-export commonly used utilities for convenience.
- * Note: Most utilities are domain-specific and exported from their respective domains.
+ * This module provides organized access to all utility functions.
+ * Utilities are grouped by domain for better discoverability:
  *
- * @internal
- * These utilities are primarily for internal use. Public APIs should use
- * domain-specific exports from their respective domains.
+ * - streaming/      Streaming response utilities
+ * - message/        Message conversion and helpers
+ * - api/            API, rate limiting, and model utilities
+ * - resilience/     Circuit breakers and retry logic
+ * - optimization/   Token optimization and compression
+ * - tools/          Tool result utilities
+ * - config/         Configuration utilities
+ * - security/       Security and sanitization
+ * - search/         Search utilities
+ * - tokenization/   Token counting and pricing
+ * - prompt-caching/ Prompt cache management
+ * - toon/           Token-Oriented Object Notation
  */
 
-// Class name utility
-export * from './cn'
-
-// Model fallback and retry
-export * from './model-fallback'
-
-// Context window management
-export * from './context-window'
-
-// Memory & Context Management - exported separately via ./memory module
-// export * from './memory'
-
-// Rate limiting
-export * from './rate-limiting'
-
-// Hybrid search
-export * from './hybrid-search'
-
-// Mobile utilities (existing)
+// Core Utilities (remain at root)
+export { cn } from './cn'
 export * from './mobile'
+export * from './export-utils'
 
-// Token Optimization Utilities
-// Note: CompressionOptions/Result from prompt-compression conflict with memory types
-// Only export the compressPrompt function from here
-export { compressPrompt } from './prompt-compression'
+// Streaming Utilities
+export * from './streaming'
 
-// Advanced Semantic Compression (LLMLingua-style)
-export {
-  compressPromptSemantic,
-  compressPromptCombined,
-  calculateTokenImportance,
-  estimateCompressibility,
-  type SemanticCompressionOptions,
-  type SemanticCompressionResult,
-  type TokenImportance,
-} from './prompt-compression-advanced'
+// Message Utilities
+export * from './message'
 
-// Context Ordering (Lost-in-the-Middle mitigation)
-export {
-  reorderForAttention,
-  addStructuralMarkers,
-  optimizeContextLayout,
-  calculateMessageImportance,
-  estimateAttentionLoss,
-  createContextOrderingHook,
-  type ContextMessage,
-  type OrderingOptions,
-  type OrderedContext,
-  type StructuredMessage,
-} from './context-ordering'
+// API Utilities
+export * from './api'
 
-// LLMLingua-2 Style Compression (~1.5-2x RAG context compression)
-// Note: Statistical fallback achieves ~50-70% of original. Full ML model would achieve 3-5x.
-export {
-  LLMLinguaCompressor,
-  compressRAGContext,
-  intelligentCompress,
-  createLLMLinguaCompressor,
-  type LLMLinguaConfig,
-  type CompressionResult,
-  type CompressorStats,
-} from './llmlingua-compressor'
+// Resilience Utilities
+export * from './resilience'
 
-// Chain-of-Thought (CoT) Optimization
-export {
-  analyzeCoTPrompt,
-  optimizeCoTPrompt,
-  addZeroShotCoT,
-  recommendCoTApproach,
-  estimateCoTSavings,
-  createCoTPrompt,
-  COT_TRIGGERS,
-  type CoTOptimizationOptions,
-  type CoTAnalysis,
-  type CoTOptimizationResult,
-} from './cot-optimizer'
+// Optimization Utilities
+export * from './optimization'
 
-// Structured Output Schema Caching
-export {
-  SchemaCache,
-  createOpenAIWarmingRequest,
-  estimateSchemaLatency,
-  recommendSchemaStrategy,
-  COMMON_SCHEMAS,
-  type SchemaEntry,
-  type SchemaCacheOptions,
-  type SchemaWarmingResult,
-} from './structured-output-cache'
+// Tool Utilities
+export * from './tools'
 
-export * from './smart-cache'
-export * from './model-router'
-export * from './response-limiter'
-export * from './request-batcher'
+// Configuration Utilities
+export * from './config'
 
-// Batch API Support (50% cost savings)
-export {
-  BatchRequestManager,
-  estimateBatchSavings,
-  shouldUseBatch,
-  createOpenAIBatchFile,
-  createAnthropicBatchFile,
-  parseOpenAIBatchResults,
-  type BatchRequest,
-  type BatchJob,
-  type BatchJobStatus,
-  type BatchResult,
-  type BatchConfig,
-  type BatchCostEstimate,
-  type BatchStats,
-  type BatchMessage,
-} from './batch-api'
-export * from './reference-handler'
-export * from './response-prefilling'
-export * from './prompt-structure'
+// Security Utilities
+export * from './security'
 
-// Tokenization utilities
+// Search Utilities
+export * from './search'
+
+// Tokenization (existing subdirectory)
 export * from './tokenization'
 
-// Configuration Builder
-export * from './chat-config-builder'
-
-// Streaming utilities (shared across hooks)
-export * from './streaming-helpers'
-
-// Streaming Optimization (output token savings)
+// Prompt Caching (existing subdirectory)
 export {
-  StreamingResponseMonitor,
-  PartialResponseCache,
-  createOptimizedStreamHandler,
-  hashQuery,
-  estimateResponseLength,
-  getRecommendedMaxTokens,
-  DEFAULT_COMPLETION_SIGNALS,
-  DEFAULT_EARLY_STOP_PATTERNS,
-  type StreamingOptimizationConfig,
-  type ChunkAnalysis,
-  type StreamingMetrics,
-  type PartialResponseEntry,
-} from './streaming-optimizer'
+  PromptCacheManager,
+  createAnthropicCachedMessages,
+  estimateCacheSavings,
+  type CacheProvider,
+  type CacheableContent,
+  type CacheStats,
+  type PromptCacheOptions,
+} from './prompt-caching'
 
-// Message conversion utilities (canonical implementation)
-export * from './message-conversion'
-// Legacy exports for backward compatibility
-// Note: Commented out to avoid duplicate exports - message-converter re-exports from message-conversion
-// export * from './message-converter'
-
-// Tool result extraction utilities
-export * from './tool-result-extractor'
-
-// Message conversion utilities are exported from chat-ui domain
-// See: src/exports/chat-ui.ts
-// These are re-exported here for backward compatibility only
-
-// Message grouping utilities
-export * from './message-grouping'
-
-// Performance utilities (debounce, throttle, Batcher, etc.)
-export * from './performance'
-
-// Fetch utilities with timeout and abort support
+// TOON (existing subdirectory)
 export {
-  fetchWithTimeout,
-  TimeoutError,
-  isTimeoutError,
-  isAbortError,
-  type FetchWithTimeoutOptions,
-} from './fetch-with-timeout'
-
-// Rate limit header parsing
-export {
-  parseRateLimitHeaders,
-  calculateRetryDelay,
-  shouldThrottle,
-  RateLimitInfoError,
-  type RateLimitInfo,
-} from './rate-limit-headers'
-
-// Circuit breaker pattern for AI API resilience
-export {
-  CircuitBreaker,
-  CircuitOpenError,
-  createAICircuitBreaker,
-  withCircuitBreaker,
-  isCircuitOpenError,
-  type CircuitBreakerOptions,
-  type CircuitBreakerStats,
-  type CircuitState,
-} from './circuit-breaker'
-
-// Retry with exponential backoff
-export {
-  retryWithBackoff,
-  createRetryWrapper,
-  AI_API_RETRY_OPTIONS,
-  STREAMING_RETRY_OPTIONS,
-  type RetryOptions,
-  type RetryResult,
-} from './retry-with-backoff'
-
-// Request deduplication (prevent double-clicks)
-export {
-  RequestDeduplicator,
-  DebouncedError,
-  isDebouncedError,
-  createMessageKey,
-  createDeduplicator,
-  type DeduplicationOptions,
-  type DeduplicationStats,
-} from './request-deduplication'
-
-// Environment validation utilities
-export {
-  validateAIProvider,
-  validateVectorStore,
-  validateClarityChatConfig,
-  shouldUseMockMode,
-  getConfigSummary,
-  type EnvValidationResult,
-  type EnvValidationOptions,
-} from './env-validation'
-
-// Security utilities
-export {
-  safeEvaluate,
-  detectDangerousPatterns,
-  formatEvaluateResult,
-  type SafeEvaluateResult,
-} from './safe-evaluate'
-
-export {
-  sanitizeCodeHtml,
-  escapeHtmlEntities,
-  createSafeCodeHtml,
-  detectDangerousHtml,
-} from './sanitize-html'
+  jsonToToon,
+  toonToJson,
+  autoOptimize,
+  formatForLLM,
+  parseFlexible,
+  estimateToonSavings,
+  isSuitableForToon,
+  type ToonOptions,
+  type ToonFormat,
+  type ToonMetadata,
+  type ToonStats,
+  type ToonOptimizationResult,
+  type AutoToonOptions,
+} from './toon'

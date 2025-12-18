@@ -37,7 +37,9 @@ export async function installDevDependencies(
   packageManager: string,
   packages: string[]
 ): Promise<void> {
-  logger.info(`Installing ${packages.length} dev packages with ${packageManager}`)
+  logger.info(
+    `Installing ${packages.length} dev packages with ${packageManager}`
+  )
 
   const commands: Record<string, { cmd: string; args: string[] }> = {
     npm: { cmd: 'npm', args: ['install', '--save-dev', ...packages] },

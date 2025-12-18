@@ -127,7 +127,7 @@ function RAGExample() {
   const handleQuery = async () => {
     // Retrieve relevant documents
     const results = await rag.retrieve('What is React?', 5)
-    console.log('Retrieved documents:', results)
+    logger.debug('Retrieved documents:', results)
   }
 
   return (
@@ -257,7 +257,7 @@ function VectorStoreExample() {
 
   const handleSearch = async () => {
     const results = await search('What is React?', { topK: 5 })
-    console.log('Search results:', results)
+    logger.debug('Search results:', results)
   }
 
   return (
@@ -308,7 +308,7 @@ function EmbeddingsExample() {
   const handleEmbed = async () => {
     // Single text
     const embedding = await generate('What is React?')
-    console.log('Embedding:', embedding)
+    logger.debug('Embedding:', embedding)
 
     // Multiple texts (batch)
     const embeddings = await generate([
@@ -316,7 +316,7 @@ function EmbeddingsExample() {
       'What is Vue?',
       'What is Angular?',
     ])
-    console.log('Embeddings:', embeddings)
+    logger.debug('Embeddings:', embeddings)
   }
 
   return (

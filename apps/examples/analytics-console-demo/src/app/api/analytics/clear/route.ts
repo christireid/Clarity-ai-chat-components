@@ -15,14 +15,13 @@ export async function DELETE() {
         { status: 403 }
       )
     }
-    
+
     clearAllEntries()
-    
+
     return NextResponse.json({
       success: true,
-      message: 'All analytics data cleared'
+      message: 'All analytics data cleared',
     })
-    
   } catch (error) {
     console.error('Clear analytics error:', error)
     return NextResponse.json(

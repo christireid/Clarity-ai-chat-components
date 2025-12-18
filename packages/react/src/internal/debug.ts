@@ -270,7 +270,7 @@ export function debugLog(
   const timestamp = entry.timestamp.toISOString().split('T')[1]?.slice(0, 12)
 
   if (data !== undefined) {
-    console.groupCollapsed(
+    console.log(
       `%c${level.toUpperCase()}%c [${timestamp}] %c${source}%c ${message}`,
       LOG_BADGES[level],
       'color: #888',
@@ -278,7 +278,7 @@ export function debugLog(
       LOG_STYLES[level]
     )
     console.log(data)
-    console.groupEnd()
+    console.log()
   } else {
     console.log(
       `%c${level.toUpperCase()}%c [${timestamp}] %c${source}%c ${message}`,

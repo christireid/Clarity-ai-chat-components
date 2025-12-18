@@ -21,8 +21,8 @@ async function main() {
       extensionTestsPath,
       launchArgs: [
         '--disable-extensions', // Disable other extensions
-        '--disable-gpu' // Faster in CI
-      ]
+        '--disable-gpu', // Faster in CI
+      ],
     })
   } catch (err) {
     console.error('Failed to run tests:', err)

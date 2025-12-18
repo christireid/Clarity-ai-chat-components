@@ -5,11 +5,11 @@ import { useState } from 'react'
 
 /**
  * **useChat Hook (Enhanced)**
- * 
+ *
  * Enhanced useChat hook with full Vercel AI SDK compatibility.
  * Provides complete chat interface with streaming support, message management,
  * tool calling, and multi-modal content.
- * 
+ *
  * **Key Features:**
  * - Vercel AI SDK compatible API
  * - Streaming support (SSE and data protocols)
@@ -19,7 +19,7 @@ import { useState } from 'react'
  * - Error handling and recovery
  * - Request cancellation
  * - Form handling
- * 
+ *
  * **Use Cases:**
  * - AI chat interfaces
  * - Multi-turn conversations
@@ -76,7 +76,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 function BasicChatDemo() {
-  const { messages, append, isLoading, handleSubmit, input, setInput, error, stop } = useChat({
+  const {
+    messages,
+    append,
+    isLoading,
+    handleSubmit,
+    input,
+    setInput,
+    error,
+    stop,
+  } = useChat({
     initialMessages: [],
     onFinish: (message) => {
       console.log('Message finished:', message)
@@ -156,32 +165,35 @@ export const BasicUsage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic chat interface using enhanced useChat hook with form handling and message display.',
+        story:
+          'Basic chat interface using enhanced useChat hook with form handling and message display.',
       },
     },
   },
 }
 
 function WithInitialMessagesDemo() {
-  const { messages, append, isLoading, handleSubmit, input, setInput } = useChat({
-    initialMessages: [
-      {
-        id: '1',
-        role: 'assistant',
-        content: 'Hello! How can I help you today?',
-      },
-      {
-        id: '2',
-        role: 'user',
-        content: 'Tell me about React hooks',
-      },
-      {
-        id: '3',
-        role: 'assistant',
-        content: 'React hooks are functions that let you use state and other React features in functional components.',
-      },
-    ],
-  })
+  const { messages, append, isLoading, handleSubmit, input, setInput } =
+    useChat({
+      initialMessages: [
+        {
+          id: '1',
+          role: 'assistant',
+          content: 'Hello! How can I help you today?',
+        },
+        {
+          id: '2',
+          role: 'user',
+          content: 'Tell me about React hooks',
+        },
+        {
+          id: '3',
+          role: 'assistant',
+          content:
+            'React hooks are functions that let you use state and other React features in functional components.',
+        },
+      ],
+    })
 
   return (
     <div className="flex flex-col h-[500px] border rounded-lg max-w-2xl">
@@ -238,7 +250,8 @@ export const WithInitialMessages: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Chat with pre-populated initial messages to continue an existing conversation.',
+        story:
+          'Chat with pre-populated initial messages to continue an existing conversation.',
       },
     },
   },
@@ -253,15 +266,15 @@ function AppendMessageDemo() {
 
   const handleAppend = async () => {
     if (!customMessage.trim()) return
-    
+
     // Append user message
     await append({
       role: 'user',
       content: customMessage,
     })
-    
+
     setCustomMessage('')
-    
+
     // Simulate assistant response
     setTimeout(async () => {
       await append({
@@ -320,7 +333,10 @@ function AppendMessageDemo() {
             className="flex-1 p-2 border rounded-lg"
             disabled={isLoading}
           />
-          <Button onClick={handleAppend} disabled={isLoading || !customMessage.trim()}>
+          <Button
+            onClick={handleAppend}
+            disabled={isLoading || !customMessage.trim()}
+          >
             Append Message
           </Button>
           {isLoading && (
@@ -330,7 +346,8 @@ function AppendMessageDemo() {
           )}
         </div>
         <p className="text-xs text-gray-500">
-          Using append() to programmatically add messages instead of form submission.
+          Using append() to programmatically add messages instead of form
+          submission.
         </p>
       </div>
     </div>
@@ -409,7 +426,8 @@ function ReloadDemo() {
         )}
       </div>
       <p className="text-xs text-gray-500">
-        Use reload() to regenerate the last assistant message. This is useful for retrying failed requests or getting alternative responses.
+        Use reload() to regenerate the last assistant message. This is useful
+        for retrying failed requests or getting alternative responses.
       </p>
     </div>
   )
@@ -439,18 +457,18 @@ function ErrorHandlingDemo() {
 
   const handleAppend = async () => {
     if (!message.trim()) return
-    
+
     try {
       // Simulate an error for demo
       if (message.toLowerCase().includes('error')) {
         throw new Error('Simulated API error')
       }
-      
+
       await append({
         role: 'user',
         content: message,
       })
-      
+
       // Simulate assistant response
       setTimeout(async () => {
         await append({
@@ -458,7 +476,7 @@ function ErrorHandlingDemo() {
           content: `Response to: "${message}"`,
         })
       }, 1000)
-      
+
       setMessage('')
     } catch (err) {
       console.error('Failed to append:', err)
@@ -501,13 +519,19 @@ function ErrorHandlingDemo() {
 
       {error && (
         <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <div className="font-medium text-red-800 dark:text-red-200">Error:</div>
-          <div className="text-sm text-red-700 dark:text-red-300 mt-1">{error.message}</div>
+          <div className="font-medium text-red-800 dark:text-red-200">
+            Error:
+          </div>
+          <div className="text-sm text-red-700 dark:text-red-300 mt-1">
+            {error.message}
+          </div>
         </div>
       )}
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Message (try "error" to trigger error):</label>
+        <label className="text-sm font-medium">
+          Message (try "error" to trigger error):
+        </label>
         <div className="flex gap-2">
           <input
             value={message}
@@ -516,7 +540,10 @@ function ErrorHandlingDemo() {
             className="flex-1 p-2 border rounded-lg"
             disabled={isLoading}
           />
-          <Button onClick={handleAppend} disabled={isLoading || !message.trim()}>
+          <Button
+            onClick={handleAppend}
+            disabled={isLoading || !message.trim()}
+          >
             Send
           </Button>
           {isLoading && (
@@ -535,7 +562,8 @@ export const ErrorHandling: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Error handling with keepLastMessageOnError option to preserve messages on error.',
+        story:
+          'Error handling with keepLastMessageOnError option to preserve messages on error.',
       },
     },
   },

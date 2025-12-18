@@ -101,7 +101,7 @@ function AnalyticsView({ messages }: { messages: Message[] }) {
       autoGenerate
       updateInterval={30000}
       onAnalyticsGenerated={(analytics) => {
-        console.log('Analytics:', analytics)
+        logger.debug('Analytics:', analytics)
       }}
     />
   )

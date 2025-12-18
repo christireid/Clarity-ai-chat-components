@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
@@ -95,7 +96,7 @@ function App() {
         timestamp: Date.now(),
       }])
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setIsLoading(false)
     }
@@ -152,7 +153,7 @@ app.post('/api/chat', async (req, res) => {
   res.json({ message: completion.choices[0].message.content })
 })
 
-app.listen(3001, () => console.log('Server running on port 3001'))`}
+app.listen(3001, () => logger.debug('Server running on port 3001'))`}
         />
       </section>
 

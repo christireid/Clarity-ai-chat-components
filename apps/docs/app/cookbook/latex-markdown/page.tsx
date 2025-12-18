@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -106,7 +107,7 @@ def quadratic(a, b, c, x):
   content={content}
   onMathError={(error, latex) => {
     toast.error('Math failed to render')
-    console.warn('Invalid LaTeX', { error, latex })
+    logger.warn('Invalid LaTeX', { error, latex })
   }}
 />`}
         />

@@ -9,14 +9,14 @@
 import { clarityMemory } from '../src/core/memory'
 
 async function main() {
-  console.log('🚀 Clarity Memory Quick Start\n')
+  logger.debug('🚀 Clarity Memory Quick Start\n')
 
   // Step 1: Create memory instance (zero config!)
   const mem = clarityMemory()
-  console.log('✅ Memory instance created\n')
+  logger.debug('✅ Memory instance created\n')
 
   // Step 2: Add some memories
-  console.log('📝 Adding memories...')
+  logger.debug('📝 Adding memories...')
   await mem.add("User prefers TypeScript over JavaScript", {
     type: 'semantic',
     importance: 0.9,
@@ -32,45 +32,45 @@ async function main() {
     type: 'episodic',
     importance: 0.5
   })
-  console.log('✅ Memories added\n')
+  logger.debug('✅ Memories added\n')
 
   // Step 3: Search for memories
-  console.log('🔍 Searching for "user preferences"...')
+  logger.debug('🔍 Searching for "user preferences"...')
   const results = await mem.search("user preferences", {
     limit: 5
   })
   
-  console.log(`Found ${results.length} results:`)
+  logger.debug(`Found ${results.length} results:`)
   results.forEach((result, i) => {
-    console.log(`  ${i + 1}. [${result.score.toFixed(2)}] ${result.memory.content}`)
+    logger.debug(`  ${i + 1}. [${result.score.toFixed(2)}] ${result.memory.content}`)
   })
-  console.log()
+  logger.debug()
 
   // Step 4: Get optimized context for LLM
-  console.log('📦 Getting optimized context...')
+  logger.debug('📦 Getting optimized context...')
   const context = await mem.context({
     maxTokens: 500,
     query: "user preferences"
   })
   
-  console.log(`Context (${context.tokens} tokens):`)
-  console.log(context.text)
-  console.log()
+  logger.debug(`Context (${context.tokens} tokens):`)
+  logger.debug(context.text)
+  logger.debug()
 
   // Step 5: Check statistics
-  console.log('📊 Statistics:')
+  logger.debug('📊 Statistics:')
   const stats = await mem.getStats()
-  console.log(`  Total memories: ${stats.total}`)
-  console.log(`  By type:`, stats.byType)
-  console.log(`  Total tokens: ${stats.totalTokens}`)
-  console.log()
+  logger.debug(`  Total memories: ${stats.total}`)
+  logger.debug(`  By type:`, stats.byType)
+  logger.debug(`  Total tokens: ${stats.totalTokens}`)
+  logger.debug()
 
   // Cleanup
   await mem.close()
-  console.log('✅ Example complete!')
+  logger.debug('✅ Example complete!')
 }
 
 main().catch((error) => {
-  console.error('❌ Error:', error)
+  logger.error('❌ Error:', error)
   process.exit(1)
 })

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -315,7 +316,7 @@ function RAGDocumentManager() {
             context={doc}
             onToggle={toggleActive}
             onRemove={removeDocument}
-            onPreview={(ctx) => console.log('Preview:', ctx)}
+            onPreview={(ctx) => logger.debug('Preview:', ctx)}
             showActions={true}
           />
         ))}

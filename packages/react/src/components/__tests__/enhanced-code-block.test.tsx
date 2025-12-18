@@ -33,7 +33,7 @@ vi.mock('../message/markdown-code-block', () => ({
 
 describe('EnhancedCodeBlock', () => {
   const sampleCode = `function hello() {
-  console.log("Hello world");
+  logger.debug("Hello world");
   return true;
 }`
 

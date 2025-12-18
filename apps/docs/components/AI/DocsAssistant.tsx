@@ -687,7 +687,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         </div>
       )}
       onError={(error, errorInfo) => {
-        console.error('[DocsAssistant] Error:', error, errorInfo)
+        logger.error('[DocsAssistant] Error:', error, errorInfo)
       }}
       onReset={() => {
         toast.info('Documentation Assistant has been reset')

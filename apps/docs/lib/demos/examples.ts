@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Full working code examples for each demo
  * These are complete, copy-paste-ready examples that users can use as starters
@@ -17,8 +18,8 @@ export default function App() {
       theme="auto"
       showTimestamps
       enableMarkdown
-      onMessageSent={(msg) => console.log('Sent:', msg)}
-      onError={(error) => console.error('Chat error:', error)}
+      onMessageSent={(msg) => logger.debug('Sent:', msg)}
+      onError={(error) => logger.error('Chat error:', error)}
     />
   )
 }
@@ -113,9 +114,9 @@ export default function StreamingDemo() {
         api="/api/chat"
         enableStreaming
         streamingOptions={{
-          onStart: () => console.log('Stream started'),
-          onToken: (token) => console.log('Token:', token),
-          onComplete: () => console.log('Stream complete'),
+          onStart: () => logger.debug('Stream started'),
+          onToken: (token) => logger.debug('Token:', token),
+          onComplete: () => logger.debug('Stream complete'),
         }}
       />
     </div>
@@ -468,7 +469,7 @@ export default function EnterpriseChat({ tenantId, userId }) {
 
         // Error handling
         onError={(error) => {
-          console.error('Chat error:', error)
+          logger.error('Chat error:', error)
           // Send to error tracking service
         }}
 

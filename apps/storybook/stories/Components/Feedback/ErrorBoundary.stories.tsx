@@ -9,14 +9,19 @@ import {
 
 const SimulatedWidget: React.FC<{ explode: boolean }> = ({ explode }) => {
   if (explode) {
-    throw new Error('Simulated failure: downstream embedding service not responding')
+    throw new Error(
+      'Simulated failure: downstream embedding service not responding'
+    )
   }
 
   return (
     <div className="space-y-2 rounded-xl border border-border bg-card p-6 text-left shadow-sm">
-      <h3 className="text-sm font-semibold text-foreground">Analytics Stream</h3>
+      <h3 className="text-sm font-semibold text-foreground">
+        Analytics Stream
+      </h3>
       <p className="text-xs text-muted-foreground">
-        This widget renders live metrics from the agent run feed. Toggle the button below to simulate a runtime error.
+        This widget renders live metrics from the agent run feed. Toggle the
+        button below to simulate a runtime error.
       </p>
     </div>
   )
@@ -24,10 +29,10 @@ const SimulatedWidget: React.FC<{ explode: boolean }> = ({ explode }) => {
 
 /**
  * **ErrorBoundary Component**
- * 
+ *
  * Production-ready React error boundaries with enhanced reporting
  * and recovery mechanisms.
- * 
+ *
  * **Key Features:**
  * - Default and custom fallback UIs
  * - Error reporting integration
@@ -35,7 +40,7 @@ const SimulatedWidget: React.FC<{ explode: boolean }> = ({ explode }) => {
  * - Reset keys for automatic recovery
  * - Enhanced error boundary with telemetry
  * - Error context preservation
- * 
+ *
  * **Use Cases:**
  * - Application-wide error handling
  * - Component-level error boundaries
@@ -151,7 +156,9 @@ export const CustomFallback: Story = {
         fallback={(error, reset) => (
           <div className="flex max-w-lg flex-col gap-3 rounded-xl border border-warning bg-warning/10 p-6 shadow-sm">
             <div>
-              <h3 className="text-sm font-semibold text-warning">Graceful degradation</h3>
+              <h3 className="text-sm font-semibold text-warning">
+                Graceful degradation
+              </h3>
               <p className="text-xs text-muted-foreground">{error.message}</p>
             </div>
             <div className="flex gap-2">
@@ -206,11 +213,15 @@ export const EnhancedWithTelemetry: Story = {
           enableFeedback
           severity="error"
           errorContext={{ surface: 'SessionSummaryCard' }}
-          onError={(error) => console.info('[Storybook] Error captured', error.message)}
+          onError={(error) =>
+            console.info('[Storybook] Error captured', error.message)
+          }
           fallback={(error, reset, showFeedback) => (
             <div className="flex max-w-lg flex-col gap-3 rounded-xl border border-destructive bg-destructive/10 p-6 shadow-sm">
               <div>
-                <h3 className="text-sm font-semibold text-destructive">Session summary failed</h3>
+                <h3 className="text-sm font-semibold text-destructive">
+                  Session summary failed
+                </h3>
                 <p className="text-xs text-destructive/80">{error.message}</p>
               </div>
               <div className="flex gap-2">
@@ -229,7 +240,9 @@ export const EnhancedWithTelemetry: Story = {
                   className="rounded-lg border border-border bg-background px-3 py-1 text-xs hover:bg-accent"
                   onClick={() => {
                     showFeedback()
-                    alert('Feedback dialog opened via ErrorBoundaryEnhanced context')
+                    alert(
+                      'Feedback dialog opened via ErrorBoundaryEnhanced context'
+                    )
                   }}
                 >
                   Share feedback

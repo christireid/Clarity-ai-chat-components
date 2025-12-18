@@ -46,7 +46,13 @@ export const CustomFallback: Story = {
   args: {
     children: <ThrowError />,
     fallback: ({ error, resetError }) => (
-      <div style={{ padding: '2rem', border: '2px solid red', borderRadius: '8px' }}>
+      <div
+        style={{
+          padding: '2rem',
+          border: '2px solid red',
+          borderRadius: '8px',
+        }}
+      >
         <h2>Custom Error UI</h2>
         <p>{error.message}</p>
         <button onClick={resetError}>Reset</button>

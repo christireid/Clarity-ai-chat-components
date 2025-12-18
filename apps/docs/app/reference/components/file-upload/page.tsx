@@ -209,7 +209,7 @@ function UploadDemo() {
           <CodePlayground
             initialCode={`function Example() {
   const handleUpload = async (files) => {
-    console.log('Uploading...', files)
+    logger.debug('Uploading...', files)
     // Simulate 1s upload delay
     await new Promise(r => setTimeout(r, 1000))
     

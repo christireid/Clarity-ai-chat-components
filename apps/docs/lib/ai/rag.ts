@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * RAG (Retrieval-Augmented Generation)
  *
@@ -56,7 +57,7 @@ export async function retrieveRelevantDocs(
     })
 
     if (keywordResults.length > 0) {
-      console.log(`Found ${keywordResults.length} results using keyword search`)
+      logger.debug(`Found ${keywordResults.length} results using keyword search`)
 
       // Convert keyword search results to SearchResult format
       const searchResults: SearchResult[] = keywordResults.map((result) => ({
@@ -73,7 +74,7 @@ export async function retrieveRelevantDocs(
     }
 
     // Fallback to embeddings-based search if keyword search returns no results
-    console.log('Keyword search returned no results, trying embeddings search...')
+    logger.debug('Keyword search returned no results, trying embeddings search...')
 
     // Generate embedding for the query
     const queryEmbedding = await generateEmbedding(query)
@@ -89,7 +90,7 @@ export async function retrieveRelevantDocs(
 
     return filteredResults
   } catch (error) {
-    console.error('Error in retrieveRelevantDocs:', error)
+    logger.error('Error in retrieveRelevantDocs:', error)
 
     // Last resort: try keyword search with very low threshold
     const keywordResults = searchDocumentation(query, {

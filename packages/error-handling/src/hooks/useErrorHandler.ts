@@ -15,7 +15,7 @@ export interface UseErrorHandlerOptions {
 
 /**
  * Hook for centralized error handling with logging and notifications
- * 
+ *
  * @example
  * ```tsx
  * const { handleError } = useErrorHandler({
@@ -26,7 +26,7 @@ export interface UseErrorHandlerOptions {
  *     Sentry.captureException(error)
  *   }
  * })
- * 
+ *
  * try {
  *   await riskyOperation()
  * } catch (error) {
@@ -47,7 +47,7 @@ export function useErrorHandler(options?: UseErrorHandlerOptions) {
 
       // Log to console in development
       if (logErrors) {
-        console.group('🚨 Clarity Chat Error')
+        console.debug('🚨 Clarity Chat Error')
         console.error('Error:', err)
 
         // If it's our custom error, log the full details
@@ -55,7 +55,7 @@ export function useErrorHandler(options?: UseErrorHandlerOptions) {
           console.error('\n' + err.toString())
         }
 
-        console.groupEnd()
+        console.debug()
       }
 
       // Show toast notification if enabled

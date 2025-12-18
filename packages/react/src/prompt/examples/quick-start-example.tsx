@@ -1,6 +1,6 @@
 /**
  * Quick Start Example
- * 
+ *
  * Simplest possible example - zero configuration needed
  */
 
@@ -10,7 +10,7 @@ import {
   ChatWindow,
   convertCoreMessagesToMessages,
 } from '../../index'
-import { useQuickOptimize } from '../hooks/use-quick-optimize'
+import { useQuickOptimize } from '../hooks/hooks/use-quick-optimize'
 
 export function QuickStartExample() {
   const chat = useClarityChat({
@@ -30,8 +30,8 @@ export function QuickStartExample() {
         <h1 className="text-xl font-bold">Quick Start Example</h1>
         {wasOptimized && tokenStats.saved > 0 && (
           <div className="mt-2 text-sm text-green-600">
-            ✅ Optimized: Saved {tokenStats.saved} tokens
-            ({tokenStats.original} → {tokenStats.optimized})
+            ✅ Optimized: Saved {tokenStats.saved} tokens ({tokenStats.original}{' '}
+            → {tokenStats.optimized})
           </div>
         )}
       </div>
@@ -89,8 +89,10 @@ export function QuickStartExample() {
  * Example with preset selection
  */
 export function QuickStartWithPresetExample() {
-  const [preset, setPreset] = React.useState<'balanced' | 'conservative' | 'aggressive'>('balanced')
-  
+  const [preset, setPreset] = React.useState<
+    'balanced' | 'conservative' | 'aggressive'
+  >('balanced')
+
   const chat = useClarityChat({
     api: '/api/chat',
   })
@@ -122,7 +124,8 @@ export function QuickStartWithPresetExample() {
         </div>
         {tokenStats.saved > 0 && (
           <div className="mt-2 text-sm">
-            Tokens: {tokenStats.optimized} / {tokenStats.original} (saved {tokenStats.saved})
+            Tokens: {tokenStats.optimized} / {tokenStats.original} (saved{' '}
+            {tokenStats.saved})
           </div>
         )}
       </div>

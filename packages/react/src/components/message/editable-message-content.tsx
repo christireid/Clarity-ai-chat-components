@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, cn, Textarea } from '@clarity-chat/primitives'
-import { CheckIcon, CloseIcon } from '../icons'
+import { CheckIcon, CloseIcon } from '../ui/icons'
 import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /** Maximum recommended content length before warning */

@@ -5,7 +5,7 @@ import { expect, userEvent, within, waitFor } from 'storybook/test'
 
 /**
  * Enhanced ChatInput component with delightful microanimations and state management.
- * 
+ *
  * **Key Features:**
  * - Smooth expand/contract animation as user types
  * - Character counter with color-coded feedback (blue → yellow → red)
@@ -16,7 +16,7 @@ import { expect, userEvent, within, waitFor } from 'storybook/test'
  * - Error shake animation when over limit
  * - Helpful keyboard hints on focus
  * - Accessible with ARIA labels
- * 
+ *
  * **Design Philosophy:**
  * - Delightful by Default: Every interaction provides clear feedback
  * - Progressive Disclosure: Advanced features appear contextually
@@ -30,7 +30,8 @@ const meta = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'A delightful chat input component with smooth animations, character counting, and comprehensive state management.',
+        component:
+          'A delightful chat input component with smooth animations, character counting, and comprehensive state management.',
       },
     },
   },
@@ -106,7 +107,7 @@ export const Default: Story = {
 export const WithCharacterLimit: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput
@@ -129,7 +130,7 @@ export const WithCharacterLimit: Story = {
 export const CustomPlaceholder: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput
@@ -153,9 +154,13 @@ export const CustomPlaceholder: Story = {
 export const CharacterCounterStates: Story = {
   render: () => {
     const [value1, setValue1] = useState('This is a short message')
-    const [value2, setValue2] = useState('This message is getting close to the limit and will show warning colors soon')
-    const [value3, setValue3] = useState('This message is way too long and exceeds the maximum character limit! You cannot send this message until you shorten it.')
-    
+    const [value2, setValue2] = useState(
+      'This message is getting close to the limit and will show warning colors soon'
+    )
+    const [value3, setValue3] = useState(
+      'This message is way too long and exceeds the maximum character limit! You cannot send this message until you shorten it.'
+    )
+
     return (
       <div className="flex flex-col gap-6 max-w-2xl">
         <div>
@@ -170,9 +175,11 @@ export const CharacterCounterStates: Story = {
             maxLength={100}
           />
         </div>
-        
+
         <div>
-          <h3 className="text-sm font-medium mb-2">Warning (Yellow) - 80% of limit</h3>
+          <h3 className="text-sm font-medium mb-2">
+            Warning (Yellow) - 80% of limit
+          </h3>
           <ChatInput
             value={value2}
             onChange={setValue2}
@@ -183,7 +190,7 @@ export const CharacterCounterStates: Story = {
             maxLength={100}
           />
         </div>
-        
+
         <div>
           <h3 className="text-sm font-medium mb-2">Error (Red) - Over limit</h3>
           <ChatInput
@@ -207,7 +214,7 @@ export const CharacterCounterStates: Story = {
 export const CustomWarningThreshold: Story = {
   render: () => {
     const [value, setValue] = useState('Testing custom warning threshold')
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput
@@ -231,7 +238,7 @@ export const CustomWarningThreshold: Story = {
 export const NoCharacterCounter: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput
@@ -261,7 +268,7 @@ export const SendButtonStates: Story = {
     const [value, setValue] = useState('Test message')
     const [delay, setDelay] = useState(2000)
     const [shouldFail, setShouldFail] = useState(false)
-    
+
     const handleSubmit = async (val: string) => {
       console.log('Submitting:', val)
       await new Promise((resolve, reject) => {
@@ -277,15 +284,11 @@ export const SendButtonStates: Story = {
         setValue('')
       }
     }
-    
+
     return (
       <div className="flex flex-col gap-4 max-w-2xl">
-        <ChatInput
-          value={value}
-          onChange={setValue}
-          onSubmit={handleSubmit}
-        />
-        
+        <ChatInput value={value} onChange={setValue} onSubmit={handleSubmit} />
+
         <div className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Delay (ms)</label>
@@ -300,7 +303,7 @@ export const SendButtonStates: Story = {
             />
             <span className="text-xs text-gray-600">{delay}ms</span>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <label className="text-sm">
               <input
@@ -313,9 +316,10 @@ export const SendButtonStates: Story = {
             </label>
           </div>
         </div>
-        
+
         <p className="text-sm text-gray-600">
-          Watch the send button transition through states: idle → loading → {shouldFail ? 'error' : 'success'}
+          Watch the send button transition through states: idle → loading →{' '}
+          {shouldFail ? 'error' : 'success'}
         </p>
       </div>
     )
@@ -329,11 +333,13 @@ export const SendButtonStates: Story = {
 export const FocusGlowAnimation: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <div className="flex flex-col gap-6 max-w-2xl">
         <div>
-          <h3 className="text-sm font-medium mb-2">With focus glow (default)</h3>
+          <h3 className="text-sm font-medium mb-2">
+            With focus glow (default)
+          </h3>
           <ChatInput
             value={value}
             onChange={setValue}
@@ -347,7 +353,7 @@ export const FocusGlowAnimation: Story = {
             Click inside to see the glowing focus ring animation
           </p>
         </div>
-        
+
         <div>
           <h3 className="text-sm font-medium mb-2">Without focus glow</h3>
           <ChatInput
@@ -368,11 +374,13 @@ export const FocusGlowAnimation: Story = {
 export const HeightAnimation: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <div className="flex flex-col gap-6 max-w-2xl">
         <div>
-          <h3 className="text-sm font-medium mb-2">With height animation (default)</h3>
+          <h3 className="text-sm font-medium mb-2">
+            With height animation (default)
+          </h3>
           <ChatInput
             value={value}
             onChange={setValue}
@@ -386,7 +394,7 @@ export const HeightAnimation: Story = {
             Type multiple lines (Shift + Enter) to see smooth expansion
           </p>
         </div>
-        
+
         <div>
           <h3 className="text-sm font-medium mb-2">Without height animation</h3>
           <ChatInput
@@ -415,13 +423,13 @@ export const ChatConversation: Story = {
       { id: 1, text: 'Hello! How can I help you today?', isUser: false },
       { id: 2, text: 'I have a question about your product', isUser: true },
     ])
-    
+
     const handleSubmit = async (val: string) => {
       // Add user message
       const userMsg = { id: Date.now(), text: val, isUser: true }
       setMessages((prev) => [...prev, userMsg])
       setValue('')
-      
+
       // Simulate AI response
       await new Promise((resolve) => setTimeout(resolve, 1500))
       const aiMsg = {
@@ -431,7 +439,7 @@ export const ChatConversation: Story = {
       }
       setMessages((prev) => [...prev, aiMsg])
     }
-    
+
     return (
       <div className="flex flex-col h-[500px] border rounded-lg max-w-2xl">
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -452,7 +460,7 @@ export const ChatConversation: Story = {
             </div>
           ))}
         </div>
-        
+
         <ChatInput
           value={value}
           onChange={setValue}
@@ -468,7 +476,7 @@ export const SupportTicket: Story = {
   render: () => {
     const [value, setValue] = useState('')
     const [submitted, setSubmitted] = useState(false)
-    
+
     const handleSubmit = async (val: string) => {
       console.log('Ticket submitted:', val)
       await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -476,14 +484,14 @@ export const SupportTicket: Story = {
       setSubmitted(true)
       setTimeout(() => setSubmitted(false), 3000)
     }
-    
+
     return (
       <div className="flex flex-col gap-4 max-w-2xl p-6 border rounded-lg">
         <h2 className="text-lg font-semibold">Submit a Support Ticket</h2>
         <p className="text-sm text-gray-600">
           Describe your issue in detail. We'll get back to you within 24 hours.
         </p>
-        
+
         <ChatInput
           value={value}
           onChange={setValue}
@@ -491,7 +499,7 @@ export const SupportTicket: Story = {
           placeholder="Describe your issue..."
           maxLength={1000}
         />
-        
+
         {submitted && (
           <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-sm text-green-800 dark:text-green-200">
             ✓ Your ticket has been submitted successfully!
@@ -507,9 +515,14 @@ export const CommentSystem: Story = {
     const [value, setValue] = useState('')
     const [comments, setComments] = useState([
       { id: 1, author: 'Alice', text: 'Great article!', time: '2h ago' },
-      { id: 2, author: 'Bob', text: 'Very informative, thanks for sharing.', time: '1h ago' },
+      {
+        id: 2,
+        author: 'Bob',
+        text: 'Very informative, thanks for sharing.',
+        time: '1h ago',
+      },
     ])
-    
+
     const handleSubmit = async (val: string) => {
       const newComment = {
         id: Date.now(),
@@ -520,7 +533,7 @@ export const CommentSystem: Story = {
       setComments((prev) => [...prev, newComment])
       setValue('')
     }
-    
+
     return (
       <div className="flex flex-col gap-4 max-w-2xl">
         <div className="space-y-4">
@@ -538,7 +551,7 @@ export const CommentSystem: Story = {
             </div>
           ))}
         </div>
-        
+
         <ChatInput
           value={value}
           onChange={setValue}
@@ -589,7 +602,7 @@ export const LongContent: Story = {
     const [value, setValue] = useState(
       'This is a very long message that spans multiple lines.\n\nIt demonstrates how the textarea automatically expands as you type more content.\n\nThe component handles this gracefully with smooth animations.\n\nYou can add even more lines (up to 6) and it will keep expanding!'
     )
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput
@@ -611,7 +624,7 @@ export const LongContent: Story = {
 export const VeryShortLimit: Story = {
   render: () => {
     const [value, setValue] = useState('Hi!')
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput
@@ -639,7 +652,7 @@ export const VeryShortLimit: Story = {
 export const Accessibility: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <div className="flex flex-col gap-4 max-w-2xl">
         <ChatInput
@@ -651,7 +664,7 @@ export const Accessibility: Story = {
           }}
           maxLength={200}
         />
-        
+
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm space-y-2">
           <strong>Accessibility Features:</strong>
           <ul className="list-disc list-inside space-y-1">
@@ -685,7 +698,7 @@ export const Playground: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState('')
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput

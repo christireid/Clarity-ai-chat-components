@@ -134,7 +134,7 @@ export function createLiveblocksExtension(
     } as LiveblocksConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Liveblocks extension initialized')
+      ctx.console.info('Liveblocks extension initialized')
 
       let presence = new Map<string, PresenceData>()
       const presenceCallbacks = new Set<
@@ -143,18 +143,18 @@ export function createLiveblocksExtension(
 
       const adapter: RealtimeAdapter = {
         async connect() {
-          ctx.logger.info('Connecting to Liveblocks')
+          ctx.console.info('Connecting to Liveblocks')
           // Would use @liveblocks/client
         },
         disconnect() {
-          ctx.logger.info('Disconnecting from Liveblocks')
+          ctx.console.info('Disconnecting from Liveblocks')
         },
         subscribe(channel, callback) {
-          ctx.logger.debug(`Subscribing to channel: ${channel}`)
+          ctx.console.log(`Subscribing to channel: ${channel}`)
           return () => {}
         },
         publish(channel, data) {
-          ctx.logger.debug(`Publishing to channel: ${channel}`)
+          ctx.console.log(`Publishing to channel: ${channel}`)
         },
         getPresence() {
           return presence
@@ -234,14 +234,14 @@ export function createSocketIOExtension(
     } as SocketIOConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Socket.IO extension initialized')
+      ctx.console.info('Socket.IO extension initialized')
 
       let socket: unknown = null
       const subscriptions = new Map<string, Set<(data: unknown) => void>>()
 
       const adapter: RealtimeAdapter = {
         async connect() {
-          ctx.logger.info(`Connecting to Socket.IO at ${ctx.config.url}`)
+          ctx.console.info(`Connecting to Socket.IO at ${ctx.config.url}`)
           // Would use socket.io-client
           // socket = io(ctx.config.url, {
           //   path: ctx.config.path,
@@ -253,7 +253,7 @@ export function createSocketIOExtension(
           // })
         },
         disconnect() {
-          ctx.logger.info('Disconnecting from Socket.IO')
+          ctx.console.info('Disconnecting from Socket.IO')
           // socket?.disconnect()
         },
         subscribe(channel, callback) {
@@ -332,15 +332,15 @@ export function createYjsExtension(
     } as YjsConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Yjs extension initialized')
+      ctx.console.info('Yjs extension initialized')
 
       // Would use yjs and y-websocket/y-webrtc
       const adapter: RealtimeAdapter = {
         async connect() {
-          ctx.logger.info('Connecting Yjs document')
+          ctx.console.info('Connecting Yjs document')
         },
         disconnect() {
-          ctx.logger.info('Disconnecting Yjs document')
+          ctx.console.info('Disconnecting Yjs document')
         },
         subscribe(channel, callback) {
           return () => {}
@@ -397,18 +397,18 @@ export function createPusherExtension(
     } as PusherConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Pusher extension initialized')
+      ctx.console.info('Pusher extension initialized')
 
       // Would use pusher-js
       const adapter: RealtimeAdapter = {
         async connect() {
-          ctx.logger.info('Connecting to Pusher')
+          ctx.console.info('Connecting to Pusher')
         },
         disconnect() {
-          ctx.logger.info('Disconnecting from Pusher')
+          ctx.console.info('Disconnecting from Pusher')
         },
         subscribe(channel, callback) {
-          ctx.logger.debug(`Subscribing to Pusher channel: ${channel}`)
+          ctx.console.log(`Subscribing to Pusher channel: ${channel}`)
           return () => {}
         },
         publish(channel, data) {
@@ -463,14 +463,14 @@ export function createAblyExtension(
     } as AblyConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Ably extension initialized')
+      ctx.console.info('Ably extension initialized')
 
       const adapter: RealtimeAdapter = {
         async connect() {
-          ctx.logger.info('Connecting to Ably')
+          ctx.console.info('Connecting to Ably')
         },
         disconnect() {
-          ctx.logger.info('Disconnecting from Ably')
+          ctx.console.info('Disconnecting from Ably')
         },
         subscribe(channel, callback) {
           return () => {}
@@ -525,15 +525,15 @@ export function createPartyKitExtension(
     } as PartyKitConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('PartyKit extension initialized')
+      ctx.console.info('PartyKit extension initialized')
 
       // Would use partysocket
       const adapter: RealtimeAdapter = {
         async connect() {
-          ctx.logger.info('Connecting to PartyKit')
+          ctx.console.info('Connecting to PartyKit')
         },
         disconnect() {
-          ctx.logger.info('Disconnecting from PartyKit')
+          ctx.console.info('Disconnecting from PartyKit')
         },
         subscribe(channel, callback) {
           return () => {}

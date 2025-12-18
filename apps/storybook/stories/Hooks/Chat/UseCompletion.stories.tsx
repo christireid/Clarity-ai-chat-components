@@ -5,10 +5,10 @@ import { useState } from 'react'
 
 /**
  * **useCompletion Hook**
- * 
+ *
  * Hook for managing text completion state with streaming support.
  * Ideal for single-turn completions, autocomplete, and text generation.
- * 
+ *
  * **Key Features:**
  * - Streaming text completion
  * - Single-turn interactions
@@ -16,7 +16,7 @@ import { useState } from 'react'
  * - Request cancellation
  * - Custom API endpoints
  * - Callback support
- * 
+ *
  * **Use Cases:**
  * - Text autocomplete
  * - Single-turn AI completions
@@ -137,7 +137,8 @@ export const BasicUsage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic completion example with prompt input and streaming output.',
+        story:
+          'Basic completion example with prompt input and streaming output.',
       },
     },
   },
@@ -156,7 +157,7 @@ function MockAPIDemo() {
 
   const handleComplete = async () => {
     if (!prompt.trim()) return
-    
+
     // Simulate API call with streaming
     const mockStream = new ReadableStream({
       async start(controller) {
@@ -253,13 +254,13 @@ function ErrorHandlingDemo() {
 
   const handleComplete = async () => {
     if (!prompt.trim()) return
-    
+
     try {
       // Simulate an error
       if (prompt.toLowerCase().includes('error')) {
         throw new Error('Simulated API error')
       }
-      
+
       await complete(prompt)
     } catch (err) {
       console.error('Completion failed:', err)
@@ -269,7 +270,9 @@ function ErrorHandlingDemo() {
   return (
     <div className="space-y-4 max-w-2xl">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Prompt (try "error" to trigger error):</label>
+        <label className="text-sm font-medium">
+          Prompt (try "error" to trigger error):
+        </label>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -293,8 +296,12 @@ function ErrorHandlingDemo() {
 
       {error && (
         <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <div className="font-medium text-red-800 dark:text-red-200">Error:</div>
-          <div className="text-sm text-red-700 dark:text-red-300 mt-1">{error.message}</div>
+          <div className="font-medium text-red-800 dark:text-red-200">
+            Error:
+          </div>
+          <div className="text-sm text-red-700 dark:text-red-300 mt-1">
+            {error.message}
+          </div>
         </div>
       )}
 
@@ -383,7 +390,8 @@ export const Cancellation: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Cancelling an in-progress completion request using the stop() function.',
+        story:
+          'Cancelling an in-progress completion request using the stop() function.',
       },
     },
   },

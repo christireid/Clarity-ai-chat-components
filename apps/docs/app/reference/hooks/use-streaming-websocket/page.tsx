@@ -28,10 +28,10 @@ function BasicWebSocketDemo() {
   } = useStreamingWebSocket({
     url: 'wss://echo.websocket.org', // Public echo server for demo
     onMessage: (msg) => {
-      console.log('Received:', msg.data)
+      logger.debug('Received:', msg.data)
     },
     onError: (err) => {
-      console.error('WebSocket Error:', err)
+      logger.error('WebSocket Error:', err)
     },
   })
 
@@ -355,7 +355,7 @@ export default function UseStreamingWebSocketPage() {
   const { status, messages, connect, disconnect, sendJson } = useStreamingWebSocket({
     url: 'wss://echo.websocket.org',
     onMessage: (msg) => {
-      console.log('Received:', msg.data)
+      logger.debug('Received:', msg.data)
     },
   })
 
@@ -408,7 +408,7 @@ function SimpleWebSocket() {
   } = useStreamingWebSocket({
     url: 'wss://api.example.com/ws',
     onMessage: (msg) => {
-      console.log('Received:', msg.data)
+      logger.debug('Received:', msg.data)
     },
   })
 
@@ -450,7 +450,7 @@ function AutoConnectWebSocket() {
     url: 'wss://api.example.com/ws',
     connectOnMount: true, // Connect automatically
     onMessage: (msg) => {
-      console.log('Received:', msg.data)
+      logger.debug('Received:', msg.data)
     },
   })
 
@@ -540,10 +540,10 @@ function WebSocketWithReconnect() {
     reconnectDelay: 1000,
     maxReconnectDelay: 30000,
     onReconnecting: (attempt, delay) => {
-      console.log(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
+      logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
-      console.error('Max reconnection attempts reached')
+      logger.error('Max reconnection attempts reached')
     },
   })
 
@@ -578,7 +578,7 @@ function WebSocketWithHeartbeat() {
     heartbeatTimeout: 5000, // Timeout after 5 seconds
     heartbeatMessage: 'ping',
     onHeartbeatFailed: () => {
-      console.error('Heartbeat failed - connection may be dead')
+      logger.error('Heartbeat failed - connection may be dead')
       // Hook will automatically attempt reconnection
     },
   })
@@ -620,13 +620,13 @@ function WebSocketWithMessageHandling() {
     onMessage: (msg: WebSocketMessage) => {
       switch (msg.type) {
         case 'text':
-          console.log('Text message:', msg.data)
+          logger.debug('Text message:', msg.data)
           break
         case 'binary':
-          console.log('Binary message:', msg.raw)
+          logger.debug('Binary message:', msg.raw)
           break
         case 'blob':
-          console.log('Blob message:', msg.raw)
+          logger.debug('Blob message:', msg.raw)
           break
       }
     },
@@ -728,13 +728,13 @@ function CompleteWebSocketExample() {
     enableHeartbeat: true,
     heartbeatInterval: 30000,
     onMessage: (msg: WebSocketMessage) => {
-      console.log('Received:', msg.data)
+      logger.debug('Received:', msg.data)
     },
     onError: (err) => {
-      console.error('WebSocket Error:', err)
+      logger.error('WebSocket Error:', err)
     },
     onReconnecting: (attempt, delay) => {
-      console.log(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
+      logger.debug(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
     },
   })
 

@@ -114,7 +114,7 @@ function OfflineChat() {
           await chat.append(message)
           setPendingMessages(prev => prev.filter(m => m.id !== message.id))
         } catch (error) {
-          console.error('Failed to sync message:', error)
+          logger.error('Failed to sync message:', error)
         }
       })
     }

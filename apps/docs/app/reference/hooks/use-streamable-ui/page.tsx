@@ -35,10 +35,10 @@ function BasicStreamableUIDemo() {
     {
       mode: 'append',
       onUpdate: (value) => {
-        console.log('Updated:', value)
+        logger.debug('Updated:', value)
       },
       onComplete: (finalValue) => {
-        console.log('Complete:', finalValue)
+        logger.debug('Complete:', finalValue)
       },
     }
   )
@@ -231,7 +231,7 @@ export default function UseStreamableUIPage() {
   const { values, latest, status, isStreaming } = useStreamableUI(source, {
     mode: 'append',
     onComplete: (final) => {
-      console.log('Complete:', final)
+      logger.debug('Complete:', final)
     },
   })
 
@@ -520,7 +520,7 @@ function CompletionExample() {
     mode: 'append',
     completeWhen: (value) => value === null, // Complete when null is received
     onComplete: (finalValue) => {
-      console.log('Stream complete!', finalValue)
+      logger.debug('Stream complete!', finalValue)
     },
   })
 
@@ -612,13 +612,13 @@ function CompleteStreamableUIExample() {
       return value === '[DONE]'
     },
     onUpdate: (value) => {
-      console.log('New value:', value)
+      logger.debug('New value:', value)
     },
     onComplete: (finalValue) => {
-      console.log('Stream complete! Final:', finalValue)
+      logger.debug('Stream complete! Final:', finalValue)
     },
     onError: (err) => {
-      console.error('Stream error:', err)
+      logger.error('Stream error:', err)
     },
   })
 

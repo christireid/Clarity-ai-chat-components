@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -63,7 +64,7 @@ export default function AdvancedAgentWorkflowCookbook() {
     tools,
     maxIterations: 10,
     onToolCall: (tool, args) => {
-      console.log(\`Calling \${tool}:\`, args)
+      logger.debug(\`Calling \${tool}:\`, args)
     }
   })
 
@@ -203,7 +204,7 @@ const result = await agent.run({
     fallbackStrategy: 'skip' // or 'retry', 'fail'
   },
   onError: (error, toolName, attempt) => {
-    console.error(\`Tool \${toolName} failed (attempt \${attempt}):\`, error)
+    logger.error(\`Tool \${toolName} failed (attempt \${attempt}):\`, error)
   }
 })`}</code>
         </pre>

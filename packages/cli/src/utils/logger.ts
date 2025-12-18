@@ -1,6 +1,7 @@
 /**
  * Enhanced structured logging utility
  * Supports log levels, structured output, and request tracking
+ *
  */
 
 import pc from 'picocolors'
@@ -75,6 +76,7 @@ function formatLogEntry(entry: LogEntry): string {
 
 /**
  * Create logger instance
+ *
  */
 export function getLogger(
   namespace: string,
@@ -97,6 +99,10 @@ export function getLogger(
     return parts.join(' ')
   }
 
+  // Create the standard utils logger
+  const utilsLogger = getLogger(namespace)
+  utilsLogger.setLevel(level)
+
   return {
     info: (message: string, ...args: any[]) => {
       if (!shouldLog(LogLevel.INFO)) return
@@ -110,9 +116,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        console.log(formatLogEntry(entry))
+        utilsLogger.info(formatLogEntry(entry))
       } else {
-        console.log(formatPrefix('ℹ', pc.blue), message, ...args)
+        utilsLogger.info(formatPrefix('ℹ', pc.blue), message, ...args)
       }
     },
 
@@ -128,9 +134,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        console.warn(formatLogEntry(entry))
+        utilsLogger.warn(formatLogEntry(entry))
       } else {
-        console.warn(formatPrefix('⚠', pc.yellow), message, ...args)
+        utilsLogger.warn(formatPrefix('⚠', pc.yellow), message, ...args)
       }
     },
 
@@ -154,9 +160,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        console.error(formatLogEntry(entry))
+        utilsLogger.error(formatLogEntry(entry))
       } else {
-        console.error(formatPrefix('✖', pc.red), errorMessage, ...args)
+        utilsLogger.error(formatPrefix('✖', pc.red), errorMessage, ...args)
 
         if (
           error &&
@@ -164,7 +170,7 @@ export function getLogger(
           error.stack &&
           (process.env.DEBUG || process.env.VERBOSE)
         ) {
-          console.error(pc.gray(String(error.stack)))
+          utilsLogger.error(pc.gray(String(error.stack)))
         }
       }
     },
@@ -181,9 +187,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        console.log(formatLogEntry(entry))
+        utilsLogger.info(formatLogEntry(entry))
       } else {
-        console.log(formatPrefix('✔', pc.green), message, ...args)
+        utilsLogger.info(formatPrefix('✔', pc.green), message, ...args)
       }
     },
 
@@ -199,16 +205,25 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        console.log(formatLogEntry(entry))
+        utilsLogger.debug(formatLogEntry(entry))
       } else {
-        console.log(formatPrefix('🐛', pc.magenta), message, ...args)
+        utilsLogger.debug(formatPrefix('🐛', pc.magenta), message, ...args)
       }
     },
 
     setLevel: (level: LogLevel) => {
       instanceLevel = level
+      utilsLogger.setLevel(level)
     },
 
     getLevel: () => instanceLevel,
   }
+}
+
+export default {
+  LogLevel,
+  getLogger,
+  setGlobalLogLevel,
+  setRequestId,
+  getRequestId,
 }

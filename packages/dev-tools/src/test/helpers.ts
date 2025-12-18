@@ -1,3 +1,7 @@
+import { getLogger } from '../debug/logger'
+
+const logger = getLogger('test-helpers')
+
 /**
  * Test helper utilities
  * 
@@ -352,9 +356,9 @@ export class TestSuite {
       duration: number
     }>
   }> {
-    console.log()
-    console.log(infoBox(`Running test suite: ${chalk.bold(this.name)}`, '🧪 Test Suite'))
-    console.log()
+    logger.debug()
+    logger.debug(infoBox(`Running test suite: ${chalk.bold(this.name)}`, '🧪 Test Suite'))
+    logger.debug()
 
     const results: Array<{
       name: string
@@ -386,7 +390,7 @@ export class TestSuite {
           duration
         })
 
-        console.log(chalk.green(`  ✅ ${test.name}`) + chalk.gray(` (${duration.toFixed(2)}ms)`))
+        logger.debug(chalk.green(`  ✅ ${test.name}`) + chalk.gray(` (${duration.toFixed(2)}ms)`))
 
         // Run afterEach hooks
         for (const hook of this.afterEachHooks) {
@@ -402,15 +406,15 @@ export class TestSuite {
           duration
         })
 
-        console.log(chalk.red(`  ❌ ${test.name}`))
-        console.log(chalk.gray(`     ${(error as Error).message}`))
+        logger.debug(chalk.red(`  ❌ ${test.name}`))
+        logger.debug(chalk.gray(`     ${(error as Error).message}`))
 
         // Still run afterEach hooks
         for (const hook of this.afterEachHooks) {
           try {
             await hook()
           } catch (hookError) {
-            console.error('Error in afterEach hook:', hookError)
+            logger.error('Error in afterEach hook:', { error: hookError })
           }
         }
       }
@@ -439,9 +443,9 @@ export class TestSuite {
       r.error ? r.error.message.substring(0, 30) + '...' : '—',
     ])
 
-    console.log()
-    console.log(table(tableData, columns))
-    console.log()
+    logger.debug()
+    logger.debug(table(tableData, columns))
+    logger.debug()
 
     // Summary box
     const summaryData: Record<string, string> = {
@@ -452,11 +456,11 @@ export class TestSuite {
     }
 
     if (failed === 0) {
-      console.log(successBox(keyValueTable(summaryData), '✅ Test Results'))
+      logger.debug(successBox(keyValueTable(summaryData), '✅ Test Results'))
     } else {
-      console.log(errorBox(keyValueTable(summaryData), '❌ Test Results'))
+      logger.debug(errorBox(keyValueTable(summaryData), '❌ Test Results'))
     }
-    console.log()
+    logger.debug()
 
     return {
       passed,

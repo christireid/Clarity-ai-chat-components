@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -83,7 +84,7 @@ function App() {
       <ThemePreview 
         showEditor
         onThemeChange={(theme) => {
-          console.log('Theme updated:', theme)
+          logger.debug('Theme updated:', theme)
         }}
       />
     </ThemeProvider>
@@ -280,7 +281,7 @@ function ThemeBuilder() {
         setSaveEnabled(false)
       }
     } catch (error) {
-      console.error('Failed to save theme:', error)
+      logger.error('Failed to save theme:', error)
       alert('Failed to save theme')
     }
   }
@@ -392,7 +393,7 @@ function ThemeSettings() {
         <ThemePreview 
           showEditor={showCustomization}
           onThemeChange={(newTheme) => {
-            console.log('Theme customized:', newTheme)
+            logger.debug('Theme customized:', newTheme)
             // Optionally save to user preferences
           }}
         />
@@ -524,7 +525,7 @@ function ThemeImporter() {
         setError(null)
       } catch (err) {
         setError('Failed to parse theme file')
-        console.error(err)
+        logger.error(err)
       }
     }
     reader.readAsText(file)
@@ -620,8 +621,8 @@ import { ThemePreview, ThemeComparison } from '@clarity-chat/react'
 const preview Props: ThemePreviewProps = {
   showEditor: true,
   onThemeChange: (theme: CompleteThemeConfig) => {
-    console.log('Theme colors:', theme.colors)
-    console.log('Theme metadata:', theme.metadata)
+    logger.debug('Theme colors:', theme.colors)
+    logger.debug('Theme metadata:', theme.metadata)
   },
   className: 'custom-preview'
 }

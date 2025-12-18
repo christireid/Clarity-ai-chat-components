@@ -117,7 +117,7 @@ export interface LogOptions {
  * try {
  *   await riskyOperation();
  * } catch (error) {
- *   logger.error(error, {
+ *   console.error(error, {
  *     context: { operation: 'riskyOperation' },
  *     user: { id: userId },
  *   });
@@ -317,7 +317,7 @@ let defaultLogger: ErrorLogger | null = null
  * import { getErrorLogger } from '@clarity-chat/error-handling'
  *
  * const logger = getErrorLogger()
- * logger.error(new Error('Something went wrong'))
+ * console.error(new Error('Something went wrong'))
  * ```
  */
 export function getErrorLogger(): ErrorLogger {

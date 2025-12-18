@@ -6,10 +6,10 @@ import { expect, userEvent, within } from 'storybook/test'
 
 /**
  * **Message Component**
- * 
+ *
  * Enhanced message component for displaying chat messages with animations,
  * feedback, and interactive features.
- * 
+ *
  * **Key Features:**
  * - Slide-in animations
  * - Hover actions
@@ -19,7 +19,7 @@ import { expect, userEvent, within } from 'storybook/test'
  * - Copy functionality
  * - Retry on error
  * - Markdown rendering
- * 
+ *
  * **Use Cases:**
  * - Chat interfaces
  * - Messaging applications
@@ -107,7 +107,10 @@ type Story = StoryObj<typeof Message>
 // Mock Data
 // ============================================================================
 
-const createUserMessage = (content: string, overrides?: Partial<MessageType>): MessageType => ({
+const createUserMessage = (
+  content: string,
+  overrides?: Partial<MessageType>
+): MessageType => ({
   id: 'msg-' + Date.now(),
   role: 'user',
   content,
@@ -116,7 +119,10 @@ const createUserMessage = (content: string, overrides?: Partial<MessageType>): M
   ...overrides,
 })
 
-const createAssistantMessage = (content: string, overrides?: Partial<MessageType>): MessageType => ({
+const createAssistantMessage = (
+  content: string,
+  overrides?: Partial<MessageType>
+): MessageType => ({
   id: 'msg-' + Date.now(),
   role: 'assistant',
   content,
@@ -132,14 +138,18 @@ const createAssistantMessage = (content: string, overrides?: Partial<MessageType
 export const UserMessage: Story = {
   render: () => (
     <Message
-      message={createUserMessage('Hello! Can you help me with React animations?')}
+      message={createUserMessage(
+        'Hello! Can you help me with React animations?'
+      )}
     />
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
     // Test message content is rendered
-    await expect(canvas.getByText(/Hello! Can you help me with React animations/i)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/Hello! Can you help me with React animations/i)
+    ).toBeInTheDocument()
   },
 }
 
@@ -156,7 +166,9 @@ export const AssistantMessage: Story = {
     const canvas = within(canvasElement)
 
     // Test message renders
-    await expect(canvas.getByText(/React animations can be achieved/i)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/React animations can be achieved/i)
+    ).toBeInTheDocument()
 
     // Test feedback buttons appear on hover (if visible)
     // Note: This may depend on implementation - some components show on hover
@@ -166,7 +178,8 @@ export const AssistantMessage: Story = {
 export const StreamingMessage: Story = {
   render: () => {
     const [content, setContent] = React.useState('')
-    const fullText = 'This is a streaming message that appears character by character...'
+    const fullText =
+      'This is a streaming message that appears character by character...'
 
     React.useEffect(() => {
       let i = 0
@@ -198,14 +211,16 @@ export const SlideInAnimation: Story = {
     const [messages, setMessages] = React.useState<MessageType[]>([])
 
     const addMessage = (role: 'user' | 'assistant') => {
-      const content = role === 'user' 
-        ? 'User message slides in from the right' 
-        : 'Assistant message slides in from the left'
-      
-      const newMessage = role === 'user'
-        ? createUserMessage(content)
-        : createAssistantMessage(content)
-      
+      const content =
+        role === 'user'
+          ? 'User message slides in from the right'
+          : 'Assistant message slides in from the left'
+
+      const newMessage =
+        role === 'user'
+          ? createUserMessage(content)
+          : createAssistantMessage(content)
+
       setMessages((prev) => [...prev, newMessage])
     }
 
@@ -271,7 +286,8 @@ export const ActionBarReveal: Story = {
   render: () => (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Hover over the assistant message to see the action bar slide up from below
+        Hover over the assistant message to see the action bar slide up from
+        below
       </p>
       <Message
         message={createAssistantMessage(
@@ -334,24 +350,24 @@ export const WithMarkdown: Story = {
     <Message
       message={createAssistantMessage(
         "Here's how to use **Framer Motion**:\n\n" +
-        "1. Install the package: `npm install framer-motion`\n" +
-        "2. Import motion: `import { motion } from 'framer-motion'`\n" +
-        "3. Use motion components: `<motion.div animate={{ x: 100 }} />`\n\n" +
-        "## Key Concepts\n\n" +
-        "- **Variants**: Define animation states\n" +
-        "- **Transitions**: Control timing\n" +
-        "- **Gestures**: Handle interactions\n\n" +
-        "### Example Code\n\n" +
-        "```jsx\n" +
-        "<motion.div\n" +
-        "  initial={{ opacity: 0 }}\n" +
-        "  animate={{ opacity: 1 }}\n" +
-        "  transition={{ duration: 0.5 }}\n" +
-        ">\n" +
-        "  Hello World\n" +
-        "</motion.div>\n" +
-        "```\n\n" +
-        "Pretty cool, right?"
+          '1. Install the package: `npm install framer-motion`\n' +
+          "2. Import motion: `import { motion } from 'framer-motion'`\n" +
+          '3. Use motion components: `<motion.div animate={{ x: 100 }} />`\n\n' +
+          '## Key Concepts\n\n' +
+          '- **Variants**: Define animation states\n' +
+          '- **Transitions**: Control timing\n' +
+          '- **Gestures**: Handle interactions\n\n' +
+          '### Example Code\n\n' +
+          '```jsx\n' +
+          '<motion.div\n' +
+          '  initial={{ opacity: 0 }}\n' +
+          '  animate={{ opacity: 1 }}\n' +
+          '  transition={{ duration: 0.5 }}\n' +
+          '>\n' +
+          '  Hello World\n' +
+          '</motion.div>\n' +
+          '```\n\n' +
+          'Pretty cool, right?'
       )}
       onFeedback={(type) => console.log('Feedback:', type)}
     />
@@ -363,22 +379,22 @@ export const WithCodeBlock: Story = {
     <Message
       message={createAssistantMessage(
         "Here's a React component example:\n\n" +
-        "```tsx\n" +
-        "import React from 'react'\n" +
-        "import { motion } from 'framer-motion'\n\n" +
-        "export const AnimatedButton = () => {\n" +
-        "  return (\n" +
-        "    <motion.button\n" +
-        "      whileHover={{ scale: 1.05 }}\n" +
-        "      whileTap={{ scale: 0.95 }}\n" +
-        "      className=\"px-4 py-2 bg-blue-500 text-white rounded\"\n" +
-        "    >\n" +
-        "      Click me!\n" +
-        "    </motion.button>\n" +
-        "  )\n" +
-        "}\n" +
-        "```\n\n" +
-        "Hover over the code block to see the copy button!"
+          '```tsx\n' +
+          "import React from 'react'\n" +
+          "import { motion } from 'framer-motion'\n\n" +
+          'export const AnimatedButton = () => {\n' +
+          '  return (\n' +
+          '    <motion.button\n' +
+          '      whileHover={{ scale: 1.05 }}\n' +
+          '      whileTap={{ scale: 0.95 }}\n' +
+          '      className="px-4 py-2 bg-blue-500 text-white rounded"\n' +
+          '    >\n' +
+          '      Click me!\n' +
+          '    </motion.button>\n' +
+          '  )\n' +
+          '}\n' +
+          '```\n\n' +
+          'Hover over the code block to see the copy button!'
       )}
       onFeedback={(type) => console.log('Feedback:', type)}
     />
@@ -390,9 +406,27 @@ export const WithAttachments: Story = {
     <Message
       message={createUserMessage('Here are the files you requested:', {
         attachments: [
-          { id: '1', name: 'document.pdf', type: 'application/pdf', size: 1024000, url: '#' },
-          { id: '2', name: 'image.png', type: 'image/png', size: 512000, url: '#' },
-          { id: '3', name: 'data.json', type: 'application/json', size: 2048, url: '#' },
+          {
+            id: '1',
+            name: 'document.pdf',
+            type: 'application/pdf',
+            size: 1024000,
+            url: '#',
+          },
+          {
+            id: '2',
+            name: 'image.png',
+            type: 'image/png',
+            size: 512000,
+            url: '#',
+          },
+          {
+            id: '3',
+            name: 'data.json',
+            type: 'application/json',
+            size: 2048,
+            url: '#',
+          },
         ],
       })}
     />
@@ -426,7 +460,9 @@ export const ErrorStatus: Story = {
     const canvas = within(canvasElement)
 
     // Test error message renders
-    await expect(canvas.getByText(/Failed to generate response/i)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/Failed to generate response/i)
+    ).toBeInTheDocument()
 
     // Test retry button exists (if rendered)
     const retryButton = canvas.queryByRole('button', { name: /retry/i })
@@ -466,14 +502,14 @@ export const Conversation: Story = {
       createUserMessage('Can you show me an example?'),
       createAssistantMessage(
         "Sure! Here's a simple React component:\n\n" +
-        "```jsx\n" +
-        "function Welcome({ name }) {\n" +
-        "  return <h1>Hello, {name}!</h1>\n" +
-        "}\n\n" +
-        "// Usage\n" +
-        "<Welcome name=\"World\" />\n" +
-        "```\n\n" +
-        "This component accepts a `name` prop and renders a greeting."
+          '```jsx\n' +
+          'function Welcome({ name }) {\n' +
+          '  return <h1>Hello, {name}!</h1>\n' +
+          '}\n\n' +
+          '// Usage\n' +
+          '<Welcome name="World" />\n' +
+          '```\n\n' +
+          'This component accepts a `name` prop and renders a greeting.'
       ),
       createUserMessage("Thanks! That's helpful."),
       createAssistantMessage(
@@ -487,7 +523,9 @@ export const Conversation: Story = {
           <Message
             key={msg.id}
             message={msg}
-            onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
+            onFeedback={(type) =>
+              console.log('Feedback for ' + msg.id + ':', type)
+            }
           />
         ))}
       </div>
@@ -502,7 +540,9 @@ export const Conversation: Story = {
 export const InteractiveDemo: Story = {
   render: () => {
     const [messages, setMessages] = React.useState([
-      createAssistantMessage("Hello! I'm your AI assistant. How can I help you today?"),
+      createAssistantMessage(
+        "Hello! I'm your AI assistant. How can I help you today?"
+      ),
     ] as MessageType[])
     const [input, setInput] = React.useState('')
 
@@ -522,7 +562,8 @@ export const InteractiveDemo: Story = {
           "Interesting! Here's my perspective on this topic.",
           'Let me break that down for you step by step.',
         ]
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)]
+        const randomResponse =
+          responses[Math.floor(Math.random() * responses.length)]
         const aiMsg = createAssistantMessage(randomResponse)
         setMessages((prev) => [...prev, aiMsg])
       }, 1000)
@@ -535,7 +576,9 @@ export const InteractiveDemo: Story = {
             <Message
               key={msg.id}
               message={msg}
-              onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
+              onFeedback={(type) =>
+                console.log('Feedback for ' + msg.id + ':', type)
+              }
             />
           ))}
         </div>

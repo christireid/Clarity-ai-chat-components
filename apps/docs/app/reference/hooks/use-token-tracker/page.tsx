@@ -38,10 +38,10 @@ function BasicTrackerDemo() {
     warningThreshold: 0.8,
     criticalThreshold: 0.95,
     onWarning: () => {
-      console.log('Warning threshold reached')
+      logger.debug('Warning threshold reached')
     },
     onCritical: () => {
-      console.log('Critical threshold reached')
+      logger.debug('Critical threshold reached')
     },
   })
 
@@ -476,10 +476,10 @@ function ThresholdAlerts() {
     warningThreshold: 0.8,
     criticalThreshold: 0.95,
     onWarning: () => {
-      console.log('Warning: Approaching token limit')
+      logger.debug('Warning: Approaching token limit')
     },
     onCritical: () => {
-      console.log('Critical: Token limit nearly reached')
+      logger.debug('Critical: Token limit nearly reached')
     },
   })
 
@@ -579,10 +579,10 @@ function CompleteTrackerExample() {
     warningThreshold: 0.8,
     criticalThreshold: 0.95,
     onWarning: () => {
-      console.log('Warning threshold reached')
+      logger.debug('Warning threshold reached')
     },
     onCritical: () => {
-      console.log('Critical threshold reached')
+      logger.debug('Critical threshold reached')
     },
   })
 

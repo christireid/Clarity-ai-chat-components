@@ -77,31 +77,36 @@ const oktaSteps: SSOConfigStep[] = [
   {
     id: 'create-app',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'Log into your Okta admin console and create a new SAML 2.0 application.',
+    description:
+      'Log into your Okta admin console and create a new SAML 2.0 application.',
     status: 'complete',
   },
   {
     id: 'configure-urls',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'Copy the ACS URL and Entity ID from below and paste them into your Okta app settings.',
+    description:
+      'Copy the ACS URL and Entity ID from below and paste them into your Okta app settings.',
     status: 'complete',
   },
   {
     id: 'download-metadata',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'Download the IdP metadata XML file from Okta and upload it in the next step.',
+    description:
+      'Download the IdP metadata XML file from Okta and upload it in the next step.',
     status: 'in-progress',
   },
   {
     id: 'upload-metadata',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'Upload the Okta metadata XML file to complete the integration.',
+    description:
+      'Upload the Okta metadata XML file to complete the integration.',
     status: 'pending',
   },
   {
     id: 'test-connection',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'Test the SSO connection to ensure everything is configured correctly.',
+    description:
+      'Test the SSO connection to ensure everything is configured correctly.',
     status: 'pending',
   },
 ]
@@ -110,25 +115,29 @@ const azureSteps: SSOConfigStep[] = [
   {
     id: 'create-enterprise-app',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'In Azure AD, navigate to Enterprise applications and create a new SAML application.',
+    description:
+      'In Azure AD, navigate to Enterprise applications and create a new SAML application.',
     status: 'complete',
   },
   {
     id: 'basic-saml',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'Enter the Identifier (Entity ID) and Reply URL (ACS URL) from the metadata below.',
+    description:
+      'Enter the Identifier (Entity ID) and Reply URL (ACS URL) from the metadata below.',
     status: 'in-progress',
   },
   {
     id: 'attributes-claims',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'Configure email, first name, and last name attributes to be sent in SAML assertions.',
+    description:
+      'Configure email, first name, and last name attributes to be sent in SAML assertions.',
     status: 'pending',
   },
   {
     id: 'certificate',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'Download the Base64 certificate from Azure AD for verification.',
+    description:
+      'Download the Base64 certificate from Azure AD for verification.',
     status: 'pending',
   },
   {
@@ -143,7 +152,8 @@ const auth0Steps: SSOConfigStep[] = [
   {
     id: 'create-connection',
     title: 'Advanced/Enterprise/SSOConfigWizard',
-    description: 'In Auth0, go to Authentication > Enterprise and create a new SAML connection.',
+    description:
+      'In Auth0, go to Authentication > Enterprise and create a new SAML connection.',
     status: 'complete',
   },
   {
@@ -256,14 +266,19 @@ export const InProgress: Story = {
     providerName: 'SAML 2.0',
     steps: oktaSteps.map((step, index) => ({
       ...step,
-      status: (index === 2 ? 'in-progress' : index < 2 ? 'complete' : 'pending') as const,
+      status: (index === 2
+        ? 'in-progress'
+        : index < 2
+          ? 'complete'
+          : 'pending') as const,
     })),
     metadata: mockMetadata,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Configuration in progress - some steps complete, current step active.',
+        story:
+          'Configuration in progress - some steps complete, current step active.',
       },
     },
   },
@@ -292,7 +307,9 @@ export const InteractiveSetup: Story = {
   render: () => {
     const [steps, setSteps] = React.useState<SSOConfigStep[]>(oktaSteps)
     const [notes, setNotes] = React.useState('')
-    const [provider, setProvider] = React.useState<'Okta' | 'Azure AD' | 'Auth0'>('Okta')
+    const [provider, setProvider] = React.useState<
+      'Okta' | 'Azure AD' | 'Auth0'
+    >('Okta')
 
     const providerSteps = {
       Okta: oktaSteps,
@@ -304,9 +321,14 @@ export const InteractiveSetup: Story = {
       setSteps((current) =>
         current.map((step) => {
           if (step.id === stepId) {
-            const statusCycle: Array<SSOConfigStep['status']> = ['pending', 'in-progress', 'complete']
+            const statusCycle: Array<SSOConfigStep['status']> = [
+              'pending',
+              'in-progress',
+              'complete',
+            ]
             const currentIndex = statusCycle.indexOf(step.status || 'pending')
-            const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length]
+            const nextStatus =
+              statusCycle[(currentIndex + 1) % statusCycle.length]
             return { ...step, status: nextStatus }
           }
           return step
@@ -314,7 +336,9 @@ export const InteractiveSetup: Story = {
       )
     }
 
-    const handleProviderChange = (newProvider: 'Okta' | 'Azure AD' | 'Auth0') => {
+    const handleProviderChange = (
+      newProvider: 'Okta' | 'Azure AD' | 'Auth0'
+    ) => {
       setProvider(newProvider)
       setSteps(providerSteps[newProvider])
     }
@@ -342,11 +366,12 @@ export const InteractiveSetup: Story = {
 
         <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg">
           <p className="text-sm">
-            <strong>Interactive Demo:</strong> Click on any step title below to cycle through statuses (pending → in-progress → complete)
+            <strong>Interactive Demo:</strong> Click on any step title below to
+            cycle through statuses (pending → in-progress → complete)
           </p>
         </div>
 
-        <div 
+        <div
           onClick={(e) => {
             const target = e.target as HTMLElement
             const stepElement = target.closest('[data-step-id]')
@@ -358,7 +383,9 @@ export const InteractiveSetup: Story = {
         >
           <SSOConfigWizard
             providerName={provider}
-            steps={steps.map((step) => ({ ...step, 'data-step-id': step.id } as any))}
+            steps={steps.map(
+              (step) => ({ ...step, 'data-step-id': step.id }) as any
+            )}
             metadata={mockMetadata}
             notes={notes}
             onNotesChange={setNotes}
@@ -394,8 +421,8 @@ export const CompleteIntegrationFlow: Story = {
         index < currentStep
           ? 'complete'
           : index === currentStep
-          ? 'in-progress'
-          : ('pending' as const),
+            ? 'in-progress'
+            : ('pending' as const),
     }))
 
     const handleNext = () => {
@@ -416,7 +443,9 @@ export const CompleteIntegrationFlow: Story = {
       return (
         <div className="text-center p-12 border rounded-lg">
           <div className="text-6xl mb-4">✅</div>
-          <h2 className="text-2xl font-bold mb-2">SSO Configuration Complete!</h2>
+          <h2 className="text-2xl font-bold mb-2">
+            SSO Configuration Complete!
+          </h2>
           <p className="text-muted-foreground mb-6">
             Your Okta integration is now active and ready to use.
           </p>
@@ -475,7 +504,8 @@ export const CompleteIntegrationFlow: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Complete integration flow with step navigation and completion state.',
+        story:
+          'Complete integration flow with step navigation and completion state.',
       },
     },
   },
@@ -493,7 +523,9 @@ export const MultiProviderDashboard: Story = {
       { name: 'Auth0', status: 'pending', steps: auth0Steps, users: 0 },
     ]
 
-    const [selectedProvider, setSelectedProvider] = React.useState<string | null>(null)
+    const [selectedProvider, setSelectedProvider] = React.useState<
+      string | null
+    >(null)
 
     return (
       <div className="space-y-6">
@@ -518,8 +550,8 @@ export const MultiProviderDashboard: Story = {
                     provider.status === 'complete'
                       ? 'bg-green-100 text-green-800'
                       : provider.status === 'in-progress'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-gray-100 text-gray-800'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-gray-100 text-gray-800'
                   }`}
                 >
                   {provider.status}
@@ -543,7 +575,9 @@ export const MultiProviderDashboard: Story = {
               providerName={selectedProvider}
               steps={providers.find((p) => p.name === selectedProvider)!.steps}
               metadata={mockMetadata}
-              onDownloadMetadata={() => alert(`Downloading ${selectedProvider} metadata...`)}
+              onDownloadMetadata={() =>
+                alert(`Downloading ${selectedProvider} metadata...`)
+              }
             />
           </div>
         )}

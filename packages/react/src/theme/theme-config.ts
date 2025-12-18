@@ -54,7 +54,7 @@ export interface ColorConfig {
   input: HSLColor
   ring: HSLColor
 
-  // Surface variants (optional - used for subtle backgrounds)
+  // Extended surface colors (optional for advanced theming)
   surfaceMuted?: HSLColor
   surfaceElevated?: HSLColor
   surfaceOverlay?: HSLColor

@@ -15,7 +15,6 @@
  */
 
 import type { Memory, MemoryScore } from '../types'
-
 /**
  * Weight configuration for scoring components
  */
@@ -73,11 +72,11 @@ const DEFAULT_CONFIG: ResolvedConfig = {
  *
  * // Score a memory without query
  * const score = scorer.score(memory)
- * console.log(score.final) // 0.0 - 1.0
+ * logger.debug(score.final) // 0.0 - 1.0
  *
  * // Score a memory with query for semantic relevance
  * const scoreWithQuery = scorer.score(memory, "user preferences")
- * console.log(scoreWithQuery.semanticRelevance) // Higher if memory content matches query
+ * logger.debug(scoreWithQuery.semanticRelevance) // Higher if memory content matches query
  * ```
  */
 export class ImportanceScorer {

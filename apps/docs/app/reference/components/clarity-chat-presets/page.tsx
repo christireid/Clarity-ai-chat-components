@@ -252,7 +252,7 @@ function CustomizedChat() {
       showTokenCounter
       enableMessageOperations
       onMessageCopy={(id, content) => {
-        console.log('Copied:', id)
+        logger.debug('Copied:', id)
       }}
       className="h-screen"
     />

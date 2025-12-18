@@ -265,7 +265,7 @@ function ChatWithErrorHandling() {
   const chat = useClarityChat({
     api: '/api/chat',
     onError: (error) => {
-      console.error('Chat error:', error)
+      logger.error('Chat error:', error)
     },
   })
 

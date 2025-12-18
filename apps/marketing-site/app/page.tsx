@@ -2,6 +2,7 @@ import Header from '../components/layout/Header'
 import Footer from '../components/layout/Footer'
 import HeroSection from '../components/sections/HeroSection'
 import FeaturesSection from '../components/sections/FeaturesSection'
+import ComparisonSection from '../components/sections/ComparisonSection'
 import PricingSection from '../components/sections/PricingSection'
 import CTASection from '../components/sections/CTASection'
 import Testimonials from '../components/Testimonials'
@@ -14,6 +15,7 @@ export default function HomePage() {
       <main>
         <HeroSection />
         <FeaturesSection />
+        <ComparisonSection />
         <Testimonials />
         <PricingSection />
         <FAQ />

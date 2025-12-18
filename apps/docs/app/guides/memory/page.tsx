@@ -577,7 +577,7 @@ const updated = await memory?.updateMemory(memoryId, {
 // Delete a memory
 const deleted = await memory?.deleteMemory(memoryId)
 if (deleted) {
-  console.log('Memory deleted')
+  logger.debug('Memory deleted')
 }`}
             language="tsx"
             showLineNumbers
@@ -592,7 +592,7 @@ if (deleted) {
 // Promote a session memory to global
 const promoted = await memory?.promoteMemory(memoryId, 'global')
 if (promoted) {
-  console.log('Memory promoted to global scope')
+  logger.debug('Memory promoted to global scope')
 }`}
             language="tsx"
             showLineNumbers
@@ -607,7 +607,7 @@ if (promoted) {
 // Compress a memory to save tokens
 const compressed = await memory?.compressMemory(memoryId, 0.5) // 50% compression
 if (compressed) {
-  console.log('Memory compressed')
+  logger.debug('Memory compressed')
 }`}
             language="tsx"
             showLineNumbers

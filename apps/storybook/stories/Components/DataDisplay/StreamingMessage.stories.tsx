@@ -90,21 +90,24 @@ const mockCitations: Citation[] = [
     id: 'cite_1',
     source: 'React Official Documentation - Hooks API',
     url: 'https://react.dev/reference/react/useState',
-    chunkText: 'useState is a React Hook that lets you add a state variable to your component.',
+    chunkText:
+      'useState is a React Hook that lets you add a state variable to your component.',
     confidence: 0.95,
   },
   {
     id: 'cite_2',
     source: 'MDN Web Docs - JavaScript Reference',
     url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
-    chunkText: 'JavaScript is a programming language that allows you to implement complex features on web pages.',
+    chunkText:
+      'JavaScript is a programming language that allows you to implement complex features on web pages.',
     confidence: 0.87,
   },
   {
     id: 'cite_3',
     source: 'TypeScript Handbook - Generics',
     url: 'https://www.typescriptlang.org/docs/handbook/2/generics.html',
-    chunkText: 'Generics provide a way to make components work with any data type and not restrict to one data type.',
+    chunkText:
+      'Generics provide a way to make components work with any data type and not restrict to one data type.',
     confidence: 0.92,
   },
 ]
@@ -156,7 +159,7 @@ export const WithThinking: Story = {
     isStreaming: false,
     showThinking: true,
     thinkingSteps: [
-      'Analyzing the user\'s question',
+      "Analyzing the user's question",
       'Searching documentation for useState',
       'Considering best practices',
       'Formulating response',
@@ -170,7 +173,7 @@ export const ActiveThinking: Story = {
     isStreaming: true,
     showThinking: true,
     thinkingSteps: [
-      'Analyzing the user\'s question',
+      "Analyzing the user's question",
       'Searching documentation for useState',
     ],
     currentThinkingStep: 'Considering best practices and edge cases...',
@@ -231,13 +234,15 @@ export const ErrorState: Story = {
   args: {
     content: '',
     isStreaming: false,
-    error: 'Failed to generate response. The API rate limit has been exceeded. Please try again in a few minutes.',
+    error:
+      'Failed to generate response. The API rate limit has been exceeded. Please try again in a few minutes.',
   },
 }
 
 export const PartialJSON: Story = {
   args: {
-    content: '{"name": "React Hook", "type": "useState", "description": "State management in functional components"}',
+    content:
+      '{"name": "React Hook", "type": "useState", "description": "State management in functional components"}',
     isStreaming: true,
   },
 }
@@ -294,9 +299,13 @@ Key benefits:
     }, 2000)
 
     setTimeout(() => {
-      setThinkingSteps(['Analyzed user question', 'Searched React docs', 'Generated response'])
+      setThinkingSteps([
+        'Analyzed user question',
+        'Searched React docs',
+        'Generated response',
+      ])
       setCurrentStep('')
-      
+
       // Stream content
       let index = 0
       const interval = setInterval(() => {
@@ -320,7 +329,7 @@ Key benefits:
       >
         {isStreaming ? 'Streaming...' : 'Start Streaming'}
       </button>
-      
+
       <StreamingMessage
         content={content}
         isStreaming={isStreaming}
@@ -359,10 +368,11 @@ const ToolApprovalDemo = () => {
     <div className="space-y-4">
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <p className="text-sm text-blue-900 dark:text-blue-100">
-          💡 Try approving or rejecting tool calls to see the interaction workflow
+          💡 Try approving or rejecting tool calls to see the interaction
+          workflow
         </p>
       </div>
-      
+
       <StreamingMessage
         content="I need to perform these actions to help you:"
         isStreaming={false}
@@ -371,13 +381,11 @@ const ToolApprovalDemo = () => {
         onToolApprove={handleApprove}
         onToolReject={handleReject}
       />
-      
+
       {Object.keys(toolStates).length > 0 && (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <h4 className="font-medium mb-2">Tool States:</h4>
-          <pre className="text-sm">
-            {JSON.stringify(toolStates, null, 2)}
-          </pre>
+          <pre className="text-sm">{JSON.stringify(toolStates, null, 2)}</pre>
         </div>
       )}
     </div>
@@ -459,7 +467,7 @@ This is a powerful pattern for extracting component logic into reusable function
 
 export const MultipleCitations: Story = {
   args: {
-    content: 'Here\'s a comprehensive answer based on multiple sources...',
+    content: "Here's a comprehensive answer based on multiple sources...",
     isStreaming: false,
     showCitations: true,
     citations: [
@@ -468,14 +476,16 @@ export const MultipleCitations: Story = {
         id: 'cite_4',
         source: 'React Beta Docs - Thinking in React',
         url: 'https://beta.reactjs.org/learn/thinking-in-react',
-        chunkText: 'React can change how you think about the designs you look at and the apps you build.',
+        chunkText:
+          'React can change how you think about the designs you look at and the apps you build.',
         confidence: 0.88,
       },
       {
         id: 'cite_5',
         source: 'freeCodeCamp - React Hooks Tutorial',
         url: 'https://www.freecodecamp.org/news/react-hooks-tutorial/',
-        chunkText: 'Hooks are a new addition in React 16.8 that let you use state and other React features without writing a class.',
+        chunkText:
+          'Hooks are a new addition in React 16.8 that let you use state and other React features without writing a class.',
         confidence: 0.94,
       },
     ],

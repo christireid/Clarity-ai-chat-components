@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 import { FeedbackWidget } from '@/components/FeedbackWidget'
 
@@ -42,7 +43,7 @@ function StreamingChat() {
   } = useStreaming({
     endpoint: '/api/stream',
     protocol: 'sse',
-    onComplete: (fullText) => console.log('Done:', fullText)
+    onComplete: (fullText) => logger.debug('Done:', fullText)
   })
 
   return (

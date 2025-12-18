@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -131,13 +132,13 @@ function MobileMessage({ message }: { message: Message }) {
     <MobileOptimizedMessage
       message={message}
       onReply={(msg) => {
-        console.log('Reply to:', msg.id)
+        logger.debug('Reply to:', msg.id)
       }}
       onCopy={(msg) => {
         navigator.clipboard.writeText(msg.content)
       }}
       onDelete={(msg) => {
-        console.log('Delete:', msg.id)
+        logger.debug('Delete:', msg.id)
       }}
     />
   )

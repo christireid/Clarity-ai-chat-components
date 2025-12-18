@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -365,7 +366,7 @@ function CustomChatWindow() {
 
         <h3>State Debugging</h3>
         <pre><code>{`// Add debug output
-console.log('Current state:', { messages, isLoading })
+logger.debug('Current state:', { messages, isLoading })
 
 // Render state for visibility
 <div className="debug">

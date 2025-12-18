@@ -1,9 +1,9 @@
 /**
  * Basic Chat Integration Example
- * 
+ *
  * Demonstrates a simple chat implementation using Clarity Chat components.
  * This example shows the minimum setup required to get started.
- * 
+ *
  * Features:
  * - Message display
  * - Input handling

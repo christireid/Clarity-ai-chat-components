@@ -174,7 +174,10 @@ export async function logAccessibilityViolations(): Promise<void> {
       return
     }
 
-    console.group(`%c⚠️ ${violations.length} accessibility violations`, 'color: orange')
+    console.log(
+      `%c⚠️ ${violations.length} accessibility violations`,
+      'color: orange'
+    )
 
     violations.forEach((v) => {
       const impactColor = {
@@ -184,16 +187,19 @@ export async function logAccessibilityViolations(): Promise<void> {
         minor: 'gray',
       }[v.impact]
 
-      console.group(`%c${v.id}`, `color: ${impactColor}; font-weight: bold`)
+      console.log(`%c${v.id}`, `color: ${impactColor}; font-weight: bold`)
       console.log('Impact:', v.impact)
       console.log('Description:', v.description)
       console.log('Help:', v.help)
       console.log('Docs:', v.helpUrl)
-      console.log('Affected elements:', v.nodes.map((n) => n.target.join(', ')))
-      console.groupEnd()
+      console.log(
+        'Affected elements:',
+        v.nodes.map((n) => n.target.join(', '))
+      )
+      console.log()
     })
 
-    console.groupEnd()
+    console.log()
   } catch (error) {
     // axe-core might not be installed
     console.warn('Accessibility checks skipped (axe-core not available)')
@@ -238,7 +244,9 @@ interface UseAccessibilityCheckOptions {
  * }
  * ```
  */
-export function useAccessibilityCheck(options: UseAccessibilityCheckOptions = {}) {
+export function useAccessibilityCheck(
+  options: UseAccessibilityCheckOptions = {}
+) {
   const { autoRun = false, runOnChange = [], debounce = 0 } = options
 
   const [violations, setViolations] = useState<AccessibilityViolation[]>([])

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -487,7 +488,7 @@ function useWebSocketChat(roomId) {
     ws.current = new WebSocket(\`wss://api.example.com/chat/\${roomId}\`)
 
     ws.current.onopen = () => {
-      console.log('Connected to chat')
+      logger.debug('Connected to chat')
       // Send join event
       ws.current.send(JSON.stringify({
         type: 'join',
@@ -521,7 +522,7 @@ function useWebSocketChat(roomId) {
     }
 
     ws.current.onclose = () => {
-      console.log('Disconnected from chat')
+      logger.debug('Disconnected from chat')
     }
 
     return () => {

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -225,7 +226,7 @@ export async function POST(req: Request) {
       }
     })
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.error('Chat API error:', error)
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
@@ -353,7 +354,7 @@ export async function POST(req: Request) {
   try {
     return await handleRequest(req)
   } catch (error) {
-    console.error('API Error:', error)
+    logger.error('API Error:', error)
     
     // Send to monitoring service
     await fetch('https://api.your-monitoring.com/errors', {

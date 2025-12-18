@@ -53,6 +53,7 @@ export const TEMPLATES = {
   component: `import { forwardRef } from 'react'
 import { cn } from '@/lib/utils'
 
+
 export interface {{pascalName}}Props {
   /** Additional CSS classes */
   className?: string
@@ -99,6 +100,7 @@ import { render, screen } from '@testing-library/react'
 import { createRef } from 'react'
 import { {{pascalName}} } from './{{pascalName}}'
 
+
 describe('{{pascalName}}', () => {
   it('should render children correctly', () => {
     render(<{{pascalName}}>Test content</{{pascalName}}>)
@@ -140,6 +142,7 @@ describe('{{pascalName}}', () => {
 
   componentStory: `import type { Meta, StoryObj } from '@storybook/react'
 import { {{pascalName}} } from './{{pascalName}}'
+
 
 const meta: Meta<typeof {{pascalName}}> = {
   title: '{{componentDir}}/{{pascalName}}',
@@ -196,11 +199,14 @@ export const CustomStyle: Story = {
 import { forwardRef, useState, useCallback, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 {{#if withStreaming}}
+
 import { useStreaming } from '@/hooks/useStreaming'
 {{/if}}
+
 {{#if withMemory}}
 import { useMemory } from '@/hooks/useMemory'
 {{/if}}
+
 
 export interface {{pascalName}}Message {
   id: string
@@ -476,6 +482,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { {{pascalName}} } from './{{pascalName}}'
 
+
 // Mock fetch
 const mockFetch = vi.fn()
 global.fetch = mockFetch
@@ -592,6 +599,7 @@ describe('{{pascalName}}', () => {
 
   chatComponentStory: `import type { Meta, StoryObj } from '@storybook/react'
 import { {{pascalName}} } from './{{pascalName}}'
+
 
 const meta: Meta<typeof {{pascalName}}> = {
   title: 'Chat/{{pascalName}}',
@@ -734,6 +742,7 @@ export function use{{pascalName}}(
   hookTest: `import { describe, it, expect } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { use{{pascalName}} } from './use{{pascalName}}'
+
 
 describe('use{{pascalName}}', () => {
   it('should initialize with default value', () => {
@@ -965,6 +974,7 @@ export { {{pascalName}}Context }
   contextTest: `import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { {{pascalName}}Provider, use{{pascalName}} } from './{{pascalName}}Context'
+
 
 function TestConsumer() {
   const { value, setValue, reset } = use{{pascalName}}()
@@ -1250,6 +1260,7 @@ export function create{{pascalName}}Adapter(
   adapterTest: `import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { create{{pascalName}}Adapter } from './{{camelName}}Adapter'
 
+
 describe('{{pascalName}}Adapter', () => {
   const mockApiKey = 'test-api-key'
   let mockFetch: ReturnType<typeof vi.fn>
@@ -1385,12 +1396,16 @@ describe('{{pascalName}}Adapter', () => {
   apiRoute: `import { NextRequest } from 'next/server'
 import { headers } from 'next/headers'
 {{#if (eq provider "openai")}}
+
 import OpenAI from 'openai'
 {{else if (eq provider "anthropic")}}
+
 import Anthropic from '@anthropic-ai/sdk'
 {{else if (eq provider "google")}}
+
 import { GoogleGenerativeAI } from '@google/generative-ai'
 {{/if}}
+
 
 // ============================================================================
 // Security Configuration
@@ -1641,7 +1656,7 @@ export async function POST(req: NextRequest) {
 {{/if}}
 {{/if}}
   } catch (error) {
-    console.error('API error:', error)
+    logger.error('API error:', error)
     return Response.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
@@ -1655,6 +1670,7 @@ export async function POST(req: NextRequest) {
   // ---------------------------------------------------------------------------
   test: `import { describe, it, expect, vi } from 'vitest'
 import { {{pascalName}} } from './{{pascalName}}'
+
 
 describe('{{pascalName}}', () => {
   it('should work correctly', () => {

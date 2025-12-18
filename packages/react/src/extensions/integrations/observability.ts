@@ -178,7 +178,7 @@ export function createDataDogExtension(
     } as DataDogConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('DataDog extension initialized')
+      ctx.console.info('DataDog extension initialized')
 
       // Would use @datadog/browser-rum and @datadog/browser-logs
       if (typeof window !== 'undefined') {
@@ -210,33 +210,33 @@ export function createDataDogExtension(
       const adapter: ObservabilityAdapter = {
         startSpan(name, attributes) {
           const start = performance.now()
-          ctx.logger.debug(`Starting span: ${name}`)
+          ctx.console.log(`Starting span: ${name}`)
           return {
             setAttributes(attrs) {
               Object.assign(attributes || {}, attrs)
             },
             setStatus(status, message) {
-              ctx.logger.debug(
+              ctx.console.log(
                 `Span ${name} status: ${status}${message ? ` - ${message}` : ''}`
               )
             },
             end() {
               const duration = performance.now() - start
-              ctx.logger.debug(`Span ${name} ended: ${duration.toFixed(2)}ms`)
+              ctx.console.log(`Span ${name} ended: ${duration.toFixed(2)}ms`)
             },
           }
         },
 
         recordMetric(name, value, tags) {
-          ctx.logger.debug(`Metric ${name}: ${value}`)
+          ctx.console.log(`Metric ${name}: ${value}`)
         },
 
         incrementCounter(name, tags) {
-          ctx.logger.debug(`Counter ${name} incremented`)
+          ctx.console.log(`Counter ${name} incremented`)
         },
 
         recordHistogram(name, value, tags) {
-          ctx.logger.debug(`Histogram ${name}: ${value}`)
+          ctx.console.log(`Histogram ${name}: ${value}`)
         },
 
         log(level, message, context) {
@@ -353,7 +353,7 @@ export function createOpenTelemetryExtension(
     } as OpenTelemetryConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('OpenTelemetry extension initialized')
+      ctx.console.info('OpenTelemetry extension initialized')
 
       // Would use @opentelemetry/sdk-trace-web and related packages
       const adapter: ObservabilityAdapter = {
@@ -373,7 +373,7 @@ export function createOpenTelemetryExtension(
             end() {
               const duration = performance.now() - start
               // Would send to OTLP endpoint
-              ctx.logger.debug(
+              ctx.console.log(
                 `OTel span: ${name} [${spanStatus}] ${duration.toFixed(2)}ms`
               )
             },
@@ -381,23 +381,23 @@ export function createOpenTelemetryExtension(
         },
 
         recordMetric(name, value, tags) {
-          ctx.logger.debug(`OTel metric: ${name} = ${value}`)
+          ctx.console.log(`OTel metric: ${name} = ${value}`)
         },
 
         incrementCounter(name, tags) {
-          ctx.logger.debug(`OTel counter: ${name}++`)
+          ctx.console.log(`OTel counter: ${name}++`)
         },
 
         recordHistogram(name, value, tags) {
-          ctx.logger.debug(`OTel histogram: ${name} = ${value}`)
+          ctx.console.log(`OTel histogram: ${name} = ${value}`)
         },
 
         log(level, message, context) {
-          ctx.logger.debug(`OTel log [${level}]: ${message}`)
+          ctx.console.log(`OTel log [${level}]: ${message}`)
         },
 
         captureError(error, context) {
-          ctx.logger.error(`OTel error: ${error.message}`)
+          ctx.console.error(`OTel error: ${error.message}`)
         },
 
         setUser(userId, traits) {
@@ -447,7 +447,7 @@ export function createNewRelicExtension(
     defaultConfig: config as NewRelicConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('New Relic extension initialized')
+      ctx.console.info('New Relic extension initialized')
 
       // Would use @newrelic/browser-agent
       const adapter: ObservabilityAdapter = {
@@ -458,14 +458,14 @@ export function createNewRelicExtension(
             setStatus() {},
             end() {
               const duration = performance.now() - start
-              ctx.logger.debug(
+              ctx.console.log(
                 `New Relic span: ${name} ${duration.toFixed(2)}ms`
               )
             },
           }
         },
         recordMetric(name, value, tags) {
-          ctx.logger.debug(`New Relic metric: ${name} = ${value}`)
+          ctx.console.log(`New Relic metric: ${name} = ${value}`)
         },
         incrementCounter(name, tags) {},
         recordHistogram(name, value, tags) {},
@@ -544,7 +544,7 @@ export function createHoneycombExtension(
     } as HoneycombConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Honeycomb extension initialized')
+      ctx.console.info('Honeycomb extension initialized')
 
       const adapter: ObservabilityAdapter = {
         startSpan(name, attributes) {
@@ -568,7 +568,7 @@ export function createHoneycombExtension(
               ;(event as Record<string, unknown>)['duration_ms'] =
                 performance.now() - start
               // Would send to Honeycomb API
-              ctx.logger.debug(`Honeycomb event: ${name}`)
+              ctx.console.log(`Honeycomb event: ${name}`)
             },
           }
         },
@@ -621,7 +621,7 @@ export function createGrafanaExtension(
     } as GrafanaConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Grafana Faro extension initialized')
+      ctx.console.info('Grafana Faro extension initialized')
 
       // Would use @grafana/faro-web-sdk
       const adapter: ObservabilityAdapter = {
@@ -631,7 +631,7 @@ export function createGrafanaExtension(
             setAttributes() {},
             setStatus() {},
             end() {
-              ctx.logger.debug(
+              ctx.console.log(
                 `Grafana span: ${name} ${(performance.now() - start).toFixed(2)}ms`
               )
             },
@@ -685,7 +685,7 @@ export function createLogflareExtension(
     defaultConfig: config as LogflareConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Logflare extension initialized')
+      ctx.console.info('Logflare extension initialized')
 
       const adapter: ObservabilityAdapter = {
         startSpan(name) {
@@ -694,7 +694,7 @@ export function createLogflareExtension(
             setAttributes() {},
             setStatus() {},
             end() {
-              ctx.logger.debug(`Logflare span: ${name}`)
+              ctx.console.log(`Logflare span: ${name}`)
             },
           }
         },
@@ -758,7 +758,7 @@ export function createAxiomExtension(
     defaultConfig: config as AxiomConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Axiom extension initialized')
+      ctx.console.info('Axiom extension initialized')
 
       const adapter: ObservabilityAdapter = {
         startSpan(name) {
@@ -838,7 +838,7 @@ export function createBetterStackExtension(
     } as BetterStackConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Better Stack extension initialized')
+      ctx.console.info('Better Stack extension initialized')
 
       const adapter: ObservabilityAdapter = {
         startSpan(name) {

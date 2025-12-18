@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * useBranching Hook
  *
@@ -95,7 +96,7 @@ function loadBranchStateFromStorage(): BranchState | null {
       }
     }
   } catch (e) {
-    console.error('Failed to load branch state:', e)
+    logger.error('Failed to load branch state:', e)
   }
   return null
 }
@@ -136,7 +137,7 @@ export function useBranching(
         localStorage.removeItem(BRANCHES_KEY)
       }
     } catch (e) {
-      console.error('Failed to save branch state:', e)
+      logger.error('Failed to save branch state:', e)
     }
   }, [branchState, isHydrated])
 

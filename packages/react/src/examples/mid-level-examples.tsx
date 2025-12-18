@@ -1,15 +1,16 @@
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Mid-Level Examples - Composable Building Blocks
- * 
+ *
  * These examples demonstrate using mid-level APIs for more control
  * while maintaining ergonomics. Each example is 40-60 lines of code.
  */
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
-import { useClarityChat } from '../hooks/use-clarity-chat'
+import { useClarityChat } from '../hooks/chat/use-clarity-chat'
 import { useChatHandlers } from '../hooks/use-chat-handlers'
-import { ChatWindow } from '../components/chat-window'
+import { ChatWindow } from '../components/chat/chat-window'
 import { ChatInput } from '../components/chat-input'
 import { useChatEnhanced } from '../hooks/use-chat-enhanced'
 import { useClarityChatWithTools } from '../hooks/use-clarity-chat-with-tools'
@@ -36,11 +37,11 @@ export function CustomChatWithHandlers() {
   const handlers = useChatHandlers({
     chat,
     onMessageSent: (content) => {
-      console.log('Message sent:', content)
+      logger.debug('Message sent:', content)
       // Analytics tracking, etc.
     },
     onMessageError: (error) => {
-      console.error('Failed to send:', error)
+      logger.error('Failed to send:', error)
       // Error reporting, etc.
     },
   })
@@ -75,10 +76,10 @@ export function VercelCompatibleChat() {
       { role: 'system', content: 'You are a helpful assistant.' },
     ],
     onFinish: (message) => {
-      console.log('Message finished:', message)
+      logger.debug('Message finished:', message)
     },
     onError: (error) => {
-      console.error('Chat error:', error)
+      logger.error('Chat error:', error)
     },
   })
 
@@ -118,7 +119,9 @@ function WeatherToolResult({ result }: { result: WeatherResult }) {
   return (
     <div className="weather-result">
       <h4>Weather in {result.location}</h4>
-      <p>{result.temperature}°F - {result.condition}</p>
+      <p>
+        {result.temperature}°F - {result.condition}
+      </p>
     </div>
   )
 }
@@ -138,13 +141,16 @@ export function ChatWithTools() {
   })
 
   // Create a compatible chat object for handlers
-  const chatForHandlers = React.useMemo(() => ({
-    messages,
-    append,
-    isLoading,
-    setMessages: () => {}, // Not used in this example
-  }), [messages, append, isLoading])
-  
+  const chatForHandlers = React.useMemo(
+    () => ({
+      messages,
+      append,
+      isLoading,
+      setMessages: () => {}, // Not used in this example
+    }),
+    [messages, append, isLoading]
+  )
+
   const handlers = useChatHandlers({ chat: chatForHandlers as any })
 
   return (
@@ -198,12 +204,9 @@ function MemoryChatInner() {
     onMessageSent: async (content) => {
       // Add to memory before sending
       if (memory?.addMemory) {
-        await memory.addMemory(
-          content,
-          'conversation',
-          'session',
-          { timestamp: Date.now() }
-        )
+        await memory.addMemory(content, 'conversation', 'session', {
+          timestamp: Date.now(),
+        })
       }
     },
   })

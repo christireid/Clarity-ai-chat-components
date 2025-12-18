@@ -10,7 +10,7 @@ import type { AnalyticsEntry } from '@/types/analytics'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     // Validate required fields
     const {
       provider,
@@ -20,23 +20,23 @@ export async function POST(request: NextRequest) {
       cost,
       responseTime,
       userId,
-      metadata
+      metadata,
     } = body
-    
+
     if (!provider || !model) {
       return NextResponse.json(
         { error: 'Provider and model are required' },
         { status: 400 }
       )
     }
-    
+
     if (promptTokens === undefined || completionTokens === undefined) {
       return NextResponse.json(
         { error: 'Token counts are required' },
         { status: 400 }
       )
     }
-    
+
     // Add entry
     const promptCount = Number(promptTokens)
     const completionCount = Number(completionTokens)
@@ -49,17 +49,16 @@ export async function POST(request: NextRequest) {
       cost: Number(cost) || 0,
       responseTime: Number(responseTime) || 0,
       userId,
-      metadata
+      metadata,
     })
-    
+
     return NextResponse.json({
       success: true,
       entry: {
         id: entry.id,
-        timestamp: entry.timestamp
-      }
+        timestamp: entry.timestamp,
+      },
     })
-    
   } catch (error) {
     console.error('Analytics log error:', error)
     return NextResponse.json(

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -97,11 +98,11 @@ function DocumentSelector() {
     <DocumentIntegration
       platforms={['google-docs', 'notion', 'confluence']}
       onDocumentSelect={(document) => {
-        console.log('Selected document:', document.metadata.title)
+        logger.debug('Selected document:', document.metadata.title)
         // Use document content for RAG
       }}
       onContentExtract={(content) => {
-        console.log('Extracted content:', content.text)
+        logger.debug('Extracted content:', content.text)
         // Process content chunks
       }}
     />

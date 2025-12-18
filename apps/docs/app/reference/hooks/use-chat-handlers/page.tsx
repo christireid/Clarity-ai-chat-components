@@ -157,12 +157,12 @@ function Chat() {
   const handlers = useChatHandlers({
     chat,
     onMessageSent: (content) => {
-      console.log('Message sent:', content)
+      logger.debug('Message sent:', content)
       // Track analytics
       analytics.track('message_sent', { length: content.length })
     },
     onMessageError: (error) => {
-      console.error('Failed to send message:', error)
+      logger.error('Failed to send message:', error)
       // Show user-friendly error
       toast.error('Failed to send message. Please try again.')
     },

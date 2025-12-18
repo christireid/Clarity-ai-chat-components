@@ -143,7 +143,7 @@ function Autocomplete() {
 
   const handleComplete = async (prompt: string) => {
     const result = await complete(prompt)
-    console.log('Completion:', result)
+    logger.debug('Completion:', result)
   }
 
   return (
@@ -245,7 +245,7 @@ function TextGenerator() {
   const { completion, complete, isLoading, stop } = useCompletion({
     api: '/api/completion',
     onFinish: (prompt, completion) => {
-      console.log('Generated:', completion)
+      logger.debug('Generated:', completion)
     },
   })
 
@@ -304,7 +304,7 @@ function Completion() {
   const { completion, complete, error, isLoading } = useCompletion({
     api: '/api/completion',
     onError: (error) => {
-      console.error('Completion error:', error)
+      logger.error('Completion error:', error)
       toast.error('Failed to generate completion')
     },
   })

@@ -5,10 +5,10 @@ import { useState } from 'react'
 
 /**
  * **useAssistant Hook**
- * 
+ *
  * Hook for managing AI assistant interactions with tool calling support,
  * multi-step workflows, and thread/run management.
- * 
+ *
  * **Key Features:**
  * - Assistant thread management
  * - Tool calling support
@@ -17,7 +17,7 @@ import { useState } from 'react'
  * - Streaming responses
  * - Error handling
  * - Request cancellation
- * 
+ *
  * **Use Cases:**
  * - AI assistants with tools
  * - Multi-step agent workflows
@@ -75,7 +75,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 function BasicAssistantDemo() {
-  const { status, messages, submitMessage, handleSubmit, input, setInput, error, stop } = useAssistant({
+  const {
+    status,
+    messages,
+    submitMessage,
+    handleSubmit,
+    input,
+    setInput,
+    error,
+    stop,
+  } = useAssistant({
     assistantId: 'demo-assistant',
     onToolCall: (toolCall) => {
       console.log('Tool called:', toolCall)
@@ -171,7 +180,8 @@ export const BasicUsage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic assistant interface with status tracking and form handling.',
+        story:
+          'Basic assistant interface with status tracking and form handling.',
       },
     },
   },
@@ -202,8 +212,8 @@ function StatusTrackingDemo() {
                 status === 'idle'
                   ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
                   : status === 'in_progress'
-                  ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
-                  : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200'
+                    ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
+                    : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200'
               }`}
             >
               {status}
@@ -217,7 +227,10 @@ function StatusTrackingDemo() {
           </div>
           {error && (
             <div>
-              <strong>Error:</strong> <span className="text-red-600 dark:text-red-400">{error.message}</span>
+              <strong>Error:</strong>{' '}
+              <span className="text-red-600 dark:text-red-400">
+                {error.message}
+              </span>
             </div>
           )}
         </div>
@@ -256,7 +269,10 @@ function StatusTrackingDemo() {
           className="flex-1 p-2 border rounded-lg"
           disabled={status !== 'idle'}
         />
-        <Button onClick={handleSubmit} disabled={status !== 'idle' || !message.trim()}>
+        <Button
+          onClick={handleSubmit}
+          disabled={status !== 'idle' || !message.trim()}
+        >
           Submit
         </Button>
       </div>
@@ -269,7 +285,8 @@ export const StatusTracking: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Tracking assistant status (idle, in_progress, awaiting_message) and related state.',
+        story:
+          'Tracking assistant status (idle, in_progress, awaiting_message) and related state.',
       },
     },
   },
@@ -298,8 +315,8 @@ function ToolCallingDemo() {
       <div className="p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
         <h3 className="font-medium mb-2">Tool Calling Support</h3>
         <p className="text-sm text-gray-700 dark:text-gray-300">
-          The assistant can call tools during the conversation. Check the browser console
-          to see tool invocation events when they occur.
+          The assistant can call tools during the conversation. Check the
+          browser console to see tool invocation events when they occur.
         </p>
       </div>
 
@@ -315,8 +332,8 @@ function ToolCallingDemo() {
                   msg.role === 'user'
                     ? 'bg-blue-600 text-white'
                     : msg.role === 'tool'
-                    ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-200'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                      ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-200'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                 }`}
               >
                 {typeof msg.content === 'string' ? (
@@ -349,7 +366,10 @@ function ToolCallingDemo() {
           className="flex-1 p-2 border rounded-lg"
           disabled={status !== 'idle'}
         />
-        <Button onClick={handleSubmit} disabled={status !== 'idle' || !message.trim()}>
+        <Button
+          onClick={handleSubmit}
+          disabled={status !== 'idle' || !message.trim()}
+        >
           Submit
         </Button>
       </div>
@@ -362,7 +382,8 @@ export const ToolCalling: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Assistant with tool calling support. Tool invocations are logged to the console.',
+        story:
+          'Assistant with tool calling support. Tool invocations are logged to the console.',
       },
     },
   },
@@ -395,7 +416,9 @@ function ThreadManagementDemo() {
           <div>
             <strong>Current Thread ID:</strong>{' '}
             {threadId ? (
-              <code className="px-2 py-1 bg-white dark:bg-gray-800 rounded">{threadId}</code>
+              <code className="px-2 py-1 bg-white dark:bg-gray-800 rounded">
+                {threadId}
+              </code>
             ) : (
               <span className="text-gray-500">None (create a new thread)</span>
             )}
@@ -410,7 +433,9 @@ function ThreadManagementDemo() {
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {messages.length === 0 && (
             <div className="text-center text-gray-500 py-8">
-              {threadId ? 'Start a conversation in this thread' : 'Create a thread to start'}
+              {threadId
+                ? 'Start a conversation in this thread'
+                : 'Create a thread to start'}
             </div>
           )}
           {messages.map((msg) => (
@@ -451,7 +476,10 @@ function ThreadManagementDemo() {
           className="flex-1 p-2 border rounded-lg"
           disabled={status !== 'idle' || !threadId}
         />
-        <Button onClick={handleSubmit} disabled={status !== 'idle' || !message.trim() || !threadId}>
+        <Button
+          onClick={handleSubmit}
+          disabled={status !== 'idle' || !message.trim() || !threadId}
+        >
           Submit
         </Button>
       </div>

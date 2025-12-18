@@ -54,7 +54,7 @@ function CachedChat() {
 
     // Callback when cache is hit
     onCacheHit: (cached) => {
-      console.log('Cache hit! Saved API call.')
+      logger.debug('Cache hit! Saved API call.')
     },
   })
 
@@ -172,7 +172,7 @@ function StreamingCachedChat() {
 
     onCacheHit: (cached) => {
       // Cached response will stream with animation
-      console.log('Replaying cached response')
+      logger.debug('Replaying cached response')
     },
   })
 
@@ -215,7 +215,7 @@ function StreamingCachedChat() {
 
   // Manual invalidation
   onInvalidate: (key) => {
-    console.log(\`Cache invalidated: \${key}\`)
+    logger.debug(\`Cache invalidated: \${key}\`)
   },
 })
 
@@ -246,7 +246,7 @@ cache.invalidatePattern(/^user-.*/) // Regex pattern`}
 
 // Access cache stats
 const stats = cache.getStats()
-console.log({
+logger.debug({
   hitRate: stats.hitRate,      // 0.65 = 65% hit rate
   missRate: stats.missRate,    // 0.35
   totalHits: stats.hits,       // 1234

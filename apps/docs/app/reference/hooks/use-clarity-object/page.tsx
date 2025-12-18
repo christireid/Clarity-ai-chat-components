@@ -342,10 +342,10 @@ function UserGenerator() {
 
   // TypeScript knows the structure!
   if (object) {
-    console.log(object.name) // ✅ Type-safe
-    console.log(object.email) // ✅ Type-safe
-    console.log(object.preferences.theme) // ✅ Type-safe
-    // console.log(object.invalid) // ❌ TypeScript error
+    logger.debug(object.name) // ✅ Type-safe
+    logger.debug(object.email) // ✅ Type-safe
+    logger.debug(object.preferences.theme) // ✅ Type-safe
+    // logger.debug(object.invalid) // ❌ TypeScript error
   }
 
   return <div>...</div>
@@ -363,11 +363,11 @@ function UserGenerator() {
   api: '/api/generate-products',
   stream: true,
   onProgress: (chunk) => {
-    console.log('Progress:', chunk)
+    logger.debug('Progress:', chunk)
     // Update UI with partial results
   },
   onFinish: (object) => {
-    console.log('Generation complete:', object)
+    logger.debug('Generation complete:', object)
   },
 })`}
           language="tsx"
@@ -414,7 +414,7 @@ function UserGenerator() {
           code={`const { object, run, isLoading, error, reset } = useClarityObject<Product[]>({
   api: '/api/generate-products',
   onError: (error) => {
-    console.error('Generation error:', error)
+    logger.error('Generation error:', error)
     // Send to error tracking service
     if (typeof errorTrackingService !== 'undefined') {
       errorTrackingService.captureException(error)
@@ -478,14 +478,14 @@ function BlogPostGenerator() {
     initialInput: { topic: 'React hooks' },
     stream: true,
     onProgress: (chunk) => {
-      console.log('Generating...', chunk)
+      logger.debug('Generating...', chunk)
     },
     onFinish: (post) => {
-      console.log('Post generated:', post)
+      logger.debug('Post generated:', post)
       // Save to database, etc.
     },
     onError: (error) => {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     },
   })
 
@@ -598,7 +598,7 @@ export async function POST(req: Request) {
     // Return the products array
     return NextResponse.json(content.products || [])
   } catch (error) {
-    console.error('Product generation error:', error)
+    logger.error('Product generation error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -77,9 +77,25 @@ export type {
   UseStreamingErrorReturn,
 } from './hooks/useStreamingError'
 
-// Accessibility hooks
+// Accessibility hooks (enhanced)
 export {
+  // Enhanced accessibility utilities
   useFocusManagement,
+  useScreenReaderAnnounce,
+  useHighContrastMode,
+  useReducedMotion,
+  useColorContrast,
+  useKeyboardNavigation,
+  // Legacy accessibility hooks (for backward compatibility)
+  useFocusManagementLegacy as useFocusManagementLegacy,
+  useFocusTrap as useFocusTrapLegacy,
+  useAnnounce as useAnnounceLegacy,
+  usePrefersReducedMotionLegacy as usePrefersReducedMotionLegacy,
+  useIdLegacy as useIdLegacy,
+} from './accessibility'
+
+// Re-export legacy hooks with their original names for backward compatibility
+export {
   useFocusTrap,
   useAnnounce,
   usePrefersReducedMotion,

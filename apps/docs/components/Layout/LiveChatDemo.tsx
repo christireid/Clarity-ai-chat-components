@@ -38,7 +38,7 @@ const generateId = () => crypto.randomUUID()
 const initialMessages: Message[] = [
   {
     id: '1',
-    text: "Hi! I'm your Clarity Chat documentation assistant. Ask me anything about building chat interfaces with our 70+ components and 35+ hooks!",
+    text: "Hi! I'm your Clarity Chat documentation assistant. Ask me anything about building chat interfaces with our 200+ components and 140+ hooks!",
     sender: 'bot',
     timestamp: new Date(Date.now() - 60000),
   },
@@ -87,7 +87,7 @@ export function LiveChatDemo() {
     reset: resetStreaming,
   } = useStreaming({
     onError: (error) => {
-      console.error('Streaming error:', error)
+      logger.error('Streaming error:', error)
       setIsError(true)
       setMessages((prev) => {
         const lastMsg = prev[prev.length - 1]
@@ -217,7 +217,7 @@ export function LiveChatDemo() {
     } catch (error: any) {
       if (error.name === 'AbortError') return
 
-      console.error('Error getting response:', error)
+      logger.error('Error getting response:', error)
       setIsError(true)
       setIsTyping(false)
       setMessages((prev) => [

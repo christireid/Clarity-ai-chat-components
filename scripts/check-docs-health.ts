@@ -52,7 +52,7 @@ const ESSENTIAL_FILES = [
   'CODE_OF_CONDUCT.md',
   'SECURITY.md',
   'LICENSE',
-  '.github/DOCUMENTATION_POLICY.md'
+  '.github/DOCUMENTATION_POLICY.md',
 ]
 
 const ARTIFACT_PATTERNS = [
@@ -68,7 +68,7 @@ const ARTIFACT_PATTERNS = [
   /^CLEANUP_.+\.md$/,
   /^OPTIMIZATION_.+\.md$/,
   /^REFACTOR_.+\.md$/,
-  /^IMPLEMENTATION_.+\.md$/
+  /^IMPLEMENTATION_.+\.md$/,
 ]
 
 async function countFiles(pattern: string): Promise<number> {
@@ -77,7 +77,7 @@ async function countFiles(pattern: string): Promise<number> {
       `find . -type f -name "${pattern}" -not -path "./node_modules/*" -not -path "./.git/*" | wc -l`
     )
     return parseInt(stdout.trim())
-  } catch (error) {
+  } catch {
     return 0
   }
 }
@@ -88,7 +88,7 @@ async function findFiles(pattern: string): Promise<string[]> {
       `find . -type f -name "${pattern}" -not -path "./node_modules/*" -not -path "./.git/*"`
     )
     return stdout.trim().split('\n').filter(Boolean)
-  } catch (error) {
+  } catch {
     return []
   }
 }
@@ -104,7 +104,9 @@ async function findArtifacts(): Promise<string[]> {
     const filename = path.basename(file)
 
     // Check if filename matches any artifact pattern
-    const isArtifact = ARTIFACT_PATTERNS.some(pattern => pattern.test(filename))
+    const isArtifact = ARTIFACT_PATTERNS.some((pattern) =>
+      pattern.test(filename)
+    )
 
     if (isArtifact) {
       artifacts.push(file)
@@ -120,7 +122,7 @@ async function findEmptyFiles(): Promise<string[]> {
       `find . -type f -name "*.md" -empty -not -path "./node_modules/*"`
     )
     return stdout.trim().split('\n').filter(Boolean)
-  } catch (error) {
+  } catch {
     return []
   }
 }
@@ -133,14 +135,17 @@ async function findTodoMarkers(): Promise<{ count: number; files: string[] }> {
     const files = stdout.trim().split('\n').filter(Boolean)
     return {
       count: files.length,
-      files
+      files,
     }
-  } catch (error) {
+  } catch {
     return { count: 0, files: [] }
   }
 }
 
-async function checkEssentialFiles(): Promise<{ missing: string[]; present: string[] }> {
+async function checkEssentialFiles(): Promise<{
+  missing: string[]
+  present: string[]
+}> {
   const missing: string[] = []
   const present: string[] = []
 
@@ -156,7 +161,9 @@ async function checkEssentialFiles(): Promise<{ missing: string[]; present: stri
   return { missing, present }
 }
 
-function calculateHealthScore(report: Omit<HealthReport, 'healthScore' | 'status'>): number {
+function calculateHealthScore(
+  report: Omit<HealthReport, 'healthScore' | 'status'>
+): number {
   let score = 100
 
   // Deduct points for issues
@@ -173,7 +180,9 @@ function calculateHealthScore(report: Omit<HealthReport, 'healthScore' | 'status
   return Math.max(0, Math.min(100, score))
 }
 
-function getHealthStatus(score: number): 'excellent' | 'good' | 'warning' | 'critical' {
+function getHealthStatus(
+  score: number
+): 'excellent' | 'good' | 'warning' | 'critical' {
   if (score >= 90) return 'excellent'
   if (score >= 75) return 'good'
   if (score >= 60) return 'warning'
@@ -193,14 +202,14 @@ function formatReport(report: HealthReport, format: 'text' | 'json'): string {
     yellow: '\x1b[33m',
     blue: '\x1b[34m',
     cyan: '\x1b[36m',
-    bold: '\x1b[1m'
+    bold: '\x1b[1m',
   }
 
   const statusColor = {
     excellent: colors.green,
     good: colors.blue,
     warning: colors.yellow,
-    critical: colors.red
+    critical: colors.red,
   }[report.status]
 
   let output = `
@@ -226,7 +235,7 @@ ${colors.bold}${colors.cyan}🚨 ARTIFACTS${colors.reset}
 
   if (report.artifacts.count > 0) {
     output += '\n  Files:\n'
-    report.artifacts.files.slice(0, 10).forEach(file => {
+    report.artifacts.files.slice(0, 10).forEach((file) => {
       output += `    • ${file}\n`
     })
     if (report.artifacts.count > 10) {
@@ -242,7 +251,7 @@ ${colors.bold}${colors.cyan}📄 EMPTY FILES${colors.reset}
 
   if (report.empty.count > 0) {
     output += '\n  Files:\n'
-    report.empty.files.forEach(file => {
+    report.empty.files.forEach((file) => {
       output += `    • ${file}\n`
     })
   }
@@ -259,7 +268,7 @@ ${colors.bold}${colors.cyan}🔒 ESSENTIAL FILES${colors.reset}
 
   if (report.essentialFiles.missing.length > 0) {
     output += '\n  Missing:\n'
-    report.essentialFiles.missing.forEach(file => {
+    report.essentialFiles.missing.forEach((file) => {
       output += `    ${colors.red}• ${file}${colors.reset}\n`
     })
   }
@@ -323,22 +332,22 @@ async function main() {
     fileCount: {
       markdown: mdCount,
       text: txtCount,
-      total: mdCount + txtCount
+      total: mdCount + txtCount,
     },
     artifacts: {
       count: artifacts.length,
-      files: artifacts
+      files: artifacts,
     },
     orphans: {
       count: 0, // Placeholder for future orphan detection
-      files: []
+      files: [],
     },
     empty: {
       count: empty.length,
-      files: empty
+      files: empty,
     },
     todos,
-    essentialFiles
+    essentialFiles,
   }
 
   const healthScore = calculateHealthScore(partialReport)
@@ -347,7 +356,7 @@ async function main() {
   const report: HealthReport = {
     ...partialReport,
     healthScore,
-    status
+    status,
   }
 
   // Output report
@@ -363,7 +372,7 @@ async function main() {
   }
 }
 
-main().catch(error => {
+main().catch((error) => {
   console.error('Error running documentation health check:', error)
   process.exit(1)
 })

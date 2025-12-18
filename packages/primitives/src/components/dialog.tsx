@@ -8,7 +8,7 @@ import {
   type Variants,
   type Transition,
 } from 'framer-motion'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 import { saveFocus, getFocusableElements, announce } from '../lib/aria'
 import { CloseIcon } from './icons'
 import {

@@ -2,11 +2,14 @@
 
 import * as React from 'react'
 import type { ComponentPropsWithoutRef, ElementRef } from 'react'
-import { cn } from '../lib/utils'
+import { cn } from '../lib/cn'
 import { ErrorMessage } from './error-message'
 import { Switch as BaseSwitch } from './ui/switch'
 
-type BaseSwitchProps = Omit<ComponentPropsWithoutRef<typeof BaseSwitch>, 'onChange'>
+type BaseSwitchProps = Omit<
+  ComponentPropsWithoutRef<typeof BaseSwitch>,
+  'onChange'
+>
 
 export interface SwitchProps extends BaseSwitchProps {
   /** Visible label displayed next to the switch */
@@ -31,7 +34,10 @@ export interface SwitchProps extends BaseSwitchProps {
   required?: boolean
 }
 
-export const Switch = React.forwardRef<ElementRef<typeof BaseSwitch>, SwitchProps>(
+export const Switch = React.forwardRef<
+  ElementRef<typeof BaseSwitch>,
+  SwitchProps
+>(
   (
     {
       id,
@@ -62,7 +68,9 @@ export const Switch = React.forwardRef<ElementRef<typeof BaseSwitch>, SwitchProp
     const hiddenInputRef = React.useRef<HTMLInputElement>(null)
 
     const isControlled = checked !== undefined
-    const [internalChecked, setInternalChecked] = React.useState<boolean>(defaultChecked ?? false)
+    const [internalChecked, setInternalChecked] = React.useState<boolean>(
+      defaultChecked ?? false
+    )
     const resolvedChecked = (isControlled ? checked : internalChecked) ?? false
 
     React.useEffect(() => {
@@ -116,19 +124,20 @@ export const Switch = React.forwardRef<ElementRef<typeof BaseSwitch>, SwitchProp
       emitNativeChange(nextState)
     }
 
-    const describedByIds = [descriptionId, errorId].filter(Boolean).join(' ') || undefined
+    const describedByIds =
+      [descriptionId, errorId].filter(Boolean).join(' ') || undefined
 
     const hiddenInput = (
       <input
         ref={hiddenInputRef}
-        type='checkbox'
+        type="checkbox"
         tabIndex={-1}
-        aria-hidden='true'
+        aria-hidden="true"
         name={name}
         value={value ?? 'on'}
         required={required}
         disabled={disabled}
-        className='sr-only'
+        className="sr-only"
         data-switch-hidden-input
         readOnly
       />
@@ -143,7 +152,7 @@ export const Switch = React.forwardRef<ElementRef<typeof BaseSwitch>, SwitchProp
           )}
         >
           {(label || description) && (
-            <div className='flex-1'>
+            <div className="flex-1">
               {label && (
                 <label
                   id={labelId}
@@ -169,7 +178,7 @@ export const Switch = React.forwardRef<ElementRef<typeof BaseSwitch>, SwitchProp
               )}
             </div>
           )}
-          <div className='flex items-center gap-2'>
+          <div className="flex items-center gap-2">
             <BaseSwitch
               id={switchId}
               ref={ref}

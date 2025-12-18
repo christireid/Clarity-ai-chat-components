@@ -92,7 +92,7 @@ export default function UseRetryWithBackoffPage() {
   maxRetries: 5,
   baseDelay: 500, // Start fast
   onRetry: (attempt, delay) => {
-    console.log(\`Retrying... attempt \${attempt} in \${delay}ms\`)
+    logger.debug(\`Retrying... attempt \${attempt} in \${delay}ms\`)
   }
 })
 

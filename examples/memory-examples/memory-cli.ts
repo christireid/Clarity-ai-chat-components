@@ -17,8 +17,8 @@ import { clarityMemory } from '../../packages/memory/src/factory'
 const memory = clarityMemory({
   debug: false,
   storage: {
-    type: 'memory' // Change to 'file' with path for persistence
-  }
+    type: 'memory', // Change to 'file' with path for persistence
+  },
 })
 
 // Initialize memory
@@ -28,7 +28,7 @@ await memory.initialize()
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  prompt: '\n💭 You: '
+  prompt: '\n💭 You: ',
 })
 
 console.log('╔═══════════════════════════════════════════════════════════╗')
@@ -68,7 +68,9 @@ rl.on('line', async (input) => {
 
   if (message === '/clear') {
     // Note: clearAll() may not be available, this is a placeholder
-    console.log('✨ Memory cleared (in production, implement clearAll() method)')
+    console.log(
+      '✨ Memory cleared (in production, implement clearAll() method)'
+    )
     rl.prompt()
     return
   }
@@ -84,12 +86,12 @@ rl.on('line', async (input) => {
     // Search for relevant memories
     const relevantMemories = await memory.recall(message, {
       limit: 5,
-      minConfidence: 0.6
+      minConfidence: 0.6,
     })
 
     // Get optimized context
     const contextBundle = await memory.context({
-      maxTokens: 500
+      maxTokens: 500,
     })
 
     // Generate response (in real app, call your LLM here)
@@ -108,14 +110,14 @@ rl.on('line', async (input) => {
         type: 'episodic',
         scope: 'session',
         importance: 0.5,
-        tags: ['user-message']
+        tags: ['user-message'],
       }),
       memory.add(response, {
         type: 'episodic',
         scope: 'session',
         importance: 0.6,
-        tags: ['assistant-response']
-      })
+        tags: ['assistant-response'],
+      }),
     ])
 
     // Show memory info
@@ -144,11 +146,14 @@ async function generateResponse(
   memoriesUsed: number
 ): Promise<string> {
   // Simulate processing time
-  await new Promise(resolve => setTimeout(resolve, 300))
+  await new Promise((resolve) => setTimeout(resolve, 300))
 
   // Mock responses based on keywords
-  if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
-    return `Hello! I'm here to help. ${memoriesUsed > 0 ? "I remember our previous conversations." : "This is our first chat!"}`
+  if (
+    message.toLowerCase().includes('hello') ||
+    message.toLowerCase().includes('hi')
+  ) {
+    return `Hello! I'm here to help. ${memoriesUsed > 0 ? 'I remember our previous conversations.' : 'This is our first chat!'}`
   }
 
   if (message.toLowerCase().includes('name')) {
@@ -160,7 +165,7 @@ async function generateResponse(
       type: 'semantic',
       scope: 'user',
       importance: 0.9,
-      tags: ['user-fact']
+      tags: ['user-fact'],
     })
     return "I've stored that in my semantic memory. I'll remember it for future conversations!"
   }

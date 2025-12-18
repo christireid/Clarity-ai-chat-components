@@ -7,6 +7,7 @@
 import { ClarityError, type ErrorSolution } from './base.js'
 
 // Provider helper functions
+// Provider helper functions
 function getEnvKeyName(provider: string): string {
   const map: Record<string, string> = {
     openai: 'OPENAI_API_KEY',

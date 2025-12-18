@@ -15,7 +15,13 @@ import {
   Message,
 } from '@clarity-chat/react'
 import type { Thread, ThreadViewConfig } from '@clarity-chat/react'
-import { Card, CardContent, CardHeader, CardTitle, Button } from '@clarity-chat/primitives'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Button,
+} from '@clarity-chat/primitives'
 
 // =============================================================================
 // Example 1: Basic Inline Threading
@@ -57,31 +63,33 @@ export function BasicThreadingExample() {
       },
     }
 
-    setThreads(prev => [...prev, newThread])
+    setThreads((prev) => [...prev, newThread])
   }
 
   const handleThreadReply = (threadId: string, content: string) => {
-    setThreads(prev => prev.map(thread => {
-      if (thread.id === threadId) {
-        const newMessage: Message = {
-          id: `msg-${Date.now()}`,
-          role: 'user',
-          content,
-          timestamp: Date.now(),
-        }
+    setThreads((prev) =>
+      prev.map((thread) => {
+        if (thread.id === threadId) {
+          const newMessage: Message = {
+            id: `msg-${Date.now()}`,
+            role: 'user',
+            content,
+            timestamp: Date.now(),
+          }
 
-        return {
-          ...thread,
-          messages: [...thread.messages, newMessage],
-          lastActivity: Date.now(),
-          metadata: {
-            ...thread.metadata,
-            updatedAt: Date.now(),
-          },
+          return {
+            ...thread,
+            messages: [...thread.messages, newMessage],
+            lastActivity: Date.now(),
+            metadata: {
+              ...thread.metadata,
+              updatedAt: Date.now(),
+            },
+          }
         }
-      }
-      return thread
-    }))
+        return thread
+      })
+    )
   }
 
   return (
@@ -89,8 +97,8 @@ export function BasicThreadingExample() {
       <h2 className="text-2xl font-bold">Basic Inline Threading</h2>
 
       <div className="space-y-4">
-        {messages.map(message => {
-          const thread = threads.find(t => t.parentMessageId === message.id)
+        {messages.map((message) => {
+          const thread = threads.find((t) => t.parentMessageId === message.id)
 
           return (
             <div key={message.id}>
@@ -147,7 +155,9 @@ export function SidebarThreadingExample() {
   ])
 
   const [threads, setThreads] = React.useState<Thread[]>([])
-  const [selectedThread, setSelectedThread] = React.useState<Thread | null>(null)
+  const [selectedThread, setSelectedThread] = React.useState<Thread | null>(
+    null
+  )
 
   const handleCreateThread = (parentMessageId: string) => {
     const newThread: Thread = {
@@ -160,33 +170,35 @@ export function SidebarThreadingExample() {
       isArchived: false,
     }
 
-    setThreads(prev => [...prev, newThread])
+    setThreads((prev) => [...prev, newThread])
     setSelectedThread(newThread)
   }
 
   const handleThreadReply = (content: string) => {
     if (!selectedThread) return
 
-    setThreads(prev => prev.map(thread => {
-      if (thread.id === selectedThread.id) {
-        const newMessage: Message = {
-          id: `msg-${Date.now()}`,
-          role: 'user',
-          content,
-          timestamp: Date.now(),
-        }
+    setThreads((prev) =>
+      prev.map((thread) => {
+        if (thread.id === selectedThread.id) {
+          const newMessage: Message = {
+            id: `msg-${Date.now()}`,
+            role: 'user',
+            content,
+            timestamp: Date.now(),
+          }
 
-        const updatedThread = {
-          ...thread,
-          messages: [...thread.messages, newMessage],
-          lastActivity: Date.now(),
-        }
+          const updatedThread = {
+            ...thread,
+            messages: [...thread.messages, newMessage],
+            lastActivity: Date.now(),
+          }
 
-        setSelectedThread(updatedThread)
-        return updatedThread
-      }
-      return thread
-    }))
+          setSelectedThread(updatedThread)
+          return updatedThread
+        }
+        return thread
+      })
+    )
   }
 
   return (
@@ -195,8 +207,8 @@ export function SidebarThreadingExample() {
       <div className="col-span-2 space-y-4 overflow-auto">
         <h2 className="text-2xl font-bold">Sidebar Threading</h2>
 
-        {messages.map(message => {
-          const thread = threads.find(t => t.parentMessageId === message.id)
+        {messages.map((message) => {
+          const thread = threads.find((t) => t.parentMessageId === message.id)
 
           return (
             <div key={message.id}>
@@ -209,7 +221,8 @@ export function SidebarThreadingExample() {
                   onClick={() => setSelectedThread(thread)}
                   className="mt-2"
                 >
-                  {thread.messages.length} {thread.messages.length === 1 ? 'reply' : 'replies'}
+                  {thread.messages.length}{' '}
+                  {thread.messages.length === 1 ? 'reply' : 'replies'}
                   {thread.unreadCount > 0 && (
                     <span className="ml-2 text-destructive">
                       ({thread.unreadCount} new)
@@ -237,7 +250,9 @@ export function SidebarThreadingExample() {
       <div className="border-l pl-4 overflow-auto">
         {selectedThread ? (
           <MessageThreadView
-            parentMessage={messages.find(m => m.id === selectedThread.parentMessageId)!}
+            parentMessage={
+              messages.find((m) => m.id === selectedThread.parentMessageId)!
+            }
             thread={selectedThread}
             config={{
               maxDepth: 5,
@@ -339,15 +354,15 @@ export function ThreadBrowserExample() {
   const handleSelectThread = (thread: Thread) => {
     console.log('Selected thread:', thread)
     // Mark thread as read
-    setThreads(prev => prev.map(t =>
-      t.id === thread.id ? { ...t, unreadCount: 0 } : t
-    ))
+    setThreads((prev) =>
+      prev.map((t) => (t.id === thread.id ? { ...t, unreadCount: 0 } : t))
+    )
   }
 
   const handleArchiveThread = (threadId: string) => {
-    setThreads(prev => prev.map(t =>
-      t.id === threadId ? { ...t, isArchived: true } : t
-    ))
+    setThreads((prev) =>
+      prev.map((t) => (t.id === threadId ? { ...t, isArchived: true } : t))
+    )
   }
 
   return (
@@ -356,7 +371,7 @@ export function ThreadBrowserExample() {
       <div className="col-span-2 space-y-4 overflow-auto">
         <h2 className="text-2xl font-bold">Thread Browser</h2>
 
-        {messages.map(message => (
+        {messages.map((message) => (
           <div key={message.id}>
             <Message message={message} />
           </div>
@@ -423,7 +438,7 @@ export function ProductionThreadingExample() {
       })
 
       const newThread = await response.json()
-      setThreads(prev => [...prev, newThread])
+      setThreads((prev) => [...prev, newThread])
     } catch (error) {
       console.error('Failed to create thread:', error)
     }
@@ -439,16 +454,18 @@ export function ProductionThreadingExample() {
 
       const newMessage = await response.json()
 
-      setThreads(prev => prev.map(thread => {
-        if (thread.id === threadId) {
-          return {
-            ...thread,
-            messages: [...thread.messages, newMessage],
-            lastActivity: Date.now(),
+      setThreads((prev) =>
+        prev.map((thread) => {
+          if (thread.id === threadId) {
+            return {
+              ...thread,
+              messages: [...thread.messages, newMessage],
+              lastActivity: Date.now(),
+            }
           }
-        }
-        return thread
-      }))
+          return thread
+        })
+      )
     } catch (error) {
       console.error('Failed to send thread reply:', error)
     }
@@ -460,9 +477,11 @@ export function ProductionThreadingExample() {
         method: 'POST',
       })
 
-      setThreads(prev => prev.map(thread =>
-        thread.id === threadId ? { ...thread, unreadCount: 0 } : thread
-      ))
+      setThreads((prev) =>
+        prev.map((thread) =>
+          thread.id === threadId ? { ...thread, unreadCount: 0 } : thread
+        )
+      )
     } catch (error) {
       console.error('Failed to mark thread as read:', error)
     }
@@ -477,8 +496,8 @@ export function ProductionThreadingExample() {
       <h2 className="text-2xl font-bold">Production Threading</h2>
 
       <div className="space-y-4">
-        {messages.map(message => {
-          const thread = threads.find(t => t.parentMessageId === message.id)
+        {messages.map((message) => {
+          const thread = threads.find((t) => t.parentMessageId === message.id)
 
           return (
             <div key={message.id}>
@@ -527,10 +546,10 @@ export function AdvancedThreadingExample() {
   const [threads, setThreads] = React.useState<Thread[]>([])
 
   const advancedConfig: ThreadViewConfig = {
-    maxDepth: 5,              // Allow deeper nesting
+    maxDepth: 5, // Allow deeper nesting
     showPreview: true,
-    previewLength: 200,       // Longer previews
-    collapseThreshold: 5,     // Collapse sooner
+    previewLength: 200, // Longer previews
+    collapseThreshold: 5, // Collapse sooner
     notificationsEnabled: true,
   }
 
@@ -539,8 +558,8 @@ export function AdvancedThreadingExample() {
       <h2 className="text-2xl font-bold">Advanced Threading Configuration</h2>
 
       <div className="space-y-4">
-        {messages.map(message => {
-          const thread = threads.find(t => t.parentMessageId === message.id)
+        {messages.map((message) => {
+          const thread = threads.find((t) => t.parentMessageId === message.id)
 
           return (
             <div key={message.id}>

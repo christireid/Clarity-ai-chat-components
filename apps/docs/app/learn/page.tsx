@@ -13,9 +13,21 @@ const sections = [
     icon: Zap,
     description: 'Quick start guides and installation instructions',
     links: [
-      { title: 'Quick Start', href: '/learn/quick-start', description: 'Get up and running in 5 minutes' },
-      { title: 'Installation', href: '/learn/installation', description: 'Install Clarity Chat in your project' },
-      { title: 'Tutorial', href: '/learn/tutorial', description: 'Build a complete chat application' },
+      {
+        title: 'Quick Start',
+        href: '/learn/quick-start',
+        description: 'Get up and running in 5 minutes',
+      },
+      {
+        title: 'Installation',
+        href: '/learn/installation',
+        description: 'Install Clarity Chat in your project',
+      },
+      {
+        title: 'Tutorial',
+        href: '/learn/tutorial',
+        description: 'Build a complete chat application',
+      },
     ],
   },
   {
@@ -23,10 +35,26 @@ const sections = [
     icon: BookOpen,
     description: 'Understand the fundamentals of Clarity Chat',
     links: [
-      { title: 'Components', href: '/learn/concepts/components', description: 'Learn about UI components' },
-      { title: 'Hooks', href: '/learn/concepts/hooks', description: 'Powerful React hooks for state management' },
-      { title: 'Theming', href: '/learn/concepts/theming', description: 'Customize colors and styles' },
-      { title: 'Animations', href: '/learn/concepts/animations', description: 'Smooth motion and transitions' },
+      {
+        title: 'Components',
+        href: '/learn/concepts/components',
+        description: 'Learn about UI components',
+      },
+      {
+        title: 'Hooks',
+        href: '/learn/concepts/hooks',
+        description: 'Powerful React hooks for state management',
+      },
+      {
+        title: 'Theming',
+        href: '/learn/concepts/theming',
+        description: 'Customize colors and styles',
+      },
+      {
+        title: 'Animations',
+        href: '/learn/concepts/animations',
+        description: 'Smooth motion and transitions',
+      },
     ],
   },
   {
@@ -34,11 +62,11 @@ const sections = [
     icon: Code,
     description: 'In-depth guides for specific topics',
     links: [
-      { title: 'Styling', href: '/learn/guides/styling', description: 'Custom styles and CSS' },
-      { title: 'Accessibility', href: '/learn/guides/accessibility', description: 'Build inclusive interfaces' },
-      { title: 'Performance', href: '/learn/guides/performance', description: 'Optimize your chat app' },
-      { title: 'Testing', href: '/learn/guides/testing', description: 'Test your components' },
-      { title: 'TypeScript', href: '/learn/guides/typescript', description: 'Type-safe development' },
+      {
+        title: 'View all guides',
+        href: '/guides',
+        description: 'Browse comprehensive guides →',
+      },
     ],
   },
   {
@@ -46,7 +74,11 @@ const sections = [
     icon: Lightbulb,
     description: 'Real-world examples and patterns',
     links: [
-      { title: 'View all examples', href: '/examples', description: 'Browse code examples →' },
+      {
+        title: 'View all examples',
+        href: '/examples',
+        description: 'Browse code examples →',
+      },
     ],
   },
 ]
@@ -57,7 +89,8 @@ export default function LearnPage() {
       <div className="max-w-4xl">
         <h1 className="text-5xl font-bold mb-6">Learn Clarity Chat</h1>
         <p className="text-xl text-text-secondary mb-12">
-          Everything you need to know to build beautiful, accessible chat interfaces with React.
+          Everything you need to know to build beautiful, accessible chat
+          interfaces with React.
         </p>
 
         <div className="grid gap-8">

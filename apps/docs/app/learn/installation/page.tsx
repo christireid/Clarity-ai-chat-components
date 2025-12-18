@@ -309,7 +309,7 @@ function App() {
     <div style={{ height: '100vh' }}>
       <ChatWindow
         messages={[]}
-        onSendMessage={(text) => console.log(text)}
+        onSendMessage={(text) => logger.debug(text)}
       />
     </div>
   )

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
     return new StreamingTextResponse(stream)
 
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.error('Chat API error:', error)
     return new Response(
       JSON.stringify({ error: 'Failed to generate response' }),
       { status: 500 }
@@ -190,7 +191,7 @@ export default function ChatPage() {
       ))
 
     } catch (error) {
-      console.error('Chat error:', error)
+      logger.error('Chat error:', error)
       
       // Show error state
       setMessages(prev => prev.map(m =>

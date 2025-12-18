@@ -20,10 +20,10 @@ function BasicSSEDemo() {
     method: 'POST',
     body: { message: 'Hello' },
     onMessage: (event) => {
-      console.log('Received event:', event)
+      logger.debug('Received event:', event)
     },
     onError: (err) => {
-      console.error('SSE Error:', err)
+      logger.error('SSE Error:', err)
     },
   })
 
@@ -286,7 +286,7 @@ export default function UseStreamingSSEPage() {
   const { status, data, connect, disconnect } = useStreamingSSE({
     url: '/api/stream',
     onMessage: (event) => {
-      console.log('Event:', event)
+      logger.debug('Event:', event)
     },
   })
 
@@ -336,7 +336,7 @@ function SimpleSSE() {
   } = useStreamingSSE({
     url: '/api/stream',
     onMessage: (event) => {
-      console.log('Received:', event.data)
+      logger.debug('Received:', event.data)
     },
   })
 
@@ -419,7 +419,7 @@ function SSEWithAuth() {
     onError: (error) => {
       if (error.message.includes('401')) {
         // Handle authentication error
-        console.error('Authentication failed')
+        logger.error('Authentication failed')
       }
     },
   })
@@ -455,10 +455,10 @@ function SSEWithReconnect() {
     reconnectDelay: 1000, // Start with 1 second
     maxReconnectDelay: 30000, // Max 30 seconds
     onReconnecting: (attempt, delay) => {
-      console.log(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
+      logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
-      console.error('Max reconnection attempts reached')
+      logger.error('Max reconnection attempts reached')
     },
   })
 
@@ -501,16 +501,16 @@ function SSEWithEventHandling() {
     onMessage: (event: SSEEvent) => {
       switch (event.type) {
         case 'message':
-          console.log('Message:', event.data)
+          logger.debug('Message:', event.data)
           break
         case 'error':
-          console.error('Error event:', event.data)
+          logger.error('Error event:', event.data)
           break
         case 'done':
-          console.log('Stream complete')
+          logger.debug('Stream complete')
           break
         default:
-          console.log('Unknown event type:', event.type)
+          logger.debug('Unknown event type:', event.type)
       }
     },
   })
@@ -547,7 +547,7 @@ function SSEWithResume() {
     resumeFromLastEventId: true, // Automatically resume from last event
     onMessage: (event) => {
       // Server should include Last-Event-ID header on reconnect
-      console.log('Event ID:', event.id)
+      logger.debug('Event ID:', event.id)
     },
   })
 
@@ -631,10 +631,10 @@ function CompleteSSEExample() {
       }
     },
     onError: (err) => {
-      console.error('SSE Error:', err)
+      logger.error('SSE Error:', err)
     },
     onReconnecting: (attempt, delay) => {
-      console.log(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
+      logger.debug(\`Reconnecting in \${delay}ms (attempt \${attempt})\`)
     },
   })
 

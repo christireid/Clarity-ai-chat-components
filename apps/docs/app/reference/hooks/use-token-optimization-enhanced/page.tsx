@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -170,13 +171,13 @@ function OptimizedChat() {
       })
       
       // Use optimized content
-      console.log('Tokens:', optimized.tokens.total)
-      console.log('Cost: $', cost.total)
+      logger.debug('Tokens:', optimized.tokens.total)
+      logger.debug('Cost: $', cost.total)
       if (stats) {
-        console.log('Savings: $', stats.overall.totalCostSaved)
+        logger.debug('Savings: $', stats.overall.totalCostSaved)
       }
     } catch (error) {
-      console.error('Optimization failed:', error)
+      logger.error('Optimization failed:', error)
     }
   }
 
@@ -290,11 +291,11 @@ function ToonOptimized() {
 
       const optimized = await optimizeData(data)
       // Result: 30-60% fewer tokens, same data
-      console.log('Format:', optimized.format) // 'toon'
-      console.log('Tokens:', optimized.tokens.total)
-      console.log('Savings:', optimized.optimizations.toon?.savingsPercent)
+      logger.debug('Format:', optimized.format) // 'toon'
+      logger.debug('Tokens:', optimized.tokens.total)
+      logger.debug('Savings:', optimized.optimizations.toon?.savingsPercent)
     } catch (error) {
-      console.error('TOON optimization failed:', error)
+      logger.error('TOON optimization failed:', error)
     }
   }
 
@@ -327,10 +328,10 @@ function CachedChat() {
       })
 
       if (optimized.optimizations.cached) {
-        console.log('Used cached prompt - 50-90% cost savings!')
+        logger.debug('Used cached prompt - 50-90% cost savings!')
       }
     } catch (error) {
-      console.error('Caching failed:', error)
+      logger.error('Caching failed:', error)
     }
   }
 
@@ -360,11 +361,11 @@ function SemanticCachedChat() {
       
       // Check cache stats (stats may be undefined initially)
       if (stats) {
-        console.log('Cache Hit Rate:', stats.semanticCache.hitRate)
-        console.log('Tokens Saved:', stats.semanticCache.tokensSaved)
+        logger.debug('Cache Hit Rate:', stats.semanticCache.hitRate)
+        logger.debug('Tokens Saved:', stats.semanticCache.tokensSaved)
       }
     } catch (error) {
-      console.error('Semantic caching failed:', error)
+      logger.error('Semantic caching failed:', error)
     }
   }
 
@@ -400,15 +401,15 @@ function CostTrackedChat() {
         outputTokens,
       })
 
-      console.log('Input Cost: $', cost.input)
-      console.log('Output Cost: $', cost.output)
-      console.log('Total Cost: $', cost.total)
+      logger.debug('Input Cost: $', cost.input)
+      logger.debug('Output Cost: $', cost.output)
+      logger.debug('Total Cost: $', cost.total)
       
       if (stats) {
-        console.log('Savings: $', stats.costs.savingsFromOptimization)
+        logger.debug('Savings: $', stats.costs.savingsFromOptimization)
       }
     } catch (error) {
-      console.error('Cost tracking failed:', error)
+      logger.error('Cost tracking failed:', error)
     }
   }
 

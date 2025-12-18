@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Analytics Tracking
  *
@@ -195,7 +196,7 @@ export class RedisAnalyticsStore implements AnalyticsStore {
       await this.redis.hincrby(this.getMetricsKey(), 'followUps', 1)
     }
 
-    console.log(`📊 Analytics tracked: ${analytics.query.substring(0, 50)}... (${analytics.responseTime}ms, $${analytics.cost.toFixed(4)})`)
+    logger.debug(`📊 Analytics tracked: ${analytics.query.substring(0, 50)}... (${analytics.responseTime}ms, $${analytics.cost.toFixed(4)})`)
   }
 
   async getSummary(startDate?: Date, endDate?: Date): Promise<AnalyticsSummary> {
@@ -350,7 +351,7 @@ export class RedisAnalyticsStore implements AnalyticsStore {
     // Remove old queries from sorted set
     await this.redis.zremrangebyscore(this.getQueryListKey(), 0, cutoff)
 
-    console.log(`🗑️  Cleared analytics data older than ${olderThanDays} days`)
+    logger.debug(`🗑️  Cleared analytics data older than ${olderThanDays} days`)
   }
 }
 
@@ -404,7 +405,7 @@ export class LocalAnalyticsStore implements AnalyticsStore {
       this.metrics.followUps++
     }
 
-    console.log(`📊 Analytics tracked (local): ${analytics.query.substring(0, 50)}...`)
+    logger.debug(`📊 Analytics tracked (local): ${analytics.query.substring(0, 50)}...`)
   }
 
   async getSummary(startDate?: Date, endDate?: Date): Promise<AnalyticsSummary> {
@@ -540,10 +541,10 @@ export function getAnalyticsStore(): AnalyticsStore {
     process.env.NODE_ENV === 'production'
 
   if (useRedis) {
-    console.log('Using Redis analytics store (Upstash)')
+    logger.debug('Using Redis analytics store (Upstash)')
     return new RedisAnalyticsStore()
   } else {
-    console.log('Using local analytics store (development mode)')
+    logger.debug('Using local analytics store (development mode)')
     return new LocalAnalyticsStore()
   }
 }

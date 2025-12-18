@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -354,7 +355,7 @@ import { Pinecone } from '@pinecone-database/pinecone'
 
 const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY })
 const indexes = await pinecone.listIndexes()
-console.log('Available indexes:', indexes)`}</code>
+logger.debug('Available indexes:', indexes)`}</code>
         </pre>
 
         <h3>Context Window Exceeded</h3>
@@ -587,7 +588,7 @@ import { ChatWindow } from '@clarity-chat/react'
 
 <ChatWindow
   onDebug={(event, data) => {
-    console.log(\`[DEBUG] \${event}\`, data)
+    logger.debug(\`[DEBUG] \${event}\`, data)
   }}
   debug={true}
 />`}</code>
@@ -624,7 +625,7 @@ import { ChatWindow } from '@clarity-chat/react'
     </div>
   )}
   onError={(error, errorInfo) => {
-    console.error('Caught error:', error, errorInfo)
+    logger.error('Caught error:', error, errorInfo)
     // Send to error tracking service
   }}
 >

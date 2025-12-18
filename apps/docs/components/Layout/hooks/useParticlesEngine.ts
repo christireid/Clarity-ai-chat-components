@@ -74,7 +74,7 @@ export function useParticlesEngine() {
           setError(error)
         }
         if (process.env.NODE_ENV === 'development') {
-          console.error('[AnimatedBackground] Failed to initialize particles:', error)
+          logger.error('[AnimatedBackground] Failed to initialize particles:', error)
         }
         throw error
       })

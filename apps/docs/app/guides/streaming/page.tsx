@@ -155,7 +155,7 @@ function SSEChat() {
     body: { message: 'Hello' },
     autoReconnect: true,
     onMessage: (event) => {
-      console.log('Received:', event.data)
+      logger.debug('Received:', event.data)
     },
   })
 
@@ -248,7 +248,7 @@ function WebSocketChat() {
     autoReconnect: true,
     enableHeartbeat: true,
     onMessage: (msg) => {
-      console.log('Received:', msg.data)
+      logger.debug('Received:', msg.data)
     },
   })
 
@@ -605,7 +605,7 @@ function ChatWithErrorHandling() {
     api: '/api/chat',
     transport: 'sse',
     onError: (error) => {
-      console.error('Stream error:', error)
+      logger.error('Stream error:', error)
       // Show user-friendly error message
       if (error.message.includes('network')) {
         alert('Network error. Please check your connection.')
@@ -658,7 +658,7 @@ function SSEReconnect() {
     reconnectDelay: 1000, // Start with 1 second
     maxReconnectDelay: 30000, // Max 30 seconds
     onReconnecting: (attempt, delay) => {
-      console.log(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
+      logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
     onMaxReconnectAttemptsReached: () => {
       alert('Failed to reconnect. Please refresh the page.')
@@ -695,7 +695,7 @@ function WebSocketReconnect() {
     reconnectDelay: 1000,
     maxReconnectDelay: 30000,
     onReconnecting: (attempt, delay) => {
-      console.log(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
+      logger.debug(\`Reconnecting (attempt \${attempt}) in \${delay}ms\`)
     },
   })
 

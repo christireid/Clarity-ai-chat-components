@@ -79,7 +79,7 @@ class ToolErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ToolErrorBoundary caught error:', error, errorInfo)
+    logger.error('ToolErrorBoundary caught error:', error, errorInfo)
     this.props.onError?.(error, errorInfo)
   }
 

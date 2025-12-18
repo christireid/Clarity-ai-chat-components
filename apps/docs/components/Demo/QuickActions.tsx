@@ -59,7 +59,7 @@ export function QuickActions({
         })
       } catch (err) {
         // Silently handle if user cancels or share is not supported
-        console.log('Share cancelled or not supported')
+        logger.debug('Share cancelled or not supported')
       }
     } else {
       // Fallback: copy URL

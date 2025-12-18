@@ -1,3 +1,4 @@
+import { logger } from '..'
 /**
  * Logger Tests
  */
@@ -285,7 +286,7 @@ describe('Logger', () => {
     })
 
     it('should provide error function', () => {
-      error('Error message')
+      logger.error('Error message')
       expect(consoleErrorSpy).toHaveBeenCalled()
     })
 

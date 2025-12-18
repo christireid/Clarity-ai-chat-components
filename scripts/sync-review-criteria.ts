@@ -22,7 +22,8 @@ interface CriteriaItem {
   items: string[]
 }
 
-interface RuleMapping {
+// Reserved for future use
+interface _RuleMapping {
   rule: string
   criteria: string[]
   covered: boolean
@@ -78,7 +79,9 @@ function loadAllCriteria(): CriteriaItem[] {
     return []
   }
 
-  const files = fs.readdirSync(criteriaPath).filter((f) => f.endsWith('.md') && f !== 'README.md')
+  const files = fs
+    .readdirSync(criteriaPath)
+    .filter((f) => f.endsWith('.md') && f !== 'README.md')
 
   return files.map((file) => parseCriteriaFile(path.join(criteriaPath, file)))
 }
@@ -136,7 +139,9 @@ function generateReport(criteria: CriteriaItem[], rules: string[]): void {
       .map(([rule]) => rule)
 
     console.log(`\n${item.category.toUpperCase()} (${item.file})`)
-    console.log(`  Automated checks: ${rulesForCriteria.length > 0 ? rulesForCriteria.join(', ') : 'None'}`)
+    console.log(
+      `  Automated checks: ${rulesForCriteria.length > 0 ? rulesForCriteria.join(', ') : 'None'}`
+    )
     console.log(`  Manual review items: ${item.items.length}`)
   }
 
@@ -166,7 +171,9 @@ function generateReport(criteria: CriteriaItem[], rules: string[]): void {
       .map(([rule]) => rule)
 
     const coverage = rulesForCriteria.length > 0 ? '✓ Partial' : '○ Manual only'
-    console.log(`${item.category.padEnd(13)} │ ${String(rulesForCriteria.length).padEnd(10)} │ ${coverage}`)
+    console.log(
+      `${item.category.padEnd(13)} │ ${String(rulesForCriteria.length).padEnd(10)} │ ${coverage}`
+    )
   }
 
   console.log('\n')
@@ -185,7 +192,9 @@ function validateAlignment(criteria: CriteriaItem[], rules: string[]): boolean {
 
   // Check all criteria files have at least one rule
   for (const item of criteria) {
-    const hasRules = Object.values(RULE_TO_CRITERIA).some((files) => files.includes(item.file))
+    const hasRules = Object.values(RULE_TO_CRITERIA).some((files) =>
+      files.includes(item.file)
+    )
     if (!hasRules && item.file !== 'clarity-chat.md') {
       console.warn(`⚠️  Criteria file '${item.file}' has no automated checks`)
     }

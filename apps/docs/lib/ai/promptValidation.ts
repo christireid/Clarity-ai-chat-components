@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Prompt Validation Module
  *
@@ -342,16 +343,16 @@ export function validatePromptDevMode(
   const report = validatePrompt(prompt)
 
   if (!report.isValid) {
-    console.error(`[Prompt Validation] ${promptName} has errors:`)
+    logger.error(`[Prompt Validation] ${promptName} has errors:`)
     for (const error of report.errors) {
-      console.error(`  ❌ ${error.ruleName}: ${error.message}`)
+      logger.error(`  ❌ ${error.ruleName}: ${error.message}`)
     }
   }
 
   if (report.warnings.length > 0) {
-    console.warn(`[Prompt Validation] ${promptName} has warnings:`)
+    logger.warn(`[Prompt Validation] ${promptName} has warnings:`)
     for (const warning of report.warnings) {
-      console.warn(`  ⚠️ ${warning.ruleName}: ${warning.message}`)
+      logger.warn(`  ⚠️ ${warning.ruleName}: ${warning.message}`)
     }
   }
 }

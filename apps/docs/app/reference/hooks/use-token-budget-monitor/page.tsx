@@ -32,10 +32,10 @@ function BasicBudgetMonitorDemo() {
     criticalThreshold: 0.95,
     reservedForOutput: 100,
     onWarning: (usage) => {
-      console.log('Warning:', usage.utilizationPercent)
+      logger.debug('Warning:', usage.utilizationPercent)
     },
     onCritical: (usage) => {
-      console.log('Critical:', usage.utilizationPercent)
+      logger.debug('Critical:', usage.utilizationPercent)
     },
   })
 
@@ -385,10 +385,10 @@ function BasicMonitor() {
     criticalThreshold: 0.95, // 95%
     reservedForOutput: 4096,
     onWarning: (usage) => {
-      console.log('Warning:', usage.utilizationPercent)
+      logger.debug('Warning:', usage.utilizationPercent)
     },
     onCritical: (usage) => {
-      console.log('Critical:', usage.utilizationPercent)
+      logger.debug('Critical:', usage.utilizationPercent)
     },
   })
 
@@ -428,7 +428,7 @@ function AutoTrimMonitor() {
     criticalThreshold: 0.95,
     autoTrim: true, // Automatically trim at critical
     onAutoTrim: (result) => {
-      console.log('Auto-trimmed:', result.tokensRemoved, 'tokens')
+      logger.debug('Auto-trimmed:', result.tokensRemoved, 'tokens')
       // Update messages to reflect trimmed content
       setMessages(result.trimmedContent.map((content, i) => ({
         role: messages[i].role,
@@ -706,13 +706,13 @@ function CompleteBudgetMonitorExample() {
     model: 'gpt-4',
     useAccurateTokenization: false,
     onWarning: (usage) => {
-      console.log('Warning:', usage.utilizationPercent)
+      logger.debug('Warning:', usage.utilizationPercent)
     },
     onCritical: (usage) => {
-      console.log('Critical:', usage.utilizationPercent)
+      logger.debug('Critical:', usage.utilizationPercent)
     },
     onExceeded: (usage) => {
-      console.error('Exceeded:', usage.utilizationPercent)
+      logger.error('Exceeded:', usage.utilizationPercent)
     },
     autoTrim: false, // Manual trimming
   })

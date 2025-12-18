@@ -35,14 +35,14 @@ export * from './types'
 // Memory service (framework-agnostic)
 export { MemoryService } from './memory-service'
 
-// Token optimization utilities
+// Token optimization utilities (local implementations)
+export { TokenCounter } from './utils/token-counter'
+export { TokenBudgetManager } from './context/token-budget'
 export {
-  TokenCounter,
-  TokenBudgetManager,
   MemoryCompressor,
   SemanticChunker,
   ContextOptimizer,
-} from './token-optimizer'
+} from './utils/token-optimization-stubs'
 
 // LLM-based summarization (80-90% token reduction)
 export {

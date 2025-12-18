@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -112,11 +113,11 @@ function AutoScrollInput() {
 function WithEvents() {
   const { isKeyboardVisible } = useMobileKeyboard({
     onKeyboardShow: (height) => {
-      console.log('Keyboard shown, height:', height)
+      logger.debug('Keyboard shown, height:', height)
       // Adjust UI, show compact header, etc.
     },
     onKeyboardHide: () => {
-      console.log('Keyboard hidden')
+      logger.debug('Keyboard hidden')
       // Restore UI, show full header, etc.
     },
   })

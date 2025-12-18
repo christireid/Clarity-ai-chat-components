@@ -1,10 +1,14 @@
 /**
  * Enhanced TypeScript types for chat hooks
- * 
+ *
  * Provides better type inference and type safety
  */
 
-import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced'
+import type {
+  CoreMessage,
+  CoreMessageContent,
+} from '../hooks/chat/use-chat-enhanced'
+import { isString, isArray } from '@clarity-chat/utils/validation'
 
 /**
  * Type guard for string content
@@ -12,7 +16,7 @@ import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced
 export function isStringContent(
   content: CoreMessageContent
 ): content is string {
-  return typeof content === 'string'
+  return isString(content)
 }
 
 /**
@@ -21,17 +25,27 @@ export function isStringContent(
 export function isArrayContent(
   content: CoreMessageContent
 ): content is Extract<CoreMessageContent, Array<unknown>> {
-  return Array.isArray(content)
+  return isArray(content)
 }
 
 /**
  * Content part type
  */
-type ContentPart = 
+type ContentPart =
   | { type: 'text'; text: string }
   | { type: 'image'; image: string | ArrayBuffer }
-  | { type: 'tool-call'; toolCallId: string; toolName: string; args: Record<string, unknown> }
-  | { type: 'tool-result'; toolCallId: string; toolName: string; result: unknown }
+  | {
+      type: 'tool-call'
+      toolCallId: string
+      toolName: string
+      args: Record<string, unknown>
+    }
+  | {
+      type: 'tool-result'
+      toolCallId: string
+      toolName: string
+      result: unknown
+    }
 
 /**
  * Type guard for text content part
@@ -39,7 +53,12 @@ type ContentPart =
 export function isTextContentPart(
   part: unknown
 ): part is { type: 'text'; text: string } {
-  return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'text'
+  return (
+    typeof part === 'object' &&
+    part !== null &&
+    'type' in part &&
+    (part as { type: string }).type === 'text'
+  )
 }
 
 /**
@@ -48,35 +67,46 @@ export function isTextContentPart(
 export function isImageContentPart(
   part: unknown
 ): part is { type: 'image'; image: string | ArrayBuffer } {
-  return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'image'
+  return (
+    typeof part === 'object' &&
+    part !== null &&
+    'type' in part &&
+    (part as { type: string }).type === 'image'
+  )
 }
 
 /**
  * Type guard for tool call content part
  */
-export function isToolCallContentPart(
-  part: unknown
-): part is {
+export function isToolCallContentPart(part: unknown): part is {
   type: 'tool-call'
   toolCallId: string
   toolName: string
   args: Record<string, unknown>
 } {
-  return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'tool-call'
+  return (
+    typeof part === 'object' &&
+    part !== null &&
+    'type' in part &&
+    (part as { type: string }).type === 'tool-call'
+  )
 }
 
 /**
  * Type guard for tool result content part
  */
-export function isToolResultContentPart(
-  part: unknown
-): part is {
+export function isToolResultContentPart(part: unknown): part is {
   type: 'tool-result'
   toolCallId: string
   toolName: string
   result: unknown
 } {
-  return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'tool-result'
+  return (
+    typeof part === 'object' &&
+    part !== null &&
+    'type' in part &&
+    (part as { type: string }).type === 'tool-result'
+  )
 }
 
 /**

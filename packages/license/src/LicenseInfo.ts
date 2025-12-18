@@ -64,7 +64,7 @@ function notifyListeners(): void {
  *
  * // Later, check license status
  * if (LicenseInfo.isValid()) {
- *   console.log('Licensed to:', LicenseInfo.getLicensee());
+ *   logger.debug('Licensed to:', LicenseInfo.getLicensee());
  * }
  * ```
  */
@@ -118,7 +118,7 @@ export const LicenseInfo = {
    * @example
    * ```typescript
    * const unsubscribe = LicenseInfo.subscribe(() => {
-   *   console.log('License changed:', LicenseInfo.isValid());
+   *   logger.debug('License changed:', LicenseInfo.isValid());
    * });
    *
    * // Later, to stop listening:

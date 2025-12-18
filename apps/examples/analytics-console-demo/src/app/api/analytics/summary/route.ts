@@ -9,9 +9,8 @@ import { getSummaryStats } from '@/lib/storage'
 export async function GET() {
   try {
     const stats = getSummaryStats()
-    
+
     return NextResponse.json(stats)
-    
   } catch (error) {
     console.error('Analytics summary error:', error)
     return NextResponse.json(

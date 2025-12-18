@@ -1,3 +1,7 @@
+import { getLogger } from '../debug/logger'
+
+const logger = getLogger('config-validator')
+
 /**
  * Configuration validator
  * 
@@ -407,9 +411,9 @@ export function printValidationResults(results: ValidationResult, title?: string
       ? `All validations passed with ${results.warnings.length} warning(s)`
       : 'All validations passed!'
     
-    console.log()
-    console.log(successBox(content, title || '✅ Validation'))
-    console.log()
+    logger.debug()
+    logger.debug(successBox(content, title || '✅ Validation'))
+    logger.debug()
     
     if (results.warnings.length > 0) {
       const columns: TableColumn[] = [
@@ -418,8 +422,8 @@ export function printValidationResults(results: ValidationResult, title?: string
       ]
 
       const warningData = results.warnings.map(w => [w.field, w.message])
-      console.log(table(warningData, columns))
-      console.log()
+      logger.debug(table(warningData, columns))
+      logger.debug()
     }
     
     return
@@ -438,11 +442,11 @@ export function printValidationResults(results: ValidationResult, title?: string
     error.message,
   ])
 
-  console.log()
-  console.log(errorBox('Validation failed', title || '❌ Validation'))
-  console.log()
-  console.log(table(errorData, columns))
-  console.log()
+  logger.debug()
+  logger.debug(errorBox('Validation failed', title || '❌ Validation'))
+  logger.debug()
+  logger.debug(table(errorData, columns))
+  logger.debug()
 
   if (results.warnings.length > 0) {
     const warningColumns: TableColumn[] = [
@@ -451,10 +455,10 @@ export function printValidationResults(results: ValidationResult, title?: string
     ]
 
     const warningData = results.warnings.map(w => [w.field, w.message])
-    console.log(warningBox('Additional warnings', '⚠️  Warnings'))
-    console.log()
-    console.log(table(warningData, warningColumns))
-    console.log()
+    logger.debug(warningBox('Additional warnings', '⚠️  Warnings'))
+    logger.debug()
+    logger.debug(table(warningData, warningColumns))
+    logger.debug()
   }
 }
 

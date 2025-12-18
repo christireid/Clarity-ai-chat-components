@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -198,7 +199,7 @@ function MeasuredChat() {
     phase: 'mount' | 'update',
     actualDuration: number
   ) => {
-    console.log(\`\${id} \${phase}: \${actualDuration}ms\`)
+    logger.debug(\`\${id} \${phase}: \${actualDuration}ms\`)
     
     // Send to analytics
     if (actualDuration > 16) { // > 1 frame at 60fps

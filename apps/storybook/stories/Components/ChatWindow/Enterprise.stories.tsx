@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ChatWindow, useClarityChat, MemoryProvider, ThemeProvider } from '@clarity-chat/react'
+import {
+  ChatWindow,
+  useClarityChat,
+  MemoryProvider,
+  ThemeProvider,
+} from '@clarity-chat/react'
 import { useState } from 'react'
 import type { Message } from '@clarity-chat/types'
 
@@ -29,7 +34,14 @@ advanced features, performance optimizations, and production-ready configuration
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '800px', height: '700px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+      <div
+        style={{
+          width: '800px',
+          height: '700px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+        }}
+      >
         <Story />
       </div>
     ),
@@ -79,7 +91,9 @@ export const WithAdvancedMemory: Story = {
     }
 
     return (
-      <MemoryProvider config={{ maxTokens: 10000, strategy: 'semantic-chunks' }}>
+      <MemoryProvider
+        config={{ maxTokens: 10000, strategy: 'semantic-chunks' }}
+      >
         <ChatApp />
       </MemoryProvider>
     )
@@ -128,20 +142,22 @@ export const WithErrorRecovery: Story = {
           await append({ role: 'user', content })
         } catch (err) {
           setError(err as Error)
-          setRetryCount(prev => prev + 1)
+          setRetryCount((prev) => prev + 1)
         }
       }
 
       return (
         <div>
           {error && (
-            <div style={{ 
-              padding: '12px', 
-              background: '#fee2e2', 
-              border: '1px solid #fca5a5',
-              borderRadius: '4px',
-              marginBottom: '16px'
-            }}>
+            <div
+              style={{
+                padding: '12px',
+                background: '#fee2e2',
+                border: '1px solid #fca5a5',
+                borderRadius: '4px',
+                marginBottom: '16px',
+              }}
+            >
               <strong>Error:</strong> {error.message}
               {retryCount > 0 && <div>Retry attempts: {retryCount}</div>}
             </div>
@@ -252,10 +268,20 @@ export const MultiUserConversation: Story = {
 
       return (
         <div>
-          <div style={{ padding: '12px', background: '#f5f5f5', marginBottom: '16px', borderRadius: '4px' }}>
+          <div
+            style={{
+              padding: '12px',
+              background: '#f5f5f5',
+              marginBottom: '16px',
+              borderRadius: '4px',
+            }}
+          >
             <label>
               Current User:{' '}
-              <select value={currentUser} onChange={(e) => setCurrentUser(e.target.value)}>
+              <select
+                value={currentUser}
+                onChange={(e) => setCurrentUser(e.target.value)}
+              >
                 <option value="user1">User 1</option>
                 <option value="user2">User 2</option>
                 <option value="user3">User 3</option>
@@ -266,8 +292,8 @@ export const MultiUserConversation: Story = {
             messages={messages}
             isLoading={isLoading}
             onSendMessage={async (content) => {
-              await append({ 
-                role: 'user', 
+              await append({
+                role: 'user',
                 content,
                 metadata: { userId: currentUser }, // Include user metadata
               })

@@ -12,14 +12,14 @@ import { expect, userEvent, within } from 'storybook/test'
 
 /**
  * Empty State Components
- * 
+ *
  * **Comprehensive empty states for all scenarios:**
  * - No data or content
  * - No search results
  * - No conversations
  * - Error states
  * - Success states
- * 
+ *
  * **Design Philosophy:**
  * - Clear Communication: Users always know what's happening
  * - Actionable: Provide clear next steps
@@ -91,7 +91,9 @@ export const Default: Story = {
     await expect(canvas.getByText('No items found')).toBeInTheDocument()
 
     // Test description renders
-    await expect(canvas.getByText('Get started by creating your first item.')).toBeInTheDocument()
+    await expect(
+      canvas.getByText('Get started by creating your first item.')
+    ).toBeInTheDocument()
 
     // Test action button renders and is clickable
     const createButton = canvas.getByRole('button', { name: /create item/i })
@@ -113,14 +115,15 @@ export const NoData: Story = {
       action={{
         label: 'Get Started',
         onClick: () => alert('Get started clicked!'),
-        variant: 'primary'
+        variant: 'primary',
       }}
     />
   ),
   parameters: {
     docs: {
       description: {
-        story: 'Pre-configured empty state for when there is no data to display.',
+        story:
+          'Pre-configured empty state for when there is no data to display.',
       },
     },
   },
@@ -147,7 +150,9 @@ export const NoSearchResults: Story = {
     await expect(canvas.getByText(/no results found/i)).toBeInTheDocument()
 
     // Test search query is displayed
-    await expect(canvas.getByText(/artificial intelligence/i)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/artificial intelligence/i)
+    ).toBeInTheDocument()
 
     // Test clear search button renders and is clickable
     const clearButton = canvas.getByRole('button', { name: /clear search/i })
@@ -165,7 +170,8 @@ export const NoConversations: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Empty state for chat applications with no active conversations.',
+        story:
+          'Empty state for chat applications with no active conversations.',
       },
     },
   },
@@ -194,7 +200,9 @@ export const ErrorIllustration: Story = {
     await expect(canvas.getByText('Failed to load data')).toBeInTheDocument()
 
     // Test error description renders
-    await expect(canvas.getByText(/couldn't load the requested content/i)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/couldn't load the requested content/i)
+    ).toBeInTheDocument()
 
     // Test retry button renders and is clickable
     const retryButton = canvas.getByRole('button', { name: /retry/i })
@@ -290,7 +298,8 @@ export const PrimaryActionVariant: Story = {
 export const DestructiveActionVariant: Story = {
   args: {
     title: 'Components/Feedback/EmptyState',
-    description: 'This action cannot be undone. All your data will be permanently deleted.',
+    description:
+      'This action cannot be undone. All your data will be permanently deleted.',
     action: {
       label: 'Delete Everything',
       onClick: () => alert('Delete clicked!'),
@@ -422,11 +431,7 @@ export const AnimatedEntry: Story = {
         >
           Replay Animation
         </button>
-        {show && (
-          <NoDataEmptyState
-            onAction={() => alert('Action clicked!')}
-          />
-        )}
+        {show && <NoDataEmptyState onAction={() => alert('Action clicked!')} />}
       </div>
     )
   },
@@ -445,20 +450,48 @@ export const AnimatedEntry: Story = {
 
 export const InteractiveDemo: Story = {
   render: () => {
-    const [scenario, setScenario] = React.useState<'data' | 'search' | 'conversation' | 'error' | 'success'>('data')
+    const [scenario, setScenario] = React.useState<
+      'data' | 'search' | 'conversation' | 'error' | 'success'
+    >('data')
 
     const renderState = () => {
       switch (scenario) {
         case 'data':
-          return <EmptyState icon={<Database className="text-primary" size={32} />} title="No data yet" description="Get started by adding your first item" action={{ label: 'Get Started', onClick: () => console.log('Create clicked'), variant: 'primary' }} />
+          return (
+            <EmptyState
+              icon={<Database className="text-primary" size={32} />}
+              title="No data yet"
+              description="Get started by adding your first item"
+              action={{
+                label: 'Get Started',
+                onClick: () => console.log('Create clicked'),
+                variant: 'primary',
+              }}
+            />
+          )
         case 'search':
-          return <NoSearchResultsState searchQuery="test query" onClearSearch={() => console.log('Clear')} />
+          return (
+            <NoSearchResultsState
+              searchQuery="test query"
+              onClearSearch={() => console.log('Clear')}
+            />
+          )
         case 'conversation':
-          return <NoConversationsState onCreateConversation={() => console.log('Start')} />
+          return (
+            <NoConversationsState
+              onCreateConversation={() => console.log('Start')}
+            />
+          )
         case 'error':
           return <ErrorState onRetry={() => console.log('Retry')} />
         case 'success':
-          return <SuccessState title="Success!" description="Operation completed successfully" onContinue={() => console.log('Continue')} />
+          return (
+            <SuccessState
+              title="Success!"
+              description="Operation completed successfully"
+              onContinue={() => console.log('Continue')}
+            />
+          )
         default:
           return null
       }
@@ -528,7 +561,8 @@ export const InteractiveDemo: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Interactive demo showing all empty state variations. Toggle between scenarios to see different states.',
+        story:
+          'Interactive demo showing all empty state variations. Toggle between scenarios to see different states.',
       },
     },
   },
@@ -542,7 +576,7 @@ export const Accessibility: Story = {
   render: () => (
     <div className="space-y-8 max-w-2xl">
       <NoDataEmptyState onAction={() => console.log('Action')} />
-      
+
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm space-y-2">
         <strong>Accessibility Features:</strong>
         <ul className="list-disc list-inside space-y-1">
@@ -558,4 +592,3 @@ export const Accessibility: Story = {
     </div>
   ),
 }
-

@@ -12,8 +12,18 @@ export default meta
 type Story = StoryObj<typeof PromptLibrary>
 
 const mockPrompts = [
-  { id: '1', title: 'Advanced/AI/PromptLibrary', content: 'Review this code for best practices...', category: 'development' },
-  { id: '2', title: 'Advanced/AI/PromptLibrary', content: 'Explain {concept} in simple terms...', category: 'education' },
+  {
+    id: '1',
+    title: 'Advanced/AI/PromptLibrary',
+    content: 'Review this code for best practices...',
+    category: 'development',
+  },
+  {
+    id: '2',
+    title: 'Advanced/AI/PromptLibrary',
+    content: 'Explain {concept} in simple terms...',
+    category: 'education',
+  },
 ]
 
 export const Default: Story = {

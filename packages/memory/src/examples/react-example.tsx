@@ -55,7 +55,7 @@ export function ChatApp() {
 
       setMessage('')
     } catch (err) {
-      console.error('Error:', err)
+      logger.error('Error:', err)
     }
   }
 

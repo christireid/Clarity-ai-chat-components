@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -105,7 +106,7 @@ function EventCreator() {
         { email: 'bob@example.com', name: 'Bob' },
       ],
     })
-    console.log('Event created:', event.id)
+    logger.debug('Event created:', event.id)
   }
 
   return <button onClick={handleCreate}>Create Event</button>
@@ -130,7 +131,7 @@ function AvailabilityChecker() {
     
     const freeSlots = slots.filter(slot => slot.status === 'free')
     if (freeSlots.length > 0) {
-      console.log('Available slots:', freeSlots)
+      logger.debug('Available slots:', freeSlots)
     }
   }
 
@@ -150,7 +151,7 @@ function ActionItemConverter({ actionItems }: { actionItems: ActionItem[] }) {
 
   const handleConvert = async (actionItem: ActionItem) => {
     const event = await convertActionToEvent(actionItem)
-    console.log('Event created from action item:', event.id)
+    logger.debug('Event created from action item:', event.id)
   }
 
   return (

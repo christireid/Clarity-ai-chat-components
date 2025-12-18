@@ -63,7 +63,7 @@ function ChatWithMemory() {
       limit: 10,
       types: ['preference'],
     })
-    console.log('Found memories:', results)
+    logger.debug('Found memories:', results)
   }
 
   return (
@@ -217,7 +217,7 @@ useEffect(() => {
   if (!memory) return
 
   const unsubscribe = memory.subscribe('memory:added', (event) => {
-    console.log('New memory added:', event.memory)
+    logger.debug('New memory added:', event.memory)
   })
 
   return () => unsubscribe()

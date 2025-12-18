@@ -203,7 +203,7 @@ function PromptBuilder() {
       fields={fields}
       values={values}
       onChange={setValues}
-      onSubmit={(result) => console.log(result)}
+      onSubmit={(result) => logger.debug(result)}
     />
   )
 }`}

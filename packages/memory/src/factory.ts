@@ -80,16 +80,16 @@ export function clarityMemory(config?: MemoryConfig): ClarityMemory {
     const env = detectEnvironment()
     const storageType = config?.storage?.type || getRecommendedStorageType()
     
-    console.log('[ClarityMemory] Setup Info:', {
+    console.debug('[ClarityMemory] Setup Info:', {
       environment: env,
       recommendedStorage: storageType,
       configuredStorage: config?.storage?.type || 'auto',
       hasEmbeddingProvider: !!config?.embeddingProvider,
       hasTokenBudget: !!config?.tokenBudget,
     })
-    
+
     if (validation.warnings.length > 0 || validation.suggestions.length > 0) {
-      console.log('\n' + formatValidationResult(validation))
+      console.debug('\n' + formatValidationResult(validation))
     }
   }
 

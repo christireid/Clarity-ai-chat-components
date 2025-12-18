@@ -1,6 +1,6 @@
 /**
  * TypeScript Utility Types for Clarity Chat
- * 
+ *
  * Helper types for working with useClarityChat and related components
  */
 
@@ -10,8 +10,8 @@ import type {
   ClarityMemoryOptions,
   ClarityChatMemoryInfo,
   ClarityChatErrorInfo,
-} from '../hooks/use-clarity-chat'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
+} from '../hooks/chat/use-clarity-chat'
+import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -55,7 +55,7 @@ export interface ClarityChatWithoutMemoryReturn extends UseClarityChatReturn {
 /**
  * Helper to check if memory is enabled
  */
-export type IsMemoryEnabled<T extends UseClarityChatOptions> = 
+export type IsMemoryEnabled<T extends UseClarityChatOptions> =
   T['memory'] extends { enabled: true } ? true : false
 
 /**
@@ -179,9 +179,11 @@ export function isAssistantMessage(message: CoreMessage): boolean {
  * Type guard: Check if message has text content
  */
 export function hasTextContent(message: CoreMessage): boolean {
-  return typeof message.content === 'string' || 
-         (Array.isArray(message.content) && 
-          message.content.some(part => part.type === 'text'))
+  return (
+    typeof message.content === 'string' ||
+    (Array.isArray(message.content) &&
+      message.content.some((part) => part.type === 'text'))
+  )
 }
 
 /**
@@ -191,14 +193,14 @@ export function extractTextContent(message: CoreMessage): string {
   if (typeof message.content === 'string') {
     return message.content
   }
-  
+
   if (Array.isArray(message.content)) {
     return message.content
-      .filter(part => part.type === 'text')
-      .map(part => (part as { type: 'text'; text: string }).text)
+      .filter((part) => part.type === 'text')
+      .map((part) => (part as { type: 'text'; text: string }).text)
       .join(' ')
   }
-  
+
   return ''
 }
 
@@ -216,7 +218,10 @@ export function createUserMessage(content: string, id?: string): CoreMessage {
 /**
  * Create an assistant message
  */
-export function createAssistantMessage(content: string, id?: string): CoreMessage {
+export function createAssistantMessage(
+  content: string,
+  id?: string
+): CoreMessage {
   return {
     id: id || `assistant-${Date.now()}`,
     role: 'assistant',

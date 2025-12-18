@@ -67,6 +67,37 @@ export interface ColorTokens {
   surfaceMuted?: HSLValue
   surfaceElevated?: HSLValue
   surfaceOverlay?: HSLValue
+
+  // 2025 Enhancement tokens
+  glassmorphism?: {
+    background?: HSLValue
+    backdrop?: HSLValue
+    border?: HSLValue
+    shadow?: HSLValue
+  }
+  aurora?: {
+    gradient1?: HSLValue
+    gradient2?: HSLValue
+    gradient3?: HSLValue
+    accent?: HSLValue
+  }
+  neumorphism?: {
+    light?: HSLValue
+    dark?: HSLValue
+    highlight?: HSLValue
+    shadow?: HSLValue
+  }
+  adaptive?: {
+    background?: HSLValue
+    foreground?: HSLValue
+    accent?: HSLValue
+  }
+  quantum?: {
+    primary?: HSLValue
+    secondary?: HSLValue
+    glow?: HSLValue
+    pulse?: HSLValue
+  }
 }
 
 /**
@@ -119,6 +150,37 @@ export const lightColors: ColorTokens = {
   surfaceMuted: '240 5% 96%',
   surfaceElevated: '0 0% 100%',
   surfaceOverlay: '0 0% 100%',
+
+  // 2025 Enhancement tokens
+  glassmorphism: {
+    background: '0 0% 100%',
+    backdrop: '0 0% 100%',
+    border: '240 6% 90%',
+    shadow: '240 6% 90%',
+  },
+  aurora: {
+    gradient1: '221 83% 53%',
+    gradient2: '262 83% 53%',
+    gradient3: '142 71% 35%',
+    accent: '221 83% 53%',
+  },
+  neumorphism: {
+    light: '0 0% 100%',
+    dark: '240 5% 85%',
+    highlight: '0 0% 100%',
+    shadow: '240 5% 85%',
+  },
+  adaptive: {
+    background: '0 0% 100%',
+    foreground: '222 47% 11%',
+    accent: '239 84% 56%',
+  },
+  quantum: {
+    primary: '239 84% 56%',
+    secondary: '142 71% 35%',
+    glow: '221 83% 53%',
+    pulse: '262 83% 53%',
+  },
 }
 
 /**
@@ -165,6 +227,37 @@ export const darkColors: ColorTokens = {
   surfaceMuted: '217 33% 17%',
   surfaceElevated: '222 47% 13%',
   surfaceOverlay: '222 47% 9%',
+
+  // 2025 Enhancement tokens
+  glassmorphism: {
+    background: '222 47% 11%',
+    backdrop: '222 47% 9%',
+    border: '217 33% 22%',
+    shadow: '217 33% 22%',
+  },
+  aurora: {
+    gradient1: '239 84% 70%',
+    gradient2: '262 84% 70%',
+    gradient3: '142 71% 50%',
+    accent: '239 84% 70%',
+  },
+  neumorphism: {
+    light: '217 33% 25%',
+    dark: '217 33% 15%',
+    highlight: '217 33% 30%',
+    shadow: '217 33% 10%',
+  },
+  adaptive: {
+    background: '222 47% 11%',
+    foreground: '210 40% 98%',
+    accent: '239 84% 70%',
+  },
+  quantum: {
+    primary: '239 84% 70%',
+    secondary: '142 71% 50%',
+    glow: '262 84% 70%',
+    pulse: '221 83% 70%',
+  },
 }
 
 /**

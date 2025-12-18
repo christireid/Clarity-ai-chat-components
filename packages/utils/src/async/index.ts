@@ -1,3 +1,7 @@
+
+
+/**
+ * Asynchronous utility functions
 /**
  * Async Utilities
  *
@@ -178,7 +182,7 @@ export interface RetryOptions {
  *     retries: 3,
  *     delay: 1000,
  *     shouldRetry: (err) => err.status === 503,
- *     onRetry: (err, attempt) => console.log(`Retry ${attempt}`)
+ *     onRetry: (err, attempt) => debug(`Retry ${attempt}`)
  *   }
  * )
  * ```
@@ -233,7 +237,7 @@ export async function retry<T>(
  *   const data = await timeout(fetchData(), 5000)
  * } catch (error) {
  *   if (error.name === 'TimeoutError') {
- *     console.log('Request timed out')
+ *     debug('Request timed out')
  *   }
  * }
  * ```
@@ -269,7 +273,7 @@ export async function timeout<T>(
  * @example
  * ```ts
  * await sleep(1000) // Wait 1 second
- * console.log('Done waiting')
+ * debug('Done waiting')
  * ```
  */
 export function sleep(ms: number): Promise<void> {

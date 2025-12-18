@@ -85,7 +85,7 @@ const demoCode = `function fibonacci(n: number): number {
 }
 
 // Usage
-console.log(fibonacci(10)); // Output: 55`
+logger.debug(fibonacci(10)); // Output: 55`
 
 export default function StreamingStatesDemo() {
   const [phase, setPhase] = useState<StreamingPhase>('idle')

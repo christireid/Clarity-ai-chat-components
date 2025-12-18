@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -236,12 +237,12 @@ function InteractiveTimeline() {
 
   const handleJumpTo = (event) => {
     setSelectedEvent(event.id)
-    console.log('Jumped to event:', event.title)
+    logger.debug('Jumped to event:', event.title)
     // In real app: scroll to message, highlight it, etc.
   }
 
   const handleRetry = (step) => {
-    console.log('Retrying step:', step.title)
+    logger.debug('Retrying step:', step.title)
     // In real app: re-run the failed tool call
     setEvents(prev => prev.map(e =>
       e.id === step.id
@@ -378,7 +379,7 @@ function AgentDebugDashboard() {
         title="Agent Execution Trace"
         subtitle="See every step the AI agent took"
         showStatusIndicators={true}
-        onJumpToEvent={(e) => console.log('Jump to:', e.title)}
+        onJumpToEvent={(e) => logger.debug('Jump to:', e.title)}
       />
     </div>
   )

@@ -300,7 +300,7 @@ function BranchingChat() {
 
   const handleBranch = (messageId: string) => {
     const branchId = branchConversation(messageId)
-    console.log('Created branch:', branchId)
+    logger.debug('Created branch:', branchId)
   }
 
   const branches = getBranches()

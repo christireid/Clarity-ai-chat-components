@@ -1,9 +1,11 @@
 'use client'
 
+import { logger } from '@clarity-chat/utils/logger'
+
 import * as React from 'react'
 import { cn } from '../../utils/cn'
 import { normalizeLanguage, escapeHtml } from './utils'
-import { sanitizeCodeHtml } from '../../utils/sanitize-html'
+import { sanitizeCodeHtml } from '../../utils/security/sanitize-html'
 import { CODE_THEMES, type CodeThemeName, DEFAULT_DARK_THEME } from './themes'
 import { CodeBlockHeader } from './CodeBlockHeader'
 import { CodeBlockCopyButton } from './CodeBlockCopyButton'
@@ -125,7 +127,7 @@ export const StreamingCodeBlock = React.memo<StreamingCodeBlockProps>(
           })
           setHighlightedHtml(html)
         } catch (err) {
-          console.error('Shiki streaming highlight failed:', err)
+          logger.error('Shiki streaming highlight failed:', err)
           setHighlightedHtml(`<code>${escapeHtml(codeToHighlight)}</code>`)
         } finally {
           setIsHighlighting(false)

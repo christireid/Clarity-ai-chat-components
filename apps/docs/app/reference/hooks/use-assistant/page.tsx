@@ -192,7 +192,7 @@ function Example() {
   const { messages, append, status, toolInvocations } = useAssistant({
     api: '/api/assistant',
     onToolCall: async (invocation) => {
-      console.log('Tool called:', invocation.toolName, invocation.args)
+      logger.debug('Tool called:', invocation.toolName, invocation.args)
       // Return tool result
       return { result: 'Tool executed successfully' }
     },
@@ -260,7 +260,7 @@ function Assistant() {
     threadId,
     onFinish: (message) => {
       // Thread ID is automatically managed
-      console.log('Assistant finished:', message)
+      logger.debug('Assistant finished:', message)
     },
   })
 

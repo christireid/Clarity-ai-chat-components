@@ -199,7 +199,7 @@ export function getLogger(
         error?.stack &&
         (process.env.DEBUG || process.env.VERBOSE || globalOptions.verbose)
       ) {
-        console.error(pc.gray(error.stack))
+        logger.error(pc.gray(error.stack))
       }
     }
   }

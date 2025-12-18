@@ -12,7 +12,6 @@
  * // Recommended: Import from specific modules
  * import { formatBytes, formatDuration } from '@clarity-chat/utils/format'
  * import { LRUCache, memoize } from '@clarity-chat/utils/cache'
- * import { getLogger } from '@clarity-chat/utils/logger'
  * import { debounce, retry } from '@clarity-chat/utils/async'
  * import { ValidationError, tryCatch } from '@clarity-chat/utils/errors'
  * import { isString, assertDefined } from '@clarity-chat/utils/validation'
@@ -69,6 +68,7 @@ export {
   setRequestId,
   getRequestId,
   getLogger,
+  logger,
   info,
   warn,
   error,
@@ -224,7 +224,132 @@ export {
 } from './validation/index.js'
 
 // ============================================================================
+// TypeScript Strict Mode Utilities
+// ============================================================================
+
+export {
+  // Enhanced strict type guards
+  isStrictString,
+  isStrictNumber,
+  isStrictBoolean,
+  isStrictFunction,
+  isStrictObject,
+  isStrictArray,
+  isStrictArrayOf,
+  isStrictNull,
+  isStrictUndefined,
+  isStrictNullish,
+  isStrictDefined,
+  isStrictNonEmptyString,
+  isStrictNonEmptyArray,
+  isStrictValidDate,
+  isStrictPromise,
+  isStrictError,
+  // Enhanced strict assertions
+  strictAssertDefined,
+  strictAssertString,
+  strictAssertNumber,
+  strictAssertBoolean,
+  strictAssertObject,
+  strictAssertArray,
+  strictAssertFunction,
+  strictAssert,
+  strictAssertNever,
+  // Enhanced strict validation
+  validateStrictString,
+  validateStrictNumber,
+  validateStrictArray,
+  // Enhanced strict runtime checking
+  strictTypeOf,
+  validateStrictUnion,
+  validateStrictEnum,
+  validateStrictDate,
+  // Enhanced strict format validation
+  isStrictValidEmail,
+  isStrictValidUrl,
+  isStrictValidUuid,
+  isStrictValidJson,
+  parseStrictJson,
+  // Enhanced strict object utilities
+  strictHasKey,
+  strictHasKeys,
+  strictPick,
+  strictOmit,
+  // Enhanced strict property access
+  strictPropertyAccess,
+  strictArrayAccess,
+  // Enhanced strict utility functions
+  createStrictTypeGuard,
+  and,
+  or,
+  not,
+  optional,
+  arrayOf,
+  tuple,
+  record,
+  strictMeasurePerformance,
+  // Re-export types
+  type StrictValidation,
+  type StrictValidationSuccess,
+  type StrictValidationError,
+  type StrictTypeGuard,
+  type StrictAssertion,
+  type StrictStringValidationOptions,
+  type StrictNumberValidationOptions,
+  type StrictArrayValidationOptions,
+} from './typescript-strict.js'
+
+// ============================================================================
 // File System Utilities
 // ============================================================================
 
 export { pathExists, directoryExists, fileExists } from './fs.js'
+
+// ============================================================================
+// Configuration Manager
+// ============================================================================
+
+export {
+  createConfigManager,
+  createSimpleConfig,
+  validateConfig,
+  getConfigDefaults,
+  mergeConfig,
+  type ConfigSchema,
+  type ConfigFieldSchema,
+  type ConfigManager,
+} from './config-manager.js'
+
+// ============================================================================
+// Performance Monitor
+// ============================================================================
+
+export {
+  PerformanceMonitor,
+  measurePerformance,
+  measureAsyncPerformance,
+  startPerformanceTimer,
+  endPerformanceTimer,
+  getPerformanceMetrics,
+  formatPerformanceMetrics,
+  getPerformanceSummary,
+  type PerformanceMetrics,
+  type OperationTiming,
+  type PerformanceOptions,
+} from './performance.js'
+
+// ============================================================================
+// Unified Error Handler
+// ============================================================================
+
+export {
+  UnifiedErrorHandler,
+  handleError as handleUnifiedError, // Rename to avoid conflict with errors/utils.js
+  isRetryableError,
+  formatErrorForDisplay,
+  retryOperation,
+  type ErrorContext as UnifiedErrorContext, // Rename to avoid conflict
+  type ErrorReport,
+  type ProcessedError,
+  type RetryConfig,
+} from './error-handler.js'

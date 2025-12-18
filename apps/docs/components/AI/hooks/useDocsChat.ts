@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { useState, useRef, useCallback, useEffect } from 'react'
 import {
   useToast,
@@ -360,7 +361,7 @@ export function useDocsChat() {
                 }
               } catch (parseError) {
                 if (process.env.NODE_ENV === 'development') {
-                  console.debug('[DocsAssistant] JSON parse error:', parseError)
+                  logger.debug('[DocsAssistant] JSON parse error:', parseError)
                 }
               }
             }
@@ -560,7 +561,7 @@ export function useDocsChat() {
             : "Feedback received. We'll work on improving."
         )
       } catch (error) {
-        console.error('Failed to submit feedback:', error)
+        logger.error('Failed to submit feedback:', error)
         toast.error('Failed to submit feedback. Please try again.')
         // Revert optimistic update on failure
         setMessages((prev) =>
@@ -594,7 +595,7 @@ export function useDocsChat() {
           throw new Error(downloadResult.error || 'Download failed')
         }
       } catch (error) {
-        console.error('Failed to export conversation:', error)
+        logger.error('Failed to export conversation:', error)
         toast.error('Failed to export conversation')
         throw error
       }

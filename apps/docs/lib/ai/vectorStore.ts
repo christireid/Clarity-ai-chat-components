@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Vector Store
  *
@@ -97,7 +98,7 @@ export class PineconeVectorStore implements VectorStore {
       const indexExists = indexes.indexes?.some(index => index.name === this.indexName)
 
       if (!indexExists) {
-        console.log(`Creating Pinecone index: ${this.indexName}`)
+        logger.debug(`Creating Pinecone index: ${this.indexName}`)
 
         await client.createIndex({
           name: this.indexName,
@@ -112,13 +113,13 @@ export class PineconeVectorStore implements VectorStore {
         })
 
         // Wait for index to be ready
-        console.log('Waiting for index to be ready...')
+        logger.debug('Waiting for index to be ready...')
         await new Promise(resolve => setTimeout(resolve, 10000))
       }
 
-      console.log(`Pinecone index ready: ${this.indexName}`)
+      logger.debug(`Pinecone index ready: ${this.indexName}`)
     } catch (error) {
-      console.error('Error initializing Pinecone:', error)
+      logger.error('Error initializing Pinecone:', error)
       throw error
     }
   }
@@ -172,7 +173,7 @@ export class PineconeVectorStore implements VectorStore {
         }))
       )
 
-      console.log(`Uploaded batch ${i / batchSize + 1} (${batch.length} chunks)`)
+      logger.debug(`Uploaded batch ${i / batchSize + 1} (${batch.length} chunks)`)
     }
   }
 
@@ -248,10 +249,10 @@ export class LocalVectorStore implements VectorStore {
       const data = await fs.readFile(this.filePath, 'utf-8')
       const parsed = JSON.parse(data)
       this.chunks = new Map(Object.entries(parsed))
-      console.log(`Loaded ${this.chunks.size} chunks from ${this.filePath}`)
+      logger.debug(`Loaded ${this.chunks.size} chunks from ${this.filePath}`)
     } catch (error) {
       // File doesn't exist yet, start with empty store
-      console.log('Initializing new local vector store')
+      logger.debug('Initializing new local vector store')
       this.chunks = new Map()
     }
   }
@@ -271,7 +272,7 @@ export class LocalVectorStore implements VectorStore {
       this.chunks.set(chunk.id, chunk)
     }
     await this.persist()
-    console.log(`Stored ${chunks.length} chunks locally`)
+    logger.debug(`Stored ${chunks.length} chunks locally`)
   }
 
   async search(embedding: number[], topK = 5): Promise<SearchResult[]> {
@@ -321,10 +322,10 @@ export function getVectorStore(): VectorStore {
   const usePinecone = process.env.PINECONE_API_KEY && process.env.NODE_ENV === 'production'
 
   if (usePinecone) {
-    console.log('Using Pinecone vector store')
+    logger.debug('Using Pinecone vector store')
     return new PineconeVectorStore()
   } else {
-    console.log('Using local vector store (development mode)')
+    logger.debug('Using local vector store (development mode)')
     return new LocalVectorStore()
   }
 }

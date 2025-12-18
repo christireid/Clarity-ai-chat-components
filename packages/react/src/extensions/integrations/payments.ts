@@ -132,7 +132,7 @@ export function createStripeExtension(
     } as StripeConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Stripe extension initialized')
+      ctx.console.info('Stripe extension initialized')
 
       // Load Stripe.js
       if (typeof window !== 'undefined') {
@@ -166,7 +166,7 @@ export function createStripeExtension(
 
       const adapter: PaymentAdapter = {
         async createCheckoutSession(options) {
-          ctx.logger.debug('Creating Stripe checkout session')
+          ctx.console.log('Creating Stripe checkout session')
           const params: Record<string, unknown> = {
             'line_items[0][price]': options.priceId,
             'line_items[0][quantity]': '1',
@@ -193,7 +193,7 @@ export function createStripeExtension(
         },
 
         async createPortalSession(customerId) {
-          ctx.logger.debug('Creating Stripe portal session')
+          ctx.console.log('Creating Stripe portal session')
           const data = await makeStripeRequest(
             '/billing_portal/sessions',
             'POST',
@@ -205,7 +205,7 @@ export function createStripeExtension(
         },
 
         async getSubscription(subscriptionId) {
-          ctx.logger.debug(`Getting subscription: ${subscriptionId}`)
+          ctx.console.log(`Getting subscription: ${subscriptionId}`)
           const data = await makeStripeRequest(
             `/subscriptions/${encodeURIComponent(subscriptionId)}`,
             'GET'
@@ -223,7 +223,7 @@ export function createStripeExtension(
         },
 
         async cancelSubscription(subscriptionId) {
-          ctx.logger.debug(`Canceling subscription: ${subscriptionId}`)
+          ctx.console.log(`Canceling subscription: ${subscriptionId}`)
           await makeStripeRequest(
             `/subscriptions/${encodeURIComponent(subscriptionId)}`,
             'DELETE'
@@ -231,7 +231,7 @@ export function createStripeExtension(
         },
 
         async recordUsage(subscriptionItemId, quantity, timestamp) {
-          ctx.logger.debug(
+          ctx.console.log(
             `Recording usage: ${quantity} for ${subscriptionItemId}`
           )
           await makeStripeRequest(
@@ -289,7 +289,7 @@ export function createLemonSqueezyExtension(
     defaultConfig: config as LemonSqueezyConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Lemon Squeezy extension initialized')
+      ctx.console.info('Lemon Squeezy extension initialized')
 
       // Load Lemon.js
       if (typeof window !== 'undefined') {
@@ -321,7 +321,7 @@ export function createLemonSqueezyExtension(
 
       const adapter: PaymentAdapter = {
         async createCheckoutSession(options) {
-          ctx.logger.debug('Creating Lemon Squeezy checkout')
+          ctx.console.log('Creating Lemon Squeezy checkout')
           const data = await makeRequest('/checkouts', 'POST', {
             data: {
               type: 'checkouts',
@@ -341,7 +341,7 @@ export function createLemonSqueezyExtension(
         },
 
         async createPortalSession(customerId) {
-          ctx.logger.debug('Creating Lemon Squeezy portal')
+          ctx.console.log('Creating Lemon Squeezy portal')
           const data = await makeRequest(
             `/customers/${encodeURIComponent(customerId)}/customer-portal`,
             'GET'
@@ -436,7 +436,7 @@ export function createPaddleExtension(
     } as PaddleConfig,
 
     initialize: async (ctx) => {
-      ctx.logger.info('Paddle extension initialized')
+      ctx.console.info('Paddle extension initialized')
 
       // Load Paddle.js
       if (typeof window !== 'undefined') {
@@ -463,7 +463,7 @@ export function createPaddleExtension(
 
       const adapter: PaymentAdapter = {
         async createCheckoutSession(options) {
-          ctx.logger.debug('Creating Paddle checkout')
+          ctx.console.log('Creating Paddle checkout')
           // Paddle uses client-side checkout
           return { id: `paddle_${Date.now()}`, url: '' }
         },
@@ -477,11 +477,11 @@ export function createPaddleExtension(
         },
 
         async cancelSubscription(subscriptionId) {
-          ctx.logger.debug(`Canceling Paddle subscription: ${subscriptionId}`)
+          ctx.console.log(`Canceling Paddle subscription: ${subscriptionId}`)
         },
 
         async recordUsage(subscriptionItemId, quantity) {
-          ctx.logger.debug(`Recording Paddle usage: ${quantity}`)
+          ctx.console.log(`Recording Paddle usage: ${quantity}`)
         },
       }
 

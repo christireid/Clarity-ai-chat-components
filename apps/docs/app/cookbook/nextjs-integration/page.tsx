@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest) {
 
     return new StreamingTextResponse(stream)
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.error('Chat API error:', error)
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

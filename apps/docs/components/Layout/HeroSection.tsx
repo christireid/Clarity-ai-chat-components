@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { HeroParticlesLazy } from '@/components/hero/HeroParticlesLazy'
+import { CardSkeleton } from './Skeletons'
 
 interface HeroSectionProps {
   title: React.ReactNode
@@ -86,7 +87,7 @@ function CopyConfetti({ show }: { show: boolean }) {
               }}
               exit={{ opacity: 0 }}
               transition={{
-                duration: 0.5,
+                duration: durations.slow,
                 delay: particle.delay,
                 ease: 'easeOut',
               }}
@@ -109,9 +110,6 @@ function InstallCommand({ command }: { command: string }) {
       await navigator.clipboard.writeText(command)
       setCopied(true)
       setShowConfetti(true)
-      toast.success('Copied to clipboard!', {
-        description: 'Installation command ready to paste',
-      })
 
       // Haptic feedback on mobile if supported
       if (navigator.vibrate) {
@@ -119,8 +117,8 @@ function InstallCommand({ command }: { command: string }) {
       }
 
       toast.success('Copied to clipboard!', {
-        description: 'Install command ready to paste',
-        duration: 2000,
+        description: 'Installation command ready to paste',
+        duration: durations.slower,
       })
 
       setTimeout(() => {
@@ -139,13 +137,13 @@ function InstallCommand({ command }: { command: string }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.35 }}
+      transition={{ duration: durations.slow, delay: 0.35 }}
       className="flex items-center justify-center mb-8"
     >
       <div className="relative group">
         <motion.div
           animate={copied ? { scale: [1, 1.02, 1] } : {}}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: durations.normal }}
           className="flex items-center gap-3 px-5 py-3 rounded-xl bg-bg-tertiary/80 backdrop-blur-sm border border-border hover:border-brand-300 transition-all shadow-lg"
         >
           <Terminal className="w-4 h-4 text-brand-500" />
@@ -165,7 +163,7 @@ function InstallCommand({ command }: { command: string }) {
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     exit={{ scale: 0, rotate: 180 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: durations.normal }}
                   >
                     <Check className="w-4 h-4 text-green-500" />
                   </motion.div>
@@ -175,7 +173,7 @@ function InstallCommand({ command }: { command: string }) {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: durations.normal }}
                   >
                     <Copy className="w-4 h-4 text-text-secondary" />
                   </motion.div>
@@ -318,7 +316,7 @@ function GitHubStarsBadge() {
       rel="noopener noreferrer"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: durations.moderate }}
       whileHover={{ scale: 1.05 }}
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bg-secondary/80 border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:border-brand-300 transition-all"
     >
@@ -355,7 +353,11 @@ export function HeroSection({
             'radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)',
           ],
         }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+        transition={{
+          duration: durations.slower,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
         className="absolute inset-0 opacity-50"
       />
 
@@ -370,7 +372,7 @@ export function HeroSection({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={{ duration: durations.slow, delay: 0.1 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 text-sm font-medium shadow-sm"
             >
               <motion.div
@@ -379,14 +381,14 @@ export function HeroSection({
                   scale: [1, 1.2, 1, 1.2, 1],
                 }}
                 transition={{
-                  duration: 2,
+                  duration: durations.slower,
                   repeat: Infinity,
                   repeatDelay: 3,
                 }}
               >
                 <Sparkles className="w-4 h-4" />
               </motion.div>
-              <span>70+ Components · 35+ Hooks · 11 Themes</span>
+              <span>200+ Components · 140+ Hooks · 13 Themes</span>
             </motion.div>
             {showGitHubStars && <GitHubStarsBadge />}
           </div>
@@ -395,7 +397,7 @@ export function HeroSection({
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: durations.slow, delay: 0.2 }}
             className="text-5xl md:text-7xl font-bold mb-6 text-balance"
           >
             {title}
@@ -405,7 +407,7 @@ export function HeroSection({
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: durations.slow, delay: 0.3 }}
             className="text-xl md:text-2xl text-text-secondary mb-8 text-balance max-w-3xl mx-auto"
           >
             {description}
@@ -418,7 +420,7 @@ export function HeroSection({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: durations.slow, delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -430,7 +432,7 @@ export function HeroSection({
                   className="absolute inset-0 bg-white/20"
                   initial={{ scale: 0, opacity: 0 }}
                   whileHover={{ scale: 2, opacity: 0 }}
-                  transition={{ duration: 0.6 }}
+                  transition={{ duration: durations.slower }}
                 />
                 <span className="relative z-10">{primaryCta.text}</span>
                 <ArrowRight className="relative z-10 w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -456,7 +458,7 @@ export function HeroSection({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+            transition={{ duration: durations.slow, delay: 0.5 }}
             className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto"
           >
             {[
@@ -469,7 +471,10 @@ export function HeroSection({
                 key={stat.label}
                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                transition={{
+                  duration: durations.slow,
+                  delay: 0.6 + index * 0.1,
+                }}
                 whileHover={{ scale: 1.05, y: -3 }}
                 className="group relative p-4 sm:p-5 rounded-xl bg-gradient-to-br from-bg-secondary to-bg-tertiary border border-border hover:border-brand-300 transition-all duration-300 hover:shadow-lg"
               >

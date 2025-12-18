@@ -15,7 +15,14 @@ import {
   ChatWindow,
 } from '@clarity-chat/react'
 import type { MentionableUser, Mention } from '@clarity-chat/react'
-import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@clarity-chat/primitives'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Button,
+} from '@clarity-chat/primitives'
 
 // 💡 Type for chat messages with mentions (used in Example 4)
 interface ChatMessageWithMentions {
@@ -38,10 +45,34 @@ export function BasicMentionExample() {
   const [mentions, setMentions] = React.useState<Mention[]>([])
 
   const users: MentionableUser[] = [
-    { id: '1', name: 'Alice Johnson', username: 'alice', role: 'Developer', isOnline: true },
-    { id: '2', name: 'Bob Smith', username: 'bob', role: 'Designer', isOnline: true },
-    { id: '3', name: 'Charlie Brown', username: 'charlie', role: 'Manager', isOnline: false },
-    { id: '4', name: 'Diana Prince', username: 'diana', role: 'Product', isOnline: true },
+    {
+      id: '1',
+      name: 'Alice Johnson',
+      username: 'alice',
+      role: 'Developer',
+      isOnline: true,
+    },
+    {
+      id: '2',
+      name: 'Bob Smith',
+      username: 'bob',
+      role: 'Designer',
+      isOnline: true,
+    },
+    {
+      id: '3',
+      name: 'Charlie Brown',
+      username: 'charlie',
+      role: 'Manager',
+      isOnline: false,
+    },
+    {
+      id: '4',
+      name: 'Diana Prince',
+      username: 'diana',
+      role: 'Product',
+      isOnline: true,
+    },
   ]
 
   const handleSubmit = () => {
@@ -78,7 +109,10 @@ export function BasicMentionExample() {
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
               {mentions.length > 0 && (
-                <span>Mentioning: {mentions.length} {mentions.length === 1 ? 'person' : 'people'}</span>
+                <span>
+                  Mentioning: {mentions.length}{' '}
+                  {mentions.length === 1 ? 'person' : 'people'}
+                </span>
               )}
             </div>
 
@@ -109,22 +143,17 @@ export function BasicMentionExample() {
  * Complete mention system with inbox and state management
  */
 export function MentionInboxExample() {
-  const {
-    mentions,
-    unreadCount,
-    addMention,
-    markAsRead,
-    markAllAsRead,
-  } = useMentions({
-    onMentionAdded: (mention) => {
-      console.log('New mention added:', mention)
-      // Show notification
-      // notify(`You were mentioned!`)
-    },
-    onMentionRead: (mention) => {
-      console.log('Mention marked as read:', mention)
-    },
-  })
+  const { mentions, unreadCount, addMention, markAsRead, markAllAsRead } =
+    useMentions({
+      onMentionAdded: (mention) => {
+        console.log('New mention added:', mention)
+        // Show notification
+        // notify(`You were mentioned!`)
+      },
+      onMentionRead: (mention) => {
+        console.log('Mention marked as read:', mention)
+      },
+    })
 
   const [messages] = React.useState([
     {
@@ -136,7 +165,7 @@ export function MentionInboxExample() {
     {
       id: 'msg-2',
       role: 'user' as const,
-      content: '@alice @bob Let\'s discuss the new design',
+      content: "@alice @bob Let's discuss the new design",
       timestamp: Date.now() - 50000,
     },
     {
@@ -150,7 +179,12 @@ export function MentionInboxExample() {
   const users: MentionableUser[] = [
     { id: 'alice', name: 'Alice Johnson', username: 'alice', isOnline: true },
     { id: 'bob', name: 'Bob Smith', username: 'bob', isOnline: true },
-    { id: 'charlie', name: 'Charlie Brown', username: 'charlie', isOnline: false },
+    {
+      id: 'charlie',
+      name: 'Charlie Brown',
+      username: 'charlie',
+      isOnline: false,
+    },
   ]
 
   // Simulate mentions (in real app, these come from backend)
@@ -203,7 +237,7 @@ export function MentionInboxExample() {
       <div className="col-span-2 space-y-4 overflow-auto">
         <h2 className="text-2xl font-bold">Messages</h2>
 
-        {messages.map(message => (
+        {messages.map((message) => (
           <div key={message.id} id={`message-${message.id}`}>
             <Card>
               <CardContent className="pt-6">
@@ -232,11 +266,7 @@ export function MentionInboxExample() {
               </CardTitle>
 
               {unreadCount > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={markAllAsRead}
-                >
+                <Button variant="ghost" size="sm" onClick={markAllAsRead}>
                   Mark all read
                 </Button>
               )}
@@ -288,12 +318,24 @@ export function FuzzySearchExample() {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm">
-            <li><code>@aj</code> → Alice Johnson</li>
-            <li><code>@bs</code> → Bob Smith</li>
-            <li><code>@dp</code> → Diana Prince</li>
-            <li><code>@alice</code> → Alice Johnson</li>
-            <li><code>@john</code> → Alice Johnson (matches "Johnson")</li>
-            <li><code>@char</code> → Charlie Brown</li>
+            <li>
+              <code>@aj</code> → Alice Johnson
+            </li>
+            <li>
+              <code>@bs</code> → Bob Smith
+            </li>
+            <li>
+              <code>@dp</code> → Diana Prince
+            </li>
+            <li>
+              <code>@alice</code> → Alice Johnson
+            </li>
+            <li>
+              <code>@john</code> → Alice Johnson (matches "Johnson")
+            </li>
+            <li>
+              <code>@char</code> → Charlie Brown
+            </li>
           </ul>
         </CardContent>
       </Card>
@@ -326,18 +368,31 @@ export function CompleteMentionChatExample() {
   const [messages, setMessages] = React.useState<ChatMessageWithMentions[]>([])
   const [inputValue, setInputValue] = React.useState('')
 
-  const {
-    mentions,
-    unreadCount,
-    addMention,
-    markAsRead,
-    extractMentions,
-  } = useMentions()
+  const { mentions, unreadCount, addMention, markAsRead, extractMentions } =
+    useMentions()
 
   const users: MentionableUser[] = [
-    { id: '1', name: 'Alice Johnson', username: 'alice', role: 'Developer', isOnline: true },
-    { id: '2', name: 'Bob Smith', username: 'bob', role: 'Designer', isOnline: true },
-    { id: '3', name: 'Charlie Brown', username: 'charlie', role: 'Manager', isOnline: false },
+    {
+      id: '1',
+      name: 'Alice Johnson',
+      username: 'alice',
+      role: 'Developer',
+      isOnline: true,
+    },
+    {
+      id: '2',
+      name: 'Bob Smith',
+      username: 'bob',
+      role: 'Designer',
+      isOnline: true,
+    },
+    {
+      id: '3',
+      name: 'Charlie Brown',
+      username: 'charlie',
+      role: 'Manager',
+      isOnline: false,
+    },
   ]
 
   const currentUserId = '1' // Alice
@@ -358,10 +413,10 @@ export function CompleteMentionChatExample() {
     }
 
     // Add message to UI
-    setMessages(prev => [...prev, newMessage])
+    setMessages((prev) => [...prev, newMessage])
 
     // Track mentions (in real app, backend would do this)
-    extractedMentions.forEach(mention => {
+    extractedMentions.forEach((mention) => {
       // Only add to inbox if mentioning someone else
       if (mention.userId !== currentUserId) {
         addMention({
@@ -442,7 +497,7 @@ export function CompleteMentionChatExample() {
       <div className="col-span-3 flex flex-col">
         {/* Messages */}
         <div className="flex-1 overflow-auto space-y-4 mb-4">
-          {messages.map(message => (
+          {messages.map((message) => (
             <div key={message.id} id={`message-${message.id}`}>
               <Card>
                 <CardContent className="pt-6">
@@ -453,7 +508,8 @@ export function CompleteMentionChatExample() {
                     </p>
                     {message.mentions && message.mentions.length > 0 && (
                       <Badge variant="secondary" className="text-xs">
-                        {message.mentions.length} {message.mentions.length === 1 ? 'mention' : 'mentions'}
+                        {message.mentions.length}{' '}
+                        {message.mentions.length === 1 ? 'mention' : 'mentions'}
                       </Badge>
                     )}
                   </div>
@@ -538,7 +594,9 @@ export function AdvancedMentionExample() {
             mentionClassName="bg-primary/20 text-primary font-medium rounded px-1"
             dropdownClassName="shadow-xl border-2 border-primary/20"
             renderUser={(user, isHighlighted) => (
-              <div className={`flex items-center gap-3 p-2 rounded ${isHighlighted ? 'bg-accent' : ''}`}>
+              <div
+                className={`flex items-center gap-3 p-2 rounded ${isHighlighted ? 'bg-accent' : ''}`}
+              >
                 {user.avatar && (
                   <img
                     src={user.avatar}
@@ -548,7 +606,9 @@ export function AdvancedMentionExample() {
                 )}
                 <div className="flex-1">
                   <div className="font-medium">{user.name}</div>
-                  <div className="text-sm text-muted-foreground">@{user.username}</div>
+                  <div className="text-sm text-muted-foreground">
+                    @{user.username}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {user.role && (
@@ -581,13 +641,8 @@ export function ProductionMentionExample() {
   const [users, setUsers] = React.useState<MentionableUser[]>([])
   const [isLoadingUsers, setIsLoadingUsers] = React.useState(false)
 
-  const {
-    mentions,
-    unreadCount,
-    addMention,
-    markAsRead,
-    extractMentions,
-  } = useMentions()
+  const { mentions, unreadCount, addMention, markAsRead, extractMentions } =
+    useMentions()
 
   // Load users from backend
   React.useEffect(() => {
@@ -633,7 +688,7 @@ export function ProductionMentionExample() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: inputValue,
-          mentions: extractedMentions.map(m => m.userId),
+          mentions: extractedMentions.map((m) => m.userId),
         }),
       })
 
@@ -674,9 +729,7 @@ export function ProductionMentionExample() {
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          {/* Mention list would go here */}
-        </CardContent>
+        <CardContent>{/* Mention list would go here */}</CardContent>
       </Card>
 
       <Card>

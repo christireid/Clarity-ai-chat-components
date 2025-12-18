@@ -80,7 +80,7 @@ const DEFAULT_OPTIONS: LoggerOptions = {
 
 let globalOptions: LoggerOptions = { ...DEFAULT_OPTIONS }
 let globalLogLevel: LogLevel =
-  typeof process !== 'undefined' && process.env?.DEBUG
+  typeof process !== 'undefined' && process.env?.['DEBUG']
     ? LogLevel.DEBUG
     : LogLevel.INFO
 let requestId: string | null = null
@@ -226,7 +226,7 @@ export function getLogger(
 
     const isJsonMode =
       globalOptions.jsonOutput ||
-      (typeof process !== 'undefined' && process.env?.JSON_LOGS)
+      (typeof process !== 'undefined' && process.env?.['JSON_LOGS'])
 
     if (isJsonMode) {
       consoleFn(formatLogEntry(entry))
@@ -279,6 +279,17 @@ export function getLogger(
 
 // Create default logger instance
 const defaultLogger = getLogger('app')
+
+/**
+ * Default logger instance for direct use
+ * @example
+ * ```ts
+ * import { logger } from '@clarity-chat/utils/logger'
+ * logger.info('Hello')
+ * logger.error('Something went wrong')
+ * ```
+ */
+export const logger = defaultLogger
 
 /**
  * Log an info message using the default logger

@@ -1,16 +1,16 @@
 /**
  * Prompt Optimization Example
- * 
+ *
  * Demonstrates prompt optimization with token stats display
  */
 
 import * as React from 'react'
-import { 
-  useClarityChat, 
-  ChatWindow, 
-  convertCoreMessagesToMessages 
+import {
+  useClarityChat,
+  ChatWindow,
+  convertCoreMessagesToMessages,
 } from '../../index'
-import { usePromptInspector } from '../hooks/use-prompt-inspector'
+import { usePromptInspector } from '../hooks/hooks/use-prompt-inspector'
 
 export function PromptOptimizationExample() {
   const [showInspector, setShowInspector] = React.useState(false)
@@ -67,8 +67,7 @@ export function PromptOptimizationExample() {
                       {' '}
                       <span className="text-gray-500">
                         / {chat.tokenStats.original}
-                      </span>
-                      {' '}
+                      </span>{' '}
                       <span className="text-green-600">
                         (saved {chat.tokenStats.saved})
                       </span>
@@ -158,9 +157,7 @@ export function PromptOptimizationExample() {
                 </span>
               </div>
               {inspector.isOverBudget && (
-                <div className="text-red-600 font-medium">
-                  ⚠️ Over budget!
-                </div>
+                <div className="text-red-600 font-medium">⚠️ Over budget!</div>
               )}
               {inspector.estimatedCost && (
                 <div className="flex justify-between pt-2 border-t">
@@ -191,10 +188,7 @@ export function PromptOptimizationExample() {
             <h3 className="font-medium mb-2">Messages</h3>
             <div className="space-y-2">
               {inspector.messageInspections.map((inspection, i) => (
-                <div
-                  key={i}
-                  className="p-2 bg-white rounded border text-xs"
-                >
+                <div key={i} className="p-2 bg-white rounded border text-xs">
                   <div className="flex justify-between items-start mb-1">
                     <span className="font-medium capitalize">
                       {inspection.role}

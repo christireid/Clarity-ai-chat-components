@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
@@ -64,7 +65,7 @@ export default function PersonaPanelPage() {
   return (
     <PersonaPanel
       personas={personas}
-      onSelect={(p) => console.log('Selected:', p.name)}
+      onSelect={(p) => logger.debug('Selected:', p.name)}
     />
   )
 }

@@ -5,10 +5,10 @@ import { expect, within } from 'storybook/test'
 
 /**
  * **MessageList Component**
- * 
+ *
  * Message list component with auto-scroll, scroll-to-bottom button,
  * and comprehensive message management features.
- * 
+ *
  * **Key Features:**
  * - Auto-scroll to latest message
  * - Scroll-to-bottom button
@@ -16,7 +16,7 @@ import { expect, within } from 'storybook/test'
  * - Copy, feedback, and retry actions
  * - Empty state handling
  * - Virtual scrolling support
- * 
+ *
  * **Use Cases:**
  * - Chat interfaces
  * - Messaging applications
@@ -115,7 +115,8 @@ const mockMessages: Message[] = [
   {
     id: '2',
     role: 'assistant',
-    content: 'Of course! I\'d be happy to help. What do you need assistance with?',
+    content:
+      "Of course! I'd be happy to help. What do you need assistance with?",
     timestamp: Date.now() - 280000,
   },
   {
@@ -155,12 +156,20 @@ export const Default: Story = {
     const canvas = within(canvasElement)
 
     // Test messages render
-    await expect(canvas.getByText('Hello! Can you help me?')).toBeInTheDocument()
-    await expect(canvas.getByText(/Of course! I'd be happy to help/)).toBeInTheDocument()
+    await expect(
+      canvas.getByText('Hello! Can you help me?')
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/Of course! I'd be happy to help/)
+    ).toBeInTheDocument()
 
     // Test user and assistant messages display
-    await expect(canvas.getByText('I need help with React hooks')).toBeInTheDocument()
-    await expect(canvas.getByText(/useState for state management/)).toBeInTheDocument()
+    await expect(
+      canvas.getByText('I need help with React hooks')
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/useState for state management/)
+    ).toBeInTheDocument()
   },
 }
 
@@ -172,7 +181,9 @@ export const EmptyList: Story = {
     const canvas = within(canvasElement)
 
     // Test empty state renders
-    await expect(canvas.getByText(/no messages|empty|start/i)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/no messages|empty|start/i)
+    ).toBeInTheDocument()
   },
 }
 
@@ -228,7 +239,8 @@ useEffect(() => {
       {
         id: '8',
         role: 'assistant',
-        content: 'useContext allows you to consume React context without wrapping components.',
+        content:
+          'useContext allows you to consume React context without wrapping components.',
         timestamp: Date.now() - 160000,
       },
     ],

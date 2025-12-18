@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
@@ -68,7 +69,7 @@ export default function UtilitiesPage() {
 
 const text = 'Hello, how are you?'
 const tokens = countTokens(text, 'gpt-4')
-console.log(\`Tokens: \${tokens}\`) // Tokens: 6
+logger.debug(\`Tokens: \${tokens}\`) // Tokens: 6
 
 // With messages
 const messages = [
@@ -76,7 +77,7 @@ const messages = [
   { role: 'user', content: 'Hello!' }
 ]
 const total = countTokens(messages, 'gpt-4')
-console.log(\`Total tokens: \${total}\`)`}</code></pre>
+logger.debug(\`Total tokens: \${total}\`)`}</code></pre>
 
         <h3>estimateCost</h3>
         <p>Estimate API costs:</p>
@@ -87,7 +88,7 @@ const cost = estimateCost({
   inputTokens: 1000,
   outputTokens: 500
 })
-console.log(\`Cost: $\${cost}\`) // Cost: $0.045`}</code></pre>
+logger.debug(\`Cost: $\${cost}\`) // Cost: $0.045`}</code></pre>
 
         <h3>formatTokens</h3>
         <p>Human-readable token formatting:</p>
@@ -113,7 +114,7 @@ const chunks = splitIntoChunks(text, {
 })
 
 chunks.forEach((chunk, i) => {
-  console.log(\`Chunk \${i}: \${chunk.length} chars\`)
+  logger.debug(\`Chunk \${i}: \${chunk.length} chars\`)
 })`}</code></pre>
 
         <h3>semanticChunker</h3>
@@ -137,7 +138,7 @@ Here's some code:
 
 \\\`\\\`\\\`typescript
 function hello() {
-  console.log('Hello')
+  logger.debug('Hello')
 }
 \\\`\\\`\\\`
 \`\`\`
@@ -182,7 +183,7 @@ const reranked = await rerankDocuments(query, docs, {
         <pre><code>{`import { vectorSimilarity } from '@clarity-chat/react/utils'
 
 const similarity = vectorSimilarity(embedding1, embedding2, 'cosine')
-console.log(\`Similarity: \${similarity}\`) // 0.0 to 1.0`}</code></pre>
+logger.debug(\`Similarity: \${similarity}\`) // 0.0 to 1.0`}</code></pre>
       </section>
 
       <section className="docs-section">
@@ -251,7 +252,7 @@ const { result, latency } = await measureLatency(async () => {
   return await openai.chat.completions.create(...)
 })
 
-console.log(\`Request took \${latency}ms\`)`}</code></pre>
+logger.debug(\`Request took \${latency}ms\`)`}</code></pre>
 
         <h3>optimizePrompt</h3>
         <p>Optimize prompts for token efficiency:</p>
@@ -263,7 +264,7 @@ const optimized = await optimizePrompt(prompt, {
   preserveStructure: true
 })
 
-console.log(\`Reduced from \${prompt.length} to \${optimized.length}\`)`}</code></pre>
+logger.debug(\`Reduced from \${prompt.length} to \${optimized.length}\`)`}</code></pre>
 
         <h3>compressContext</h3>
         <p>Compress conversation context:</p>
@@ -290,7 +291,7 @@ try {
     requireContent: true
   })
 } catch (error) {
-  console.error('Invalid message:', error.message)
+  logger.error('Invalid message:', error.message)
 }`}</code></pre>
 
         <h3>sanitizeInput</h3>
@@ -310,7 +311,7 @@ const sanitized = sanitizeInput(userInput, {
 
 const pii = detectPII(text)
 if (pii.length > 0) {
-  console.warn('PII detected:', pii)
+  logger.warn('PII detected:', pii)
   // pii: [{ type: 'email', value: 'user@example.com', offset: 45 }]
 }`}</code></pre>
       </section>
@@ -330,7 +331,7 @@ const result = await retryWithBackoff(
     maxDelayMs: 10000,
     factor: 2,
     onRetry: (error, attempt) => {
-      console.log(\`Retry \${attempt}: \${error.message}\`)
+      logger.debug(\`Retry \${attempt}: \${error.message}\`)
     }
   }
 )`}</code></pre>
@@ -346,7 +347,7 @@ try {
   )
 } catch (error) {
   if (error.name === 'TimeoutError') {
-    console.error('Request timed out')
+    logger.error('Request timed out')
   }
 }`}</code></pre>
 

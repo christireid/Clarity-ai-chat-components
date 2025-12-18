@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Chat Analytics Service
  *
@@ -142,7 +143,7 @@ export function flushAnalytics(): void {
   // Send batch to analytics service
   sendBatchToAnalyticsService(config.serviceEndpoint, eventsToSend).catch(
     (error) => {
-      console.error('[Analytics] Failed to send batch:', error)
+      logger.error('[Analytics] Failed to send batch:', error)
     }
   )
 }
@@ -169,7 +170,7 @@ export function trackChatInteraction(metrics: ChatInteractionMetrics): void {
 
   // Log to console in development
   if (config.logToConsole) {
-    console.log('[Analytics] Chat interaction:', enrichedMetrics)
+    logger.debug('[Analytics] Chat interaction:', enrichedMetrics)
   }
 
   // Queue for batched sending in production
@@ -204,7 +205,7 @@ export function trackApiError(error: {
   }
 
   if (config.logToConsole) {
-    console.error('[Analytics] API error:', enrichedError)
+    logger.error('[Analytics] API error:', enrichedError)
   }
 
   // Errors are queued with type marker for batching
@@ -248,7 +249,7 @@ export function trackPersonalityModeChange(data: {
   }
 
   if (config.logToConsole) {
-    console.log('[Analytics] Personality mode change:', enrichedData)
+    logger.debug('[Analytics] Personality mode change:', enrichedData)
   }
 
   queueEvent({
@@ -283,7 +284,7 @@ export function trackDemoModeUsage(data: {
   }
 
   if (config.logToConsole) {
-    console.log('[Analytics] Demo mode usage:', enrichedData)
+    logger.debug('[Analytics] Demo mode usage:', enrichedData)
   }
 
   queueEvent({
@@ -314,7 +315,7 @@ export function trackSearchQuery(query: {
   }
 
   if (config.logToConsole) {
-    console.log('[Analytics] Search query:', enrichedQuery)
+    logger.debug('[Analytics] Search query:', enrichedQuery)
   }
 
   queueEvent({

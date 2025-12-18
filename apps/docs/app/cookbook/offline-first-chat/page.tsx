@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -58,10 +59,10 @@ function OfflineChatApp() {
       <OfflineChatSync
         messages={messages}
         onStatusChange={(status) => {
-          console.log('Sync status:', status)
+          logger.debug('Sync status:', status)
         }}
         onSyncComplete={(synced) => {
-          console.log(\`Synced \${synced} messages\`)
+          logger.debug(\`Synced \${synced} messages\`)
         }}
       />
       {!isOnline && (
@@ -218,7 +219,7 @@ function CompleteOfflineChat() {
           body: JSON.stringify(message),
         })
       } catch (error) {
-        console.error('Failed to send message:', error)
+        logger.error('Failed to send message:', error)
       }
     }
   }

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import {
   Badge,
@@ -15,7 +16,7 @@ import {
   DialogTitle,
   cn,
 } from '@clarity-chat/primitives'
-import { Skeleton } from '../skeleton'
+import { Skeleton } from '../ui/skeleton'
 
 export type TokenStatus = 'active' | 'expired' | 'revoked'
 
@@ -161,7 +162,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
         onCopy?.(token)
         setTimeout(() => setCopiedTokenId(null), 2000)
       } catch (err) {
-        console.error('Failed to copy token:', err)
+        logger.error('Failed to copy token:', err)
       }
     },
     [onCopy]

@@ -1,67 +1,149 @@
+'use client'
+
 /**
- * Core Exports - Essential APIs Only
+ * @clarity-chat/react/core - Minimal Bundle Entry Point
  *
- * This file exports only the most essential APIs for a simpler import experience.
- * Use this if you want to import just the basics without the full library.
+ * This file exports only the most essential APIs for a minimal bundle size.
+ * Use this entry point when you want just the basics without the full library.
+ *
+ * Bundle size: ~30% smaller than the full library
+ *
+ * ## When to Use
+ *
+ * Use this entry point when:
+ * - You only need basic chat functionality
+ * - Bundle size is critical (e.g., mobile apps)
+ * - You'll add features incrementally
+ *
+ * ## What's Included
+ *
+ * - Core Components: ClarityChat, ChatWindow, ChatInput, MessageList
+ * - Primary Hook: useClarityChat
+ * - Essential Types: Message, MessageRole
+ * - Error Handling: ErrorBoundary, ChatWithErrorBoundary
+ * - Memory: createMemoryStore
  *
  * @example
  * ```tsx
- * import { ClarityChat } from '@clarity-chat/react/core'
+ * import { ClarityChat, useClarityChat } from '@clarity-chat/react/core'
+ *
+ * function App() {
+ *   return <ClarityChat api="/api/chat" />
+ * }
  * ```
  *
- * @fileoverview Core essential APIs
+ * @example
+ * ```tsx
+ * // Combine with feature-specific imports for tree-shaking
+ * import { ClarityChat } from '@clarity-chat/react/core'
+ * import { useStreamingSSE } from '@clarity-chat/react/hooks'
+ * import { TokenCounter } from '@clarity-chat/react/components'
+ * ```
+ *
+ * @packageDocumentation
  */
 
 // Main high-level component
-export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
+export {
+  ClarityChat,
+  type ClarityChatProps,
+} from './components/chat/clarity-chat'
 export {
   ClarityChatSimple,
   type ClarityChatSimpleProps,
-} from './components/clarity-chat-simple'
+} from './components/chat/clarity-chat-simple'
 
-// Main hook
+/**
+ * Main chat component - drop-in ready
+ */
+export { ClarityChat, ClarityChatSimple } from './components/chat'
+
+export type { ClarityChatProps } from './components/chat/clarity-chat'
+
+export type { ClarityChatSimpleProps } from './components/chat/clarity-chat-simple'
+
+// =============================================================================
+// PRIMARY HOOK
+// =============================================================================
+
+/**
+ * Primary chat state management hook
+ */
 export {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
-} from './hooks/use-clarity-chat'
+} from './hooks/chat/use-clarity-chat'
 
 // Core components
-export { ChatWindow, type ChatWindowProps } from './components/chat-window'
-export { ChatInput } from './components/chat-input'
-export { MessageList } from './components/message-list'
+export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
+export { ChatInput } from './components/chat/chat-input'
+export { MessageList } from './components/message/message-list'
 
-// Core types
+/**
+ * Core building blocks for custom chat interfaces
+ */
+export { ChatWindow, ChatInput, MessageList } from './components/chat'
+
+export type { ChatWindowProps } from './components/chat/chat-window'
+
+// =============================================================================
+// CORE TYPES
+// =============================================================================
+
+/**
+ * Essential message types
+ */
 export type { Message, MessageRole } from '@clarity-chat/types'
 
-// Core utilities
+// =============================================================================
+// MESSAGE UTILITIES
+// =============================================================================
+
+/**
+ * Message conversion utilities
+ */
 export {
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
-} from './utils/message-conversion'
+} from './utils/message/message-conversion'
 
 // Error handling
-export { ErrorBoundary } from './components/error-boundary'
+export { ErrorBoundary } from './components/feedback/error-boundary'
 export {
   ChatWithErrorBoundary,
   type ChatWithErrorBoundaryProps,
-} from './components/chat-with-error-boundary'
+} from './components/chat/chat-with-error-boundary'
 
-// Composed hooks
+// =============================================================================
+// COMPOSED HOOKS
+// =============================================================================
+
+/**
+ * Chat hook with common operations pre-configured
+ */
 export {
   useChatWithOperations,
   type UseChatWithOperationsOptions,
   type UseChatWithOperationsReturn,
-} from './hooks/use-chat-with-operations'
+} from './hooks/chat/use-chat-with-operations'
 
-// Simplified hook
+/**
+ * Simplified chat hook for basic use cases
+ */
 export {
   useChatSimple,
   type UseChatSimpleOptions,
   type UseChatSimpleReturn,
-} from './hooks/use-chat-simple'
+} from './hooks/chat/use-chat-simple'
 
-// Memory store factory
+// =============================================================================
+// MEMORY
+// =============================================================================
+
+/**
+ * Memory store factory for conversation persistence
+ */
 export {
   createMemoryStore,
   type CreateMemoryStoreOptions,

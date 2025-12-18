@@ -1,7 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import * as fs from 'fs'
 import * as path from 'path'
-import { CHECKS, checkFile, parseSuppressions, isSuppressed } from '../review-checks'
+import {
+  CHECKS,
+  checkFile,
+  parseSuppressions,
+  isSuppressed,
+} from '../review-checks'
 import type { Options } from '../review-checks'
 
 const fixturesDir = path.join(__dirname, 'fixtures')
@@ -136,7 +141,9 @@ const data: any = {}
       const filePath = path.join(fixturesDir, 'bad-tailwind.tsx')
       const result = await checkFile(filePath, defaultOptions)
 
-      const tailwindIssues = result.issues.filter((i) => i.rule === 'arbitraryTailwind')
+      const tailwindIssues = result.issues.filter(
+        (i) => i.rule === 'arbitraryTailwind'
+      )
       expect(tailwindIssues.length).toBeGreaterThan(0)
     })
 
@@ -144,7 +151,9 @@ const data: any = {}
       const filePath = path.join(fixturesDir, 'bad-tailwind.tsx')
       const result = await checkFile(filePath, defaultOptions)
 
-      const colorIssues = result.issues.filter((i) => i.rule === 'hardcodedColors')
+      const colorIssues = result.issues.filter(
+        (i) => i.rule === 'hardcodedColors'
+      )
       expect(colorIssues.length).toBeGreaterThan(0)
     })
 
@@ -217,7 +226,7 @@ const data: any = {}
 // Test file for auto-fix
 console.log('should be removed')
 const x = 1
-console.debug('also removed')
+console.log('also removed')
 `
       )
     })

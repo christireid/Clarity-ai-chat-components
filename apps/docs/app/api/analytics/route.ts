@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getAnalyticsStore } from '@/lib/ai/analytics'
+import { logApiError } from '@/lib/security/secureLogger'
 
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    console.error('Analytics API error:', error)
+    logApiError(error as Error, 'Analytics API GET', request)
 
     return NextResponse.json(
       {
@@ -114,7 +115,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    console.error('Recent queries API error:', error)
+    logApiError(error as Error, 'Analytics API POST', request)
 
     return NextResponse.json(
       {

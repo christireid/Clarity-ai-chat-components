@@ -66,6 +66,10 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+import MarketingAssistant from '@/components/marketing-assistant/ChatWidget'
+import SmoothScroll from '@/components/ui/SmoothScroll'
+import ScrollProgress from '@/components/ui/ScrollProgress'
+
 export default function RootLayout({
   children,
 }: {
@@ -73,16 +77,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-      </head>
-      <body className="min-h-screen bg-surface-950 text-white antialiased">
-        {children}
+      <body className="min-h-screen bg-surface-950 text-white antialiased font-sans">
+        <SmoothScroll>
+          <ScrollProgress />
+          {children}
+          <MarketingAssistant />
+        </SmoothScroll>
       </body>
     </html>
   )

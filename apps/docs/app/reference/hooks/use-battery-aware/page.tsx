@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import React from 'react'
 import { Metadata } from 'next'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
@@ -138,10 +139,10 @@ function StatusMonitor() {
   const { batteryStatus } = useBatteryAware({
     onStatusChange: (status) => {
       if (status.level < 0.1) {
-        console.warn('Battery critically low')
+        logger.warn('Battery critically low')
       }
       if (status.charging) {
-        console.log('Device is charging')
+        logger.debug('Device is charging')
       }
     },
   })

@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Next.js 16 Instrumentation Hook
  *
@@ -14,7 +15,7 @@
 export async function register() {
   // Only run on server
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    console.log('[Instrumentation] Node.js runtime initialized')
+    logger.debug('[Instrumentation] Node.js runtime initialized')
 
     // Example: Initialize monitoring in production
     if (process.env.NODE_ENV === 'production') {
@@ -28,7 +29,7 @@ export async function register() {
 
   // Edge runtime specific initialization
   if (process.env.NEXT_RUNTIME === 'edge') {
-    console.log('[Instrumentation] Edge runtime initialized')
+    logger.debug('[Instrumentation] Edge runtime initialized')
   }
 }
 
@@ -55,7 +56,7 @@ export function onRequestError(
   }
 ) {
   // Log errors for monitoring
-  console.error('[Request Error]', {
+  logger.error('[Request Error]', {
     digest: error.digest,
     message: error.message,
     path: request.path,

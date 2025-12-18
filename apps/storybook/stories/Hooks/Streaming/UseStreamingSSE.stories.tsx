@@ -89,7 +89,7 @@ type Story = StoryObj<typeof meta>
 function useMockSSEServer() {
   const [isActive, setIsActive] = React.useState(false)
   const [events, setEvents] = React.useState<SSEEvent[]>([])
-  
+
   const simulateSSE = (callback: (event: SSEEvent) => void) => {
     let counter = 0
     const interval = setInterval(() => {
@@ -102,17 +102,17 @@ function useMockSSEServer() {
       callback(event)
       setEvents((prev) => [...prev, event])
       counter++
-      
+
       // Stop after 10 events
       if (counter >= 10) {
         clearInterval(interval)
         setIsActive(false)
       }
     }, 1000)
-    
+
     return () => clearInterval(interval)
   }
-  
+
   return { isActive, setIsActive, events, simulateSSE }
 }
 
@@ -170,12 +170,16 @@ export const BasicExample: Story = {
 
         <div className="border rounded-lg p-4 h-64 overflow-y-auto bg-muted">
           {messages.length === 0 ? (
-            <p className="text-muted-foreground text-center">No messages yet. Click Connect to start.</p>
+            <p className="text-muted-foreground text-center">
+              No messages yet. Click Connect to start.
+            </p>
           ) : (
             <div className="space-y-2">
               {messages.map((msg, index) => (
                 <div key={index} className="p-2 bg-background rounded">
-                  <div className="text-sm font-mono">{JSON.stringify(msg.data, null, 2)}</div>
+                  <div className="text-sm font-mono">
+                    {JSON.stringify(msg.data, null, 2)}
+                  </div>
                 </div>
               ))}
             </div>
@@ -198,11 +202,12 @@ export const AIStreamingExample: Story = {
     const streamAIResponse = () => {
       setIsStreaming(true)
       setContent('')
-      
-      const fullText = 'This is a simulated AI response that streams token by token, just like how modern language models deliver their responses in real-time.'
+
+      const fullText =
+        'This is a simulated AI response that streams token by token, just like how modern language models deliver their responses in real-time.'
       const words = fullText.split(' ')
       let index = 0
-      
+
       const interval = setInterval(() => {
         if (index < words.length) {
           setContent((prev) => prev + (prev ? ' ' : '') + words[index])
@@ -232,9 +237,7 @@ export const AIStreamingExample: Story = {
         </div>
 
         {!isStreaming && content && (
-          <div className="text-sm text-muted-foreground">
-            ✓ Stream complete
-          </div>
+          <div className="text-sm text-muted-foreground">✓ Stream complete</div>
         )}
       </div>
     )
@@ -254,7 +257,9 @@ export const AIStreamingExample: Story = {
 
 export const ConnectionStatusExample: Story = {
   render: () => {
-    const [status, setStatus] = React.useState<'idle' | 'connecting' | 'connected' | 'error'>('idle')
+    const [status, setStatus] = React.useState<
+      'idle' | 'connecting' | 'connected' | 'error'
+    >('idle')
     const [eventCount, setEventCount] = React.useState(0)
 
     const connect = () => {
@@ -265,7 +270,7 @@ export const ConnectionStatusExample: Story = {
         const interval = setInterval(() => {
           setEventCount((c) => c + 1)
         }, 500)
-        
+
         setTimeout(() => {
           clearInterval(interval)
         }, 5000)
@@ -287,7 +292,9 @@ export const ConnectionStatusExample: Story = {
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-4 p-4 border rounded-lg">
-          <div className={`w-3 h-3 rounded-full ${statusColors[status]} animate-pulse`} />
+          <div
+            className={`w-3 h-3 rounded-full ${statusColors[status]} animate-pulse`}
+          />
           <div className="flex-1">
             <div className="font-medium capitalize">{status}</div>
             <div className="text-sm text-muted-foreground">
@@ -356,25 +363,28 @@ export const AutoReconnectionExample: Story = {
     const [reconnectCount, setReconnectCount] = React.useState(0)
 
     const addLog = (message: string) => {
-      setLogs((prev) => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`])
+      setLogs((prev) => [
+        ...prev,
+        `[${new Date().toLocaleTimeString()}] ${message}`,
+      ])
     }
 
     const simulateConnection = () => {
       setIsActive(true)
       addLog('Connecting to server...')
-      
+
       setTimeout(() => {
         addLog('✓ Connected successfully')
-        
+
         // Simulate disconnect after 3 seconds
         setTimeout(() => {
           addLog('⚠ Connection lost - Server disconnected')
           setReconnectCount((c) => c + 1)
-          
+
           // Attempt reconnection
           setTimeout(() => {
             addLog('Attempting to reconnect...')
-            
+
             setTimeout(() => {
               addLog('✓ Reconnected successfully')
             }, 1500)
@@ -482,7 +492,9 @@ export const RealTimeDashboard: Story = {
             <div className="text-sm text-muted-foreground">Requests/min</div>
           </div>
           <div className="p-4 border rounded-lg">
-            <div className="text-2xl font-bold text-red-600">{metrics.errors}</div>
+            <div className="text-2xl font-bold text-red-600">
+              {metrics.errors}
+            </div>
             <div className="text-sm text-muted-foreground">Errors</div>
           </div>
           <div className="p-4 border rounded-lg">

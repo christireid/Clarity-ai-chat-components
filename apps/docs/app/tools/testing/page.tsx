@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
@@ -106,8 +107,8 @@ const { result, metrics } = await profiler.profile('chat', async () => {
   })
 })
 
-console.log('Duration', metrics.duration)
-console.log('Response', result.choices[0].message)
+logger.debug('Duration', metrics.duration)
+logger.debug('Response', result.choices[0].message)
 `}
         />
       </section>

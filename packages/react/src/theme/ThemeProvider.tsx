@@ -16,7 +16,7 @@ import {
 } from './create-theme'
 import type { CompleteThemeConfig, PartialThemeConfig } from './theme-config'
 import type { ThemeContextValue } from './theme-types'
-import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
@@ -239,7 +239,7 @@ export function ThemeProvider({
         }
       }
     } catch (error) {
-      console.warn('Failed to load theme from localStorage:', error)
+      logger.warn('Failed to load theme from localStorage:', error)
     }
 
     setIsHydrated(true)
@@ -281,7 +281,7 @@ export function ThemeProvider({
       }
       // Warn about invalid preset and fallback to default
       if (process.env.NODE_ENV !== 'production') {
-        console.warn(
+        logger.warn(
           `[Clarity Chat] Unknown theme preset "${preset}". ` +
             `Available presets: ${Object.keys(modernThemes).join(', ')}. ` +
             `Falling back to "default".`
@@ -389,7 +389,7 @@ export function ThemeProvider({
 
         localStorage.setItem(storageKey, JSON.stringify(toStore))
       } catch (error) {
-        console.warn('Failed to save theme to localStorage:', error)
+        logger.warn('Failed to save theme to localStorage:', error)
       }
     }
   }, [
@@ -420,7 +420,7 @@ export function ThemeProvider({
       }
     } catch (error) {
       // BroadcastChannel may not be available in some environments
-      console.warn('Cross-tab theme sync not available:', error)
+      logger.warn('Cross-tab theme sync not available:', error)
     }
 
     return () => {
@@ -439,7 +439,7 @@ export function ThemeProvider({
     if (typeof BroadcastChannel === 'undefined') {
       // Log warning in development only
       if (process.env.NODE_ENV !== 'production') {
-        console.warn(
+        logger.warn(
           '[Clarity Chat] BroadcastChannel API not available. ' +
             'Cross-tab theme sync will fall back to localStorage-only persistence. ' +
             'Theme changes will sync on page reload but not in real-time.'

@@ -119,7 +119,7 @@ export function handleError(error: string | Error | unknown): never {
       )
     }
 
-    logger.error(normalizedError)
+    console.error(normalizedError)
     process.exit(normalizedError.code)
   }
 
@@ -152,7 +152,7 @@ export function handleError(error: string | Error | unknown): never {
       )
     }
 
-    logger.error(normalizedError)
+    console.error(normalizedError)
     process.exit(ExitCode.GENERAL_ERROR)
   }
 
@@ -170,7 +170,7 @@ export function handleError(error: string | Error | unknown): never {
     )
   }
 
-  logger.error('Unknown error', normalizedError)
+  console.error('Unknown error', normalizedError)
   process.exit(ExitCode.GENERAL_ERROR)
 }
 

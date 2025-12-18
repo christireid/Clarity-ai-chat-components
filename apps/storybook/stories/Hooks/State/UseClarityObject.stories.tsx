@@ -1,13 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useClarityObject } from '@clarity-chat/react'
-import { Button, Card, CardHeader, CardContent, Badge } from '@clarity-chat/primitives'
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardContent,
+  Badge,
+} from '@clarity-chat/primitives'
 import { useState } from 'react'
 
 /**
  * **useClarityObject Hook (Structured Output)**
- * 
+ *
  * Type-safe structured object generation from AI models.
- * 
+ *
  * **Key Features:**
  * - Generic type support for type-safe object generation
  * - Streaming and non-streaming modes
@@ -15,7 +21,7 @@ import { useState } from 'react'
  * - Error handling and loading states
  * - Input management and reset functionality
  * - Callback support (onFinish, onError, onProgress)
- * 
+ *
  * **Use Cases:**
  * - Product recommendations
  * - Data extraction
@@ -72,8 +78,8 @@ type Story = StoryObj<typeof meta>
 // Mock API endpoint (in real usage, this would be your backend)
 const mockApiCall = async (input: { query: string }) => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  
+  await new Promise((resolve) => setTimeout(resolve, 1500))
+
   // Mock product data
   return {
     products: [
@@ -104,8 +110,10 @@ interface Product {
 
 function ProductRecommendations() {
   const [query, setQuery] = useState('gaming laptops')
-  
-  const { object, run, isLoading, error, reset } = useClarityObject<{ products: Product[] }>({
+
+  const { object, run, isLoading, error, reset } = useClarityObject<{
+    products: Product[]
+  }>({
     api: '/api/generate-products',
     initialInput: { query },
     stream: false,
@@ -160,7 +168,9 @@ function ProductRecommendations() {
       {isLoading && (
         <Card>
           <CardContent className="pt-6">
-            <p className="text-gray-600">Generating product recommendations...</p>
+            <p className="text-gray-600">
+              Generating product recommendations...
+            </p>
           </CardContent>
         </Card>
       )}
@@ -192,7 +202,8 @@ export const BasicUsage: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic usage of useClarityObject for generating structured product recommendations.',
+        story:
+          'Basic usage of useClarityObject for generating structured product recommendations.',
       },
     },
   },
@@ -216,7 +227,10 @@ function FormGenerator() {
 
   return (
     <div className="space-y-4">
-      <Button onClick={() => run({ purpose: 'user registration' })} disabled={isLoading}>
+      <Button
+        onClick={() => run({ purpose: 'user registration' })}
+        disabled={isLoading}
+      >
         {isLoading ? 'Generating Form...' : 'Generate Registration Form'}
       </Button>
 
@@ -247,7 +261,9 @@ function FormGenerator() {
                 <div key={index} className="flex items-center gap-2">
                   <Badge variant="outline">{field.type}</Badge>
                   <span className="font-medium">{field.label}</span>
-                  {field.required && <Badge variant="destructive">Required</Badge>}
+                  {field.required && (
+                    <Badge variant="destructive">Required</Badge>
+                  )}
                 </div>
               ))}
             </div>
@@ -263,14 +279,17 @@ export const FormGeneration: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Using useClarityObject to generate form structures dynamically.',
+        story:
+          'Using useClarityObject to generate form structures dynamically.',
       },
     },
   },
 }
 
 function StreamingExample() {
-  const { object, run, isLoading, error } = useClarityObject<{ items: string[] }>({
+  const { object, run, isLoading, error } = useClarityObject<{
+    items: string[]
+  }>({
     api: '/api/stream-list',
     initialInput: { topic: 'AI technologies' },
     stream: true,
@@ -281,7 +300,10 @@ function StreamingExample() {
 
   return (
     <div className="space-y-4">
-      <Button onClick={() => run({ topic: 'AI technologies' })} disabled={isLoading}>
+      <Button
+        onClick={() => run({ topic: 'AI technologies' })}
+        disabled={isLoading}
+      >
         {isLoading ? 'Streaming...' : 'Stream List'}
       </Button>
 
@@ -324,7 +346,8 @@ export const StreamingMode: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Using useClarityObject with streaming mode for real-time updates.',
+        story:
+          'Using useClarityObject with streaming mode for real-time updates.',
       },
     },
   },

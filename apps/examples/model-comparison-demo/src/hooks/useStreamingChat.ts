@@ -1,7 +1,7 @@
 // Type-safe streaming chat hook - Example hook needs type updates
 import { useState, useCallback } from 'react'
 
-// Local types for model comparison  
+// Local types for model comparison
 export type ChatMessage = any
 export interface ModelConfig {
   id: string
@@ -34,7 +34,8 @@ interface UseStreamingChatOptions {
 export function useStreamingChat(options: UseStreamingChatOptions = {}) {
   const [isStreaming, setIsStreaming] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [abortController, setAbortController] = useState<AbortController | null>(null)
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null)
 
   const stream = useCallback(
     async (messages: ChatMessage[], config: ModelConfig) => {
@@ -56,7 +57,9 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}) {
 
         if (!response.ok) {
           const errorData = await response.json()
-          throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`
+          )
         }
 
         if (!response.body) {
@@ -95,7 +98,12 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}) {
                     break
 
                   case 'done':
-                    if (options.onComplete && data.usage && data.cost !== undefined && data.duration !== undefined) {
+                    if (
+                      options.onComplete &&
+                      data.usage &&
+                      data.cost !== undefined &&
+                      data.duration !== undefined
+                    ) {
                       options.onComplete({
                         usage: data.usage,
                         cost: data.cost,
@@ -127,7 +135,8 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}) {
         if (err.name === 'AbortError') {
           console.log('Stream aborted by user')
         } else {
-          const errorMessage = err.message || 'An error occurred during streaming'
+          const errorMessage =
+            err.message || 'An error occurred during streaming'
           setError(errorMessage)
           if (options.onError) {
             options.onError(errorMessage)

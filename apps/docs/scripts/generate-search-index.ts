@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * Generate Search Index
@@ -100,7 +101,7 @@ function pathToHref(filePath: string): string {
  * Main function to generate search index
  */
 async function generateSearchIndex() {
-  console.log('🔍 Scanning documentation pages...\n')
+  logger.debug('🔍 Scanning documentation pages...\n')
 
   const appDir = path.join(process.cwd(), 'app')
   const pattern = path.join(appDir, '**/page.{tsx,mdx}')
@@ -113,7 +114,7 @@ async function generateSearchIndex() {
     ]
   })
 
-  console.log(`Found ${files.length} pages\n`)
+  logger.debug(`Found ${files.length} pages\n`)
 
   const searchItems: SearchItem[] = []
   const skipped: string[] = []
@@ -141,7 +142,7 @@ async function generateSearchIndex() {
         category,
       })
     } catch (error) {
-      console.error(`Error processing ${filePath}:`, error)
+      logger.error(`Error processing ${filePath}:`, error)
     }
   }
 
@@ -185,19 +186,19 @@ export const searchData: SearchItem[] = ${JSON.stringify(searchItems, null, 2)}
 
   fs.writeFileSync(outputPath, fileContent)
 
-  console.log('✅ Search index generated successfully!\n')
-  console.log(`📊 Statistics:`)
-  console.log(`   Total items: ${searchItems.length}`)
-  console.log(`   Components: ${searchItems.filter(i => i.type === 'component').length}`)
-  console.log(`   Hooks: ${searchItems.filter(i => i.type === 'hook').length}`)
-  console.log(`   Guides: ${searchItems.filter(i => i.type === 'guide').length}`)
-  console.log(`   Examples: ${searchItems.filter(i => i.type === 'example').length}`)
-  console.log(`   Cookbook: ${searchItems.filter(i => i.type === 'cookbook').length}`)
-  console.log(`   Concepts: ${searchItems.filter(i => i.type === 'concept').length}`)
-  console.log(`   Deployment: ${searchItems.filter(i => i.type === 'deployment').length}`)
-  console.log(`   Integrations: ${searchItems.filter(i => i.type === 'integration').length}`)
-  console.log(`   Skipped (no title): ${skipped.length}`)
-  console.log(`\n📁 Output: ${outputPath}`)
+  logger.debug('✅ Search index generated successfully!\n')
+  logger.debug(`📊 Statistics:`)
+  logger.debug(`   Total items: ${searchItems.length}`)
+  logger.debug(`   Components: ${searchItems.filter(i => i.type === 'component').length}`)
+  logger.debug(`   Hooks: ${searchItems.filter(i => i.type === 'hook').length}`)
+  logger.debug(`   Guides: ${searchItems.filter(i => i.type === 'guide').length}`)
+  logger.debug(`   Examples: ${searchItems.filter(i => i.type === 'example').length}`)
+  logger.debug(`   Cookbook: ${searchItems.filter(i => i.type === 'cookbook').length}`)
+  logger.debug(`   Concepts: ${searchItems.filter(i => i.type === 'concept').length}`)
+  logger.debug(`   Deployment: ${searchItems.filter(i => i.type === 'deployment').length}`)
+  logger.debug(`   Integrations: ${searchItems.filter(i => i.type === 'integration').length}`)
+  logger.debug(`   Skipped (no title): ${skipped.length}`)
+  logger.debug(`\n📁 Output: ${outputPath}`)
 }
 
 // Run the script
