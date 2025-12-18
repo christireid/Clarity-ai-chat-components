@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced error handling utilities for CLI
  * Provides actionable error messages and proper exit codes
@@ -7,7 +6,6 @@ import { logger } from '@clarity-chat/utils/logger';
 import pc from 'picocolors'
 import boxen from 'boxen'
 import { getLogger } from './logger.js'
-
 
 const logger = getLogger('errors')
 

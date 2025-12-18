@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * add command - Add a component to your project
  * Enhanced with beautiful UI components

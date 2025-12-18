@@ -282,9 +282,13 @@ export {
 } from './hooks/use-composed-refs'
 
 // ============================================================================
-// Utils (commented out due to Node.js type issues)
+// Utils
 // ============================================================================
 
+// Core utility - cn function for Tailwind class merging
+export { cn } from './lib/cn'
+
+// Full utils module commented out due to Node.js type issues
 // export * from './lib/utils'
 
 // ARIA Utilities
