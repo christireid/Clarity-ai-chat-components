@@ -95,3 +95,9 @@ export type {
   CompressionContext,
   QualityMetrics as CompressionQualityMetrics,
 } from './compression/dynamic-compression'
+
+// Token counting exports (legacy compatibility)
+export { TokenCounter } from './legacy-compatibility'
+
+// Simple tokenizers
+export { SimpleTokenCounter } from './tokenizers/simple-counter'
