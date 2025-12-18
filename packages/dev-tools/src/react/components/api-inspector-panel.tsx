@@ -1,13 +1,13 @@
-import { logger } from '@clarity-chat/utils/logger';
+'use client'
+
 /**
  * API Inspector Panel Component
  * Premium API call monitoring with filtering, search, and export
  * React 19 component using useOptimistic for real-time updates
  */
 
-'use client'
-
 import * as React from 'react'
+import { getLogger } from '../../debug/logger'
 import { useAPIInspector } from '../hooks/use-api-inspector'
 import type { APICallLog } from '../../debug/api-inspector'
 import {
@@ -22,6 +22,8 @@ import {
   TrashIcon,
   InboxIcon,
 } from './icons'
+
+const logger = getLogger('api-inspector-panel')
 
 export interface APIInspectorPanelProps {
   /** Additional CSS classes */
@@ -133,7 +135,7 @@ export function APIInspectorPanel({
       setCopiedId(log.id)
       setTimeout(() => setCopiedId(null), 2000)
     } catch (err) {
-      logger.error('Failed to copy:', err)
+      logger.error('Failed to copy:', { error: err })
     }
   }, [])
 

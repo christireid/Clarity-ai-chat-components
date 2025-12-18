@@ -1,3 +1,7 @@
+import { getLogger } from '../../debug/logger'
+
+const logger = getLogger('cli-debug')
+
 /**
  * Debug command
  *
@@ -59,11 +63,11 @@ debugCommand
         hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
         hasGoogleKey: !!process.env.GOOGLE_API_KEY,
       }
-      console.log(JSON.stringify(jsonOutput, null, 2))
+      logger.debug(JSON.stringify(jsonOutput, null, 2))
     } else {
-      console.log()
-      console.log(infoBox(keyValueTable(envInfo), 'Environment Information'))
-      console.log()
+      logger.debug()
+      logger.debug(infoBox(keyValueTable(envInfo), 'Environment Information'))
+      logger.debug()
     }
   })
 
@@ -197,7 +201,7 @@ debugCommand
       },
     })
 
-    logger.timeEnd('Total Request', 'info')
+    logger.timeEnd('Total Request')
 
     // Summary
     const summary: Record<string, string> = {

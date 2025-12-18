@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Error Boundary with Error Tracking Integration
  *

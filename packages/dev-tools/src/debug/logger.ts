@@ -60,7 +60,9 @@ const ICONS: Record<LogLevel, string> = {
 let globalLogLevel: LogLevel = 'info'
 let globalContext: Record<string, unknown> = {}
 
-// Compatibility wrapper for legacy code
+/**
+ * Logger class for development tools
+ */
 export class Logger {
   private namespace: string
   private level: LogLevel
@@ -122,23 +124,43 @@ export class Logger {
     }
   }
 
-  trace(message: string, context?: Record<string, unknown>): void {
+  trace(message?: string, context?: Record<string, unknown>): void {
+    if (!message) {
+      console.log()
+      return
+    }
     this.log('trace', message, context)
   }
 
-  debug(message: string, context?: Record<string, unknown>): void {
+  debug(message?: string, context?: Record<string, unknown>): void {
+    if (!message) {
+      console.log()
+      return
+    }
     this.log('debug', message, context)
   }
 
-  info(message: string, context?: Record<string, unknown>): void {
+  info(message?: string, context?: Record<string, unknown>): void {
+    if (!message) {
+      console.log()
+      return
+    }
     this.log('info', message, context)
   }
 
-  warn(message: string, context?: Record<string, unknown>): void {
+  warn(message?: string, context?: Record<string, unknown>): void {
+    if (!message) {
+      console.log()
+      return
+    }
     this.log('warn', message, context)
   }
 
-  error(message: string, context?: Record<string, unknown>): void {
+  error(message?: string, context?: Record<string, unknown>): void {
+    if (!message) {
+      console.log()
+      return
+    }
     this.log('error', message, context)
   }
 
@@ -168,31 +190,28 @@ export class Logger {
     console.groupEnd()
   }
 
-  // Log filtering
+  // Log filtering (no-op for compatibility)
   filter(_predicate: (entry: LogEntry) => boolean): void {
-    // This is a no-op for compatibility - the new logger doesn't support filtering
-    console.warn('Log filtering is not supported in the new logger')
+    console.warn('Log filtering is not supported in this logger')
   }
 
-  // Get all logs
+  // Get all logs (no-op for compatibility)
   getLogs(_level?: LogLevel): LogEntry[] {
-    // This is a no-op for compatibility - the new logger doesn't support log retrieval
-    console.warn('Log retrieval is not supported in the new logger')
+    console.warn('Log retrieval is not supported in this logger')
     return []
   }
 
-  // Export logs
+  // Export logs (no-op for compatibility)
   exportLogs(_options?: {
     level?: LogLevel
     format?: 'json' | 'csv'
     filePath?: string
   }): void {
-    // This is a no-op for compatibility
-    console.warn('Log export is not supported in the new logger')
+    console.warn('Log export is not supported in this logger')
   }
 }
 
-// Factory functions for backward compatibility
+// Factory functions
 export function createLogger(options: LoggerOptions = {}): Logger {
   return new Logger('app', options)
 }
@@ -211,51 +230,37 @@ export function setGlobalContext(context: Record<string, unknown>): void {
 }
 
 // UI helpers
-export function logInfoBox(
-  message: string,
-  context?: Record<string, unknown>
-): void {
+export function logInfoBox(message: string, title?: string): void {
   const logger = getLogger('ui')
-  logger.info(message, context)
-  if (context) {
-    console.log(infoBox(message, context))
-  }
+  logger.info(message)
+  console.log(infoBox(message, title))
 }
 
-export function logWarningBox(
-  message: string,
-  context?: Record<string, unknown>
-): void {
+export function logWarningBox(message: string, title?: string): void {
   const logger = getLogger('ui')
-  logger.warn(message, context)
-  console.log(warningBox(message, context))
+  logger.warn(message)
+  console.log(warningBox(message, title))
 }
 
-export function logErrorBox(
-  message: string,
-  context?: Record<string, unknown>
-): void {
+export function logErrorBox(message: string, title?: string): void {
   const logger = getLogger('ui')
-  logger.error(message, context)
-  console.log(errorBox(message, context))
+  logger.error(message)
+  console.log(errorBox(message, title))
 }
 
-export function logSuccessBox(
-  message: string,
-  context?: Record<string, unknown>
-): void {
+export function logSuccessBox(message: string, title?: string): void {
   const logger = getLogger('ui')
-  logger.info(message, context)
-  console.log(successBox(message, context))
+  logger.info(message)
+  console.log(successBox(message, title))
 }
 
 export function logKeyValue(
-  data: Record<string, unknown>,
-  title?: string
+  data: Record<string, string | number | boolean>,
+  options?: { labelColor?: (text: string) => string; valueColor?: (text: string) => string }
 ): void {
   const logger = getLogger('ui')
-  logger.info(title || 'Key-Value Data', data)
-  console.log(keyValueTable(data, title))
+  logger.info('Key-Value Data')
+  console.log(keyValueTable(data, options))
 }
 
 export default {

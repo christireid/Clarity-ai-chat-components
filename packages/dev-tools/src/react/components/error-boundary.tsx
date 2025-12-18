@@ -1,14 +1,16 @@
-import { logger } from '@clarity-chat/utils/logger';
+'use client'
+
 /**
  * Error Boundary Component
  * Catches JavaScript errors in child component trees
  * and displays a graceful fallback UI
  */
 
-'use client'
-
 import * as React from 'react'
+import { getLogger } from '../../debug/logger'
 import { AlertTriangleIcon } from './icons'
+
+const logger = getLogger('error-boundary')
 
 export interface ErrorBoundaryProps {
   /** Child components to render */
@@ -58,8 +60,7 @@ export class ErrorBoundary extends React.Component<
     if (process.env.NODE_ENV === 'development') {
       logger.error(
         `[ErrorBoundary${this.props.componentName ? `: ${this.props.componentName}` : ''}]`,
-        error,
-        errorInfo
+        { error, errorInfo }
       )
     }
   }

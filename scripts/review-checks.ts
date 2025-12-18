@@ -22,6 +22,12 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { execSync } from 'child_process'
 
+// Simple logger for script output
+const SecureLogger = {
+  debug: (...args: unknown[]) => console.log(...args),
+  error: (...args: unknown[]) => console.error(...args),
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
@@ -492,27 +498,31 @@ async function checkFiles(
 
 function printConsoleResults(result: CheckResult): void {
   if (result.issues.length === 0 && result.fixed.length === 0) {
-    console.log(`${colors.green}✓ All review checks passed${colors.reset}`)
-    console.log(
+    SecureLogger.debug(
+      `${colors.green}✓ All review checks passed${colors.reset}`
+    )
+    SecureLogger.debug(
       `${colors.dim}  Checked ${result.filesChecked} file(s) in ${result.duration}ms${colors.reset}`
     )
     return
   }
 
-  console.log(`\n${colors.cyan}━━━ Review Check Results ━━━${colors.reset}\n`)
+  SecureLogger.debug(
+    `\n${colors.cyan}━━━ Review Check Results ━━━${colors.reset}\n`
+  )
 
   // Show fixed issues first
   if (result.fixed.length > 0) {
-    console.log(
+    SecureLogger.debug(
       `${colors.green}✓ Auto-fixed ${result.fixed.length} issue(s):${colors.reset}`
     )
     for (const issue of result.fixed) {
       const relativePath = path.relative(process.cwd(), issue.file)
-      console.log(
+      SecureLogger.debug(
         `  ${colors.dim}${relativePath}:${issue.line} - ${issue.rule}${colors.reset}`
       )
     }
-    console.log('')
+    SecureLogger.debug('')
   }
 
   // Group remaining issues by file
@@ -525,7 +535,7 @@ function printConsoleResults(result: CheckResult): void {
 
   for (const [file, fileIssues] of byFile) {
     const relativePath = path.relative(process.cwd(), file)
-    console.log(`${colors.bold}${relativePath}${colors.reset}`)
+    SecureLogger.debug(`${colors.bold}${relativePath}${colors.reset}`)
 
     for (const issue of fileIssues) {
       const icon = issue.severity === 'error' ? '✗' : '⚠'
@@ -533,46 +543,48 @@ function printConsoleResults(result: CheckResult): void {
       const fixableHint = issue.fixable
         ? ` ${colors.dim}(--fix available)${colors.reset}`
         : ''
-      console.log(
+      SecureLogger.debug(
         `  ${color}${icon}${colors.reset} Line ${issue.line}: ${issue.message}${fixableHint}`
       )
-      console.log(`    ${colors.dim}Rule: ${issue.rule}${colors.reset}`)
+      SecureLogger.debug(`    ${colors.dim}Rule: ${issue.rule}${colors.reset}`)
     }
-    console.log('')
+    SecureLogger.debug('')
   }
 
   // Summary
   const errors = result.issues.filter((i) => i.severity === 'error')
   const warnings = result.issues.filter((i) => i.severity === 'warning')
 
-  console.log(`${colors.cyan}━━━ Summary ━━━${colors.reset}`)
-  console.log(
+  SecureLogger.debug(`${colors.cyan}━━━ Summary ━━━${colors.reset}`)
+  SecureLogger.debug(
     `${colors.dim}Checked ${result.filesChecked} file(s) in ${result.duration}ms${colors.reset}`
   )
   if (errors.length > 0) {
-    console.log(`${colors.red}✗ ${errors.length} error(s)${colors.reset}`)
+    SecureLogger.debug(
+      `${colors.red}✗ ${errors.length} error(s)${colors.reset}`
+    )
   }
   if (warnings.length > 0) {
-    console.log(
+    SecureLogger.debug(
       `${colors.yellow}⚠ ${warnings.length} warning(s)${colors.reset}`
     )
   }
   if (result.fixed.length > 0) {
-    console.log(
+    SecureLogger.debug(
       `${colors.green}✓ ${result.fixed.length} auto-fixed${colors.reset}`
     )
   }
-  console.log('')
+  SecureLogger.debug('')
 
   // Suppression hint
   if (result.issues.length > 0) {
-    console.log(
+    SecureLogger.debug(
       `${colors.dim}Suppress with: // review-ignore: ruleName${colors.reset}`
     )
-    console.log(
+    SecureLogger.debug(
       `${colors.dim}Suppress next line: // review-ignore-next-line: ruleName${colors.reset}`
     )
-    console.log('')
+    SecureLogger.debug('')
   }
 }
 
@@ -601,7 +613,7 @@ function printJsonResults(result: CheckResult): void {
     })),
   }
 
-  console.log(JSON.stringify(output, null, 2))
+  SecureLogger.debug(JSON.stringify(output, null, 2))
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -652,7 +664,7 @@ function parseArgs(args: string[]): Options {
 }
 
 function printHelp(): void {
-  console.log(`
+  SecureLogger.debug(`
 ${colors.cyan}${colors.bold}Review Checks${colors.reset} - Pre-commit code quality checks
 
 ${colors.bold}Usage:${colors.reset}
@@ -705,11 +717,11 @@ async function main(): Promise<void> {
     files = getStagedFiles()
     if (files.length === 0) {
       if (options.output === 'json') {
-        console.log(
+        SecureLogger.debug(
           JSON.stringify({ passed: true, filesChecked: 0, issues: [] })
         )
       } else {
-        console.log(
+        SecureLogger.debug(
           `${colors.dim}No staged TypeScript/JavaScript files to check${colors.reset}`
         )
       }
@@ -737,10 +749,10 @@ async function main(): Promise<void> {
   // Exit code
   if (!result.passed) {
     if (options.output !== 'json') {
-      console.log(
+      SecureLogger.debug(
         `${colors.red}Review checks failed. Please fix errors before committing.${colors.reset}`
       )
-      console.log(
+      SecureLogger.debug(
         `${colors.dim}Tip: Run 'pnpm review' for detailed AI-powered suggestions.${colors.reset}\n`
       )
     }
@@ -748,17 +760,17 @@ async function main(): Promise<void> {
   }
 
   if (result.issues.length > 0 && options.output !== 'json') {
-    console.log(
+    SecureLogger.debug(
       `${colors.yellow}Review checks passed with warnings.${colors.reset}`
     )
-    console.log(
+    SecureLogger.debug(
       `${colors.dim}Consider running 'pnpm review' for detailed suggestions.${colors.reset}\n`
     )
   }
 }
 
 main().catch((error) => {
-  console.error(`${colors.red}Error: ${error.message}${colors.reset}`)
+  SecureLogger.error(`${colors.red}Error: ${error.message}${colors.reset}`)
   process.exit(1)
 })
 
