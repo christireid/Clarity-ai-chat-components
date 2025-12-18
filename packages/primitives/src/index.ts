@@ -281,6 +281,9 @@ export {
   useForwardedRef,
 } from './hooks/use-composed-refs'
 
+export { useMagnetic } from './hooks/use-magnetic'
+export type { UseMagneticOptions } from './hooks/use-magnetic'
+
 // ============================================================================
 // Utils
 // ============================================================================
