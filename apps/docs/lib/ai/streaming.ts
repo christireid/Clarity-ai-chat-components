@@ -38,7 +38,7 @@ export function createSSEStream(
 
         controller.close()
       } catch (error) {
-        logger.logger.error('Streaming error:', error)
+        logger.error('Streaming error:', error)
 
         const errorChunk = `data: ${JSON.stringify({
           type: 'error',
@@ -107,7 +107,7 @@ export async function* streamFromOpenAI(
       }
     }
   } catch (error) {
-    logger.logger.error('OpenAI streaming error:', error)
+    logger.error('OpenAI streaming error:', error)
     throw error
   }
 }
@@ -165,7 +165,7 @@ export async function* streamFromClaude(
       }
     }
   } catch (error) {
-    logger.logger.error('Claude streaming error:', error)
+    logger.error('Claude streaming error:', error)
     throw error
   }
 }
@@ -228,7 +228,7 @@ export async function* streamFromGemini(
       }
     }
   } catch (error) {
-    logger.logger.error('Gemini streaming error:', error)
+    logger.error('Gemini streaming error:', error)
     throw error
   }
 }
@@ -279,7 +279,7 @@ export async function* streamFromDemo(
 
     // Error handling
     error:
-      'Handle errors gracefully with built-in error boundaries:\n\n```tsx\nimport { ErrorBoundary, useErrorRecovery } from "@clarity-chat/react"\n\nconst { retry, resetError } = useErrorRecovery({\n  maxRetries: 3,\n  onError: (error) => logger.logger.error(error),\n})\n\n<ErrorBoundary fallback={<ErrorMessage />}>\n  <ChatWindow />\n</ErrorBoundary>\n```\n\n📖 **Learn more**: [Error Handling](/guides/error-handling)',
+      'Handle errors gracefully with built-in error boundaries:\n\n```tsx\nimport { ErrorBoundary, useErrorRecovery } from "@clarity-chat/react"\n\nconst { retry, resetError } = useErrorRecovery({\n  maxRetries: 3,\n  onError: (error) => logger.error(error),\n})\n\n<ErrorBoundary fallback={<ErrorMessage />}>\n  <ChatWindow />\n</ErrorBoundary>\n```\n\n📖 **Learn more**: [Error Handling](/guides/error-handling)',
 
     // Testing
     test: 'Test your chat components with our testing utilities:\n\n```tsx\nimport { render, screen } from "@testing-library/react"\nimport { ChatWindow } from "@clarity-chat/react"\n\ntest("renders chat input", () => {\n  render(<ChatWindow messages={[]} />)\n  expect(screen.getByRole("textbox")).toBeInTheDocument()\n})\n```\n\nWe provide mocks for streaming and API calls.\n\n📖 **Learn more**: [Testing Guide](/guides/testing)',
@@ -789,7 +789,7 @@ export function validateRequest(
  * Error handler for streaming errors
  */
 export function handleStreamError(error: unknown): StreamChunk {
-  logger.logger.error('Stream error:', error)
+  logger.error('Stream error:', error)
 
   let errorMessage = 'An unexpected error occurred'
 

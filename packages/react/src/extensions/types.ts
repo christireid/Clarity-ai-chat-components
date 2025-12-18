@@ -199,12 +199,16 @@ export interface ExtensionStateManager {
 }
 
 /**
- * Extension logger interface
+ * Extension logger interface for structured logging within extensions
  */
 export interface ExtensionLogger {
+  /** Log debug-level message (development only) */
   debug(message: string, ...args: unknown[]): void
+  /** Log informational message */
   info(message: string, ...args: unknown[]): void
+  /** Log warning message */
   warn(message: string, ...args: unknown[]): void
+  /** Log error message */
   error(message: string, ...args: unknown[]): void
   /** Create child logger with additional prefix */
   child(prefix: string): ExtensionLogger

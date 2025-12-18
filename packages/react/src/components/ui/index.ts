@@ -4,6 +4,7 @@
  * Generic UI primitives and utilities used across the library.
  */
 
+export * from './animated-dots'
 export * from './animated-list'
 export { BatteryIndicator } from './battery-indicator'
 export * from './collapsible-section'

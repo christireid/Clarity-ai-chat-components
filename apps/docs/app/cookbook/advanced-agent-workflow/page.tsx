@@ -204,7 +204,7 @@ const result = await agent.run({
     fallbackStrategy: 'skip' // or 'retry', 'fail'
   },
   onError: (error, toolName, attempt) => {
-    logger.logger.error(\`Tool \${toolName} failed (attempt \${attempt}):\`, error)
+    logger.error(\`Tool \${toolName} failed (attempt \${attempt}):\`, error)
   }
 })`}</code>
         </pre>

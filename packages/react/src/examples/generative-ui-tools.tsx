@@ -12,7 +12,7 @@ import * as React from 'react'
 import {
   useClarityChat,
   convertCoreMessagesToMessages,
-} from '../hooks/chat/use-clarity-chat'
+} from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat/chat-window'
 import {
   ClarityToolResult,

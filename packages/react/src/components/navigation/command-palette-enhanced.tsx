@@ -23,8 +23,9 @@ import {
   useFocusTrap,
   useFocusRestoration,
 } from '../../accessibility/focus-management'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
+import { EASING_FRAMER } from '../../animations/constants'
 
 // ============================================================================
 // Types
@@ -622,7 +623,7 @@ export function CommandPaletteEnhanced({
               }}
               transition={{
                 duration: prefersReducedMotion ? 0 : 0.2,
-                ease: [0.25, 0.1, 0.25, 1],
+                ease: EASING_FRAMER.sharp,
               }}
               role="dialog"
               aria-modal="true"

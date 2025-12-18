@@ -2,6 +2,8 @@
 
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
+import { Skeleton as BaseSkeleton } from './skeleton'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /**
  * Hook to announce loading state changes to screen readers.
@@ -239,8 +241,8 @@ export interface DashboardSkeletonProps {
 }
 
 /**
- * Base skeleton element with pulse animation.
- * Respects user's prefers-reduced-motion setting.
+ * Internal skeleton wrapper that uses the main Skeleton component.
+ * Provides a simpler interface for dashboard skeletons.
  */
 function Skeleton({
   className,
@@ -248,13 +250,9 @@ function Skeleton({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { animate?: boolean }) {
   return (
-    <div
-      className={cn(
-        'rounded-md bg-muted/60',
-        animate && 'animate-pulse motion-reduce:animate-none',
-        className
-      )}
-      aria-hidden="true"
+    <BaseSkeleton
+      variant={animate ? 'pulse' : 'none'}
+      className={className}
       {...props}
     />
   )

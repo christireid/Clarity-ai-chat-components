@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * Clarity Chat License Key Generator CLI
@@ -22,7 +23,7 @@ import type { LicensePlan, LicenseScope } from '../src/types'
 const args = process.argv.slice(2)
 
 function printUsage() {
-  console.log(`
+  logger.debug(`
 Clarity Chat License Key Generator
 
 USAGE:
@@ -93,7 +94,7 @@ async function main() {
   if (command === 'generate') {
     const secret = process.env.CLARITY_LICENSE_SECRET
     if (!secret) {
-      console.error(
+      logger.error(
         'Error: CLARITY_LICENSE_SECRET environment variable is required'
       )
       process.exit(1)
@@ -102,7 +103,7 @@ async function main() {
     const options = parseArgs(args.slice(1))
 
     if (!options.licensee || !options.email || !options.plan) {
-      console.error('Error: --licensee, --email, and --plan are required')
+      logger.error('Error: --licensee, --email, and --plan are required')
       printUsage()
       process.exit(1)
     }
@@ -111,7 +112,7 @@ async function main() {
     const validScopes: LicenseScope[] = ['individual', 'team', 'organization']
 
     if (!validPlans.includes(options.plan as LicensePlan)) {
-      console.error(
+      logger.error(
         `Error: Invalid plan. Must be one of: ${validPlans.join(', ')}`
       )
       process.exit(1)
@@ -119,7 +120,7 @@ async function main() {
 
     const scope = (options.scope as LicenseScope) || 'individual'
     if (!validScopes.includes(scope)) {
-      console.error(
+      logger.error(
         `Error: Invalid scope. Must be one of: ${validScopes.join(', ')}`
       )
       process.exit(1)
@@ -140,74 +141,74 @@ async function main() {
         secret
       )
 
-      console.log('\n✅ License key generated successfully!\n')
-      console.log('License Key:')
-      console.log('─'.repeat(60))
-      console.log(key)
-      console.log('─'.repeat(60))
-      console.log('\nDetails:')
-      console.log(`  Licensee: ${options.licensee}`)
-      console.log(`  Email: ${options.email}`)
-      console.log(`  Plan: ${options.plan}`)
-      console.log(`  Scope: ${scope}`)
-      console.log(`  Duration: ${options.days || 365} days`)
-      if (options.devs) console.log(`  Max Developers: ${options.devs}`)
-      if (options.domains) console.log(`  Domains: ${options.domains}`)
-      console.log()
+      logger.debug('\n✅ License key generated successfully!\n')
+      logger.debug('License Key:')
+      logger.debug('─'.repeat(60))
+      logger.debug(key)
+      logger.debug('─'.repeat(60))
+      logger.debug('\nDetails:')
+      logger.debug(`  Licensee: ${options.licensee}`)
+      logger.debug(`  Email: ${options.email}`)
+      logger.debug(`  Plan: ${options.plan}`)
+      logger.debug(`  Scope: ${scope}`)
+      logger.debug(`  Duration: ${options.days || 365} days`)
+      if (options.devs) logger.debug(`  Max Developers: ${options.devs}`)
+      if (options.domains) logger.debug(`  Domains: ${options.domains}`)
+      logger.debug()
     } catch (error) {
-      console.error('Error generating license:', error)
+      logger.error('Error generating license:', error)
       process.exit(1)
     }
   } else if (command === 'verify') {
     const key = args[1]
     if (!key) {
-      console.error('Error: License key is required')
+      logger.error('Error: License key is required')
       process.exit(1)
     }
 
     const result = verifyLicense(key)
-    console.log('\nLicense Verification Result:')
-    console.log('─'.repeat(40))
-    console.log(`  Status: ${result.status}`)
-    if (result.reason) console.log(`  Reason: ${result.reason}`)
+    logger.debug('\nLicense Verification Result:')
+    logger.debug('─'.repeat(40))
+    logger.debug(`  Status: ${result.status}`)
+    if (result.reason) logger.debug(`  Reason: ${result.reason}`)
     if (result.payload) {
-      console.log(`  Licensee: ${result.payload.licensee}`)
-      console.log(`  Plan: ${result.payload.plan}`)
-      console.log(`  Scope: ${result.payload.scope}`)
+      logger.debug(`  Licensee: ${result.payload.licensee}`)
+      logger.debug(`  Plan: ${result.payload.plan}`)
+      logger.debug(`  Scope: ${result.payload.scope}`)
     }
-    console.log()
+    logger.debug()
 
     // Also check checksum if secret is available
     const secret = process.env.CLARITY_LICENSE_SECRET
     if (secret) {
       const checksumValid = verifyLicenseChecksum(key, secret)
-      console.log(`  Checksum Valid: ${checksumValid ? '✅ Yes' : '❌ No'}`)
+      logger.debug(`  Checksum Valid: ${checksumValid ? '✅ Yes' : '❌ No'}`)
     }
   } else if (command === 'decode') {
     const key = args[1]
     if (!key) {
-      console.error('Error: License key is required')
+      logger.error('Error: License key is required')
       process.exit(1)
     }
 
     const parsed = parseLicenseKey(key)
     if (!parsed) {
-      console.error('Error: Invalid license key format')
+      logger.error('Error: Invalid license key format')
       process.exit(1)
     }
 
     try {
       const payload = JSON.parse(base64Decode(parsed.encodedPayload))
-      console.log('\nDecoded License:')
-      console.log('─'.repeat(40))
-      console.log(JSON.stringify(payload, null, 2))
-      console.log()
+      logger.debug('\nDecoded License:')
+      logger.debug('─'.repeat(40))
+      logger.debug(JSON.stringify(payload, null, 2))
+      logger.debug()
     } catch (error) {
-      console.error('Error decoding license payload:', error)
+      logger.error('Error decoding license payload:', error)
       process.exit(1)
     }
   } else {
-    console.error(`Unknown command: ${command}`)
+    logger.error(`Unknown command: ${command}`)
     printUsage()
     process.exit(1)
   }

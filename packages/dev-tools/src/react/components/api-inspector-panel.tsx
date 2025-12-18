@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * API Inspector Panel Component
  * Premium API call monitoring with filtering, search, and export
@@ -132,7 +133,7 @@ export function APIInspectorPanel({
       setCopiedId(log.id)
       setTimeout(() => setCopiedId(null), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      logger.error('Failed to copy:', err)
     }
   }, [])
 

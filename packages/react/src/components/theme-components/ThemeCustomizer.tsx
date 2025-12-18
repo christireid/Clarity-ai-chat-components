@@ -29,7 +29,7 @@ import {
   generateHarmoniousPalette,
   type ColorHarmony,
 } from '../../theme/color-advanced'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import { useLocalStorage } from '../../hooks/storage/use-local-storage'
 
 // ============================================================================

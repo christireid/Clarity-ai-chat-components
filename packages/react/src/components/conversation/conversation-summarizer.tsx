@@ -1,7 +1,5 @@
 'use client'
 
-import { logger } from '@clarity-chat/utils/logger'
-
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -16,6 +14,7 @@ import {
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /**
  * Summary detail level
@@ -144,7 +143,7 @@ const defaultConfig: SummarizationConfig = {
  *     includeKeyTopics: true,
  *   }}
  *   onSummaryGenerated={(summary) => {
- *     logger.debug('Summary:', summary.content)
+ *     console.log('Summary:', summary.content)
  *   }}
  * />
  * ```
@@ -336,9 +335,7 @@ export function ConversationSummarizer({
         onSummaryGenerated?.(summary)
       } catch (err) {
         logger.error('Failed to generate summary:', err)
-        setError(
-          err instanceof Error ? err.message : 'Failed to generate summary'
-        )
+        setError(err instanceof Error ? err.message : 'Failed to generate summary')
       } finally {
         setIsGenerating(false)
       }

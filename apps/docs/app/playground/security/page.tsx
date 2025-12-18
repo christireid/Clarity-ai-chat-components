@@ -151,7 +151,7 @@ export default function SecurityPlayground() {
       const newMetrics = security.getMetrics()
       setMetrics(newMetrics)
     } catch (error) {
-      logger.logger.error('Validation error:', error)
+      logger.error('Validation error:', error)
     } finally {
       setIsValidating(false)
     }

@@ -1,6 +1,4 @@
-'use client'
-
-import { logger } from '@clarity-chat/utils/logger'
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * ClarityChat - Top-Level Drop-in Component
  *
@@ -33,6 +31,8 @@ import { logger } from '@clarity-chat/utils/logger'
  * ```
  */
 
+'use client'
+
 import * as React from 'react'
 import {
   useClarityChat,
@@ -40,7 +40,7 @@ import {
 } from '../../hooks/chat/use-clarity-chat'
 import { ChatWindow } from './chat-window'
 import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import { useToast } from '../ui/toast'
 
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
@@ -373,9 +373,7 @@ export function ClarityChat({
 
         if (userMessageIndex === -1) {
           logger.warn('Cannot regenerate: no preceding user message found')
-          toast?.logger.error(
-            'Cannot regenerate: no previous message to resend'
-          )
+          toast?.logger.error('Cannot regenerate: no previous message to resend')
           return
         }
 
@@ -406,9 +404,7 @@ export function ClarityChat({
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
           logger.error('Failed to regenerate message:', error)
-          toast?.logger.error(
-            'Failed to regenerate response. Please try again.'
-          )
+          toast?.logger.error('Failed to regenerate response. Please try again.')
         }
       }
     },

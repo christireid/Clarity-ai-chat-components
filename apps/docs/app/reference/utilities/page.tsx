@@ -291,7 +291,7 @@ try {
     requireContent: true
   })
 } catch (error) {
-  logger.logger.error('Invalid message:', error.message)
+  logger.error('Invalid message:', error.message)
 }`}</code></pre>
 
         <h3>sanitizeInput</h3>
@@ -347,7 +347,7 @@ try {
   )
 } catch (error) {
   if (error.name === 'TimeoutError') {
-    logger.logger.error('Request timed out')
+    logger.error('Request timed out')
   }
 }`}</code></pre>
 

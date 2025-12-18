@@ -9,8 +9,8 @@ import * as React from 'react'
 import {
   useClarityChat,
   convertCoreMessagesToMessages,
-} from '../hooks/chat/use-clarity-chat'
-import { useAssistant, type ToolInvocation } from '../hooks/chat/use-assistant'
+} from '../hooks/use-clarity-chat'
+import { useAssistant, type ToolInvocation } from '../hooks/use-assistant'
 import { ChatWindow } from '../components/chat/chat-window'
 import {
   ClarityToolResult,

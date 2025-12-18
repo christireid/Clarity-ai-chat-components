@@ -1,15 +1,13 @@
 'use client'
 
-import { logger } from '@clarity-chat/utils/logger'
-
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import { useVoiceInput } from '../../hooks/input/use-voice-input'
 import {
-  useQuantumVoice,
-  type QuantumVoiceState,
-} from '../../hooks/use-quantum-voice'
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 import type { ReactNode } from 'react'
 
 /**
@@ -60,22 +58,6 @@ export interface VoiceInputProps {
 
   /** Callback on error */
   onError?: (error: string) => void
-
-  /** Quantum voice enhancement state */
-  quantumVoice?: QuantumVoiceState
-
-  /** Enable quantum voice features */
-  enableQuantumVoice?: boolean
-
-  /** Quantum voice features configuration */
-  quantumFeatures?: Partial<{
-    realTimeProcessing: boolean
-    adaptiveRecognition: boolean
-    noiseCancellation: boolean
-    emotionDetection: boolean
-    accentAdaptation: boolean
-    quantumEnhancements: boolean
-  }>
 }
 
 /**
@@ -110,7 +92,7 @@ const variantMap = {
  * // Basic usage
  * <VoiceInput
  *   onTranscript={(text) => {
- *     logger.debug('Voice input:', text)
+ *     console.log('Voice input:', text)
  *     sendMessage(text)
  *   }}
  * />
@@ -156,30 +138,9 @@ export function VoiceInput({
   onStart,
   onStop,
   onError,
-  quantumVoice,
-  enableQuantumVoice = false,
-  quantumFeatures,
 }: VoiceInputProps) {
   const [showTranscript, setShowTranscript] = React.useState(false)
   const lastFinalTranscriptRef = React.useRef('')
-
-  // Initialize quantum voice if enabled
-  const quantumVoiceState = useQuantumVoice({
-    enabled: enableQuantumVoice,
-    features: quantumFeatures,
-    onProcessingStart: () => {
-      console.log('Quantum voice processing started')
-    },
-    onProcessingEnd: () => {
-      console.log('Quantum voice processing completed')
-    },
-    onEmotionChange: (emotion) => {
-      console.log('Emotion detected:', emotion)
-      // Could adjust UI based on emotion
-    },
-  })
-
-  const voiceQuantum = quantumVoice || quantumVoiceState
 
   // React 19: Config object with callbacks - compiler intelligently handles
   // Note: In production, consider keeping useMemo if this causes re-initialization issues
@@ -305,7 +266,7 @@ export function VoiceInput({
                 transition={{
                   duration: durations.slower,
                   repeat: Infinity,
-                  ease: [0.25, 0.1, 0.25, 1],
+                  ease: EASING_FRAMER.sharp,
                 }}
               />
               <motion.div
@@ -315,7 +276,7 @@ export function VoiceInput({
                 transition={{
                   duration: durations.slower,
                   repeat: Infinity,
-                  ease: [0.25, 0.1, 0.25, 1],
+                  ease: EASING_FRAMER.sharp,
                   delay: 0.5,
                 }}
               />
@@ -384,11 +345,6 @@ export function VoiceInput({
                     Voice Input
                   </span>
                 )}
-                {quantumVoiceState.isEnhanced && (
-                  <Badge variant="outline" className="text-xs">
-                    Quantum
-                  </Badge>
-                )}
               </div>
 
               <Button
@@ -420,32 +376,15 @@ export function VoiceInput({
                 {[...Array(5)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className={cn(
-                      'w-1 rounded-full',
-                      quantumVoiceState.isEnhanced
-                        ? 'bg-quantum-primary'
-                        : 'bg-destructive'
-                    )}
+                    className="w-1 bg-destructive rounded-full"
                     animate={{
-                      height: voiceQuantum.features.quantumEnhancements
-                        ? [
-                            `${12 + Math.random() * 8}px`,
-                            `${32 + Math.random() * 16}px`,
-                            `${12 + Math.random() * 8}px`,
-                          ]
-                        : ['12px', '32px', '12px'],
+                      height: ['12px', '32px', '12px'],
                     }}
                     transition={{
-                      duration: quantumVoiceState.features.realTimeProcessing
-                        ? 0.4
-                        : 0.8,
+                      duration: durations.slower,
                       repeat: Infinity,
-                      ease: quantumVoiceState.features.quantumEnhancements
-                        ? [0.16, 1, 0.3, 1]
-                        : [0.25, 0.1, 0.25, 1],
-                      delay: quantumVoiceState.features.quantumEnhancements
-                        ? i * 0.05
-                        : i * 0.1,
+                      ease: EASING_FRAMER.sharp,
+                      delay: i * 0.1,
                     }}
                   />
                 ))}
@@ -543,26 +482,6 @@ export function VoiceInput({
                     }}
                   />
                 </div>
-                {quantumVoiceState.isEnhanced && (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Processing
-                      </span>
-                      <Badge variant="outline" className="text-xs">
-                        {Math.round(quantumVoiceState.processingSpeed)}ms
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Emotion
-                      </span>
-                      <Badge variant="outline" className="text-xs capitalize">
-                        {quantumVoiceState.emotion}
-                      </Badge>
-                    </div>
-                  </>
-                )}
               </div>
             )}
           </motion.div>

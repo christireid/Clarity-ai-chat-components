@@ -26,6 +26,7 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   INTERACTION_VARIANTS,
+  DURATION_SECONDS as durations,
 } from '../../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'

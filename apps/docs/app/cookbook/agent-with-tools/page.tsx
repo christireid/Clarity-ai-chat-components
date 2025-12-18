@@ -235,7 +235,7 @@ export default function AgentChatPage() {
       })))
 
     } catch (error) {
-      logger.logger.error('Agent error:', error)
+      logger.error('Agent error:', error)
     } finally {
       setIsLoading(false)
     }

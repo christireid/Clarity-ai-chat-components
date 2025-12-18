@@ -164,7 +164,7 @@ function OAuthConfiguration({ tenantId }: { tenantId: string }) {
   if (response.ok) {
     logger.debug('SSO test successful')
   } else {
-    logger.logger.error('SSO test failed:', await response.text())
+    logger.error('SSO test failed:', await response.text())
   }
 }
 

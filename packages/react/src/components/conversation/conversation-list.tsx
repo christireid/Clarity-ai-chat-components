@@ -2,6 +2,11 @@
 
 import { useState, useMemo, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { formatRelativeTime } from '@clarity-chat/primitives'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 /**
  * Folder for organizing conversations
@@ -118,19 +123,7 @@ export interface ConversationListProps {
   className?: string
 }
 
-/**
- * Format timestamp to relative time
- */
-function formatRelativeTime(timestamp: number): string {
-  const now = Date.now()
-  const diff = now - timestamp
-
-  if (diff < 60000) return 'Just now'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`
-  if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`
-  return new Date(timestamp).toLocaleDateString()
-}
+// formatRelativeTime imported from @clarity-chat/primitives
 
 /**
  * Production-ready Conversation List component.
@@ -721,7 +714,7 @@ export function ConversationList({
                     transition={{
                       duration: durations.normal,
                       delay: index * 0.05, // Stagger: 50ms between items
-                      ease: [0.4, 0, 0.2, 1],
+                      ease: EASING_FRAMER.default,
                     }}
                     whileHover={{
                       y: -2,

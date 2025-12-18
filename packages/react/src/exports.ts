@@ -14,32 +14,32 @@
 // ============================================================================
 
 // Top-Level: Drop-in ready components
-export { ClarityChat } from './components/clarity-chat'
-export { ClarityChatPresets } from './components/clarity-chat-presets'
+export { ClarityChat } from './components/chat/clarity-chat'
+export { ClarityChatPresets } from './components/chat/clarity-chat-presets'
 
 // Mid-Level: Composable components
-export { ChatWindow } from './components/chat-window'
-export { ChatInput } from './components/chat-input'
-export { AdvancedChatInput } from './components/advanced-chat-input'
-export { VirtualizedMessageList as MessageList } from './components/virtualized-message-list'
-export { StreamingMessage } from './components/streaming-message'
-export { ThinkingIndicator } from './components/thinking-indicator'
+export { ChatWindow } from './components/chat/chat-window'
+export { ChatInput } from './components/chat/chat-input'
+export { AdvancedChatInput } from './components/input/advanced-chat-input'
+export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
+export { StreamingMessage } from './components/message/streaming-message'
+export { ThinkingIndicator } from './components/message/thinking-indicator'
 
 // Low-Level: Primitives
-export { Message } from './components/message'
-export { MessageMetadata } from './components/message-metadata'
+export { Message } from './components/message/message'
+export { MessageMetadata } from './components/message/message-metadata'
 export {
   MessageMarkdownRenderer,
   useMarkdownComponents,
   useMarkdownPlugins,
   type MessageMarkdownRendererProps,
 } from './components/message/index'
-export { StreamBlock } from './components/stream-block'
-export { ToolInvocationCard } from './components/tool-invocation-card'
-export { ClarityToolResult } from './components/clarity-tool-result'
-export { CitationCard } from './components/citation-card'
-export { CopyButton } from './components/copy-button'
-export { FileUpload } from './components/file-upload'
+export { StreamBlock } from './components/message/stream-block'
+export { ToolInvocationCard } from './components/message/tool-invocation-card'
+export { ClarityToolResult } from './components/message/clarity-tool-result'
+export { CitationCard } from './components/message/citation-card'
+export { CopyButton } from './components/message/copy-button'
+export { FileUpload } from './components/input/file-upload'
 
 // ============================================================================
 // DOMAIN 2: CHAT STATE
@@ -56,7 +56,7 @@ export {
   type ClarityChatErrorInfo,
   type ClarityPromptOptimizationOptions,
   type ClarityChatTokenStats,
-} from './hooks/chat/use-clarity-chat'
+} from './hooks/use-clarity-chat'
 
 // Mid-Level: Composable hooks
 export {
@@ -64,25 +64,25 @@ export {
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
-} from './hooks/chat/use-chat-enhanced'
+} from './hooks/use-chat-enhanced'
 export {
   useChatHandlers,
   type UseChatHandlersOptions,
   type ChatHandlers,
-} from './hooks/chat/use-chat-handlers'
+} from './hooks/use-chat-handlers'
 export {
   useClarityChatWithTools,
   type UseClarityChatWithToolsOptions,
   type UseClarityChatWithToolsReturn,
   type ExtractedToolResult,
-} from './hooks/chat/use-clarity-chat-with-tools'
+} from './hooks/use-clarity-chat-with-tools'
 
 // Low-Level: Primitives
 export {
   useChat,
   type UseChatOptions as UseChatOptionsLegacy,
   type UseChatReturn as UseChatReturnLegacy,
-} from './hooks/chat/use-chat'
+} from './hooks/use-chat'
 export {
   convertCoreMessageToMessage,
   convertMessageToCoreMessage,
@@ -131,10 +131,10 @@ export * from './embeddings'
 // Top-Level: Abstracted via useClarityChat (transport option)
 
 // Mid-Level: Transport hooks
-export * from './hooks/streaming/use-streaming-sse'
-export * from './hooks/streaming/use-streaming-websocket'
-export * from './hooks/streaming/use-streaming'
-export * from './hooks/streaming/use-streamable-ui'
+export * from './hooks/use-streaming-sse'
+export * from './hooks/use-streaming-websocket'
+export * from './hooks/use-streaming'
+export * from './hooks/use-streamable-ui'
 
 // Low-Level: Primitives
 export type { StreamChunk } from './adapters/types'
@@ -150,14 +150,14 @@ export {
   useClarityObject,
   type UseClarityObjectOptions,
   type UseClarityObjectReturn,
-} from './hooks/chat/use-clarity-object'
+} from './hooks/use-clarity-object'
 
 // Top-Level: Drop-in ready agent hook
 export {
   useAgent,
   type UseAgentOptions,
   type UseAgentReturn,
-} from './hooks/chat/use-agent'
+} from './hooks/use-agent'
 
 // Mid-Level: Tool integration
 export * from './agents/tool-ui-registry'
@@ -273,13 +273,13 @@ export * from './animations'
 export * from './accessibility'
 
 // Additional Components (organized by feature)
-export { ModelSelector } from './components/model-selector'
-export { ContextCard } from './components/context-card'
-export { ContextManager } from './components/context-manager'
-export { ProjectSidebar } from './components/project-sidebar'
-export { PromptLibrary } from './components/prompt-library'
-export { SettingsPanel } from './components/settings-panel'
-export { UsageDashboard } from './components/usage-dashboard'
+export { ModelSelector } from './components/ai/model-selector'
+export { ContextCard } from './components/context/context-card'
+export { ContextManager } from './components/context/context-manager'
+export { ProjectSidebar } from './components/context/project-sidebar'
+export { PromptLibrary } from './components/prompt/prompt-library'
+export { SettingsPanel } from './components/context/settings-panel'
+export { UsageDashboard } from './components/dashboards/usage-dashboard'
 export {
   // Components
   LinkPreview,
@@ -310,72 +310,72 @@ export {
   type UseLinkPreviewReturn,
   type MetadataFetcherConfig,
   type EmbedType,
-} from './components/link-preview'
-export { KnowledgeBaseViewer } from './components/knowledge-base-viewer'
-export { ExportDialog } from './components/export-dialog'
-export { BatchExportDialog } from './components/batch-export-dialog'
-export { StreamCancellation } from './components/stream-cancellation'
+} from './components/ui/link-preview'
+export { KnowledgeBaseViewer } from './components/ai/knowledge-base-viewer'
+export { ExportDialog } from './components/media/export-dialog'
+export { BatchExportDialog } from './components/media/batch-export-dialog'
+export { StreamCancellation } from './components/message/stream-cancellation'
 export {
   MessageSearch,
   MessageSearchWithSuspense,
   highlightSearchMatch,
-} from './components/message-search'
+} from './components/search/message-search'
 export {
   AdvancedMessageSearch,
   type SearchFilters,
   type SavedSearch,
   type SortOption,
   type FilterPreset,
-} from './components/advanced-message-search'
+} from './components/search/advanced-message-search'
 export {
   SemanticMessageSearch,
   type SemanticSearchConfig,
   type SemanticSearchResult,
   type EmbeddingProvider,
-} from './components/advanced-message-search-semantic'
-export { FollowUpSuggestions } from './components/follow-up-suggestions'
-export { PromptSuggestions } from './components/prompt-suggestions'
-export { EnhancedMarkdownRenderer } from './components/enhanced-markdown-renderer'
-export { EnhancedCodeBlock } from './components/enhanced-code-block'
-export { StreamingTextRenderer } from './components/streaming-text-renderer'
-export { PersonaPanel } from './components/persona-panel'
-export { ConversationTimeline } from './components/conversation-timeline'
-export { MemoryInspector } from './components/memory-inspector'
-export { SafetyStatusCard } from './components/safety-status-card'
-export { AuditLogViewer } from './components/audit-log-viewer'
-export { DocumentViewer } from './components/document-viewer'
-export { ResponseQualityMeter } from './components/response-quality-meter'
-export { MultiModalPreview } from './components/multi-modal-preview'
-export { AgentRunFeed } from './components/agent-run-feed'
-export { SessionSummaryCard } from './components/session-summary-card'
-export { WorkflowSuggestionList } from './components/workflow-suggestion-list'
+} from './components/search/advanced-message-search-semantic'
+export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
+export { PromptSuggestions } from './components/prompt/prompt-suggestions'
+export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
+export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
+export { StreamingTextRenderer } from './components/message/streaming-text-renderer'
+export { PersonaPanel } from './components/ai/persona-panel'
+export { ConversationTimeline } from './components/conversation/conversation-timeline'
+export { MemoryInspector } from './components/context/memory-inspector'
+export { SafetyStatusCard } from './components/ai/safety-status-card'
+export { AuditLogViewer } from './components/ai/audit-log-viewer'
+export { DocumentViewer } from './components/media/document-viewer'
+export { ResponseQualityMeter } from './components/dashboards/response-quality-meter'
+export { MultiModalPreview } from './components/media/multi-modal-preview'
+export { AgentRunFeed } from './components/ai/agent-run-feed'
+export { SessionSummaryCard } from './components/ai/session-summary-card'
+export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
 // AI-Ops components (exported from directory)
 export * from './components/ai-ops'
 // Enterprise components (exported from directory)
 export * from './components/enterprise'
-export { AnalyticsDashboard } from './components/analytics-dashboard'
+export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
 
 // Error Handling Components
-export { ErrorBoundary } from './components/error-boundary'
-export { RetryButton } from './components/retry-button'
-export { NetworkStatus } from './components/network-status'
+export { ErrorBoundary } from './components/feedback/error-boundary'
+export { RetryButton } from './components/feedback/retry-button'
+export { NetworkStatus } from './components/feedback/network-status'
 
 // Token Management Components
-export { TokenCounter } from './components/token-counter'
-export { TokenOptimizationPanel } from './components/token-optimization-panel'
-export { TokenOptimizationBadge } from './components/token-optimization-badge'
+export { TokenCounter } from './components/token/token-counter'
+export { TokenOptimizationPanel } from './components/token/token-optimization-panel'
+export { TokenOptimizationBadge } from './components/token/token-optimization-badge'
 export {
   TokenBudgetBar,
   TokenBudgetIndicator,
-} from './components/token-budget-bar'
+} from './components/token/token-budget-bar'
 
 // Context & Conversation Management
-export { ContextVisualizer } from './components/context-visualizer'
-export { ConversationList } from './components/conversation-list'
-export { ConversationBranchVisualizer } from './components/conversation-branch-visualizer'
+export { ContextVisualizer } from './components/context/context-visualizer'
+export { ConversationList } from './components/conversation/conversation-list'
+export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
 
 // Markdown & Rendering
-export { MarkdownRendererEnhanced } from './components/markdown-renderer-enhanced'
+export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
 
 // Chat History with Undo/Redo
 export {
@@ -383,7 +383,7 @@ export {
   type ChatMessage as ChatHistoryMessage,
   type ChatHistoryOptions,
   type UseChatHistoryReturn,
-} from './hooks/chat/use-chat-history'
+} from './hooks/use-chat-history'
 
 // Integrations (Sentry, Analytics) - explicitly named to avoid conflicts
 export {
@@ -411,47 +411,47 @@ export {
 } from './integrations/analytics'
 
 // Additional Hooks
-export * from './hooks/chat/use-completion'
-export * from './hooks/chat/use-assistant'
-export * from './hooks/ui/use-auto-scroll'
-export * from './hooks/ui/use-clipboard'
-export * from './hooks/ui/use-debounce'
-export * from './hooks/ui/use-throttle'
-export * from './hooks/ui/use-event-listener'
-export * from './hooks/ui/use-intersection-observer'
-export * from './hooks/storage/use-local-storage'
-export * from './hooks/storage/use-indexed-db'
-export * from './hooks/ui/use-media-query'
-export * from './hooks/ui/use-mounted'
-export * from './hooks/ui/use-previous'
-export * from './hooks/ui/use-toggle'
-export * from './hooks/ui/use-window-size'
-export * from './hooks/resilience/use-error-recovery'
-export * from './hooks/token/use-token-tracker'
-export * from './hooks/token/use-token-optimization'
-export * from './hooks/message/use-message-operations'
-export * from './hooks/message/use-message-history'
-export * from './hooks/input/use-realistic-typing'
-export * from './hooks/keyboard/use-command-palette-commands'
-export * from './hooks/message/use-optimistic-message'
-export * from './hooks/performance/use-performance'
-export * from './hooks/performance/use-deferred-search'
-export * from './hooks/input/use-voice-input'
-export * from './hooks/model/use-model-router'
-export * from './hooks/performance/use-smart-throttle'
-export * from './hooks/performance/use-smart-cache'
-export * from './hooks/input/use-character-counter'
-export * from './hooks/input/use-submit-button-state'
-export * from './hooks/input/use-mobile-keyboard'
-export { useDesignTokens } from './hooks/theme/use-design-tokens'
-export * from './hooks/theme/use-theme-analytics'
+export * from './hooks/use-completion'
+export * from './hooks/use-assistant'
+export * from './hooks/use-auto-scroll'
+export * from './hooks/use-clipboard'
+export * from './hooks/use-debounce'
+export * from './hooks/use-throttle'
+export * from './hooks/use-event-listener'
+export * from './hooks/use-intersection-observer'
+export * from './hooks/use-local-storage'
+export * from './hooks/use-indexed-db'
+export * from './hooks/use-media-query'
+export * from './hooks/use-mounted'
+export * from './hooks/use-previous'
+export * from './hooks/use-toggle'
+export * from './hooks/use-window-size'
+export * from './hooks/use-error-recovery'
+export * from './hooks/use-token-tracker'
+export * from './hooks/use-token-optimization'
+export * from './hooks/use-message-operations'
+export * from './hooks/use-message-history'
+export * from './hooks/use-realistic-typing'
+export * from './hooks/use-command-palette-commands'
+export * from './hooks/use-optimistic-message'
+export * from './hooks/use-performance'
+export * from './hooks/use-deferred-search'
+export * from './hooks/use-voice-input'
+export * from './hooks/use-model-router'
+export * from './hooks/use-smart-throttle'
+export * from './hooks/use-smart-cache'
+export * from './hooks/use-character-counter'
+export * from './hooks/use-submit-button-state'
+export * from './hooks/use-mobile-keyboard'
+export { useDesignTokens } from './hooks/use-design-tokens'
+export * from './hooks/use-theme-analytics'
 export {
   useBatteryAware,
   withBatteryOptimizations,
   type BatteryStatus,
   type BatteryAwareConfig,
   type OptimizationRecommendations,
-} from './hooks/performance/use-battery-aware'
+} from './hooks/use-battery-aware'
 
 // Additional Utilities
 // Note: Specific utils are exported above. Commenting out barrel export to avoid duplicates.
@@ -484,7 +484,7 @@ export {
   useClarityChatWithPersistence,
   useClarityChatWithDebounce,
   useClarityChatWithAutoSave,
-} from './hooks/chat/use-clarity-chat-helpers'
+} from './hooks/use-clarity-chat-helpers'
 
 // Testing utilities (for test files only)
 export {
@@ -501,21 +501,10 @@ export {
 } from './test-utils/use-clarity-chat-test-utils'
 
 // UI Primitives
-export * from './components/skeleton'
-export * from './components/animated-list'
-export * from './components/toast'
-export * from './components/progress'
-export {
-  FeedbackAnimation as FeedbackAnimationOverlay,
-  type FeedbackAnimationProps,
-  type FeedbackType,
-  SuccessCheckmark,
-  ErrorShake,
-  PulseAttention,
-  RippleEffect,
-  ConfettiEffect,
-  GlowEffect,
-  BounceIn,
-  SlideNotification,
-} from './components/feedback-animation'
-export * from './components/interactive-card'
+export * from './components/ui/skeleton'
+export * from './components/ui/animated-dots'
+export * from './components/ui/animated-list'
+export * from './components/ui/toast'
+export * from './components/ui/progress'
+export * from './components/ui/feedback-animation'
+export * from './components/ui/interactive-card'

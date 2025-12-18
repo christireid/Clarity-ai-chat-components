@@ -4,6 +4,10 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn, formatFileSize } from '@clarity-chat/primitives'
 import type { MessageAttachment } from '@clarity-chat/types'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 export interface FileUploadProps {
   onUpload: (files: File[]) => Promise<MessageAttachment[]>
@@ -255,7 +259,7 @@ export function FileUpload({
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{
               duration: durations.normal,
-              ease: [0.25, 0.1, 0.25, 1],
+              ease: EASING_FRAMER.sharp,
             }}
             className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm"
           >
@@ -310,7 +314,7 @@ export function FileUpload({
                   transition={{
                     delay: index * 0.05,
                     duration: durations.normal,
-                    ease: [0.25, 0.1, 0.25, 1],
+                    ease: EASING_FRAMER.sharp,
                   }}
                   className="flex items-center gap-3 p-3 bg-card border border-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 ease-out"
                 >

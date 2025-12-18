@@ -26,7 +26,7 @@ export default async function WebhooksGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read webhooks guide', error)
+    logger.error('Failed to read webhooks guide', error)
     content = '# Webhooks\n\nContent not available.'
   }
 

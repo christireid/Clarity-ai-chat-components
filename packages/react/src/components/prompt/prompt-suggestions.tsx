@@ -4,6 +4,11 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Card, CardContent, Badge, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
+import { Skeleton } from '../ui/skeleton'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 /**
  * Types of prompt suggestions based on context
@@ -141,10 +146,7 @@ export function PromptSuggestions({
     return (
       <div className={cn('flex flex-wrap gap-2.5', className)}>
         {Array.from({ length: maxSuggestions }).map((_, i) => (
-          <div
-            key={i}
-            className="h-9 w-28 animate-pulse rounded-full bg-muted/60"
-          />
+          <Skeleton key={i} width={112} height={36} rounded="full" />
         ))}
       </div>
     )
@@ -342,7 +344,7 @@ export function PromptSuggestions({
             transition={{
               duration: durations.normal,
               delay: index * 0.03,
-              ease: [0.25, 0.1, 0.25, 1],
+              ease: EASING_FRAMER.sharp,
             }}
           >
             <Button

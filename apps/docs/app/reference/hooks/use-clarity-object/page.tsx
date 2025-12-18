@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { ToastProvider, useClarityObject } from '@clarity-chat/react'
@@ -415,7 +414,7 @@ function UserGenerator() {
           code={`const { object, run, isLoading, error, reset } = useClarityObject<Product[]>({
   api: '/api/generate-products',
   onError: (error) => {
-    logger.logger.error('Generation error:', error)
+    logger.error('Generation error:', error)
     // Send to error tracking service
     if (typeof errorTrackingService !== 'undefined') {
       errorTrackingService.captureException(error)
@@ -486,7 +485,7 @@ function BlogPostGenerator() {
       // Save to database, etc.
     },
     onError: (error) => {
-      logger.logger.error('Error:', error)
+      logger.error('Error:', error)
     },
   })
 
@@ -599,7 +598,7 @@ export async function POST(req: Request) {
     // Return the products array
     return NextResponse.json(content.products || [])
   } catch (error) {
-    logger.logger.error('Product generation error:', error)
+    logger.error('Product generation error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

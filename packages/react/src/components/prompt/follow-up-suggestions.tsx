@@ -13,6 +13,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { Skeleton, SkeletonText } from '../ui/skeleton'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface FollowUpSuggestion {
   id: string

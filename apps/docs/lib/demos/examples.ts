@@ -19,7 +19,7 @@ export default function App() {
       showTimestamps
       enableMarkdown
       onMessageSent={(msg) => logger.debug('Sent:', msg)}
-      onError={(error) => logger.logger.error('Chat error:', error)}
+      onError={(error) => logger.error('Chat error:', error)}
     />
   )
 }
@@ -469,7 +469,7 @@ export default function EnterpriseChat({ tenantId, userId }) {
 
         // Error handling
         onError={(error) => {
-          logger.logger.error('Chat error:', error)
+          logger.error('Chat error:', error)
           // Send to error tracking service
         }}
 

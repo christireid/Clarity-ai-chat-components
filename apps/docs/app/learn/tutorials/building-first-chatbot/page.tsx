@@ -158,7 +158,7 @@ export default function Home() {
       }
       setMessages(prev => [...prev, aiMessage])
     } catch (error) {
-      logger.logger.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setIsLoading(false)
     }

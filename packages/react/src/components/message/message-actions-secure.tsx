@@ -44,6 +44,7 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   INTERACTION_VARIANTS,
+  DURATION_SECONDS as durations,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
 import { useToast } from '../ui/toast'

@@ -126,7 +126,7 @@ NEXT_PUBLIC_ANALYTICS_ID=...`}
 
   // Callbacks
   onMessage={(msg) => logger.debug('New message:', msg)}
-  onError={(err) => logger.logger.error('Error:', err)}
+  onError={(err) => logger.error('Error:', err)}
   onStreamStart={() => logger.debug('Stream started')}
   onStreamEnd={() => logger.debug('Stream ended')}
 />`}

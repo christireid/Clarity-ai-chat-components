@@ -7,6 +7,10 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../animations/constants'
 
 // SSR-safe platform detection
 function detectIsMac(): boolean {
@@ -306,7 +310,7 @@ function KeyboardShortcutsHelp({
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        transition={{ duration: durations.normal, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: durations.normal, ease: EASING_FRAMER.sharp }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
         role="dialog"
         aria-modal="true"

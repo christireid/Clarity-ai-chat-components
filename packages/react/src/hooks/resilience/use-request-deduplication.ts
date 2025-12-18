@@ -8,7 +8,7 @@
  * ```tsx
  * const { execute, isPending, stats } = useRequestDeduplication({
  *   debounceMs: 300,
- *   onDedupe: () => console.log('Duplicate request blocked'),
+ *   onDedupe: () => logger.debug('Duplicate request blocked'),
  * })
  *
  * const handleSubmit = async () => {
@@ -20,7 +20,7 @@
  *       // Request was debounced, ignore
  *       return
  *     }
- *     toast.console.error('Failed to submit')
+ *     toast.error('Failed to submit')
  *   }
  * }
  * ```

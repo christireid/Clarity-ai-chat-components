@@ -11,7 +11,7 @@
  */
 
 import * as React from 'react'
-import { useClarityChat } from '../hooks/chat/use-clarity-chat'
+import { useClarityChat } from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat/chat-window'
 // Note: No conversion needed! ChatWindow accepts CoreMessage[] directly
 

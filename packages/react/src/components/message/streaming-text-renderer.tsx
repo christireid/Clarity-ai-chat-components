@@ -2,8 +2,7 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { cn, useReducedMotion } from '@clarity-chat/primitives'
 import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
 
 /**

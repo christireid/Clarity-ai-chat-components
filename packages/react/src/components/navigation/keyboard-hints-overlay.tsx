@@ -16,8 +16,9 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Kbd } from '@clarity-chat/primitives'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import { formatShortcutDisplay } from '../../hooks/keyboard/use-keyboard-navigation'
+import { EASING_FRAMER } from '../../animations/constants'
 
 export interface KeyboardHint {
   /** Unique identifier */
@@ -169,7 +170,7 @@ export function KeyboardHintsOverlay({
                 transition={{
                   duration: prefersReducedMotion ? 0 : 0.2,
                   delay: prefersReducedMotion ? 0 : index * 0.03,
-                  ease: [0.25, 0.1, 0.25, 1],
+                  ease: EASING_FRAMER.sharp,
                 }}
               >
                 <div

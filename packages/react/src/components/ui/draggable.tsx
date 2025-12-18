@@ -3,7 +3,11 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations/constants'
+import {
+  ANIMATION_DURATION,
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
 
 export interface DragInfo {
   point: { x: number; y: number }

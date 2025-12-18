@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * Enhanced Error Boundary with Error Tracking Integration
  *
@@ -11,7 +12,7 @@ import React from 'react'
 import { ErrorBoundary, type ErrorBoundaryProps } from './error-boundary'
 import { ErrorFeedback } from '../../error/ErrorFeedback'
 import { useErrorReporter } from '../../error/ErrorReporter'
-import type { ErrorFeedback as ErrorFeedbackData } from '../../error/types'
+import type { ErrorFeedback as ErrorFeedbackData } from '../error/types'
 
 /**
  * Enhanced Error Boundary Props
@@ -229,7 +230,7 @@ export function ErrorBoundaryEnhanced({
         originalError: currentError,
       })
 
-      console.log('[ErrorBoundaryEnhanced] User feedback submitted:', feedback)
+      logger.debug('[ErrorBoundaryEnhanced] User feedback submitted:', feedback)
     },
     [currentError, currentErrorInfo, errorReporter, errorContext, severity]
   )

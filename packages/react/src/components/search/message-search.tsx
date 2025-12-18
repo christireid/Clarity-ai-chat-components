@@ -7,6 +7,7 @@ import { Input, Badge, Button, cn } from '@clarity-chat/primitives'
 import { useDeferredSearch } from '../../hooks/performance/use-deferred-search'
 import { SearchIcon } from '../ui/icons'
 import { X, Command, ArrowUp, ArrowDown, CornerDownLeft } from 'lucide-react'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 const { Suspense, useCallback, useEffect, useRef, useState, useMemo } = React
 

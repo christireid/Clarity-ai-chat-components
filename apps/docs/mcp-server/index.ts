@@ -272,7 +272,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport()
   await server.connect(transport)
-  logger.logger.error('Clarity Chat MCP Server running on stdio')
+  logger.error('Clarity Chat MCP Server running on stdio')
 }
 
 main().catch(console.error)

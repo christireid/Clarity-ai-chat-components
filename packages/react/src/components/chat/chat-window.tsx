@@ -15,16 +15,9 @@ import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/prompt-suggestions'
-import {
-  useUIEnhancements,
-  getEnhancedClassName,
-} from '../../contexts/ui-enhancements'
+import { useUIEnhancements, getEnhancedClassName } from '../../contexts/ui-enhancements'
 import { useSecurity } from '../../utils/security'
-import {
-  usePerformanceMonitoring,
-  useRenderOptimization,
-  use60FPSAnimation,
-} from '../../utils/performance'
+import { usePerformanceMonitoring, useRenderOptimization, use60FPSAnimation } from '../../utils/performance'
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */
@@ -32,14 +25,6 @@ export interface ChatWindowProps {
   isLoading?: boolean
   /** AI processing status for thinking indicator */
   aiStatus?: AIStatus
-  /** UI Enhancement flags for 2025 features */
-  quantumAnimations?: boolean
-  glassmorphism?: boolean
-  auroraGradients?: boolean
-  neumorphism?: boolean
-  voiceIntegration?: boolean
-  adaptiveColors?: boolean
-  wcagAAA?: boolean
   onSendMessage: (content: string) => void
   /**
    * Callback to stop/cancel the current AI generation.
@@ -116,34 +101,6 @@ export interface ChatWindowProps {
   onDismissError?: () => void
   className?: string
   /**
-   * 2025 UI/UX Enhancement: Quantum Animations
-   */
-  quantumAnimations?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Glassmorphism effect
-   */
-  glassmorphism?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Aurora gradients
-   */
-  auroraGradients?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Neumorphism style
-   */
-  neumorphism?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Voice Integration
-   */
-  voiceIntegration?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Adaptive Colors
-   */
-  adaptiveColors?: boolean
-  /**
-   * 2025 UI/UX Enhancement: WCAG AAA compliance
-   */
-  wcagAAA?: boolean
-  /**
    * Starter prompts to show in empty state (2024 AI UX trend)
    * These help users discover what the chat can do
    */
@@ -172,131 +129,125 @@ interface DefaultEmptyStateProps {
   showStarterPrompts?: boolean
 }
 
-const DefaultEmptyState = React.memo(
-  ({
-    starterPrompts,
-    onSelectPrompt,
-    showStarterPrompts = true,
-  }: DefaultEmptyStateProps) => {
-    const { animate: animate60FPS } = use60FPSAnimation(true)
-
-    return (
+const DefaultEmptyState = ({
+  starterPrompts,
+  onSelectPrompt,
+  showStarterPrompts = true,
+}: DefaultEmptyStateProps) => (
+  <motion.div
+    className="text-center space-y-8 px-4 py-8"
+    initial={{ opacity: 0, scale: 0.95 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
+  >
+    {/* Animated icon with decorative rings */}
+    <div className="relative inline-flex items-center justify-center">
+      {/* Outer decorative ring */}
       <motion.div
-        className="text-center space-y-8 px-4 py-8"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
+        className="absolute w-32 h-32 rounded-full border border-primary/10"
+        animate={{
+          scale: [1, 1.05, 1],
+          opacity: [0.5, 0.8, 0.5],
+        }}
+        transition={{
+          duration: duration('slower'),
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      {/* Middle decorative ring */}
+      <motion.div
+        className="absolute w-28 h-28 rounded-full border border-primary/20"
+        animate={{
+          scale: [1, 1.03, 1],
+          opacity: [0.6, 1, 0.6],
+        }}
+        transition={{
+          duration: duration('slower'),
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 0.5,
+        }}
+      />
+      {/* Main icon container */}
+      <motion.div
+        className="relative z-10 inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/15 to-primary/5 shadow-[0_8px_32px_-8px_hsl(var(--primary)/0.3)] ring-1 ring-primary/20"
+        animate={{
+          scale: [1, 1.02, 1],
+          rotate: [0, 1, -1, 0],
+        }}
+        transition={{
+          duration: duration('slower'),
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
       >
-        {/* Animated icon with decorative rings */}
-        <div className="relative inline-flex items-center justify-center">
-          {/* Outer decorative ring */}
-          <motion.div
-            className="absolute w-32 h-32 rounded-full border border-primary/10"
-            animate={{
-              scale: [1, 1.05, 1],
-              opacity: [0.5, 0.8, 0.5],
-            }}
-            transition={{
-              duration: duration('slower'),
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-          {/* Middle decorative ring */}
-          <motion.div
-            className="absolute w-28 h-28 rounded-full border border-primary/20"
-            animate={{
-              scale: [1, 1.03, 1],
-              opacity: [0.6, 1, 0.6],
-            }}
-            transition={{
-              duration: duration('slower'),
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: 0.5,
-            }}
-          />
-          {/* Main icon container */}
-          <motion.div
-            className="relative z-10 inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/15 to-primary/5 shadow-[0_8px_32px_-8px_hsl(var(--primary)/0.3)] ring-1 ring-primary/20"
-            animate={{
-              scale: [1, 1.02, 1],
-              rotate: [0, 1, -1, 0],
-            }}
-            transition={{
-              duration: duration('slower'),
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          >
+        <motion.div
+          animate={{
+            y: [0, -2, 0],
+          }}
+          transition={{
+            duration: duration('slower'),
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        >
+          <BotIcon size={40} className="text-primary" />
+        </motion.div>
+      </motion.div>
+    </div>
+
+    <div className="space-y-3">
+      <h3 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+        Start a conversation
+      </h3>
+      <p className="text-sm text-muted-foreground/80 max-w-md mx-auto leading-relaxed">
+        Send a message to begin chatting with the AI assistant. I'm here to help
+        with your questions and tasks.
+      </p>
+    </div>
+
+    {/* Starter Prompts - 2024 AI UX Pattern */}
+    {showStarterPrompts &&
+      starterPrompts &&
+      starterPrompts.length > 0 &&
+      onSelectPrompt && (
+        <motion.div
+          className="pt-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.2,
+            duration: duration('slow'),
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
+        >
+          <div className="flex items-center justify-center gap-2 mb-5">
             <motion.div
-              animate={{
-                y: [0, -2, 0],
-              }}
+              animate={{ rotate: [0, 15, -15, 0] }}
               transition={{
                 duration: duration('slower'),
                 repeat: Infinity,
                 ease: 'easeInOut',
               }}
             >
-              <BotIcon size={40} className="text-primary" />
+              <SparklesIcon size={14} className="text-primary" />
             </motion.div>
-          </motion.div>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-            Start a conversation
-          </h3>
-          <p className="text-sm text-muted-foreground/80 max-w-md mx-auto leading-relaxed">
-            Send a message to begin chatting with the AI assistant. I'm here to
-            help with your questions and tasks.
-          </p>
-        </div>
-
-        {/* Starter Prompts - 2024 AI UX Pattern */}
-        {showStarterPrompts &&
-          starterPrompts &&
-          starterPrompts.length > 0 &&
-          onSelectPrompt && (
-            <motion.div
-              className="pt-6"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 0.2,
-                duration: duration('slow'),
-                ease: [0.25, 0.1, 0.25, 1],
-              }}
-            >
-              <div className="flex items-center justify-center gap-2 mb-5">
-                <motion.div
-                  animate={{ rotate: [0, 15, -15, 0] }}
-                  transition={{
-                    duration: duration('slower'),
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                >
-                  <SparklesIcon size={14} className="text-primary" />
-                </motion.div>
-                <span className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
-                  Try asking
-                </span>
-              </div>
-              <PromptSuggestions
-                suggestions={starterPrompts}
-                onSelect={onSelectPrompt}
-                suggestionType="starter"
-                layout="chips"
-                maxSuggestions={4}
-                className="justify-center"
-              />
-            </motion.div>
-          )}
-      </motion.div>
-    )
-  }
+            <span className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
+              Try asking
+            </span>
+          </div>
+          <PromptSuggestions
+            suggestions={starterPrompts}
+            onSelect={onSelectPrompt}
+            suggestionType="starter"
+            layout="chips"
+            maxSuggestions={4}
+            className="justify-center"
+          />
+        </motion.div>
+      )}
+  </motion.div>
 )
 
 /**
@@ -310,6 +261,18 @@ const DefaultEmptyState = React.memo(
  *
  * For drop-in usage, use top-level `ClarityChat` instead.
  * For custom rendering, use low-level `Message` components.
+ *
+ * @example
+ * ```tsx
+ * const chat = useClarityChat({ api: '/api/chat' })
+ * const handlers = useChatHandlers({ chat })
+ *
+ * <ChatWindow
+ *   messages={chat.messages}
+ *   isLoading={chat.isLoading}
+ *   onSendMessage={handlers.onSendMessage}
+ * />
+ * ```
  *
  * A mid-level building block for rendering chat interfaces. Provides full control
  * over message rendering, input handling, and UI customization.
@@ -352,18 +315,63 @@ const DefaultEmptyState = React.memo(
  * @param props.onClear - Optional callback for clear chat functionality
  * @param props.className - Optional CSS class name
  * @param props.aiStatus - Optional AI processing status for thinking indicator
+ *
+ * @example Basic usage with useChat hook
+ * ```tsx
+ * import { useChat, ChatWindow } from '@clarity-chat/react'
+ *
+ * function MyChat() {
+ *   const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+ *
+ *   return (
+ *     <ChatWindow
+ *       messages={messages}
+ *       isLoading={isLoading}
+ *       onSendMessage={sendMessage}
+ *     />
+ *   )
+ * }
+ * ```
+ *
+ * @example With custom header and actions
+ * ```tsx
+ * <ChatWindow
+ *   messages={messages}
+ *   isLoading={isLoading}
+ *   onSendMessage={sendMessage}
+ *   showHeader
+ *   sessionTitle="Customer Support"
+ *   sessionSubtitle="We're here to help"
+ *   headerActions={<Button>Settings</Button>}
+ *   showMessageCount
+ *   onExport={() => exportMessages(messages)}
+ *   onClear={() => clearMessages()}
+ * />
+ * ```
+ *
+ * @example With message callbacks
+ * ```tsx
+ * <ChatWindow
+ *   messages={messages}
+ *   isLoading={isLoading}
+ *   onSendMessage={sendMessage}
+ *   onMessageCopy={(id, content) => {
+ *     navigator.clipboard.writeText(content)
+ *     toast.success('Copied!')
+ *   }}
+ *   onMessageFeedback={(id, type) => {
+ *     analytics.track('message_feedback', { id, type })
+ *   }}
+ *   onMessageRetry={(id) => {
+ *     retryMessage(id)
+ *   }}
+ * />
+ * ```
  */
 export function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
-  quantumAnimations = false,
-  glassmorphism = false,
-  auroraGradients = false,
-  neumorphism = false,
-  voiceIntegration = false,
-  adaptiveColors = false,
-  wcagAAA = false,
   onSendMessage,
   onStopGeneration,
   onMessageCopy,
@@ -413,29 +421,6 @@ export function ChatWindow({
 
   const [input, setInput] = React.useState('')
 
-  // Security and enhancement hooks
-  const security = useSecurity()
-  const enhancements = useUIEnhancements()
-
-  // Use enhancement props or fall back to context values
-  const effectiveQuantumAnimations =
-    quantumAnimations ?? enhancements.quantumAnimations
-  const effectiveGlassmorphism = glassmorphism ?? enhancements.glassmorphism
-  const effectiveAuroraGradients =
-    auroraGradients ?? enhancements.auroraGradients
-
-  // Performance monitoring
-  const { measureRender, isPerformanceAcceptable, animate } =
-    usePerformanceMonitoring()
-  const { animate: animate60FPS } = use60FPSAnimation(
-    effectiveQuantumAnimations
-  )
-  const effectiveNeumorphism = neumorphism ?? enhancements.neumorphism
-  const effectiveVoiceIntegration =
-    voiceIntegration ?? enhancements.voiceIntegration
-  const effectiveAdaptiveColors = adaptiveColors ?? enhancements.adaptiveColors
-  const effectiveWCAGAAA = wcagAAA ?? enhancements.wcagAAA
-
   // Convert CoreMessage[] to Message[] if needed
   // Check if first message has 'content' property that could be string or array
   // CoreMessage has content: string | Array<...>, Message has content: string
@@ -460,14 +445,7 @@ export function ChatWindow({
 
   // React 19: Compiler optimizes - no useCallback needed
   const handleSubmit = (content: string) => {
-    // Security validation
-    const validation = security.validateInput(content)
-    if (!validation.isValid) {
-      console.warn('Security validation failed:', validation.error)
-      return
-    }
-
-    onSendMessage(validation.sanitized || content)
+    onSendMessage(content)
     setInput('')
   }
 
@@ -510,16 +488,7 @@ export function ChatWindow({
         'border-border/30',
         'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.15)]',
         'backdrop-blur-sm',
-        getEnhancedClassName({
-          className,
-          quantumAnimations: effectiveQuantumAnimations,
-          glassmorphism: effectiveGlassmorphism,
-          auroraGradients: effectiveAuroraGradients,
-          neumorphism: effectiveNeumorphism,
-          voiceIntegration: effectiveVoiceIntegration,
-          adaptiveColors: effectiveAdaptiveColors,
-          wcagAAA: effectiveWCAGAAA,
-        })
+        className
       )}
     >
       {/* Optional Header */}

@@ -11,11 +11,11 @@ import {
   Badge,
   Button,
   cn,
-  formatBytes,
 } from '@clarity-chat/primitives'
 import { DURATION_SECONDS } from '../../animations/constants'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
+import { formatBytes } from '@clarity-chat/primitives'
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../../animations/motion-safe'
@@ -229,7 +229,7 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
         }
         return undefined
       } catch (error) {
-        console.warn('Failed to collect Web Vitals:', error)
+        logger.warn('Failed to collect Web Vitals:', error)
         return undefined
       }
     }
@@ -299,6 +299,20 @@ function usePerformanceMetrics(updateInterval: number = 1000) {
  * - Network performance
  * - Memory usage
  * - FPS counter
+ *
+ * @example
+ * ```tsx
+ * <PerformanceAnalyticsDashboard
+ *   updateInterval={1000}
+ *   showWebVitals
+ *   showComponentMetrics
+ *   showMemoryUsage
+ *   showFPS
+ *   onDataUpdate={(data) => {
+ *     logger.debug('Performance:', data)
+ *   }}
+ * />
+ * ```
  */
 export function PerformanceAnalyticsDashboard({
   data: externalData,
@@ -319,6 +333,12 @@ export function PerformanceAnalyticsDashboard({
   React.useEffect(() => {
     onDataUpdate?.(data)
   }, [data, onDataUpdate])
+
+  /**
+   * Format bytes to human-readable format
+   */
+  `
+  }
 
   /**
    * Get rating color
@@ -440,7 +460,7 @@ export function PerformanceAnalyticsDashboard({
                   >
                     {vital.name === 'CLS'
                       ? vital.value.toFixed(3)
-                      : Math.round(vital.value) + 'ms'}
+                      : `${Math.round(vital.value)}ms`}
                   </div>
                   <Badge
                     variant={getRatingVariant(vital.rating)}
@@ -518,14 +538,11 @@ export function PerformanceAnalyticsDashboard({
                   className="h-full bg-primary"
                   initial={{
                     width: prefersReducedMotion
-                      ? (data.memoryUsage.used / data.memoryUsage.limit) * 100 +
-                        '%'
+                      ? `${(data.memoryUsage.used / data.memoryUsage.limit) * 100}%`
                       : 0,
                   }}
                   animate={{
-                    width:
-                      (data.memoryUsage.used / data.memoryUsage.limit) * 100 +
-                      '%',
+                    width: `${(data.memoryUsage.used / data.memoryUsage.limit) * 100}%`,
                   }}
                   transition={{
                     duration: getMotionSafeDuration(

@@ -2,10 +2,9 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
-import { Avatar } from '@clarity-chat/primitives'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { cn, Avatar, useReducedMotion } from '@clarity-chat/primitives'
 import { getMotionSafeDuration } from '../../animations/motion-safe'
+import { AnimatedDots } from '../ui/animated-dots'
 
 /**
  * Typing indicator variant styles
@@ -133,149 +132,14 @@ export function TypingIndicator({
           'min-w-[70px]'
         )}
       >
-        {variant === 'dots' && (
-          <DotsAnimation prefersReducedMotion={prefersReducedMotion} />
-        )}
-        {variant === 'pulse' && (
-          <PulseAnimation prefersReducedMotion={prefersReducedMotion} />
-        )}
-        {variant === 'wave' && (
-          <WaveAnimation prefersReducedMotion={prefersReducedMotion} />
-        )}
+        <AnimatedDots
+          variant={variant === 'dots' ? 'bounce' : variant}
+          size="md"
+          className="text-muted-foreground"
+        />
       </motion.div>
     </motion.div>
   )
 }
 
 TypingIndicator.displayName = 'TypingIndicator'
-
-/**
- * Classic bouncing dots animation
- */
-function DotsAnimation({
-  prefersReducedMotion,
-}: {
-  prefersReducedMotion: boolean
-}) {
-  if (prefersReducedMotion) {
-    return (
-      <div className="flex gap-1.5">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="w-2 h-2 rounded-full bg-muted-foreground/60"
-          />
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex gap-1.5">
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          animate={{
-            y: [-2, -6, -2],
-            opacity: [0.6, 1, 0.6],
-          }}
-          transition={{
-            // Framer Motion 12: Enhanced spring bounce for dots
-            type: 'spring',
-            damping: 10,
-            stiffness: 400,
-            repeat: Infinity,
-            delay: i * 0.15,
-          }}
-          className="w-2 h-2 rounded-full bg-muted-foreground"
-        />
-      ))}
-    </div>
-  )
-}
-
-/**
- * Pulse animation (expanding circles)
- */
-function PulseAnimation({
-  prefersReducedMotion,
-}: {
-  prefersReducedMotion: boolean
-}) {
-  if (prefersReducedMotion) {
-    return (
-      <div className="flex gap-1.5">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="w-2 h-2 rounded-full bg-muted-foreground/60"
-          />
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex gap-1.5">
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          animate={{
-            scale: [1, 1.4, 1],
-            opacity: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: durations.slower,
-            repeat: Infinity,
-            delay: i * 0.2,
-            ease: 'easeInOut',
-          }}
-          className="w-2 h-2 rounded-full bg-muted-foreground"
-        />
-      ))}
-    </div>
-  )
-}
-
-/**
- * Wave animation (sequential fade)
- */
-function WaveAnimation({
-  prefersReducedMotion,
-}: {
-  prefersReducedMotion: boolean
-}) {
-  if (prefersReducedMotion) {
-    return (
-      <div className="flex gap-1.5">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="w-2 h-2 rounded-full bg-muted-foreground/60"
-          />
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex gap-1.5">
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          animate={{
-            opacity: [0.3, 1, 0.3],
-            scale: [0.9, 1.1, 0.9],
-          }}
-          transition={{
-            duration: durations.slower,
-            repeat: Infinity,
-            delay: i * 0.25,
-            ease: 'linear',
-          }}
-          className="w-2 h-2 rounded-full bg-muted-foreground"
-        />
-      ))}
-    </div>
-  )
-}

@@ -21,7 +21,7 @@
  */
 
 import * as React from 'react'
-import type { CoreMessage } from '../hooks/chat/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import type {
   ToolComponentRegistry,
   ToolComponentProps,

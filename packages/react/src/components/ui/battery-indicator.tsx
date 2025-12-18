@@ -7,6 +7,7 @@ import {
   useBatteryAware,
   type BatteryAwareConfig,
 } from '../../hooks/performance/use-battery-aware'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface BatteryIndicatorProps {
   /** Battery-aware configuration */

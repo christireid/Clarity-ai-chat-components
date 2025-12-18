@@ -4,8 +4,12 @@ import { useState, useRef, useMemo, useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { cn, Kbd, useBodyScrollLock } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, EASING_FRAMER } from '../../animations/constants'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import {
+  ANIMATION_DURATION,
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   useFocusTrap,
   useFocusRestoration,

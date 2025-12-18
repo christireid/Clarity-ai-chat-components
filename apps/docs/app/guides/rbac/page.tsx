@@ -24,7 +24,7 @@ export default async function RbacGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read rbac guide', error)
+    logger.error('Failed to read rbac guide', error)
     content = '# Rbac\n\nContent not available.'
   }
 

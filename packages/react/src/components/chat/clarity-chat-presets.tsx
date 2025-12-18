@@ -23,7 +23,7 @@
  * ```
  */
 
-import type { UseClarityChatOptions } from '../hooks/chat/use-clarity-chat'
+import type { UseClarityChatOptions } from '../../hooks/chat/use-clarity-chat'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
 
 /**

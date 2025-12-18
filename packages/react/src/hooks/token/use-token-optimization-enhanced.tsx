@@ -23,7 +23,7 @@
 'use client'
 
 import * as React from 'react'
-import type { CoreMessage } from './use-chat-enhanced'
+import type { CoreMessage } from '../chat/use-chat-enhanced'
 
 // Import new utilities
 import {

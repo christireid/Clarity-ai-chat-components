@@ -1,7 +1,7 @@
 /**
  * Enhanced structured logging utility
  * Supports log levels, structured output, and request tracking
- *
+ * 
  */
 
 import pc from 'picocolors'
@@ -160,9 +160,9 @@ export function getLogger(
       }
 
       if (process.env.JSON_LOGS) {
-        console.error(formatLogEntry(entry))
+        utilsLogger.error(formatLogEntry(entry))
       } else {
-        console.error(formatPrefix('✖', pc.red), errorMessage, ...args)
+        utilsLogger.error(formatPrefix('✖', pc.red), errorMessage, ...args)
 
         if (
           error &&
@@ -170,7 +170,7 @@ export function getLogger(
           error.stack &&
           (process.env.DEBUG || process.env.VERBOSE)
         ) {
-          console.error(pc.gray(String(error.stack)))
+          utilsLogger.error(pc.gray(String(error.stack)))
         }
       }
     },

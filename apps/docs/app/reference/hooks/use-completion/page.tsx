@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -305,8 +304,8 @@ function Completion() {
   const { completion, complete, error, isLoading } = useCompletion({
     api: '/api/completion',
     onError: (error) => {
-      logger.logger.error('Completion error:', error)
-      toast.logger.error('Failed to generate completion')
+      logger.error('Completion error:', error)
+      toast.error('Failed to generate completion')
     },
   })
 

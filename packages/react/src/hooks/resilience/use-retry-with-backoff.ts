@@ -19,7 +19,7 @@
  *     const { result } = await execute(() => submitForm(data))
  *     toast.success('Submitted!')
  *   } catch (error) {
- *     toast.console.error('Failed after all retries')
+ *     toast.error('Failed after all retries')
  *   }
  * }
  * ```

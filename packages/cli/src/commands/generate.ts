@@ -415,7 +415,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   const generator = GENERATORS[type]
 
   if (!generator) {
-    console.error(`Unknown generator type: ${type}`)
+    logger.error(`Unknown generator type: ${type}`)
 
     // Display available generators in a beautiful table
     const columns: TableColumn[] = [
@@ -452,7 +452,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   let name = options.name
   if (!name) {
     if (options.yes) {
-      console.error('--name is required when using --yes flag')
+      log.error('--name is required when using --yes flag')
       process.exit(1)
     }
     name = await promptText({
@@ -472,7 +472,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   } else {
     const validation = validateName(name)
     if (validation) {
-      console.error(validation)
+      log.error(validation)
       process.exit(1)
     }
   }
@@ -664,7 +664,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     // Clean up on error
     await clearCleanup()
 
-    console.error(error instanceof Error ? error.message : String(error))
+    log.error(error instanceof Error ? error.message : String(error))
     console.log()
     console.log(
       errorBox('Failed to generate files. Check the error above.', '✗ Error')

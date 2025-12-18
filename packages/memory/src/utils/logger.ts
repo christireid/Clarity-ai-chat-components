@@ -1,3 +1,4 @@
+import { logger as utilsLogger } from '@clarity-chat/utils/logger'
 /**
  * Logger Utility
  *
@@ -31,25 +32,25 @@ class ClarityLogger implements Logger {
 
   error(message: string, ...args: unknown[]): void {
     if (this.shouldLog('error')) {
-      console.error(`${this.prefix} [ERROR] ${message}`, ...args)
+      utilsLogger.error(`${this.prefix} [ERROR] ${message}`, ...args)
     }
   }
 
   warn(message: string, ...args: unknown[]): void {
     if (this.shouldLog('warn')) {
-      console.warn(`${this.prefix} [WARN] ${message}`, ...args)
+      utilsLogger.warn(`${this.prefix} [WARN] ${message}`, ...args)
     }
   }
 
   info(message: string, ...args: unknown[]): void {
     if (this.shouldLog('info')) {
-      console.info(`${this.prefix} [INFO] ${message}`, ...args)
+      utilsLogger.info(`${this.prefix} [INFO] ${message}`, ...args)
     }
   }
 
   debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog('debug')) {
-      console.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
+      utilsLogger.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
     }
   }
 
@@ -59,7 +60,7 @@ class ClarityLogger implements Logger {
 }
 
 // Default logger instance
-export const memoryLogger = new ClarityLogger()
+export const logger = new ClarityLogger()
 
 /**
  * Create a logger instance

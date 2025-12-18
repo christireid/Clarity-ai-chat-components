@@ -29,12 +29,13 @@ import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/prompt-suggestions'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../../animations/motion-safe'
 import { getSpring } from '../../animations/spring-presets'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 export interface EmptyStateProps {
   /** Icon to display */

@@ -7,13 +7,10 @@
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
-import {
-  ClarityChat,
-  ClarityChatPresets,
-} from '../components/chat/clarity-chat'
-import { useClarityChat } from '../hooks/chat/use-clarity-chat'
-import { useClarityObject } from '../hooks/chat/use-clarity-object'
-import { useChatHandlers } from '../hooks/chat/use-chat-handlers'
+import { ClarityChat, ClarityChatPresets } from '../components/clarity-chat'
+import { useClarityChat } from '../hooks/use-clarity-chat'
+import { useClarityObject } from '../hooks/use-clarity-object'
+import { useChatHandlers } from '../hooks/use-chat-handlers'
 import { ChatWindow } from '../components/chat/chat-window'
 import { MemoryProvider } from '../memory/memory-provider'
 

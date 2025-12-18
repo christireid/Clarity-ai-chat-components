@@ -10,11 +10,12 @@ import {
   InfoIcon,
 } from '../ui/icons'
 import { RetryButton, type RetryErrorType } from './retry-button'
-import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../../animations/motion-safe'
+import { DURATION_SECONDS as durations } from '../../animations/constants'
 
 /**
  * Error severity levels
