@@ -1,7 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Recipe Component Examples
- * 
+ *
  * Demonstrates the pre-built recipe components for common patterns
  */
 
@@ -47,7 +47,7 @@ export function AnalyticsChatExample() {
           // Track in analytics
         }}
         onError={(error) => {
-          logger.logger.error('Chat error:', error)
+          logger.error('Chat error:', error)
           // Send to error tracking
         }}
       />
@@ -91,7 +91,7 @@ export function ErrorHandlingChatExample() {
       <ChatWithErrorHandling
         api="/api/chat"
         onError={(error, errorInfo) => {
-          logger.logger.error('Error caught:', error, errorInfo)
+          logger.error('Error caught:', error, errorInfo)
           // Send to error tracking service
         }}
         errorFallback={(error, reset) => (
@@ -123,7 +123,7 @@ export function CompleteChatExample() {
           logger.debug('Received:', id)
         }}
         onError={(error) => {
-          logger.logger.error('Error:', error)
+          logger.error('Error:', error)
         }}
       />
     </div>
@@ -135,7 +135,7 @@ export function CompleteChatExample() {
  */
 export function PresetUsageExample() {
   const { applyChatPreset } = require('../presets/chat-presets')
-  
+
   // Apply preset to custom options
   const options = applyChatPreset('enterprise', {
     api: '/api/chat',

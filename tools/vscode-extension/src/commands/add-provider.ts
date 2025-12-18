@@ -1,6 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
-import { SecureLogger } from '@/lib/security/secureLogger';
 /**
  * Add Provider Command
  */
@@ -10,30 +7,30 @@ import * as vscode from 'vscode'
 export async function addProviderCommand() {
   const provider = await vscode.window.showQuickPick(
     [
-      { 
-        label: 'OpenAI', 
-        description: 'Add OpenAI (GPT-4, GPT-3.5)', 
+      {
+        label: 'OpenAI',
+        description: 'Add OpenAI (GPT-4, GPT-3.5)',
         value: 'openai',
         package: 'openai',
         envVar: 'OPENAI_API_KEY',
-        docsUrl: 'https://platform.openai.com/api-keys'
+        docsUrl: 'https://platform.openai.com/api-keys',
       },
-      { 
-        label: 'Anthropic', 
-        description: 'Add Anthropic (Claude 3)', 
+      {
+        label: 'Anthropic',
+        description: 'Add Anthropic (Claude 3)',
         value: 'anthropic',
         package: '@anthropic-ai/sdk',
         envVar: 'ANTHROPIC_API_KEY',
-        docsUrl: 'https://console.anthropic.com/settings/keys'
+        docsUrl: 'https://console.anthropic.com/settings/keys',
       },
-      { 
-        label: 'Google AI', 
-        description: 'Add Google AI (Gemini)', 
+      {
+        label: 'Google AI',
+        description: 'Add Google AI (Gemini)',
         value: 'google',
         package: '@google/generative-ai',
         envVar: 'GOOGLE_API_KEY',
-        docsUrl: 'https://makersuite.google.com/app/apikey'
-      }
+        docsUrl: 'https://makersuite.google.com/app/apikey',
+      },
     ],
     { placeHolder: 'Select provider to add' }
   )
@@ -49,15 +46,17 @@ export async function addProviderCommand() {
   )
 
   if (installAction === 'Install Package') {
-    vscode.window.showInformationMessage(
-      `Run: npm install ${provider.package}`,
-      'Copy Command'
-    ).then(selection => {
-      if (selection === 'Copy Command') {
-        vscode.env.clipboard.writeText(`npm install ${provider.package}`)
-        vscode.window.showInformationMessage('Command copied to clipboard!')
-      }
-    })
+    vscode.window
+      .showInformationMessage(
+        `Run: npm install ${provider.package}`,
+        'Copy Command'
+      )
+      .then((selection) => {
+        if (selection === 'Copy Command') {
+          vscode.env.clipboard.writeText(`npm install ${provider.package}`)
+          vscode.window.showInformationMessage('Command copied to clipboard!')
+        }
+      })
   } else if (installAction === 'Setup Instructions') {
     showSetupInstructions(provider)
   } else if (installAction === 'Get API Key') {
@@ -148,7 +147,7 @@ const response = await openai.chat.completions.create({
   messages: [{ role: 'user', content: 'Hello!' }]
 })
 
-SecureLogger.debug(response.choices[0].message.content)`,
+console.log(response.choices[0].message.content)`,
 
     anthropic: `import Anthropic from '@anthropic-ai/sdk'
 
@@ -162,7 +161,7 @@ const response = await anthropic.messages.create({
   messages: [{ role: 'user', content: 'Hello!' }]
 })
 
-SecureLogger.debug(response.content[0].text)`,
+console.log(response.content[0].text)`,
 
     google: `import { GoogleGenerativeAI } from '@google/generative-ai'
 
@@ -171,7 +170,7 @@ const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
 
 const result = await model.generateContent('Hello!')
 const response = await result.response
-SecureLogger.debug(response.text())`
+console.log(response.text())`,
   }
 
   return examples[provider] || ''

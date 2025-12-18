@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Anthropic Model Adapter
  *
@@ -185,7 +185,7 @@ export const anthropicAdapter: ModelAdapter = {
               }
             }
           } catch (e) {
-            logger.logger.error('Failed to parse streaming chunk:', e)
+            logger.error('Failed to parse streaming chunk:', e)
           }
         }
       }

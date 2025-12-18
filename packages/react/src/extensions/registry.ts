@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Extension Registry
  *
@@ -91,7 +91,7 @@ class StateManagerImpl implements ExtensionStateManager {
       try {
         cb(value)
       } catch (e) {
-        logger.logger.error('State subscriber error:', e)
+        logger.error('State subscriber error:', e)
       }
     })
   }
@@ -119,11 +119,11 @@ class LoggerImpl implements ExtensionLogger {
   }
 
   warn(message: string, ...args: unknown[]): void {
-    console.warn(`[${this.prefix}]`, message, ...args)
+    logger.warn(`[${this.prefix}]`, message, ...args)
   }
 
   error(message: string, ...args: unknown[]): void {
-    console.error(`[${this.prefix}]`, message, ...args)
+    logger.error(`[${this.prefix}]`, message, ...args)
   }
 
   child(childPrefix: string): ExtensionLogger {
@@ -145,7 +145,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
       try {
         handler(data)
       } catch (e) {
-        console.error(`Event handler error for ${event}:`, e)
+        logger.error(`Event handler error for ${event}:`, e)
       }
     })
 
@@ -156,7 +156,7 @@ class EventEmitterImpl implements ExtensionEventEmitter {
         try {
           handler(data)
         } catch (e) {
-          console.error(`Once handler error for ${event}:`, e)
+          logger.error(`Once handler error for ${event}:`, e)
         }
       })
       this.onceHandlers.delete(event)
@@ -818,7 +818,7 @@ export class ExtensionRegistryImpl implements ExtensionRegistry {
       try {
         handler(eventData)
       } catch (e) {
-        logger.logger.error('Registry event handler error:', e)
+        logger.error('Registry event handler error:', e)
       }
     })
   }

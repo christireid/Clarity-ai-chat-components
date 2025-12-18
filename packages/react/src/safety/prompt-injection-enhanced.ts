@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Enhanced Prompt Injection Detection (2025)
  *
@@ -261,7 +261,10 @@ export class EnhancedPromptInjectionGuardrail {
   /**
    * Check message for prompt injection attacks
    */
-  async check(message: string, context?: { role?: string }): Promise<EnhancedInjectionResult> {
+  async check(
+    message: string,
+    context?: { role?: string }
+  ): Promise<EnhancedInjectionResult> {
     const results: EnhancedInjectionResult[] = []
 
     // Layer 1: Heuristic detection (fast)
@@ -440,7 +443,8 @@ export class EnhancedPromptInjectionGuardrail {
     return {
       safe: semanticScore < this.config.semanticThreshold,
       confidence: semanticScore,
-      action: semanticScore >= this.config.confidenceThreshold ? 'block' : 'allow',
+      action:
+        semanticScore >= this.config.confidenceThreshold ? 'block' : 'allow',
       threats,
       method: 'semantic',
       explanation:
@@ -535,7 +539,9 @@ export class EnhancedPromptInjectionGuardrail {
   /**
    * LLM-as-judge detection (optional, highest accuracy)
    */
-  private async detectLLMJudge(message: string): Promise<EnhancedInjectionResult> {
+  private async detectLLMJudge(
+    message: string
+  ): Promise<EnhancedInjectionResult> {
     if (!this.config.llmJudge.enabled) {
       return {
         safe: true,
@@ -582,12 +588,14 @@ Respond with JSON:
         safe: !result.is_injection,
         confidence: result.confidence,
         action: result.is_injection ? 'block' : 'allow',
-        threats: result.is_injection ? ['LLM-as-judge flagged as injection'] : [],
+        threats: result.is_injection
+          ? ['LLM-as-judge flagged as injection']
+          : [],
         method: 'llm-judge',
         explanation: result.explanation,
       }
     } catch (error) {
-      logger.logger.error('LLM-as-judge detection failed:', error)
+      logger.error('LLM-as-judge detection failed:', error)
       return {
         safe: true,
         confidence: 0,
@@ -617,7 +625,9 @@ Respond with JSON:
 
     // Get highest confidence result
     const maxConfidence = Math.max(...results.map((r) => r.confidence))
-    const highestConfidenceResult = results.find((r) => r.confidence === maxConfidence)!
+    const highestConfidenceResult = results.find(
+      (r) => r.confidence === maxConfidence
+    )!
 
     // Combine all threats
     const allThreats = [...new Set(results.flatMap((r) => r.threats))]
@@ -628,7 +638,8 @@ Respond with JSON:
     return {
       safe: maxConfidence < this.config.confidenceThreshold,
       confidence: maxConfidence,
-      action: maxConfidence >= this.config.confidenceThreshold ? 'block' : 'allow',
+      action:
+        maxConfidence >= this.config.confidenceThreshold ? 'block' : 'allow',
       threats: allThreats,
       method: methods as any,
       category: highestConfidenceResult.category,

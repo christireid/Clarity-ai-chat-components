@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 /**
@@ -37,7 +36,11 @@ import {
   EASING_FRAMER,
   // createSlideVariant, // Reserved for future use
 } from '../../animations'
+<<<<<<< HEAD
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+=======
+import { useReducedMotion } from '@clarity-chat/primitives'
+>>>>>>> origin/main
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
@@ -422,7 +425,7 @@ export function useToast(): ToastContextValue {
         return ''
       },
       error: (description: string, title?: string) => {
-        toast.logger.error(description, title)
+        toast.error(description, title)
         return ''
       },
       info: (description: string, title?: string) => {

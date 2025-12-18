@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Plugin Manager
  *
@@ -19,7 +19,10 @@ export class PluginManager implements PluginManagerInterface {
   private plugins = new Map<string, PluginConfig>()
   private config: Required<PluginManagerConfig>
   private sharedState: Record<string, PluginStateValue> = {}
-  private eventHandlers = new Map<string, Set<(data: PluginEventData) => void>>()
+  private eventHandlers = new Map<
+    string,
+    Set<(data: PluginEventData) => void>
+  >()
 
   constructor(config?: PluginManagerConfig) {
     this.config = {
@@ -39,7 +42,9 @@ export class PluginManager implements PluginManagerInterface {
     if (plugin.dependencies) {
       for (const dep of plugin.dependencies) {
         if (!this.plugins.has(dep)) {
-          throw new Error(`Plugin ${plugin.name} requires ${dep} which is not registered`)
+          throw new Error(
+            `Plugin ${plugin.name} requires ${dep} which is not registered`
+          )
         }
       }
     }
@@ -116,7 +121,10 @@ export class PluginManager implements PluginManagerInterface {
   /**
    * Call a hook across all enabled plugins
    */
-  async callHook<T = unknown>(hookName: string, ...args: unknown[]): Promise<T[]> {
+  async callHook<T = unknown>(
+    hookName: string,
+    ...args: unknown[]
+  ): Promise<T[]> {
     const results: T[] = []
 
     const configs = Array.from(this.plugins.values())
@@ -131,7 +139,10 @@ export class PluginManager implements PluginManagerInterface {
             results.push(result as T)
           }
         } catch (error) {
-          logger.logger.error(`Plugin ${config.plugin.name} hook ${hookName} failed:`, error)
+          logger.error(
+            `Plugin ${config.plugin.name} hook ${hookName} failed:`,
+            error
+          )
         }
       }
     }
@@ -149,7 +160,7 @@ export class PluginManager implements PluginManagerInterface {
         try {
           handler(data)
         } catch (error) {
-          logger.logger.error(`Event handler for ${event} failed:`, error)
+          logger.error(`Event handler for ${event} failed:`, error)
         }
       })
     }
@@ -185,7 +196,10 @@ export class PluginManager implements PluginManagerInterface {
     this.sharedState[key] = value
   }
 
-  private async initializePlugin(plugin: Plugin, config?: Record<string, unknown>): Promise<void> {
+  private async initializePlugin(
+    plugin: Plugin,
+    config?: Record<string, unknown>
+  ): Promise<void> {
     if (!plugin.initialize) return
 
     const context: PluginContext = {
@@ -205,4 +219,3 @@ export class PluginManager implements PluginManagerInterface {
     return `${Date.now()}-${Math.random().toString(36).substring(7)}`
   }
 }
-

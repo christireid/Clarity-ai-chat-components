@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -284,7 +285,7 @@ export function CalendarIntegration({
     } catch (error) {
       // Silently fail for availability (non-critical)
       if (process.env.NODE_ENV === 'development') {
-        logger.logger.error('Failed to load availability:', error)
+        logger.error('Failed to load availability:', error)
       }
     }
   }, [fetchAvailability, range, isMounted])

@@ -1,3 +1,4 @@
+import { logger } from '../logger'
 /**
  * Enhanced Validation Utilities
  *
@@ -397,7 +398,7 @@ export function assertArray(
 export function assertFunction(
   value: unknown,
   message?: string
-): asserts value is (...args: unknown[]) => unknown {
+): asserts value is (...args: any[]) => any {
   if (!isFunction(value)) {
     throw new TypeError(message || `Expected function, got ${typeof value}`)
   }
@@ -600,7 +601,7 @@ export function parseJson<T = unknown>(
     }
     return { success: true, data: parsed as T }
   } catch (parseError) {
-    console.error('JSON parsing failed', {
+    logger.error('JSON parsing failed', {
       jsonString,
       error:
         parseError instanceof Error ? parseError.message : String(parseError),

@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { VirtualizedMessageList as MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -6,10 +5,10 @@ import { expect, within } from 'storybook/test'
 
 /**
  * **MessageList Component**
- * 
+ *
  * Message list component with auto-scroll, scroll-to-bottom button,
  * and comprehensive message management features.
- * 
+ *
  * **Key Features:**
  * - Auto-scroll to latest message
  * - Scroll-to-bottom button
@@ -17,7 +16,7 @@ import { expect, within } from 'storybook/test'
  * - Copy, feedback, and retry actions
  * - Empty state handling
  * - Virtual scrolling support
- * 
+ *
  * **Use Cases:**
  * - Chat interfaces
  * - Messaging applications
@@ -50,9 +49,9 @@ and comprehensive message management features.
 \`\`\`tsx
 <MessageList
   messages={messages}
-  onMessageCopy={(id, content) => SecureLogger.debug('Copied:', content)}
-  onMessageFeedback={(id, type) => SecureLogger.debug('Feedback:', type)}
-  onMessageRetry={(id) => SecureLogger.debug('Retry:', id)}
+  onMessageCopy={(id, content) => console.log('Copied:', content)}
+  onMessageFeedback={(id, type) => console.log('Feedback:', type)}
+  onMessageRetry={(id) => console.log('Retry:', id)}
 />
 \`\`\`
         `,
@@ -116,7 +115,8 @@ const mockMessages: Message[] = [
   {
     id: '2',
     role: 'assistant',
-    content: 'Of course! I\'d be happy to help. What do you need assistance with?',
+    content:
+      "Of course! I'd be happy to help. What do you need assistance with?",
     timestamp: Date.now() - 280000,
   },
   {
@@ -148,20 +148,28 @@ Would you like to know more about a specific hook?`,
 export const Default: Story = {
   args: {
     messages: mockMessages,
-    onMessageCopy: (id, content) => SecureLogger.debug('Copy:', id, content),
-    onMessageFeedback: (id, type) => SecureLogger.debug('Feedback:', id, type),
-    onMessageRetry: (id) => SecureLogger.debug('Retry:', id),
+    onMessageCopy: (id, content) => console.log('Copy:', id, content),
+    onMessageFeedback: (id, type) => console.log('Feedback:', id, type),
+    onMessageRetry: (id) => console.log('Retry:', id),
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
     // Test messages render
-    await expect(canvas.getByText('Hello! Can you help me?')).toBeInTheDocument()
-    await expect(canvas.getByText(/Of course! I'd be happy to help/)).toBeInTheDocument()
+    await expect(
+      canvas.getByText('Hello! Can you help me?')
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/Of course! I'd be happy to help/)
+    ).toBeInTheDocument()
 
     // Test user and assistant messages display
-    await expect(canvas.getByText('I need help with React hooks')).toBeInTheDocument()
-    await expect(canvas.getByText(/useState for state management/)).toBeInTheDocument()
+    await expect(
+      canvas.getByText('I need help with React hooks')
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/useState for state management/)
+    ).toBeInTheDocument()
   },
 }
 
@@ -173,7 +181,9 @@ export const EmptyList: Story = {
     const canvas = within(canvasElement)
 
     // Test empty state renders
-    await expect(canvas.getByText(/no messages|empty|start/i)).toBeInTheDocument()
+    await expect(
+      canvas.getByText(/no messages|empty|start/i)
+    ).toBeInTheDocument()
   },
 }
 
@@ -229,7 +239,8 @@ useEffect(() => {
       {
         id: '8',
         role: 'assistant',
-        content: 'useContext allows you to consume React context without wrapping components.',
+        content:
+          'useContext allows you to consume React context without wrapping components.',
         timestamp: Date.now() - 160000,
       },
     ],

@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import React, { useEffect, useState } from 'react'
 import { cn } from '@clarity-chat/primitives'
@@ -145,7 +146,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
                 )
                 setHighlightedCode(highlighted)
               } catch (error) {
-                logger.logger.error('Prism highlighting error:', error)
+                logger.error('Prism highlighting error:', error)
                 setHighlightedCode(codeString)
               }
             } else {

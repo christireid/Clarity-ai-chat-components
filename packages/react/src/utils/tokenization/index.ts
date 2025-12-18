@@ -1,47 +1,47 @@
 // Main exports for the tokenization utilities
-export { TokenCounter } from '@clarity-chat/token-optimization';
+export { TokenCounter } from '@clarity-chat/token-optimization'
 
 // Core token counting with different strategies
-export { 
-  smartCountTokens, 
+export {
+  smartCountTokens,
   smartTokenCounter,
   type FallbackStrategy,
-  type FallbackContext 
-} from './smart-fallback.js';
+  type FallbackContext,
+} from './smart-fallback.js'
 
 // Robust error handling
-export { 
+export {
   countTokensRobust,
   robustTokenCounter,
   type TokenCounterError,
   type ErrorContext,
-  type ErrorHandlingOptions 
-} from './robust-error-handling.js';
+  type ErrorHandlingOptions,
+} from './robust-error-handling.js'
 
 // Token budget validation
-export { 
+export {
   validateTokenBudget,
   createTokenBudget,
   tokenBudgetValidator,
   type TokenBudget,
   type TokenBudgetConfig,
   type TokenBudgetValidation,
-  type TruncationOptions 
-} from './token-budget-validator.js';
+  type TruncationOptions,
+} from './token-budget-validator.js'
 
 // Performance optimization
-export { 
+export {
   countTokensOptimized,
   countTokensBatchOptimized,
   benchmarkTokenCounter,
   optimizedTokenCounter,
   type PerformanceMetrics,
   type PerformanceBenchmark,
-  type CachingConfig 
-} from './performance-optimization.js';
+  type CachingConfig,
+} from './performance-optimization.js'
 
 // Analytics and monitoring
-export { 
+export {
   recordTokenUsage,
   getTokenAnalytics,
   getTokenMetrics,
@@ -49,11 +49,11 @@ export {
   type TokenUsageEvent,
   type TokenAnalytics,
   type TokenMetrics,
-  type TokenAlert 
-} from './token-analytics.js';
+  type TokenAlert,
+} from './token-analytics.js'
 
 // Migration assistant
-export { 
+export {
   analyzeTokenMigration,
   generateMigrationReport,
   autoFixTokenMigration,
@@ -61,8 +61,8 @@ export {
   tokenMigrationAssistant,
   type MigrationRule,
   type MigrationAnalysis,
-  type MigrationResult 
-} from './migration-assistant.js';
+  type MigrationResult,
+} from './migration-assistant.js'
 
 // Text compression and preprocessing
 export {
@@ -74,8 +74,8 @@ export {
   SemanticCompressor,
   type CompressionStrategy,
   type CompressionConfig,
-  type CompressionResult
-} from './text-compression.js';
+  type CompressionResult,
+} from './text-compression.js'
 
 // Advanced compression techniques
 export {
@@ -92,26 +92,8 @@ export {
   type AdvancedCompressionStrategy,
   type AdvancedCompressionConfig,
   type AdvancedCompressionResult,
-  type CompressionQualityMetrics
-} from './advanced-compression.js';
-
-// Advanced compression techniques
-export {
-  LLMLinguaCompressor,
-  AdvancedCompressionOrchestrator,
-  compressWithLLMLingua,
-  compressWithSelectiveContext,
-  compressAdaptive,
-  compressEnsemble,
-  compressIncremental,
-  advancedCompressor,
-  compressionOrchestrator,
-  compressWithAdvanced,
-  type AdvancedCompressionStrategy,
-  type AdvancedCompressionConfig,
-  type AdvancedCompressionResult,
-  type CompressionQualityMetrics
-} from './advanced-compression.js';
+  type CompressionQualityMetrics,
+} from './advanced-compression.js'
 
 // Adaptive optimization
 export {
@@ -124,8 +106,8 @@ export {
   type ContextProfile,
   type ConversationState,
   type AdaptiveOptimizationConfig,
-  type AdaptiveOptimizationResult
-} from './adaptive-optimizer.js';
+  type AdaptiveOptimizationResult,
+} from './adaptive-optimizer.js'
 
 // Intelligent caching
 export {
@@ -144,8 +126,8 @@ export {
   type CacheConfig,
   type CacheEntry,
   type CacheStats,
-  type SemanticCacheConfig
-} from './intelligent-caching.js';
+  type SemanticCacheConfig,
+} from './intelligent-caching.js'
 
 // Smart truncation and summarization
 export {
@@ -158,8 +140,8 @@ export {
   type ContentType,
   type TruncationConfig,
   type TruncationResult,
-  type SummarizationConfig
-} from './smart-truncation.js';
+  type SummarizationConfig,
+} from './smart-truncation.js'
 
 // Dynamic optimization
 export {
@@ -171,8 +153,8 @@ export {
   type ContextType,
   type ModelContext,
   type ContentContext,
-  type DynamicOptimizationResult
-} from './dynamic-optimization.js';
+  type DynamicOptimizationResult,
+} from './dynamic-optimization.js'
 
 // Optimization middleware
 export {
@@ -191,8 +173,8 @@ export {
   type MiddlewareConfig,
   type OptimizationContext,
   type MiddlewareResult,
-  type TokenUsageMetrics
-} from './optimization-middleware.js';
+  type TokenUsageMetrics,
+} from './optimization-middleware.js'
 
 // Response optimization
 export {
@@ -207,8 +189,8 @@ export {
   type ResponseOptimizationConfig,
   type ResponseMetrics,
   type ConversationContext,
-  type ResponsePrediction
-} from './response-optimization.js';
+  type ResponsePrediction,
+} from './response-optimization.js'
 
 // Optimization dashboard and monitoring
 export {
@@ -220,54 +202,75 @@ export {
   type TimeSeriesData,
   type ModelMetrics,
   type AlertConfig,
-  type Alert
-} from './optimization-dashboard.js';
+  type Alert,
+} from './optimization-dashboard.js'
 
 // Re-export the comprehensive test utilities
 // export * from '../utils/__tests__/token-counter-comprehensive.test.js';
 
 // Convenience re-exports from the original estimator and accurate-counter
 // These maintain backward compatibility while using the new TokenCounter internally
-export { estimateTokens, estimateTokensByProvider, estimateMessagesTokens } from './estimator.js';
-export { countTokens, countConversationTokens, truncateToTokenBudget } from './accurate-counter.js';
+export {
+  estimateTokens,
+  estimateTokensByProvider,
+  estimateMessagesTokens,
+} from './estimator.js'
+export {
+  countTokens,
+  countConversationTokens,
+  truncateToTokenBudget,
+} from './accurate-counter.js'
 
 // Export validation utilities for convenience
-export { InputValidator } from './input-validator.js';
-export type { ValidationResult, InputConstraints } from './input-validator.js';
+export { InputValidator } from './input-validator.js'
+export type { ValidationResult, InputConstraints } from './input-validator.js'
 
 // Export error handling utilities
-export { errorHandler, ErrorCategory, ErrorSeverity } from './enhanced-error-handling.js';
-export type { TokenOptimizationError, ErrorRecoveryStrategy } from './enhanced-error-handling.js';
+export {
+  errorHandler,
+  ErrorCategory,
+  ErrorSeverity,
+} from './enhanced-error-handling.js'
+export type {
+  TokenOptimizationError,
+  ErrorRecoveryStrategy,
+} from './enhanced-error-handling.js'
 
 // Export React hooks
-export { useTokenValidator, useAutoTokenValidator } from './use-token-validator.js';
-export { useTokenPerformance, useAutoTokenPerformance } from './use-token-performance.js';
-export type { TokenPerformanceMetrics } from './use-token-performance.js';
+export {
+  useTokenValidator,
+  useAutoTokenValidator,
+} from './use-token-validator.js'
+export {
+  useTokenPerformance,
+  useAutoTokenPerformance,
+} from './use-token-performance.js'
+export type { TokenPerformanceMetrics } from './use-token-performance.js'
 
 // Default export for easy importing
 export default {
   // Core functionality
   TokenCounter,
-  
+
   // Smart counting
   smartCountTokens,
   smartTokenCounter,
-  
+
   // Robust counting
   countTokensRobust,
   robustTokenCounter,
-  
+
   // Budget validation
   validateTokenBudget,
   createTokenBudget,
   tokenBudgetValidator,
-  
+
   // Performance optimization
   countTokensOptimized,
   countTokensBatchOptimized,
   benchmarkTokenCounter,
   optimizedTokenCounter,
-  
+
   // Text compression
   compressText,
   compressForBudget,
@@ -275,7 +278,7 @@ export default {
   compressSemanticOnly,
   compressMultiStrategy,
   SemanticCompressor,
-  
+
   // Advanced compression
   LLMLinguaCompressor,
   AdvancedCompressionOrchestrator,
@@ -287,9 +290,9 @@ export default {
   advancedCompressor,
   compressionOrchestrator,
   compressWithAdvanced,
-  
+
   // Adaptive optimization
-  
+
   // Intelligent caching
   IntelligentSemanticCache,
   MultiLevelCacheManager,
@@ -301,20 +304,20 @@ export default {
   getCachedCompression,
   setCachedCompression,
   getCacheAnalytics,
-  
+
   // Smart truncation
   SmartTruncator,
   SmartSummarizer,
   truncateText,
   summarizeText,
   truncateConversation,
-  
+
   // Dynamic optimization
   DynamicOptimizer,
   optimizeForModel,
   optimizeForBudget,
   optimizeForCost,
-  
+
   // Optimization middleware
   TokenOptimizationMiddleware,
   TokenOptimizationInterceptor,
@@ -325,7 +328,7 @@ export default {
   getOptimizationMetrics,
   getOptimizationHistory,
   configureMiddleware,
-  
+
   // Response optimization
   ResponseLengthPredictor,
   ResponseOptimizer,
@@ -334,23 +337,23 @@ export default {
   predictResponseLength,
   controlResponseBudget,
   getResponsePredictionAccuracy,
-  
+
   // Dashboard and monitoring
   TokenOptimizationMonitor,
   TokenOptimizationAnalytics,
   createTokenMonitor,
   createTokenAnalytics,
-  
+
   // Analytics
   recordTokenUsage: recordTokenUsage,
   getTokenAnalytics,
   getTokenMetrics,
   tokenAnalyticsMonitor,
-  
+
   // Migration
   analyzeTokenMigration,
   generateMigrationReport,
   autoFixTokenMigration,
   manualMigrateTokens,
-  tokenMigrationAssistant
-};
+  tokenMigrationAssistant,
+}

@@ -8,7 +8,7 @@ import type {
   UseChatOptions as UseChatEnhancedOptions,
   UseChatReturn as UseChatEnhancedReturn,
   CoreMessage,
-} from '../use-chat-enhanced'
+} from '../chat/use-chat-enhanced'
 
 /**
  * Memory configuration options

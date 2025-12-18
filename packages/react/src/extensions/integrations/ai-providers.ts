@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * AI Model Provider Extensions
  *
@@ -398,7 +397,7 @@ export function createCohereExtension(
       )
       ctx.services.register('adapter', adapter)
       ctx.services.register('models', cohereModels)
-      ctx.logger.info('Cohere extension initialized')
+      ctx.console.info('Cohere extension initialized')
     },
 
     healthCheck: async (ctx) => {
@@ -458,7 +457,7 @@ export function createMistralExtension(
       )
       ctx.services.register('adapter', adapter)
       ctx.services.register('models', mistralModels)
-      ctx.logger.info('Mistral extension initialized')
+      ctx.console.info('Mistral extension initialized')
     },
 
     healthCheck: async (ctx) => {
@@ -520,7 +519,7 @@ export function createTogetherExtension(
         ctx.config.model || 'meta-llama/Llama-3.1-70B-Instruct-Turbo'
       )
       ctx.services.register('adapter', adapter)
-      ctx.logger.info('Together AI extension initialized')
+      ctx.console.info('Together AI extension initialized')
     },
   })
 }
@@ -568,7 +567,7 @@ export function createGroqExtension(
       )
       ctx.services.register('adapter', adapter)
       ctx.services.register('models', groqModels)
-      ctx.logger.info('Groq extension initialized')
+      ctx.console.info('Groq extension initialized')
     },
   })
 }
@@ -712,7 +711,7 @@ export function createOllamaExtension(
       }
 
       ctx.services.register('adapter', adapter)
-      ctx.logger.info('Ollama extension initialized')
+      ctx.console.info('Ollama extension initialized')
     },
 
     healthCheck: async (ctx) => {
@@ -890,7 +889,7 @@ export function createAzureOpenAIExtension(
       }
 
       ctx.services.register('adapter', adapter)
-      ctx.logger.info('Azure OpenAI extension initialized')
+      ctx.console.info('Azure OpenAI extension initialized')
     },
   })
 }
@@ -941,7 +940,7 @@ export function createFireworksExtension(
         ctx.config.model || 'accounts/fireworks/models/llama-v3p1-70b-instruct'
       )
       ctx.services.register('adapter', adapter)
-      ctx.logger.info('Fireworks AI extension initialized')
+      ctx.console.info('Fireworks AI extension initialized')
     },
   })
 }
@@ -1003,7 +1002,7 @@ export function createPerplexityExtension(
         ctx.config.model || 'llama-3.1-sonar-large-128k-online'
       )
       ctx.services.register('adapter', adapter)
-      ctx.logger.info('Perplexity extension initialized')
+      ctx.console.info('Perplexity extension initialized')
     },
   })
 }
@@ -1046,7 +1045,7 @@ export function createReplicateExtension(
     },
 
     initialize: (ctx) => {
-      ctx.logger.info('Replicate extension initialized')
+      ctx.console.info('Replicate extension initialized')
       // Replicate uses a different API pattern - would need custom adapter
     },
   })
@@ -1096,7 +1095,7 @@ export function createHuggingFaceExtension(
     },
 
     initialize: (ctx) => {
-      ctx.logger.info('Hugging Face extension initialized')
+      ctx.console.info('Hugging Face extension initialized')
     },
   })
 }
@@ -1143,7 +1142,7 @@ export function createDeepSeekExtension(
         ctx.config.model || 'deepseek-chat'
       )
       ctx.services.register('adapter', adapter)
-      ctx.logger.info('DeepSeek extension initialized')
+      ctx.console.info('DeepSeek extension initialized')
     },
   })
 }
@@ -1179,7 +1178,7 @@ export function createAI21Extension(
     },
 
     initialize: (ctx) => {
-      ctx.logger.info('AI21 extension initialized')
+      ctx.console.info('AI21 extension initialized')
     },
   })
 }

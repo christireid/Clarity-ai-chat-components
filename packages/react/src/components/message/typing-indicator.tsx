@@ -2,10 +2,16 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
+<<<<<<< HEAD
 import { cn } from '@clarity-chat/primitives'
 import { Avatar } from '@clarity-chat/primitives'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
 import { getMotionSafeDuration } from '../../animations/motion-safe'
+=======
+import { cn, Avatar, useReducedMotion } from '@clarity-chat/primitives'
+import { getMotionSafeDuration } from '../../animations/motion-safe'
+import { AnimatedDots } from '../ui/animated-dots'
+>>>>>>> origin/main
 
 /**
  * Typing indicator variant styles
@@ -133,6 +139,7 @@ export function TypingIndicator({
           'min-w-[70px]'
         )}
       >
+<<<<<<< HEAD
         {variant === 'dots' && (
           <DotsAnimation prefersReducedMotion={prefersReducedMotion} />
         )}
@@ -142,12 +149,20 @@ export function TypingIndicator({
         {variant === 'wave' && (
           <WaveAnimation prefersReducedMotion={prefersReducedMotion} />
         )}
+=======
+        <AnimatedDots
+          variant={variant === 'dots' ? 'bounce' : variant}
+          size="md"
+          className="text-muted-foreground"
+        />
+>>>>>>> origin/main
       </motion.div>
     </motion.div>
   )
 }
 
 TypingIndicator.displayName = 'TypingIndicator'
+<<<<<<< HEAD
 
 /**
  * Classic bouncing dots animation
@@ -279,3 +294,5 @@ function WaveAnimation({
     </div>
   )
 }
+=======
+>>>>>>> origin/main

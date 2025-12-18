@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { logger } from '@clarity-chat/utils/logger';
 
 /**
  * Clarity Chat Codemods CLI
@@ -22,13 +23,13 @@ program
   .command('list')
   .description('List available codemods')
   .action(() => {
-    console.log(chalk.bold.cyan('\n📝 Available Codemods\n'))
+    logger.debug(chalk.bold.cyan('\n📝 Available Codemods\n'))
 
     availableTransforms.forEach((transform) => {
-      console.log(chalk.yellow(`  ${transform.name}`))
-      console.log(chalk.gray(`  ${transform.description}`))
-      console.log(chalk.gray(`  Version: ${transform.from} → ${transform.to}`))
-      console.log()
+      logger.debug(chalk.yellow(`  ${transform.name}`))
+      logger.debug(chalk.gray(`  ${transform.description}`))
+      logger.debug(chalk.gray(`  Version: ${transform.from} → ${transform.to}`))
+      logger.debug()
     })
   })
 
@@ -40,12 +41,12 @@ program
   .option('-v, --verbose', 'Show verbose output')
   .option('--parser <parser>', 'Parser to use (babel, tsx, ts)', 'tsx')
   .action(async (transformName, path, options) => {
-    console.log(chalk.bold.cyan('\n🔧 Running Codemod\n'))
+    logger.debug(chalk.bold.cyan('\n🔧 Running Codemod\n'))
 
     const transform = availableTransforms.find((t) => t.name === transformName)
     if (!transform) {
-      console.error(chalk.red(`❌ Transform "${transformName}" not found`))
-      console.log(
+      logger.error(chalk.red(`❌ Transform "${transformName}" not found`))
+      logger.debug(
         chalk.gray('\nRun') +
           chalk.cyan(' clarity-codemod list ') +
           chalk.gray('to see available transforms')
@@ -53,15 +54,15 @@ program
       process.exit(1)
     }
 
-    console.log(chalk.white(`Transform: ${chalk.cyan(transform.name)}`))
-    console.log(
+    logger.debug(chalk.white(`Transform: ${chalk.cyan(transform.name)}`))
+    logger.debug(
       chalk.white(`Description: ${chalk.gray(transform.description)}`)
     )
-    console.log(chalk.white(`Path: ${chalk.gray(path)}`))
+    logger.debug(chalk.white(`Path: ${chalk.gray(path)}`))
     if (options.dry) {
-      console.log(chalk.yellow('⚠️  Dry run mode - no files will be modified'))
+      logger.debug(chalk.yellow('⚠️  Dry run mode - no files will be modified'))
     }
-    console.log()
+    logger.debug()
 
     const spinner = ora('Transforming files...').start()
 
@@ -75,26 +76,26 @@ program
 
       spinner.succeed('Transformation complete')
 
-      console.log()
-      console.log(chalk.bold.white('Results:'))
-      console.log(chalk.green(`  ✓ Transformed: ${result.ok}`))
-      console.log(chalk.gray(`  - No change: ${result.nochange}`))
-      console.log(chalk.yellow(`  ⚠ Skipped: ${result.skip}`))
+      logger.debug()
+      logger.debug(chalk.bold.white('Results:'))
+      logger.debug(chalk.green(`  ✓ Transformed: ${result.ok}`))
+      logger.debug(chalk.gray(`  - No change: ${result.nochange}`))
+      logger.debug(chalk.yellow(`  ⚠ Skipped: ${result.skip}`))
       if (result.error > 0) {
-        console.log(chalk.red(`  ✗ Errors: ${result.error}`))
+        logger.debug(chalk.red(`  ✗ Errors: ${result.error}`))
       }
-      console.log(chalk.gray(`  ⏱️  Time: ${result.timeElapsed}`))
-      console.log()
+      logger.debug(chalk.gray(`  ⏱️  Time: ${result.timeElapsed}`))
+      logger.debug()
 
       if (options.dry) {
-        console.log(chalk.yellow('💡 Run without --dry to apply changes'))
+        logger.debug(chalk.yellow('💡 Run without --dry to apply changes'))
       } else {
-        console.log(chalk.green.bold('✓ Files have been updated!'))
+        logger.debug(chalk.green.bold('✓ Files have been updated!'))
       }
-      console.log()
+      logger.debug()
     } catch (error) {
       spinner.fail('Transformation failed')
-      console.error(
+      logger.error(
         chalk.red(
           `\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`
         )
@@ -109,11 +110,11 @@ program
   .option('-d, --dry', 'Dry run (no files will be changed)')
   .option('-v, --verbose', 'Show verbose output')
   .action(async (fromVersion, toVersion, path, options) => {
-    console.log(chalk.bold.cyan('\n🚀 Running Migration\n'))
-    console.log(chalk.white(`From: v${fromVersion}`))
-    console.log(chalk.white(`To: v${toVersion}`))
-    console.log(chalk.white(`Path: ${path}`))
-    console.log()
+    logger.debug(chalk.bold.cyan('\n🚀 Running Migration\n'))
+    logger.debug(chalk.white(`From: v${fromVersion}`))
+    logger.debug(chalk.white(`To: v${toVersion}`))
+    logger.debug(chalk.white(`Path: ${path}`))
+    logger.debug()
 
     // Find transforms needed for this migration
     const transforms = availableTransforms.filter((t) => {
@@ -126,23 +127,23 @@ program
     })
 
     if (transforms.length === 0) {
-      console.log(chalk.yellow('No transforms needed for this migration'))
+      logger.debug(chalk.yellow('No transforms needed for this migration'))
       return
     }
 
-    console.log(
+    logger.debug(
       chalk.white(`Found ${transforms.length} transform(s) to apply:\n`)
     )
     transforms.forEach((t, i) => {
-      console.log(
+      logger.debug(
         chalk.cyan(`  ${i + 1}. ${t.name}`) +
           chalk.gray(` (${t.from} → ${t.to})`)
       )
     })
-    console.log()
+    logger.debug()
 
     for (const transform of transforms) {
-      console.log(chalk.bold(`Running: ${transform.name}`))
+      logger.debug(chalk.bold(`Running: ${transform.name}`))
 
       try {
         const result = await runTransform(transform.name, path, {
@@ -150,23 +151,23 @@ program
           verbose: options.verbose,
         })
 
-        console.log(chalk.green(`  ✓ ${result.ok} files transformed`))
+        logger.debug(chalk.green(`  ✓ ${result.ok} files transformed`))
       } catch (error) {
-        console.error(
+        logger.error(
           chalk.red(
             `  ✗ Failed: ${error instanceof Error ? error.message : 'Unknown error'}`
           )
         )
       }
-      console.log()
+      logger.debug()
     }
 
     if (options.dry) {
-      console.log(chalk.yellow('💡 Run without --dry to apply changes'))
+      logger.debug(chalk.yellow('💡 Run without --dry to apply changes'))
     } else {
-      console.log(chalk.green.bold('✓ Migration complete!'))
+      logger.debug(chalk.green.bold('✓ Migration complete!'))
     }
-    console.log()
+    logger.debug()
   })
 
 program.parse()

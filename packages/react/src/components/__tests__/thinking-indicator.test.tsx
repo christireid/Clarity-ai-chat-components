@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { ThinkingIndicator } from '../thinking-indicator'
+import { ThinkingIndicator } from '../message/thinking-indicator'
 import type { AIStatus } from '@clarity-chat/types'
 
 // Mock useReducedMotion hook

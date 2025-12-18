@@ -166,7 +166,7 @@ function WithWarnings({ messages }: { messages: Message[] }) {
     maxTokens: 128000,
     onWarning: (warning) => {
       if (warning.level === 'critical') {
-        logger.logger.error(warning.message)
+        logger.error(warning.message)
         // Show critical alert
       } else if (warning.level === 'warning') {
         logger.warn(warning.message)

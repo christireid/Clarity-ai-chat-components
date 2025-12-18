@@ -3,7 +3,11 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn, Button } from '@clarity-chat/primitives'
+<<<<<<< HEAD
 import { duration } from '../../animations/constants'
+=======
+import { duration, EASING_FRAMER } from '../../animations/constants'
+>>>>>>> origin/main
 
 export type NetworkStatus = 'online' | 'offline' | 'reconnecting' | 'slow'
 
@@ -203,7 +207,7 @@ export function NetworkStatusBanner({
           exit={{ opacity: 0, height: 0 }}
           transition={{
             duration: duration('normal'),
-            ease: [0.25, 0.1, 0.25, 1],
+            ease: EASING_FRAMER.sharp,
           }}
           className={cn('border-b', config.className, className)}
           role="status"

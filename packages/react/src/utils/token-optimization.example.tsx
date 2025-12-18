@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Token Optimization Examples
  *
@@ -11,8 +10,8 @@ import {
   useTokenOptimization,
   TokenOptimizationPanel,
   TokenOptimizationBadge,
-} from '../../hooks/token/use-token-optimization'
-import { useChat } from '../hooks/use-chat-enhanced'
+} from '../hooks/token/use-token-optimization'
+import { useChat } from '../hooks/chat/use-chat-enhanced'
 
 // ============================================================================
 // Example 1: Basic Usage with Prompt Shortening
@@ -125,7 +124,7 @@ export function FullOptimizationExample() {
     // 3. Check cache
     const cached = getCachedResponse(optimized)
     if (cached) {
-      logger.debug('Using cached response!')
+      console.log('Using cached response!')
       append({ role: 'assistant', content: cached })
       return
     }

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Optimized Message Component
  *
@@ -27,6 +26,10 @@ import {
   ANIMATION_DURATION,
   EASING_FRAMER,
   INTERACTION_VARIANTS,
+<<<<<<< HEAD
+=======
+  DURATION_SECONDS as durations,
+>>>>>>> origin/main
 } from '../../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'

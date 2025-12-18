@@ -135,7 +135,7 @@ export class SimpleTokenCounter {
     this.cache.clear()
   }
 
-  // Additional methods required by tests
+  // Additional static method for tests
   static estimate(text: string): number {
     if (!text) return 0
     // Use actual token counting for better accuracy

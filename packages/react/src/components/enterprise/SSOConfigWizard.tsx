@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import {
   Badge,
@@ -134,7 +134,7 @@ const CopyableInput: React.FC<{
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      logger.logger.error('Failed to copy:', err)
+      logger.error('Failed to copy:', err)
     }
   }
 

@@ -3,14 +3,22 @@
  *
  * Loading placeholder components with shimmer animation effect.
  * Used to show content structure while data is loading.
- * Zero-dependency version - no Framer Motion required
  */
 
 import * as React from 'react'
+<<<<<<< HEAD
 import { cn } from '@clarity-chat/primitives'
+=======
+import { motion, type HTMLMotionProps } from 'framer-motion'
+import { cn } from '@clarity-chat/primitives'
+import {
+  createPulseAnimation,
+  createShimmerAnimation,
+} from '../../animations/utils'
+>>>>>>> origin/main
 
 export interface SkeletonProps extends Omit<
-  React.HTMLAttributes<HTMLDivElement>,
+  HTMLMotionProps<'div'>,
   'children'
 > {
   /** Animation type */
@@ -22,44 +30,6 @@ export interface SkeletonProps extends Omit<
   /** Border radius */
   rounded?: 'none' | 'sm' | 'md' | 'lg' | 'full'
 }
-
-// CSS animations for skeleton loading
-const SkeletonStyles = () => (
-  <style>{`
-    @keyframes skeleton-pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.4;
-      }
-    }
-
-    @keyframes skeleton-shimmer {
-      0% {
-        background-position: -200% 0;
-      }
-      100% {
-        background-position: 200% 0;
-      }
-    }
-
-    .skeleton-pulse {
-      animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    .skeleton-shimmer {
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.1),
-        transparent
-      );
-      background-size: 200% 100%;
-      animation: skeleton-shimmer 1.5s ease-in-out infinite;
-    }
-  `}</style>
-)
 
 /**
  * Base skeleton component with loading animation
@@ -81,32 +51,64 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     full: 'rounded-full',
   }
 
-  const animationClass = variant === 'pulse' 
-    ? 'skeleton-pulse' 
-    : variant === 'shimmer' 
-    ? 'skeleton-shimmer' 
-    : ''
+  // Shimmer gradient background
+  const shimmerStyle =
+    variant === 'shimmer'
+      ? {
+          backgroundImage:
+            'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+          backgroundSize: '200% 100%',
+        }
+      : {}
+
+  const variants =
+    variant === 'pulse'
+      ? createPulseAnimation()
+      : variant === 'shimmer'
+        ? createShimmerAnimation()
+        : undefined
 
   const baseStyle = {
     width: width ?? '100%',
     height: height ?? '1rem',
+    ...shimmerStyle,
     ...style,
   }
 
-  return (
-    <>
-      <SkeletonStyles />
-      <div
+  if (variant === 'none') {
+    return (
+      <motion.div
         className={cn(
           'bg-muted/60 backdrop-blur-sm',
           roundedClasses[rounded],
-          animationClass,
           className
         )}
         style={baseStyle}
         {...props}
       />
-    </>
+    )
+  }
+
+  // Extract ARIA role separately to ensure it's passed correctly to motion.div.
+  // Framer Motion's HTMLMotionProps can have type conflicts with standard HTML attributes
+  // when spread together. Explicit extraction ensures proper typing and avoids
+  // rendering role="" when undefined.
+  const { role, ...restProps } = props
+
+  return (
+    <motion.div
+      className={cn(
+        'bg-muted/60 backdrop-blur-sm',
+        roundedClasses[rounded],
+        className
+      )}
+      style={baseStyle}
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      {...(role !== undefined && { role })}
+      {...restProps}
+    />
   )
 }
 

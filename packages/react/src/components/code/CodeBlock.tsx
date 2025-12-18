@@ -1,5 +1,6 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
+
+import { logger } from '@clarity-chat/utils/logger'
 
 import * as React from 'react'
 import { codeToHtml, type BundledLanguage, type BundledTheme } from 'shiki'
@@ -211,7 +212,7 @@ export const CodeBlock = React.memo<CodeBlockProps>(function CodeBlock({
           setIsLoading(false)
         }
       } catch (err) {
-        logger.logger.error('Shiki highlighting failed:', err)
+        logger.error('Shiki highlighting failed:', err)
         if (!cancelled) {
           setError(
             err instanceof Error ? err : new Error('Highlighting failed')

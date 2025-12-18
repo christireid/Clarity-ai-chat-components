@@ -43,9 +43,21 @@
  * @packageDocumentation
  */
 
+<<<<<<< HEAD
 // =============================================================================
 // DROP-IN READY COMPONENTS
 // =============================================================================
+=======
+// Main high-level component
+export {
+  ClarityChat,
+  type ClarityChatProps,
+} from './components/chat/clarity-chat'
+export {
+  ClarityChatSimple,
+  type ClarityChatSimpleProps,
+} from './components/chat/clarity-chat-simple'
+>>>>>>> origin/main
 
 /**
  * Main chat component - drop-in ready
@@ -69,9 +81,16 @@ export {
   type UseClarityChatReturn,
 } from './hooks/chat/use-clarity-chat'
 
+<<<<<<< HEAD
 // =============================================================================
 // COMPOSABLE COMPONENTS
 // =============================================================================
+=======
+// Core components
+export { ChatWindow, type ChatWindowProps } from './components/chat/chat-window'
+export { ChatInput } from './components/chat/chat-input'
+export { MessageList } from './components/message/message-list'
+>>>>>>> origin/main
 
 /**
  * Core building blocks for custom chat interfaces
@@ -99,6 +118,7 @@ export type { Message, MessageRole } from '@clarity-chat/types'
 export {
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
+<<<<<<< HEAD
 } from './utils/message'
 
 // =============================================================================
@@ -114,6 +134,16 @@ export {
   ChatWithErrorBoundary,
   type ChatWithErrorBoundaryProps,
 } from './components/chat'
+=======
+} from './utils/message/message-conversion'
+
+// Error handling
+export { ErrorBoundary } from './components/feedback/error-boundary'
+export {
+  ChatWithErrorBoundary,
+  type ChatWithErrorBoundaryProps,
+} from './components/chat/chat-with-error-boundary'
+>>>>>>> origin/main
 
 // =============================================================================
 // COMPOSED HOOKS

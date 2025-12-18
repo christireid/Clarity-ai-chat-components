@@ -1,5 +1,9 @@
 'use client'
 
+<<<<<<< HEAD
+=======
+import { logger } from '@clarity-chat/utils/logger'
+>>>>>>> origin/main
 /**
  * useAgent - Top-level hook for AI agents
  *
@@ -97,7 +101,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
       }
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        logger.logger.error('[useAgent] Validation error:', error)
+        logger.error('[useAgent] Validation error:', error)
         throw error
       }
     }
@@ -154,7 +158,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         setError(error)
         // Log error for debugging
         if (process.env['NODE_ENV'] === 'development') {
-          logger.logger.error('[useAgent] Execution failed:', error)
+          logger.error('[useAgent] Execution failed:', error)
         }
         throw error
       } finally {

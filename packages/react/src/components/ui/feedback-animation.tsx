@@ -19,6 +19,7 @@ import {
 import {
   ANIMATION_DURATION,
   EASING_FRAMER,
+  DURATION_SECONDS as durations,
   // createSuccessAnimation, // Reserved for future use
   // createErrorAnimation, // Reserved for future use
 } from '../../animations'

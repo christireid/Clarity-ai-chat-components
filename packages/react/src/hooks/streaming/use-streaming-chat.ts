@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 'use client'
 
+=======
+>>>>>>> origin/main
 /**
  * useStreamingChat - Top-level hook for streaming chat
  *
@@ -18,11 +21,16 @@
  */
 
 import * as React from 'react'
+<<<<<<< HEAD
 import {
   useClarityChat,
   type UseClarityChatOptions,
 } from '../chat/use-clarity-chat'
 import { convertCoreMessagesToMessages } from '../../utils/message'
+=======
+import { useClarityChat, type UseClarityChatOptions } from '../use-clarity-chat'
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
+>>>>>>> origin/main
 import {
   validateApiEndpoint,
   validateStreamingProtocol,
@@ -93,7 +101,7 @@ export function useStreamingChat(
       validateStreamingProtocol(protocol)
     } catch (error) {
       if (process.env['NODE_ENV'] === 'development') {
-        logger.logger.error('[useStreamingChat] Validation error:', error)
+        logger.error('[useStreamingChat] Validation error:', error)
         throw error
       }
     }

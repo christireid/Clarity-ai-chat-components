@@ -1,3 +1,4 @@
+import { logger } from '../logger'
 /**
  * Error Handling Utilities
  *
@@ -36,14 +37,14 @@ export function formatError(error: Error | ClarityError): string {
  */
 export function logError(errorToLog: Error | ClarityError): void {
   if (errorToLog instanceof ClarityError) {
-    console.error(errorToLog.toTerminalString())
+    logger.error(errorToLog.toTerminalString())
   } else {
-    console.error('\n❌ Unexpected Error:', errorToLog.message)
+    logger.error('\n❌ Unexpected Error:', errorToLog.message)
     if (errorToLog.stack) {
-      console.error('\nStack trace:')
-      console.error(errorToLog.stack)
+      logger.error('\nStack trace:')
+      logger.error(errorToLog.stack)
     }
-    console.error('')
+    logger.error('')
   }
 }
 

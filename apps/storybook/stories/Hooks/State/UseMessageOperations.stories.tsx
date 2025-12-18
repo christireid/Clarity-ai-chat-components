@@ -1,4 +1,3 @@
-import { SecureLogger } from '@/lib/security/secureLogger';
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useMessageOperations } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
@@ -6,10 +5,10 @@ import { useState } from 'react'
 
 /**
  * **useMessageOperations Hook**
- * 
+ *
  * Comprehensive hook for managing message CRUD operations with undo/redo,
  * editing, regeneration, and conversation branching.
- * 
+ *
  * **Key Features:**
  * - Add, edit, delete messages
  * - Undo/redo functionality
@@ -17,7 +16,7 @@ import { useState } from 'react'
  * - Message regeneration
  * - Conversation branching
  * - Operation history tracking
- * 
+ *
  * **Use Cases:**
  * - Chat applications with editing
  * - Conversation management
@@ -58,8 +57,8 @@ const {
   canRedo
 } = useMessageOperations({
   initialMessages: [],
-  onEdit: (id, content) => SecureLogger.debug('Edited:', id, content),
-  onRegenerate: (id) => SecureLogger.debug('Regenerating:', id)
+  onEdit: (id, content) => console.log('Edited:', id, content),
+  onRegenerate: (id) => console.log('Regenerating:', id)
 })
 \`\`\`
         `,
@@ -144,7 +143,11 @@ function BasicOperationsDemo() {
                     <Button size="sm" onClick={handleSaveEdit}>
                       Save
                     </Button>
-                    <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCancelEdit}
+                    >
                       Cancel
                     </Button>
                   </div>
@@ -224,7 +227,8 @@ export const BasicOperations: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Basic message operations: add, edit, delete with undo/redo support.',
+        story:
+          'Basic message operations: add, edit, delete with undo/redo support.',
       },
     },
   },
@@ -286,7 +290,11 @@ function MessageEditingDemo() {
                   >
                     Save
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => cancelEditing(msg.id)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => cancelEditing(msg.id)}
+                  >
                     Cancel
                   </Button>
                 </div>
@@ -329,8 +337,8 @@ function MessageEditingDemo() {
       </div>
 
       <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-xs">
-        <strong>Editing Mode:</strong> Click "Edit" on any message to enter editing mode.
-        Messages track version numbers when edited.
+        <strong>Editing Mode:</strong> Click "Edit" on any message to enter
+        editing mode. Messages track version numbers when edited.
       </div>
     </div>
   )
@@ -359,12 +367,13 @@ function RegenerationDemo() {
       {
         id: '2',
         role: 'assistant',
-        content: 'Why did the chicken cross the road? To get to the other side!',
+        content:
+          'Why did the chicken cross the road? To get to the other side!',
         timestamp: Date.now() - 30000,
       },
     ],
     onRegenerate: (id) => {
-      SecureLogger.debug('Regenerating message:', id)
+      console.log('Regenerating message:', id)
       // In a real app, this would trigger an API call
     },
   })
@@ -418,8 +427,9 @@ function RegenerationDemo() {
       </div>
 
       <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-xs">
-        <strong>Regeneration:</strong> Click "Regenerate" on assistant messages to
-        request a new response. In a real app, this would trigger an API call.
+        <strong>Regeneration:</strong> Click "Regenerate" on assistant messages
+        to request a new response. In a real app, this would trigger an API
+        call.
       </div>
     </div>
   )

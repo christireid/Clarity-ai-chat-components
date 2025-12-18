@@ -6,7 +6,11 @@ import {
   modernThemes,
   type ModernThemePresetName,
 } from '../../theme/modern-presets'
+<<<<<<< HEAD
 import type { CompleteThemeConfig } from '../theme/theme-config'
+=======
+import type { CompleteThemeConfig } from '../../theme/theme-config'
+>>>>>>> origin/main
 
 /**
  * ThemePreviewThumbnail - Visual thumbnail preview of a theme

@@ -3,7 +3,11 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "removeComments": true
+    "removeComments": true,
+    "paths": {
+      "@clarity-chat/utils": ["../utils/dist/index.d.ts"],
+      "@clarity-chat/utils/*": ["../utils/dist/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

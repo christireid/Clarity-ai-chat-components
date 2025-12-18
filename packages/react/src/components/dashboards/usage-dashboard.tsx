@@ -17,7 +17,11 @@ import type {
   UsageLimit,
   UsageMetrics,
 } from '@clarity-chat/types'
+<<<<<<< HEAD
 import { DURATION_SECONDS } from '../../animations/constants'
+=======
+import { DURATION_SECONDS, EASING_FRAMER } from '../../animations/constants'
+>>>>>>> origin/main
 
 export interface UsageDashboardProps {
   balance: CreditBalance
@@ -203,7 +207,7 @@ export function UsageDashboard({
                         transition={{
                           delay: baseDelay,
                           duration: DURATION_SECONDS.normal,
-                          ease: [0.25, 0.1, 0.25, 1],
+                          ease: EASING_FRAMER.sharp,
                         }}
                         className={cn(
                           'p-4 rounded-xl border border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-shadow duration-200',
@@ -283,7 +287,7 @@ export function UsageDashboard({
                     transition={{
                       delay: index * 0.05,
                       duration: DURATION_SECONDS.normal,
-                      ease: [0.25, 0.1, 0.25, 1],
+                      ease: EASING_FRAMER.sharp,
                     }}
                     className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border/40 hover:bg-muted/50 transition-colors duration-200"
                   >
@@ -318,7 +322,7 @@ export function UsageDashboard({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   duration: DURATION_SECONDS.normal,
-                  ease: [0.25, 0.1, 0.25, 1],
+                  ease: EASING_FRAMER.sharp,
                 }}
                 className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-500/30 rounded-xl shadow-[0_2px_8px_rgba(245,158,11,0.1)]"
               >

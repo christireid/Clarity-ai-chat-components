@@ -48,4 +48,4 @@ export * from './microanimations'
 export * from './theme-animations'
 
 // Re-export the useReducedMotion hook for convenience
-export { useReducedMotion } from '../hooks/ui/use-reduced-motion'
+export { useReducedMotion } from '@clarity-chat/primitives'

@@ -64,7 +64,7 @@ export async function doctorCommand(options: DoctorOptions) {
     try {
       config = await loadConfig(cwd)
     } catch (err) {
-      logger.debug('Config not found or invalid', err)
+      console.log('Config not found or invalid', err)
     }
 
     // Check 1: package.json exists
@@ -395,7 +395,7 @@ GOOGLE_API_KEY=your_key_here
           } else if (result.status === 'warn') {
             warn(`${name}: ${result.message}`)
           } else {
-            logger.error(`${name}: ${result.message}`)
+            console.error(`${name}: ${result.message}`)
           }
         })
       }
@@ -408,7 +408,7 @@ GOOGLE_API_KEY=your_key_here
           } else if (result.status === 'warn') {
             warn(`${name}: ${result.message}`)
           } else {
-            logger.error(`${name}: ${result.message}`)
+            console.error(`${name}: ${result.message}`)
           }
         })
       })
@@ -448,7 +448,7 @@ GOOGLE_API_KEY=your_key_here
       console.log('\n' + pc.bold('Summary:'))
       success(`Passed: ${passCount}`)
       if (warnCount > 0) warn(`Warnings: ${warnCount}`)
-      if (failCount > 0) logger.error(`Failed: ${failCount}`)
+      if (failCount > 0) console.error(`Failed: ${failCount}`)
     }
 
     // Auto-fix if requested
@@ -475,8 +475,8 @@ GOOGLE_API_KEY=your_key_here
             success(`Fixed: ${name}`)
           } catch (err) {
             fixSpinner.fail(`Failed to fix ${name}`)
-            logger.error(err instanceof Error ? err : new Error(String(err)))
-            logger.error(`Failed to fix: ${name}`)
+            console.error(err instanceof Error ? err : new Error(String(err)))
+            console.error(`Failed to fix: ${name}`)
           }
         }
       }

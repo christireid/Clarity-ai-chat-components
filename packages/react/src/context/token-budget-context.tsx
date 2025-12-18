@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import * as React from 'react'
@@ -103,7 +102,7 @@ export function TokenBudgetProvider({
   const setModel = React.useCallback(
     (newModel: BudgetMonitorModel) => {
       if (!isValidBudgetMonitorModel(newModel)) {
-        logger.warn(
+        console.warn(
           `[TokenBudgetProvider] Invalid model: "${newModel}". Ignoring.`
         )
         return

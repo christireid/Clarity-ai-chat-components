@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useClarityChat Storybook Stories
  *
@@ -8,7 +7,11 @@ import { logger } from '@clarity-chat/utils/logger';
 import type { Meta, StoryObj } from '@storybook/react'
 import React, { useMemo } from 'react'
 import { useClarityChat, coreMessagesToMessages } from './use-clarity-chat'
+<<<<<<< HEAD
 import { ChatWindow } from '../components/chat/chat-window'
+=======
+import { ChatWindow } from '../../components/chat/chat-window'
+>>>>>>> origin/main
 import {
   Card,
   CardContent,
@@ -281,7 +284,7 @@ export const AdvancedFeatures: Story = {
       userId: 'user-123',
       threadId: 'thread-456',
       onFinish: (message) => {
-        logger.debug('Message finished:', message)
+        console.log('Message finished:', message)
       },
       fetch: async (url, options) => {
         const body = JSON.parse((options?.body as string) || '{}')

@@ -4,7 +4,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import * as React from 'react'
-import { ErrorBoundary } from '../error-boundary'
+import { ErrorBoundary } from '../feedback/error-boundary'
 
 // Component that throws an error
 const ThrowError: React.FC<{ shouldThrow: boolean; errorMessage?: string }> = ({
@@ -71,7 +71,9 @@ describe('ErrorBoundary', () => {
         </ErrorBoundary>
       )
 
-      expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /try again/i })
+      ).toBeInTheDocument()
     })
 
     it('should call onError callback when error occurs', () => {
@@ -129,12 +131,17 @@ describe('ErrorBoundary', () => {
 
       render(
         <ErrorBoundary fallback={fallback}>
-          <ThrowError shouldThrow={true} errorMessage="Function fallback error" />
+          <ThrowError
+            shouldThrow={true}
+            errorMessage="Function fallback error"
+          />
         </ErrorBoundary>
       )
 
       expect(fallback).toHaveBeenCalled()
-      expect(screen.getByText('Error: Function fallback error')).toBeInTheDocument()
+      expect(
+        screen.getByText('Error: Function fallback error')
+      ).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument()
     })
   })
@@ -296,7 +303,10 @@ describe('ErrorBoundary', () => {
     it('should display error message in fallback', () => {
       render(
         <ErrorBoundary>
-          <ThrowError shouldThrow={true} errorMessage="Specific error message" />
+          <ThrowError
+            shouldThrow={true}
+            errorMessage="Specific error message"
+          />
         </ErrorBoundary>
       )
 

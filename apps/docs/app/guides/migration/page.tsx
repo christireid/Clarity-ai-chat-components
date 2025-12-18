@@ -26,7 +26,7 @@ export default async function MigrationGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read migration guide', error)
+    logger.error('Failed to read migration guide', error)
     content = '# Migration\n\nContent not available.'
   }
 

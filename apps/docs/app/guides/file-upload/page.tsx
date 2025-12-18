@@ -26,7 +26,7 @@ export default async function FileUploadGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read file-upload guide', error)
+    logger.error('Failed to read file-upload guide', error)
     content = '# File-upload\n\nContent not available.'
   }
 

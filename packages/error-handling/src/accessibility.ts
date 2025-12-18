@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { logger } from '@clarity-chat/utils/logger'
+>>>>>>> origin/main
 /**
  * Enhanced Accessibility Utilities
  *
@@ -77,7 +81,11 @@ export function useFocusManagement(
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const focusableElementsRef = useRef<HTMLElement[]>([])
 
+<<<<<<< HEAD
   useEffect((): void | (() => void) => {
+=======
+  useEffect(() => {
+>>>>>>> origin/main
     if (!containerRef.current) return
 
     // Store current focus before managing
@@ -115,6 +123,7 @@ export function useFocusManagement(
         focusableElementsRef.current.includes(initialElement)
       ) {
         initialElement.focus({ preventScroll: false })
+<<<<<<< HEAD
         console.debug('Focus set to initial element', {
           selector: initialFocus,
         })
@@ -122,6 +131,16 @@ export function useFocusManagement(
     } else if (focusableElementsRef.current.length > 0) {
       focusableElementsRef.current[0]?.focus({ preventScroll: false })
       console.debug('Focus set to first focusable element')
+=======
+        logger.debug('Focus set to initial element', { selector: initialFocus })
+      }
+    } else if (
+      focusableElementsRef.current.length > 0 &&
+      focusableElementsRef.current[0]
+    ) {
+      focusableElementsRef.current[0].focus({ preventScroll: false })
+      logger.debug('Focus set to first focusable element')
+>>>>>>> origin/main
     }
 
     // Handle focus trapping
@@ -138,15 +157,28 @@ export function useFocusManagement(
             focusableElementsRef.current.length
           : (currentIndex + 1) % focusableElementsRef.current.length
 
+<<<<<<< HEAD
         focusableElementsRef.current[nextIndex]?.focus()
         console.debug('Focus trapped to next element', {
           direction: event.shiftKey ? 'previous' : 'next',
         })
+=======
+        if (focusableElementsRef.current[nextIndex]) {
+          focusableElementsRef.current[nextIndex].focus()
+          logger.debug('Focus trapped to next element', {
+            direction: event.shiftKey ? 'previous' : 'next',
+          })
+        }
+>>>>>>> origin/main
       }
 
       document.addEventListener('keydown', handleKeyDown)
       return () => document.removeEventListener('keydown', handleKeyDown)
     }
+<<<<<<< HEAD
+=======
+    return undefined
+>>>>>>> origin/main
   }, [containerRef, trapFocus, initialFocus])
 
   // Restore focus on unmount
@@ -159,7 +191,11 @@ export function useFocusManagement(
 
         if (elementToFocus && elementToFocus.focus) {
           elementToFocus.focus({ preventScroll: true })
+<<<<<<< HEAD
           console.debug('Focus restored to previous element')
+=======
+          logger.debug('Focus restored to previous element')
+>>>>>>> origin/main
         }
       }
     }
@@ -249,7 +285,11 @@ export function useScreenReaderAnnounce(
       region.style.overflow = 'hidden'
       document.body.appendChild(region)
       announcementRef.current = region
+<<<<<<< HEAD
       console.debug('Created ARIA live region', { priority })
+=======
+      logger.debug('Created ARIA live region', { priority })
+>>>>>>> origin/main
     }
 
     const timeoutId = setTimeout(() => {
@@ -265,7 +305,11 @@ export function useScreenReaderAnnounce(
 
             // Reset announcing state after a reasonable time
             setTimeout(() => setIsAnnouncing(false), 1000)
+<<<<<<< HEAD
             console.debug('Screen reader announcement', { message, priority })
+=======
+            logger.debug('Screen reader announcement', { message, priority })
+>>>>>>> origin/main
           }
         }, 100)
       }
@@ -280,7 +324,11 @@ export function useScreenReaderAnnounce(
       if (announcementRef.current) {
         document.body.removeChild(announcementRef.current)
         announcementRef.current = null
+<<<<<<< HEAD
         console.debug('Removed ARIA live region')
+=======
+        logger.debug('Removed ARIA live region')
+>>>>>>> origin/main
       }
     }
   }, [])
@@ -308,11 +356,15 @@ export function useHighContrastMode(): boolean {
   const [isHighContrast, setIsHighContrast] = useState(false)
 
   useEffect(() => {
+    // Safety check
+    if (typeof window === 'undefined' || !window.matchMedia) return
+
     const checkHighContrast = () => {
       // Check for Windows high contrast mode
       const isWindowsHighContrast = window.matchMedia(
         '(-ms-high-contrast: active)'
       ).matches
+<<<<<<< HEAD
 
       // Check for forced colors (CSS media query)
       const isForcedColors = window.matchMedia(
@@ -330,18 +382,62 @@ export function useHighContrastMode(): boolean {
       }
     }
 
+=======
+
+      // Check for forced colors (CSS media query)
+      const isForcedColors = window.matchMedia(
+        '(forced-colors: active)'
+      ).matches
+
+      const highContrast = isWindowsHighContrast || isForcedColors
+      setIsHighContrast(highContrast)
+
+      if (highContrast) {
+        logger.debug('High contrast mode detected', {
+          windowsHighContrast: isWindowsHighContrast,
+          forcedColors: isForcedColors,
+        })
+      }
+    }
+
+>>>>>>> origin/main
     checkHighContrast()
 
     // Listen for changes
     const mediaQuery1 = window.matchMedia('(-ms-high-contrast: active)')
     const mediaQuery2 = window.matchMedia('(forced-colors: active)')
 
+<<<<<<< HEAD
     mediaQuery1.addEventListener('change', checkHighContrast)
     mediaQuery2.addEventListener('change', checkHighContrast)
 
     return () => {
       mediaQuery1.removeEventListener('change', checkHighContrast)
       mediaQuery2.removeEventListener('change', checkHighContrast)
+=======
+    const addListener = (mq: MediaQueryList, handler: () => void) => {
+      if (mq.addEventListener) {
+        mq.addEventListener('change', handler)
+      } else if (mq.addListener) {
+        mq.addListener(handler)
+      }
+    }
+
+    const removeListener = (mq: MediaQueryList, handler: () => void) => {
+      if (mq.removeEventListener) {
+        mq.removeEventListener('change', handler)
+      } else if (mq.removeListener) {
+        mq.removeListener(handler)
+      }
+    }
+
+    addListener(mediaQuery1, checkHighContrast)
+    addListener(mediaQuery2, checkHighContrast)
+
+    return () => {
+      removeListener(mediaQuery1, checkHighContrast)
+      removeListener(mediaQuery2, checkHighContrast)
+>>>>>>> origin/main
     }
   }, [])
 
@@ -359,18 +455,39 @@ export function useReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
   useEffect(() => {
+<<<<<<< HEAD
+=======
+    // Safety check
+    if (typeof window === 'undefined' || !window.matchMedia) return
+
+>>>>>>> origin/main
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     setPrefersReducedMotion(mediaQuery.matches)
 
     const handleChange = (event: MediaQueryListEvent) => {
       setPrefersReducedMotion(event.matches)
+<<<<<<< HEAD
       console.debug('Reduced motion preference changed', {
+=======
+      logger.debug('Reduced motion preference changed', {
+>>>>>>> origin/main
         prefersReducedMotion: event.matches,
       })
     }
 
+<<<<<<< HEAD
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
+=======
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleChange as any)
+      return () => mediaQuery.removeListener(handleChange as any)
+    }
+    return undefined
+>>>>>>> origin/main
   }, [])
 
   return prefersReducedMotion
@@ -416,14 +533,22 @@ export function useColorContrast(
       }
       setContrast(result)
 
+<<<<<<< HEAD
       console.debug('Color contrast calculated', {
+=======
+      logger.debug('Color contrast calculated', {
+>>>>>>> origin/main
         foreground: foregroundColor,
         background: backgroundColor,
         ratio,
         wcag: result,
       })
     } catch (error) {
+<<<<<<< HEAD
       console.error('Color contrast calculation failed', {
+=======
+      logger.error('Color contrast calculation failed', {
+>>>>>>> origin/main
         foreground: foregroundColor,
         background: backgroundColor,
         error: error instanceof Error ? error.message : String(error),
@@ -466,11 +591,19 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   if (cleanHex.length !== 6) return null
 
   const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex)
+<<<<<<< HEAD
   return result
     ? {
         r: parseInt(result[1]!, 16),
         g: parseInt(result[2]!, 16),
         b: parseInt(result[3]!, 16),
+=======
+  return result && result[1] && result[2] && result[3]
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+>>>>>>> origin/main
       }
     : null
 }
@@ -491,7 +624,13 @@ function getRelativeLuminance(rgb: {
       : Math.pow((value + 0.055) / 1.055, 2.4)
   })
 
+<<<<<<< HEAD
   return 0.2126 * sRGB[0]! + 0.7152 * sRGB[1]! + 0.0722 * sRGB[2]!
+=======
+  return (
+    0.2126 * (sRGB[0] ?? 0) + 0.7152 * (sRGB[1] ?? 0) + 0.0722 * (sRGB[2] ?? 0)
+  )
+>>>>>>> origin/main
 }
 
 // ============================================================================
@@ -535,7 +674,11 @@ export function useKeyboardNavigation(options: KeyboardNavigationOptions = {}) {
           event.preventDefault()
         }
         handler(event)
+<<<<<<< HEAD
         console.debug('Keyboard navigation event handled', { key: event.key })
+=======
+        logger.debug('Keyboard navigation event handled', { key: event.key })
+>>>>>>> origin/main
       }
     }
 
@@ -563,7 +706,11 @@ export function useFocusManagementLegacy() {
    */
   const captureFocus = useCallback(() => {
     previousFocusRef.current = document.activeElement as HTMLElement
+<<<<<<< HEAD
     console.debug('Focus captured for error handling')
+=======
+    logger.debug('Focus captured for error handling')
+>>>>>>> origin/main
   }, [])
 
   /**
@@ -572,7 +719,11 @@ export function useFocusManagementLegacy() {
   const focusError = useCallback(() => {
     if (errorContainerRef.current) {
       errorContainerRef.current.focus({ preventScroll: false })
+<<<<<<< HEAD
       console.debug('Focus moved to error container')
+=======
+      logger.debug('Focus moved to error container')
+>>>>>>> origin/main
     }
   }, [])
 
@@ -583,7 +734,11 @@ export function useFocusManagementLegacy() {
     if (previousFocusRef.current && previousFocusRef.current.focus) {
       previousFocusRef.current.focus({ preventScroll: true })
       previousFocusRef.current = null
+<<<<<<< HEAD
       console.debug('Focus restored to previous element')
+=======
+      logger.debug('Focus restored to previous element')
+>>>>>>> origin/main
     }
   }, [])
 
@@ -662,10 +817,14 @@ export function useAnnounce() {
         }
       }, 100)
 
+<<<<<<< HEAD
       console.debug('Screen reader announcement (legacy)', {
         message,
         priority,
       })
+=======
+      logger.debug('Screen reader announcement (legacy)', { message, priority })
+>>>>>>> origin/main
     },
     []
   )
@@ -699,3 +858,9 @@ export function useIdLegacy(prefix: string): string {
   }
   return idRef.current
 }
+<<<<<<< HEAD
+=======
+
+// Export legacy name for backward compatibility
+export { usePrefersReducedMotionLegacy as usePrefersReducedMotion }
+>>>>>>> origin/main

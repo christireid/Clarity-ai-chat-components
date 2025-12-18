@@ -1,3 +1,4 @@
+import { logger } from '../logger'
 /**
  * Progress Tracking Utilities
  *
@@ -117,7 +118,7 @@ function createFallbackSpinner(initialText: string): Spinner {
     },
     fail: (msg?: string) => {
       isActive = false
-      console.error(`✗ ${msg ?? currentText}`)
+      logger.error(`✗ ${msg ?? currentText}`)
       return fallback
     },
     warn: (msg?: string) => {

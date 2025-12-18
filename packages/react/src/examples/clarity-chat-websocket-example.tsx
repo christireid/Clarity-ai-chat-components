@@ -17,7 +17,7 @@
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { convertCoreMessagesToMessages } from '../utils/message/message-conversion'
 import { Badge } from '@clarity-chat/primitives'
 
 /**

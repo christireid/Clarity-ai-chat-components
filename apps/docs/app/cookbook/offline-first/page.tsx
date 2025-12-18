@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import type { Metadata } from 'next'
@@ -115,7 +114,7 @@ function OfflineChat() {
           await chat.append(message)
           setPendingMessages(prev => prev.filter(m => m.id !== message.id))
         } catch (error) {
-          logger.logger.error('Failed to sync message:', error)
+          logger.error('Failed to sync message:', error)
         }
       })
     }

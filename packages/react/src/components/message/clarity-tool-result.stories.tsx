@@ -1,6 +1,6 @@
 /**
  * ClarityToolResult Storybook Stories
- * 
+ *
  * Demonstrates the tool UI registry pattern and ClarityToolResult component
  */
 
@@ -8,7 +8,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { ClarityToolResult, type ToolCall } from './clarity-tool-result'
 import { createToolUIRegistry } from '../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader, Badge } from '@clarity-chat/primitives'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 
 const meta: Meta<typeof ClarityToolResult> = {
   title: 'Components/ClarityToolResult',
@@ -43,12 +43,12 @@ const registry = createToolUIRegistry({
   messages={messages}
 />
 \`\`\`
-        `
-      }
+        `,
+      },
     },
-    layout: 'padded'
+    layout: 'padded',
   },
-  tags: ['autodocs']
+  tags: ['autodocs'],
 }
 
 export default meta
@@ -136,24 +136,24 @@ const mockMessages: CoreMessage[] = [
   {
     id: '1',
     role: 'user',
-    content: 'What is the weather in San Francisco?'
+    content: 'What is the weather in San Francisco?',
   },
   {
     id: '2',
     role: 'assistant',
-    content: 'Let me check the weather for you.'
-  }
+    content: 'Let me check the weather for you.',
+  },
 ]
 
 export const WeatherTool: Story = {
   args: {
     registry: createToolUIRegistry({
-      get_weather: WeatherResult
+      get_weather: WeatherResult,
     }),
     toolCall: {
       name: 'get_weather',
       args: { location: 'San Francisco', units: 'fahrenheit' },
-      id: 'call_123'
+      id: 'call_123',
     },
     result: {
       location: 'San Francisco',
@@ -161,28 +161,28 @@ export const WeatherTool: Story = {
       condition: 'Sunny',
       humidity: 65,
       windSpeed: 10,
-      units: 'fahrenheit'
+      units: 'fahrenheit',
     },
-    messages: mockMessages
+    messages: mockMessages,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Weather tool result with custom UI component'
-      }
-    }
-  }
+        story: 'Weather tool result with custom UI component',
+      },
+    },
+  },
 }
 
 export const FAQSearchTool: Story = {
   args: {
     registry: createToolUIRegistry({
-      search_faq: FAQResults
+      search_faq: FAQResults,
     }),
     toolCall: {
       name: 'search_faq',
       args: { query: 'password reset', limit: 3 },
-      id: 'call_456'
+      id: 'call_456',
     },
     result: {
       query: 'password reset',
@@ -190,37 +190,37 @@ export const FAQSearchTool: Story = {
         {
           question: 'How do I reset my password?',
           answer: 'Go to Settings > Security > Reset Password',
-          category: 'Account'
+          category: 'Account',
         },
         {
           question: 'What if I forgot my email?',
           answer: 'Contact support with your account details',
-          category: 'Account'
+          category: 'Account',
         },
         {
           question: 'How long does reset take?',
           answer: 'Password reset emails arrive within 5 minutes',
-          category: 'Account'
-        }
+          category: 'Account',
+        },
       ],
-      totalResults: 3
+      totalResults: 3,
     },
-    messages: mockMessages
+    messages: mockMessages,
   },
   parameters: {
     docs: {
       description: {
-        story: 'FAQ search tool result with custom UI component'
-      }
-    }
-  }
+        story: 'FAQ search tool result with custom UI component',
+      },
+    },
+  },
 }
 
 export const MultipleTools: Story = {
   render: () => {
     const registry = createToolUIRegistry({
       get_weather: WeatherResult,
-      search_faq: FAQResults
+      search_faq: FAQResults,
     })
 
     return (
@@ -230,7 +230,7 @@ export const MultipleTools: Story = {
           toolCall={{
             name: 'get_weather',
             args: { location: 'New York', units: 'celsius' },
-            id: 'call_1'
+            id: 'call_1',
           }}
           result={{
             location: 'New York',
@@ -238,7 +238,7 @@ export const MultipleTools: Story = {
             condition: 'Cloudy',
             humidity: 70,
             windSpeed: 15,
-            units: 'celsius'
+            units: 'celsius',
           }}
           messages={mockMessages}
         />
@@ -247,7 +247,7 @@ export const MultipleTools: Story = {
           toolCall={{
             name: 'search_faq',
             args: { query: 'billing', limit: 2 },
-            id: 'call_2'
+            id: 'call_2',
           }}
           result={{
             query: 'billing',
@@ -255,15 +255,15 @@ export const MultipleTools: Story = {
               {
                 question: 'What is your refund policy?',
                 answer: 'We offer 30-day money-back guarantee',
-                category: 'Billing'
+                category: 'Billing',
               },
               {
                 question: 'How do I update my payment method?',
                 answer: 'Go to Settings > Billing > Payment Methods',
-                category: 'Billing'
-              }
+                category: 'Billing',
+              },
             ],
-            totalResults: 2
+            totalResults: 2,
           }}
           messages={mockMessages}
         />
@@ -273,10 +273,10 @@ export const MultipleTools: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Multiple tool results using the same registry'
-      }
-    }
-  }
+        story: 'Multiple tool results using the same registry',
+      },
+    },
+  },
 }
 
 export const UnregisteredTool: Story = {
@@ -285,32 +285,32 @@ export const UnregisteredTool: Story = {
     toolCall: {
       name: 'unknown_tool',
       args: { data: 'some data' },
-      id: 'call_999'
+      id: 'call_999',
     },
     result: {
       status: 'success',
-      data: { value: 42, message: 'Tool executed successfully' }
+      data: { value: 42, message: 'Tool executed successfully' },
     },
-    messages: mockMessages
+    messages: mockMessages,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Fallback rendering for unregistered tools (shows JSON)'
-      }
-    }
-  }
+        story: 'Fallback rendering for unregistered tools (shows JSON)',
+      },
+    },
+  },
 }
 
 export const WithHeader: Story = {
   args: {
     registry: createToolUIRegistry({
-      get_weather: WeatherResult
+      get_weather: WeatherResult,
     }),
     toolCall: {
       name: 'get_weather',
       args: { location: 'London', units: 'celsius' },
-      id: 'call_789'
+      id: 'call_789',
     },
     result: {
       location: 'London',
@@ -318,16 +318,16 @@ export const WithHeader: Story = {
       condition: 'Rainy',
       humidity: 80,
       windSpeed: 20,
-      units: 'celsius'
+      units: 'celsius',
     },
     messages: mockMessages,
-    showHeader: true
+    showHeader: true,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Tool result with header showing tool name'
-      }
-    }
-  }
+        story: 'Tool result with header showing tool name',
+      },
+    },
+  },
 }

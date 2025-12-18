@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Middleware Pipeline System
  *
@@ -49,7 +49,7 @@ function createDefaultLogger(): ExtensionLogger {
       if (isDev) logger.info('[Middleware]', msg, ...args)
     },
     warn: (msg, ...args) => logger.warn('[Middleware]', msg, ...args),
-    error: (msg, ...args) => logger.logger.error('[Middleware]', msg, ...args),
+    error: (msg, ...args) => logger.error('[Middleware]', msg, ...args),
     child: (prefix) => ({
       debug: (msg, ...args) => {
         if (isDev) logger.debug(`[Middleware:${prefix}]`, msg, ...args)
@@ -60,7 +60,7 @@ function createDefaultLogger(): ExtensionLogger {
       warn: (msg, ...args) =>
         logger.warn(`[Middleware:${prefix}]`, msg, ...args),
       error: (msg, ...args) =>
-        logger.logger.error(`[Middleware:${prefix}]`, msg, ...args),
+        logger.error(`[Middleware:${prefix}]`, msg, ...args),
       child: function (p: string) {
         return createDefaultLogger().child(`${prefix}:${p}`)
       },

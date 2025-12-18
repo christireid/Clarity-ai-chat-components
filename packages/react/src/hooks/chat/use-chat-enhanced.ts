@@ -1,5 +1,6 @@
 'use client'
 
+<<<<<<< HEAD
 /**
  * useChatEnhanced - Mid-Level Enhanced Chat Hook
  *
@@ -18,6 +19,12 @@
  * const { messages, append } = useClarityChat({ api: '/api/chat' })
  * ```
  *
+=======
+import { logger } from '@clarity-chat/utils/logger'
+/**
+ * useChatEnhanced - Mid-Level Enhanced Chat Hook
+ *
+>>>>>>> origin/main
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Chat & Completions
  *
@@ -25,6 +32,12 @@
  * Provides a complete chat interface with streaming support, message management,
  * and all features found in Vercel AI SDK's useChat, plus additional enterprise features.
  *
+<<<<<<< HEAD
+=======
+ * For simpler use cases, use top-level `useClarityChat` instead.
+ * For basic chat, use `useChat` (low-level) instead.
+ *
+>>>>>>> origin/main
  * @param options - Chat configuration options
  * @param options.api - API endpoint URL (required)
  * @param options.initialMessages - Initial messages array
@@ -224,7 +237,7 @@ export interface UseChatReturn {
  *   api: '/api/chat',
  *   initialMessages: [],
  *   onFinish: (message) => logger.debug('Finished:', message),
- *   onError: (error) => logger.logger.error('Error:', error),
+ *   onError: (error) => logger.error('Error:', error),
  * })
  * ```
  */

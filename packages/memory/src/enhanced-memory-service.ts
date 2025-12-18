@@ -1,25 +1,37 @@
 /**
  * Enhanced Memory Service with Advanced Token Optimization
- *
+ * 
  * Production-ready memory management with enterprise-grade token optimization,
  * security, and performance enhancements
  */
 
 import type {
   MemoryItem,
+  MemoryQuery as _MemoryQuery,
+  MemorySearchResult as _MemorySearchResult,
   MemoryServiceConfig,
+  MemoryStats as _MemoryStats,
+  MemoryType as _MemoryType,
+  MemoryScope as _MemoryScope,
+  MemoryPriority as _MemoryPriority,
+  MemoryEvent as _MemoryEvent,
   MemoryEventListener,
   MemoryBuffer,
   MemoryContext,
   VectorStore,
+  VectorStoreMatch as _VectorStoreMatch,
+  VectorStoreVector as _VectorStoreVector,
+  VectorStoreQuery as _VectorStoreQuery,
   EmbeddingProvider,
+  AddOptions as _AddOptions,
   ContextOptions,
   ContextBundle,
+  TokenBreakdown as _TokenBreakdown,
 } from './types'
 
 // Enhanced imports with new token optimization
-import { ContextOptimizer } from './token-optimizer'
-import {
+import { TokenCounter as _TokenCounter, ContextOptimizer } from './token-optimizer'
+import { 
   AccurateTokenCounter,
   TokenSecurityManager,
   ToonOptimizer,
@@ -27,10 +39,14 @@ import {
   SemanticCache,
   ContextAwareCompressor,
   PredictiveTokenOptimizer,
-  AdvancedSecurityManager,
+  AdvancedSecurityManager
 } from '@clarity-chat/token-optimization'
 
-import { DecayManager } from './utils/decay-manager'
+import {
+  DecayManager,
+  type DecayManagerConfig as _DecayManagerConfig,
+  type DecayResult as _DecayResult,
+} from './utils/decay-manager'
 
 /**
  * Enhanced Memory Service with Advanced Token Optimization
@@ -86,7 +102,7 @@ export class EnhancedMemoryService {
       model: this.config.tokenOptimization.model || 'gpt-4',
       cacheSize: 100000,
       enableCaching: true,
-      enableMonitoring: true,
+      enableMonitoring: true
     })
 
     // Security manager
@@ -96,7 +112,7 @@ export class EnhancedMemoryService {
       enableAuditLogging: true,
       enablePIIRedaction: true,
       noiseLevel: 0.1,
-      complianceLevel: 'enterprise',
+      complianceLevel: 'enterprise'
     })
 
     // TOON optimizer
@@ -105,7 +121,7 @@ export class EnhancedMemoryService {
       maxArraySizeForTable: 1000,
       preserveKeys: false,
       compactNumbers: true,
-      quoteStrings: false,
+      quoteStrings: false
     })
 
     // LLMLingua compressor (optional)
@@ -114,7 +130,7 @@ export class EnhancedMemoryService {
         modelName: 'microsoft/llmlingua-2-xlm-roberta-large-meetingbank',
         compressionRate: 0.6,
         useLLMLingua2: true,
-        enableStructureAware: true,
+        enableStructureAware: true
       })
     }
 
@@ -124,7 +140,7 @@ export class EnhancedMemoryService {
         maxSize: 1000000,
         similarityThreshold: 0.85,
         embeddingModel: 'text-embedding-ada-002',
-        cleanupInterval: 300000,
+        cleanupInterval: 300000
       })
     }
 
@@ -139,7 +155,7 @@ export class EnhancedMemoryService {
       enableThreatDetection: true,
       enableBehaviorAnalysis: true,
       enableZeroTrust: true,
-      complianceLevel: 'enterprise',
+      complianceLevel: 'enterprise'
     })
   }
 
@@ -180,8 +196,7 @@ export class EnhancedMemoryService {
       const cached = await this.semanticCache.getSimilarResponse(content, 0.9)
       if (cached) {
         optimizedContent = cached
-        savedTokens =
-          this.tokenCounter.count(content) - this.tokenCounter.count(cached)
+        savedTokens = this.tokenCounter.count(content) - this.tokenCounter.count(cached)
       }
     }
 
@@ -190,11 +205,8 @@ export class EnhancedMemoryService {
       // Try different optimization strategies
       const strategies = [
         { method: 'toon', optimize: this.optimizeWithToon.bind(this) },
-        {
-          method: 'llmlingua',
-          optimize: this.optimizeWithLLMLingua.bind(this),
-        },
-        { method: 'context', optimize: this.optimizeWithContext.bind(this) },
+        { method: 'llmlingua', optimize: this.optimizeWithLLMLingua.bind(this) },
+        { method: 'context', optimize: this.optimizeWithContext.bind(this) }
       ]
 
       let bestResult = null
@@ -204,7 +216,7 @@ export class EnhancedMemoryService {
         try {
           const result = await strategy.optimize(content, context)
           const savings = result.originalTokens - result.optimizedTokens
-
+          
           if (savings > bestSavings) {
             bestSavings = savings
             bestResult = { ...result, method: strategy.method }
@@ -222,16 +234,14 @@ export class EnhancedMemoryService {
         // Fallback to simple truncation
         optimizedContent = this.tokenCounter.truncate(content, maxTokens)
         method = 'truncation'
-        savedTokens =
-          this.tokenCounter.count(content) -
-          this.tokenCounter.count(optimizedContent)
+        savedTokens = this.tokenCounter.count(content) - this.tokenCounter.count(optimizedContent)
       }
 
       // Cache the result
       if (this.semanticCache) {
         await this.semanticCache.cacheResponse(content, optimizedContent, {
           method,
-          savings: savedTokens,
+          savings: savedTokens
         })
       }
     }
@@ -254,8 +264,8 @@ export class EnhancedMemoryService {
       security: {
         sanitized: true,
         threats: secured.threats,
-        riskLevel: secured.riskLevel,
-      },
+        riskLevel: secured.riskLevel
+      }
     }
   }
 
@@ -281,22 +291,22 @@ export class EnhancedMemoryService {
         content: content,
         metadata: {
           timestamp: new Date().toISOString(),
-          length: content.length,
-        },
+          length: content.length
+        }
       }
     }
 
     // Convert to TOON format
     const toonContent = this.toonOptimizer.convertToToon(data)
-
+    
     const originalTokens = this.tokenCounter.count(content)
     const optimizedTokens = this.tokenCounter.count(toonContent)
-
+    
     return {
       optimized: toonContent,
       originalTokens,
       optimizedTokens,
-      compressionRatio: originalTokens / optimizedTokens,
+      compressionRatio: originalTokens / optimizedTokens
     }
   }
 
@@ -326,7 +336,7 @@ export class EnhancedMemoryService {
       optimized: result.compressed,
       originalTokens: result.originalTokens,
       optimizedTokens: result.compressedTokens,
-      compressionRatio: result.compressionRatio,
+      compressionRatio: result.compressionRatio
     }
   }
 
@@ -347,7 +357,7 @@ export class EnhancedMemoryService {
       {
         conversationHistory: [],
         userProfile: context,
-        currentTask: 'memory_optimization',
+        currentTask: 'memory_optimization'
       },
       Math.floor(this.tokenCounter.count(content) * 0.7) // Target 70% of original
     )
@@ -356,27 +366,23 @@ export class EnhancedMemoryService {
       optimized: result.compressed,
       originalTokens: result.originalTokens,
       optimizedTokens: result.compressedTokens,
-      compressionRatio: result.compressionRatio,
+      compressionRatio: result.compressionRatio
     }
   }
 
   /**
    * Enhanced context generation with token optimization
    */
-  async generateOptimizedContext(
-    options?: ContextOptions & {
-      maxTokens?: number
-      securityLevel?: 'basic' | 'enterprise' | 'government'
+  async generateOptimizedContext(options?: ContextOptions & {
+    maxTokens?: number
+    securityLevel?: 'basic' | 'enterprise' | 'government'
+  }): Promise<ContextBundle & {
+    optimization: {
+      method: string
+      savings: number
+      security: any
     }
-  ): Promise<
-    ContextBundle & {
-      optimization: {
-        method: string
-        savings: number
-        security: any
-      }
-    }
-  > {
+  }> {
     const maxTokens = options?.maxTokens || 4096
     const securityLevel = options?.securityLevel || 'enterprise'
 
@@ -385,10 +391,13 @@ export class EnhancedMemoryService {
 
     // Optimize each component
     const optimizedComponents = await Promise.all([
-      this.optimizeMemoryContent(baseContext.formatted, {
-        maxTokens: Math.floor(maxTokens * 0.7),
-        securityLevel,
-      }),
+      this.optimizeMemoryContent(
+        baseContext.formatted,
+        {
+          maxTokens: Math.floor(maxTokens * 0.7),
+          securityLevel
+        }
+      )
     ])
 
     const optimized = optimizedComponents[0]
@@ -400,8 +409,8 @@ export class EnhancedMemoryService {
       optimization: {
         method: optimized.method,
         savings: optimized.savings,
-        security: optimized.security,
-      },
+        security: optimized.security
+      }
     }
   }
 
@@ -409,14 +418,14 @@ export class EnhancedMemoryService {
    * Get token optimization statistics
    */
   getTokenOptimizationStats(): {
-    tokenCounter: ReturnType<AccurateTokenCounter['getMonitoringStats']>
-    cache: ReturnType<SemanticCache['getCacheStats']> | undefined
-    security: ReturnType<AdvancedSecurityManager['generateComplianceReport']>
+    tokenCounter: unknown
+    cache: unknown
+    security: unknown
   } {
     return {
       tokenCounter: this.tokenCounter.getMonitoringStats(),
       cache: this.semanticCache?.getCacheStats(),
-      security: this.securityManager.generateComplianceReport(),
+      security: this.securityManager.generateComplianceReport()
     }
   }
 
@@ -426,15 +435,15 @@ export class EnhancedMemoryService {
   async destroy(): Promise<void> {
     this.tokenCounter.destroy()
     this.semanticCache?.destroy()
-
+    
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval)
     }
-
+    
     if (this.summarizationInterval) {
       clearInterval(this.summarizationInterval)
     }
-
+    
     if (this.decayInterval) {
       clearInterval(this.decayInterval)
     }

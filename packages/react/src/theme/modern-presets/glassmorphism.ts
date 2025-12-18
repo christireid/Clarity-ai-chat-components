@@ -7,7 +7,7 @@
  */
 
 import type { CompleteThemeConfig, ThemeMetadata } from '../theme-config'
-import { createPreset } from '../base'
+import { createPreset } from './base'
 
 /**
  * Glassmorphism light theme
@@ -406,7 +406,4 @@ export const glassmorphismPreset = createPreset({
   metadata: glassmorphismThemeMetadata,
 })
 
-/**
- * Export individual themes
- */
-export { glassmorphismLightTheme, glassmorphismDarkTheme, glassmorphismThemeMetadata }
+// Themes are already exported with 'export const' declarations above

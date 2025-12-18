@@ -18,6 +18,13 @@ import {
   SparklesIcon,
   FileIcon,
 } from '../ui/icons'
+<<<<<<< HEAD
+=======
+import {
+  EASING_FRAMER,
+  DURATION_SECONDS as durations,
+} from '../../animations/constants'
+>>>>>>> origin/main
 
 export type TimelineEventType =
   | 'user'
@@ -156,7 +163,11 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                   exit={{ opacity: 0, y: -12 }}
                   transition={{
                     duration: durations.normal,
+<<<<<<< HEAD
                     ease: [0.4, 0, 0.2, 1],
+=======
+                    ease: EASING_FRAMER.default,
+>>>>>>> origin/main
                   }}
                   className="relative pl-12"
                 >

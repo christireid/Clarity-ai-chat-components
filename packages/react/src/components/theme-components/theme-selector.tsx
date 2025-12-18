@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Theme Selector Component
  *
@@ -47,7 +46,7 @@ export interface ThemeSelectorProps {
  * <ThemeSelector
  *   showPreview
  *   orientation="vertical"
- *   onThemeChange={(theme) => logger.debug('Theme changed:', theme)}
+ *   onThemeChange={(theme) => console.log('Theme changed:', theme)}
  * />
  * ```
  */

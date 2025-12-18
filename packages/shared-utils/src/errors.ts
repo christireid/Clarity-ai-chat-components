@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Shared Error Classes
  *
@@ -97,7 +96,7 @@ export function handleError(error: string | Error | unknown): never {
 
   if (normalizedError instanceof CLIError) {
     if (isJsonMode) {
-      logger.logger.error(
+      logger.error(
         JSON.stringify({
           error: normalizedError.message,
           code: normalizedError.code,
@@ -106,27 +105,27 @@ export function handleError(error: string | Error | unknown): never {
         })
       )
     } else {
-      logger.logger.error('')
-      logger.logger.error(
+      logger.error('')
+      logger.error(
         pc.bold(pc.red(`✖ ${normalizedError.name}: ${normalizedError.message}`))
       )
 
       if (normalizedError.suggestions.length > 0) {
-        logger.logger.error('')
-        logger.logger.error(pc.bold(pc.yellow('💡 Suggestions:')))
+        logger.error('')
+        logger.error(pc.bold(pc.yellow('💡 Suggestions:')))
         for (const suggestion of normalizedError.suggestions) {
-          logger.logger.error(pc.gray(`   • ${suggestion}`))
+          logger.error(pc.gray(`   • ${suggestion}`))
         }
       }
 
       if (normalizedError.docs) {
-        logger.logger.error('')
-        logger.logger.error(
+        logger.error('')
+        logger.error(
           pc.bold(pc.blue('📚 Documentation: ')) +
             pc.underline(pc.cyan(normalizedError.docs))
         )
       }
-      logger.logger.error('')
+      logger.error('')
     }
 
     process.exit(normalizedError.code)
@@ -134,25 +133,25 @@ export function handleError(error: string | Error | unknown): never {
 
   // Generic error
   if (isJsonMode) {
-    logger.logger.error(
+    logger.error(
       JSON.stringify({
         error: normalizedError.message,
         stack: normalizedError.stack,
       })
     )
   } else {
-    logger.logger.error('')
-    logger.logger.error(pc.bold(pc.red(`✖ Error: ${normalizedError.message}`)))
+    logger.error('')
+    logger.error(pc.bold(pc.red(`✖ Error: ${normalizedError.message}`)))
 
     if (process.env.DEBUG || process.env.VERBOSE) {
       if (normalizedError.stack) {
-        logger.logger.error('')
-        logger.logger.error(pc.gray(normalizedError.stack))
+        logger.error('')
+        logger.error(pc.gray(normalizedError.stack))
       }
     } else {
-      logger.logger.error(pc.gray('   Run with --verbose for more details'))
+      logger.error(pc.gray('   Run with --verbose for more details'))
     }
-    logger.logger.error('')
+    logger.error('')
   }
 
   process.exit(ExitCode.GENERAL_ERROR)

@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 'use client'
 
+=======
+>>>>>>> origin/main
 /**
  * Enhanced Token Optimization Hook (Unified)
  *
@@ -35,7 +38,7 @@
  */
 
 import * as React from 'react'
-import type { CoreMessage } from './use-chat-enhanced'
+import type { CoreMessage } from '../chat/use-chat-enhanced'
 
 // Import new utilities
 import {
@@ -62,7 +65,11 @@ import {
 } from '../../utils/prompt-caching'
 
 // Import existing utilities
+<<<<<<< HEAD
 import { type CompressionResult } from '../../utils/memory/prompt-compression'
+=======
+import { type CompressionResult } from '../../utils/optimization/prompt-compression'
+>>>>>>> origin/main
 import {
   intelligentCompress,
   type LLMLinguaConfig,
@@ -403,7 +410,7 @@ function getPresetConfig(
  *
  * // Optimize structured data (uses TOON if beneficial)
  * const optimized = await optimizeData(myData)
- * logger.debug(`Saved ${optimized.optimizations.toon?.savingsPercent}%`)
+ * console.log(`Saved ${optimized.optimizations.toon?.savingsPercent}%`)
  *
  * // Prepare messages with cache control
  * const messages = prepareMessages(conversationMessages)
@@ -415,7 +422,7 @@ function getPresetConfig(
  * const prefill = getPrefill('json') // returns '{'
  *
  * // Track total savings
- * logger.debug(`Total saved: $${stats.overall.totalCostSaved.toFixed(4)}`)
+ * console.log(`Total saved: $${stats.overall.totalCostSaved.toFixed(4)}`)
  * ```
  */
 export function useTokenOptimizationEnhanced(
@@ -1101,7 +1108,7 @@ export function useTokenOptimizationEnhanced(
 
       // Handle summarization strategy
       if (historyLimiting.strategy === 'summarize' && !summarizeMessage) {
-        logger.warn(
+        console.warn(
           'Summarization strategy selected but no summarizeMessage callback provided. Falling back to default.'
         )
         return limitHistory(messages, {
@@ -1154,7 +1161,7 @@ export function useTokenOptimizationEnhanced(
             ...recentMessages,
           ]
         } catch (error) {
-          logger.warn(
+          console.warn(
             'Summarization failed, falling back to sliding window',
             error
           )
@@ -1310,7 +1317,7 @@ export function useTokenOptimizationEnhanced(
             ...recentMessages,
           ]
         } catch (error) {
-          logger.warn(
+          console.warn(
             'Smart history optimization failed, falling back to default',
             error
           )

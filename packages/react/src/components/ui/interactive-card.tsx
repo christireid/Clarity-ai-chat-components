@@ -10,7 +10,14 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+<<<<<<< HEAD
 import { INTERACTION_VARIANTS } from '../../animations'
+=======
+import {
+  INTERACTION_VARIANTS,
+  DURATION_SECONDS as durations,
+} from '../../animations'
+>>>>>>> origin/main
 
 export interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Whether card is clickable */

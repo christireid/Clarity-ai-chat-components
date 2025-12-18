@@ -16,7 +16,12 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+<<<<<<< HEAD
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+=======
+import { useReducedMotion } from '@clarity-chat/primitives'
+import { EASING_FRAMER } from '../../animations/constants'
+>>>>>>> origin/main
 
 export interface FocusIndicatorProps {
   /** Whether to show the focus indicator */
@@ -203,7 +208,7 @@ export function FocusIndicator({
           }}
           transition={{
             duration: animationDuration / 1000,
-            ease: [0.25, 0.1, 0.25, 1],
+            ease: EASING_FRAMER.sharp,
           }}
           style={{
             borderWidth: ringWidth,

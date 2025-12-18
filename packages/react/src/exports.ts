@@ -54,6 +54,7 @@
 // Components for building chat interfaces
 // =============================================================================
 
+<<<<<<< HEAD
 // Tier 1: Drop-in Ready
 export {
   ClarityChat,
@@ -68,6 +69,35 @@ export {
   type ChatWithAnalyticsProps,
   type ChatWithPresetProps,
 } from './components/chat'
+=======
+// Top-Level: Drop-in ready components
+export { ClarityChat } from './components/chat/clarity-chat'
+export { ClarityChatPresets } from './components/chat/clarity-chat-presets'
+
+// Mid-Level: Composable components
+export { ChatWindow } from './components/chat/chat-window'
+export { ChatInput } from './components/chat/chat-input'
+export { AdvancedChatInput } from './components/input/advanced-chat-input'
+export { VirtualizedMessageList as MessageList } from './components/chat/virtualized-message-list'
+export { StreamingMessage } from './components/message/streaming-message'
+export { ThinkingIndicator } from './components/message/thinking-indicator'
+
+// Low-Level: Primitives
+export { Message } from './components/message/message'
+export { MessageMetadata } from './components/message/message-metadata'
+export {
+  MessageMarkdownRenderer,
+  useMarkdownComponents,
+  useMarkdownPlugins,
+  type MessageMarkdownRendererProps,
+} from './components/message/index'
+export { StreamBlock } from './components/message/stream-block'
+export { ToolInvocationCard } from './components/message/tool-invocation-card'
+export { ClarityToolResult } from './components/message/clarity-tool-result'
+export { CitationCard } from './components/message/citation-card'
+export { CopyButton } from './components/message/copy-button'
+export { FileUpload } from './components/input/file-upload'
+>>>>>>> origin/main
 
 // Tier 2: Composable
 export {
@@ -136,7 +166,11 @@ export {
   convertMessageToCoreMessage,
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
+<<<<<<< HEAD
 } from './utils/message'
+=======
+} from './utils/message/message-conversion'
+>>>>>>> origin/main
 
 // =============================================================================
 // DOMAIN 3: MEMORY & CONTEXT
@@ -401,6 +435,7 @@ export * from './animations'
 // Accessibility
 export * from './accessibility'
 
+<<<<<<< HEAD
 // Templates
 export * from './templates'
 
@@ -416,6 +451,112 @@ export * from './components/message'
 
 // Input Components
 export * from './components/input'
+=======
+// Additional Components (organized by feature)
+export { ModelSelector } from './components/ai/model-selector'
+export { ContextCard } from './components/context/context-card'
+export { ContextManager } from './components/context/context-manager'
+export { ProjectSidebar } from './components/context/project-sidebar'
+export { PromptLibrary } from './components/prompt/prompt-library'
+export { SettingsPanel } from './components/context/settings-panel'
+export { UsageDashboard } from './components/dashboards/usage-dashboard'
+export {
+  // Components
+  LinkPreview,
+  LinkPreviewSkeleton,
+  LinkPreviewError,
+  LinkPreviewCompact,
+  InlineLink,
+  SmartLinkPreview,
+  RichEmbed,
+  // Hook
+  useLinkPreview,
+  // Utilities
+  isValidUrl,
+  sanitizeUrl,
+  detectEmbedType,
+  createMetadataFetcher,
+  createFallbackMetadata,
+  // Types
+  type LinkMetadata,
+  type LinkPreviewProps,
+  type LinkPreviewVariant,
+  type LinkPreviewSkeletonProps,
+  type LinkPreviewErrorProps,
+  type LinkPreviewCompactProps,
+  type InlineLinkProps,
+  type SmartLinkPreviewProps,
+  type UseLinkPreviewOptions,
+  type UseLinkPreviewReturn,
+  type MetadataFetcherConfig,
+  type EmbedType,
+} from './components/ui/link-preview'
+export { KnowledgeBaseViewer } from './components/ai/knowledge-base-viewer'
+export { ExportDialog } from './components/media/export-dialog'
+export { BatchExportDialog } from './components/media/batch-export-dialog'
+export { StreamCancellation } from './components/message/stream-cancellation'
+export {
+  MessageSearch,
+  MessageSearchWithSuspense,
+  highlightSearchMatch,
+} from './components/search/message-search'
+export {
+  AdvancedMessageSearch,
+  type SearchFilters,
+  type SavedSearch,
+  type SortOption,
+  type FilterPreset,
+} from './components/search/advanced-message-search'
+export {
+  SemanticMessageSearch,
+  type SemanticSearchConfig,
+  type SemanticSearchResult,
+  type EmbeddingProvider,
+} from './components/search/advanced-message-search-semantic'
+export { FollowUpSuggestions } from './components/prompt/follow-up-suggestions'
+export { PromptSuggestions } from './components/prompt/prompt-suggestions'
+export { EnhancedMarkdownRenderer } from './components/ai/enhanced-markdown-renderer'
+export { EnhancedCodeBlock } from './components/ai/enhanced-code-block'
+export { StreamingTextRenderer } from './components/message/streaming-text-renderer'
+export { PersonaPanel } from './components/ai/persona-panel'
+export { ConversationTimeline } from './components/conversation/conversation-timeline'
+export { MemoryInspector } from './components/context/memory-inspector'
+export { SafetyStatusCard } from './components/ai/safety-status-card'
+export { AuditLogViewer } from './components/ai/audit-log-viewer'
+export { DocumentViewer } from './components/media/document-viewer'
+export { ResponseQualityMeter } from './components/dashboards/response-quality-meter'
+export { MultiModalPreview } from './components/media/multi-modal-preview'
+export { AgentRunFeed } from './components/ai/agent-run-feed'
+export { SessionSummaryCard } from './components/ai/session-summary-card'
+export { WorkflowSuggestionList } from './components/ai/workflow-suggestion-list'
+// AI-Ops components (exported from directory)
+export * from './components/ai-ops'
+// Enterprise components (exported from directory)
+export * from './components/enterprise'
+export { AnalyticsDashboard } from './components/dashboards/analytics-dashboard'
+
+// Error Handling Components
+export { ErrorBoundary } from './components/feedback/error-boundary'
+export { RetryButton } from './components/feedback/retry-button'
+export { NetworkStatus } from './components/feedback/network-status'
+
+// Token Management Components
+export { TokenCounter } from './components/token/token-counter'
+export { TokenOptimizationPanel } from './components/token/token-optimization-panel'
+export { TokenOptimizationBadge } from './components/token/token-optimization-badge'
+export {
+  TokenBudgetBar,
+  TokenBudgetIndicator,
+} from './components/token/token-budget-bar'
+
+// Context & Conversation Management
+export { ContextVisualizer } from './components/context/context-visualizer'
+export { ConversationList } from './components/conversation/conversation-list'
+export { ConversationBranchVisualizer } from './components/conversation/conversation-branch-visualizer'
+
+// Markdown & Rendering
+export { MarkdownRendererEnhanced } from './components/ai/markdown-renderer-enhanced'
+>>>>>>> origin/main
 
 // Search Components
 export * from './components/search'
@@ -523,3 +664,38 @@ export type {
   ChatAnalyticsConfig,
   ChatPerformanceMetrics,
 } from './types/clarity-chat-types'
+<<<<<<< HEAD
+=======
+
+// Helper hooks (legacy, consider deprecating)
+export {
+  useClarityChatWithWindow,
+  useClarityChatWithAnalytics,
+  useClarityChatWithPersistence,
+  useClarityChatWithDebounce,
+  useClarityChatWithAutoSave,
+} from './hooks/use-clarity-chat-helpers'
+
+// Testing utilities (for test files only)
+export {
+  createMockUseClarityChat,
+  createTestMessages,
+  createTestUserMessage,
+  createTestAssistantMessage,
+  waitForChatUpdate,
+  simulateStreamingResponse,
+  createMockFetch,
+  createMockStreamingResponse,
+  assertMessageStructure,
+  assertChatState,
+} from './test-utils/use-clarity-chat-test-utils'
+
+// UI Primitives
+export * from './components/ui/skeleton'
+export * from './components/ui/animated-dots'
+export * from './components/ui/animated-list'
+export * from './components/ui/toast'
+export * from './components/ui/progress'
+export * from './components/ui/feedback-animation'
+export * from './components/ui/interactive-card'
+>>>>>>> origin/main

@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 import * as React from 'react'
 import {
   Badge,
@@ -162,7 +162,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
         onCopy?.(token)
         setTimeout(() => setCopiedTokenId(null), 2000)
       } catch (err) {
-        logger.logger.error('Failed to copy token:', err)
+        logger.error('Failed to copy token:', err)
       }
     },
     [onCopy]

@@ -1,10 +1,8 @@
 'use client'
-import { SecureLogger } from '@/lib/security/secureLogger';
 
 import { useEffect } from 'react'
 import { AlertCircle, RefreshCw } from 'lucide-react'
 
-import { SecureLogger } from '@/lib/security/secureLogger';
 export default function Error({
   error,
   reset,
@@ -13,7 +11,7 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    SecureLogger.error('Dashboard error:', error)
+    console.error('Dashboard error:', error)
   }, [error])
 
   return (

@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Extension Builder
  *
@@ -169,7 +168,7 @@ class ExtensionBuilderImpl<
  *     },
  *   })
  *   .onInitialize((ctx) => {
- *     ctx.logger.info('Extension initialized')
+ *     ctx.console.info('Extension initialized')
  *   })
  *   .build()
  * ```
@@ -241,7 +240,7 @@ export interface QuickExtensionOptions<TConfig = Record<string, unknown>> {
  *   category: 'analytics',
  *   description: 'Track chat analytics',
  *   initialize: (ctx) => {
- *     ctx.logger.info('Tracker ready')
+ *     ctx.console.info('Tracker ready')
  *   },
  * })
  * ```

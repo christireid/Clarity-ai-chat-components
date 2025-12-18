@@ -74,7 +74,7 @@ export default function HooksAPIPage() {
     content: 'Hello!',
     timestamp: Date.now(),
   }],
-  onError: (error) => logger.logger.error(error),
+  onError: (error) => logger.error(error),
 })`}
         />
       </section>

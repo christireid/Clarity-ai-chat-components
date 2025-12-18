@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 'use client'
 
 import { useState, useEffect, useRef, useCallback, memo } from 'react'
@@ -88,7 +87,7 @@ export function LiveChatDemo() {
     reset: resetStreaming,
   } = useStreaming({
     onError: (error) => {
-      logger.logger.error('Streaming error:', error)
+      logger.error('Streaming error:', error)
       setIsError(true)
       setMessages((prev) => {
         const lastMsg = prev[prev.length - 1]
@@ -218,7 +217,7 @@ export function LiveChatDemo() {
     } catch (error: any) {
       if (error.name === 'AbortError') return
 
-      logger.logger.error('Error getting response:', error)
+      logger.error('Error getting response:', error)
       setIsError(true)
       setIsTyping(false)
       setMessages((prev) => [

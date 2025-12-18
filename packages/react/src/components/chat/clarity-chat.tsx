@@ -39,7 +39,11 @@ import {
   type UseClarityChatOptions,
 } from '../../hooks/chat/use-clarity-chat'
 import { ChatWindow } from './chat-window'
+<<<<<<< HEAD
 import { convertCoreMessagesToMessages } from '../../utils/message'
+=======
+import { convertCoreMessagesToMessages } from '../../utils/message/message-conversion'
+>>>>>>> origin/main
 import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 import { useToast } from '../ui/toast'
 
@@ -192,7 +196,7 @@ export function ClarityChat({
       } catch (error) {
         // Only show error if not aborted - aborts are intentional
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to send message:', error)
+          logger.error('Failed to send message:', error)
           toast?.logger.error('Failed to send message. Please try again.')
         }
       }
@@ -326,7 +330,7 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to update message:', error)
+          logger.error('Failed to update message:', error)
           toast?.logger.error('Failed to update message. Please try again.')
         }
       }
@@ -403,7 +407,7 @@ export function ClarityChat({
       } catch (error) {
         setIsRegenerating(false)
         if (error instanceof Error && error.name !== 'AbortError') {
-          logger.logger.error('Failed to regenerate message:', error)
+          logger.error('Failed to regenerate message:', error)
           toast?.logger.error('Failed to regenerate response. Please try again.')
         }
       }

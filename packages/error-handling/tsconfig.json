@@ -5,7 +5,11 @@
     "useDefineForClassFields": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@clarity-chat/utils": ["../utils/src/index.ts"],
+      "@clarity-chat/utils/*": ["../utils/src/*"]
+    }
   },
   "include": ["src"],
   "exclude": [

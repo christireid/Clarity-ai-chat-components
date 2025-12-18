@@ -1,3 +1,4 @@
+import { logger } from '@clarity-chat/utils/logger';
 /**
  * React Example
  *
@@ -11,17 +12,14 @@ import { MemoryInspector } from '../react/memory-inspector'
 
 export function ChatApp() {
   const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState<
-    Array<{ role: string; content: string }>
-  >([])
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
 
   // @ts-expect-error - Example code uses partial config for demonstration
   const memoryHook = useMemory({
     storage: { type: 'indexeddb' },
   })
-
-  const { add, recall, context, initialized, loading, error, memory } =
-    memoryHook
+  
+  const { add, recall, context, initialized, loading, error, memory } = memoryHook
 
   const handleSend = async () => {
     if (!message.trim() || !initialized) return
@@ -50,7 +48,7 @@ export function ChatApp() {
         importance: 0.6,
       })
 
-      setMessages((prev) => [
+      setMessages(prev => [
         ...prev,
         { role: 'user', content: message },
         { role: 'assistant', content: response },
@@ -58,7 +56,7 @@ export function ChatApp() {
 
       setMessage('')
     } catch (err) {
-      console.error('Error:', err)
+      logger.error('Error:', err)
     }
   }
 
@@ -74,14 +72,7 @@ export function ChatApp() {
     <div style={{ display: 'flex', gap: '20px', padding: '20px' }}>
       <div style={{ flex: 1 }}>
         <h2>Chat</h2>
-        <div
-          style={{
-            border: '1px solid #ddd',
-            padding: '10px',
-            minHeight: '400px',
-            marginBottom: '10px',
-          }}
-        >
+        <div style={{ border: '1px solid #ddd', padding: '10px', minHeight: '400px', marginBottom: '10px' }}>
           {messages.map((msg, idx) => (
             <div key={idx} style={{ marginBottom: '10px' }}>
               <strong>{msg.role}:</strong> {msg.content}
@@ -102,7 +93,7 @@ export function ChatApp() {
           </button>
         </div>
       </div>
-
+      
       <div style={{ flex: 1 }}>
         <h2>Memory Inspector</h2>
         {initialized && memory && <MemoryInspector memory={memory} />}

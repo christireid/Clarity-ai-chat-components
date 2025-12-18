@@ -1,13 +1,16 @@
 /**
  * Message Conversion Utilities
- * 
+ *
  * Unified utilities for converting between CoreMessage (Vercel AI SDK format)
  * and Message (Clarity internal format) types.
- * 
+ *
  * This is the canonical implementation. All message conversion should use these functions.
  */
 
-import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced'
+import type {
+  CoreMessage,
+  CoreMessageContent,
+} from '../hooks/chat/use-chat-enhanced'
 import type { Message, MessageRole } from '@clarity-chat/types'
 import { generateId } from '@clarity-chat/primitives'
 
@@ -30,7 +33,7 @@ function extractTextContent(content: CoreMessageContent): string {
 
 /**
  * Convert CoreMessage to Message format
- * 
+ *
  * @param coreMessage - CoreMessage from useChatEnhanced
  * @param chatId - Chat ID for the message
  * @returns Message compatible with ChatWindow
@@ -43,7 +46,7 @@ export function convertCoreMessageToMessage(
   const now = new Date()
 
   // Map role types
-  const role: MessageRole = 
+  const role: MessageRole =
     coreMessage.role === 'function' || coreMessage.role === 'tool'
       ? 'assistant'
       : (coreMessage.role as MessageRole)
@@ -66,13 +69,11 @@ export function convertCoreMessageToMessage(
 
 /**
  * Convert Message to CoreMessage format
- * 
+ *
  * @param message - Message from Clarity types
  * @returns CoreMessage compatible with useChatEnhanced
  */
-export function convertMessageToCoreMessage(
-  message: Message
-): CoreMessage {
+export function convertMessageToCoreMessage(message: Message): CoreMessage {
   return {
     id: message.id,
     role: message.role,

@@ -76,7 +76,7 @@ export function useDocsChat() {
     criticalThreshold: TOKEN_CRITICAL_THRESHOLD,
     onWarning: () => toast.warning('Approaching context limit'),
     onCritical: () =>
-      toast.logger.error('Near context limit - consider clearing conversation'),
+      toast.error('Near context limit - consider clearing conversation'),
   })
 
   // Session ID
@@ -454,7 +454,7 @@ export function useDocsChat() {
         } else {
           const retryInfo =
             currentRetry > 0 ? ` (after ${currentRetry} retries)` : ''
-          toast.logger.error(`${errorMsg}${retryInfo}`, 'Failed to get response')
+          toast.error(`${errorMsg}${retryInfo}`, 'Failed to get response')
           const errorMessage: Message = {
             id: `error-${Date.now()}`,
             chatId: 'docs-assistant',
@@ -561,8 +561,8 @@ export function useDocsChat() {
             : "Feedback received. We'll work on improving."
         )
       } catch (error) {
-        logger.logger.error('Failed to submit feedback:', error)
-        toast.logger.error('Failed to submit feedback. Please try again.')
+        logger.error('Failed to submit feedback:', error)
+        toast.error('Failed to submit feedback. Please try again.')
         // Revert optimistic update on failure
         setMessages((prev) =>
           prev.map((m) =>
@@ -595,8 +595,8 @@ export function useDocsChat() {
           throw new Error(downloadResult.error || 'Download failed')
         }
       } catch (error) {
-        logger.logger.error('Failed to export conversation:', error)
-        toast.logger.error('Failed to export conversation')
+        logger.error('Failed to export conversation:', error)
+        toast.error('Failed to export conversation')
         throw error
       }
     },

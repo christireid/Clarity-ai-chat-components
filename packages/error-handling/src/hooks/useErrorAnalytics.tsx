@@ -139,7 +139,11 @@ export function ErrorAnalyticsProvider({
   const log = React.useCallback(
     (message: string, data?: unknown) => {
       if (enableLogging) {
+<<<<<<< HEAD
         console.debug(`[ErrorAnalytics] ${message}`, data)
+=======
+        console.log(`[ErrorAnalytics] ${message}`, data)
+>>>>>>> origin/main
       }
     },
     [enableLogging]

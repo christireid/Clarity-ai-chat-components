@@ -7,7 +7,7 @@ import { render } from '@testing-library/react'
 import React from 'react'
 import { ClarityToolResult, type ToolCall } from '../clarity-tool-result'
 import { createToolUIRegistry } from '../../agents/tool-ui-registry'
-import type { CoreMessage } from '../../hooks/use-chat-enhanced'
+import type { CoreMessage } from '../../hooks/chat/use-chat-enhanced'
 
 describe('ClarityToolResult', () => {
   const mockMessages: CoreMessage[] = [
@@ -15,7 +15,9 @@ describe('ClarityToolResult', () => {
   ]
 
   it('should render registered tool component', () => {
-    const TestComponent = vi.fn(() => React.createElement('div', null, 'Test Tool Result'))
+    const TestComponent = vi.fn(() =>
+      React.createElement('div', null, 'Test Tool Result')
+    )
 
     const registry = createToolUIRegistry({
       test_tool: TestComponent,
@@ -78,7 +80,9 @@ describe('ClarityToolResult', () => {
   })
 
   it('should render custom fallback component', () => {
-    const CustomFallback = vi.fn(() => React.createElement('div', null, 'Custom Fallback'))
+    const CustomFallback = vi.fn(() =>
+      React.createElement('div', null, 'Custom Fallback')
+    )
 
     const registry = createToolUIRegistry({})
 

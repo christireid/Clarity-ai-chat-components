@@ -15,6 +15,12 @@ import {
   PromptSuggestions,
   type PromptSuggestion,
 } from '../prompt/prompt-suggestions'
+<<<<<<< HEAD
+=======
+import { useUIEnhancements, getEnhancedClassName } from '../../contexts/ui-enhancements'
+import { useSecurity } from '../../utils/security'
+import { usePerformanceMonitoring, useRenderOptimization, use60FPSAnimation } from '../../utils/performance'
+>>>>>>> origin/main
 
 export interface ChatWindowProps {
   /** Messages in either Message[] or CoreMessage[] format */
@@ -98,34 +104,6 @@ export interface ChatWindowProps {
   onDismissError?: () => void
   className?: string
   /**
-   * 2025 UI/UX Enhancement: Quantum Animations
-   */
-  quantumAnimations?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Glassmorphism effect
-   */
-  glassmorphism?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Aurora gradients
-   */
-  auroraGradients?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Neumorphism style
-   */
-  neumorphism?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Voice Integration
-   */
-  voiceIntegration?: boolean
-  /**
-   * 2025 UI/UX Enhancement: Adaptive Colors
-   */
-  adaptiveColors?: boolean
-  /**
-   * 2025 UI/UX Enhancement: WCAG AAA compliance
-   */
-  wcagAAA?: boolean
-  /**
    * Starter prompts to show in empty state (2024 AI UX trend)
    * These help users discover what the chat can do
    */
@@ -154,6 +132,7 @@ interface DefaultEmptyStateProps {
   showStarterPrompts?: boolean
 }
 
+<<<<<<< HEAD
 const DefaultEmptyState = React.memo(
   ({
     starterPrompts,
@@ -161,6 +140,22 @@ const DefaultEmptyState = React.memo(
     showStarterPrompts = true,
   }: DefaultEmptyStateProps) => {
     return (
+=======
+const DefaultEmptyState = ({
+  starterPrompts,
+  onSelectPrompt,
+  showStarterPrompts = true,
+}: DefaultEmptyStateProps) => (
+  <motion.div
+    className="text-center space-y-8 px-4 py-8"
+    initial={{ opacity: 0, scale: 0.95 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: duration('slow'), ease: [0.25, 0.1, 0.25, 1] }}
+  >
+    {/* Animated icon with decorative rings */}
+    <div className="relative inline-flex items-center justify-center">
+      {/* Outer decorative ring */}
+>>>>>>> origin/main
       <motion.div
         className="text-center space-y-8 px-4 py-8"
         initial={{ opacity: 0, scale: 0.95 }}
@@ -403,13 +398,6 @@ export function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
-  quantumAnimations = false,
-  glassmorphism = false,
-  auroraGradients = false,
-  neumorphism = false,
-  voiceIntegration = false,
-  adaptiveColors = false,
-  wcagAAA = false,
   onSendMessage,
   onStopGeneration,
   onMessageCopy,

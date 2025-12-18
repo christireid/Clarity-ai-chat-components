@@ -12,11 +12,12 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { useTheme } from './use-theme'
-import { useReducedMotion } from '../hooks/ui/use-reduced-motion'
+import { useReducedMotion } from '@clarity-chat/primitives'
 import {
   getMotionSafeDuration,
   getMotionSafeValue,
 } from '../animations/motion-safe'
+import { DURATION_SECONDS as durations } from '../animations/constants'
 
 /**
  * Props for ThemeToggle component

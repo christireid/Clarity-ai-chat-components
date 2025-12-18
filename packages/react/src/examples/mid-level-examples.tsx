@@ -1,4 +1,4 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Mid-Level Examples - Composable Building Blocks
  *
@@ -8,7 +8,7 @@ import { logger } from '@clarity-chat/utils/logger';
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
-import { useClarityChat } from '../hooks/use-clarity-chat'
+import { useClarityChat } from '../hooks/chat/use-clarity-chat'
 import { useChatHandlers } from '../hooks/use-chat-handlers'
 import { ChatWindow } from '../components/chat/chat-window'
 import { ChatInput } from '../components/chat-input'
@@ -41,7 +41,7 @@ export function CustomChatWithHandlers() {
       // Analytics tracking, etc.
     },
     onMessageError: (error) => {
-      logger.logger.error('Failed to send:', error)
+      logger.error('Failed to send:', error)
       // Error reporting, etc.
     },
   })
@@ -79,7 +79,7 @@ export function VercelCompatibleChat() {
       logger.debug('Message finished:', message)
     },
     onError: (error) => {
-      logger.logger.error('Chat error:', error)
+      logger.error('Chat error:', error)
     },
   })
 

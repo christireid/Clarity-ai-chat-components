@@ -5,9 +5,20 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
 import { TimeSeparator } from './time-separator'
+<<<<<<< HEAD
 import { ScrollArea, Button, cn, useA11y } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../../hooks/ui/use-auto-scroll'
 import { useReducedMotion } from '../../hooks/ui/use-reduced-motion'
+=======
+import {
+  ScrollArea,
+  Button,
+  cn,
+  useA11y,
+  useReducedMotion,
+} from '@clarity-chat/primitives'
+import { useAutoScroll } from '../../hooks/ui/use-auto-scroll'
+>>>>>>> origin/main
 import { ArrowDownIcon } from '../ui/icons'
 import { SkeletonMessage } from '../ui/skeleton'
 import {

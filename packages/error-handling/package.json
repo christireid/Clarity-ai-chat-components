@@ -60,7 +60,8 @@
     "react-dom": ">=18.2.0"
   },
   "dependencies": {
-    "react-error-boundary": "^5.0.0"
+    "react-error-boundary": "^5.0.0",
+    "@clarity-chat/utils": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

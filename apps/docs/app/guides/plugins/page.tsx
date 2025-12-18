@@ -26,7 +26,7 @@ export default async function PluginsGuidePage() {
     )
     content = await readFile(filePath, 'utf-8')
   } catch (error) {
-    logger.logger.error('Failed to read plugins guide', error)
+    logger.error('Failed to read plugins guide', error)
     content = '# Plugins\n\nContent not available.'
   }
 

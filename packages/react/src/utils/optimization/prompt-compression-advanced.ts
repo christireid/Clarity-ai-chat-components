@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * Advanced Semantic Prompt Compression
  *
@@ -651,8 +650,8 @@ function compressWithImportance(
  * @example
  * ```ts
  * const result = compressPromptSemantic(longPrompt, { targetRatio: 0.5 })
- * logger.debug(`Compressed from ${result.originalTokens} to ${result.compressedTokens} tokens`)
- * logger.debug(`Saved ${result.savingsPercent.toFixed(1)}%`)
+ * console.log(`Compressed from ${result.originalTokens} to ${result.compressedTokens} tokens`)
+ * console.log(`Saved ${result.savingsPercent.toFixed(1)}%`)
  * ```
  */
 export function compressPromptSemantic(

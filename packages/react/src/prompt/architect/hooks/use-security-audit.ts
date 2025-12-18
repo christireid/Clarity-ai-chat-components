@@ -1,4 +1,3 @@
-import { logger } from '@clarity-chat/utils/logger';
 /**
  * useSecurityAudit Hook
  *
@@ -120,10 +119,10 @@ function calculateSecurityRiskScore(findings: SecurityFinding[]): number {
  * ```typescript
  * const audit = useSecurityAudit({
  *   onFindingDetected: (finding) => {
- *     logger.debug('Security issue found:', finding)
+ *     console.log('Security issue found:', finding)
  *   },
  *   onAuditComplete: (findings, riskScore) => {
- *     logger.debug(`Audit complete. Risk score: ${riskScore}`)
+ *     console.log(`Audit complete. Risk score: ${riskScore}`)
  *   },
  * })
  *

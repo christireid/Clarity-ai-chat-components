@@ -143,7 +143,7 @@ export function flushAnalytics(): void {
   // Send batch to analytics service
   sendBatchToAnalyticsService(config.serviceEndpoint, eventsToSend).catch(
     (error) => {
-      logger.logger.error('[Analytics] Failed to send batch:', error)
+      logger.error('[Analytics] Failed to send batch:', error)
     }
   )
 }
@@ -205,7 +205,7 @@ export function trackApiError(error: {
   }
 
   if (config.logToConsole) {
-    logger.logger.error('[Analytics] API error:', enrichedError)
+    logger.error('[Analytics] API error:', enrichedError)
   }
 
   // Errors are queued with type marker for batching

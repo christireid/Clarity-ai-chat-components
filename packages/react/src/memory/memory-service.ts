@@ -1,7 +1,7 @@
-import { logger } from '@clarity-chat/utils/logger';
+import { logger } from '@clarity-chat/utils/logger'
 /**
  * Memory Service
- * 
+ *
  * Production-ready memory management for AI chat applications
  * Implements hybrid memory system with:
  * - Short-term and long-term memory
@@ -73,7 +73,10 @@ export class MemoryService {
       this.startCleanupTask()
     }
 
-    if (this.config.enableAutoSummarization && this.config.summarizationInterval) {
+    if (
+      this.config.enableAutoSummarization &&
+      this.config.summarizationInterval
+    ) {
       this.startSummarizationTask()
     }
   }
@@ -126,7 +129,7 @@ export class MemoryService {
         memory.embedding = await this.embeddings.embedText(content)
       } catch (error) {
         if (this.config.debug) {
-          logger.logger.error('Failed to generate embedding:', error)
+          logger.error('Failed to generate embedding:', error)
         }
       }
     } else if (options.embedding) {
@@ -141,7 +144,10 @@ export class MemoryService {
     this.buffer.totalTokens += memory.tokens
 
     // Auto-flush if threshold reached
-    if (this.buffer.autoFlush && this.buffer.items.length >= this.buffer.flushThreshold) {
+    if (
+      this.buffer.autoFlush &&
+      this.buffer.items.length >= this.buffer.flushThreshold
+    ) {
       await this.flushBuffer()
     }
 
@@ -225,7 +231,9 @@ export class MemoryService {
   /**
    * Vector search
    */
-  private async vectorSearch(query: MemoryQuery): Promise<MemorySearchResult[]> {
+  private async vectorSearch(
+    query: MemoryQuery
+  ): Promise<MemorySearchResult[]> {
     if (!this.vectorStore || !query.embedding) {
       return []
     }
@@ -240,14 +248,14 @@ export class MemoryService {
         includeMetadata: true,
       })
 
-      return matches.map(match => ({
+      return matches.map((match) => ({
         memory: this.cache.get(match.id) || this.createMemoryFromMatch(match),
         relevance: match.score,
         distance: 1 - match.score,
       }))
     } catch (error) {
       if (this.config.debug) {
-        logger.logger.error('Vector search failed:', error)
+        logger.error('Vector search failed:', error)
       }
       return []
     }
@@ -263,13 +271,17 @@ export class MemoryService {
       // Apply basic filters
       if (query.types && !query.types.includes(memory.type)) continue
       if (query.scopes && !query.scopes.includes(memory.scope)) continue
-      if (query.priorities && !query.priorities.includes(memory.priority)) continue
-      if (query.minConfidence && memory.confidence < query.minConfidence) continue
+      if (query.priorities && !query.priorities.includes(memory.priority))
+        continue
+      if (query.minConfidence && memory.confidence < query.minConfidence)
+        continue
 
       // Time range filter
       if (query.timeRange) {
-        if (query.timeRange.start && memory.createdAt < query.timeRange.start) continue
-        if (query.timeRange.end && memory.createdAt > query.timeRange.end) continue
+        if (query.timeRange.start && memory.createdAt < query.timeRange.start)
+          continue
+        if (query.timeRange.end && memory.createdAt > query.timeRange.end)
+          continue
       }
 
       // Text search
@@ -300,11 +312,20 @@ export class MemoryService {
   /**
    * Apply query filters
    */
-  private applyFilters(results: MemorySearchResult[], query: MemoryQuery): MemorySearchResult[] {
-    return results.filter(result => {
-      if (query.userId && result.memory.metadata.userId !== query.userId) return false
-      if (query.threadId && result.memory.metadata.threadId !== query.threadId) return false
-      if (query.sessionId && result.memory.metadata.sessionId !== query.sessionId) return false
+  private applyFilters(
+    results: MemorySearchResult[],
+    query: MemoryQuery
+  ): MemorySearchResult[] {
+    return results.filter((result) => {
+      if (query.userId && result.memory.metadata.userId !== query.userId)
+        return false
+      if (query.threadId && result.memory.metadata.threadId !== query.threadId)
+        return false
+      if (
+        query.sessionId &&
+        result.memory.metadata.sessionId !== query.sessionId
+      )
+        return false
       return true
     })
   }
@@ -334,7 +355,10 @@ export class MemoryService {
   /**
    * Update memory item
    */
-  async updateMemory(id: string, updates: Partial<MemoryItem>): Promise<MemoryItem | null> {
+  async updateMemory(
+    id: string,
+    updates: Partial<MemoryItem>
+  ): Promise<MemoryItem | null> {
     const memory = this.cache.get(id)
     if (!memory) return null
 
@@ -347,14 +371,14 @@ export class MemoryService {
     // Recalculate tokens if content changed
     if (updates.content && updates.content !== memory.content) {
       updated.tokens = TokenCounter.count(updates.content)
-      
+
       // Regenerate embedding
       if (this.embeddings) {
         try {
           updated.embedding = await this.embeddings.embedText(updates.content)
         } catch (error) {
           if (this.config.debug) {
-            logger.logger.error('Failed to regenerate embedding:', error)
+            logger.error('Failed to regenerate embedding:', error)
           }
         }
       }
@@ -394,7 +418,7 @@ export class MemoryService {
         )
       } catch (error) {
         if (this.config.debug) {
-          logger.logger.error('Failed to delete from vector store:', error)
+          logger.error('Failed to delete from vector store:', error)
         }
       }
     }
@@ -427,7 +451,10 @@ export class MemoryService {
   /**
    * Promote memory to higher scope
    */
-  async promoteMemory(id: string, targetScope: MemoryScope): Promise<MemoryItem | null> {
+  async promoteMemory(
+    id: string,
+    targetScope: MemoryScope
+  ): Promise<MemoryItem | null> {
     const memory = this.cache.get(id)
     if (!memory) return null
 
@@ -451,7 +478,10 @@ export class MemoryService {
   /**
    * Compress memory
    */
-  async compressMemory(id: string, ratio: number = 0.5): Promise<MemoryItem | null> {
+  async compressMemory(
+    id: string,
+    ratio: number = 0.5
+  ): Promise<MemoryItem | null> {
     const memory = this.cache.get(id)
     if (!memory) return null
 
@@ -508,8 +538,8 @@ export class MemoryService {
     if (!this.vectorStore) return
 
     const vectors = memories
-      .filter(m => m.embedding && m.embedding.length > 0)
-      .map(m => ({
+      .filter((m) => m.embedding && m.embedding.length > 0)
+      .map((m) => ({
         id: m.id,
         values: m.embedding!,
         metadata: {
@@ -530,7 +560,7 @@ export class MemoryService {
       })
     } catch (error) {
       if (this.config.debug) {
-        logger.logger.error('Failed to update vector store:', error)
+        logger.error('Failed to update vector store:', error)
       }
     }
   }
@@ -540,7 +570,7 @@ export class MemoryService {
    */
   getMemoryContext(): MemoryContext {
     const stats = this.getStats()
-    
+
     return {
       conversationActivity: this.assessConversationActivity(),
       preferenceRichness: this.assessPreferenceRichness(),
@@ -595,7 +625,8 @@ export class MemoryService {
       byScope,
       byPriority,
       totalTokens,
-      averageConfidence: this.cache.size > 0 ? totalConfidence / this.cache.size : 0,
+      averageConfidence:
+        this.cache.size > 0 ? totalConfidence / this.cache.size : 0,
     }
   }
 
@@ -640,9 +671,9 @@ export class MemoryService {
    */
   private startCleanupTask(): void {
     this.cleanupInterval = setInterval(() => {
-      this.cleanup().catch(error => {
+      this.cleanup().catch((error) => {
         if (this.config.debug) {
-          logger.logger.error('Cleanup task failed:', error)
+          logger.error('Cleanup task failed:', error)
         }
       })
     }, this.config.cleanupInterval!)
@@ -695,7 +726,7 @@ export class MemoryService {
           listener(event)
         } catch (error) {
           if (this.config.debug) {
-            logger.logger.error('Event listener error:', error)
+            logger.error('Event listener error:', error)
           }
         }
       }
@@ -746,7 +777,7 @@ export class MemoryService {
 
   private assessConversationActivity(): 'low' | 'medium' | 'high' {
     // Simple heuristic based on recent memories
-    const recentMemories = Array.from(this.cache.values()).filter(m => {
+    const recentMemories = Array.from(this.cache.values()).filter((m) => {
       const age = Date.now() - m.createdAt.getTime()
       return age < 5 * 60 * 1000 // Last 5 minutes
     })
@@ -758,7 +789,7 @@ export class MemoryService {
 
   private assessPreferenceRichness(): 'low' | 'medium' | 'high' {
     const semanticMemories = Array.from(this.cache.values()).filter(
-      m => m.type === 'semantic'
+      (m) => m.type === 'semantic'
     )
 
     if (semanticMemories.length > 20) return 'high'

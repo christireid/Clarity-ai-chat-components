@@ -625,7 +625,7 @@ import { ChatWindow } from '@clarity-chat/react'
     </div>
   )}
   onError={(error, errorInfo) => {
-    logger.logger.error('Caught error:', error, errorInfo)
+    logger.error('Caught error:', error, errorInfo)
     // Send to error tracking service
   }}
 >
