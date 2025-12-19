@@ -130,6 +130,7 @@ export const ComponentErrorCode = {
   LIFECYCLE_ERROR: 'COMPONENT_LIFECYCLE_ERROR',
   HOOK_ERROR: 'COMPONENT_HOOK_ERROR',
   CONTEXT_ERROR: 'COMPONENT_CONTEXT_ERROR',
+  SECURITY_RISK: 'SECURITY_RISK',
 } as const
 
 export type ComponentErrorCode =

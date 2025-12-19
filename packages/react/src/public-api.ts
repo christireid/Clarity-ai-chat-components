@@ -136,13 +136,8 @@ export {
   withLicense,
 } from '@clarity-chat/license'
 
-export type {
-  LicensePlan,
-  LicenseStatus,
-  LicenseProviderProps,
-  LicenseGateProps,
-  WatermarkProps,
-} from '@clarity-chat/license'
+// License types are available from @clarity-chat/license directly
+// Consumers should import types as: import type { LicensePlan } from '@clarity-chat/license'
 
 // ============================================================================
 // ESSENTIAL TYPES
