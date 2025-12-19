@@ -99,10 +99,6 @@ export function getLogger(
     return parts.join(' ')
   }
 
-  // Create the standard utils logger
-  const utilsLogger = getLogger(namespace)
-  utilsLogger.setLevel(level)
-
   return {
     info: (message: string, ...args: any[]) => {
       if (!shouldLog(LogLevel.INFO)) return

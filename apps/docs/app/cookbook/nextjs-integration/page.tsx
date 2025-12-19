@@ -37,8 +37,6 @@ export default function NextJSIntegrationPage() {
         <p>Set up Clarity Chat in Next.js App Router:</p>
         <CodePlayground
           initialCode={`// app/chat/page.tsx
-'use client'
-
 import { ClarityChat } from '@clarity-chat/react'
 
 export default function ChatPage() {
@@ -82,7 +80,7 @@ export default async function ChatLayout({ children }: { children: React.ReactNo
 }
 
 // app/chat/page.tsx (Client Component)
-'use client'
+
 import { useClarityChat } from '@clarity-chat/react'
 
 export default function ChatPage() {
@@ -222,8 +220,6 @@ export async function deleteConversation(conversationId: string) {
         <p>Complete Next.js integration example:</p>
         <CodePlayground
           initialCode={`// app/chat/page.tsx
-'use client'
-
 import { ClarityChat } from '@clarity-chat/react'
 import { useSession } from 'next-auth/react'
 

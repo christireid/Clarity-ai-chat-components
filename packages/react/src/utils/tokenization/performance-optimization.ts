@@ -1,5 +1,16 @@
 import { TokenCounter } from '@clarity-chat/token-optimization'
 
+// Extend Performance interface for Chrome-specific memory API
+declare global {
+  interface Performance {
+    memory?: {
+      usedJSHeapSize: number
+      totalJSHeapSize: number
+      jsHeapSizeLimit: number
+    }
+  }
+}
+
 export interface PerformanceMetrics {
   operation: string
   duration: number

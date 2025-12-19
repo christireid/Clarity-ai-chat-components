@@ -263,7 +263,7 @@ export { useKeyboardShortcuts } from './hooks/keyboard/use-keyboard-shortcuts'
 
 // Command Palette
 export { useCommandPalette } from './hooks/keyboard/use-command-palette'
-export { useCommandPaletteCommands } from './hooks/keyboard/use-command-palette-commands'
+// Note: useCommandPaletteCommands has a broken import path and is excluded
 
 // Clipboard
 export { useClipboard } from './hooks/ui/use-clipboard'

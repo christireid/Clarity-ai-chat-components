@@ -47,7 +47,7 @@ export function FloatingChatWidget({
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Use Clarity Chat Hook
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
+  const { messages, input, setInput, handleSubmit, isLoading, error } =
     useClarityChat({
       api: apiEndpoint,
       body: {
@@ -63,6 +63,21 @@ export function FloatingChatWidget({
       memory: memoryConfig,
       promptOptimization: optimizationConfig,
     })
+
+  // Helper to extract text content from message
+  const getMessageContent = (content: unknown): string => {
+    if (typeof content === 'string') return content
+    if (Array.isArray(content)) {
+      return content
+        .filter(
+          (part): part is { type: 'text'; text: string } =>
+            typeof part === 'object' && part !== null && part.type === 'text'
+        )
+        .map((part) => part.text)
+        .join('')
+    }
+    return String(content)
+  }
 
   // Auto-scroll
   useEffect(() => {
@@ -179,7 +194,7 @@ export function FloatingChatWidget({
                         : 'bg-muted text-foreground border border-border rounded-bl-none shadow-sm'
                     }`}
                   >
-                    {msg.content}
+                    {getMessageContent(msg.content)}
                   </div>
                   {msg.role === 'user' && (
                     <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center flex-shrink-0">
@@ -229,7 +244,7 @@ export function FloatingChatWidget({
                   autoFocus
                   type="text"
                   value={input}
-                  onChange={handleInputChange}
+                  onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask anything..."
                   className="w-full bg-background border border-border rounded-xl pl-4 pr-12 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
                 />
